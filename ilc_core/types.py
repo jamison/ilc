@@ -16,7 +16,15 @@ NodeType = Literal[
     "genesis.blob"      # Meta: Raw data adhering to a schema
 ]
 
-EdgeType = Literal["supports", "refutes", "derives_from", "equivalent", "implements", "relates_to"]
+EdgeType = Literal[
+    "supports",      # Validation (+Stake)
+    "refutes",       # Contradiction (-Stake, Slash)
+    "derives_from",  # Lineage (Task -> Claim)
+    "equivalent",    # Dedup (A == B)
+    "implements",    # Schema Compliance
+    "relates_to",    # General link
+    "supersedes"     # Versioning (New -> Old). No slashing.
+]
 
 class Node(BaseModel):
     """
