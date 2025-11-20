@@ -1,12 +1,14 @@
 from typing import Dict, Optional
 from ..types import Node, Edge
 from ..graph import EpistemicGraph
+from .clustering import SponsorGraph
 
 class ConsensusEngine:
     def __init__(self, graph: EpistemicGraph):
         self.graph = graph
         # Ledger: Node ID -> Staked Amount (Float)
         self.node_stakes: Dict[str, float] = {}
+        self.sponsor_graph = SponsorGraph()
     
     def register_stake(self, node_id: str, amount: float):
         """Called when an agent Supports a node."""
@@ -15,6 +17,19 @@ class ConsensusEngine:
         current = self.node_stakes.get(node_id, 0.0)
         self.node_stakes[node_id] = current + amount
         print(f"[Consensus] Stake added to {node_id[:8]}. Net: {self.node_stakes[node_id]}")
+
+    def register_sponsorship(self, sponsor_id: str, agent_id: str):
+        """Records that Sponsor funds Agent."""
+        self.sponsor_graph.union(sponsor_id, agent_id)
+
+    def validate_independence(self, validators: list[str]) -> bool:
+        """
+        Sybil Check: Do these validators represent diverse capital?
+        Returns True only if we have >= 3 distinct clusters.
+        """
+        unique_roots = self.sponsor_graph.get_cluster_count(validators)
+        print(f"[Consensus] Independence Check: {len(validators)} agents -> {unique_roots} clusters.")
+        return unique_roots >= 3
 
     def process_contradiction(self, target_id: str, stake_amount: float):
         """
