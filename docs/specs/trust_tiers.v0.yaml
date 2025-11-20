@@ -1,0 +1,33 @@
+:definitions:
+  TrustVector:
+    type: object
+    description: "The dynamic reputation state of an agent."
+    properties:
+      accuracy:
+        type: number
+        format: float
+        minimum: 0.0
+        maximum: 1.0
+        description: "Epistemic Truth Score. % of claims that survived contradiction."
+      precision:
+        type: number
+        format: float
+        minimum: 0.0
+        maximum: 1.0
+        description: "Validation alignment score."
+      potential:
+        type: number
+        format: float
+        minimum: 0.0
+        maximum: 1.0
+        description: "Efficiency Coefficient (Phi). Derived from Proof of Potential benchmarks (Tokens/Watt)."
+      last_active_epoch:
+        type: integer
+        description: "Block height of last valid contribution."
+
+  HardwareProof:
+    type: object
+    properties:
+      benchmark_hash: { type: string }
+      tee_signature: { type: string }
+      watts_reported: { type: number }
