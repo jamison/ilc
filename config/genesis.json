@@ -1,0 +1,31 @@
+{
+    "protocol_version": "1.0.0",
+    "network": "ilc-mainnet-alpha",
+    "timestamp": "2025-11-20T12:00:00Z",
+    "supply_cap": 25920000,
+    "governance": {
+        "atrophy_half_life_epochs": 262800,
+        "efficiency_cap_multiplier": 1.5,
+        "genesis_decay_alpha": 0.5
+    },
+    "axiomatic_core": [
+        {
+            "id": "axiom:math:01",
+            "claim": "1 + 1 = 2",
+            "domain": "Arithmetic",
+            "weight": 1.0
+        },
+        {
+            "id": "axiom:physics:01",
+            "claim": "Entropy increases in an isolated system (2nd Law)",
+            "domain": "Thermodynamics",
+            "weight": 1.0
+        },
+        {
+            "id": "axiom:logic:01",
+            "claim": "A thing is identical to itself (Law of Identity)",
+            "domain": "Logic",
+            "weight": 1.0
+        }
+    ]
+}
