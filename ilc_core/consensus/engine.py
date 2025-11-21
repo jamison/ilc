@@ -1,4 +1,6 @@
 from typing import Dict, Optional
+import math
+import time
 from ..types import Node, Edge
 from ..graph import EpistemicGraph
 from .clustering import SponsorGraph
@@ -31,17 +33,58 @@ class ConsensusEngine:
         print(f"[Consensus] Independence Check: {len(validators)} agents -> {unique_roots} clusters.")
         return unique_roots >= 3
 
+    def get_node_age(self, node: Node) -> float:
+        # In sim, we might use epochs. In real code, seconds.
+        now = time.time()
+        # Mock timestamp for simulation if needed, else real delta
+        return max(1.0, now - node.timestamp.timestamp())
+
+    def calculate_maintenance_tax(self, node: Node) -> float:
+        """
+        The Shield: Older, reused nodes pay less tax.
+        """
+        age = self.get_node_age(node)
+        # Reuse count simulated by net_stake for now
+        reuse_factor = max(1.0, node.net_stake) 
+        
+        base_tax = 0.01 # 1% per epoch
+        # Decay tax as age and reuse increase
+        tax_rate = base_tax / (1 + math.log(age * reuse_factor))
+        return tax_rate
+
+    def calculate_refutation_bounty(self, node: Node) -> float:
+        """
+        The Sword: Older nodes are worth more to destroy.
+        Paradigm Shift Bonus = Age^1.5
+        """
+        base_stake = self.node_stakes.get(node.id, 0.0)
+        age = self.get_node_age(node)
+        
+        # The Jackpot grows over time
+        # Scaling factor 0.001 ensures it doesn't explode instantly but grows long-term
+        paradigm_bonus = 0.001 * math.pow(age, 1.5)
+        
+        total_bounty = base_stake + paradigm_bonus
+        print(f"[Consensus] Node {node.id[:8]} Age: {age:.1f}s. Bounty: {total_bounty:.4f} (Bonus: {paradigm_bonus:.4f})")
+        return total_bounty
+
     def process_contradiction(self, target_id: str, stake_amount: float):
         """
         The 'Slash' Mechanism.
         Refutations are weighted 1.5x to incentivize error-finding.
         """
+        if target_id not in self.graph.nodes: return
+        node = self.graph.nodes[target_id]
+        
+        bounty = self.calculate_refutation_bounty(node)
+        
         current = self.node_stakes.get(target_id, 0.0)
         # The Slash: Remove the stake AND apply penalty logic (simplified here as subtraction)
         slash_impact = stake_amount * 1.5
         new_balance = current - slash_impact
         
         self.node_stakes[target_id] = new_balance
+        print(f"[Consensus] ⚔️ PARADIGM SHIFT! Refuter earns Jackpot: {bounty:.4f} ILC")
         print(f"[Consensus] ⚔️ CONTRADICTION! Node {target_id[:8]} slashed by {slash_impact}. Net: {new_balance}")
 
     def process_update(self, edge: Edge):
