@@ -53,7 +53,7 @@ def test_paradigm_dynamics():
     print(f"Ancient Bounty: {bounty_old:.2f}")
     print(f"New Bounty: {bounty_new:.2f}")
     
-    assert bounty_old > bounty_new * 5 # Should be significantly higher
+    assert bounty_old > bounty_new * 10 # Should be significantly higher
     print("SUCCESS: Ancient dogma offers a massive bounty (Paradigm Shift effect).")
 
 if __name__ == "__main__":

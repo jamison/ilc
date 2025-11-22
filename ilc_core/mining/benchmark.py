@@ -17,116 +17,277 @@ try:
 except ImportError:
     HAS_NUMPY = False
 
+
 class PoWBenchmark:
-    def __init__(self, matrix_size: int = 2000):
-        self.n = matrix_size
-        
-        # Reference Specs (In a real node, this comes from the Graph)
+    """
+    PoWBenchmark
+
+    Purpose
+    -------
+    Provide a simple, reproducible "proof of potential" benchmark for agents.
+    The output score is a scalar in [0, 1] that represents the relative
+    compute capability of the agent's underlying hardware (and environment).
+
+    Usage
+    -----
+        bench = PoWBenchmark(matrix_size=1024)
+        result = bench.run(agent_id="agent-123")
+        score = result["score"]  # 0.0 - 1.0
+
+    This `score` is what should be passed into Governance.update_hardware_potential
+    as part of the agent_potentials list for an epoch.
+    """
+
+    def __init__(self, matrix_size: int = 1024):
+        # Size parameter for matrix-heavy work. Larger => heavier workload.
+        self.n = int(matrix_size)
+
+        # Reference specs (conceptual only; not hard enforcement).
+        # Could be used later for more advanced FLOPS-per-watt scoring.
         self.specs = {
-            "silicon": {"watts": 350, "tflops": 30.0},  # GPU Baseline
-            "carbon":  {"watts": 100, "tflops": 1.0}    # CPU Baseline
+            "silicon": {"watts": 350, "tflops": 30.0},  # GPU baseline
+            "carbon": {"watts": 100, "tflops": 1.0},    # CPU baseline
         }
 
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
     def run(self, agent_id: str) -> dict:
         """
-        Two-Stage Proof of Potential.
-        1. Genesis Bypass (Score 1.0)
-        2. The Filter (Memory Wall)
-        3. The Work (ZK Maintenance OR Math Fallback)
+        Two-stage "proof of potential" benchmark.
+
+        Stages
+        ------
+        1. Genesis Bypass:
+           - If 'genesis' is in the agent_id, return a fixed score of 1.0.
+             This is a convenience hook for early bootstrap nodes.
+
+        2. Filter (Memory / Throughput check):
+           - Run a matrix workload appropriate to the environment:
+             GPU (torch.cuda) > NumPy > pure Python.
+
+        3. Work (Task-specific kernel):
+           - Either a matrix-heavy workload or a prime-search workload,
+             selected with a simple Kademlia-style hash lottery.
+
+        Scoring
+        -------
+        - Based on total time taken (filter + work).
+        - Faster hardware => smaller total time => higher score.
+        - Score is mapped into [0, 1] via a squashed logistic transform.
+        - GPU ("silicon") gets a capped boost: score in [0.5, 1.0].
+        - CPU-only ("carbon") gets score in [0.0, 0.5].
+
+        Returns
+        -------
+        dict with keys:
+            - "score"      : float in [0, 1]
+            - "tier"       : "silicon" | "carbon" | "genesis"
+            - "device"     : string describing the device type
+            - "task"       : "MATRIX_HEAVY" | "INTEGER_SEARCH"
+            - "total_time" : total benchmark wall-clock time (seconds)
         """
         print(f"[Benchmark] Initializing CapProof for {agent_id}...")
-        
-        # --- GENESIS BYPASS ---
+
+        # --- GENESIS BYPASS ------------------------------------------------
         if "genesis" in agent_id.lower():
-            print(f"[Benchmark] GENESIS AGENT DETECTED. Bypassing checks.")
+            print("[Benchmark] GENESIS AGENT DETECTED. Bypassing checks.")
             return {
                 "score": 1.0,
                 "tier": "genesis",
                 "device": "virtual_core",
-                "task": "AXIOM_MAINTENANCE"
+                "task": "bypass",
+                "total_time": 0.0,
             }
 
-        # --- STAGE 1: THE MEMORY WALL (Filter) ---
-        start_filter = time.time()
-        tier = "carbon"
-        device = "cpu_generic"
-        
-        if HAS_TORCH and torch.cuda.is_available():
-            self._run_gpu_matrix()
-            tier = "silicon"
-            device = torch.cuda.get_device_name(0)
-        elif HAS_NUMPY:
-            self._run_numpy_matrix()
-            device = "cpu_numpy"
-        else:
-            self._run_pure_python_matrix()
-            
-        filter_time = time.time() - start_filter
-        
-        # --- STAGE 2: THE USEFUL WORK ---
+        # --- ENVIRONMENT / TIER DETECTION ---------------------------------
+        tier, device = self._detect_tier()
+
+        # --- TASK ASSIGNMENT (lottery) ------------------------------------
         task_type = self._assign_task(agent_id)
-        print(f"[Benchmark] Assigned Task: {task_type}")
-        
+
+        # --- FILTER STAGE --------------------------------------------------
+        start_filter = time.time()
+        if tier == "silicon":
+            # GPU or "fast path" filter
+            self._run_gpu_or_numpy_matrix()
+        else:
+            # CPU-only filter
+            self._run_numpy_or_python_matrix()
+        filter_time = time.time() - start_filter
+
+        # --- WORK STAGE ----------------------------------------------------
         start_work = time.time()
         if task_type == "MATRIX_HEAVY":
-            if tier == "silicon": self._run_gpu_matrix() # Do it again/heavier
-            else: self._run_numpy_matrix()
+            if tier == "silicon":
+                # Heavier matrix work on GPU/NumPy
+                self._run_gpu_or_numpy_matrix(heavy=True)
+            else:
+                self._run_numpy_or_python_matrix(heavy=True)
         else:
             self._run_prime_search()
         work_time = time.time() - start_work
-        
-        # --- SCORING ---
-        # Efficiency = (Work / Time) / Reference_Watts
-        # For MVP: Time-based decay
-        
+
+        # --- SCORING -------------------------------------------------------
+        # Efficiency proxy: smaller total_time => higher score.
         total_time = filter_time + work_time
-        if total_time == 0: total_time = 0.0001
-        
-        raw_score = 10.0 / total_time
-        normalized_score = 1 / (1 + math.exp(-(raw_score) + 2))
-        
-        # Boost for Silicon Tier doing Useful Work
+        if total_time <= 0.0:
+            total_time = 0.0001
+
+        # Raw 'speed' metric.
+        raw_score = 10.0 / total_time  # arbitrary scaling
+
+        # Logistic squash into (0,1).
+        # Center around raw_score ~= 2.0 for typical hardware.
+        normalized_score = 1.0 / (1.0 + math.exp(-(raw_score - 2.0)))
+
+        # Tier-based shaping:
+        # - silicon: 0.5 - 1.0
+        # - carbon: 0.0 - 0.5
         if tier == "silicon":
-            normalized_score = 0.5 + (normalized_score * 0.5) # 0.5 - 1.0
+            normalized_score = 0.5 + (normalized_score * 0.5)
         else:
-            normalized_score = normalized_score * 0.5         # 0.0 - 0.5
-            
-        print(f"[Benchmark] {tier.upper()} TIER. Time: {total_time:.4f}s. Score: {normalized_score:.4f}")
-        
+            normalized_score = normalized_score * 0.5
+
+        # Clamp to [0,1].
+        normalized_score = max(0.0, min(normalized_score, 1.0))
+
+        print(
+            f"[Benchmark] {tier.upper()} TIER. "
+            f"Time: {total_time:.4f}s. Score: {normalized_score:.4f}"
+        )
+
         return {
             "score": round(normalized_score, 4),
             "tier": tier,
             "device": device,
-            "task": task_type
+            "task": task_type,
+            "total_time": total_time,
         }
 
+    # ------------------------------------------------------------------
+    # Tier / environment helpers
+    # ------------------------------------------------------------------
+    def _detect_tier(self) -> tuple[str, str]:
+        """
+        Decide whether the environment is 'silicon' (GPU-capable) or
+        'carbon' (CPU-only / fallback), and return a device description.
+        """
+        if HAS_TORCH and torch.cuda.is_available():
+            dev = torch.cuda.get_device_name(0)
+            return "silicon", f"cuda:{dev}"
+
+        if HAS_NUMPY:
+            return "carbon", "cpu:numpy"
+
+        # Last-resort fallback: pure Python.
+        return "carbon", "cpu:pure_python"
+
+    # ------------------------------------------------------------------
+    # Task / workload selection
+    # ------------------------------------------------------------------
     def _assign_task(self, agent_id: str) -> str:
-        """Kademlia-style Lottery."""
+        """
+        Simple lottery to decide which workload kernel is run.
+
+        We use a hash of agent_id so each agent tends to see a stable mix
+        of tasks across many epochs.
+        """
         h = int(hashlib.sha256(agent_id.encode()).hexdigest(), 16)
-        if h % 3 == 0: # 33% chance of Critical Maintenance
-            return "MATRIX_HEAVY" # ZK Proxy
-        return "INTEGER_SEARCH" # Prime Hunt
+        # ~33% chance of matrix-heavy work; otherwise prime search.
+        if h % 3 == 0:
+            return "MATRIX_HEAVY"
+        return "INTEGER_SEARCH"
 
-    # --- WORKLOAD KERNELS ---
-    def _run_gpu_matrix(self):
-        if HAS_TORCH:
-            s = self.n
-            a = torch.randn(s, s, device='cuda', dtype=torch.float16)
-            b = torch.randn(s, s, device='cuda', dtype=torch.float16)
-            torch.matmul(a, b); torch.cuda.synchronize()
+    # ------------------------------------------------------------------
+    # Workload kernels
+    # ------------------------------------------------------------------
+    def _run_gpu_or_numpy_matrix(self, heavy: bool = False) -> None:
+        """
+        Run a matrix workload using GPU if available, else NumPy.
 
-    def _run_numpy_matrix(self):
-        s = self.n
-        a = np.random.rand(s, s); b = np.random.rand(s, s)
-        np.matmul(a, b)
+        heavy=True multiplies the effective workload size slightly.
+        """
+        size = self.n * (2 if heavy else 1)
 
-    def _run_pure_python_matrix(self):
-        s = 150; A = [[random.random()]*s for _ in range(s)]
-        sum(sum(row) for row in A)
+        if HAS_TORCH and torch.cuda.is_available():
+            s = size
+            a = torch.randn(s, s, device="cuda", dtype=torch.float16)
+            b = torch.randn(s, s, device="cuda", dtype=torch.float16)
+            torch.matmul(a, b)
+            torch.cuda.synchronize()
+            return
 
-    def _run_prime_search(self):
-        cand = 5000000 + random.randint(1, 1000)
+        if HAS_NUMPY:
+            s = size
+            a = np.random.rand(s, s)
+            b = np.random.rand(s, s)
+            np.matmul(a, b)
+            return
+
+        # Fallback if neither torch nor numpy is available.
+        self._run_pure_python_matrix()
+
+    def _run_numpy_or_python_matrix(self, heavy: bool = False) -> None:
+        """
+        Run a matrix workload using NumPy if available, else pure Python.
+        """
+        size = self.n * (2 if heavy else 1)
+
+        if HAS_NUMPY:
+            s = size
+            a = np.random.rand(s, s)
+            b = np.random.rand(s, s)
+            np.matmul(a, b)
+            return
+
+        self._run_pure_python_matrix()
+
+    def _run_pure_python_matrix(self) -> None:
+        """
+        Very simple pure-Python matrix-like workload for worst-case environments.
+        """
+        s = 150
+        A = [[random.random() for _ in range(s)] for _ in range(s)]
+        _ = sum(sum(row) for row in A)
+
+    def _run_prime_search(self) -> None:
+        """
+        Integer workload: naive prime search near a random large number.
+        """
+        cand = 5_000_000 + random.randint(1, 1_000)
         while True:
-            if all(cand % i != 0 for i in range(2, int(math.sqrt(cand)) + 1)):
+            is_prime = True
+            limit = int(math.sqrt(cand)) + 1
+            for i in range(2, limit):
+                if cand % i == 0:
+                    is_prime = False
+                    break
+            if is_prime:
                 break
             cand += 1
+
+
+# ----------------------------------------------------------------------
+# Convenience helpers for simulations
+# ----------------------------------------------------------------------
+def run_benchmarks_for_agents(
+    agent_ids: list[str],
+    matrix_size: int = 1024,
+) -> dict[str, float]:
+    """
+    Convenience function for simulations / orchestration:
+
+        scores = run_benchmarks_for_agents(["a1", "a2", "a3"])
+        median_potential = statistics.median(scores.values())
+
+    Returns a dict mapping agent_id -> score (0.0 - 1.0).
+    """
+    bench = PoWBenchmark(matrix_size=matrix_size)
+    scores: dict[str, float] = {}
+
+    for aid in agent_ids:
+        result = bench.run(aid)
+        scores[aid] = result["score"]
+
+    return scores
