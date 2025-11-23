@@ -5,12 +5,15 @@ from .consensus.engine import ConsensusEngine
 from .agent import EveAgent
 from .types import Node
 from .network.peer import PeerManager
+from .config import load_governance_config
 
 # Singleton State (Simulated Persistence for MVP)
 graph = EpistemicGraph()
 graph.load_genesis()
-consensus = ConsensusEngine(graph)
+cfg = load_governance_config()
+consensus = ConsensusEngine(graph, governance_config=cfg)
 agent = EveAgent("agent:local_node", graph, consensus)
+agent.wallet_balance = 1000.0
 peer_manager = PeerManager(local_port=8000)
 
 app = FastAPI(title="ILC Node Daemon", version="0.1.0")

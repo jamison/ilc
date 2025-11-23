@@ -87,8 +87,9 @@ class Governance:
         # "Genesis" median benchmark potential. This anchors the hardware
         # scaling factor. If the network becomes 10x faster, we *reduce* the
         # ECU-per-task baseline so that real-world cost stays roughly stable.
-        self.genesis_median_potential: float = 0.1
-        self.current_median_potential: float = 0.1
+        hw_cfg = cfg.get("hardware", {})
+        self.genesis_median_potential: float = float(hw_cfg.get("genesis_median_potential", 0.1))
+        self.current_median_potential: float = self.genesis_median_potential
 
         # --- Internal state for congestion ------------------------------
         # We keep a smoothed congestion score per epoch.

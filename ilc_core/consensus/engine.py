@@ -31,7 +31,7 @@ class ConsensusEngine:
       reward engine.
     """
 
-    def __init__(self, graph: EpistemicGraph):
+    def __init__(self, graph: EpistemicGraph, governance_config: Optional[Dict] = None):
         self.graph = graph
 
         # Ledger: Node ID -> Staked Amount (float units, interpreted later as ECU/ILC)
@@ -41,7 +41,11 @@ class ConsensusEngine:
         self.sponsor_graph = SponsorGraph()
 
         # ECU-anchored, congestion-aware governance surface.
-        self.governance = Governance()
+        if governance_config is None:
+            from ..config import load_governance_config
+            governance_config = load_governance_config()
+        
+        self.governance = Governance(governance_config)
 
         # Simple epoch bookkeeping (optional, but useful for logging/debugging).
         self.epoch_index: int = 0
@@ -229,6 +233,15 @@ class ConsensusEngine:
             f"Bounty: {total_bounty:.4f} (Bonus: {paradigm_bonus:.4f})"
         )
         return total_bounty
+
+    def process_edge(self, edge: Edge, stake_amount: float = 0.0) -> None:
+        """
+        Dispatch edge processing based on type.
+        """
+        if edge.type == "refutes":
+            self.process_contradiction(edge.target_id, stake_amount)
+        elif edge.type == "supersedes":
+            self.process_update(edge)
 
     def process_contradiction(self, target_id: str, stake_amount: float) -> None:
         """

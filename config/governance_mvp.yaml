@@ -1,0 +1,20 @@
+# Mirrors the intended contents of genesis.governance.config:01
+# for the MVP reference client.
+ecu:
+  base_costs:
+    claim.submit: 0.05
+    audit.panel: 0.02
+    refute.attempt: 0.03
+    contradiction.sweep: 0.10
+    graph.compression: 0.04
+    star.map.embedding: 0.02
+
+backlog_hotspot_pricing:
+  enabled: true
+  backlog_gain: 0.05
+  vol_price_gain: 0.2
+  price_max: 1.5
+  decay_per_finalized: 0.5
+
+hardware:
+  genesis_median_potential: 0.1
