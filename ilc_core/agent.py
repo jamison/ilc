@@ -124,6 +124,53 @@ class EveAgent:
         print(f"[{self.id}] Minted {node.id[:8]}")
         return node
 
+    def auto_mine_claim(self, content: str, parent_id: str) -> Optional[Node]:
+        """
+        Strategy helper: automatically choose a stake for a claim.submit task
+        based on:
+        - current wallet_balance,
+        - the ECU fee for "claim.submit" (via Governance),
+        - this agent's hardware potential (trust_vector["potential"]).
+
+        This is primarily intended for simulations and does not change the
+        behavior of mine_thought(...) when called directly with an explicit
+        stake.
+
+        MVP strategy:
+        - Ensure we have a hardware potential score (run perform_pow_benchmark()
+          if needed).
+        - Map potential ∈ [0, 1] to a stake fraction ∈ [f_min, f_max] of the
+          current wallet_balance.
+        - Compute candidate_stake = fraction * wallet_balance.
+        - Route candidate_stake through decide_stake_for_claim(...) to enforce
+          ECU fees and wallet caps.
+        - If the resulting stake is valid, call mine_thought(...) with that
+          chosen stake.
+        """
+        # Ensure we have a potential measurement.
+        if self.trust_vector.get("potential", 0.0) <= 0.0:
+            self.perform_pow_benchmark()
+
+        potential = self.trust_vector.get("potential", 0.0)
+
+        # Low potential → more cautious; high potential → more aggressive.
+        f_min = 0.05  # stake at least 5% of wallet
+        f_max = 0.25  # at most 25% of wallet in this MVP
+        frac = f_min + (f_max - f_min) * potential
+
+        # Derive a candidate stake from current wallet.
+        candidate_stake = frac * self.wallet_balance
+
+        # Let the ECU-aware helper adjust or reject.
+        chosen = self.decide_stake_for_claim(candidate_stake)
+
+        if chosen <= 0 or self.wallet_balance < chosen:
+            print(f"[{self.id}] Auto-mine aborted (insufficient funds or fee too high).")
+            return None
+
+        # Delegate actual minting to the existing mine_thought path.
+        return self.mine_thought(content, parent_id, chosen)
+
     def receive_reward(self, amount: float):
         """Handle earnings and auto-repayment."""
         if self.vault:
