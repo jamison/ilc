@@ -1,0 +1,29 @@
+{
+    "hardware_archetypes": {
+        "cpu": {
+            "base_potential": 0.3,
+            "stake_fraction_min": 0.05,
+            "stake_fraction_max": 0.10
+        },
+        "gpu": {
+            "base_potential": 0.7,
+            "stake_fraction_min": 0.08,
+            "stake_fraction_max": 0.22
+        },
+        "asic": {
+            "base_potential": 0.9,
+            "stake_fraction_min": 0.10,
+            "stake_fraction_max": 0.25
+        },
+        "fpga": {
+            "base_potential": 0.6,
+            "stake_fraction_min": 0.06,
+            "stake_fraction_max": 0.18
+        },
+        "edge": {
+            "base_potential": 0.2,
+            "stake_fraction_min": 0.02,
+            "stake_fraction_max": 0.08
+        }
+    }
+}

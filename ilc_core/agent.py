@@ -154,8 +154,9 @@ class EveAgent:
         potential = self.trust_vector.get("potential", 0.0)
 
         # Low potential → more cautious; high potential → more aggressive.
-        f_min = 0.05  # stake at least 5% of wallet
-        f_max = 0.25  # at most 25% of wallet in this MVP
+        # Allow external config (e.g., hardware archetypes) to override.
+        f_min = getattr(self, "strategy_stake_fraction_min", 0.05)
+        f_max = getattr(self, "strategy_stake_fraction_max", 0.25)
         frac = f_min + (f_max - f_min) * potential
 
         # Derive a candidate stake from current wallet.
