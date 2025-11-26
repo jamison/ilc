@@ -1,51 +1,47 @@
 from __future__ import annotations
 
 from typing import Optional
+from .entropy import entropy_weight
 
 
 def simple_claim_reward(
-    stake_amount: float,
+    stake_spent: float,
     potential: float,
     reuse_count: int = 0,
+    success_rate: Optional[float] = None,
 ) -> float:
     """
-    MVP / Simulation-only reward function for mined claims.
-
-    This is NOT the final ILC monetary policy. It is a toy function to enable
-    simulations with a live reward loop.
-
-    Intuition
-    ---------
-    - Higher stake should generally yield higher rewards.
-    - Higher hardware/intelligence potential may slightly boost reward.
-    - Reuse_count (how often a node is reused) could matter later; for now,
-      we keep it optional and small.
-
-    Parameters
-    ----------
-    stake_amount : float
-        Amount staked on the claim.
-    potential : float
-        Agent's hardware/intelligence potential in [0, 1].
-    reuse_count : int, optional
-        Number of times this claim has been reused in the sim (for future use).
-
-    Returns
-    -------
-    float
-        Reward amount (generic units). For now, we keep this on the same
-        numeric scale as stakes.
+    MVP / Simulation-only reward function.
+    
+    Returns:
+        reward_amount (float): The amount of ILC to mint as reward.
+        
+    Formula (Sim-Only):
+        Base Reward = stake_spent + (0.5 * potential * stake_spent)
+        
+        If success_rate is provided (Phase 10), we apply an entropy multiplier:
+            Multiplier = entropy_weight(success_rate)  (in [0.5, 2.0])
+            Final Reward = Base Reward * Multiplier
+            
+    NOTE: This is NOT the final ILC monetary policy. It is a placeholder
+    to allow agents to earn back what they spend plus a margin, so they
+    don't go bankrupt in long-running simulations.
     """
-    if stake_amount <= 0.0:
+    # 1. Base recovery of stake
+    if stake_spent <= 0.0:
         return 0.0
 
-    # Base reward proportional to stake.
-    base = stake_amount
+    base = stake_spent
+    
+    # 2. Profit margin based on potential
+    # e.g. if potential is 1.0, margin is 50%. If 0.0, margin is 0%.
+    margin = 0.5 * potential * stake_spent
+    
+    total = base + margin
 
-    # Small boost from potential (e.g. up to +50% for potential=1.0).
-    potential_boost = 0.5 * potential * stake_amount
-
-    # For now, ignore reuse_count or treat it as a tiny additive factor.
-    reuse_boost = 0.0
-
-    return base + potential_boost + reuse_boost
+    # 3. Optional Entropy Weighting (Phase 10)
+    if success_rate is not None:
+        w = entropy_weight(success_rate)
+        total *= w
+        
+    return total
