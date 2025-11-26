@@ -6,9 +6,8 @@ from .entropy import entropy_weight
 
 def simple_claim_reward(
     stake_spent: float,
-    potential: float,
-    reuse_count: int = 0,
-    success_rate: Optional[float] = None,
+    potential: float = 0.0,
+    success_rate: float | None = None,
 ) -> float:
     """
     MVP / Simulation-only reward function.
@@ -23,9 +22,10 @@ def simple_claim_reward(
             Multiplier = entropy_weight(success_rate)  (in [0.5, 2.0])
             Final Reward = Base Reward * Multiplier
             
-    NOTE: This is NOT the final ILC monetary policy. It is a placeholder
-    to allow agents to earn back what they spend plus a margin, so they
-    don't go bankrupt in long-running simulations.
+    NOTE: This function is the canonical reward surface for MVP sims.
+    Entropy / "learning signal" weighting lives here, not in callers.
+    
+    If success_rate is None, no entropy weighting is applied.
     """
     # 1. Base recovery of stake
     if stake_spent <= 0.0:
