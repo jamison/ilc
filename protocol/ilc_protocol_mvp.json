@@ -1,0 +1,66 @@
+{
+    "version": "0.1.0",
+    "description": "ILC MVP protocol surfaces for claims, refutes, tasks, outcomes, and epoch summaries.",
+    "objects": {
+        "claim": {
+            "description": "Canonical on-chain / on-graph claim object.",
+            "fields": {
+                "id": "string - content-addressed identifier (e.g. hash)",
+                "type": "string - e.g. 'claim'",
+                "agent_id": "string - logical agent identifier",
+                "content": "string - claim text or reference",
+                "parent_ids": "array<string> - parents in the epistemic graph",
+                "timestamp": "string - ISO8601 UTC timestamp",
+                "net_stake": "number - total stake currently attached to this claim"
+            }
+        },
+        "refute": {
+            "description": "Refutation attempt tying to a target claim.",
+            "fields": {
+                "id": "string",
+                "type": "string - e.g. 'refute'",
+                "agent_id": "string",
+                "target_claim_id": "string",
+                "content": "string - explanation / evidence",
+                "timestamp": "string",
+                "net_stake": "number"
+            }
+        },
+        "task": {
+            "description": "Logical unit of work submitted to the protocol.",
+            "fields": {
+                "task_id": "string",
+                "task_type": "string - e.g. 'claim.submit', 'refute.attempt', 'contradiction.sweep'",
+                "agent_id": "string",
+                "payload_ref": "string - reference into content / graph / storage",
+                "epoch": "integer - epoch in which the task is admitted",
+                "meta": "object - free-form metadata (domain, hardware tier, etc.)"
+            }
+        },
+        "task_outcome": {
+            "description": "Economic outcome of a task for telemetry and learning.",
+            "fields": {
+                "task_id": "string",
+                "task_type": "string",
+                "domain": "string - optional routing label (e.g. EASY/MEDIUM/HARD)",
+                "agent_id": "string",
+                "epoch": "integer",
+                "stake_spent": "number - ECU-equivalent stake burned or locked",
+                "reward_paid": "number - ILC paid for this task",
+                "success": "boolean - coarse outcome flag",
+                "meta": "object - optional details (e.g. success_reason, entropy_bucket)"
+            }
+        },
+        "epoch_summary": {
+            "description": "Aggregate economic stats for an epoch.",
+            "fields": {
+                "epoch": "integer",
+                "total_tasks": "integer",
+                "total_ecu_spent": "number",
+                "total_reward_paid": "number",
+                "clearing_price_ilc_per_ecu": "number - e.g. P_e",
+                "meta": "object - optional, may include congestion, hardware stats, etc."
+            }
+        }
+    }
+}
