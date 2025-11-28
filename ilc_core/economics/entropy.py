@@ -1,19 +1,23 @@
 # ilc_core/economics/entropy.py
+"""
+Entropy-based helpers for shaping rewards in the ILC economics sandbox.
 
+These functions provide a simple "learning signal" over empirical success rates,
+and a corresponding entropy_weight(...) that upweights mid-entropy domains and
+downweights tasks that are either trivial (almost always succeed) or hopeless
+(almost always fail).
+"""
 from __future__ import annotations
 from typing import Optional
 
 def learning_signal(success_rate: float) -> float:
     """
-    Symmetric bell-shaped learning signal in [0, 0.25].
+    Map a success_rate in [0, 1] to a "learning signal" scalar.
 
-    For a given empirical success rate p ∈ [0, 1], the signal is:
-        L(p) = p * (1 - p)
-
-    Intuition:
-    - p ~ 0.0  → task is too hard, no gradient.
-    - p ~ 1.0  → task is solved, no gradient.
-    - p ~ 0.5  → maximal "learning juice".
+    The shape is intentionally peaked around medium success probabilities, so that
+    tasks which are neither trivial nor impossible produce the strongest signal.
+    This is a toy model used only in the economics sandbox, not a fixed part of
+    the ILC protocol.
     """
     p = max(0.0, min(1.0, float(success_rate)))
     return p * (1.0 - p)
@@ -25,12 +29,12 @@ def entropy_weight(
     max_cap: float = 2.0,
 ) -> float:
     """
-    Map learning_signal(p) into a multiplicative weight ∈ [min_floor, max_cap].
+    Compute an entropy-like weight for a given success_rate in [0, 1].
 
-    We normalize L(p) ∈ [0, 0.25] by scaling and shifting into the target band.
-
-    This is intentionally soft and purely experimental. It does NOT affect
-    Governance or ECU-based minimum fees; it only modulates reward in sims.
+    The weight is larger for mid-range success rates (where entropy is high) and
+    smaller near 0.0 or 1.0. Reward helpers such as simple_claim_reward can use
+    this to reward work on "interesting" domains more than on trivial or solved
+    ones. This is purely exploratory and parameterized for future tuning.
     """
     base_signal = learning_signal(success_rate)  # in [0, 0.25]
     # Normalize to [0, 1]

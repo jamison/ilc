@@ -1,3 +1,11 @@
+"""
+Reward helpers for the ILC economics sandbox.
+
+This module defines simple_claim_reward(...), which turns ECU-like stake_spent,
+hardware potential, and an entropy-weighted learning signal (optional success_rate)
+into a single float reward. It is used in simulations to explore incentives and
+does not yet define the final L1 protocol reward schedule.
+"""
 from __future__ import annotations
 
 from typing import Optional
@@ -10,22 +18,20 @@ def simple_claim_reward(
     success_rate: float | None = None,
 ) -> float:
     """
-    MVP / Simulation-only reward function.
-    
+    Compute an entropy-weighted reward for a single claim in the economics sandbox.
+
+    Args:
+        stake_spent: ECU-like quantity associated with this task in the sim. In current
+            simulations this is often approximated using the governance fee.
+        potential: Proxy for the agent's hardware or capability in [0, 1].
+        success_rate: Optional empirical or assumed success probability in [0, 1].
+            When provided, an entropy-based weight is applied via the helpers in
+            ilc_core.economics.entropy.
+
     Returns:
-        reward_amount (float): The amount of ILC to mint as reward.
-        
-    Formula (Sim-Only):
-        Base Reward = stake_spent + (0.5 * potential * stake_spent)
-        
-        If success_rate is provided (Phase 10), we apply an entropy multiplier:
-            Multiplier = entropy_weight(success_rate)  (in [0.5, 2.0])
-            Final Reward = Base Reward * Multiplier
-            
-    NOTE: This function is the canonical reward surface for MVP sims.
-    Entropy / "learning signal" weighting lives here, not in callers.
-    
-    If success_rate is None, no entropy weighting is applied.
+        A single float reward_paid in ILC units for this one task. The economics
+        sandbox uses this as a scalar signal; it does not yet model full protocol
+        distribution or multi-recipient payouts.
     """
     # 1. Base recovery of stake
     if stake_spent <= 0.0:

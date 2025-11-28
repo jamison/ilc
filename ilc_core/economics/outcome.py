@@ -1,7 +1,21 @@
+"""
+Outcome logging primitives for the ILC economics sandbox.
+
+TaskOutcome and OutcomeLogger provide a lightweight way to record what happened
+to each simulated task (stake_spent, reward_paid, success, domain, etc.) and to
+aggregate simple statistics for analysis or RL-style agents.
+"""
 from dataclasses import dataclass
 
 @dataclass
 class TaskOutcome:
+    """
+    Compact record of a single task's economic outcome in the sandbox.
+
+    This does not attempt to encode full protocol semantics; instead it captures
+    just enough information for telemetry, analysis, and future RL agents:
+    task_type, domain, stake_spent, reward_paid, and success flag.
+    """
     task_type: str           # e.g. "claim.submit"
     domain: str | None       # e.g. "easy", "medium", "hard", or None
     stake_spent: float
@@ -10,6 +24,14 @@ class TaskOutcome:
 
 
 class OutcomeLogger:
+    """
+    Minimal logger that accumulates TaskOutcome records in memory.
+
+    The logger is used by simulations to track aggregate statistics such as total
+    stake_spent, total reward_paid, counts per domain, and simple averages. It is
+    intentionally simple and non-persistent; production deployments would use a
+    more robust telemetry and storage layer.
+    """
     def __init__(self) -> None:
         self.outcomes: list[TaskOutcome] = []
 

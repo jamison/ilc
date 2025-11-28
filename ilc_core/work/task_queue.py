@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+"""
+Task abstractions for the ILC economics sandbox.
+
+TaskDescriptor describes a unit of work (task_type, agent_id, payload, meta),
+and TaskQueue provides a simple FIFO queue. Simulations use these helpers to
+model how tasks might be scheduled and processed without committing to a
+network-level job format.
+"""
 from dataclasses import dataclass, field
 from typing import Any, Deque, Dict, List, Optional
 from collections import deque
@@ -8,7 +16,11 @@ from collections import deque
 @dataclass
 class TaskDescriptor:
     """
-    Minimal unit-of-work description for ILC tasks.
+    Minimal description of a unit of work in the sandbox.
+
+    Fields are intentionally generic: task_id, task_type, agent_id, payload, and
+    meta. Simulations can attach domain labels, success probabilities, or other
+    hints via payload/meta without affecting the queueing logic.
 
     MVP fields
     ----------
@@ -39,13 +51,6 @@ class TaskDescriptor:
 
 class TaskQueue:
     """
-    Very small FIFO queue for TaskDescriptor objects.
-
-    Intent
-    ------
-    - Provide a single, reusable abstraction for "work to be done".
-    - Be simple enough to embed in:
-        - simulations (ballast, bandit, etc.)
         - future schedulers / routers
         - optional API endpoints
 

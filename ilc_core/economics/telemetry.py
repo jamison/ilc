@@ -1,14 +1,24 @@
+"""
+Economic telemetry façade and RL hook stubs for the ILC economics sandbox.
+
+EconomicTelemetry wraps the epoch reward ledger and OutcomeLogger to provide a
+unified view of simulated economic activity. RLHook defines a minimal observer
+interface that future RL agents can implement to receive per-task and per-epoch
+signals without being wired into the core protocol.
+"""
 from .epoch_ledger import SimpleEpochLedger
 from .outcome import OutcomeLogger, TaskOutcome
 
 class EconomicTelemetry:
     """
-    Simple façade over epoch-level and task-level economic data.
+    Façade over the epoch reward ledger and outcome logging for simulations.
 
-    This is sim-only for now, and provides a stable surface for:
-    - analytics
-    - future RL agents
-    - monitoring / dashboards
+    EconomicTelemetry is responsible for:
+      * Recording per-task TaskOutcome events.
+      * Updating a SimpleEpochLedger with aggregated ECU_spent and rewards.
+      * Providing snapshots for analysis and future RL agents.
+    It is currently only used in sandbox simulations and is not a mandatory part
+    of the on-chain protocol design.
     """
 
     def __init__(self) -> None:
@@ -43,10 +53,11 @@ class EconomicTelemetry:
 
 class RLHook:
     """
-    Minimal RL hook interface (sim-only).
+    Minimal stub interface for RL-style agents observing economic activity.
 
-    This does NOT change consensus or L1 semantics.
-    It only observes task outcomes and epoch summaries.
+    Implementations can override on_task_outcome(...) and on_epoch_summary(...)
+    to ingest telemetry from EconomicTelemetry. The default implementation is a
+    no-op so that simulations can wire it in without changing behavior.
     """
 
     def on_task_outcome(self, outcome: TaskOutcome) -> None:
