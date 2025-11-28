@@ -5,6 +5,9 @@ EconomicTelemetry wraps the epoch reward ledger and OutcomeLogger to provide a
 unified view of simulated economic activity. RLHook defines a minimal observer
 interface that future RL agents can implement to receive per-task and per-epoch
 signals without being wired into the core protocol.
+
+For how this is used in the economics sandbox and how it might map to future
+genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from .epoch_ledger import SimpleEpochLedger
 from .outcome import OutcomeLogger, TaskOutcome

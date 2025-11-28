@@ -6,6 +6,9 @@ These functions provide a simple "learning signal" over empirical success rates,
 and a corresponding entropy_weight(...) that upweights mid-entropy domains and
 downweights tasks that are either trivial (almost always succeed) or hopeless
 (almost always fail).
+
+For how this is used in the economics sandbox and how it might map to future
+genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from __future__ import annotations
 from typing import Optional

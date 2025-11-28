@@ -4,6 +4,9 @@ Outcome logging primitives for the ILC economics sandbox.
 TaskOutcome and OutcomeLogger provide a lightweight way to record what happened
 to each simulated task (stake_spent, reward_paid, success, domain, etc.) and to
 aggregate simple statistics for analysis or RL-style agents.
+
+For how this is used in the economics sandbox and how it might map to future
+genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from dataclasses import dataclass
 

@@ -7,6 +7,9 @@ TaskDescriptor describes a unit of work (task_type, agent_id, payload, meta),
 and TaskQueue provides a simple FIFO queue. Simulations use these helpers to
 model how tasks might be scheduled and processed without committing to a
 network-level job format.
+
+For how this is used in the economics sandbox and how it might map to future
+genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from dataclasses import dataclass, field
 from typing import Any, Deque, Dict, List, Optional

@@ -5,6 +5,9 @@ This module defines simple_claim_reward(...), which turns ECU-like stake_spent,
 hardware potential, and an entropy-weighted learning signal (optional success_rate)
 into a single float reward. It is used in simulations to explore incentives and
 does not yet define the final L1 protocol reward schedule.
+
+For how this is used in the economics sandbox and how it might map to future
+genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from __future__ import annotations
 
