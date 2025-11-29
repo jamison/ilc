@@ -14,6 +14,7 @@ genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 from dataclasses import dataclass, field
 from typing import Any, Deque, Dict, List, Optional
 from collections import deque
+from ilc_core.genesis import EpistemicWorkTask
 
 
 @dataclass
@@ -50,6 +51,32 @@ class TaskDescriptor:
     agent_id: Optional[str] = None
     payload: Dict[str, Any] = field(default_factory=dict)
     meta: Dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_epistemic_work_task(
+        cls,
+        task: EpistemicWorkTask,
+        *,
+        task_type: str = "genesis.epistemic.work.task",
+        agent_id_override: Optional[str] = None,
+    ) -> TaskDescriptor:
+        """
+        Convenience helper: wrap an EpistemicWorkTask into a TaskDescriptor
+        suitable for enqueuing in TaskQueue.
+
+        - task_id comes from task.task_id
+        - agent_id defaults to task.agent_id, but can be overridden
+        - payload carries the full serialized EpistemicWorkTask
+        - meta is currently empty (can be extended later)
+        """
+        payload = {"epistemic_work_task": task.model_dump(by_alias=True)}
+        return cls(
+            task_id=task.task_id,
+            task_type=task_type,
+            agent_id=agent_id_override or task.agent_id,
+            payload=payload,
+            meta={},
+        )
 
 
 class TaskQueue:
