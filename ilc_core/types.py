@@ -42,6 +42,10 @@ class Node(BaseModel):
     # Epistemic State
     net_stake: float = 0.0
 
+    # Optional target for refutation-type nodes.
+    # For now, used only when type == "refutation".
+    target_id: Optional[str] = None
+
     def compute_id(self) -> str:
         """Calculates SHA-256 ID. Dicts are canonicalized."""
         if isinstance(self.content, dict):

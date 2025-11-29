@@ -37,16 +37,28 @@ def test_node_to_protocol_refute_basic():
         signature="sig2",
         net_stake=5.0
     )
-    # Node is a Pydantic model and doesn't have target_id field yet.
-    # The mapper defaults to None if attribute is missing.
-    # We cannot set node.target_id = "abc" because Pydantic forbids it.
+    # Node is a Pydantic model and now has target_id field.
+    node.target_id = "abc"
     
     proto = node_to_protocol_refute(node)
     assert proto["id"] == "def"
     assert proto["type"] == "refute" # Canonical protocol type
     assert proto["agent_id"] == "agent:refuter"
-    assert proto["target_claim_id"] is None # Default behavior
+    assert proto["target_claim_id"] == "abc"
     assert proto["content"] == "Counter-evidence"
+
+def test_node_to_protocol_refute_missing_target_defaults_none():
+    node = Node(
+        id="refute:no-target",
+        type="refutation",
+        content="Refute with no explicit target",
+        agent_id="agent:refuter",
+        signature="sig3",
+        net_stake=1.0,
+    )
+    # target_id defaults to None
+    proto = node_to_protocol_refute(node)
+    assert proto["target_claim_id"] is None
 
 def test_outcome_to_protocol_task_outcome_basic():
     outcome = TaskOutcome(

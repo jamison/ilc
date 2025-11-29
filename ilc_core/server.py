@@ -6,6 +6,15 @@ from .agent import EveAgent
 from .types import Node
 from .network.peer import PeerManager
 from .config import load_governance_config
+from fastapi.responses import JSONResponse
+from typing import List, Optional
+from ilc_core.economics.outcome import TaskOutcome
+from ilc_core.protocol.schema import load_protocol_schema
+from ilc_core.protocol.mapper import (
+    node_to_protocol_claim,
+    node_to_protocol_refute,
+    outcome_to_protocol_task_outcome,
+)
 
 # Singleton State (Simulated Persistence for MVP)
 graph = EpistemicGraph()
@@ -23,6 +32,27 @@ class ClaimRequest(BaseModel):
     content: str
     parent_id: str
     stake: float
+
+class ProtocolClaimRequest(BaseModel):
+    agent_id: str
+    content: str
+    parent_ids: Optional[List[str]] = None
+    net_stake: Optional[float] = None
+
+class ProtocolRefuteRequest(BaseModel):
+    agent_id: str
+    content: str
+    target_claim_id: str
+    net_stake: Optional[float] = None
+
+class ProtocolTaskOutcomeRequest(BaseModel):
+    task_type: str
+    domain: str
+    agent_id: str
+    epoch: Optional[int] = None
+    stake_spent: float
+    reward_paid: float
+    success: bool
 
 @app.get("/")
 def read_root():
@@ -88,3 +118,69 @@ def receive_gossip(node_data: dict):
 def add_peer_endpoint(host: str, port: int):
     peer_manager.add_peer(host, port)
     return {"status": "added", "total_peers": len(peer_manager.peers)}
+
+# --- Protocol Surface (MVP) ---
+# NOTE: These /v1/protocol/* endpoints expose the MVP protocol schema over HTTP.
+# They do not persist to a real chain or run consensus; they just:
+#   - accept simple request models
+#   - construct internal Node/TaskOutcome objects
+#   - map them to protocol-shaped dicts via ilc_core.protocol.mapper
+# This keeps the API in lockstep with protocol/ilc_protocol_mvp.json without
+# hard-coding JSON structures here.
+
+@app.get("/v1/protocol/schema")
+def get_protocol_schema():
+    schema = load_protocol_schema()
+    return JSONResponse(schema)
+
+@app.post("/v1/protocol/claim")
+def submit_protocol_claim(req: ProtocolClaimRequest):
+    # Build a Node; keep it simple and deterministic
+    node = Node(
+        id="", # Will be computed
+        type="claim",
+        content=req.content,
+        agent_id=req.agent_id,
+        signature="api_signed",
+        net_stake=req.net_stake or 0.0,
+    )
+    node.id = node.compute_id()
+
+    # Inject parent_ids if provided (mapper looks for attribute)
+    if req.parent_ids:
+        node.parent_ids = req.parent_ids
+
+    proto = node_to_protocol_claim(node)
+    return {"claim": proto}
+
+@app.post("/v1/protocol/refute")
+def submit_protocol_refute(req: ProtocolRefuteRequest):
+    node = Node(
+        id="",
+        type="refutation",
+        content=req.content,
+        agent_id=req.agent_id,
+        signature="api_signed",
+        net_stake=req.net_stake or 0.0,
+        target_id=req.target_claim_id
+    )
+    node.id = node.compute_id()
+    
+    proto = node_to_protocol_refute(node)
+    return {"refute": proto}
+
+@app.post("/v1/protocol/task_outcome")
+def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
+    outcome = TaskOutcome(
+        task_type=req.task_type,
+        domain=req.domain,
+        stake_spent=req.stake_spent,
+        reward_paid=req.reward_paid,
+        success=req.success,
+    )
+    proto = outcome_to_protocol_task_outcome(
+        outcome,
+        epoch=req.epoch,
+        agent_id=req.agent_id,
+    )
+    return {"task_outcome": proto}

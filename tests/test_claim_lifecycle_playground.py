@@ -18,6 +18,9 @@ def test_claim_lifecycle_playground_runs_and_shapes():
     assert claim["type"] == "claim"
     # Refutation type might map to 'refute' in protocol even if internal is 'refutation'
     assert refute["type"] == "refute" 
+    # NEW: refute should point at the claim
+    assert refute["target_claim_id"] == claim["id"]
+    
     assert outcome["task_type"] == "claim.submit"
     assert isinstance(epoch["total_tasks"], int)
     assert isinstance(epoch["total_ecu_spent"], float)

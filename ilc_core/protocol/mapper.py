@@ -36,14 +36,14 @@ def node_to_protocol_refute(node: Node) -> Dict[str, Any]:
     if node.type not in ("refute", "refutation"):
         raise ValueError("node_to_protocol_refute expects a 'refute' or 'refutation' node")
 
-    # target_id is not on Node, so we default to None or check for an attribute
-    target_id = getattr(node, "target_id", None)
+    # Now we trust Node has target_id as a field; it's fine if it's None.
+    target_claim_id = node.target_id
     
     return {
         "id": node.id,
         "type": "refute", # Canonical protocol type is 'refute'
         "agent_id": node.agent_id,
-        "target_claim_id": target_id,
+        "target_claim_id": target_claim_id,
         "content": str(node.content),
         "timestamp": node.timestamp.isoformat() if hasattr(node, "timestamp") else None,
         "net_stake": getattr(node, "net_stake", 0.0),
