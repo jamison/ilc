@@ -15,6 +15,9 @@ from ilc_core.protocol.mapper import (
     node_to_protocol_refute,
     outcome_to_protocol_task_outcome,
 )
+from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
+from ilc_core.genesis.schema import load_epistemic_work_task_schema
+from ilc_core.work.task_queue import TaskDescriptor
 
 # Singleton State (Simulated Persistence for MVP)
 graph = EpistemicGraph()
@@ -184,3 +187,50 @@ def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
         agent_id=req.agent_id,
     )
     return {"task_outcome": proto}
+
+@app.get("/v1/protocol/ep_task_schema")
+def get_ep_task_schema():
+    """
+    Return the canonical JSON schema for EpistemicWorkTask.
+
+    This is the same schema used by the EpistemicWorkTask Pydantic model
+    and is suitable for external validation / code generation.
+    """
+    schema = load_epistemic_work_task_schema()
+    return JSONResponse(schema)
+
+@app.post("/v1/protocol/ep_task")
+def submit_ep_task(ep_task: EpistemicWorkTask):
+    """
+    Intake endpoint for a single EpistemicWorkTask.
+
+    MVP behavior:
+    - Validate the incoming JSON against EpistemicWorkTask.
+    - Wrap it into a TaskDescriptor via TaskDescriptor.from_epistemic_work_task(...).
+    - Return both the canonical ep_task JSON and the TaskDescriptor
+      to show how the scheduler would view it.
+
+    This endpoint does *not* enqueue the task into any global worker
+    or trigger a reward loop. It is a shaping + validation surface only.
+    """
+    # Canonical JSON view of the EpistemicWorkTask
+    ep_json = ep_task_to_json(ep_task)
+
+    # Bridge into TaskDescriptor
+    td = TaskDescriptor.from_epistemic_work_task(ep_task)
+
+    # If TaskDescriptor is a dataclass, convert to dict appropriately
+    try:
+        from dataclasses import asdict
+        td_dict = asdict(td)
+    except TypeError:
+        # If it's a pydantic model or has .dict(), use that
+        if hasattr(td, "dict"):
+            td_dict = td.dict()
+        else:
+            td_dict = td.__dict__
+
+    return {
+        "ep_task": ep_json,
+        "task_descriptor": td_dict,
+    }

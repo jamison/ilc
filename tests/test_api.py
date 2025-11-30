@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from fastapi.testclient import TestClient
@@ -8,6 +9,7 @@ from ilc_core.server import app
 client = TestClient(app)
 
 def test_api_lifecycle():
+    """Smoke-test the legacy HTTP API: pulse, mine, and read-back a node."""
     # 1. Check Pulse
     response = client.get("/")
     assert response.status_code == 200
@@ -32,6 +34,7 @@ def test_api_lifecycle():
     print("Read Back: OK")
 
 def test_get_protocol_schema():
+    """Ensure /v1/protocol/schema returns the MVP protocol schema with core objects."""
     response = client.get("/v1/protocol/schema")
     assert response.status_code == 200
     data = response.json()
@@ -40,6 +43,7 @@ def test_get_protocol_schema():
     assert "claim" in data["objects"]
 
 def test_submit_protocol_claim():
+    """POST /v1/protocol/claim returns a protocol-shaped claim echoing core fields."""
     payload = {
         "agent_id": "agent:test",
         "content": "1 + 1 = 2",
@@ -57,6 +61,7 @@ def test_submit_protocol_claim():
     assert claim["id"] is not None
 
 def test_submit_protocol_refute():
+    """POST /v1/protocol/refute returns a refute object correctly linked to target_claim_id."""
     payload = {
         "agent_id": "agent:refuter",
         "content": "Counter-evidence",
@@ -73,6 +78,7 @@ def test_submit_protocol_refute():
     assert refute["target_claim_id"] == "claim:demo:1"
 
 def test_submit_protocol_task_outcome():
+    """POST /v1/protocol/task_outcome accepts a task outcome and returns a protocol-shaped echo."""
     payload = {
         "task_type": "claim.submit",
         "domain": "MEDIUM",
@@ -91,9 +97,69 @@ def test_submit_protocol_task_outcome():
     assert outcome["domain"] == "MEDIUM"
     assert outcome["epoch"] == 3
 
+def test_get_ep_task_schema():
+    """
+    The ep_task schema endpoint should return a JSON object describing
+    the EpistemicWorkTask structure.
+    """
+    response = client.get("/v1/protocol/ep_task_schema")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, dict)
+    # Very light sanity checks; the exact schema is locked in the JSON file.
+    assert data.get("title") is not None or "Epistemic" in json.dumps(data)
+    assert "properties" in data
+
+def test_submit_epistemic_work_task_mvp():
+    """
+    Submitting an EpistemicWorkTask over HTTP should:
+    - Validate the payload
+    - Echo back a canonical ep_task JSON
+    - Return a mapped TaskDescriptor dict
+    """
+    payload = {
+        "task_id": "task:demo:1",
+        "task_class": "star.map.embedding",
+        "agent_id": "agent:test",
+        "region_scope": ["global"],
+        "difficulty_factor": 1.0,
+        "input_data": {"dummy": True},
+        "verification_method": "hash-match",
+        "task_state": "proposed",
+        "timestamp_created": 1700000000,
+        # If your EpistemicWorkTask uses an alias like "ecu.estimate",
+        # include it here as in the schema:
+        "ecu.estimate": 0.5,
+    }
+
+    response = client.post("/v1/protocol/ep_task", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "ep_task" in data
+    assert "task_descriptor" in data
+
+    ep = data["ep_task"]
+    td = data["task_descriptor"]
+
+    # Basic checks on the EpTask echo
+    assert ep["task_id"] == "task:demo:1"
+    assert ep["agent_id"] == "agent:test"
+    assert ep["task_class"] == "star.map.embedding"
+
+    # Basic checks on the TaskDescriptor mapping
+    assert td["task_id"] == "task:demo:1"
+    assert td["agent_id"] == "agent:test"
+    # Depending on how from_epistemic_work_task is implemented:
+    # task_type might be something like "epistemic.work"
+    assert "task_type" in td
+    assert "payload" in td
+
 if __name__ == "__main__":
     test_api_lifecycle()
     test_get_protocol_schema()
     test_submit_protocol_claim()
     test_submit_protocol_refute()
     test_submit_protocol_task_outcome()
+    test_get_ep_task_schema()
+    test_submit_epistemic_work_task_mvp()
