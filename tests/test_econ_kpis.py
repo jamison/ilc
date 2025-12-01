@@ -1,13 +1,16 @@
 import csv
 import pytest
+from ilc_core.protocol.event_export import (
+    TASK_OUTCOME_HEADERS,
+    EPOCH_SUMMARY_HEADERS,
+    CLAIM_HEADERS,
+)
 from ilc_core.analysis.econ_kpis import (
     load_tasks_csv,
     load_epochs_csv,
     compute_basic_kpis,
-)
-from ilc_core.protocol.event_export import (
-    TASK_OUTCOME_HEADERS,
-    EPOCH_SUMMARY_HEADERS,
+    load_claims_csv,
+    compute_claim_kpis,
 )
 
 def test_compute_basic_kpis_synthetic(tmp_path):
@@ -129,3 +132,51 @@ def test_compute_basic_kpis_robustness(tmp_path):
     assert kpis["total_reward_ilc"] == 0.0
     assert kpis["total_ecu_spent"] == 0.0
     assert kpis["tasks_by_domain"] == {"HARD": 1}
+    assert kpis["total_ecu_spent"] == 0.0
+    assert kpis["tasks_by_domain"] == {"HARD": 1}
+
+def test_compute_claim_kpis_synthetic(tmp_path):
+    claims_csv = tmp_path / "claims.csv"
+
+    # Write a small synthetic claims CSV
+    with claims_csv.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=CLAIM_HEADERS)
+        writer.writeheader()
+        writer.writerow({
+            "id": "c1",
+            "type": "claim",
+            "agent_id": "agent:a",
+            "content": "foo",
+            "net_stake": "5.0",
+            "timestamp": "t",
+            "parent_ids": "",
+            "target_id": "",
+        })
+        writer.writerow({
+            "id": "c2",
+            "type": "claim",
+            "agent_id": "agent:a",
+            "content": "bar",
+            "net_stake": "3.0",
+            "timestamp": "t",
+            "parent_ids": "",
+            "target_id": "",
+        })
+        writer.writerow({
+            "id": "c3",
+            "type": "claim",
+            "agent_id": "agent:b",
+            "content": "baz",
+            "net_stake": "2.0",
+            "timestamp": "t",
+            "parent_ids": "",
+            "target_id": "",
+        })
+
+    rows = load_claims_csv(claims_csv)
+    kpis = compute_claim_kpis(rows)
+
+    assert kpis["agent:a"]["num_claims"] == 2.0
+    assert kpis["agent:a"]["total_net_stake"] == 8.0
+    assert kpis["agent:b"]["num_claims"] == 1.0
+    assert kpis["agent:b"]["total_net_stake"] == 2.0

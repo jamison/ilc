@@ -35,6 +35,19 @@ def load_epochs_csv(path: PathLike) -> List[Dict[str, str]]:
         reader = csv.DictReader(f)
         return list(reader)
 
+def load_claims_csv(path: PathLike) -> List[Dict[str, str]]:
+    """
+    Load a claims CSV into a list of dict rows (string values).
+    Returns [] if file does not exist.
+    """
+    p = Path(path)
+    if not p.exists():
+        return []
+
+    with p.open("r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        return list(reader)
+
 def _to_float(value: Any, default: float = 0.0) -> float:
     try:
         return float(value)
@@ -122,4 +135,39 @@ def compute_basic_kpis(
         "total_tasks_from_epochs": total_tasks_from_epochs,
         "avg_tasks_per_epoch": avg_tasks_per_epoch,
         "avg_clearing_price_ilc_per_ecu": avg_clearing_price_ilc_per_ecu,
+        "avg_clearing_price_ilc_per_ecu": avg_clearing_price_ilc_per_ecu,
     }
+
+def compute_claim_kpis(
+    claim_rows: List[Dict[str, str]]
+) -> Dict[str, Dict[str, float]]:
+    """
+    Compute basic per-agent claim KPIs from claims.csv rows.
+
+    Returns:
+        {
+            agent_id: {
+                "num_claims": ...,
+                "total_net_stake": ...,
+            },
+            ...
+        }
+    """
+    per_agent: Dict[str, Dict[str, float]] = {}
+
+    for row in claim_rows:
+        agent_id = row.get("agent_id") or "unknown"
+        net_stake_str = row.get("net_stake") or "0"
+        try:
+            net_stake = float(net_stake_str)
+        except ValueError:
+            net_stake = 0.0
+
+        stats = per_agent.setdefault(
+            agent_id,
+            {"num_claims": 0.0, "total_net_stake": 0.0},
+        )
+        stats["num_claims"] += 1.0
+        stats["total_net_stake"] += net_stake
+
+    return per_agent
