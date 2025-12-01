@@ -26,6 +26,13 @@ EdgeType = Literal[
     "supersedes"     # Versioning (New -> Old). No slashing.
 ]
 
+LinkType = Literal[
+    "supports",
+    "refutes",
+    "equivalent",
+    "depends_on",
+]
+
 class Node(BaseModel):
     """
     The atomic unit of the Epistemological Graph.
@@ -148,3 +155,17 @@ def claim_record_to_node(claim: ClaimRecord) -> Node:
         net_stake=claim.net_stake,
         target_id=claim.target_id,
     )
+
+class LinkRecord(BaseModel):
+    """
+    Internal representation of a link between two claims.
+
+    'source_id' -> 'target_id' with a given link_type.
+    """
+    id: str
+    link_type: LinkType
+    source_id: str
+    target_id: str
+    # Optional: timestamp, creator_agent_id, meta
+    timestamp: Optional[str] = None
+    agent_id: Optional[str] = None
