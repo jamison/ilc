@@ -1,5 +1,5 @@
 from typing import Any, Dict, Optional, Union
-from ilc_core.types import Node
+from ilc_core.types import Node, node_to_claim_record
 from ilc_core.economics.outcome import TaskOutcome
 
 
@@ -12,16 +12,15 @@ def node_to_protocol_claim(node: Node) -> Dict[str, Any]:
     if node.type != "claim":
         raise ValueError("node_to_protocol_claim expects a 'claim' node")
 
+    claim = node_to_claim_record(node)
     return {
-        "id": node.id,
-        "type": node.type,
-        "agent_id": node.agent_id,
-        "content": str(node.content),
-        # Use a list of parent ids; adapt from the graph model as needed.
-        # Since Node doesn't store edges directly, we default to empty list.
-        "parent_ids": getattr(node, "parent_ids", []),
-        "timestamp": node.timestamp.isoformat() if hasattr(node, "timestamp") else None,
-        "net_stake": getattr(node, "net_stake", 0.0),
+        "id": claim.id,
+        "type": claim.type,
+        "agent_id": claim.agent_id,
+        "content": claim.content,
+        "parent_ids": claim.parent_ids,
+        "timestamp": claim.timestamp,
+        "net_stake": claim.net_stake,
     }
 
 
@@ -36,17 +35,16 @@ def node_to_protocol_refute(node: Node) -> Dict[str, Any]:
     if node.type not in ("refute", "refutation"):
         raise ValueError("node_to_protocol_refute expects a 'refute' or 'refutation' node")
 
-    # Now we trust Node has target_id as a field; it's fine if it's None.
-    target_claim_id = node.target_id
+    claim = node_to_claim_record(node)
     
     return {
-        "id": node.id,
+        "id": claim.id,
         "type": "refute", # Canonical protocol type is 'refute'
-        "agent_id": node.agent_id,
-        "target_claim_id": target_claim_id,
-        "content": str(node.content),
-        "timestamp": node.timestamp.isoformat() if hasattr(node, "timestamp") else None,
-        "net_stake": getattr(node, "net_stake", 0.0),
+        "agent_id": claim.agent_id,
+        "target_claim_id": claim.target_id,
+        "content": claim.content,
+        "timestamp": claim.timestamp,
+        "net_stake": claim.net_stake,
     }
 
 

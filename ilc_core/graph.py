@@ -1,7 +1,7 @@
 import json
 import os
-from typing import Dict, List
-from .types import Node, Edge
+from typing import Dict, List, Optional
+from .types import Node, Edge, ClaimRecord, claim_record_to_node, node_to_claim_record
 
 class EpistemicGraph:
     def __init__(self):
@@ -35,4 +35,18 @@ class EpistemicGraph:
         if node.id in self.nodes:
             raise ValueError("Node already exists")
         self.nodes[node.id] = node
+        self.nodes[node.id] = node
         return True
+
+    def add_claim(self, claim: ClaimRecord) -> None:
+        node = claim_record_to_node(claim)
+        self.add_node(node)
+
+    def get_claim(self, claim_id: str) -> Optional[ClaimRecord]:
+        node = self.nodes.get(claim_id)
+        if node is None:
+            return None
+        # Only return if it's actually a claim/refutation
+        if node.type not in ("claim", "refutation", "refute"):
+            return None
+        return node_to_claim_record(node)
