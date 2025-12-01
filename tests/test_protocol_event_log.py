@@ -37,3 +37,30 @@ def test_protocol_event_log_empty_iter(tmp_path):
 
     events = list(event_log.iter_events())
     assert events == []
+
+def test_protocol_event_log_claim_and_refutation(tmp_path):
+    log_path = tmp_path / "events_claim_refute.ndjson"
+    event_log = ProtocolEventLog(log_path)
+
+    claim = make_event(
+        kind="claim",
+        payload={"id": "c1", "type": "claim", "agent_id": "agent:test"},
+        source="test",
+        schema_version="0.1.0",
+    )
+    refute = make_event(
+        kind="refutation",
+        payload={"id": "r1", "type": "refutation", "agent_id": "agent:test"},
+        source="test",
+        schema_version="0.1.0",
+    )
+
+    event_log.append(claim)
+    event_log.append(refute)
+
+    events = list(event_log.iter_events())
+    assert len(events) == 2
+    assert events[0].kind == "claim"
+    assert events[1].kind == "refutation"
+    assert events[0].payload["id"] == "c1"
+    assert events[1].payload["id"] == "r1"

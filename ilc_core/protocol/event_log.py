@@ -4,7 +4,12 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, Literal, Optional
 import json
 
-EventKind = Literal["task_outcome", "epoch_summary"]  # keep small for now
+EventKind = Literal[
+    "task_outcome",
+    "epoch_summary",
+    "claim",
+    "refutation",
+]  # keep small for now
 
 
 @dataclass
