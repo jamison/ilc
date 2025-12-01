@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable
+from dataclasses import dataclass
+from typing import Dict, Iterable, Tuple, List
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.types import LinkRecord
@@ -64,3 +65,46 @@ def find_conflict_hotspots(
             hotspots[claim_id] = s
 
     return hotspots
+    return hotspots
+
+def compute_local_influence_scores(
+    graph: EpistemicGraph,
+    *,
+    weight_supports: float = 1.0,
+    weight_refutes: float = 1.0,
+    weight_equivalent: float = 0.0,
+    weight_depends_on: float = 0.0,
+) -> Dict[str, float]:
+    """
+    Compute a simple local influence score for each claim based on incoming links.
+
+    score = + w_s * supports_in
+            - w_r * refutes_in
+            + w_e * equivalent_in
+            + w_d * depends_on_in
+    """
+    stats = compute_claim_link_stats(graph)
+    scores: Dict[str, float] = {}
+
+    for claim_id, s in stats.items():
+        score = (
+            weight_supports * s.supports_in
+            - weight_refutes * s.refutes_in
+            + weight_equivalent * s.equivalent_in
+            + weight_depends_on * s.depends_on_in
+        )
+        scores[claim_id] = float(score)
+
+    return scores
+
+def rank_claims_by_influence(
+    scores: Dict[str, float],
+    *,
+    descending: bool = True,
+) -> List[Tuple[str, float]]:
+    """
+    Return a sorted list of (claim_id, score) pairs.
+
+    By default, highest influence first.
+    """
+    return sorted(scores.items(), key=lambda kv: kv[1], reverse=descending)
