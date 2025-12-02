@@ -79,7 +79,6 @@ def flatten_epoch_summary_event(event: Dict[str, Any]) -> Dict[str, Any]:
         "total_ecu_spent": payload.get("total_ecu_spent", 0.0),
         "total_reward_paid": payload.get("total_reward_paid", 0.0),
         "clearing_price_ilc_per_ecu": payload.get("clearing_price_ilc_per_ecu", 0.0),
-        "clearing_price_ilc_per_ecu": payload.get("clearing_price_ilc_per_ecu", 0.0),
     }
 
 def flatten_claim_event(event: Dict[str, Any]) -> Dict[str, Any]:

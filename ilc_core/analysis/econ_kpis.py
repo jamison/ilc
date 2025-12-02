@@ -135,7 +135,6 @@ def compute_basic_kpis(
         "total_tasks_from_epochs": total_tasks_from_epochs,
         "avg_tasks_per_epoch": avg_tasks_per_epoch,
         "avg_clearing_price_ilc_per_ecu": avg_clearing_price_ilc_per_ecu,
-        "avg_clearing_price_ilc_per_ecu": avg_clearing_price_ilc_per_ecu,
     }
 
 

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from dataclasses import dataclass
 from typing import Dict, Iterable, Tuple, List
 
 from ilc_core.graph import EpistemicGraph
@@ -65,7 +64,6 @@ def find_conflict_hotspots(
         if s.supports_in >= min_supports and s.refutes_in >= min_refutes:
             hotspots[claim_id] = s
 
-    return hotspots
     return hotspots
 
 def compute_local_influence_scores(

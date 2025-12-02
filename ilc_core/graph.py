@@ -39,7 +39,6 @@ class EpistemicGraph:
         if node.id in self.nodes:
             raise ValueError("Node already exists")
         self.nodes[node.id] = node
-        self.nodes[node.id] = node
         return True
 
     def add_claim(self, claim: ClaimRecord) -> None:
