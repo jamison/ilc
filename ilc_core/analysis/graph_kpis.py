@@ -4,6 +4,7 @@ from typing import Dict, Iterable, Tuple, List
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.types import LinkRecord
+from ilc_core.protocol.params import ProtocolParams
 
 @dataclass
 class ClaimLinkStats:
@@ -108,3 +109,27 @@ def rank_claims_by_influence(
     By default, highest influence first.
     """
     return sorted(scores.items(), key=lambda kv: kv[1], reverse=descending)
+
+def get_local_influence_scores(
+    graph: EpistemicGraph,
+    params: ProtocolParams,
+) -> Dict[str, float]:
+    """
+    Dispatch to the configured local influence algorithm.
+
+    For now we only support "algo.local_influence.v0_toy", which delegates
+    to compute_local_influence_scores with the configured weights.
+    """
+    algo_id = params.local_influence_algorithm_id
+
+    if algo_id == "algo.local_influence.v0_toy":
+        return compute_local_influence_scores(
+            graph,
+            weight_supports=params.weight_supports,
+            weight_refutes=params.weight_refutes,
+            weight_equivalent=params.weight_equivalent,
+            weight_depends_on=params.weight_depends_on,
+        )
+
+    # Future: add additional algorithms and selection logic here.
+    raise ValueError(f"Unsupported local_influence_algorithm_id: {algo_id!r}")
