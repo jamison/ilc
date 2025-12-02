@@ -2,7 +2,13 @@ import csv
 import pytest
 from pathlib import Path
 
-from ilc_core.analysis.agent_profiles import AgentProfile, build_agent_profiles
+from ilc_core.analysis.agent_profiles import (
+    AgentProfile,
+    build_agent_profiles,
+    compute_agent_influence_kpis,
+    attach_influence_to_profiles,
+)
+from ilc_core.analysis.claim_scores import ClaimInfluenceRow
 
 def test_agent_profile_as_dict_namespaces_keys():
     p = AgentProfile(
@@ -87,3 +93,106 @@ def test_build_agent_profiles_merges_econ_and_claims(tmp_path):
     claim_keys = [k for k in d.keys() if k.startswith("claim_")]
     assert econ_keys, "expected some econ_* keys"
     assert claim_keys, "expected some claim_* keys"
+
+def test_compute_agent_influence_kpis_basic(tmp_path):
+    # Prepare a small claims.csv mapping c1 -> agent:a, c2 -> agent:b
+    claims_csv = tmp_path / "claims.csv"
+    with claims_csv.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "id", "type", "agent_id", "content",
+            "net_stake", "timestamp", "parent_ids", "target_id",
+        ])
+        writer.writeheader()
+        writer.writerow({
+            "id": "c1",
+            "type": "claim",
+            "agent_id": "agent:a",
+            "content": "foo",
+            "net_stake": "1.0",
+            "timestamp": "t",
+            "parent_ids": "",
+            "target_id": "",
+        })
+        writer.writerow({
+            "id": "c2",
+            "type": "claim",
+            "agent_id": "agent:b",
+            "content": "bar",
+            "net_stake": "1.0",
+            "timestamp": "t",
+            "parent_ids": "",
+            "target_id": "",
+        })
+
+    rows = [
+        ClaimInfluenceRow(
+            claim_id="c1",
+            supports_in=1,
+            refutes_in=0,
+            equivalent_in=0,
+            depends_on_in=0,
+            net_support=1,
+            influence_score=1.0,
+        ),
+        ClaimInfluenceRow(
+            claim_id="c2",
+            supports_in=0,
+            refutes_in=1,
+            equivalent_in=0,
+            depends_on_in=0,
+            net_support=-1,
+            influence_score=-1.0,
+        ),
+    ]
+
+    kpis = compute_agent_influence_kpis(rows, claims_csv)
+    assert kpis["agent:a"]["total_influence"] == 1.0
+    assert kpis["agent:a"]["num_influenced_claims"] == 1.0
+    assert kpis["agent:a"]["avg_influence"] == 1.0
+
+    assert kpis["agent:b"]["total_influence"] == -1.0
+    assert kpis["agent:b"]["num_influenced_claims"] == 1.0
+    assert kpis["agent:b"]["avg_influence"] == -1.0
+
+def test_attach_influence_to_profiles_in_place(tmp_path):
+    # Reuse claims.csv from previous test or build a quick one again
+    claims_csv = tmp_path / "claims.csv"
+    with claims_csv.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "id", "type", "agent_id", "content",
+            "net_stake", "timestamp", "parent_ids", "target_id",
+        ])
+        writer.writeheader()
+        writer.writerow({
+            "id": "c1",
+            "type": "claim",
+            "agent_id": "agent:a",
+            "content": "foo",
+            "net_stake": "1.0",
+            "timestamp": "t",
+            "parent_ids": "",
+            "target_id": "",
+        })
+
+    rows = [
+        ClaimInfluenceRow(
+            claim_id="c1",
+            supports_in=1,
+            refutes_in=0,
+            equivalent_in=0,
+            depends_on_in=0,
+            net_support=1,
+            influence_score=1.0,
+        )
+    ]
+
+    profiles = {
+        "agent:a": AgentProfile(agent_id="agent:a"),
+    }
+
+    attach_influence_to_profiles(profiles, rows, claims_csv)
+
+    assert "agent:a" in profiles
+    p = profiles["agent:a"]
+    assert "total_influence" in p.influence
+    assert p.influence["total_influence"] == 1.0
