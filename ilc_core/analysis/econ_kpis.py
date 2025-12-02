@@ -138,6 +138,40 @@ def compute_basic_kpis(
         "avg_clearing_price_ilc_per_ecu": avg_clearing_price_ilc_per_ecu,
     }
 
+
+def compute_agent_econ_kpis(
+    task_rows: List[Dict[str, str]],
+) -> Dict[str, Dict[str, float]]:
+    """
+    Compute per-agent economic KPIs from tasks.csv rows.
+
+    Returns:
+        {
+            agent_id: {
+                "tasks": ...,
+                "reward": ...,
+                "stake_spent": ...,
+            },
+            ...
+        }
+    """
+    per_agent: Dict[str, Dict[str, float]] = {}
+
+    for row in task_rows:
+        agent_id = row.get("agent_id") or "unknown"
+        reward = _to_float(row.get("reward_paid"))
+        stake = _to_float(row.get("stake_spent"))
+
+        stats = per_agent.setdefault(
+            agent_id,
+            {"tasks": 0.0, "reward": 0.0, "stake_spent": 0.0},
+        )
+        stats["tasks"] += 1.0
+        stats["reward"] += reward
+        stats["stake_spent"] += stake
+
+    return per_agent
+
 def compute_claim_kpis(
     claim_rows: List[Dict[str, str]]
 ) -> Dict[str, Dict[str, float]]:
