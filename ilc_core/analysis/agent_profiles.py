@@ -24,6 +24,9 @@ class AgentProfile:
     # Influence KPIs (from compute_agent_influence_kpis)
     influence: Dict[str, float] = field(default_factory=dict)
 
+    # Competency (from attach_competency_to_profiles)
+    competency: Dict[str, Any] = field(default_factory=dict)
+
     def as_dict(self) -> Dict[str, Any]:
         """
         Flatten into a single dict for printing/JSON export.
@@ -36,6 +39,8 @@ class AgentProfile:
             data[f"claim_{k}"] = v
         for k, v in self.influence.items():
             data[f"influence_{k}"] = v
+        if self.competency:
+            data["competency"] = self.competency
         return data
 
 def build_agent_profiles(
@@ -67,6 +72,24 @@ def build_agent_profiles(
         profile = profiles.setdefault(agent_id, AgentProfile(agent_id=agent_id))
         profile.claims = dict(claim_stats)
 
+    return profiles
+
+
+def attach_competency_to_profiles(
+    profiles: Dict[str, AgentProfile],
+    competency_summary: Dict[str, Dict[str, Any]],
+) -> Dict[str, AgentProfile]:
+    """
+    Attach competency summaries to existing AgentProfile objects.
+    If an agent_id in competency_summary is not present in profiles,
+    create a new profile shell for it.
+    """
+    for agent_id, comp in competency_summary.items():
+        profile = profiles.get(agent_id)
+        if profile is None:
+            profile = AgentProfile(agent_id=agent_id)
+            profiles[agent_id] = profile
+        profile.competency = comp
     return profiles
 
 def compute_agent_influence_kpis(
