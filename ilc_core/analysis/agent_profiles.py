@@ -27,6 +27,9 @@ class AgentProfile:
     # Competency (from attach_competency_to_profiles)
     competency: Dict[str, Any] = field(default_factory=dict)
 
+    # Stress response patterns (from stress_response_kpis)
+    stress_response: Dict[str, Any] = field(default_factory=dict)
+
     def as_dict(self) -> Dict[str, Any]:
         """
         Flatten into a single dict for printing/JSON export.
@@ -41,6 +44,8 @@ class AgentProfile:
             data[f"influence_{k}"] = v
         if self.competency:
             data["competency"] = self.competency
+        if self.stress_response:
+            data["stress_response"] = self.stress_response
         return data
 
 def build_agent_profiles(
