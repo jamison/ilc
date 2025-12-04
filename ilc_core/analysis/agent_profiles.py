@@ -30,6 +30,9 @@ class AgentProfile:
     # Stress response patterns (from stress_response_kpis)
     stress_response: Dict[str, Any] = field(default_factory=dict)
 
+    # Light Cone KPIs (from light_cone_kpis)
+    light_cone: Dict[str, Any] = field(default_factory=dict)
+
     def as_dict(self) -> Dict[str, Any]:
         """
         Flatten into a single dict for printing/JSON export.
@@ -46,6 +49,8 @@ class AgentProfile:
             data["competency"] = self.competency
         if self.stress_response:
             data["stress_response"] = self.stress_response
+        if self.light_cone:
+            data["light_cone"] = self.light_cone
         return data
 
 def build_agent_profiles(
@@ -164,3 +169,26 @@ def attach_influence_to_profiles(
     for agent_id, stats in influence_kpis.items():
         profile = profiles.setdefault(agent_id, AgentProfile(agent_id=agent_id))
         profile.influence = dict(stats)
+
+def attach_light_cone_to_profiles(
+    profiles: Dict[str, AgentProfile],
+    light_cone_rows: Dict[str, Any], # Typed as Any to avoid circular imports if possible, or use TYPE_CHECKING
+) -> Dict[str, AgentProfile]:
+    """
+    Attach light-cone metrics to existing AgentProfile objects.
+    If an agent_id appears only in light_cone_rows, create a shell profile.
+    """
+    # Note: light_cone_rows is expected to be Dict[str, AgentLightConeRow]
+    # We iterate and access attributes.
+    for agent_id, row in light_cone_rows.items():
+        profile = profiles.get(agent_id)
+        if profile is None:
+            profile = AgentProfile(agent_id=agent_id)
+            profiles[agent_id] = profile
+        profile.light_cone = {
+            "reach_score": row.reach_score,
+            "horizon_score": row.horizon_score,
+            "domain_span": row.domain_span,
+            "light_cone_score": row.light_cone_score,
+        }
+    return profiles
