@@ -1,7 +1,6 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, replace
 from enum import Enum
-from typing import Any, Dict, List, Optional
-import copy
+from typing import Any, Dict, List
 
 from .topology import DevnetTopology
 
@@ -76,18 +75,11 @@ def gossip_step(
                 msg.ttl = 0
 
                 for neighbor_id in neighbors:
-                    new_msg = dataclass_replace(msg, ttl=next_ttl)
+                    new_msg = replace(msg, ttl=next_ttl)
                     to_deliver.append((neighbor_id, new_msg))
 
     for target_node, msg in to_deliver:
         if target_node in inboxes:
             inboxes[target_node].append(msg)
 
-def dataclass_replace(obj: Any, **changes: Any) -> Any:
-    """
-    Simple helper to replace fields in a dataclass, similar to dataclasses.replace
-    but ensuring we don't have import issues if strictly adhering to standard lib.
-    (Actually dataclasses.replace is standard lib, I'll use it).
-    """
-    from dataclasses import replace
-    return replace(obj, **changes)
+
