@@ -85,3 +85,26 @@ def test_isolation():
         
     assert len(inboxes["n2"]) > 0
     assert len(inboxes["n3"]) == 0
+
+def test_gossip_ttl_eventually_inert(topology):
+    # Tests that messages stop spawning copies once their TTL is consumed locally
+    inboxes = initialize_inboxes(topology)
+
+    msg = Message(
+        msg_id="m1",
+        msg_type=MessageType.GENERIC,
+        origin_node="n1",
+        payload={},
+        ttl=2,
+    )
+
+    gossip_broadcast(topology, inboxes, "n1", msg)
+
+    # Run more steps than the TTL
+    for _ in range(5):
+        gossip_step(topology, inboxes)
+
+    # After enough steps, no message should have ttl > 0 in ANY inbox
+    for node_msgs in inboxes.values():
+        for m in node_msgs:
+            assert m.ttl == 0, f"Found active message {m} which should be inert"
