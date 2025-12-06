@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from ilc_core.analysis.claim_scores import ClaimInfluenceRow
 from os import PathLike
 
@@ -14,6 +14,7 @@ from ilc_core.analysis.econ_kpis import (
 @dataclass
 class AgentProfile:
     agent_id: str
+    node_id: Optional[str] = None
 
     # Econ KPIs (from compute_basic_kpis)
     econ: Dict[str, float] = field(default_factory=dict)
@@ -39,6 +40,9 @@ class AgentProfile:
         Namespaces econ_* and claim_* keys to avoid collisions.
         """
         data: Dict[str, Any] = {"agent_id": self.agent_id}
+        if self.node_id is not None:
+            data["node_id"] = self.node_id
+
         for k, v in self.econ.items():
             data[f"econ_{k}"] = v
         for k, v in self.claims.items():
