@@ -42,7 +42,7 @@ def run_devnet_epoch(
       1) Compute routing suggestions via suggest_tasks_for_agents.
       2) Materialize RoutedTaskRow objects.
       3) Convert to task-row dicts.
-      4) Build agent->node mapping from profiles (using profile.node_id, fallback "unknown").
+      4) Build agent->node mapping from profiles (using profile.node_id, fallback "unassigned").
       5) Compute per-node load metrics via compute_node_load_metrics.
       6) If export_dir is provided:
            - Export agent dossiers to CSV/JSON.
@@ -52,9 +52,7 @@ def run_devnet_epoch(
       DevnetEpochResult with in-memory task rows and node load metrics.
     """
     # 1) Compute routing suggestions
-    # We pass explicit None for tasks_history (not used in current MVP heuristic default)
-    # or empty dict if required. suggest_tasks_for_agents sig:
-    # (profiles, namespace_health, *, max_suggestions_per_agent=3)
+    # 1) Compute routing suggestions based on current namespace health
     suggestions = suggest_tasks_for_agents(
         profiles=profiles,
         namespace_health=namespace_snapshot,
@@ -76,8 +74,8 @@ def run_devnet_epoch(
     # This might duplicates logic inside materialize, but needed for compute_node_load_metrics
     agent_to_node: Dict[str, str] = {}
     for agent_id, profile in profiles.items():
-        # Fallback "unknown" if None? compute_node_load_metrics tolerates missing keys but let's be safe
-        agent_to_node[agent_id] = profile.node_id if profile.node_id else "unknown"
+        # Fallback "unassigned" if None? compute_node_load_metrics tolerates missing keys but let's be safe
+        agent_to_node[agent_id] = profile.node_id if profile.node_id else "unassigned"
 
     # 5) Compute per-node load metrics
     node_load = compute_node_load_metrics(

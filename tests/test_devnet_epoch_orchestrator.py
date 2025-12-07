@@ -105,7 +105,7 @@ def test_run_with_export(minimal_setup):
 
 def test_missing_agent_handling():
     # Test case where an agent has no profile node_id or isn't in topology (edge case)
-    # The orchestrator should handle it (fallback to "unknown" in agent_to_node)
+    # The orchestrator should handle it (fallback to "unassigned" in agent_to_node)
     
     snapshot = NamespaceHealthSnapshot(
         namespace_id="ns", epoch_index=1, total_stress=0.5, cohesion_score=0.5,
@@ -122,7 +122,7 @@ def test_missing_agent_handling():
     result = run_devnet_epoch(1, topo, snapshot, profiles)
     
     # Should run without error
-    # Load metrics might be computed for "unknown"? 
+    # Load metrics might be computed for "unassigned"? 
     # compute_node_load_metrics initializes from set(agent_to_node.values())
     
-    assert "unknown" in result.node_load_metrics
+    assert "unassigned" in result.node_load_metrics
