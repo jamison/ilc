@@ -1,3 +1,7 @@
+# MANUAL MAINTENANCE SCRIPT
+# This is a manual smoke test for the Governance and Consensus Engine integration.
+# Canonical unit tests live in tests/test_governance_engine.py.
+
 import sys
 import os
 from pathlib import Path

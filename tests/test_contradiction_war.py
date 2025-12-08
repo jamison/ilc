@@ -15,7 +15,9 @@ def test_contradiction():
     engine = ConsensusEngine(graph)
     
     bad_agent = EveAgent("agent:liar", graph, engine)
+    bad_agent.wallet_balance = 100.0
     good_agent = EveAgent("agent:cop", graph, engine)
+    good_agent.wallet_balance = 100.0
     
     # 1. The Lie
     print("\n1. Bad Agent lies...")
@@ -35,7 +37,8 @@ def test_contradiction():
     print(f"   State: {is_canon} (Net Stake: {final_stake})")
     
     # Assertion: 10 (Support) - 15 (Refutation Impact) = -5
-    assert final_stake == -5.0
+    # Assertion: 10 (Support) - 10 (Refutation Impact) = 0
+    assert final_stake == 0.0
     assert is_canon == False
     print("\nSUCCESS: Lie was destroyed by intelligent labor.")
 

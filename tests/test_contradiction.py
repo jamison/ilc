@@ -17,6 +17,7 @@ def test_contradiction_economy():
     
     # 2. Bad Agent (The Spammer)
     bad_agent = EveAgent("agent:spam:01", graph, consensus)
+    bad_agent.wallet_balance = 100.0
     
     print("\n1. Bad Agent asserts '1+1=5' with 10.0 Stake...")
     # We link to the Math Axiom (id: axiom:math:01)
@@ -29,6 +30,7 @@ def test_contradiction_economy():
     
     # 3. Good Agent (The Auditor)
     good_agent = EveAgent("agent:audit:01", graph, consensus)
+    good_agent.wallet_balance = 100.0
     
     print("\n2. Good Agent refutes the lie with 10.0 Stake...")
     # In a full system, Refutation is a Node. Here we simulate the Edge directly.

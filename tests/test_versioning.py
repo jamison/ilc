@@ -15,7 +15,9 @@ def test_version_update():
     
     # We patch the agent to have the new engine
     agent_a = EveAgent("agent:founder", graph, consensus)
+    agent_a.wallet_balance = 100.0
     agent_b = EveAgent("agent:updater", graph, consensus)
+    agent_b.wallet_balance = 100.0
     
     # 1. Old Valid Data
     print("1. Agent A posts IP List v1...")

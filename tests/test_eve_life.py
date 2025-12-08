@@ -16,6 +16,7 @@ def test_eve_awakening():
     
     # 2. Boot the Agent (EVE)
     eve = EveAgent("agent:eve:01", graph, consensus)
+    eve.wallet_balance = 100.0
     print(f"Agent {eve.id} is online.")
     
     # 3. Run Hardware Benchmark (Proof of Potential)
