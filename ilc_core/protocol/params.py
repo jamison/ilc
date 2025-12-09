@@ -18,6 +18,10 @@ class ProtocolParams:
     weight_refutes: float = 1.0
     weight_equivalent: float = 0.0
     weight_depends_on: float = 0.0
+    
+    # Phase 61B: Econ Params (Placeholders for demo)
+    burn_rate: float = 0.0
+    pb_rate: float = 0.0
 
 def load_protocol_params(path: Optional[PathLike] = None) -> ProtocolParams:
     """

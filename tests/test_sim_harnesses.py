@@ -116,3 +116,44 @@ def test_closed_loop_harness():
     assert isinstance(history[0], ClosedLoopEpochMetrics)
     assert received_metrics[0][0] == 1
     assert received_metrics[0][1] == history[0]
+
+def test_econ_export_sidecar():
+    from ilc_core.sim.harness_econ_scenarios import export_econ_summaries_with_overrides_to_csv
+    from ilc_core.sim.devnet_experiments import DevnetExperimentSummary
+    import tempfile
+    from pathlib import Path
+    
+    # 1. Setup Data
+    scenarios = [
+        EconScenarioConfig("L1", {"burn": 0.1}),
+        EconScenarioConfig("L2", {"burn": 0.9, "xtra": 1})
+    ]
+    
+    # Dummy summaries
+    s1 = DevnetExperimentSummary("L1", "ns", 1, 10, 100.0, 10.0, 10.0, 5.0)
+    s2 = DevnetExperimentSummary("L2", "ns", 1, 20, 200.0, 20.0, 10.0, 8.0)
+    
+    # 2. Export
+    with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
+        path = Path(tmp.name)
+        export_econ_summaries_with_overrides_to_csv(scenarios, [s1, s2], path)
+        
+        # 3. Verify
+        content = path.read_text()
+        lines = content.strip().splitlines()
+        
+        # Header should contain econ_burn, econ_xtra
+        header = lines[0]
+        assert "econ_burn" in header
+        assert "econ_xtra" in header
+        
+        # Row 1 (L1) -> burn=0.1, xtra=""
+        row1 = lines[1]
+        assert "L1" in row1
+        assert "0.1" in row1
+        
+        # Row 2 (L2) -> burn=0.9, xtra=1
+        row2 = lines[2]
+        assert "L2" in row2
+        assert "0.9" in row2
+        assert "1" in row2
