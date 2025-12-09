@@ -23,6 +23,7 @@ def run_devnet_multi_epoch(
     *,
     export_root: Optional[PathLike] = None,
     export_prefix: str = "epoch",
+    rng_seed: Optional[int] = None,
 ) -> DevnetMultiEpochResult:
     """
     Execute multiple devnet epochs sequentially based on a list of snapshots.
@@ -33,10 +34,15 @@ def run_devnet_multi_epoch(
         profiles: Agent profiles (assumed static).
         export_root: Optional directory to create per-epoch export subdirectories in.
         export_prefix: Prefix for per-epoch directories (e.g. "epoch_0010").
+        rng_seed: Optional seed for Python's global random number generator. 
+                  If provided, random.seed(rng_seed) is called before execution.
         
     Returns:
         DevnetMultiEpochResult containing all per-epoch results and aggregated node load metrics.
     """
+    if rng_seed is not None:
+        import random
+        random.seed(rng_seed)
     
     # 1. Preconditions
     if not snapshots:

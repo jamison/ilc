@@ -26,6 +26,7 @@ def run_econ_scenarios_on_devnet(
     econ_scenarios: List[EconScenarioConfig],
     *,
     apply_econ: Callable[[Dict[str, Any]], None],
+    rng_seed: Optional[int] = None,
 ) -> List[DevnetExperimentSummary]:
     """
     Run a set of economic scenarios using a base devnet configuration.
@@ -34,6 +35,7 @@ def run_econ_scenarios_on_devnet(
         base_scenario: The template configuration for topology/agents/stress.
         econ_scenarios: List of economic configurations to test.
         apply_econ: Hook to apply global economic parameter overrides.
+        rng_seed: Optional master seed for determinism.
 
     Returns:
         List of DevnetExperimentSummary objects.
@@ -50,12 +52,19 @@ def run_econ_scenarios_on_devnet(
         topo, profiles = build_topology_and_profiles(base_scenario)
         snapshots = build_snapshots_for_scenario(base_scenario)
         
+        # Derive seed
+        run_seed = None
+        if rng_seed is not None:
+            # Hash seed + label
+            run_seed = hash((rng_seed, econ_scen.label)) & 0xffffffff
+            
         # 3. Run Simulation
         multi_result = run_devnet_multi_epoch(
             topology=topo,
             snapshots=snapshots,
             profiles=profiles,
-            export_root=None
+            export_root=None,
+            rng_seed=run_seed
         )
         
         # 4. Summarize (Use econ scenario label)

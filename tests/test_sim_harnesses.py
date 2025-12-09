@@ -27,15 +27,24 @@ def test_param_grid_harness():
         "dummy": ["A", "B"]
     }
     
+    # Test label suffix builder & seed
+    def suffixer(p):
+        return f"suffix_{p['dummy']}"
+
     results = run_param_grid_on_devnet(
         base_scenario=base,
-        grid=grid
+        grid=grid,
+        label_suffix_builder=suffixer,
+        rng_seed=555
     )
     
     assert len(results) == 4
     for res in results:
         assert isinstance(res, GridRunResult)
         assert res.summary.num_epochs == 1
+        # Check label suffix behavior
+        assert "suffix_" in res.summary.label
+        
         # Check params applied
         if res.params["num_agents"] == 3:
             # How to check if scenario config was actually updated?

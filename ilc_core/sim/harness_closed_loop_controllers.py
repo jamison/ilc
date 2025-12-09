@@ -28,6 +28,7 @@ class ClosedLoopEpochMetrics:
 def run_closed_loop_devnet(
     config: ClosedLoopRunConfig,
     controller_step: Callable[[int, ClosedLoopEpochMetrics], None],
+    rng_seed: Optional[int] = None,
 ) -> List[ClosedLoopEpochMetrics]:
     """
     Run a devnet simulation epoch-by-epoch, invoking a controller step
@@ -46,6 +47,12 @@ def run_closed_loop_devnet(
     
     for i in range(config.num_epochs):
         epoch_idx = i + 1
+        
+        # Derive seed for this epoch
+        run_seed = None
+        if rng_seed is not None:
+            # Deterministic per epoch
+            run_seed = hash((rng_seed, epoch_idx)) & 0xffffffff
         
         # 1. Determine Stress for this epoch
         if i < len(base_schedule):
@@ -88,7 +95,8 @@ def run_closed_loop_devnet(
             topology=topo,
             snapshots=one_epoch_snapshots,
             profiles=profiles,
-            export_root=None
+            export_root=None,
+            rng_seed=run_seed
         )
         
         # 4. Computing Metrics

@@ -27,6 +27,8 @@ def run_param_grid_on_devnet(
     grid: Dict[str, List[Any]],
     *,
     apply_params: Optional[Callable[[DevnetScenarioConfig, Dict[str, Any]], DevnetScenarioConfig]] = None,
+    label_suffix_builder: Optional[Callable[[Dict[str, Any]], str]] = None,
+    rng_seed: Optional[int] = None,
 ) -> List[GridRunResult]:
     """
     Run a parameter sweep over a cartesian product of grid values.
@@ -36,6 +38,13 @@ def run_param_grid_on_devnet(
         grid: Dictionary mapping parameter names to lists of values to sweep.
         apply_params: Optional hook to apply parameters to the scenario. 
                       If None, matching keys are applied directly to scenario fields.
+                      NOTE: keys in `grid` that do not match DevnetScenarioConfig fields
+                      are ignored by the default logic but are still recorded in 
+                      GridRunResult.params and exported to CSV. These serve as 
+                      "external knobs" (e.g. controller gains).
+        label_suffix_builder: Optional callback to generate a custom label suffix from params.
+        rng_seed: Optional master seed. If provided, a deterministic derivation is used 
+                  to seed each individual run.
 
     Returns:
         List of GridRunResult objects containing params and experiment summary.
@@ -60,13 +69,26 @@ def run_param_grid_on_devnet(
             current_scenario = apply_params(current_scenario, params)
         else:
             # Default application: set attributes if they exist
+            # Note: non-matching keys are intentionally ignored here (external knobs)
             for k, v in params.items():
                 if hasattr(current_scenario, k):
                     setattr(current_scenario, k, v)
         
-        # Construct label including params for clarity
-        param_str = "_".join(f"{k}={v}" for k, v in params.items())
-        current_scenario.label = f"{base_scenario.label}_{param_str}"
+        # Construct label
+        if label_suffix_builder:
+            suffix = label_suffix_builder(params)
+            current_scenario.label = f"{base_scenario.label}_{suffix}"
+        else:
+            param_str = "_".join(f"{k}={v}" for k, v in params.items())
+            current_scenario.label = f"{base_scenario.label}_{param_str}"
+        
+        # Deterministic seed derivation
+        run_seed = None
+        if rng_seed is not None:
+            # Sort items to ensure deterministic hashing regardless of dict iteration order
+            # (though params is created from sorted keys above, safety first)
+            p_tuple = tuple(sorted(params.items()))
+            run_seed = hash((rng_seed, p_tuple)) & 0xffffffff
         
         # Execute scenario
         # 1. Build components
@@ -78,7 +100,8 @@ def run_param_grid_on_devnet(
             topology=topo,
             snapshots=snapshots,
             profiles=profiles,
-            export_root=None
+            export_root=None,
+            rng_seed=run_seed
         )
         
         # 3. Summarize
