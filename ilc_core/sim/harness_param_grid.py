@@ -83,7 +83,10 @@ def run_param_grid_on_devnet(
         # 1. Apply Params
         # (Deepcopy ensures we don't mutate the template or previous runs)
         scenario = copy.deepcopy(base_scenario)
-        apply_params_to_scenario(scenario, params)
+        if apply_params:
+            scenario = apply_params(scenario, params)
+        else:
+            apply_params_to_scenario(scenario, params)
         
         # 2. Update Label
         if label_suffix_builder:
