@@ -129,12 +129,14 @@ def run_devnet_epoch(
                 "agent_id": task.get("agent_id"),
                 "node_id": task.get("node_id"),
                 "namespace_id": task.get("namespace_id"),
-                "epoch_index": task.get("epoch_index"),
+                # Use the epoch_index argument, not the task dict
+                "epoch_index": epoch_index,
                 "task_type": task.get("task_type"),
                 "problem_space": task.get("problem_space"),
                 "reward": task.get("reward"),
                 "success": task.get("success"),
-                "regime": task.get("stress_regime"),
+                # RoutedTaskRow.as_dict() uses key "regime"
+                "regime": task.get("regime"),
             }
             event_logger.emit(kind="task_outcome", payload=payload)
         
