@@ -7,6 +7,7 @@ from ilc_core.network.topology import DevnetTopology
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.sim.devnet_epoch_orchestrator import DevnetEpochResult, run_devnet_epoch
+from ilc_core.protocol.event_log import EventLogger, write_events_to_file
 
 @dataclass
 class DevnetMultiEpochResult:
@@ -52,20 +53,32 @@ def run_devnet_multi_epoch(
     for snapshot in snapshots:
         epoch_index = snapshot.epoch_index
         export_dir_for_epoch = None
+        event_logger = None
         
         if export_root:
             p_root = Path(export_root)
             # e.g. epoch_0010
             dir_name = f"{export_prefix}_{epoch_index:04d}"
             export_dir_for_epoch = p_root / dir_name
+            # Enable logging if exporting
+            event_logger = EventLogger(events=[])
             
         result = run_devnet_epoch(
             epoch_index=epoch_index,
             topology=topology,
             namespace_snapshot=snapshot,
             profiles=profiles,
-            export_dir=export_dir_for_epoch
+            export_dir=export_dir_for_epoch,
+            event_logger=event_logger
         )
+        
+        # If we logged events, write them out
+        if export_dir_for_epoch and event_logger:
+            write_events_to_file(
+                event_logger.events,
+                export_dir_for_epoch / "devnet_events.ndjson"
+            )
+
         epoch_results.append(result)
 
     # 3. Aggregate Node Load

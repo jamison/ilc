@@ -9,6 +9,7 @@ from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.analysis.task_routing_suggestions import TaskRoutingSuggestion
 from ilc_core.sim.devnet_epoch_orchestrator import run_devnet_epoch, DevnetEpochResult
+from ilc_core.protocol.event_log import EventLogger
 
 @pytest.fixture
 def minimal_setup():
@@ -97,11 +98,27 @@ def test_run_with_export(minimal_setup):
         assert "epoch_report.csv" in files
         assert "epoch_report.json" in files
         
+        # Routed Tasks & Node Load export checks
+        assert (p / "routed_tasks.csv").exists()
+        assert (p / "routed_tasks.json").exists()
+        assert (p / "node_load.csv").exists()
+        assert (p / "node_load.json").exists()
+
         # Quick content check
         with (p / "epoch_report.json").open() as f:
             data = json.load(f)
             assert data["epoch_index"] == 10
             assert data["namespace"]["namespace_id"] == "test_ns"
+
+        # Basic content check for new files
+        with (p / "routed_tasks.json").open() as f:
+            tasks = json.load(f)
+            # 2 agents, each with 2 competency spaces -> 4 tasks
+            assert len(tasks) == 4
+
+        with (p / "node_load.json").open() as f:
+            loads = json.load(f)
+            assert len(loads) > 0
 
 def test_missing_agent_handling():
     # Test case where an agent has no profile node_id or isn't in topology (edge case)

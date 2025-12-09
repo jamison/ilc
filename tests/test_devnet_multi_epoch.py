@@ -1,3 +1,4 @@
+
 import pytest
 import tempfile
 import json
@@ -87,6 +88,18 @@ def test_multi_epoch_with_export_dirs(multi_epoch_setup):
         files = {f.name for f in epoch_10_dir.iterdir()}
         assert "epoch_report.json" in files
         assert "agent_dossiers.csv" in files
+        
+        # Check NDJSON exists
+        assert (root / "test_epoch_0010" / "devnet_events.ndjson").exists()
+        assert (root / "test_epoch_0020" / "devnet_events.ndjson").exists()
+        
+        # Verify content briefly
+        with open(root / "test_epoch_0010" / "devnet_events.ndjson") as f:
+            lines = f.readlines()
+            assert len(lines) > 0
+            first_evt = json.loads(lines[0])
+            assert "kind" in first_evt
+            assert "payload" in first_evt
 
 def test_multi_epoch_empty_snapshots(multi_epoch_setup):
     topo, profiles, _ = multi_epoch_setup

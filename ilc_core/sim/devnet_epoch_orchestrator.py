@@ -11,6 +11,15 @@ from ilc_core.analysis.routed_tasks import (
     materialize_routed_tasks_for_epoch,
     routed_tasks_to_task_rows_dicts,
 )
+from ilc_core.protocol.event_log import EventLogger
+from ilc_core.analysis.routed_tasks_export import (
+    export_routed_tasks_to_csv,
+    export_routed_tasks_to_json,
+)
+from ilc_core.network.node_load_export import (
+    export_node_load_to_csv,
+    export_node_load_to_json,
+)
 from ilc_core.analysis.agent_dossier_export import (
     export_agent_dossiers_to_csv,
     export_agent_dossiers_to_json,
@@ -34,6 +43,7 @@ def run_devnet_epoch(
     profiles: Dict[str, AgentProfile],
     *,
     export_dir: Optional[PathLike] = None,
+    event_logger: Optional["EventLogger"] = None,
 ) -> DevnetEpochResult:
     """
     High-level in-process devnet epoch simulation.
@@ -47,11 +57,14 @@ def run_devnet_epoch(
       6) If export_dir is provided:
            - Export agent dossiers to CSV/JSON.
            - Export a unified epoch report to CSV/JSON.
+           - Export routed tasks and node load metrics (New in Phase 59).
+      7) If event_logger is provided:
+           - Emit TASK_OUTCOME event for each routed task.
+           - Emit EPOCH_SUMMARY event.
 
     Returns:
       DevnetEpochResult with in-memory task rows and node load metrics.
     """
-    # 1) Compute routing suggestions
     # 1) Compute routing suggestions based on current namespace health
     suggestions = suggest_tasks_for_agents(
         profiles=profiles,
@@ -99,6 +112,48 @@ def run_devnet_epoch(
         export_epoch_report_to_json(
             epoch_index, namespace_snapshot, profiles, p / "epoch_report.json"
         )
+        
+        # Routed Tasks & Node Load (Phase 59)
+        export_routed_tasks_to_csv(routed_task_dicts, p / "routed_tasks.csv")
+        export_routed_tasks_to_json(routed_task_dicts, p / "routed_tasks.json")
+        
+        export_node_load_to_csv(node_load, p / "node_load.csv")
+        export_node_load_to_json(node_load, p / "node_load.json")
+
+    # 7) Emit Events if Logger provided
+    if event_logger:
+        # Emit TASK_OUTCOMEs
+        for task in routed_task_dicts:
+            # Minimal payload
+            payload = {
+                "agent_id": task.get("agent_id"),
+                "node_id": task.get("node_id"),
+                "namespace_id": task.get("namespace_id"),
+                "epoch_index": task.get("epoch_index"),
+                "task_type": task.get("task_type"),
+                "problem_space": task.get("problem_space"),
+                "reward": task.get("reward"),
+                "success": task.get("success"),
+                "regime": task.get("stress_regime"),
+            }
+            event_logger.emit(kind="task_outcome", payload=payload)
+        
+        # Emit EPOCH_SUMMARY
+        total_tasks = sum(m.get("num_tasks", 0) for m in node_load.values())
+        total_reward = sum(m.get("total_reward", 0.0) for m in node_load.values())
+        
+        # Simple regime inference
+        stress = namespace_snapshot.total_stress
+        regime = "low" if stress < 0.3 else "high" if stress >= 1.0 else "medium"
+        
+        summary_payload = {
+            "namespace_id": namespace_snapshot.namespace_id,
+            "epoch_index": epoch_index,
+            "total_tasks": total_tasks,
+            "total_reward": total_reward,
+            "stress_regime": regime,
+        }
+        event_logger.emit(kind="epoch_summary", payload=summary_payload)
 
     return DevnetEpochResult(
         epoch_index=epoch_index,

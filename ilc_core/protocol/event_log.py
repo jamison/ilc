@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, Literal, Optional
+from typing import Any, Dict, Iterable, Literal, Optional, List
 import json
 
 EventKind = Literal[
@@ -69,3 +69,32 @@ def make_event(
         source=source,
         schema_version=schema_version,
     )
+
+
+@dataclass
+class EventLogger:
+    """
+    In-memory accumulator for events (sim-only).
+    """
+    events: List[ProtocolEvent]
+
+    def emit(
+        self,
+        kind: EventKind,
+        payload: Dict[str, Any],
+        source: str = "sim",
+    ) -> None:
+        evt = make_event(kind, payload, source=source)
+        self.events.append(evt)
+
+
+def write_events_to_file(events: List[ProtocolEvent], path: Path | str) -> None:
+    """
+    Write a list of ProtocolEvents to an NDJSON file.
+    """
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("w", encoding="utf-8") as f:
+        for evt in events:
+            json.dump(asdict(evt), f)
+            f.write("\n")
