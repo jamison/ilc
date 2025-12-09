@@ -22,8 +22,32 @@ from ilc_core.sim.devnet_experiments import (
     DevnetExperimentSummary
 )
 
+# Synthetic defaults for devnet scenario simulations.
+# These are not normative protocol thresholds; they just give
+# a stable, "healthy-ish" namespace for stress-sweep experiments.
+DEFAULT_COHESION_SCORE = 0.8
+DEFAULT_CROSSLINK_DEFICIT = 0.0
+DEFAULT_SUPPORT_RATIO = 0.9
+DEFAULT_CONTROVERSY_RATIO = 0.1
+DEFAULT_VALIDATION_DEPTH_ERROR = 0.0
+DEFAULT_MEAN_ABS_INFLUENCE = 0.5
+
 @dataclass
 class DevnetScenarioConfig:
+    """
+    Configuration for a single devnet scenario.
+
+    Fields:
+      - label: Human-readable label for the scenario (used in summaries/CSV).
+      - stress_schedule: List of total_stress values, one per epoch.
+      - namespace_id: Namespace identifier used in NamespaceHealthSnapshot
+        (defaults to "ns_scenario" unless overridden or inherited from config).
+      - num_agents: Number of synthetic agents to create for this scenario.
+      - topology_kind: Topology type ("star" for now; other values are not yet supported).
+      - center_id: Node ID for the orchestration/center node in a star topology.
+      - worker_ids: Optional explicit worker node IDs; if None or empty, a minimal
+        default like ["w1", "w2"] is used.
+    """
     label: str
     stress_schedule: List[float]
     namespace_id: str = "ns_scenario"
@@ -95,9 +119,18 @@ def build_topology_and_profiles(
 ) -> Tuple[DevnetTopology, Dict[str, AgentProfile]]:
     """
     Construct topology and agent profiles for a given scenario.
-    MVP: always builds a star topology.
+
+    MVP: only supports a star topology (center_id + worker_ids).
     """
     # 1. Topology
+    if scenario.topology_kind != "star":
+        # MVP limitation: we only support star topology in Phase 60.
+        # Raise a clear error so configs don't silently do the wrong thing.
+        raise ValueError(
+            f"Unsupported topology_kind={scenario.topology_kind!r}; "
+            f"only 'star' is supported in this MVP."
+        )
+
     center_id = scenario.center_id
     worker_ids = scenario.worker_ids
     
@@ -154,14 +187,14 @@ def build_snapshots_for_scenario(
             total_stress=float(stress_val),
             epoch_index=epoch_idx,
             # Reasonable defaults
-            cohesion_score=0.8,
+            cohesion_score=DEFAULT_COHESION_SCORE,
             contradiction_overflow=0.0,
-            validation_depth_error=0.0,
-            mean_abs_influence=0.5,
+            validation_depth_error=DEFAULT_VALIDATION_DEPTH_ERROR,
+            mean_abs_influence=DEFAULT_MEAN_ABS_INFLUENCE,
             # Phase 60 Fix: Add missing required fields
-            crosslink_deficit=0.0,
-            support_ratio=0.9,
-            controversy_ratio=0.1
+            crosslink_deficit=DEFAULT_CROSSLINK_DEFICIT,
+            support_ratio=DEFAULT_SUPPORT_RATIO,
+            controversy_ratio=DEFAULT_CONTROVERSY_RATIO
         )
         snapshots.append(snap)
         
@@ -198,7 +231,23 @@ def run_scenarios_from_config(
     config: Mapping[str, Any],
 ) -> List[DevnetExperimentSummary]:
     """
-    Parse and run all scenarios in the config.
+    Parse and run all scenarios in a config dictionary.
+
+    Expected config shape (MVP):
+
+      {
+        "namespace_id": "ns_sweep_auto",       # optional global default
+        "num_agents": 3,                       # optional global default
+        "topology_kind": "star",               # optional, only "star" supported
+        "center_id": "orch",                   # optional, default center node
+        "worker_ids": ["w1", "w2", ...],       # optional; if omitted, defaults apply
+        "scenarios": [
+          {"label": "demo_low", "stress_schedule": [0.1, 0.2, 0.3]},
+          {"label": "demo_high", "stress_schedule": [0.8, 1.2, 1.5], "num_agents": 10},
+        ]
+      }
+
+    Top-level keys act as defaults and can be overridden per scenario.
     """
     scenarios = scenarios_from_config(config)
     results = []
