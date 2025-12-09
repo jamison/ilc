@@ -51,8 +51,8 @@ def run_closed_loop_devnet(
         # Derive seed for this epoch
         run_seed = None
         if rng_seed is not None:
-            # Deterministic per epoch
-            run_seed = hash((rng_seed, epoch_idx)) & 0xffffffff
+            # Simple stable derivation
+            run_seed = rng_seed + epoch_idx
         
         # 1. Determine Stress for this epoch
         if i < len(base_schedule):

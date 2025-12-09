@@ -21,6 +21,15 @@ from ilc_core.sim.devnet_experiments import (
 class GridRunResult:
     params: Dict[str, Any]
     summary: DevnetExperimentSummary
+    
+def apply_params_to_scenario(
+    scenario: DevnetScenarioConfig, 
+    params: Dict[str, Any]
+) -> None:
+    """Helper: Apply matching keys to scenario, ignore others."""
+    for k, v in params.items():
+        if hasattr(scenario, k):
+            setattr(scenario, k, v)
 
 def run_param_grid_on_devnet(
     base_scenario: DevnetScenarioConfig,
@@ -29,6 +38,8 @@ def run_param_grid_on_devnet(
     apply_params: Optional[Callable[[DevnetScenarioConfig, Dict[str, Any]], DevnetScenarioConfig]] = None,
     label_suffix_builder: Optional[Callable[[Dict[str, Any]], str]] = None,
     rng_seed: Optional[int] = None,
+    export_root: Optional[PathLike] = None,
+    export_prefix: str = "grid",
 ) -> List[GridRunResult]:
     """
     Run a parameter sweep over a cartesian product of grid values.
@@ -48,69 +59,75 @@ def run_param_grid_on_devnet(
 
     Returns:
         List of GridRunResult objects containing params and experiment summary.
+        label_suffix_builder: Optional hook to generate label suffixes.
+        rng_seed: Optional master seed. If set, each grid point run gets a
+                  deterministic seed derived from this (rng_seed + run_index).
+        export_root: Optional root directory to save per-run NDJSON events.
+        export_prefix: Prefix for per-run export directories/files.
+        
+    Keys in `grid` that match `DevnetScenarioConfig` fields are applied automatically.
+    Keys that do not match are ignored by the config updater but recorded in results
+    (useful for external knobs like econ params).
     """
-    keys = sorted(grid.keys())
-    values_list = [grid[k] for k in keys]
-    
     results = []
     
-    # Iterate over cartesian product
-    for combination in itertools.product(*values_list):
-        # Build params dict for this point
+    # Generate all combinations
+    keys = sorted(grid.keys())
+    values_lists = [grid[k] for k in keys]
+    
+    # Use enumerate to get a stable run_index for seeding
+    for run_index, combination in enumerate(itertools.product(*values_lists)):
+        # Construct params dict for this run
         params = dict(zip(keys, combination))
         
-        # Clone base scenario
-        # We use copy.deepcopy to ensure no mutable state leaks between runs
-        # (though currently config is mostly immutable dataclass, good practice)
-        current_scenario = copy.deepcopy(base_scenario)
+        # 1. Apply Params
+        # (Deepcopy ensures we don't mutate the template or previous runs)
+        scenario = copy.deepcopy(base_scenario)
+        apply_params_to_scenario(scenario, params)
         
-        # Apply parameters
-        if apply_params:
-            current_scenario = apply_params(current_scenario, params)
-        else:
-            # Default application: set attributes if they exist
-            # Note: non-matching keys are intentionally ignored here (external knobs)
-            for k, v in params.items():
-                if hasattr(current_scenario, k):
-                    setattr(current_scenario, k, v)
-        
-        # Construct label
+        # 2. Update Label
         if label_suffix_builder:
             suffix = label_suffix_builder(params)
-            current_scenario.label = f"{base_scenario.label}_{suffix}"
+            scenario.label = f"{base_scenario.label}_{suffix}"
         else:
-            param_str = "_".join(f"{k}={v}" for k, v in params.items())
-            current_scenario.label = f"{base_scenario.label}_{param_str}"
+            # Default: append all params
+            suffix_parts = [f"{k}={v}" for k, v in params.items()]
+            scenario.label = f"{base_scenario.label}_{'_'.join(suffix_parts)}"
+            
+        # 3. Build Sim Components
+        topo, profiles = build_topology_and_profiles(scenario)
+        snapshots = build_snapshots_for_scenario(scenario)
         
-        # Deterministic seed derivation
+        # Derive Seed
         run_seed = None
         if rng_seed is not None:
-            # Sort items to ensure deterministic hashing regardless of dict iteration order
-            # (though params is created from sorted keys above, safety first)
-            p_tuple = tuple(sorted(params.items()))
-            run_seed = hash((rng_seed, p_tuple)) & 0xffffffff
-        
-        # Execute scenario
-        # 1. Build components
-        topo, profiles = build_topology_and_profiles(current_scenario)
-        snapshots = build_snapshots_for_scenario(current_scenario)
-        
-        # 2. Run multi-epoch
+            # Simple stable derivation: master + index
+            run_seed = rng_seed + run_index
+            
+        # Determine Per-Run Export Path
+        run_export_dir = None
+        if export_root:
+            run_export_dir = Path(export_root) / f"{export_prefix}_{scenario.label}"
+            
+        # 4. Run Simulation
         multi_result = run_devnet_multi_epoch(
             topology=topo,
             snapshots=snapshots,
             profiles=profiles,
-            export_root=None,
+            export_root=run_export_dir,
             rng_seed=run_seed
         )
         
-        # 3. Summarize
+        # 5. Summarize
         summary = summarize_multi_epoch_run(
-            label=current_scenario.label,
+            label=scenario.label,
             multi=multi_result
         )
         
-        results.append(GridRunResult(params=params, summary=summary))
+        results.append(GridRunResult(
+            params=params,
+            summary=summary
+        ))
         
     return results
 

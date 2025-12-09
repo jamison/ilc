@@ -32,19 +32,24 @@ def default_apply_econ(overrides: Dict[str, Any]) -> None:
     protocol parameters / genesis state used by devnet simulations.
 
     This is an MVP helper for use in demos and simple experiments.
-    It currently constructs a transient ProtocolParams object to validate/show
-    intent, but ideally would update a singleton or context var if one existed.
-    For now, we log at warning level if key is unknown.
+    It currently validates econ override keys against ProtocolParams and 
+    logs warnings for unknown keys; it is intentionally a no-op on actual 
+    protocol state in the MVP until singletons are established.
     """
     # Validation step: map overrides to ProtocolParams fields
     valid_keys = set(ProtocolParams.__annotations__.keys())
+    filtered_overrides = {}
     
     for k, v in overrides.items():
         if k in valid_keys:
-            # Here we would update the real global state
-            pass
+            filtered_overrides[k] = v
         else:
             logging.warning(f"Unknown econ override key: {k} (ignored)")
+            
+    # Instantiate params to demonstrate valid shape (and catch type errors)
+    if filtered_overrides:
+        params = ProtocolParams(**filtered_overrides)
+        logging.debug(f"Effective econ params for this run: {params}")
 
 def run_econ_scenarios_on_devnet(
     base_scenario: DevnetScenarioConfig,
@@ -52,11 +57,26 @@ def run_econ_scenarios_on_devnet(
     *,
     apply_econ: Callable[[Dict[str, Any]], None],
     rng_seed: Optional[int] = None,
+    export_root: Optional[PathLike] = None,
+    export_prefix: str = "econ",
 ) -> List[DevnetExperimentSummary]:
-    # ... (unchanged implementation)
+    """
+    Run a set of economic scenarios using a base devnet configuration.
+
+    Args:
+        base_scenario: The template configuration for topology/agents/stress.
+        econ_scenarios: List of economic configurations to test.
+        apply_econ: Hook to apply global economic parameter overrides.
+        rng_seed: Optional master seed for determinism.
+        export_root: Optional root directory to save per-run NDJSON events.
+        export_prefix: Prefix for per-run export directories/files.
+
+    Returns:
+        List of DevnetExperimentSummary objects.
+    """
     results = []
     
-    for econ_scen in econ_scenarios:
+    for i, econ_scen in enumerate(econ_scenarios):
         # 1. Apply Econ Params (Global Hook)
         apply_econ(econ_scen.param_overrides)
         
@@ -67,15 +87,20 @@ def run_econ_scenarios_on_devnet(
         # Derive seed
         run_seed = None
         if rng_seed is not None:
-             # Hash seed + label
-            run_seed = hash((rng_seed, econ_scen.label)) & 0xffffffff
+             # Simple stable derivation: master + index
+            run_seed = rng_seed + i
+            
+        # Determine Per-Run Export Path
+        run_export_dir = None
+        if export_root:
+            run_export_dir = Path(export_root) / econ_scen.label
             
         # 3. Run Simulation
         multi_result = run_devnet_multi_epoch(
             topology=topo,
             snapshots=snapshots,
             profiles=profiles,
-            export_root=None,
+            export_root=run_export_dir,
             rng_seed=run_seed
         )
         

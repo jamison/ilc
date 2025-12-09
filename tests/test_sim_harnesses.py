@@ -157,3 +157,40 @@ def test_econ_export_sidecar():
         assert "L2" in row2
         assert "0.9" in row2
         assert "1" in row2
+
+def test_harness_ndjson_export():
+    import tempfile
+    from pathlib import Path
+    from ilc_core.sim.harness_param_grid import run_param_grid_on_devnet
+    
+    # Setup minimal base
+    base = DevnetScenarioConfig("ndjson_test", [0.5], 2)
+    grid = {"num_agents": [2, 3]} # 2 runs
+    
+    with tempfile.TemporaryDirectory() as tmp:
+        export_root = Path(tmp)
+        
+        results = run_param_grid_on_devnet(
+            base_scenario=base,
+            grid=grid,
+            rng_seed=999,
+            export_root=export_root
+        )
+        
+        assert len(results) == 2
+        
+        # Expect folders like {tmp}/grid_ndjson_test_num_agents=2/001_epoch/devnet_events.ndjson
+        # NOTE: harness uses "grid_" prefix by default
+        label_1 = results[0].summary.label
+        run_dir_1 = export_root / f"grid_{label_1}"
+        assert run_dir_1.exists()
+        assert run_dir_1.is_dir()
+        
+        # Check for events file in epoch subdirectory
+        # Assuming run_devnet_multi_epoch uses "epoch_XXXX" pattern by default
+        epoch_dirs = list(run_dir_1.glob("epoch_*"))
+        assert len(epoch_dirs) >= 1
+        
+        events_file = epoch_dirs[0] / "devnet_events.ndjson"
+        assert events_file.exists()
+        assert events_file.stat().st_size > 0
