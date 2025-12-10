@@ -70,9 +70,12 @@ def run_econ_scenarios_on_devnet(
         base_scenario: The template configuration for topology/agents/stress.
         econ_scenarios: List of economic configurations to test.
         apply_econ: Hook to apply global economic parameter overrides.
-        rng_seed: Optional master seed for determinism.
-        export_root: Optional root directory to save per-run NDJSON events.
-        export_prefix: Prefix for per-run export directories/files.
+        rng_seed: Base random seed. Each scenario uses rng_seed + list_index.
+        export_root: Optional root directory to enable NDJSON exports.
+                     If provided, creates subdirectories: 
+                     `{export_root}/{scenario.label}/epoch_XXXX/devnet_events.ndjson`.
+        export_prefix: Prefix for per-run export directories (default "econ", 
+                       though usually the scenario label is used directly).
 
     Returns:
         List of DevnetExperimentSummary objects.

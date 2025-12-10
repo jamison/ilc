@@ -64,6 +64,8 @@ def run_param_grid_on_devnet(
         rng_seed: Base random seed for deterministic runs. Each grid point uses
               rng_seed + run_index.
         export_root: Optional root directory to enable NDJSON exports.
+                     If provided, creates subdirectories: 
+                     `{export_root}/{export_prefix}_{scenario.label}/epoch_XXXX/devnet_events.ndjson`.
         export_prefix: Subdirectory prefix under export_root (default "grid").
 
     Returns:
