@@ -48,6 +48,9 @@ def default_apply_econ(overrides: Dict[str, Any]) -> None:
             
     # Instantiate params to demonstrate valid shape (and catch type errors)
     if filtered_overrides:
+        # NOTE: For MVP we only validate overrides by constructing a ProtocolParams
+        # instance. We do not mutate any global state yet; wiring to a real
+        # parameter registry is a future phase.
         params = ProtocolParams(**filtered_overrides)
         logging.debug(f"Effective econ params for this run: {params}")
 

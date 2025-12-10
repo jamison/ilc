@@ -25,11 +25,12 @@ class GridRunResult:
 def apply_params_to_scenario(
     scenario: DevnetScenarioConfig, 
     params: Dict[str, Any]
-) -> None:
-    """Helper: Apply matching keys to scenario, ignore others."""
+) -> DevnetScenarioConfig:
+    """Helper: Apply matching keys to scenario, ignore others. Returns modified scenario."""
     for k, v in params.items():
         if hasattr(scenario, k):
             setattr(scenario, k, v)
+    return scenario
 
 def run_param_grid_on_devnet(
     base_scenario: DevnetScenarioConfig,
@@ -46,28 +47,23 @@ def run_param_grid_on_devnet(
 
     Args:
         base_scenario: Template scenario configuration.
-        grid: Dictionary mapping parameter names to lists of values to sweep.
-        apply_params: Optional hook to apply parameters to the scenario. 
-                      If None, matching keys are applied directly to scenario fields.
-                      NOTE: keys in `grid` that do not match DevnetScenarioConfig fields
-                      are ignored by the default logic but are still recorded in 
-                      GridRunResult.params and exported to CSV. These serve as 
-                      "external knobs" (e.g. controller gains).
-        label_suffix_builder: Optional callback to generate a custom label suffix from params.
-        rng_seed: Optional master seed. If provided, a deterministic derivation is used 
-                  to seed each individual run.
+        grid: Mapping from parameter name to list of values.
+              Keys that match DevnetScenarioConfig fields are applied by default.
+              Keys that do not match are treated as "external knobs": they are
+              ignored by the default applicator but still recorded in params/CSV.
+        apply_params: Optional hook to customize how params are applied. If
+              provided, this function is responsible for mutating/returning the
+              scenario given the param dict.
+        label_suffix_builder: Optional hook to build a compact suffix for
+              scenario labels; useful when grids are large.
+        rng_seed: Base random seed for deterministic runs. Each grid point uses
+              rng_seed + run_index.
+        export_root: Optional root directory to enable NDJSON exports.
+        export_prefix: Subdirectory prefix under export_root (default "grid").
 
     Returns:
-        List of GridRunResult objects containing params and experiment summary.
-        label_suffix_builder: Optional hook to generate label suffixes.
-        rng_seed: Optional master seed. If set, each grid point run gets a
-                  deterministic seed derived from this (rng_seed + run_index).
-        export_root: Optional root directory to save per-run NDJSON events.
-        export_prefix: Prefix for per-run export directories/files.
-        
-    Keys in `grid` that match `DevnetScenarioConfig` fields are applied automatically.
-    Keys that do not match are ignored by the config updater but recorded in results
-    (useful for external knobs like econ params).
+        List of GridRunResult objects containing the param dict and
+        DevnetExperimentSummary for each grid point.
     """
     results = []
     

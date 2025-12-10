@@ -53,4 +53,6 @@ def load_protocol_params(path: Optional[PathLike] = None) -> ProtocolParams:
         weight_refutes=float(data.get("weight_refutes", 1.0)),
         weight_equivalent=float(data.get("weight_equivalent", 0.0)),
         weight_depends_on=float(data.get("weight_depends_on", 0.0)),
+        burn_rate=float(data.get("burn_rate", 0.0)),
+        pb_rate=float(data.get("pb_rate", 0.0)),
     )
