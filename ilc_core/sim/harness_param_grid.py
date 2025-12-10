@@ -21,6 +21,11 @@ from ilc_core.sim.devnet_experiments import (
 class GridRunResult:
     params: Dict[str, Any]
     summary: DevnetExperimentSummary
+    # Phase 61F: Distribution metrics for node rewards
+    min_node_reward: float = 0.0
+    max_node_reward: float = 0.0
+    mean_node_reward: float = 0.0
+    reward_variance: float = 0.0
     
 def apply_params_to_scenario(
     scenario: DevnetScenarioConfig, 
@@ -117,6 +122,28 @@ def run_param_grid_on_devnet(
             rng_seed=run_seed
         )
         
+        # Phase 61F: Compute Distribution Metrics
+        # Collect rewards from aggregate_node_load
+        metrics = {
+             "min_node_reward": 0.0,
+             "max_node_reward": 0.0,
+             "mean_node_reward": 0.0,
+             "reward_variance": 0.0,
+        }
+        
+        rewards = [node_data.get("total_reward", 0.0) 
+                   for node_data in multi_result.aggregate_node_load.values()]
+        
+        if rewards:
+            r_mean = sum(rewards) / len(rewards)
+            # Population variance: sum((x - mean)^2) / N
+            r_var = sum((r - r_mean) ** 2 for r in rewards) / len(rewards)
+            
+            metrics["min_node_reward"] = min(rewards)
+            metrics["max_node_reward"] = max(rewards)
+            metrics["mean_node_reward"] = r_mean
+            metrics["reward_variance"] = r_var
+            
         # 5. Summarize
         summary = summarize_multi_epoch_run(
             label=scenario.label,
@@ -125,7 +152,11 @@ def run_param_grid_on_devnet(
         
         results.append(GridRunResult(
             params=params,
-            summary=summary
+            summary=summary,
+            min_node_reward=metrics["min_node_reward"],
+            max_node_reward=metrics["max_node_reward"],
+            mean_node_reward=metrics["mean_node_reward"],
+            reward_variance=metrics["reward_variance"]
         ))
         
     return results
@@ -155,7 +186,12 @@ def export_param_grid_results_to_csv(
         "avg_tasks_per_epoch", "avg_reward_per_task", "max_node_tasks"
     ]
     
-    header = param_keys + summary_fields
+    # 3. Distribution fields
+    dist_fields = [
+        "min_node_reward", "max_node_reward", "mean_node_reward", "reward_variance"
+    ]
+    
+    header = param_keys + summary_fields + dist_fields
     
     with p.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=header)
@@ -171,5 +207,11 @@ def export_param_grid_results_to_csv(
             s_dict = asdict(res.summary)
             for k in summary_fields:
                 row[k] = s_dict.get(k)
+                
+            # Add distribution fields
+            row["min_node_reward"] = res.min_node_reward
+            row["max_node_reward"] = res.max_node_reward
+            row["mean_node_reward"] = res.mean_node_reward
+            row["reward_variance"] = res.reward_variance
                 
             writer.writerow(row)

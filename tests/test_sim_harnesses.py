@@ -46,6 +46,11 @@ def test_param_grid_harness():
         assert "suffix_" in res.summary.label
         
         # Check params applied
+        # Phase 61F: Check metrics
+        assert isinstance(res.min_node_reward, float)
+        assert res.min_node_reward <= res.max_node_reward
+        assert res.reward_variance >= 0.0
+        
         if res.params["num_agents"] == 3:
             # How to check if scenario config was actually updated?
             # run_devnet_multi_epoch generates results based on it.
@@ -151,6 +156,8 @@ def test_econ_export_sidecar():
         row1 = lines[1]
         assert "L1" in row1
         assert "0.1" in row1
+        
+
         
         # Row 2 (L2) -> burn=0.9, xtra=1
         row2 = lines[2]
