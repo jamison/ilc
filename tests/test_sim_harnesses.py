@@ -1,5 +1,9 @@
 import pytest
-from ilc_core.sim.devnet_scenarios import DevnetScenarioConfig
+from ilc_core.sim.devnet_scenarios import (
+    DevnetScenarioConfig,
+    build_topology_and_profiles,
+    run_scenario
+)
 from ilc_core.sim.harness_param_grid import (
     run_param_grid_on_devnet, 
     GridRunResult
@@ -241,3 +245,39 @@ def test_param_grid_custom_apply_hook():
     # For now, determining if the hook was called is sufficient regression coverage 
     # since we manually verified the wiring logic.
     pass
+
+def test_scenario_competency_schema():
+    """Verify built profiles have canonical competency structure."""
+    cfg = DevnetScenarioConfig("test_schema", [0.1], 2)
+    topo, profiles = build_topology_and_profiles(cfg)
+    
+    assert len(profiles) > 0
+    p = list(profiles.values())[0]
+    
+    # Needs canonical structure: competency["by_space"]["SPACE"] -> {success_rate, tasks}
+    comp = p.competency
+    assert "by_space" in comp
+    assert "LOCAL_CONSISTENCY" in comp["by_space"]
+    
+    entry = comp["by_space"]["LOCAL_CONSISTENCY"]
+    assert "success_rate" in entry
+    assert "tasks" in entry
+    # Check default values are preserved
+    assert entry["success_rate"] == 0.8
+    assert entry["tasks"] == 10
+
+def test_scenario_nonzero_results():
+    """Smoke test: ensure simulation actually routes tasks and produces reward."""
+    # Setup a scenario with sufficient agents and stress to trigger work
+    # Regime: 0.5 stress -> Medium -> likely maintenance or routine tasks
+    cfg = DevnetScenarioConfig(
+        label="test_nonzero", 
+        stress_schedule=[0.5, 0.5], 
+        num_agents=5
+    )
+    
+    summary = run_scenario(cfg)
+    
+    assert summary.total_tasks > 0, "Simulation produced zero tasks (schema mismatch?)"
+    assert summary.total_reward > 0.0, "Simulation produced zero reward"
+

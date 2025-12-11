@@ -158,8 +158,10 @@ def build_topology_and_profiles(
             agent_id=agent_id,
             node_id=node_id,
             competency={
-                "LOCAL_CONSISTENCY": {"score": 0.8, "experience": 10},
-                "PLANNING": {"score": 0.5, "experience": 5},
+                "by_space": {
+                    "LOCAL_CONSISTENCY": {"success_rate": 0.8, "tasks": 10},
+                    "PLANNING": {"success_rate": 0.5, "tasks": 5},
+                }
             },
             stress_response={
                 "resilience": 0.5,
