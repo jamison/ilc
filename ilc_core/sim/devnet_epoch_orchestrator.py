@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Dict, Any, List, Optional
 from os import PathLike
 from pathlib import Path
@@ -11,6 +11,7 @@ from ilc_core.analysis.routed_tasks import (
     materialize_routed_tasks_for_epoch,
     routed_tasks_to_task_rows_dicts,
 )
+from ilc_core.protocol.params import ProtocolParams
 from ilc_core.protocol.event_log import EventLogger
 from ilc_core.analysis.routed_tasks_export import (
     export_routed_tasks_to_csv,
@@ -35,6 +36,10 @@ class DevnetEpochResult:
     namespace_id: str
     routed_task_rows: List[Dict[str, Any]]
     node_load_metrics: Dict[str, Dict[str, float]]
+    # Phase 64A: Backlog Signal
+    num_suggestions: int = 0
+    num_executed: int = 0
+    backlog_count: int = 0  # max(0, suggestions - executed)
 
 def run_devnet_epoch(
     epoch_index: int,
@@ -44,6 +49,7 @@ def run_devnet_epoch(
     *,
     export_dir: Optional[PathLike] = None,
     event_logger: Optional["EventLogger"] = None,
+    protocol_params: Optional[ProtocolParams] = None,
 ) -> DevnetEpochResult:
     """
     High-level in-process devnet epoch simulation.
@@ -70,6 +76,9 @@ def run_devnet_epoch(
         profiles=profiles,
         namespace_health=namespace_snapshot,
     )
+    
+    # Phase 64A: Capture total suggestions
+    total_suggestions = sum(len(s_list) for s_list in suggestions.values())
 
     # 2) Materialize RoutedTaskRow objects
     routed_rows = materialize_routed_tasks_for_epoch(
@@ -78,7 +87,13 @@ def run_devnet_epoch(
         profiles=profiles,
         suggestions=suggestions,
         topology=topology,
+        protocol_params=protocol_params,
     )
+    
+    # Phase 64A: Capture total executed
+    total_executed = len(routed_rows)
+    # Backlog = dropped (QA) or unrouted (if any logic dropped them before materialization)
+    backlog_count = max(0, total_suggestions - total_executed)
 
     # 3) Convert to task-row dicts
     routed_task_dicts = routed_tasks_to_task_rows_dicts(routed_rows)
@@ -122,6 +137,13 @@ def run_devnet_epoch(
 
     # 7) Emit Events if Logger provided
     if event_logger:
+        # Emit EPOCH_CONFIG (Phase 63C)
+        params_dict = asdict(protocol_params) if protocol_params else {}
+        event_logger.emit(
+            kind="epoch_config", 
+            payload={"epoch_index": epoch_index, "protocol_params": params_dict}
+        )
+        
         # Emit TASK_OUTCOMEs
         for task in routed_task_dicts:
             # Minimal payload
@@ -154,6 +176,10 @@ def run_devnet_epoch(
             "total_tasks": total_tasks,
             "total_reward": total_reward,
             "stress_regime": regime,
+            # Phase 64A: Add backlog info to event log
+            "backlog_count": backlog_count,
+            "num_suggestions": total_suggestions,
+            "num_executed": total_executed,
         }
         event_logger.emit(kind="epoch_summary", payload=summary_payload)
 
@@ -162,4 +188,7 @@ def run_devnet_epoch(
         namespace_id=namespace_snapshot.namespace_id,
         routed_task_rows=routed_task_dicts,
         node_load_metrics=node_load,
+        num_suggestions=total_suggestions,
+        num_executed=total_executed,
+        backlog_count=backlog_count,
     )

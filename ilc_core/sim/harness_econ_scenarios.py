@@ -5,7 +5,7 @@ from pathlib import Path
 import csv 
 
 # Add ProtocolParams import
-from ilc_core.protocol.params import ProtocolParams
+from ilc_core.protocol.params import ProtocolParams, normalize_protocol_overrides
 
 import logging
 
@@ -36,11 +36,14 @@ def default_apply_econ(overrides: Dict[str, Any]) -> None:
     logs warnings for unknown keys; it is intentionally a no-op on actual 
     protocol state in the MVP until singletons are established.
     """
+    # 1. Normalize Keys / Coerce Types (Hygiene Phase 64C)
+    normalized = normalize_protocol_overrides(overrides)
+
     # Validation step: map overrides to ProtocolParams fields
     valid_keys = set(ProtocolParams.__annotations__.keys())
     filtered_overrides = {}
     
-    for k, v in overrides.items():
+    for k, v in normalized.items():
         if k in valid_keys:
             filtered_overrides[k] = v
         else:
@@ -162,7 +165,9 @@ def export_econ_summaries_with_overrides_to_csv(
         "label", "namespace_id", "num_epochs", 
         "total_tasks", "total_reward", 
         "avg_tasks_per_epoch", "avg_reward_per_task", 
-        "max_node_tasks"
+        "max_node_tasks",
+        # Phase 64B
+        "mean_backlog_per_epoch", "max_backlog", "mean_backlog_ratio"
     ] 
     
     # Econ columns prefixed

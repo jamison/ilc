@@ -7,6 +7,7 @@ import json
 EventKind = Literal[
     "task_outcome",
     "epoch_summary",
+    "epoch_config",
     "claim",
     "refutation",
 ]  # keep small for now

@@ -185,7 +185,9 @@ def export_param_grid_results_to_csv(
     # 2. Summary fields (hardcoded for stability, or could verify via verify)
     summary_fields = [
         "label", "num_epochs", "total_tasks", "total_reward", 
-        "avg_tasks_per_epoch", "avg_reward_per_task", "max_node_tasks"
+        "avg_tasks_per_epoch", "avg_reward_per_task", "max_node_tasks",
+        # Phase 64B
+        "mean_backlog_per_epoch", "max_backlog", "mean_backlog_ratio"
     ]
     
     # 3. Distribution fields

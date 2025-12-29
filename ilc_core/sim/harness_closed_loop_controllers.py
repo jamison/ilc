@@ -10,12 +10,19 @@ from ilc_core.sim.devnet_scenarios import (
 from ilc_core.sim.devnet_multi_epoch import run_devnet_multi_epoch
 from ilc_core.sim.devnet_experiments import summarize_multi_epoch_run
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
+from ilc_core.analysis.agent_profiles import AgentProfile
+from ilc_core.network.topology import DevnetTopology
+from ilc_core.protocol.params import ProtocolParams
 
+@dataclass
 @dataclass
 class ClosedLoopRunConfig:
     label: str
     num_epochs: int
     scenario: DevnetScenarioConfig
+    initial_params: Optional[ProtocolParams] = None
+    # Phase 65B: Dependency Injection for topology builder (prevents global patching)
+    topology_builder_fn: Optional[Callable[[DevnetScenarioConfig], tuple[DevnetTopology, Dict[str, AgentProfile]]]] = None
 
 @dataclass
 class ClosedLoopEpochMetrics:
@@ -27,7 +34,8 @@ class ClosedLoopEpochMetrics:
 
 def run_closed_loop_devnet(
     config: ClosedLoopRunConfig,
-    controller_step: Callable[[int, ClosedLoopEpochMetrics], None],
+    # Phase 65B: Controller returns new params (Functional Style) or None (if no change)
+    controller_step: Callable[[int, ClosedLoopEpochMetrics, ProtocolParams], Optional[ProtocolParams]],
     rng_seed: Optional[int] = None,
 ) -> List[ClosedLoopEpochMetrics]:
     """
@@ -37,8 +45,15 @@ def run_closed_loop_devnet(
     metrics_history: List[ClosedLoopEpochMetrics] = []
     
     # Build initial state
-    # We build topology/profiles once (assuming static network for MVP closed loop)
-    topo, profiles = build_topology_and_profiles(config.scenario)
+    # Phase 65B: Use injected builder if provided, else default
+    if config.topology_builder_fn:
+        topo, profiles = config.topology_builder_fn(config.scenario)
+    else:
+        # We build topology/profiles once (assuming static network for MVP closed loop)
+        topo, profiles = build_topology_and_profiles(config.scenario)
+    
+    # Initialize params
+    current_params = config.initial_params or ProtocolParams()
     
     # We will derive stress from scenario schedule if available, or just reuse last value?
     # For MVP, let's assume scenario.stress_schedule has at least 'num_epochs' entries
@@ -96,7 +111,8 @@ def run_closed_loop_devnet(
             snapshots=one_epoch_snapshots,
             profiles=profiles,
             export_root=None,
-            rng_seed=run_seed
+            rng_seed=run_seed,
+            protocol_params=current_params
         )
         
         # 4. Computing Metrics
@@ -107,16 +123,22 @@ def run_closed_loop_devnet(
         )
         
         # 5. Build Metric Object
+        # Extract the single epoch result
+        epoch_res = multi_result.epoch_results[0]
+        
         m = ClosedLoopEpochMetrics(
             epoch_index=epoch_idx,
             total_tasks=summary.total_tasks,
             total_reward=summary.total_reward,
             avg_reward_per_task=summary.avg_reward_per_task,
-            backlog_proxy=0.0 # Placeholder
+            backlog_proxy=float(epoch_res.backlog_count) # Phase 64A: Real Backlog
         )
         metrics_history.append(m)
         
         # 6. Controller Hook
-        controller_step(epoch_idx, m)
+        # Phase 65B: Functional Semantics
+        new_params = controller_step(epoch_idx, m, current_params)
+        if new_params is not None:
+             current_params = new_params
         
     return metrics_history

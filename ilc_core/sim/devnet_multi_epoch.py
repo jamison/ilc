@@ -8,6 +8,7 @@ from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.sim.devnet_epoch_orchestrator import DevnetEpochResult, run_devnet_epoch
 from ilc_core.protocol.event_log import EventLogger, write_events_to_file
+from ilc_core.protocol.params import ProtocolParams
 
 @dataclass
 class DevnetMultiEpochResult:
@@ -24,6 +25,7 @@ def run_devnet_multi_epoch(
     export_root: Optional[PathLike] = None,
     export_prefix: str = "epoch",
     rng_seed: Optional[int] = None,
+    protocol_params: Optional[ProtocolParams] = None,
 ) -> DevnetMultiEpochResult:
     """
     Execute multiple devnet epochs sequentially based on a list of snapshots.
@@ -75,7 +77,8 @@ def run_devnet_multi_epoch(
             namespace_snapshot=snapshot,
             profiles=profiles,
             export_dir=export_dir_for_epoch,
-            event_logger=event_logger
+            event_logger=event_logger,
+            protocol_params=protocol_params
         )
         
         # If we logged events, write them out

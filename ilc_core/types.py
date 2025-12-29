@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Union, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import json
 
@@ -43,7 +43,7 @@ class Node(BaseModel):
     content: Union[str, Dict[str, Any]] = Field(..., description="The payload")
     
     agent_id: str = Field(..., description="The Agent who minted this")
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     signature: str = Field(..., description="Cryptographic signature")
     
     # Epistemic State
@@ -135,7 +135,7 @@ def claim_record_to_node(claim: ClaimRecord) -> Node:
     Convert a ClaimRecord into a generic Node suitable for EpistemicGraph.
     """
     # We need to handle timestamp conversion str -> datetime
-    ts = datetime.utcnow()
+    ts = datetime.now(timezone.utc)
     if claim.timestamp:
         try:
             ts = datetime.fromisoformat(claim.timestamp)

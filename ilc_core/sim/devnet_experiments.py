@@ -16,6 +16,10 @@ class DevnetExperimentSummary:
     avg_tasks_per_epoch: float
     avg_reward_per_task: float
     max_node_tasks: float
+    # Phase 64B: Backlog Metrics
+    mean_backlog_per_epoch: float = 0.0
+    max_backlog: float = 0.0
+    mean_backlog_ratio: float = 0.0
 
 def summarize_multi_epoch_run(
     label: str,
@@ -48,6 +52,18 @@ def summarize_multi_epoch_run(
     avg_tasks_per_epoch = total_tasks / max(num_epochs, 1) if num_epochs > 0 else 0.0
     avg_reward_per_task = (total_reward / total_tasks) if total_tasks > 0 else 0.0
     
+    # Phase 64B: Backlog Aggregation
+    backlogs = [float(er.backlog_count) for er in multi.epoch_results]
+    # Ratio = backlog / max(1, suggestions). Note: suggestions = backlog + executed.
+    ratios = [
+        float(er.backlog_count) / max(1.0, float(er.num_suggestions)) 
+        for er in multi.epoch_results
+    ]
+    
+    mean_backlog = sum(backlogs) / max(num_epochs, 1) if num_epochs > 0 else 0.0
+    max_backlog_val = max(backlogs) if backlogs else 0.0
+    mean_ratio = sum(ratios) / max(num_epochs, 1) if num_epochs > 0 else 0.0
+
     return DevnetExperimentSummary(
         label=label,
         namespace_id=ns_id,
@@ -57,6 +73,9 @@ def summarize_multi_epoch_run(
         avg_tasks_per_epoch=avg_tasks_per_epoch,
         avg_reward_per_task=avg_reward_per_task,
         max_node_tasks=max_node_tasks,
+        mean_backlog_per_epoch=mean_backlog,
+        max_backlog=max_backlog_val,
+        mean_backlog_ratio=mean_ratio,
     )
 
 def export_experiment_summaries_to_csv(
@@ -79,7 +98,9 @@ def export_experiment_summaries_to_csv(
         "label", "namespace_id", "num_epochs", 
         "total_tasks", "total_reward", 
         "avg_tasks_per_epoch", "avg_reward_per_task", 
-        "max_node_tasks"
+        "max_node_tasks",
+        # Phase 64B
+        "mean_backlog_per_epoch", "max_backlog", "mean_backlog_ratio"
     ]
     
     rows = [asdict(s) for s in summaries]

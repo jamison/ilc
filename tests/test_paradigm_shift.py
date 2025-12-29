@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
@@ -16,7 +16,7 @@ def test_paradigm_dynamics():
     
     # 1. Create Nodes
     # "Ancient Dogma" - Created 10,000 ticks ago
-    old_time = datetime.utcnow() - timedelta(seconds=10000)
+    old_time = datetime.now(timezone.utc) - timedelta(seconds=10000)
     old_node = Node(
         id="", type="claim", content="Earth is Flat", 
         agent_id="agent:ancient", signature="sig", timestamp=old_time,

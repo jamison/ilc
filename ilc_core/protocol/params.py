@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any, Dict
 import json
 from pathlib import Path
 from os import PathLike
@@ -23,16 +23,121 @@ class ProtocolParams:
     burn_rate: float = 0.0
     pb_rate: float = 0.0
 
+    # Phase 63C: Closed-loop knobs
+    base_reward: float = 1.0
+    qa_min_score: float = 0.0
+    toll_per_task: float = 0.0
+    competence_kappa: float = 1.0  # Power law exponent for score->reward (was kappa)
+    competence_mult_enabled: bool = False
+    competence_mult_min_floor: float = 1.0
+    competence_mult_max_cap: float = 1.0
+    qa_enabled: bool = True # Canonical field for QA toggle if needed, or implicit via min_score? 
+                            # User mentioned "qa_enabled" -> "qa_enabled" in requirements.
+                            # I will add it if it creates no conflict, but verify if `qa_enabled` was in original? 
+                            # Original did NOT have qa_enabled. User asked to map "qa_enabled" -> "qa_enabled".
+                            # I'll stick to what was there unless instructed to add. 
+                            # Wait, "qa_enabled stays qa_enabled (canonical already)" suggests it SHOULD be there.
+                            # But Step 7190 view shows NO qa_enabled.
+                            # I will ADD `qa_enabled: bool = True` to be safe and match user implication.
+
+    # Re-adding `qa_enabled` to match user request "legacy override normalization" implication.
+    # Note: Logic usually checks `qa_min_score` directly, but `qa_enabled` might be a gate?
+    # I'll add it.
+    qa_enabled: bool = True
+
+def parse_bool(value: Any, default: bool = False) -> bool:
+    """
+    Robust boolean parser.
+    Handles None, bool, int, float, and strings like "true"/"false"/"0", etc.
+    """
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        v_lower = value.strip().lower()
+        if v_lower in ("true", "1", "yes", "y", "on"):
+            return True
+        if v_lower in ("false", "0", "no", "n", "off", ""):
+            return False
+        # Fallback
+        return default
+    return default
+
+def normalize_protocol_overrides(raw: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Normalize legacy parameter keys to canonical fields and coerce types.
+    """
+    normalized = {}
+    
+    # Mappings: legacy -> canonical
+    # canonical -> canonical (identity) is implicit if we iterate raw and don't match legacy
+    # But we want to handle type coercion too.
+    
+    # Explicit mapping for renames
+    key_map = {
+        "ce_enabled": "competence_mult_enabled",
+        "ce_min_floor": "competence_mult_min_floor",
+        "ce_max_cap": "competence_mult_max_cap",
+        "toll": "toll_per_task",
+        "kappa": "competence_kappa",
+        "qa": "qa_min_score",
+        # Keep canonicals too just in case we need to explicit map them? 
+        # No, we'll handle pass-through.
+    }
+    
+    # Fields that need specific type coercion
+    bool_fields = {"competence_mult_enabled", "qa_enabled"}
+    float_fields = {
+        "toll_per_task", "competence_kappa", "qa_min_score", 
+        "base_reward", "burn_rate", "pb_rate",
+        "competence_mult_min_floor", "competence_mult_max_cap",
+        "weight_supports", "weight_refutes", "weight_equivalent", "weight_depends_on"
+    }
+    
+    for k, v in raw.items():
+        # 1. Map Keys
+        canonical_k = key_map.get(k, k)
+        
+        # 2. Map Values / Coerce
+        if canonical_k in bool_fields:
+            normalized[canonical_k] = parse_bool(v, default=False) # Default False is safer? Or context dependent?
+            # parse_bool handles None->default. 
+            # If v comes from JSON "false", parse_bool handles it.
+            # If v matches default, it's fine.
+            # SPECIAL CASE: qa_enabled default True? 
+            # parse_bool signature takes default.
+            # We can checks specific defaults here or just let parse_bool standard default (False) apply if garbage.
+            if canonical_k == "qa_enabled" and v is None:
+                 normalized[canonical_k] = True # Default True for QA?
+            elif canonical_k == "qa_enabled":
+                 normalized[canonical_k] = parse_bool(v, default=True) # Bias towards enabled?
+            else:
+                 normalized[canonical_k] = parse_bool(v, default=False)
+
+        elif canonical_k in float_fields:
+            try:
+                normalized[canonical_k] = float(v)
+            except (ValueError, TypeError):
+                # keep raw if coercion fails? Or drop/warning?
+                # User said "cast to float if not None". 
+                if v is not None:
+                     # Log warning? We are inside a pure function. 
+                     # Just keep raw or set to 0.0?
+                     # Let's keep raw, validation downstream (dataclass init) might catch it validly or crash.
+                     normalized[canonical_k] = v
+        else:
+            # Pass through string fields or unknowns
+            normalized[canonical_k] = v
+            
+    return normalized
+
 def load_protocol_params(path: Optional[PathLike] = None) -> ProtocolParams:
     """
     Load ProtocolParams from a JSON file if provided; otherwise return defaults.
-
-    Expected JSON structure:
-        {
-            "local_influence_algorithm_id": "...",
-            "weight_supports": 1.0,
-            ...
-        }
+    Uses normalization to handle legacy keys and safe parsing.
     """
     if path is None:
         return ProtocolParams()
@@ -44,6 +149,15 @@ def load_protocol_params(path: Optional[PathLike] = None) -> ProtocolParams:
     with p.open("r", encoding="utf-8") as f:
         data = json.load(f)
 
+    # Normalize
+    data = normalize_protocol_overrides(data)
+
+    # Construct. defaults are handled by dataclass if missing from dict.
+    # Note: data coming from normalize_protocol_overrides has canonical keys and coerced types.
+    # We can perform a dict unpack with filter? 
+    # Or explicitly map like before (safer for MVP expliciteness).
+    
+    # We can use fields() or explicit args. Explicit is robust.
     return ProtocolParams(
         local_influence_algorithm_id=data.get(
             "local_influence_algorithm_id",
@@ -55,4 +169,14 @@ def load_protocol_params(path: Optional[PathLike] = None) -> ProtocolParams:
         weight_depends_on=float(data.get("weight_depends_on", 0.0)),
         burn_rate=float(data.get("burn_rate", 0.0)),
         pb_rate=float(data.get("pb_rate", 0.0)),
+        base_reward=float(data.get("base_reward", 1.0)),
+        qa_min_score=float(data.get("qa_min_score", 0.0)),
+        toll_per_task=float(data.get("toll_per_task", 0.0)),
+        competence_kappa=float(data.get("competence_kappa", 1.0)), # Renamed
+        
+        competence_mult_enabled=parse_bool(data.get("competence_mult_enabled", False)),
+        competence_mult_min_floor=float(data.get("competence_mult_min_floor", 1.0)),
+        competence_mult_max_cap=float(data.get("competence_mult_max_cap", 1.0)),
+        
+        qa_enabled=parse_bool(data.get("qa_enabled", True), default=True),
     )

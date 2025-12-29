@@ -178,3 +178,126 @@ def summarize_fairness(
         top10_share = sum(top_slice) / total_payout
         
     return gini, corr, top10_share
+
+def apply_pb_farming_and_gating(
+    base_payouts: Dict[str, float],
+    pb_agent_ids: Sequence[str],
+    pb_intensity: float,
+    gating_mode: str,
+    gestation_epochs: int,
+) -> Dict[str, float]:
+    """
+    Simulate Principal/Bounty (PB) farming boosts and subsequent subjective gating.
+
+    1. PB Boost: Agents in pb_agent_ids get scaled by (1 + pb_intensity).
+       We preserve total reward by scaling down non-PB agents if extra value is minted.
+    2. Gating:
+       - "none": PB boost is fully realized.
+       - "soft": PB boost is dampened by gestation_epochs (1 / (1 + gest * intensity)).
+       - "strict": PB boost is completely removed, reverting PB agents to base reward.
+    3. Renormalization: Ensure total sum equals sum(base_payouts).
+
+    Args:
+        base_payouts: Baseline rewards from simulation.
+        pb_agent_ids: List of agents acting as "PB farmers".
+        pb_intensity: Strength of the PB mechanism (0.0 to 1.0+).
+        gating_mode: "none", "soft", or "strict".
+        gestation_epochs: Severity of the gating hysteresis.
+
+    Returns:
+        New payout dictionary with gating applied.
+    """
+    if gating_mode not in ("none", "soft", "strict"):
+        raise ValueError(f"Unknown gating_mode: {gating_mode}")
+        
+    total_base = sum(base_payouts.values())
+    pb_set = set(pb_agent_ids)
+    
+    # 1. PB Boost & Conservation
+    pb_boosted = {}
+    
+    # Naive boost
+    for aid, val in base_payouts.items():
+        if aid in pb_set:
+            pb_boosted[aid] = val * (1.0 + pb_intensity)
+        else:
+            pb_boosted[aid] = val
+            
+    # Calculate extra minted
+    extra = sum(pb_boosted[a] - base_payouts.get(a, 0.0) for a in base_payouts if a in pb_set)
+    pool_others = sum(base_payouts[a] for a in base_payouts if a not in pb_set)
+    
+    # Scale down others if needed to roughly conserve pie BEFORE gating (optional, but good for isolation)
+    # The prompt implies: "If pool_others > 0 and extra > 0, scale non-PB payouts down"
+    if pool_others > 1e-9 and extra > 0:
+        scale_others = max(0.0, 1.0 - extra / pool_others)
+        for aid, val in base_payouts.items():
+            if aid not in pb_set:
+                pb_boosted[aid] = val * scale_others
+                
+    # 2. Apply Gating
+    gated = {}
+    
+    # Precompute soft factor
+    # f decreases as gestation increases
+    soft_denom = 1.0 + max(0, gestation_epochs) * max(0.0, pb_intensity)
+    soft_factor = 1.0 / soft_denom
+    
+    for aid in base_payouts.keys(): # Iterate original keys to ensure stability
+        # Note: we use base_payouts keys. If pb_boosted has keys not in base (not possible by logic above), ignored.
+        
+        val_boosted = pb_boosted.get(aid, 0.0)
+        base_val = base_payouts.get(aid, 0.0)
+        
+        if gating_mode == "none":
+            gated[aid] = val_boosted
+            
+        elif gating_mode == "soft":
+            if aid in pb_set:
+                uplift = max(0.0, val_boosted - base_val)
+                gated[aid] = base_val + uplift * soft_factor
+            else:
+                gated[aid] = val_boosted
+                
+        elif gating_mode == "strict":
+            if aid in pb_set:
+                gated[aid] = base_val # Revert boost completely
+            else:
+                gated[aid] = val_boosted
+                
+        # Clamp negative guard
+        gated[aid] = max(0.0, gated.get(aid, 0.0))
+
+    # 3. Final Renormalization
+    # We want to match total_base exactly to allow fair apples-to-apples Gini comparison
+    sum_gated = sum(gated.values())
+    if sum_gated > 1e-9 and total_base > 1e-9:
+        scale = total_base / sum_gated
+        for k in gated:
+            gated[k] *= scale
+            
+    return gated
+
+import numpy as np
+
+def compute_group_roi_ratio(
+    payouts: Dict[str, float], 
+    pb_agent_ids: Sequence[str]
+) -> Tuple[float, float, float]:
+    """
+    Compute ratio of average rewards: PB-Group / Honest-Group.
+    
+    Returns:
+        (pb_mean, honest_mean, ratio)
+    """
+    pb_ids = set(pb_agent_ids)
+    
+    # Filter only agents present in payouts
+    pb_vals = [payouts[a] for a in payouts if a in pb_ids]
+    honest_vals = [payouts[a] for a in payouts if a not in pb_ids]
+    
+    pb_mean = float(np.mean(pb_vals)) if pb_vals else 0.0
+    honest_mean = float(np.mean(honest_vals)) if honest_vals else 0.0
+    
+    ratio = pb_mean / honest_mean if honest_mean > 1e-9 else 0.0
+    return pb_mean, honest_mean, ratio

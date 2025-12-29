@@ -9,6 +9,7 @@ from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.analysis.task_routing_suggestions import TaskRoutingSuggestion
 from ilc_core.network.topology import DevnetTopology, NodeConfig, NodeRole
+from ilc_core.protocol.params import ProtocolParams
 
 @pytest.fixture
 def mock_topology():
@@ -89,7 +90,8 @@ def test_materialize_basic(mock_topology, mock_profiles, mock_snapshot):
     assert row.namespace_id == "ns1"
     assert row.regime == "medium" # 0.5 stress
     assert row.success is True    # score 0.8 >= 0.5
-    assert row.reward > 1.0       # base=1.0, score=0.8 -> > 1.0
+    # Old logic: > 1.0. New logic: base(1.0) * 0.8^1 = 0.8
+    assert row.reward == 0.8
 
 def test_materialize_regimes(mock_topology, mock_profiles, mock_snapshot):
     # Test Low Stress
@@ -152,7 +154,7 @@ def test_reward_and_success_logic(mock_topology, mock_profiles, mock_snapshot):
     
     rows = materialize_routed_tasks_for_epoch(
         1, mock_snapshot, mock_profiles, {"a1": [bad_sugg, good_sugg]}, mock_topology,
-        base_reward=10.0
+        protocol_params=ProtocolParams(base_reward=10.0)
     )
     
     assert len(rows) == 2
@@ -161,10 +163,12 @@ def test_reward_and_success_logic(mock_topology, mock_profiles, mock_snapshot):
     
     assert r_bad.success is False
     assert r_bad.reward > 0
-    assert r_bad.reward == 10.0 * (1.0 + 0.1 * 0.1) # 10 * 1.01 = 10.1
+    # New logic: 10.0 * (0.1^1) = 1.0
+    assert abs(r_bad.reward - 1.0) < 1e-6
     
     assert r_good.success is True
-    assert r_good.reward == 10.0 * (1.0 + 0.1 * 1.0) # 10 * 1.1 = 11.0
+    # New logic: 10.0 * (1.0^1) = 10.0
+    assert abs(r_good.reward - 10.0) < 1e-6
 
 def test_dict_conversion(mock_topology, mock_profiles, mock_snapshot):
     sugg = TaskRoutingSuggestion(
