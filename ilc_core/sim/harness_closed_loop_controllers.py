@@ -1,144 +1,167 @@
-from dataclasses import dataclass
-from typing import List, Callable, Optional, Dict
-import math
+from __future__ import annotations
+
+from dataclasses import dataclass, replace
+from pathlib import Path
+from typing import Callable, Optional, List, Dict, Tuple
+
+import csv
 
 from ilc_core.sim.devnet_scenarios import (
     DevnetScenarioConfig,
     build_topology_and_profiles,
-    build_snapshots_for_scenario
 )
-from ilc_core.sim.devnet_multi_epoch import run_devnet_multi_epoch
-from ilc_core.sim.devnet_experiments import summarize_multi_epoch_run
+from ilc_core.sim.devnet_epoch_orchestrator import run_devnet_epoch
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
+from ilc_core.protocol.params import ProtocolParams
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.network.topology import DevnetTopology
-from ilc_core.protocol.params import ProtocolParams
 
-@dataclass
-@dataclass
-class ClosedLoopRunConfig:
-    label: str
-    num_epochs: int
-    scenario: DevnetScenarioConfig
-    initial_params: Optional[ProtocolParams] = None
-    # Phase 65B: Dependency Injection for topology builder (prevents global patching)
-    topology_builder_fn: Optional[Callable[[DevnetScenarioConfig], tuple[DevnetTopology, Dict[str, AgentProfile]]]] = None
-
-@dataclass
+@dataclass(frozen=True)
 class ClosedLoopEpochMetrics:
     epoch_index: int
-    total_tasks: float
+    total_tasks: int
+    backlog_proxy: int
     total_reward: float
     avg_reward_per_task: float
-    backlog_proxy: float  # Placeholder for now
+    # Optional but useful: total_suggestions = executed + backlog_proxy by default.
+    total_suggestions: Optional[int] = None
+
+# Functional controller: MUST return a new ProtocolParams instance.
+ClosedLoopControllerFn = Callable[[int, ClosedLoopEpochMetrics, "ProtocolParams"], "ProtocolParams"]
+
+@dataclass
+class ClosedLoopRunConfig:
+    scenario: "DevnetScenarioConfig"
+    initial_params: "ProtocolParams"
+    num_epochs: int
+    label: str = "phase_65b"
+
+    # Option 1: pass builder explicitly (NO monkeypatching)
+    topology_builder_fn: Optional[
+        Callable[["DevnetScenarioConfig", int], Tuple["DevnetTopology", Dict[str, "AgentProfile"]]]
+    ] = None
 
 def run_closed_loop_devnet(
     config: ClosedLoopRunConfig,
-    # Phase 65B: Controller returns new params (Functional Style) or None (if no change)
-    controller_step: Callable[[int, ClosedLoopEpochMetrics, ProtocolParams], Optional[ProtocolParams]],
-    rng_seed: Optional[int] = None,
+    controller_step: ClosedLoopControllerFn,
+    rng_seed: int = 0,
 ) -> List[ClosedLoopEpochMetrics]:
     """
-    Run a devnet simulation epoch-by-epoch, invoking a controller step
-    after each epoch to allow parameter adjustment.
+    Run a closed-loop devnet simulation for config.num_epochs.
+    Controller is functional: returns new ProtocolParams each epoch.
+    Topology/profiles are built once (deterministic) via topology_builder_fn if provided.
+    Writes CSV history into out/<label>/backlog_control_history.csv
     """
-    metrics_history: List[ClosedLoopEpochMetrics] = []
-    
-    # Build initial state
-    # Phase 65B: Use injected builder if provided, else default
-    if config.topology_builder_fn:
-        topo, profiles = config.topology_builder_fn(config.scenario)
-    else:
-        # We build topology/profiles once (assuming static network for MVP closed loop)
-        topo, profiles = build_topology_and_profiles(config.scenario)
-    
-    # Initialize params
-    current_params = config.initial_params or ProtocolParams()
-    
-    # We will derive stress from scenario schedule if available, or just reuse last value?
-    # For MVP, let's assume scenario.stress_schedule has at least 'num_epochs' entries
-    # OR replicate the last one if we run out.
-    base_schedule = config.scenario.stress_schedule
-    
-    for i in range(config.num_epochs):
-        epoch_idx = i + 1
+    out_dir = Path("out") / config.label
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "backlog_control_history.csv"
+
+    # Build topology/profiles once (stationary environment unless scenario itself changes internally)
+    builder = config.topology_builder_fn or build_topology_and_profiles
+    scenario_topology, scenario_profiles = builder(config.scenario, rng_seed)
+
+    current_params = config.initial_params
+    metrics_log: List[ClosedLoopEpochMetrics] = []
+    history_rows: list[dict] = []
+
+    for epoch_idx_zero in range(config.num_epochs):
+        epoch_idx = epoch_idx_zero + 1 # 1-based for events/snapshots
         
-        # Derive seed for this epoch
-        run_seed = None
-        if rng_seed is not None:
-            # Simple stable derivation
-            run_seed = rng_seed + epoch_idx
-        
-        # 1. Determine Stress for this epoch
-        if i < len(base_schedule):
-            stress_val = base_schedule[i]
+        # 1. Determine Stress from Schedule
+        sched = config.scenario.stress_schedule
+        if epoch_idx_zero < len(sched):
+            stress_val = sched[epoch_idx_zero]
         else:
-            stress_val = base_schedule[-1] if base_schedule else 0.5
-            
-        # 2. Build ONE snapshot for this single epoch
-        # (We use correct epoch index)
-        # We reuse the logic from build_snapshots_for_scenario but just for one point
-        # A bit hacky: create a temporary config with 1-item schedule to use builder?
-        # Or just instantiate manually like the builder does.
-        # Let's instantiate manually to avoid overhead/confusion.
-        
-        # Need defaults constants? They are in devnet_scenarios but not exported publicly
-        # in a clean way except via build_snapshots. 
-        # Actually, let's just make a mini config for this epoch to reuse builder consistency.
-        mini_config = DevnetScenarioConfig(
-            label=f"{config.label}_epoch_{epoch_idx}",
-            stress_schedule=[stress_val],
+            stress_val = sched[-1] if sched else 0.5
+
+        # 2. Build Snapshot for this epoch
+        # We need a minimal snapshot to drive routing
+        snapshot = NamespaceHealthSnapshot(
             namespace_id=config.scenario.namespace_id,
-            num_agents=config.scenario.num_agents,
-            topology_kind=config.scenario.topology_kind,
-            center_id=config.scenario.center_id,
-            worker_ids=config.scenario.worker_ids
+            total_stress=float(stress_val),
+            epoch_index=epoch_idx,
+            # Defaults
+            cohesion_score=0.8,
+            contradiction_overflow=0.0,
+            validation_depth_error=0.0,
+            mean_abs_influence=0.5,
+            crosslink_deficit=0.0,
+            support_ratio=0.9,
+            controversy_ratio=0.1
         )
-        
-        one_epoch_snapshots = build_snapshots_for_scenario(mini_config)
-        # Fixup epoch index in the generated snapshot (builder starts at 1)
-        # But wait, run_devnet_multi_epoch expects snapshots.
-        # If we pass a list of 1 snapshot, it will run 1 epoch.
-        # But we want the epoch_index to be correct (i+1). 
-        # build_snapshots_for_scenario(mini_config) will use index 0 -> epoch 1.
-        # If we are at i=5 (epoch 6), we need to fix it.
-        one_epoch_snapshots[0].epoch_index = epoch_idx
-        
-        # 3. Run ONE epoch
-        # (We pass the existing topo/profiles)
-        multi_result = run_devnet_multi_epoch(
-            topology=topo,
-            snapshots=one_epoch_snapshots,
-            profiles=profiles,
-            export_root=None,
-            rng_seed=run_seed,
-            protocol_params=current_params
+
+        # Run epoch
+        epoch_result = run_devnet_epoch(
+            epoch_index=epoch_idx,
+            topology=scenario_topology,
+            namespace_snapshot=snapshot,
+            profiles=scenario_profiles,
+            protocol_params=current_params,
+            # No rng_seed supported in run_devnet_epoch currently
         )
+
+        executed = int(epoch_result.num_executed)
+        backlog = int(epoch_result.backlog_count)
+        # Check if suggestion_count exists, otherwise infer
+        suggestions = getattr(epoch_result, "num_suggestions", None)
+
+        # Compute metrics from node_load_metrics
+        # node_load_metrics is Dict[node_id, Dict[str, float]]
+        # e.g. {"w1": {"num_tasks": 10, "total_reward": 5.5, ...}}
+        epoch_total_reward = sum(load.get("total_reward", 0.0) for load in epoch_result.node_load_metrics.values())
         
-        # 4. Computing Metrics
-        # We can use summarize_multi_epoch_run on this 1-epoch result
-        summary = summarize_multi_epoch_run(
-            label=f"epoch_{epoch_idx}",
-            multi=multi_result
-        )
-        
-        # 5. Build Metric Object
-        # Extract the single epoch result
-        epoch_res = multi_result.epoch_results[0]
-        
+        if executed > 0:
+            avg_reward = epoch_total_reward / executed
+        else:
+            avg_reward = 0.0
+
         m = ClosedLoopEpochMetrics(
             epoch_index=epoch_idx,
-            total_tasks=summary.total_tasks,
-            total_reward=summary.total_reward,
-            avg_reward_per_task=summary.avg_reward_per_task,
-            backlog_proxy=float(epoch_res.backlog_count) # Phase 64A: Real Backlog
+            total_tasks=executed,
+            backlog_proxy=backlog,
+            total_reward=float(epoch_total_reward),
+            avg_reward_per_task=float(avg_reward),
+            total_suggestions=int(suggestions) if suggestions is not None else (executed + backlog),
         )
-        metrics_history.append(m)
-        
-        # 6. Controller Hook
-        # Phase 65B: Functional Semantics
+        metrics_log.append(m)
+
+        # Controller step MUST return a new params object
         new_params = controller_step(epoch_idx, m, current_params)
-        if new_params is not None:
-             current_params = new_params
-        
-    return metrics_history
+        if not isinstance(new_params, type(current_params)):
+            raise TypeError(
+                f"controller_step must return ProtocolParams, got: {type(new_params)}"
+            )
+        current_params = new_params
+
+        total_sugg = m.total_suggestions if m.total_suggestions is not None else (executed + backlog)
+        backlog_ratio = backlog / max(1, total_sugg)
+
+        history_rows.append(
+            {
+                "epoch": epoch_idx,
+                "qa_min_score": float(current_params.qa_min_score),
+                "executed_tasks": executed,
+                "backlog_count": backlog,
+                "total_suggestions": total_sugg,
+                "backlog_ratio": float(backlog_ratio),
+                "avg_reward_per_task": float(m.avg_reward_per_task),
+            }
+        )
+
+    # Write CSV
+    fieldnames = [
+        "epoch",
+        "qa_min_score",
+        "executed_tasks",
+        "backlog_count",
+        "total_suggestions",
+        "backlog_ratio",
+        "avg_reward_per_task",
+    ]
+    with out_path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames)
+        w.writeheader()
+        for row in history_rows:
+            w.writerow(row)
+
+    return metrics_log
