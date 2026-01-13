@@ -8,7 +8,8 @@ from ilc_core.protocol.params import ProtocolParams
 
 
 def test_controller_directionality_and_no_mutation():
-    controller = sim.make_backlog_controller(target_backlog_ratio=0.30)
+    # Use no smoothing (alpha=1.0) and no deadband (0.0) to test raw PI directionality
+    controller = sim.make_backlog_controller(target_backlog_ratio=0.30, smoothing_alpha=1.0, deadband=0.0)
 
     start = ProtocolParams(qa_enabled=True, qa_min_score=0.90)
 
@@ -62,5 +63,8 @@ def test_sim_creates_phase_65b_history_csv(tmp_path, monkeypatch):
         rows = list(csv.DictReader(f))
 
     assert len(rows) == 3
-    assert "qa_min_score" in rows[0]
+    # Phase 65C: New CSV columns are qa_used, qa_next, delta_qa
+    assert "qa_used" in rows[0]
+    assert "qa_next" in rows[0]
+    assert "delta_qa" in rows[0]
     assert "backlog_ratio" in rows[0]

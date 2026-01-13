@@ -91,9 +91,10 @@ def test_closed_loop_integration_runs():
         initial_params=params
     )
     
+    from dataclasses import replace
     def dummy_controller(idx, metrics, p):
-        # Mutate params
-        p.base_reward += 1.0
+        # Functional controller: return new params (no mutation)
+        return replace(p, base_reward=p.base_reward + 1.0)
         
     history = run_closed_loop_devnet(cfg, dummy_controller, rng_seed=123)
     

@@ -90,8 +90,8 @@ def materialize_routed_tasks_for_epoch(
             # Safety clamp: score must be in [0.0, 1.0]
             score = min(1.0, max(0.0, float(sugg.score)))
             
-            # 1. QA Gating
-            if score < params.qa_min_score:
+            # 1. QA Gating (respects qa_enabled toggle)
+            if params.qa_enabled and score < params.qa_min_score:
                 continue
 
             # 2. Reward Calculation

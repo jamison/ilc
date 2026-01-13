@@ -58,7 +58,7 @@ def test_closed_loop_metrics_have_backlog():
     )
     
     def noop_ctrl(idx, m, p):
-        pass
+        return p  # Functional controller: return unchanged params
         
     history = run_closed_loop_devnet(cfg, noop_ctrl, rng_seed=123)
     
@@ -70,4 +70,4 @@ def test_closed_loop_metrics_have_backlog():
         # Given param setting, we expect SOME drops
         # But asserting >0 is flaky if random generator yields perfect scores.
         # Just assert type correctness.
-        assert isinstance(m.backlog_proxy, float)
+        assert isinstance(m.backlog_proxy, int)

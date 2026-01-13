@@ -67,6 +67,9 @@ def run_closed_loop_devnet(
     for epoch_idx_zero in range(config.num_epochs):
         epoch_idx = epoch_idx_zero + 1 # 1-based for events/snapshots
         
+        # Store qa_used BEFORE running this epoch
+        qa_used = current_params.qa_min_score
+        
         # 1. Determine Stress from Schedule
         sched = config.scenario.stress_schedule
         if epoch_idx_zero < len(sched):
@@ -90,7 +93,7 @@ def run_closed_loop_devnet(
             controversy_ratio=0.1
         )
 
-        # Run epoch
+        # Run epoch with current_params (which has qa_used)
         epoch_result = run_devnet_epoch(
             epoch_index=epoch_idx,
             topology=scenario_topology,
@@ -131,6 +134,12 @@ def run_closed_loop_devnet(
             raise TypeError(
                 f"controller_step must return ProtocolParams, got: {type(new_params)}"
             )
+        
+        # Compute qa_next and delta AFTER controller returned
+        qa_next = new_params.qa_min_score
+        delta_qa = qa_next - qa_used
+        
+        # Update current_params for next epoch
         current_params = new_params
 
         total_sugg = m.total_suggestions if m.total_suggestions is not None else (executed + backlog)
@@ -139,7 +148,9 @@ def run_closed_loop_devnet(
         history_rows.append(
             {
                 "epoch": epoch_idx,
-                "qa_min_score": float(current_params.qa_min_score),
+                "qa_used": float(qa_used),
+                "qa_next": float(qa_next),
+                "delta_qa": float(delta_qa),
                 "executed_tasks": executed,
                 "backlog_count": backlog,
                 "total_suggestions": total_sugg,
@@ -151,7 +162,9 @@ def run_closed_loop_devnet(
     # Write CSV
     fieldnames = [
         "epoch",
-        "qa_min_score",
+        "qa_used",
+        "qa_next",
+        "delta_qa",
         "executed_tasks",
         "backlog_count",
         "total_suggestions",

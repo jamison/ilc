@@ -116,11 +116,17 @@ def scenarios_from_config(config: Mapping[str, Any]) -> List[DevnetScenarioConfi
 
 def build_topology_and_profiles(
     scenario: DevnetScenarioConfig,
+    rng_seed: Optional[int] = None,
 ) -> Tuple[DevnetTopology, Dict[str, AgentProfile]]:
     """
     Construct topology and agent profiles for a given scenario.
 
     MVP: only supports a star topology (center_id + worker_ids).
+
+    Args:
+        scenario: Configuration for the devnet scenario.
+        rng_seed: Reserved for future deterministic topology generation.
+                  Currently ignored but accepted for API compatibility.
     """
     # 1. Topology
     if scenario.topology_kind != "star":

@@ -31,19 +31,7 @@ class ProtocolParams:
     competence_mult_enabled: bool = False
     competence_mult_min_floor: float = 1.0
     competence_mult_max_cap: float = 1.0
-    qa_enabled: bool = True # Canonical field for QA toggle if needed, or implicit via min_score? 
-                            # User mentioned "qa_enabled" -> "qa_enabled" in requirements.
-                            # I will add it if it creates no conflict, but verify if `qa_enabled` was in original? 
-                            # Original did NOT have qa_enabled. User asked to map "qa_enabled" -> "qa_enabled".
-                            # I'll stick to what was there unless instructed to add. 
-                            # Wait, "qa_enabled stays qa_enabled (canonical already)" suggests it SHOULD be there.
-                            # But Step 7190 view shows NO qa_enabled.
-                            # I will ADD `qa_enabled: bool = True` to be safe and match user implication.
-
-    # Re-adding `qa_enabled` to match user request "legacy override normalization" implication.
-    # Note: Logic usually checks `qa_min_score` directly, but `qa_enabled` might be a gate?
-    # I'll add it.
-    qa_enabled: bool = True
+    qa_enabled: bool = True  # Toggle for QA filtering. If False, all suggestions pass.
 
 def parse_bool(value: Any, default: bool = False) -> bool:
     """
