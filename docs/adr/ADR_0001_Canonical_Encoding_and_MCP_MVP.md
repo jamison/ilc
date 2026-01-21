@@ -91,3 +91,18 @@ NDJSON MUST NOT be used as the canonical commitment bytes for NodeID/signatures.
 - Attestation tests: COSE blocks verify against referenced DAG-CBOR bytes and/or referenced CIDs.
 - MCP contract tests: tool input/output validate against JSON Schemas.
 
+## Implementation
+
+**Phase 66A** implemented the core encoding primitives:
+
+| Component | Module |
+|-----------|--------|
+| DAG-CBOR encoder/decoder | `ilc_core/encoding/dag_cbor.py` |
+| CIDv1 NodeID generation | `ilc_core/encoding/cidv1.py` |
+| Unsigned varint (multiformat) | `ilc_core/encoding/varint.py` |
+
+Public API exports from `ilc_core.encoding`:
+- `encode_dag_cbor(obj)` - Encode Python object to deterministic DAG-CBOR bytes
+- `decode_dag_cbor(data)` - Decode DAG-CBOR bytes to Python object
+- `node_id_from_obj(obj)` - Generate CIDv1 NodeID string from object
+- `parse_cidv1(cid_str)` - Parse CID components (version, codec, multihash)
