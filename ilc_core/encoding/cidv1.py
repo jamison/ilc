@@ -227,10 +227,11 @@ def node_id_from_obj(obj: Any) -> str:
         
     Raises:
         TypeError: If obj contains unsupported types for DAG-CBOR.
-        ValueError: If integers are out of range or keys are not str.
+        ValueError: If integers are out of range, keys are not str, or
+                    contains unsupported types (set, frozenset).
     """
-    from .dag_cbor import validate_ilc_object_keys_str_only
-    validate_ilc_object_keys_str_only(obj)
+    from .dag_cbor import validate_ilc_object_encodable
+    validate_ilc_object_encodable(obj)
     dag_bytes = encode_dag_cbor(obj)
     mh = sha2_256_multihash(dag_bytes)
     cid_bytes = cidv1_bytes(CODEC_DAG_CBOR, mh)
@@ -242,6 +243,7 @@ def validate_nodeid_obj(obj: Any) -> None:
     
     This enforces all ILC NodeID object invariants:
     - All map keys must be str (not bytes)
+    - No unsupported container types (set, frozenset)
     - All values must be DAG-CBOR encodable
     
     Args:
@@ -251,7 +253,6 @@ def validate_nodeid_obj(obj: Any) -> None:
         ValueError: If object violates NodeID invariants.
         TypeError: If object contains unsupported types.
     """
-    from .dag_cbor import validate_ilc_object_keys_str_only
-    validate_ilc_object_keys_str_only(obj)
-    # Validate it can be encoded (catches type errors)
-    encode_dag_cbor(obj)
+    from .dag_cbor import validate_ilc_object_encodable
+    validate_ilc_object_encodable(obj)
+

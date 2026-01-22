@@ -321,7 +321,7 @@ def _validate_keys_str_only_recursive(obj: Any, path: str) -> None:
                     f"ILC object map keys must be str, got {type(key).__name__} "
                     f"at path {path}.{key!r}"
                 )
-            child_path = f"{path}.{key}" if path else f"$.{key}"
+            child_path = f"{path}.{key}"
             _validate_keys_str_only_recursive(value, child_path)
     elif isinstance(obj, (list, tuple)):
         for i, item in enumerate(obj):
@@ -349,6 +349,58 @@ def is_ilc_object_keys_str_only(obj: Any) -> bool:
     """Return True if all map keys in obj are str."""
     try:
         validate_ilc_object_keys_str_only(obj)
+    except ValueError:
+        return False
+    return True
+
+
+def _validate_encodable_recursive(obj: Any, path: str) -> None:
+    """Recursive helper for validate_ilc_object_encodable."""
+    # Check for unsupported container types first
+    if isinstance(obj, (set, frozenset)):
+        type_name = type(obj).__name__
+        raise ValueError(
+            f"Unsupported type {type_name} at path \"{path}\" "
+            f"({type_name}s are not DAG-CBOR encodable; use list)"
+        )
+    
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if not isinstance(key, str):
+                raise ValueError(
+                    f"ILC object map keys must be str, got {type(key).__name__} "
+                    f"at path {path}.{key!r}"
+                )
+            child_path = f"{path}.{key}"
+            _validate_encodable_recursive(value, child_path)
+    elif isinstance(obj, (list, tuple)):
+        for i, item in enumerate(obj):
+            child_path = f"{path}[{i}]"
+            _validate_encodable_recursive(item, child_path)
+    # Primitives (int, bool, None, str, bytes) are all encodable
+
+
+def validate_ilc_object_encodable(obj: Any) -> None:
+    """Validate that an object can be encoded to ILC DAG-CBOR.
+    
+    This provides early, friendly errors for unsupported types before
+    the encoder is invoked. Catches:
+    - Non-str map keys (bytes keys rejected)
+    - Unsupported container types (set, frozenset)
+    
+    Args:
+        obj: Python object to validate.
+        
+    Raises:
+        ValueError: If object contains unsupported types, with path.
+    """
+    _validate_encodable_recursive(obj, "$")
+
+
+def is_ilc_object_encodable(obj: Any) -> bool:
+    """Return True if object can be encoded to ILC DAG-CBOR."""
+    try:
+        validate_ilc_object_encodable(obj)
     except ValueError:
         return False
     return True

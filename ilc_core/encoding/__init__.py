@@ -14,6 +14,8 @@ from .dag_cbor import (
     decode_dag_cbor_strict,
     validate_ilc_object_keys_str_only,
     is_ilc_object_keys_str_only,
+    validate_ilc_object_encodable,
+    is_ilc_object_encodable,
     validate_canonical_ilc_dag_cbor,
     is_canonical_ilc_dag_cbor,
 )
@@ -29,6 +31,8 @@ __all__ = [
     "is_nodeid",
     "validate_ilc_object_keys_str_only",
     "is_ilc_object_keys_str_only",
+    "validate_ilc_object_encodable",
+    "is_ilc_object_encodable",
     "validate_canonical_ilc_dag_cbor",
     "is_canonical_ilc_dag_cbor",
 ]

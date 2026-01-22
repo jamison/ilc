@@ -13,6 +13,8 @@ import pytest
 from ilc_core.encoding.dag_cbor import (
     validate_ilc_object_keys_str_only,
     is_ilc_object_keys_str_only,
+    validate_ilc_object_encodable,
+    is_ilc_object_encodable,
     decode_dag_cbor_strict,
     decode_dag_cbor,
     encode_dag_cbor,
@@ -203,4 +205,60 @@ class TestTupleBypassPrevention:
         obj = [{"a": ({"b": [{b"c": 1}]},)}]
         with pytest.raises(ValueError, match="must be str"):
             validate_ilc_object_keys_str_only(obj)
+
+
+class TestUnsupportedTypesRejection:
+    """Tests for early rejection of unsupported container types."""
+
+    def test_set_at_root_rejected_with_path(self):
+        """Set at root is rejected with $ path."""
+        obj = {1, 2, 3}
+        with pytest.raises(ValueError, match=r'Unsupported type set at path "\$"'):
+            validate_ilc_object_encodable(obj)
+
+    def test_set_nested_in_list_rejected_with_path(self):
+        """Set nested in list shows correct path."""
+        obj = {"a": [1, {2, 3}]}
+        with pytest.raises(ValueError, match=r'at path "\$\.a\[1\]"'):
+            validate_ilc_object_encodable(obj)
+
+    def test_set_nested_in_tuple_rejected_with_path(self):
+        """Set nested in tuple shows correct path."""
+        obj = ({"a": 1}, {2, 3, 4})
+        with pytest.raises(ValueError, match=r'at path "\$\[1\]"'):
+            validate_ilc_object_encodable(obj)
+
+    def test_frozenset_nested_in_dict_rejected(self):
+        """Frozenset nested in dict is rejected."""
+        obj = {"a": {"b": frozenset([1, 2])}}
+        with pytest.raises(ValueError, match=r'Unsupported type frozenset'):
+            validate_ilc_object_encodable(obj)
+
+    def test_error_path_starts_with_dollar(self):
+        """Error path starts with $ for nested case."""
+        obj = {"level1": {"level2": {1, 2}}}
+        with pytest.raises(ValueError) as exc_info:
+            validate_ilc_object_encodable(obj)
+        assert '"$.' in str(exc_info.value)
+
+    def test_node_id_from_obj_rejects_set(self):
+        """node_id_from_obj rejects set in object."""
+        obj = {"data": {1, 2, 3}}
+        with pytest.raises(ValueError, match="Unsupported type set"):
+            node_id_from_obj(obj)
+
+    def test_node_id_from_obj_rejects_frozenset(self):
+        """node_id_from_obj rejects frozenset in object."""
+        obj = {"data": frozenset(["a", "b"])}
+        with pytest.raises(ValueError, match="Unsupported type frozenset"):
+            node_id_from_obj(obj)
+
+    def test_is_ilc_object_encodable_returns_false_for_set(self):
+        """is_ilc_object_encodable returns False for set."""
+        assert is_ilc_object_encodable({1, 2, 3}) is False
+
+    def test_is_ilc_object_encodable_returns_true_for_valid_object(self):
+        """is_ilc_object_encodable returns True for valid object."""
+        assert is_ilc_object_encodable({"a": [1, 2, 3]}) is True
+
 

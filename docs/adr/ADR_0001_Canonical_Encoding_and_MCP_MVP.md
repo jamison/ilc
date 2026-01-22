@@ -135,9 +135,20 @@ Forbidden:
 | `is_canonical_ilc_dag_cbor(data)` | Boolean helper |
 | `validate_nodeid_obj(obj)` | Pre-encode NodeID validator |
 
+**Phase 66A-FIX4** added encodability validation with friendly early errors:
+
+| Function | Purpose |
+|----------|---------|
+| `validate_ilc_object_encodable(obj)` | Rejects unsupported types (set/frozenset) with path |
+| `is_ilc_object_encodable(obj)` | Boolean helper |
+
+Unsupported types (set, frozenset) are rejected early with clear error messages including the path to the offending value (e.g., `Unsupported type set at path "$.a.b[2]"`).
+
 Public API exports from `ilc_core.encoding`:
 - `encode_dag_cbor(obj)` - Encode Python object to deterministic DAG-CBOR bytes
 - `decode_dag_cbor(data)` - Decode DAG-CBOR bytes (permissive, allows bytes keys)
 - `decode_dag_cbor_strict(data)` - Decode with str-only key enforcement
-- `node_id_from_obj(obj)` - Generate CIDv1 NodeID (enforces str-only keys)
+- `node_id_from_obj(obj)` - Generate CIDv1 NodeID (enforces str-only keys + encodability)
 - `parse_cidv1(cid_str)` - Parse CID components (version, codec, multihash)
+- `validate_ilc_object_encodable(obj)` - Pre-encode validation with friendly errors
+
