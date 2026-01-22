@@ -243,6 +243,8 @@ def _decode_value(data: bytes, offset: int) -> tuple[Any, int]:
             total_consumed += key_consumed
             if not isinstance(key, (str, bytes)):
                 raise ValueError(f"DAG-CBOR map key must be str or bytes, got {type(key)}")
+            if key in result:
+                raise ValueError(f"Duplicate map key: {key!r}")
             value, value_consumed = _decode_value(data, offset + total_consumed)
             total_consumed += value_consumed
             result[key] = value
@@ -286,3 +288,23 @@ def decode_dag_cbor(data: bytes) -> Any:
         )
     
     return value
+
+
+def validate_canonical_dag_cbor(data: bytes) -> None:
+    """Validate that DAG-CBOR bytes are in canonical form.
+
+    Canonical means decode -> re-encode yields identical bytes.
+    """
+    obj = decode_dag_cbor(data)
+    reencoded = encode_dag_cbor(obj)
+    if reencoded != data:
+        raise ValueError("Non-canonical DAG-CBOR bytes")
+
+
+def is_canonical_dag_cbor(data: bytes) -> bool:
+    """Return True if data is canonical DAG-CBOR bytes."""
+    try:
+        validate_canonical_dag_cbor(data)
+    except ValueError:
+        return False
+    return True

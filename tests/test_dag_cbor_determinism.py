@@ -10,7 +10,12 @@ Verifies:
 
 import pytest
 
-from ilc_core.encoding.dag_cbor import encode_dag_cbor, decode_dag_cbor
+from ilc_core.encoding.dag_cbor import (
+    encode_dag_cbor,
+    decode_dag_cbor,
+    validate_canonical_dag_cbor,
+    is_canonical_dag_cbor,
+)
 
 
 class TestDagCborDeterminism:
@@ -204,3 +209,31 @@ class TestDecodeErrors:
         valid = encode_dag_cbor(42)
         with pytest.raises(ValueError, match="Trailing data"):
             decode_dag_cbor(valid + b"\x00")
+
+    def test_duplicate_map_key_raises(self):
+        """Duplicate map keys are rejected."""
+        # {"a": 1, "a": 2} encoded directly
+        data = b"\xa2\x61\x61\x01\x61\x61\x02"
+        with pytest.raises(ValueError, match="Duplicate map key"):
+            decode_dag_cbor(data)
+
+
+class TestCanonicalValidation:
+    """Tests for canonical DAG-CBOR validation."""
+
+    def test_non_canonical_key_order_fails(self):
+        """Non-canonical map key order fails canonical validation."""
+        # {"b": 1, "a": 2} in non-canonical order
+        data = b"\xa2\x61\x62\x01\x61\x61\x02"
+        decoded = decode_dag_cbor(data)
+        assert decoded == {"b": 1, "a": 2}
+        with pytest.raises(ValueError, match="Non-canonical DAG-CBOR bytes"):
+            validate_canonical_dag_cbor(data)
+        assert is_canonical_dag_cbor(data) is False
+
+    def test_canonical_bytes_pass(self):
+        """Canonical bytes produced by encoder pass validation."""
+        obj = {"a": 2, "b": 1}
+        data = encode_dag_cbor(obj)
+        validate_canonical_dag_cbor(data)
+        assert is_canonical_dag_cbor(data) is True

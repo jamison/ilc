@@ -23,7 +23,7 @@ Rationale:
 - It reduces consensus ambiguity by restricting tags and key types while retaining compact binary encoding.
 
 **Notes (ILC profile constraints):**
-- Map keys are strings only.
+- Map keys are strings (preferred) or bytes; consensus objects should use string keys for interoperability.
 - Disallow indefinite-length items.
 - Avoid floats in consensus payloads (use integers / fixed-point / explicit string/bytes forms).
 - Use explicit domain encodings for timestamps, money, big integers, field elements.

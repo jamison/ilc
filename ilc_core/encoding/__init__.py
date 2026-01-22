@@ -9,11 +9,13 @@ All implementations are stdlib-only (no external dependencies).
 """
 
 from .dag_cbor import encode_dag_cbor, decode_dag_cbor
-from .cidv1 import node_id_from_obj, parse_cidv1
+from .cidv1 import node_id_from_obj, parse_cidv1, parse_nodeid_strict, is_nodeid
 
 __all__ = [
     "encode_dag_cbor",
     "decode_dag_cbor",
     "node_id_from_obj",
     "parse_cidv1",
+    "parse_nodeid_strict",
+    "is_nodeid",
 ]

@@ -149,6 +149,67 @@ def parse_cidv1(cid_str: str) -> dict:
     }
 
 
+def parse_nodeid_strict(nodeid: str) -> dict:
+    """Parse and validate a strict ILC NodeID (CIDv1 + dag-cbor + sha2-256).
+
+    Args:
+        nodeid: CIDv1 string (multibase base32 lowercase, 'b' prefix).
+
+    Returns:
+        Parsed CID dict with strict NodeID invariants enforced.
+
+    Raises:
+        ValueError: If nodeid is malformed or violates NodeID invariants.
+    """
+    try:
+        info = parse_cidv1(nodeid)
+    except ValueError as exc:
+        msg = str(exc)
+        if msg.startswith("Expected CIDv1"):
+            try:
+                raw = cidv1_from_str(nodeid)
+                version, _ = decode_uvarint(raw, 0)
+            except ValueError:
+                raise ValueError(f"Not a NodeID: {msg}")
+            raise ValueError(
+                f"Not a NodeID: expected CIDv1, got version {version}"
+            )
+        raise
+
+    if info["version"] != CIDV1_VERSION:
+        raise ValueError(
+            f"Not a NodeID: expected CIDv1, got version {info['version']}"
+        )
+    if info["codec"] != CODEC_DAG_CBOR:
+        raise ValueError(
+            "Not a NodeID: expected codec dag-cbor "
+            f"(0x{CODEC_DAG_CBOR:x}), got 0x{info['codec']:x}"
+        )
+    if info["mh_code"] != MH_SHA2_256:
+        raise ValueError(
+            "Not a NodeID: expected multihash sha2-256 "
+            f"(0x{MH_SHA2_256:x}), got 0x{info['mh_code']:x}"
+        )
+    if info["digest_len"] != SHA2_256_LEN:
+        raise ValueError(
+            "Not a NodeID: expected digest length "
+            f"{SHA2_256_LEN}, got {info['digest_len']}"
+        )
+
+    strict_info = dict(info)
+    strict_info["digest_bytes"] = bytes.fromhex(info["digest_hex"])
+    return strict_info
+
+
+def is_nodeid(nodeid: str) -> bool:
+    """Return True if nodeid is a valid strict ILC NodeID."""
+    try:
+        parse_nodeid_strict(nodeid)
+    except ValueError:
+        return False
+    return True
+
+
 def node_id_from_obj(obj: Any) -> str:
     """Generate a NodeID (CIDv1 string) from a Python object.
     

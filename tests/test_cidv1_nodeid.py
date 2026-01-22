@@ -8,15 +8,19 @@ Verifies:
 - Parse correctness (CID components can be extracted)
 """
 
+import base64
 import pytest
 
 from ilc_core.encoding.cidv1 import (
     node_id_from_obj,
     parse_cidv1,
+    parse_nodeid_strict,
+    is_nodeid,
     CODEC_DAG_CBOR,
     MH_SHA2_256,
     SHA2_256_LEN,
 )
+from ilc_core.encoding.varint import encode_uvarint
 
 
 class TestNodeIdStability:
@@ -147,3 +151,53 @@ class TestErrorHandling:
         """Invalid base32 characters raise error."""
         with pytest.raises(ValueError, match="Invalid base32"):
             parse_cidv1("b" + "!!invalid!!")
+
+
+class TestNodeIdStrictness:
+    """Tests for strict NodeID parsing and validation."""
+
+    def _cid_str(self, version, codec, mh_code, digest_len):
+        digest = b"\x00" * digest_len
+        raw = (
+            encode_uvarint(version)
+            + encode_uvarint(codec)
+            + encode_uvarint(mh_code)
+            + encode_uvarint(digest_len)
+            + digest
+        )
+        b32 = base64.b32encode(raw).decode("ascii").lower().rstrip("=")
+        return "b" + b32
+
+    def test_wrong_codec_fails(self):
+        """Non-dag-cbor codec is rejected."""
+        cid = self._cid_str(1, 0x70, MH_SHA2_256, SHA2_256_LEN)
+        with pytest.raises(ValueError, match="expected codec dag-cbor"):
+            parse_nodeid_strict(cid)
+
+    def test_wrong_multihash_code_fails(self):
+        """Non-sha2-256 multihash is rejected."""
+        cid = self._cid_str(1, CODEC_DAG_CBOR, 0x13, SHA2_256_LEN)
+        with pytest.raises(ValueError, match="expected multihash sha2-256"):
+            parse_nodeid_strict(cid)
+
+    def test_wrong_digest_length_fails(self):
+        """Non-32-byte digest length is rejected."""
+        cid = self._cid_str(1, CODEC_DAG_CBOR, MH_SHA2_256, 16)
+        with pytest.raises(ValueError, match="expected digest length"):
+            parse_nodeid_strict(cid)
+
+    def test_wrong_version_fails(self):
+        """Non-v1 CID is rejected."""
+        cid = self._cid_str(0, CODEC_DAG_CBOR, MH_SHA2_256, SHA2_256_LEN)
+        with pytest.raises(ValueError, match="expected CIDv1"):
+            parse_nodeid_strict(cid)
+
+    def test_is_nodeid_true_for_valid(self):
+        """is_nodeid returns True for valid NodeIDs."""
+        cid = node_id_from_obj({"a": 1})
+        assert is_nodeid(cid) is True
+
+    def test_is_nodeid_false_for_invalid(self):
+        """is_nodeid returns False for invalid NodeIDs."""
+        cid = self._cid_str(1, 0x70, MH_SHA2_256, SHA2_256_LEN)
+        assert is_nodeid(cid) is False
