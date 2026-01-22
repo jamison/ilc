@@ -308,3 +308,96 @@ def is_canonical_dag_cbor(data: bytes) -> bool:
     except ValueError:
         return False
     return True
+
+
+# --- ILC Strict Key Validation ---
+
+def _validate_keys_str_only_recursive(obj: Any, path: str) -> None:
+    """Recursive helper for validate_ilc_object_keys_str_only."""
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if not isinstance(key, str):
+                raise ValueError(
+                    f"ILC object map keys must be str, got {type(key).__name__} "
+                    f"at path {path}.{key!r}"
+                )
+            child_path = f"{path}.{key}" if path else f"$.{key}"
+            _validate_keys_str_only_recursive(value, child_path)
+    elif isinstance(obj, (list, tuple)):
+        for i, item in enumerate(obj):
+            child_path = f"{path}[{i}]"
+            _validate_keys_str_only_recursive(item, child_path)
+    # Primitives (int, bool, None, str, bytes) have no nested keys to check
+
+
+def validate_ilc_object_keys_str_only(obj: Any) -> None:
+    """Recursively enforce that all map keys are Python str (CBOR text string).
+    
+    ILC canonical objects require text-string keys only for cross-language
+    determinism and interoperability. Bytes are allowed as values but not keys.
+    
+    Args:
+        obj: Python object to validate.
+        
+    Raises:
+        ValueError: If any dict key is not a str, with path to offending key.
+    """
+    _validate_keys_str_only_recursive(obj, "$")
+
+
+def is_ilc_object_keys_str_only(obj: Any) -> bool:
+    """Return True if all map keys in obj are str."""
+    try:
+        validate_ilc_object_keys_str_only(obj)
+    except ValueError:
+        return False
+    return True
+
+
+def decode_dag_cbor_strict(data: bytes) -> Any:
+    """Decode DAG-CBOR with ILC strict object rules.
+    
+    Enforces:
+    - No duplicate keys (already enforced by decoder)
+    - All map keys must be str (not bytes)
+    
+    Args:
+        data: DAG-CBOR encoded bytes.
+        
+    Returns:
+        Decoded Python object.
+        
+    Raises:
+        ValueError: If data is malformed or contains bytes keys.
+    """
+    obj = decode_dag_cbor(data)
+    validate_ilc_object_keys_str_only(obj)
+    return obj
+
+
+def validate_canonical_ilc_dag_cbor(data: bytes) -> None:
+    """Validate that DAG-CBOR bytes are in canonical ILC form.
+    
+    This is the strict validator for ILC consensus objects:
+    - All map keys must be str (text strings)
+    - Canonical encoding (decode -> re-encode = identical bytes)
+    
+    Args:
+        data: DAG-CBOR encoded bytes.
+        
+    Raises:
+        ValueError: If data is non-canonical or uses bytes keys.
+    """
+    obj = decode_dag_cbor_strict(data)
+    reencoded = encode_dag_cbor(obj)
+    if reencoded != data:
+        raise ValueError("Non-canonical ILC DAG-CBOR bytes")
+
+
+def is_canonical_ilc_dag_cbor(data: bytes) -> bool:
+    """Return True if data is canonical ILC DAG-CBOR bytes (str keys only)."""
+    try:
+        validate_canonical_ilc_dag_cbor(data)
+    except ValueError:
+        return False
+    return True

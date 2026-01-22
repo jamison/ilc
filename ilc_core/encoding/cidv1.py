@@ -216,6 +216,9 @@ def node_id_from_obj(obj: Any) -> str:
     The object is encoded to deterministic DAG-CBOR, hashed with SHA2-256,
     wrapped in a multihash, and encoded as a CIDv1 base32 lowercase string.
     
+    ILC NodeIDs require all map keys to be str (text strings). Objects
+    with bytes keys will be rejected.
+    
     Args:
         obj: Python object to generate ID for.
         
@@ -224,9 +227,31 @@ def node_id_from_obj(obj: Any) -> str:
         
     Raises:
         TypeError: If obj contains unsupported types for DAG-CBOR.
-        ValueError: If integers are out of range.
+        ValueError: If integers are out of range or keys are not str.
     """
+    from .dag_cbor import validate_ilc_object_keys_str_only
+    validate_ilc_object_keys_str_only(obj)
     dag_bytes = encode_dag_cbor(obj)
     mh = sha2_256_multihash(dag_bytes)
     cid_bytes = cidv1_bytes(CODEC_DAG_CBOR, mh)
     return cidv1_to_str(cid_bytes)
+
+
+def validate_nodeid_obj(obj: Any) -> None:
+    """Validate that an object can be used to generate a NodeID.
+    
+    This enforces all ILC NodeID object invariants:
+    - All map keys must be str (not bytes)
+    - All values must be DAG-CBOR encodable
+    
+    Args:
+        obj: Python object to validate.
+        
+    Raises:
+        ValueError: If object violates NodeID invariants.
+        TypeError: If object contains unsupported types.
+    """
+    from .dag_cbor import validate_ilc_object_keys_str_only
+    validate_ilc_object_keys_str_only(obj)
+    # Validate it can be encoded (catches type errors)
+    encode_dag_cbor(obj)

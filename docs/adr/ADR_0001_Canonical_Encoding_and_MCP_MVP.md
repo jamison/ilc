@@ -91,6 +91,29 @@ NDJSON MUST NOT be used as the canonical commitment bytes for NodeID/signatures.
 - Attestation tests: COSE blocks verify against referenced DAG-CBOR bytes and/or referenced CIDs.
 - MCP contract tests: tool input/output validate against JSON Schemas.
 
+## Consensus Rule: String-Only Map Keys
+
+**Decision:** ILC canonical DAG-CBOR objects MUST use text string keys only (no byte-string keys).
+
+**Rationale:**
+- Cross-language interoperability: Different implementations normalize/display bytes keys differently
+- Canonical sorting simplicity: Single key type simplifies ordering rules
+- Reduced attack surface: Prevents semantic near-collisions between text and bytes keys
+- Determinism: Ensures identical behavior across Python, Rust, Go, JavaScript implementations
+
+**Examples:**
+
+Allowed:
+```json
+{"node": "bafyrei...", "digest": "abc123", "data": "<bytes-as-value>"}
+```
+
+Forbidden:
+- Byte-string keys (e.g., Python `{b"key": value}`, CBOR major type 2 as map key)
+- Mixed text and bytes keys in the same map
+
+**Implementation:** Strict validators + strict decode wrapper + NodeID generation fails on non-str keys.
+
 ## Implementation
 
 **Phase 66A** implemented the core encoding primitives:
@@ -101,8 +124,20 @@ NDJSON MUST NOT be used as the canonical commitment bytes for NodeID/signatures.
 | CIDv1 NodeID generation | `ilc_core/encoding/cidv1.py` |
 | Unsigned varint (multiformat) | `ilc_core/encoding/varint.py` |
 
+**Phase 66A-FIX2** added strict key validation:
+
+| Function | Purpose |
+|----------|---------|
+| `validate_ilc_object_keys_str_only(obj)` | Recursive str-only key validator with path |
+| `is_ilc_object_keys_str_only(obj)` | Boolean helper |
+| `decode_dag_cbor_strict(data)` | Strict decode (rejects bytes keys) |
+| `validate_canonical_ilc_dag_cbor(data)` | Strict canonical validator |
+| `is_canonical_ilc_dag_cbor(data)` | Boolean helper |
+| `validate_nodeid_obj(obj)` | Pre-encode NodeID validator |
+
 Public API exports from `ilc_core.encoding`:
 - `encode_dag_cbor(obj)` - Encode Python object to deterministic DAG-CBOR bytes
-- `decode_dag_cbor(data)` - Decode DAG-CBOR bytes to Python object
-- `node_id_from_obj(obj)` - Generate CIDv1 NodeID string from object
+- `decode_dag_cbor(data)` - Decode DAG-CBOR bytes (permissive, allows bytes keys)
+- `decode_dag_cbor_strict(data)` - Decode with str-only key enforcement
+- `node_id_from_obj(obj)` - Generate CIDv1 NodeID (enforces str-only keys)
 - `parse_cidv1(cid_str)` - Parse CID components (version, codec, multihash)
