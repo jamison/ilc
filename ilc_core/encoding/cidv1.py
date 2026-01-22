@@ -256,3 +256,24 @@ def validate_nodeid_obj(obj: Any) -> None:
     from .dag_cbor import validate_ilc_object_encodable
     validate_ilc_object_encodable(obj)
 
+
+def node_id_from_bytes(payload: bytes) -> str:
+    """Generate a NodeID (CIDv1 string) from canonical ILC DAG-CBOR bytes.
+    
+    This is for use when you already have the canonical bytes (e.g., from
+    a COSE payload) and want to compute the NodeID without re-encoding.
+    
+    Args:
+        payload: Canonical ILC DAG-CBOR bytes.
+        
+    Returns:
+        CIDv1 string (multibase base32 lowercase, 'b' prefix).
+        
+    Raises:
+        ValueError: If payload is not canonical ILC DAG-CBOR.
+    """
+    from .dag_cbor import validate_canonical_ilc_dag_cbor
+    validate_canonical_ilc_dag_cbor(payload)
+    mh = sha2_256_multihash(payload)
+    cid_bytes = cidv1_bytes(CODEC_DAG_CBOR, mh)
+    return cidv1_to_str(cid_bytes)
