@@ -1,4 +1,4 @@
-# ILC Master Principle List v5.0
+# ILC Master Principle List v5.1
 
 ## Core Mission Objectives (Quick Reference)
 
@@ -16,6 +16,7 @@
 - Content-addressable canonical form to ensure immutability and deduplication.
 - Evidence-first design with provable completeness or verifiable redaction.
 - Conflict resolution pathways (e.g., refute.claim, contradict.assert) directly supported in link types.
+- Canonical commitment bytes are DAG-CBOR; NodeIDs are CIDv1 over DAG-CBOR bytes; signatures use COSE blocks; NDJSON is for logs only.
 
 **4. Scalability & Interoperability**
 - Versioned schema and namespace structure for independent domain evolution.
@@ -38,7 +39,7 @@
 - ZK-proof compatibility for privacy-preserving evidence.
 
 
-## State of Play (v5.0)
+## State of Play (v5.1)
 - Completed definition of `genesis.node_structure` as a foundational architectural primitive.
 - All seven Genesis truth primitives integrated (v4.9 baseline).
 - Next focus areas: linkage primitives (directionality, propagation coefficients, conflict handling) and namespace hierarchy completion (target v5.1).
