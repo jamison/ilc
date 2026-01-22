@@ -168,3 +168,39 @@ class TestNodeIdRejectsNonStrKeys:
         """node_id_from_obj accepts str keys."""
         nid = node_id_from_obj({"a": 1, "b": 2})
         assert nid.startswith("b")
+
+
+class TestTupleBypassPrevention:
+    """Tests ensuring tuples cannot bypass the str-only key policy."""
+
+    def test_validate_strict_rejects_bytes_key_inside_tuple(self):
+        """Validator catches bytes keys inside tuple."""
+        obj = ({"ok": 1}, {b"nope": 2})
+        with pytest.raises(ValueError, match="must be str"):
+            validate_ilc_object_keys_str_only(obj)
+
+    def test_node_id_from_obj_rejects_bytes_key_inside_tuple(self):
+        """NodeID hashing rejects tuple-wrapped bytes key."""
+        obj = ({"a": 1}, {b"b": 2})
+        with pytest.raises(ValueError, match="must be str"):
+            node_id_from_obj(obj)
+
+    def test_node_id_from_obj_allows_tuple_with_str_keys(self):
+        """Valid tuple structure with str keys works."""
+        obj = ({"a": 1}, {"b": 2})
+        nid = node_id_from_obj(obj)
+        assert isinstance(nid, str)
+        assert nid.startswith("b")
+
+    def test_deeply_nested_tuple_bytes_key_rejected(self):
+        """Deeply nested bytes key inside tuple is rejected."""
+        obj = {"outer": ({"inner": ({b"bad": 1},)},)}
+        with pytest.raises(ValueError, match="must be str"):
+            validate_ilc_object_keys_str_only(obj)
+
+    def test_mixed_list_tuple_bytes_key_rejected(self):
+        """Mixed list/tuple nesting with bytes key is rejected."""
+        obj = [{"a": ({"b": [{b"c": 1}]},)}]
+        with pytest.raises(ValueError, match="must be str"):
+            validate_ilc_object_keys_str_only(obj)
+
