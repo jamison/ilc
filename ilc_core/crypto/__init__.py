@@ -3,6 +3,9 @@ ILC Crypto module - COSE signing and verification.
 
 This module provides cryptographic primitives for ILC attestations:
 - COSE_Sign1 attestation blocks (Ed25519)
+- Canonical CBOR encoding for COSE structures
+
+Dependencies: cbor2>=5.0.0, cryptography>=41.0.0
 """
 
 from .cose_sign1 import (
@@ -15,6 +18,12 @@ from .cose_sign1 import (
     COSE_HDR_KID,
     COSE_ALG_EDDSA,
 )
+from .cbor_canonical import (
+    cbor_dumps_canonical,
+    cbor_loads,
+    validate_canonical_cbor_bytes,
+    is_canonical_cbor,
+)
 
 __all__ = [
     "cose_sign1_sign",
@@ -25,4 +34,9 @@ __all__ = [
     "COSE_HDR_ALG",
     "COSE_HDR_KID",
     "COSE_ALG_EDDSA",
+    "cbor_dumps_canonical",
+    "cbor_loads",
+    "validate_canonical_cbor_bytes",
+    "is_canonical_cbor",
 ]
+

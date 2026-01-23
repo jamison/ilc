@@ -16,7 +16,7 @@ from cryptography.exceptions import InvalidSignature
 
 from ilc_core.encoding.dag_cbor import encode_dag_cbor, decode_dag_cbor
 from ilc_core.encoding.cidv1 import node_id_from_bytes, node_id_from_obj
-from ilc_core.encoding.cbor_canonical import cbor_dumps_canonical, cbor_loads
+from ilc_core.crypto.cbor_canonical import cbor_dumps_canonical, cbor_loads
 from ilc_core.crypto.cose_sign1 import (
     cose_sign1_sign,
     cose_sign1_decode,
@@ -226,3 +226,54 @@ class TestCoseSign1Kid:
         result = cose_sign1_verify(cose_bytes, TEST_PUBLIC_KEY)
         
         assert result["kid"] is None
+
+
+class TestCoseSign1MVPGuardrails:
+    """Tests for ILC MVP restrictions (Phase 66B-FIX1)."""
+
+    def test_decode_rejects_nonempty_unprotected_header(self):
+        """Non-empty unprotected header is rejected per MVP policy."""
+        from cbor2 import CBORTag
+        
+        payload = encode_dag_cbor({"a": 1})
+        protected = cbor_dumps_canonical({1: -8})  # alg = EdDSA
+        # Non-empty unprotected header (kid in wrong place)
+        unprotected = {4: b"some-key-id"}
+        cose_array = [protected, unprotected, payload, b"\x00" * 64]
+        bad_cose = cbor_dumps_canonical(CBORTag(COSE_TAG_SIGN1, cose_array))
+        
+        with pytest.raises(ValueError, match="unprotected headers must be empty"):
+            cose_sign1_decode(bad_cose)
+
+    def test_decode_rejects_alg_in_unprotected_even_if_protected_correct(self):
+        """Even if protected header is correct, non-empty unprotected is rejected."""
+        from cbor2 import CBORTag
+        
+        payload = encode_dag_cbor({"test": "data"})
+        protected = cbor_dumps_canonical({1: -8})
+        # Redundant alg in unprotected (attack vector)
+        unprotected = {1: -8}
+        cose_array = [protected, unprotected, payload, b"\x00" * 64]
+        bad_cose = cbor_dumps_canonical(CBORTag(COSE_TAG_SIGN1, cose_array))
+        
+        with pytest.raises(ValueError, match="unprotected headers must be empty"):
+            cose_sign1_decode(bad_cose)
+
+    def test_sign_produces_canonical_cose_bytes(self):
+        """Signed COSE bytes pass canonical CBOR validation."""
+        from ilc_core.crypto.cbor_canonical import validate_canonical_cbor_bytes
+        
+        payload = encode_dag_cbor({"x": 1, "y": 2})
+        cose_bytes = cose_sign1_sign(payload, TEST_PRIVATE_KEY)
+        
+        # Should not raise
+        validate_canonical_cbor_bytes(cose_bytes)
+
+    def test_sign_produces_empty_unprotected_header(self):
+        """Signing always produces empty unprotected header."""
+        payload = encode_dag_cbor({"a": 1})
+        cose_bytes = cose_sign1_sign(payload, TEST_PRIVATE_KEY)
+        
+        result = cose_sign1_decode(cose_bytes)
+        assert result["unprotected"] == {}
+

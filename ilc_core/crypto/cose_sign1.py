@@ -15,7 +15,7 @@ from typing import Any
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cbor2 import CBORTag
 
-from ..encoding.cbor_canonical import (
+from .cbor_canonical import (
     cbor_dumps_canonical,
     cbor_loads,
     validate_canonical_cbor_bytes,
@@ -130,6 +130,13 @@ def cose_sign1_decode(cose_bytes: bytes) -> dict:
         raise ValueError("COSE_Sign1 protected header must be bstr")
     if not isinstance(unprotected_map, dict):
         raise ValueError("COSE_Sign1 unprotected header must be map")
+    
+    # MVP restriction: unprotected headers must be empty
+    # This prevents ambiguity in header placement and simplifies verification.
+    # Future ILC versions may relax this if needed.
+    if unprotected_map != {}:
+        raise ValueError("Invalid COSE_Sign1: unprotected headers must be empty for ILC MVP")
+    
     if not isinstance(payload, bytes):
         raise ValueError("COSE_Sign1 payload must be bstr")
     if not isinstance(signature, bytes):

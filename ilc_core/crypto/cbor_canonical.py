@@ -5,6 +5,8 @@ This module provides canonical CBOR encoding/decoding for COSE blocks,
 which use integer-labeled header maps (NOT subject to ILC strict key rules).
 
 Uses cbor2 with canonical=True for deterministic output.
+
+Dependencies: cbor2>=5.0.0
 """
 
 from __future__ import annotations
