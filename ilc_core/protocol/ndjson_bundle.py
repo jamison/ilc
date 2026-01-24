@@ -80,18 +80,31 @@ def dumps_ndjson(obj: dict) -> str:
     """Serialize dict to deterministic JSON line ending with '\\n'.
     
     Uses sorted keys and compact separators for reproducibility.
+    Rejects NaN/Infinity for cross-language compatibility.
     """
-    line = json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    line = json.dumps(
+        obj,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,  # Strict JSON: reject NaN/Infinity
+    )
     return line + "\n"
+
+
+def _reject_nan_infinity(constant: str):
+    """Raise error for NaN/Infinity in JSON parsing."""
+    raise ValueError(f"Non-JSON constant not allowed: {constant}")
 
 
 def loads_ndjson(line: str) -> dict:
     """Parse one NDJSON line into a dict.
     
     Strips trailing newlines, rejects non-dict results.
+    Rejects NaN/Infinity for cross-language compatibility.
     
     Raises:
-        ValueError: If line is empty or doesn't parse to dict.
+        ValueError: If line is empty, doesn't parse to dict, or contains NaN/Infinity.
     """
     # Normalize line endings
     line = line.rstrip("\r\n")
@@ -99,7 +112,7 @@ def loads_ndjson(line: str) -> dict:
         raise ValueError("Empty or whitespace-only NDJSON line")
     
     try:
-        obj = json.loads(line)
+        obj = json.loads(line, parse_constant=_reject_nan_infinity)
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON: {e}")
     

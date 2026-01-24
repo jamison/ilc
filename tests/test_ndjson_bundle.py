@@ -441,3 +441,42 @@ class TestRequireFooter:
         
         with pytest.raises(ValueError, match="footer required"):
             list(iter_bundle(buf, require_footer=True))
+
+
+class TestStrictJsonNanInfinity:
+    """Tests for strict JSON: reject NaN/Infinity."""
+
+    def test_dumps_rejects_nan(self):
+        """dumps_ndjson rejects NaN values."""
+        with pytest.raises(ValueError, match="Out of range float values"):
+            dumps_ndjson({"value": float("nan")})
+
+    def test_dumps_rejects_infinity(self):
+        """dumps_ndjson rejects Infinity values."""
+        with pytest.raises(ValueError, match="Out of range float values"):
+            dumps_ndjson({"value": float("inf")})
+
+    def test_dumps_rejects_negative_infinity(self):
+        """dumps_ndjson rejects -Infinity values."""
+        with pytest.raises(ValueError, match="Out of range float values"):
+            dumps_ndjson({"value": float("-inf")})
+
+    def test_loads_rejects_nan_literal(self):
+        """loads_ndjson rejects NaN literal in JSON."""
+        # JavaScript-style NaN in JSON
+        with pytest.raises(ValueError, match="Non-JSON constant not allowed"):
+            loads_ndjson('{"value": NaN}')
+
+    def test_loads_rejects_infinity_literal(self):
+        """loads_ndjson rejects Infinity literal in JSON."""
+        with pytest.raises(ValueError, match="Non-JSON constant not allowed"):
+            loads_ndjson('{"value": Infinity}')
+
+    def test_valid_floats_still_work(self):
+        """Normal float values still work."""
+        obj = loads_ndjson('{"value": 3.14159}')
+        assert obj == {"value": 3.14159}
+        
+        line = dumps_ndjson({"value": 2.71828})
+        assert "2.71828" in line
+
