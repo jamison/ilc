@@ -23,4 +23,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0001](ADR_0001_Canonical_Encoding_and_MCP_MVP.md) | Canonical Encoding and MCP MVP | Accepted |
 | [ADR-0002](ADR_0002_NDJSON_Bundle_Transport.md) | NDJSON Bundle Transport | Accepted |
 | [ADR-0003](ADR_0003_Star_Map_Ngram_Route_Index.md) | Star Map N-gram Route Index | Accepted |
-
+| [ADR-0004](ADR_0004_Genesis_Primitive_Commit_Epoch.md) | Genesis Truth Primitives — commit.epoch and star.map demotion | Accepted |
