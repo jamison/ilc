@@ -124,8 +124,12 @@ tools/make_ndjson_bundle.py          # Demo/smoke test tool
 - Deterministic JSON output enables diff-based debugging
 - Future phases can add compression, chunking, or network transport
 
+**Concrete use-case:** Route index shards (ADR-0003) are transported as COSE-signed records in NDJSON bundles.
+
 ## References
 
 - NDJSON: https://ndjson.org/
 - RFC 8259: JSON
 - Phase 66B: COSE_Sign1 attestation blocks
+- [ADR-0003: Star Map N-gram Route Index](ADR_0003_Star_Map_Ngram_Route_Index.md)
+
