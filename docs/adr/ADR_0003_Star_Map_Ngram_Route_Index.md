@@ -34,8 +34,8 @@ Adopt `ilc.star.map.ngram.route_index@v1` as the route index format with:
 
 ### Tokenization
 - Split on ASCII space
-- Token byte-length cap: 64 bytes
-- Token count cap: 1,024
+- Token byte-length cap: 64 bytes (reject if exceeded)
+- Token count cap: 1,024 (reject if exceeded)
 
 ### Hashing
 - Multi-head SHA-256 with domain separation

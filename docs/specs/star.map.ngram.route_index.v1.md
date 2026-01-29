@@ -80,8 +80,8 @@ Canonicalization produces a deterministic UTF-8 byte sequence from arbitrary inp
 2. Discard empty tokens
 
 **Guardrails (recommended):**
-- Maximum token byte-length: 64 bytes (truncate longer tokens)
-- Maximum total token count: 1,024 (truncate after limit)
+- Maximum token byte-length: 64 bytes (reject tokens exceeding this limit)
+- Maximum total token count: 1,024 (reject inputs exceeding this limit)
 
 > [!NOTE]
 > **Limitation:** Languages without whitespace word boundaries (Chinese, Japanese, Thai) require external segmentation before tokenization. v1 does not specify segmentation; producers must document their approach.
@@ -388,8 +388,10 @@ mixed case text
 
 **Input text:**
 ```
-ﬁle (U+FB01 LATIN SMALL LIGATURE FI)
+ﬁle
 ```
+
+(U+FB01 LATIN SMALL LIGATURE FI followed by "le")
 
 **Canonical text:**
 ```
