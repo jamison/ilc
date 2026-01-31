@@ -326,6 +326,64 @@ class TestMCPAuditTrail:
             assert "bGFyZ2UgYnVuZGxlIGRhdGE=" not in log_content
             assert '"redacted": true' in log_content or '"redacted":true' in log_content
 
+    def test_mcp_audit_payload_schema_valid(self) -> None:
+        """Logged audit payload validates against mcp_tool_call schema."""
+        import tempfile
+        from pathlib import Path
+        import json
+        import jsonschema
+        from ilc_core.node.node_v0 import ILCNodeV0
+        from ilc_core.mcp.service import _load_audit_schema
+        
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
+            service = MCPToolService(event_log=node.event_log, node_id="test-node-id")
+            
+            # Call a tool
+            service.handle_request("ilc.capabilities.get", {})
+            
+            events = list(node.event_log.iter_events())
+            assert len(events) == 1
+            
+            # Validate payload against schema
+            schema = _load_audit_schema()
+            jsonschema.validate(instance=events[0].payload, schema=schema)
+            
+            # Check key fields
+            assert events[0].payload["tool_name"] == "ilc.capabilities.get"
+            assert events[0].payload["status"] == "ok"
+            assert events[0].payload["node_id"] == "test-node-id"
+
+    def test_mcp_audit_payload_schema_error_requires_error(self) -> None:
+        """Error status events include error field and validate against schema."""
+        import tempfile
+        from pathlib import Path
+        import jsonschema
+        from ilc_core.node.node_v0 import ILCNodeV0
+        from ilc_core.mcp.service import _load_audit_schema
+        
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
+            service = MCPToolService(event_log=node.event_log, node_id="test-node-id")
+            
+            # Trigger an input validation error (missing required "cid" field)
+            try:
+                service.handle_request("ilc.block.get", {"want": "raw"})
+            except ValueError:
+                pass
+            
+            events = list(node.event_log.iter_events())
+            assert len(events) == 1
+            
+            # Validate payload against schema (error status requires error field)
+            schema = _load_audit_schema()
+            jsonschema.validate(instance=events[0].payload, schema=schema)
+            
+            # Check error is present
+            assert events[0].payload["status"] == "error"
+            assert "error" in events[0].payload
+
+
 
 
 
