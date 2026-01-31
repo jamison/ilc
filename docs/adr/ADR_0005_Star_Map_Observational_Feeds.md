@@ -53,6 +53,34 @@ We adopt the concept of **star.map observational fields**: broadcast feeds that 
 
 ---
 
+## Congestion Pricing / Replication Pressure
+
+As feed consumption scales, endpoint-level ECU surge pricing can be applied as request rates rise. This incentivizes mirrors and aliases across shards to distribute load.
+
+Requirements:
+- Lightweight proof-of-equivalence using CID/NodeID
+- Per-endpoint rate windows for surge detection
+- Routing hints for mirror discovery
+
+This enables organic replication pressure without central coordination.
+
+---
+
+## Event-Level Provenance Contracts (ABI)
+
+To ensure stable analytics and interoperability across agents, each feed topic defines a minimal, versioned event ABI:
+
+| Topic | Core Fields |
+|-------|-------------|
+| `events.reuse.v0` | block_cid, hit_type, timestamp |
+| `events.ops.v0` | op_kind, node_id, timestamp |
+| `events.evidence.v0` | evidence_cid, claim_cid, timestamp |
+| `events.contradiction.v0` | contra_cid, claim_a_cid, claim_b_cid, timestamp |
+
+**Non-goal:** No runtime enforcement in this phase. The ABI is advisory for downstream tooling.
+
+---
+
 ## Non-Goals
 
 This ADR does **not** cover:
@@ -61,6 +89,7 @@ This ADR does **not** cover:
 - Message queue or broker infrastructure
 - Real-time push notifications
 - Cross-node federation of feeds
+- Runtime ABI enforcement
 
 These may be addressed in future phases.
 
