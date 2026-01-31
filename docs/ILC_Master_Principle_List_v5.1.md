@@ -300,6 +300,7 @@
 ## 26) Protocol MVP Surface: Public APIs, Event Streams & Indexing (Δ v4.8)  ✅ ✏️ ❓
 - REST + SSE/WebSocket; auth’d writes; explicit versioning (✏️).  
 - Canonical JSON‑LD outputs; GraphQL sandbox (✏️); compound indexes (✏️).  
+- **Observational Feeds (ADR-0005):** star.map as broadcast feed with selective pull; avoids per-call polling; maintains auditability via append-only NDJSON logs.
 - ❓ Historical snapshot retention CBA.  
 **Sims:** load scaling, abuse, snapshot cost, index mutation volume.
 
