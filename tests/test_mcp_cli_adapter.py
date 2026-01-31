@@ -146,10 +146,10 @@ class TestMCPCLIAdapter:
             
             assert result.returncode == 0, f"CLI failed: {result.stderr}"
             
-            # Verify node_id is reflected in event log source
+            # Verify node_id is recorded in audit log
             log_file = Path(tmp_dir) / "event_log.ndjson"
             log_content = log_file.read_text()
-            # The node ID affects the event log path/content indirectly
-            # For now, just verify the call succeeded
             assert "mcp_tool_call" in log_content
+            assert "custom-test-node" in log_content
+
 
