@@ -293,6 +293,7 @@
 - Canonical JSON‑LD (✏️ profile locked); content addressing; provenance signatures (✏️ domain‑separated/multisig).  
 - Merkle bundles; redaction with ZK completeness (❓ accuracy/latency).  
 - Reproducibility metadata (✏️ SBOM/VEX); proof freshness windows (✏️).  
+- **EVE Canonical Capsules (ADR-0006):** content-addressed, Genesis-signed knowledge bundles; forks are explicit and verifiable; embeddings are accelerators, not authoritative memory.
 **Sims:** redaction curve, canonicalization fuzz, provenance mix, bundle churn.
 
 ---
