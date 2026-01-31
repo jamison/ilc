@@ -383,7 +383,85 @@ class TestMCPAuditTrail:
             assert events[0].payload["status"] == "error"
             assert "error" in events[0].payload
 
+    def test_audit_sample_rate_zero(self) -> None:
+        """sample_rate=0.0 logs no events."""
+        import tempfile
+        from pathlib import Path
+        from ilc_core.node.node_v0 import ILCNodeV0
+        
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
+            service = MCPToolService(
+                event_log=node.event_log,
+                audit_sample_rate=0.0,
+                audit_rng_seed=42,
+            )
+            
+            # Call tool multiple times
+            for _ in range(10):
+                service.handle_request("ilc.capabilities.get", {})
+            
+            events = list(node.event_log.iter_events())
+            assert len(events) == 0
 
+    def test_audit_sample_rate_one(self) -> None:
+        """sample_rate=1.0 logs all events."""
+        import tempfile
+        from pathlib import Path
+        from ilc_core.node.node_v0 import ILCNodeV0
+        
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
+            service = MCPToolService(
+                event_log=node.event_log,
+                audit_sample_rate=1.0,
+                audit_rng_seed=42,
+            )
+            
+            # Call tool multiple times
+            for _ in range(5):
+                service.handle_request("ilc.capabilities.get", {})
+            
+            events = list(node.event_log.iter_events())
+            assert len(events) == 5
 
+    def test_audit_rate_limit(self) -> None:
+        """max_per_minute=1 drops events beyond the limit."""
+        import tempfile
+        from pathlib import Path
+        from ilc_core.node.node_v0 import ILCNodeV0
+        
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
+            # Fixed clock at minute 100
+            fixed_clock = lambda: 6000.0
+            service = MCPToolService(
+                event_log=node.event_log,
+                audit_max_per_minute=1,
+                audit_clock=fixed_clock,
+            )
+            
+            # First call logs
+            service.handle_request("ilc.capabilities.get", {})
+            # Second call should be dropped
+            service.handle_request("ilc.capabilities.get", {})
+            
+            events = list(node.event_log.iter_events())
+            assert len(events) == 1
 
-
+    def test_audit_schema_loads_from_package(self) -> None:
+        """Schema loads via package resources, not docs path."""
+        import importlib.resources
+        from ilc_core.mcp.service import _load_audit_schema, _AUDIT_SCHEMA
+        import ilc_core.mcp.service as svc_module
+        
+        # Clear cached schema
+        svc_module._AUDIT_SCHEMA = None
+        
+        # Load schema (should work via package resources)
+        schema = _load_audit_schema()
+        
+        # Verify schema loaded successfully
+        assert schema is not None
+        assert schema.get("$id") == "mcp_tool_call_event_schema_v0.1"
+        assert "tool_name" in schema.get("properties", {})
