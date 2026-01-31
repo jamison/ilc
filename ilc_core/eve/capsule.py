@@ -137,3 +137,78 @@ def verify_capsule_signature(
         return True
     except Exception:
         return False
+
+
+def load_capsule_manifest_cbor(path: Union[str, Path]) -> dict:
+    """Load a capsule manifest from a DAG-CBOR file.
+    
+    Args:
+        path: Path to manifest file (DAG-CBOR encoded).
+        
+    Returns:
+        Manifest dict.
+        
+    Raises:
+        FileNotFoundError: If file does not exist.
+        ValueError: If file cannot be decoded.
+    """
+    from ilc_core.encoding.dag_cbor import decode_dag_cbor
+    
+    path = Path(path)
+    data = path.read_bytes()
+    try:
+        manifest = decode_dag_cbor(data)
+    except Exception as e:
+        raise ValueError(f"Invalid DAG-CBOR manifest: {e}") from e
+    
+    if not isinstance(manifest, dict):
+        raise ValueError("DAG-CBOR manifest must decode to a dict")
+    
+    return manifest
+
+
+def verify_manifest_cid(manifest: dict, cose_sign1_bytes: bytes) -> bool:
+    """Verify that manifest capsule_id matches the signed payload.
+    
+    Verifies two things:
+    1. The signed manifest is internally consistent (capsule_id matches content hash)
+    2. The *provided* manifest matches the signed manifest
+    
+    Args:
+        manifest: Manifest dict to verify.
+        cose_sign1_bytes: Raw COSE Sign1 bytes (not base64).
+        
+    Returns:
+        True if valid and matches, False otherwise.
+    """
+    from ilc_core.crypto.cose_sign1 import cose_sign1_decode
+    from ilc_core.encoding.dag_cbor import decode_dag_cbor, encode_dag_cbor
+    from ilc_core.encoding.cidv1 import node_id_from_bytes
+    
+    try:
+        # Decode the signed payload
+        decoded = cose_sign1_decode(cose_sign1_bytes)
+        payload = decoded["payload"]
+        
+        # Decode manifest from payload
+        signed_manifest = decode_dag_cbor(payload)
+        
+        # 1. Verify internal consistency
+        manifest_for_cid = dict(signed_manifest)
+        manifest_for_cid["capsule_id"] = ""
+        cid_payload = encode_dag_cbor(manifest_for_cid)
+        expected_cid = node_id_from_bytes(cid_payload)
+        
+        if signed_manifest.get("capsule_id") != expected_cid:
+            return False
+            
+        # 2. Verify provided manifest matches signed manifest
+        # (This ensures the signature actually applies to the manifest we have)
+        if manifest != signed_manifest:
+            return False
+            
+        return True
+    except Exception:
+        return False
+
+

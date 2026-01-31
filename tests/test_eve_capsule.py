@@ -175,3 +175,129 @@ class TestVerifyCapsuleSignature:
         
         result = verify_capsule_signature({}, "not-valid-base64!", public_key_bytes)
         assert result is False
+
+
+class TestLoadCapsuleManifestCbor:
+    """Tests for load_capsule_manifest_cbor."""
+    
+    def test_load_valid_cbor(self, tmp_path):
+        """Load valid DAG-CBOR manifest."""
+        from ilc_core.eve.capsule import load_capsule_manifest_cbor
+        from ilc_core.encoding.dag_cbor import encode_dag_cbor
+        
+        manifest = {
+            "capsule_id": "bafyreif...",
+            "version": 1,
+            "predecessor": None,
+            "publisher_key_id": "did:key:z6Mk...",
+            "created_at": "2026-01-31T22:00:00Z",
+            "entries": [{"kind": "doc", "cid": "baf...", "content_type": "text/plain"}],
+        }
+        path = tmp_path / "manifest.cbor"
+        path.write_bytes(encode_dag_cbor(manifest))
+        
+        loaded = load_capsule_manifest_cbor(path)
+        assert loaded == manifest
+    
+    def test_load_invalid_cbor(self, tmp_path):
+        """Invalid CBOR raises ValueError."""
+        from ilc_core.eve.capsule import load_capsule_manifest_cbor
+        
+        path = tmp_path / "bad.cbor"
+        path.write_bytes(b"not cbor")
+        
+        with pytest.raises(ValueError, match="Invalid DAG-CBOR"):
+            load_capsule_manifest_cbor(path)
+
+
+class TestManifestCidVerification:
+    """Tests for manifest CID verification."""
+    
+    def test_manifest_cid_matches_signed_payload(self):
+        """CID computed from signed payload matches manifest capsule_id."""
+        from ilc_core.eve.capsule import verify_manifest_cid
+        from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
+        
+        private_key = ed25519.Ed25519PrivateKey.generate()
+        private_key_bytes = private_key.private_bytes_raw()
+        
+        entries = [
+            {"kind": "doc", "cid": "bafytest", "content_type": "text/plain"}
+        ]
+        manifest = build_capsule_manifest(
+            entries=entries,
+            publisher_key_id="test-key",
+            created_at="2026-01-31T23:00:00Z"
+        )
+        
+        signed_manifest, cose_b64u = sign_capsule_manifest(manifest, private_key_bytes)
+        
+        # Decode COSE bytes
+        padded = cose_b64u + "=" * (-len(cose_b64u) % 4)
+        cose_bytes = base64.urlsafe_b64decode(padded)
+        
+        # Verify CID matches
+        assert verify_manifest_cid(signed_manifest, cose_bytes) is True
+    
+    def test_manifest_cid_mismatch_detected(self):
+        """Mismatched CID is detected."""
+        from ilc_core.eve.capsule import verify_manifest_cid
+        from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
+        
+        private_key = ed25519.Ed25519PrivateKey.generate()
+        private_key_bytes = private_key.private_bytes_raw()
+        
+        entries = [
+            {"kind": "doc", "cid": "bafytest", "content_type": "text/plain"}
+        ]
+        manifest = build_capsule_manifest(
+            entries=entries,
+            publisher_key_id="test-key",
+            created_at="2026-01-31T23:00:00Z"
+        )
+        
+        signed_manifest, cose_b64u = sign_capsule_manifest(manifest, private_key_bytes)
+        
+        # Tamper with capsule_id
+        tampered = dict(signed_manifest)
+        tampered["capsule_id"] = "bafyreiwrong"
+        
+        padded = cose_b64u + "=" * (-len(cose_b64u) % 4)
+        cose_bytes = base64.urlsafe_b64decode(padded)
+        
+        # Should fail
+        assert verify_manifest_cid(tampered, cose_bytes) is False
+
+
+class TestSignAndVerifyRoundtrip:
+    """Tests for complete sign and verify roundtrip."""
+    
+    def test_sign_and_verify_roundtrip(self):
+        """Sign manifest and verify signature roundtrip."""
+        from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
+        
+        private_key = ed25519.Ed25519PrivateKey.generate()
+        public_key = private_key.public_key()
+        private_key_bytes = private_key.private_bytes_raw()
+        public_key_bytes = public_key.public_bytes_raw()
+        
+        entries = [
+            {"kind": "document", "cid": "bafytest123", "content_type": "text/markdown"}
+        ]
+        manifest = build_capsule_manifest(
+            entries=entries,
+            publisher_key_id="test-genesis-key",
+            created_at="2026-01-31T23:00:00Z"
+        )
+        
+        signed_manifest, cose_b64u = sign_capsule_manifest(manifest, private_key_bytes)
+        
+        # Verify signature
+        result = verify_capsule_signature(signed_manifest, cose_b64u, public_key_bytes)
+        assert result is True
+        
+        # Verify with wrong key fails
+        wrong_key = ed25519.Ed25519PrivateKey.generate().public_key().public_bytes_raw()
+        result2 = verify_capsule_signature(signed_manifest, cose_b64u, wrong_key)
+        assert result2 is False
+
