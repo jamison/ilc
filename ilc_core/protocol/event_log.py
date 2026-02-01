@@ -10,7 +10,11 @@ EventKind = Literal[
     "epoch_config",
     "claim",
     "refutation",
+    "mcp_tool_call",
+    "commit.epoch",
 ]  # keep small for now
+
+
 
 
 @dataclass
@@ -99,3 +103,71 @@ def write_events_to_file(events: List[ProtocolEvent], path: Path | str) -> None:
         for evt in events:
             json.dump(asdict(evt), f)
             f.write("\n")
+
+
+def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
+    """
+    Validate that a payload matches the commit.epoch schema.
+    Raises ValueError if invalid.
+    """
+    required_top = {
+        "event_kind", "epoch_index", "epoch_id", "namespace_id",
+        "created_at", "finalization_state", "summary", "checksums"
+    }
+    missing = required_top - set(payload.keys())
+    if missing:
+        raise ValueError(f"Missing required top-level fields: {missing}")
+
+    if payload["event_kind"] != "commit.epoch":
+        raise ValueError(f"Invalid event_kind: {payload.get('event_kind')}")
+
+    if payload["finalization_state"] not in {"committed", "rolled_back", "superseded"}:
+        raise ValueError(f"Invalid finalization_state: {payload.get('finalization_state')}")
+
+    # Validate summary
+    summary = payload["summary"]
+    required_summary = {"task_count", "agent_count", "reward_total", "stake_total"}
+    missing_summary = required_summary - set(summary.keys())
+    if missing_summary:
+        raise ValueError(f"Missing required summary fields: {missing_summary}")
+
+    # Validate checksums
+    checksums = payload["checksums"]
+    required_checksums = {"epoch_events_cid", "epoch_state_cid"}
+    missing_checksums = required_checksums - set(checksums.keys())
+    if missing_checksums:
+        raise ValueError(f"Missing required checksums fields: {missing_checksums}")
+
+
+def make_commit_epoch_event(
+    epoch_index: int,
+    epoch_id: str,
+    namespace_id: str,
+    created_at: str,
+    finalization_state: Literal["committed", "rolled_back", "superseded"],
+    summary: Dict[str, Any],
+    checksums: Dict[str, str],
+    source: str = "protocol"
+) -> ProtocolEvent:
+    """
+    Helper to construct a validated commit.epoch event.
+    """
+    payload = {
+        "event_kind": "commit.epoch",
+        "epoch_index": epoch_index,
+        "epoch_id": epoch_id,
+        "namespace_id": namespace_id,
+        "created_at": created_at,
+        "finalization_state": finalization_state,
+        "summary": summary,
+        "checksums": checksums,
+    }
+    
+    validate_commit_epoch_payload(payload)
+    
+    return make_event(
+        kind="commit.epoch",
+        payload=payload,
+        source=source
+    )
+
