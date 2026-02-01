@@ -110,33 +110,83 @@ def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
     Validate that a payload matches the commit.epoch schema.
     Raises ValueError if invalid.
     """
+    if not isinstance(payload, dict):
+        raise ValueError("Payload must be a dict")
+
     required_top = {
-        "event_kind", "epoch_index", "epoch_id", "namespace_id",
-        "created_at", "finalization_state", "summary", "checksums"
+        "event_kind",
+        "epoch_index",
+        "epoch_id",
+        "namespace_id",
+        "created_at",
+        "finalization_state",
+        "summary",
+        "checksums",
     }
-    missing = required_top - set(payload.keys())
+    payload_keys = set(payload.keys())
+    missing = required_top - payload_keys
     if missing:
         raise ValueError(f"Missing required top-level fields: {missing}")
+    extra = payload_keys - required_top
+    if extra:
+        raise ValueError(f"Unexpected top-level fields: {extra}")
 
     if payload["event_kind"] != "commit.epoch":
         raise ValueError(f"Invalid event_kind: {payload.get('event_kind')}")
+
+    if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
+        raise ValueError("epoch_index must be a non-negative integer")
+    if not isinstance(payload["epoch_id"], str):
+        raise ValueError("epoch_id must be a string")
+    if not isinstance(payload["namespace_id"], str):
+        raise ValueError("namespace_id must be a string")
+    if not isinstance(payload["created_at"], str):
+        raise ValueError("created_at must be a string")
+    try:
+        datetime.fromisoformat(payload["created_at"].replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("created_at must be ISO 8601 with UTC timezone") from exc
 
     if payload["finalization_state"] not in {"committed", "rolled_back", "superseded"}:
         raise ValueError(f"Invalid finalization_state: {payload.get('finalization_state')}")
 
     # Validate summary
     summary = payload["summary"]
+    if not isinstance(summary, dict):
+        raise ValueError("summary must be a dict")
     required_summary = {"task_count", "agent_count", "reward_total", "stake_total"}
-    missing_summary = required_summary - set(summary.keys())
+    summary_keys = set(summary.keys())
+    missing_summary = required_summary - summary_keys
     if missing_summary:
         raise ValueError(f"Missing required summary fields: {missing_summary}")
+    extra_summary = summary_keys - required_summary
+    if extra_summary:
+        raise ValueError(f"Unexpected summary fields: {extra_summary}")
+    if not isinstance(summary["task_count"], int) or summary["task_count"] < 0:
+        raise ValueError("summary.task_count must be a non-negative integer")
+    if not isinstance(summary["agent_count"], int) or summary["agent_count"] < 0:
+        raise ValueError("summary.agent_count must be a non-negative integer")
+    if not isinstance(summary["reward_total"], (int, float)) or summary["reward_total"] < 0:
+        raise ValueError("summary.reward_total must be a non-negative number")
+    if not isinstance(summary["stake_total"], (int, float)) or summary["stake_total"] < 0:
+        raise ValueError("summary.stake_total must be a non-negative number")
 
     # Validate checksums
     checksums = payload["checksums"]
+    if not isinstance(checksums, dict):
+        raise ValueError("checksums must be a dict")
     required_checksums = {"epoch_events_cid", "epoch_state_cid"}
-    missing_checksums = required_checksums - set(checksums.keys())
+    checksum_keys = set(checksums.keys())
+    missing_checksums = required_checksums - checksum_keys
     if missing_checksums:
         raise ValueError(f"Missing required checksums fields: {missing_checksums}")
+    extra_checksums = checksum_keys - required_checksums
+    if extra_checksums:
+        raise ValueError(f"Unexpected checksums fields: {extra_checksums}")
+    if not isinstance(checksums["epoch_events_cid"], str):
+        raise ValueError("checksums.epoch_events_cid must be a string")
+    if not isinstance(checksums["epoch_state_cid"], str):
+        raise ValueError("checksums.epoch_state_cid must be a string")
 
 
 def make_commit_epoch_event(
@@ -170,4 +220,3 @@ def make_commit_epoch_event(
         payload=payload,
         source=source
     )
-

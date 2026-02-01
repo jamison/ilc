@@ -95,10 +95,18 @@ class TestCommitEpochEvent:
             "epoch_index": 1,
             "epoch_id": "e1",
             "namespace_id": "n1",
-            "created_at": "now",
+            "created_at": "2026-02-01T12:00:00Z",
             "finalization_state": "invalid_state",  # Wrong enum
-            "summary": {},
-            "checksums": {}
+            "summary": {
+                "task_count": 1,
+                "agent_count": 1,
+                "reward_total": 0,
+                "stake_total": 0
+            },
+            "checksums": {
+                "epoch_events_cid": "cid1",
+                "epoch_state_cid": "cid2"
+            }
         }
         with pytest.raises(ValueError, match="Invalid finalization_state"):
             validate_commit_epoch_payload(payload)

@@ -32,7 +32,7 @@ Human readability is not required; tooling provides inspection.
 ## Manifest Schema
 
 ```yaml
-capsule_id: CID           # CID of this manifest (self-referential after signing)
+capsule_id: CID           # CID computed from manifest with capsule_id=""
 version: int              # Monotonic version number (1, 2, 3, ...)
 predecessor: CID | null   # CID of previous version (null for v1)
 publisher_key_id: string  # Key identifier (e.g., DID or key fingerprint)
@@ -75,11 +75,26 @@ tags: string[]            # Optional classification tags
 
 ---
 
+## Capsule ID Derivation
+
+To avoid self-referential hashing, `capsule_id` is computed from a canonical
+manifest where `capsule_id` is the empty string:
+
+1. Set `capsule_id` = "" (empty string)
+2. Serialize manifest to DAG-CBOR bytes
+3. Compute CID over those bytes
+4. Write computed CID into `capsule_id`
+5. Re-serialize and sign the manifest bytes (now containing the CID)
+
+This binds the signature to the final manifest while keeping CID derivation deterministic.
+
+---
+
 ## Signature
 
 The manifest is signed using COSE Sign1:
 
-1. Serialize manifest to DAG-CBOR bytes
+1. Serialize manifest (with computed `capsule_id`) to DAG-CBOR bytes
 2. Sign bytes with publisher private key
 3. Encode signature as COSE Sign1 structure
 4. Store signature alongside manifest (e.g., `manifest.sig`)

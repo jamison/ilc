@@ -180,6 +180,10 @@ def verify_manifest_cid(manifest: dict, cose_sign1_bytes: bytes) -> bool:
         
     Returns:
         True if valid and matches, False otherwise.
+
+    Note:
+        This function does NOT verify the COSE signature. Call
+        verify_capsule_signature() first when full verification is required.
     """
     from ilc_core.crypto.cose_sign1 import cose_sign1_decode
     from ilc_core.encoding.dag_cbor import decode_dag_cbor, encode_dag_cbor
@@ -210,5 +214,4 @@ def verify_manifest_cid(manifest: dict, cose_sign1_bytes: bytes) -> bool:
         return True
     except Exception:
         return False
-
 
