@@ -1,0 +1,12 @@
+{
+    "task_id": "task-001",
+    "roots": [
+        "bafyreihash123"
+    ],
+    "blocks_inline": [
+        {
+            "cid": "bafyreihash123",
+            "bytes_b64": "AAAA"
+        }
+    ]
+}

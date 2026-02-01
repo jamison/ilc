@@ -1,0 +1,6 @@
+{
+    "filters": {
+        "task_class": "custom",
+        "limit": 2
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "tasks": [
+        {
+            "task_id": "task-001",
+            "task_class": "custom",
+            "input_cids": [
+                "bafyreihash123"
+            ],
+            "submission": {
+                "expected_outputs": "One CID with signed payload",
+                "requires_attestation": true,
+                "accepted_signature_algorithms": [
+                    "ed25519"
+                ],
+                "max_submit_bytes": 1048576
+            },
+            "bounty": {
+                "bounty_id": "bounty-001",
+                "ecu_estimate": 1.0,
+                "deadline": "2026-02-01T00:00:00Z"
+            }
+        }
+    ]
+}

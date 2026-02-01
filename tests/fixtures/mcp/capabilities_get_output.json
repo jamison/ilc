@@ -1,0 +1,15 @@
+{
+    "protocol_version": "0.1",
+    "supported_codecs": [
+        "dag-cbor"
+    ],
+    "supported_multihash": [
+        "sha2-256"
+    ],
+    "max_block_bytes": 1048576,
+    "max_bundle_bytes": 10485760,
+    "signature_algorithms": [
+        "ed25519"
+    ],
+    "notes": "MVP"
+}
