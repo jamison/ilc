@@ -129,6 +129,7 @@
 ## 5) Truth Primitive “Epistemological Particles” (Δ v2.9, Δ v3.4)  ✅ ✏️ ❓
 **Primitives:** `assert.truth`, `validate.claim`, `contradict.assert`, `refute.claim`, `revise.assert`, `link.claim`, `commit.epoch`.  
 - **Note:** `star.map` is a Development/Experience tool and L2 routing artifact, not a Genesis truth primitive.
+- **Note:** `commit.epoch` economics (reward/decay/consolidation) are specified in: `docs/specs/commit_epoch_economics_v0.1.md`
 - **Attributes per primitive (✅ ✏️):** name, polarity (constructive/destructive/neutral), core function, vector hints, reward hints, specialization tags, constraints, canonical errors. ✏️ finalize coefficients & error codes.  
 - **Polarity weights (✏️):** constructive 1.00; destructive 1.25; neutral 0.75 → tune via sims.  
 - **❓ Needs Evidence:** decay & reward curves per namespace.
