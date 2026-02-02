@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class EpistemicWorkTask(BaseModel):
     task_id: str
@@ -35,12 +35,12 @@ class EpistemicWorkTask(BaseModel):
     ]
     timestamp_created: int
 
-    class Config:
-        # allow both `ecu_estimate` and `ecu.estimate` in input, but always
-        # emit `ecu.estimate` on export
-        populate_by_name = True
-        allow_population_by_field_name = True
-        protected_namespaces = ()
+    # allow both `ecu_estimate` and `ecu.estimate` in input, but always
+    # emit `ecu.estimate` on export
+    model_config = ConfigDict(
+        populate_by_name=True,
+        protected_namespaces=(),
+    )
 
 def ep_task_to_json(task: EpistemicWorkTask) -> Dict[str, Any]:
     """
