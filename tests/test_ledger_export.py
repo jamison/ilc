@@ -21,7 +21,7 @@ def test_ledger_export_in_memory(tmp_path):
     record_1 = {
          "epoch_index": 1,
          "epoch_id": "ns:0001",
-         "status": "committed",
+         "status": "settled",
          "summary": {"tasks": 10, "reward": 50.0},
          "checksums": {"state": "abc"}
     }
@@ -70,7 +70,7 @@ def test_ledger_export_in_memory(tmp_path):
     assert "epoch_records" in data
     assert "stake_snapshots" in data
     assert "balances" in data
-    assert data["epoch_records"]["ns:0001"]["status"] == "committed"
+    assert data["epoch_records"]["ns:0001"]["status"] == "settled"
     assert data["balances"]["agent_alice"] == 100.0
     
     # Check CSV
@@ -84,4 +84,4 @@ def test_ledger_export_in_memory(tmp_path):
     assert "summary_tasks" in header
     
     row = lines[1]
-    assert "committed" in row
+    assert "settled" in row
