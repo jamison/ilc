@@ -21,6 +21,7 @@ from ilc_core.sim.devnet_experiments import (
     summarize_multi_epoch_run, 
     DevnetExperimentSummary
 )
+from ilc_core.ledger import get_ledger_backend
 
 # Synthetic defaults for devnet scenario simulations.
 # These are not normative protocol thresholds; they just give
@@ -55,6 +56,9 @@ class DevnetScenarioConfig:
     topology_kind: str = "star"
     center_id: str = "orch"
     worker_ids: Optional[List[str]] = None
+    # Ledger Persistence (Phase 70E)
+    ledger_backend_kind: str = "memory"  # "memory" or "file"
+    ledger_storage_dir: Optional[str] = None
 
 def scenario_from_dict(data: Mapping[str, Any]) -> DevnetScenarioConfig:
     """
@@ -82,7 +86,8 @@ def scenario_from_dict(data: Mapping[str, Any]) -> DevnetScenarioConfig:
         "stress_schedule": stress_schedule,
     }
     
-    for key in ["namespace_id", "num_agents", "topology_kind", "center_id", "worker_ids"]:
+    for key in ["namespace_id", "num_agents", "topology_kind", "center_id", "worker_ids",
+                "ledger_backend_kind", "ledger_storage_dir"]:
         if key in data:
             kwargs[key] = data[key]
             
@@ -100,7 +105,8 @@ def scenarios_from_config(config: Mapping[str, Any]) -> List[DevnetScenarioConfi
     
     # Defaults from top-level
     defaults = {}
-    for key in ["namespace_id", "num_agents", "topology_kind", "center_id", "worker_ids"]:
+    for key in ["namespace_id", "num_agents", "topology_kind", "center_id", "worker_ids",
+                "ledger_backend_kind", "ledger_storage_dir"]:
         if key in config:
             defaults[key] = config[key]
             
@@ -217,6 +223,12 @@ def run_scenario(
     topo, profiles = build_topology_and_profiles(scenario)
     snapshots = build_snapshots_for_scenario(scenario)
     
+    # Phase 70E: Ledger Backend
+    ledger = get_ledger_backend(
+        kind=scenario.ledger_backend_kind,
+        storage_dir=scenario.ledger_storage_dir
+    )
+
     # Run multi-epoch (no export root for now, keeping it in-memory unless we add config for it)
     # The prompt doesn't explicitly ask to expose export_root in config, devnet_config_runner_demo might use it though?
     # "Run run_devnet_multi_epoch(topology, snapshots, profiles, export_root=None)"
@@ -224,7 +236,8 @@ def run_scenario(
         topology=topo,
         snapshots=snapshots,
         profiles=profiles,
-        export_root=None
+        export_root=None,
+        ledger_backend=ledger
     )
     
     # Summarize
