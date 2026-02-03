@@ -7,8 +7,12 @@ from ilc_core.network.topology import DevnetTopology
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.sim.devnet_epoch_orchestrator import DevnetEpochResult, run_devnet_epoch
-from ilc_core.protocol.event_log import EventLogger, write_events_to_file
+from ilc_core.protocol.event_log import EventLogger, write_events_to_file, make_commit_epoch_event
 from ilc_core.protocol.params import ProtocolParams
+from ilc_core.ledger.backend import LedgerBackend
+from ilc_core.ledger.stake_snapshot import StakeSnapshot
+
+from datetime import datetime, timezone
 
 @dataclass
 class DevnetMultiEpochResult:
@@ -26,6 +30,7 @@ def run_devnet_multi_epoch(
     export_prefix: str = "epoch",
     rng_seed: Optional[int] = None,
     protocol_params: Optional[ProtocolParams] = None,
+    ledger_backend: Optional[LedgerBackend] = None,
 ) -> DevnetMultiEpochResult:
     """
     Execute multiple devnet epochs sequentially based on a list of snapshots.
@@ -38,6 +43,8 @@ def run_devnet_multi_epoch(
         export_prefix: Prefix for per-epoch directories (e.g. "epoch_0010").
         rng_seed: Optional seed for Python's global random number generator. 
                   If provided, random.seed(rng_seed) is called before execution.
+        ledger_backend: Optional ledger backend for settlement and persistence.
+                        If provided, settles the epoch and stores snapshots.
         
     Returns:
         DevnetMultiEpochResult containing all per-epoch results and aggregated node load metrics.
@@ -80,6 +87,56 @@ def run_devnet_multi_epoch(
             event_logger=event_logger,
             protocol_params=protocol_params
         )
+
+        # Ledger Settlement
+        if ledger_backend:
+            # 1. Store Stake Snapshot
+            # Construct a synthetic snapshot assuming uniform stake for now (or from ledger?)
+            # Prompt says: "stakes = {agent_id: 1.0 for agent_id in profiles.keys()}"
+            epoch_id = f"{snapshot.namespace_id}:{epoch_index:04d}"
+            stakes = {agent_id: 1.0 for agent_id in profiles.keys()}
+            
+            stake_snapshot = StakeSnapshot(
+                epoch_id=epoch_id,
+                epoch_index=epoch_index,
+                namespace_id=snapshot.namespace_id,
+                stakes=stakes,
+                total_stake=float(len(stakes)),
+                created_at=datetime.now(timezone.utc).isoformat(),
+            )
+            ledger_backend.put_stake_snapshot(stake_snapshot)
+
+            # 2. Compute Summary from Result
+            # result.node_load_metrics is Dict[node_id, Dict[metric, value]]
+            total_tasks = int(sum(m.get("num_tasks", 0) for m in result.node_load_metrics.values()))
+            total_reward = float(sum(m.get("total_reward", 0.0) for m in result.node_load_metrics.values()))
+            
+            # 3. Create Commit Event
+            commit_evt = make_commit_epoch_event(
+                epoch_index=epoch_index,
+                epoch_id=epoch_id,
+                namespace_id=snapshot.namespace_id,
+                created_at=datetime.now(timezone.utc).isoformat(),
+                finalization_state="committed",
+                summary={
+                    "task_count": total_tasks,
+                    "agent_count": len(stakes),
+                    "reward_total": total_reward,
+                    "stake_total": float(len(stakes)),
+                },
+                checksums={
+                    "epoch_events_cid": "devnet:events",  # Placeholder
+                    "epoch_state_cid": "devnet:state",    # Placeholder
+                },
+                source="sim:devnet_multi_epoch",
+            )
+            
+            # 4. Apply Settlement
+            ledger_backend.apply_epoch_settlement(commit_evt)
+            
+            # 5. Log Event (Task B)
+            if event_logger:
+                event_logger.events.append(commit_evt)
         
         # If we logged events, write them out
         if export_dir_for_epoch and event_logger:

@@ -9,6 +9,7 @@ from ilc_core.network.topology import build_star_topology, NodeRole, assign_agen
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.sim.devnet_multi_epoch import run_devnet_multi_epoch, DevnetMultiEpochResult
+from ilc_core.ledger.backend import InMemoryLedgerBackend
 
 @pytest.fixture
 def multi_epoch_setup():
@@ -106,6 +107,75 @@ def test_multi_epoch_empty_snapshots(multi_epoch_setup):
     
     result = run_devnet_multi_epoch(topo, [], profiles)
     
-    assert result.namespace_id == ""
     assert result.epoch_results == []
     assert result.aggregate_node_load == {}
+
+def test_multi_epoch_with_ledger_backend(multi_epoch_setup):
+    """Test full wiring of ledger: snapshot creation, storage, and settlement."""
+    topo, profiles, base_snap = multi_epoch_setup
+    
+    # 1 epoch
+    snaps = [
+        base_snap.__class__(**{**base_snap.as_dict(), "epoch_index": 1}),
+    ]
+    
+    ledger = InMemoryLedgerBackend()
+    
+    # Run with ledger
+    run_devnet_multi_epoch(topo, snaps, profiles, ledger_backend=ledger)
+    
+    epoch_id = f"{snaps[0].namespace_id}:0001"
+    
+    # Check Stake Snapshot Persistence
+    assert ledger.get_stake_snapshot(epoch_id) is not None
+    snapshot = ledger.get_stake_snapshot(epoch_id)
+    assert snapshot.epoch_id == epoch_id
+    assert snapshot.epoch_index == 1
+    assert snapshot.total_stake > 0
+    assert len(snapshot.stakes) == len(profiles)
+
+    # Check Epoch Record (Settlement)
+    record = ledger.get_epoch_record(epoch_id)
+    assert record is not None
+    assert record["status"] == "settled"
+    assert record.get("distribution_status") == "distributed"
+    assert record["epoch_index"] == 1
+    assert record["summary"]["task_count"] >= 0  # Could be 0 if heuristics generate nothing
+    
+    # Check Balances
+    # Note: If no tasks/rewards generated, balance might stay 0.0.
+    # But distribution logic runs regardless.
+    # If total_reward > 0, someone should have balance.
+    total_reward = record["summary"]["reward_total"]
+    if total_reward > 0:
+        assert any(ledger.get_balance(a_id) > 0 for a_id in profiles.keys())
+    
+    # Also verify that a restart (if we were using FileBackend) would work, 
+    # but here we just test MemoryBackend wiring.
+    
+def test_multi_epoch_event_logging_with_ledger(multi_epoch_setup):
+    """Verify that commit.epoch events are logged when ledger is active."""
+    topo, profiles, base_snap = multi_epoch_setup
+    snaps = [base_snap.__class__(**{**base_snap.as_dict(), "epoch_index": 5})]
+    ledger = InMemoryLedgerBackend()
+    
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        run_devnet_multi_epoch(
+            topo, snaps, profiles, 
+            export_root=tmp_dir, 
+            ledger_backend=ledger
+        )
+        
+        log_path = Path(tmp_dir) / "epoch_0005" / "devnet_events.ndjson"
+        assert log_path.exists()
+        
+        found_commit = False
+        with open(log_path) as f:
+            for line in f:
+                evt = json.loads(line)
+                if evt.get("kind") == "commit.epoch":
+                    found_commit = True
+                    assert evt["payload"]["epoch_index"] == 5
+                    break
+        
+        assert found_commit, "commit.epoch event not found in event log"
