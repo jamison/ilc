@@ -340,6 +340,44 @@ Maps to Equation **I** (energy‑per‑proof) and **G** (tokens‑per‑watt).
 
 ---
 
+## Philosophical Context (Non-Axiomatic)
+
+The following ideas are framing only. They are **not** protocol axioms and must
+never override verification, refutation, or audit logic.
+
+### Background (Hoffman / Arkani‑Hamed)
+
+**Donald Hoffman** is a cognitive scientist known for “interface theory,” the
+idea that perception is an adaptive interface rather than a literal window onto
+reality. In this view, what we experience are fitness‑optimized symbols that
+help us act, not necessarily faithful representations of underlying structure.
+
+**Nima Arkani‑Hamed** is a theoretical physicist who has argued that spacetime
+may be emergent rather than fundamental (often summarized as “spacetime is
+doomed”). This does not specify what replaces spacetime, but it suggests that
+the deepest layer of reality may be described by abstract constraints rather
+than the familiar geometry of space and time.
+
+We cite these ideas as **philosophical context only**: they are not validated
+protocol premises, and they do not imply that any specific ontology should be
+hard‑coded into ILC.
+
+### Relevance to ILC (framing only)
+
+1. **Interface‑level claims:** If observations are interface‑level symbols, then
+   the protocol should treat claims as **representations** that must be tested,
+   not as ground truth. This reinforces the primacy of verification/refutation.
+2. **Constraint‑first modeling:** If deep reality is expressed in constraints
+   rather than literal surfaces, ILC should model **consistent constraints that
+   survive checks** instead of presuming any single ontology.
+3. **No metaphysical settlement:** Philosophical frames can guide vocabulary and
+   intuition, but **must not** bypass audit or become settlement rules.
+
+These points are recorded to clarify **why** ILC prioritizes verification and
+audited constraint updates, not to assert a metaphysical doctrine.
+
+---
+
 ## Non-Goals
 
 - Not a macroeconomic policy for payouts.
