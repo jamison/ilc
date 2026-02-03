@@ -16,6 +16,7 @@ from ilc_core.ledger.ledger_export import (
     export_ledger_state_csv,
     export_ledger_distribution_checks_csv
 )
+from ilc_core.ledger.canon_export import export_canon_state_json
 
 from datetime import datetime, timezone
 
@@ -165,15 +166,21 @@ def run_devnet_multi_epoch(
                 target_epoch_id=epoch_id
             )
             export_ledger_state_csv(ledger_backend, export_dir_for_epoch / "ledger_state.csv")
-            
+
             # If we performed a check, write the verification CSV
             if check:
                 # Add epoch_id to the check result for the CSV row
                 check["epoch_id"] = epoch_id
                 export_ledger_distribution_checks_csv(
-                    [check], 
-                    export_dir_for_epoch / "ledger_distribution_checks.csv"
-                )
+                check,
+                export_dir_for_epoch / "ledger_distribution_checks.csv"
+            )
+
+            # Phase 71: Canon Export
+            export_canon_state_json(
+                ledger_backend,
+                export_dir_for_epoch / "canon_state.json"
+            )
 
         epoch_results.append(result)
 
