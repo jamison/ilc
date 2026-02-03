@@ -11,7 +11,11 @@ from ilc_core.protocol.event_log import EventLogger, write_events_to_file, make_
 from ilc_core.protocol.params import ProtocolParams
 from ilc_core.ledger.backend import LedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
-from ilc_core.ledger.ledger_export import export_ledger_state_json, export_ledger_state_csv
+from ilc_core.ledger.ledger_export import (
+    export_ledger_state_json, 
+    export_ledger_state_csv,
+    export_ledger_distribution_checks_csv
+)
 
 from datetime import datetime, timezone
 
@@ -133,6 +137,11 @@ def run_devnet_multi_epoch(
             )
             
             # 4. Apply Settlement
+            # Capture balances before settlement for verification (Phase 70H)
+            balances_before = None
+            if hasattr(ledger_backend, "balances"):
+                 balances_before = ledger_backend.balances.copy()
+            
             ledger_backend.apply_epoch_settlement(commit_evt)
             
             # 5. Log Event (Task B)
@@ -146,10 +155,25 @@ def run_devnet_multi_epoch(
                 export_dir_for_epoch / "devnet_events.ndjson"
             )
 
-        # 6. Phase 70G: Ledger Export
+        # 6. Phase 70G/H: Ledger Export & Verification
         if export_dir_for_epoch and ledger_backend:
-            export_ledger_state_json(ledger_backend, export_dir_for_epoch / "ledger_state.json")
+            # Export with verification check
+            check = export_ledger_state_json(
+                ledger_backend, 
+                export_dir_for_epoch / "ledger_state.json",
+                balances_before=balances_before,
+                target_epoch_id=epoch_id
+            )
             export_ledger_state_csv(ledger_backend, export_dir_for_epoch / "ledger_state.csv")
+            
+            # If we performed a check, write the verification CSV
+            if check:
+                # Add epoch_id to the check result for the CSV row
+                check["epoch_id"] = epoch_id
+                export_ledger_distribution_checks_csv(
+                    [check], 
+                    export_dir_for_epoch / "ledger_distribution_checks.csv"
+                )
 
         epoch_results.append(result)
 

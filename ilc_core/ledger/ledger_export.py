@@ -3,18 +3,25 @@ import csv
 from os import PathLike
 from pathlib import Path
 from dataclasses import asdict
-from typing import Any, Dict
+from typing import Any, Dict, Optional, List
 
 from ilc_core.ledger.backend import LedgerBackend
+from ilc_core.ledger.settlement_verification import verify_stake_distribution
 
-def export_ledger_state_json(ledger: LedgerBackend, path: PathLike) -> None:
+def export_ledger_state_json(
+    ledger: LedgerBackend, 
+    path: PathLike,
+    *,
+    balances_before: Optional[Dict[str, float]] = None,
+    target_epoch_id: Optional[str] = None
+) -> Dict[str, Any]:
     """
     Export full ledger state to a JSON file.
     
-    Includes:
-    - epoch_records
-    - stake_snapshots
-    - balances
+    If balances_before and target_epoch_id are provided, performs distribution check
+    on that specific epoch and attaches 'distribution_check' to the record.
+    
+    Returns the verification result (check dict) if performed, else empty dict.
     """
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -38,8 +45,30 @@ def export_ledger_state_json(ledger: LedgerBackend, path: PathLike) -> None:
         "balances": balances
     }
     
+    check_result = {}
+    
+    # Optional Verification (Task B)
+    if balances_before is not None and target_epoch_id:
+        record = epoch_records.get(target_epoch_id)
+        # We need the snapshot for *this* epoch
+        snapshot_raw = raw_snapshots.get(target_epoch_id)
+        
+        if record:
+             check_result = verify_stake_distribution(
+                 epoch_record=record,
+                 snapshot=snapshot_raw, # verify handles None
+                 balances_before=balances_before,
+                 balances_after=balances # current balances are 'after'
+             )
+             # Attach to record in output
+             record["distribution_check"] = check_result
+             # Update data ref just in case it wasn't by ref (it is)
+             data["epoch_records"][target_epoch_id] = record
+
     with p.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+        
+    return check_result
 
 def export_ledger_state_csv(ledger: LedgerBackend, path: PathLike) -> None:
     """
@@ -95,3 +124,36 @@ def export_ledger_state_csv(ledger: LedgerBackend, path: PathLike) -> None:
         writer.writeheader()
         for r in rows:
             writer.writerow(r)
+
+def export_ledger_distribution_checks_csv(
+    checks: List[Dict[str, Any]],
+    path: PathLike,
+) -> None:
+    """
+    Export verification results to a CSV file.
+    """
+    if not checks:
+        return
+        
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Flatten checks for CSV if needed?
+    # Prompt says columns: epoch_id, ok, total_delta, expected_total, max_agent_error, top_errors, input_hash
+    # The check result doesn't have epoch_id inside it by default, we should probably inject it or 
+    # expect the caller to pass it??
+    # Wait, the verification helper returns a dict. It doesn't include epoch_id.
+    # We should probably pass a list of checks where we added epoch_id.
+    
+    header = ["epoch_id", "ok", "total_delta", "expected_total", "max_agent_error", "top_errors", "input_hash"]
+    
+    with p.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=header)
+        writer.writeheader()
+        for c in checks:
+            # Filter to just header keys
+            row = {k: c.get(k) for k in header}
+            # top_errors is list, stringify
+            if isinstance(row["top_errors"], list):
+                row["top_errors"] = ";".join(row["top_errors"])
+            writer.writerow(row)
