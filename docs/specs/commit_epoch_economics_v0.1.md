@@ -8,7 +8,9 @@
 
 ## 1. Overview
 
-This document defines the economic semantics tied to `commit.epoch` events in the ILC protocol. The `commit.epoch` event gates all reward distribution, decay calculations, and stake consolidation. No economic state transitions occur outside of epoch finalization.
+This document defines the economic semantics tied to `commit.epoch` events in the ILC protocol. The `commit.epoch` event gates all **ledger settlement** (rewards distribution, decay application, consolidation). No ledger settlement occurs outside of `commit.epoch`.
+
+**Note:** Control-plane updates (benchmark results, trust tiers, routing parameters) may occur at epoch start and are logged via `epoch_config`. These are non-ledger operations.
 
 **Scope:** This spec covers:
 - How epoch finalization triggers economic effects
@@ -70,10 +72,13 @@ decay_window = 2 epochs
 
 ### 4.3 Consolidation
 
-Stake changes (deposits, withdrawals) are queued during epochs and applied at epoch boundaries:
+Stake changes (deposits, withdrawals) follow a queued settlement model:
 
-- **Deposits:** Effective at next epoch start
-- **Withdrawals:** Cooldown period of 1 epoch, effective after cooldown
+- **Queuing:** Deposits/withdrawals are **queued during epoch E**
+- **Finalization:** They are **finalized at `commit.epoch(E)`** (ledger write)
+- **Activation:** They become **active for epoch E+1** (semantic effect)
+
+This ensures all balance mutations occur at `commit.epoch` while stake effects apply in the subsequent epoch.
 
 ---
 
