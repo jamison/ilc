@@ -4,8 +4,6 @@ Tests for FileLedgerBackend persistence and parity.
 
 import pytest
 import os
-import shutil
-import json
 from datetime import datetime, timezone
 from typing import Generator, Any
 

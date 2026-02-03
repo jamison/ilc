@@ -4,8 +4,7 @@ Persistent ledger backend implementation using file storage.
 
 import os
 import json
-import shutil
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
