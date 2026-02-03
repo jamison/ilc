@@ -1,8 +1,9 @@
 from dataclasses import dataclass, asdict
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from os import PathLike
 from pathlib import Path
 import csv
+import json
 
 from ilc_core.sim.devnet_multi_epoch import DevnetMultiEpochResult
 
@@ -145,3 +146,27 @@ def export_experiment_summaries_to_csv(
         writer.writeheader()
         for r in rows:
             writer.writerow(r)
+
+def export_experiment_summaries_to_json(
+    summaries: List[DevnetExperimentSummary],
+    path: PathLike,
+) -> None:
+    """
+    Write experiment summaries to a JSON list, including flattened metrics.
+    """
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    
+    rows = []
+    for s in summaries:
+        row = asdict(s)
+        metrics = row.pop("settlement_metrics", None) or {}
+        
+        # We assume parity with CSV: prefix with settlement_
+        for k, v in metrics.items():
+            row[f"settlement_{k}"] = v
+            
+        rows.append(row)
+        
+    with p.open("w", encoding="utf-8") as f:
+        json.dump(rows, f, indent=2)
