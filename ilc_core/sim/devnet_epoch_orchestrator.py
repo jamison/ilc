@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from os import PathLike
 from pathlib import Path
@@ -137,11 +138,17 @@ def run_devnet_epoch(
 
     # 7) Emit Events if Logger provided
     if event_logger:
-        # Emit EPOCH_CONFIG (Phase 63C)
+        # Emit EPOCH_CONFIG (Phase 63C, updated Phase 69D)
         params_dict = asdict(protocol_params) if protocol_params else {}
         event_logger.emit(
             kind="epoch_config", 
-            payload={"epoch_index": epoch_index, "protocol_params": params_dict}
+            payload={
+                "epoch_index": epoch_index,
+                "benchmark_suite_id": "devnet_synthetic_v0.1",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "namespace_id": namespace_snapshot.namespace_id,
+                "protocol_params": params_dict,
+            }
         )
         
         # Emit TASK_OUTCOMEs

@@ -49,6 +49,8 @@ The control loop executes these actions in order:
    - Construct `epoch_config` payload with updated parameters
    - Emit `epoch_config` event to protocol log
 
+**Note:** `epoch_config` is minimally validated; extra fields are allowed (forward compatible).
+
 ---
 
 ## 4. Outputs

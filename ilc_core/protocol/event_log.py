@@ -220,3 +220,154 @@ def make_commit_epoch_event(
         payload=payload,
         source=source
     )
+
+
+# ============================================================
+# Lenient validators (allow extra fields, fail on missing required)
+# ============================================================
+
+def validate_epoch_config_payload(payload: Dict[str, Any]) -> None:
+    """
+    Lenient validator for epoch_config payloads.
+    Validates required keys + basic types. Allows extra keys.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("payload must be a dict")
+
+    required = {"epoch_index", "benchmark_suite_id", "created_at", "namespace_id"}
+    missing = required - set(payload.keys())
+    if missing:
+        raise ValueError(f"Missing required epoch_config fields: {missing}")
+
+    if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
+        raise ValueError("epoch_index must be a non-negative integer")
+    if not isinstance(payload["benchmark_suite_id"], str):
+        raise ValueError("benchmark_suite_id must be a string")
+    if not isinstance(payload["created_at"], str):
+        raise ValueError("created_at must be a string")
+    if not isinstance(payload["namespace_id"], str):
+        raise ValueError("namespace_id must be a string")
+
+
+def validate_task_outcome_payload(payload: Dict[str, Any]) -> None:
+    """
+    Lenient validator for task_outcome payloads.
+    Validates required keys + basic types. Allows extra keys.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("payload must be a dict")
+
+    required = {"agent_id", "epoch_index", "namespace_id", "task_type", "reward", "success"}
+    missing = required - set(payload.keys())
+    if missing:
+        raise ValueError(f"Missing required task_outcome fields: {missing}")
+
+    if not isinstance(payload["agent_id"], str):
+        raise ValueError("agent_id must be a string")
+    if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
+        raise ValueError("epoch_index must be a non-negative integer")
+    if not isinstance(payload["namespace_id"], str):
+        raise ValueError("namespace_id must be a string")
+    if not isinstance(payload["task_type"], str):
+        raise ValueError("task_type must be a string")
+    if not isinstance(payload["reward"], (int, float)) or payload["reward"] < 0:
+        raise ValueError("reward must be a non-negative number")
+    if not isinstance(payload["success"], bool):
+        raise ValueError("success must be a boolean")
+
+
+def validate_epoch_summary_payload(payload: Dict[str, Any]) -> None:
+    """
+    Lenient validator for epoch_summary payloads.
+    Validates required keys + basic types. Allows extra keys.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("payload must be a dict")
+
+    required = {"epoch_index", "total_tasks", "total_reward"}
+    missing = required - set(payload.keys())
+    if missing:
+        raise ValueError(f"Missing required epoch_summary fields: {missing}")
+
+    if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
+        raise ValueError("epoch_index must be a non-negative integer")
+    if not isinstance(payload["total_tasks"], int) or payload["total_tasks"] < 0:
+        raise ValueError("total_tasks must be a non-negative integer")
+    if not isinstance(payload["total_reward"], (int, float)) or payload["total_reward"] < 0:
+        raise ValueError("total_reward must be a non-negative number")
+
+
+# ============================================================
+# Helper constructors (parallel to make_commit_epoch_event)
+# ============================================================
+
+def make_epoch_config_event(
+    epoch_index: int,
+    benchmark_suite_id: str,
+    created_at: str,
+    namespace_id: str,
+    source: str = "protocol",
+    **extra_fields: Any
+) -> ProtocolEvent:
+    """
+    Helper to construct a validated epoch_config event.
+    Extra fields are passed through to the payload.
+    """
+    payload = {
+        "epoch_index": epoch_index,
+        "benchmark_suite_id": benchmark_suite_id,
+        "created_at": created_at,
+        "namespace_id": namespace_id,
+        **extra_fields,
+    }
+    validate_epoch_config_payload(payload)
+    return make_event(kind="epoch_config", payload=payload, source=source)
+
+
+def make_task_outcome_event(
+    agent_id: str,
+    epoch_index: int,
+    namespace_id: str,
+    task_type: str,
+    reward: float,
+    success: bool,
+    source: str = "sim",
+    **extra_fields: Any
+) -> ProtocolEvent:
+    """
+    Helper to construct a validated task_outcome event.
+    Extra fields are passed through to the payload.
+    """
+    payload = {
+        "agent_id": agent_id,
+        "epoch_index": epoch_index,
+        "namespace_id": namespace_id,
+        "task_type": task_type,
+        "reward": reward,
+        "success": success,
+        **extra_fields,
+    }
+    validate_task_outcome_payload(payload)
+    return make_event(kind="task_outcome", payload=payload, source=source)
+
+
+def make_epoch_summary_event(
+    epoch_index: int,
+    total_tasks: int,
+    total_reward: float,
+    source: str = "sim",
+    **extra_fields: Any
+) -> ProtocolEvent:
+    """
+    Helper to construct a validated epoch_summary event.
+    Extra fields are passed through to the payload.
+    """
+    payload = {
+        "epoch_index": epoch_index,
+        "total_tasks": total_tasks,
+        "total_reward": total_reward,
+        **extra_fields,
+    }
+    validate_epoch_summary_payload(payload)
+    return make_event(kind="epoch_summary", payload=payload, source=source)
+
