@@ -200,3 +200,16 @@ Future implementation will likely integrate at:
 - **Economics engine:** Subscribe to commit.epoch events for settlement
 
 No code changes are required in this phase. This section is informational only.
+
+---
+
+## 12. Finality Model (Short Note)
+
+Unlike probabilistic ledgers (e.g., Bitcoin) where nodes may temporarily diverge until enough confirmations accrue, ILC aims for **epoch-bounded finality**:
+
+- **During an epoch:** control-plane state may drift (routing tiers, benchmarks, congestion policy), but no ledger settlement occurs.
+- **At `commit.epoch`:** settlement is expected to be canonical. Nodes should converge on the same stake snapshot and commit.epoch event.
+
+The design intent is deterministic finality at epoch boundaries rather than continuous probabilistic convergence. This requires:
+1) a canonical stake snapshot for the epoch, and  
+2) a canonical `commit.epoch` settlement event that references it.
