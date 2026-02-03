@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, Literal
 
 from ilc_core.protocol.event_log import ProtocolEvent, validate_commit_epoch_payload
+from ilc_core.ledger.stake_snapshot import StakeSnapshot
 
 
 class LedgerBackend(ABC):
@@ -50,6 +51,29 @@ class LedgerBackend(ABC):
         """
         pass
 
+    @abstractmethod
+    def put_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
+        """
+        Store a stake snapshot for an epoch.
+        
+        Args:
+            snapshot: The stake snapshot to store
+        """
+        pass
+
+    @abstractmethod
+    def get_stake_snapshot(self, epoch_id: str) -> Optional[StakeSnapshot]:
+        """
+        Retrieve a stake snapshot for an epoch.
+        
+        Args:
+            epoch_id: The unique epoch identifier
+            
+        Returns:
+            The stake snapshot or None if not found
+        """
+        pass
+
 
 class InMemoryLedgerBackend(LedgerBackend):
     """
@@ -61,16 +85,18 @@ class InMemoryLedgerBackend(LedgerBackend):
     def __init__(self):
         self.balances: Dict[str, float] = {}
         self.epoch_records: Dict[str, Dict[str, Any]] = {}
+        self.stake_snapshots: Dict[str, StakeSnapshot] = {}
 
     def apply_epoch_settlement(self, epoch_event: ProtocolEvent) -> None:
         """
         Apply settlement for a commit.epoch event.
         
         Settlement rules:
-        - committed: Record epoch and apply rewards (stub: no balance changes yet)
-        - rolled_back: Mark epoch as rolled back, no balance changes
-        - superseded: Mark prior epoch as superseded, apply new epoch
-        - Idempotent: Re-applying same epoch_id is a no-op
+        - committed: Record epoch and apply rewards using stake snapshot.
+                     If snapshot missing, stub distribution (no balance change).
+        - rolled_back: Mark epoch as rolled back, no balance changes.
+        - superseded: Mark prior epoch as superseded, reverse its effects, apply new epoch.
+        - Idempotent: Re-applying same epoch_id is a no-op.
         """
         if epoch_event.kind != "commit.epoch":
             raise ValueError(f"Expected commit.epoch event, got {epoch_event.kind}")
@@ -94,6 +120,28 @@ class InMemoryLedgerBackend(LedgerBackend):
             if (prior_record.get("epoch_index") == epoch_index and 
                 prior_id != epoch_id and
                 prior_record.get("status") != "superseded"):
+                
+                # Reverse effects of prior epoch if it was settled with real distribution
+                if prior_record.get("status") == "settled":
+                     # Check if we need to reverse balances
+                     # Note: we only reverse if distribution actually happened.
+                     # But for simplicity in this phase, assuming single thread/process,
+                     # we assume only one "settled" epoch at a time per index. 
+                     # However, to be strict:
+                     # If prior record has "distribution_status" == "distributed", we should reverse.
+                     # This requires storing distributed amounts or recalculating them.
+                     # Re-calculation needs the *prior* snapshot.
+                     # For MVP in 70B, we assume simple overwrite logic: 
+                     # if superseded, we don't necessarily "undo" immediately unless we track balances carefully.
+                     # But wait, balance updates are cumulative. We MUST undo changes.
+                     
+                     # 1. Reverse prior rewards if they were applied
+                     if prior_record.get("distribution_status") == "distributed":
+                         prior_snapshot = self.get_stake_snapshot(prior_id)
+                         if prior_snapshot:
+                             prior_rewards = prior_record.get("summary", {}).get("reward_total", 0.0)
+                             self._apply_rewards(prior_snapshot, -prior_rewards)
+
                 # Mark prior as superseded
                 prior_record["status"] = "superseded"
                 prior_record["superseded_by"] = epoch_id
@@ -112,10 +160,15 @@ class InMemoryLedgerBackend(LedgerBackend):
 
         if finalization_state == "committed":
             record["status"] = "settled"
-            # TODO: Await per-agent stake snapshot source.
-            # For now, reward_total is recorded but balances are unchanged.
-            # Real distribution requires stake snapshot per agent.
-            record["distribution_status"] = "stub_no_balance_change"
+            
+            # Real distribution using stake snapshot
+            snapshot = self.get_stake_snapshot(epoch_id)
+            if snapshot:
+                rewards = payload["summary"]["reward_total"]
+                self._apply_rewards(snapshot, rewards)
+                record["distribution_status"] = "distributed"
+            else:
+                record["distribution_status"] = "stub_no_snapshot"
 
         elif finalization_state == "rolled_back":
             record["status"] = "rolled_back"
@@ -127,6 +180,16 @@ class InMemoryLedgerBackend(LedgerBackend):
 
         self.epoch_records[epoch_id] = record
 
+    def _apply_rewards(self, snapshot: StakeSnapshot, total_rewards: float) -> None:
+        """Helper to apply (or reverse) rewards based on logic."""
+        if snapshot.total_stake <= 0:
+            return
+            
+        for agent_id, stake in snapshot.stakes.items():
+            share = (stake / snapshot.total_stake) * total_rewards
+            current = self.balances.get(agent_id, 0.0)
+            self.balances[agent_id] = current + share
+
     def get_balance(self, agent_id: str) -> float:
         """Get agent balance. Returns 0.0 if not found."""
         return self.balances.get(agent_id, 0.0)
@@ -134,6 +197,14 @@ class InMemoryLedgerBackend(LedgerBackend):
     def get_epoch_record(self, epoch_id: str) -> Optional[Dict[str, Any]]:
         """Get epoch settlement record."""
         return self.epoch_records.get(epoch_id)
+
+    def put_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
+        """Store a stake snapshot."""
+        self.stake_snapshots[snapshot.epoch_id] = snapshot
+
+    def get_stake_snapshot(self, epoch_id: str) -> Optional[StakeSnapshot]:
+        """Retrieve a stake snapshot."""
+        return self.stake_snapshots.get(epoch_id)
 
 
 def settle_commit_epoch(ledger: LedgerBackend, event: ProtocolEvent) -> None:

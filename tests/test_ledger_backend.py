@@ -9,6 +9,7 @@ from ilc_core.ledger.backend import (
     InMemoryLedgerBackend,
     settle_commit_epoch,
 )
+from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEvent
 
 
@@ -74,7 +75,7 @@ class TestInMemoryLedgerBackend:
         assert record["status"] == "settled"
         assert record["finalization_state"] == "committed"
         # Stub rule: balances unchanged
-        assert record["distribution_status"] == "stub_no_balance_change"
+        assert record["distribution_status"] == "stub_no_snapshot"
 
     def test_rolled_back_marks_epoch_no_balance_change(self):
         """Rolled back epoch should mark record but not change balances."""
@@ -170,6 +171,136 @@ class TestInMemoryLedgerBackend:
         # Balances should be unchanged (stub rule)
         assert ledger.get_balance("agent_1") == 0.0
         assert ledger.get_balance("agent_2") == 0.0
+
+
+    def test_store_and_retrieve_stake_snapshot(self):
+        """Should be able to store and retrieve stake snapshots."""
+        ledger = InMemoryLedgerBackend()
+        snapshot = StakeSnapshot(
+            epoch_id="epoch_5_snap",
+            epoch_index=5,
+            namespace_id="test_ns",
+            stakes={"agent_a": 600.0, "agent_b": 400.0},
+            total_stake=1000.0,
+            created_at=datetime.now(timezone.utc).isoformat()
+        )
+        
+        ledger.put_stake_snapshot(snapshot)
+        retrieved = ledger.get_stake_snapshot("epoch_5_snap")
+        assert retrieved == snapshot
+
+    def test_apply_rewards_with_snapshot(self):
+        """Committed epoch with snapshot should update balances."""
+        ledger = InMemoryLedgerBackend()
+        
+        # 1. Store snapshot
+        snapshot = StakeSnapshot(
+            epoch_id="epoch_10_dist",
+            epoch_index=10,
+            namespace_id="test_ns",
+            stakes={"agent_a": 600.0, "agent_b": 400.0},
+            total_stake=1000.0,
+            created_at=datetime.now(timezone.utc).isoformat()
+        )
+        ledger.put_stake_snapshot(snapshot)
+        
+        # 2. Apply settlement (Reward = 100.0)
+        payload = make_commit_epoch_payload(
+            epoch_id="epoch_10_dist",
+            epoch_index=10,
+            finalization_state="committed",
+            reward_total=100.0,
+        )
+        event = make_commit_epoch_event(payload)
+        ledger.apply_epoch_settlement(event)
+        
+        # 3. Check balances
+        # agent_a: (600/1000) * 100 = 60.0
+        # agent_b: (400/1000) * 100 = 40.0
+        assert ledger.get_balance("agent_a") == 60.0
+        assert ledger.get_balance("agent_b") == 40.0
+        
+        # Check record status
+        record = ledger.get_epoch_record("epoch_10_dist")
+        assert record["status"] == "settled"
+        assert record["distribution_status"] == "distributed"
+
+    def test_apply_rewards_missing_snapshot_stub(self):
+        """Committed epoch WITHOUT snapshot should result in stub behavior."""
+        ledger = InMemoryLedgerBackend()
+        
+        # Apply settlement without storing snapshot first
+        payload = make_commit_epoch_payload(
+            epoch_id="epoch_11_stub",
+            epoch_index=11,
+            finalization_state="committed",
+            reward_total=100.0,
+        )
+        event = make_commit_epoch_event(payload)
+        ledger.apply_epoch_settlement(event)
+        
+        # Balances unchanged
+        assert ledger.get_balance("agent_a") == 0.0
+        
+        # Check record
+        record = ledger.get_epoch_record("epoch_11_stub")
+        assert record["status"] == "settled"
+        assert record["distribution_status"] == "stub_no_snapshot"
+
+    def test_superseded_reverses_distribution(self):
+        """Superseded epoch should reverse prior reward distribution."""
+        ledger = InMemoryLedgerBackend()
+        
+        # 1. Setup snapshots for epoch index 20 (assume same stakes for simplicity)
+        snap1 = StakeSnapshot(
+            epoch_id="epoch_20_v1",
+            epoch_index=20,
+            namespace_id="test_ns",
+            stakes={"agent_a": 100.0},
+            total_stake=100.0,
+            created_at="2025-01-01T00:00:00Z"
+        )
+        ledger.put_stake_snapshot(snap1)
+        
+        # 2. Apply V1 (Reward = 50.0)
+        payload1 = make_commit_epoch_payload(
+            epoch_id="epoch_20_v1", epoch_index=20, reward_total=50.0
+        )
+        ledger.apply_epoch_settlement(make_commit_epoch_event(payload1))
+        
+        # Check intermediate balance: agent_a has 50.0
+        assert ledger.get_balance("agent_a") == 50.0
+        
+        # 3. Setup V2 snapshot (can be same logic, new ID)
+        snap2 = StakeSnapshot(
+            epoch_id="epoch_20_v2",
+            epoch_index=20,
+            namespace_id="test_ns",
+            stakes={"agent_a": 100.0},
+            total_stake=100.0,
+            created_at="2025-01-01T00:01:00Z"
+        )
+        ledger.put_stake_snapshot(snap2)
+
+        # 4. Apply V2 (Reward = 80.0) -> Supersedes V1
+        payload2 = make_commit_epoch_payload(
+            epoch_id="epoch_20_v2", epoch_index=20, reward_total=80.0
+        )
+        ledger.apply_epoch_settlement(make_commit_epoch_event(payload2))
+        
+        # Check final balance
+        # Was 50.0. 
+        # Reverse V1: -50.0 -> 0.0
+        # Apply V2: +80.0 -> 80.0
+        assert ledger.get_balance("agent_a") == 80.0
+        
+        # Check records
+        rec1 = ledger.get_epoch_record("epoch_20_v1")
+        assert rec1["status"] == "superseded"
+        assert rec1["superseded_by"] == "epoch_20_v2"
+        
+        rec2 = ledger.get_epoch_record("epoch_20_v2")
+        assert rec2["status"] == "settled"
 
     def test_get_epoch_record_not_found(self):
         """get_epoch_record returns None for unknown epoch_id."""

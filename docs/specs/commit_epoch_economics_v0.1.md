@@ -58,7 +58,7 @@ agent_reward = (agent_stake / stake_total) * reward_total
 Distribution only occurs when `finalization_state = committed`.
 
 > [!IMPORTANT]
-> Reward distribution requires per-agent stake snapshot (not yet implemented). The ledger backend records epoch data but does not mutate balances until stake snapshots are available.
+> Reward distribution requires per-agent stake snapshot. A valid `StakeSnapshot` must be stored in the ledger before an epoch is committed to enable real reward distribution. If missing, the epoch is settled with `distribution_status="stub_no_snapshot"` and balances remain unchanged.
 
 ### 4.2 Decay
 
