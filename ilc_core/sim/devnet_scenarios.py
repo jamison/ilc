@@ -22,6 +22,7 @@ from ilc_core.sim.devnet_experiments import (
     DevnetExperimentSummary
 )
 from ilc_core.ledger import get_ledger_backend
+from ilc_core.ledger.settlement_metrics import compute_settlement_metrics
 
 # Synthetic defaults for devnet scenario simulations.
 # These are not normative protocol thresholds; they just give
@@ -240,10 +241,16 @@ def run_scenario(
         ledger_backend=ledger
     )
     
+    # Phase 70F: Compute Metrics
+    settlement_metrics = None
+    if ledger:
+        settlement_metrics = compute_settlement_metrics(ledger)
+
     # Summarize
     summary = summarize_multi_epoch_run(
         label=scenario.label,
-        multi=multi_result
+        multi=multi_result,
+        settlement_metrics=settlement_metrics
     )
     
     return summary

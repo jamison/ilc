@@ -20,10 +20,13 @@ class DevnetExperimentSummary:
     mean_backlog_per_epoch: float = 0.0
     max_backlog: float = 0.0
     mean_backlog_ratio: float = 0.0
+    # Phase 70F: Settlement Metrics
+    settlement_metrics: Optional[Dict[str, Any]] = None
 
 def summarize_multi_epoch_run(
     label: str,
     multi: DevnetMultiEpochResult,
+    settlement_metrics: Optional[Dict[str, Any]] = None,
 ) -> DevnetExperimentSummary:
     """
     Summarize a multi-epoch run into a single KPI row.
@@ -76,6 +79,7 @@ def summarize_multi_epoch_run(
         mean_backlog_per_epoch=mean_backlog,
         max_backlog=max_backlog_val,
         mean_backlog_ratio=mean_ratio,
+        settlement_metrics=settlement_metrics,
     )
 
 def export_experiment_summaries_to_csv(
@@ -100,10 +104,41 @@ def export_experiment_summaries_to_csv(
         "avg_tasks_per_epoch", "avg_reward_per_task", 
         "max_node_tasks",
         # Phase 64B
-        "mean_backlog_per_epoch", "max_backlog", "mean_backlog_ratio"
+        "mean_backlog_per_epoch", "max_backlog", "mean_backlog_ratio",
+        # Phase 70F: Settlement Metrics
+        "settlement_num_epochs_total",
+        "settlement_num_epochs_settled",
+        "settlement_num_epochs_rolled_back",
+        "settlement_num_epochs_superseded",
+        "settlement_num_snapshots",
+        "settlement_total_rewards_distributed",
+        "settlement_total_rewards_stubbed",
     ]
     
-    rows = [asdict(s) for s in summaries]
+    # Pre-process rows to flatten settlement_metrics
+    rows = []
+    for s in summaries:
+        row = asdict(s)
+        metrics = row.pop("settlement_metrics", None)
+        
+        # Default empty values for settlement columns
+        stats = {
+            "num_epochs_total": 0,
+            "num_epochs_settled": 0,
+            "num_epochs_rolled_back": 0,
+            "num_epochs_superseded": 0,
+            "num_snapshots": 0,
+            "total_rewards_distributed": 0.0,
+            "total_rewards_stubbed": 0.0,
+        }
+        
+        if metrics:
+            stats.update(metrics)
+            
+        for k, v in stats.items():
+            row[f"settlement_{k}"] = v
+            
+        rows.append(row)
     
     with p.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=header)
