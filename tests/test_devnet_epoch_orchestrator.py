@@ -9,7 +9,12 @@ from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.analysis.task_routing_suggestions import TaskRoutingSuggestion
 from ilc_core.sim.devnet_epoch_orchestrator import run_devnet_epoch, DevnetEpochResult
-from ilc_core.protocol.event_log import EventLogger
+from ilc_core.protocol.event_log import (
+    EventLogger,
+    validate_epoch_config_payload,
+    validate_task_outcome_payload,
+    validate_epoch_summary_payload,
+)
 
 @pytest.fixture
 def minimal_setup():
@@ -143,3 +148,66 @@ def test_missing_agent_handling():
     # compute_node_load_metrics initializes from set(agent_to_node.values())
     
     assert "unassigned" in result.node_load_metrics
+
+
+def test_devnet_emission_validates_payloads(minimal_setup):
+    """
+    Integration test: Run devnet epoch with event_logger and validate
+    all emitted payloads using lenient validators.
+    
+    This test will fail if event payloads drift from required fields.
+    """
+    topo, profiles, snapshot = minimal_setup
+    
+    # Create event logger
+    logger = EventLogger(events=[])
+    
+    # Run devnet epoch with event logger
+    result = run_devnet_epoch(
+        epoch_index=10,
+        topology=topo,
+        namespace_snapshot=snapshot,
+        profiles=profiles,
+        event_logger=logger,
+    )
+    
+    # Verify events were emitted
+    assert len(logger.events) > 0
+    
+    # Categorize and validate events
+    epoch_config_events = []
+    task_outcome_events = []
+    epoch_summary_events = []
+    
+    for evt in logger.events:
+        if evt.kind == "epoch_config":
+            epoch_config_events.append(evt)
+            # Validate payload - should not raise
+            validate_epoch_config_payload(evt.payload)
+        elif evt.kind == "task_outcome":
+            task_outcome_events.append(evt)
+            validate_task_outcome_payload(evt.payload)
+        elif evt.kind == "epoch_summary":
+            epoch_summary_events.append(evt)
+            validate_epoch_summary_payload(evt.payload)
+    
+    # Should have exactly 1 epoch_config and 1 epoch_summary
+    assert len(epoch_config_events) == 1
+    assert len(epoch_summary_events) == 1
+    
+    # Should have task_outcome events (one per routed task)
+    assert len(task_outcome_events) == len(result.routed_task_rows)
+    
+    # Verify epoch_config required fields
+    config = epoch_config_events[0].payload
+    assert config["epoch_index"] == 10
+    assert "benchmark_suite_id" in config
+    assert "created_at" in config
+    assert config["namespace_id"] == "test_ns"
+    
+    # Verify epoch_summary required fields
+    summary = epoch_summary_events[0].payload
+    assert summary["epoch_index"] == 10
+    assert "total_tasks" in summary
+    assert "total_reward" in summary
+

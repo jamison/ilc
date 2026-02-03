@@ -170,7 +170,7 @@ def run_devnet_epoch(
             event_logger.emit(kind="task_outcome", payload=payload)
         
         # Emit EPOCH_SUMMARY
-        total_tasks = sum(m.get("num_tasks", 0) for m in node_load.values())
+        total_tasks = int(sum(m.get("num_tasks", 0) for m in node_load.values()))
         total_reward = sum(m.get("total_reward", 0.0) for m in node_load.values())
         
         # Simple regime inference
