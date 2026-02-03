@@ -199,6 +199,12 @@ Future implementation will likely integrate at:
 - **ProtocolEventLog / event_log.py:** Record commit.epoch events in NDJSON
 - **Economics engine:** Subscribe to commit.epoch events for settlement
 
+---
+
+## 12. Related Notes
+
+- `docs/specs/epoch_economics_accounting_notes_v0.1.md`
+
 No code changes are required in this phase. This section is informational only.
 
 ---
