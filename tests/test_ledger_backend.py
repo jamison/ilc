@@ -225,6 +225,32 @@ class TestInMemoryLedgerBackend:
         assert record["status"] == "settled"
         assert record["distribution_status"] == "distributed"
 
+    def test_apply_rewards_snapshot_validation_error(self):
+        """Should raise ValueError if snapshot mismatches payload."""
+        ledger = InMemoryLedgerBackend()
+        
+        # Snapshot with index=5
+        snapshot = StakeSnapshot(
+            epoch_id="epoch_5_wrong",
+            epoch_index=5,
+            namespace_id="test_ns",
+            stakes={"a": 100.0},
+            total_stake=100.0,
+            created_at=datetime.now(timezone.utc).isoformat()
+        )
+        ledger.put_stake_snapshot(snapshot)
+        
+        # Payload with index=99 (mismatch)
+        payload = make_commit_epoch_payload(
+            epoch_id="epoch_5_wrong", # ID matches to find it
+            epoch_index=99,
+            finalization_state="committed"
+        )
+        event = make_commit_epoch_event(payload)
+        
+        with pytest.raises(ValueError, match="Snapshot epoch_index 5 != payload 99"):
+            ledger.apply_epoch_settlement(event)
+
     def test_apply_rewards_missing_snapshot_stub(self):
         """Committed epoch WITHOUT snapshot should result in stub behavior."""
         ledger = InMemoryLedgerBackend()

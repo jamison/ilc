@@ -25,7 +25,7 @@ class StakeSnapshot:
         # Use small epsilon for float comparison if needed, but strict equality is better for deterministic ledger
         if abs(calculated_total - self.total_stake) > 1e-9:
             raise ValueError(
-                f"total_stake ({self.total_stake}) matches sum of stakes ({calculated_total})"
+                f"total_stake ({self.total_stake}) does not match sum of stakes ({calculated_total})"
             )
         if any(s < 0 for s in self.stakes.values()):
             raise ValueError("All stake values must be non-negative")

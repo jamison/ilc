@@ -2,7 +2,7 @@
 ILC Ledger Backend: In-memory settlement implementation.
 
 This module provides the minimal ledger backend for commit.epoch settlement.
-Phase 70A: In-memory only, no persistence, stub distribution rule.
+Phase 70B: In-memory only, no persistence, snapshot-based distribution + stub fallback.
 """
 
 from abc import ABC, abstractmethod
@@ -164,6 +164,14 @@ class InMemoryLedgerBackend(LedgerBackend):
             # Real distribution using stake snapshot
             snapshot = self.get_stake_snapshot(epoch_id)
             if snapshot:
+                # Consistency Checks
+                if snapshot.epoch_id != epoch_id:
+                    raise ValueError(f"Snapshot epoch_id {snapshot.epoch_id} != payload {epoch_id}")
+                if snapshot.epoch_index != epoch_index:
+                    raise ValueError(f"Snapshot epoch_index {snapshot.epoch_index} != payload {epoch_index}")
+                if snapshot.namespace_id != payload["namespace_id"]:
+                    raise ValueError(f"Snapshot namespace_id {snapshot.namespace_id} != payload {payload['namespace_id']}")
+
                 rewards = payload["summary"]["reward_total"]
                 self._apply_rewards(snapshot, rewards)
                 record["distribution_status"] = "distributed"
