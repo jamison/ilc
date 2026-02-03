@@ -11,6 +11,7 @@ from ilc_core.protocol.event_log import EventLogger, write_events_to_file, make_
 from ilc_core.protocol.params import ProtocolParams
 from ilc_core.ledger.backend import LedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
+from ilc_core.ledger.ledger_export import export_ledger_state_json, export_ledger_state_csv
 
 from datetime import datetime, timezone
 
@@ -144,6 +145,11 @@ def run_devnet_multi_epoch(
                 event_logger.events,
                 export_dir_for_epoch / "devnet_events.ndjson"
             )
+
+        # 6. Phase 70G: Ledger Export
+        if export_dir_for_epoch and ledger_backend:
+            export_ledger_state_json(ledger_backend, export_dir_for_epoch / "ledger_state.json")
+            export_ledger_state_csv(ledger_backend, export_dir_for_epoch / "ledger_state.csv")
 
         epoch_results.append(result)
 
