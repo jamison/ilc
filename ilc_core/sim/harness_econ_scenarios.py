@@ -20,6 +20,7 @@ from ilc_core.sim.devnet_experiments import (
     DevnetExperimentSummary,
     export_experiment_summaries_to_csv
 )
+from ilc_core.ledger import get_ledger_backend
 
 @dataclass
 class EconScenarioConfig:
@@ -105,12 +106,17 @@ def run_econ_scenarios_on_devnet(
             run_export_dir = Path(export_root) / econ_scen.label
             
         # 3. Run Simulation
+        ledger = get_ledger_backend(
+            kind=base_scenario.ledger_backend_kind,
+            storage_dir=base_scenario.ledger_storage_dir
+        )
         multi_result = run_devnet_multi_epoch(
             topology=topo,
             snapshots=snapshots,
             profiles=profiles,
             export_root=run_export_dir,
-            rng_seed=run_seed
+            rng_seed=run_seed,
+            ledger_backend=ledger
         )
         
         # 4. Summarize (Use econ scenario label)
