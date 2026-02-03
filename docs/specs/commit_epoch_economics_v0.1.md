@@ -57,6 +57,9 @@ agent_reward = (agent_stake / stake_total) * reward_total
 
 Distribution only occurs when `finalization_state = committed`.
 
+> [!IMPORTANT]
+> Reward distribution requires per-agent stake snapshot (not yet implemented). The ledger backend records epoch data but does not mutate balances until stake snapshots are available.
+
 ### 4.2 Decay
 
 Unclaimed rewards decay over time:
