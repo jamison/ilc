@@ -102,6 +102,23 @@ def test_verify_extra_agent_leak():
     assert result["ok"] is False # Total mismatch (15 vs 10) AND individual mismatch for b
     assert result["total_delta"] == 15.0
 
+def test_verify_distributed_without_snapshot_fails():
+    """
+    Test that distributed status without a snapshot fails verification.
+    """
+    epoch_record = {
+        "distribution_status": "distributed",
+        "summary": {"reward_total": 10.0}
+    }
+    balances_before = {"a": 0.0}
+    balances_after = {"a": 10.0}
+
+    result = verify_stake_distribution(epoch_record, None, balances_before, balances_after)
+
+    assert result["ok"] is False
+    assert result["top_errors"]
+    assert "missing_snapshot_or_total_stake" in result["top_errors"][0]
+
 def test_verify_distributed_no_snapshot():
     """
     Test guard against 'distributed' status with missing snapshot.
@@ -117,4 +134,4 @@ def test_verify_distributed_no_snapshot():
     result = verify_stake_distribution(epoch_record, None, balances_before, balances_after)
     
     assert result["ok"] is False
-    assert "Validation Failed" in result["top_errors"][0]
+    assert "missing_snapshot_or_total_stake" in result["top_errors"][0]

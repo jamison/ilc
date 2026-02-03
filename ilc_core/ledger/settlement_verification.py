@@ -7,7 +7,7 @@ from ilc_core.ledger.stake_snapshot import StakeSnapshot
 
 def hash_inputs(
     epoch_record: Dict[str, Any],
-    snapshot: StakeSnapshot,
+    snapshot: Optional[StakeSnapshot],
     balances_before: Dict[str, float],
     balances_after: Dict[str, float],
 ) -> str:
@@ -26,7 +26,7 @@ def hash_inputs(
 
 def verify_stake_distribution(
     epoch_record: Dict[str, Any],
-    snapshot: StakeSnapshot,
+    snapshot: Optional[StakeSnapshot],
     balances_before: Dict[str, float],
     balances_after: Dict[str, float],
 ) -> Dict[str, Any]:
@@ -65,17 +65,7 @@ def verify_stake_distribution(
     
     max_err = 0.0
     
-    # Fix B: Guard against distributed status without valid snapshot
-    if status == "distributed" and (not snapshot or snapshot.total_stake <= 0):
-        # Critical failure: Distributed but no snapshot means we can't verify logic.
-        return {
-            "ok": False, # Explicit fail
-            "total_delta": total_delta,
-            "expected_total": expected_total,
-            "max_agent_error": max(deltas.values(), default=0.0), # Treat all deltas as error? Or undefined.
-            "top_errors": ["Validation Failed: 'distributed' status but missing valid snapshot/stake"],
-            "input_hash": hash_inputs(epoch_record, snapshot, balances_before, balances_after),
-        }
+    missing_snapshot = status == "distributed" and (snapshot is None or snapshot.total_stake <= 0)
 
     if status == "distributed" and snapshot and snapshot.total_stake > 0:
         for agent_id, stake in snapshot.stakes.items():
@@ -97,7 +87,7 @@ def verify_stake_distribution(
     # Check bounds
     ok_total = abs(total_delta - expected_total) <= eps
     ok_individual = max_err <= eps
-    ok = ok_total and ok_individual
+    ok = ok_total and ok_individual and not missing_snapshot
     
     # Top errors
     # We want to identify the biggest discrepancies.
@@ -116,6 +106,8 @@ def verify_stake_distribution(
             
     top_errors = sorted(error_map.items(), key=lambda kv: kv[1], reverse=True)[:5]
     top_errors_formatted = [f"{k}:{v:.6f}" for k, v in top_errors if v > eps]
+    if missing_snapshot:
+        top_errors_formatted.insert(0, "missing_snapshot_or_total_stake")
 
     return {
         "ok": ok,
@@ -123,5 +115,6 @@ def verify_stake_distribution(
         "expected_total": expected_total,
         "max_agent_error": max_err,
         "top_errors": top_errors_formatted,
+        "error_note": "distributed_without_snapshot" if missing_snapshot else "",
         "input_hash": hash_inputs(epoch_record, snapshot, balances_before, balances_after),
     }
