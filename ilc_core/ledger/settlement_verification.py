@@ -65,6 +65,18 @@ def verify_stake_distribution(
     
     max_err = 0.0
     
+    # Fix B: Guard against distributed status without valid snapshot
+    if status == "distributed" and (not snapshot or snapshot.total_stake <= 0):
+        # Critical failure: Distributed but no snapshot means we can't verify logic.
+        return {
+            "ok": False, # Explicit fail
+            "total_delta": total_delta,
+            "expected_total": expected_total,
+            "max_agent_error": max(deltas.values(), default=0.0), # Treat all deltas as error? Or undefined.
+            "top_errors": ["Validation Failed: 'distributed' status but missing valid snapshot/stake"],
+            "input_hash": hash_inputs(epoch_record, snapshot, balances_before, balances_after),
+        }
+
     if status == "distributed" and snapshot and snapshot.total_stake > 0:
         for agent_id, stake in snapshot.stakes.items():
             expected = (stake / snapshot.total_stake) * reward_total
