@@ -116,26 +116,13 @@ class InMemoryLedgerBackend(LedgerBackend):
                 return
 
         # Handle supersession: find any prior epoch with same epoch_index
-        for prior_id, prior_record in self.epoch_records.items():
+        for prior_id, prior_record in list(self.epoch_records.items()):
             if (prior_record.get("epoch_index") == epoch_index and 
                 prior_id != epoch_id and
                 prior_record.get("status") != "superseded"):
                 
                 # Reverse effects of prior epoch if it was settled with real distribution
                 if prior_record.get("status") == "settled":
-                     # Check if we need to reverse balances
-                     # Note: we only reverse if distribution actually happened.
-                     # But for simplicity in this phase, assuming single thread/process,
-                     # we assume only one "settled" epoch at a time per index. 
-                     # However, to be strict:
-                     # If prior record has "distribution_status" == "distributed", we should reverse.
-                     # This requires storing distributed amounts or recalculating them.
-                     # Re-calculation needs the *prior* snapshot.
-                     # For MVP in 70B, we assume simple overwrite logic: 
-                     # if superseded, we don't necessarily "undo" immediately unless we track balances carefully.
-                     # But wait, balance updates are cumulative. We MUST undo changes.
-                     
-                     # 1. Reverse prior rewards if they were applied
                      if prior_record.get("distribution_status") == "distributed":
                          prior_snapshot = self.get_stake_snapshot(prior_id)
                          if prior_snapshot:
@@ -145,6 +132,7 @@ class InMemoryLedgerBackend(LedgerBackend):
                 # Mark prior as superseded
                 prior_record["status"] = "superseded"
                 prior_record["superseded_by"] = epoch_id
+                self._store_epoch_record(prior_record)
 
         # Create epoch record
         record: Dict[str, Any] = {
@@ -186,7 +174,7 @@ class InMemoryLedgerBackend(LedgerBackend):
             record["status"] = "superseded"
             # This event itself is superseded; no balance changes
 
-        self.epoch_records[epoch_id] = record
+        self._store_epoch_record(record)
 
     def _apply_rewards(self, snapshot: StakeSnapshot, total_rewards: float) -> None:
         """Helper to apply (or reverse) rewards based on logic."""
@@ -196,7 +184,15 @@ class InMemoryLedgerBackend(LedgerBackend):
         for agent_id, stake in snapshot.stakes.items():
             share = (stake / snapshot.total_stake) * total_rewards
             current = self.balances.get(agent_id, 0.0)
-            self.balances[agent_id] = current + share
+            self._set_balance(agent_id, current + share)
+
+    def _set_balance(self, agent_id: str, new_balance: float) -> None:
+        """Set an agent's balance."""
+        self.balances[agent_id] = new_balance
+
+    def _store_epoch_record(self, record: Dict[str, Any]) -> None:
+        """Store an epoch record."""
+        self.epoch_records[record["epoch_id"]] = record
 
     def get_balance(self, agent_id: str) -> float:
         """Get agent balance. Returns 0.0 if not found."""
@@ -209,6 +205,12 @@ class InMemoryLedgerBackend(LedgerBackend):
     def put_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
         """Store a stake snapshot."""
         self.stake_snapshots[snapshot.epoch_id] = snapshot
+        # Hook for persistence subclass can override this or use _store_snapshot if added
+        self._store_stake_snapshot(snapshot)
+
+    def _store_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
+        """Hook for persisting snapshot."""
+        pass # InMemory stores in self.stake_snapshots in put_stake_snapshot directly, actually let's move it here
 
     def get_stake_snapshot(self, epoch_id: str) -> Optional[StakeSnapshot]:
         """Retrieve a stake snapshot."""
