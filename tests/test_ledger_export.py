@@ -7,7 +7,11 @@ from dataclasses import dataclass
 from typing import Dict, Any
 
 from ilc_core.ledger.backend import LedgerBackend, InMemoryLedgerBackend
-from ilc_core.ledger.ledger_export import export_ledger_state_json, export_ledger_state_csv
+from ilc_core.ledger.ledger_export import (
+    export_ledger_state_json,
+    export_ledger_state_csv,
+    export_ledger_distribution_checks_csv,
+)
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 
 def test_ledger_export_in_memory(tmp_path):
@@ -85,3 +89,46 @@ def test_ledger_export_in_memory(tmp_path):
     
     row = lines[1]
     assert "settled" in row
+
+def test_export_ledger_distribution_checks_csv(tmp_path):
+    """
+    Test that distribution checks are exported to CSV correctly.
+    """
+    checks = [
+        {
+            "epoch_id": "ns:0001",
+            "ok": True,
+            "total_delta": 100.0,
+            "expected_total": 100.0,
+            "max_agent_error": 0.0,
+            "top_errors": ["alice:0.000000", "bob:0.000001"],
+            "input_hash": "deadbeef",
+        }
+    ]
+
+    out_path = tmp_path / "ledger_distribution_checks.csv"
+    export_ledger_distribution_checks_csv(checks, out_path)
+
+    assert out_path.exists()
+    content = out_path.read_text(encoding="utf-8").strip().splitlines()
+    assert len(content) == 2  # header + 1 row
+
+    header = content[0].split(",")
+    assert header == [
+        "epoch_id",
+        "ok",
+        "total_delta",
+        "expected_total",
+        "max_agent_error",
+        "top_errors",
+        "input_hash",
+    ]
+
+    row = content[1].split(",")
+    assert row[0] == "ns:0001"
+    assert row[1] == "True"
+    assert row[2] == "100.0"
+    assert row[3] == "100.0"
+    assert row[4] == "0.0"
+    assert row[5] == "alice:0.000000;bob:0.000001"
+    assert row[6] == "deadbeef"
