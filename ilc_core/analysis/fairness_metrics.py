@@ -179,34 +179,6 @@ def summarize_fairness(
         
     return gini, corr, top10_share
 
-def apply_pb_farming_and_gating(
-    base_payouts: Dict[str, float],
-    pb_agent_ids: Sequence[str],
-    pb_intensity: float,
-    gating_mode: str,
-    gestation_epochs: int,
-) -> Dict[str, float]:
-    """
-    Simulate Principal/Bounty (PB) farming boosts and subsequent subjective gating.
-
-    1. PB Boost: Agents in pb_agent_ids get scaled by (1 + pb_intensity).
-       We preserve total reward by scaling down non-PB agents if extra value is minted.
-    2. Gating:
-       - "none": PB boost is fully realized.
-       - "soft": PB boost is dampened by gestation_epochs (1 / (1 + gest * intensity)).
-       - "strict": PB boost is completely removed, reverting PB agents to base reward.
-    3. Renormalization: Ensure total sum equals sum(base_payouts).
-
-    Args:
-        base_payouts: Baseline rewards from simulation.
-        pb_agent_ids: List of agents acting as "PB farmers".
-        pb_intensity: Strength of the PB mechanism (0.0 to 1.0+).
-        gating_mode: "none", "soft", or "strict".
-        gestation_epochs: Severity of the gating hysteresis.
-
-    Returns:
-        New payout dictionary with gating applied.
-    """
 def _pb_validate_inputs(gating_mode: str) -> None:
     """Validate gating mode input."""
     if gating_mode not in ("none", "soft", "strict"):
