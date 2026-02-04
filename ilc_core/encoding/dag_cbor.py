@@ -160,6 +160,42 @@ def encode_dag_cbor(obj: Any) -> bytes:
 
 # --- Decoder ---
 
+def _read_extended_length(additional: int, data: bytes, offset: int) -> tuple[int, int]:
+    """Helper to read extended length integer values.
+    
+    Returns:
+        (value, bytes_read_for_length_only)
+    """
+    if additional == 24:
+        if offset + 1 >= len(data):
+            raise ValueError("Truncated CBOR: missing 1-byte length")
+        return data[offset + 1], 1
+    elif additional == 25:
+        if offset + 2 >= len(data):
+            raise ValueError("Truncated CBOR: missing 2-byte length")
+        val = (data[offset + 1] << 8) | data[offset + 2]
+        return val, 2
+    elif additional == 26:
+        if offset + 4 >= len(data):
+            raise ValueError("Truncated CBOR: missing 4-byte length")
+        val = (data[offset + 1] << 24) | (data[offset + 2] << 16) | \
+              (data[offset + 3] << 8) | data[offset + 4]
+        return val, 4
+    elif additional == 27:
+        if offset + 8 >= len(data):
+            raise ValueError("Truncated CBOR: missing 8-byte length")
+        val = 0
+        for i in range(8):
+            val = (val << 8) | data[offset + 1 + i]
+        return val, 8
+    elif additional in (28, 29, 30):
+        raise ValueError(f"Reserved additional info: {additional}")
+    elif additional == 31:
+        raise ValueError("Indefinite length not supported in DAG-CBOR")
+    else:
+        raise ValueError(f"Invalid additional info: {additional}")
+
+
 def _decode_type_and_len(data: bytes, offset: int) -> tuple[int, int, int]:
     """Decode CBOR type header, returning (major_type, value, bytes_consumed)."""
     if offset >= len(data):
@@ -171,34 +207,9 @@ def _decode_type_and_len(data: bytes, offset: int) -> tuple[int, int, int]:
     
     if additional <= 23:
         return major, additional, 1
-    elif additional == 24:
-        if offset + 1 >= len(data):
-            raise ValueError("Truncated CBOR: missing 1-byte length")
-        return major, data[offset + 1], 2
-    elif additional == 25:
-        if offset + 2 >= len(data):
-            raise ValueError("Truncated CBOR: missing 2-byte length")
-        val = (data[offset + 1] << 8) | data[offset + 2]
-        return major, val, 3
-    elif additional == 26:
-        if offset + 4 >= len(data):
-            raise ValueError("Truncated CBOR: missing 4-byte length")
-        val = (data[offset + 1] << 24) | (data[offset + 2] << 16) | \
-              (data[offset + 3] << 8) | data[offset + 4]
-        return major, val, 5
-    elif additional == 27:
-        if offset + 8 >= len(data):
-            raise ValueError("Truncated CBOR: missing 8-byte length")
-        val = 0
-        for i in range(8):
-            val = (val << 8) | data[offset + 1 + i]
-        return major, val, 9
-    elif additional in (28, 29, 30):
-        raise ValueError(f"Reserved additional info: {additional}")
-    elif additional == 31:
-        raise ValueError("Indefinite length not supported in DAG-CBOR")
-    else:
-        raise ValueError(f"Invalid additional info: {additional}")
+    
+    val, length_bytes = _read_extended_length(additional, data, offset)
+    return major, val, 1 + length_bytes
 
 
 def _decode_value(data: bytes, offset: int) -> tuple[Any, int]:

@@ -41,8 +41,8 @@ def compute_agent_light_cone_kpis(
         agent_claims[node.agent_id].add(node.id)
         
     # Build adjacency (undirected for reachability context)
-    # Actually, let's stick to the prompt: "reachable by any incident LinkRecord"
-    # So if I wrote C1, and C1->C2, C2 is in my reach. If C3->C1, C3 is in my reach.
+    # Ref: "reachable by any incident LinkRecord"
+    # Logic: If I wrote C1, and C1->C2, C2 is in my reach. If C3->C1, C3 is in my reach (undirected neighbor).
     adj: Dict[str, Set[str]] = {}
     for link in graph.links.values():
         if link.source_id not in adj: adj[link.source_id] = set()

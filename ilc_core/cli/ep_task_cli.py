@@ -15,6 +15,80 @@ class HttpClient:
     def post(self, path: str, json: Any) -> Any:
         return requests.post(f"{self.base_url}{path}", json=json)
 
+def _handle_schema(client: Any) -> int:
+    try:
+        res = client.get("/v1/protocol/ep_task_schema")
+        if res.status_code == 200:
+            print(json.dumps(res.json(), indent=2))
+            return 0
+        else:
+            print(f"Error fetching schema: {res.status_code}", file=sys.stderr)
+            return 1
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+def _handle_submit(client: Any, file_path: Optional[str]) -> int:
+    try:
+        if file_path:
+            with open(file_path, "r") as f:
+                payload = json.load(f)
+        else:
+            # Read from stdin
+            if sys.stdin.isatty():
+                print("Reading JSON from stdin...", file=sys.stderr)
+            payload = json.load(sys.stdin)
+
+        res = client.post("/v1/protocol/ep_task", json=payload)
+        if res.status_code == 200:
+            data = res.json()
+            ep = data.get("ep_task", {})
+            td = data.get("task_descriptor", {})
+            print(f"Accepted EpistemicWorkTask: {ep.get('task_id')}")
+            print(f"  Class: {ep.get('task_class')}")
+            print(f"  Mapped Task Type: {td.get('task_type')}")
+            print("\nFull Response:")
+            print(json.dumps(data, indent=2))
+            return 0
+        else:
+            print(f"Error submitting task: {res.status_code}", file=sys.stderr)
+            try:
+                print(res.json(), file=sys.stderr)
+            except:
+                print(res.text, file=sys.stderr)
+            return 1
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+def _handle_demo(client: Any) -> int:
+    try:
+        payload = {
+            "task_id": "task:demo:cli",
+            "task_class": "star.map.embedding",
+            "agent_id": "agent:cli",
+            "region_scope": ["global"],
+            "difficulty_factor": 1.0,
+            "input_data": {"demo": True},
+            "verification_method": "hash-match",
+            "task_state": "proposed",
+            "timestamp_created": 1700000000,
+            "ecu.estimate": 0.1,
+        }
+        print("Submitting demo task...")
+        res = client.post("/v1/protocol/ep_task", json=payload)
+        if res.status_code == 200:
+            data = res.json()
+            print("Success!")
+            print(json.dumps(data, indent=2))
+            return 0
+        else:
+            print(f"Error submitting demo task: {res.status_code}", file=sys.stderr)
+            return 1
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
 def run_ep_task_cli(argv: Optional[List[str]] = None, client: Any = None) -> int:
     """
     CLI entrypoint for Epistemic Work Task operations.
@@ -48,78 +122,13 @@ def run_ep_task_cli(argv: Optional[List[str]] = None, client: Any = None) -> int
         client = HttpClient(args.base_url)
 
     if args.command == "schema":
-        try:
-            res = client.get("/v1/protocol/ep_task_schema")
-            if res.status_code == 200:
-                print(json.dumps(res.json(), indent=2))
-                return 0
-            else:
-                print(f"Error fetching schema: {res.status_code}", file=sys.stderr)
-                return 1
-        except Exception as e:
-            print(f"Error: {e}", file=sys.stderr)
-            return 1
+        return _handle_schema(client)
 
     elif args.command == "submit":
-        try:
-            if args.file:
-                with open(args.file, "r") as f:
-                    payload = json.load(f)
-            else:
-                # Read from stdin
-                if sys.stdin.isatty():
-                    print("Reading JSON from stdin...", file=sys.stderr)
-                payload = json.load(sys.stdin)
-
-            res = client.post("/v1/protocol/ep_task", json=payload)
-            if res.status_code == 200:
-                data = res.json()
-                ep = data.get("ep_task", {})
-                td = data.get("task_descriptor", {})
-                print(f"Accepted EpistemicWorkTask: {ep.get('task_id')}")
-                print(f"  Class: {ep.get('task_class')}")
-                print(f"  Mapped Task Type: {td.get('task_type')}")
-                print("\nFull Response:")
-                print(json.dumps(data, indent=2))
-                return 0
-            else:
-                print(f"Error submitting task: {res.status_code}", file=sys.stderr)
-                try:
-                    print(res.json(), file=sys.stderr)
-                except:
-                    print(res.text, file=sys.stderr)
-                return 1
-        except Exception as e:
-            print(f"Error: {e}", file=sys.stderr)
-            return 1
+        return _handle_submit(client, args.file)
 
     elif args.command == "demo":
-        try:
-            payload = {
-                "task_id": "task:demo:cli",
-                "task_class": "star.map.embedding",
-                "agent_id": "agent:cli",
-                "region_scope": ["global"],
-                "difficulty_factor": 1.0,
-                "input_data": {"demo": True},
-                "verification_method": "hash-match",
-                "task_state": "proposed",
-                "timestamp_created": 1700000000,
-                "ecu.estimate": 0.1,
-            }
-            print("Submitting demo task...")
-            res = client.post("/v1/protocol/ep_task", json=payload)
-            if res.status_code == 200:
-                data = res.json()
-                print("Success!")
-                print(json.dumps(data, indent=2))
-                return 0
-            else:
-                print(f"Error submitting demo task: {res.status_code}", file=sys.stderr)
-                return 1
-        except Exception as e:
-            print(f"Error: {e}", file=sys.stderr)
-            return 1
+        return _handle_demo(client)
 
     return 0
 
