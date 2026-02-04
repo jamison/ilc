@@ -35,3 +35,4 @@ include = ["ilc_core*"]
 
 [project.scripts]
 ilc-mcp = "ilc_core.cli.mcp_cli:main"
+ilc-canon-verify = "ilc_core.cli.canon_cli:main"

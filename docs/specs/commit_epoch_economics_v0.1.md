@@ -30,6 +30,10 @@ The `ilc_core.ledger.canon_loader` module provides strict verification for these
 2. Schema version is supported.
 3. Required fields are present.
 
+> [!TIP]
+> Verification can be performed via CLI: `ilc-canon-verify --path <file.json> --print-hash`
+
+
 ---
 
 ## 2. Definitions
