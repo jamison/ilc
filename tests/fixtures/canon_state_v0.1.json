@@ -1,0 +1,21 @@
+{
+    "balances": {
+        "alice": 100.0,
+        "bob": 50.0
+    },
+    "canon_export_version": "v0.1",
+    "canon_hash": "36ba344f2741240329fb55d89c056db66a990a6c188bf978543ecd50d9e2a0e9",
+    "epoch_records": {
+        "ns:0001": {
+            "epoch_id": "ns:0001",
+            "epoch_index": 1,
+            "status": "settled"
+        }
+    },
+    "generated_at": "2026-02-04T12:00:00Z",
+    "stake_snapshots": {
+        "ns:0001": {
+            "total_stake": 150.0
+        }
+    }
+}

@@ -8,7 +8,7 @@ from dataclasses import asdict
 from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.canon_export import export_canon_state_json
 from ilc_core.ledger.canon_loader import (
-    load_canon_state, load_canon_state_obj, verify_canon_hash, CanonVerificationError, CanonState
+    load_canon_state, load_canon_state_obj, verify_canon_hash, verify_canon_state, CanonVerificationError, CanonState
 )
 
 # Helper to generate a valid canon file
@@ -121,7 +121,7 @@ def test_schema_sanity():
     with tempfile.TemporaryDirectory() as tmpdir:
         path = Path(tmpdir) / "canon.json"
         
-        # Missing required key 'epoch_records'
+        # Missing key
         data = {
             "canon_export_version": "v0.1",
             "canon_hash": "deadbeef",
@@ -132,5 +132,62 @@ def test_schema_sanity():
         with open(path, "w") as f:
             json.dump(data, f)
             
-        with pytest.raises(CanonVerificationError, match="Missing required key"):
+        with pytest.raises(CanonVerificationError, match="Missing required key: epoch_records"):
             load_canon_state(path)
+            
+        # Wrong type (epoch_records should be dict)
+        data["epoch_records"] = "invalid_string"
+        with open(path, "w") as f:
+            json.dump(data, f)
+            
+        with pytest.raises(CanonVerificationError, match="Invalid type for 'epoch_records': expected dict, got str"):
+            load_canon_state(path)
+
+def test_verify_canon_state_helper():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        path = Path(tmpdir) / "canon.json"
+        
+        # 1. Valid
+        create_valid_canon(tmpdir, "canon.json")
+        report = verify_canon_state(path)
+        assert report["ok"] is True
+        assert report["canon_hash"] == report["computed_hash"]
+        
+        # 2. Tampered
+        with open(path) as f:
+            data = json.load(f)
+        data["balances"]["alice"] = 0.0
+        with open(path, "w") as f:
+            json.dump(data, f)
+            
+        report = verify_canon_state(path)
+        assert report["ok"] is False
+        assert report["error"] == "Hash mismatch"
+        assert report["canon_hash"] != report["computed_hash"]
+        
+        # 3. Missing File
+        report = verify_canon_state(Path(tmpdir) / "nonexistent.json")
+        assert report["ok"] is False
+        assert "File not found" in report["error"]
+
+def test_fixture_stability():
+    """
+    Ensure the static fixture validates correctly and deterministically.
+    """
+    fixture_path = Path("tests/fixtures/canon_state_v0.1.json")
+    if not fixture_path.exists():
+        pytest.skip("Fixture not found (run from project root)")
+        
+    # Should load without error
+    payload = load_canon_state(fixture_path)
+    assert payload["canon_export_version"] == "v0.1"
+    
+    # helper check
+    report = verify_canon_state(fixture_path)
+    assert report["ok"] is True
+    
+    # Explicit hash check
+    # payload is the raw JSON which includes generated_at and canon_hash
+    expected_hash = "36ba344f2741240329fb55d89c056db66a990a6c188bf978543ecd50d9e2a0e9"
+    assert report["computed_hash"] == expected_hash
+
