@@ -10,6 +10,7 @@ Verifies:
 """
 
 import pytest
+from cbor2 import CBORTag
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.exceptions import InvalidSignature
@@ -73,7 +74,6 @@ class TestCoseSign1TamperDetection:
         cose_bytes = cose_sign1_sign(payload, TEST_PRIVATE_KEY)
         
         # Decode, tamper, re-encode
-        from cbor2 import CBORTag
         obj = cbor_loads(cose_bytes)
         cose_array = list(obj.value)
         tampered_payload = bytes([cose_array[2][0] ^ 0xFF]) + cose_array[2][1:]
@@ -88,7 +88,6 @@ class TestCoseSign1TamperDetection:
         payload = encode_dag_cbor({"a": 1})
         cose_bytes = cose_sign1_sign(payload, TEST_PRIVATE_KEY)
         
-        from cbor2 import CBORTag
         obj = cbor_loads(cose_bytes)
         cose_array = list(obj.value)
         tampered_sig = bytes([cose_array[3][0] ^ 0xFF]) + cose_array[3][1:]
@@ -130,7 +129,6 @@ class TestCoseSign1CanonicalEnforcement:
         payload = encode_dag_cbor({"a": 1})
         
         # Create valid array but with wrong tag
-        from cbor2 import CBORTag
         protected = cbor_dumps_canonical({1: -8})
         cose_array = [protected, {}, payload, b"\x00" * 64]
         wrong_tag = cbor_dumps_canonical(CBORTag(99, cose_array))
@@ -140,7 +138,6 @@ class TestCoseSign1CanonicalEnforcement:
 
     def test_decode_rejects_wrong_shape(self):
         """Wrong array length is rejected."""
-        from cbor2 import CBORTag
         cose_array = [b"", {}, b""]  # Only 3 elements
         wrong_shape = cbor_dumps_canonical(CBORTag(COSE_TAG_SIGN1, cose_array))
         
@@ -149,7 +146,6 @@ class TestCoseSign1CanonicalEnforcement:
 
     def test_decode_rejects_payload_not_bstr(self):
         """Payload not bytes is rejected."""
-        from cbor2 import CBORTag
         protected = cbor_dumps_canonical({1: -8})
         cose_array = [protected, {}, "not bytes", b"\x00" * 64]
         bad = cbor_dumps_canonical(CBORTag(COSE_TAG_SIGN1, cose_array))
@@ -233,7 +229,6 @@ class TestCoseSign1MVPGuardrails:
 
     def test_decode_rejects_nonempty_unprotected_header(self):
         """Non-empty unprotected header is rejected per MVP policy."""
-        from cbor2 import CBORTag
         
         payload = encode_dag_cbor({"a": 1})
         protected = cbor_dumps_canonical({1: -8})  # alg = EdDSA
@@ -247,7 +242,6 @@ class TestCoseSign1MVPGuardrails:
 
     def test_decode_rejects_alg_in_unprotected_even_if_protected_correct(self):
         """Even if protected header is correct, non-empty unprotected is rejected."""
-        from cbor2 import CBORTag
         
         payload = encode_dag_cbor({"test": "data"})
         protected = cbor_dumps_canonical({1: -8})
@@ -276,4 +270,3 @@ class TestCoseSign1MVPGuardrails:
         
         result = cose_sign1_decode(cose_bytes)
         assert result["unprotected"] == {}
-

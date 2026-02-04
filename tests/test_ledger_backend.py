@@ -145,6 +145,7 @@ class TestInMemoryLedgerBackend:
         
         # Apply twice
         ledger.apply_epoch_settlement(event)
+        # Second apply should be a no-op
         ledger.apply_epoch_settlement(event)
         
         record = ledger.get_epoch_record("epoch_70_idem")

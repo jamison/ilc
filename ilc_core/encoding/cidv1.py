@@ -14,7 +14,7 @@ import base64
 from typing import Any
 
 from .varint import encode_uvarint, decode_uvarint
-from .dag_cbor import encode_dag_cbor
+from .dag_cbor import encode_dag_cbor, validate_ilc_object_encodable
 
 
 # Multiformat constants
@@ -230,7 +230,6 @@ def node_id_from_obj(obj: Any) -> str:
         ValueError: If integers are out of range, keys are not str, or
                     contains unsupported types (set, frozenset).
     """
-    from .dag_cbor import validate_ilc_object_encodable
     validate_ilc_object_encodable(obj)
     dag_bytes = encode_dag_cbor(obj)
     mh = sha2_256_multihash(dag_bytes)
@@ -253,7 +252,6 @@ def validate_nodeid_obj(obj: Any) -> None:
         ValueError: If object violates NodeID invariants.
         TypeError: If object contains unsupported types.
     """
-    from .dag_cbor import validate_ilc_object_encodable
     validate_ilc_object_encodable(obj)
 
 

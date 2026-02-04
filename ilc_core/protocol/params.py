@@ -52,6 +52,7 @@ def parse_bool(value: Any, default: bool = False) -> bool:
             return False
         # Fallback
         return default
+    # Fallback for non-string values
     return default
 
 def normalize_protocol_overrides(raw: Dict[str, Any]) -> Dict[str, Any]:

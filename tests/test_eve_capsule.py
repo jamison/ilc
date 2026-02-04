@@ -12,11 +12,14 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.eve.capsule import (
     load_capsule_manifest,
+    load_capsule_manifest_cbor,
     validate_capsule_manifest,
+    verify_manifest_cid,
     verify_capsule_signature,
     REQUIRED_MANIFEST_FIELDS,
     REQUIRED_ENTRY_FIELDS,
 )
+from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
 from ilc_core.crypto.cose_sign1 import cose_sign1_sign
 from ilc_core.crypto.cbor_canonical import cbor_dumps_canonical
 
@@ -182,7 +185,6 @@ class TestLoadCapsuleManifestCbor:
     
     def test_load_valid_cbor(self, tmp_path):
         """Load valid DAG-CBOR manifest."""
-        from ilc_core.eve.capsule import load_capsule_manifest_cbor
         from ilc_core.encoding.dag_cbor import encode_dag_cbor
         
         manifest = {
@@ -201,7 +203,6 @@ class TestLoadCapsuleManifestCbor:
     
     def test_load_invalid_cbor(self, tmp_path):
         """Invalid CBOR raises ValueError."""
-        from ilc_core.eve.capsule import load_capsule_manifest_cbor
         
         path = tmp_path / "bad.cbor"
         path.write_bytes(b"not cbor")
@@ -215,8 +216,6 @@ class TestManifestCidVerification:
     
     def test_manifest_cid_matches_signed_payload(self):
         """CID computed from signed payload matches manifest capsule_id."""
-        from ilc_core.eve.capsule import verify_manifest_cid
-        from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
         
         private_key = ed25519.Ed25519PrivateKey.generate()
         private_key_bytes = private_key.private_bytes_raw()
@@ -241,8 +240,6 @@ class TestManifestCidVerification:
     
     def test_manifest_cid_mismatch_detected(self):
         """Mismatched CID is detected."""
-        from ilc_core.eve.capsule import verify_manifest_cid
-        from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
         
         private_key = ed25519.Ed25519PrivateKey.generate()
         private_key_bytes = private_key.private_bytes_raw()
@@ -274,7 +271,6 @@ class TestSignAndVerifyRoundtrip:
     
     def test_sign_and_verify_roundtrip(self):
         """Sign manifest and verify signature roundtrip."""
-        from ilc_core.eve.capsule_builder import build_capsule_manifest, sign_capsule_manifest
         
         private_key = ed25519.Ed25519PrivateKey.generate()
         public_key = private_key.public_key()
@@ -300,4 +296,3 @@ class TestSignAndVerifyRoundtrip:
         wrong_key = ed25519.Ed25519PrivateKey.generate().public_key().public_bytes_raw()
         result2 = verify_capsule_signature(signed_manifest, cose_b64u, wrong_key)
         assert result2 is False
-

@@ -4,8 +4,17 @@ MCP Tool Service Tests.
 Tests for the in-process MCP tool service.
 """
 
+import json
+import tempfile
+from pathlib import Path
+
+import jsonschema
 import pytest
 
+import ilc_core.mcp.service as svc_module
+from ilc_core.node.node_v0 import ILCNodeV0
+from ilc_core.mcp.node_service import NodeMCPToolService
+from ilc_core.mcp.service import _load_audit_schema, _AUDIT_SCHEMA
 from ilc_core.mcp.service import MCPToolService
 from ilc_core.mcp.schema import (
     load_mcp_tools_schema,
@@ -144,9 +153,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_tool_call_logged_on_success(self) -> None:
         """Successful tool call is logged with status=ok."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -164,9 +170,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_tool_call_logged_on_error(self) -> None:
         """Failed tool call is logged with status=error."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -187,9 +190,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_tool_call_payload_guard(self) -> None:
         """Large payloads are summarized with digest."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         from ilc_core.mcp import service as svc_module
         
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -214,10 +214,6 @@ class TestMCPAuditTrail:
 
     def test_node_mcp_tool_service_logs_via_node(self) -> None:
         """NodeMCPToolService logs events to the node."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
-        from ilc_core.mcp.node_service import NodeMCPToolService
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -231,9 +227,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_tool_call_logged_on_output_error(self) -> None:
         """Output validation failure is logged with status=error."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -263,9 +256,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_audit_redacts_bytes_b64(self) -> None:
         """Audit log redacts bytes_b64 fields from inline blocks."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -298,9 +288,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_audit_redacts_bundle_bytes(self) -> None:
         """Audit log redacts bundle_bytes_b64 fields."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -328,12 +315,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_audit_payload_schema_valid(self) -> None:
         """Logged audit payload validates against mcp_tool_call schema."""
-        import tempfile
-        from pathlib import Path
-        import json
-        import jsonschema
-        from ilc_core.node.node_v0 import ILCNodeV0
-        from ilc_core.mcp.service import _load_audit_schema
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -356,11 +337,6 @@ class TestMCPAuditTrail:
 
     def test_mcp_audit_payload_schema_error_requires_error(self) -> None:
         """Error status events include error field and validate against schema."""
-        import tempfile
-        from pathlib import Path
-        import jsonschema
-        from ilc_core.node.node_v0 import ILCNodeV0
-        from ilc_core.mcp.service import _load_audit_schema
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -385,9 +361,6 @@ class TestMCPAuditTrail:
 
     def test_audit_sample_rate_zero(self) -> None:
         """sample_rate=0.0 logs no events."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -406,9 +379,6 @@ class TestMCPAuditTrail:
 
     def test_audit_sample_rate_one(self) -> None:
         """sample_rate=1.0 logs all events."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -427,9 +397,6 @@ class TestMCPAuditTrail:
 
     def test_audit_rate_limit(self) -> None:
         """max_per_minute=1 drops events beyond the limit."""
-        import tempfile
-        from pathlib import Path
-        from ilc_core.node.node_v0 import ILCNodeV0
         
         with tempfile.TemporaryDirectory() as tmp_dir:
             node = ILCNodeV0(node_id="test-node", data_dir=Path(tmp_dir) / "data")
@@ -452,8 +419,6 @@ class TestMCPAuditTrail:
     def test_audit_schema_loads_from_package(self) -> None:
         """Schema loads via package resources, not docs path."""
         import importlib.resources
-        from ilc_core.mcp.service import _load_audit_schema, _AUDIT_SCHEMA
-        import ilc_core.mcp.service as svc_module
         
         # Clear cached schema
         svc_module._AUDIT_SCHEMA = None
