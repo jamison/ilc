@@ -38,49 +38,57 @@ class FileLedgerBackend(InMemoryLedgerBackend):
 
     def _load_state(self):
         """Load state from disk into memory."""
-        # Load balances
-        if os.path.exists(self.balances_file):
-            try:
-                with open(self.balances_file, "r") as f:
-                    self.balances = json.load(f)
-            except json.JSONDecodeError:
-                # If corrupt or empty, start fresh (or raise? MVP: start fresh/warn)
-                # For safety, let's just log/pass.
-                pass
+        self._load_balances()
+        self._load_epoch_records()
+        self._load_stake_snapshots()
 
-        # Load epochs
+    def _load_json_file(self, path: str) -> Dict[str, Any] | None:
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            return None
+
+    def _load_balances(self) -> None:
+        if not os.path.exists(self.balances_file):
+            return
+        data = self._load_json_file(self.balances_file)
+        if isinstance(data, dict):
+            self.balances = data
+
+    def _load_epoch_records(self) -> None:
         # Shape: { "epoch_id": "...", "status": "...", ... }
         for filename in os.listdir(self.epochs_dir):
-            if filename.endswith(".json"):
-                path = os.path.join(self.epochs_dir, filename)
-                try:
-                    with open(path, "r") as f:
-                        record = json.load(f)
-                        self.epoch_records[record["epoch_id"]] = record
-                except (json.JSONDecodeError, KeyError):
-                    continue
+            if not filename.endswith(".json"):
+                continue
+            path = os.path.join(self.epochs_dir, filename)
+            record = self._load_json_file(path)
+            if isinstance(record, dict) and "epoch_id" in record:
+                self.epoch_records[record["epoch_id"]] = record
 
-        # Load snapshots
+    def _load_stake_snapshots(self) -> None:
         # Shape: { "epoch_id": "...", "stakes": {}, ... }
         for filename in os.listdir(self.snapshots_dir):
-            if filename.endswith(".json"):
-                path = os.path.join(self.snapshots_dir, filename)
-                try:
-                    with open(path, "r") as f:
-                        data = json.load(f)
-                        # We only check for shape compatibility
-                        if "schema_version" in data and data["schema_version"] == 1:
-                            snapshot = StakeSnapshot(
-                                epoch_id=data["epoch_id"],
-                                epoch_index=data["epoch_index"],
-                                namespace_id=data["namespace_id"],
-                                stakes=data["stakes"],
-                                total_stake=data["total_stake"],
-                                created_at=data["created_at"],
-                            )
-                            self.stake_snapshots[snapshot.epoch_id] = snapshot
-                except (json.JSONDecodeError, KeyError, ValueError):
-                    continue
+            if not filename.endswith(".json"):
+                continue
+            path = os.path.join(self.snapshots_dir, filename)
+            data = self._load_json_file(path)
+            if not isinstance(data, dict):
+                continue
+            if data.get("schema_version") != 1:
+                continue
+            try:
+                snapshot = StakeSnapshot(
+                    epoch_id=data["epoch_id"],
+                    epoch_index=data["epoch_index"],
+                    namespace_id=data["namespace_id"],
+                    stakes=data["stakes"],
+                    total_stake=data["total_stake"],
+                    created_at=data["created_at"],
+                )
+            except (KeyError, ValueError):
+                continue
+            self.stake_snapshots[snapshot.epoch_id] = snapshot
 
     def _atomic_write(self, path: str, data: Any):
         """

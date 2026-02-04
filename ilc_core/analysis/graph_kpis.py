@@ -30,21 +30,19 @@ def compute_claim_link_stats(graph: EpistemicGraph) -> Dict[str, ClaimLinkStats]
     """
     stats: Dict[str, ClaimLinkStats] = {}
 
-    # Iterate over all links stored in the graph
+    counters = {
+        "supports": "supports_in",
+        "refutes": "refutes_in",
+        "equivalent": "equivalent_in",
+        "depends_on": "depends_on_in",
+    }
+
     for link in graph.links.values():
         target_id = link.target_id
-        s = stats.setdefault(
-            target_id,
-            ClaimLinkStats(claim_id=target_id),
-        )
-        if link.link_type == "supports":
-            s.supports_in += 1
-        elif link.link_type == "refutes":
-            s.refutes_in += 1
-        elif link.link_type == "equivalent":
-            s.equivalent_in += 1
-        elif link.link_type == "depends_on":
-            s.depends_on_in += 1
+        s = stats.setdefault(target_id, ClaimLinkStats(claim_id=target_id))
+        field = counters.get(link.link_type)
+        if field:
+            setattr(s, field, getattr(s, field) + 1)
 
     return stats
 

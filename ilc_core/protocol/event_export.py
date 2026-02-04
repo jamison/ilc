@@ -111,6 +111,31 @@ def flatten_claim_event(event: Dict[str, Any]) -> Dict[str, Any]:
         "target_id": payload.get("target_id"),
     }
 
+def _detect_event_kind(event: Dict[str, Any]) -> str | None:
+    kind = event.get("kind") or event.get("type")
+    if kind:
+        return kind
+    if "task_type" in event:
+        return "task_outcome"
+    if "total_tasks" in event:
+        return "epoch_summary"
+    return None
+
+def _read_ndjson_events(path: Path) -> List[Dict[str, Any]]:
+    events: List[Dict[str, Any]] = []
+    if not path.exists():
+        return events
+    with path.open("r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line:
+                continue
+            try:
+                events.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return events
+
 def export_event_log_to_csv(
     ndjson_path: PathLike,
     *,
@@ -140,37 +165,17 @@ def export_event_log_to_csv(
     epoch_rows: List[Dict[str, Any]] = []
     claim_rows: List[Dict[str, Any]] = []
 
-    if ndjson_path.exists():
-        with ndjson_path.open("r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    event = json.loads(line)
-                    # Detect type
-                    # 1. Wrapped event
-                    kind = event.get("kind") or event.get("type")
-                    
-                    # 2. Bare event inference (fallback)
-                    if not kind:
-                        if "task_type" in event:
-                            kind = "task_outcome"
-                        elif "total_tasks" in event:
-                            kind = "epoch_summary"
-                    
-                    if kind == "task_outcome":
-                        task_rows.append(flatten_task_outcome_event(event))
-                        counts["task_outcomes"] += 1
-                    elif kind == "epoch_summary":
-                        epoch_rows.append(flatten_epoch_summary_event(event))
-                        counts["epoch_summaries"] += 1
-                    elif kind in ("claim", "refutation"):
-                        claim_rows.append(flatten_claim_event(event))
-                        counts["claims"] += 1
-                    
-                except json.JSONDecodeError:
-                    continue
+    for event in _read_ndjson_events(ndjson_path):
+        kind = _detect_event_kind(event)
+        if kind == "task_outcome":
+            task_rows.append(flatten_task_outcome_event(event))
+            counts["task_outcomes"] += 1
+        elif kind == "epoch_summary":
+            epoch_rows.append(flatten_epoch_summary_event(event))
+            counts["epoch_summaries"] += 1
+        elif kind in ("claim", "refutation"):
+            claim_rows.append(flatten_claim_event(event))
+            counts["claims"] += 1
 
     # Write Tasks CSV
     tasks_csv_path.parent.mkdir(parents=True, exist_ok=True)

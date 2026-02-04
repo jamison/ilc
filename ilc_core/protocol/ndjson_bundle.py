@@ -365,6 +365,26 @@ def write_bundle(
 
 # === Bundle Reader / Iterator ===
 
+def _parse_bundle_line(
+    raw_line: str,
+    *,
+    line_num: int,
+    max_line_bytes: int,
+) -> dict | None:
+    line_bytes = raw_line.encode("utf-8")
+    if len(line_bytes) > max_line_bytes:
+        raise ValueError(
+            f"NDJSON bundle line {line_num}: line too large "
+            f"({len(line_bytes)} bytes > {max_line_bytes} limit)"
+        )
+    stripped = raw_line.rstrip("\r\n")
+    if not stripped or stripped.isspace():
+        return None
+    try:
+        return loads_ndjson(raw_line)
+    except ValueError as e:
+        raise ValueError(f"NDJSON bundle line {line_num}: {e}")
+
 def iter_bundle(
     fp: TextIO,
     *,
@@ -399,25 +419,14 @@ def iter_bundle(
     
     for raw_line in fp:
         line_num += 1
-        
-        # Size check (approximate for streaming)
-        line_bytes = raw_line.encode("utf-8")
-        if len(line_bytes) > max_line_bytes:
-            raise ValueError(
-                f"NDJSON bundle line {line_num}: line too large "
-                f"({len(line_bytes)} bytes > {max_line_bytes} limit)"
-            )
-        
-        # Skip empty lines (be tolerant)
-        stripped = raw_line.rstrip("\r\n")
-        if not stripped or stripped.isspace():
+        obj = _parse_bundle_line(
+            raw_line,
+            line_num=line_num,
+            max_line_bytes=max_line_bytes,
+        )
+        if obj is None:
             continue
-        
-        try:
-            obj = loads_ndjson(raw_line)
-        except ValueError as e:
-            raise ValueError(f"NDJSON bundle line {line_num}: {e}")
-        
+
         obj_type = obj.get("type")
         
         if obj_type == TYPE_HEADER:
@@ -439,7 +448,7 @@ def iter_bundle(
             record_count += 1
             
             # Hash using normalized line (ending with \n)
-            normalized = stripped + "\n"
+            normalized = raw_line.rstrip("\r\n") + "\n"
             hasher.update(normalized.encode("utf-8"))
             
             yield ("record", obj)
