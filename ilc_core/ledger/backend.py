@@ -231,7 +231,7 @@ class InMemoryLedgerBackend(LedgerBackend):
 
     def _store_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
         """Hook for persisting snapshot."""
-        pass # InMemory stores in self.stake_snapshots in put_stake_snapshot directly, actually let's move it here
+        pass  # InMemory stores in put_stake_snapshot; persistence backends can override
 
     def get_stake_snapshot(self, epoch_id: str) -> Optional[StakeSnapshot]:
         """Retrieve a stake snapshot."""
