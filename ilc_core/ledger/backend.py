@@ -91,12 +91,7 @@ class InMemoryLedgerBackend(LedgerBackend):
         """
         Apply settlement for a commit.epoch event.
         
-        Settlement rules:
-        - committed: Record epoch and apply rewards using stake snapshot.
-                     If snapshot missing, stub distribution (no balance change).
-        - rolled_back: Mark epoch as rolled back, no balance changes.
-        - superseded: Mark prior epoch as superseded, reverse its effects, apply new epoch.
-        - Idempotent: Re-applying same epoch_id is a no-op.
+        Refactored in Phase 74 for clarity and reduced nesting.
         """
         if epoch_event.kind != "commit.epoch":
             raise ValueError(f"Expected commit.epoch event, got {epoch_event.kind}")
@@ -105,76 +100,102 @@ class InMemoryLedgerBackend(LedgerBackend):
         validate_commit_epoch_payload(payload)
 
         epoch_id = payload["epoch_id"]
-        finalization_state = payload["finalization_state"]
-        epoch_index = payload["epoch_index"]
+        
+        # Idempotency check
+        if self._check_idempotency(epoch_id):
+            return
 
-        # Check for existing record
+        # Handle supersession of prior epochs
+        self._process_supersession(payload["epoch_index"], epoch_id)
+
+        # Create pending record
+        record = self._create_pending_record(payload)
+
+        # Finalize based on state
+        finalization_state = payload["finalization_state"]
+        if finalization_state == "committed":
+            self._finalize_committed(record, payload)
+        elif finalization_state == "rolled_back":
+            self._finalize_rolled_back(record)
+        elif finalization_state == "superseded":
+            self._finalize_superseded(record)
+
+        self._store_epoch_record(record)
+
+    def _check_idempotency(self, epoch_id: str) -> bool:
+        """Return True if epoch already processed and shouldn't be re-applied."""
         existing = self.epoch_records.get(epoch_id)
         if existing is not None:
-            # Idempotent: if already processed and not superseded, no-op
+            # If already processed and not superseded, no-op
             if existing.get("status") != "superseded":
-                return
+                return True
+        return False
 
-        # Handle supersession: find any prior epoch with same epoch_index
+    def _process_supersession(self, epoch_index: int, new_epoch_id: str) -> None:
+        """Identify and supersede any prior epochs at this index."""
+        # Note: Iterating copy of items to allow safe modification
         for prior_id, prior_record in list(self.epoch_records.items()):
             if (prior_record.get("epoch_index") == epoch_index and 
-                prior_id != epoch_id and
+                prior_id != new_epoch_id and
                 prior_record.get("status") != "superseded"):
                 
-                # Reverse effects of prior epoch if it was settled with real distribution
-                if prior_record.get("status") == "settled":
-                     if prior_record.get("distribution_status") == "distributed":
-                         prior_snapshot = self.get_stake_snapshot(prior_id)
-                         if prior_snapshot:
-                             prior_rewards = prior_record.get("summary", {}).get("reward_total", 0.0)
-                             self._apply_rewards(prior_snapshot, -prior_rewards)
+                # Reverse effects if it was settled/distributed
+                if (prior_record.get("status") == "settled" and 
+                    prior_record.get("distribution_status") == "distributed"):
+                    
+                    prior_snapshot = self.get_stake_snapshot(prior_id)
+                    if prior_snapshot:
+                        prior_rewards = prior_record.get("summary", {}).get("reward_total", 0.0)
+                        self._apply_rewards(prior_snapshot, -prior_rewards)
 
                 # Mark prior as superseded
                 prior_record["status"] = "superseded"
-                prior_record["superseded_by"] = epoch_id
+                prior_record["superseded_by"] = new_epoch_id
                 self._store_epoch_record(prior_record)
 
-        # Create epoch record
-        record: Dict[str, Any] = {
-            "epoch_id": epoch_id,
-            "epoch_index": epoch_index,
+    def _create_pending_record(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Create the initial epoch record structure."""
+        return {
+            "epoch_id": payload["epoch_id"],
+            "epoch_index": payload["epoch_index"],
             "namespace_id": payload["namespace_id"],
             "created_at": payload["created_at"],
-            "finalization_state": finalization_state,
+            "finalization_state": payload["finalization_state"],
             "summary": payload["summary"],
             "checksums": payload["checksums"],
             "status": "pending",
         }
 
-        if finalization_state == "committed":
-            record["status"] = "settled"
-            
-            # Real distribution using stake snapshot
-            snapshot = self.get_stake_snapshot(epoch_id)
-            if snapshot:
-                # Consistency Checks
-                if snapshot.epoch_id != epoch_id:
-                    raise ValueError(f"Snapshot epoch_id {snapshot.epoch_id} != payload {epoch_id}")
-                if snapshot.epoch_index != epoch_index:
-                    raise ValueError(f"Snapshot epoch_index {snapshot.epoch_index} != payload {epoch_index}")
-                if snapshot.namespace_id != payload["namespace_id"]:
-                    raise ValueError(f"Snapshot namespace_id {snapshot.namespace_id} != payload {payload['namespace_id']}")
+    def _finalize_committed(self, record: Dict[str, Any], payload: Dict[str, Any]) -> None:
+        """Apply committed state logic: rewards distribution."""
+        record["status"] = "settled"
+        epoch_id = payload["epoch_id"]
+        
+        snapshot = self.get_stake_snapshot(epoch_id)
+        if snapshot:
+            # Consistency Checks
+            if snapshot.epoch_id != epoch_id:
+                raise ValueError(f"Snapshot epoch_id {snapshot.epoch_id} != payload {epoch_id}")
+            if snapshot.epoch_index != payload["epoch_index"]:
+                raise ValueError(f"Snapshot epoch_index {snapshot.epoch_index} != payload {payload['epoch_index']}")
+            if snapshot.namespace_id != payload["namespace_id"]:
+                raise ValueError(f"Snapshot namespace_id {snapshot.namespace_id} != payload {payload['namespace_id']}")
 
-                rewards = payload["summary"]["reward_total"]
-                self._apply_rewards(snapshot, rewards)
-                record["distribution_status"] = "distributed"
-            else:
-                record["distribution_status"] = "stub_no_snapshot"
+            rewards = payload["summary"]["reward_total"]
+            self._apply_rewards(snapshot, rewards)
+            record["distribution_status"] = "distributed"
+        else:
+            record["distribution_status"] = "stub_no_snapshot"
 
-        elif finalization_state == "rolled_back":
-            record["status"] = "rolled_back"
-            # No balance changes for rolled back epochs
+    def _finalize_rolled_back(self, record: Dict[str, Any]) -> None:
+        """Apply rolled_back state logic."""
+        record["status"] = "rolled_back"
+        # No balance changes
 
-        elif finalization_state == "superseded":
-            record["status"] = "superseded"
-            # This event itself is superseded; no balance changes
-
-        self._store_epoch_record(record)
+    def _finalize_superseded(self, record: Dict[str, Any]) -> None:
+        """Apply superseded state logic (for event itself)."""
+        record["status"] = "superseded"
+        # No balance changes
 
     def _apply_rewards(self, snapshot: StakeSnapshot, total_rewards: float) -> None:
         """Helper to apply (or reverse) rewards based on logic."""
