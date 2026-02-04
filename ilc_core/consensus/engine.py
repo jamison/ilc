@@ -11,6 +11,83 @@ from .clustering import SponsorGraph
 from .governance import Governance, BacklogMetrics
 
 
+def _engine_update_epoch_metrics(
+    governance: Governance,
+    backlog_len: int,
+    finalized_last_epoch: int,
+    agent_potentials: Optional[List[float]],
+    epoch_index: int
+) -> None:
+    """Helper to update governance metrics at epoch end."""
+    # Update hardware potential if measurements are provided.
+    if agent_potentials:
+        governance.update_hardware_potential(agent_potentials)
+
+    # Update congestion from backlog metrics.
+    metrics = BacklogMetrics(
+        backlog_len=backlog_len,
+        finalized_last_epoch=finalized_last_epoch,
+    )
+    governance.update_congestion(metrics)
+
+    # Debug/logging (safe to keep for now; can be swapped for proper logger).
+    print(
+        f"[Consensus] Epoch {epoch_index + 1} "
+        f"backlog={backlog_len}, finalized={finalized_last_epoch}, "
+        f"hardware_scale={governance.hardware_scale:.4f}, "
+        f"congestion_mult={governance.congestion_multiplier:.4f}"
+    )
+
+def _engine_compute_tax_rate(
+    age: float,
+    net_stake: float
+) -> float:
+    """Helper to compute maintenance tax rate based on age and reuse."""
+    # Reuse count simulated by net_stake for now.
+    reuse_factor = max(1.0, net_stake)
+
+    base_tax = 0.01  # 1% per epoch (or per time unit)
+    # Decay tax as age and reuse increase.
+    tax_rate = base_tax / (1 + math.log(age * reuse_factor))
+    return tax_rate
+
+def _engine_compute_bounty_amount(
+    base_stake: float,
+    age: float,
+    node_id: str
+) -> float:
+    """Helper to compute refutation bounty with paradigm shift bonus."""
+    # Tuned exponent to ensure EV < 0 for looting attacks at a 1% error rate
+    # (as per earlier design discussions).
+    paradigm_bonus = 0.001 * math.pow(age, 1.4)
+
+    total_bounty = base_stake + paradigm_bonus
+    print(
+        f"[Consensus] Node {node_id[:8]} Age: {age:.1f}s. "
+        f"Bounty: {total_bounty:.4f} (Bonus: {paradigm_bonus:.4f})"
+    )
+    return total_bounty
+
+def _engine_apply_slash(
+    node_stakes: Dict[str, float],
+    target_id: str,
+    stake_amount: float,
+    bounty: float
+) -> None:
+    """Helper to apply slashing and log jackpot."""
+    # The Slash (very simple MVP form).
+    current = node_stakes.get(target_id, 0.0)
+    new_balance = current - stake_amount
+    node_stakes[target_id] = new_balance
+
+    print(
+        f"[Consensus] ⚔️ PARADIGM SHIFT! "
+        f"Refuter earns Jackpot (theoretical): {bounty:.4f} units"
+    )
+    # TODO(v0.4.x): Transfer 'bounty' to refuter agent and integrate with
+    # vesting + slashing mechanics (currently just logged).
+
+
 class ConsensusEngine:
     """
     ConsensusEngine
@@ -81,28 +158,17 @@ class ConsensusEngine:
         - Updates congestion based on backlog and finalized work, which *increases*
           ECU cost when queues are long.
         """
-        # Update hardware potential if measurements are provided.
-        if agent_potentials:
-            self.governance.update_hardware_potential(agent_potentials)
-
-        # Update congestion from backlog metrics.
-        metrics = BacklogMetrics(
-            backlog_len=backlog_len,
-            finalized_last_epoch=finalized_last_epoch,
+        _engine_update_epoch_metrics(
+            self.governance,
+            backlog_len,
+            finalized_last_epoch,
+            agent_potentials,
+            self.epoch_index
         )
-        self.governance.update_congestion(metrics)
-
+        
         # Bookkeeping.
         self.epoch_index += 1
         self.last_epoch_finalized = finalized_last_epoch
-
-        # Debug/logging (safe to keep for now; can be swapped for proper logger).
-        print(
-            f"[Consensus] Epoch {self.epoch_index} "
-            f"backlog={backlog_len}, finalized={finalized_last_epoch}, "
-            f"hardware_scale={self.governance.hardware_scale:.4f}, "
-            f"congestion_mult={self.governance.congestion_multiplier:.4f}"
-        )
 
     # ------------------------------------------------------------------
     # Staking and fee enforcement
@@ -197,13 +263,7 @@ class ConsensusEngine:
         Returns a fractional rate (e.g. 0.01 = 1%).
         """
         age = self.get_node_age(node)
-        # Reuse count simulated by net_stake for now.
-        reuse_factor = max(1.0, node.net_stake)
-
-        base_tax = 0.01  # 1% per epoch (or per time unit)
-        # Decay tax as age and reuse increase.
-        tax_rate = base_tax / (1 + math.log(age * reuse_factor))
-        return tax_rate
+        return _engine_compute_tax_rate(age, node.net_stake)
 
     # ------------------------------------------------------------------
     # Refutation bounties and contradictions
@@ -222,17 +282,7 @@ class ConsensusEngine:
         """
         base_stake = self.node_stakes.get(node.id, 0.0)
         age = self.get_node_age(node)
-
-        # Tuned exponent to ensure EV < 0 for looting attacks at a 1% error rate
-        # (as per earlier design discussions).
-        paradigm_bonus = 0.001 * math.pow(age, 1.4)
-
-        total_bounty = base_stake + paradigm_bonus
-        print(
-            f"[Consensus] Node {node.id[:8]} Age: {age:.1f}s. "
-            f"Bounty: {total_bounty:.4f} (Bonus: {paradigm_bonus:.4f})"
-        )
-        return total_bounty
+        return _engine_compute_bounty_amount(base_stake, age, node.id)
 
     def process_edge(self, edge: Edge, stake_amount: float = 0.0) -> None:
         """
@@ -259,18 +309,8 @@ class ConsensusEngine:
         node = self.graph.nodes[target_id]
 
         bounty = self.calculate_refutation_bounty(node)
-
-        # The Slash (very simple MVP form).
-        current = self.node_stakes.get(target_id, 0.0)
-        new_balance = current - stake_amount
-        self.node_stakes[target_id] = new_balance
-
-        print(
-            f"[Consensus] ⚔️ PARADIGM SHIFT! "
-            f"Refuter earns Jackpot (theoretical): {bounty:.4f} units"
-        )
-        # TODO: In a full system, transfer 'bounty' to refuter agent and
-        # integrate with vesting + slashing mechanics.
+        
+        _engine_apply_slash(self.node_stakes, target_id, stake_amount, bounty)
 
     # ------------------------------------------------------------------
     # Supersedes / evolution handling
