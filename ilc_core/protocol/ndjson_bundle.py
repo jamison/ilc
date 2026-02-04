@@ -385,6 +385,42 @@ def _parse_bundle_line(
     except ValueError as e:
         raise ValueError(f"NDJSON bundle line {line_num}: {e}")
 
+def _check_header_state(line_num: int, header_seen: bool, record_count: int, footer_seen: bool) -> None:
+    if header_seen:
+        raise ValueError(f"NDJSON bundle line {line_num}: duplicate header")
+    if record_count > 0 or footer_seen:
+        raise ValueError(f"NDJSON bundle line {line_num}: header must be first line")
+
+def _check_record_state(line_num: int, header_seen: bool, footer_seen: bool) -> None:
+    if not header_seen:
+        raise ValueError(f"NDJSON bundle line {line_num}: record before header")
+    if footer_seen:
+        raise ValueError(f"NDJSON bundle line {line_num}: record after footer")
+
+def _check_footer_state(line_num: int, header_seen: bool, footer_seen: bool) -> None:
+    if not header_seen:
+        raise ValueError(f"NDJSON bundle line {line_num}: footer before header")
+    if footer_seen:
+        raise ValueError(f"NDJSON bundle line {line_num}: duplicate footer")
+
+def _validate_bundle_footer_content(
+    pending_footer: dict,
+    record_count: int,
+    hasher: Any  # hashlib object
+) -> None:
+    if pending_footer["record_count"] != record_count:
+        raise ValueError(
+            f"NDJSON bundle footer: record_count mismatch "
+            f"(footer says {pending_footer['record_count']}, actual {record_count})"
+        )
+    
+    computed_digest = b64u_encode(hasher.digest())
+    if pending_footer["sha256_b64u"] != computed_digest:
+        raise ValueError(
+            f"NDJSON bundle footer: sha256 digest mismatch "
+            f"(footer: {pending_footer['sha256_b64u']}, computed: {computed_digest})"
+        )
+
 def iter_bundle(
     fp: TextIO,
     *,
@@ -430,19 +466,13 @@ def iter_bundle(
         obj_type = obj.get("type")
         
         if obj_type == TYPE_HEADER:
-            if header_seen:
-                raise ValueError(f"NDJSON bundle line {line_num}: duplicate header")
-            if record_count > 0 or footer_seen:
-                raise ValueError(f"NDJSON bundle line {line_num}: header must be first line")
+            _check_header_state(line_num, header_seen, record_count, footer_seen)
             validate_bundle_header(obj, line_num=line_num)
             header_seen = True
             yield ("header", obj)
         
         elif obj_type == TYPE_RECORD:
-            if not header_seen:
-                raise ValueError(f"NDJSON bundle line {line_num}: record before header")
-            if footer_seen:
-                raise ValueError(f"NDJSON bundle line {line_num}: record after footer")
+            _check_record_state(line_num, header_seen, footer_seen)
             validate_bundle_record(obj, line_num=line_num, prev_seq=prev_seq)
             prev_seq = obj["seq"]
             record_count += 1
@@ -454,10 +484,7 @@ def iter_bundle(
             yield ("record", obj)
         
         elif obj_type == TYPE_FOOTER:
-            if not header_seen:
-                raise ValueError(f"NDJSON bundle line {line_num}: footer before header")
-            if footer_seen:
-                raise ValueError(f"NDJSON bundle line {line_num}: duplicate footer")
+            _check_footer_state(line_num, header_seen, footer_seen)
             validate_bundle_footer(obj, line_num=line_num)
             footer_seen = True
             pending_footer = obj
@@ -473,18 +500,7 @@ def iter_bundle(
     if pending_footer is not None:
         # Validate footer content
         if validate_footer:
-            if pending_footer["record_count"] != record_count:
-                raise ValueError(
-                    f"NDJSON bundle footer: record_count mismatch "
-                    f"(footer says {pending_footer['record_count']}, actual {record_count})"
-                )
-            
-            computed_digest = b64u_encode(hasher.digest())
-            if pending_footer["sha256_b64u"] != computed_digest:
-                raise ValueError(
-                    f"NDJSON bundle footer: sha256 digest mismatch "
-                    f"(footer: {pending_footer['sha256_b64u']}, computed: {computed_digest})"
-                )
+            _validate_bundle_footer_content(pending_footer, record_count, hasher)
         
         yield ("footer", pending_footer)
     
