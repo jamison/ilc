@@ -33,6 +33,9 @@ The `ilc_core.ledger.canon_loader` module provides strict verification for these
 > [!TIP]
 > Verification can be performed via CLI: `ilc-canon-verify --path <file.json> --print-hash`
 
+> [!NOTE]
+> Usage: `ilc-canon-verify --path <file>` for boolean check.
+> Usage: `ilc-canon-summary --path <file>` for JSON summary (counts/version).
 
 ---
 
