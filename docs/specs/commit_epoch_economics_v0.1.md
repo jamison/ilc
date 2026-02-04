@@ -24,6 +24,12 @@ Devnet simulations produce a `canon_state.json` artifact at each epoch. This fil
 > [!NOTE]
 > The canon export is a **read-only integrity artifact**. It does not participate in settlement logic or consensus; it merely captures the authoritative state for external observers.
 
+### Integrity Checking
+The `ilc_core.ledger.canon_loader` module provides strict verification for these artifacts. It ensures:
+1. `canon_hash` matches the re-computed SHA-256 (excluding `generated_at`).
+2. Schema version is supported.
+3. Required fields are present.
+
 ---
 
 ## 2. Definitions
