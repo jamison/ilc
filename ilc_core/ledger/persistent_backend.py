@@ -4,7 +4,7 @@ Persistent ledger backend implementation using file storage.
 
 import os
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
@@ -72,23 +72,28 @@ class FileLedgerBackend(InMemoryLedgerBackend):
             if not filename.endswith(".json"):
                 continue
             path = os.path.join(self.snapshots_dir, filename)
-            data = self._load_json_file(path)
-            if not isinstance(data, dict):
-                continue
-            if data.get("schema_version") != 1:
-                continue
-            try:
-                snapshot = StakeSnapshot(
-                    epoch_id=data["epoch_id"],
-                    epoch_index=data["epoch_index"],
-                    namespace_id=data["namespace_id"],
-                    stakes=data["stakes"],
-                    total_stake=data["total_stake"],
-                    created_at=data["created_at"],
-                )
-            except (KeyError, ValueError):
-                continue
-            self.stake_snapshots[snapshot.epoch_id] = snapshot
+            snapshot = self._parse_stake_snapshot_file(path)
+            if snapshot:
+                self.stake_snapshots[snapshot.epoch_id] = snapshot
+
+    def _parse_stake_snapshot_file(self, path: str) -> Optional[StakeSnapshot]:
+        """Helper to parse a single stake snapshot file."""
+        data = self._load_json_file(path)
+        if not isinstance(data, dict):
+            return None
+        if data.get("schema_version") != 1:
+            return None
+        try:
+            return StakeSnapshot(
+                epoch_id=data["epoch_id"],
+                epoch_index=data["epoch_index"],
+                namespace_id=data["namespace_id"],
+                stakes=data["stakes"],
+                total_stake=data["total_stake"],
+                created_at=data["created_at"],
+            )
+        except (KeyError, ValueError):
+            return None
 
     def _atomic_write(self, path: str, data: Any):
         """

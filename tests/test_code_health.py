@@ -23,8 +23,6 @@ EXCLUDE_DIRS = {
 }
 EXCLUDE_PATHS = {
     ROOT / "ilc_core" / "ledger" / "backend.py",
-    ROOT / "ilc_core" / "ledger" / "persistent_backend.py",
-    ROOT / "ilc_core" / "cli" / "ep_task_cli.py",
 }
 
 

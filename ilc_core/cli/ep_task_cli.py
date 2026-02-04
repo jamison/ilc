@@ -89,17 +89,8 @@ def _handle_demo(client: Any) -> int:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
-def run_ep_task_cli(argv: Optional[List[str]] = None, client: Any = None) -> int:
-    """
-    CLI entrypoint for Epistemic Work Task operations.
-    
-    Args:
-        argv: List of arguments (default: sys.argv[1:])
-        client: Optional HTTP client (default: requests wrapper)
-    """
-    if argv is None:
-        argv = sys.argv[1:]
-
+def _build_cli_parser() -> argparse.ArgumentParser:
+    """Helper to construct the CLI argument parser."""
     parser = argparse.ArgumentParser(description="Epistemic Work Task CLI")
     parser.add_argument("--base-url", default="http://127.0.0.1:8000", help="Base URL of the ILC node")
     
@@ -114,23 +105,41 @@ def run_ep_task_cli(argv: Optional[List[str]] = None, client: Any = None) -> int
     
     # Subcommand: demo
     subparsers.add_parser("demo", help="Submit a demo task")
+    
+    return parser
 
+def _dispatch_cli_command(args: argparse.Namespace, client: Any) -> int:
+    """Helper to route CLI commands to handlers."""
+    if args.command == "schema":
+        return _handle_schema(client)
+
+    if args.command == "submit":
+        return _handle_submit(client, args.file)
+
+    if args.command == "demo":
+        return _handle_demo(client)
+
+    return 0
+
+def run_ep_task_cli(argv: Optional[List[str]] = None, client: Any = None) -> int:
+    """
+    CLI entrypoint for Epistemic Work Task operations.
+    
+    Args:
+        argv: List of arguments (default: sys.argv[1:])
+        client: Optional HTTP client (default: requests wrapper)
+    """
+    if argv is None:
+        argv = sys.argv[1:]
+
+    parser = _build_cli_parser()
     args = parser.parse_args(argv)
 
     # Setup client
     if client is None:
         client = HttpClient(args.base_url)
 
-    if args.command == "schema":
-        return _handle_schema(client)
-
-    elif args.command == "submit":
-        return _handle_submit(client, args.file)
-
-    elif args.command == "demo":
-        return _handle_demo(client)
-
-    return 0
+    return _dispatch_cli_command(args, client)
 
 if __name__ == "__main__":
     raise SystemExit(run_ep_task_cli())
