@@ -77,3 +77,14 @@ def test_cli_tampered_file(tmp_path):
     data = json.loads(res.stdout)
     assert data["ok"] is False
     assert "Hash mismatch" in data["error"]
+
+def test_cli_output_is_deterministic():
+    if not FIXTURE_PATH.exists():
+        pytest.skip("Fixture not found")
+
+    res1 = run_cli("--path", str(FIXTURE_PATH), "--print-hash")
+    res2 = run_cli("--path", str(FIXTURE_PATH), "--print-hash")
+
+    assert res1.returncode == 0
+    assert res2.returncode == 0
+    assert res1.stdout == res2.stdout

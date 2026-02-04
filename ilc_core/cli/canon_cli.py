@@ -22,7 +22,7 @@ def main() -> int:
         
     # Output
     if not args.quiet:
-        print(json.dumps(report))
+        print(json.dumps(report, sort_keys=True))
         
     # Exit Code
     return 0 if report.get("ok") else 1
