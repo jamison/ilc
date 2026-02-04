@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 from os import PathLike
 from pathlib import Path
+from datetime import datetime, timezone
 
 from ilc_core.network.topology import DevnetTopology
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
@@ -18,14 +19,143 @@ from ilc_core.ledger.ledger_export import (
 )
 from ilc_core.ledger.canon_export import export_canon_state_json
 
-from datetime import datetime, timezone
-
 @dataclass
 class DevnetMultiEpochResult:
     namespace_id: str
     topology: DevnetTopology
     epoch_results: List[DevnetEpochResult]
     aggregate_node_load: Dict[str, Dict[str, float]]
+
+def _prepare_epoch_env(
+    export_root: Optional[PathLike],
+    export_prefix: str,
+    epoch_index: int
+) -> Tuple[Optional[Path], Optional[EventLogger]]:
+    if not export_root:
+        return None, None
+        
+    p_root = Path(export_root)
+    dir_name = f"{export_prefix}_{epoch_index:04d}"
+    export_dir = p_root / dir_name
+    # Enable logging if exporting
+    return export_dir, EventLogger(events=[])
+
+def _settle_epoch(
+    ledger_backend: LedgerBackend,
+    snapshot: NamespaceHealthSnapshot,
+    profiles: Dict[str, AgentProfile],
+    result: DevnetEpochResult,
+    event_logger: Optional[EventLogger],
+    epoch_id: str
+) -> Optional[Dict[str, float]]:
+    # 1. Store Stake Snapshot
+    stakes = {agent_id: 1.0 for agent_id in profiles.keys()}
+    
+    stake_snapshot = StakeSnapshot(
+        epoch_id=epoch_id,
+        epoch_index=snapshot.epoch_index,
+        namespace_id=snapshot.namespace_id,
+        stakes=stakes,
+        total_stake=float(len(stakes)),
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    ledger_backend.put_stake_snapshot(stake_snapshot)
+
+    # 2. Compute Summary from Result
+    total_tasks = int(sum(m.get("num_tasks", 0) for m in result.node_load_metrics.values()))
+    total_reward = float(sum(m.get("total_reward", 0.0) for m in result.node_load_metrics.values()))
+    
+    # 3. Create Commit Event
+    commit_evt = make_commit_epoch_event(
+        epoch_index=snapshot.epoch_index,
+        epoch_id=epoch_id,
+        namespace_id=snapshot.namespace_id,
+        created_at=datetime.now(timezone.utc).isoformat(),
+        finalization_state="committed",
+        summary={
+            "task_count": total_tasks,
+            "agent_count": len(stakes),
+            "reward_total": total_reward,
+            "stake_total": float(len(stakes)),
+        },
+        checksums={
+            "epoch_events_cid": "devnet:events",  # Placeholder
+            "epoch_state_cid": "devnet:state",    # Placeholder
+        },
+        source="sim:devnet_multi_epoch",
+    )
+    
+    # 4. Apply Settlement
+    balances_before = None
+    if hasattr(ledger_backend, "balances"):
+         balances_before = ledger_backend.balances.copy()
+    
+    ledger_backend.apply_epoch_settlement(commit_evt)
+    
+    # 5. Log Event
+    if event_logger:
+        event_logger.events.append(commit_evt)
+        
+    return balances_before
+
+def _export_epoch_ledger_artifacts(
+    export_dir: Path,
+    ledger_backend: LedgerBackend,
+    balances_before: Optional[Dict[str, float]],
+    epoch_id: str
+) -> None:
+    # Export with verification check
+    check = export_ledger_state_json(
+        ledger_backend, 
+        export_dir / "ledger_state.json",
+        balances_before=balances_before,
+        target_epoch_id=epoch_id
+    )
+    export_ledger_state_csv(ledger_backend, export_dir / "ledger_state.csv")
+
+    # If we performed a check, write the verification CSV
+    if check:
+        # Add epoch_id to the check result for the CSV row
+        check["epoch_id"] = epoch_id
+        export_ledger_distribution_checks_csv(
+            [check],
+            export_dir / "ledger_distribution_checks.csv"
+        )
+
+    # Phase 71: Canon Export
+    export_canon_state_json(
+        ledger_backend,
+        export_dir / "canon_state.json"
+    )
+
+def _aggregate_metrics(
+    epoch_results: List[DevnetEpochResult]
+) -> Dict[str, Dict[str, float]]:
+    # Gather all node IDs seen across any epoch
+    all_nodes = set()
+    for res in epoch_results:
+        all_nodes.update(res.node_load_metrics.keys())
+        
+    agg_load: Dict[str, Dict[str, float]] = {}
+    
+    for node_id in all_nodes:
+        total_tasks = 0.0
+        total_reward = 0.0
+        
+        for res in epoch_results:
+            metrics = res.node_load_metrics.get(node_id)
+            if metrics:
+                total_tasks += metrics.get("num_tasks", 0.0)
+                total_reward += metrics.get("total_reward", 0.0)
+        
+        avg_rew = (total_reward / total_tasks) if total_tasks > 0 else 0.0
+        
+        agg_load[node_id] = {
+            "num_tasks": total_tasks,
+            "total_reward": total_reward,
+            "avg_reward": avg_rew
+        }
+    return agg_load
 
 def run_devnet_multi_epoch(
     topology: DevnetTopology,
@@ -53,7 +183,7 @@ def run_devnet_multi_epoch(
                         If provided, settles the epoch and stores snapshots.
         
     Returns:
-        DevnetMultiEpochResult containing all per-epoch results and aggregated node load metrics.
+        DevnetMultiEpochResult containing all per-epoch results and aggregate metrics.
     """
     if rng_seed is not None:
         import random
@@ -72,149 +202,47 @@ def run_devnet_multi_epoch(
     epoch_results: List[DevnetEpochResult] = []
     
     for snapshot in snapshots:
-        epoch_index = snapshot.epoch_index
-        export_dir_for_epoch = None
-        event_logger = None
-        
-        if export_root:
-            p_root = Path(export_root)
-            # e.g. epoch_0010
-            dir_name = f"{export_prefix}_{epoch_index:04d}"
-            export_dir_for_epoch = p_root / dir_name
-            # Enable logging if exporting
-            event_logger = EventLogger(events=[])
+        export_dir, event_logger = _prepare_epoch_env(
+            export_root, export_prefix, snapshot.epoch_index
+        )
             
         result = run_devnet_epoch(
-            epoch_index=epoch_index,
+            epoch_index=snapshot.epoch_index,
             topology=topology,
             namespace_snapshot=snapshot,
             profiles=profiles,
-            export_dir=export_dir_for_epoch,
+            export_dir=export_dir,
             event_logger=event_logger,
             protocol_params=protocol_params
         )
 
-        # Ledger Settlement
-        if ledger_backend:
-            # 1. Store Stake Snapshot
-            # Construct a synthetic snapshot assuming uniform stake for now (or from ledger?)
-            # Prompt says: "stakes = {agent_id: 1.0 for agent_id in profiles.keys()}"
-            epoch_id = f"{snapshot.namespace_id}:{epoch_index:04d}"
-            stakes = {agent_id: 1.0 for agent_id in profiles.keys()}
-            
-            stake_snapshot = StakeSnapshot(
-                epoch_id=epoch_id,
-                epoch_index=epoch_index,
-                namespace_id=snapshot.namespace_id,
-                stakes=stakes,
-                total_stake=float(len(stakes)),
-                created_at=datetime.now(timezone.utc).isoformat(),
-            )
-            ledger_backend.put_stake_snapshot(stake_snapshot)
+        epoch_id = f"{snapshot.namespace_id}:{snapshot.epoch_index:04d}"
+        balances_before = None
 
-            # 2. Compute Summary from Result
-            # result.node_load_metrics is Dict[node_id, Dict[metric, value]]
-            total_tasks = int(sum(m.get("num_tasks", 0) for m in result.node_load_metrics.values()))
-            total_reward = float(sum(m.get("total_reward", 0.0) for m in result.node_load_metrics.values()))
-            
-            # 3. Create Commit Event
-            commit_evt = make_commit_epoch_event(
-                epoch_index=epoch_index,
-                epoch_id=epoch_id,
-                namespace_id=snapshot.namespace_id,
-                created_at=datetime.now(timezone.utc).isoformat(),
-                finalization_state="committed",
-                summary={
-                    "task_count": total_tasks,
-                    "agent_count": len(stakes),
-                    "reward_total": total_reward,
-                    "stake_total": float(len(stakes)),
-                },
-                checksums={
-                    "epoch_events_cid": "devnet:events",  # Placeholder
-                    "epoch_state_cid": "devnet:state",    # Placeholder
-                },
-                source="sim:devnet_multi_epoch",
+        if ledger_backend:
+            balances_before = _settle_epoch(
+                ledger_backend, snapshot, profiles, result, event_logger, epoch_id
             )
-            
-            # 4. Apply Settlement
-            # Capture balances before settlement for verification (Phase 70H)
-            balances_before = None
-            if hasattr(ledger_backend, "balances"):
-                 balances_before = ledger_backend.balances.copy()
-            
-            ledger_backend.apply_epoch_settlement(commit_evt)
-            
-            # 5. Log Event (Task B)
-            if event_logger:
-                event_logger.events.append(commit_evt)
         
-        # If we logged events, write them out
-        if export_dir_for_epoch and event_logger:
+        # If we logged events (sim or commit), write them out
+        if export_dir and event_logger:
             write_events_to_file(
                 event_logger.events,
-                export_dir_for_epoch / "devnet_events.ndjson"
+                export_dir / "devnet_events.ndjson"
             )
 
-        # 6. Phase 70G/H: Ledger Export & Verification
-        if export_dir_for_epoch and ledger_backend:
-            # Export with verification check
-            check = export_ledger_state_json(
-                ledger_backend, 
-                export_dir_for_epoch / "ledger_state.json",
-                balances_before=balances_before,
-                target_epoch_id=epoch_id
-            )
-            export_ledger_state_csv(ledger_backend, export_dir_for_epoch / "ledger_state.csv")
-
-            # If we performed a check, write the verification CSV
-            if check:
-                # Add epoch_id to the check result for the CSV row
-                check["epoch_id"] = epoch_id
-                export_ledger_distribution_checks_csv(
-                    [check],
-                    export_dir_for_epoch / "ledger_distribution_checks.csv"
-                )
-
-            # Phase 71: Canon Export
-            export_canon_state_json(
-                ledger_backend,
-                export_dir_for_epoch / "canon_state.json"
+        # Ledger Export & Verification
+        if export_dir and ledger_backend:
+            _export_epoch_ledger_artifacts(
+                export_dir, ledger_backend, balances_before, epoch_id
             )
 
         epoch_results.append(result)
 
     # 3. Aggregate Node Load
-    # We want to sum num_tasks and total_reward across all epochs per node.
-    # Then recompute avg_reward.
-    
-    # First, gather all node IDs seen across any epoch
-    all_nodes = set()
-    for res in epoch_results:
-        all_nodes.update(res.node_load_metrics.keys())
-        
-    agg_load: Dict[str, Dict[str, float]] = {}
-    
-    for node_id in all_nodes:
-        total_tasks = 0.0
-        total_reward = 0.0
-        
-        for res in epoch_results:
-            metrics = res.node_load_metrics.get(node_id)
-            if metrics:
-                total_tasks += metrics.get("num_tasks", 0.0)
-                total_reward += metrics.get("total_reward", 0.0)
-        
-        avg_rew = (total_reward / total_tasks) if total_tasks > 0 else 0.0
-        
-        agg_load[node_id] = {
-            "num_tasks": total_tasks,
-            "total_reward": total_reward,
-            "avg_reward": avg_rew
-        }
+    agg_load = _aggregate_metrics(epoch_results)
 
     # 4. Namespace ID
-    # Assume single namespace for MVP
     ns_id = snapshots[0].namespace_id
     
     return DevnetMultiEpochResult(
