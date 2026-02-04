@@ -30,20 +30,6 @@ def classify_namespace_stress(snap: NamespaceHealthSnapshot) -> str:
     else:
         return "high"
 
-def suggest_tasks_for_agents(
-    profiles: Dict[str, AgentProfile],
-    namespace_health: NamespaceHealthSnapshot,
-    *,
-    max_suggestions_per_agent: int = 3,
-) -> Dict[str, List[TaskRoutingSuggestion]]:
-    """
-    Generate prioritized task suggestions for each agent based on namespace health
-    and agent profile signals (competency, stress preference, light cone).
-    """
-    results: Dict[str, List[TaskRoutingSuggestion]] = {}
-    
-    regime = classify_namespace_stress(namespace_health)
-    
 def _determine_regime_focus(
     regime: str,
     namespace_health: NamespaceHealthSnapshot
