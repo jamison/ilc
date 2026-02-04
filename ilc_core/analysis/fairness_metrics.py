@@ -207,13 +207,17 @@ def apply_pb_farming_and_gating(
     Returns:
         New payout dictionary with gating applied.
     """
+def _pb_validate_inputs(gating_mode: str) -> None:
+    """Validate gating mode input."""
     if gating_mode not in ("none", "soft", "strict"):
         raise ValueError(f"Unknown gating_mode: {gating_mode}")
-        
-    total_base = sum(base_payouts.values())
-    pb_set = set(pb_agent_ids)
-    
-    # 1. PB Boost & Conservation
+
+def _pb_apply_boost_and_conserve(
+    base_payouts: Dict[str, float],
+    pb_set: set[str],
+    pb_intensity: float
+) -> Dict[str, float]:
+    """Apply PB boost and optionally scale down others to roughly conserve total."""
     pb_boosted = {}
     
     # Naive boost
@@ -227,25 +231,31 @@ def apply_pb_farming_and_gating(
     extra = sum(pb_boosted[a] - base_payouts.get(a, 0.0) for a in base_payouts if a in pb_set)
     pool_others = sum(base_payouts[a] for a in base_payouts if a not in pb_set)
     
-    # Scale down others if needed to roughly conserve pie BEFORE gating (optional, but good for isolation)
-    # The prompt implies: "If pool_others > 0 and extra > 0, scale non-PB payouts down"
+    # Scale down others if needed to roughly conserve pie BEFORE gating
     if pool_others > 1e-9 and extra > 0:
         scale_others = max(0.0, 1.0 - extra / pool_others)
         for aid, val in base_payouts.items():
             if aid not in pb_set:
                 pb_boosted[aid] = val * scale_others
                 
-    # 2. Apply Gating
+    return pb_boosted
+
+def _pb_apply_gating_logic(
+    base_payouts: Dict[str, float],
+    pb_boosted: Dict[str, float],
+    pb_set: set[str],
+    gating_mode: str,
+    pb_intensity: float,
+    gestation_epochs: int
+) -> Dict[str, float]:
+    """Apply gating rules (none, soft, strict) to boosted payouts."""
     gated = {}
     
     # Precompute soft factor
-    # f decreases as gestation increases
     soft_denom = 1.0 + max(0, gestation_epochs) * max(0.0, pb_intensity)
     soft_factor = 1.0 / soft_denom
     
     for aid in base_payouts.keys(): # Iterate original keys to ensure stability
-        # Note: we use base_payouts keys. If pb_boosted has keys not in base (not possible by logic above), ignored.
-        
         val_boosted = pb_boosted.get(aid, 0.0)
         base_val = base_payouts.get(aid, 0.0)
         
@@ -267,14 +277,64 @@ def apply_pb_farming_and_gating(
                 
         # Clamp negative guard
         gated[aid] = max(0.0, gated.get(aid, 0.0))
+        
+    return gated
 
-    # 3. Final Renormalization
-    # We want to match total_base exactly to allow fair apples-to-apples Gini comparison
+def _pb_renormalize_payouts(
+    gated: Dict[str, float],
+    target_total: float
+) -> None:
+    """In-place renormalize gated payouts to match target total."""
     sum_gated = sum(gated.values())
-    if sum_gated > 1e-9 and total_base > 1e-9:
-        scale = total_base / sum_gated
+    if sum_gated > 1e-9 and target_total > 1e-9:
+        scale = target_total / sum_gated
         for k in gated:
             gated[k] *= scale
+
+def apply_pb_farming_and_gating(
+    base_payouts: Dict[str, float],
+    pb_agent_ids: Sequence[str],
+    pb_intensity: float,
+    gating_mode: str,
+    gestation_epochs: int,
+) -> Dict[str, float]:
+    """
+    Simulate Principal/Bounty (PB) farming boosts and subsequent subjective gating.
+
+    1. PB Boost: Agents in pb_agent_ids get scaled by (1 + pb_intensity).
+       We preserve total reward by scaling down non-PB agents if extra value is minted.
+    2. Gating:
+       - "none": PB boost is fully realized.
+       - "soft": PB boost is dampened by gestation_epochs (1 / (1 + gest * intensity)).
+       - "strict": PB boost is completely removed, reverting PB agents to base reward.
+    3. Renormalization: Ensure total sum equals sum(base_payouts).
+
+    Args:
+        base_payouts: Baseline rewards from simulation.
+        pb_agent_ids: List of agents acting as "PB farmers".
+        pb_intensity: Strength of the PB mechanism (0.0 to 1.0+).
+        gating_mode: "none", "soft", or "strict".
+        gestation_epochs: Severity of the gating hysteresis.
+
+    Returns:
+        New payout dictionary with gating applied.
+    """
+    _pb_validate_inputs(gating_mode)
+        
+    total_base = sum(base_payouts.values())
+    pb_set = set(pb_agent_ids)
+    
+    # 1. PB Boost & Conservation
+    pb_boosted = _pb_apply_boost_and_conserve(base_payouts, pb_set, pb_intensity)
+
+    # 2. Apply Gating
+    gated = _pb_apply_gating_logic(
+        base_payouts, pb_boosted, pb_set,
+        gating_mode, pb_intensity, gestation_epochs
+    )
+
+    # 3. Final Renormalization
+    _pb_renormalize_payouts(gated, total_base)
             
     return gated
 
