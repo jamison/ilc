@@ -385,25 +385,25 @@ def _parse_bundle_line(
     except ValueError as e:
         raise ValueError(f"NDJSON bundle line {line_num}: {e}")
 
-def _check_header_state(line_num: int, header_seen: bool, record_count: int, footer_seen: bool) -> None:
+def _bundle_check_header_state(line_num: int, header_seen: bool, record_count: int, footer_seen: bool) -> None:
     if header_seen:
         raise ValueError(f"NDJSON bundle line {line_num}: duplicate header")
     if record_count > 0 or footer_seen:
         raise ValueError(f"NDJSON bundle line {line_num}: header must be first line")
 
-def _check_record_state(line_num: int, header_seen: bool, footer_seen: bool) -> None:
+def _bundle_check_record_state(line_num: int, header_seen: bool, footer_seen: bool) -> None:
     if not header_seen:
         raise ValueError(f"NDJSON bundle line {line_num}: record before header")
     if footer_seen:
         raise ValueError(f"NDJSON bundle line {line_num}: record after footer")
 
-def _check_footer_state(line_num: int, header_seen: bool, footer_seen: bool) -> None:
+def _bundle_check_footer_state(line_num: int, header_seen: bool, footer_seen: bool) -> None:
     if not header_seen:
         raise ValueError(f"NDJSON bundle line {line_num}: footer before header")
     if footer_seen:
         raise ValueError(f"NDJSON bundle line {line_num}: duplicate footer")
 
-def _validate_bundle_footer_content(
+def _bundle_validate_footer_content(
     pending_footer: dict,
     record_count: int,
     hasher: Any  # hashlib object
@@ -466,13 +466,13 @@ def iter_bundle(
         obj_type = obj.get("type")
         
         if obj_type == TYPE_HEADER:
-            _check_header_state(line_num, header_seen, record_count, footer_seen)
+            _bundle_check_header_state(line_num, header_seen, record_count, footer_seen)
             validate_bundle_header(obj, line_num=line_num)
             header_seen = True
             yield ("header", obj)
         
         elif obj_type == TYPE_RECORD:
-            _check_record_state(line_num, header_seen, footer_seen)
+            _bundle_check_record_state(line_num, header_seen, footer_seen)
             validate_bundle_record(obj, line_num=line_num, prev_seq=prev_seq)
             prev_seq = obj["seq"]
             record_count += 1
@@ -484,7 +484,7 @@ def iter_bundle(
             yield ("record", obj)
         
         elif obj_type == TYPE_FOOTER:
-            _check_footer_state(line_num, header_seen, footer_seen)
+            _bundle_check_footer_state(line_num, header_seen, footer_seen)
             validate_bundle_footer(obj, line_num=line_num)
             footer_seen = True
             pending_footer = obj
@@ -500,7 +500,7 @@ def iter_bundle(
     if pending_footer is not None:
         # Validate footer content
         if validate_footer:
-            _validate_bundle_footer_content(pending_footer, record_count, hasher)
+            _bundle_validate_footer_content(pending_footer, record_count, hasher)
         
         yield ("footer", pending_footer)
     

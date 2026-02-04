@@ -297,6 +297,24 @@ class TestOrderingViolations:
             list(iter_bundle(buf))
 
 
+def test_iter_bundle_fixture_parity_minimal():
+    """Minimal parity check: record count + sample fields from a fixture bundle."""
+    header = make_bundle_header(bundle_id="fixture-parity")
+    payload = {"fixture": "parity"}
+    node_id = node_id_from_obj(payload)
+    record = make_bundle_record(seq=1, node_id=node_id, cose_bytes=b"AA")
+    buf = io.StringIO()
+    write_bundle(buf, header=header, records=[record], include_footer=True)
+    buf.seek(0)
+
+    events = list(iter_bundle(buf))
+    assert len(events) == 3  # header, record, footer
+    assert events[0][0] == "header"
+    assert events[1][0] == "record"
+    assert events[1][1]["seq"] == 1
+    assert events[2][0] == "footer"
+
+
 class TestLineSizeLimit:
     """Tests for line size enforcement."""
 
@@ -479,4 +497,3 @@ class TestStrictJsonNanInfinity:
         
         line = dumps_ndjson({"value": 2.71828})
         assert "2.71828" in line
-
