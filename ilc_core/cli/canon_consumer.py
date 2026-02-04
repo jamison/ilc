@@ -66,15 +66,22 @@ def main() -> int:
     """CLI entrypoint for ilc-canon-summary."""
     parser = argparse.ArgumentParser(description="Summarize a canon_state.json file.")
     parser.add_argument("--path", required=True, help="Path to canon_state.json")
+    parser.add_argument("--print-hash", action="store_true", help="Include hashes in output")
+    parser.add_argument("--quiet", action="store_true", help="Suppress stdout")
     
     args = parser.parse_args()
     
     summary = summarize_canon_state(args.path)
-    
+
+    if not args.print_hash:
+        summary.pop("canon_hash", None)
+        summary.pop("computed_hash", None)
+
     # Strict deterministic JSON output
-    print(json.dumps(summary, sort_keys=True))
-    
-    return 0 if summary["ok"] else 1
+    if not args.quiet:
+        print(json.dumps(summary, sort_keys=True))
+
+    return 0 if summary.get("ok") else 1
 
 if __name__ == "__main__":
     sys.exit(main())

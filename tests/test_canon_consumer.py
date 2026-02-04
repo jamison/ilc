@@ -77,3 +77,38 @@ class TestCanonConsumer:
         
         data = json.loads(res.stdout)
         assert data["ok"] is False
+
+    def test_cli_print_hash_and_quiet(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+
+        res = run_cli("--path", str(FIXTURE_PATH), "--print-hash")
+        assert res.returncode == 0
+        data = json.loads(res.stdout)
+        assert "canon_hash" in data
+        assert "computed_hash" in data
+
+        res = run_cli("--path", str(FIXTURE_PATH), "--quiet")
+        assert res.returncode == 0
+        assert res.stdout == ""
+
+    def test_cli_version_mismatch(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bad_path = Path(tmpdir) / "bad_version.json"
+            shutil.copy(FIXTURE_PATH, bad_path)
+
+            with open(bad_path, "r") as f:
+                data = json.load(f)
+
+            data["canon_export_version"] = "v0.99"
+            with open(bad_path, "w") as f:
+                json.dump(data, f)
+
+            res = run_cli("--path", str(bad_path))
+            assert res.returncode == 1
+            data = json.loads(res.stdout)
+            assert data["ok"] is False
+            assert "Unsupported version" in data.get("error", "")

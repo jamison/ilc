@@ -133,9 +133,11 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
             except json.JSONDecodeError as e:
                 return {"ok": False, "error": f"Invalid JSON: {e}"}
         
-        # We won't replicate full schema check here, just enough to get hash
+        # Minimal schema checks for report
         if "canon_hash" not in payload:
             return {"ok": False, "error": "Missing 'canon_hash' field"}
+        if payload.get("canon_export_version") != "v0.1":
+            return {"ok": False, "error": f"Unsupported version: {payload.get('canon_export_version')}"}
             
         expected_hash = payload["canon_hash"]
         
