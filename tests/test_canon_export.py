@@ -44,39 +44,23 @@ def test_canon_export_determinism():
         
         res1 = export_canon_state_json(ledger, p1)
         res2 = export_canon_state_json(ledger, p2)
-        
-        # Check hashes - MUST be identical if payload logic is correct
-        # Note: generated_at will differ, so the hash WILL differ between runs.
-        # But we want to test determinism. 
-        # If the function generates a timestamp, it's NOT deterministic across time.
-        # BUT the requirement says "Do not include runtime-only fields ... beyond generated_at".
-        # And "Compute hash over the payload".
-        # If 'generated_at' is in the payload, the hash changes.
-        
-        # To test determinism of the STRUCTURE given the SAME timestamp, we'd need to mock datetime. 
-        # But let's verify that "canon_hash" in the file matches the content.
-        
+
+        # Check hashes
+        # Fix: Now that generated_at is excluded from hashing, the hashes MUST be identical.
         assert res1["canon_hash"] != ""
+        assert res1["canon_hash"] == res2["canon_hash"]
         
-        # Verify Integrity: Hash matches content
-        # Load file 1
+        # Verify Content Integrity (hash matches payload content minus exclusion)
         with open(p1) as f:
             data1 = json.load(f)
-        
+            
         h1 = data1.pop("canon_hash")
+         # We must also replicate the exclusion logic used in export
+        if "generated_at" in data1:
+            del data1["generated_at"]
+            
         computed1 = compute_canon_hash(data1)
         assert h1 == computed1
-
-        # Verify Sorting/Determinism logic
-        # We can construct two payloads with same timestamp manually and check hashes matches.
-        payload_A = data1
-        payload_B = data1.copy()
-        
-        # Shuffle keys in B? compute_canon_hash should handle it.
-        # Python 3.7+ dicts preserve insertion order, but json.dumps with sort_keys=True enforces alpha order.
-        hA = compute_canon_hash(payload_A)
-        hB = compute_canon_hash(payload_B)
-        assert hA == hB
 
 def test_canon_export_structure():
     """

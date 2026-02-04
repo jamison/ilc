@@ -65,8 +65,14 @@ def export_canon_state_json(
     }
     
     # 3. Compute Hash
-    # We compute hash of the payload WITHOUT canon_hash key.
-    payload_hash = compute_canon_hash(payload)
+    # Fix: Exclude generated_at from the hash to ensure determinism across runs.
+    # We copy the payload and remove mutable fields.
+    payload_for_hashing = payload.copy()
+    if "generated_at" in payload_for_hashing:
+        del payload_for_hashing["generated_at"]
+    
+    # We compute hash of the payload WITHOUT generated_at and WITHOUT canon_hash key.
+    payload_hash = compute_canon_hash(payload_for_hashing)
     
     # 4. Insert Hash
     payload["canon_hash"] = payload_hash

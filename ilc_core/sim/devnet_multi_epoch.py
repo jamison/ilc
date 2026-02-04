@@ -172,9 +172,9 @@ def run_devnet_multi_epoch(
                 # Add epoch_id to the check result for the CSV row
                 check["epoch_id"] = epoch_id
                 export_ledger_distribution_checks_csv(
-                check,
-                export_dir_for_epoch / "ledger_distribution_checks.csv"
-            )
+                    [check],
+                    export_dir_for_epoch / "ledger_distribution_checks.csv"
+                )
 
             # Phase 71: Canon Export
             export_canon_state_json(

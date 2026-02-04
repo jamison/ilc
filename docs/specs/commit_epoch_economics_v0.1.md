@@ -18,6 +18,12 @@ This document defines the economic semantics tied to `commit.epoch` events in th
 - Stake consolidation rules
 - Rollback and conflict resolution
 
+### Canon Export (v0.1)
+Devnet simulations produce a `canon_state.json` artifact at each epoch. This file contains a deterministic, versioned, and content-hashed snapshot of the ledger state suitable for downstream agent consumption and auditing. 
+
+> [!NOTE]
+> The canon export is a **read-only integrity artifact**. It does not participate in settlement logic or consensus; it merely captures the authoritative state for external observers.
+
 ---
 
 ## 2. Definitions
