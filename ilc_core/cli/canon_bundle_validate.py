@@ -6,11 +6,15 @@ from pathlib import Path
 from typing import NoReturn
 
 from ilc_core.ledger.canon_export_bundle_validate import validate_canon_export_bundle
+from ilc_core.ledger.canon_export_bundle_sign import load_key_from_file
+from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signature
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a canon export bundle.")
     parser.add_argument("--bundle", required=True, help="Path to the bundle directory")
     parser.add_argument("--report", help="Path to write Markdown validation report")
+    parser.add_argument("--verify-signature", action="store_true", help="Verify manifest.sig HMAC")
+    parser.add_argument("--key-file", help="Path to base64 key file (required for signature verification)")
     
     args = parser.parse_args()
     bundle_path = Path(args.bundle).resolve()
@@ -24,6 +28,26 @@ def main() -> int:
             "errors": [f"Validator crashed: {e}"], 
             "warnings": []
         }
+
+    # Signature Verification Logic
+    if args.verify_signature:
+        if not args.key_file:
+             report["ok"] = False
+             report["errors"].append("Missing --key-file for signature verification")
+        else:
+            try:
+                key = load_key_from_file(Path(args.key_file))
+                if not verify_manifest_signature(bundle_path, key):
+                     report["ok"] = False
+                     report["errors"].append("Signature mismatch")
+            except FileNotFoundError:
+                report["ok"] = False
+                report["errors"].append("Signature verification failed: manifest.sig not found")
+            except Exception as e:
+                report["ok"] = False
+                report["errors"].append(f"Signature verification error: {e}")
+    else:
+        report.setdefault("warnings", []).append("Signature verification skipped")
     
     # Single-line JSON output
     print(json.dumps(report, separators=(",", ":"), sort_keys=False))
