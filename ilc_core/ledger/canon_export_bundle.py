@@ -1,0 +1,80 @@
+
+import json
+import hashlib
+from pathlib import Path
+from typing import Dict, Any, Optional
+
+def _sha256_bytes(data: bytes) -> str:
+    """Compute SHA-256 hexdigest of bytes."""
+    return hashlib.sha256(data).hexdigest()
+
+def write_canon_export_bundle(
+    export: Dict[str, Any], 
+    validation: Dict[str, Any], 
+    bundle_dir: Path, 
+    created_at: Optional[str] = None, 
+    overwrite: bool = False
+) -> Path:
+    """
+    Write a canon export bundle directory containing export.json, validate.json, and manifest.json.
+    
+    Args:
+        export: The canon export dictionary (v0.1). Must contain 'canon_hash'.
+        validation: The validation report dictionary.
+        bundle_dir: Destination directory path.
+        created_at: Optional creation timestamp for manifest.
+        overwrite: If True, allow writing to non-empty directory.
+        
+    Returns:
+        The path to the created bundle directory.
+        
+    Raises:
+        ValueError: If export is missing required fields.
+        FileExistsError: If bundle_dir is not empty and overwrite is False.
+    """
+    # 1. Validate Input
+    if "canon_hash" not in export:
+        raise ValueError("export payload missing required 'canon_hash'")
+        
+    export_fmt = export.get("canon_export_format", "unknown")
+    
+    # 2. Prepare Directory
+    if not bundle_dir.exists():
+        bundle_dir.mkdir(parents=True, exist_ok=True)
+    
+    if any(bundle_dir.iterdir()) and not overwrite:
+        raise FileExistsError(f"Bundle directory is not empty: {bundle_dir}")
+        
+    # 3. Serialize Content (Deterministic)
+    # Use sort_keys=True and separators=(",", ":") for canonical JSON form
+    export_bytes = json.dumps(export, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    validate_bytes = json.dumps(validation, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    
+    # 4. Write Content Files
+    # Append newline strictly
+    (bundle_dir / "export.json").write_bytes(export_bytes + b"\n")
+    (bundle_dir / "validate.json").write_bytes(validate_bytes + b"\n")
+    
+    # 5. Compute Hashes
+    export_hash = _sha256_bytes(export_bytes)
+    validate_hash = _sha256_bytes(validate_bytes)
+    
+    # 6. Create Manifest
+    created_at = created_at or "2026-02-05T00:00:00+00:00" # Default, usually caller passes UTC now
+    
+    manifest = {
+        "bundle_format": "v0.1",
+        "export_format": export_fmt,
+        "hash_alg": "sha256",
+        "created_at": created_at,
+        "export_hash": export_hash,
+        "validate_hash": validate_hash,
+        "canon_hash": export["canon_hash"],
+        "export_path": "export.json",
+        "validate_path": "validate.json"
+    }
+    
+    manifest_bytes = json.dumps(manifest, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    (bundle_dir / "manifest.json").write_bytes(manifest_bytes + b"\n")
+    
+    return bundle_dir
