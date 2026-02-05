@@ -91,16 +91,41 @@ def _get_error_code(errors: list[str]) -> str:
 def main() -> int:
     """CLI entrypoint for ilc-canon-summary."""
     parser = argparse.ArgumentParser(description="Summarize a canon_state.json file.")
-    parser.add_argument("--path", required=True, help="Path to canon_state.json")
+    parser.add_argument("--path", help="Path to canon_state.json (required unless --validate-export is used)")
     parser.add_argument("--print-hash", action="store_true", help="Include hashes in output")
     parser.add_argument("--quiet", action="store_true", help="Suppress stdout")
     parser.add_argument("--report", action="store_true", help="Emit full verification report as single-line JSON")
     parser.add_argument("--kpis", action="store_true", help="Emit single-line KPI summary")
     parser.add_argument("--diagnostics", action="store_true", help="Emit verbose error diagnostics to stderr (silent on success)")
     parser.add_argument("--audit-log", help="Append usage record to specified JSONL file")
+    parser.add_argument("--validate-export", help="Validate a canon export JSON file")
     
     args = parser.parse_args()
     
+    if args.validate_export:
+        try:
+            from ilc_core.ledger.canon_export_validate import validate_canon_export_v0_1
+            
+            with open(args.validate_export, "r") as f:
+                doc = json.load(f)
+                
+            report = validate_canon_export_v0_1(doc)
+            print(json.dumps(report, separators=(",", ":")))
+            return 0 if report["ok"] else 1
+            
+        except FileNotFoundError:
+            print(json.dumps({"ok": False, "errors": [f"File not found: {args.validate_export}"], "warnings": []}))
+            return 1
+        except json.JSONDecodeError:
+            print(json.dumps({"ok": False, "errors": [f"Invalid JSON in file: {args.validate_export}"], "warnings": []}))
+            return 1
+        except Exception as e:
+            print(json.dumps({"ok": False, "errors": [str(e)], "warnings": []}))
+            return 1
+    
+    if not args.path:
+        parser.error("the following arguments are required: --path")
+
     summary = summarize_canon_state(args.path)
 
     # Calculate error code if needed
