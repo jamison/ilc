@@ -17,10 +17,11 @@ EXCLUDE_FILES = {"__init__.py"}
 EXCLUDE_DIRS = {
     ROOT / "ilc_core" / "analysis",
     ROOT / "ilc_core" / "encoding",
-    ROOT / "ilc_core" / "protocol",
     ROOT / "ilc_core" / "consensus",
 }
-EXCLUDE_PATHS: set[Path] = set()
+EXCLUDE_PATHS: set[Path] = {
+    ROOT / "ilc_core" / "protocol" / "params.py",
+}
 
 
 def iter_python_files() -> list[Path]:
