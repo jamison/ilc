@@ -55,11 +55,30 @@ def parse_bool(value: Any, default: bool = False) -> bool:
     # Fallback for non-string values
     return default
 
+def _normalize_bool_field(key: str, value: Any) -> bool:
+    """Normalize a boolean field value with key-specific defaults."""
+    if key == "qa_enabled":
+        if value is None:
+            return True
+        return parse_bool(value, default=True)
+    return parse_bool(value, default=False)
+
+
+def _normalize_float_field(value: Any) -> Any:
+    """Normalize a float field value with fallback to raw on coercion failure."""
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        if value is not None:
+            return value
+    return value
+
+
 def normalize_protocol_overrides(raw: Dict[str, Any]) -> Dict[str, Any]:
     """
     Normalize legacy parameter keys to canonical fields and coerce types.
     """
-    normalized = {}
+    normalized: Dict[str, Any] = {}
     
     # Mappings: legacy -> canonical
     # canonical -> canonical (identity) is implicit if we iterate raw and don't match legacy
@@ -92,31 +111,9 @@ def normalize_protocol_overrides(raw: Dict[str, Any]) -> Dict[str, Any]:
         
         # 2. Map Values / Coerce
         if canonical_k in bool_fields:
-            normalized[canonical_k] = parse_bool(v, default=False) # Default False is safer? Or context dependent?
-            # parse_bool handles None->default. 
-            # If v comes from JSON "false", parse_bool handles it.
-            # If v matches default, it's fine.
-            # SPECIAL CASE: qa_enabled default True? 
-            # parse_bool signature takes default.
-            # We can checks specific defaults here or just let parse_bool standard default (False) apply if garbage.
-            if canonical_k == "qa_enabled" and v is None:
-                 normalized[canonical_k] = True # Default True for QA?
-            elif canonical_k == "qa_enabled":
-                 normalized[canonical_k] = parse_bool(v, default=True) # Bias towards enabled?
-            else:
-                 normalized[canonical_k] = parse_bool(v, default=False)
-
+            normalized[canonical_k] = _normalize_bool_field(canonical_k, v)
         elif canonical_k in float_fields:
-            try:
-                normalized[canonical_k] = float(v)
-            except (ValueError, TypeError):
-                # keep raw if coercion fails? Or drop/warning?
-                # User said "cast to float if not None". 
-                if v is not None:
-                     # Log warning? We are inside a pure function. 
-                     # Just keep raw or set to 0.0?
-                     # Let's keep raw, validation downstream (dataclass init) might catch it validly or crash.
-                     normalized[canonical_k] = v
+            normalized[canonical_k] = _normalize_float_field(v)
         else:
             # Pass through string fields or unknowns
             normalized[canonical_k] = v
