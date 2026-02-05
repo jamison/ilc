@@ -27,6 +27,7 @@ class TestCanonExportFormat:
         assert export["epochs"] == []
         assert export["snapshots"] == []
         assert export["kpis"]["epoch_count"] == 0
+        assert "computed_hash" not in export
 
     def test_export_format_full_populated(self):
         """Verify fully populated input maps correctly."""

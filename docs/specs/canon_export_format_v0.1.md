@@ -69,8 +69,8 @@ Minimum shape:
 ```json
 {
   "canon_export_format": "v0.1",
-  "canon_hash": "a1b2c3d4e5f6...",
-  "computed_hash": "a1b2c3d4e5f6...",
+  "canon_hash": "a1b2c3d4e5f6",
+  "computed_hash": "a1b2c3d4e5f6",
   "exported_at": "2026-02-05T12:00:00+00:00",
   "meta": {
     "canon_export_version": "v0.1",

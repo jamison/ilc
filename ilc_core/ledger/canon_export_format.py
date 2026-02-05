@@ -48,7 +48,6 @@ def export_canon_format_v0_1(canon_state: Dict[str, Any], exported_at: Optional[
     payload = {
         "canon_export_format": "v0.1",
         "canon_hash": canon_state.get("canon_hash"),
-        "computed_hash": canon_state.get("computed_hash"),
         "exported_at": exported_at,
         "meta": meta,
         "epochs": epochs,
@@ -59,11 +58,9 @@ def export_canon_format_v0_1(canon_state: Dict[str, Any], exported_at: Optional[
             "balance_count": meta["balance_count"],
         },
     }
-    
-    # Filter out None values that are not required (computed_hash)
-    # Actually schema allows computed_hash to be missing? No, schema says optional propery, so we can omit or pass null?
-    # Spec table says "No" for required on computed_hash. 
-    # Python code above includes it with .get(), so it might be None.
-    # We'll leave it in. If it's None, it serializes to null, which is valid JSON.
+
+    computed_hash = canon_state.get("computed_hash")
+    if computed_hash is not None:
+        payload["computed_hash"] = computed_hash
 
     return payload
