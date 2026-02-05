@@ -6,13 +6,21 @@ and adds AST-based detection for duplicate top-level class/function names.
 from __future__ import annotations
 
 import ast
+import importlib.util
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tools"))
+_SCAN_DUPLICATES_PATH = ROOT / "tools" / "scan_duplicates.py"
+_spec = importlib.util.spec_from_file_location("scan_duplicates", _SCAN_DUPLICATES_PATH)
+if _spec is None or _spec.loader is None:
+    raise ImportError(f"Unable to load scan_duplicates from {_SCAN_DUPLICATES_PATH}")
+_scan_duplicates = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = _scan_duplicates
+_spec.loader.exec_module(_scan_duplicates)
 
-from scan_duplicates import scan_for_duplicates, DuplicateFinding
+scan_for_duplicates = _scan_duplicates.scan_for_duplicates
+DuplicateFinding = _scan_duplicates.DuplicateFinding
 
 EXCLUDE_DIRS = {
     "__pycache__",

@@ -26,7 +26,8 @@ def _format_top_offenders(offenders: list[tuple[int, str]], label: str) -> str:
     """Format top-N offenders as a sorted summary."""
     if not offenders:
         return ""
-    sorted_offenders = sorted(offenders, key=lambda x: -x[0])[:_TOP_N]
+    # Stable order: value desc, then description asc for deterministic output.
+    sorted_offenders = sorted(offenders, key=lambda x: (-x[0], x[1]))[:_TOP_N]
     lines = [f"Top offenders ({label}):"]
     for i, (value, desc) in enumerate(sorted_offenders, 1):
         lines.append(f"{i}) {desc} ({value})")
@@ -138,8 +139,10 @@ def test_function_size_thresholds() -> None:
             loc = f"{path.relative_to(ROOT)}:{start}-{end} {name}()"
             
             if length > MAX_FUNC_LINES:
-                failures.append(f"{path}:{start}-{end} {name}() is {length} lines (max {MAX_FUNC_LINES})")
-            line_offenders.append((length, loc))
+                failures.append(
+                    f"{path}:{start}-{end} {name}() is {length} lines (max {MAX_FUNC_LINES})"
+                )
+                line_offenders.append((length, loc))
             
             arg_count = len(node.args.args) + len(node.args.kwonlyargs)
             if node.args.vararg is not None:
@@ -147,13 +150,17 @@ def test_function_size_thresholds() -> None:
             if node.args.kwarg is not None:
                 arg_count += 1
             if arg_count > MAX_FUNC_ARGS:
-                failures.append(f"{path}:{start}-{end} {name}() has {arg_count} args (max {MAX_FUNC_ARGS})")
-            arg_offenders.append((arg_count, loc))
+                failures.append(
+                    f"{path}:{start}-{end} {name}() has {arg_count} args (max {MAX_FUNC_ARGS})"
+                )
+                arg_offenders.append((arg_count, loc))
             
             depth = max_nesting_depth(node)
             if depth > MAX_NESTING_DEPTH:
-                failures.append(f"{path}:{start}-{end} {name}() nesting depth {depth} (max {MAX_NESTING_DEPTH})")
-            nesting_offenders.append((depth, loc))
+                failures.append(
+                    f"{path}:{start}-{end} {name}() nesting depth {depth} (max {MAX_NESTING_DEPTH})"
+                )
+                nesting_offenders.append((depth, loc))
     
     if failures:
         report_parts = [
@@ -190,8 +197,10 @@ def test_class_size_thresholds() -> None:
             loc = f"{path.relative_to(ROOT)}:{start}-{end} class {name}"
             
             if length > MAX_CLASS_LINES:
-                failures.append(f"{path}:{start}-{end} class {name} is {length} lines (max {MAX_CLASS_LINES})")
-            class_offenders.append((length, loc))
+                failures.append(
+                    f"{path}:{start}-{end} class {name} is {length} lines (max {MAX_CLASS_LINES})"
+                )
+                class_offenders.append((length, loc))
     
     if failures:
         report_parts = [
