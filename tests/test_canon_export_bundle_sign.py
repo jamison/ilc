@@ -3,7 +3,8 @@ import pytest
 import base64
 import hmac
 import hashlib
-from ilc_core.ledger.canon_export_bundle_sign import sign_manifest
+from pathlib import Path
+from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
 
 class TestCanonExportBundleSign:
     
@@ -60,3 +61,12 @@ class TestCanonExportBundleSign:
         sig2 = (valid_bundle / "manifest.sig").read_bytes()
         
         assert sig1 != sig2
+
+    def test_load_key_from_file(self, tmp_path):
+        key = b"secret_key_123"
+        key_b64 = base64.b64encode(key).decode("utf-8")
+        key_path = tmp_path / "key.txt"
+        key_path.write_text(key_b64)
+
+        loaded = load_key_from_file(key_path)
+        assert loaded == key

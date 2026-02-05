@@ -5,6 +5,14 @@ import hmac
 from pathlib import Path
 from typing import Optional
 
+
+def load_key_from_file(path: Path) -> bytes:
+    """Load a base64-encoded key from a file."""
+    raw = path.read_text(encoding="utf-8").strip()
+    if not raw:
+        raise ValueError("Key file is empty")
+    return base64.b64decode(raw)
+
 def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path:
     """
     Sign the manifest.json file in a bundle using HMAC-SHA256.
