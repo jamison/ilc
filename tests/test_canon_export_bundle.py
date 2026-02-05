@@ -47,6 +47,12 @@ class TestCanonExportBundle:
         computed_hash = hashlib.sha256(content_hashed).hexdigest()
         assert computed_hash == manifest["export_hash"]
 
+        validate_on_disk = (bundle_dir / "validate.json").read_bytes()
+        assert validate_on_disk.endswith(b"\n")
+        validate_hashed = validate_on_disk[:-1]
+        computed_validate_hash = hashlib.sha256(validate_hashed).hexdigest()
+        assert computed_validate_hash == manifest["validate_hash"]
+
     def test_overwrite_protection(self, tmp_path):
         """Should raise FileExistsError if folder not empty."""
         bundle_dir = tmp_path / "bundle"
