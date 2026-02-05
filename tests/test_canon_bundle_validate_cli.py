@@ -28,10 +28,12 @@ class TestCanonBundleValidateCLI:
         data = json.loads(result.stdout)
         assert data["ok"] is True
         assert "\n" not in result.stdout.strip() # Single line check
+        assert result.stderr.strip() == ""
 
     def test_missing_bundle(self, tmp_path):
+        missing_path = (tmp_path / "missing").resolve()
         result = subprocess.run(
-            COMMAND + ["--bundle", str(tmp_path / "missing")],
+            COMMAND + ["--bundle", str(missing_path)],
             capture_output=True,
             text=True
         )
@@ -39,6 +41,8 @@ class TestCanonBundleValidateCLI:
         data = json.loads(result.stdout)
         assert data["ok"] is False
         assert any("not found" in e for e in data["errors"])
+        assert any(str(missing_path) in e for e in data["errors"])
+        assert result.stderr.strip() == ""
 
     def test_invalid_bundle(self, valid_bundle):
         # Tamper with file
@@ -53,3 +57,4 @@ class TestCanonBundleValidateCLI:
         data = json.loads(result.stdout)
         assert data["ok"] is False
         assert any("hash mismatch" in e for e in data["errors"])
+        assert result.stderr.strip() == ""

@@ -12,7 +12,7 @@ def main() -> int:
     parser.add_argument("--bundle", required=True, help="Path to the bundle directory")
     
     args = parser.parse_args()
-    bundle_path = Path(args.bundle)
+    bundle_path = Path(args.bundle).resolve()
     
     try:
         report = validate_canon_export_bundle(bundle_path)
