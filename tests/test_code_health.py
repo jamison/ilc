@@ -18,7 +18,6 @@ EXCLUDE_DIRS = {
     ROOT / "ilc_core" / "analysis",
     ROOT / "ilc_core" / "encoding",
     ROOT / "ilc_core" / "protocol",
-    ROOT / "ilc_core" / "sim",
     ROOT / "ilc_core" / "consensus",
 }
 EXCLUDE_PATHS: set[Path] = set()
