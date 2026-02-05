@@ -75,11 +75,10 @@ class TestCanonBundleSignCLI:
         assert result.stderr == ""
 
     def test_key_missing_flag(self, bundle_dir):
-        # argparse handles this -> prints to stderr and exits 2 usually
         result = self.run_cli(["--bundle", str(bundle_dir)])
-        assert result.returncode != 0
-        # argparse output is standard error
-        assert "the following arguments are required: --key-file" in result.stderr
+        assert result.returncode == 1
+        assert "key_missing" in result.stdout
+        assert result.stderr == ""
 
     def test_key_file_missing_path(self, bundle_dir, tmp_path):
         # Path provided but file doesn't exist
@@ -87,3 +86,4 @@ class TestCanonBundleSignCLI:
         result = self.run_cli(["--bundle", str(bundle_dir), "--key-file", str(missing_key)])
         assert result.returncode == 1
         assert "key_missing" in result.stdout
+        assert result.stderr == ""
