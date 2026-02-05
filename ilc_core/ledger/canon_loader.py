@@ -114,57 +114,88 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
     Returns:
         Dict with keys:
             - ok (bool): True if verified
-            - canon_hash (str): The hash found in the file
-            - computed_hash (str): The hash re-computed (if possible)
-            - error (str, optional): Error message if failed
+            - canon_hash (str | None): The hash found in the file, or None if parse failed
+            - computed_hash (str | None): The hash re-computed, or None if parse failed
+            - errors (list[str]): List of error messages (empty if verification passed)
     """
+    errors: list[str] = []
+    
     try:
-        # We can reuse load_canon_state, but we need to catch the specific errors
-        # However, load_canon_state returns the payload, we want report.
-        # Let's do a custom flow to capture computed hash even on mismatch.
-        
         p = Path(path)
         if not p.exists():
-            return {"ok": False, "error": f"File not found: {path}"}
+            return {
+                "ok": False,
+                "canon_hash": None,
+                "computed_hash": None,
+                "errors": [f"File not found: {path}"]
+            }
             
         with p.open("r", encoding="utf-8") as f:
             try:
                 payload = json.load(f)
             except json.JSONDecodeError as e:
-                return {"ok": False, "error": f"Invalid JSON: {e}"}
+                return {
+                    "ok": False,
+                    "canon_hash": None,
+                    "computed_hash": None,
+                    "errors": [f"Invalid JSON: {e}"]
+                }
         
         # Minimal schema checks for report
         if "canon_hash" not in payload:
-            return {"ok": False, "error": "Missing 'canon_hash' field"}
+            errors.append("Missing 'canon_hash' field")
+        
         if payload.get("canon_export_version") != "v0.1":
-            return {"ok": False, "error": f"Unsupported version: {payload.get('canon_export_version')}"}
+            errors.append(f"Unsupported version: {payload.get('canon_export_version')}")
+            
+        if errors:
+            return {
+                "ok": False,
+                "canon_hash": payload.get("canon_hash"),
+                "computed_hash": None,
+                "errors": errors
+            }
             
         expected_hash = payload["canon_hash"]
         
         # Compute
-        verify_payload = payload.copy()
-        del verify_payload["canon_hash"]
-        if "generated_at" in verify_payload:
-            del verify_payload["generated_at"]
-            
-        computed_hash = compute_canon_hash(verify_payload)
+        try:
+            verify_payload = payload.copy()
+            del verify_payload["canon_hash"]
+            if "generated_at" in verify_payload:
+                del verify_payload["generated_at"]
+                
+            computed_hash = compute_canon_hash(verify_payload)
+        except Exception as e:
+            return {
+                "ok": False,
+                "canon_hash": expected_hash,
+                "computed_hash": None,
+                "errors": [f"Hash computation failed: {e}"]
+            }
         
         if computed_hash == expected_hash:
             return {
                 "ok": True, 
                 "canon_hash": expected_hash, 
-                "computed_hash": computed_hash
+                "computed_hash": computed_hash,
+                "errors": []
             }
         else:
             return {
                 "ok": False, 
                 "canon_hash": expected_hash, 
                 "computed_hash": computed_hash,
-                "error": "Hash mismatch"
+                "errors": ["Hash mismatch"]
             }
             
     except Exception as e:
-        return {"ok": False, "error": str(e)}
+        return {
+            "ok": False,
+            "canon_hash": None,
+            "computed_hash": None,
+            "errors": [str(e)]
+        }
 
 def load_canon_state_obj(path: PathLike) -> CanonState:
     """

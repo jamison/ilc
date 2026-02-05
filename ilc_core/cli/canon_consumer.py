@@ -35,32 +35,33 @@ def summarize_canon_state(path: Union[str, PathLike]) -> Dict[str, Any]:
     """
     report = verify_canon_state(path)
     
+    # Base response shape
+    result = {
+        "ok": report["ok"],
+        "canon_hash": report.get("canon_hash"),
+        "computed_hash": report.get("computed_hash"),
+        "errors": report.get("errors", [])
+    }
+    
     if not report["ok"]:
-        return {
-            "ok": False,
-            "error": report.get("error", "Verification failed")
-        }
+        return result
     
     # Reload to extract counts (verify_canon_state verifies but doesn't return full payload)
-    # We can trust the file now since verify passed
     try:
         with open(path, "r") as f:
             payload = json.load(f)
             
-        return {
-            "ok": True,
-            "canon_hash": report["canon_hash"],
-            "computed_hash": report["computed_hash"],
+        result.update({
             "canon_export_version": payload.get("canon_export_version", "unknown"),
             "epoch_count": len(payload.get("epoch_records", {})),
             "snapshot_count": len(payload.get("stake_snapshots", {})),
             "balance_count": len(payload.get("balances", {})),
-        }
+        })
+        return result
     except Exception as e:
-        return {
-            "ok": False,
-            "error": f"Failed to parse payload for summary: {str(e)}"
-        }
+        result["ok"] = False
+        result["errors"].append(f"Failed to parse payload for summary: {str(e)}")
+        return result
 
 def main() -> int:
     """CLI entrypoint for ilc-canon-summary."""
@@ -73,13 +74,25 @@ def main() -> int:
     
     summary = summarize_canon_state(args.path)
 
-    if not args.print_hash:
-        summary.pop("canon_hash", None)
-        summary.pop("computed_hash", None)
+    # Format output as single line: status=ok canon_path=... canon_hash=... errors=[]
+    status = "ok" if summary.get("ok") else "fail"
+    canon_hash = summary.get("canon_hash") or "unknown"
+    # Shorten hash for display
+    canon_hash_short = canon_hash[:12] if canon_hash and canon_hash != "unknown" else "unknown"
+    
+    errors = summary.get("errors", [])
+    # Format errors as python list repr for easy parsing
+    errors_str = str(errors).replace("'", '"')
+    
+    output = (
+        f"status={status} "
+        f"canon_path={args.path} "
+        f"canon_hash={canon_hash_short} "
+        f"errors={errors_str}"
+    )
 
-    # Strict deterministic JSON output
     if not args.quiet:
-        print(json.dumps(summary, sort_keys=True))
+        print(output)
 
     return 0 if summary.get("ok") else 1
 

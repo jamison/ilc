@@ -33,7 +33,7 @@ class TestCanonConsumer:
     def test_summarize_missing_file(self):
         summary = summarize_canon_state("nonexistent.json")
         assert summary["ok"] is False
-        assert "File not found" in summary.get("error", "")
+        assert any("File not found" in e for e in summary.get("errors", []))
 
     def test_summarize_tampered_file(self):
         if not FIXTURE_PATH.exists():
@@ -58,7 +58,7 @@ class TestCanonConsumer:
                 
             summary = summarize_canon_state(bad_path)
             assert summary["ok"] is False
-            assert "Hash mismatch" in summary.get("error", "")
+            assert any("Hash mismatch" in e for e in summary.get("errors", []))
 
     def test_cli_valid(self):
         if not FIXTURE_PATH.exists():
@@ -67,26 +67,33 @@ class TestCanonConsumer:
         res = run_cli("--path", str(FIXTURE_PATH))
         assert res.returncode == 0
         
-        data = json.loads(res.stdout)
-        assert data["ok"] is True
-        assert "epoch_count" in data
+        # Output should be: status=ok canon_path=... canon_hash=... errors=[]
+        output = res.stdout.strip()
+        assert output.startswith("status=ok")
+        assert f"canon_path={str(FIXTURE_PATH)}" in output
+        assert "canon_hash=" in output
+        assert "errors=[]" in output
+        
+        # Ensure hash is shortened (usually 64 chars -> 12 chars)
+        import re
+        hash_match = re.search(r"canon_hash=([a-f0-9]+|unknown)", output)
+        if hash_match:
+            hash_val = hash_match.group(1)
+            if hash_val != "unknown":
+                assert len(hash_val) <= 12
 
     def test_cli_error(self):
         res = run_cli("--path", "missing_file.json")
         assert res.returncode == 1
         
-        data = json.loads(res.stdout)
-        assert data["ok"] is False
+        output = res.stdout.strip()
+        assert output.startswith("status=fail")
+        assert "errors=[" in output
+        assert "File not found" in output
 
-    def test_cli_print_hash_and_quiet(self):
+    def test_cli_quiet(self):
         if not FIXTURE_PATH.exists():
             pytest.skip("Fixture not found")
-
-        res = run_cli("--path", str(FIXTURE_PATH), "--print-hash")
-        assert res.returncode == 0
-        data = json.loads(res.stdout)
-        assert "canon_hash" in data
-        assert "computed_hash" in data
 
         res = run_cli("--path", str(FIXTURE_PATH), "--quiet")
         assert res.returncode == 0
@@ -109,6 +116,7 @@ class TestCanonConsumer:
 
             res = run_cli("--path", str(bad_path))
             assert res.returncode == 1
-            data = json.loads(res.stdout)
-            assert data["ok"] is False
-            assert "Unsupported version" in data.get("error", "")
+            
+            output = res.stdout.strip()
+            assert output.startswith("status=fail")
+            assert "Unsupported version" in output
