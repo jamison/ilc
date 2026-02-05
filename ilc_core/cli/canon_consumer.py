@@ -90,7 +90,7 @@ def main() -> int:
     if args.diagnostics and not summary.get("ok"):
         errors = summary.get("errors", [])
         error_msg = "; ".join(errors) if errors else "Unknown error"
-        
+
         # Map to stable error code
         code = "E_UNKNOWN"
         if "File not found" in error_msg:
@@ -101,11 +101,11 @@ def main() -> int:
             code = "E_HASH_MISMATCH"
         elif "Unsupported version" in error_msg:
             code = "E_UNSUPPORTED_VERSION"
-            
-        print(f"diagnostics=on", file=sys.stderr)
-        print(f"path={args.path}", file=sys.stderr)
-        print(f"code={code}", file=sys.stderr)
-        print(f"details={error_msg}", file=sys.stderr)
+
+        print(
+            f"diagnostics=on canon_path={args.path} code={code} error_message={error_msg}",
+            file=sys.stderr,
+        )
 
     if args.report:
         # Report mode: emit single-line JSON with stable key order

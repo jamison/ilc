@@ -214,9 +214,9 @@ class TestCanonConsumer:
         # Stderr has diagnostics
         err = res.stderr.strip()
         assert "diagnostics=on" in err
-        assert "path=missing_file.json" in err
+        assert "canon_path=missing_file.json" in err
         assert "code=E_FILE_NOT_FOUND" in err
-        assert "details=File not found" in err
+        assert "error_message=File not found" in err
 
     def test_cli_diagnostics_success(self):
         if not FIXTURE_PATH.exists():
@@ -259,3 +259,9 @@ class TestCanonConsumer:
                 
             res = run_cli("--path", str(ver_path), "--diagnostics")
             assert "code=E_UNSUPPORTED_VERSION" in res.stderr
+
+    def test_cli_diagnostics_with_quiet(self):
+        res = run_cli("--path", "missing_file.json", "--diagnostics", "--quiet")
+        assert res.returncode == 1
+        assert res.stdout.strip() == ""
+        assert "diagnostics=on" in res.stderr
