@@ -17,7 +17,6 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
         
     Raises:
         FileNotFoundError: If manifest.json or manifest.sig are missing.
-        binascii.Error: If manifest.sig contains invalid base64 data.
     """
     manifest_path = bundle_dir / "manifest.json"
     sig_path = bundle_dir / "manifest.sig"
@@ -27,23 +26,12 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     if not sig_path.exists():
         raise FileNotFoundError(f"Signature not found at {sig_path}")
         
-    sig_b64 = sig_path.read_text(encoding="utf-8").strip()
-    
-    # Reject multi-line signatures or unexpected whitespace/newlines within the base64 string
-    # (Checking against raw content for internal newlines)
     raw_sig_content = sig_path.read_text(encoding="utf-8")
-    if "\n" in raw_sig_content.strip(): 
-         # A valid single-line signature file might have ONE trailing newline, 
-         # but .strip() removes it. If there are internal newlines, they might persist 
-         # or we should check the raw string more carefully.
-         # Re-read: "If manifest.sig has newlines or whitespace in middle: return ok=false"
-         # Let's check internal structure strictly.
-         pass
-    
-    # For robust check:
     lines = [line for line in raw_sig_content.splitlines() if line.strip()]
     if len(lines) != 1:
-        # If there's more than one non-empty line, it's malformed according to our strict rule
+        return False
+    sig_b64 = lines[0].strip()
+    if any(ch.isspace() for ch in sig_b64):
         return False
         
     # Read manifest bytes as-is

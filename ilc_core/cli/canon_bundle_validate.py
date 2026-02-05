@@ -32,20 +32,29 @@ def main() -> int:
     # Signature Verification Logic
     if args.verify_signature:
         if not args.key_file:
-             report["ok"] = False
-             report["errors"].append("Missing --key-file for signature verification")
+            report["ok"] = False
+            report["errors"].append("key_missing")
         else:
             try:
                 key = load_key_from_file(Path(args.key_file))
                 if not verify_manifest_signature(bundle_path, key):
-                     report["ok"] = False
-                     report["errors"].append("Signature mismatch")
-            except FileNotFoundError:
+                    report["ok"] = False
+                    report["errors"].append("signature_mismatch")
+            except FileNotFoundError as exc:
                 report["ok"] = False
-                report["errors"].append("Signature verification failed: manifest.sig not found")
-            except Exception as e:
+                if "manifest.json" in str(exc):
+                    report["errors"].append("manifest_missing")
+                else:
+                    report["errors"].append("signature_missing")
+            except ValueError as exc:
                 report["ok"] = False
-                report["errors"].append(f"Signature verification error: {e}")
+                if str(exc) == "invalid_key_file":
+                    report["errors"].append("invalid_key_file")
+                else:
+                    report["errors"].append(f"signature_verification_error:{exc}")
+            except Exception as exc:
+                report["ok"] = False
+                report["errors"].append(f"signature_verification_error:{exc}")
     else:
         report.setdefault("warnings", []).append("Signature verification skipped")
     

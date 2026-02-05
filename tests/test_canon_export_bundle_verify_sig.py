@@ -67,6 +67,7 @@ class TestCanonExportBundleVerifySig:
         )
         assert result.returncode == 0
         assert '"ok":true' in result.stdout
+        assert result.stderr == ""
 
         # 2. Skip case (warning)
         result = subprocess.run(
@@ -75,6 +76,7 @@ class TestCanonExportBundleVerifySig:
         )
         assert result.returncode == 0
         assert "Signature verification skipped" in result.stdout
+        assert result.stderr == ""
 
         # 3. Mismatch case
         (signed_bundle / "manifest.json").write_text("{}") # Destroy manifest
@@ -83,4 +85,17 @@ class TestCanonExportBundleVerifySig:
             capture_output=True, text=True
         )
         assert '"ok":false' in result.stdout
-        assert "Signature mismatch" in result.stdout
+        assert "signature_mismatch" in result.stdout
+        assert result.stderr == ""
+
+    def test_cli_invalid_key_file(self, signed_bundle, tmp_path):
+        bad_key_file = tmp_path / "bad_key.txt"
+        bad_key_file.write_text("not-base64@@@")
+        result = subprocess.run(
+            COMMAND + ["--bundle", str(signed_bundle), "--verify-signature", "--key-file", str(bad_key_file)],
+            capture_output=True, text=True
+        )
+        assert result.returncode == 1
+        assert '"ok":false' in result.stdout
+        assert "invalid_key_file" in result.stdout
+        assert result.stderr == ""

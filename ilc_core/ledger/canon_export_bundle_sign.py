@@ -1,5 +1,6 @@
 
 import base64
+import binascii
 import hashlib
 import hmac
 from pathlib import Path
@@ -11,7 +12,10 @@ def load_key_from_file(path: Path) -> bytes:
     raw = path.read_text(encoding="utf-8").strip()
     if not raw:
         raise ValueError("Key file is empty")
-    return base64.b64decode(raw)
+    try:
+        return base64.b64decode(raw)
+    except binascii.Error as exc:
+        raise ValueError("invalid_key_file") from exc
 
 def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path:
     """
