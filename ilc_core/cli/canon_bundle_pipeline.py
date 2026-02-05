@@ -37,6 +37,13 @@ def main() -> int:
             report["errors"].append("bundle_missing")
             print(json.dumps(report, separators=(",", ":"), sort_keys=False))
             return 1
+
+        manifest_path = bundle_path / "manifest.json"
+        if not manifest_path.exists():
+            report["ok"] = False
+            report["errors"].append("manifest_missing")
+            print(json.dumps(report, separators=(",", ":"), sort_keys=False))
+            return 1
         
         # Step 2: Validate bundle
         validation_result = validate_canon_export_bundle(bundle_path)
@@ -64,6 +71,21 @@ def main() -> int:
                 print(json.dumps(report, separators=(",", ":"), sort_keys=False))
                 return 1
             
+            sig_path = bundle_path / "manifest.sig"
+            if sig_path.exists() and not args.overwrite:
+                try:
+                    if verify_manifest_signature(bundle_path, key):
+                        report["ok"] = False
+                        report["errors"].append("signature_exists")
+                    else:
+                        report["ok"] = False
+                        report["errors"].append("signature_mismatch")
+                except FileNotFoundError:
+                    report["ok"] = False
+                    report["errors"].append("signature_missing")
+                print(json.dumps(report, separators=(",", ":"), sort_keys=False))
+                return 1
+
             # Sign
             try:
                 sign_manifest(bundle_path, key, overwrite=args.overwrite)
@@ -93,6 +115,8 @@ def main() -> int:
         # Step 4: Report (optional)
         if args.report:
             report_path = Path(args.report)
+            if report_path.is_dir():
+                report_path = report_path / "bundle_validation_report.md"
             report_path.parent.mkdir(parents=True, exist_ok=True)
             md_content = render_bundle_report(str(bundle_path), validation_result)
             report_path.write_text(md_content, encoding="utf-8")

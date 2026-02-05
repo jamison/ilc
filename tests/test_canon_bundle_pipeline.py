@@ -83,9 +83,9 @@ class TestCanonBundlePipeline:
         bundle.mkdir()
         result = self.run_cli(["--bundle", str(bundle), "--key-file", str(key_file)])
         assert result.returncode == 1
-        # Validation should fail due to missing manifest
         data = json.loads(result.stdout)
         assert data["ok"] is False
+        assert "manifest_missing" in data["errors"]
         assert result.stderr == ""
 
     def test_invalid_key_file(self, valid_bundle, tmp_path):
@@ -106,22 +106,19 @@ class TestCanonBundlePipeline:
         assert result.stderr == ""
 
     def test_signature_mismatch(self, valid_bundle, key_file):
-        # First sign
         from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
         key = load_key_from_file(key_file)
         sign_manifest(valid_bundle, key)
-        
-        # Tamper manifest
+
+        # Tamper manifest after signing so signature is stale.
         manifest = valid_bundle / "manifest.json"
         manifest.write_text(manifest.read_text() + " ")
-        
-        # Pipeline should detect mismatch on verify
-        result = self.run_cli(["--bundle", str(valid_bundle), "--key-file", str(key_file), "--overwrite"])
-        # Note: --overwrite signs again with the tampered manifest, so verify passes.
-        # To test mismatch, we need to sign, then tamper, then verify WITHOUT re-signing.
-        # The pipeline always signs first if key is provided, so this test needs adjustment.
-        # Instead, let's test directly: sign, tamper, then call pipeline without overwrite.
-        
+
+        result = self.run_cli(["--bundle", str(valid_bundle), "--key-file", str(key_file)])
+        assert result.returncode == 1
+        data = json.loads(result.stdout)
+        assert "signature_mismatch" in data["errors"]
+        assert result.stderr == ""
     def test_signature_exists_no_overwrite(self, valid_bundle, key_file):
         from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
         key = load_key_from_file(key_file)
