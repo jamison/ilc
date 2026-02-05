@@ -21,9 +21,7 @@ EXCLUDE_DIRS = {
     ROOT / "ilc_core" / "sim",
     ROOT / "ilc_core" / "consensus",
 }
-EXCLUDE_PATHS = {
-    ROOT / "ilc_core" / "ledger" / "backend.py",
-}
+EXCLUDE_PATHS: set[Path] = set()
 
 
 def iter_python_files() -> list[Path]:
