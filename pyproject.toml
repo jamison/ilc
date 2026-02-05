@@ -37,3 +37,4 @@ include = ["ilc_core*"]
 ilc-mcp = "ilc_core.cli.mcp_cli:main"
 ilc-canon-verify = "ilc_core.cli.canon_cli:main"
 ilc-canon-summary = "ilc_core.cli.canon_consumer:main"
+ilc-canon-export = "ilc_core.cli.canon_export:main"
