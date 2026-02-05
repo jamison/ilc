@@ -129,8 +129,12 @@ class TestCanonConsumer:
         assert res.returncode == 0
         
         # Must be parseable JSON
-        report = json.loads(res.stdout)
+        output = res.stdout
+        assert "\n" not in output.strip()
+        report = json.loads(output)
+        assert list(report.keys()) == ["ok", "canon_hash", "computed_hash", "errors", "meta"]
         assert report["ok"] is True
+        assert isinstance(report["errors"], list)
         assert "meta" in report
         assert report["meta"]["epoch_count"] is not None
         assert report["meta"]["canon_export_version"] == "v0.1"
@@ -139,8 +143,17 @@ class TestCanonConsumer:
         res = run_cli("--path", "missing_file.json", "--report")
         assert res.returncode == 1
         
-        report = json.loads(res.stdout)
+        output = res.stdout
+        assert "\n" not in output.strip()
+        report = json.loads(output)
+        assert list(report.keys()) == ["ok", "canon_hash", "computed_hash", "errors", "meta"]
         assert report["ok"] is False
+        assert isinstance(report["errors"], list)
         assert "meta" in report
         assert report["meta"]["epoch_count"] is None
         assert any("File not found" in e for e in report["errors"])
+
+    def test_cli_report_ignores_quiet(self):
+        res = run_cli("--path", "missing_file.json", "--report", "--quiet")
+        assert res.returncode == 1
+        assert res.stdout.strip() != ""

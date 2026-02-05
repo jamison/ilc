@@ -82,9 +82,27 @@ def main() -> int:
     summary = summarize_canon_state(args.path)
 
     if args.report:
-        # Report mode: emit raw single-line JSON
-        print(json.dumps(summary, sort_keys=True))
-        return 0 if summary.get("ok") else 1
+        # Report mode: emit single-line JSON with stable key order
+        report = verify_canon_state(args.path)
+        meta = report.get(
+            "meta",
+            {
+                "canon_export_version": None,
+                "epoch_count": None,
+                "snapshot_count": None,
+                "balance_count": None,
+            },
+        )
+        errors = report.get("errors", [])
+        ordered_report = {
+            "ok": report.get("ok", False),
+            "canon_hash": report.get("canon_hash"),
+            "computed_hash": report.get("computed_hash"),
+            "errors": errors,
+            "meta": meta,
+        }
+        print(json.dumps(ordered_report, separators=(",", ":")))
+        return 0 if ordered_report["ok"] else 1
 
     # Format output as single line: status=ok canon_path=... canon_hash=... errors=[]
     status = "ok" if summary.get("ok") else "fail"
