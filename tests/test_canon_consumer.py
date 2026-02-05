@@ -120,3 +120,27 @@ class TestCanonConsumer:
             output = res.stdout.strip()
             assert output.startswith("status=fail")
             assert "Unsupported version" in output
+
+    def test_cli_report_valid(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+
+        res = run_cli("--path", str(FIXTURE_PATH), "--report")
+        assert res.returncode == 0
+        
+        # Must be parseable JSON
+        report = json.loads(res.stdout)
+        assert report["ok"] is True
+        assert "meta" in report
+        assert report["meta"]["epoch_count"] is not None
+        assert report["meta"]["canon_export_version"] == "v0.1"
+
+    def test_cli_report_error(self):
+        res = run_cli("--path", "missing_file.json", "--report")
+        assert res.returncode == 1
+        
+        report = json.loads(res.stdout)
+        assert report["ok"] is False
+        assert "meta" in report
+        assert report["meta"]["epoch_count"] is None
+        assert any("File not found" in e for e in report["errors"])

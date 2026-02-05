@@ -40,7 +40,13 @@ def summarize_canon_state(path: Union[str, PathLike]) -> Dict[str, Any]:
         "ok": report["ok"],
         "canon_hash": report.get("canon_hash"),
         "computed_hash": report.get("computed_hash"),
-        "errors": report.get("errors", [])
+        "errors": report.get("errors", []),
+        "meta": report.get("meta", {
+            "canon_export_version": None,
+            "epoch_count": None,
+            "snapshot_count": None,
+            "balance_count": None
+        })
     }
     
     if not report["ok"]:
@@ -69,10 +75,16 @@ def main() -> int:
     parser.add_argument("--path", required=True, help="Path to canon_state.json")
     parser.add_argument("--print-hash", action="store_true", help="Include hashes in output")
     parser.add_argument("--quiet", action="store_true", help="Suppress stdout")
+    parser.add_argument("--report", action="store_true", help="Emit full verification report as single-line JSON")
     
     args = parser.parse_args()
     
     summary = summarize_canon_state(args.path)
+
+    if args.report:
+        # Report mode: emit raw single-line JSON
+        print(json.dumps(summary, sort_keys=True))
+        return 0 if summary.get("ok") else 1
 
     # Format output as single line: status=ok canon_path=... canon_hash=... errors=[]
     status = "ok" if summary.get("ok") else "fail"

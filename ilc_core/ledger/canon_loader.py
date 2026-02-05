@@ -117,8 +117,17 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
             - canon_hash (str | None): The hash found in the file, or None if parse failed
             - computed_hash (str | None): The hash re-computed, or None if parse failed
             - errors (list[str]): List of error messages (empty if verification passed)
+            - meta (dict): Metadata including version and record counts
     """
     errors: list[str] = []
+    
+    # Default meta
+    meta: Dict[str, Any] = {
+        "canon_export_version": None,
+        "epoch_count": None,
+        "snapshot_count": None,
+        "balance_count": None
+    }
     
     try:
         p = Path(path)
@@ -127,7 +136,8 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
                 "ok": False,
                 "canon_hash": None,
                 "computed_hash": None,
-                "errors": [f"File not found: {path}"]
+                "errors": [f"File not found: {path}"],
+                "meta": meta
             }
             
         with p.open("r", encoding="utf-8") as f:
@@ -138,9 +148,16 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
                     "ok": False,
                     "canon_hash": None,
                     "computed_hash": None,
-                    "errors": [f"Invalid JSON: {e}"]
+                    "errors": [f"Invalid JSON: {e}"],
+                    "meta": meta
                 }
         
+        # Extract meta early
+        meta["canon_export_version"] = payload.get("canon_export_version")
+        meta["epoch_count"] = len(payload.get("epoch_records", {})) if isinstance(payload.get("epoch_records"), dict) else None
+        meta["snapshot_count"] = len(payload.get("stake_snapshots", {})) if isinstance(payload.get("stake_snapshots"), dict) else None
+        meta["balance_count"] = len(payload.get("balances", {})) if isinstance(payload.get("balances"), dict) else None
+
         # Minimal schema checks for report
         if "canon_hash" not in payload:
             errors.append("Missing 'canon_hash' field")
@@ -153,7 +170,8 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
                 "ok": False,
                 "canon_hash": payload.get("canon_hash"),
                 "computed_hash": None,
-                "errors": errors
+                "errors": errors,
+                "meta": meta
             }
             
         expected_hash = payload["canon_hash"]
@@ -171,7 +189,8 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
                 "ok": False,
                 "canon_hash": expected_hash,
                 "computed_hash": None,
-                "errors": [f"Hash computation failed: {e}"]
+                "errors": [f"Hash computation failed: {e}"],
+                "meta": meta
             }
         
         if computed_hash == expected_hash:
@@ -179,14 +198,16 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
                 "ok": True, 
                 "canon_hash": expected_hash, 
                 "computed_hash": computed_hash,
-                "errors": []
+                "errors": [],
+                "meta": meta
             }
         else:
             return {
                 "ok": False, 
                 "canon_hash": expected_hash, 
                 "computed_hash": computed_hash,
-                "errors": ["Hash mismatch"]
+                "errors": ["Hash mismatch"],
+                "meta": meta
             }
             
     except Exception as e:
@@ -194,7 +215,8 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
             "ok": False,
             "canon_hash": None,
             "computed_hash": None,
-            "errors": [str(e)]
+            "errors": [str(e)],
+            "meta": meta
         }
 
 def load_canon_state_obj(path: PathLike) -> CanonState:
