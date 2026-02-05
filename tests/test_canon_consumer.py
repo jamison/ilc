@@ -176,11 +176,8 @@ class TestCanonConsumer:
         res = run_cli("--path", str(FIXTURE_PATH), "--kpis")
         assert res.returncode == 0
         output = res.stdout.strip()
-        # Expect: kpis=epochs:1 snapshots:1 balances:2
-        assert output.startswith("kpis=")
-        assert "epochs:1" in output
-        assert "snapshots:1" in output
-        assert "balances:2" in output
+        expected = "kpis=epochs:1 snapshots:1 balances:2"
+        assert output == expected
 
     def test_cli_kpis_precedence(self):
         if not FIXTURE_PATH.exists():
