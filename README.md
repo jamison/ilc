@@ -50,3 +50,10 @@ python3 tools/demo_walkthrough.py
 python3 -m pytest tests/test_code_health.py -v  # Size/nesting thresholds
 python3 tools/scan_duplicates.py                 # Duplicate imports/lines
 ```
+
+## 📦 Canon Consumer
+
+```bash
+ilc-canon-summary --path tests/fixtures/canon_state_v0.1.json
+ilc-canon-summary --path tests/fixtures/canon_state_v0.1.json --report
+```
