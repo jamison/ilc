@@ -37,6 +37,21 @@ _SIMPLE_TRUE = 21
 _SIMPLE_NULL = 22
 
 
+def _cbor_encode_length_bytes(n: int) -> bytes:
+    """Encode a length value as big-endian bytes based on size."""
+    if n <= 0xFF:
+        return bytes([n])
+    if n <= 0xFFFF:
+        return bytes([(n >> 8) & 0xFF, n & 0xFF])
+    if n <= 0xFFFFFFFF:
+        return bytes([(n >> 24) & 0xFF, (n >> 16) & 0xFF,
+                      (n >> 8) & 0xFF, n & 0xFF])
+    return bytes([(n >> 56) & 0xFF, (n >> 48) & 0xFF,
+                  (n >> 40) & 0xFF, (n >> 32) & 0xFF,
+                  (n >> 24) & 0xFF, (n >> 16) & 0xFF,
+                  (n >> 8) & 0xFF, n & 0xFF])
+
+
 def _encode_type_and_len(major: int, n: int) -> bytes:
     """Encode a CBOR type header with minimal integer encoding."""
     if n < 0:
@@ -46,21 +61,15 @@ def _encode_type_and_len(major: int, n: int) -> bytes:
     
     if n <= 23:
         return bytes([head | n])
-    elif n <= 0xFF:
-        return bytes([head | 24, n])
-    elif n <= 0xFFFF:
-        return bytes([head | 25, (n >> 8) & 0xFF, n & 0xFF])
-    elif n <= 0xFFFFFFFF:
-        return bytes([head | 26, (n >> 24) & 0xFF, (n >> 16) & 0xFF,
-                      (n >> 8) & 0xFF, n & 0xFF])
-    elif n <= 0xFFFFFFFFFFFFFFFF:
-        return bytes([head | 27,
-                      (n >> 56) & 0xFF, (n >> 48) & 0xFF,
-                      (n >> 40) & 0xFF, (n >> 32) & 0xFF,
-                      (n >> 24) & 0xFF, (n >> 16) & 0xFF,
-                      (n >> 8) & 0xFF, n & 0xFF])
-    else:
-        raise ValueError(f"Value too large for CBOR: {n}")
+    if n <= 0xFF:
+        return bytes([head | 24]) + _cbor_encode_length_bytes(n)
+    if n <= 0xFFFF:
+        return bytes([head | 25]) + _cbor_encode_length_bytes(n)
+    if n <= 0xFFFFFFFF:
+        return bytes([head | 26]) + _cbor_encode_length_bytes(n)
+    if n <= 0xFFFFFFFFFFFFFFFF:
+        return bytes([head | 27]) + _cbor_encode_length_bytes(n)
+    raise ValueError(f"Value too large for CBOR: {n}")
 
 
 def _encode_int(n: int) -> bytes:
@@ -170,30 +179,33 @@ def _read_extended_length(additional: int, data: bytes, offset: int) -> tuple[in
         if offset + 1 >= len(data):
             raise ValueError("Truncated CBOR: missing 1-byte length")
         return data[offset + 1], 1
-    elif additional == 25:
+    
+    if additional == 25:
         if offset + 2 >= len(data):
             raise ValueError("Truncated CBOR: missing 2-byte length")
         val = (data[offset + 1] << 8) | data[offset + 2]
         return val, 2
-    elif additional == 26:
+    
+    if additional == 26:
         if offset + 4 >= len(data):
             raise ValueError("Truncated CBOR: missing 4-byte length")
         val = (data[offset + 1] << 24) | (data[offset + 2] << 16) | \
               (data[offset + 3] << 8) | data[offset + 4]
         return val, 4
-    elif additional == 27:
+    
+    if additional == 27:
         if offset + 8 >= len(data):
             raise ValueError("Truncated CBOR: missing 8-byte length")
         val = 0
         for i in range(8):
             val = (val << 8) | data[offset + 1 + i]
         return val, 8
-    elif additional in (28, 29, 30):
+    
+    if additional in (28, 29, 30):
         raise ValueError(f"Reserved additional info: {additional}")
-    elif additional == 31:
+    if additional == 31:
         raise ValueError("Indefinite length not supported in DAG-CBOR")
-    else:
-        raise ValueError(f"Invalid additional info: {additional}")
+    raise ValueError(f"Invalid additional info: {additional}")
 
 
 def _decode_type_and_len(data: bytes, offset: int) -> tuple[int, int, int]:
