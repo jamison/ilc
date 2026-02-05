@@ -8,31 +8,59 @@ from ilc_core.ledger.canon_export_bundle_validate import validate_canon_export_b
 from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
 from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signature
 from ilc_core.ledger.canon_bundle_pipeline_report import render_pipeline_report
+from ilc_core.ledger.canon_bundle_audit_artifact import create_audit_artifact, write_audit_artifact
 
-def _write_report(args, report, json_output):
-    """Write report if --report is set. Always called before exit."""
-    if args.report:
-        try:
-            report_path = Path(args.report)
-            if report_path.is_dir():
-                report_path = report_path / "bundle_pipeline_report.md"
-            report_path.parent.mkdir(parents=True, exist_ok=True)
-            report["steps"]["report"] = True
-            md_content = render_pipeline_report(
-                str(report.get("bundle_path", "")),
-                report,
-                json_output=json_output,
-            )
-            report_path.write_text(md_content, encoding="utf-8")
-        except Exception:
-            report["steps"]["report"] = False
-            report.setdefault("warnings", []).append("report_write_failed")
+def _write_report_and_audit(args, report, json_output):
+    """Write report and audit artifact if --report is set. Always called before exit."""
+    if not args.report:
+        return
+    
+    bundle_path = Path(report.get("bundle_path", ""))
+    report_arg_path = Path(args.report)
+    
+    # Determine report path
+    if report_arg_path.is_dir():
+        report_path = report_arg_path / "bundle_pipeline_report.md"
+        audit_path = report_arg_path / "bundle_pipeline_audit.json"
+    else:
+        report_path = report_arg_path
+        audit_path = report_arg_path.with_name("bundle_pipeline_audit.json")
+    
+    # Write report
+    md_content = None
+    try:
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report["steps"]["report"] = True
+        md_content = render_pipeline_report(
+            str(bundle_path),
+            report,
+            json_output=json_output,
+        )
+        report_path.write_text(md_content, encoding="utf-8")
+    except Exception:
+        report["steps"]["report"] = False
+        report.setdefault("warnings", []).append("report_write_failed")
+    
+    # Write audit artifact
+    try:
+        audit = create_audit_artifact(
+            bundle_path=bundle_path,
+            report=report,
+            report_path=report_path if report["steps"]["report"] else None,
+            audit_path=audit_path,
+            json_output=json_output,
+            report_content=md_content,
+        )
+        if not write_audit_artifact(audit, audit_path):
+            report.setdefault("warnings", []).append("audit_write_failed")
+    except Exception:
+        report.setdefault("warnings", []).append("audit_write_failed")
 
 def _finalize(args, report) -> int:
-    """Print JSON, write report, and return exit code."""
+    """Print JSON, write report and audit, and return exit code."""
     json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
     print(json_output)
-    _write_report(args, report, json_output)
+    _write_report_and_audit(args, report, json_output)
     return 0 if report["ok"] else 1
 
 def main() -> int:
