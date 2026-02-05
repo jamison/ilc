@@ -212,6 +212,28 @@ def _pb_apply_boost_and_conserve(
                 
     return pb_boosted
 
+def _pb_compute_gated_value(
+    aid: str,
+    val_boosted: float,
+    base_val: float,
+    pb_set: set[str],
+    gating_mode: str,
+    soft_factor: float
+) -> float:
+    """Compute gated value for a single agent based on gating mode."""
+    if gating_mode == "none":
+        return val_boosted
+    
+    if gating_mode == "soft" and aid in pb_set:
+        uplift = max(0.0, val_boosted - base_val)
+        return base_val + uplift * soft_factor
+    
+    if gating_mode == "strict" and aid in pb_set:
+        return base_val  # Revert boost completely
+    
+    return val_boosted
+
+
 def _pb_apply_gating_logic(
     base_payouts: Dict[str, float],
     pb_boosted: Dict[str, float],
@@ -221,34 +243,22 @@ def _pb_apply_gating_logic(
     gestation_epochs: int
 ) -> Dict[str, float]:
     """Apply gating rules (none, soft, strict) to boosted payouts."""
-    gated = {}
+    gated: Dict[str, float] = {}
     
     # Precompute soft factor
     soft_denom = 1.0 + max(0, gestation_epochs) * max(0.0, pb_intensity)
     soft_factor = 1.0 / soft_denom
     
-    for aid in base_payouts.keys(): # Iterate original keys to ensure stability
+    for aid in base_payouts.keys():  # Iterate original keys to ensure stability
         val_boosted = pb_boosted.get(aid, 0.0)
         base_val = base_payouts.get(aid, 0.0)
         
-        if gating_mode == "none":
-            gated[aid] = val_boosted
-            
-        elif gating_mode == "soft":
-            if aid in pb_set:
-                uplift = max(0.0, val_boosted - base_val)
-                gated[aid] = base_val + uplift * soft_factor
-            else:
-                gated[aid] = val_boosted
-                
-        elif gating_mode == "strict":
-            if aid in pb_set:
-                gated[aid] = base_val # Revert boost completely
-            else:
-                gated[aid] = val_boosted
-                
+        gated_val = _pb_compute_gated_value(
+            aid, val_boosted, base_val, pb_set, gating_mode, soft_factor
+        )
+        
         # Clamp negative guard
-        gated[aid] = max(0.0, gated.get(aid, 0.0))
+        gated[aid] = max(0.0, gated_val)
         
     return gated
 

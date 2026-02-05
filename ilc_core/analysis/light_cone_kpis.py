@@ -134,15 +134,4 @@ def compute_agent_light_cone_kpis(
         
     return results
 
-# Post-MVP TODOs:
-# - Expected: Add cluster-level light cone (namespaces/shards) with explicit weighting.
-#   Deferred: Requires stable namespace registry and shard mapping (not finalized).
-#   Placeholder: Keep per-agent KPI only; add cluster KPI once registry lands.
-#
-# - Expected: Use light-cone deltas over time as emergent-organism signal.
-#   Deferred: Depends on epoch-indexed KPI storage (not present yet).
-#   Placeholder: Log deltas in devnet only once epoch storage exists.
-#
-# - Expected: Normalization by total ECUs per agent.
-#   Deferred: ECU aggregation lives in settlement layer; needs canonical interface.
-#   Placeholder: Inject ECU normalization after settlement metrics interface stabilizes.
+# Post-MVP notes relocated to project deferred items file (Light-cone KPIs section).

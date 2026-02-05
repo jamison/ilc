@@ -18,10 +18,7 @@ EXCLUDE_DIRS = {
     ROOT / "ilc_core" / "encoding",
     ROOT / "ilc_core" / "consensus",
 }
-EXCLUDE_PATHS: set[Path] = {
-    ROOT / "ilc_core" / "analysis" / "fairness_metrics.py",  # nesting depth 5 in _pb_apply_gating_logic
-    ROOT / "ilc_core" / "analysis" / "light_cone_kpis.py",  # TODO comment
-}
+EXCLUDE_PATHS: set[Path] = set()
 
 
 def iter_python_files() -> list[Path]:
