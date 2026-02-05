@@ -91,43 +91,7 @@ class TestCanonExportCLI:
         input_file = tmp_path / "input.json"
         output_file = tmp_path / "output.json"
         
-        # Invalid input (missing required fields for export format, actually wait-
-        # export_canon_format_v0_1 handles the transformation.
-        # So we need input that passes export transformation but results in invalid schema?
-        # Example: meta counts might be wrong if we manually tamper?
-        # Or if export_canon_format logic is flawed.
-        # Actually, let's create a scenario where export generation works but validation fails.
-        # export_canon_format is strict on types.
-        # Maybe we mock the validator to fail? Hard to do in subprocess.
-        # Alternatively, we can patch `ilc_core.ledger.canon_export_validate.validate_canon_export_v0_1` 
-        # inside the process? No.
-        
-        # Let's try to construct an input that validly exports but is invalid?
-        # The exporter forces correct types and fields mostly.
-        # Ah, warnings! Validation returns "ok": true on warnings.
-        # If we want "ok": false, we need errors.
-        # But exporter ensures schema compliance.
-        # EXCEPT maybe if `canon_export_version` is missing in input, exporter raises ValueError.
-        # That's an export failure, not a validation failure.
-        
-        # What if we pass `kpis` in input? Exporter copies them? No, exporter uses logic.
-        # What if `canon_export_format` version is mismatched? It's hardcoded in exporter.
-        
-        # Wait, exporter is robust. Maybe I can't easily trigger validation failure 
-        # unless exporter is broken or input allows bad data through that validation catches.
-        # The validator checks `snapshots[*].balances` values.
-        # Input balances: {"a": "bad"}.
-        # Exporter: `balances = canon_state.get("balances", {})`. It just passes it through?
-        # Let's check canon_export_format.py.
-        # `balances: Dict[str, float] = canon_state.get("balances", {})`
-        # `isinstance(balances, dict)` check is done.
-        # But deep values check is NOT done in items.
-        # So `{"balances": {"a": "bad_string"}}` will export successfully (JSON serializable).
-        # Validator `snapshots[*].balances['agent']` check? 
-        # Wait, exporter puts balances in 'snapshots' list AND input might have 'balances' dict?
-        # The exporter maps input 'snapshots' (list) directly to output 'snapshots'.
-        # So if input 'snapshots' contains bad data, exporter passes it through.
-        
+        # Craft input that exports successfully but fails validation on deep balances.
         input_data = {
             "canon_hash": "h1",
             "canon_export_version": "v1",
@@ -179,6 +143,25 @@ class TestCanonExportCLI:
         assert result2.returncode == 0
         assert json.loads(output_file.read_text())["canon_hash"] == "h1"
 
+    def test_output_dir_creation(self, tmp_path):
+        """Ensure parent directories are created for output."""
+        input_file = tmp_path / "input.json"
+        output_file = tmp_path / "nested" / "dir" / "export.json"
+
+        input_file.write_text(json.dumps({
+            "canon_hash": "h1",
+            "canon_export_version": "v1"
+        }))
+
+        result = subprocess.run(
+            COMMAND + ["--input", str(input_file), "--output", str(output_file)],
+            capture_output=True,
+            text=True
+        )
+
+        assert result.returncode == 0
+        assert output_file.exists()
+
     def test_missing_input(self, tmp_path):
         """Fail if input missing."""
         result = subprocess.run(
@@ -188,3 +171,23 @@ class TestCanonExportCLI:
         )
         assert result.returncode == 1
         assert "Input file not found" in result.stderr
+
+    def test_exported_at_is_utc(self, tmp_path):
+        """Exported timestamp should be UTC."""
+        input_file = tmp_path / "input.json"
+        output_file = tmp_path / "output.json"
+
+        input_file.write_text(json.dumps({
+            "canon_hash": "h1",
+            "canon_export_version": "v1"
+        }))
+
+        result = subprocess.run(
+            COMMAND + ["--input", str(input_file), "--output", str(output_file)],
+            capture_output=True,
+            text=True
+        )
+
+        assert result.returncode == 0
+        data = json.loads(output_file.read_text())
+        assert data["exported_at"].endswith("+00:00") or data["exported_at"].endswith("Z")
