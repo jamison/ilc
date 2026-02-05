@@ -6,7 +6,8 @@ from typing import Dict, Any, Optional
 def render_pipeline_report(
     bundle_path: str, 
     report: Dict[str, Any], 
-    timestamp: Optional[str] = None
+    timestamp: Optional[str] = None,
+    json_output: Optional[str] = None,
 ) -> str:
     """
     Render a Markdown report for the canon bundle pipeline.
@@ -34,7 +35,7 @@ def render_pipeline_report(
     warnings = report.get("warnings", [])
     
     # JSON output (single-line, verbatim)
-    json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+    json_output = json_output or json.dumps(report, separators=(",", ":"), sort_keys=False)
     
     lines = [
         "# Canon Bundle Pipeline Report",

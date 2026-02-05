@@ -9,7 +9,7 @@ from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_fro
 from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signature
 from ilc_core.ledger.canon_bundle_pipeline_report import render_pipeline_report
 
-def _write_report(args, report):
+def _write_report(args, report, json_output):
     """Write report if --report is set. Always called before exit."""
     if args.report:
         try:
@@ -17,16 +17,22 @@ def _write_report(args, report):
             if report_path.is_dir():
                 report_path = report_path / "bundle_pipeline_report.md"
             report_path.parent.mkdir(parents=True, exist_ok=True)
-            md_content = render_pipeline_report(str(report.get("bundle_path", "")), report)
-            report_path.write_text(md_content, encoding="utf-8")
             report["steps"]["report"] = True
+            md_content = render_pipeline_report(
+                str(report.get("bundle_path", "")),
+                report,
+                json_output=json_output,
+            )
+            report_path.write_text(md_content, encoding="utf-8")
         except Exception:
+            report["steps"]["report"] = False
             report.setdefault("warnings", []).append("report_write_failed")
 
 def _finalize(args, report) -> int:
     """Print JSON, write report, and return exit code."""
-    print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-    _write_report(args, report)
+    json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+    print(json_output)
+    _write_report(args, report, json_output)
     return 0 if report["ok"] else 1
 
 def main() -> int:

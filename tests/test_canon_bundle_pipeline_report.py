@@ -78,6 +78,7 @@ class TestCanonBundlePipelineReport:
         content = report_path.read_text()
         assert "```json" in content
         assert '"ok":true' in content
+        assert result.stdout.strip() in content
 
     def test_directory_resolves_to_filename(self, valid_bundle, key_file, tmp_path):
         report_dir = tmp_path / "reports"
