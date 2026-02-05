@@ -17,8 +17,11 @@ class TestCanonBundleReport:
         assert "Status: **OK**" in md
         assert "Bundle: `/path/to/bundle`" in md
         assert "Timestamp: `2026-01-01T00:00:00Z`" in md
+        assert "Report Version: v0.1" in md
         assert "## Errors" in md
         assert "- None" in md
+        assert "## Warnings" in md
+        assert md.strip().endswith("- None")
 
     def test_render_error_report(self):
         """Test report rendering with errors and warnings."""
@@ -55,7 +58,9 @@ class TestCanonBundleReport:
         assert report_file.exists()
         content = report_file.read_text()
         assert "Status: **OK**" in content
+        assert "Report Version: v0.1" in content
         assert str(bundle_dir) in content
+        assert result.stderr.strip() == ""
 
     def test_cli_report_to_directory(self, tmp_path):
         """If directory passed to --report, use default filename."""
@@ -76,3 +81,21 @@ class TestCanonBundleReport:
         expected_file = report_dir / "bundle_validation_report.md"
         assert result.returncode == 0
         assert expected_file.exists()
+
+    def test_cli_report_parent_dir_creation(self, tmp_path):
+        """Ensure parent dirs are created for report path."""
+        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
+
+        bundle_dir = tmp_path / "bundle"
+        write_canon_export_bundle({"canon_hash": "h"}, {"ok": True}, bundle_dir)
+
+        nested_report = tmp_path / "nested" / "reports" / "bundle_report.md"
+
+        result = subprocess.run(
+            COMMAND + ["--bundle", str(bundle_dir), "--report", str(nested_report)],
+            capture_output=True,
+            text=True
+        )
+
+        assert result.returncode == 0
+        assert nested_report.exists()
