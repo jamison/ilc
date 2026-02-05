@@ -15,11 +15,13 @@ CODE_DIRS = [ROOT / "ilc_core"]
 EXCLUDE_FILES = {"__init__.py"}
 # Targeted exclusions for legacy hotspots; revisit once refactors land.
 EXCLUDE_DIRS = {
-    ROOT / "ilc_core" / "analysis",
     ROOT / "ilc_core" / "encoding",
     ROOT / "ilc_core" / "consensus",
 }
-EXCLUDE_PATHS: set[Path] = set()
+EXCLUDE_PATHS: set[Path] = {
+    ROOT / "ilc_core" / "analysis" / "fairness_metrics.py",  # nesting depth 5 in _pb_apply_gating_logic
+    ROOT / "ilc_core" / "analysis" / "light_cone_kpis.py",  # TODO comment
+}
 
 
 def iter_python_files() -> list[Path]:
