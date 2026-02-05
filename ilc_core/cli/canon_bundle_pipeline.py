@@ -95,6 +95,7 @@ def main() -> int:
         if not manifest_path.exists():
             report["ok"] = False
             report["errors"].append("manifest_missing")
+            report["warnings"].append("manifest_missing")
             return _finalize(args, report)
         
         # Step 2: Validate bundle
