@@ -265,3 +265,56 @@ class TestCanonConsumer:
         assert res.returncode == 1
         assert res.stdout.strip() == ""
         assert "diagnostics=on" in res.stderr
+
+    def test_audit_log_success(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            log_file = Path(tmpdir) / "audit.jsonl"
+            res = run_cli("--path", str(FIXTURE_PATH), "--audit-log", str(log_file))
+            assert res.returncode == 0
+            
+            assert log_file.exists()
+            content = log_file.read_text(encoding="utf-8").strip()
+            record = json.loads(content)
+            
+            assert record["ok"] is True
+            assert record["canon_path"] == str(FIXTURE_PATH)
+            assert record["canon_hash"] is not None
+            assert record["error_code"] is None
+            assert "timestamp" in record
+
+    def test_audit_log_failure_append(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            log_file = Path(tmpdir) / "audit.jsonl"
+            
+            # Run 1: Failure
+            res = run_cli("--path", "missing.json", "--audit-log", str(log_file))
+            assert res.returncode == 1
+            
+            # Run 2: Failure again (append)
+            res = run_cli("--path", "missing.json", "--audit-log", str(log_file))
+            assert res.returncode == 1
+            
+            lines = log_file.read_text(encoding="utf-8").strip().split("\n")
+            assert len(lines) == 2
+            
+            rec1 = json.loads(lines[0])
+            assert rec1["ok"] is False
+            assert rec1["error_code"] == "E_FILE_NOT_FOUND"
+            
+            rec2 = json.loads(lines[1])
+            assert rec2["ok"] is False
+            assert rec2["error_code"] == "E_FILE_NOT_FOUND"
+
+    def test_audit_log_quiet(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            log_file = Path(tmpdir) / "audit.jsonl"
+            res = run_cli("--path", str(FIXTURE_PATH), "--audit-log", str(log_file), "--quiet")
+            assert res.returncode == 0
+            assert res.stdout.strip() == ""
+            assert log_file.exists()
