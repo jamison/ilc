@@ -80,10 +80,32 @@ def main() -> int:
     parser.add_argument("--quiet", action="store_true", help="Suppress stdout")
     parser.add_argument("--report", action="store_true", help="Emit full verification report as single-line JSON")
     parser.add_argument("--kpis", action="store_true", help="Emit single-line KPI summary")
+    parser.add_argument("--diagnostics", action="store_true", help="Emit verbose error diagnostics to stderr (silent on success)")
     
     args = parser.parse_args()
     
     summary = summarize_canon_state(args.path)
+
+    # Diagnostics logic (stderr only)
+    if args.diagnostics and not summary.get("ok"):
+        errors = summary.get("errors", [])
+        error_msg = "; ".join(errors) if errors else "Unknown error"
+        
+        # Map to stable error code
+        code = "E_UNKNOWN"
+        if "File not found" in error_msg:
+            code = "E_FILE_NOT_FOUND"
+        elif "Invalid JSON" in error_msg:
+            code = "E_INVALID_JSON"
+        elif "Hash mismatch" in error_msg:
+            code = "E_HASH_MISMATCH"
+        elif "Unsupported version" in error_msg:
+            code = "E_UNSUPPORTED_VERSION"
+            
+        print(f"diagnostics=on", file=sys.stderr)
+        print(f"path={args.path}", file=sys.stderr)
+        print(f"code={code}", file=sys.stderr)
+        print(f"details={error_msg}", file=sys.stderr)
 
     if args.report:
         # Report mode: emit single-line JSON with stable key order

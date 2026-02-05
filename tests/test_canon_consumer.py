@@ -203,3 +203,59 @@ class TestCanonConsumer:
         assert "epochs:None" in output
         assert "snapshots:None" in output
         assert "balances:None" in output
+
+    def test_cli_diagnostics_failure(self):
+        res = run_cli("--path", "missing_file.json", "--diagnostics")
+        assert res.returncode == 1
+        
+        # Stdout is standard failure
+        assert res.stdout.strip().startswith("status=fail")
+        
+        # Stderr has diagnostics
+        err = res.stderr.strip()
+        assert "diagnostics=on" in err
+        assert "path=missing_file.json" in err
+        assert "code=E_FILE_NOT_FOUND" in err
+        assert "details=File not found" in err
+
+    def test_cli_diagnostics_success(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+
+        res = run_cli("--path", str(FIXTURE_PATH), "--diagnostics")
+        assert res.returncode == 0
+        
+        # Stdout is standard success
+        assert res.stdout.strip().startswith("status=ok")
+        
+        # Stderr is empty on success
+        assert res.stderr.strip() == ""
+
+    def test_cli_diagnostics_mapping(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+            
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Case 1: Tampered file -> Hash mismatch
+            bad_path = Path(tmpdir) / "tampered.json"
+            shutil.copy(FIXTURE_PATH, bad_path)
+            with open(bad_path, "r") as f:
+                data = json.load(f)
+            data["balances"] = {"hacker": 1000000.0}
+            with open(bad_path, "w") as f:
+                json.dump(data, f)
+                
+            res = run_cli("--path", str(bad_path), "--diagnostics")
+            assert "code=E_HASH_MISMATCH" in res.stderr
+
+            # Case 2: Bad version -> Unsupported version
+            ver_path = Path(tmpdir) / "bad_ver.json"
+            shutil.copy(FIXTURE_PATH, ver_path)
+            with open(ver_path, "r") as f:
+                data = json.load(f)
+            data["canon_export_version"] = "v9.9"
+            with open(ver_path, "w") as f:
+                json.dump(data, f)
+                
+            res = run_cli("--path", str(ver_path), "--diagnostics")
+            assert "code=E_UNSUPPORTED_VERSION" in res.stderr
