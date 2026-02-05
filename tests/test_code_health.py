@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+import os
 from pathlib import Path
 
 MAX_FUNC_LINES = 150
@@ -10,12 +11,26 @@ MAX_FILE_LINES = 1500
 MAX_FUNC_ARGS = 10
 MAX_NESTING_DEPTH = 4
 
+# Environment variable for top-N offender reporting (default 5).
+_TOP_N = int(os.environ.get("CODE_HEALTH_TOP_N", "5"))
+
 ROOT = Path(__file__).resolve().parents[1]
 CODE_DIRS = [ROOT / "ilc_core"]
 EXCLUDE_FILES = {"__init__.py"}
 # Targeted exclusions for legacy hotspots; revisit once refactors land.
 EXCLUDE_DIRS: set[Path] = set()
 EXCLUDE_PATHS: set[Path] = set()
+
+
+def _format_top_offenders(offenders: list[tuple[int, str]], label: str) -> str:
+    """Format top-N offenders as a sorted summary."""
+    if not offenders:
+        return ""
+    sorted_offenders = sorted(offenders, key=lambda x: -x[0])[:_TOP_N]
+    lines = [f"Top offenders ({label}):"]
+    for i, (value, desc) in enumerate(sorted_offenders, 1):
+        lines.append(f"{i}) {desc} ({value})")
+    return "\n".join(lines)
 
 
 def iter_python_files() -> list[Path]:
@@ -99,6 +114,11 @@ def test_file_size_thresholds() -> None:
 
 def test_function_size_thresholds() -> None:
     failures = []
+    # Collect offenders for reporting.
+    line_offenders: list[tuple[int, str]] = []
+    nesting_offenders: list[tuple[int, str]] = []
+    arg_offenders: list[tuple[int, str]] = []
+    
     for path in iter_python_files():
         try:
             source = path.read_text(encoding="utf-8")
@@ -114,33 +134,43 @@ def test_function_size_thresholds() -> None:
             start = node.lineno
             end = node.end_lineno or node.lineno
             length = end - start + 1
+            name = getattr(node, "name", "<lambda>")
+            loc = f"{path.relative_to(ROOT)}:{start}-{end} {name}()"
+            
             if length > MAX_FUNC_LINES:
-                name = getattr(node, "name", "<lambda>")
-                failures.append(
-                    f"{path}:{start}-{end} {name}() is {length} lines (max {MAX_FUNC_LINES})"
-                )
+                failures.append(f"{path}:{start}-{end} {name}() is {length} lines (max {MAX_FUNC_LINES})")
+            line_offenders.append((length, loc))
+            
             arg_count = len(node.args.args) + len(node.args.kwonlyargs)
             if node.args.vararg is not None:
                 arg_count += 1
             if node.args.kwarg is not None:
                 arg_count += 1
             if arg_count > MAX_FUNC_ARGS:
-                name = getattr(node, "name", "<lambda>")
-                failures.append(
-                    f"{path}:{start}-{end} {name}() has {arg_count} args (max {MAX_FUNC_ARGS})"
-                )
+                failures.append(f"{path}:{start}-{end} {name}() has {arg_count} args (max {MAX_FUNC_ARGS})")
+            arg_offenders.append((arg_count, loc))
+            
             depth = max_nesting_depth(node)
             if depth > MAX_NESTING_DEPTH:
-                name = getattr(node, "name", "<lambda>")
-                failures.append(
-                    f"{path}:{start}-{end} {name}() nesting depth {depth} (max {MAX_NESTING_DEPTH})"
-                )
+                failures.append(f"{path}:{start}-{end} {name}() nesting depth {depth} (max {MAX_NESTING_DEPTH})")
+            nesting_offenders.append((depth, loc))
+    
     if failures:
-        raise AssertionError("Function size threshold exceeded:\n" + "\n".join(failures))
+        report_parts = [
+            "Function size threshold exceeded:",
+            *failures[:_TOP_N],
+            "",
+            _format_top_offenders(line_offenders, "lines"),
+            _format_top_offenders(nesting_offenders, "nesting"),
+            _format_top_offenders(arg_offenders, "args"),
+        ]
+        raise AssertionError("\n".join(p for p in report_parts if p))
 
 
 def test_class_size_thresholds() -> None:
     failures = []
+    class_offenders: list[tuple[int, str]] = []
+    
     for path in iter_python_files():
         try:
             source = path.read_text(encoding="utf-8")
@@ -156,13 +186,21 @@ def test_class_size_thresholds() -> None:
             start = node.lineno
             end = node.end_lineno or node.lineno
             length = end - start + 1
+            name = getattr(node, "name", "<class>")
+            loc = f"{path.relative_to(ROOT)}:{start}-{end} class {name}"
+            
             if length > MAX_CLASS_LINES:
-                name = getattr(node, "name", "<class>")
-                failures.append(
-                    f"{path}:{start}-{end} class {name} is {length} lines (max {MAX_CLASS_LINES})"
-                )
+                failures.append(f"{path}:{start}-{end} class {name} is {length} lines (max {MAX_CLASS_LINES})")
+            class_offenders.append((length, loc))
+    
     if failures:
-        raise AssertionError("Class size threshold exceeded:\n" + "\n".join(failures))
+        report_parts = [
+            "Class size threshold exceeded:",
+            *failures[:_TOP_N],
+            "",
+            _format_top_offenders(class_offenders, "class lines"),
+        ]
+        raise AssertionError("\n".join(p for p in report_parts if p))
 
 
 def test_no_todos_in_prod_code() -> None:

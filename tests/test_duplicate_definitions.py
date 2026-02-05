@@ -1,7 +1,18 @@
+"""Test for duplicate top-level definitions in Python files.
+
+Uses the scan_duplicates tool for duplicate import/line detection,
+and adds AST-based detection for duplicate top-level class/function names.
+"""
+from __future__ import annotations
+
 import ast
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from scan_duplicates import scan_for_duplicates, DuplicateFinding
 
 EXCLUDE_DIRS = {
     "__pycache__",
@@ -37,9 +48,13 @@ def _find_duplicate_top_level_defs(source: str) -> dict[str, int]:
 
 
 def test_no_duplicate_top_level_definitions() -> None:
+    """Check that no file has duplicate top-level function/class names."""
     duplicates: dict[str, list[str]] = {}
     for path in _iter_py_files(ROOT):
-        source = path.read_text(encoding="utf-8")
+        try:
+            source = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
         dups = _find_duplicate_top_level_defs(source)
         if dups:
             duplicates[str(path)] = [f"{name} x{count}" for name, count in dups.items()]
@@ -50,4 +65,22 @@ def test_no_duplicate_top_level_definitions() -> None:
         )
         raise AssertionError(
             "Duplicate top-level definitions found:\n" + details
+        )
+
+
+def test_no_duplicate_imports_or_lines() -> None:
+    """Check for duplicate imports and consecutive duplicate lines using scan_duplicates tool."""
+    findings = scan_for_duplicates(ROOT)
+    
+    if findings:
+        # Limit output to avoid huge test logs.
+        max_findings = 10
+        details = "\n".join(
+            f"{f.filepath}:{f.line}: {f.kind} - {f.content}"
+            for f in findings[:max_findings]
+        )
+        if len(findings) > max_findings:
+            details += f"\n... and {len(findings) - max_findings} more findings"
+        raise AssertionError(
+            f"Found {len(findings)} duplicate imports or lines:\n" + details
         )
