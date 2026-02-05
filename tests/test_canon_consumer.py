@@ -157,3 +157,14 @@ class TestCanonConsumer:
         res = run_cli("--path", "missing_file.json", "--report", "--quiet")
         assert res.returncode == 1
         assert res.stdout.strip() != ""
+
+    def test_cli_module_invocation(self):
+        """Verify that the module can be invoked via python -m ilc_core.cli.canon_consumer"""
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+            
+        cmd = [sys.executable, "-m", "ilc_core.cli.canon_consumer", "--path", str(FIXTURE_PATH)]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        
+        assert res.returncode == 0
+        assert res.stdout.strip().startswith("status=ok")
