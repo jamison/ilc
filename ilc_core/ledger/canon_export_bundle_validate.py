@@ -5,8 +5,11 @@ from pathlib import Path
 from typing import Dict, Any, List, Set
 
 REQUIRED_MANIFEST_KEYS = {
-    "bundle_format", "created_at", "export_hash", "validate_hash", 
-    "canon_hash", "export_path", "validate_path", "hash_alg", "export_format"
+    "bundle_format", "created_at", "export_hash", "validate_hash",
+    "canon_hash", "export_path", "validate_path", "hash_alg"
+}
+OPTIONAL_MANIFEST_KEYS = {
+    "export_format",
 }
 
 def _hash_file_content(path: Path) -> str:
@@ -57,7 +60,7 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
     if missing_keys:
         errors.append(f"Manifest missing keys: {sorted(list(missing_keys))}")
         
-    unknown_keys = manifest_keys - REQUIRED_MANIFEST_KEYS
+    unknown_keys = manifest_keys - REQUIRED_MANIFEST_KEYS - OPTIONAL_MANIFEST_KEYS
     if unknown_keys:
         warnings.append(f"Manifest contains unknown keys: {sorted(list(unknown_keys))}")
         
@@ -98,9 +101,11 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
         errors.append(f"Failed to compute file hashes: {e}")
 
     # 8. Content Consistency Checks (Lightweight)
-    if export_format_val := manifest.get("export_format"):
-        if export_format_val != "v0.1":
-             warnings.append(f"Unexpected export_format: {export_format_val}")
+    export_format_val = manifest.get("export_format")
+    if export_format_val is None:
+        warnings.append("Missing optional field 'export_format'")
+    elif export_format_val != "v0.1":
+        warnings.append(f"Unexpected export_format: {export_format_val}")
 
     return {
         "ok": len(errors) == 0,

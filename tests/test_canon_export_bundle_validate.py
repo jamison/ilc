@@ -49,6 +49,12 @@ class TestCanonExportBundleValidate:
         assert not report["ok"]
         assert any("Missing required file" in e for e in report["errors"])
 
+    def test_verify_missing_manifest(self, valid_bundle):
+        (valid_bundle / "manifest.json").unlink()
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert any("Missing required file" in e for e in report["errors"])
+
     def test_verify_malformed_manifest(self, valid_bundle):
         manifest_path = valid_bundle / "manifest.json"
         data = json.loads(manifest_path.read_text())
@@ -68,6 +74,26 @@ class TestCanonExportBundleValidate:
         report = validate_canon_export_bundle(valid_bundle)
         assert report["ok"] # Unknown keys are OK, just warning
         assert any("Manifest contains unknown keys" in w for w in report["warnings"])
+
+    def test_verify_created_at_warning(self, valid_bundle):
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["created_at"] = "2026-02-05 00:00:00"
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert report["ok"]
+        assert any("created_at does not appear" in w for w in report["warnings"])
+
+    def test_verify_missing_export_format_warning(self, valid_bundle):
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        del data["export_format"]
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert report["ok"]
+        assert any("Missing optional field 'export_format'" in w for w in report["warnings"])
 
     def test_verify_bad_paths(self, valid_bundle):
         manifest_path = valid_bundle / "manifest.json"
