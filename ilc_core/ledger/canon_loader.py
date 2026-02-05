@@ -126,7 +126,10 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
         "canon_export_version": None,
         "epoch_count": None,
         "snapshot_count": None,
-        "balance_count": None
+        "balance_count": None,
+        "kpi_epoch_count": None,
+        "kpi_snapshot_count": None,
+        "kpi_balance_count": None
     }
     
     try:
@@ -157,6 +160,11 @@ def verify_canon_state(path: PathLike) -> Dict[str, Any]:
         meta["epoch_count"] = len(payload.get("epoch_records", {})) if isinstance(payload.get("epoch_records"), dict) else None
         meta["snapshot_count"] = len(payload.get("stake_snapshots", {})) if isinstance(payload.get("stake_snapshots"), dict) else None
         meta["balance_count"] = len(payload.get("balances", {})) if isinstance(payload.get("balances"), dict) else None
+        
+        # Mirror for KPIs
+        meta["kpi_epoch_count"] = meta["epoch_count"]
+        meta["kpi_snapshot_count"] = meta["snapshot_count"]
+        meta["kpi_balance_count"] = meta["balance_count"]
 
         # Minimal schema checks for report
         if "canon_hash" not in payload:

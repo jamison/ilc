@@ -45,7 +45,10 @@ def summarize_canon_state(path: Union[str, PathLike]) -> Dict[str, Any]:
             "canon_export_version": None,
             "epoch_count": None,
             "snapshot_count": None,
-            "balance_count": None
+            "balance_count": None,
+            "kpi_epoch_count": None,
+            "kpi_snapshot_count": None,
+            "kpi_balance_count": None
         })
     }
     
@@ -76,6 +79,7 @@ def main() -> int:
     parser.add_argument("--print-hash", action="store_true", help="Include hashes in output")
     parser.add_argument("--quiet", action="store_true", help="Suppress stdout")
     parser.add_argument("--report", action="store_true", help="Emit full verification report as single-line JSON")
+    parser.add_argument("--kpis", action="store_true", help="Emit single-line KPI summary")
     
     args = parser.parse_args()
     
@@ -91,6 +95,9 @@ def main() -> int:
                 "epoch_count": None,
                 "snapshot_count": None,
                 "balance_count": None,
+                "kpi_epoch_count": None,
+                "kpi_snapshot_count": None,
+                "kpi_balance_count": None,
             },
         )
         errors = report.get("errors", [])
@@ -103,6 +110,22 @@ def main() -> int:
         }
         print(json.dumps(ordered_report, separators=(",", ":")))
         return 0 if ordered_report["ok"] else 1
+
+    if args.kpis and not args.quiet:
+        # KPI mode: emit single-line summary
+        # Format: kpis=epochs:3 snapshots:2 balances:4
+        meta = summary.get("meta", {})
+        epochs = meta.get("kpi_epoch_count")
+        snapshots = meta.get("kpi_snapshot_count")
+        balances = meta.get("kpi_balance_count")
+        
+        # Handle None values elegantly for display
+        e_str = str(epochs) if epochs is not None else "None"
+        s_str = str(snapshots) if snapshots is not None else "None"
+        b_str = str(balances) if balances is not None else "None"
+        
+        print(f"kpis=epochs:{e_str} snapshots:{s_str} balances:{b_str}")
+        return 0 if summary.get("ok") else 1
 
     # Format output as single line: status=ok canon_path=... canon_hash=... errors=[]
     status = "ok" if summary.get("ok") else "fail"

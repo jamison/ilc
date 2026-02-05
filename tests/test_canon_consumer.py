@@ -168,3 +168,41 @@ class TestCanonConsumer:
         
         assert res.returncode == 0
         assert res.stdout.strip().startswith("status=ok")
+
+    def test_cli_kpis_valid(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+
+        res = run_cli("--path", str(FIXTURE_PATH), "--kpis")
+        assert res.returncode == 0
+        output = res.stdout.strip()
+        # Expect: kpis=epochs:1 snapshots:1 balances:2
+        assert output.startswith("kpis=")
+        assert "epochs:1" in output
+        assert "snapshots:1" in output
+        assert "balances:2" in output
+
+    def test_cli_kpis_precedence(self):
+        if not FIXTURE_PATH.exists():
+            pytest.skip("Fixture not found")
+
+        # --report overrides --kpis
+        res = run_cli("--path", str(FIXTURE_PATH), "--kpis", "--report")
+        assert res.returncode == 0
+        output = res.stdout.strip()
+        assert output.startswith("{")  # JSON
+        assert "kpis=" not in output
+
+        # --quiet suppresses --kpis
+        res = run_cli("--path", str(FIXTURE_PATH), "--kpis", "--quiet")
+        assert res.returncode == 0
+        assert res.stdout.strip() == ""
+
+    def test_cli_kpis_error(self):
+        res = run_cli("--path", "missing_file.json", "--kpis")
+        assert res.returncode == 1
+        output = res.stdout.strip()
+        # Expect: kpis=epochs:None snapshots:None balances:None
+        assert "epochs:None" in output
+        assert "snapshots:None" in output
+        assert "balances:None" in output
