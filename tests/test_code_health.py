@@ -1,4 +1,16 @@
-"""Basic code health checks (size thresholds)."""
+"""Basic code health checks (size thresholds).
+
+Thresholds:
+- MAX_FUNC_LINES = 150 (max lines per function)
+- MAX_CLASS_LINES = 300 (max lines per class)
+- MAX_FILE_LINES = 1500 (max lines per file)
+- MAX_FUNC_ARGS = 10 (max function arguments)
+- MAX_NESTING_DEPTH = 4 (max nesting depth in functions)
+
+On failure, the top-N offenders are reported. Override N with CODE_HEALTH_TOP_N env var.
+
+Run locally: python3 -m pytest tests/test_code_health.py -v
+"""
 from __future__ import annotations
 
 import ast

@@ -152,6 +152,17 @@ def main() -> int:
         action="store_true",
         help="Output findings as JSON",
     )
+    parser.add_argument(
+        "--max-findings",
+        type=int,
+        default=50,
+        help="Cap printed findings (default: 50, use 0 for summary only)",
+    )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress per-file details, print summary only",
+    )
     args = parser.parse_args()
 
     try:
@@ -160,13 +171,23 @@ def main() -> int:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
+    total = len(findings)
+    capped_findings = findings[:args.max_findings] if args.max_findings > 0 else []
+
     if args.json:
-        print(json.dumps([f.to_dict() for f in findings], indent=2))
+        print(json.dumps([f.to_dict() for f in capped_findings], indent=2))
+        if total > len(capped_findings):
+            print(f"// {total - len(capped_findings)} more findings truncated", file=sys.stderr)
+    elif args.quiet:
+        if findings:
+            print(f"Found {total} duplicate(s).")
+        else:
+            print("No duplicates found.")
     else:
         if findings:
             # Group by file for readable output.
             by_file: dict[str, list[DuplicateFinding]] = {}
-            for f in findings:
+            for f in capped_findings:
                 by_file.setdefault(f.filepath, []).append(f)
             
             for filepath, file_findings in sorted(by_file.items()):
@@ -176,6 +197,9 @@ def main() -> int:
                         print(f"  Line {finding.line}: Duplicate import '{finding.content}' (first seen at line {finding.first_seen_line})")
                     else:
                         print(f"  Line {finding.line}: Consecutive duplicate line '{finding.content}'")
+            
+            if total > len(capped_findings):
+                print(f"\n... and {total - len(capped_findings)} more findings (use --max-findings to see more)")
         else:
             print("No duplicates found.")
 

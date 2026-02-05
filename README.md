@@ -43,3 +43,10 @@ python3 tools/demo_walkthrough.py
     *   `server.py`: FastAPI interface.
 *   `whitepaper/`: The living constitution of the protocol.
 *   `tools/`: Bootstrapping and demo scripts.
+
+## 🔧 Code Health Checks
+
+```bash
+python3 -m pytest tests/test_code_health.py -v  # Size/nesting thresholds
+python3 tools/scan_duplicates.py                 # Duplicate imports/lines
+```
