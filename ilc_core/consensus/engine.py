@@ -84,8 +84,7 @@ def _engine_apply_slash(
         f"[Consensus] ⚔️ PARADIGM SHIFT! "
         f"Refuter earns Jackpot (theoretical): {bounty:.4f} units"
     )
-    # TODO(v0.4.x): Transfer 'bounty' to refuter agent and integrate with
-    # vesting + slashing mechanics (currently just logged).
+    # Post-MVP: bounty transfer moved to project deferred items file (Consensus section).
 
 
 class ConsensusEngine:

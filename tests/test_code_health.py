@@ -14,9 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CODE_DIRS = [ROOT / "ilc_core"]
 EXCLUDE_FILES = {"__init__.py"}
 # Targeted exclusions for legacy hotspots; revisit once refactors land.
-EXCLUDE_DIRS = {
-    ROOT / "ilc_core" / "consensus",
-}
+EXCLUDE_DIRS: set[Path] = set()
 EXCLUDE_PATHS: set[Path] = set()
 
 
