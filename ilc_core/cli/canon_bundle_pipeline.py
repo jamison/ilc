@@ -7,7 +7,27 @@ from pathlib import Path
 from ilc_core.ledger.canon_export_bundle_validate import validate_canon_export_bundle
 from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
 from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signature
-from ilc_core.ledger.canon_export_bundle_report import render_bundle_report
+from ilc_core.ledger.canon_bundle_pipeline_report import render_pipeline_report
+
+def _write_report(args, report):
+    """Write report if --report is set. Always called before exit."""
+    if args.report:
+        try:
+            report_path = Path(args.report)
+            if report_path.is_dir():
+                report_path = report_path / "bundle_pipeline_report.md"
+            report_path.parent.mkdir(parents=True, exist_ok=True)
+            md_content = render_pipeline_report(str(report.get("bundle_path", "")), report)
+            report_path.write_text(md_content, encoding="utf-8")
+            report["steps"]["report"] = True
+        except Exception:
+            report.setdefault("warnings", []).append("report_write_failed")
+
+def _finalize(args, report) -> int:
+    """Print JSON, write report, and return exit code."""
+    print(json.dumps(report, separators=(",", ":"), sort_keys=False))
+    _write_report(args, report)
+    return 0 if report["ok"] else 1
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the canon bundle pipeline.")
@@ -35,15 +55,13 @@ def main() -> int:
         if not bundle_path.exists() or not bundle_path.is_dir():
             report["ok"] = False
             report["errors"].append("bundle_missing")
-            print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-            return 1
+            return _finalize(args, report)
 
         manifest_path = bundle_path / "manifest.json"
         if not manifest_path.exists():
             report["ok"] = False
             report["errors"].append("manifest_missing")
-            print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-            return 1
+            return _finalize(args, report)
         
         # Step 2: Validate bundle
         validation_result = validate_canon_export_bundle(bundle_path)
@@ -52,8 +70,7 @@ def main() -> int:
             report["ok"] = False
             report["errors"].extend(validation_result.get("errors", []))
             report["warnings"].extend(validation_result.get("warnings", []))
-            print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-            return 1
+            return _finalize(args, report)
         
         # Step 3: Signing (optional)
         if args.key_file:
@@ -61,15 +78,13 @@ def main() -> int:
             if not key_path.exists():
                 report["ok"] = False
                 report["errors"].append("key_missing")
-                print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-                return 1
+                return _finalize(args, report)
             try:
                 key = load_key_from_file(key_path)
             except ValueError:
                 report["ok"] = False
                 report["errors"].append("invalid_key_file")
-                print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-                return 1
+                return _finalize(args, report)
             
             sig_path = bundle_path / "manifest.sig"
             if sig_path.exists() and not args.overwrite:
@@ -83,8 +98,7 @@ def main() -> int:
                 except FileNotFoundError:
                     report["ok"] = False
                     report["errors"].append("signature_missing")
-                print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-                return 1
+                return _finalize(args, report)
 
             # Sign
             try:
@@ -93,42 +107,28 @@ def main() -> int:
             except FileExistsError:
                 report["ok"] = False
                 report["errors"].append("signature_exists")
-                print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-                return 1
+                return _finalize(args, report)
             
             # Verify
             try:
                 if not verify_manifest_signature(bundle_path, key):
                     report["ok"] = False
                     report["errors"].append("signature_mismatch")
-                    print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-                    return 1
+                    return _finalize(args, report)
                 steps["verify"] = True
             except FileNotFoundError:
                 report["ok"] = False
                 report["errors"].append("signature_missing")
-                print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-                return 1
+                return _finalize(args, report)
         else:
             report["warnings"].append("signature_verification_skipped")
-        
-        # Step 4: Report (optional)
-        if args.report:
-            report_path = Path(args.report)
-            if report_path.is_dir():
-                report_path = report_path / "bundle_validation_report.md"
-            report_path.parent.mkdir(parents=True, exist_ok=True)
-            md_content = render_bundle_report(str(bundle_path), validation_result)
-            report_path.write_text(md_content, encoding="utf-8")
-            steps["report"] = True
             
     except Exception as e:
         report["ok"] = False
         report["errors"].append("pipeline_failed")
         print(f"Internal error: {e}", file=sys.stderr)
 
-    print(json.dumps(report, separators=(",", ":"), sort_keys=False))
-    return 0 if report["ok"] else 1
+    return _finalize(args, report)
 
 if __name__ == "__main__":
     sys.exit(main())
