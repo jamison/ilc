@@ -49,7 +49,7 @@ def create_audit_artifact(
     
     audit = {
         "audit_version": "v0.1",
-        "bundle_path": str(bundle_path),
+        "bundle_path": str(bundle_path.resolve()),
         "timestamp": ts,
         "pipeline_ok": report.get("ok", False),
         "errors": report.get("errors", []),

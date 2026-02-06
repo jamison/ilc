@@ -36,7 +36,7 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
     if not bundle_dir.exists() or not bundle_dir.is_dir():
         return {"ok": False, "errors": [f"Bundle directory not found or not a directory: {bundle_dir}"], "warnings": []}
         
-    # 2. File Extistence Check
+    # 2. File Existence Check
     manifest_path = bundle_dir / "manifest.json"
     export_path = bundle_dir / "export.json"
     validate_path = bundle_dir / "validate.json"

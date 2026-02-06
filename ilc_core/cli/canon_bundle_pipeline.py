@@ -107,7 +107,6 @@ def main() -> int:
         if not manifest_path.exists():
             report["ok"] = False
             report["errors"].append("manifest_missing")
-            report["warnings"].append("manifest_missing")
             return _finalize(args, report)
         
         # Step 2: Validate bundle
@@ -137,8 +136,9 @@ def main() -> int:
             if sig_path.exists() and not args.overwrite:
                 try:
                     if verify_manifest_signature(bundle_path, key):
-                        report["ok"] = False
-                        report["errors"].append("signature_exists")
+                        steps["verify"] = True
+                        report["warnings"].append("signature_exists")
+                        return _finalize(args, report)
                     else:
                         report["ok"] = False
                         report["errors"].append("signature_mismatch")

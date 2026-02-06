@@ -103,7 +103,10 @@ def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
     # Compare steps (validate + verify)
     audit_steps = audit.get("steps", {})
     check("steps.validate", audit_steps.get("validate"), current_validate_step)
-    current_verify_step = audit_sig_hash is None or current_sig_hash == audit_sig_hash
+    if audit_sig_hash is None:
+        current_verify_step = current_sig_hash is None
+    else:
+        current_verify_step = current_sig_hash == audit_sig_hash
     check("steps.verify", audit_steps.get("verify"), current_verify_step)
     
     # Compare pipeline_ok based on current replay state
