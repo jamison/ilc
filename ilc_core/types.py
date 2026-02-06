@@ -96,17 +96,6 @@ def node_to_claim_record(node: Node) -> ClaimRecord:
     """
     Convert a graph Node into a ClaimRecord. Assumes node.type is claim-like.
     """
-    # If node.content is a dict, we might find extra fields there, 
-    # but for MVP claims are usually strings.
-    # We'll check node.data if it existed, but Node model doesn't have 'data' field in types.py yet.
-    # Wait, looking at Node definition:
-    # content: Union[str, Dict[str, Any]]
-    # It doesn't have a generic 'data' bag. 
-    # However, in previous steps we saw usage like node.data in the plan.
-    # But types.py shows Node only has: id, type, content, agent_id, timestamp, signature, net_stake, target_id.
-    
-    # So we map directly from Node fields.
-    
     content_str = str(node.content)
     if isinstance(node.content, dict):
         # If content is dict, maybe it has the text? For now just stringify or extract 'text' if present?
