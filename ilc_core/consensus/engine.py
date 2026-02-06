@@ -48,7 +48,8 @@ def _engine_compute_tax_rate(
 
     base_tax = 0.01  # 1% per epoch (or per time unit)
     # Decay tax as age and reuse increase.
-    tax_rate = base_tax / (1 + math.log(age * reuse_factor))
+    product = max(1.0, age * reuse_factor)
+    tax_rate = base_tax / (1 + math.log(product))
     return tax_rate
 
 def _engine_compute_bounty_amount(

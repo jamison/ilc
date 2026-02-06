@@ -52,6 +52,8 @@ class Node(BaseModel):
     # Optional target for refutation-type nodes.
     # For now, used only when type == "refutation".
     target_id: Optional[str] = None
+    # Optional parent lineage for claim/refutation nodes.
+    parent_ids: List[str] = Field(default_factory=list)
 
     def compute_id(self) -> str:
         """Calculates SHA-256 ID. Dicts are canonicalized."""
@@ -84,6 +86,7 @@ class ClaimRecord(BaseModel):
     type: str  # "claim" or "refutation" (or other future variants)
     agent_id: str
     content: str
+    signature: Optional[str] = None
     net_stake: float = 0.0
     timestamp: Optional[str] = None
     parent_ids: List[str] = Field(default_factory=list)
@@ -118,15 +121,10 @@ def node_to_claim_record(node: Node) -> ClaimRecord:
         type=node.type,
         agent_id=node.agent_id,
         content=content_str,
+        signature=node.signature,
         net_stake=node.net_stake,
         timestamp=ts_str,
-        parent_ids=[], # Node doesn't explicitly store parents list yet, unless we query edges.
-                       # For MVP, we'll leave empty or rely on graph lookups later.
-                       # But wait, the plan said "data = node.data or {}".
-                       # The Node model in types.py DOES NOT have a .data field.
-                       # I should check if I need to add it or if I should just map what I have.
-                       # The plan assumed node.data.
-                       # I will map what is available in Node.
+        parent_ids=list(node.parent_ids),
         target_id=node.target_id,
     )
 
@@ -141,6 +139,8 @@ def claim_record_to_node(claim: ClaimRecord) -> Node:
             ts = datetime.fromisoformat(claim.timestamp)
         except ValueError:
             pass
+    if not claim.signature:
+        raise ValueError("ClaimRecord signature required to create Node")
 
     return Node(
         id=claim.id,
@@ -148,12 +148,10 @@ def claim_record_to_node(claim: ClaimRecord) -> Node:
         content=claim.content,
         agent_id=claim.agent_id,
         timestamp=ts,
-        signature="sig-placeholder", # ClaimRecord doesn't have sig yet?
-                                     # Or maybe we should add sig to ClaimRecord?
-                                     # The plan didn't have signature in ClaimRecord.
-                                     # I'll use a placeholder or derived value.
+        signature=claim.signature,
         net_stake=claim.net_stake,
         target_id=claim.target_id,
+        parent_ids=list(claim.parent_ids),
     )
 
 class LinkRecord(BaseModel):

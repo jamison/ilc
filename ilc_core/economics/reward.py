@@ -37,7 +37,9 @@ def simple_claim_reward(
         distribution or multi-recipient payouts.
     """
     # 1. Base recovery of stake
-    if stake_spent <= 0.0:
+    if stake_spent < 0.0:
+        raise ValueError(f"stake_spent cannot be negative: {stake_spent}")
+    if stake_spent == 0.0:
         return 0.0
 
     base = stake_spent

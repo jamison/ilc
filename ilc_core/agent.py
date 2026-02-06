@@ -1,4 +1,5 @@
 from typing import Optional
+import logging
 from .types import Node, Edge
 from .graph import EpistemicGraph
 from .consensus.engine import ConsensusEngine
@@ -184,6 +185,13 @@ class EveAgent:
             self.wallet_balance += amount
 
     def refute_node(self, target_id: str, stake: float):
-        if self.wallet_balance < stake: return
+        if self.wallet_balance < stake:
+            logging.getLogger(__name__).warning(
+                "Insufficient balance for refutation: wallet_balance=%.4f stake=%.4f",
+                self.wallet_balance,
+                stake,
+            )
+            return False
         self.wallet_balance -= stake
         self.consensus.process_contradiction(target_id, stake)
+        return True
