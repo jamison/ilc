@@ -10,6 +10,10 @@ from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signa
 from ilc_core.ledger.canon_bundle_pipeline_report import render_pipeline_report
 from ilc_core.ledger.canon_bundle_audit_artifact import create_audit_artifact, write_audit_artifact
 
+def _set_error(report, code: str) -> None:
+    report["ok"] = False
+    report["errors"].append(code)
+
 def _resolve_report_paths(report_arg: Path) -> tuple[Path, Path]:
     """Resolve report and audit paths from the --report argument."""
     if report_arg.is_dir():
@@ -49,6 +53,85 @@ def _write_audit(bundle_path: Path, report, audit_path: Path, json_output: str, 
             report.setdefault("warnings", []).append("audit_write_failed")
     except Exception:
         report.setdefault("warnings", []).append("audit_write_failed")
+
+def _prepare_bundle(args, report) -> tuple[Path | None, bool]:
+    bundle_path = Path(args.bundle).resolve()
+    report["bundle_path"] = str(bundle_path)
+    if not bundle_path.exists() or not bundle_path.is_dir():
+        _set_error(report, "bundle_missing")
+        return None, False
+    manifest_path = bundle_path / "manifest.json"
+    if not manifest_path.exists():
+        _set_error(report, "manifest_missing")
+        return None, False
+    return bundle_path, True
+
+def _run_validation(bundle_path: Path, report, steps) -> bool:
+    validation_result = validate_canon_export_bundle(bundle_path)
+    steps["validate"] = True
+    if validation_result.get("ok", False):
+        return True
+    report["ok"] = False
+    report["errors"].extend(validation_result.get("errors", []))
+    report["warnings"].extend(validation_result.get("warnings", []))
+    return False
+
+def _load_key(args, report):
+    key_path = Path(args.key_file)
+    if not key_path.exists():
+        _set_error(report, "key_missing")
+        return None
+    try:
+        return load_key_from_file(key_path)
+    except ValueError:
+        _set_error(report, "invalid_key_file")
+        return None
+
+def _handle_existing_signature(bundle_path: Path, key, report, steps) -> bool:
+    try:
+        if verify_manifest_signature(bundle_path, key):
+            steps["verify"] = True
+            report["warnings"].append("signature_exists")
+            return False
+        _set_error(report, "signature_mismatch")
+        return False
+    except FileNotFoundError:
+        _set_error(report, "signature_missing")
+        return False
+
+def _sign_bundle(bundle_path: Path, key, report, steps, overwrite: bool) -> bool:
+    try:
+        sign_manifest(bundle_path, key, overwrite=overwrite)
+        steps["sign"] = True
+        return True
+    except FileExistsError:
+        _set_error(report, "signature_exists")
+        return False
+
+def _verify_signature(bundle_path: Path, key, report, steps) -> bool:
+    try:
+        if not verify_manifest_signature(bundle_path, key):
+            _set_error(report, "signature_mismatch")
+            return False
+        steps["verify"] = True
+        return True
+    except FileNotFoundError:
+        _set_error(report, "signature_missing")
+        return False
+
+def _handle_signing(args, bundle_path: Path, report, steps) -> bool:
+    if not args.key_file:
+        report["warnings"].append("signature_verification_skipped")
+        return True
+    key = _load_key(args, report)
+    if key is None:
+        return False
+    sig_path = bundle_path / "manifest.sig"
+    if sig_path.exists() and not args.overwrite:
+        return _handle_existing_signature(bundle_path, key, report, steps)
+    if not _sign_bundle(bundle_path, key, report, steps, args.overwrite):
+        return False
+    return _verify_signature(bundle_path, key, report, steps)
 
 def _finalize(args, report) -> int:
     """Write report/audit (if requested), print JSON, and return exit code."""
@@ -94,81 +177,13 @@ def main() -> int:
     }
     
     try:
-        bundle_path = Path(args.bundle).resolve()
-        report["bundle_path"] = str(bundle_path)
-        
-        # Step 1: Check bundle exists and is a directory
-        if not bundle_path.exists() or not bundle_path.is_dir():
-            report["ok"] = False
-            report["errors"].append("bundle_missing")
+        bundle_path, ok = _prepare_bundle(args, report)
+        if not ok:
             return _finalize(args, report)
-
-        manifest_path = bundle_path / "manifest.json"
-        if not manifest_path.exists():
-            report["ok"] = False
-            report["errors"].append("manifest_missing")
+        if not _run_validation(bundle_path, report, steps):
             return _finalize(args, report)
-        
-        # Step 2: Validate bundle
-        validation_result = validate_canon_export_bundle(bundle_path)
-        steps["validate"] = True
-        if not validation_result.get("ok", False):
-            report["ok"] = False
-            report["errors"].extend(validation_result.get("errors", []))
-            report["warnings"].extend(validation_result.get("warnings", []))
+        if not _handle_signing(args, bundle_path, report, steps):
             return _finalize(args, report)
-        
-        # Step 3: Signing (optional)
-        if args.key_file:
-            key_path = Path(args.key_file)
-            if not key_path.exists():
-                report["ok"] = False
-                report["errors"].append("key_missing")
-                return _finalize(args, report)
-            try:
-                key = load_key_from_file(key_path)
-            except ValueError:
-                report["ok"] = False
-                report["errors"].append("invalid_key_file")
-                return _finalize(args, report)
-            
-            sig_path = bundle_path / "manifest.sig"
-            if sig_path.exists() and not args.overwrite:
-                try:
-                    if verify_manifest_signature(bundle_path, key):
-                        steps["verify"] = True
-                        report["warnings"].append("signature_exists")
-                        return _finalize(args, report)
-                    else:
-                        report["ok"] = False
-                        report["errors"].append("signature_mismatch")
-                except FileNotFoundError:
-                    report["ok"] = False
-                    report["errors"].append("signature_missing")
-                return _finalize(args, report)
-
-            # Sign
-            try:
-                sign_manifest(bundle_path, key, overwrite=args.overwrite)
-                steps["sign"] = True
-            except FileExistsError:
-                report["ok"] = False
-                report["errors"].append("signature_exists")
-                return _finalize(args, report)
-            
-            # Verify
-            try:
-                if not verify_manifest_signature(bundle_path, key):
-                    report["ok"] = False
-                    report["errors"].append("signature_mismatch")
-                    return _finalize(args, report)
-                steps["verify"] = True
-            except FileNotFoundError:
-                report["ok"] = False
-                report["errors"].append("signature_missing")
-                return _finalize(args, report)
-        else:
-            report["warnings"].append("signature_verification_skipped")
             
     except Exception as e:
         report["ok"] = False

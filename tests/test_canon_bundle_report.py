@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 from ilc_core.ledger.canon_export_bundle_report import render_bundle_report
+from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_validate"]
 
@@ -41,8 +42,6 @@ class TestCanonBundleReport:
 
     def test_cli_report_generation(self, tmp_path):
         """Verify CLI generates report file."""
-        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
-        
         bundle_dir = tmp_path / "bundle"
         write_canon_export_bundle({"canon_hash": "h"}, {"ok": True}, bundle_dir)
         
@@ -64,8 +63,6 @@ class TestCanonBundleReport:
 
     def test_cli_report_to_directory(self, tmp_path):
         """If directory passed to --report, use default filename."""
-        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
-        
         bundle_dir = tmp_path / "bundle"
         write_canon_export_bundle({"canon_hash": "h"}, {"ok": True}, bundle_dir)
         
@@ -84,8 +81,6 @@ class TestCanonBundleReport:
 
     def test_cli_report_parent_dir_creation(self, tmp_path):
         """Ensure parent dirs are created for report path."""
-        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
-
         bundle_dir = tmp_path / "bundle"
         write_canon_export_bundle({"canon_hash": "h"}, {"ok": True}, bundle_dir)
 

@@ -12,8 +12,8 @@ from ilc_core.analysis.claim_scores import (
 
 def make_small_graph() -> EpistemicGraph:
     g = EpistemicGraph()
-    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo")
-    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar")
+    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig")
+    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig")
     g.add_claim(c1)
     g.add_claim(c2)
 

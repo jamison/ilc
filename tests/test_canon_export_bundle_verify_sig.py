@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signature
+from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
+from ilc_core.ledger.canon_export_bundle_sign import sign_manifest
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_validate"]
 
@@ -16,9 +18,6 @@ class TestCanonExportBundleVerifySig:
 
     @pytest.fixture
     def signed_bundle(self, tmp_path, test_key):
-        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
-        from ilc_core.ledger.canon_export_bundle_sign import sign_manifest
-        
         bundle = tmp_path / "bundle"
         write_canon_export_bundle({"canon_hash": "foo"}, {"ok": True}, bundle)
         sign_manifest(bundle, test_key)
@@ -39,7 +38,6 @@ class TestCanonExportBundleVerifySig:
         assert verify_manifest_signature(signed_bundle, b"wrong_key") is False
 
     def test_verify_missing_sig(self, tmp_path):
-        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
         bundle = tmp_path / "unsigned"
         write_canon_export_bundle({"canon_hash": "bar"}, {}, bundle)
         

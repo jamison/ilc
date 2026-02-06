@@ -15,12 +15,14 @@ def test_epistemic_graph_add_and_query_links():
     graph = EpistemicGraph()
 
     c1 = ClaimRecord(
+        signature="sig",
         id="c1",
         type="claim",
         agent_id="agent:a",
         content="foo",
     )
     c2 = ClaimRecord(
+        signature="sig",
         id="c2",
         type="claim",
         agent_id="agent:b",
@@ -47,8 +49,8 @@ def test_epistemic_graph_add_and_query_links():
 
 def test_add_duplicate_link_raises():
     graph = EpistemicGraph()
-    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="x")
-    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="y")
+    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="x", signature="sig")
+    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="y", signature="sig")
     graph.add_claim(c1)
     graph.add_claim(c2)
 

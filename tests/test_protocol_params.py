@@ -31,8 +31,8 @@ def test_load_protocol_params_from_json(tmp_path):
 def test_get_local_influence_scores_dispatch():
     # Build a trivial graph with one support and one refute on same target
     g = EpistemicGraph()
-    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo")
-    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar")
+    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig")
+    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig")
     g.add_claim(c1)
     g.add_claim(c2)
 

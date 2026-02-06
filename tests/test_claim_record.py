@@ -4,6 +4,7 @@ from ilc_core.graph import EpistemicGraph
 
 def test_claim_record_round_trip():
     claim = ClaimRecord(
+        signature="sig",
         id="c1",
         type="claim",
         agent_id="agent:a",
@@ -16,21 +17,22 @@ def test_claim_record_round_trip():
     node = claim_record_to_node(claim)
     recovered = node_to_claim_record(node)
     
-    # Note: Node doesn't persist parent_ids in the MVP conversion unless we add edges.
-    # So recovered.parent_ids will be empty.
-    # We should verify the rest matches.
+    # Verify round-trip fields.
     assert recovered.id == claim.id
     assert recovered.type == claim.type
     assert recovered.agent_id == claim.agent_id
     assert recovered.content == claim.content
+    assert recovered.signature == claim.signature
     assert recovered.net_stake == claim.net_stake
     # Timestamp might have minor formatting diffs, but let's check basic equality
     assert recovered.timestamp == claim.timestamp
+    assert recovered.parent_ids == claim.parent_ids
     assert recovered.target_id == claim.target_id
 
 def test_epistemic_graph_add_and_get_claim():
     graph = EpistemicGraph()
     claim = ClaimRecord(
+        signature="sig",
         id="c1",
         type="claim",
         agent_id="agent:a",

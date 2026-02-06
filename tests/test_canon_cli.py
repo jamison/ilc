@@ -30,7 +30,7 @@ def test_cli_missing_file():
     assert res.returncode == 1
     data = json.loads(res.stdout)
     assert data["ok"] is False
-    assert "File not found" in data["error"]
+    assert any("File not found" in err for err in data["errors"])
 
 def test_cli_print_hash():
     if not FIXTURE_PATH.exists():
@@ -76,7 +76,7 @@ def test_cli_tampered_file(tmp_path):
     assert res.returncode == 1
     data = json.loads(res.stdout)
     assert data["ok"] is False
-    assert "Hash mismatch" in data["error"]
+    assert "Hash mismatch" in data["errors"]
 
 def test_cli_output_is_deterministic():
     if not FIXTURE_PATH.exists():

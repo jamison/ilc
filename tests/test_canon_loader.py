@@ -162,13 +162,13 @@ def test_verify_canon_state_helper():
             
         report = verify_canon_state(path)
         assert report["ok"] is False
-        assert report["error"] == "Hash mismatch"
+        assert report["errors"] == ["Hash mismatch"]
         assert report["canon_hash"] != report["computed_hash"]
         
         # 3. Missing File
         report = verify_canon_state(Path(tmpdir) / "nonexistent.json")
         assert report["ok"] is False
-        assert "File not found" in report["error"]
+        assert any("File not found" in err for err in report["errors"])
 
 def test_fixture_stability():
     """
@@ -190,4 +190,3 @@ def test_fixture_stability():
     # payload is the raw JSON which includes generated_at and canon_hash
     expected_hash = "36ba344f2741240329fb55d89c056db66a990a6c188bf978543ecd50d9e2a0e9"
     assert report["computed_hash"] == expected_hash
-

@@ -9,9 +9,9 @@ from ilc_core.analysis.graph_kpis import (
 
 def make_small_graph() -> EpistemicGraph:
     g = EpistemicGraph()
-    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo")
-    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar")
-    c3 = ClaimRecord(id="c3", type="claim", agent_id="c", content="baz")
+    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig")
+    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig")
+    c3 = ClaimRecord(id="c3", type="claim", agent_id="c", content="baz", signature="sig")
     g.add_claim(c1)
     g.add_claim(c2)
     g.add_claim(c3)
@@ -47,9 +47,9 @@ def test_no_hotspots_if_threshold_not_met():
 
 def make_influence_graph() -> EpistemicGraph:
     g = EpistemicGraph()
-    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo")
-    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar")
-    c3 = ClaimRecord(id="c3", type="claim", agent_id="c", content="baz")
+    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig")
+    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig")
+    c3 = ClaimRecord(id="c3", type="claim", agent_id="c", content="baz", signature="sig")
     g.add_claim(c1)
     g.add_claim(c2)
     g.add_claim(c3)

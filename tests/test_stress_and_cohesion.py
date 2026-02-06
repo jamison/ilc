@@ -36,12 +36,12 @@ def test_compute_epistemic_stress_basic():
 
 def test_compute_cohesion_metrics_basic():
     g = EpistemicGraph()
-    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo")
-    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar")
+    c1 = ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig")
+    c2 = ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig")
     g.add_claim(c1)
     g.add_claim(c2)
 
-    c3 = ClaimRecord(id="c3", type="claim", agent_id="c", content="baz")
+    c3 = ClaimRecord(id="c3", type="claim", agent_id="c", content="baz", signature="sig")
     g.add_claim(c3)
 
     # 1 support, 1 refute on c2 (hotspot)

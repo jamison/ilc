@@ -7,15 +7,15 @@ from ilc_core.analysis.agent_profiles import AgentProfile, attach_light_cone_to_
 def test_compute_agent_light_cone_kpis_reach():
     g = EpistemicGraph()
     # Agent A -> B, Agent A -> C
-    g.add_claim(ClaimRecord(id="c1", type="claim", agent_id="a", content="foo"))
-    g.add_claim(ClaimRecord(id="c2", type="claim", agent_id="b", content="bar"))
-    g.add_claim(ClaimRecord(id="c3", type="claim", agent_id="c", content="baz"))
+    g.add_claim(ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig"))
+    g.add_claim(ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig"))
+    g.add_claim(ClaimRecord(id="c3", type="claim", agent_id="c", content="baz", signature="sig"))
     
     g.add_link(LinkRecord(id="l1", link_type="supports", source_id="c1", target_id="c2"))
     g.add_link(LinkRecord(id="l2", link_type="supports", source_id="c1", target_id="c3"))
     
     # Agent D: isolated
-    g.add_claim(ClaimRecord(id="c4", type="claim", agent_id="d", content="qux"))
+    g.add_claim(ClaimRecord(id="c4", type="claim", agent_id="d", content="qux", signature="sig"))
     
     kpis = compute_agent_light_cone_kpis(g, [])
     
@@ -43,8 +43,8 @@ def test_compute_agent_light_cone_kpis_horizon_domain():
 def test_light_cone_composite_score():
     g = EpistemicGraph()
     # Agent A: Reach 1 (c1->c2)
-    g.add_claim(ClaimRecord(id="c1", type="claim", agent_id="a", content="foo"))
-    g.add_claim(ClaimRecord(id="c2", type="claim", agent_id="b", content="bar"))
+    g.add_claim(ClaimRecord(id="c1", type="claim", agent_id="a", content="foo", signature="sig"))
+    g.add_claim(ClaimRecord(id="c2", type="claim", agent_id="b", content="bar", signature="sig"))
     g.add_link(LinkRecord(id="l1", link_type="supports", source_id="c1", target_id="c2"))
     
     # Agent A: Horizon 1, Domain 1

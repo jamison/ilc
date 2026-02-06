@@ -6,6 +6,8 @@ import base64
 import json
 from pathlib import Path
 
+from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
+
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_pipeline"]
 
 class TestCanonBundlePipeline:
@@ -106,7 +108,6 @@ class TestCanonBundlePipeline:
         assert result.stderr == ""
 
     def test_signature_mismatch(self, valid_bundle, key_file):
-        from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
         key = load_key_from_file(key_file)
         sign_manifest(valid_bundle, key)
 
@@ -120,12 +121,11 @@ class TestCanonBundlePipeline:
         assert "signature_mismatch" in data["errors"]
         assert result.stderr == ""
     def test_signature_exists_no_overwrite(self, valid_bundle, key_file):
-        from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
         key = load_key_from_file(key_file)
         sign_manifest(valid_bundle, key)
         
         result = self.run_cli(["--bundle", str(valid_bundle), "--key-file", str(key_file)])
-        assert result.returncode == 1
+        assert result.returncode == 0
         data = json.loads(result.stdout)
-        assert "signature_exists" in data["errors"]
+        assert "signature_exists" in data["warnings"]
         assert result.stderr == ""
