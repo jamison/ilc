@@ -2,7 +2,10 @@
 import base64
 import hashlib
 import hmac
+from datetime import datetime
 from pathlib import Path
+
+from ilc_core.ledger.canon_bundle_utils import derive_key_id
 
 def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     """
@@ -34,8 +37,43 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     if any(ch.isspace() for ch in sig_b64):
         return False
         
-    # Read manifest bytes as-is
-    manifest_data = manifest_path.read_bytes()
+    # Load manifest JSON for metadata validation
+    try:
+        manifest_bytes = manifest_path.read_bytes()
+    except OSError:
+        return False
+
+    try:
+        manifest_text = manifest_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        return False
+
+    try:
+        import json
+        manifest_json = json.loads(manifest_text)
+    except Exception:
+        return False
+
+    key_id = manifest_json.get("key_id")
+    sig_alg = manifest_json.get("sig_alg")
+    signed_at = manifest_json.get("signed_at")
+
+    if key_id is None or sig_alg is None or signed_at is None:
+        return False
+
+    if sig_alg != "hmac-sha256":
+        return False
+
+    if key_id != derive_key_id(key):
+        return False
+
+    try:
+        datetime.fromisoformat(str(signed_at).replace("Z", "+00:00"))
+    except ValueError:
+        return False
+
+    # Read manifest bytes as-is for signing
+    manifest_data = manifest_bytes
     
     # Compute Expected HMAC
     expected = hmac.new(key, manifest_data, hashlib.sha256).digest()

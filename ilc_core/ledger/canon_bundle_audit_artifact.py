@@ -45,6 +45,19 @@ def create_audit_artifact(
     if report_content:
         report_hash = hashlib.sha256(report_content.encode("utf-8")).hexdigest()
     
+    # Extract key metadata from manifest if available
+    key_id = None
+    sig_alg = None
+    signed_at = None
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            key_id = manifest.get("key_id")
+            sig_alg = manifest.get("sig_alg")
+            signed_at = manifest.get("signed_at")
+        except (json.JSONDecodeError, OSError):
+            pass
+    
     audit = {
         "audit_version": "v0.1",
         "bundle_path": str(bundle_path.resolve()),
@@ -61,9 +74,13 @@ def create_audit_artifact(
         "signature_hash": sig_hash,
         "report_hash": report_hash,
         "pipeline_json": json_output,
+        "key_id": key_id,
+        "sig_alg": sig_alg,
+        "signed_at": signed_at,
     }
     
     return audit
+
 
 def write_audit_artifact(audit: Dict[str, Any], audit_path: Path) -> bool:
     """

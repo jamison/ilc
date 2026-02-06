@@ -147,3 +147,53 @@ class TestCanonExportBundleValidate:
         assert not report["ok"]
         assert any("Unsupported hash_alg" in e for e in report["errors"])
 
+    def test_validate_missing_key_id_when_signed(self, valid_bundle):
+        """Signature present but no key_id should produce error."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["sig_alg"] = "hmac-sha256"
+        data["signed_at"] = "2026-02-06T12:34:56Z"
+        manifest_path.write_text(json.dumps(data))
+        (valid_bundle / "manifest.sig").write_text("ZmFrZXNpZw==\n")
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "missing_key_id" in report["errors"]
+
+    def test_validate_unsupported_sig_alg(self, valid_bundle):
+        """Unsupported sig_alg should produce error."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["key_id"] = "abc123"
+        data["sig_alg"] = "rsa-sha512"
+        data["signed_at"] = "2026-02-06T12:34:56Z"
+        manifest_path.write_text(json.dumps(data))
+        (valid_bundle / "manifest.sig").write_text("ZmFrZXNpZw==\n")
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "unsupported_sig_alg" in report["errors"]
+
+    def test_validate_invalid_signed_at(self, valid_bundle):
+        """Invalid signed_at format should produce error."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["key_id"] = "abc123"
+        data["sig_alg"] = "hmac-sha256"
+        data["signed_at"] = "Feb 6, 2026 12:34"
+        manifest_path.write_text(json.dumps(data))
+        (valid_bundle / "manifest.sig").write_text("ZmFrZXNpZw==\n")
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "invalid_signed_at" in report["errors"]
+
+    def test_validate_no_metadata_required_without_signature(self, valid_bundle):
+        """Key metadata not required when signature is absent."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        # No key metadata and no signature
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert report["ok"]

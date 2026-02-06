@@ -18,6 +18,12 @@ def file_sha256(path: Path) -> Optional[str]:
     return h.hexdigest()
 
 
+def derive_key_id(key_bytes: bytes) -> str:
+    """Derive a stable 16-character key identifier from key bytes."""
+    return sha256(key_bytes).hexdigest()[:16]
+
+
+
 # Known issue patterns for normalization
 KNOWN_ISSUE_MAP = {
     "missing required file": "manifest_missing",

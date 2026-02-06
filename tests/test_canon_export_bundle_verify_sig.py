@@ -1,6 +1,9 @@
 
 import pytest
 import base64
+import hashlib
+import hmac
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -9,6 +12,16 @@ from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
 from ilc_core.ledger.canon_export_bundle_sign import sign_manifest
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_validate"]
+
+def _rewrite_manifest_and_resign(bundle_dir: Path, key: bytes, mutate_fn) -> None:
+    manifest_path = bundle_dir / "manifest.json"
+    sig_path = bundle_dir / "manifest.sig"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    mutate_fn(manifest)
+    manifest_bytes = json.dumps(manifest, separators=(",", ":"), sort_keys=False).encode("utf-8")
+    manifest_path.write_bytes(manifest_bytes)
+    sig = hmac.new(key, manifest_bytes, hashlib.sha256).digest()
+    sig_path.write_bytes(base64.b64encode(sig) + b"\n")
 
 class TestCanonExportBundleVerifySig:
     
@@ -51,6 +64,30 @@ class TestCanonExportBundleVerifySig:
         # This validator strictly rejects it
         sig_path.write_bytes(content + b"\n" + content)
         
+        assert verify_manifest_signature(signed_bundle, test_key) is False
+
+    def test_verify_missing_key_id(self, signed_bundle, test_key):
+        def mutate(manifest):
+            manifest.pop("key_id", None)
+        _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
+        assert verify_manifest_signature(signed_bundle, test_key) is False
+
+    def test_verify_unsupported_sig_alg(self, signed_bundle, test_key):
+        def mutate(manifest):
+            manifest["sig_alg"] = "rsa-sha512"
+        _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
+        assert verify_manifest_signature(signed_bundle, test_key) is False
+
+    def test_verify_invalid_signed_at(self, signed_bundle, test_key):
+        def mutate(manifest):
+            manifest["signed_at"] = "2026/02/06 12:34"
+        _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
+        assert verify_manifest_signature(signed_bundle, test_key) is False
+
+    def test_verify_key_id_mismatch(self, signed_bundle, test_key):
+        def mutate(manifest):
+            manifest["key_id"] = "deadbeefdeadbeef"
+        _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
         assert verify_manifest_signature(signed_bundle, test_key) is False
 
     def test_cli_integration(self, signed_bundle, tmp_path):

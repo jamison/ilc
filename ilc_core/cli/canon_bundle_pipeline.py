@@ -28,15 +28,34 @@ def _write_report(bundle_path: Path, report, report_path: Path, json_output: str
     """Write report file and return (success, content)."""
     try:
         report_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Extract key metadata from manifest if available
+        key_metadata = None
+        manifest_path = bundle_path / "manifest.json"
+        if manifest_path.exists():
+            try:
+                import json as json_mod
+                manifest = json_mod.loads(manifest_path.read_text(encoding="utf-8"))
+                if manifest.get("key_id") or manifest.get("sig_alg") or manifest.get("signed_at"):
+                    key_metadata = {
+                        "key_id": manifest.get("key_id"),
+                        "sig_alg": manifest.get("sig_alg"),
+                        "signed_at": manifest.get("signed_at"),
+                    }
+            except Exception:
+                pass
+        
         md_content = render_pipeline_report(
             str(bundle_path),
             report,
             json_output=json_output,
+            key_metadata=key_metadata,
         )
         report_path.write_text(md_content, encoding="utf-8")
         return True, md_content
     except Exception:
         return False, None
+
 
 def _write_audit(bundle_path: Path, report, audit_path: Path, json_output: str, report_path: Path | None, report_content: str | None) -> None:
     """Write audit artifact file; append warning on failure."""

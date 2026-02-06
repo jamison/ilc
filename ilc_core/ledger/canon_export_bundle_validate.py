@@ -10,7 +10,7 @@ REQUIRED_MANIFEST_KEYS = {
     "canon_hash", "export_path", "validate_path", "hash_alg"
 }
 OPTIONAL_MANIFEST_KEYS = {
-    "export_format",
+    "export_format", "key_id", "sig_alg", "signed_at",
 }
 
 def _hash_file_content(path: Path) -> str:
@@ -113,6 +113,28 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
         warnings.append("Missing optional field 'export_format'")
     elif export_format_val != "v0.1":
         warnings.append(f"Unexpected export_format: {export_format_val}")
+    
+    # 9. Key Metadata Validation (only when signature present)
+    sig_path = bundle_dir / "manifest.sig"
+    if sig_path.exists():
+        # Require key metadata when signature is present
+        if "key_id" not in manifest:
+            errors.append("missing_key_id")
+        if "sig_alg" not in manifest:
+            errors.append("missing_sig_alg")
+        elif manifest.get("sig_alg") != "hmac-sha256":
+            errors.append("unsupported_sig_alg")
+        
+        signed_at = manifest.get("signed_at")
+        if signed_at is None:
+            errors.append("missing_signed_at")
+        elif not isinstance(signed_at, str):
+            errors.append("invalid_signed_at")
+        else:
+            try:
+                datetime.fromisoformat(signed_at.replace("Z", "+00:00"))
+            except ValueError:
+                errors.append("invalid_signed_at")
 
     return {
         "ok": len(errors) == 0,

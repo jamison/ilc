@@ -3,8 +3,10 @@ import pytest
 import base64
 import hmac
 import hashlib
+import json
 from pathlib import Path
 from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
+from ilc_core.ledger.canon_bundle_utils import derive_key_id
 
 class TestCanonExportBundleSign:
     
@@ -70,3 +72,20 @@ class TestCanonExportBundleSign:
 
         loaded = load_key_from_file(key_path)
         assert loaded == key
+
+    def test_manifest_has_key_metadata(self, valid_bundle, test_key):
+        """Manifest includes key_id, sig_alg, signed_at after signing."""
+        sign_manifest(valid_bundle, test_key, overwrite=True)
+        manifest = json.loads((valid_bundle / "manifest.json").read_text())
+        assert "key_id" in manifest
+        assert manifest["sig_alg"] == "hmac-sha256"
+        assert manifest["signed_at"].endswith("Z")
+
+    def test_key_id_derived_from_key_bytes(self, valid_bundle, test_key):
+        """key_id should be derived from sha256(key)[:16]."""
+        sign_manifest(valid_bundle, test_key, overwrite=True)
+        manifest = json.loads((valid_bundle / "manifest.json").read_text())
+        expected_key_id = derive_key_id(test_key)
+        assert manifest["key_id"] == expected_key_id
+        assert len(manifest["key_id"]) == 16
+
