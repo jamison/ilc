@@ -10,46 +10,40 @@ from ilc_core.ledger.canon_export_bundle_verify_sig import verify_manifest_signa
 from ilc_core.ledger.canon_bundle_pipeline_report import render_pipeline_report
 from ilc_core.ledger.canon_bundle_audit_artifact import create_audit_artifact, write_audit_artifact
 
-def _write_report_and_audit(args, report, json_output):
-    """Write report and audit artifact if --report is set. Always called before exit."""
-    if not args.report:
-        return
-    
-    bundle_path = Path(report.get("bundle_path", ""))
-    report_arg_path = Path(args.report)
-    
-    # Determine report path
-    if report_arg_path.is_dir():
-        report_path = report_arg_path / "bundle_pipeline_report.md"
-        audit_path = report_arg_path / "bundle_pipeline_audit.json"
+def _resolve_report_paths(report_arg: Path) -> tuple[Path, Path]:
+    """Resolve report and audit paths from the --report argument."""
+    if report_arg.is_dir():
+        report_path = report_arg / "bundle_pipeline_report.md"
+        audit_path = report_arg / "bundle_pipeline_audit.json"
     else:
-        report_path = report_arg_path
-        audit_path = report_arg_path.with_name("bundle_pipeline_audit.json")
-    
-    # Write report
-    md_content = None
+        report_path = report_arg
+        audit_path = report_arg.with_name("bundle_pipeline_audit.json")
+    return report_path, audit_path
+
+def _write_report(bundle_path: Path, report, report_path: Path, json_output: str) -> tuple[bool, str | None]:
+    """Write report file and return (success, content)."""
     try:
         report_path.parent.mkdir(parents=True, exist_ok=True)
-        report["steps"]["report"] = True
         md_content = render_pipeline_report(
             str(bundle_path),
             report,
             json_output=json_output,
         )
         report_path.write_text(md_content, encoding="utf-8")
+        return True, md_content
     except Exception:
-        report["steps"]["report"] = False
-        report.setdefault("warnings", []).append("report_write_failed")
-    
-    # Write audit artifact
+        return False, None
+
+def _write_audit(bundle_path: Path, report, audit_path: Path, json_output: str, report_path: Path | None, report_content: str | None) -> None:
+    """Write audit artifact file; append warning on failure."""
     try:
         audit = create_audit_artifact(
             bundle_path=bundle_path,
             report=report,
-            report_path=report_path if report["steps"]["report"] else None,
+            report_path=report_path,
             audit_path=audit_path,
             json_output=json_output,
-            report_content=md_content,
+            report_content=report_content,
         )
         if not write_audit_artifact(audit, audit_path):
             report.setdefault("warnings", []).append("audit_write_failed")
@@ -57,10 +51,28 @@ def _write_report_and_audit(args, report, json_output):
         report.setdefault("warnings", []).append("audit_write_failed")
 
 def _finalize(args, report) -> int:
-    """Print JSON, write report and audit, and return exit code."""
+    """Write report/audit (if requested), print JSON, and return exit code."""
+    bundle_path = Path(report.get("bundle_path", ""))
     json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+
+    if args.report:
+        report_arg_path = Path(args.report)
+        report_path, audit_path = _resolve_report_paths(report_arg_path)
+
+        # Optimistically mark report as true for JSON/report alignment.
+        report["steps"]["report"] = True
+        json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+        report_ok, report_content = _write_report(bundle_path, report, report_path, json_output)
+        if not report_ok:
+            report["steps"]["report"] = False
+            report.setdefault("warnings", []).append("report_write_failed")
+            json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+            report_content = None
+            report_path = None
+
+        _write_audit(bundle_path, report, audit_path, json_output, report_path, report_content)
+
     print(json_output)
-    _write_report_and_audit(args, report, json_output)
     return 0 if report["ok"] else 1
 
 def main() -> int:
