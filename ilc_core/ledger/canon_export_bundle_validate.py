@@ -1,6 +1,7 @@
 
 import hashlib
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Set
 
@@ -80,10 +81,16 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
     if manifest["validate_path"] != "validate.json":
         errors.append(f"Invalid validate_path: {manifest['validate_path']} (must be 'validate.json')")
 
-    # 6. Check Timestamp Format (Warning only)
+    # 6. Check Timestamp Format (Strict ISO-8601)
     ts = manifest.get("created_at", "")
-    if not (ts.endswith("Z") or "+00:00" in ts):
-        warnings.append("created_at does not appear to be ISO-8601 UTC (missing 'Z' or '+00:00')")
+    if not isinstance(ts, str):
+        errors.append("created_at must be a string")
+    else:
+        ts_normalized = ts.replace("Z", "+00:00")
+        try:
+            datetime.fromisoformat(ts_normalized)
+        except ValueError:
+            errors.append("invalid_created_at")
 
     if errors:
         return {"ok": False, "errors": errors, "warnings": warnings}

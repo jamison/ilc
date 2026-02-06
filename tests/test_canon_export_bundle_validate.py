@@ -75,15 +75,47 @@ class TestCanonExportBundleValidate:
         assert report["ok"] # Unknown keys are OK, just warning
         assert any("Manifest contains unknown keys" in w for w in report["warnings"])
 
-    def test_verify_created_at_warning(self, valid_bundle):
+    def test_verify_created_at_strict_iso8601_invalid(self, valid_bundle):
+        """Invalid ISO-8601 format should produce error."""
         manifest_path = valid_bundle / "manifest.json"
         data = json.loads(manifest_path.read_text())
-        data["created_at"] = "2026-02-05 00:00:00"
+        data["created_at"] = "Feb 5, 2026 12:00"  # Natural language - invalid ISO
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "invalid_created_at" in report["errors"]
+
+    def test_verify_created_at_strict_iso8601_valid_z(self, valid_bundle):
+        """Valid ISO-8601 with Z suffix should pass."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["created_at"] = "2026-02-06T12:34:56Z"
         manifest_path.write_text(json.dumps(data))
 
         report = validate_canon_export_bundle(valid_bundle)
         assert report["ok"]
-        assert any("created_at does not appear" in w for w in report["warnings"])
+
+    def test_verify_created_at_strict_iso8601_valid_offset(self, valid_bundle):
+        """Valid ISO-8601 with offset should pass."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["created_at"] = "2026-02-06T12:34:56+00:00"
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert report["ok"]
+
+    def test_verify_created_at_non_string(self, valid_bundle):
+        """Non-string created_at should produce error."""
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["created_at"] = 1234567890
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "created_at must be a string" in report["errors"]
 
     def test_verify_missing_export_format_warning(self, valid_bundle):
         manifest_path = valid_bundle / "manifest.json"
@@ -114,3 +146,4 @@ class TestCanonExportBundleValidate:
         report = validate_canon_export_bundle(valid_bundle)
         assert not report["ok"]
         assert any("Unsupported hash_alg" in e for e in report["errors"])
+

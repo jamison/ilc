@@ -1,9 +1,9 @@
 
-import hashlib
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from ilc_core.ledger.canon_export_bundle_validate import validate_canon_export_bundle
+from ilc_core.ledger.canon_bundle_utils import file_sha256, normalized_multiset
 
 REQUIRED_AUDIT_KEYS = {
     "audit_version", "bundle_path", "manifest_hash", "pipeline_json",
@@ -12,13 +12,9 @@ REQUIRED_AUDIT_KEYS = {
 
 SUPPORTED_AUDIT_VERSIONS = {"v0.1"}
 
-def file_sha256(path: Path) -> Optional[str]:
-    """Compute SHA-256 hexdigest of a file's bytes, or None if file doesn't exist."""
-    if not path.exists():
-        return None
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
+
     """
     Replay-verify a bundle against an audit artifact.
     
@@ -114,11 +110,20 @@ def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
     audit_errors = audit.get("errors", [])
     audit_warnings = audit.get("warnings", [])
     
-    # Check recorded errors/warnings (exact match)
-    check("errors", audit_errors, current_errors)
-    check("warnings", audit_warnings, current_warnings)
+    # Check recorded errors/warnings using normalized multisets (tolerates wording changes)
+    expected_errors = normalized_multiset(audit_errors)
+    actual_errors = normalized_multiset(current_errors)
+    if expected_errors != actual_errors:
+        mismatch["errors"] = {"expected": dict(expected_errors), "actual": dict(actual_errors)}
+    
+    expected_warnings = normalized_multiset(audit_warnings)
+    actual_warnings = normalized_multiset(current_warnings)
+    if expected_warnings != actual_warnings:
+        mismatch["warnings"] = {"expected": dict(expected_warnings), "actual": dict(actual_warnings)}
+    
     current_pipeline_ok = current_validate_step and current_verify_step
     check("pipeline_ok", audit_pipeline_ok, current_pipeline_ok)
+
     
     # Determine if replay matches
     replay_matches = len(mismatch) == 0

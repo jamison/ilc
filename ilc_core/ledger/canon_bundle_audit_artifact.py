@@ -5,11 +5,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-def file_sha256(path: Path) -> Optional[str]:
-    """Compute SHA-256 hexdigest of a file's bytes, or None if file doesn't exist."""
-    if not path.exists():
-        return None
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+from ilc_core.ledger.canon_bundle_utils import file_sha256
+
+
 
 def create_audit_artifact(
     bundle_path: Path,

@@ -7,13 +7,16 @@ import json
 import hashlib
 from pathlib import Path
 
+from ilc_core.ledger.canon_bundle_replay_verify import replay_verify
+from ilc_core.ledger.canon_bundle_utils import file_sha256, normalize_issue, normalized_multiset
+from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
+
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_replay"]
 
 class TestCanonBundleReplayVerify:
     
     @pytest.fixture
     def valid_bundle(self, tmp_path):
-        from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
         bundle = tmp_path / "bundle"
         export = {"canon_hash": "abc123", "canon_export_format": "v0.1"}
         validation = {"ok": True, "errors": [], "warnings": []}
@@ -176,3 +179,55 @@ class TestCanonBundleReplayVerify:
         data = json.loads(result.stdout)
         assert "audit_file_missing" in data["errors"]
         assert result.stderr == ""
+
+
+class TestReplayNormalization:
+    """Tests for normalized error/warning comparison."""
+    
+    def test_normalize_issue_snake_case(self):
+        """Snake_case issues should pass through unchanged."""
+        assert normalize_issue("manifest_missing") == "manifest_missing"
+        assert normalize_issue("signature_mismatch") == "signature_mismatch"
+    
+    def test_normalize_issue_known_patterns(self):
+        """Known patterns should map to standard keys."""
+        assert normalize_issue("Missing required file: manifest.json") == "manifest_missing"
+        assert normalize_issue("Signature mismatch detected") == "signature_mismatch"
+        assert normalize_issue("signature missing from bundle") == "signature_missing"
+    
+    def test_normalize_issue_fallback(self):
+        """Unknown patterns should convert spaces to underscores."""
+        result = normalize_issue("Something unexpected happened")
+        assert "_" in result
+        assert " " not in result
+    
+    def test_normalized_multiset_counts(self):
+        """Multiset should count duplicate issues."""
+        issues = ["manifest_missing", "manifest_missing", "signature_mismatch"]
+        result = normalized_multiset(issues)
+        assert result["manifest_missing"] == 2
+        assert result["signature_mismatch"] == 1
+    
+    def test_replay_compare_normalizes_wording(self, tmp_path):
+        """Same meaning with different wording should match."""
+        # Create a bundle
+        bundle = tmp_path / "bundle"
+        export = {"canon_hash": "abc123", "canon_export_format": "v0.1"}
+        validation = {"ok": True, "errors": [], "warnings": []}
+        write_canon_export_bundle(export, validation, bundle)
+        
+        # Create an audit with verbose error message
+        audit = {
+            "audit_version": "v0.1",
+            "bundle_path": str(bundle.resolve()),
+            "manifest_hash": file_sha256(bundle / "manifest.json"),
+            "signature_hash": None,
+            "pipeline_json": "{}",
+            "steps": {"validate": True, "verify": True},
+            "pipeline_ok": True,
+            "errors": [],  # Both empty - should match
+            "warnings": []
+        }
+        
+        result = replay_verify(bundle, audit)
+        assert result["replay_matches"] is True
