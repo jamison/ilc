@@ -387,3 +387,198 @@ def verify_registry_file_signature(
         "registry_hash": computed_hash,
         "key_id": sig_data.get("key_id"),
     }
+
+
+def _atomic_write(path: Path, data: str) -> None:
+    """Write data to path atomically using temp file + rename."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(data, encoding="utf-8")
+    tmp.replace(path)
+
+
+def _now_iso8601() -> str:
+    """Return current UTC time as strict ISO-8601 string."""
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def rotate_registry(
+    registry_path: Path,
+    new_key_id: str,
+    force: bool = False
+) -> dict:
+    """
+    Rotate registry: move current→previous→deprecated, insert new key.
+    
+    Args:
+        registry_path: Path to registry JSON file.
+        new_key_id: New key ID to become sole current key.
+        force: If True, override validation failures.
+    
+    Returns:
+        Dict with {ok, old_current_keys, new_current_key, updated_at, warnings}.
+    """
+    warnings = []
+    
+    # Validate new_key_id format
+    if not re.match(KEY_ID_PATTERN, new_key_id):
+        return {"ok": False, "error": "invalid_new_key_id"}
+    
+    # Check file exists
+    if not registry_path.exists():
+        return {"ok": False, "error": "file_not_found"}
+    
+    # Load and validate current registry
+    try:
+        content = registry_path.read_text(encoding="utf-8")
+        data = json.loads(content)
+    except (json.JSONDecodeError, OSError):
+        return {"ok": False, "error": "file_read_error"}
+    
+    # Validate before rotation unless force
+    if not force:
+        validation = validate_registry_file(registry_path)
+        if not validation["ok"]:
+            return {"ok": False, "error": "validation_failed", "validation_errors": validation["errors"]}
+    
+    # Check if new key already exists
+    all_keys = (
+        set(data.get("current_keys", [])) |
+        set(data.get("previous_keys", [])) |
+        set(data.get("deprecated_keys", []))
+    )
+    if new_key_id in all_keys:
+        return {"ok": False, "error": "key_already_exists"}
+    
+    # Perform rotation
+    old_current = sorted(set(data.get("current_keys", [])))
+    old_previous = sorted(set(data.get("previous_keys", [])))
+    old_deprecated = sorted(set(data.get("deprecated_keys", [])))
+    
+    new_data = {
+        **data,
+        "current_keys": [new_key_id],
+        "previous_keys": old_current,
+        "deprecated_keys": sorted(set(old_deprecated) | set(old_previous)),
+        "updated_at": _now_iso8601(),
+    }
+    
+    # Invalidate existing .sig file
+    sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
+    if sig_path.exists():
+        try:
+            sig_path.unlink()
+            warnings.append("signature_invalidated")
+        except OSError:
+            warnings.append("signature_invalidation_failed")
+    
+    # Atomic write
+    try:
+        _atomic_write(registry_path, json.dumps(new_data, indent=2))
+    except OSError as e:
+        return {"ok": False, "error": f"write_failed:{e}"}
+    
+    return {
+        "ok": True,
+        "old_current_keys": old_current,
+        "new_current_key": new_key_id,
+        "updated_at": new_data["updated_at"],
+        "warnings": warnings,
+    }
+
+
+def backup_registry(registry_path: Path, backup_dir: Path) -> dict:
+    """
+    Create timestamped backup of registry file.
+    
+    Args:
+        registry_path: Path to registry JSON file.
+        backup_dir: Directory for backup files.
+    
+    Returns:
+        Dict with {ok, backup_path}.
+    """
+    from datetime import datetime, timezone
+    
+    if not registry_path.exists():
+        return {"ok": False, "error": "file_not_found"}
+    
+    # Create backup directory if needed
+    try:
+        backup_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as e:
+        return {"ok": False, "error": f"backup_dir_create_failed:{e}"}
+    
+    # Generate backup filename
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    backup_name = f"{registry_path.name}.{stamp}.bak"
+    backup_path = backup_dir / backup_name
+    
+    # Copy file
+    try:
+        content = registry_path.read_text(encoding="utf-8")
+        backup_path.write_text(content, encoding="utf-8")
+    except OSError as e:
+        return {"ok": False, "error": f"backup_failed:{e}"}
+    
+    return {"ok": True, "backup_path": str(backup_path)}
+
+
+def restore_registry(
+    backup_path: Path,
+    registry_path: Path,
+    force: bool = False,
+    prod: bool = False
+) -> dict:
+    """
+    Restore registry from backup.
+    
+    Args:
+        backup_path: Path to backup file.
+        registry_path: Path to registry file to restore to.
+    
+    Returns:
+        Dict with {ok, restored_from}.
+    """
+    if not backup_path.exists():
+        return {"ok": False, "error": "backup_not_found"}
+    
+    # Read and validate backup
+    try:
+        content = backup_path.read_text(encoding="utf-8")
+        data = json.loads(content)
+    except (json.JSONDecodeError, OSError):
+        return {"ok": False, "error": "backup_invalid"}
+    
+    # Validate backup content is valid registry format
+    # Write to temp file and validate
+    tmp_path = registry_path.with_suffix(registry_path.suffix + ".restore_tmp")
+    try:
+        tmp_path.write_text(content, encoding="utf-8")
+        validation = validate_registry_file(tmp_path, prod=prod)
+        if not validation["ok"] and not force:
+            tmp_path.unlink()
+            return {"ok": False, "error": "backup_validation_failed", "validation_errors": validation["errors"]}
+    finally:
+        if tmp_path.exists():
+            tmp_path.unlink()
+    
+    # Atomic restore
+    try:
+        _atomic_write(registry_path, content)
+    except OSError as e:
+        return {"ok": False, "error": f"restore_failed:{e}"}
+    
+    # Invalidate existing .sig file
+    sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
+    if sig_path.exists():
+        try:
+            sig_path.unlink()
+        except OSError:
+            pass
+    
+    return {
+        "ok": True,
+        "restored_from": str(backup_path),
+        "warnings": ["validation_bypassed"] if (force and not validation["ok"]) else [],
+    }

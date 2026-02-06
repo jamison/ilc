@@ -1,13 +1,13 @@
 """
-CLI for validating and signing canon bundle key registry files.
+CLI for validating, signing, and managing canon bundle key registry files.
 
 Usage:
     python3 -m ilc_core.cli.canon_bundle_key_registry --registry /path/registry.json
     python3 -m ilc_core.cli.canon_bundle_key_registry --registry /path/registry.json --strict
     python3 -m ilc_core.cli.canon_bundle_key_registry --registry /path/registry.json --sign --key-file key.txt
-    python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --sig registry.sig --key-file key.txt
-    python3 -m ilc_core.cli.canon_bundle_key_registry --registry-dir ./config --key-file key.txt
-    python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --prod --key-file key.txt
+    python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --rotate --new-key-id a1b2c3d4e5f6a7b8
+    python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --backup-dir ./backups
+    python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --restore ./backups/registry.bak
 """
 
 import argparse
@@ -21,6 +21,9 @@ from ilc_core.ledger.canon_bundle_key_registry import (
     validate_registry_file,
     sign_registry_file,
     verify_registry_file_signature,
+    rotate_registry,
+    backup_registry,
+    restore_registry,
 )
 
 
@@ -41,7 +44,7 @@ def _load_key_bytes(key_path: Path) -> bytes:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate and sign canon bundle key registry files"
+        description="Validate, sign, and manage canon bundle key registry files"
     )
     registry_group = parser.add_mutually_exclusive_group(required=True)
     registry_group.add_argument(
@@ -84,6 +87,32 @@ def main() -> int:
         action="store_true",
         help="Production mode: require signature, disallow empty registry"
     )
+    # Ops commands
+    parser.add_argument(
+        "--rotate",
+        action="store_true",
+        help="Rotate keys: add new current, move old keys"
+    )
+    parser.add_argument(
+        "--new-key-id",
+        type=str,
+        help="New key ID for rotation (required with --rotate)"
+    )
+    parser.add_argument(
+        "--backup-dir",
+        type=str,
+        help="Create a timestamped backup in this directory"
+    )
+    parser.add_argument(
+        "--restore",
+        type=str,
+        help="Restore registry from backup file"
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force operation (override validation failures or prod restrictions)"
+    )
     
     args = parser.parse_args()
     
@@ -100,7 +129,25 @@ def main() -> int:
         registry_path = Path(args.registry).resolve()
         default_sig_path = None
     
-    # Handle IO errors
+    # Restore mode (check first since registry may not exist yet)
+    if args.restore:
+        backup_path = Path(args.restore).resolve()
+        result = restore_registry(backup_path, registry_path, force=args.force, prod=prod)
+        
+        output = {
+            "ok": result.get("ok", False),
+            "errors": [result.get("error")] if result.get("error") else [],
+            "warnings": result.get("warnings", []),
+            "registry_path": str(registry_path),
+            "restored_from": result.get("restored_from"),
+            "prod": prod,
+        }
+        if result.get("validation_errors"):
+            output["validation_errors"] = result["validation_errors"]
+        print(json.dumps(output, separators=(",", ":")))
+        return 0 if result.get("ok") else (2 if "not_found" in result.get("error", "") else 1)
+    
+    # Handle IO errors for other operations
     if not registry_path.exists():
         output = {
             "ok": False,
@@ -111,6 +158,65 @@ def main() -> int:
         }
         print(json.dumps(output, separators=(",", ":")))
         return 2
+    
+    # Backup mode
+    if args.backup_dir:
+        backup_dir = Path(args.backup_dir).resolve()
+        result = backup_registry(registry_path, backup_dir)
+        
+        output = {
+            "ok": result.get("ok", False),
+            "errors": [result.get("error")] if result.get("error") else [],
+            "warnings": [],
+            "registry_path": str(registry_path),
+            "backup_path": result.get("backup_path"),
+            "prod": prod,
+        }
+        print(json.dumps(output, separators=(",", ":")))
+        return 0 if result.get("ok") else 2
+    
+    # Rotation mode
+    if args.rotate:
+        if not args.new_key_id:
+            output = {
+                "ok": False,
+                "errors": ["new_key_id_required"],
+                "warnings": [],
+                "registry_path": str(registry_path),
+                "prod": prod,
+            }
+            print(json.dumps(output, separators=(",", ":")))
+            return 1
+        
+        # In prod mode, rotation requires --force
+        if prod and not args.force:
+            output = {
+                "ok": False,
+                "errors": ["prod_rotation_requires_force"],
+                "warnings": [],
+                "registry_path": str(registry_path),
+                "prod": prod,
+            }
+            print(json.dumps(output, separators=(",", ":")))
+            return 1
+        
+        result = rotate_registry(registry_path, args.new_key_id, force=args.force)
+        
+        output = {
+            "ok": result.get("ok", False),
+            "errors": [result.get("error")] if result.get("error") else [],
+            "warnings": result.get("warnings", []),
+            "registry_path": str(registry_path),
+            "rotation": True,
+            "old_current_keys": result.get("old_current_keys"),
+            "new_current_key": result.get("new_current_key"),
+            "updated_at": result.get("updated_at"),
+            "prod": prod,
+        }
+        if result.get("validation_errors"):
+            output["validation_errors"] = result["validation_errors"]
+        print(json.dumps(output, separators=(",", ":")))
+        return 0 if result.get("ok") else 1
     
     # Production mode requires signature verification
     if prod and not args.key_file and not args.sign:
