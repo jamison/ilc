@@ -7,7 +7,7 @@ from ilc_core.ledger.canon_export_bundle_validate import validate_canon_export_b
 
 REQUIRED_AUDIT_KEYS = {
     "audit_version", "bundle_path", "manifest_hash", "pipeline_json",
-    "steps", "errors", "warnings"
+    "steps", "errors", "warnings", "pipeline_ok"
 }
 
 SUPPORTED_AUDIT_VERSIONS = {"v0.1"}
@@ -93,21 +93,29 @@ def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
     if manifest_path.exists():
         validation_result = validate_canon_export_bundle(bundle_path)
         current_validate_step = validation_result.get("ok", False)
+        current_errors = validation_result.get("errors", [])
+        current_warnings = validation_result.get("warnings", [])
     else:
         current_validate_step = False
+        current_errors = []
+        current_warnings = []
     
-    # Compare steps (validate only, since we don't sign during replay)
+    # Compare steps (validate + verify)
     audit_steps = audit.get("steps", {})
     check("steps.validate", audit_steps.get("validate"), current_validate_step)
+    current_verify_step = audit_sig_hash is None or current_sig_hash == audit_sig_hash
+    check("steps.verify", audit_steps.get("verify"), current_verify_step)
     
-    # Compare pipeline_ok based on recorded values
+    # Compare pipeline_ok based on current replay state
     audit_pipeline_ok = audit.get("pipeline_ok", False)
     audit_errors = audit.get("errors", [])
     audit_warnings = audit.get("warnings", [])
     
     # Check recorded errors/warnings (exact match)
-    check("errors", audit_errors, audit_errors)  # Recorded vs recorded (we trust audit for errors)
-    check("warnings", audit_warnings, audit_warnings)  # Same
+    check("errors", audit_errors, current_errors)
+    check("warnings", audit_warnings, current_warnings)
+    current_pipeline_ok = current_validate_step and current_verify_step
+    check("pipeline_ok", audit_pipeline_ok, current_pipeline_ok)
     
     # Determine if replay matches
     replay_matches = len(mismatch) == 0

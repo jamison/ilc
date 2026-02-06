@@ -130,6 +130,7 @@ class TestCanonBundleReplayVerify:
             "manifest_hash": "abc",
             "pipeline_json": "{}",
             "steps": {},
+            "pipeline_ok": False,
             "errors": [],
             "warnings": []
         }
