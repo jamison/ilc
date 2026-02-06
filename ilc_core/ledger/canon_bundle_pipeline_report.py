@@ -66,6 +66,7 @@ def render_pipeline_report(
             f"- key_id: {key_metadata.get('key_id', 'N/A')}",
             f"- sig_alg: {key_metadata.get('sig_alg', 'N/A')}",
             f"- signed_at: {key_metadata.get('signed_at', 'N/A')}",
+            f"- key_status: {key_metadata.get('key_status', 'N/A')}",
         ])
     
     lines.extend([

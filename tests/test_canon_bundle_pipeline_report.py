@@ -4,11 +4,17 @@ import subprocess
 import sys
 import base64
 import json
+import os
 from pathlib import Path
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_pipeline"]
 
 class TestCanonBundlePipelineReport:
+
+    @pytest.fixture(autouse=True)
+    def _allow_empty_key_registry(self, monkeypatch):
+        """Allow empty key registry for pipeline CLI tests."""
+        monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
     
     @pytest.fixture
     def valid_bundle(self, tmp_path):

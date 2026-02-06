@@ -4,6 +4,7 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -24,6 +25,11 @@ def _rewrite_manifest_and_resign(bundle_dir: Path, key: bytes, mutate_fn) -> Non
     sig_path.write_bytes(base64.b64encode(sig) + b"\n")
 
 class TestCanonExportBundleVerifySig:
+
+    @pytest.fixture(autouse=True)
+    def _allow_empty_key_registry(self, monkeypatch):
+        """Allow empty key registry for signature tests."""
+        monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
     
     @pytest.fixture
     def test_key(self):

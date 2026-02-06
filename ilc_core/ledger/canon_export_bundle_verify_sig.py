@@ -6,6 +6,8 @@ from datetime import datetime
 from pathlib import Path
 
 from ilc_core.ledger.canon_bundle_utils import derive_key_id
+from ilc_core.ledger.canon_bundle_key_registry import get_registry
+
 
 def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     """
@@ -72,6 +74,12 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     except ValueError:
         return False
 
+    # Check key_id against registry - reject deprecated/unknown
+    registry = get_registry()
+    key_status = registry.status(key_id)
+    if key_status in ("deprecated", "unknown"):
+        return False
+
     # Read manifest bytes as-is for signing
     manifest_data = manifest_bytes
     
@@ -85,3 +93,4 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
         return False
         
     return hmac.compare_digest(actual, expected)
+

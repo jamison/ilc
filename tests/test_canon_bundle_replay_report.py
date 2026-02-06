@@ -8,6 +8,12 @@ from pathlib import Path
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_replay"]
 
+
+@pytest.fixture(autouse=True)
+def _allow_empty_key_registry(monkeypatch):
+    monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
+
+
 class TestCanonBundleReplayReport:
     
     @pytest.fixture

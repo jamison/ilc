@@ -10,6 +10,12 @@ from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_fro
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_pipeline"]
 
+
+@pytest.fixture(autouse=True)
+def _allow_empty_key_registry(monkeypatch):
+    monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
+
+
 class TestCanonBundlePipeline:
     
     @pytest.fixture

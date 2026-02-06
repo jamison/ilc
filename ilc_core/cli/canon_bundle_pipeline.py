@@ -24,27 +24,35 @@ def _resolve_report_paths(report_arg: Path) -> tuple[Path, Path]:
         audit_path = report_arg.with_name("bundle_pipeline_audit.json")
     return report_path, audit_path
 
+def _extract_key_metadata(bundle_path: Path) -> dict | None:
+    manifest_path = bundle_path / "manifest.json"
+    if not manifest_path.exists():
+        return None
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    if not (manifest.get("key_id") or manifest.get("sig_alg") or manifest.get("signed_at")):
+        return None
+    key_id = manifest.get("key_id")
+    key_status = None
+    if key_id:
+        from ilc_core.ledger.canon_bundle_key_registry import get_registry
+        registry = get_registry()
+        key_status = registry.status(key_id)
+    return {
+        "key_id": key_id,
+        "sig_alg": manifest.get("sig_alg"),
+        "signed_at": manifest.get("signed_at"),
+        "key_status": key_status,
+    }
+
 def _write_report(bundle_path: Path, report, report_path: Path, json_output: str) -> tuple[bool, str | None]:
     """Write report file and return (success, content)."""
     try:
         report_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Extract key metadata from manifest if available
-        key_metadata = None
-        manifest_path = bundle_path / "manifest.json"
-        if manifest_path.exists():
-            try:
-                import json as json_mod
-                manifest = json_mod.loads(manifest_path.read_text(encoding="utf-8"))
-                if manifest.get("key_id") or manifest.get("sig_alg") or manifest.get("signed_at"):
-                    key_metadata = {
-                        "key_id": manifest.get("key_id"),
-                        "sig_alg": manifest.get("sig_alg"),
-                        "signed_at": manifest.get("signed_at"),
-                    }
-            except Exception:
-                pass
-        
+
+        key_metadata = _extract_key_metadata(bundle_path)
         md_content = render_pipeline_report(
             str(bundle_path),
             report,

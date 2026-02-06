@@ -13,6 +13,12 @@ from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_replay"]
 
+
+@pytest.fixture(autouse=True)
+def _allow_empty_key_registry(monkeypatch):
+    monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
+
+
 class TestCanonBundleReplayVerify:
     
     @pytest.fixture

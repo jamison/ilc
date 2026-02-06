@@ -58,6 +58,13 @@ def create_audit_artifact(
         except (json.JSONDecodeError, OSError):
             pass
     
+    # Determine key_status from registry
+    key_status = None
+    if key_id:
+        from ilc_core.ledger.canon_bundle_key_registry import get_registry
+        registry = get_registry()
+        key_status = registry.status(key_id)
+    
     audit = {
         "audit_version": "v0.1",
         "bundle_path": str(bundle_path.resolve()),
@@ -77,6 +84,7 @@ def create_audit_artifact(
         "key_id": key_id,
         "sig_alg": sig_alg,
         "signed_at": signed_at,
+        "key_status": key_status,
     }
     
     return audit

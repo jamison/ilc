@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Set
 
+from ilc_core.ledger.canon_bundle_key_registry import get_registry
+
 REQUIRED_MANIFEST_KEYS = {
     "bundle_format", "created_at", "export_hash", "validate_hash",
     "canon_hash", "export_path", "validate_path", "hash_alg"
@@ -12,6 +14,20 @@ REQUIRED_MANIFEST_KEYS = {
 OPTIONAL_MANIFEST_KEYS = {
     "export_format", "key_id", "sig_alg", "signed_at",
 }
+
+
+def _append_key_status_issues(manifest: Dict[str, Any], errors: List[str], warnings: List[str]) -> None:
+    key_id = manifest.get("key_id")
+    if not key_id:
+        return
+    registry = get_registry()
+    key_status = registry.status(key_id)
+    if key_status == "deprecated":
+        errors.append("deprecated_key_id")
+    elif key_status == "unknown":
+        errors.append("unknown_key_id")
+    elif key_status == "previous":
+        warnings.append("previous_key_id")
 
 def _hash_file_content(path: Path) -> str:
     """Read bytes, strip one trailing newline if present, and return sha256 hex digest."""
@@ -135,6 +151,9 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
                 datetime.fromisoformat(signed_at.replace("Z", "+00:00"))
             except ValueError:
                 errors.append("invalid_signed_at")
+        
+        # 10. Key Registry Status Check
+        _append_key_status_issues(manifest, errors, warnings)
 
     return {
         "ok": len(errors) == 0,
