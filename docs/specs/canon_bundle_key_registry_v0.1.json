@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "canon_bundle_key_registry_v0.1.json",
+    "title": "Canon Bundle Key Registry",
+    "description": "Schema for ILC canon bundle signing key registry",
+    "type": "object",
+    "required": [
+        "registry_version",
+        "updated_at",
+        "current_keys",
+        "previous_keys",
+        "deprecated_keys"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "registry_version": {
+            "type": "string",
+            "enum": [
+                "v0.1"
+            ],
+            "description": "Registry format version"
+        },
+        "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO-8601 timestamp of last update"
+        },
+        "current_keys": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{16}$"
+            },
+            "description": "Active signing key IDs"
+        },
+        "previous_keys": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{16}$"
+            },
+            "description": "Previously active key IDs (still accepted)"
+        },
+        "deprecated_keys": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{16}$"
+            },
+            "description": "Deprecated key IDs (rejected)"
+        },
+        "notes": {
+            "type": "string",
+            "description": "Human-readable notes"
+        }
+    }
+}
