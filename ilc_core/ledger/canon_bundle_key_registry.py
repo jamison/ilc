@@ -228,3 +228,158 @@ def validate_registry_file(path: Path, strict: bool = False) -> dict:
         "errors": errors,
         "warnings": warnings
     }
+
+
+def canonical_registry_bytes(registry_path: Path) -> bytes:
+    """
+    Return canonical bytes of registry JSON for signing/verification.
+    
+    Canonical form: sorted keys, compact separators, no trailing newline.
+    """
+    data = json.loads(registry_path.read_text(encoding="utf-8"))
+    return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def _derive_key_id(key: bytes) -> str:
+    """Derive key_id from key bytes (first 16 hex chars of SHA-256)."""
+    import hashlib
+    return hashlib.sha256(key).hexdigest()[:16]
+
+
+def sign_registry_file(
+    registry_path: Path,
+    key: bytes,
+    sig_path: Optional[Path] = None
+) -> dict:
+    """
+    Sign a registry file and write detached signature.
+    
+    Args:
+        registry_path: Path to registry JSON file.
+        key: Signing key bytes.
+        sig_path: Optional signature file path. Defaults to registry_path + .sig.
+    
+    Returns:
+        Dict with {ok: bool, key_id: str, sig_alg: str, sig_path: str, registry_hash: str}.
+    """
+    import hashlib
+    import hmac
+    from datetime import datetime, timezone
+    
+    if sig_path is None:
+        sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
+    
+    try:
+        canonical = canonical_registry_bytes(registry_path)
+    except (json.JSONDecodeError, OSError) as e:
+        return {"ok": False, "error": f"failed_to_read_registry:{e}"}
+    
+    # Compute hash and signature
+    registry_hash = hashlib.sha256(canonical).hexdigest()
+    signature = hmac.new(key, canonical, hashlib.sha256).hexdigest()
+    key_id = _derive_key_id(key)
+    signed_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    
+    sig_data = {
+        "sig_alg": "hmac-sha256",
+        "key_id": key_id,
+        "signed_at": signed_at,
+        "registry_hash": registry_hash,
+        "signature_hex": signature,
+    }
+    
+    try:
+        sig_path.write_text(json.dumps(sig_data, indent=2), encoding="utf-8")
+    except OSError as e:
+        return {"ok": False, "error": f"failed_to_write_sig:{e}"}
+    
+    return {
+        "ok": True,
+        "key_id": key_id,
+        "sig_alg": "hmac-sha256",
+        "sig_path": str(sig_path),
+        "registry_hash": registry_hash,
+    }
+
+
+def verify_registry_file_signature(
+    registry_path: Path,
+    key: bytes,
+    sig_path: Optional[Path] = None
+) -> dict:
+    """
+    Verify a registry file signature.
+    
+    Args:
+        registry_path: Path to registry JSON file.
+        key: Signing key bytes.
+        sig_path: Optional signature file path. Defaults to registry_path + .sig.
+    
+    Returns:
+        Dict with {ok: bool, errors: list, warnings: list, registry_hash: str, key_id: str}.
+    """
+    import hashlib
+    import hmac
+    
+    if sig_path is None:
+        sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
+    
+    errors = []
+    warnings = []
+    
+    # Check sig file exists
+    if not sig_path.exists():
+        return {"ok": False, "errors": ["signature_missing"], "warnings": []}
+    
+    # Read signature file
+    try:
+        sig_data = json.loads(sig_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"ok": False, "errors": ["signature_invalid"], "warnings": []}
+    
+    # Validate signature file structure
+    required_fields = ["sig_alg", "key_id", "signed_at", "registry_hash", "signature_hex"]
+    for f in required_fields:
+        if f not in sig_data:
+            errors.append(f"signature_invalid:missing_{f}")
+    
+    if errors:
+        return {"ok": False, "errors": errors, "warnings": []}
+    
+    # Validate signed_at format
+    signed_at = sig_data.get("signed_at", "")
+    if not _is_strict_iso8601_tz(signed_at):
+        errors.append("signature_invalid:invalid_signed_at")
+    
+    # Validate sig_alg
+    if sig_data.get("sig_alg") != "hmac-sha256":
+        errors.append("signature_invalid:unsupported_sig_alg")
+    
+    # Read registry and compute canonical form
+    try:
+        canonical = canonical_registry_bytes(registry_path)
+    except (json.JSONDecodeError, OSError):
+        return {"ok": False, "errors": ["file_read_error"], "warnings": []}
+    
+    # Verify hash
+    computed_hash = hashlib.sha256(canonical).hexdigest()
+    if computed_hash != sig_data.get("registry_hash"):
+        errors.append("signature_mismatch:hash_mismatch")
+    
+    # Verify HMAC signature
+    expected_sig = hmac.new(key, canonical, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected_sig, sig_data.get("signature_hex", "")):
+        errors.append("signature_mismatch")
+    
+    # Check key_id matches
+    computed_key_id = _derive_key_id(key)
+    if computed_key_id != sig_data.get("key_id"):
+        errors.append("signature_key_unknown")
+    
+    return {
+        "ok": len(errors) == 0,
+        "errors": errors,
+        "warnings": warnings,
+        "registry_hash": computed_hash,
+        "key_id": sig_data.get("key_id"),
+    }
