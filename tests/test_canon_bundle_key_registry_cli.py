@@ -121,3 +121,97 @@ class TestCanonBundleKeyRegistryCli:
         assert output["key_counts"]["current"] == 1
         assert output["key_counts"]["previous"] == 1
         assert output["key_counts"]["deprecated"] == 1
+
+    def test_sign_creates_sig_file(self, tmp_path):
+        """CLI sign mode creates .sig file."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key_path = tmp_path / "key.txt"
+        key_path.write_bytes(b"test-signing-key")
+        
+        result = self._run_cli(["--registry", str(path), "--sign", "--key-file", str(key_path)])
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["ok"] is True
+        assert "sig_path" in output
+        assert Path(output["sig_path"]).exists()
+    
+    def test_sign_and_verify(self, tmp_path):
+        """CLI sign then verify succeeds."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key_path = tmp_path / "key.txt"
+        key_path.write_bytes(b"test-signing-key")
+        
+        # Sign
+        sign_result = self._run_cli(["--registry", str(path), "--sign", "--key-file", str(key_path)])
+        assert sign_result.returncode == 0
+        
+        # Verify
+        verify_result = self._run_cli(["--registry", str(path), "--key-file", str(key_path)])
+        assert verify_result.returncode == 0
+        output = json.loads(verify_result.stdout)
+        assert output["signature_ok"] is True
+    
+    def test_sig_without_key_file_fails(self, tmp_path):
+        """--sig without --key-file returns key_missing_for_verify."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        sig_path = tmp_path / "registry.sig"
+        sig_path.write_text("{}")
+        
+        result = self._run_cli(["--registry", str(path), "--sig", str(sig_path)])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert "key_missing_for_verify" in output["errors"]
+    
+    def test_registry_dir_resolution(self, tmp_path):
+        """--registry-dir resolves canon_key_registry_v0.1.json."""
+        registry_path = tmp_path / "canon_key_registry_v0.1.json"
+        registry_path.write_text(json.dumps({
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        }))
+        
+        result = self._run_cli(["--registry-dir", str(tmp_path)])
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["ok"] is True
+    
+    def test_base64_key_loading(self, tmp_path):
+        """CLI loads base64-encoded key file."""
+        import base64
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        # Create base64-encoded key
+        raw_key = b"this-is-a-test-key-32-bytes-long"
+        key_path = tmp_path / "key.txt"
+        key_path.write_bytes(base64.b64encode(raw_key))
+        
+        result = self._run_cli(["--registry", str(path), "--sign", "--key-file", str(key_path)])
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["ok"] is True
