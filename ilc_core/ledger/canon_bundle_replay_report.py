@@ -43,7 +43,7 @@ def render_replay_report(
     """
     ts = created_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     
-    pipeline_ok = replay_json.get("ok", False)
+    pipeline_ok = replay_json.get("pipeline_ok", replay_json.get("ok", False))
     replay_matches = replay_json.get("replay_matches", False)
     mismatch_count = len(mismatches)
     warning_count = len(warnings)
@@ -122,7 +122,7 @@ def render_replay_report(
     # Known Limitations
     lines.append("## Known Limitations")
     lines.append("- Replay does not re-sign the bundle; signature verification is hash-based only.")
-    lines.append("- Audit path mismatch yields a warning but does not cause failure.")
+    lines.append("- Bundle path mismatch yields a warning but does not cause failure.")
     lines.append("- Report does not include raw keys or signature contents for security.")
     lines.append("")
     

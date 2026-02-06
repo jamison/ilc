@@ -7,7 +7,7 @@ from pathlib import Path
 from ilc_core.ledger.canon_bundle_replay_verify import replay_verify
 from ilc_core.ledger.canon_bundle_replay_report import render_replay_report
 
-def _write_report(bundle_path: Path, audit_path: Path, result: dict, report_arg: str, json_output: str) -> list:
+def _write_report(bundle_path: Path, audit_path: Path, result: dict, report_arg: str) -> list:
     """Write replay report if --report is set. Returns list of warnings."""
     warnings = []
     try:
@@ -50,12 +50,12 @@ def main() -> int:
             "replay_matches": False,
             "mismatch": {}
         }
-        json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
-        print(json_output)
         if args.report:
-            extra_warnings = _write_report(bundle_path, audit_path, result, args.report, json_output)
+            extra_warnings = _write_report(bundle_path, audit_path, result, args.report)
             if extra_warnings:
                 result["warnings"].extend(extra_warnings)
+        json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
+        print(json_output)
         return 1
     
     try:
@@ -68,24 +68,25 @@ def main() -> int:
             "replay_matches": False,
             "mismatch": {}
         }
-        json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
-        print(json_output)
         if args.report:
-            extra_warnings = _write_report(bundle_path, audit_path, result, args.report, json_output)
+            extra_warnings = _write_report(bundle_path, audit_path, result, args.report)
             if extra_warnings:
                 result["warnings"].extend(extra_warnings)
+        json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
+        print(json_output)
         return 1
     
     # Run replay verification
     result = replay_verify(bundle_path, audit)
     
-    json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
-    print(json_output)
-    
     # Write report if requested
     if args.report:
-        extra_warnings = _write_report(bundle_path, audit_path, result, args.report, json_output)
-        # Note: warnings after JSON output don't affect the printed output
+        extra_warnings = _write_report(bundle_path, audit_path, result, args.report)
+        if extra_warnings:
+            result["warnings"].extend(extra_warnings)
+    
+    json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
+    print(json_output)
     
     return 0 if result.get("replay_matches", False) else 1
 

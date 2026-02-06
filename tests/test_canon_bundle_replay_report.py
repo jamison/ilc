@@ -175,3 +175,19 @@ class TestCanonBundleReplayReport:
         limitations_section = content.split("## Known Limitations")[1]
         bullet_count = limitations_section.count("- ")
         assert bullet_count >= 2
+
+    def test_report_write_failed_warning_in_stdout(self, signed_bundle_with_audit, tmp_path):
+        bundle, audit_path = signed_bundle_with_audit
+        no_write_dir = tmp_path / "no_write"
+        no_write_dir.mkdir()
+        no_write_dir.chmod(0o500)
+        report_path = no_write_dir / "replay_report.md"
+        try:
+            result = self.run_cli([
+                "--bundle", str(bundle),
+                "--audit", str(audit_path),
+                "--report", str(report_path)
+            ])
+        finally:
+            no_write_dir.chmod(0o700)
+        assert "report_write_failed" in result.stdout
