@@ -367,6 +367,88 @@ class TestOpsCli:
         output = json.loads(result.stdout)
         assert output["ok"] is True
     
+    def test_cli_restore_prod_requires_force(self, tmp_path):
+        """Prod restore fails on empty current_keys unless --force."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        
+        backup_path = tmp_path / "backup.json"
+        backup_path.write_text(json.dumps({
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": [],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        }))
+        
+        result = self._run_cli([
+            "--registry", str(path),
+            "--restore", str(backup_path),
+            "--prod",
+        ])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert output["ok"] is False
+        assert (
+            "backup_validation_failed" in output["errors"] or
+            "prod_empty_registry" in output["errors"]
+        )
+        
+        result = self._run_cli([
+            "--registry", str(path),
+            "--restore", str(backup_path),
+            "--prod",
+            "--force",
+        ])
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["ok"] is True
+        if "warnings" in output:
+            assert "validation_bypassed" in output["warnings"]
+    
+    def test_cli_restore_prod_validation_error(self, tmp_path):
+        """Prod restore rejects invalid backup."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        
+        backup_path = tmp_path / "backup_invalid.json"
+        backup_path.write_text(json.dumps({"invalid": "data"}))
+        
+        result = self._run_cli([
+            "--registry", str(path),
+            "--restore", str(backup_path),
+        ])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert output["ok"] is False
+        assert (
+            "backup_validation_failed" in output["errors"] or
+            "backup_invalid" in output["errors"]
+        )
+        
+        result = self._run_cli([
+            "--registry", str(path),
+            "--restore", str(backup_path),
+            "--prod",
+        ])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert output["ok"] is False
+        assert (
+            "backup_validation_failed" in output["errors"] or
+            "backup_invalid" in output["errors"]
+        )
+    
     def test_cli_prod_rotation_requires_force(self, tmp_path):
         """In prod mode, rotation requires --force."""
         path = self._write_registry(tmp_path, {
