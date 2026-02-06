@@ -116,13 +116,14 @@ def _is_strict_iso8601_tz(value: str) -> bool:
     return re.match(STRICT_ISO8601_TZ_PATTERN, value) is not None
 
 
-def validate_registry_file(path: Path, strict: bool = False) -> dict:
+def validate_registry_file(path: Path, strict: bool = False, prod: bool = False) -> dict:
     """
     Validate a key registry file.
     
     Args:
         path: Path to the registry JSON file.
         strict: If True, empty current_keys is an error instead of warning.
+        prod: If True, enforce production mode (empty current_keys is hard error).
     
     Returns:
         Dict with {ok: bool, errors: list, warnings: list}.
@@ -218,7 +219,9 @@ def validate_registry_file(path: Path, strict: bool = False) -> dict:
     
     # Check empty current_keys
     if not data.get("current_keys"):
-        if strict:
+        if prod:
+            errors.append("prod_empty_registry")
+        elif strict:
             errors.append("empty_current_keys")
         else:
             warnings.append("empty_current_keys")
@@ -228,6 +231,7 @@ def validate_registry_file(path: Path, strict: bool = False) -> dict:
         "errors": errors,
         "warnings": warnings
     }
+
 
 
 def canonical_registry_bytes(registry_path: Path) -> bytes:

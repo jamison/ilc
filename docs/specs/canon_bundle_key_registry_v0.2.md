@@ -58,3 +58,14 @@ No trailing newline is permitted.
 ## Notes
 
 This is a policy attestation (shared‑secret HMAC), not a public trust anchor. Future revisions may add asymmetric signatures or registry signing with public verification.
+
+## Production Mode Policy
+
+Production mode is enabled by `ILC_ENV=prod` or CLI `--prod`. In production:
+
+1. **Empty registry is not allowed** (`prod_empty_registry`).
+2. **Signature verification is required** (`prod_signature_required`).
+3. Detached signature file must exist and verify correctly.
+4. `--allow-empty` is ignored in production mode.
+
+Non‑prod behavior remains lenient (warnings allowed, signature optional).

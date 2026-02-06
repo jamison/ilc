@@ -215,3 +215,113 @@ class TestCanonBundleKeyRegistryCli:
         assert result.returncode == 0
         output = json.loads(result.stdout)
         assert output["ok"] is True
+    
+    def test_prod_empty_registry_fails(self, tmp_path):
+        """In prod mode, empty registry fails even with --allow-empty."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": [],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key_path = tmp_path / "key.txt"
+        key_path.write_bytes(b"test-key")
+        # Create dummy sig
+        sig_path = path.with_suffix(path.suffix + ".sig")
+        sig_path.write_text("{}")
+        
+        result = self._run_cli(["--registry", str(path), "--prod", "--key-file", str(key_path), "--allow-empty"])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert output["prod"] is True
+        assert "prod_empty_registry" in output["errors"]
+    
+    def test_prod_missing_sig_fails(self, tmp_path):
+        """In prod mode, missing signature fails."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key_path = tmp_path / "key.txt"
+        key_path.write_bytes(b"test-key")
+        
+        result = self._run_cli(["--registry", str(path), "--prod", "--key-file", str(key_path)])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert output["prod"] is True
+        assert "signature_missing" in output["errors"]
+    
+    def test_prod_signature_required(self, tmp_path):
+        """In prod mode without key-file, prod_signature_required error."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        
+        result = self._run_cli(["--registry", str(path), "--prod"])
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert output["prod"] is True
+        assert "prod_signature_required" in output["errors"]
+    
+    def test_prod_valid_registry_and_sig_passes(self, tmp_path):
+        """In prod mode, valid registry + signature passes."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key_path = tmp_path / "key.txt"
+        key_path.write_bytes(b"test-key")
+        
+        # Sign first
+        sign_result = self._run_cli(["--registry", str(path), "--sign", "--key-file", str(key_path)])
+        assert sign_result.returncode == 0
+        
+        # Verify in prod mode
+        result = self._run_cli(["--registry", str(path), "--prod", "--key-file", str(key_path)])
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["prod"] is True
+        assert output["signature_ok"] is True
+    
+    def test_output_contains_prod_field(self, tmp_path):
+        """Output JSON includes prod field."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        
+        result = self._run_cli(["--registry", str(path)])
+        output = json.loads(result.stdout)
+        assert "prod" in output
+        assert output["prod"] is False
+    
+    def test_non_prod_allows_missing_sig(self, tmp_path):
+        """Non-prod mode allows missing signature (no --key-file required)."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T21:30:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        
+        result = self._run_cli(["--registry", str(path)])
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["prod"] is False
+        assert output["ok"] is True
+

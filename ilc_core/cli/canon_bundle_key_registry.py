@@ -7,11 +7,13 @@ Usage:
     python3 -m ilc_core.cli.canon_bundle_key_registry --registry /path/registry.json --sign --key-file key.txt
     python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --sig registry.sig --key-file key.txt
     python3 -m ilc_core.cli.canon_bundle_key_registry --registry-dir ./config --key-file key.txt
+    python3 -m ilc_core.cli.canon_bundle_key_registry --registry registry.json --prod --key-file key.txt
 """
 
 import argparse
 import base64
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -77,8 +79,16 @@ def main() -> int:
         type=str,
         help="Path to key file (required for signing or signature verification)"
     )
+    parser.add_argument(
+        "--prod",
+        action="store_true",
+        help="Production mode: require signature, disallow empty registry"
+    )
     
     args = parser.parse_args()
+    
+    # Detect production mode: CLI flag overrides env
+    prod = args.prod or os.environ.get("ILC_ENV") == "prod"
     
     # Resolve registry path
     if args.registry_dir:
@@ -97,9 +107,22 @@ def main() -> int:
             "errors": ["file_not_found"],
             "warnings": [],
             "registry_path": str(registry_path),
+            "prod": prod,
         }
         print(json.dumps(output, separators=(",", ":")))
         return 2
+    
+    # Production mode requires signature verification
+    if prod and not args.key_file and not args.sign:
+        output = {
+            "ok": False,
+            "errors": ["prod_signature_required"],
+            "warnings": [],
+            "registry_path": str(registry_path),
+            "prod": prod,
+        }
+        print(json.dumps(output, separators=(",", ":")))
+        return 1
     
     # Check if --sig provided without --key-file (verification requires key)
     if args.sig and not args.key_file and not args.sign:
@@ -108,6 +131,7 @@ def main() -> int:
             "errors": ["key_missing_for_verify"],
             "warnings": [],
             "registry_path": str(registry_path),
+            "prod": prod,
         }
         print(json.dumps(output, separators=(",", ":")))
         return 1
@@ -120,6 +144,7 @@ def main() -> int:
                 "errors": ["key_missing_for_sign"],
                 "warnings": [],
                 "registry_path": str(registry_path),
+                "prod": prod,
             }
             print(json.dumps(output, separators=(",", ":")))
             return 1
@@ -131,6 +156,7 @@ def main() -> int:
                 "errors": ["key_file_not_found"],
                 "warnings": [],
                 "registry_path": str(registry_path),
+                "prod": prod,
             }
             print(json.dumps(output, separators=(",", ":")))
             return 2
@@ -149,15 +175,16 @@ def main() -> int:
             "key_id": result.get("key_id"),
             "sig_alg": result.get("sig_alg"),
             "registry_hash": result.get("registry_hash"),
+            "prod": prod,
         }
         print(json.dumps(output, separators=(",", ":")))
         return 0 if result.get("ok") else 1
     
-    # Determine strict mode
+    # Determine strict mode (prod implies strict, but --allow-empty is ignored in prod)
     strict = args.strict and not args.allow_empty
     
     # Validate registry structure first
-    result = validate_registry_file(registry_path, strict=strict)
+    result = validate_registry_file(registry_path, strict=strict, prod=prod)
 
     # IO error handling: treat as exit code 2
     if any(err in result["errors"] for err in ("file_not_found", "file_read_error")):
@@ -166,12 +193,13 @@ def main() -> int:
             "errors": result["errors"],
             "warnings": result["warnings"],
             "registry_path": str(registry_path),
+            "prod": prod,
         }
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    # If allow-empty, remove empty_current_keys from errors
-    if args.allow_empty and "empty_current_keys" in result["errors"]:
+    # If allow-empty (and not prod), remove empty_current_keys from errors
+    if args.allow_empty and not prod and "empty_current_keys" in result["errors"]:
         result["errors"].remove("empty_current_keys")
         if "empty_current_keys" not in result["warnings"]:
             result["warnings"].append("empty_current_keys")
@@ -223,6 +251,7 @@ def main() -> int:
         "registry_path": str(registry_path),
         "registry_version": registry_version,
         "key_counts": key_counts,
+        "prod": prod,
     }
     
     if signature_ok is not None:
