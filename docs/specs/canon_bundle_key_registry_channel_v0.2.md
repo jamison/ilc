@@ -46,11 +46,28 @@ A **channel file** tracks available registry sources and the currently active ch
 {
   "last_sync": {
     "channel": "main",
-    "source": "/var/ilc/registry/main.bundle",
+    "source": "https://mirror.example.com/main.bundle",
     "timestamp": "2026-02-07T12:00:00Z",
     "bundle_hash": "abc123...",
     "key_id": "a1b2c3d4e5f6a7b8",
     "ok": true,
+    "selected_source_reason": "first_success",
+    "source_attempts": [
+      {
+        "index": 0,
+        "source": "/var/ilc/registry/main.bundle",
+        "ok": false,
+        "errors": ["source_not_found"],
+        "attempt_duration_ms": 12
+      },
+      {
+        "index": 1,
+        "source": "https://mirror.example.com/main.bundle",
+        "ok": true,
+        "errors": [],
+        "attempt_duration_ms": 450
+      }
+    ],
     "warnings": [],
     "errors": []
   }

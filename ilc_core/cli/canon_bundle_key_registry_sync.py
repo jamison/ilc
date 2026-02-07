@@ -101,6 +101,17 @@ def main() -> int:
         help="Network timeout in seconds (default: 20)"
     )
     parser.add_argument(
+        "--no-failover",
+        action="store_true",
+        help="Disable failover to subsequent sources"
+    )
+    parser.add_argument(
+        "--max-sources",
+        type=int,
+        default=None,
+        help="Max number of sources to attempt"
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         dest="json_output",
@@ -130,6 +141,8 @@ def main() -> int:
         dry_run=args.dry_run,
         keep_temp=args.keep_temp,
         timeout=args.timeout,
+        failover=not args.no_failover,
+        max_sources=args.max_sources,
     )
     
     output = {
@@ -138,8 +151,12 @@ def main() -> int:
         "warnings": result.get("warnings", []),
     }
     
+    # Copy all relevant fields
     for field in ["channel", "source", "source_index", "channel_version",
-                  "bundle_hash", "key_id", "installed_path", "dry_run", "dest", "actions"]:
+                  "bundle_hash", "key_id", "installed_path", "dry_run", 
+                  "dest", "actions", "attempted_sources", "failed_sources",
+                  "successful_source_index", "last_sync",
+                  "sources_to_attempt", "failover_enabled"]:
         if field in result:
             output[field] = result[field]
     
@@ -148,16 +165,44 @@ def main() -> int:
     if result.get("ok"):
         return 0
     
-    # Determine exit code
-    io_errors = {
-        "file_not_found", "file_read_error", "source_not_found",
-        "source_download_failed", "archive_extract_failed",
-        "archive_format_unknown", "fetch_failed",
-        "dest_not_writable", "key_file_not_found",
+    # Determine exit code: validation/policy -> 1, IO/transport -> 2
+    validation_errors = {
+        "invalid_json",
+        "schema_violation",
+        "channel_not_found",
+        "sources_missing",
+        "source_index_out_of_range",
+        "max_sources_invalid",
+        "network_disabled",
+        "dest_exists",
+        "bundle_verify_failed",
     }
-    for err in result.get("errors", []):
-        if any(io_err in err for io_err in io_errors):
-            return 2
+    io_errors = {
+        "file_not_found",
+        "file_read_error",
+        "file_write_error",
+        "source_not_found",
+        "source_download_failed",
+        "archive_extract_failed",
+        "archive_format_unknown",
+        "fetch_failed",
+        "dest_not_writable",
+        "key_file_not_found",
+        "channel_update_failed",
+    }
+
+    errors = result.get("errors", [])
+    has_validation = any(
+        any(token in err for token in validation_errors) for err in errors
+    )
+    has_io = any(any(token in err for token in io_errors) for err in errors)
+
+    if has_validation:
+        return 1
+    if has_io:
+        return 2
+    if "sync_failed_all_sources" in errors:
+        return 2
     return 1
 
 
