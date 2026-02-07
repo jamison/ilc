@@ -60,6 +60,19 @@ semantics.
 In short: **bundles remain canonical artifacts; streams deliver chunked, signed
 deltas that rehydrate into a bundle**.
 
+This maps to the earlier “star map” intuition: broadcast is a **pointer**, not the
+payload. Agents can signal that *something exists* (like a star in the sky), but
+anyone who wants to know **what** it is must pull and verify the canonical bundle.
+That keeps discovery scalable while preserving local verification.
+
+Practically, this means:
+- **Pull-first** is the default (fetch/verify/settle).
+- **Broadcast** is metadata only (announcements, hints, indices).
+- **Bundles** are the final truth objects and the basis for settlement.
+
+**Source note:** See `Z_Past_Chats/2025_11_12_ILC - ILC latest main thread Oct25.txt`
+for the original “star map / pull discovery” discussion (Oct 8, 2025).
+
 ---
 
 ## Auditor Panels by Layer (Context)
