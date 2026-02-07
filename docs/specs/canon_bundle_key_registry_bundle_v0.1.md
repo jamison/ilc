@@ -4,6 +4,12 @@
 
 A **registry bundle** is a distribution artifact containing a signed key registry.
 
+This format defines the **canonical artifact** that nodes can verify deterministically.
+Transport mechanisms (streaming, subscription feeds, pub/sub) are intentionally
+out of scope for v0.1 so we can stabilize integrity rules first. In future phases,
+streams can deliver *the same canonical bundle content* as chunked, content-addressed
+deltas, but the bundle remains the final source of truth for settlement.
+
 ---
 
 ## Bundle Structure
@@ -39,6 +45,38 @@ canon_key_registry_bundle_v0.1/
 - Registry hash computed from canonical JSON (sorted keys, compact)
 - Signature hash provides integrity check on signature file
 - Path fields must be basenames only (no path traversal)
+
+---
+
+## Future Transport Layer (Context)
+
+The bundle is a **canonical snapshot**. A streaming or subscription layer is a
+transport mechanism, not the truth source. When we add streaming, the expectation
+is that streams will carry **content-addressed chunks** (Merkle-style or NDJSON
+deltas) that reconstruct a bundle on disk. Verification still happens against the
+bundle manifest + signature, so streaming can be added without changing settlement
+semantics.
+
+In short: **bundles remain canonical artifacts; streams deliver chunked, signed
+deltas that rehydrate into a bundle**.
+
+---
+
+## Auditor Panels by Layer (Context)
+
+We anticipate *multiple auditor panels* operating at different layers of the stack:
+
+- **Settlement / Canonical panel**: verifies bundle integrity (hashes, signatures,
+  schema, epoch linkage). This panel decides accept/reject for settlement.
+- **Transport / Streaming panel**: verifies delivery correctness (chunk completeness,
+  replay safety, path traversal, DOS anomalies). Produces reliability metrics and
+  triggers re-fetch but does not override canonical acceptance.
+- **Semantic / Agent panel**: evaluates epistemic quality, contradictions, and
+  relevance of the underlying claims/updates. Produces *quality weights* that can
+  influence rewards, but does not change the canonical bundle hash.
+
+This layered model keeps **truth, reliability, and meaning** separated while still
+allowing each to influence downstream incentives.
 
 ---
 
