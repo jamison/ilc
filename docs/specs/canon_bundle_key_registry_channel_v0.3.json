@@ -1,0 +1,22 @@
+{
+  "channel_version": "v0.3",
+  "updated_at": "2026-02-07T12:00:00Z",
+  "current_channel": "main",
+  "channels": ["experimental", "main", "test"],
+  "channel_order": ["experimental", "test", "main"],
+  "sources": {
+    "experimental": ["https://mirror.example.com/experimental.bundle"],
+    "main": ["https://mirror.example.com/main.bundle"],
+    "test": ["https://mirror.example.com/test.bundle"]
+  },
+  "last_sync": {
+    "channel": "main",
+    "source": "https://mirror.example.com/main.bundle",
+    "timestamp": "2026-02-07T12:00:00Z",
+    "bundle_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "key_id": "a1b2c3d4e5f6a7b8",
+    "ok": true,
+    "warnings": [],
+    "errors": []
+  }
+}

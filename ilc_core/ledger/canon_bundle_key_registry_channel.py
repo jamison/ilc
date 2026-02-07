@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import Optional
 
 
-CHANNEL_VERSION = "v0.2"
+CHANNEL_VERSION = "v0.3"
+CHANNEL_VERSION_V02 = "v0.2"
 CHANNEL_VERSION_V01 = "v0.1"
 CHANNEL_FILENAME = "canon_key_registry_channel.json"
 CHANNEL_PATTERN = re.compile(r"^[a-z0-9-]{1,32}$")
@@ -85,7 +86,7 @@ def validate_channel_file(path: Path) -> dict:
     version = data.get("channel_version")
     if "channel_version" not in data:
         errors.append("schema_violation:missing_channel_version")
-    elif version not in (CHANNEL_VERSION, CHANNEL_VERSION_V01):
+    elif version not in (CHANNEL_VERSION, CHANNEL_VERSION_V02, CHANNEL_VERSION_V01):
         errors.append("schema_violation:invalid_channel_version")
     elif version == CHANNEL_VERSION_V01:
         warnings.append("channel_version_v01_deprecated")
@@ -132,7 +133,7 @@ def validate_channel_file(path: Path) -> dict:
 
     # Validate sources (v0.2 only)
     sources = data.get("sources")
-    if version == CHANNEL_VERSION:
+    if version in (CHANNEL_VERSION, CHANNEL_VERSION_V02):
         if sources is not None:
             if not isinstance(sources, dict):
                 errors.append("schema_violation:sources_not_object")
@@ -155,7 +156,7 @@ def validate_channel_file(path: Path) -> dict:
 
     # Validate last_sync (v0.2 only)
     last_sync = data.get("last_sync")
-    if version == CHANNEL_VERSION and last_sync is not None:
+    if version in (CHANNEL_VERSION, CHANNEL_VERSION_V02) and last_sync is not None:
         if not isinstance(last_sync, dict):
             errors.append("schema_violation:last_sync_not_object")
         else:

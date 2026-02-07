@@ -6,6 +6,7 @@ from pathlib import Path
 
 from ilc_core.ledger.canon_bundle_key_registry_bundle import build_registry_bundle
 from ilc_core.ledger.canon_bundle_key_registry_sync import sync_channel_registry
+from ilc_core.ledger.canon_bundle_key_registry_channel_signing import sign_channel_file
 
 
 class TestSyncChannelRegistry:
@@ -92,7 +93,7 @@ class TestSyncChannelRegistry:
         assert result["successful_source_index"] == 1
         
         last_sync = result["last_sync"]
-        assert last_sync["selected_source_reason"] == "first_success"
+        assert last_sync["selected_source_reason"] == "failover_success"
         assert len(last_sync["source_attempts"]) == 2
         assert last_sync["source_attempts"][0]["ok"] is False
         assert last_sync["source_attempts"][1]["ok"] is True
@@ -294,6 +295,95 @@ class TestSyncChannelRegistry:
         assert "max_sources_invalid" in data["last_sync"]["errors"]
 
 
+class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
+    """Tests for channel signature policy in sync."""
+    
+    def test_sync_missing_signature_warns_when_not_required(self, tmp_path):
+        """Missing signature emits warning but proceeds if not required."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        channel_key = b"channel-key"
+        
+        result = sync_channel_registry(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=channel_key, 
+            require_signed_channel=False
+        )
+        
+        assert result["ok"] is True
+        assert "channel_signature_missing_unenforced" in result["warnings"]
+
+    def test_sync_required_signed_channel_missing_sig_fails(self, tmp_path):
+        """Missing signature fails if required."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        channel_key = b"channel-key"
+        
+        result = sync_channel_registry(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=channel_key, 
+            require_signed_channel=True
+        )
+        
+        assert result["ok"] is False
+        assert "channel_signature_missing" in result["errors"]
+
+    def test_sync_invalid_signature_fails_even_when_not_required(self, tmp_path):
+        """Invalid signature fails even if not required."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        channel_key = b"channel-key"
+        
+        # Create invalid sig
+        sign_channel_file(channel_file, channel_key)
+        sig_path = channel_file.with_suffix(channel_file.suffix + ".sig")
+        sig_data = json.loads(sig_path.read_text())
+        sig_data["channel_hash"] = "invalid"
+        sig_path.write_text(json.dumps(sig_data))
+        
+        result = sync_channel_registry(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=channel_key, 
+            require_signed_channel=False
+        )
+        
+        assert result["ok"] is False
+        assert "channel_hash_mismatch" in result["errors"]
+
+    def test_sync_valid_signature_allows_fetch(self, tmp_path):
+        """Valid verify allows sync to proceed."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        channel_key = b"channel-key"
+        
+        sign_channel_file(channel_file, channel_key)
+        
+        result = sync_channel_registry(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=channel_key, 
+            require_signed_channel=True
+        )
+        
+        assert result["ok"] is True
+        assert not result["errors"]
+        # Should not have missing warnings
+        assert "channel_signature_missing_unenforced" not in result["warnings"]
+
+    def test_sync_fails_if_required_but_no_key_provided(self, tmp_path):
+        """Sync fails if required=True but no channel_key provided."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        
+        result = sync_channel_registry(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=None,
+            require_signed_channel=True
+        )
+        
+        assert result["ok"] is False
+        assert "channel_key_missing_for_required_signature" in result["errors"]
+
+
 class TestSyncCli:
     """Tests for sync CLI."""
     
@@ -331,13 +421,19 @@ class TestSyncCli:
         
         return bundle_dir, channel_file, key_file
     
-    def _run_cli(self, args):
+    def _run_cli(self, args, env=None):
         import subprocess
+        import os
+        environ = os.environ.copy()
+        if env:
+            environ.update(env)
+            
         return subprocess.run(
             ["python3", "-m", "ilc_core.cli.canon_bundle_key_registry_sync"] + args,
             capture_output=True,
             text=True,
-            cwd="/Users/jamstar/Documents/ILC_Main/01_Current"
+            cwd="/Users/jamstar/Documents/ILC_Main/01_Current",
+            env=environ
         )
     
     def test_cli_sync_succeeds(self, tmp_path):
@@ -476,3 +572,39 @@ class TestSyncCli:
         assert output["ok"] is True
         assert output["successful_source_index"] == 1
         assert output["last_sync"]["source_attempts"][0]["errors"] == ["network_disabled"]
+
+    def test_cli_require_signed_channel_env(self, tmp_path):
+        """CLI respects env var for requiring signature."""
+        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        
+        # Should fail with missing signature
+        result = self._run_cli([
+            "--channel-file", str(channel_file),
+            "--key-file", str(key_file),
+            "--dest", str(dest_dir),
+        ], env={"ILC_REQUIRE_SIGNED_CHANNEL": "1"})
+        
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert "channel_key_missing_for_required_signature" in output["errors"]
+
+    def test_cli_flag_overrides_env_require_signed_channel(self, tmp_path):
+        """CLI flag overrides env var."""
+        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        
+        # Env=1 but Flag=False -> Should succeed (with warnings if key provided or just succeed if no key provided and not required)
+        # Actually if I say --no-require-signed-channel, it sets require=False. 
+        # If no key is provided, it just skips verification.
+        
+        result = self._run_cli([
+            "--channel-file", str(channel_file),
+            "--key-file", str(key_file),
+            "--dest", str(dest_dir),
+            "--no-require-signed-channel"
+        ], env={"ILC_REQUIRE_SIGNED_CHANNEL": "1"})
+        
+        assert result.returncode == 0
+        output = json.loads(result.stdout)
+        assert output["ok"] is True

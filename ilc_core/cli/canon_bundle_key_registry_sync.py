@@ -9,6 +9,7 @@ Usage:
 import argparse
 import base64
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -25,6 +26,23 @@ def _load_key_bytes(key_path: Path) -> bytes:
     except Exception:
         pass
     return content
+
+
+def resolve_require_signed_channel(args) -> bool:
+    """Resolve signature requirement from CLI flags and environment."""
+    if args.require_signed_channel:
+        return True
+    if args.no_require_signed_channel:
+        return False
+    
+    env = os.environ.get("ILC_REQUIRE_SIGNED_CHANNEL")
+    if env is not None:
+        if env.lower() in ("1", "true", "yes"):
+            return True
+        if env.lower() in ("0", "false", "no"):
+            return False
+            
+    return False
 
 
 def main() -> int:
@@ -112,6 +130,28 @@ def main() -> int:
         help="Max number of sources to attempt"
     )
     parser.add_argument(
+        "--channel-key-file",
+        type=str,
+        default=None,
+        help="Path to channel signature verification key"
+    )
+    parser.add_argument(
+        "--channel-sig-file",
+        type=str,
+        default=None,
+        help="Path to detached channel signature"
+    )
+    parser.add_argument(
+        "--require-signed-channel",
+        action="store_true",
+        help="Enforce valid channel signature"
+    )
+    parser.add_argument(
+        "--no-require-signed-channel",
+        action="store_true",
+        help="Do not enforce channel signature (overrides env)"
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         dest="json_output",
@@ -120,18 +160,45 @@ def main() -> int:
     
     args = parser.parse_args()
     
-    # Load key
-    key_path = Path(args.key_file)
-    if not key_path.exists():
+    if args.require_signed_channel and args.no_require_signed_channel:
+        print(json.dumps({
+            "ok": False,
+            "errors": ["conflicting_arguments:require_signed_channel"],
+            "warnings": []
+        }, separators=(",", ":")))
+        return 1
+
+    # Load keys
+    registry_key_path = Path(args.key_file)
+    if not registry_key_path.exists():
         output = {"ok": False, "errors": ["key_file_not_found"], "warnings": []}
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    key = _load_key_bytes(key_path)
+    registry_key = _load_key_bytes(registry_key_path)
+    
+    channel_key = None
+    if args.channel_key_file:
+        c_key_path = Path(args.channel_key_file)
+        if not c_key_path.exists():
+            output = {"ok": False, "errors": ["channel_key_file_not_found"], "warnings": []}
+            print(json.dumps(output, separators=(",", ":")))
+            return 2
+        channel_key = _load_key_bytes(c_key_path)
+    
+    # Resolve policy
+    require_signed = resolve_require_signed_channel(args)
+    
+    # Resolve sig path from args or env
+    channel_sig_path = None
+    if args.channel_sig_file:
+        channel_sig_path = Path(args.channel_sig_file)
+    elif os.environ.get("ILC_CHANNEL_SIG_PATH"):
+        channel_sig_path = Path(os.environ["ILC_CHANNEL_SIG_PATH"])
     
     result = sync_channel_registry(
         channel_file=Path(args.channel_file).resolve(),
-        key=key,
+        key=registry_key,
         dest_dir=Path(args.dest).resolve(),
         channel=args.channel,
         source_index=args.source_index,
@@ -143,6 +210,9 @@ def main() -> int:
         timeout=args.timeout,
         failover=not args.no_failover,
         max_sources=args.max_sources,
+        channel_key=channel_key,
+        channel_sig_path=channel_sig_path,
+        require_signed_channel=require_signed,
     )
     
     output = {
@@ -176,11 +246,21 @@ def main() -> int:
         "network_disabled",
         "dest_exists",
         "bundle_verify_failed",
+        # Channel signing errors
+        "channel_signature_missing",
+        "channel_signature_invalid",
+        "channel_signature_mismatch",
+        "channel_signature_key_unknown",
+        "channel_signature_unsupported_sig_alg",
+        "channel_signature_invalid_signed_at",
+        "channel_signature_missing_field",
+        "channel_key_missing_for_required_signature",
     }
     io_errors = {
         "file_not_found",
         "file_read_error",
         "file_write_error",
+        "channel_read_error",
         "source_not_found",
         "source_download_failed",
         "archive_extract_failed",
@@ -188,7 +268,10 @@ def main() -> int:
         "fetch_failed",
         "dest_not_writable",
         "key_file_not_found",
+        "key_read_failed",
         "channel_update_failed",
+        "channel_key_file_not_found",
+        "channel_signature_read_error",
     }
 
     errors = result.get("errors", [])

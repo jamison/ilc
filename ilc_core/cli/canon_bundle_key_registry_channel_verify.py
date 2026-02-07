@@ -1,0 +1,101 @@
+"""
+CLI for verifying registry channel file signatures.
+
+Usage:
+    python3 -m ilc_core.cli.canon_bundle_key_registry_channel_verify \
+        --channel-file channel.json --key-file key.txt
+"""
+
+import argparse
+import base64
+import json
+import sys
+from pathlib import Path
+
+from ilc_core.ledger.canon_bundle_key_registry_channel_signing import verify_channel_file_signature
+
+
+def _load_key_bytes(key_path: Path) -> bytes:
+    """Load key bytes from file, decoding base64 if applicable."""
+    content = key_path.read_bytes().strip()
+    try:
+        decoded = base64.b64decode(content, validate=True)
+        if len(decoded) >= 16:
+            return decoded
+    except Exception:
+        pass
+    return content
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Verify registry channel file signature"
+    )
+    
+    parser.add_argument(
+        "--channel-file",
+        type=str,
+        required=True,
+        help="Path to channel file to verify"
+    )
+    parser.add_argument(
+        "--key-file",
+        type=str,
+        required=True,
+        help="Path to verification key file"
+    )
+    parser.add_argument(
+        "--sig-file",
+        type=str,
+        default=None,
+        help="Path to signature file (default: <channel>.sig)"
+    )
+    
+    args = parser.parse_args()
+    
+    # Load key
+    key_path = Path(args.key_file)
+    if not key_path.exists():
+        output = {"ok": False, "errors": ["key_file_not_found"], "warnings": []}
+        print(json.dumps(output, separators=(",", ":")))
+        return 2
+    
+    try:
+        key = _load_key_bytes(key_path)
+    except Exception as e:
+        output = {"ok": False, "errors": [f"key_read_failed:{e}"], "warnings": []}
+        print(json.dumps(output, separators=(",", ":")))
+        return 2
+    
+    channel_path = Path(args.channel_file)
+    sig_path = Path(args.sig_file) if args.sig_file else None
+    
+    result = verify_channel_file_signature(
+        channel_path=channel_path,
+        key=key,
+        sig_path=sig_path,
+    )
+    
+    print(json.dumps(result, separators=(",", ":")))
+    
+    if result.get("ok"):
+        return 0
+    
+    # IO vs Validation errors
+    io_errors = {
+        "channel_read_error", 
+        "channel_signature_read_error",
+        "channel_file_not_found"
+    }
+    # Note: missing sig is code 1 (validation/policy), not IO error usually.
+    # But if file read failed (permissions), it is IO.
+    
+    for err in result.get("errors", []):
+        if any(io_e in err for io_e in io_errors):
+            return 2
+            
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

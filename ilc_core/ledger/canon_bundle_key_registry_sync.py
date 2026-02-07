@@ -16,6 +16,9 @@ from ilc_core.ledger.canon_bundle_key_registry_channel import (
     load_channel_file,
     _atomic_write,
 )
+from ilc_core.ledger.canon_bundle_key_registry_channel_signing import (
+    verify_channel_file_signature,
+)
 from ilc_core.ledger.canon_bundle_key_registry_fetch import fetch_registry_bundle
 from ilc_core.ledger.canon_bundle_key_registry_bundle import BUNDLE_DIR_NAME
 
@@ -29,9 +32,16 @@ def _canonicalize_source(source: str) -> str:
     """Canonicalize source string for audit log."""
     parsed = urlparse(source)
     if parsed.scheme == "file":
-        return str(Path(parsed.path).resolve())
+        try:
+            return str(Path(parsed.path).resolve())
+        except OSError:
+            # If path doesn't exist, just return as is (will fail later)
+            return parsed.path
     if parsed.scheme == "":
-        return str(Path(source).resolve())
+        try:
+            return str(Path(source).resolve())
+        except OSError:
+            return source
     return source
 
 
@@ -85,13 +95,16 @@ def sync_channel_registry(
     timeout: int = 20,
     failover: bool = True,
     max_sources: Optional[int] = None,
+    channel_key: Optional[bytes] = None,
+    channel_sig_path: Optional[Path] = None,
+    require_signed_channel: bool = False,
 ) -> dict:
     """
     Sync a channel's registry bundle with deterministic failover.
     
     Args:
         channel_file: Path to channel file.
-        key: Verification key bytes.
+        key: Registry bundle verification key bytes.
         dest_dir: Destination directory for installed bundle.
         channel: Channel name (default: use current_channel).
         source_index: Start index in sources list (default: 0).
@@ -103,18 +116,74 @@ def sync_channel_registry(
         timeout: Network timeout in seconds.
         failover: If True, attempt subsequent sources on failure.
         max_sources: Max number of sources to attempt.
+        channel_key: Optional key to verify channel file signature.
+        channel_sig_path: Optional path to channel signature file.
+        require_signed_channel: If True, fail if channel signature invalid or missing.
     
     Returns:
         Dict with execution results and audit metadata.
     """
-    # Load channel file
+    warnings = []
+
+    # Load channel file first so policy failures can still be audited in last_sync
     load_result = load_channel_file(channel_file)
     if not load_result["ok"]:
-        return {"ok": False, "errors": [load_result["error"]], "warnings": []}
-    
+        return {"ok": False, "errors": [load_result["error"]], "warnings": warnings}
+
     channel_data = load_result["data"]
     channel_version = channel_data.get("channel_version", "v0.1")
-    
+
+    # Verify channel signature policy before source resolution/attempts
+    audit_channel = channel if channel is not None else channel_data.get("current_channel")
+    if channel_key:
+        verify_result = verify_channel_file_signature(
+            channel_file, channel_key, channel_sig_path
+        )
+
+        sig_missing = "channel_signature_missing" in verify_result.get("errors", [])
+
+        if not verify_result["ok"]:
+            if sig_missing and not require_signed_channel:
+                warnings.append("channel_signature_missing_unenforced")
+            else:
+                policy_warnings = warnings + verify_result.get("warnings", [])
+                _record_last_sync(
+                    channel_file=channel_file,
+                    channel_data=channel_data,
+                    channel=audit_channel,
+                    source=None,
+                    ok=False,
+                    errors=verify_result["errors"],
+                    warnings=policy_warnings,
+                    selected_source_reason="signature_policy_failed",
+                )
+                return {
+                    "ok": False,
+                    "errors": verify_result["errors"],
+                    "warnings": policy_warnings,
+                }
+        else:
+            # Valid signature
+            warnings.extend(verify_result.get("warnings", []))
+
+    elif require_signed_channel:
+        # Required but no key provided to verify with
+        _record_last_sync(
+            channel_file=channel_file,
+            channel_data=channel_data,
+            channel=audit_channel,
+            source=None,
+            ok=False,
+            errors=["channel_key_missing_for_required_signature"],
+            warnings=warnings,
+            selected_source_reason="signature_policy_failed",
+        )
+        return {
+            "ok": False,
+            "errors": ["channel_key_missing_for_required_signature"],
+            "warnings": warnings,
+        }
+
     # Resolve channel
     if channel is None:
         channel = channel_data.get("current_channel")
@@ -127,10 +196,10 @@ def sync_channel_registry(
             source=None,
             ok=False,
             errors=["channel_not_found"],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": ["channel_not_found"], "warnings": []}
+        return {"ok": False, "errors": ["channel_not_found"], "warnings": warnings}
     
     channels = channel_data.get("channels", [])
     if channel not in channels:
@@ -142,10 +211,10 @@ def sync_channel_registry(
             source=None,
             ok=False,
             errors=[err],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": [err], "warnings": []}
+        return {"ok": False, "errors": [err], "warnings": warnings}
     
     # Resolve sources
     sources_map = channel_data.get("sources")
@@ -157,10 +226,10 @@ def sync_channel_registry(
             source=None,
             ok=False,
             errors=["sources_missing"],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": ["sources_missing"], "warnings": []}
+        return {"ok": False, "errors": ["sources_missing"], "warnings": warnings}
     
     sources = sources_map.get(channel, [])
     if not sources:
@@ -172,10 +241,10 @@ def sync_channel_registry(
             source=None,
             ok=False,
             errors=[err],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": [err], "warnings": []}
+        return {"ok": False, "errors": [err], "warnings": warnings}
     
     # Validate indices
     if source_index < 0 or source_index >= len(sources):
@@ -186,10 +255,10 @@ def sync_channel_registry(
             source=None,
             ok=False,
             errors=["source_index_out_of_range"],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": ["source_index_out_of_range"], "warnings": []}
+        return {"ok": False, "errors": ["source_index_out_of_range"], "warnings": warnings}
     
     if max_sources is not None and max_sources < 1:
         _record_last_sync(
@@ -199,10 +268,10 @@ def sync_channel_registry(
             source=None,
             ok=False,
             errors=["max_sources_invalid"],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": ["max_sources_invalid"], "warnings": []}
+        return {"ok": False, "errors": ["max_sources_invalid"], "warnings": warnings}
     
     # Determine attempt window
     start = source_index
@@ -226,10 +295,10 @@ def sync_channel_registry(
             source=selected,
             ok=False,
             errors=["dest_exists"],
-            warnings=[],
+            warnings=warnings,
             selected_source_reason="window_exhausted" if failover else "no_failover",
         )
-        return {"ok": False, "errors": ["dest_exists"], "warnings": []}
+        return {"ok": False, "errors": ["dest_exists"], "warnings": warnings}
     
     if dry_run:
         return {
@@ -242,7 +311,7 @@ def sync_channel_registry(
             "failover_enabled": failover,
             "actions": ["fetch", "verify", "install", "update_last_sync"],
             "errors": [],
-            "warnings": [],
+            "warnings": warnings,
         }
     
     # Failover loop
@@ -291,7 +360,7 @@ def sync_channel_registry(
             if current_index == start:
                 selected_source_reason = "no_failover" if not failover else "first_success"
             else:
-                selected_source_reason = "first_success"
+                selected_source_reason = "failover_success"
             break
             
     # Determine overall status
@@ -306,7 +375,7 @@ def sync_channel_registry(
     
     # Aggregate errors/warnings for return
     final_errors = []
-    final_warnings = []
+    final_warnings = list(warnings)
     
     if not ok:
         final_errors.append("sync_failed_all_sources")
