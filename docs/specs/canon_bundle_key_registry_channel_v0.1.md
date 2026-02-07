@@ -1,5 +1,7 @@
 # Canon Bundle Key Registry Channel Format v0.1
 
+> **Note:** v0.2 supersedes this version. See `canon_bundle_key_registry_channel_v0.2.md`.
+
 ## Overview
 
 A **channel file** tracks available registry sources (e.g., main, test, experimental) and the currently active channel.

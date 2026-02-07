@@ -33,6 +33,56 @@ class TestValidateChannelFile:
         result = validate_channel_file(path)
         assert result["ok"] is True
         assert len(result["errors"]) == 0
+
+    def test_valid_v02_with_sources_passes(self, tmp_path):
+        """Valid v0.2 channel file with sources passes validation."""
+        path = self._write_channel(tmp_path, {
+            "channel_version": "v0.2",
+            "updated_at": "2026-02-07T10:00:00Z",
+            "current_channel": "main",
+            "channels": ["experimental", "main", "test"],
+            "sources": {
+                "experimental": ["file:///tmp/exp.bundle"],
+                "main": ["/var/ilc/main.bundle"],
+                "test": ["https://example.com/test.bundle"],
+            },
+        })
+
+        result = validate_channel_file(path)
+        assert result["ok"] is True
+        assert len(result["errors"]) == 0
+
+    def test_v02_sources_missing_channel_errors(self, tmp_path):
+        """v0.2 sources must include all channels."""
+        path = self._write_channel(tmp_path, {
+            "channel_version": "v0.2",
+            "updated_at": "2026-02-07T10:00:00Z",
+            "current_channel": "main",
+            "channels": ["main", "test"],
+            "sources": {
+                "main": ["/var/ilc/main.bundle"],
+            },
+        })
+
+        result = validate_channel_file(path)
+        assert result["ok"] is False
+        assert any(e.startswith("sources_missing:") for e in result["errors"])
+
+    def test_v01_sources_ignored_warns(self, tmp_path):
+        """v0.1 sources are ignored with warning."""
+        path = self._write_channel(tmp_path, {
+            "channel_version": "v0.1",
+            "updated_at": "2026-02-07T10:00:00Z",
+            "current_channel": "main",
+            "channels": ["main"],
+            "sources": {
+                "main": ["/var/ilc/main.bundle"],
+            },
+        })
+
+        result = validate_channel_file(path)
+        assert result["ok"] is True
+        assert "sources_ignored_v01" in result["warnings"]
     
     def test_invalid_channel_name_rejected(self, tmp_path):
         """Invalid channel name is rejected."""
