@@ -48,8 +48,10 @@ class TestSyncChannelRegistry:
         channel_file = tmp_path / "channel.json"
         
         channel_data = {
-            "channel_version": "v0.2",
+            "channel_version": "v0.4",
             "updated_at": "2026-02-07T10:00:00Z",
+            "published_at": "2026-02-07T10:00:00Z",
+            "channel_seq": 1,
             "current_channel": channel_name,
             "channels": ["experimental", "main", "test"],
             "sources": {
@@ -176,8 +178,10 @@ class TestSyncChannelRegistry:
         """Sync fails when sources mapping is missing."""
         channel_file = tmp_path / "channel.json"
         channel_file.write_text(json.dumps({
-            "channel_version": "v0.2",
+            "channel_version": "v0.4",
             "updated_at": "2026-02-07T10:00:00Z",
+            "published_at": "2026-02-07T10:00:00Z",
+            "channel_seq": 1,
             "current_channel": "main",
             "channels": ["main"],
         }))
@@ -212,8 +216,10 @@ class TestSyncChannelRegistry:
         """Sync respects allow_network flag for https sources."""
         channel_file = tmp_path / "channel.json"
         channel_file.write_text(json.dumps({
-            "channel_version": "v0.2",
+            "channel_version": "v0.4",
             "updated_at": "2026-02-07T10:00:00Z",
+            "published_at": "2026-02-07T10:00:00Z",
+            "channel_seq": 1,
             "current_channel": "main",
             "channels": ["main"],
             "sources": {
@@ -312,19 +318,24 @@ class TestSyncChannelRegistry:
         assert "seen_seq" in result
         assert "seen_hash" in result
         assert "rollback_check_applied" in result
-        assert result["rollback_check_applied"] is False  # v0.2 channel
+        assert result["rollback_check_applied"] is True  # v0.4 channel triggers check
 
     def test_sync_prod_rejects_legacy_channel_version(self, tmp_path):
         """Prod mode rejects channel versions older than v0.4."""
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
 
+        # Downgrade to v0.2
+        data = json.loads(channel_file.read_text())
+        data["channel_version"] = "v0.2"
+        channel_file.write_text(json.dumps(data))
+
         result = call_sync(
             channel_file, key, dest_dir, channel="main", prod=True
         )
 
         assert result["ok"] is False
-        assert "channel_version_unsupported_in_prod:v0.2" in result["errors"]
+        assert "channel_version_breakglass_forbidden_in_prod" in result["errors"]
 
 
 

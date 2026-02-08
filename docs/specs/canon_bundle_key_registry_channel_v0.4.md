@@ -29,3 +29,7 @@ Version `v0.4` introduces mandatory rollback protection fields.
 1. `channel_seq` must be non-negative integer.
 2. `published_at` must be valid ISO-8601 UTC.
 3. `prev_channel_hash` must be valid 64-char hex string if present.
+
+## Version Policy Note
+In production environments (`prod=True`), version `v0.4` is mandatory. Legacy versions (`v0.3`, `v0.2`, `v0.1`) are rejected by default to enforce rollback protection. Non-production environments may allow legacy versions via explicit compatibility flags (`--allow-legacy-channel-v03`), but these modes operate with reduced security semantics (no rollback protection).
+

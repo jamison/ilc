@@ -168,6 +168,21 @@ def _setup_parser() -> argparse.ArgumentParser:
         default=None,
         help="Path to local sync state file (default: <channel-file>.sync_state.json)"
     )
+    parser.add_argument(
+        "--allow-legacy-channel-v03",
+        action="store_true",
+        help="Allow v0.3 channel files in compatibility mode (non-prod default path)."
+    )
+    parser.add_argument(
+        "--allow-legacy-channel-v02-v01",
+        action="store_true",
+        help="Allow v0.2/v0.1 channel files in break-glass mode (non-prod only)."
+    )
+    parser.add_argument(
+        "--non-prod",
+        action="store_true",
+        help="Run in non-production mode (relax version policy decision matrix)."
+    )
     return parser
 
 
@@ -230,7 +245,9 @@ def main() -> int:
         require_signed_channel=require_signed,
         allow_channel_rollback=args.allow_channel_rollback,
         sync_state_file=Path(args.sync_state_file).resolve() if args.sync_state_file else None,
-        prod=True, # CLI is considered prod context by default for safety
+        prod=not args.non_prod,
+        allow_legacy_channel_v03=args.allow_legacy_channel_v03,
+        allow_legacy_channel_v02_v01=args.allow_legacy_channel_v02_v01,
     )
     
     result = sync_channel_registry(ctx)

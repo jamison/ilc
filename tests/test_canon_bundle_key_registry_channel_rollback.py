@@ -206,6 +206,7 @@ class TestSyncIntegrationRollback:
         }
         ctx.channel_file.write_text(json.dumps(data))
         ctx.prod = False
+        ctx.allow_legacy_channel_v03 = True
         
         with patch("ilc_core.ledger.canon_bundle_key_registry_sync.fetch_registry_bundle") as mock_fetch:
              mock_fetch.return_value = {"ok": True}

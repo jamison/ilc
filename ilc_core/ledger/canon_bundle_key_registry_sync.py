@@ -40,6 +40,70 @@ def _now_iso8601() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+@dataclass(frozen=True)
+class VersionPolicyDecision:
+    ok: bool
+    policy: str
+    errors: List[str]
+    warnings: List[str]
+
+
+def evaluate_channel_version_policy(
+    version: Optional[str],
+    *,
+    prod: bool,
+    allow_v03: bool,
+    allow_legacy: bool,
+    force: bool,
+) -> VersionPolicyDecision:
+    """
+    Evaluate channel version against environment policy.
+    
+    Returns deterministic policy decision.
+    """
+    if version is None:
+        return VersionPolicyDecision(False, "rejected", ["channel_version_missing"], [])
+
+    if not isinstance(version, str):
+        return VersionPolicyDecision(False, "rejected", ["channel_version_invalid"], [])
+
+    version = version.strip()
+    if not version:
+        return VersionPolicyDecision(False, "rejected", ["channel_version_missing"], [])
+        
+    if version not in {"v0.4", "v0.3", "v0.2", "v0.1"}:
+        return VersionPolicyDecision(False, "rejected", ["channel_version_invalid"], [])
+        
+    if version == "v0.4":
+        return VersionPolicyDecision(True, "current", [], [])
+        
+    if version == "v0.3":
+        if prod:
+             # In prod, we reject v0.3 unless specific future break-glass is added.
+             # For now, strict rejection.
+             if allow_v03: # If user tries to override in prod
+                 if not force:
+                     return VersionPolicyDecision(False, "rejected", ["rollback_override_requires_force_in_prod"], [])
+                 # Even with force, is it allowed? "channel_version_breakglass_forbidden_in_prod"
+                 return VersionPolicyDecision(False, "rejected", ["channel_version_breakglass_forbidden_in_prod"], [])
+             return VersionPolicyDecision(False, "rejected", ["channel_version_unsupported_in_prod"], [])
+             
+        if not allow_v03:
+            return VersionPolicyDecision(False, "rejected", ["channel_version_legacy_not_allowed"], [])
+            
+        return VersionPolicyDecision(True, "compat_v03", [], ["channel_version_v03_compat_mode"])
+        
+    # v0.2 / v0.1
+    if prod:
+        return VersionPolicyDecision(False, "rejected", ["channel_version_breakglass_forbidden_in_prod"], [])
+        
+    if not allow_legacy:
+        return VersionPolicyDecision(False, "rejected", ["channel_version_legacy_not_allowed"], [])
+        
+    return VersionPolicyDecision(True, "legacy_breakglass", [], ["channel_version_legacy_breakglass_used"])
+
+
+
 @dataclass
 class LastSyncRecord:
     channel: Optional[str] = None
@@ -86,6 +150,8 @@ def _fail_with_last_sync(
     errors: List[str],
     warnings: List[str],
     selected_source_reason: str,
+    channel_version: Optional[str] = None,
+    channel_version_policy: Optional[str] = None,
     source: Optional[str] = None,
 ) -> dict:
     """Create standardized sync failure result with sidecar last_sync."""
@@ -100,7 +166,18 @@ def _fail_with_last_sync(
             selected_source_reason=selected_source_reason,
         ),
     )
-    return {"ok": False, "errors": list(errors), "warnings": list(warnings), "last_sync": last_sync}
+    res = {
+        "ok": False,
+        "errors": list(errors),
+        "warnings": list(warnings),
+        "last_sync": last_sync,
+    }
+    if channel_version is not None:
+        res["channel_version"] = channel_version
+    if channel_version_policy is not None:
+        res["channel_version_policy"] = channel_version_policy
+        
+    return res
 
 
 def _validate_sync_policy(
@@ -187,6 +264,9 @@ class SyncContext:
     allow_channel_rollback: bool = False
     sync_state_file: Optional[Path] = None
     prod: bool = False
+    allow_legacy_channel_v03: bool = False
+    allow_legacy_channel_v02_v01: bool = False
+
 
 
 def _attempt_sync_from_window(
@@ -293,6 +373,26 @@ def _finalize_sync(
     )
     last_sync = _record_last_sync(ctx.channel_file, record)
     
+    channel_version_policy = "current"
+    channel_version_override_used = False
+    
+    # We need to re-evaluate the policy to get the correct classification
+    # This is slightly redundant but ensures consistency without passing extra args
+    # through all call layers.
+    pol_decision = evaluate_channel_version_policy(
+        channel_version,
+        prod=ctx.prod,
+        allow_v03=ctx.allow_legacy_channel_v03,
+        allow_legacy=ctx.allow_legacy_channel_v02_v01,
+        force=ctx.force,
+    )
+    # If fetch succeeded, the policy must have passed or been overridden
+    channel_version_policy = pol_decision.policy
+    
+    # Heuristic for override usage: if policy is compatible/legacy and not current v0.4
+    if channel_version_policy in ("compat_v03", "legacy_breakglass"):
+        channel_version_override_used = True
+
     result = {
         "ok": ok,
         "errors": final_errors,
@@ -304,6 +404,8 @@ def _finalize_sync(
         "failed_sources": len([a for a in attempts if not a["ok"]]),
         "successful_source_index": successful_source_index,
         "channel_version": channel_version,
+        "channel_version_policy": channel_version_policy,
+        "channel_version_override_used": channel_version_override_used,
         "last_sync": last_sync,
     }
     
@@ -489,21 +591,33 @@ def _prepare_sync_channel(
     warnings.extend(val_result.get("warnings", []))
     channel_version = channel_data.get("channel_version", "v0.1")
 
-    if ctx.prod and channel_version != "v0.4":
-        errors = [f"channel_version_unsupported_in_prod:{channel_version}"]
+    # Evaluate version policy (Phase 132)
+    decision = evaluate_channel_version_policy(
+        channel_version,
+        prod=ctx.prod,
+        allow_v03=ctx.allow_legacy_channel_v03,
+        allow_legacy=ctx.allow_legacy_channel_v02_v01,
+        force=ctx.force,
+    )
+    
+    if not decision.ok:
         return (
             _fail_with_last_sync(
                 ctx,
                 audit_channel,
-                errors,
-                warnings,
+                decision.errors,
+                warnings + decision.warnings,
                 selected_source_reason="channel_version_policy_failed",
+                channel_version=channel_version,
+                channel_version_policy=decision.policy,
             ),
             None,
             warnings,
             None,
             None,
         )
+    
+    warnings.extend(decision.warnings)
 
     require_signed = ctx.require_signed_channel or ctx.prod
     pol_ok, pol_errors, pol_warnings = _validate_sync_policy(
@@ -518,6 +632,7 @@ def _prepare_sync_channel(
                 pol_errors,
                 warnings,
                 selected_source_reason="signature_policy_failed",
+                channel_version=channel_version,
             ),
             None,
             warnings,
@@ -608,6 +723,7 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
             win_errors,
             warnings,
             selected_source_reason="window_exhausted" if ctx.failover else "no_failover",
+            channel_version=channel_version,
         )
         
     # Check dest exists
@@ -621,6 +737,7 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
             warnings,
             selected_source_reason="window_exhausted" if ctx.failover else "no_failover",
             source=selected,
+            channel_version=channel_version,
         )
         
     if ctx.dry_run:
