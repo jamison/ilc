@@ -26,4 +26,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0004](ADR_0004_Genesis_Primitive_Commit_Epoch.md) | Genesis Truth Primitives — commit.epoch and star.map demotion | Accepted |
 | [ADR-0005](ADR_0005_Star_Map_Observational_Feeds.md) | Star Map Observational Feeds | Accepted |
 | [ADR-0006](ADR_0006_EVE_Canonical_Capsule_Integrity.md) | EVE Canonical Capsule Integrity | Accepted |
-
+| [ADR-0007](ADR_0007_Constitutional_Baseline_and_Ratification_Process.md) | Constitutional Baseline and Ratification Process | Accepted |
