@@ -61,21 +61,10 @@ def load_channel_file(path: Path) -> dict:
     return {"ok": True, "data": data}
 
 
-def validate_channel_file(path: Path) -> dict:
-    """
-    Validate a channel file.
-    
-    Returns:
-        Dict with {ok, errors, warnings, data}.
-    """
+def _validate_channel_schema(data: dict) -> tuple[list, list]:
+    """Validate basic schema fields."""
     errors = []
     warnings = []
-    
-    load_result = load_channel_file(path)
-    if not load_result["ok"]:
-        return {"ok": False, "errors": [load_result["error"]], "warnings": []}
-    
-    data = load_result["data"]
     
     # Check for unknown fields
     for key in data:
@@ -97,28 +86,39 @@ def validate_channel_file(path: Path) -> dict:
     elif not STRICT_ISO8601_TZ_PATTERN.match(str(data.get("updated_at", ""))):
         errors.append("schema_violation:invalid_updated_at")
     
+    return errors, warnings
+
+
+def _validate_channel_semantics(data: dict) -> tuple[list, list]:
+    """Validate channel semantic rules."""
+    errors = []
+    warnings = []
+    
     # Validate channels
     if "channels" not in data:
         errors.append("schema_violation:missing_channels")
+        return errors, warnings
+        
+    channels = data["channels"]
+    if not isinstance(channels, list):
+        errors.append("schema_violation:channels_not_list")
+        return errors, warnings
+        
+    if len(channels) == 0:
+        errors.append("empty_channels")
     else:
-        channels = data["channels"]
-        if not isinstance(channels, list):
-            errors.append("schema_violation:channels_not_list")
-        elif len(channels) == 0:
-            errors.append("empty_channels")
-        else:
-            # Check format
-            for ch in channels:
-                if not isinstance(ch, str) or not CHANNEL_PATTERN.match(ch):
-                    errors.append(f"invalid_channel_format:{ch}")
-            
-            # Check duplicates
-            if len(channels) != len(set(channels)):
-                errors.append("duplicate_channels")
-            
-            # Check sorted
-            if channels != sorted(channels):
-                warnings.append("unsorted_channels")
+        # Check format
+        for ch in channels:
+            if not isinstance(ch, str) or not CHANNEL_PATTERN.match(ch):
+                errors.append(f"invalid_channel_format:{ch}")
+        
+        # Check duplicates
+        if len(channels) != len(set(channels)):
+            errors.append("duplicate_channels")
+        
+        # Check sorted
+        if channels != sorted(channels):
+            warnings.append("unsorted_channels")
     
     # Validate current_channel
     if "current_channel" not in data:
@@ -127,65 +127,134 @@ def validate_channel_file(path: Path) -> dict:
         current = data["current_channel"]
         if not isinstance(current, str) or not CHANNEL_PATTERN.match(current):
             errors.append(f"invalid_channel_format:{current}")
-        elif "channels" in data and isinstance(data["channels"], list):
-            if current not in data["channels"]:
-                errors.append("current_channel_not_in_channels")
+        elif isinstance(channels, list) and current not in channels:
+            errors.append("current_channel_not_in_channels")
+            
+    return errors, warnings
 
-    # Validate sources (v0.2 only)
+
+def _validate_sources(data: dict, version: str) -> tuple[list, list]:
+    """Validate sources field (v0.2+)."""
+    errors = []
+    warnings = []
+    
+    if version == CHANNEL_VERSION_V01:
+        if data.get("sources") is not None:
+             warnings.append("sources_ignored_v01")
+        return errors, warnings
+        
+    if version not in (CHANNEL_VERSION, CHANNEL_VERSION_V02):
+        return errors, warnings
+        
     sources = data.get("sources")
-    if version in (CHANNEL_VERSION, CHANNEL_VERSION_V02):
-        if sources is not None:
-            if not isinstance(sources, dict):
-                errors.append("schema_violation:sources_not_object")
-            else:
-                for ch in channels if isinstance(channels, list) else []:
-                    if ch not in sources or not sources[ch]:
-                        errors.append(f"sources_missing:{ch}")
-                        continue
-                    if not isinstance(sources[ch], list):
-                        errors.append(f"sources_not_list:{ch}")
-                        continue
-                    for src in sources[ch]:
-                        if not isinstance(src, str) or not src:
-                            errors.append(f"sources_invalid:{ch}")
-                for ch in sources:
-                    if isinstance(channels, list) and ch not in channels:
-                        errors.append(f"sources_unknown_channel:{ch}")
-    elif version == CHANNEL_VERSION_V01 and sources is not None:
-        warnings.append("sources_ignored_v01")
+    if sources is None:
+        return errors, warnings
+        
+    if not isinstance(sources, dict):
+        errors.append("schema_violation:sources_not_object")
+        return errors, warnings
+        
+    channels = data.get("channels", [])
+    if not isinstance(channels, list):
+        channels = []
+        
+    for ch in channels:
+        if ch not in sources or not sources[ch]:
+            errors.append(f"sources_missing:{ch}")
+            continue
+        if not isinstance(sources[ch], list):
+            errors.append(f"sources_not_list:{ch}")
+            continue
+        for src in sources[ch]:
+            if not isinstance(src, str) or not src:
+                errors.append(f"sources_invalid:{ch}")
+                
+    for ch in sources:
+        if ch not in channels:
+            errors.append(f"sources_unknown_channel:{ch}")
+            
+    return errors, warnings
 
-    # Validate last_sync (v0.2 only)
+
+def _validate_last_sync(data: dict, version: str) -> tuple[list, list]:
+    """Validate last_sync field (v0.2+)."""
+    errors = []
+    warnings = []
+    
     last_sync = data.get("last_sync")
-    if version in (CHANNEL_VERSION, CHANNEL_VERSION_V02) and last_sync is not None:
-        if not isinstance(last_sync, dict):
-            errors.append("schema_violation:last_sync_not_object")
-        else:
-            required = ["channel", "source", "timestamp", "ok", "warnings", "errors"]
-            for field in required:
-                if field not in last_sync:
-                    errors.append(f"last_sync_missing:{field}")
-            if "channel" in last_sync:
-                if not isinstance(last_sync["channel"], str) or not last_sync["channel"]:
-                    errors.append("last_sync_invalid_channel")
-                elif isinstance(channels, list) and last_sync["channel"] not in channels:
-                    errors.append("last_sync_channel_not_in_channels")
-            if "source" in last_sync:
-                if not isinstance(last_sync["source"], str):
-                    errors.append("last_sync_invalid_source")
-            if "timestamp" in last_sync:
-                if not STRICT_ISO8601_TZ_PATTERN.match(str(last_sync["timestamp"])):
-                    errors.append("last_sync_invalid_timestamp")
-            if "ok" in last_sync and not isinstance(last_sync["ok"], bool):
-                errors.append("last_sync_invalid_ok")
-            for list_field in ("warnings", "errors"):
-                if list_field in last_sync and not isinstance(last_sync[list_field], list):
-                    errors.append(f"last_sync_invalid_{list_field}")
-            for opt_field in ("bundle_hash", "key_id"):
-                if opt_field in last_sync and last_sync[opt_field] is not None:
-                    if not isinstance(last_sync[opt_field], str):
-                        errors.append(f"last_sync_invalid_{opt_field}")
-    elif version == CHANNEL_VERSION_V01 and last_sync is not None:
+    if last_sync is None:
+        return errors, warnings
+        
+    if version == CHANNEL_VERSION_V01:
         warnings.append("last_sync_ignored_v01")
+        return errors, warnings
+        
+    if version not in (CHANNEL_VERSION, CHANNEL_VERSION_V02):
+        return errors, warnings
+        
+    if not isinstance(last_sync, dict):
+        errors.append("schema_violation:last_sync_not_object")
+        return errors, warnings
+        
+    required = ["channel", "source", "timestamp", "ok", "warnings", "errors"]
+    for field in required:
+        if field not in last_sync:
+            errors.append(f"last_sync_missing:{field}")
+            
+    channels = data.get("channels", [])
+    if not isinstance(channels, list):
+        channels = []
+    
+    if "channel" in last_sync:
+        ch = last_sync["channel"]
+        if not isinstance(ch, str) or not ch:
+            errors.append("last_sync_invalid_channel")
+        elif ch not in channels:
+            errors.append("last_sync_channel_not_in_channels")
+            
+    if "source" in last_sync and not isinstance(last_sync["source"], str):
+        errors.append("last_sync_invalid_source")
+        
+    if "timestamp" in last_sync:
+        if not STRICT_ISO8601_TZ_PATTERN.match(str(last_sync["timestamp"])):
+             errors.append("last_sync_invalid_timestamp")
+             
+    if "ok" in last_sync and not isinstance(last_sync["ok"], bool):
+        errors.append("last_sync_invalid_ok")
+        
+    for list_field in ("warnings", "errors"):
+        if list_field in last_sync and not isinstance(last_sync[list_field], list):
+            errors.append(f"last_sync_invalid_{list_field}")
+            
+    for opt_field in ("bundle_hash", "key_id"):
+        if opt_field in last_sync and last_sync[opt_field] is not None:
+             if not isinstance(last_sync[opt_field], str):
+                 errors.append(f"last_sync_invalid_{opt_field}")
+                 
+    return errors, warnings
+
+
+def validate_channel_file(path: Path) -> dict:
+    """
+    Validate a channel file.
+    
+    Returns:
+        Dict with {ok, errors, warnings, data}.
+    """
+    load_result = load_channel_file(path)
+    if not load_result["ok"]:
+        return {"ok": False, "errors": [load_result["error"]], "warnings": []}
+    
+    data = load_result["data"]
+    version = data.get("channel_version")
+    
+    schema_err, schema_warn = _validate_channel_schema(data)
+    sem_err, sem_warn = _validate_channel_semantics(data)
+    src_err, src_warn = _validate_sources(data, version)
+    sf_err, sf_warn = _validate_last_sync(data, version)
+    
+    errors = schema_err + sem_err + src_err + sf_err
+    warnings = schema_warn + sem_warn + src_warn + sf_warn
     
     return {
         "ok": len(errors) == 0,

@@ -42,7 +42,7 @@ def _load_key_bytes(key_path: Path) -> bytes:
     return content
 
 
-def main() -> int:
+def _setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Validate, sign, and manage canon bundle key registry files"
     )
@@ -113,7 +113,125 @@ def main() -> int:
         action="store_true",
         help="Force operation (override validation failures or prod restrictions)"
     )
+    return parser
+
+
+def _handle_restore(backup_path: Path, registry_path: Path, force: bool, prod: bool) -> int:
+    result = restore_registry(backup_path, registry_path, force=force, prod=prod)
+    output = {
+        "ok": result.get("ok", False),
+        "errors": [result.get("error")] if result.get("error") else [],
+        "warnings": result.get("warnings", []),
+        "registry_path": str(registry_path),
+        "restored_from": result.get("restored_from"),
+        "prod": prod,
+    }
+    if result.get("validation_errors"):
+        output["validation_errors"] = result["validation_errors"]
+    print(json.dumps(output, separators=(",", ":")))
+    return 0 if result.get("ok") else (2 if "not_found" in result.get("error", "") else 1)
+
+
+def _handle_backup(registry_path: Path, backup_dir: Path, prod: bool) -> int:
+    result = backup_registry(registry_path, backup_dir)
+    output = {
+        "ok": result.get("ok", False),
+        "errors": [result.get("error")] if result.get("error") else [],
+        "warnings": [],
+        "registry_path": str(registry_path),
+        "backup_path": result.get("backup_path"),
+        "prod": prod,
+    }
+    print(json.dumps(output, separators=(",", ":")))
+    return 0 if result.get("ok") else 2
+
+
+def _handle_rotate(registry_path: Path, new_key_id: str, force: bool, prod: bool) -> int:
+    if not new_key_id:
+        output = {
+            "ok": False,
+            "errors": ["new_key_id_required"],
+            "warnings": [],
+            "registry_path": str(registry_path),
+            "prod": prod,
+        }
+        print(json.dumps(output, separators=(",", ":")))
+        return 1
     
+    if prod and not force:
+        output = {
+            "ok": False,
+            "errors": ["prod_rotation_requires_force"],
+            "warnings": [],
+            "registry_path": str(registry_path),
+            "prod": prod,
+        }
+        print(json.dumps(output, separators=(",", ":")))
+        return 1
+    
+    result = rotate_registry(registry_path, new_key_id, force=force)
+    output = {
+        "ok": result.get("ok", False),
+        "errors": [result.get("error")] if result.get("error") else [],
+        "warnings": result.get("warnings", []),
+        "registry_path": str(registry_path),
+        "rotation": True,
+        "old_current_keys": result.get("old_current_keys"),
+        "new_current_key": result.get("new_current_key"),
+        "updated_at": result.get("updated_at"),
+        "prod": prod,
+    }
+    if result.get("validation_errors"):
+        output["validation_errors"] = result["validation_errors"]
+    print(json.dumps(output, separators=(",", ":")))
+    return 0 if result.get("ok") else 1
+
+
+def _handle_sign(registry_path: Path, key_file: str, sig_file: str, default_sig_path: Path, prod: bool) -> int:
+    if not key_file:
+        output = {
+            "ok": False,
+            "errors": ["key_missing_for_sign"],
+            "warnings": [],
+            "registry_path": str(registry_path),
+            "prod": prod,
+        }
+        print(json.dumps(output, separators=(",", ":")))
+        return 1
+    
+    key_path = Path(key_file)
+    if not key_path.exists():
+        output = {
+            "ok": False,
+            "errors": ["key_file_not_found"],
+            "warnings": [],
+            "registry_path": str(registry_path),
+            "prod": prod,
+        }
+        print(json.dumps(output, separators=(",", ":")))
+        return 2
+    
+    key = _load_key_bytes(key_path)
+    sig_path = Path(sig_file) if sig_file else (default_sig_path if default_sig_path else None)
+    
+    result = sign_registry_file(registry_path, key, sig_path)
+    output = {
+        "ok": result.get("ok", False),
+        "errors": [result.get("error")] if result.get("error") else [],
+        "warnings": [],
+        "registry_path": str(registry_path),
+        "sig_path": result.get("sig_path"),
+        "key_id": result.get("key_id"),
+        "sig_alg": result.get("sig_alg"),
+        "registry_hash": result.get("registry_hash"),
+        "prod": prod,
+    }
+    print(json.dumps(output, separators=(",", ":")))
+    return 0 if result.get("ok") else 1
+
+
+def main() -> int:
+    parser = _setup_parser()
     args = parser.parse_args()
     
     # Detect production mode: CLI flag overrides env
@@ -123,7 +241,6 @@ def main() -> int:
     if args.registry_dir:
         registry_dir = Path(args.registry_dir).resolve()
         registry_path = registry_dir / "canon_key_registry_v0.1.json"
-        # Default sig path in registry-dir mode
         default_sig_path = registry_dir / "canon_key_registry_v0.1.json.sig"
     else:
         registry_path = Path(args.registry).resolve()
@@ -131,23 +248,9 @@ def main() -> int:
     
     # Restore mode (check first since registry may not exist yet)
     if args.restore:
-        backup_path = Path(args.restore).resolve()
-        result = restore_registry(backup_path, registry_path, force=args.force, prod=prod)
-        
-        output = {
-            "ok": result.get("ok", False),
-            "errors": [result.get("error")] if result.get("error") else [],
-            "warnings": result.get("warnings", []),
-            "registry_path": str(registry_path),
-            "restored_from": result.get("restored_from"),
-            "prod": prod,
-        }
-        if result.get("validation_errors"):
-            output["validation_errors"] = result["validation_errors"]
-        print(json.dumps(output, separators=(",", ":")))
-        return 0 if result.get("ok") else (2 if "not_found" in result.get("error", "") else 1)
+        return _handle_restore(Path(args.restore).resolve(), registry_path, args.force, prod)
     
-    # Handle IO errors for other operations
+    # Check if registry exists for other ops
     if not registry_path.exists():
         output = {
             "ok": False,
@@ -159,165 +262,48 @@ def main() -> int:
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    # Backup mode
     if args.backup_dir:
-        backup_dir = Path(args.backup_dir).resolve()
-        result = backup_registry(registry_path, backup_dir)
+        return _handle_backup(registry_path, Path(args.backup_dir).resolve(), prod)
         
-        output = {
-            "ok": result.get("ok", False),
-            "errors": [result.get("error")] if result.get("error") else [],
-            "warnings": [],
-            "registry_path": str(registry_path),
-            "backup_path": result.get("backup_path"),
-            "prod": prod,
-        }
-        print(json.dumps(output, separators=(",", ":")))
-        return 0 if result.get("ok") else 2
-    
-    # Rotation mode
     if args.rotate:
-        if not args.new_key_id:
-            output = {
-                "ok": False,
-                "errors": ["new_key_id_required"],
-                "warnings": [],
-                "registry_path": str(registry_path),
-                "prod": prod,
-            }
-            print(json.dumps(output, separators=(",", ":")))
-            return 1
-        
-        # In prod mode, rotation requires --force
-        if prod and not args.force:
-            output = {
-                "ok": False,
-                "errors": ["prod_rotation_requires_force"],
-                "warnings": [],
-                "registry_path": str(registry_path),
-                "prod": prod,
-            }
-            print(json.dumps(output, separators=(",", ":")))
-            return 1
-        
-        result = rotate_registry(registry_path, args.new_key_id, force=args.force)
-        
-        output = {
-            "ok": result.get("ok", False),
-            "errors": [result.get("error")] if result.get("error") else [],
-            "warnings": result.get("warnings", []),
-            "registry_path": str(registry_path),
-            "rotation": True,
-            "old_current_keys": result.get("old_current_keys"),
-            "new_current_key": result.get("new_current_key"),
-            "updated_at": result.get("updated_at"),
-            "prod": prod,
-        }
-        if result.get("validation_errors"):
-            output["validation_errors"] = result["validation_errors"]
-        print(json.dumps(output, separators=(",", ":")))
-        return 0 if result.get("ok") else 1
+        return _handle_rotate(registry_path, args.new_key_id, args.force, prod)
     
-    # Production mode requires signature verification
+    # Production policy checks
     if prod and not args.key_file and not args.sign:
-        output = {
-            "ok": False,
-            "errors": ["prod_signature_required"],
-            "warnings": [],
-            "registry_path": str(registry_path),
-            "prod": prod,
-        }
-        print(json.dumps(output, separators=(",", ":")))
+        print(json.dumps({"ok": False, "errors": ["prod_signature_required"], "warnings": [], "registry_path": str(registry_path), "prod": prod}, separators=(",", ":")))
         return 1
     
-    # Check if --sig provided without --key-file (verification requires key)
     if args.sig and not args.key_file and not args.sign:
-        output = {
-            "ok": False,
-            "errors": ["key_missing_for_verify"],
-            "warnings": [],
-            "registry_path": str(registry_path),
-            "prod": prod,
-        }
-        print(json.dumps(output, separators=(",", ":")))
+        print(json.dumps({"ok": False, "errors": ["key_missing_for_verify"], "warnings": [], "registry_path": str(registry_path), "prod": prod}, separators=(",", ":")))
         return 1
     
-    # Signing mode
     if args.sign:
-        if not args.key_file:
-            output = {
-                "ok": False,
-                "errors": ["key_missing_for_sign"],
-                "warnings": [],
-                "registry_path": str(registry_path),
-                "prod": prod,
-            }
-            print(json.dumps(output, separators=(",", ":")))
-            return 1
-        
-        key_path = Path(args.key_file)
-        if not key_path.exists():
-            output = {
-                "ok": False,
-                "errors": ["key_file_not_found"],
-                "warnings": [],
-                "registry_path": str(registry_path),
-                "prod": prod,
-            }
-            print(json.dumps(output, separators=(",", ":")))
-            return 2
-        
-        key = _load_key_bytes(key_path)
-        sig_path = Path(args.sig) if args.sig else (default_sig_path if default_sig_path else None)
-        
-        result = sign_registry_file(registry_path, key, sig_path)
-        
-        output = {
-            "ok": result.get("ok", False),
-            "errors": [result.get("error")] if result.get("error") else [],
-            "warnings": [],
-            "registry_path": str(registry_path),
-            "sig_path": result.get("sig_path"),
-            "key_id": result.get("key_id"),
-            "sig_alg": result.get("sig_alg"),
-            "registry_hash": result.get("registry_hash"),
-            "prod": prod,
-        }
-        print(json.dumps(output, separators=(",", ":")))
-        return 0 if result.get("ok") else 1
+        return _handle_sign(registry_path, args.key_file, args.sig, default_sig_path, prod)
     
-    # Determine strict mode (prod implies strict, but --allow-empty is ignored in prod)
+    # Validate and optional verify
     strict = args.strict and not args.allow_empty
-    
-    # Validate registry structure first
     result = validate_registry_file(registry_path, strict=strict, prod=prod)
 
-    # IO error handling: treat as exit code 2
     if any(err in result["errors"] for err in ("file_not_found", "file_read_error")):
         output = {
-            "ok": False,
-            "errors": result["errors"],
-            "warnings": result["warnings"],
-            "registry_path": str(registry_path),
-            "prod": prod,
+            "ok": False, "errors": result["errors"], "warnings": result["warnings"],
+            "registry_path": str(registry_path), "prod": prod
         }
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    # If allow-empty (and not prod), remove empty_current_keys from errors
     if args.allow_empty and not prod and "empty_current_keys" in result["errors"]:
         result["errors"].remove("empty_current_keys")
         if "empty_current_keys" not in result["warnings"]:
-            result["warnings"].append("empty_current_keys")
+           result["warnings"].append("empty_current_keys")
         result["ok"] = len(result["errors"]) == 0
     
-    # Signature verification if --key-file provided (without --sign)
     signature_ok = None
     sig_path_str = None
     registry_hash = None
     sig_key_id = None
     
-    if args.key_file and not args.sign:
+    if args.key_file:
         key_path = Path(args.key_file)
         if not key_path.exists():
             result["errors"].append("key_file_not_found")
@@ -337,7 +323,7 @@ def main() -> int:
                 result["ok"] = False
             result["warnings"].extend(sig_result.get("warnings", []))
     
-    # Get key counts if valid JSON
+    # Get key counts
     key_counts = {"current": 0, "previous": 0, "deprecated": 0}
     registry_version = None
     try:

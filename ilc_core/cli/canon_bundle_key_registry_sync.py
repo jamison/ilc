@@ -13,7 +13,7 @@ import os
 import sys
 from pathlib import Path
 
-from ilc_core.ledger.canon_bundle_key_registry_sync import sync_channel_registry
+from ilc_core.ledger.canon_bundle_key_registry_sync import sync_channel_registry, SyncContext
 
 
 def _load_key_bytes(key_path: Path) -> bytes:
@@ -45,7 +45,7 @@ def resolve_require_signed_channel(args) -> bool:
     return False
 
 
-def main() -> int:
+def _setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Sync registry bundles from channel sources"
     )
@@ -157,7 +157,11 @@ def main() -> int:
         dest="json_output",
         help="Force JSON output"
     )
-    
+    return parser
+
+
+def main() -> int:
+    parser = _setup_parser()
     args = parser.parse_args()
     
     if args.require_signed_channel and args.no_require_signed_channel:
@@ -196,7 +200,7 @@ def main() -> int:
     elif os.environ.get("ILC_CHANNEL_SIG_PATH"):
         channel_sig_path = Path(os.environ["ILC_CHANNEL_SIG_PATH"])
     
-    result = sync_channel_registry(
+    ctx = SyncContext(
         channel_file=Path(args.channel_file).resolve(),
         key=registry_key,
         dest_dir=Path(args.dest).resolve(),
@@ -214,6 +218,8 @@ def main() -> int:
         channel_sig_path=channel_sig_path,
         require_signed_channel=require_signed,
     )
+    
+    result = sync_channel_registry(ctx)
     
     output = {
         "ok": result.get("ok", False),

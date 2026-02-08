@@ -31,7 +31,8 @@ def _load_key_bytes(key_path: Path) -> bytes:
     return content
 
 
-def main() -> int:
+
+def _setup_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Build and verify canon bundle key registry bundles"
     )
@@ -90,7 +91,11 @@ def main() -> int:
         dest="json_output",
         help="Force JSON output"
     )
-    
+    return parser
+
+
+def main() -> int:
+    parser = _setup_parser()
     args = parser.parse_args()
     
     # Load key

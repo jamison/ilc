@@ -10,6 +10,9 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
+import hashlib
+import hmac
+from datetime import datetime, timezone
 
 
 @dataclass
@@ -246,7 +249,6 @@ def canonical_registry_bytes(registry_path: Path) -> bytes:
 
 def _derive_key_id(key: bytes) -> str:
     """Derive key_id from key bytes (first 16 hex chars of SHA-256)."""
-    import hashlib
     return hashlib.sha256(key).hexdigest()[:16]
 
 
@@ -266,9 +268,7 @@ def sign_registry_file(
     Returns:
         Dict with {ok: bool, key_id: str, sig_alg: str, sig_path: str, registry_hash: str}.
     """
-    import hashlib
-    import hmac
-    from datetime import datetime, timezone
+
     
     if sig_path is None:
         sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
@@ -322,8 +322,7 @@ def verify_registry_file_signature(
     Returns:
         Dict with {ok: bool, errors: list, warnings: list, registry_hash: str, key_id: str}.
     """
-    import hashlib
-    import hmac
+
     
     if sig_path is None:
         sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
@@ -398,7 +397,6 @@ def _atomic_write(path: Path, data: str) -> None:
 
 def _now_iso8601() -> str:
     """Return current UTC time as strict ISO-8601 string."""
-    from datetime import datetime, timezone
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -498,7 +496,7 @@ def backup_registry(registry_path: Path, backup_dir: Path) -> dict:
     Returns:
         Dict with {ok, backup_path}.
     """
-    from datetime import datetime, timezone
+
     
     if not registry_path.exists():
         return {"ok": False, "error": "file_not_found"}

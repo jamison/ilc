@@ -5,8 +5,17 @@ import pytest
 from pathlib import Path
 
 from ilc_core.ledger.canon_bundle_key_registry_bundle import build_registry_bundle
-from ilc_core.ledger.canon_bundle_key_registry_sync import sync_channel_registry
+from ilc_core.ledger.canon_bundle_key_registry_sync import (
+    sync_channel_registry,
+    SyncContext,
+)
 from ilc_core.ledger.canon_bundle_key_registry_channel_signing import sign_channel_file
+
+
+def call_sync(channel_file, key, dest_dir, **kwargs):
+    """Helper to call sync_channel_registry with SyncContext."""
+    ctx = SyncContext(channel_file, key, dest_dir, **kwargs)
+    return sync_channel_registry(ctx)
 
 
 class TestSyncChannelRegistry:
@@ -58,7 +67,7 @@ class TestSyncChannelRegistry:
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main"
         )
         
@@ -84,7 +93,7 @@ class TestSyncChannelRegistry:
         
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main"
         )
         
@@ -109,7 +118,7 @@ class TestSyncChannelRegistry:
         
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main", failover=False
         )
         
@@ -131,7 +140,7 @@ class TestSyncChannelRegistry:
         
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main"
         )
         
@@ -154,7 +163,7 @@ class TestSyncChannelRegistry:
         
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main", max_sources=2
         )
         
@@ -176,7 +185,7 @@ class TestSyncChannelRegistry:
         key = b"test-signing-key"
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main"
         )
         
@@ -191,7 +200,7 @@ class TestSyncChannelRegistry:
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main", source_index=5
         )
         
@@ -218,7 +227,7 @@ class TestSyncChannelRegistry:
         dest_dir = tmp_path / "installed"
         
         # Test failure without flag
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main", allow_network=False
         )
         assert result["ok"] is False
@@ -231,7 +240,7 @@ class TestSyncChannelRegistry:
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main", dry_run=True
         )
         
@@ -246,13 +255,13 @@ class TestSyncChannelRegistry:
         dest_dir = tmp_path / "installed"
         
         # First sync
-        result1 = sync_channel_registry(
+        result1 = call_sync(
             channel_file, key, dest_dir, channel="main"
         )
         assert result1["ok"] is True
         
         # Second sync without force should fail
-        result2 = sync_channel_registry(
+        result2 = call_sync(
             channel_file, key, dest_dir, channel="main"
         )
         assert result2["ok"] is False
@@ -272,7 +281,7 @@ class TestSyncChannelRegistry:
         
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir
         )
         
@@ -284,7 +293,7 @@ class TestSyncChannelRegistry:
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, max_sources=0
         )
         
@@ -304,7 +313,7 @@ class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
         dest_dir = tmp_path / "installed"
         channel_key = b"channel-key"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main",
             channel_key=channel_key, 
             require_signed_channel=False
@@ -319,7 +328,7 @@ class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
         dest_dir = tmp_path / "installed"
         channel_key = b"channel-key"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main",
             channel_key=channel_key, 
             require_signed_channel=True
@@ -341,7 +350,7 @@ class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
         sig_data["channel_hash"] = "invalid"
         sig_path.write_text(json.dumps(sig_data))
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main",
             channel_key=channel_key, 
             require_signed_channel=False
@@ -358,7 +367,7 @@ class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
         
         sign_channel_file(channel_file, channel_key)
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main",
             channel_key=channel_key, 
             require_signed_channel=True
@@ -374,7 +383,7 @@ class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
-        result = sync_channel_registry(
+        result = call_sync(
             channel_file, key, dest_dir, channel="main",
             channel_key=None,
             require_signed_channel=True

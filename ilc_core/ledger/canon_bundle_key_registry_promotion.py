@@ -30,6 +30,110 @@ def _now_iso8601() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _validate_promotion_inputs(
+    src_dir: Path,
+    dest_dir: Path,
+    channel_data: dict,
+    src_channel: str,
+    dest_channel: str,
+    force: bool
+) -> tuple[list, list]:
+    """Validate promotion inputs and permissions."""
+    errors = []
+    warnings = []
+    
+    # Check same channel
+    if src_channel == dest_channel:
+        if not force:
+            errors.append("channel_same_as_source")
+        else:
+            warnings.append("channel_same_as_source_forced")
+            
+    channels = channel_data.get("channels", [])
+    if src_channel not in channels:
+        errors.append(f"channel_not_found:{src_channel}")
+        
+    if dest_channel not in channels:
+        if not force:
+            errors.append(f"channel_not_found:{dest_channel}")
+        else:
+            warnings.append("channel_added_by_force")
+            
+    # Check order
+    channel_order = channel_data.get("channel_order")
+    if channel_order:
+        if src_channel not in channel_order or dest_channel not in channel_order:
+            errors.append("channel_order_incomplete")
+        else:
+            src_idx = channel_order.index(src_channel)
+            dest_idx = channel_order.index(dest_channel)
+            if dest_idx < src_idx:
+                errors.append("channel_order_violation")
+    else:
+        warnings.append("channel_order_missing")
+        
+    # Check paths
+    if not src_dir.exists() or not os.access(src_dir, os.R_OK):
+        errors.append("src_not_readable")
+        
+    if dest_dir.exists():
+        if not os.access(dest_dir, os.W_OK):
+             errors.append("dest_not_writable")
+    elif not os.access(dest_dir.parent, os.W_OK):
+         errors.append("dest_not_writable")
+         
+    return errors, warnings
+
+
+def _perform_promotion(src_bundle: Path, dest_dir: Path) -> dict:
+    """Perform atomic copy of bundle."""
+    try:
+        dest_bundle = dest_dir / BUNDLE_DIR_NAME
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        
+        tmp_bundle = dest_dir / (BUNDLE_DIR_NAME + ".tmp")
+        if tmp_bundle.exists():
+            shutil.rmtree(tmp_bundle)
+        shutil.copytree(src_bundle, tmp_bundle)
+        
+        if dest_bundle.exists():
+            shutil.rmtree(dest_bundle)
+        tmp_bundle.rename(dest_bundle)
+        
+        return {"ok": True, "dest_bundle": dest_bundle}
+    except OSError as e:
+        return {"ok": False, "error": f"promotion_failed:{e}"}
+
+
+def _update_channel_after_promotion(
+    channel_file: Path,
+    channel_data: dict,
+    last_promotion: dict,
+    dest_channel: str,
+    switch: bool
+) -> dict:
+    """Update channel file with promotion metadata."""
+    try:
+        channel_data["last_promotion"] = last_promotion
+        channel_data["updated_at"] = _now_iso8601()
+        
+        if switch:
+            channel_data["current_channel"] = dest_channel
+            
+        # Ensure dest_channel is in channels list (if forced addition)
+        channels = channel_data.get("channels", [])
+        if dest_channel not in channels:
+            channels.append(dest_channel)
+            channels.sort()
+            channel_data["channels"] = channels
+            
+        content = json.dumps(channel_data, indent=2, sort_keys=True)
+        _atomic_write(channel_file, content)
+        return {"ok": True}
+    except OSError as e:
+        return {"ok": False, "error": f"channel_update_failed:{e}"}
+
+
 def promote_bundle(
     src_dir: Path,
     dest_dir: Path,
@@ -58,15 +162,7 @@ def promote_bundle(
     Returns:
         Dict with {ok, errors, warnings, last_promotion, actions}.
     """
-    errors = []
-    warnings = []
     actions = []
-    
-    # Check same channel
-    if src_channel == dest_channel:
-        if not force:
-            return {"ok": False, "errors": ["channel_same_as_source"], "warnings": []}
-        warnings.append("channel_same_as_source_forced")
     
     # Verify source bundle
     src_bundle = src_dir / BUNDLE_DIR_NAME
@@ -87,44 +183,13 @@ def promote_bundle(
         return {"ok": False, "errors": [channel_result["error"]], "warnings": []}
     
     channel_data = channel_result["data"]
-    channels = channel_data.get("channels", [])
     
-    # Check source channel exists
-    if src_channel not in channels:
-        return {"ok": False, "errors": ["channel_not_found:" + src_channel], "warnings": []}
-    
-    # Check destination channel exists
-    if dest_channel not in channels:
-        if not force:
-            return {"ok": False, "errors": ["channel_not_found:" + dest_channel], "warnings": []}
-        warnings.append("channel_added_by_force")
-        channels.append(dest_channel)
-        channels.sort()
-        channel_data["channels"] = channels
-        actions.append(f"add_channel:{dest_channel}")
-    
-    # Check channel order
-    channel_order = channel_data.get("channel_order")
-    if channel_order:
-        try:
-            src_idx = channel_order.index(src_channel)
-            dest_idx = channel_order.index(dest_channel)
-            if dest_idx < src_idx:
-                return {"ok": False, "errors": ["channel_order_violation"], "warnings": []}
-        except ValueError:
-            return {"ok": False, "errors": ["channel_order_incomplete"], "warnings": []}
-    else:
-        warnings.append("channel_order_missing")
-
-    # Check directories are accessible
-    if not src_dir.exists() or not os.access(src_dir, os.R_OK):
-        return {"ok": False, "errors": ["src_not_readable"], "warnings": warnings}
-    if dest_dir.exists():
-        if not os.access(dest_dir, os.W_OK):
-            return {"ok": False, "errors": ["dest_not_writable"], "warnings": warnings}
-    else:
-        if not os.access(dest_dir.parent, os.W_OK):
-            return {"ok": False, "errors": ["dest_not_writable"], "warnings": warnings}
+    # Validate inputs
+    val_errors, val_warnings = _validate_promotion_inputs(
+        src_dir, dest_dir, channel_data, src_channel, dest_channel, force
+    )
+    if val_errors:
+        return {"ok": False, "errors": val_errors, "warnings": val_warnings}
     
     # Build promotion log
     last_promotion = {
@@ -135,17 +200,20 @@ def promote_bundle(
         "key_id": verify_result.get("key_id"),
     }
     
+    # Record actions
+    if dest_channel not in channel_data.get("channels", []):
+        actions.append(f"add_channel:{dest_channel}")
     actions.append(f"copy_bundle:{src_channel}->{dest_channel}")
     actions.append("update_last_promotion")
     if switch:
         actions.append(f"set_current_channel:{dest_channel}")
     
-    # Dry run - return plan
+    # Dry run
     if dry_run:
         return {
             "ok": True,
             "errors": [],
-            "warnings": warnings,
+            "warnings": val_warnings,
             "dry_run": True,
             "actions": actions,
             "last_promotion": last_promotion,
@@ -153,43 +221,24 @@ def promote_bundle(
         }
     
     # Perform promotion
-    try:
-        dest_bundle = dest_dir / BUNDLE_DIR_NAME
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Atomic copy
-        tmp_bundle = dest_dir / (BUNDLE_DIR_NAME + ".tmp")
-        if tmp_bundle.exists():
-            shutil.rmtree(tmp_bundle)
-        shutil.copytree(src_bundle, tmp_bundle)
-        
-        if dest_bundle.exists():
-            shutil.rmtree(dest_bundle)
-        tmp_bundle.rename(dest_bundle)
-        
-    except OSError as e:
-        return {"ok": False, "errors": [f"promotion_failed:{e}"], "warnings": warnings}
+    promote_result = _perform_promotion(src_bundle, dest_dir)
+    if not promote_result["ok"]:
+        return {"ok": False, "errors": [promote_result["error"]], "warnings": val_warnings}
     
     # Update channel file
-    try:
-        channel_data["last_promotion"] = last_promotion
-        channel_data["updated_at"] = _now_iso8601()
-        if switch:
-            channel_data["current_channel"] = dest_channel
-        
-        content = json.dumps(channel_data, indent=2, sort_keys=True)
-        _atomic_write(channel_file, content)
-        
-    except OSError as e:
-        return {"ok": False, "errors": [f"channel_update_failed:{e}"], "warnings": warnings}
+    update_result = _update_channel_after_promotion(
+        channel_file, channel_data, last_promotion, dest_channel, switch
+    )
+    if not update_result["ok"]:
+        return {"ok": False, "errors": [update_result["error"]], "warnings": val_warnings}
     
     return {
         "ok": True,
         "errors": [],
-        "warnings": warnings,
+        "warnings": val_warnings,
         "dry_run": False,
         "actions": actions,
         "last_promotion": last_promotion,
-        "dest_bundle": str(dest_bundle),
+        "dest_bundle": str(promote_result["dest_bundle"]),
         "promoted": True,
     }

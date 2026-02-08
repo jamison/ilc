@@ -23,6 +23,16 @@ from ilc_core.ledger.canon_bundle_key_registry_bundle import (
 )
 
 
+def _canonicalize_source(source: str) -> str:
+    """Canonicalize source string for logging/comparison."""
+    parsed = urlparse(source)
+    if parsed.scheme == "file":
+        return str(Path(parsed.path).resolve())
+    if parsed.scheme in ("http", "https"):
+        return source.rstrip("/")
+    return str(Path(source).resolve())
+
+
 def _is_safe_archive_path(path_str: str) -> bool:
     """Check if archive path is safe (no traversal, no absolute paths)."""
     if path_str.startswith("/"):
@@ -46,35 +56,132 @@ def _download_url(url: str, dest_path: Path, timeout: int) -> dict:
         return {"ok": False, "error": f"source_download_failed:{e}"}
 
 
+def _extract_zip(archive_path: Path, dest_dir: Path) -> dict:
+    """Extract zip archive safely."""
+    try:
+        with zipfile.ZipFile(str(archive_path), "r") as zf:
+            for name in zf.namelist():
+                if not _is_safe_archive_path(name):
+                    return {"ok": False, "error": "archive_path_traversal"}
+            zf.extractall(dest_dir)
+        return {"ok": True}
+    except Exception as e:
+        return {"ok": False, "error": f"archive_extract_failed:{e}"}
+
+
+def _extract_tar(archive_path: Path, dest_dir: Path) -> dict:
+    """Extract tar archive safely."""
+    try:
+        with tarfile.open(str(archive_path), "r:*") as tf:
+            for member in tf.getmembers():
+                if not _is_safe_archive_path(member.name):
+                    return {"ok": False, "error": "archive_path_traversal"}
+            tf.extractall(dest_dir, filter="data")
+        return {"ok": True}
+    except Exception as e:
+        return {"ok": False, "error": f"archive_extract_failed:{e}"}
+
+
 def _extract_archive(archive_path: Path, dest_dir: Path) -> dict:
     """Extract zip or tar archive with path traversal protection."""
-    archive_path_str = str(archive_path)
+    path_str = str(archive_path)
     
-    # Try zip first
-    if zipfile.is_zipfile(archive_path_str):
-        try:
-            with zipfile.ZipFile(archive_path_str, "r") as zf:
-                for name in zf.namelist():
-                    if not _is_safe_archive_path(name):
-                        return {"ok": False, "error": "archive_path_traversal"}
-                zf.extractall(dest_dir)
-            return {"ok": True}
-        except Exception as e:
-            return {"ok": False, "error": f"archive_extract_failed:{e}"}
+    if zipfile.is_zipfile(path_str):
+        return _extract_zip(archive_path, dest_dir)
     
-    # Try tar
-    if tarfile.is_tarfile(archive_path_str):
-        try:
-            with tarfile.open(archive_path_str, "r:*") as tf:
-                for member in tf.getmembers():
-                    if not _is_safe_archive_path(member.name):
-                        return {"ok": False, "error": "archive_path_traversal"}
-                tf.extractall(dest_dir, filter="data")
-            return {"ok": True}
-        except Exception as e:
-            return {"ok": False, "error": f"archive_extract_failed:{e}"}
+    if tarfile.is_tarfile(path_str):
+        return _extract_tar(archive_path, dest_dir)
     
     return {"ok": False, "error": "archive_format_unknown"}
+
+
+def _fetch_remote_source(source: str, temp_dir: Path, allow_network: bool, timeout: int) -> dict:
+    """Attempt to fetch from remote HTTPS source."""
+    if not source.startswith("https://"):
+        return {"ok": True, "skipped": True}
+        
+    if not allow_network:
+         return {"ok": False, "error": "network_not_allowed"}
+    
+    archive_path = temp_dir / "bundle_archive"
+    dl_result = _download_url(source, archive_path, timeout)
+    if not dl_result["ok"]:
+        return {"ok": False, "error": dl_result["error"]}
+    
+    extract_dir = temp_dir / "extracted"
+    extract_dir.mkdir(exist_ok=True)
+    ext_result = _extract_archive(archive_path, extract_dir)
+    if not ext_result["ok"]:
+        return {"ok": False, "error": ext_result["error"]}
+        
+    # Find bundle dir
+    entries = [p for p in extract_dir.iterdir()]
+    if len(entries) != 1 or not entries[0].is_dir():
+         return {"ok": False, "error": "bundle_layout_invalid"}
+         
+    return {"ok": True, "bundle_dir": entries[0]}
+
+
+def _fetch_local_source(source: str, temp_dir: Path) -> dict:
+    """Attempt to fetch from local path or file:// URL."""
+    parsed = urlparse(source)
+    if parsed.scheme == "https":
+         return {"ok": True, "skipped": True}
+         
+    if parsed.scheme == "file":
+        path = Path(parsed.path)
+    else:
+        path = Path(source)
+        
+    if not path.exists():
+        return {"ok": False, "error": "source_not_found"}
+        
+    if path.is_dir():
+        bundle_dir = temp_dir / path.name
+        shutil.copytree(path, bundle_dir)
+        return {"ok": True, "bundle_dir": bundle_dir}
+    
+    # Archive
+    extract_dir = temp_dir / "extracted"
+    extract_dir.mkdir(exist_ok=True)
+    ext_result = _extract_archive(path, extract_dir)
+    if not ext_result["ok"]:
+        return {"ok": False, "error": ext_result["error"]}
+        
+    entries = [p for p in extract_dir.iterdir()]
+    if len(entries) != 1 or not entries[0].is_dir():
+         return {"ok": False, "error": "bundle_layout_invalid"}
+         
+    return {"ok": True, "bundle_dir": entries[0]}
+
+
+def _resolve_bundle_dir(source: str, temp_dir: Path, allow_network: bool, timeout: int) -> dict:
+    """Resolve source to a local directory containing the bundle."""
+    # Try remote
+    remote = _fetch_remote_source(source, temp_dir, allow_network, timeout)
+    if not remote.get("skipped"):
+        return remote
+        
+    # Try local
+    local = _fetch_local_source(source, temp_dir)
+    if not local.get("skipped"):
+        return local
+        
+    return {"ok": False, "error": "source_scheme_unsupported"}
+
+
+def _install_bundle(bundle_dir: Path, dest_dir: Path, force: bool, warnings: list) -> dict:
+    """Install verified bundle to destination."""
+    target = dest_dir / BUNDLE_DIR_NAME
+    if target.exists():
+        if not force:
+            return {"ok": False, "error": "bundle_exists"}
+        shutil.rmtree(target)
+    
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(bundle_dir), str(target))
+    
+    return {"ok": True, "installed_path": str(target)}
 
 
 def fetch_registry_bundle(
@@ -103,7 +210,6 @@ def fetch_registry_bundle(
     Returns:
         Dict with {ok, errors, warnings, bundle_dir, installed_to}.
     """
-    parsed = urlparse(source)
     temp_dir = None
     warnings = []
     
@@ -111,58 +217,12 @@ def fetch_registry_bundle(
         # Create temp directory
         temp_dir = Path(tempfile.mkdtemp(prefix="registry_bundle_"))
         
-        # Handle different source types
-        if parsed.scheme == "https":
-            if not allow_network:
-                return {"ok": False, "errors": ["network_not_allowed"], "warnings": []}
-            
-            # Download archive
-            archive_path = temp_dir / "bundle_archive"
-            download_result = _download_url(source, archive_path, timeout)
-            if not download_result["ok"]:
-                return {"ok": False, "errors": [download_result["error"]], "warnings": []}
-            
-            # Extract archive
-            extract_dir = temp_dir / "extracted"
-            extract_dir.mkdir()
-            extract_result = _extract_archive(archive_path, extract_dir)
-            if not extract_result["ok"]:
-                return {"ok": False, "errors": [extract_result["error"]], "warnings": []}
-            
-            # Find bundle directory
-            entries = [p for p in extract_dir.iterdir()]
-            if len(entries) != 1 or not entries[0].is_dir():
-                return {"ok": False, "errors": ["bundle_layout_invalid"], "warnings": []}
-            bundle_dir = entries[0]
-            
-        elif parsed.scheme == "file" or parsed.scheme == "":
-            # Local path or file:// URL
-            if parsed.scheme == "file":
-                source_path = Path(parsed.path)
-            else:
-                source_path = Path(source)
-            
-            if not source_path.exists():
-                return {"ok": False, "errors": ["source_not_found"], "warnings": []}
-            
-            if source_path.is_dir():
-                # Copy directory
-                bundle_dir = temp_dir / source_path.name
-                shutil.copytree(source_path, bundle_dir)
-            else:
-                # Assume it's an archive
-                extract_dir = temp_dir / "extracted"
-                extract_dir.mkdir()
-                extract_result = _extract_archive(source_path, extract_dir)
-                if not extract_result["ok"]:
-                    return {"ok": False, "errors": [extract_result["error"]], "warnings": []}
-                
-                entries = [p for p in extract_dir.iterdir()]
-                if len(entries) != 1 or not entries[0].is_dir():
-                    return {"ok": False, "errors": ["bundle_layout_invalid"], "warnings": []}
-                bundle_dir = entries[0]
-        else:
-            return {"ok": False, "errors": ["source_scheme_unsupported"], "warnings": []}
+        # Resolve source to bundle directory
+        resolve_result = _resolve_bundle_dir(source, temp_dir, allow_network, timeout)
+        if not resolve_result["ok"]:
+            return {"ok": False, "errors": [resolve_result["error"]], "warnings": []}
+        
+        bundle_dir = resolve_result["bundle_dir"]
         
         # Verify bundle
         verify_result = verify_registry_bundle(bundle_dir, key, strict=strict)
@@ -175,20 +235,15 @@ def fetch_registry_bundle(
         warnings.extend(verify_result.get("warnings", []))
         
         # Install to destination
-        target = dest_dir / BUNDLE_DIR_NAME
-        if target.exists():
-            if not force:
-                return {"ok": False, "errors": ["bundle_exists"], "warnings": warnings}
-            shutil.rmtree(target)
-        
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(bundle_dir), str(target))
+        install_result = _install_bundle(bundle_dir, dest_dir, force, warnings)
+        if not install_result["ok"]:
+             return {"ok": False, "errors": [install_result["error"]], "warnings": warnings}
         
         return {
             "ok": True,
             "errors": [],
             "warnings": warnings,
-            "bundle_dir": str(target),
+            "bundle_dir": install_result["installed_path"],
             "installed_to": str(dest_dir),
             "registry_hash": verify_result.get("registry_hash"),
             "key_id": verify_result.get("key_id"),
@@ -201,3 +256,4 @@ def fetch_registry_bundle(
         # Cleanup temp dir
         if temp_dir and temp_dir.exists() and not keep_temp:
             shutil.rmtree(temp_dir, ignore_errors=True)
+
