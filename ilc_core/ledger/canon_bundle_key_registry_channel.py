@@ -12,7 +12,9 @@ from pathlib import Path
 from typing import Optional
 
 
-CHANNEL_VERSION = "v0.3"
+
+CHANNEL_VERSION = "v0.4"
+CHANNEL_VERSION_V03 = "v0.3"
 CHANNEL_VERSION_V02 = "v0.2"
 CHANNEL_VERSION_V01 = "v0.1"
 CHANNEL_FILENAME = "canon_key_registry_channel.json"
@@ -23,6 +25,7 @@ STRICT_ISO8601_TZ_PATTERN = re.compile(
 ALLOWED_FIELDS = {
     "channel_version", "updated_at", "current_channel", "channels", "notes",
     "channel_order", "sources", "last_sync", "last_promotion",
+    "published_at", "channel_seq", "prev_channel_hash",
 }
 
 
@@ -75,7 +78,7 @@ def _validate_channel_schema(data: dict) -> tuple[list, list]:
     version = data.get("channel_version")
     if "channel_version" not in data:
         errors.append("schema_violation:missing_channel_version")
-    elif version not in (CHANNEL_VERSION, CHANNEL_VERSION_V02, CHANNEL_VERSION_V01):
+    elif version not in (CHANNEL_VERSION, CHANNEL_VERSION_V03, CHANNEL_VERSION_V02, CHANNEL_VERSION_V01):
         errors.append("schema_violation:invalid_channel_version")
     elif version == CHANNEL_VERSION_V01:
         warnings.append("channel_version_v01_deprecated")
@@ -85,6 +88,27 @@ def _validate_channel_schema(data: dict) -> tuple[list, list]:
         errors.append("schema_violation:missing_updated_at")
     elif not STRICT_ISO8601_TZ_PATTERN.match(str(data.get("updated_at", ""))):
         errors.append("schema_violation:invalid_updated_at")
+
+    # Validate v0.4 fields
+    if version == CHANNEL_VERSION:
+        # published_at
+        if "published_at" not in data:
+            errors.append("context_violation:missing_published_at")
+        elif not STRICT_ISO8601_TZ_PATTERN.match(str(data.get("published_at", ""))):
+            errors.append("value_violation:invalid_published_at")
+            
+        # channel_seq
+        channel_seq = data.get("channel_seq")
+        if "channel_seq" not in data:
+            errors.append("context_violation:missing_channel_seq")
+        elif type(channel_seq) is not int or channel_seq < 0:
+            errors.append("value_violation:invalid_channel_seq")
+            
+        # prev_channel_hash (optional)
+        prev_hash = data.get("prev_channel_hash")
+        if prev_hash is not None:
+             if not isinstance(prev_hash, str) or not re.match(r"^[0-9a-f]{64}$", prev_hash):
+                 errors.append("value_violation:invalid_prev_channel_hash")
     
     return errors, warnings
 

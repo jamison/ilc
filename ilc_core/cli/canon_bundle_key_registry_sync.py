@@ -157,6 +157,17 @@ def _setup_parser() -> argparse.ArgumentParser:
         dest="json_output",
         help="Force JSON output"
     )
+    parser.add_argument(
+        "--allow-channel-rollback",
+        action="store_true",
+        help="Allow regression to older channel sequence (requires --force in prod)"
+    )
+    parser.add_argument(
+        "--sync-state-file",
+        type=str,
+        default=None,
+        help="Path to local sync state file (default: <channel-file>.sync_state.json)"
+    )
     return parser
 
 
@@ -217,6 +228,9 @@ def main() -> int:
         channel_key=channel_key,
         channel_sig_path=channel_sig_path,
         require_signed_channel=require_signed,
+        allow_channel_rollback=args.allow_channel_rollback,
+        sync_state_file=Path(args.sync_state_file).resolve() if args.sync_state_file else None,
+        prod=True, # CLI is considered prod context by default for safety
     )
     
     result = sync_channel_registry(ctx)
@@ -229,10 +243,12 @@ def main() -> int:
     
     # Copy all relevant fields
     for field in ["channel", "source", "source_index", "channel_version",
-                  "bundle_hash", "key_id", "installed_path", "dry_run", 
+                  "bundle_hash", "key_id", "installed_path", "dry_run",
                   "dest", "actions", "attempted_sources", "failed_sources",
                   "successful_source_index", "last_sync",
-                  "sources_to_attempt", "failover_enabled"]:
+                  "sources_to_attempt", "failover_enabled",
+                  "seen_seq", "seen_hash", "channel_seq", "channel_hash",
+                  "freshness_decision", "rollback_override", "rollback_check_applied"]:
         if field in result:
             output[field] = result[field]
     
@@ -261,6 +277,11 @@ def main() -> int:
         "channel_signature_invalid_signed_at",
         "channel_signature_missing_field",
         "channel_key_missing_for_required_signature",
+        "channel_rollback_detected",
+        "channel_seq_hash_conflict",
+        "rollback_override_requires_force_in_prod",
+        "context_violation",
+        "value_violation",
     }
     io_errors = {
         "file_not_found",

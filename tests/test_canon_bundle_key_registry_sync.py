@@ -191,9 +191,8 @@ class TestSyncChannelRegistry:
         
         assert result["ok"] is False
         assert "sources_missing" in result["errors"]
-        data = json.loads(channel_file.read_text())
-        assert data["last_sync"]["ok"] is False
-        assert "sources_missing" in data["last_sync"]["errors"]
+        assert result["last_sync"]["ok"] is False
+        assert "sources_missing" in result["last_sync"]["errors"]
     
     def test_sync_fails_for_source_index_out_of_range(self, tmp_path):
         """Sync fails when source_index is out of range."""
@@ -206,9 +205,8 @@ class TestSyncChannelRegistry:
         
         assert result["ok"] is False
         assert "source_index_out_of_range" in result["errors"]
-        data = json.loads(channel_file.read_text())
-        assert data["last_sync"]["ok"] is False
-        assert "source_index_out_of_range" in data["last_sync"]["errors"]
+        assert result["last_sync"]["ok"] is False
+        assert "source_index_out_of_range" in result["last_sync"]["errors"]
     
     def test_sync_respects_allow_network_flag(self, tmp_path):
         """Sync respects allow_network flag for https sources."""
@@ -266,9 +264,8 @@ class TestSyncChannelRegistry:
         )
         assert result2["ok"] is False
         assert "dest_exists" in result2["errors"]
-        data = json.loads(channel_file.read_text())
-        assert data["last_sync"]["ok"] is False
-        assert "dest_exists" in data["last_sync"]["errors"]
+        assert result2["last_sync"]["ok"] is False
+        assert "dest_exists" in result2["last_sync"]["errors"]
     
     def test_sync_uses_current_channel_by_default(self, tmp_path):
         """Sync uses current_channel when channel not specified."""
@@ -299,9 +296,36 @@ class TestSyncChannelRegistry:
         
         assert result["ok"] is False
         assert "max_sources_invalid" in result["errors"]
-        data = json.loads(channel_file.read_text())
-        assert data["last_sync"]["ok"] is False
-        assert "max_sources_invalid" in data["last_sync"]["errors"]
+        assert result["last_sync"]["ok"] is False
+        assert "max_sources_invalid" in result["last_sync"]["errors"]
+
+    def test_sync_result_contain_freshness_fields(self, tmp_path):
+        """Sync result contains freshness telemetry fields."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        
+        result = call_sync(
+            channel_file, key, dest_dir, channel="main"
+        )
+        
+        assert result["ok"] is True
+        assert "seen_seq" in result
+        assert "seen_hash" in result
+        assert "rollback_check_applied" in result
+        assert result["rollback_check_applied"] is False  # v0.2 channel
+
+    def test_sync_prod_rejects_legacy_channel_version(self, tmp_path):
+        """Prod mode rejects channel versions older than v0.4."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+
+        result = call_sync(
+            channel_file, key, dest_dir, channel="main", prod=True
+        )
+
+        assert result["ok"] is False
+        assert "channel_version_unsupported_in_prod:v0.2" in result["errors"]
+
 
 
 class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
@@ -392,6 +416,36 @@ class TestSyncChannelSignaturePolicy(TestSyncChannelRegistry):
         assert result["ok"] is False
         assert "channel_key_missing_for_required_signature" in result["errors"]
 
+    def test_sync_does_not_mutate_signed_channel_file(self, tmp_path):
+        """Repeated signed syncs should not fail due to channel file mutation."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        channel_key = b"channel-key"
+
+        data = json.loads(channel_file.read_text())
+        data["channel_version"] = "v0.4"
+        data["published_at"] = "2026-02-08T12:00:00Z"
+        data["channel_seq"] = 1
+        channel_file.write_text(json.dumps(data))
+        sign_channel_file(channel_file, channel_key)
+
+        first = call_sync(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=channel_key,
+            prod=True,
+        )
+        assert first["ok"] is True
+
+        second = call_sync(
+            channel_file, key, dest_dir, channel="main",
+            channel_key=channel_key,
+            prod=True,
+            force=True,
+        )
+        assert second["ok"] is True
+        assert "channel_hash_mismatch" not in second["errors"]
+        assert "channel_signature_mismatch" not in second["errors"]
+
 
 class TestSyncCli:
     """Tests for sync CLI."""
@@ -416,8 +470,10 @@ class TestSyncCli:
         
         channel_file = tmp_path / "channel.json"
         channel_file.write_text(json.dumps({
-            "channel_version": "v0.2",
+            "channel_version": "v0.4",
             "updated_at": "2026-02-07T10:00:00Z",
+            "published_at": "2026-02-07T10:00:00Z",
+            "channel_seq": 1,
             "current_channel": channel_name,
             "channels": [channel_name],
             "sources": {
@@ -427,8 +483,13 @@ class TestSyncCli:
         
         key_file = tmp_path / "key.txt"
         key_file.write_bytes(key)
+
+        channel_key = b"channel-signing-key"
+        channel_key_file = tmp_path / "channel_key.txt"
+        channel_key_file.write_bytes(channel_key)
+        sign_channel_file(channel_file, channel_key)
         
-        return bundle_dir, channel_file, key_file
+        return bundle_dir, channel_file, key_file, channel_key_file
     
     def _run_cli(self, args, env=None):
         import subprocess
@@ -447,12 +508,13 @@ class TestSyncCli:
     
     def test_cli_sync_succeeds(self, tmp_path):
         """CLI sync succeeds."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path)
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
         ])
         
@@ -462,13 +524,14 @@ class TestSyncCli:
     
     def test_cli_failover_flags(self, tmp_path):
         """CLI accepts failover flags."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path, num_sources=2)
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path, num_sources=2)
         dest_dir = tmp_path / "installed"
         
         # Test dry-run with no-failover
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
             "--dry-run",
             "--no-failover",
@@ -481,12 +544,13 @@ class TestSyncCli:
     
     def test_cli_max_sources(self, tmp_path):
         """CLI respects max-sources."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path, num_sources=3)
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path, num_sources=3)
         dest_dir = tmp_path / "installed"
         
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
             "--dry-run",
             "--max-sources", "2",
@@ -498,12 +562,13 @@ class TestSyncCli:
 
     def test_cli_dry_run(self, tmp_path):
         """CLI dry run works."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path)
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
         
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
             "--dry-run",
         ])
@@ -516,18 +581,24 @@ class TestSyncCli:
         """CLI returns 1 for validation errors."""
         channel_file = tmp_path / "channel.json"
         channel_file.write_text(json.dumps({
-            "channel_version": "v0.2",
+            "channel_version": "v0.4",
             "updated_at": "2026-02-07T10:00:00Z",
+            "published_at": "2026-02-07T10:00:00Z",
+            "channel_seq": 1,
             "current_channel": "main",
             "channels": ["main"],
         }))
         key_file = tmp_path / "key.txt"
         key_file.write_bytes(b"test-key")
+        channel_key_file = tmp_path / "channel_key.txt"
+        channel_key_file.write_bytes(b"channel-signing-key")
+        sign_channel_file(channel_file, b"channel-signing-key")
         dest_dir = tmp_path / "installed"
         
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
         ])
         
@@ -539,19 +610,25 @@ class TestSyncCli:
         """CLI returns 1 for network policy violation."""
         channel_file = tmp_path / "channel.json"
         channel_file.write_text(json.dumps({
-            "channel_version": "v0.2",
+            "channel_version": "v0.4",
             "updated_at": "2026-02-07T10:00:00Z",
+            "published_at": "2026-02-07T10:00:00Z",
+            "channel_seq": 1,
             "current_channel": "main",
             "channels": ["main"],
             "sources": {"main": ["https://example.com/bundle.tar.gz"]},
         }))
         key_file = tmp_path / "key.txt"
         key_file.write_bytes(b"test-key")
+        channel_key_file = tmp_path / "channel_key.txt"
+        channel_key_file.write_bytes(b"channel-signing-key")
+        sign_channel_file(channel_file, b"channel-signing-key")
         dest_dir = tmp_path / "installed"
 
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
         ])
         assert result.returncode == 1
@@ -560,12 +637,13 @@ class TestSyncCli:
 
     def test_cli_network_disabled_can_still_fallback_to_local_source(self, tmp_path):
         """CLI falls back to local source if network disabled."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path, num_sources=2)
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path, num_sources=2)
         
         # Make first source https
         data = json.loads(channel_file.read_text())
         data["sources"]["main"][0] = "https://example.com/bundle.tar.gz"
         channel_file.write_text(json.dumps(data))
+        sign_channel_file(channel_file, channel_key_file.read_bytes())
         
         dest_dir = tmp_path / "installed"
         
@@ -573,6 +651,7 @@ class TestSyncCli:
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
         ])
         
@@ -584,28 +663,27 @@ class TestSyncCli:
 
     def test_cli_require_signed_channel_env(self, tmp_path):
         """CLI respects env var for requiring signature."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path)
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
+        sig_file = channel_file.with_suffix(channel_file.suffix + ".sig")
+        sig_file.unlink()
         
-        # Should fail with missing signature
+        # Should fail with missing signature when policy requires signature.
         result = self._run_cli([
             "--channel-file", str(channel_file),
             "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
             "--dest", str(dest_dir),
         ], env={"ILC_REQUIRE_SIGNED_CHANNEL": "1"})
         
         assert result.returncode == 1
         output = json.loads(result.stdout)
-        assert "channel_key_missing_for_required_signature" in output["errors"]
+        assert "channel_signature_missing" in output["errors"]
 
-    def test_cli_flag_overrides_env_require_signed_channel(self, tmp_path):
-        """CLI flag overrides env var."""
-        bundle_dir, channel_file, key_file = self._create_bundle_and_channel(tmp_path)
+    def test_cli_prod_mode_still_requires_signed_channel_key(self, tmp_path):
+        """Prod mode enforces signed channel policy even if no-require flag is set."""
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path)
         dest_dir = tmp_path / "installed"
-        
-        # Env=1 but Flag=False -> Should succeed (with warnings if key provided or just succeed if no key provided and not required)
-        # Actually if I say --no-require-signed-channel, it sets require=False. 
-        # If no key is provided, it just skips verification.
         
         result = self._run_cli([
             "--channel-file", str(channel_file),
@@ -613,6 +691,26 @@ class TestSyncCli:
             "--dest", str(dest_dir),
             "--no-require-signed-channel"
         ], env={"ILC_REQUIRE_SIGNED_CHANNEL": "1"})
+        
+        assert result.returncode == 1
+        output = json.loads(result.stdout)
+        assert "channel_key_missing_for_required_signature" in output["errors"]
+
+    def test_cli_rollback_flags(self, tmp_path):
+        """CLI accepts rollback flags."""
+        bundle_dir, channel_file, key_file, channel_key_file = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        state_file = tmp_path / "manual_state.json"
+        
+        result = self._run_cli([
+            "--channel-file", str(channel_file),
+            "--key-file", str(key_file),
+            "--channel-key-file", str(channel_key_file),
+            "--dest", str(dest_dir),
+            "--allow-channel-rollback",
+            "--sync-state-file", str(state_file),
+            "--dry-run"
+        ])
         
         assert result.returncode == 0
         output = json.loads(result.stdout)

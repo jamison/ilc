@@ -1,0 +1,24 @@
+{
+    "channel_version": "v0.4",
+    "updated_at": "2026-02-08T12:00:00Z",
+    "published_at": "2026-02-08T12:00:00Z",
+    "channel_seq": 42,
+    "prev_channel_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "current_channel": "main",
+    "channels": [
+        "main",
+        "test"
+    ],
+    "sources": {
+        "main": [
+            "https://example.com/bundles/main"
+        ],
+        "test": [
+            "https://example.com/bundles/test"
+        ]
+    },
+    "channel_order": [
+        "test",
+        "main"
+    ]
+}

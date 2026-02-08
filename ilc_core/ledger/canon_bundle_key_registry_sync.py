@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 
 from ilc_core.ledger.canon_bundle_key_registry_channel import (
     load_channel_file,
+    validate_channel_file,
     _atomic_write,
 )
 from ilc_core.ledger.canon_bundle_key_registry_channel_signing import (
@@ -23,6 +24,13 @@ from ilc_core.ledger.canon_bundle_key_registry_channel_signing import (
 from ilc_core.ledger.canon_bundle_key_registry_fetch import (
     fetch_registry_bundle,
     _canonicalize_source,
+)
+from ilc_core.ledger.canon_bundle_key_registry_sync_state import (
+    load_sync_state,
+    write_sync_state,
+    evaluate_channel_freshness,
+    ChannelFreshnessState,
+    file_lock,
 )
 from ilc_core.ledger.canon_bundle_key_registry_bundle import BUNDLE_DIR_NAME
 
@@ -47,9 +55,8 @@ class LastSyncRecord:
 
 def _record_last_sync(
     channel_file: Path,
-    channel_data: dict,
     record: LastSyncRecord,
-) -> None:
+) -> dict:
     """Best-effort write of last_sync metadata."""
     last_sync = {
         "channel": record.channel if record.channel is not None else "unknown",
@@ -65,12 +72,35 @@ def _record_last_sync(
     if record.selected_source_reason is not None:
         last_sync["selected_source_reason"] = record.selected_source_reason
     try:
-        channel_data["last_sync"] = last_sync
-        channel_data["updated_at"] = _now_iso8601()
-        content = json.dumps(channel_data, indent=2, sort_keys=True)
-        _atomic_write(channel_file, content)
+        sidecar = channel_file.with_suffix(channel_file.suffix + ".last_sync.json")
+        content = json.dumps(last_sync, indent=2, sort_keys=True)
+        _atomic_write(sidecar, content)
     except OSError:
-        return
+        pass
+    return last_sync
+
+
+def _fail_with_last_sync(
+    ctx: "SyncContext",
+    channel: Optional[str],
+    errors: List[str],
+    warnings: List[str],
+    selected_source_reason: str,
+    source: Optional[str] = None,
+) -> dict:
+    """Create standardized sync failure result with sidecar last_sync."""
+    last_sync = _record_last_sync(
+        ctx.channel_file,
+        LastSyncRecord(
+            channel=channel,
+            source=source,
+            ok=False,
+            errors=list(errors),
+            warnings=list(warnings),
+            selected_source_reason=selected_source_reason,
+        ),
+    )
+    return {"ok": False, "errors": list(errors), "warnings": list(warnings), "last_sync": last_sync}
 
 
 def _validate_sync_policy(
@@ -154,6 +184,9 @@ class SyncContext:
     channel_key: Optional[bytes] = None
     channel_sig_path: Optional[Path] = None
     require_signed_channel: bool = False
+    allow_channel_rollback: bool = False
+    sync_state_file: Optional[Path] = None
+    prod: bool = False
 
 
 def _attempt_sync_from_window(
@@ -204,12 +237,12 @@ def _attempt_sync_from_window(
 
 def _finalize_sync(
     ctx: SyncContext,
-    channel_data: dict,
     channel: str,
     channel_version: str,
     success_result: Optional[dict],
     attempts: List[Dict[str, Any]],
     warnings: List[str],
+    freshness_result: Optional[dict] = None,
 ) -> dict:
     """Finalize sync result, record metadata and return statistics."""
     # Determine overall status and selection
@@ -258,9 +291,7 @@ def _finalize_sync(
         bundle_hash=success_result.get("registry_hash") if success_result else None,
         key_id=success_result.get("key_id") if success_result else None,
     )
-    _record_last_sync(ctx.channel_file, channel_data, record)
-    
-    last_sync = channel_data.get("last_sync")
+    last_sync = _record_last_sync(ctx.channel_file, record)
     
     result = {
         "ok": ok,
@@ -276,6 +307,9 @@ def _finalize_sync(
         "last_sync": last_sync,
     }
     
+    if freshness_result:
+        result.update(freshness_result)
+    
     if ok and success_result:
         result["bundle_hash"] = success_result.get("registry_hash")
         result["key_id"] = success_result.get("key_id")
@@ -284,6 +318,215 @@ def _finalize_sync(
         result["warnings"].extend(success_result.get("warnings", []))
         
     return result
+
+
+
+
+def _do_freshness_check(
+    ctx: SyncContext,
+    channel_data: dict,
+    current_state: Optional[ChannelFreshnessState],
+    warnings: list,
+) -> tuple[Optional[dict], dict]:
+    """Execute core freshness logic given loaded state."""
+    freshness_result = {
+        "rollback_check_applied": False,
+        "freshness_decision": None,
+        "rollback_override": False,
+        "seen_seq": None,
+        "seen_hash": None,
+    }
+    
+    channel_version = channel_data.get("channel_version", "v0.1")
+    
+    if channel_version == "v0.3":
+        warnings.append("channel_version_v03_no_rollback_protection")
+        return None, freshness_result
+        
+    if channel_version != "v0.4":
+        return None, freshness_result
+
+    # v0.4 logic
+    curr_seq = channel_data.get("channel_seq")
+    if not isinstance(curr_seq, int):
+        return None, freshness_result
+        
+    from ilc_core.ledger.canon_bundle_key_registry_channel_signing import canonical_channel_bytes
+    import hashlib
+    curr_bytes = canonical_channel_bytes(ctx.channel_file)
+    curr_hash = hashlib.sha256(curr_bytes).hexdigest()
+    
+    seen_seq = current_state.seen_seq if current_state else None
+    seen_hash = current_state.seen_hash if current_state else None
+    
+    freshness_result["seen_seq"] = seen_seq
+    freshness_result["seen_hash"] = seen_hash
+    freshness_result["rollback_check_applied"] = True
+
+    is_fresh, code = evaluate_channel_freshness(seen_seq, seen_hash, curr_seq, curr_hash)
+    freshness_result["freshness_decision"] = code
+    
+    if is_fresh:
+        # Update state if not dry_run
+        if not ctx.dry_run:
+            new_state = ChannelFreshnessState(
+                seen_seq=curr_seq,
+                seen_hash=curr_hash,
+                updated_at=_now_iso8601(),
+            )
+            # We need to signal that state should be updated.
+            # But we are inside a function that doesn't have the file path or lock context effectively?
+            # Actually, `_check_channel_freshness` passed `current_state`.
+            # We need to return the NEW state to be written, or write it here?
+            # We can't write it here easily without the path.
+            # Let's return the new state object to be written by the caller.
+            freshness_result["_new_state"] = new_state
+        return None, freshness_result
+
+    # Not fresh - handle failure/override
+    if ctx.allow_channel_rollback:
+        if ctx.prod and not ctx.force:
+            err = "rollback_override_requires_force_in_prod"
+            res = {"ok": False, "errors": [err], "warnings": list(warnings)}
+            res.update(freshness_result)
+            return res, freshness_result
+        else:
+            warnings.append("channel_rollback_override_used")
+            freshness_result["rollback_override"] = True
+            # Even if override, we should update state to the new (older) sequence so we don't warn again?
+            # Yes, standard memory behavior: accept current state as new truth if override used.
+            if not ctx.dry_run:
+                new_state = ChannelFreshnessState(
+                    seen_seq=curr_seq,
+                    seen_hash=curr_hash,
+                    updated_at=_now_iso8601(),
+                )
+                freshness_result["_new_state"] = new_state
+            return None, freshness_result
+    else:
+        res = {"ok": False, "errors": [code], "warnings": list(warnings)}
+        res.update(freshness_result)
+        return res, freshness_result
+
+
+def _check_channel_freshness(
+    ctx: SyncContext,
+    channel_data: dict,
+    warnings: list,
+) -> tuple[Optional[dict], Optional[dict]]:
+    """
+    Check channel freshness against local state.
+    Returns (error_result, freshness_result).
+    """
+    sync_state_path = ctx.sync_state_file
+    if sync_state_path is None:
+        sync_state_path = ctx.channel_file.with_suffix(ctx.channel_file.suffix + ".sync_state.json")
+    
+    # Default empty result if we crash early
+    freshness_result = {} 
+
+    try:
+        with file_lock(sync_state_path):
+            current_state = load_sync_state(sync_state_path)
+            
+            err, freshness_result = _do_freshness_check(ctx, channel_data, current_state, warnings)
+            
+            if err:
+                return err, freshness_result
+
+            if (
+                ctx.prod
+                and channel_data.get("channel_version") == "v0.4"
+                and not freshness_result.get("rollback_check_applied")
+            ):
+                return {
+                    "ok": False,
+                    "errors": ["rollback_check_not_applied"],
+                    "warnings": list(warnings),
+                }, freshness_result
+            
+            # Check if we need to write state
+            new_state = freshness_result.pop("_new_state", None)
+            if new_state:
+                write_sync_state(sync_state_path, new_state)
+                
+    except Exception as e:
+        if ctx.prod:
+            return {"ok": False, "errors": [f"sync_state_error:{e}"], "warnings": list(warnings)}, freshness_result
+        warnings.append(f"sync_state_error_ignored_nonprod:{e}")
+
+    return None, freshness_result
+
+
+def _prepare_sync_channel(
+    ctx: SyncContext,
+    channel_data: dict,
+    warnings: List[str],
+) -> tuple[Optional[dict], Optional[dict], List[str], Optional[str], Optional[str]]:
+    """
+    Validate channel schema/policy and return normalized sync inputs.
+    Returns (error_result, channel_data, warnings, channel_version, audit_channel).
+    """
+    val_result = validate_channel_file(ctx.channel_file)
+    audit_channel = ctx.channel if ctx.channel is not None else channel_data.get("current_channel")
+    if not val_result["ok"]:
+        errors = list(val_result.get("errors", []))
+        return (
+            _fail_with_last_sync(
+                ctx,
+                audit_channel,
+                errors,
+                warnings,
+                selected_source_reason="channel_validation_failed",
+            ),
+            None,
+            warnings,
+            None,
+            None,
+        )
+
+    channel_data = val_result["data"]
+    warnings.extend(val_result.get("warnings", []))
+    channel_version = channel_data.get("channel_version", "v0.1")
+
+    if ctx.prod and channel_version != "v0.4":
+        errors = [f"channel_version_unsupported_in_prod:{channel_version}"]
+        return (
+            _fail_with_last_sync(
+                ctx,
+                audit_channel,
+                errors,
+                warnings,
+                selected_source_reason="channel_version_policy_failed",
+            ),
+            None,
+            warnings,
+            None,
+            None,
+        )
+
+    require_signed = ctx.require_signed_channel or ctx.prod
+    pol_ok, pol_errors, pol_warnings = _validate_sync_policy(
+        ctx.channel_file, ctx.channel_key, ctx.channel_sig_path, require_signed, warnings
+    )
+    warnings = pol_warnings
+    if not pol_ok:
+        return (
+            _fail_with_last_sync(
+                ctx,
+                audit_channel,
+                pol_errors,
+                warnings,
+                selected_source_reason="signature_policy_failed",
+            ),
+            None,
+            warnings,
+            None,
+            None,
+        )
+
+    return None, channel_data, warnings, channel_version, audit_channel
+
 
 
 def sync_channel_registry(ctx: SyncContext) -> dict:
@@ -304,30 +547,33 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
         return {"ok": False, "errors": [load_result["error"]], "warnings": warnings}
     
     channel_data = load_result["data"]
-    channel_version = channel_data.get("channel_version", "v0.1")
-    
-    # Resolve channel audit name (for logging even if validation fails)
-    audit_channel = ctx.channel if ctx.channel is not None else channel_data.get("current_channel")
-    
-    # Verify signature policy
-    pol_ok, pol_errors, pol_warnings = _validate_sync_policy(
-        ctx.channel_file, ctx.channel_key, ctx.channel_sig_path, ctx.require_signed_channel, warnings
+    prep_err, channel_data, warnings, channel_version, audit_channel = _prepare_sync_channel(
+        ctx, channel_data, warnings
     )
-    warnings = pol_warnings
+    if prep_err:
+        return prep_err
     
-    if not pol_ok:
-        _record_last_sync(
-            ctx.channel_file, channel_data,
-            LastSyncRecord(
-                channel=audit_channel,
-                ok=False,
-                errors=pol_errors,
-                warnings=warnings,
-                selected_source_reason="signature_policy_failed"
-            )
+    # Freshness Check (Phase 131)
+    fresh_err, freshness_result = _check_channel_freshness(ctx, channel_data, warnings)
+    if fresh_err:
+        err_result = _fail_with_last_sync(
+            ctx,
+            audit_channel,
+            fresh_err.get("errors", []),
+            fresh_err.get("warnings", warnings),
+            selected_source_reason="freshness_check_failed",
         )
-        return {"ok": False, "errors": pol_errors, "warnings": warnings}
-    
+        for field in (
+            "rollback_check_applied",
+            "freshness_decision",
+            "rollback_override",
+            "seen_seq",
+            "seen_hash",
+        ):
+            if field in fresh_err:
+                err_result[field] = fresh_err[field]
+        return err_result
+
     # Resolve channel
     channel = ctx.channel
     if channel is None:
@@ -343,51 +589,39 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
         err = None
     
     if err:
-        _record_last_sync(
-            ctx.channel_file, channel_data,
-             LastSyncRecord(
-                channel=channel,
-                ok=False,
-                errors=[err],
-                warnings=warnings,
-                selected_source_reason="window_exhausted" if ctx.failover else "no_failover"
-            )
+        return _fail_with_last_sync(
+            ctx,
+            channel,
+            [err],
+            warnings,
+            selected_source_reason="window_exhausted" if ctx.failover else "no_failover",
         )
-        return {"ok": False, "errors": [err], "warnings": warnings}
         
     # Resolve sources window
     window, win_errors = _resolve_sync_window(
         channel_data, channel, ctx.source_index, ctx.max_sources, ctx.failover
     )
     if win_errors:
-        _record_last_sync(
-            ctx.channel_file, channel_data,
-             LastSyncRecord(
-                channel=channel,
-                ok=False,
-                errors=win_errors,
-                warnings=warnings,
-                selected_source_reason="window_exhausted" if ctx.failover else "no_failover"
-            )
+        return _fail_with_last_sync(
+            ctx,
+            channel,
+            win_errors,
+            warnings,
+            selected_source_reason="window_exhausted" if ctx.failover else "no_failover",
         )
-        return {"ok": False, "errors": win_errors, "warnings": warnings}
         
     # Check dest exists
     dest_bundle = ctx.dest_dir / BUNDLE_DIR_NAME
     if dest_bundle.exists() and not ctx.force and not ctx.dry_run:
         selected = _canonicalize_source(window[0]) if window else None
-        _record_last_sync(
-            ctx.channel_file, channel_data,
-             LastSyncRecord(
-                channel=channel,
-                source=selected,
-                ok=False,
-                errors=["dest_exists"],
-                warnings=warnings,
-                selected_source_reason="window_exhausted" if ctx.failover else "no_failover"
-            )
+        return _fail_with_last_sync(
+            ctx,
+            channel,
+            ["dest_exists"],
+            warnings,
+            selected_source_reason="window_exhausted" if ctx.failover else "no_failover",
+            source=selected,
         )
-        return {"ok": False, "errors": ["dest_exists"], "warnings": warnings}
         
     if ctx.dry_run:
         return {
@@ -407,5 +641,5 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
     success_result, attempts = _attempt_sync_from_window(window, ctx.source_index, ctx)
             
     return _finalize_sync(
-        ctx, channel_data, channel, channel_version, success_result, attempts, warnings
+        ctx, channel, channel_version, success_result, attempts, warnings, freshness_result
     )
