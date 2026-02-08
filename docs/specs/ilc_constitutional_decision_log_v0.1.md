@@ -7,6 +7,7 @@ Companion proposal: `docs/specs/ilc_constitutional_decisions_proposal_v0.1.md`
 Triage reference:
 - `docs/research/constitution_clause_triage_v0.1.md`
 - `docs/research/constitution_mvp_criticality_v0.1.md`
+- `docs/research/constitution_mvp_guardrails_matrix_v0.1.md`
 - `docs/specs/ilc_constitutional_decisions_proposal_v0.2.md`
 
 ## Triage Snapshot
@@ -14,6 +15,12 @@ Triage reference:
 - `KEEP-NOW`: CDP-001, CDP-002, CDP-004, CDP-005, CDP-006, CDP-009
 - `KEEP-DEFER`: CDP-003, CDP-007, CDP-010
 - `DEFER-OUT`: CDP-008
+
+## MVP Guardrail Snapshot
+
+- Guardrail matrix: `docs/research/constitution_mvp_guardrails_matrix_v0.1.md`
+- `mvp_now` clauses require strict implementation (`CDP-001`, `CDP-002`, `CDP-006`).
+- `mvp_guardrail` clauses require explicit owner artifacts now and deferred-target tracking.
 
 ## Decision Register
 
