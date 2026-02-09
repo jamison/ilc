@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "mcp_tool_call_event_schema_v0.1",
+    "title": "mcp_tool_call Event Payload",
+    "description": "Schema for MCP tool call audit events logged to ProtocolEventLog.",
+    "type": "object",
+    "required": [
+        "tool_name",
+        "status",
+        "schema_version"
+    ],
+    "properties": {
+        "tool_name": {
+            "type": "string",
+            "description": "Name of the MCP tool that was invoked."
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "ok",
+                "error"
+            ],
+            "description": "Outcome of the tool invocation."
+        },
+        "schema_version": {
+            "type": "string",
+            "description": "Version of the MCP tools schema used."
+        },
+        "node_id": {
+            "type": "string",
+            "description": "Node ID for audit provenance (optional)."
+        },
+        "input": {
+            "type": "object",
+            "description": "Full input payload (mutually exclusive with input_summary)."
+        },
+        "input_summary": {
+            "type": "string",
+            "description": "Truncated summary of large input (mutually exclusive with input)."
+        },
+        "input_digest": {
+            "type": "string",
+            "description": "SHA-256 hex digest of input when summarized."
+        },
+        "output": {
+            "type": "object",
+            "description": "Full output payload (mutually exclusive with output_summary)."
+        },
+        "output_summary": {
+            "type": "string",
+            "description": "Truncated summary of large output (mutually exclusive with output)."
+        },
+        "output_digest": {
+            "type": "string",
+            "description": "SHA-256 hex digest of output when summarized."
+        },
+        "error": {
+            "type": "string",
+            "description": "Error message (required when status is error)."
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "status": {
+                        "const": "error"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "error"
+                ]
+            }
+        },
+        {
+            "not": {
+                "required": [
+                    "input",
+                    "input_summary"
+                ]
+            }
+        },
+        {
+            "not": {
+                "required": [
+                    "output",
+                    "output_summary"
+                ]
+            }
+        }
+    ],
+    "additionalProperties": false
+}

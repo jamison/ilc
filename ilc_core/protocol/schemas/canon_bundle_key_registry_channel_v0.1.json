@@ -1,0 +1,10 @@
+{
+    "channel_version": "v0.1",
+    "updated_at": "2026-02-07T10:00:00Z",
+    "current_channel": "main",
+    "channels": [
+        "experimental",
+        "main",
+        "test"
+    ]
+}

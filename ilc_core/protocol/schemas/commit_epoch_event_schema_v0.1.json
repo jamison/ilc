@@ -1,0 +1,95 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ilc-protocol.org/schemas/commit_epoch_event.v0.1.json",
+    "title": "ILC Commit Epoch Event",
+    "description": "Schema for the commit.epoch finalization event in the ILC protocol.",
+    "type": "object",
+    "required": [
+        "event_kind",
+        "epoch_index",
+        "epoch_id",
+        "namespace_id",
+        "created_at",
+        "finalization_state",
+        "summary",
+        "checksums"
+    ],
+    "properties": {
+        "event_kind": {
+            "type": "string",
+            "const": "commit.epoch"
+        },
+        "epoch_index": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Monotonically increasing epoch number."
+        },
+        "epoch_id": {
+            "type": "string",
+            "description": "Unique identifier for this epoch instance."
+        },
+        "namespace_id": {
+            "type": "string",
+            "description": "NodeID or CID of the emitting entity."
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp (UTC)."
+        },
+        "finalization_state": {
+            "type": "string",
+            "enum": [
+                "committed",
+                "rolled_back",
+                "superseded"
+            ],
+            "description": "State of the epoch finalization."
+        },
+        "summary": {
+            "type": "object",
+            "required": [
+                "task_count",
+                "agent_count",
+                "reward_total",
+                "stake_total"
+            ],
+            "properties": {
+                "task_count": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "agent_count": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "reward_total": {
+                    "type": "number",
+                    "minimum": 0.0
+                },
+                "stake_total": {
+                    "type": "number",
+                    "minimum": 0.0
+                }
+            }
+        },
+        "checksums": {
+            "type": "object",
+            "required": [
+                "epoch_events_cid",
+                "epoch_state_cid"
+            ],
+            "properties": {
+                "epoch_events_cid": {
+                    "type": "string",
+                    "description": "CID of the full event log segment."
+                },
+                "epoch_state_cid": {
+                    "type": "string",
+                    "description": "CID of the state snapshot."
+                }
+            }
+        }
+    },
+    "additionalProperties": false
+}

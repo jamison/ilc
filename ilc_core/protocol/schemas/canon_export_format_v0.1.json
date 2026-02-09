@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://ilc.org/schemas/canon_export_format_v0.1.json",
+    "type": "object",
+    "title": "Canon Export Format v0.1",
+    "required": [
+        "canon_export_format",
+        "canon_hash",
+        "exported_at",
+        "meta",
+        "epochs",
+        "snapshots"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "canon_export_format": {
+            "type": "string",
+            "const": "v0.1"
+        },
+        "canon_hash": {
+            "type": "string"
+        },
+        "computed_hash": {
+            "type": "string"
+        },
+        "exported_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "meta": {
+            "type": "object",
+            "required": [
+                "canon_export_version",
+                "epoch_count",
+                "snapshot_count",
+                "balance_count"
+            ],
+            "properties": {
+                "canon_export_version": {
+                    "type": "string"
+                },
+                "epoch_count": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "snapshot_count": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "balance_count": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "epochs": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "epoch_id"
+                ],
+                "additionalProperties": true
+            }
+        },
+        "snapshots": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "epoch_id",
+                    "balances"
+                ],
+                "additionalProperties": true
+            }
+        },
+        "kpis": {
+            "type": "object",
+            "properties": {
+                "epoch_count": {
+                    "type": "integer"
+                },
+                "snapshot_count": {
+                    "type": "integer"
+                },
+                "balance_count": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}
