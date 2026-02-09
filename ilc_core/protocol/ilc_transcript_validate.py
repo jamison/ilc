@@ -30,12 +30,21 @@ def _result(ok: bool, *, errors=None, warnings=None, version=None) -> Dict[str, 
     }
 
 def _get_sort_key(record: Dict[str, Any]) -> Tuple[str, str, str]:
-    # Key: (timestamp, event_kind, event_id)
-    return (
-        record.get("timestamp", ""),
-        record.get("event_kind", ""),
-        record.get("event_id", "")
-    )
+    """
+    Get deterministic sort key for a transcript record.
+    Key: (timestamp, normalized_kind, normalized_id)
+    """
+    timestamp = record.get("timestamp", "")
+    
+    # Normalize kind
+    if "receipt_id" in record:
+         kind = "receipt"
+         rec_id = record.get("receipt_id", "")
+    else:
+         kind = record.get("event_kind", "")
+         rec_id = record.get("event_id", "")
+         
+    return (timestamp, kind, rec_id)
 
 def _map_error(error: Any) -> str:
     path = ".".join(str(p) for p in error.path) or "root"
