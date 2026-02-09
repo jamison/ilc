@@ -32,7 +32,10 @@ from ilc_core.ledger.canon_bundle_key_registry_sync_state import (
     ChannelFreshnessState,
     file_lock,
 )
-from ilc_core.ledger.canon_bundle_key_registry_bundle import BUNDLE_DIR_NAME
+from ilc_core.ledger.canon_bundle_key_registry_bundle import (
+    BUNDLE_DIR_NAME,
+    verify_registry_bundle,
+)
 
 
 def _now_iso8601() -> str:
@@ -174,8 +177,24 @@ def _fail_with_last_sync(
     }
     if channel_version is not None:
         res["channel_version"] = channel_version
+        
+        if channel_version_policy is None:
+            decision = evaluate_channel_version_policy(
+                channel_version,
+                prod=ctx.prod,
+                allow_v03=ctx.allow_legacy_channel_v03,
+                allow_legacy=ctx.allow_legacy_channel_v02_v01,
+                force=ctx.force,
+            )
+            channel_version_policy = decision.policy
+
     if channel_version_policy is not None:
         res["channel_version_policy"] = channel_version_policy
+        # Heuristic for override usage in failure/early-exit path
+        if channel_version_policy in ("compat_v03", "legacy_breakglass"):
+            res["channel_version_override_used"] = True
+        else:
+            res["channel_version_override_used"] = False
         
     return res
 
@@ -729,6 +748,28 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
     # Check dest exists
     dest_bundle = ctx.dest_dir / BUNDLE_DIR_NAME
     if dest_bundle.exists() and not ctx.force and not ctx.dry_run:
+        # Idempotency check: if channel is fresh (or legacy) and bundle is valid, treat as success
+        is_fresh = freshness_result.get("freshness_decision") is None
+        
+        if is_fresh:
+            verify = verify_registry_bundle(dest_bundle, ctx.key, strict=ctx.strict)
+            if verify["ok"]:
+                # Idempotent success
+                warnings.extend(verify.get("warnings", []))
+                success_result = {
+                    "ok": True,
+                    "errors": [],
+                    "warnings": warnings,
+                    "bundle_dir": str(dest_bundle),
+                    "installed_to": str(ctx.dest_dir),
+                    "registry_hash": verify.get("registry_hash"),
+                    "key_id": verify.get("key_id"),
+                }
+                # No new fetch attempts made
+                return _finalize_sync(
+                    ctx, channel, channel_version, success_result, [], warnings, freshness_result
+                )
+
         selected = _canonicalize_source(window[0]) if window else None
         return _fail_with_last_sync(
             ctx,

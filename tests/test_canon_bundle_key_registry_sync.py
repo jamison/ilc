@@ -264,6 +264,10 @@ class TestSyncChannelRegistry:
         )
         assert result1["ok"] is True
         
+        # Corrupt the installed bundle so idempotency check fails
+        # This forces the logic to fall through to "dest_exists" failure
+        (dest_dir / "canon_key_registry_bundle_v0.1" / "registry_manifest.json").unlink()
+        
         # Second sync without force should fail
         result2 = call_sync(
             channel_file, key, dest_dir, channel="main"
