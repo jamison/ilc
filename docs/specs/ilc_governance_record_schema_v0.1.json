@@ -1,0 +1,91 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ilc-protocol.org/schemas/ilc_governance_record_schema_v0.1.json",
+    "title": "ILC Governance Record Schema v0.1",
+    "description": "Canonical schema for governance proposals and outcomes, including cryptographic signatures.",
+    "type": "object",
+    "required": [
+        "gov_record_id",
+        "protocol_version",
+        "timestamp",
+        "proposal_id",
+        "state",
+        "payload",
+        "signatures"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "protocol_version": {
+            "type": "string",
+            "const": "v0.1"
+        },
+        "gov_record_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Unique SHA-256 identifier for this governance record."
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+            "description": "ISO-8601 UTC timestamp."
+        },
+        "proposal_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "ID of the proposal this record pertains to."
+        },
+        "state": {
+            "type": "string",
+            "enum": [
+                "proposed",
+                "finalized",
+                "rejected"
+            ],
+            "description": "Current state of the governance procedure."
+        },
+        "payload": {
+            "type": "object",
+            "description": "The actual governance content (e.g., parameter updates). Structure depends on proposal type."
+        },
+        "signatures": {
+            "type": "array",
+            "minItems": 1,
+            "description": "List of cryptographic signatures authorizing this record.",
+            "items": {
+                "type": "object",
+                "required": [
+                    "key_id",
+                    "sig_alg",
+                    "signature",
+                    "signed_at"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "key_id": {
+                        "type": "string",
+                        "description": "Identifier of the signing key."
+                    },
+                    "sig_alg": {
+                        "type": "string",
+                        "enum": [
+                            "ed25519",
+                            "secp256k1"
+                        ],
+                        "description": "Signature algorithm used."
+                    },
+                    "signature": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]+$",
+                        "description": "Hex-encoded digital signature."
+                    },
+                    "signed_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "ISO-8601 UTC timestamp when signature was created."
+                    }
+                }
+            }
+        }
+    }
+}

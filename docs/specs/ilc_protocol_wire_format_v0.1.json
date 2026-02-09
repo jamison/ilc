@@ -1,0 +1,145 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ilc-protocol.org/schemas/ilc_protocol_wire_format_v0.1.json",
+    "title": "ILC Protocol Wire Format v0.1",
+    "description": "Canonical wire format for ILC protocol events: claims, refutations, and stake actions.",
+    "type": "object",
+    "required": [
+        "event_kind",
+        "protocol_version",
+        "event_id",
+        "timestamp",
+        "agent_id"
+    ],
+    "unevaluatedProperties": false,
+    "properties": {
+        "protocol_version": {
+            "type": "string",
+            "const": "v0.1",
+            "description": "Fixed protocol version identifier."
+        },
+        "event_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Unique SHA-256 identifier for this event."
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+            "description": "ISO-8601 UTC timestamp ending in Z."
+        },
+        "agent_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Identifier of the agent or entity generating this event."
+        },
+        "event_kind": {
+            "type": "string",
+            "enum": [
+                "claim",
+                "refute",
+                "stake"
+            ],
+            "description": "Discriminator for the type of event."
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "event_kind": {
+                        "const": "claim"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "content_hash"
+                ],
+                "properties": {
+                    "content_hash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$",
+                        "description": "SHA-256 hash of the claimed content."
+                    },
+                    "content_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Optional URL to the claimed content."
+                    },
+                    "context_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of parent event IDs this claim references or builds upon."
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "event_kind": {
+                        "const": "refute"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "target_claim_id",
+                    "reason"
+                ],
+                "properties": {
+                    "target_claim_id": {
+                        "type": "string",
+                        "description": "ID of the claim being refuted."
+                    },
+                    "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Explanation or code for the refutation."
+                    },
+                    "evidence_hash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$",
+                        "description": "Optional SHA-256 hash of supporting evidence."
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "event_kind": {
+                        "const": "stake"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "target_event_id",
+                    "amount",
+                    "currency"
+                ],
+                "properties": {
+                    "target_event_id": {
+                        "type": "string",
+                        "description": "ID of the event (claim or refute) being staked on."
+                    },
+                    "amount": {
+                        "type": "string",
+                        "pattern": "^[0-9]+$",
+                        "description": "Stake amount as a string of digits (integer)."
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Currency or token identifier (e.g., 'ILC')."
+                    }
+                }
+            }
+        }
+    ]
+}

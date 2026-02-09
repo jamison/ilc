@@ -449,3 +449,46 @@ class TestCanonBundleKeyRegistryIntegration:
         # Sync state should NOT be written for legacy channel
         sync_state_path = channel_file.with_suffix(channel_file.suffix + ".sync_state.json")
         assert not sync_state_path.exists()
+
+    def test_scenario_n_local_canon_history_invariant(self, tmp_path, key, channel_key):
+        """Scenario N: Local canon/history invariant (hash conflict)."""
+        bundle_dir = _create_bundle(tmp_path, key)
+        dest_dir = tmp_path / "installed"
+        
+        # 1. Sync Base State
+        channel_file_1 = _build_signed_channel(
+            tmp_path, version="v0.4", seq=10, source_path=str(bundle_dir), key=channel_key
+        )
+        res1 = _run_sync(channel_file_1, key, dest_dir, channel_key=channel_key, prod=True)
+        assert res1["ok"] is True
+        
+        # 2. Sync Conflict (Same Seq, Different Hash/Content)
+        # To simulate different hash, we need a bundle with different content or just same bundle?
+        # Sync state tracks channel hash. Channel hash covers the source pointers.
+        # If we change the source path or any field in channel file, hash changes.
+        
+        # Make a second bundle or just use same bundle but change channel metadata? 
+        # Changing channel metadata (e.g. timestamp) changes channel hash.
+        # _build_signed_channel uses fixed timestamp unless modified, but I can ask it to use different sources?
+        
+        # Let's create a scenario where the channel hash differs for same seq.
+        # We can modify the channel file manually or use _build_signed_channel with different input.
+        
+        # Different source path => different channel hash
+        bundle_dir_2 = tmp_path / "bundle_v2"
+        bundle_dir_2.mkdir()
+        # (Content doesn't matter for channel hash, just the string in "sources")
+        
+        channel_file_2 = _build_signed_channel(
+            tmp_path, 
+            version="v0.4", 
+            seq=10, # Same sequence
+            source_path=str(bundle_dir_2), # Different source -> Different Channel content -> Different Hash
+            key=channel_key
+        )
+        
+        res2 = _run_sync(channel_file_2, key, dest_dir, channel_key=channel_key, prod=True)
+        
+        assert res2["ok"] is False
+        assert "channel_seq_hash_conflict" in res2["errors"]
+        assert res2["rollback_check_applied"] is True

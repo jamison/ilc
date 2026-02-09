@@ -1,0 +1,69 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ilc-protocol.org/schemas/ilc_canonical_transcript_schema_v0.1.json",
+    "title": "ILC Canonical Transcript Schema v0.1",
+    "description": "Canonical schema for a deterministic, ordered log of protocol events and receipts.",
+    "type": "object",
+    "required": [
+        "transcript_id",
+        "protocol_version",
+        "timestamp_start",
+        "timestamp_end",
+        "previous_transcript_id",
+        "records"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "protocol_version": {
+            "type": "string",
+            "const": "v0.1"
+        },
+        "transcript_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 hash root of the transcript."
+        },
+        "previous_transcript_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "ID of the preceding transcript in the chain (or zero-hash if genesis)."
+        },
+        "timestamp_start": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start of the time window covered by this transcript."
+        },
+        "timestamp_end": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End of the time window covered by this transcript."
+        },
+        "records": {
+            "type": "array",
+            "description": "List of events and receipts, strictly sorted by [timestamp, event_kind, event_id].",
+            "items": {
+                "type": "object",
+                "description": "Polymorphic record wrapper. Must be a valid Wire Format event or Receipt.",
+                "oneOf": [
+                    {
+                        "required": [
+                            "protocol_version",
+                            "event_id",
+                            "timestamp",
+                            "event_kind"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "protocol_version",
+                            "receipt_id",
+                            "timestamp",
+                            "outcome",
+                            "payouts"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -32,6 +32,7 @@ include = ["ilc_core*"]
 
 [tool.setuptools.package-data]
 "ilc_core.mcp.schemas" = ["*.json"]
+"ilc_core.protocol.schemas" = ["*.json"]
 
 [project.scripts]
 ilc-mcp = "ilc_core.cli.mcp_cli:main"

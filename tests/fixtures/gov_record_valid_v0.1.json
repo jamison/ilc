@@ -1,0 +1,19 @@
+{
+    "protocol_version": "v0.1",
+    "gov_record_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "timestamp": "2026-02-09T16:00:00Z",
+    "proposal_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "state": "finalized",
+    "payload": {
+        "min_stake_amt": "1000",
+        "epoch_duration": "3600"
+    },
+    "signatures": [
+        {
+            "key_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "sig_alg": "ed25519",
+            "signature": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "signed_at": "2026-02-09T15:55:00Z"
+        }
+    ]
+}
