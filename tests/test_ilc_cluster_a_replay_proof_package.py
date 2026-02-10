@@ -160,3 +160,72 @@ def test_verify_fails_missing_field(governance_record, apply_result, conformance
     res = verify_cluster_a_replay_proof_package(package)
     assert res["ok"] is False
     assert E_MISSING_FIELD_PACKAGE in res["errors"]
+
+def test_verify_fails_malformed_input():
+    # Test non-dict input
+    res = verify_cluster_a_replay_proof_package(None)
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    assert res["checks"][0]["check"] == "check_package_root_type"
+
+    res = verify_cluster_a_replay_proof_package("not a dict")
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+
+    res = verify_cluster_a_replay_proof_package([])
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+
+def test_verify_fails_invalid_version(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    package["package_version"] = "v0.99"
+    # Recalculate hash to bypass hash check, so we hit version check validity?
+    # No, version check is 0.1, before hash check.
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    assert res["checks"][0]["check"] == "check_package_version"
+
+def test_verify_fails_malformed_evidence(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Malform evidence (not a dict)
+    package["evidence"] = "not a dict"
+    
+    # Recalculate package hash to pass step 2
+    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
+    package["package_hash_sha256"] = _canonical_package_digest(package)
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    # Should fail at check_evidence_type
+    assert any(c["check"] == "check_evidence_type" for c in res["checks"])
+
+def test_verify_fails_malformed_contract(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Malform replay_contract (not a dict)
+    package["replay_contract"] = "not a dict"
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    assert any(c["check"] == "check_replay_contract_type" for c in res["checks"])

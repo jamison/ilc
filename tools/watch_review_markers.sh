@@ -37,6 +37,8 @@ PY
 
 init_state_if_needed() {
   # Reinitialize state if missing or invalid JSON to avoid permanent crashes.
+  # IMPORTANT: initialize with an empty seen set so restart can backfill any
+  # marker files produced while watcher was offline.
   ROOT_DIR_ENV="${ROOT_DIR}" STATE_FILE_ENV="${STATE_FILE}" python3 - <<'PY'
 import json
 import os
@@ -44,28 +46,25 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 root = Path(os.environ["ROOT_DIR_ENV"])
-watch_dir = root / "automation" / "review_queue"
 state_path = Path(os.environ["STATE_FILE_ENV"])
 
-def rebuild():
-    seen = {}
-    for p in sorted(watch_dir.glob("*.json")):
-        rel = str(p.relative_to(root))
-        seen[rel] = int(p.stat().st_mtime)
+def rebuild_empty():
     payload = {
-        "seen_mtimes": seen,
+        "seen_mtimes": {},
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     state_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"Initialized review marker watcher with {len(seen)} existing marker(s).")
+    print("Initialized review marker watcher state with empty seen set.")
 
 if not state_path.exists():
-    rebuild()
+    rebuild_empty()
 else:
     try:
-        json.loads(state_path.read_text(encoding="utf-8"))
+        doc = json.loads(state_path.read_text(encoding="utf-8"))
+        if not isinstance(doc, dict) or not isinstance(doc.get("seen_mtimes", {}), dict):
+            rebuild_empty()
     except Exception:
-        rebuild()
+        rebuild_empty()
 PY
 }
 

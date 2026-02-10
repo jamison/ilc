@@ -3,15 +3,21 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WATCH_SCRIPT="${ROOT_DIR}/tools/watch_review_markers.sh"
+WATCHDOG_SCRIPT="${ROOT_DIR}/tools/watch_review_markers_watchdog.sh"
 STATE_DIR="${ROOT_DIR}/automation/state"
 PID_FILE="${STATE_DIR}/watch_review_markers.pid"
 LOG_FILE="${STATE_DIR}/watch_review_markers.log"
 HEARTBEAT_FILE="${STATE_DIR}/watch_review_markers_heartbeat.json"
+WATCHDOG_PID_FILE="${STATE_DIR}/watch_review_markers_watchdog.pid"
+WATCHDOG_LOG_FILE="${STATE_DIR}/watch_review_markers_watchdog.log"
 
 AUTO_CODEX_REVIEW="${AUTO_CODEX_REVIEW:-1}"
 REVIEW_ON_FAILED="${REVIEW_ON_FAILED:-1}"
 POLL_SECONDS="${POLL_SECONDS:-10}"
 STALE_SECONDS="${STALE_SECONDS:-90}"
+CHECK_INTERVAL_SECONDS="${CHECK_INTERVAL_SECONDS:-60}"
+START_WATCHDOG="${START_WATCHDOG:-1}"
+STOP_WATCHDOG="${STOP_WATCHDOG:-1}"
 
 usage() {
   cat <<'EOF'
@@ -22,17 +28,52 @@ Environment:
   REVIEW_ON_FAILED    default 1
   POLL_SECONDS        default 10
   STALE_SECONDS       default 90 (status freshness threshold)
+  CHECK_INTERVAL_SECONDS default 60 (watchdog check interval)
+  START_WATCHDOG      default 1 (start watchdog with watcher)
+  STOP_WATCHDOG       default 1 (stop watchdog when stopping watcher)
 EOF
 }
 
 is_running() {
   if [[ ! -f "${PID_FILE}" ]]; then
-    return 1
+    local discovered_pid
+    discovered_pid="$(pgrep -f '[/]tools/watch_review_markers.sh' | head -n1 || true)"
+    [[ -n "${discovered_pid}" ]] || return 1
+    echo "${discovered_pid}" > "${PID_FILE}"
+    return 0
   fi
   local pid
   pid="$(cat "${PID_FILE}" 2>/dev/null || true)"
-  [[ -n "${pid}" ]] || return 1
-  ps -p "${pid}" > /dev/null 2>&1
+  if [[ -n "${pid}" ]] && ps -p "${pid}" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  local discovered_pid
+  discovered_pid="$(pgrep -f '[/]tools/watch_review_markers.sh' | head -n1 || true)"
+  [[ -n "${discovered_pid}" ]] || return 1
+  echo "${discovered_pid}" > "${PID_FILE}"
+  return 0
+}
+
+watchdog_is_running() {
+  if [[ ! -f "${WATCHDOG_PID_FILE}" ]]; then
+    local discovered_pid
+    discovered_pid="$(pgrep -f '[/]tools/watch_review_markers_watchdog.sh' | head -n1 || true)"
+    [[ -n "${discovered_pid}" ]] || return 1
+    echo "${discovered_pid}" > "${WATCHDOG_PID_FILE}"
+    return 0
+  fi
+  local pid
+  pid="$(cat "${WATCHDOG_PID_FILE}" 2>/dev/null || true)"
+  if [[ -n "${pid}" ]] && ps -p "${pid}" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  local discovered_pid
+  discovered_pid="$(pgrep -f '[/]tools/watch_review_markers_watchdog.sh' | head -n1 || true)"
+  [[ -n "${discovered_pid}" ]] || return 1
+  echo "${discovered_pid}" > "${WATCHDOG_PID_FILE}"
+  return 0
 }
 
 heartbeat_age_seconds() {
@@ -62,6 +103,63 @@ except Exception:
 PY
 }
 
+start_watchdog() {
+  if [[ "${START_WATCHDOG}" != "1" ]]; then
+    return 0
+  fi
+
+  if watchdog_is_running; then
+    local pid
+    pid="$(cat "${WATCHDOG_PID_FILE}")"
+    echo "watch_review_markers_watchdog is already running (pid=${pid})"
+    return 0
+  fi
+
+  rm -f "${WATCHDOG_PID_FILE}"
+
+  nohup env \
+    AUTO_CODEX_REVIEW="${AUTO_CODEX_REVIEW}" \
+    REVIEW_ON_FAILED="${REVIEW_ON_FAILED}" \
+    POLL_SECONDS="${POLL_SECONDS}" \
+    STALE_SECONDS="${STALE_SECONDS}" \
+    CHECK_INTERVAL_SECONDS="${CHECK_INTERVAL_SECONDS}" \
+    "${WATCHDOG_SCRIPT}" loop >> "${WATCHDOG_LOG_FILE}" 2>&1 &
+  local pid="$!"
+  echo "${pid}" > "${WATCHDOG_PID_FILE}"
+
+  sleep 1
+  if watchdog_is_running; then
+    echo "watch_review_markers_watchdog started (pid=${pid})"
+  else
+    echo "Failed to start watch_review_markers_watchdog"
+    tail -n 40 "${WATCHDOG_LOG_FILE}" || true
+    return 1
+  fi
+}
+
+stop_watchdog() {
+  if ! watchdog_is_running; then
+    rm -f "${WATCHDOG_PID_FILE}"
+    echo "watch_review_markers_watchdog is not running"
+    return 0
+  fi
+
+  local pid
+  pid="$(cat "${WATCHDOG_PID_FILE}")"
+  kill "${pid}" >/dev/null 2>&1 || true
+
+  for _ in $(seq 1 20); do
+    if ps -p "${pid}" > /dev/null 2>&1; then
+      sleep 0.2
+    else
+      break
+    fi
+  done
+
+  rm -f "${WATCHDOG_PID_FILE}"
+  echo "watch_review_markers_watchdog stopped"
+}
+
 start() {
   mkdir -p "${STATE_DIR}"
 
@@ -69,31 +167,36 @@ start() {
     local pid
     pid="$(cat "${PID_FILE}")"
     echo "watch_review_markers is already running (pid=${pid})"
-    return 0
-  fi
-
-  # stale PID file
-  rm -f "${PID_FILE}"
-
-  nohup env \
-    AUTO_CODEX_REVIEW="${AUTO_CODEX_REVIEW}" \
-    REVIEW_ON_FAILED="${REVIEW_ON_FAILED}" \
-    POLL_SECONDS="${POLL_SECONDS}" \
-    "${WATCH_SCRIPT}" >> "${LOG_FILE}" 2>&1 &
-  local pid="$!"
-  echo "${pid}" > "${PID_FILE}"
-
-  sleep 1
-  if is_running; then
-    echo "watch_review_markers started (pid=${pid})"
   else
-    echo "Failed to start watch_review_markers"
-    tail -n 40 "${LOG_FILE}" || true
-    return 1
+    # stale PID file
+    rm -f "${PID_FILE}"
+
+    nohup env \
+      AUTO_CODEX_REVIEW="${AUTO_CODEX_REVIEW}" \
+      REVIEW_ON_FAILED="${REVIEW_ON_FAILED}" \
+      POLL_SECONDS="${POLL_SECONDS}" \
+      "${WATCH_SCRIPT}" >> "${LOG_FILE}" 2>&1 &
+    local pid="$!"
+    echo "${pid}" > "${PID_FILE}"
+
+    sleep 1
+    if is_running; then
+      echo "watch_review_markers started (pid=${pid})"
+    else
+      echo "Failed to start watch_review_markers"
+      tail -n 40 "${LOG_FILE}" || true
+      return 1
+    fi
   fi
+
+  start_watchdog
 }
 
 stop() {
+  if [[ "${STOP_WATCHDOG}" == "1" ]]; then
+    stop_watchdog
+  fi
+
   if ! is_running; then
     rm -f "${PID_FILE}"
     echo "watch_review_markers is not running"
@@ -124,6 +227,13 @@ status() {
     pid="$(cat "${PID_FILE}")"
   fi
 
+  local watchdog_running="no"
+  local watchdog_pid=""
+  if watchdog_is_running; then
+    watchdog_running="yes"
+    watchdog_pid="$(cat "${WATCHDOG_PID_FILE}")"
+  fi
+
   local age
   age="$(heartbeat_age_seconds)"
   local health="stopped"
@@ -137,6 +247,8 @@ status() {
 
   echo "running=${running}"
   echo "pid=${pid}"
+  echo "watchdog_running=${watchdog_running}"
+  echo "watchdog_pid=${watchdog_pid}"
   echo "heartbeat_age_seconds=${age}"
   echo "health=${health}"
 }
