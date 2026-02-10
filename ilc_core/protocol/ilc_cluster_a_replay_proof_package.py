@@ -103,13 +103,22 @@ def verify_cluster_a_replay_proof_package(package: Dict[str, Any]) -> Dict[str, 
             "warnings": [],
             "checks": [{"check": "check_package_root_type", "status": "fail", "error_code": E_SCHEMA_INVALID_PACKAGE}]
         }
+
+    # 1. Unknown Fields (additionalProperties: false)
+    ALLOWED_PKG_KEYS = {
+        "package_version", "record_hash_sha256", "evidence_contract_hash_sha256",
+        "package_hash_sha256", "evidence", "replay_contract"
+    }
+    if set(package.keys()) - ALLOWED_PKG_KEYS:
+        return {
+             "ok": False,
+             "errors": [E_SCHEMA_INVALID_PACKAGE],
+             "warnings": [],
+             "checks": [{"check": "check_package_unknown_fields", "status": "fail", "error_code": E_SCHEMA_INVALID_PACKAGE}]
+        }
         
-    # 0.1 Check Version Strictness
+    # 2. Check Version Strictness
     if package.get("package_version") != "v0.1":
-        # New token for version mismatch? Or schema invalid?
-        # Prompt suggested reusing tokens or defining explicitly.
-        # Let's reuse schema invalid or specific if needed.
-        # Let's use E_SCHEMA_INVALID_PACKAGE with a specific check context.
         return {
             "ok": False,
             "errors": [E_SCHEMA_INVALID_PACKAGE],
@@ -117,14 +126,13 @@ def verify_cluster_a_replay_proof_package(package: Dict[str, Any]) -> Dict[str, 
             "checks": [{"check": "check_package_version", "status": "fail", "error_code": E_SCHEMA_INVALID_PACKAGE}]
         }
 
-    # 1. Schema Validation (Required Fields)
+    # 3. Required Fields
     required = {
         "package_version", "record_hash_sha256", "evidence_contract_hash_sha256",
         "package_hash_sha256", "evidence", "replay_contract"
     }
     for f in required:
         if f not in package:
-            # Fatal schema error
             return {
                 "ok": False,
                 "errors": [E_MISSING_FIELD_PACKAGE],
@@ -132,7 +140,7 @@ def verify_cluster_a_replay_proof_package(package: Dict[str, Any]) -> Dict[str, 
                 "checks": [{"check": "check_package_schema_fields", "status": "fail", "error_code": E_MISSING_FIELD_PACKAGE}]
             }
             
-    # Check replay_contract fields
+    # 4. Check replay_contract fields
     replay_contract = package["replay_contract"]
     if not isinstance(replay_contract, dict):
         return {
@@ -141,6 +149,16 @@ def verify_cluster_a_replay_proof_package(package: Dict[str, Any]) -> Dict[str, 
             "warnings": [],
             "checks": [{"check": "check_replay_contract_type", "status": "fail", "error_code": E_SCHEMA_INVALID_PACKAGE}]
         }
+    
+    # Strict keys for replay_contract check?
+    ALLOWED_CONTRACT_KEYS = {"governance_record", "apply_result", "conformance_result"}
+    if set(replay_contract.keys()) - ALLOWED_CONTRACT_KEYS:
+         return {
+             "ok": False, 
+             "errors": [E_SCHEMA_INVALID_PACKAGE], 
+             "warnings": [],
+             "checks": [{"check": "check_replay_contract_unknown_fields", "status": "fail", "error_code": E_SCHEMA_INVALID_PACKAGE}]
+         }
         
     req_contract = {"governance_record", "apply_result", "conformance_result"}
     for f in req_contract:
@@ -152,7 +170,7 @@ def verify_cluster_a_replay_proof_package(package: Dict[str, Any]) -> Dict[str, 
                  "checks": [{"check": "check_replay_contract_fields", "status": "fail", "error_code": E_MISSING_FIELD_PACKAGE}]
              }
 
-    # Check evidence structure (Light)
+    # Check evidence structure (Light - detailed check happens later or via validate_evidence_schema if needed)
     evidence = package["evidence"]
     if not isinstance(evidence, dict):
          return {

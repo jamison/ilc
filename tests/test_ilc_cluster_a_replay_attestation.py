@@ -83,7 +83,7 @@ def test_attestation_pass(base_inputs, valid_evidence):
 def test_attest_hash_mismatch(base_inputs, valid_evidence):
     rec, app, conf = base_inputs
     # Tamper with evidence hash
-    bad_ev = {**valid_evidence, "record_hash_sha256": "badbeef"}
+    bad_ev = {**valid_evidence, "record_hash_sha256": "a" * 64}
     
     res = attest_cluster_a_replay(
         evidence=bad_ev,

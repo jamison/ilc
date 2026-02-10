@@ -119,3 +119,66 @@ def test_normalization_type_safety():
     # Invalid: list contains int
     with pytest.raises(TypeError):
         _sorted_unique_str(["a", 1])
+
+def test_validate_evidence_rejection_extra_fields(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    # Valid initially
+    assert validate_evidence_schema(ev) == []
+    
+    # Introduce extra field
+    ev["extra_field"] = "should not be here"
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:unknown_field_extra_field" in errors
+
+def test_validate_evidence_rejection_bad_hash(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    
+    # Bad hash length
+    ev["record_hash_sha256"] = "badhash"
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_format_record_hash_sha256" in errors
+    
+    # Non-string
+    ev["record_hash_sha256"] = 123
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_type_record_hash_sha256" in errors
+
+def test_validate_evidence_rejection_bad_timestamp_format(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    
+    # Missing Z
+    ev["generated_at"] = "2026-02-10T12:00:00" 
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_format_generated_at_utc_suffix" in errors
+    
+    # Bad ISO
+    ev["generated_at"] = "not-a-timestampZ"
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_format_generated_at_iso8601" in errors
+
+def test_validate_evidence_rejection_missing_fields(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    
+    del ev["artifact_kind"]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:missing_field_artifact_kind" in errors

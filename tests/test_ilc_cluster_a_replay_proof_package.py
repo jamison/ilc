@@ -228,4 +228,55 @@ def test_verify_fails_malformed_contract(governance_record, apply_result, confor
     res = verify_cluster_a_replay_proof_package(package)
     assert res["ok"] is False
     assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    # We allow checks to vary slightly but at least one should fail on type
     assert any(c["check"] == "check_replay_contract_type" for c in res["checks"])
+
+
+def test_verify_fails_unknown_package_field(governance_record, apply_result, conformance_result, evidence):
+    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
+        build_cluster_a_replay_proof_package, 
+        verify_cluster_a_replay_proof_package,
+        E_SCHEMA_INVALID_PACKAGE
+    )
+    
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Add unknown top-level field
+    package["unknown_garbage"] = "bad"
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    assert res["checks"][0]["check"] == "check_package_unknown_fields"
+
+
+def test_verify_fails_unknown_contract_field(governance_record, apply_result, conformance_result, evidence):
+    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
+        build_cluster_a_replay_proof_package, 
+        verify_cluster_a_replay_proof_package,
+        E_SCHEMA_INVALID_PACKAGE
+    )
+    
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Add unknown contract field
+    package["replay_contract"]["extra_stuff"] = {}
+    
+    # Recalculate package hash because modifying deeper structure changes hash? 
+    # Yes, contract is part of package. But wait, verification fails schema BEFORE hash check.
+    # So we don't even need to fix the hash to see the schema failure.
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_SCHEMA_INVALID_PACKAGE in res["errors"]
+    assert res["checks"][0]["check"] == "check_replay_contract_unknown_fields"
