@@ -1,10 +1,13 @@
 """
-Tests for ILC Cluster A Conformance and Policy Binding.
-Phase 136.
+Tests for ILC Cluster A conformance and hardening behavior.
+Phase 137.
 """
 import pytest
 from pathlib import Path
-from ilc_core.protocol.ilc_cluster_a_conformance import conformance_check_cluster_a_artifact
+from ilc_core.protocol.ilc_cluster_a_conformance import (
+    classify_conformance_result,
+    conformance_check_cluster_a_artifact,
+)
 
 # --- Fixtures ---
 
@@ -170,3 +173,91 @@ def test_envelope_keys(valid_wire_artifact, valid_policy_binding):
     
     binding_keys = {"policy_hash", "policy_epoch", "policy_window", "binding_ok"}
     assert set(res["policy_binding"].keys()) == binding_keys
+
+# --- Phase 137 Strictness Tests ---
+
+def test_governance_record_must_have_full_binding():
+    # 1. Gov record missing one binding field -> missing_policy_binding
+    gov = {
+        "protocol_version": "v0.1",
+        "gov_record_id": "a"*64,
+        "proposal_id": "b"*64,
+        "state": "proposed",
+        "timestamp": "2026-02-10T00:00:00Z",
+        "payload": {},
+        "signatures": [
+             {
+                "key_id": "key-1",
+                "sig_alg": "ed25519",
+                "signature": "a"*64,
+                "signed_at": "2026-02-10T00:00:00Z"
+            }
+        ]
+    }
+    # Valid binding fields (extracted then stripped)
+    # Case A: No binding -> Error
+    res = conformance_check_cluster_a_artifact(gov)
+    assert res["ok"] is False, f"Errors: {res.get('errors')}"
+    assert "context_violation:missing_policy_binding" in res["errors"]
+    
+    # Case B: Partial binding -> Error (Missing)
+    gov_partial = {**gov, "policy_hash": "1"*64}
+    res2 = conformance_check_cluster_a_artifact(gov_partial)
+    assert res2["ok"] is False
+    assert "context_violation:missing_policy_binding" in res2["errors"]
+
+def test_transcript_partial_binding_rejected():
+    # 2. Transcript with partial binding -> partial_policy_binding
+    transcript = {
+        "protocol_version": "v0.1",
+        "transcript_id": "d"*64,
+        "timestamp_start": "2026-02-10T00:00:00Z",
+        "timestamp_end": "2026-02-10T01:00:00Z",
+        "records": [],
+        "previous_transcript_id": "e"*64
+    }
+    # Partial binding
+    tr_partial = {**transcript, "policy_hash": "1"*64}
+    res = conformance_check_cluster_a_artifact(tr_partial)
+    assert res["ok"] is False
+    assert "context_violation:partial_policy_binding" in res["errors"], f"Got: {res.get('errors')}"
+
+def test_strict_mode_unbound_artifact_hard_fail(valid_wire_artifact):
+    # 4. expected context + unbound wire -> hard fail missing_policy_binding
+    # Wire artifact (optional binding normally)
+    # No binding in artifact. Expected hash provided.
+    res = conformance_check_cluster_a_artifact(
+        valid_wire_artifact,
+        expected_policy_hash="1"*64
+    )
+    assert res["ok"] is False
+    assert "context_violation:missing_policy_binding" in res["errors"]
+    assert "policy_binding_absent_unchecked" not in res["warnings"]
+
+def test_classify_conformance_result():
+    # 6. classify_conformance_result checks
+    
+    # Pass
+    res_ok = {"ok": True, "errors": [], "warnings": [], "policy_binding": {"binding_ok": True}}
+    cls = classify_conformance_result(res_ok)
+    assert cls["category"] == "pass"
+    
+    # Ingest Failure (policy_binding is None)
+    res_ingest = {"ok": False, "errors": ["invalid_json"], "policy_binding": None}
+    cls = classify_conformance_result(res_ingest)
+    assert cls["category"] == "ingest_failure"
+    
+    # Value Failure (policy_binding present but failed)
+    res_val = {"ok": False, "errors": ["value_violation:invalid_policy_epoch"], "policy_binding": {"binding_ok": False}}
+    cls = classify_conformance_result(res_val)
+    assert cls["category"] == "binding_value_failure"
+
+    # Structure Failure
+    res_struct = {"ok": False, "errors": ["context_violation:partial_policy_binding"], "policy_binding": {"binding_ok": False}}
+    cls = classify_conformance_result(res_struct)
+    assert cls["category"] == "binding_structure_failure"
+
+    # Context Failure
+    res_ctx = {"ok": False, "errors": ["context_violation:policy_hash_mismatch"], "policy_binding": {"binding_ok": False}}
+    cls = classify_conformance_result(res_ctx)
+    assert cls["category"] == "binding_context_mismatch"
