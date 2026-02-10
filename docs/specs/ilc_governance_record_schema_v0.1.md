@@ -33,6 +33,39 @@ The normative schema is defined in [ilc_governance_record_schema_v0.1.json](./il
 | `signature` | `string` | Hex-encoded signature. |
 | `signed_at` | `string` | ISO-8601 UTC timestamp. |
 
+## Runtime Acceptance Semantics (Cluster A)
+
+Schema validation alone is not sufficient for governance acceptance. Runtime ingest/conformance enforces the following rules:
+
+### 1) Record Identity Binding Mode
+
+- `record_digest_v1` is the canonical mode: identity checks bind `gov_record_id` to the SHA-256 digest of the entire record (excluding `signatures`).
+- `payload_hash_v0` is legacy compatibility mode and must be explicitly set in policy state.
+- Fail-closed rule: if `known_records` is non-empty and `known_records_hash_mode` is missing or unknown, acceptance must fail with `context_violation:known_records_hash_mode_required`.
+- Safe default: if `known_records` is empty and mode is missing/unknown, runtime defaults to `record_digest_v1`.
+
+### 2) Pure Apply Contract
+
+`apply_governance_record` is a pure function over inputs:
+
+- It must not mutate `current_policy_state`.
+- On success it returns a deterministic state delta at `data.policy_state_delta`:
+  - `proposals`: proposal state transition update.
+  - `known_records`: identity binding update for `gov_record_id`.
+  - `known_records_hash_mode`: effective mode used for this acceptance.
+
+### 3) Strict Governance Binding in Conformance
+
+Conformance policy checks (Phase 136/137) are strict for governance records:
+
+- Governance records require full policy binding (`policy_hash`, `policy_epoch`, `policy_window`).
+- If expected policy context is supplied and binding is missing, it is a hard failure (`context_violation:missing_policy_binding`).
+- Unchecked-binding warning (`policy_binding_absent_unchecked`) applies only when no expectations are provided.
+
+Implementation references:
+- `ilc_core/protocol/ilc_cluster_a_ingest.py`
+- `ilc_core/protocol/ilc_cluster_a_conformance.py`
+
 ## Examples
 
 ### Valid Finalized Record

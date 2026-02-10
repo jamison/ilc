@@ -19,7 +19,40 @@ from ilc_core.protocol.ilc_governance_record_validate import validate_governance
 
 # --- Helpers ---
 
-def _result(ok: bool, *, artifact_kind: Optional[str] = None, errors: List[str] = None, warnings: List[str] = None, version: Optional[str] = None, data: Any = None) -> Dict[str, Any]:
+ALLOWED_CODES = {
+    "context_violation:missing_signature_verification_context",
+    "context_violation:unknown_signing_key",
+    "context_violation:unsupported_sig_alg",
+    "value_violation:invalid_public_key_bytes",
+    "value_violation:invalid_signature_hex",
+    "value_violation:invalid_signature_length",
+    "context_violation:signature_verification_failed",
+    "context_violation:no_valid_signatures",
+    "context_violation:duplicate_signature_key_id",
+    "value_violation:invalid_min_valid_signatures",
+    "context_violation:gov_record_id_record_digest_conflict",
+    "context_violation:known_records_legacy_hash_mode",
+    "context_violation:signature_verification_unavailable",
+    "context_violation:gov_record_id_hash_conflict",
+    "context_violation:invalid_state_transition",
+    "context_violation:known_records_hash_mode_required",
+    # Inherited from validators (we don't strictly enforce these in allowed codes set for runtime yet, 
+    # but for this module's logic we should be strict)
+}
+
+KNOWN_RECORDS_HASH_MODE_PAYLOAD = "payload_hash_v0"
+KNOWN_RECORDS_HASH_MODE_DIGEST = "record_digest_v1"
+
+def _result(
+    ok: bool, 
+    *, 
+    artifact_kind: Optional[str] = None, 
+    errors: List[str] = None, 
+    warnings: List[str] = None, 
+    version: Optional[str] = None, 
+    data: Any = None,
+    error_details: List[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """
     Construct a deterministic result envelope.
     """
@@ -30,6 +63,7 @@ def _result(ok: bool, *, artifact_kind: Optional[str] = None, errors: List[str] 
         "warnings": sorted(warnings or []),
         "version": version,
         "data": data,
+        "error_details": error_details, # Optional field, None if empty/missing can be omitted by serializer if desired, here just consistent
     }
 
 def _infer_kind(obj: Dict[str, Any]) -> Optional[str]:
@@ -162,7 +196,7 @@ def assemble_canonical_transcript(records: List[Dict[str, Any]], *, transcript_m
     Sorts and validates.
     """
     errors: List[str] = []
-    valid_records: List[Dict[str, Any]] = []
+    valid_records: List[str] = []
     
     # 1. Validate Items
     for idx, rec in enumerate(records):
@@ -211,51 +245,199 @@ def assemble_canonical_transcript(records: List[Dict[str, Any]], *, transcript_m
         data=data
     )
 
-def apply_governance_record(record: Dict[str, Any], *, current_policy_state: Dict[str, Any]) -> Dict[str, Any]:
+# --- Phase 138: Signature Verification Helpers ---
+
+try:
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    _HAS_CRYPTO = True
+except ImportError:
+    _HAS_CRYPTO = False
+
+def canonical_governance_payload_bytes(record: Dict[str, Any]) -> bytes:
     """
-    Apply a governance record to current policy state.
-    Enforces validation and valid transitions.
+    Compute canonical bytes for signing from a governance record.
+    Removes 'signatures' field, sorts keys, uses compact separators.
+    """
+    payload = {k: v for k, v in record.items() if k != "signatures"}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+def verify_ed25519_signature(public_key_bytes: bytes, message: bytes, signature_hex: str) -> bool:
+    """
+    Verify Ed25519 signature.
+    Raises ValueError on invalid input format.
+    """
+    if not _HAS_CRYPTO:
+        raise RuntimeError("cryptography library missing")
+
+    if len(public_key_bytes) != 32:
+        raise ValueError("invalid_public_key_bytes")
+    
+    try:
+        sig = bytes.fromhex(signature_hex)
+    except ValueError:
+        raise ValueError("invalid_signature_hex")
+
+    if len(sig) != 64:
+        raise ValueError("invalid_signature_length")
+        
+    pk = ed25519.Ed25519PublicKey.from_public_bytes(public_key_bytes)
+    try:
+        pk.verify(sig, message)
+        return True
+    except Exception:
+        return False
+
+
+def canonical_governance_record_digest(record: Dict[str, Any]) -> str:
+    """
+    Compute canonical digest of the entire record (excluding signatures).
+    Used for identity binding in known_records.
+    """
+    # Exclude signatures, they are malleable witnessing data
+    obj = {k: v for k, v in record.items() if k != "signatures"}
+    # Deterministic JSON serialization
+    blob = json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()
+
+def _resolve_known_records_hash_mode(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Resolve known-record identity mode with fail-closed behavior.
+
+    Rules:
+    - Explicit `payload_hash_v0` or `record_digest_v1` are accepted.
+    - If mode is missing/unknown and `known_records` is non-empty, fail closed.
+    - If mode is missing/unknown and `known_records` is empty, default to `record_digest_v1`.
+    """
+    known_records = state.get("known_records", {})
+    if not isinstance(known_records, dict):
+        known_records = {}
+
+    mode = state.get("known_records_hash_mode")
+    if mode == KNOWN_RECORDS_HASH_MODE_PAYLOAD:
+        return {"ok": True, "mode": KNOWN_RECORDS_HASH_MODE_PAYLOAD, "warnings": []}
+    if mode == KNOWN_RECORDS_HASH_MODE_DIGEST:
+        return {"ok": True, "mode": KNOWN_RECORDS_HASH_MODE_DIGEST, "warnings": []}
+
+    if known_records:
+        return {
+            "ok": False,
+            "errors": ["context_violation:known_records_hash_mode_required"],
+            "error_details": [{
+                "code": "context_violation:known_records_hash_mode_required",
+                "known_records_hash_mode": mode,
+                "known_records_count": len(known_records),
+            }],
+        }
+
+    return {
+        "ok": True,
+        "mode": KNOWN_RECORDS_HASH_MODE_DIGEST,
+        "warnings": ["known_records_hash_mode_defaulted_to_record_digest_v1"],
+    }
+
+def _verify_governance_signatures(
+    record: Dict[str, Any],
+    governance_keyring: Dict[str, bytes],
+    min_valid_signatures: int
+) -> Tuple[List[str], List[str], List[Dict[str, Any]]]:
+    """
+    Verify signatures on a governance record.
+    Returns (valid_key_ids, errors, error_details).
     """
     errors: List[str] = []
+    error_details: List[Dict[str, Any]] = []
     
-    # 1. Validate Record
+    def _add(code: str, **ctx):
+        errors.append(code)
+        if ctx:
+            error_details.append({"code": code, **ctx})
+
+    if not _HAS_CRYPTO:
+         _add("context_violation:signature_verification_unavailable")
+         return [], errors, error_details
+
+    if not isinstance(min_valid_signatures, int) or min_valid_signatures < 1:
+        _add("value_violation:invalid_min_valid_signatures", min_valid_signatures=min_valid_signatures)
+        return [], errors, error_details
+
+    canonical_payload = canonical_governance_payload_bytes(record)
+    valid_key_ids = set()
+    seen_key_ids = set()
+    
+    for sig_block in record.get("signatures", []):
+        key_id = sig_block.get("key_id")
+        sig_alg = sig_block.get("sig_alg")
+        sig_hex = sig_block.get("signature")
+        
+        # M1: Duplicate check (Option A: Hard Fail)
+        if key_id in seen_key_ids:
+            _add("context_violation:duplicate_signature_key_id", key_id=key_id)
+            continue
+        seen_key_ids.add(key_id)
+        
+        # Check algorithm
+        if sig_alg != "ed25519":
+            _add("context_violation:unsupported_sig_alg", alg=sig_alg)
+            continue
+            
+        # Check key known
+        if key_id not in governance_keyring:
+            _add("context_violation:unknown_signing_key", key_id=key_id)
+            continue
+            
+        pub_key = governance_keyring[key_id]
+        
+        # Verify
+        try:
+            if verify_ed25519_signature(pub_key, canonical_payload, sig_hex):
+                valid_key_ids.add(key_id)
+            else:
+                 _add("context_violation:signature_verification_failed", key_id=key_id)
+        except ValueError as e:
+            _add(f"value_violation:{str(e)}", key_id=key_id)
+        except Exception:
+             _add("context_violation:signature_verification_failed", key_id=key_id)
+
+    # Check Threshold
+    if len(valid_key_ids) < min_valid_signatures:
+        if not errors: # If no specific verification errors but threshold failed
+             _add("context_violation:no_valid_signatures", required=min_valid_signatures, found=len(valid_key_ids))
+             
+    return sorted(list(valid_key_ids)), errors, error_details
+
+def apply_governance_record(
+    record: Dict[str, Any], 
+    *, 
+    current_policy_state: Dict[str, Any],
+    governance_keyring: Optional[Dict[str, bytes]] = None,
+    min_valid_signatures: int = 1
+) -> Dict[str, Any]:
+    """
+    Apply a governance record to current policy state.
+    Enforces validation, signature verification, and valid transitions.
+    """
+    # 1. Validate Record Schema
     val_res = validate_governance_record(record)
     if not val_res["ok"]:
         return _result(False, artifact_kind="governance_record", errors=val_res["errors"], warnings=val_res["warnings"])
-        
-    # 2. Check State Transition
-    # Allowed: 
-    #   (none/unknown) -> proposed (implicit initialization?)
-    #   proposed -> finalized
-    #   proposed -> rejected
-    # Context: current_policy_state might track the proposal state?
-    # Or does it valid transitions of the record's 'state' field itself?
-    # The prompt says: "Enforce minimal deterministic state transitions... allowed: proposed->finalized".
-    # This implies we are tracking the state OF THIS PROPOSAL ID in the policy history.
+
+    # 2. Verify Signatures (Phase 138)
+    if governance_keyring is None:
+        return _result(False, artifact_kind="governance_record", errors=["context_violation:missing_signature_verification_context"])
+
+    valid_key_ids, sig_errors, sig_details = _verify_governance_signatures(
+        record, governance_keyring, min_valid_signatures
+    )
     
+    if sig_errors:
+        return _result(False, artifact_kind="governance_record", errors=sig_errors, error_details=sig_details or None)
+        
+    # 3. Check State Transition
     proposal_id = record.get("proposal_id", "unknown")
     new_state = record.get("state", "unknown")
-    
-    # We need to know previous state of this proposal from current_policy_state?
-    # Assuming current_policy_state has structure { "proposals": { proposal_id: state } } ??
-    # Or implies checking consistency if we are updating an existing record?
-    # The prompt example: "if (old_state, new_state) not in allowed..."
-    
-    # Let's assume current_policy_state tracks proposal states.
     proposals_map = current_policy_state.get("proposals", {})
-    old_state = proposals_map.get(proposal_id, "proposed") # Default strictly? Or "new"?
+    actual_prev = proposals_map.get(proposal_id) # None if missing
     
-    # Special case: If we haven't seen it, it's effectively "new/proposed". 
-    # But if the record CLAIMS to be "finalized", and we haven't seen "proposed", is that allowed?
-    # Usually you promote status.
-    # Let's define:
-    #   None -> proposed (New proposal) - wait, record HAS a state.
-    #   So if record state is "proposed", allowed if old is None.
-    #   If record state is "finalized", allowed if old is "proposed".
-    
-    # Wait, apply_governance_record is usually applying a CHANGE.
-    # If the record is a "Proposal Record", it might be valid on its own.
-    # Transition Logic:
     allowed_transitions = {
         (None, "proposed"),
         ("proposed", "finalized"),
@@ -264,34 +446,67 @@ def apply_governance_record(record: Dict[str, Any], *, current_policy_state: Dic
         ("rejected", "rejected"),   # Idempotent re-apply
     }
     
-    actual_prev = proposals_map.get(proposal_id) # None if missing
-    
     if (actual_prev, new_state) not in allowed_transitions:
-        return _result(False, artifact_kind="governance_record", errors=[f"context_violation:invalid_state_transition:{actual_prev}:{new_state}"])
+        return _result(
+            False, 
+            artifact_kind="governance_record", 
+            errors=["context_violation:invalid_state_transition"], 
+            error_details=[{"code": "context_violation:invalid_state_transition", "prev": str(actual_prev), "current": str(new_state)}]
+        )
 
-    # 3. Check Hash Conflict (Idempotency Guard)
-    # If we have seen this ID before, payload/hash must match.
-    # prompt: "same gov_record_id + different payload hash must fail"
-    known_records = current_policy_state.get("known_records", {}) # map id -> hash
+    # 4. Resolve identity mode and check hash conflict (Identity Guard H1)
+    mode_resolution = _resolve_known_records_hash_mode(current_policy_state)
+    if not mode_resolution["ok"]:
+        return _result(
+            False,
+            artifact_kind="governance_record",
+            errors=mode_resolution["errors"],
+            error_details=mode_resolution.get("error_details"),
+        )
+
+    known_records_mode = mode_resolution["mode"]
+    mode_warnings = mode_resolution.get("warnings", [])
+
+    known_records_raw = current_policy_state.get("known_records", {}) # map id -> hash
+    known_records = known_records_raw if isinstance(known_records_raw, dict) else {}
     rec_id = record.get("gov_record_id")
-    
-    # Calculate hash of THIS record's payload
+    current_digest = canonical_governance_record_digest(record)
     current_payload_snapshot = _calc_policy_snapshot(record.get("payload", {}))
-    current_hash = current_payload_snapshot["policy_hash"]
+    current_payload_hash = current_payload_snapshot["policy_hash"]
     
     if rec_id in known_records:
         known_hash = known_records[rec_id]
-        if known_hash != current_hash:
-             return _result(False, artifact_kind="governance_record", errors=["context_violation:gov_record_id_hash_conflict"])
-             
-    # 4. Success -> Bind Metadata
+        if known_records_mode == KNOWN_RECORDS_HASH_MODE_PAYLOAD:
+            if known_hash != current_payload_hash:
+                return _result(False, artifact_kind="governance_record", errors=["context_violation:gov_record_id_hash_conflict"])
+        else:
+            if known_hash != current_digest:
+                return _result(False, artifact_kind="governance_record", errors=["context_violation:gov_record_id_record_digest_conflict"])
+
+    known_record_value = (
+        current_payload_hash
+        if known_records_mode == KNOWN_RECORDS_HASH_MODE_PAYLOAD
+        else current_digest
+    )
+
+    # 5. Success -> Bind metadata and return deterministic state delta (pure function)
     return _result(
         True,
         artifact_kind="governance_record",
+        warnings=mode_warnings,
         data={
             "proposal_id": proposal_id,
             "new_state": new_state,
-            "policy_snapshot": current_payload_snapshot
+            "policy_snapshot": current_payload_snapshot,
+            "verified_signers": valid_key_ids,
+            "record_digest": current_digest,
+            "record_digest_mode": KNOWN_RECORDS_HASH_MODE_DIGEST,
+            "known_records_hash_mode_effective": known_records_mode,
+            "policy_state_delta": {
+                "proposals": {proposal_id: new_state},
+                "known_records": {rec_id: known_record_value},
+                "known_records_hash_mode": known_records_mode,
+            },
         }
     )
     
