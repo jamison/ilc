@@ -15,7 +15,19 @@ The **Acceptance Evidence** artifact is a deterministic, portable record of a Cl
 - `record_uid`: (string) The `gov_record_id` of the evaluated record.
 - `record_hash_sha256`: (hex string) The SHA-256 digest of the canonical governance payload bytes (excluding signatures).
 - `transcript_hash_sha256`: (hex string | null) The digest of the transcript context, if applicable.
-- `generated_at`: (ISO-8601 string) Strict UTC timestamp of evidence generation.
+- `generated_at`: (ISO-8601 string) Strict UTC timestamp of evidence generation (e.g., `2025-10-25T12:00:00.123456Z`).
+
+### Schema Validation
+Strict JSON Schema available at: `docs/specs/ilc_cluster_a_acceptance_evidence_v0.1.json`.
+Artifacts MUST validate against this schema.
+
+### Canonical Hash Contract
+To ensure evidence integrity, a canonical digest is defined: `canonical_evidence_contract_digest(evidence)`.
+It relies on:
+1. Ordering keys of the evidence object.
+2. Sorting all list fields (`acceptance_errors`, `acceptance_warnings`, `constitution_checks`).
+3. Using strict JSON separators `(',', ':')` with no whitespace.
+4. Encoding as UTF-8 and computing SHA-256.
 
 ### Outcome
 - `accepted`: (boolean) True if and only if both application and conformance checks succeeded.
