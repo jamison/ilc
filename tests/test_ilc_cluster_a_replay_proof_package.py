@@ -1,0 +1,162 @@
+
+import pytest
+import copy
+from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
+    build_cluster_a_replay_proof_package,
+    verify_cluster_a_replay_proof_package,
+    E_SCHEMA_INVALID_PACKAGE,
+    E_MISSING_FIELD_PACKAGE,
+    E_HASH_MISMATCH_PACKAGE,
+    E_CONTRACT_HASH_MISMATCH,
+    E_RECORD_HASH_MISMATCH,
+    E_ATTESTATION_FAILED
+)
+from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import build_cluster_a_acceptance_evidence
+
+@pytest.fixture
+def governance_record():
+    return {
+        "gov_record_id": "rec_001",
+        "proposal_id": "prop_1",
+        "state": "proposed",
+        "payload": {"foo": "bar"},
+        "signatures": [] # Normally signatures here
+    }
+
+@pytest.fixture
+def apply_result():
+    return {"ok": True, "errors": [], "warnings": []}
+
+@pytest.fixture
+def conformance_result():
+    return {
+        "ok": True, 
+        "errors": [], 
+        "warnings": [], 
+        "constitution_checks": {
+            "checks": [{"check_id": "C1", "status": "pass"}]
+        }
+    }
+
+@pytest.fixture
+def evidence(governance_record, apply_result, conformance_result):
+    return build_cluster_a_acceptance_evidence(
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+
+def test_build_and_verify_success(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    assert package["package_version"] == "v0.1"
+    assert "package_hash_sha256" in package
+    
+    # Verify
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is True
+    assert res["errors"] == []
+    
+    checks = {c["check"] for c in res["checks"]}
+    assert "check_package_hash_match" in checks
+    assert "check_evidence_contract_hash_match" in checks
+    assert "check_record_hash_match" in checks
+    assert "check_replay_attest" in checks
+
+def test_verify_fails_package_hash_mismatch(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Tamper payload without updating hash
+    package["evidence"]["accepted"] = not package["evidence"]["accepted"]
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_HASH_MISMATCH_PACKAGE in res["errors"]
+
+def test_verify_fails_contract_hash_mismatch(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Tamper hash field
+    package["evidence_contract_hash_sha256"] = "bad" * 16 # roughly hex-ish length
+    # Update package hash to match the tampering of the hash field, so we pass package hash check
+    # But specifically, we need to bypass package hash check to reach contract hash check?
+    # verify_cluster_a_replay_proof_package stops at package hash check if mismatch.
+    # So we MUST update package hash.
+    
+    # Re-sign the package with the bad contract hash
+    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
+    package["package_hash_sha256"] = _canonical_package_digest(package)
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    # Should flag contract hash mismatch (claimed vs computed from evidence)
+    assert E_CONTRACT_HASH_MISMATCH in res["errors"]
+
+def test_verify_fails_record_hash_mismatch(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Tamper record inside replay_contract
+    package["replay_contract"]["governance_record"]["payload"]["foo"] = "baz"
+    
+    # Update package hash
+    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
+    package["package_hash_sha256"] = _canonical_package_digest(package)
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_RECORD_HASH_MISMATCH in res["errors"]
+
+def test_verify_fails_attestation_mismatch(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    # Change conformance result in contract (e.g. say it failed)
+    package["replay_contract"]["conformance_result"]["ok"] = False
+    
+    # Update package hash
+    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
+    package["package_hash_sha256"] = _canonical_package_digest(package)
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_ATTESTATION_FAILED in res["errors"]
+    # Should also see specific mismatch from attest
+    assert any("evidence_conformance_mismatch" in e for e in res["errors"])
+
+def test_verify_fails_missing_field(governance_record, apply_result, conformance_result, evidence):
+    package = build_cluster_a_replay_proof_package(
+        evidence=evidence,
+        governance_record=governance_record,
+        apply_result=apply_result,
+        conformance_result=conformance_result
+    )
+    
+    del package["replay_contract"]
+    
+    res = verify_cluster_a_replay_proof_package(package)
+    assert res["ok"] is False
+    assert E_MISSING_FIELD_PACKAGE in res["errors"]

@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ILC Cluster A Replay Proof Package v0.1",
+    "type": "object",
+    "required": [
+        "package_version",
+        "record_hash_sha256",
+        "evidence_contract_hash_sha256",
+        "package_hash_sha256",
+        "evidence",
+        "replay_contract"
+    ],
+    "properties": {
+        "package_version": {
+            "type": "string",
+            "const": "v0.1"
+        },
+        "record_hash_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidence_contract_hash_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+        },
+        "package_hash_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidence": {
+            "type": "object",
+            "description": "The full acceptance evidence artifact."
+        },
+        "replay_contract": {
+            "type": "object",
+            "required": [
+                "governance_record",
+                "apply_result",
+                "conformance_result"
+            ],
+            "properties": {
+                "governance_record": {
+                    "type": "object",
+                    "description": "The governance record sans signatures (or with). Must match record_hash."
+                },
+                "apply_result": {
+                    "type": "object",
+                    "required": [
+                        "ok"
+                    ],
+                    "properties": {
+                        "ok": {
+                            "type": "boolean"
+                        },
+                        "errors": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "warnings": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "conformance_result": {
+                    "type": "object",
+                    "required": [
+                        "ok"
+                    ],
+                    "properties": {
+                        "ok": {
+                            "type": "boolean"
+                        },
+                        "errors": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "warnings": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "constitution_checks": {
+                            "type": "object",
+                            "required": [
+                                "checks"
+                            ],
+                            "properties": {
+                                "checks": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "check_id",
+                                            "status"
+                                        ],
+                                        "properties": {
+                                            "check_id": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "additionalProperties": false
+}
