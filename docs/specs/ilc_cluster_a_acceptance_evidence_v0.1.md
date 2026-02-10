@@ -36,7 +36,9 @@ The **Acceptance Evidence** artifact is a deterministic, portable record of a Cl
 ## Determinism Rules
 1. All list fields (errors, warnings, checks) must be sorted.
 2. `record_hash_sha256` must be derived using the canonical ingest serialization.
-3. Timestamps must include timezone information (UTC).
+3. Timestamps must be strict ISO-8601 UTC strings ending in 'Z' (e.g., `2025-10-25T12:00:00.123456Z`).
 
 ## Replay Attestation
-The `ilc_cluster_a_replay_attestation` module verifies this artifact against a re-execution of the logic. Any mismatch results in `ok=False`.
+The `ilc_cluster_a_replay_attestation` module verifies this artifact against a re-execution of the logic.
+- Any semantic mismatch results in `ok=False` and specific context violation errors.
+- Any schema violation (invalid types, missing fields) results in `ok=False` and schema violation errors (fail-safe behavior).

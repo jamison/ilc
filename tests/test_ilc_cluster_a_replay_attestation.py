@@ -101,3 +101,35 @@ def test_attest_schema_fail(base_inputs, valid_evidence):
     )
     assert res["ok"] is False
     assert "schema_violation:evidence_missing_required_field" in res["errors"]
+
+def test_attest_schema_fail_invalid_types(base_inputs, valid_evidence):
+    rec, app, conf = base_inputs
+    
+    # helper to run check
+    def run(ev):
+        return attest_cluster_a_replay(
+            evidence=ev, governance_record=rec, apply_result=app, conformance_result=conf
+        )
+    
+    # 1. Accepted is not bool
+    bad_ev_1 = {**valid_evidence, "accepted": "yes"}
+    res_1 = run(bad_ev_1)
+    assert res_1["ok"] is False
+    assert E_SCHEMA_INVALID in res_1["errors"]
+    
+    # 2. Errors is not list of strings
+    bad_ev_2 = {**valid_evidence, "acceptance_errors": [123]}
+    res_2 = run(bad_ev_2)
+    assert res_2["ok"] is False
+    assert E_SCHEMA_INVALID in res_2["errors"]
+    
+    # 3. Constitution checks is not list of dicts
+    bad_ev_3 = {**valid_evidence, "constitution_checks": "invalid"}
+    res_3 = run(bad_ev_3)
+    assert res_3["ok"] is False
+    assert E_SCHEMA_INVALID in res_3["errors"]
+    
+    bad_ev_4 = {**valid_evidence, "constitution_checks": ["not-a-dict"]}
+    res_4 = run(bad_ev_4)
+    assert res_4["ok"] is False
+    assert E_SCHEMA_INVALID in res_4["errors"]

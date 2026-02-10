@@ -20,6 +20,51 @@ E_WARNING_SET_MISMATCH = "context_violation:evidence_warning_set_mismatch"
 E_SCHEMA_INVALID = "schema_violation:invalid_acceptance_evidence_shape"
 E_MISSING_FIELD = "schema_violation:evidence_missing_required_field"
 
+def _validate_evidence_schema(evidence: Dict[str, Any]) -> List[str]:
+    """
+    Strictly validate the shape of the evidence artifact.
+    Returns a list of error tokens if invalid.
+    """
+    errors = []
+    
+    # 1. Required Fields
+    required_fields = {
+        "record_hash_sha256", "conformance_ok", "constitution_checks", 
+        "accepted", "acceptance_errors", "acceptance_warnings"
+    }
+    for f in required_fields:
+        if f not in evidence:
+            errors.append(E_MISSING_FIELD)
+    
+    if errors:
+        return errors
+
+    # 2. Type Checks
+    if not isinstance(evidence["record_hash_sha256"], str):
+        errors.append(E_SCHEMA_INVALID)
+    if not isinstance(evidence["conformance_ok"], bool):
+        errors.append(E_SCHEMA_INVALID)
+    if not isinstance(evidence["accepted"], bool):
+        errors.append(E_SCHEMA_INVALID)
+        
+    # Lists
+    if not isinstance(evidence["acceptance_errors"], list) or \
+       not all(isinstance(x, str) for x in evidence["acceptance_errors"]):
+        errors.append(E_SCHEMA_INVALID)
+        
+    if not isinstance(evidence["acceptance_warnings"], list) or \
+       not all(isinstance(x, str) for x in evidence["acceptance_warnings"]):
+        errors.append(E_SCHEMA_INVALID)
+        
+    # Constitution checks must be list of dict
+    checks = evidence["constitution_checks"]
+    if not isinstance(checks, list) or \
+       not all(isinstance(x, dict) for x in checks):
+        errors.append(E_SCHEMA_INVALID)
+        
+    return sorted(list(set(errors)))
+
+
 def _emit_check(name: str, ok: bool, error_code: Optional[str] = None) -> Dict[str, Any]:
     return {
         "check": name,
@@ -49,20 +94,19 @@ def attest_cluster_a_replay(
     errors: List[str] = []
     checks: List[Dict[str, Any]] = []
     
-    # 0. Schema Check
-    required_fields = {
-        "record_hash_sha256", "conformance_ok", "constitution_checks", 
-        "accepted", "acceptance_errors", "acceptance_warnings"
-    }
-    missing = [f for f in required_fields if f not in evidence]
-    if missing:
-        errors.append(E_MISSING_FIELD)
+    # 0. Schema Validation (Fail-Safe)
+    schema_errors = _validate_evidence_schema(evidence)
+    if schema_errors:
+        # Schema failure is fatal to attestation logic but handled safely here.
+        # We return ok=False and only the schema errors.
         return {
             "ok": False,
-            "errors": sorted(errors),
+            "errors": sorted(schema_errors),
             "warnings": [],
-            "checks": [],
-            "missing_fields": sorted(missing)
+            "checks": [
+                _emit_check("check_evidence_schema_valid", False, e) 
+                for e in sorted(schema_errors)
+            ],
         }
 
     # 1. Check Record Hash

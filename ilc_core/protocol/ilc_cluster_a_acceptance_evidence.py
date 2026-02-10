@@ -11,9 +11,17 @@ from typing import Any, Dict, List, Optional
 from ilc_core.protocol.ilc_cluster_a_ingest import canonical_governance_record_digest
 
 def _sorted_unique_str(values: Optional[List[str]]) -> List[str]:
-    """Return sorted unique list of strings."""
+    """Return sorted unique list of strings. Raises TypeError if values contains non-strings."""
     if not values:
         return []
+        
+    if not isinstance(values, list):
+         raise TypeError("Values must be a list")
+         
+    for v in values:
+        if not isinstance(v, str):
+            raise TypeError(f"List must contain only strings, found {type(v)}")
+            
     return sorted(list(set(values)))
 
 def _normalize_constitution_checks(checks: Optional[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
@@ -60,11 +68,22 @@ def build_cluster_a_acceptance_evidence(
     # Use context timestamp if valid, else strictly generated now-time.
     to_use_ts = None
     if runtime_context and "timestamp" in runtime_context:
-        to_use_ts = runtime_context["timestamp"]
+        ctx_ts = runtime_context["timestamp"]
+        # Strict ISO-8601 UTC format check (must end in Z)
+        # Regex: YYYY-MM-DDTHH:MM:SS.mmmmmmZ or similar.
+        # Minimalist check: must be string, must end in 'Z', and parseable.
+        if not isinstance(ctx_ts, str) or not ctx_ts.endswith("Z"):
+             raise ValueError("runtime_context['timestamp'] must be a strict ISO-8601 UTC string ending in 'Z'")
+        to_use_ts = ctx_ts
         
     if not to_use_ts:
         # Strict UTC ISO-8601
         to_use_ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        if not to_use_ts.endswith("Z"):
+            # Ensure Z suffix behavior for python < 3.11 if needed, 
+            # though isoformat() with timezone.utc usually adds +00:00.
+            # We enforce Z for consistency with spec.
+            to_use_ts = to_use_ts.replace("+00:00", "Z")
 
     # 2. Derive Identity & Hash
     record_uid = governance_record.get("gov_record_id")

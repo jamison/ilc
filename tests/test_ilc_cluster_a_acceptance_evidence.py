@@ -86,3 +86,36 @@ def test_determinism_sorting():
     
     assert ev1["acceptance_errors"] == ["err_a", "err_m", "err_z"]
     assert ev1 == ev2 # strict equality
+
+def test_build_strict_timestamp_validation(mock_gov_record, mock_apply_res, mock_conf_res):
+    # 1. Invalid type
+    with pytest.raises(ValueError, match="strict ISO-8601 UTC string"):
+        build_cluster_a_acceptance_evidence(
+            governance_record=mock_gov_record,
+            apply_result=mock_apply_res,
+            conformance_result=mock_conf_res,
+            runtime_context={"timestamp": 12345}
+        )
+        
+    # 2. Missing Z suffix
+    with pytest.raises(ValueError, match="strict ISO-8601 UTC string"):
+        build_cluster_a_acceptance_evidence(
+            governance_record=mock_gov_record,
+            apply_result=mock_apply_res,
+            conformance_result=mock_conf_res,
+            runtime_context={"timestamp": "2026-02-10T12:00:00"}
+        )
+
+def test_normalization_type_safety():
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import _sorted_unique_str
+    
+    # Valid
+    assert _sorted_unique_str(["b", "a"]) == ["a", "b"]
+    
+    # Invalid: not a list
+    with pytest.raises(TypeError):
+        _sorted_unique_str("not-a-list")
+        
+    # Invalid: list contains int
+    with pytest.raises(TypeError):
+        _sorted_unique_str(["a", 1])
