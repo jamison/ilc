@@ -12,6 +12,7 @@ import re
 import json
 
 from ilc_core.protocol.ilc_cluster_a_ingest import ingest_cluster_a_artifact
+from ilc_core.protocol.ilc_cluster_a_clause_binding import evaluate_cluster_a_constitution_checks
 
 # --- Internal Helpers ---
 
@@ -23,6 +24,7 @@ def _stable_result(
     warnings: List[str] = None,
     version: Optional[str] = None,
     policy_binding: Optional[Dict[str, Any]] = None,
+    constitution_checks: Optional[Dict[str, Any]] = None,
     data: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     # Deduplicate errors and warnings while preserving sort
@@ -36,6 +38,7 @@ def _stable_result(
         "warnings": warnings,
         "version": version,
         "policy_binding": policy_binding,
+        "constitution_checks": constitution_checks,
         "data": data,
     }
 
@@ -189,7 +192,8 @@ def _assemble_final_result(
     struct_errors: List[str],
     ctx_errors: List[str],
     warnings: List[str],
-    binding: Dict[str, Any]
+    binding: Dict[str, Any],
+    constitution_checks: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Assembles the final deterministic result envelope."""
     all_errors = val_errors + struct_errors + ctx_errors
@@ -197,6 +201,8 @@ def _assemble_final_result(
     # Actually just pass to _stable_result.
     
     is_ok = len(all_errors) == 0
+    if not constitution_checks["ok"]:
+        is_ok = False
     
     binding_status = {
         "policy_hash": binding["policy_hash"],
@@ -212,6 +218,7 @@ def _assemble_final_result(
         warnings=warnings,
         version=ingest_res["version"],
         policy_binding=binding_status,
+        constitution_checks=constitution_checks,
         data=ingest_res["data"] if is_ok else None
     )
 
@@ -270,9 +277,20 @@ def conformance_check_cluster_a_artifact(
         expectations_provided, binding, struct_errors, ingest_res["warnings"]
     )
 
-    # 7. Result Assembly
+    # 7. Constitution Checks (Phase 140)
+    # Prepare context for binder
+    binder_ctx = {
+         "ingest_ok": ingest_res["ok"],
+         "binding_valid": (len(val_errors) == 0 and len(struct_errors) == 0),
+         "context_match": len(ctx_errors) == 0,
+         "expectations_provided": expectations_provided,
+         "all_errors": ingest_res.get("errors", []) + val_errors + struct_errors + ctx_errors
+    }
+    const_checks = evaluate_cluster_a_constitution_checks(binder_ctx)
+
+    # 8. Result Assembly
     return _assemble_final_result(
-        ingest_res, val_errors, struct_errors, ctx_errors, final_warnings, binding
+        ingest_res, val_errors, struct_errors, ctx_errors, final_warnings, binding, const_checks
     )
 
 def _has_error_prefix(errors: List[str], prefixes: Union[str, Tuple[str, ...]]) -> bool:

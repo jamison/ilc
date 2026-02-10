@@ -29,7 +29,7 @@ The normative schema is defined in [ilc_governance_record_schema_v0.1.json](./il
 | Field | Type | Description |
 |---|---|---|
 | `key_id` | `string` | ID of the signing key (referenced in Key Registry). |
-| `sig_alg` | `enum` | `"ed25519"` or `"secp256k1"`. |
+| `sig_alg` | `enum` | `"ed25519"`. |
 | `signature` | `string` | Hex-encoded signature. |
 | `signed_at` | `string` | ISO-8601 UTC timestamp. |
 

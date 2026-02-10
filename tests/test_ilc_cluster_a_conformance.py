@@ -141,10 +141,18 @@ def test_invalid_policy_window_value(valid_wire_artifact):
 
 def test_no_expected_binding_warns_if_unbound(valid_wire_artifact):
     # 11. No expected binding plus unbound artifact gives warning only
+    # Phase 140 update: CONST-004 requires policy-bound check.
+    # So if no expectations provided, CONST-004 fails, causing overall failure.
     res = conformance_check_cluster_a_artifact(valid_wire_artifact)
-    assert res["ok"] is True
+    assert res["ok"] is False
     assert "policy_binding_absent_unchecked" in res["warnings"]
-    assert res["policy_binding"]["binding_ok"] is True # It is "ok" because no errors.
+    assert res["policy_binding"]["binding_ok"] is False # Overall failure due to CONST-004
+    
+    # CONST-004 Check
+    checks = res["constitution_checks"]
+    assert checks["ok"] is False
+    c004 = next(c for c in checks["checks"] if c["check_id"] == "CONST-004")
+    assert c004["status"] == "fail"
 
 def test_deterministic_sorting_multiple_errors(valid_wire_artifact):
     # 12. Deterministic sorting of multiple errors
@@ -168,7 +176,7 @@ def test_envelope_keys(valid_wire_artifact, valid_policy_binding):
     artifact = {**valid_wire_artifact, **valid_policy_binding}
     res = conformance_check_cluster_a_artifact(artifact)
     
-    expected_keys = {"ok", "artifact_kind", "errors", "warnings", "version", "policy_binding", "data"}
+    expected_keys = {"ok", "artifact_kind", "errors", "warnings", "version", "policy_binding", "constitution_checks", "data"}
     assert set(res.keys()) == expected_keys
     
     binding_keys = {"policy_hash", "policy_epoch", "policy_window", "binding_ok"}

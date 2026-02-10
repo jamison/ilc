@@ -36,6 +36,10 @@ ALLOWED_CODES = {
     "context_violation:gov_record_id_hash_conflict",
     "context_violation:invalid_state_transition",
     "context_violation:known_records_hash_mode_required",
+    "schema_violation:invalid_type:policy_state.root",
+    "schema_violation:invalid_type:policy_state.proposals",
+    "schema_violation:invalid_type:policy_state.known_records",
+    "schema_violation:invalid_type:policy_state.known_records_hash_mode",
     # Inherited from validators (we don't strictly enforce these in allowed codes set for runtime yet, 
     # but for this module's logic we should be strict)
 }
@@ -65,6 +69,19 @@ def _result(
         "data": data,
         "error_details": error_details, # Optional field, None if empty/missing can be omitted by serializer if desired, here just consistent
     }
+
+def _emit(errors: List[str], details: List[Dict[str, Any]], code: str, **ctx) -> None:
+    """
+    Emit a runtime error with strict token enforcement.
+    """
+    if code not in ALLOWED_CODES:
+        # Fail fast in tests, or could log warning in prod. 
+        # For this phase, we treat adherence as mandatory.
+        raise ValueError(f"unapproved_error_code:{code}")
+        
+    errors.append(code)
+    if ctx:
+        details.append({"code": code, **ctx})
 
 def _infer_kind(obj: Dict[str, Any]) -> Optional[str]:
     """
@@ -348,9 +365,7 @@ def _verify_governance_signatures(
     error_details: List[Dict[str, Any]] = []
     
     def _add(code: str, **ctx):
-        errors.append(code)
-        if ctx:
-            error_details.append({"code": code, **ctx})
+        _emit(errors, error_details, code, **ctx)
 
     if not _HAS_CRYPTO:
          _add("context_violation:signature_verification_unavailable")
@@ -416,6 +431,22 @@ def apply_governance_record(
     Apply a governance record to current policy state.
     Enforces validation, signature verification, and valid transitions.
     """
+    # 0. Validate Policy State Shape (Hardening)
+    if not isinstance(current_policy_state, dict):
+         return _result(False, artifact_kind="governance_record", errors=["schema_violation:invalid_type:policy_state.root"])
+    
+    proposals_map = current_policy_state.get("proposals", {})
+    if not isinstance(proposals_map, dict):
+         return _result(False, artifact_kind="governance_record", errors=["schema_violation:invalid_type:policy_state.proposals"])
+
+    known_records_raw = current_policy_state.get("known_records", {})
+    if not isinstance(known_records_raw, dict):
+         return _result(False, artifact_kind="governance_record", errors=["schema_violation:invalid_type:policy_state.known_records"])
+    
+    mode_raw = current_policy_state.get("known_records_hash_mode")
+    if mode_raw is not None and not isinstance(mode_raw, str):
+         return _result(False, artifact_kind="governance_record", errors=["schema_violation:invalid_type:policy_state.known_records_hash_mode"])
+
     # 1. Validate Record Schema
     val_res = validate_governance_record(record)
     if not val_res["ok"]:

@@ -81,7 +81,7 @@ def validate_governance_record(path_or_obj: Union[str, Path, Dict[str, Any]]) ->
     version = obj.get("protocol_version")
 
     # 2. Validate Schema
-    validator = jsonschema.Draft202012Validator(_SCHEMA)
+    validator = jsonschema.Draft202012Validator(_SCHEMA, format_checker=jsonschema.FormatChecker())
     for error in validator.iter_errors(obj):
         errors.append(_map_error(error))
 

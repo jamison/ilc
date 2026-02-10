@@ -246,9 +246,11 @@ def test_apply_fails_unsupported_alg(clean_policy_state, key_context):
     }
     res = apply_governance_record(record, current_policy_state=clean_policy_state, governance_keyring=keyring)
     assert res["ok"] is False
-    assert "context_violation:unsupported_sig_alg" in res["errors"]
-    details = res.get("error_details", [])
-    assert any(d["code"] == "context_violation:unsupported_sig_alg" and d["alg"] == "secp256k1" for d in details)
+    # Schema validation (enum) triggers first now
+    errors = res["errors"]
+    is_schema = any("value_violation:invalid_enum" in e for e in errors)
+    is_context = "context_violation:unsupported_sig_alg" in errors
+    assert is_schema or is_context, f"Got: {errors}"
 
 def test_apply_multisig_threshold(clean_policy_state, key_context):
     """H1: Must meet min_valid_signatures threshold."""
@@ -531,7 +533,7 @@ def test_apply_invalid_threshold(clean_policy_state, key_context):
         "state": "proposed", 
         "timestamp": "2023-01-01T00:00:00Z",
         "payload": {},
-        "signatures": [{"key_id": "key_a", "sig_alg": "ed25519", "signature": "a"*64, "signed_at": "..."}]
+        "signatures": [{"key_id": "key_a", "sig_alg": "ed25519", "signature": "a"*64, "signed_at": "2023-01-01T00:00:00Z"}]
     })
 
     # Case 1: threshold < 1
