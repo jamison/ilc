@@ -31,7 +31,7 @@ def test_ingest_kind_mismatch():
 def test_envelope_shape():
     obj = {"event_id": "1", "event_kind": "claim"}
     res = ingest_cluster_a_artifact(obj)
-    assert set(res.keys()) == {"ok", "artifact_kind", "errors", "warnings", "version", "data"}
+    assert set(res.keys()) == {"ok", "artifact_kind", "errors", "warnings", "version", "data", "error_details"}
     assert res["artifact_kind"] == "wire"
     assert res["ok"] is False
     assert isinstance(res["errors"], list)

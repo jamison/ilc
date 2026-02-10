@@ -72,6 +72,7 @@ def test_assemble_rejects_invalidProvider():
     assert res["ok"] is False
     assert any("context_violation:record_not_wire_or_receipt:1" in e for e in res["errors"])
 
+
 def test_assemble_sorts_same_timestamp_by_kind():
     ts = "2026-02-09T20:00:00Z"
     
@@ -118,3 +119,70 @@ def test_assemble_sorts_same_timestamp_by_kind():
     assert out[0]["event_kind"] == "claim"
     assert "receipt_id" in out[1] # Receipt
     assert out[2]["event_kind"] == "stake"
+
+def test_transcript_assembly_deterministic_ordering():
+    """
+    M1: Verify canonical transcript ordering key: (timestamp, normalized_kind, normalized_id).
+    """
+    # Mixed records with identical timestamps to force secondary key usage
+    t = "2023-01-01T12:00:00Z"
+    
+    # Wire A: kind="stake", id="aaa"
+    rec_wire_a = {
+        "protocol_version": "v0.1",
+        "event_id": "aaa"*21 + "a", # 64 chars
+        "event_kind": "stake",
+        "timestamp": t,
+        "agent_id": "ag1",
+        "target_event_id": "evt1"*16, # 64 chars needed? Schema check usually
+        "amount": "100",
+        "currency": "ILC"
+    }
+    # Wire B: kind="stake", id="bbb"
+    rec_wire_b = {
+        "protocol_version": "v0.1",
+        "event_id": "bbb"*21 + "b", # 64 chars
+        "event_kind": "stake",
+        "timestamp": t,
+        "agent_id": "ag1",
+        "target_event_id": "evt1"*16,
+        "amount": "100",
+        "currency": "ILC"
+    }
+    # Receipt A: kind="receipt", id="aaa" 
+    rec_receipt_a = {
+        "protocol_version": "v0.1",
+        "receipt_id": "aaa"*21 + "a", # Same ID as wire_a
+        "outcome": "valid", # Enum "valid" not "success"
+        "timestamp": t,
+        "related_claim_id": "c"*64,
+        "payouts": []
+    }
+    
+    # Order expectation:
+    # 1. timestamp (all same)
+    # 2. kind ("receipt" vs "stake") 
+    #    "receipt" < "stake" ('r' < 's')
+    # 3. id
+    
+    records = [rec_wire_b, rec_receipt_a, rec_wire_a]
+    meta = {
+        "transcript_id": "a"*64,  # valid hex
+        "timestamp_start": t, 
+        "timestamp_end": t,
+        "previous_transcript_id": "0"*64
+    }
+    
+    res = assemble_canonical_transcript(records, transcript_meta=meta)
+    assert res["ok"] is True, f"Errors: {res.get('errors')}"
+    
+    sorted_recs = res["data"]["records"]
+    
+    # 1. Receipt (kind="receipt") vs Wire (kind="stake")
+    assert "receipt_id" in sorted_recs[0], "Receipt should be first (r < s)"
+    assert sorted_recs[0]["receipt_id"] == rec_receipt_a["receipt_id"]
+    
+    # 2. Wire A vs Wire B (same kind, sort by ID)
+    assert sorted_recs[1]["event_id"] == rec_wire_a["event_id"]
+    assert sorted_recs[2]["event_id"] == rec_wire_b["event_id"]
+
