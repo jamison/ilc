@@ -115,7 +115,8 @@
                         }
                     }
                 }
-            }
+            },
+            "additionalProperties": false
         }
     },
     "additionalProperties": false

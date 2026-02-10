@@ -182,3 +182,48 @@ def test_validate_evidence_rejection_missing_fields(mock_gov_record, mock_apply_
     del ev["artifact_kind"]
     errors = validate_evidence_schema(ev)
     assert "schema_violation:missing_field_artifact_kind" in errors
+
+def test_validate_evidence_rejection_check_item_shape(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    
+    # 1. Invalid Check ID Type
+    ev["constitution_checks"] = [{"check_id": 123, "status": "pass"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_type_constitution_check_item_0_check_id" in errors
+    
+    # 2. Empty Check ID
+    ev["constitution_checks"] = [{"check_id": "", "status": "pass"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_length_constitution_check_item_0_check_id" in errors
+
+    # 3. Invalid Status Value
+    ev["constitution_checks"] = [{"check_id": "C1", "status": "maybe"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_value_constitution_check_item_0_status" in errors
+
+    # 4. Unknown Field in Item
+    ev["constitution_checks"] = [{"check_id": "C1", "status": "pass", "unknown": "field"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:unknown_field_constitution_check_item_0_unknown" in errors
+
+    # 5. Missing Status
+    ev["constitution_checks"] = [{"check_id": "C1"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:missing_field_constitution_check_item_0_status" in errors
+
+def test_validate_evidence_rejection_uid_length(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    
+    ev["record_uid"] = ""
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_length_record_uid" in errors
