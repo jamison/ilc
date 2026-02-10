@@ -22,7 +22,7 @@ if [[ ! -f "${TEMPLATE}" ]]; then
   exit 2
 fi
 
-TEMPLATE_ENV="${TEMPLATE}" WALKTHROUGH_PATH_ENV="${WALKTHROUGH_PATH}" PROMPT="$(python3 - <<'PY'
+PROMPT="$(TEMPLATE_ENV="${TEMPLATE}" WALKTHROUGH_PATH_ENV="${WALKTHROUGH_PATH}" python3 - <<'PY'
 import os
 from pathlib import Path
 template = Path(os.environ["TEMPLATE_ENV"]).read_text(encoding="utf-8")
@@ -31,7 +31,6 @@ PY
 )"
 
 codex exec \
-  --sandbox danger-full-access \
-  --ask-for-approval never \
+  --dangerously-bypass-approvals-and-sandbox \
   --cd "${ROOT_DIR}" \
   "${PROMPT}"
