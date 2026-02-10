@@ -60,3 +60,12 @@ htmlcov/
 # Simulation output (generated)
 # =========================
 out/
+
+# =========================
+# Automation runtime state
+# =========================
+automation/.batch_loop.lock
+automation/phase_queue.json
+automation/reports/
+automation/review_queue/
+automation/state/
