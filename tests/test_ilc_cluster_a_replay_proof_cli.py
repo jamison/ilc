@@ -14,7 +14,10 @@ from ilc_core.cli.canon_cluster_a_replay_proof import (
     EXIT_ERROR,
     E_FILE_NOT_FOUND,
     E_INVALID_JSON,
-    E_NOT_OBJECT
+    E_NOT_OBJECT,
+    E_IO_ERROR,
+    E_IO_WRITE_ERROR,
+    E_BUILD_ERROR
 )
 
 # Mock Data
@@ -127,7 +130,9 @@ def test_build_fail_protocol(mock_files, capsys):
             assert e.value.code == EXIT_ERROR
             
         captured = capsys.readouterr()
-        assert "protocol violation" in captured.out
+        res = json.loads(captured.out)
+        assert res["error"] == E_BUILD_ERROR
+        assert "protocol violation" in res["detail"]
 
 def test_verify_success(mock_files, capsys):
     with patch("ilc_core.cli.canon_cluster_a_replay_proof.verify_cluster_a_replay_proof_package") as mock_verify:
