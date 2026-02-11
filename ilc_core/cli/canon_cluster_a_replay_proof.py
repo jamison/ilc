@@ -107,6 +107,127 @@ def handle_verify(args):
     else:
         sys.exit(EXIT_VERIFICATION_FAILED)
 
+from pathlib import Path
+from ilc_core.protocol.ilc_cluster_a_replay_proof_batch import (
+    verify_cluster_a_replay_proof_batch,
+    load_manifest_paths
+)
+
+def handle_verify_batch(args):
+    """Handle verify-batch subcommand."""
+    package_items = []
+    source_ids = []
+    
+    # Deterministic source selection
+    paths = []
+    if args.manifest:
+        try:
+            manifest_path = Path(args.manifest)
+            rel_paths = load_manifest_paths(manifest_path)
+            for p_str in rel_paths:
+                paths.append(Path(p_str))
+        except FileNotFoundError:
+            print(json.dumps({"error": "manifest_not_found", "file": str(Path(args.manifest))}))
+            sys.exit(EXIT_ERROR)
+        except ValueError as e:
+            print(json.dumps({"error": "manifest_parse_error", "detail": str(e)}))
+            sys.exit(EXIT_ERROR)
+        except Exception:
+            print(json.dumps({"error": "manifest_parse_error", "detail": "manifest_read_error"}))
+            sys.exit(EXIT_ERROR)
+    elif args.input_dir:
+        input_dir = Path(args.input_dir)
+        if not input_dir.is_dir():
+             print(json.dumps({"error": "input_dir_not_found"}))
+             sys.exit(EXIT_ERROR)
+        
+        # sorted lexicographically by normalized path
+        # glob pattern
+        pattern = args.glob if args.glob else "*.json"
+        
+        # We need deterministic sort of resolved paths
+        # "normalized relative path from --input-dir"
+        
+        # Gather all files
+        all_files = sorted(input_dir.rglob(pattern), key=lambda p: p.as_posix())
+        paths = all_files
+    else:
+        print(json.dumps({"error": "usage_error:missing_input_source"}))
+        sys.exit(EXIT_ERROR)
+
+    # Process files
+    for p in paths:
+        # Source ID definition:
+        # - form manifest: normalized relative path as written (trimmed)
+        # - from directory scan: normalized relative path from --input-dir
+        
+        if args.manifest:
+            source_id = str(p) # As written in manifest
+        else:
+            # Relative to input_dir
+            source_id = p.relative_to(args.input_dir).as_posix()
+            
+        try:
+            if not p.exists():
+                 # Fail fast per spec for manifest?
+                 # "For missing file in manifest, fail with exit code 2 and stable JSON token"
+                 # Directory scan won't have missing files unless race condition.
+                 if args.manifest:
+                     print(json.dumps({"error": "manifest_file_not_found", "file": str(p)}))
+                     sys.exit(EXIT_ERROR)
+                 continue # Should not happen for dir scan
+                 
+            with open(p, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if not isinstance(data, dict):
+                    # "continue batch verification only if file was readable and parseable to object; 
+                    # otherwise treat as input error with exit 2"
+                    # wait, "invalid JSON in one package... continue ... only if parseable to object"
+                    # logic:
+                    # - Not readable/parseable -> Exit 2
+                    # - Parseable but not object? -> The prompt says "invalid JSON ... continue ... only if ... parseable to object"
+                    #   Implying if it IS parseable but NOT object, maybe we should treat it as invalid package?
+                    #   Let's see: "Never raises on invalid package shape; represent failures in report."
+                    #   So if it is valid JSON but not a dict, we can pass it to verifier (which expects dict).
+                    #   Verifier implementation in batch module expects dict.
+                    #   So if not dict, we fail hard? Or wrap?
+                    #   Re-reading: "For invalid JSON in one package... continue ... only if ... parseable to object"
+                    #   So if it is NOT parseable (JSONDecodeError), we treat as input error (Exit 2).
+                    #   If it IS parseable, we proceed.
+                    #   If it is parseable but not a dict, verify_cluster_a_replay_proof_package might crash if not handled?
+                    #   Let's check `verify_cluster_a_replay_proof_package`. It takes Dict[str, Any].
+                    #   We should probably treat non-dict as immediate fail or wrap it?
+                    #   Let's strictly fail if not dict for now to be safe, or just pass to verifier?
+                    #   Actually, let's treat non-dict as "invalid package" which causes verification fail (Exit 1), not input error (Exit 2).
+                    #   But `package_items` is typed List[Dict]. So we must ensure dict.
+                    #   If not dict, we can't pass to batch verifier as is.
+                    #   We will just print error and exit 2 per "treat as input error with exit 2" interpretation if "otherwise" covers "not parseable to object".
+                   print(json.dumps({"error": E_NOT_OBJECT, "file": str(p)}))
+                   sys.exit(EXIT_ERROR)
+                
+                package_items.append(data)
+                source_ids.append(source_id)
+
+        except json.JSONDecodeError:
+            print(json.dumps({"error": E_INVALID_JSON, "file": str(p)}))
+            sys.exit(EXIT_ERROR)
+        except OSError:
+            print(json.dumps({"error": E_IO_ERROR, "file": str(p)}))
+            sys.exit(EXIT_ERROR)
+
+    # Run batch verification
+    report = verify_cluster_a_replay_proof_batch(package_items, source_ids)
+    
+    # Write output
+    output_path = args.out # Optional
+    _write_json_output(report, output_path, args.pretty, args.quiet) # Works for stdout too
+    
+    # Exit code
+    if report["ok"]:
+        sys.exit(EXIT_OK)
+    else:
+         sys.exit(EXIT_VERIFICATION_FAILED)
+
 def main():
     parser = argparse.ArgumentParser(
         description="ILC Cluster A Replay Proof CLI",
@@ -130,6 +251,16 @@ def main():
     verify_parser = subparsers.add_parser("verify", parents=[parent_parser], help="Verify replay proof package")
     verify_parser.add_argument("package", help="Path to package JSON")
     verify_parser.set_defaults(func=handle_verify)
+    
+    # Verify Batch
+    batch_parser = subparsers.add_parser("verify-batch", parents=[parent_parser], help="Verify batch of replay proof packages")
+    group = batch_parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--input-dir", help="Directory to scan for packages")
+    group.add_argument("--manifest", help="Path to manifest file listing packages")
+    
+    batch_parser.add_argument("--glob", help="Glob pattern for directory scan (default: *.json)")
+    batch_parser.add_argument("--out", help="Output path for batch report (default: stdout)")
+    batch_parser.set_defaults(func=handle_verify_batch)
     
     args = parser.parse_args()
     args.func(args)

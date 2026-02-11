@@ -1,0 +1,7 @@
+# Manifest with comments and blanks
+
+package_valid.json
+package_tampered_hash.json
+
+# Another file
+package_tampered_record_hash.json
