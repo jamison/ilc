@@ -70,29 +70,6 @@ def mock_files(tmp_path):
         "out": str(d / "out.json")
     }
 
-def run_cli(args):
-    """Run CLI with args and return (exit_code, stdout, stderr)."""
-    with patch("sys.stdout") as mock_stdout, \
-         patch("sys.stderr") as mock_stderr:
-        
-        # We also need to capture sys.exit
-        try:
-            with patch.object(sys, 'argv', ["prog"] + args):
-                main()
-            return 0, "", "" # Should not happen if sys.exit is called
-        except SystemExit as e:
-            # Capture stdout from mock
-            out = ""
-            for call in mock_stdout.write.call_args_list:
-                out += call[0][0]
-            # print() calls might use different internal writes, but let's assume standard print
-            # Actually, standard print goes to sys.stdout.
-            # Let's use capsys fixture instead? 
-            # Capsys is better but incompatible with my manual invocation style easily?
-            # Let's use pytest capsys in the test function.
-            pass
-            return e.code
-            
 # Rework to use capsys
 def test_build_success(mock_files, capsys):
     with patch("ilc_core.cli.canon_cluster_a_replay_proof.build_cluster_a_replay_proof_package") as mock_build:

@@ -13,8 +13,7 @@ from typing import Dict, Any, Optional
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
-    verify_cluster_a_replay_proof_package,
-    E_SCHEMA_INVALID_PACKAGE
+    verify_cluster_a_replay_proof_package
 )
 
 # Exit Codes
