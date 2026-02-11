@@ -6,7 +6,7 @@ Phase 144.
 import pytest
 import json
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from ilc_core.cli.canon_cluster_a_replay_proof import (
     main, 
     EXIT_OK, 
@@ -132,7 +132,8 @@ def test_build_fail_protocol(mock_files, capsys):
         captured = capsys.readouterr()
         res = json.loads(captured.out)
         assert res["error"] == E_BUILD_ERROR
-        assert "protocol violation" in res["detail"]
+        # strict determinism: no detail in default output
+        assert "detail" not in res
 
 def test_verify_success(mock_files, capsys):
     with patch("ilc_core.cli.canon_cluster_a_replay_proof.verify_cluster_a_replay_proof_package") as mock_verify:

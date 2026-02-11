@@ -25,7 +25,6 @@ EXIT_ERROR = 2
 # Failure Tokens
 E_FILE_NOT_FOUND = "file_not_found"
 E_INVALID_JSON = "invalid_json"
-E_INVALID_JSON = "invalid_json"
 E_NOT_OBJECT = "schema_violation:not_object"
 E_IO_ERROR = "io_error"
 E_IO_WRITE_ERROR = "io_write_error"
@@ -46,9 +45,9 @@ def _read_json_file(path: str) -> Dict[str, Any]:
     except json.JSONDecodeError:
         print(json.dumps({"error": E_INVALID_JSON, "file": path}))
         sys.exit(EXIT_ERROR)
-    except Exception as e:
+    except Exception:
         # Fallback for perm errors etc
-        print(json.dumps({"error": E_IO_ERROR, "detail": str(e), "file": path}))
+        print(json.dumps({"error": E_IO_ERROR, "file": path}))
         sys.exit(EXIT_ERROR)
 
 def _write_json_output(data: Any, path: Optional[str], pretty: bool, quiet: bool):
@@ -64,8 +63,8 @@ def _write_json_output(data: Any, path: Optional[str], pretty: bool, quiet: bool
         try:
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(content)
-        except Exception as e:
-            print(json.dumps({"error": E_IO_WRITE_ERROR, "detail": str(e), "file": path}))
+        except Exception:
+            print(json.dumps({"error": E_IO_WRITE_ERROR, "file": path}))
             sys.exit(EXIT_ERROR)
     elif not quiet:
         print(content)
@@ -91,9 +90,8 @@ def handle_build(args):
     except Exception as e:
         # Protocol level error
         # We should print JSON error
-        err_token = str(e) # Basic string conversion if it's a simple message
         # Ideally protocol raises known exceptions, but here we trap generic
-        print(json.dumps({"error": E_BUILD_ERROR, "detail": err_token}))
+        print(json.dumps({"error": E_BUILD_ERROR}))
         sys.exit(EXIT_ERROR)
 
 def handle_verify(args):
