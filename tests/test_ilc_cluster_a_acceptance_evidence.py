@@ -227,3 +227,27 @@ def test_validate_evidence_rejection_uid_length(mock_gov_record, mock_apply_res,
     ev["record_uid"] = ""
     errors = validate_evidence_schema(ev)
     assert "schema_violation:invalid_length_record_uid" in errors
+
+def test_validate_evidence_rejection_bad_check_status_legacy(mock_gov_record, mock_apply_res, mock_conf_res):
+    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=mock_gov_record,
+        apply_result=mock_apply_res,
+        conformance_result=mock_conf_res
+    )
+    
+    # 1. Warn (removed)
+    ev["constitution_checks"] = [{"check_id": "C1", "status": "warn"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_value_constitution_check_item_0_status" in errors
+    
+    # 2. Skip (removed)
+    ev["constitution_checks"] = [{"check_id": "C1", "status": "skip"}]
+    errors = validate_evidence_schema(ev)
+    assert "schema_violation:invalid_value_constitution_check_item_0_status" in errors
+    
+    # 3. Not Applicable (Valid)
+    ev["constitution_checks"] = [{"check_id": "C1", "status": "not_applicable"}]
+    errors = validate_evidence_schema(ev)
+    assert errors == []
+

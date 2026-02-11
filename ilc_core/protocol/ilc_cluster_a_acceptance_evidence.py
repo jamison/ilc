@@ -12,23 +12,9 @@ from ilc_core.protocol.ilc_cluster_a_ingest import canonical_governance_record_d
 import re
 import json
 import hashlib
-import pkgutil
 
-def _load_evidence_schema() -> Dict[str, Any]:
-    """Load the JSON schema for acceptance evidence."""
-    # Lazy load or cache could be done, here we just load
-    try:
-        # Assuming schema is packaged or available at a known path. 
-        # For this environment we read relative to docs/specs if not packaged.
-        # But we need a robust way. Let's try to read from the typical location for now.
-        # If in a package, use pkgutil.get_data.
-        # Fallback to local file read for dev environment.
-        with open("docs/specs/ilc_cluster_a_acceptance_evidence_v0.1.json", "r") as f:
-            return json.load(f)
-    except Exception:
-        # Fallback empty or log error? Strict requirement means we fail if not found.
-        # For now, return empty dict or raise, but let's assume existence.
-        return {}
+
+
 
 def canonical_evidence_contract_digest(evidence: Dict[str, Any]) -> str:
     """
@@ -198,7 +184,7 @@ def validate_evidence_schema(evidence: Dict[str, Any]) -> List[str]:
                 # status validation
                 if "status" in item:
                     status = item["status"]
-                    if status not in {"pass", "fail", "warn", "skip", "not_applicable"}:
+                    if status not in {"pass", "fail", "not_applicable"}:
                         # Note: 'not_applicable' added based on implementation plan/prompt update
                         # Prompt said: "pass, fail, not_applicable". Wait, let me check carefully.
                         # Prompt: "status must be exactly one of: pass, fail, not_applicable"
