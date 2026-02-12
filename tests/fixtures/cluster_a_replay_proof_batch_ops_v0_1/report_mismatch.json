@@ -1,0 +1,10 @@
+{
+    "batch_errors": [],
+    "error_token_counts": {},
+    "fail_count": 0,
+    "ok": false,
+    "ok_count": 1,
+    "report_version": "v0.1",
+    "results": [],
+    "total_packages": 1
+}

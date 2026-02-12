@@ -252,6 +252,152 @@ def handle_compare_reports(args):
     else:
         sys.exit(EXIT_VERIFICATION_FAILED)
 
+from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
+    run_batch_verify_and_compare,
+    ManifestParseError,
+    ManifestEntryNotFoundError,
+)
+
+OPS_CONTRACT_VERSION = "v0.1"
+OPS_TOKEN_MANIFEST_NOT_FOUND = "manifest_not_found"
+OPS_TOKEN_MANIFEST_PARSE_ERROR = "manifest_parse_error"
+OPS_TOKEN_MANIFEST_FILE_NOT_FOUND = "manifest_file_not_found"
+OPS_TOKEN_EXPECTED_INVALID_JSON = "expected_invalid_json"
+OPS_TOKEN_EXPECTED_NOT_OBJECT = "expected_not_object"
+OPS_TOKEN_EXPECTED_SCHEMA_INVALID = "expected_schema_invalid"
+OPS_TOKEN_IO_ERROR = "io_error"
+OPS_TOKEN_IO_WRITE_ERROR = "io_write_error"
+OPS_TOKEN_RUNTIME_ERROR = "ops_runtime_error"
+OPS_TOKEN_NO_OUTPUT_SINK = "usage_error:no_output_sink"
+
+
+def _json_dumps(data: Any, pretty: bool) -> str:
+    """Serialize JSON with deterministic key ordering."""
+    if pretty:
+        return json.dumps(data, indent=2, sort_keys=True)
+    return json.dumps(data, separators=(",", ":"), sort_keys=True)
+
+
+def _write_json_file(path: str, data: Any, pretty: bool) -> None:
+    """Write deterministic JSON content to file."""
+    content = _json_dumps(data, pretty)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+def _build_ops_contract(
+    *,
+    batch_ok: bool,
+    compare_ok: bool,
+    batch_report_path: Optional[str],
+    compare_report_path: Optional[str],
+    exit_code: int,
+    error_token: Optional[str],
+) -> Dict[str, Any]:
+    return {
+        "ops_contract_version": OPS_CONTRACT_VERSION,
+        "ok": bool(batch_ok and compare_ok and exit_code == EXIT_OK),
+        "batch_report_path": batch_report_path,
+        "compare_report_path": compare_report_path,
+        "batch_ok": bool(batch_ok),
+        "compare_ok": bool(compare_ok),
+        "exit_code": exit_code,
+        "error_token": error_token,
+    }
+
+
+def _emit_ops_contract(contract: Dict[str, Any], pretty: bool, quiet: bool, force_stdout: bool = False) -> None:
+    if not quiet or force_stdout:
+        print(_json_dumps(contract, pretty))
+
+
+def _emit_ops_error(token: str, pretty: bool, quiet: bool) -> None:
+    contract = _build_ops_contract(
+        batch_ok=False,
+        compare_ok=False,
+        batch_report_path=None,
+        compare_report_path=None,
+        exit_code=EXIT_ERROR,
+        error_token=token,
+    )
+    _emit_ops_contract(contract, pretty=pretty, quiet=quiet, force_stdout=True)
+    sys.exit(EXIT_ERROR)
+
+def handle_verify_and_compare(args):
+    """Handle verify-and-compare subcommand."""
+    if args.quiet and not args.out_compare:
+        _emit_ops_error(OPS_TOKEN_NO_OUTPUT_SINK, pretty=args.pretty, quiet=args.quiet)
+
+    try:
+        with open(args.expected, "r", encoding="utf-8") as f:
+            expected_report = json.load(f)
+    except json.JSONDecodeError:
+        _emit_ops_error(OPS_TOKEN_EXPECTED_INVALID_JSON, pretty=args.pretty, quiet=args.quiet)
+    except OSError:
+        _emit_ops_error(OPS_TOKEN_IO_ERROR, pretty=args.pretty, quiet=args.quiet)
+
+    if not isinstance(expected_report, dict):
+        _emit_ops_error(OPS_TOKEN_EXPECTED_NOT_OBJECT, pretty=args.pretty, quiet=args.quiet)
+
+    manifest_path = Path(args.manifest)
+    if not manifest_path.exists():
+        _emit_ops_error(OPS_TOKEN_MANIFEST_NOT_FOUND, pretty=args.pretty, quiet=args.quiet)
+
+    try:
+        result_map = run_batch_verify_and_compare(manifest_path, expected_report)
+        batch_report = result_map["batch_report"]
+        compare_report = result_map["compare_report"]
+    except ManifestEntryNotFoundError:
+        _emit_ops_error(OPS_TOKEN_MANIFEST_FILE_NOT_FOUND, pretty=args.pretty, quiet=args.quiet)
+    except ManifestParseError:
+        _emit_ops_error(OPS_TOKEN_MANIFEST_PARSE_ERROR, pretty=args.pretty, quiet=args.quiet)
+    except OSError:
+        _emit_ops_error(OPS_TOKEN_IO_ERROR, pretty=args.pretty, quiet=args.quiet)
+    except Exception:
+        _emit_ops_error(OPS_TOKEN_RUNTIME_ERROR, pretty=args.pretty, quiet=args.quiet)
+
+    batch_report_path = None
+    compare_report_path = None
+
+    if args.out_report:
+        try:
+            _write_json_file(args.out_report, batch_report, args.pretty)
+            batch_report_path = str(Path(args.out_report).resolve())
+        except OSError:
+            _emit_ops_error(OPS_TOKEN_IO_WRITE_ERROR, pretty=args.pretty, quiet=args.quiet)
+
+    if args.out_compare:
+        try:
+            _write_json_file(args.out_compare, compare_report, args.pretty)
+            compare_report_path = str(Path(args.out_compare).resolve())
+        except OSError:
+            _emit_ops_error(OPS_TOKEN_IO_WRITE_ERROR, pretty=args.pretty, quiet=args.quiet)
+
+    batch_ok = bool(batch_report.get("ok", False))
+    compare_ok = bool(compare_report.get("ok", False))
+    reasons = {m.get("reason") for m in compare_report.get("mismatches", []) if isinstance(m, dict)}
+
+    if compare_ok:
+        exit_code = EXIT_OK
+        error_token = None
+    elif "schema_invalid_left" in reasons or "schema_invalid_right" in reasons:
+        exit_code = EXIT_ERROR
+        error_token = OPS_TOKEN_EXPECTED_SCHEMA_INVALID if "schema_invalid_right" in reasons else OPS_TOKEN_RUNTIME_ERROR
+    else:
+        exit_code = EXIT_VERIFICATION_FAILED
+        error_token = None
+
+    contract = _build_ops_contract(
+        batch_ok=batch_ok,
+        compare_ok=compare_ok,
+        batch_report_path=batch_report_path,
+        compare_report_path=compare_report_path,
+        exit_code=exit_code,
+        error_token=error_token,
+    )
+    _emit_ops_contract(contract, pretty=args.pretty, quiet=args.quiet)
+    sys.exit(exit_code)
+
 def main():
     parser = argparse.ArgumentParser(
         description="ILC Cluster A Replay Proof CLI",
@@ -292,6 +438,14 @@ def main():
     compare_parser.add_argument("--right", required=True, help="Path to right batch report")
     compare_parser.add_argument("--out", help="Output path for compare report (default: stdout)")
     compare_parser.set_defaults(func=handle_compare_reports)
+    
+    # Verify and Compare (Ops)
+    ops_parser = subparsers.add_parser("verify-and-compare", parents=[parent_parser], help="Run batch verification and compare against expected report")
+    ops_parser.add_argument("--manifest", required=True, help="Path to input manifest")
+    ops_parser.add_argument("--expected", required=True, help="Path to expected batch report")
+    ops_parser.add_argument("--out-report", help="Output path for generated batch report")
+    ops_parser.add_argument("--out-compare", help="Output path for comparison report (default: stdout)")
+    ops_parser.set_defaults(func=handle_verify_and_compare)
     
     args = parser.parse_args()
     args.func(args)
