@@ -1,9 +1,34 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping, Any
+from typing import Dict, Iterable, Mapping, Any, TypedDict, TypeAlias
 
 from ilc_core.analysis.problem_space_kpis import ProblemSpace, infer_problem_space
 
 BarrierLevel = str  # or Literal["low", "medium", "high"]
+
+
+class CompetencySpaceSummary(TypedDict):
+    tasks: int
+    success_rate: float
+    barrier_low: int
+    barrier_medium: int
+    barrier_high: int
+
+
+class CompetencyGlobalSummary(TypedDict):
+    total_tasks: int
+    avg_success_rate: float
+
+
+AgentCompetencySummary = TypedDict(
+    "AgentCompetencySummary",
+    {
+        "by_space": Dict[str, CompetencySpaceSummary],
+        "global": CompetencyGlobalSummary,
+    },
+)
+
+
+AgentCompetencySummaryMap: TypeAlias = Dict[str, AgentCompetencySummary]
 
 @dataclass
 class AgentCompetencyRow:
@@ -105,7 +130,7 @@ def compute_agent_competency_kpis(
 
 def summarize_competency_for_profile(
     kpis: Dict[str, Dict[ProblemSpace, AgentCompetencyRow]]
-) -> Dict[str, Dict[str, Any]]:
+) -> AgentCompetencySummaryMap:
     """
     Convert nested competency rows into a per-agent summary dictionary
     suitable for embedding in AgentProfile.competency.
@@ -122,9 +147,9 @@ def summarize_competency_for_profile(
         },
       }
     """
-    summary: Dict[str, Dict[str, Any]] = {}
+    summary: AgentCompetencySummaryMap = {}
     for agent_id, per_space in kpis.items():
-        by_space: Dict[str, Any] = {}
+        by_space: Dict[str, CompetencySpaceSummary] = {}
         total_tasks = 0
         success_rates = []
         for space, row in per_space.items():

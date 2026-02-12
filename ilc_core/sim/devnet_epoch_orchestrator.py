@@ -1,6 +1,6 @@
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
-from typing import Dict, Any, List, Optional, TypeAlias
+from typing import Dict, List, Optional, TypeAlias
 from os import PathLike
 from pathlib import Path
 
@@ -13,6 +13,7 @@ from ilc_core.analysis.task_routing_suggestions import (
 )
 from ilc_core.analysis.routed_tasks import (
     RoutedTaskRow,
+    TaskRowDictList,
     materialize_routed_tasks_for_epoch,
     routed_tasks_to_task_rows_dicts,
 )
@@ -42,7 +43,7 @@ SuggestionMap: TypeAlias = Dict[str, List[TaskRoutingSuggestion]]
 class DevnetEpochResult:
     epoch_index: int
     namespace_id: str
-    routed_task_rows: List[Dict[str, Any]]
+    routed_task_rows: TaskRowDictList
     node_load_metrics: Dict[str, Dict[str, float]]
     # Phase 64A: Backlog Signal
     num_suggestions: int = 0
@@ -76,7 +77,7 @@ def _materialize_tasks(
     )
 
 def _compute_load_metrics(
-    routed_task_dicts: List[Dict[str, Any]],
+    routed_task_dicts: TaskRowDictList,
     profiles: Dict[str, AgentProfile]
 ) -> Dict[str, Dict[str, float]]:
     # Build agent->node mapping
@@ -94,7 +95,7 @@ def _export_epoch_artifacts(
     epoch_index: int,
     namespace_snapshot: NamespaceHealthSnapshot,
     profiles: Dict[str, AgentProfile],
-    routed_task_dicts: List[Dict[str, Any]],
+    routed_task_dicts: TaskRowDictList,
     node_load: Dict[str, Dict[str, float]]
 ) -> None:
     p = Path(export_dir)
@@ -123,7 +124,7 @@ def _emit_epoch_events(
     event_logger: "EventLogger",
     epoch_index: int,
     namespace_snapshot: NamespaceHealthSnapshot,
-    routed_task_dicts: List[Dict[str, Any]],
+    routed_task_dicts: TaskRowDictList,
     node_load: Dict[str, Dict[str, float]],
     protocol_params: Optional[ProtocolParams],
     total_suggestions: int,

@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional, TypedDict, TypeAlias
 from ilc_core.analysis.claim_scores import ClaimInfluenceRow
+from ilc_core.analysis.competency_kpis import AgentCompetencySummaryMap
 from ilc_core.analysis.light_cone_kpis import AgentLightConeRow
 from os import PathLike
 
@@ -103,7 +104,7 @@ def build_agent_profiles(
 
 def attach_competency_to_profiles(
     profiles: Dict[str, AgentProfile],
-    competency_summary: Dict[str, Dict[str, Any]],
+    competency_summary: AgentCompetencySummaryMap,
 ) -> Dict[str, AgentProfile]:
     """
     Attach competency summaries to existing AgentProfile objects.
