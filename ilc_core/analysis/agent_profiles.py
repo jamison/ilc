@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, TypedDict, TypeAlias
 from ilc_core.analysis.claim_scores import ClaimInfluenceRow
+from ilc_core.analysis.light_cone_kpis import AgentLightConeRow
 from os import PathLike
 
 from ilc_core.analysis.econ_kpis import (
@@ -10,6 +11,17 @@ from ilc_core.analysis.econ_kpis import (
     compute_agent_econ_kpis,
     compute_claim_kpis,
 )
+
+
+class AgentInfluenceRow(TypedDict):
+    total_influence: float
+    num_influenced_claims: float
+    total_net_support: float
+    avg_influence: float
+
+
+AgentInfluenceMap: TypeAlias = Dict[str, AgentInfluenceRow]
+AgentLightConeMap: TypeAlias = Dict[str, AgentLightConeRow]
 
 @dataclass
 class AgentProfile:
@@ -109,7 +121,7 @@ def attach_competency_to_profiles(
 def compute_agent_influence_kpis(
     claim_influence_rows: List[ClaimInfluenceRow],
     claims_csv_path: PathLike,
-) -> Dict[str, Dict[str, float]]:
+) -> AgentInfluenceMap:
     """
     Aggregate claim influence metrics per agent.
 
@@ -131,7 +143,7 @@ def compute_agent_influence_kpis(
         if cid:
             claim_to_agent[cid] = aid
 
-    per_agent: Dict[str, Dict[str, float]] = {}
+    per_agent: AgentInfluenceMap = {}
 
     for row in claim_influence_rows:
         claim_id = row.claim_id
@@ -176,7 +188,7 @@ def attach_influence_to_profiles(
 
 def attach_light_cone_to_profiles(
     profiles: Dict[str, AgentProfile],
-    light_cone_rows: Dict[str, Any], # Typed as Any to avoid circular imports if possible, or use TYPE_CHECKING
+    light_cone_rows: AgentLightConeMap,
 ) -> Dict[str, AgentProfile]:
     """
     Attach light-cone metrics to existing AgentProfile objects.

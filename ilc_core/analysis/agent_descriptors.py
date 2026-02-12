@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field, asdict
-from typing import Dict, List
+from typing import Dict, List, TypeAlias
 from os import PathLike
 from pathlib import Path
 import csv
@@ -8,6 +8,9 @@ from ilc_core.analysis.problem_space_kpis import (
     ProblemSpace,
     compute_problem_space_kpis,
 )
+
+
+AgentDescriptorRow: TypeAlias = Dict[str, str | float]
 
 @dataclass
 class AgentDescriptor:
@@ -19,7 +22,7 @@ class AgentDescriptor:
     total_tasks: float = 0.0
     dominant_problem_space: str = "OTHER"
 
-    def as_dict(self) -> Dict[str, float]:
+    def as_dict(self) -> AgentDescriptorRow:
         data = {
             "agent_id": self.agent_id,
             "total_tasks": self.total_tasks,

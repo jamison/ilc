@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Any
+from typing import Dict, List, TypedDict
 from os import PathLike
 from pathlib import Path
 import csv
@@ -11,6 +11,16 @@ from ilc_core.analysis.graph_kpis import (
     get_local_influence_scores,
 )
 
+
+class ClaimInfluenceRowDict(TypedDict):
+    claim_id: str
+    supports_in: int
+    refutes_in: int
+    equivalent_in: int
+    depends_on_in: int
+    net_support: int
+    influence_score: float
+
 @dataclass
 class ClaimInfluenceRow:
     claim_id: str
@@ -21,7 +31,7 @@ class ClaimInfluenceRow:
     net_support: int
     influence_score: float
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> ClaimInfluenceRowDict:
         return asdict(self)
 
 def build_claim_influence_table(
