@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Any, Optional, Callable, Union
+from typing import List, Dict, Optional, Callable, Union, TypeAlias
 from os import PathLike
 from pathlib import Path
 import csv
@@ -17,9 +17,15 @@ from ilc_core.sim.devnet_experiments import (
     DevnetExperimentSummary
 )
 
+
+GridParamScalar: TypeAlias = str | int | float | bool | None
+GridParamMap: TypeAlias = Dict[str, GridParamScalar]
+GridSpec: TypeAlias = Dict[str, List[GridParamScalar]]
+
+
 @dataclass
 class GridRunResult:
-    params: Dict[str, Any]
+    params: GridParamMap
     summary: DevnetExperimentSummary
     # Phase 61F: Distribution metrics for node rewards
     min_node_reward: float = 0.0
@@ -29,7 +35,7 @@ class GridRunResult:
     
 def apply_params_to_scenario(
     scenario: DevnetScenarioConfig, 
-    params: Dict[str, Any]
+    params: GridParamMap
 ) -> DevnetScenarioConfig:
     """Helper: Apply matching keys to scenario, ignore others. Returns modified scenario."""
     for k, v in params.items():
@@ -39,10 +45,10 @@ def apply_params_to_scenario(
 
 def run_param_grid_on_devnet(
     base_scenario: DevnetScenarioConfig,
-    grid: Dict[str, List[Any]],
+    grid: GridSpec,
     *,
-    apply_params: Optional[Callable[[DevnetScenarioConfig, Dict[str, Any]], DevnetScenarioConfig]] = None,
-    label_suffix_builder: Optional[Callable[[Dict[str, Any]], str]] = None,
+    apply_params: Optional[Callable[[DevnetScenarioConfig, GridParamMap], DevnetScenarioConfig]] = None,
+    label_suffix_builder: Optional[Callable[[GridParamMap], str]] = None,
     rng_seed: Optional[int] = None,
     export_root: Optional[PathLike] = None,
     export_prefix: str = "grid",
@@ -81,7 +87,7 @@ def run_param_grid_on_devnet(
     # Use enumerate to get a stable run_index for seeding
     for run_index, combination in enumerate(itertools.product(*values_lists)):
         # Construct params dict for this run
-        params = dict(zip(keys, combination))
+        params: GridParamMap = dict(zip(keys, combination))
         
         # 1. Apply Params
         # (Deepcopy ensures we don't mutate the template or previous runs)

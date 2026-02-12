@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Any, Callable, Union, Optional, Iterable 
+from typing import List, Dict, Callable, Union, Optional, Iterable, TypeAlias
 from os import PathLike
 from pathlib import Path
 import csv 
@@ -22,12 +22,17 @@ from ilc_core.sim.devnet_experiments import (
 )
 from ilc_core.ledger import get_ledger_backend
 
+
+OverrideScalar: TypeAlias = str | int | float | bool | None
+EconOverrideMap: TypeAlias = Dict[str, OverrideScalar]
+
+
 @dataclass
 class EconScenarioConfig:
     label: str
-    param_overrides: Dict[str, Any]
+    param_overrides: EconOverrideMap
 
-def default_apply_econ(overrides: Dict[str, Any]) -> None:
+def default_apply_econ(overrides: EconOverrideMap) -> None:
     """
     Apply economic overrides (burn rates, PB rates, etc.) to the global
     protocol parameters / genesis state used by devnet simulations.
@@ -62,7 +67,7 @@ def run_econ_scenarios_on_devnet(
     base_scenario: DevnetScenarioConfig,
     econ_scenarios: List[EconScenarioConfig],
     *,
-    apply_econ: Callable[[Dict[str, Any]], None],
+    apply_econ: Callable[[EconOverrideMap], None],
     rng_seed: Optional[int] = None,
     export_root: Optional[PathLike] = None,
     export_prefix: str = "econ",

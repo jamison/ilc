@@ -1,11 +1,25 @@
 from dataclasses import dataclass, asdict
-from typing import Dict, Any, List, Optional
+from typing import Dict, List, Optional, TypedDict, TypeAlias
 from os import PathLike
 from pathlib import Path
 import csv
 import json
 
 from ilc_core.sim.devnet_multi_epoch import DevnetMultiEpochResult
+
+
+class SettlementMetrics(TypedDict, total=False):
+    num_epochs_total: int
+    num_epochs_settled: int
+    num_epochs_rolled_back: int
+    num_epochs_superseded: int
+    num_snapshots: int
+    total_rewards_distributed: float
+    total_rewards_stubbed: float
+
+
+SettlementMetricsOpt: TypeAlias = SettlementMetrics | None
+
 
 @dataclass
 class DevnetExperimentSummary:
@@ -22,12 +36,12 @@ class DevnetExperimentSummary:
     max_backlog: float = 0.0
     mean_backlog_ratio: float = 0.0
     # Phase 70F: Settlement Metrics
-    settlement_metrics: Optional[Dict[str, Any]] = None
+    settlement_metrics: SettlementMetricsOpt = None
 
 def summarize_multi_epoch_run(
     label: str,
     multi: DevnetMultiEpochResult,
-    settlement_metrics: Optional[Dict[str, Any]] = None,
+    settlement_metrics: SettlementMetricsOpt = None,
 ) -> DevnetExperimentSummary:
     """
     Summarize a multi-epoch run into a single KPI row.
