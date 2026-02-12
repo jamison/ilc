@@ -54,7 +54,7 @@ def _handle_submit(client: Any, file_path: Optional[str]) -> int:
             print(f"Error submitting task: {res.status_code}", file=sys.stderr)
             try:
                 print(res.json(), file=sys.stderr)
-            except:
+            except Exception:
                 print(res.text, file=sys.stderr)
             return 1
     except Exception as e:
