@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 import logging
+from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from .graph import EpistemicGraph
 from .consensus.engine import ConsensusEngine
@@ -22,8 +23,6 @@ from ilc_core.work.task_queue import TaskDescriptor
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="ILC Node Daemon", version="0.1.0")
-
 
 def _init_runtime_state(app_obj: FastAPI) -> None:
     """Initialize runtime state in app.state."""
@@ -40,9 +39,14 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.peer_manager = peer_manager
 
 
-@app.on_event("startup")
-def startup() -> None:
-    _init_runtime_state(app)
+@asynccontextmanager
+async def lifespan(app_obj: FastAPI):
+    """Initialize runtime resources for the app lifespan."""
+    _init_runtime_state(app_obj)
+    yield
+
+
+app = FastAPI(title="ILC Node Daemon", version="0.1.0", lifespan=lifespan)
 
 
 def _state(request: Request):
