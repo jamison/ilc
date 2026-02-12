@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, TypeAlias
 from os import PathLike
 from pathlib import Path
 from datetime import datetime, timezone
@@ -19,12 +19,17 @@ from ilc_core.ledger.ledger_export import (
 )
 from ilc_core.ledger.canon_export import export_canon_state_json
 
+BalanceSnapshot: TypeAlias = Dict[str, float]
+NodeLoadRow: TypeAlias = Dict[str, float]
+NodeLoadMap: TypeAlias = Dict[str, NodeLoadRow]
+
+
 @dataclass
 class DevnetMultiEpochResult:
     namespace_id: str
     topology: DevnetTopology
     epoch_results: List[DevnetEpochResult]
-    aggregate_node_load: Dict[str, Dict[str, float]]
+    aggregate_node_load: NodeLoadMap
 
 def _prepare_epoch_env(
     export_root: Optional[PathLike],
@@ -47,7 +52,7 @@ def _settle_epoch(
     result: DevnetEpochResult,
     event_logger: Optional[EventLogger],
     epoch_id: str
-) -> Optional[Dict[str, float]]:
+) -> Optional[BalanceSnapshot]:
     # 1. Store Stake Snapshot
     stakes = {agent_id: 1.0 for agent_id in profiles.keys()}
     
@@ -101,7 +106,7 @@ def _settle_epoch(
 def _export_epoch_ledger_artifacts(
     export_dir: Path,
     ledger_backend: LedgerBackend,
-    balances_before: Optional[Dict[str, float]],
+    balances_before: Optional[BalanceSnapshot],
     epoch_id: str
 ) -> None:
     # Export with verification check
@@ -130,13 +135,13 @@ def _export_epoch_ledger_artifacts(
 
 def _aggregate_metrics(
     epoch_results: List[DevnetEpochResult]
-) -> Dict[str, Dict[str, float]]:
+) -> NodeLoadMap:
     # Gather all node IDs seen across any epoch
     all_nodes = set()
     for res in epoch_results:
         all_nodes.update(res.node_load_metrics.keys())
         
-    agg_load: Dict[str, Dict[str, float]] = {}
+    agg_load: NodeLoadMap = {}
     
     for node_id in all_nodes:
         total_tasks = 0.0

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any, List, Mapping, Optional
+from typing import Dict, List, Optional, TypeAlias, TypedDict
 
 # Phase 55: Routed Tasks (From Suggestions -> Task Rows)
 
@@ -8,6 +8,22 @@ from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.analysis.task_routing_suggestions import TaskRoutingSuggestion
 from ilc_core.network.topology import DevnetTopology
 from ilc_core.protocol.params import ProtocolParams
+
+
+class TaskRowDict(TypedDict):
+    agent_id: str
+    node_id: str
+    namespace_id: str
+    task_type: str
+    problem_space: str
+    barrier_level: str
+    regime: str
+    reward: float
+    success: bool
+
+
+TaskRowDictList: TypeAlias = List[TaskRowDict]
+
 
 @dataclass
 class RoutedTaskRow:
@@ -21,7 +37,7 @@ class RoutedTaskRow:
     reward: float
     success: bool
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> TaskRowDict:
         return {
             "agent_id": self.agent_id,
             "node_id": self.node_id,
@@ -155,7 +171,7 @@ def materialize_routed_tasks_for_epoch(
 
 def routed_tasks_to_task_rows_dicts(
     routed: List[RoutedTaskRow],
-) -> List[Dict[str, Any]]:
+) -> TaskRowDictList:
     """
     Convert RoutedTaskRow list into a list of dicts consumable by:
       - compute_node_load_metrics (expects agent_id + reward)

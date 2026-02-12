@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Optional, TypeAlias
 import math
 
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
@@ -14,6 +14,9 @@ class TaskRoutingSuggestion:
     barrier_level: str # "low" | "medium" | "high"
     score: float
     rationale: str # short tag like "stress:contradiction", "cohesion:low", etc.
+
+
+SuggestionMap: TypeAlias = Dict[str, List[TaskRoutingSuggestion]]
 
 def classify_namespace_stress(snap: NamespaceHealthSnapshot) -> str:
     """
@@ -163,12 +166,12 @@ def suggest_tasks_for_agents(
     namespace_health: NamespaceHealthSnapshot,
     *,
     max_suggestions_per_agent: int = 3,
-) -> Dict[str, List[TaskRoutingSuggestion]]:
+) -> SuggestionMap:
     """
     Generate prioritized task suggestions for each agent based on namespace health
     and agent profile signals (competency, stress preference, light cone).
     """
-    results: Dict[str, List[TaskRoutingSuggestion]] = {}
+    results: SuggestionMap = {}
     
     regime = classify_namespace_stress(namespace_health)
     
