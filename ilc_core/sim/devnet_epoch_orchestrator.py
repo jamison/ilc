@@ -1,14 +1,18 @@
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, TypeAlias
 from os import PathLike
 from pathlib import Path
 
 from ilc_core.network.topology import DevnetTopology, compute_node_load_metrics
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
-from ilc_core.analysis.task_routing_suggestions import suggest_tasks_for_agents
+from ilc_core.analysis.task_routing_suggestions import (
+    TaskRoutingSuggestion,
+    suggest_tasks_for_agents,
+)
 from ilc_core.analysis.routed_tasks import (
+    RoutedTaskRow,
     materialize_routed_tasks_for_epoch,
     routed_tasks_to_task_rows_dicts,
 )
@@ -31,6 +35,9 @@ from ilc_core.analysis.epoch_report_export import (
     export_epoch_report_to_json,
 )
 
+SuggestionMap: TypeAlias = Dict[str, List[TaskRoutingSuggestion]]
+
+
 @dataclass
 class DevnetEpochResult:
     epoch_index: int
@@ -45,7 +52,7 @@ class DevnetEpochResult:
 def _compute_suggestions(
     profiles: Dict[str, AgentProfile],
     namespace_snapshot: NamespaceHealthSnapshot
-) -> Dict[str, Any]:
+) -> SuggestionMap:
     return suggest_tasks_for_agents(
         profiles=profiles,
         namespace_health=namespace_snapshot,
@@ -56,9 +63,9 @@ def _materialize_tasks(
     topology: DevnetTopology,
     namespace_snapshot: NamespaceHealthSnapshot,
     profiles: Dict[str, AgentProfile],
-    suggestions: Dict[str, Any],
+    suggestions: SuggestionMap,
     protocol_params: Optional[ProtocolParams]
-) -> List[Any]:
+) -> List[RoutedTaskRow]:
     return materialize_routed_tasks_for_epoch(
         epoch_index=epoch_index,
         namespace_snapshot=namespace_snapshot,

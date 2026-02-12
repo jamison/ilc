@@ -1,6 +1,6 @@
 import csv
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, TypedDict, TypeAlias, Union
 
 from ilc_core.protocol.event_export import (
     TASK_OUTCOME_HEADERS,
@@ -8,6 +8,37 @@ from ilc_core.protocol.event_export import (
 )
 
 PathLike = Union[str, Path]
+
+
+class BasicKPIs(TypedDict):
+    total_tasks: int
+    total_reward_ilc: float
+    total_ecu_spent: float
+    avg_reward_per_task: float
+    realized_price_ilc_per_ecu: float
+    tasks_by_domain: Dict[str, int]
+    reward_by_domain: Dict[str, float]
+    avg_reward_by_domain: Dict[str, float]
+    epochs_count: int
+    max_epoch: int | None
+    total_tasks_from_epochs: int
+    avg_tasks_per_epoch: float
+    avg_clearing_price_ilc_per_ecu: float
+
+
+class AgentEconRow(TypedDict):
+    tasks: float
+    reward: float
+    stake_spent: float
+
+
+class ClaimKpiRow(TypedDict):
+    num_claims: float
+    total_net_stake: float
+
+
+AgentEconMap: TypeAlias = Dict[str, AgentEconRow]
+ClaimKpiMap: TypeAlias = Dict[str, ClaimKpiRow]
 
 def load_tasks_csv(path: PathLike) -> List[Dict[str, str]]:
     """
@@ -63,7 +94,7 @@ def _to_int(value: Any, default: int = 0) -> int:
 def compute_basic_kpis(
     task_rows: List[Dict[str, str]],
     epoch_rows: List[Dict[str, str]],
-) -> Dict[str, Any]:
+) -> BasicKPIs:
     """
     Compute basic economic KPIs from tasks.csv and epochs.csv rows.
 
@@ -140,7 +171,7 @@ def compute_basic_kpis(
 
 def compute_agent_econ_kpis(
     task_rows: List[Dict[str, str]],
-) -> Dict[str, Dict[str, float]]:
+) -> AgentEconMap:
     """
     Compute per-agent economic KPIs from tasks.csv rows.
 
@@ -154,7 +185,7 @@ def compute_agent_econ_kpis(
             ...
         }
     """
-    per_agent: Dict[str, Dict[str, float]] = {}
+    per_agent: AgentEconMap = {}
 
     for row in task_rows:
         agent_id = row.get("agent_id") or "unknown"
@@ -173,7 +204,7 @@ def compute_agent_econ_kpis(
 
 def compute_claim_kpis(
     claim_rows: List[Dict[str, str]]
-) -> Dict[str, Dict[str, float]]:
+) -> ClaimKpiMap:
     """
     Compute basic per-agent claim KPIs from claims.csv rows.
 
@@ -186,7 +217,7 @@ def compute_claim_kpis(
             ...
         }
     """
-    per_agent: Dict[str, Dict[str, float]] = {}
+    per_agent: ClaimKpiMap = {}
 
     for row in claim_rows:
         agent_id = row.get("agent_id") or "unknown"
