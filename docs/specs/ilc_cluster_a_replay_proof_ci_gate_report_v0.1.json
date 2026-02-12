@@ -102,6 +102,72 @@
                 "string",
                 "null"
             ]
+        },
+        "baseline_compare": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "compare_version",
+                        "ok",
+                        "mismatch_count",
+                        "mismatches"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "compare_version": {
+                            "type": "string",
+                            "const": "v0.1"
+                        },
+                        "ok": {
+                            "type": "boolean"
+                        },
+                        "mismatch_count": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "mismatches": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "path",
+                                    "reason",
+                                    "left",
+                                    "right"
+                                ],
+                                "additionalProperties": false,
+                                "properties": {
+                                    "path": {
+                                        "type": "string"
+                                    },
+                                    "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                            "value_mismatch",
+                                            "missing_left",
+                                            "missing_right",
+                                            "schema_invalid_current",
+                                            "schema_invalid_baseline"
+                                        ]
+                                    },
+                                    "left": {},
+                                    "right": {},
+                                    "detail": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
         }
     }
 }

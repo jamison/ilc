@@ -2,6 +2,8 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 import json
 
+from jsonschema import Draft7Validator
+
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     verify_cluster_a_replay_proof_package,
 )
@@ -11,6 +13,17 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
 
 
 GATE_VERSION = "v0.1"
+COMPARE_VERSION = "v0.1"
+
+# Load gate report schema once
+_GATE_SCHEMA_PATH = Path(__file__).parent.parent.parent / "docs" / "specs" / "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
+try:
+    with open(_GATE_SCHEMA_PATH, "r", encoding="utf-8") as _f:
+        _GATE_REPORT_SCHEMA = json.load(_f)
+except Exception:
+    _GATE_REPORT_SCHEMA = {}
+
+_GATE_REPORT_VALIDATOR = Draft7Validator(_GATE_REPORT_SCHEMA) if _GATE_REPORT_SCHEMA else None
 
 
 def _build_check_result(
@@ -262,6 +275,7 @@ def run_cluster_a_replay_proof_ci_gate(fixtures_root: Path | str, profile: str =
             "error_token_counts": {"profile_invalid": 1},
             "exit_code": 2,
             "error_token": "profile_invalid",
+            "baseline_compare": None,
         }
 
     checks = []
@@ -289,4 +303,145 @@ def run_cluster_a_replay_proof_ci_gate(fixtures_root: Path | str, profile: str =
         "error_token_counts": _count_error_tokens(checks),
         "exit_code": exit_code,
         "error_token": None,
+        "baseline_compare": None,
+    }
+
+
+# --- Baseline Load and Drift Compare ---
+
+
+def _validate_gate_report_schema(data: Any) -> Optional[str]:
+    """Validate data against CI gate report schema. Returns error string if invalid, None if valid."""
+    if _GATE_REPORT_VALIDATOR is None:
+        return "internal_error:schema_not_loaded"
+    errors = list(_GATE_REPORT_VALIDATOR.iter_errors(data))
+    if not errors:
+        return None
+    errors.sort(key=lambda e: (list(e.absolute_path), e.message))
+    return f"schema_validation_failed: {errors[0].message}"
+
+
+def load_ci_gate_baseline(path: Path | str) -> Dict[str, Any]:
+    """
+    Load and validate a CI gate baseline file.
+    Raises FileNotFoundError, json.JSONDecodeError, or ValueError (schema invalid).
+    """
+    path = Path(path)
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise ValueError("baseline is not a JSON object")
+    err = _validate_gate_report_schema(data)
+    if err:
+        raise ValueError(err)
+    return data
+
+
+def _escape_path_token(token: str) -> str:
+    """Escape path token per JSON Pointer (RFC 6901)."""
+    return token.replace("~", "~0").replace("/", "~1")
+
+
+def _path_join(parent: str, key: str) -> str:
+    """Append key to parent path."""
+    token = _escape_path_token(str(key))
+    if parent in ("", "/"):
+        return f"/{token}"
+    return f"{parent}/{token}"
+
+
+def _compare_recursive(path: str, left: Any, right: Any, mismatches: List[Dict[str, Any]]) -> None:
+    """Recursively compare left and right structures. Populates mismatches list."""
+    if type(left) != type(right):
+        mismatches.append({
+            "path": path,
+            "reason": "value_mismatch",
+            "left": left,
+            "right": right,
+            "detail": None,
+        })
+        return
+
+    if isinstance(left, dict):
+        all_keys = sorted(set(left.keys()) | set(right.keys()))
+        for k in all_keys:
+            new_path = _path_join(path, k)
+            if k not in left:
+                mismatches.append({"path": new_path, "reason": "missing_left", "left": None, "right": right[k], "detail": None})
+            elif k not in right:
+                mismatches.append({"path": new_path, "reason": "missing_right", "left": left[k], "right": None, "detail": None})
+            else:
+                _compare_recursive(new_path, left[k], right[k], mismatches)
+        return
+
+    if isinstance(left, list):
+        max_len = max(len(left), len(right))
+        for i in range(max_len):
+            new_path = _path_join(path, str(i))
+            if i >= len(left):
+                mismatches.append({"path": new_path, "reason": "missing_left", "left": None, "right": right[i], "detail": None})
+            elif i >= len(right):
+                mismatches.append({"path": new_path, "reason": "missing_right", "left": left[i], "right": None, "detail": None})
+            else:
+                _compare_recursive(new_path, left[i], right[i], mismatches)
+        return
+
+    if left != right:
+        mismatches.append({
+            "path": path,
+            "reason": "value_mismatch",
+            "left": left,
+            "right": right,
+            "detail": None,
+        })
+
+
+def compare_ci_gate_report_to_baseline(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Compare a current CI gate report to a baseline report.
+    Returns a deterministic compare report with stable reason tokens.
+    """
+    # Schema validation
+    current_err = _validate_gate_report_schema(current)
+    if current_err:
+        return {
+            "compare_version": COMPARE_VERSION,
+            "ok": False,
+            "mismatch_count": 1,
+            "mismatches": [{
+                "path": "/",
+                "reason": "schema_invalid_current",
+                "left": None,
+                "right": None,
+                "detail": current_err,
+            }],
+        }
+
+    baseline_err = _validate_gate_report_schema(baseline)
+    if baseline_err:
+        return {
+            "compare_version": COMPARE_VERSION,
+            "ok": False,
+            "mismatch_count": 1,
+            "mismatches": [{
+                "path": "/",
+                "reason": "schema_invalid_baseline",
+                "left": None,
+                "right": None,
+                "detail": baseline_err,
+            }],
+        }
+
+    # Deep compare (current=left, baseline=right)
+    mismatches: List[Dict[str, Any]] = []
+    _compare_recursive("/", current, baseline, mismatches)
+
+    # Deterministic sort
+    mismatches.sort(key=lambda m: (m["path"], m["reason"]))
+
+    return {
+        "compare_version": COMPARE_VERSION,
+        "ok": len(mismatches) == 0,
+        "mismatch_count": len(mismatches),
+        "mismatches": mismatches,
     }

@@ -1,0 +1,48 @@
+{
+    "baseline_compare": null,
+    "checks": [
+        {
+            "actual": "ok=true",
+            "check_id": "check_package_verify_valid",
+            "error_token": null,
+            "expected": "ok=true",
+            "ok": true
+        },
+        {
+            "actual": "ok=false",
+            "check_id": "check_package_verify_tampered_hash",
+            "error_token": null,
+            "expected": "ok=false",
+            "ok": true
+        },
+        {
+            "actual": "batch_ok=true",
+            "check_id": "check_batch_verify_manifest",
+            "error_token": null,
+            "expected": "batch_ok=true",
+            "ok": true
+        },
+        {
+            "actual": "compare_ok=false,mismatch=2",
+            "check_id": "check_compare_reports_mismatch",
+            "error_token": null,
+            "expected": "compare_ok=false",
+            "ok": true
+        },
+        {
+            "actual": "compare_ok=true",
+            "check_id": "check_verify_and_compare_contract",
+            "error_token": null,
+            "expected": "compare_ok=true",
+            "ok": true
+        }
+    ],
+    "error_token": null,
+    "error_token_counts": {},
+    "exit_code": 0,
+    "fail_count": 0,
+    "gate_version": "v0.1",
+    "ok": true,
+    "pass_count": 5,
+    "profile": "release_v0_1"
+}

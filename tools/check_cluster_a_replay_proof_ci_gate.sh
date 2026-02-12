@@ -1,33 +1,80 @@
-#!/bin/bash
-# Helper script to run the Cluster A Replay Proof CI Gate
-# Usage: ./check_cluster_a_replay_proof_ci_gate.sh [OUTPUT_DIR]
+#!/usr/bin/env bash
+# check_cluster_a_replay_proof_ci_gate.sh
+# Run the Cluster A Replay Proof CI Gate and optionally enforce baseline.
+#
+# Usage:
+#   ./tools/check_cluster_a_replay_proof_ci_gate.sh [--baseline <path>] [--no-enforce]
+#
+# By default, if a baseline is found at the standard location, baseline
+# enforcement is enabled. Pass --no-enforce to disable strict mode.
 
-set -e
+set -euo pipefail
 
-# Default output dir to automation/reports if not provided
-OUT_DIR="${1:-automation/reports}"
-mkdir -p "$OUT_DIR"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
-REPORT_PATH="${OUT_DIR}/cluster_a_replay_proof_ci_gate_report_${TIMESTAMP}.json"
-
-# Resolve absolute path to fixtures
-# Assuming script is in tools/ and root is ..
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FIXTURES_ROOT="${REPO_ROOT}/tests/fixtures"
+OUTPUT_DIR="${REPO_ROOT}/output/ci_gate"
+PROFILE="release_v0_1"
 
-echo "Running Cluster A Replay Proof CI Gate..."
-echo "Fixtures Root: ${FIXTURES_ROOT}"
-echo "Report Path: ${REPORT_PATH}"
+DEFAULT_BASELINE="${FIXTURES_ROOT}/cluster_a_replay_proof_ci_gate_v0_1/release_v0_1_baseline.json"
+BASELINE=""
+ENFORCE="true"
 
-# We invoke the module directly using python -m
-# This ensures we use the current python env
-python3 -m ilc_core.cli.canon_cluster_a_replay_proof ci-gate \
-    --fixtures-root "$FIXTURES_ROOT" \
-    --out "$REPORT_PATH" \
-    --pretty
+# Parse arguments
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --baseline)
+            BASELINE="$2"
+            shift 2
+            ;;
+        --no-enforce)
+            ENFORCE="false"
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            exit 2
+            ;;
+    esac
+done
 
+# Default baseline if not specified and file exists
+if [ -z "${BASELINE}" ] && [ -f "${DEFAULT_BASELINE}" ]; then
+    BASELINE="${DEFAULT_BASELINE}"
+fi
+
+mkdir -p "${OUTPUT_DIR}"
+
+REPORT_PATH="${OUTPUT_DIR}/ci_gate_report.json"
+
+# Build command
+CMD=(python3 -m ilc_core.cli.canon_cluster_a_replay_proof ci-gate
+    --fixtures-root "${FIXTURES_ROOT}"
+    --profile "${PROFILE}"
+    --out "${REPORT_PATH}"
+    --pretty)
+
+if [ -n "${BASELINE}" ]; then
+    CMD+=(--baseline "${BASELINE}")
+    if [ "${ENFORCE}" = "true" ]; then
+        CMD+=(--enforce-baseline)
+    fi
+fi
+
+echo "Running CI Gate..."
+echo "  Fixtures: ${FIXTURES_ROOT}"
+echo "  Profile:  ${PROFILE}"
+echo "  Output:   ${REPORT_PATH}"
+if [ -n "${BASELINE}" ]; then
+    echo "  Baseline: ${BASELINE}"
+    echo "  Enforce:  ${ENFORCE}"
+fi
+echo ""
+
+"${CMD[@]}"
 EXIT_CODE=$?
 
-echo "CI Gate finished with exit code: ${EXIT_CODE}"
-exit $EXIT_CODE
+echo ""
+echo "Exit code: ${EXIT_CODE}"
+exit ${EXIT_CODE}

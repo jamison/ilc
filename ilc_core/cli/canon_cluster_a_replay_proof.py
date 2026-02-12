@@ -398,14 +398,15 @@ def handle_verify_and_compare(args):
     _emit_ops_contract(contract, pretty=args.pretty, quiet=args.quiet)
     sys.exit(exit_code)
 
-from ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate import run_cluster_a_replay_proof_ci_gate
+from ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate import (
+    run_cluster_a_replay_proof_ci_gate,
+    load_ci_gate_baseline,
+    compare_ci_gate_report_to_baseline,
+)
 
 def handle_ci_gate(args):
     """Handle ci-gate subcommand."""
     fixtures_root = Path(args.fixtures_root).absolute()
-    
-    # Gate logic
-    report = run_cluster_a_replay_proof_ci_gate(fixtures_root, args.profile)
     
     # Output handling
     pretty = args.pretty
@@ -414,7 +415,6 @@ def handle_ci_gate(args):
     
     # Guard: quiet and no output sink
     if quiet and not out_path:
-        # Exit 2 with usage error token
         err_report = {
             "gate_version": "v0.1",
             "profile": args.profile,
@@ -425,9 +425,106 @@ def handle_ci_gate(args):
             "error_token_counts": {"usage_error:no_output_sink": 1},
             "exit_code": EXIT_ERROR,
             "error_token": "usage_error:no_output_sink",
+            "baseline_compare": None,
         }
         print(_json_dumps(err_report, pretty))
         sys.exit(EXIT_ERROR)
+
+    # Gate logic
+    report = run_cluster_a_replay_proof_ci_gate(fixtures_root, args.profile)
+
+    # Baseline enforcement
+    baseline_path = getattr(args, 'baseline', None)
+    enforce_baseline = getattr(args, 'enforce_baseline', False)
+
+    if baseline_path:
+        try:
+            baseline = load_ci_gate_baseline(Path(baseline_path))
+        except FileNotFoundError:
+            err_report = {
+                "gate_version": "v0.1",
+                "profile": args.profile,
+                "ok": False,
+                "pass_count": 0,
+                "fail_count": 0,
+                "checks": [],
+                "error_token_counts": {"baseline_not_found": 1},
+                "exit_code": EXIT_ERROR,
+                "error_token": "baseline_not_found",
+                "baseline_compare": None,
+            }
+            print(_json_dumps(err_report, pretty))
+            sys.exit(EXIT_ERROR)
+        except json.JSONDecodeError:
+            err_report = {
+                "gate_version": "v0.1",
+                "profile": args.profile,
+                "ok": False,
+                "pass_count": 0,
+                "fail_count": 0,
+                "checks": [],
+                "error_token_counts": {"baseline_invalid_json": 1},
+                "exit_code": EXIT_ERROR,
+                "error_token": "baseline_invalid_json",
+                "baseline_compare": None,
+            }
+            print(_json_dumps(err_report, pretty))
+            sys.exit(EXIT_ERROR)
+        except ValueError:
+            err_report = {
+                "gate_version": "v0.1",
+                "profile": args.profile,
+                "ok": False,
+                "pass_count": 0,
+                "fail_count": 0,
+                "checks": [],
+                "error_token_counts": {"baseline_schema_invalid": 1},
+                "exit_code": EXIT_ERROR,
+                "error_token": "baseline_schema_invalid",
+                "baseline_compare": None,
+            }
+            print(_json_dumps(err_report, pretty))
+            sys.exit(EXIT_ERROR)
+        except Exception:
+            err_report = {
+                "gate_version": "v0.1",
+                "profile": args.profile,
+                "ok": False,
+                "pass_count": 0,
+                "fail_count": 0,
+                "checks": [],
+                "error_token_counts": {"baseline_compare_runtime_error": 1},
+                "exit_code": EXIT_ERROR,
+                "error_token": "baseline_compare_runtime_error",
+                "baseline_compare": None,
+            }
+            print(_json_dumps(err_report, pretty))
+            sys.exit(EXIT_ERROR)
+
+        try:
+            cmp_report = compare_ci_gate_report_to_baseline(report, baseline)
+        except Exception:
+            err_report = {
+                "gate_version": "v0.1",
+                "profile": args.profile,
+                "ok": False,
+                "pass_count": 0,
+                "fail_count": 0,
+                "checks": [],
+                "error_token_counts": {"baseline_compare_runtime_error": 1},
+                "exit_code": EXIT_ERROR,
+                "error_token": "baseline_compare_runtime_error",
+                "baseline_compare": None,
+            }
+            print(_json_dumps(err_report, pretty))
+            sys.exit(EXIT_ERROR)
+
+        report["baseline_compare"] = cmp_report
+
+        if enforce_baseline and not cmp_report["ok"]:
+            report["ok"] = False
+            report["exit_code"] = EXIT_VERIFICATION_FAILED
+            report["error_token"] = "baseline_drift_detected"
 
     # Serialize report
     output_str = _json_dumps(report, pretty)
@@ -438,7 +535,6 @@ def handle_ci_gate(args):
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(output_str)
         except OSError:
-            # Fallback for IO error: Exit 2
              err_report = {
                 "gate_version": "v0.1",
                 "profile": args.profile,
@@ -449,7 +545,8 @@ def handle_ci_gate(args):
                 "error_token_counts": {E_IO_WRITE_ERROR: 1},
                 "exit_code": EXIT_ERROR,
                 "error_token": E_IO_WRITE_ERROR,
-            }
+                "baseline_compare": None,
+             }
              print(_json_dumps(err_report, pretty))
              sys.exit(EXIT_ERROR)
 
@@ -514,6 +611,8 @@ def main():
     gate_parser.add_argument("--fixtures-root", required=True, help="Root path for test fixtures")
     gate_parser.add_argument("--profile", default="release_v0_1", help="CI profile name (default: release_v0_1)")
     gate_parser.add_argument("--out", help="Output JSON report path")
+    gate_parser.add_argument("--baseline", help="Path to baseline report for drift comparison")
+    gate_parser.add_argument("--enforce-baseline", action="store_true", help="Fail (exit 1) if baseline drift detected")
     gate_parser.set_defaults(func=handle_ci_gate)
     
     args = parser.parse_args()

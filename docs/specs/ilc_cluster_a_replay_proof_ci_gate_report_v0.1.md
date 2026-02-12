@@ -29,3 +29,34 @@ Each check result contains:
 - `expected`: Description of expected state (e.g., `ok=true`).
 - `actual`: Description of actual state (e.g., `ok=false`).
 - `error_token`: Nullable stable error identifier if applicable.
+
+## Baseline Enforcement (Phase 150)
+
+When the `ci-gate` command is invoked with `--baseline <path>`, the gate loads a previously saved baseline report and compares it structurally against the current gate output.
+
+### Baseline Compare Contract
+The `baseline_compare` field in the gate report is `null` when no baseline is provided, or an object with:
+- `compare_version`: `"v0.1"`
+- `ok`: `true` if current report matches baseline exactly, `false` otherwise.
+- `mismatch_count`: Number of structural mismatches found.
+- `mismatches`: Deterministically sorted list of mismatch items.
+
+Each mismatch item contains:
+- `path`: JSON Pointer to the differing field.
+- `reason`: One of `value_mismatch`, `missing_left`, `missing_right`, `schema_invalid_current`, `schema_invalid_baseline`.
+- `left`: Value from the current report (null if missing).
+- `right`: Value from the baseline report (null if missing).
+- `detail`: Nullable detail string (used for schema validation errors).
+
+### Drift Enforcement
+When `--enforce-baseline` is set and the compare detects mismatches:
+- `exit_code` is set to `1` (verification failure).
+- `error_token` is set to `baseline_drift_detected`.
+- The `baseline_compare` object is included in the report output.
+
+### Baseline Error Tokens
+Baseline-related runtime errors use `exit_code=2` with stable tokens:
+- `baseline_not_found`: Baseline file does not exist.
+- `baseline_invalid_json`: Baseline file is not valid JSON.
+- `baseline_schema_invalid`: Baseline file fails schema validation.
+- `baseline_compare_runtime_error`: Unexpected error during compare execution.
