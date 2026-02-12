@@ -1,8 +1,12 @@
 import json
 import os
+import logging
 from typing import Dict, List, Optional, Iterable
 from .types import Node, Edge, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord
 from .links import validate_link_type, is_symmetric
+
+logger = logging.getLogger(__name__)
+
 
 class EpistemicGraph:
     def __init__(self):
@@ -33,7 +37,7 @@ class EpistemicGraph:
                 net_stake=axiom["weight"]
             )
             self.nodes[node.id] = node
-            print(f"loaded_axiom: {node.content} ({node.id})")
+            logger.info("loaded_axiom: %s (%s)", node.content, node.id)
 
     def add_node(self, node: Node):
         if node.id in self.nodes:

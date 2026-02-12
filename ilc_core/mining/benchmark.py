@@ -3,6 +3,10 @@ import random
 import math
 import hashlib
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # Hardware Acceleration Imports
 try:
@@ -87,11 +91,11 @@ class PoWBenchmark:
             - "task"       : "MATRIX_HEAVY" | "INTEGER_SEARCH"
             - "total_time" : total benchmark wall-clock time (seconds)
         """
-        print(f"[Benchmark] Initializing CapProof for {agent_id}...")
+        logger.info("[Benchmark] Initializing CapProof for %s", agent_id)
 
         # --- GENESIS BYPASS ------------------------------------------------
         if "genesis" in agent_id.lower():
-            print("[Benchmark] GENESIS AGENT DETECTED. Bypassing checks.")
+            logger.info("[Benchmark] GENESIS AGENT DETECTED. Bypassing checks.")
             return {
                 "score": 1.0,
                 "tier": "genesis",
@@ -152,9 +156,11 @@ class PoWBenchmark:
         # Clamp to [0,1].
         normalized_score = max(0.0, min(normalized_score, 1.0))
 
-        print(
-            f"[Benchmark] {tier.upper()} TIER. "
-            f"Time: {total_time:.4f}s. Score: {normalized_score:.4f}"
+        logger.info(
+            "[Benchmark] %s TIER. Time: %.4fs. Score: %.4f",
+            tier.upper(),
+            total_time,
+            normalized_score,
         )
 
         return {

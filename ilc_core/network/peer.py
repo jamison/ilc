@@ -1,7 +1,11 @@
 from typing import List, Dict, Set
+import logging
 from pydantic import BaseModel
 import requests
 import random
+
+logger = logging.getLogger(__name__)
+
 
 class Peer(BaseModel):
     host: str
@@ -18,7 +22,7 @@ class PeerManager:
         address = f"{host}:{port}"
         if address not in self.banned and address != f"127.0.0.1:{self.local_port}":
             self.peers.add(address)
-            print(f"[Network] Added peer: {address}")
+            logger.info("[Network] Added peer: %s", address)
 
     def broadcast(self, endpoint: str, payload: dict):
         """
@@ -30,7 +34,7 @@ class PeerManager:
         fanout = min(len(self.peers), 3) # Gossip to 3 peers
         targets = random.sample(list(self.peers), fanout) if self.peers else []
         
-        print(f"[Gossip] Broadcasting to {len(targets)} peers: {targets}")
+        logger.info("[Gossip] Broadcasting to %s peers: %s", len(targets), targets)
         for target in targets:
             # try:
             #     requests.post(f"http://{target}{endpoint}", json=payload, timeout=1)

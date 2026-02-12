@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 class OnboardingVault:
     def __init__(self):
         self.vault_balance = 1000.0  # Seeded by Genesis/Fees
@@ -13,7 +18,7 @@ class OnboardingVault:
         if self.vault_balance >= STARTER_AMOUNT:
             self.vault_balance -= STARTER_AMOUNT
             self.credits_issued[agent_id] = STARTER_AMOUNT
-            print(f"[Vault] Issued starter credit {STARTER_AMOUNT} to {agent_id}")
+            logger.info("[Vault] Issued starter credit %s to %s", STARTER_AMOUNT, agent_id)
             return STARTER_AMOUNT
         return 0.0
 
@@ -32,6 +37,6 @@ class OnboardingVault:
         self.vault_balance += repayment
         
         if self.credits_issued[agent_id] == 0:
-            print(f"[Vault] Agent {agent_id} has fully repaid their debt!")
+            logger.info("[Vault] Agent %s has fully repaid their debt!", agent_id)
             
         return repayment, earnings - repayment
