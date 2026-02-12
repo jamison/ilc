@@ -398,6 +398,68 @@ def handle_verify_and_compare(args):
     _emit_ops_contract(contract, pretty=args.pretty, quiet=args.quiet)
     sys.exit(exit_code)
 
+from ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate import run_cluster_a_replay_proof_ci_gate
+
+def handle_ci_gate(args):
+    """Handle ci-gate subcommand."""
+    fixtures_root = Path(args.fixtures_root).absolute()
+    
+    # Gate logic
+    report = run_cluster_a_replay_proof_ci_gate(fixtures_root, args.profile)
+    
+    # Output handling
+    pretty = args.pretty
+    quiet = args.quiet
+    out_path = args.out
+    
+    # Guard: quiet and no output sink
+    if quiet and not out_path:
+        # Exit 2 with usage error token
+        err_report = {
+            "gate_version": "v0.1",
+            "profile": args.profile,
+            "ok": False,
+            "pass_count": 0,
+            "fail_count": 0,
+            "checks": [],
+            "error_token_counts": {"usage_error:no_output_sink": 1},
+            "exit_code": EXIT_ERROR,
+            "error_token": "usage_error:no_output_sink",
+        }
+        print(_json_dumps(err_report, pretty))
+        sys.exit(EXIT_ERROR)
+
+    # Serialize report
+    output_str = _json_dumps(report, pretty)
+    
+    # Write to file if requested
+    if out_path:
+        try:
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(output_str)
+        except OSError:
+            # Fallback for IO error: Exit 2
+             err_report = {
+                "gate_version": "v0.1",
+                "profile": args.profile,
+                "ok": False,
+                "pass_count": 0,
+                "fail_count": 0,
+                "checks": [],
+                "error_token_counts": {E_IO_WRITE_ERROR: 1},
+                "exit_code": EXIT_ERROR,
+                "error_token": E_IO_WRITE_ERROR,
+            }
+             print(_json_dumps(err_report, pretty))
+             sys.exit(EXIT_ERROR)
+
+    # Print to stdout unless quiet
+    if not quiet:
+        print(output_str)
+        
+    # Exit code
+    sys.exit(report["exit_code"])
+
 def main():
     parser = argparse.ArgumentParser(
         description="ILC Cluster A Replay Proof CLI",
@@ -446,6 +508,13 @@ def main():
     ops_parser.add_argument("--out-report", help="Output path for generated batch report")
     ops_parser.add_argument("--out-compare", help="Output path for comparison report (default: stdout)")
     ops_parser.set_defaults(func=handle_verify_and_compare)
+    
+    # CI Gate
+    gate_parser = subparsers.add_parser("ci-gate", parents=[parent_parser], help="Run deterministic CI gate checks")
+    gate_parser.add_argument("--fixtures-root", required=True, help="Root path for test fixtures")
+    gate_parser.add_argument("--profile", default="release_v0_1", help="CI profile name (default: release_v0_1)")
+    gate_parser.add_argument("--out", help="Output JSON report path")
+    gate_parser.set_defaults(func=handle_ci_gate)
     
     args = parser.parse_args()
     args.func(args)

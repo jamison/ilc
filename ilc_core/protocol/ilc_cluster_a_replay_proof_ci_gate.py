@@ -1,0 +1,292 @@
+from typing import Dict, Any, List, Optional
+from pathlib import Path
+import json
+
+from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
+    verify_cluster_a_replay_proof_package,
+)
+from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
+    run_batch_verify_and_compare,
+)
+
+
+GATE_VERSION = "v0.1"
+
+
+def _build_check_result(
+    check_id: str,
+    ok: bool,
+    expected: Any,
+    actual: Any,
+    error_token: Optional[str] = None,
+) -> Dict[str, Any]:
+    return {
+        "check_id": check_id,
+        "ok": ok,
+        "expected": expected,
+        "actual": actual,
+        "error_token": error_token,
+    }
+
+
+def _check_package_verify_valid(fixtures_root: Path) -> Dict[str, Any]:
+    # Target: tests/fixtures/cluster_a_replay_proof_v0_1/package_valid.json
+    target = fixtures_root / "cluster_a_replay_proof_v0_1" / "package_valid.json"
+    if not target.exists():
+        return _build_check_result(
+            "check_package_verify_valid",
+            False,
+            "ok=true",
+            "file_not_found",
+            "fixture_missing",
+        )
+
+    try:
+        with open(target, "r", encoding="utf-8") as f:
+            pkg = json.load(f)
+        report = verify_cluster_a_replay_proof_package(pkg)
+        ok = report.get("ok", False)
+        return _build_check_result(
+            "check_package_verify_valid",
+            ok,
+            "ok=true",
+            f"ok={str(ok).lower()}",
+            None if ok else "verify_failed",
+        )
+    except Exception:
+        return _build_check_result(
+            "check_package_verify_valid",
+            False,
+            "ok=true",
+            "exception",
+            "runtime_error",
+        )
+
+
+def _check_package_verify_tampered_hash(fixtures_root: Path) -> Dict[str, Any]:
+    # Target: tests/fixtures/cluster_a_replay_proof_v0_1/package_tampered_hash.json
+    target = fixtures_root / "cluster_a_replay_proof_v0_1" / "package_tampered_hash.json"
+    if not target.exists():
+        return _build_check_result(
+            "check_package_verify_tampered_hash",
+            False,
+            "ok=false",
+            "file_not_found",
+            "fixture_missing",
+        )
+
+    try:
+        with open(target, "r", encoding="utf-8") as f:
+            pkg = json.load(f)
+        report = verify_cluster_a_replay_proof_package(pkg)
+        ok = report.get("ok", False)
+        # Expected: ok=False
+        check_ok = not ok
+        return _build_check_result(
+            "check_package_verify_tampered_hash",
+            check_ok,
+            "ok=false",
+            f"ok={str(ok).lower()}",
+            None if check_ok else "verify_succeeded_unexpectedly",
+        )
+    except Exception:
+        return _build_check_result(
+            "check_package_verify_tampered_hash",
+            False,
+            "ok=false",
+            "exception",
+            "runtime_error",
+        )
+
+
+def _check_batch_verify_manifest(fixtures_root: Path) -> Dict[str, Any]:
+    # Target: tests/fixtures/cluster_a_replay_proof_batch_v0_1/manifest_mixed.json
+    # Note: Phase 148 discovered load_manifest_paths expects TXT path list, NOT JSON dict.
+    # We should look for tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt
+    target = fixtures_root / "cluster_a_replay_proof_batch_ops_v0_1" / "manifest.txt"
+    if not target.exists():
+        return _build_check_result(
+            "check_batch_verify_manifest",
+            False,
+            "batch_ok=true",
+            "file_not_found",
+            "fixture_missing",
+        )
+
+    try:
+        # We need to manually construct package list because verify_cluster_a_replay_proof_batch
+        # takes (packages, source_ids).
+        # But wait, `run_batch_verify_from_manifest` does this.
+        # Let's import that instead to avoid duplication logic.
+        from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import run_batch_verify_from_manifest
+        
+        report = run_batch_verify_from_manifest(target)
+        ok = report.get("ok", False)
+        return _build_check_result(
+            "check_batch_verify_manifest",
+            ok,
+            "batch_ok=true",
+            f"batch_ok={str(ok).lower()}",
+            None if ok else "batch_verify_failed",
+        )
+    except Exception:
+        return _build_check_result(
+            "check_batch_verify_manifest",
+            False,
+            "batch_ok=true",
+            "exception",
+            "runtime_error",
+        )
+
+
+def _check_compare_reports_mismatch(fixtures_root: Path) -> Dict[str, Any]:
+    # Target: verify-and-compare fixtures for mismatch scenario
+    # manifest: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt
+    # expected: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/report_mismatch.json
+    
+    # We expect mismatch count > 0 -> OK=False from protocol
+    # BUT for this CI check, "success" means we successfully detetected the mismatch.
+    # So if protocol returns ok=False, check passes.
+    
+    manifest = fixtures_root / "cluster_a_replay_proof_batch_ops_v0_1" / "manifest.txt"
+    expected_path = fixtures_root / "cluster_a_replay_proof_batch_ops_v0_1" / "report_mismatch.json"
+    
+    if not manifest.exists() or not expected_path.exists():
+        return _build_check_result(
+            "check_compare_reports_mismatch",
+            False,
+            "compare_ok=false",
+            "file_not_found",
+            "fixture_missing",
+        )
+
+    try:
+        with open(expected_path, "r", encoding="utf-8") as f:
+            expected_report = json.load(f)
+            
+        reports = run_batch_verify_and_compare(manifest, expected_report)
+        compare = reports["compare_report"]
+        
+        compare_ok = compare.get("ok", False)
+        mismatch_count = compare.get("mismatch_count", 0)
+        
+        # We expect compare_ok=False and mismatch_count > 0
+        success = (not compare_ok) and (mismatch_count > 0)
+        
+        return _build_check_result(
+            "check_compare_reports_mismatch",
+            success,
+            "compare_ok=false",
+            f"compare_ok={str(compare_ok).lower()},mismatch={mismatch_count}",
+            None if success else "mismatch_detection_failed",
+        )
+            
+    except Exception:
+        return _build_check_result(
+            "check_compare_reports_mismatch",
+            False,
+            "compare_ok=false",
+            "exception",
+            "runtime_error",
+        )
+
+
+def _check_verify_and_compare_contract(fixtures_root: Path) -> Dict[str, Any]:
+    # Target: verify-and-compare success scenario
+    # manifest: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt
+    # expected: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/report_match.json
+    
+    manifest = fixtures_root / "cluster_a_replay_proof_batch_ops_v0_1" / "manifest.txt"
+    expected_path = fixtures_root / "cluster_a_replay_proof_batch_ops_v0_1" / "report_match.json"
+    
+    if not manifest.exists() or not expected_path.exists():
+        return _build_check_result(
+            "check_verify_and_compare_contract",
+            False,
+            "compare_ok=true",
+            "file_not_found",
+            "fixture_missing",
+        )
+
+    try:
+        with open(expected_path, "r", encoding="utf-8") as f:
+            expected_report = json.load(f)
+            
+        reports = run_batch_verify_and_compare(manifest, expected_report)
+        compare = reports["compare_report"]
+        
+        compare_ok = compare.get("ok", False)
+        
+        return _build_check_result(
+            "check_verify_and_compare_contract",
+            compare_ok,
+            "compare_ok=true",
+            f"compare_ok={str(compare_ok).lower()}",
+            None if compare_ok else "contract_verification_failed",
+        )
+            
+    except Exception:
+        return _build_check_result(
+            "check_verify_and_compare_contract",
+            False,
+            "compare_ok=true",
+            "exception",
+            "runtime_error",
+        )
+
+
+def _count_error_tokens(checks: List[Dict[str, Any]]) -> Dict[str, int]:
+    counts = {}
+    for c in checks:
+        if not c["ok"] and c["error_token"]:
+            token = c["error_token"]
+            counts[token] = counts.get(token, 0) + 1
+    # Sort deterministically
+    return dict(sorted(counts.items()))
+
+
+def run_cluster_a_replay_proof_ci_gate(fixtures_root: Path | str, profile: str = "release_v0_1") -> Dict[str, Any]:
+    """
+    Executes a deterministic sequence of replay-proof checks.
+    """
+    fixtures_root = Path(fixtures_root)
+
+    if profile != "release_v0_1":
+        return {
+            "gate_version": GATE_VERSION,
+            "profile": profile,
+            "ok": False,
+            "pass_count": 0,
+            "fail_count": 0,
+            "checks": [],
+            "error_token_counts": {"profile_invalid": 1},
+            "exit_code": 2,
+            "error_token": "profile_invalid",
+        }
+
+    checks = []
+    
+    # release_v0_1 checks sequence
+    checks.append(_check_package_verify_valid(fixtures_root))
+    checks.append(_check_package_verify_tampered_hash(fixtures_root))
+    checks.append(_check_batch_verify_manifest(fixtures_root))
+    checks.append(_check_compare_reports_mismatch(fixtures_root))
+    checks.append(_check_verify_and_compare_contract(fixtures_root))
+    
+    pass_count = sum(1 for c in checks if c["ok"])
+    fail_count = len(checks) - pass_count
+    
+    ok = (fail_count == 0)
+    exit_code = 0 if ok else 1
+    
+    return {
+        "gate_version": GATE_VERSION,
+        "profile": profile,
+        "ok": ok,
+        "pass_count": pass_count,
+        "fail_count": fail_count,
+        "checks": checks,
+        "error_token_counts": _count_error_tokens(checks),
+        "exit_code": exit_code,
+        "error_token": None,
+    }
