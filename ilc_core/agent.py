@@ -9,6 +9,8 @@ import time
 
 logger = logging.getLogger(__name__)
 
+DRAFT_SIGNATURE = "draft_unsigned_mvp"
+
 class EveAgent:
     def __init__(self, agent_id: str, graph: EpistemicGraph, consensus: ConsensusEngine, vault: Optional[OnboardingVault] = None):
         self.id = agent_id
@@ -108,7 +110,13 @@ class EveAgent:
             return None
 
         # Construct the node exactly as before.
-        node = Node(id="", type="claim", content=content, agent_id=self.id, signature="sig")
+        node = Node(
+            id="",
+            type="claim",
+            content=content,
+            agent_id=self.id,
+            signature=DRAFT_SIGNATURE,
+        )
         node.id = node.compute_id()
         edge = Edge(source_id=node.id, target_id=parent_id, type="derives_from")
         self.graph.add_node(node)

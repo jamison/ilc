@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.consensus.engine import ConsensusEngine
-from ilc_core.agent import EveAgent
+from ilc_core.agent import DRAFT_SIGNATURE, EveAgent
 
 
 def test_decide_stake_respects_ecu_fee_and_wallet():
@@ -45,6 +45,7 @@ def test_mine_thought_uses_strategy_and_succeeds_with_funds():
 
     # With a funded wallet and reasonable stake, mining should succeed.
     assert thought is not None
+    assert thought.signature == DRAFT_SIGNATURE
     assert thought.id in graph.nodes
     assert len(graph.edges) > 0
     assert consensus.node_stakes.get(thought.id, 0.0) > 0.0

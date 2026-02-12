@@ -36,8 +36,6 @@ class PeerManager:
         
         logger.info("[Gossip] Broadcasting to %s peers: %s", len(targets), targets)
         for target in targets:
-            # try:
-            #     requests.post(f"http://{target}{endpoint}", json=payload, timeout=1)
-            # except:
-            #     print(f"[Network] Failed to reach {target}")
+            # Real network send path can be enabled later:
+            # requests.post(f"http://{target}{endpoint}", json=payload, timeout=1)
             pass # Simulation only for now

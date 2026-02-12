@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.consensus.engine import ConsensusEngine
-from ilc_core.agent import EveAgent
+from ilc_core.agent import DRAFT_SIGNATURE, EveAgent
 
 
 def _make_agent():
@@ -26,6 +26,7 @@ def test_auto_mine_respects_ecu_and_wallet():
     node = agent.auto_mine_claim("auto-claim", parent)
 
     assert node is not None
+    assert node.signature == DRAFT_SIGNATURE
     assert node.id in graph.nodes
     assert consensus.node_stakes.get(node.id, 0.0) > 0.0
     assert agent.wallet_balance < 5.0  # some stake was spent
@@ -50,6 +51,8 @@ def test_high_potential_stakes_more_than_low():
     # Both should be able to mine at least once with the same config.
     assert node_low is not None
     assert node_high is not None
+    assert node_low.signature == DRAFT_SIGNATURE
+    assert node_high.signature == DRAFT_SIGNATURE
 
     spent_low = 10.0 - agent_low.wallet_balance
     spent_high = 10.0 - agent_high.wallet_balance
