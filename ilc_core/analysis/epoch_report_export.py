@@ -1,29 +1,32 @@
 from os import PathLike
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, List, TypeAlias
 import csv
 import json
 
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
-from ilc_core.analysis.agent_dossier_export import flatten_profile_for_csv
+from ilc_core.analysis.agent_dossier_export import AgentDossierRow, flatten_profile_for_csv
+
+EpochAgentRow: TypeAlias = AgentDossierRow
+EpochAgentRows: TypeAlias = List[EpochAgentRow]
 
 def build_epoch_agent_rows(
     epoch_index: int,
     namespace_snapshot: NamespaceHealthSnapshot,
     profiles: Dict[str, AgentProfile],
-) -> List[Dict[str, Any]]:
+) -> EpochAgentRows:
     """
     For each agent, build a flattened row combining:
       - epoch_index
       - namespace fields (e.g. namespace_id, total_stress, cohesion_score, etc.)
       - flattened agent dossier fields (via flatten_profile_for_csv)
     """
-    rows: List[Dict[str, Any]] = []
+    rows: EpochAgentRows = []
     
     # Base/Shared fields for all rows in this epoch
     # We include key metrics. Can include more if needed.
-    namespace_base = {
+    namespace_base: EpochAgentRow = {
         "epoch_index": epoch_index,
         "namespace_id": namespace_snapshot.namespace_id,
         "total_stress": namespace_snapshot.total_stress,

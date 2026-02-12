@@ -1,12 +1,17 @@
 from os import PathLike
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, List, TypeAlias
 import csv
 import json
 
 from ilc_core.analysis.agent_profiles import AgentProfile
 
-def flatten_profile_for_csv(profile: AgentProfile) -> Dict[str, Any]:
+ScalarValue: TypeAlias = str | int | float | bool | None
+AgentDossierRow: TypeAlias = Dict[str, ScalarValue]
+AgentDossierRows: TypeAlias = List[AgentDossierRow]
+
+
+def flatten_profile_for_csv(profile: AgentProfile) -> AgentDossierRow:
     """
     Flatten an AgentProfile into a 1-level dict suitable for CSV export.
 
@@ -18,7 +23,7 @@ def flatten_profile_for_csv(profile: AgentProfile) -> Dict[str, Any]:
         *_json column with the full nested data as JSON.
     """
     base = profile.as_dict()
-    row: Dict[str, Any] = {}
+    row: AgentDossierRow = {}
 
     # Always include agent_id
     row["agent_id"] = base.get("agent_id")
@@ -72,7 +77,7 @@ def export_agent_dossiers_to_csv(
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
 
-    rows: List[Dict[str, Any]] = [flatten_profile_for_csv(pf) for pf in profiles.values()]
+    rows: AgentDossierRows = [flatten_profile_for_csv(pf) for pf in profiles.values()]
 
     # Handle empty gracefully
     if not rows:

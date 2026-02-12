@@ -1,11 +1,13 @@
 import csv
 import json
 from pathlib import Path
-from typing import List, Dict, Any, Union
+from typing import Union
 from os import PathLike
 
+from ilc_core.analysis.routed_tasks import TaskRowDictList
+
 def export_routed_tasks_to_csv(
-    routed_task_rows: List[Dict[str, Any]], 
+    routed_task_rows: TaskRowDictList,
     path: Union[str, PathLike]
 ) -> None:
     """
@@ -43,7 +45,7 @@ def export_routed_tasks_to_csv(
         writer.writerows(routed_task_rows)
 
 def export_routed_tasks_to_json(
-    routed_task_rows: List[Dict[str, Any]], 
+    routed_task_rows: TaskRowDictList,
     path: Union[str, PathLike]
 ) -> None:
     """
