@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 import logging
 from pydantic import BaseModel
 from .graph import EpistemicGraph
@@ -22,16 +22,36 @@ from ilc_core.work.task_queue import TaskDescriptor
 
 logger = logging.getLogger(__name__)
 
-# Singleton State (Simulated Persistence for MVP)
-graph = EpistemicGraph()
-graph.load_genesis()
-cfg = load_governance_config()
-consensus = ConsensusEngine(graph, governance_config=cfg)
-agent = EveAgent("agent:local_node", graph, consensus)
-agent.wallet_balance = 1000.0
-peer_manager = PeerManager(local_port=8000)
-
 app = FastAPI(title="ILC Node Daemon", version="0.1.0")
+
+
+def _init_runtime_state(app_obj: FastAPI) -> None:
+    """Initialize runtime state in app.state."""
+    graph = EpistemicGraph()
+    graph.load_genesis()
+    cfg = load_governance_config()
+    consensus = ConsensusEngine(graph, governance_config=cfg)
+    agent = EveAgent("agent:local_node", graph, consensus)
+    agent.wallet_balance = 1000.0
+    peer_manager = PeerManager(local_port=8000)
+    app_obj.state.graph = graph
+    app_obj.state.consensus = consensus
+    app_obj.state.agent = agent
+    app_obj.state.peer_manager = peer_manager
+
+
+@app.on_event("startup")
+def startup() -> None:
+    _init_runtime_state(app)
+
+
+def _state(request: Request):
+    """Convenience accessor for runtime state."""
+    state = request.app.state
+    # TestClient startup hooks run on context enter; lazily initialize for direct use.
+    if not hasattr(state, "graph"):
+        _init_runtime_state(request.app)
+    return state
 
 # Request Models
 class ClaimRequest(BaseModel):
@@ -61,46 +81,50 @@ class ProtocolTaskOutcomeRequest(BaseModel):
     success: bool
 
 @app.get("/")
-def read_root():
+def read_root(request: Request):
+    state = _state(request)
     return {
         "system": "Intelligent Labor Coin",
         "status": "online",
-        "agent_id": agent.id,
-        "graph_size": len(graph.nodes),
-        "genesis_hash": graph.nodes["axiom:math:01"].id if "axiom:math:01" in graph.nodes else "unknown"
+        "agent_id": state.agent.id,
+        "graph_size": len(state.graph.nodes),
+        "genesis_hash": state.graph.nodes["axiom:math:01"].id if "axiom:math:01" in state.graph.nodes else "unknown"
     }
 
 @app.post("/mine")
-def mine_claim(req: ClaimRequest):
+def mine_claim(req: ClaimRequest, request: Request):
     """
     Public Endpoint: Ask the internal agent to perform labor.
     """
-    node = agent.mine_thought(req.content, req.parent_id, req.stake)
+    state = _state(request)
+    node = state.agent.mine_thought(req.content, req.parent_id, req.stake)
     if not node:
         raise HTTPException(status_code=400, detail="Mining failed (insufficient funds?)")
     
     # NEW: Gossip the success!
-    peer_manager.broadcast("/gossip/receive", node.model_dump())
+    state.peer_manager.broadcast("/gossip/receive", node.model_dump())
     
     return {
         "status": "success",
         "node_id": node.id,
         "content": node.content,
-        "net_stake": consensus.node_stakes.get(node.id, 0.0)
+        "net_stake": state.consensus.node_stakes.get(node.id, 0.0)
     }
 
 @app.get("/node/{node_id}")
-def get_node(node_id: str):
-    if node_id not in graph.nodes:
+def get_node(node_id: str, request: Request):
+    state = _state(request)
+    if node_id not in state.graph.nodes:
         raise HTTPException(status_code=404, detail="Node not found")
-    return graph.nodes[node_id]
+    return state.graph.nodes[node_id]
 
 @app.post("/gossip/receive")
-def receive_gossip(node_data: dict):
+def receive_gossip(node_data: dict, request: Request):
     """
     Endpoint for other nodes to push data to us.
     """
     # 1. Parse Node
+    state = _state(request)
     try:
         # Simple validation logic (would be deeper in production)
         node_id = node_data.get("id")
@@ -108,7 +132,7 @@ def receive_gossip(node_data: dict):
         
         # 2. Add to Graph (if new)
         # In a real system, we'd verify signature here first!
-        if node_id not in graph.nodes:
+        if node_id not in state.graph.nodes:
             # Reconstruct node object (simplified for MVP)
             # graph.add_node(Node(**node_data))
             logger.info("[Gossip] Accepted new knowledge: %s", node_id)
@@ -121,9 +145,10 @@ def receive_gossip(node_data: dict):
         raise HTTPException(status_code=400, detail="Invalid Gossip")
 
 @app.post("/peers/add")
-def add_peer_endpoint(host: str, port: int):
-    peer_manager.add_peer(host, port)
-    return {"status": "added", "total_peers": len(peer_manager.peers)}
+def add_peer_endpoint(host: str, port: int, request: Request):
+    state = _state(request)
+    state.peer_manager.add_peer(host, port)
+    return {"status": "added", "total_peers": len(state.peer_manager.peers)}
 
 # --- Protocol Surface (MVP) ---
 # NOTE: These /v1/protocol/* endpoints expose the MVP protocol schema over HTTP.

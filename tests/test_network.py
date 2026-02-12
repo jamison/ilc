@@ -3,16 +3,20 @@ import os
 from unittest.mock import MagicMock
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ilc_core.server import app, peer_manager
+from ilc_core.server import app
 from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
 def test_gossip_protocol():
     print("\n--- TEST: P2P GOSSIP ---")
+    # Ensure server runtime state is initialized
+    client.get("/")
     
     # 1. Populate Peer Table
     peers = ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5"]
+    peer_manager = app.state.peer_manager
+    peer_manager.peers.clear()
     for p in peers:
         client.post(f"/peers/add?host={p}&port=8000")
         
