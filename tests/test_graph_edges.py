@@ -46,3 +46,14 @@ def test_add_edge_missing_node_raises():
         pass
     else:
         raise AssertionError("Expected KeyError for unknown source_id")
+
+
+def test_legacy_direct_append_warns_once(caplog):
+    g = _seed_graph()
+    with caplog.at_level("WARNING"):
+        g.edges.append(Edge(source_id="c1", target_id="c2", type="derives_from"))
+        list(g.iter_edges_from("c1"))
+        list(g.iter_edges_from("c1"))
+
+    messages = [record.getMessage() for record in caplog.records]
+    assert sum("legacy_edge_mutation_detected" in msg for msg in messages) == 1

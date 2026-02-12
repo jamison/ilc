@@ -15,6 +15,7 @@ class EpistemicGraph:
         self.outgoing_edges: Dict[str, List[Edge]] = {}
         self.incoming_edges: Dict[str, List[Edge]] = {}
         self._edge_index_len: int = 0
+        self._legacy_edge_mutation_warned: bool = False
         self.links: Dict[str, LinkRecord] = {}
         self.outgoing_links: Dict[str, List[str]] = {}
         self.incoming_links: Dict[str, List[str]] = {}
@@ -62,6 +63,12 @@ class EpistemicGraph:
         Keep edge indexes coherent even if legacy code mutates graph.edges directly.
         """
         if self._edge_index_len != len(self.edges):
+            if not self._legacy_edge_mutation_warned:
+                logger.warning(
+                    "legacy_edge_mutation_detected: rebuild_edge_indexes len=%s",
+                    len(self.edges),
+                )
+                self._legacy_edge_mutation_warned = True
             self._rebuild_edge_indexes()
 
     def add_edge(self, edge: Edge) -> None:
