@@ -1,0 +1,16 @@
+{
+    "compare_version": "v0.1",
+    "left_report_version": null,
+    "mismatch_count": 1,
+    "mismatches": [
+        {
+            "detail": "schema_validation_failed: 'report_version' is a required property",
+            "left": null,
+            "path": "/",
+            "reason": "schema_invalid_left",
+            "right": null
+        }
+    ],
+    "ok": false,
+    "right_report_version": "v0.1"
+}

@@ -1,0 +1,43 @@
+{
+    "batch_errors": [],
+    "error_token_counts": {
+        "context_violation:replay_proof_package_hash_mismatch": 1
+    },
+    "fail_count": 1,
+    "ok": false,
+    "ok_count": 1,
+    "report_version": "v0.1",
+    "results": [
+        {
+            "checks": [
+                {
+                    "check": "check_package_hash_match",
+                    "error_code": null,
+                    "status": "pass"
+                }
+            ],
+            "errors": [],
+            "input_index": 0,
+            "ok": true,
+            "source_id": "pkg_valid.json",
+            "warnings": []
+        },
+        {
+            "checks": [
+                {
+                    "check": "check_package_hash_match",
+                    "error_code": "context_violation:replay_proof_package_hash_mismatch",
+                    "status": "pass"
+                }
+            ],
+            "errors": [
+                "context_violation:replay_proof_package_hash_mismatch"
+            ],
+            "input_index": 1,
+            "ok": false,
+            "source_id": "pkg_tampered.json",
+            "warnings": []
+        }
+    ],
+    "total_packages": 2
+}

@@ -1,0 +1,15 @@
+{
+    "compare_version": "v0.1",
+    "left_report_version": "v0.1",
+    "mismatch_count": 1,
+    "mismatches": [
+        {
+            "left": "fail",
+            "path": "/results/1/checks/0/status",
+            "reason": "value_mismatch",
+            "right": "pass"
+        }
+    ],
+    "ok": false,
+    "right_report_version": "v0.1"
+}

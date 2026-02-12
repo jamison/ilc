@@ -1,0 +1,73 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://schemas.ilc.org/ilc_cluster_a_replay_proof_batch_compare_v0.1.json",
+    "title": "ILC Cluster A Replay Proof Batch Compare Report v0.1",
+    "type": "object",
+    "required": [
+        "compare_version",
+        "ok",
+        "left_report_version",
+        "right_report_version",
+        "mismatch_count",
+        "mismatches"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "compare_version": {
+            "type": "string",
+            "const": "v0.1"
+        },
+        "ok": {
+            "type": "boolean"
+        },
+        "left_report_version": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "right_report_version": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "mismatch_count": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "mismatches": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "path",
+                    "reason",
+                    "left",
+                    "right"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                    "path": {
+                        "type": "string"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "value_mismatch",
+                            "missing_left",
+                            "missing_right",
+                            "schema_invalid_left",
+                            "schema_invalid_right"
+                        ]
+                    },
+                    "detail": {
+                        "type": "string"
+                    },
+                    "left": {},
+                    "right": {}
+                }
+            }
+        }
+    }
+}

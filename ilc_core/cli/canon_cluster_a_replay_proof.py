@@ -228,6 +228,30 @@ def handle_verify_batch(args):
     else:
          sys.exit(EXIT_VERIFICATION_FAILED)
 
+from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import compare_cluster_a_replay_proof_batch_reports
+
+def handle_compare_reports(args):
+    """Handle compare-reports subcommand."""
+    left = _read_json_file(args.left)
+    right = _read_json_file(args.right)
+    
+    # Run comparison
+    report = compare_cluster_a_replay_proof_batch_reports(left, right)
+    
+    # Write output
+    output_path = args.out # Optional
+    _write_json_output(report, output_path, args.pretty, args.quiet)
+    
+    # Exit code
+    if report["ok"]:
+        sys.exit(EXIT_OK)
+    # Schema-invalid compare results are input/schema errors.
+    reasons = {m.get("reason") for m in report.get("mismatches", []) if isinstance(m, dict)}
+    if "schema_invalid_left" in reasons or "schema_invalid_right" in reasons:
+        sys.exit(EXIT_ERROR)
+    else:
+        sys.exit(EXIT_VERIFICATION_FAILED)
+
 def main():
     parser = argparse.ArgumentParser(
         description="ILC Cluster A Replay Proof CLI",
@@ -261,6 +285,13 @@ def main():
     batch_parser.add_argument("--glob", help="Glob pattern for directory scan (default: *.json)")
     batch_parser.add_argument("--out", help="Output path for batch report (default: stdout)")
     batch_parser.set_defaults(func=handle_verify_batch)
+    
+    # Compare Reports
+    compare_parser = subparsers.add_parser("compare-reports", parents=[parent_parser], help="Compare two batch reports")
+    compare_parser.add_argument("--left", required=True, help="Path to left batch report")
+    compare_parser.add_argument("--right", required=True, help="Path to right batch report")
+    compare_parser.add_argument("--out", help="Output path for compare report (default: stdout)")
+    compare_parser.set_defaults(func=handle_compare_reports)
     
     args = parser.parse_args()
     args.func(args)
