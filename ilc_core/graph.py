@@ -12,6 +12,9 @@ class EpistemicGraph:
     def __init__(self):
         self.nodes: Dict[str, Node] = {}
         self.edges: List[Edge] = []
+        self.outgoing_edges: Dict[str, List[Edge]] = {}
+        self.incoming_edges: Dict[str, List[Edge]] = {}
+        self._edge_index_len: int = 0
         self.links: Dict[str, LinkRecord] = {}
         self.outgoing_links: Dict[str, List[str]] = {}
         self.incoming_links: Dict[str, List[str]] = {}
@@ -44,6 +47,49 @@ class EpistemicGraph:
             raise ValueError("Node already exists")
         self.nodes[node.id] = node
         return True
+
+    def _rebuild_edge_indexes(self) -> None:
+        """Rebuild edge indexes from the legacy edge list."""
+        self.outgoing_edges.clear()
+        self.incoming_edges.clear()
+        for edge in self.edges:
+            self.outgoing_edges.setdefault(edge.source_id, []).append(edge)
+            self.incoming_edges.setdefault(edge.target_id, []).append(edge)
+        self._edge_index_len = len(self.edges)
+
+    def _ensure_edge_indexes(self) -> None:
+        """
+        Keep edge indexes coherent even if legacy code mutates graph.edges directly.
+        """
+        if self._edge_index_len != len(self.edges):
+            self._rebuild_edge_indexes()
+
+    def add_edge(self, edge: Edge) -> None:
+        """Add an edge and update indexes."""
+        if edge.source_id not in self.nodes:
+            raise KeyError(f"Unknown source_id: {edge.source_id}")
+        if edge.target_id not in self.nodes:
+            raise KeyError(f"Unknown target_id: {edge.target_id}")
+
+        self.edges.append(edge)
+        self.outgoing_edges.setdefault(edge.source_id, []).append(edge)
+        self.incoming_edges.setdefault(edge.target_id, []).append(edge)
+        self._edge_index_len = len(self.edges)
+
+    def iter_edges_from(self, source_id: str) -> Iterable[Edge]:
+        self._ensure_edge_indexes()
+        for edge in self.outgoing_edges.get(source_id, []):
+            yield edge
+
+    def iter_edges_to(self, target_id: str) -> Iterable[Edge]:
+        self._ensure_edge_indexes()
+        for edge in self.incoming_edges.get(target_id, []):
+            yield edge
+
+    def iter_edges_between(self, source_id: str, target_id: str) -> Iterable[Edge]:
+        for edge in self.iter_edges_from(source_id):
+            if edge.target_id == target_id:
+                yield edge
 
     def add_claim(self, claim: ClaimRecord) -> None:
         node = claim_record_to_node(claim)

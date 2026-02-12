@@ -120,7 +120,7 @@ class EveAgent:
         node.id = node.compute_id()
         edge = Edge(source_id=node.id, target_id=parent_id, type="derives_from")
         self.graph.add_node(node)
-        self.graph.edges.append(edge)
+        self.graph.add_edge(edge)
 
         # Deduct the chosen stake and register it with the consensus engine.
         self.wallet_balance -= chosen_stake

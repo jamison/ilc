@@ -37,7 +37,7 @@ def test_graph_boot():
         target_id="axiom:math:01",
         type="derives_from"
     )
-    graph.edges.append(link)
+    graph.add_edge(link)
     print(f"SUCCESS: Linked '{eve_node.content}' -> '{graph.nodes['axiom:math:01'].content}'")
     print("KERNEL INTEGRITY: VERIFIED")
 
