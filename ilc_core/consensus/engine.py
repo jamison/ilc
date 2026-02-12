@@ -3,12 +3,15 @@ from __future__ import annotations
 from typing import Dict, Optional, List
 import math
 import time
+import logging
 from datetime import timezone
 
 from ..types import Node, Edge
 from ..graph import EpistemicGraph
 from .clustering import SponsorGraph
 from .governance import Governance, BacklogMetrics
+
+logger = logging.getLogger(__name__)
 
 
 def _engine_update_epoch_metrics(
@@ -31,7 +34,7 @@ def _engine_update_epoch_metrics(
     governance.update_congestion(metrics)
 
     # Debug/logging (safe to keep for now; can be swapped for proper logger).
-    print(
+    logger.info(
         f"[Consensus] Epoch {epoch_index + 1} "
         f"backlog={backlog_len}, finalized={finalized_last_epoch}, "
         f"hardware_scale={governance.hardware_scale:.4f}, "
@@ -63,7 +66,7 @@ def _engine_compute_bounty_amount(
     paradigm_bonus = 0.001 * math.pow(age, 1.4)
 
     total_bounty = base_stake + paradigm_bonus
-    print(
+    logger.info(
         f"[Consensus] Node {node_id[:8]} Age: {age:.1f}s. "
         f"Bounty: {total_bounty:.4f} (Bonus: {paradigm_bonus:.4f})"
     )
@@ -81,7 +84,7 @@ def _engine_apply_slash(
     new_balance = current - stake_amount
     node_stakes[target_id] = new_balance
 
-    print(
+    logger.info(
         f"[Consensus] ⚔️ PARADIGM SHIFT! "
         f"Refuter earns Jackpot (theoretical): {bounty:.4f} units"
     )
@@ -190,7 +193,7 @@ class ConsensusEngine:
         required_fee = self.governance.get_task_fee_ecu("claim.submit")
 
         if amount < required_fee:
-            print(
+            logger.warning(
                 f"[Consensus] REJECTED: Stake {amount} < "
                 f"Min ECU Fee {required_fee}"
             )
@@ -199,11 +202,11 @@ class ConsensusEngine:
         current = self.node_stakes.get(node_id, 0.0)
         self.node_stakes[node_id] = current + amount
 
-        print(
+        logger.info(
             f"[Consensus] Stake accepted ({amount} units). "
             f"Min ECU Fee was {required_fee}"
         )
-        print(
+        logger.info(
             f"[Consensus] Stake added to {node_id[:8]}. "
             f"Net: {self.node_stakes[node_id]}"
         )
@@ -229,7 +232,7 @@ class ConsensusEngine:
         are required for critical panels.
         """
         unique_roots = self.sponsor_graph.get_cluster_count(validators)
-        print(
+        logger.info(
             f"[Consensus] Independence Check: "
             f"{len(validators)} agents -> {unique_roots} clusters."
         )
@@ -329,15 +332,15 @@ class ConsensusEngine:
         new_id = edge.source_id
 
         if old_id in self.node_stakes:
-            print(
+            logger.info(
                 f"[Consensus] 🔄 EVOLUTION: Node {new_id[:8]} supersedes {old_id[:8]}."
             )
-            print(
+            logger.info(
                 f"            (Old node stake {self.node_stakes[old_id]} "
                 f"preserved, not slashed)"
             )
         else:
-            print(
+            logger.warning(
                 f"[Consensus] Warning: Superseded node {old_id[:8]} "
                 f"not found in ledger."
             )

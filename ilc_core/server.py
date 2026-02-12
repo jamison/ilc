@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+import logging
 from pydantic import BaseModel
 from .graph import EpistemicGraph
 from .consensus.engine import ConsensusEngine
@@ -18,6 +19,8 @@ from ilc_core.protocol.mapper import (
 from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
 from ilc_core.genesis.schema import load_epistemic_work_task_schema
 from ilc_core.work.task_queue import TaskDescriptor
+
+logger = logging.getLogger(__name__)
 
 # Singleton State (Simulated Persistence for MVP)
 graph = EpistemicGraph()
@@ -101,20 +104,20 @@ def receive_gossip(node_data: dict):
     try:
         # Simple validation logic (would be deeper in production)
         node_id = node_data.get("id")
-        print(f"[Gossip] Received Node {node_id} from peer.")
+        logger.info("[Gossip] Received Node %s from peer.", node_id)
         
         # 2. Add to Graph (if new)
         # In a real system, we'd verify signature here first!
         if node_id not in graph.nodes:
             # Reconstruct node object (simplified for MVP)
             # graph.add_node(Node(**node_data))
-            print(f"[Gossip] Accepted new knowledge: {node_id}")
+            logger.info("[Gossip] Accepted new knowledge: %s", node_id)
             return {"status": "accepted"}
         else:
             return {"status": "ignored", "reason": "already_have"}
             
     except Exception as e:
-        print(f"[Gossip] Error processing: {e}")
+        logger.error("[Gossip] Error processing: %s", e)
         raise HTTPException(status_code=400, detail="Invalid Gossip")
 
 @app.post("/peers/add")
