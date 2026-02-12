@@ -124,8 +124,11 @@ def handle_verify_batch(args):
         try:
             manifest_path = Path(args.manifest)
             rel_paths = load_manifest_paths(manifest_path)
+            base_dir = manifest_path.parent
             for p_str in rel_paths:
-                paths.append(Path(p_str))
+                # Resolve package files relative to the manifest directory,
+                # while preserving normalized manifest entry as source_id.
+                paths.append((base_dir / p_str, p_str))
         except FileNotFoundError:
             print(json.dumps({"error": "manifest_not_found", "file": str(Path(args.manifest))}))
             sys.exit(EXIT_ERROR)
@@ -156,16 +159,19 @@ def handle_verify_batch(args):
         sys.exit(EXIT_ERROR)
 
     # Process files
-    for p in paths:
+    for item in paths:
         # Source ID definition:
         # - form manifest: normalized relative path as written (trimmed)
         # - from directory scan: normalized relative path from --input-dir
         
         if args.manifest:
-            source_id = str(p) # As written in manifest
+            p, source_id = item
+            error_file = source_id
         else:
+            p = item
             # Relative to input_dir
             source_id = p.relative_to(args.input_dir).as_posix()
+            error_file = str(p)
             
         try:
             if not p.exists():
@@ -173,7 +179,7 @@ def handle_verify_batch(args):
                  # "For missing file in manifest, fail with exit code 2 and stable JSON token"
                  # Directory scan won't have missing files unless race condition.
                  if args.manifest:
-                     print(json.dumps({"error": "manifest_file_not_found", "file": str(p)}))
+                     print(json.dumps({"error": "manifest_file_not_found", "file": error_file}))
                      sys.exit(EXIT_ERROR)
                  continue # Should not happen for dir scan
                  
@@ -209,10 +215,10 @@ def handle_verify_batch(args):
                 source_ids.append(source_id)
 
         except json.JSONDecodeError:
-            print(json.dumps({"error": E_INVALID_JSON, "file": str(p)}))
+            print(json.dumps({"error": E_INVALID_JSON, "file": error_file}))
             sys.exit(EXIT_ERROR)
         except OSError:
-            print(json.dumps({"error": E_IO_ERROR, "file": str(p)}))
+            print(json.dumps({"error": E_IO_ERROR, "file": error_file}))
             sys.exit(EXIT_ERROR)
 
     # Run batch verification

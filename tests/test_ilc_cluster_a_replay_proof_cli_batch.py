@@ -91,6 +91,35 @@ def test_verify_batch_manifest(tmp_path):
         finally:
             os.chdir(old_cwd)
 
+def test_verify_batch_manifest_resolves_relative_to_manifest_dir_without_chdir(tmp_path):
+    d = tmp_path / "manifest_relative_base"
+    d.mkdir()
+
+    (d / "pkg_valid.json").write_text(json.dumps({"package_hash_sha256": "mock_valid"}), encoding="utf-8")
+    (d / "pkg_invalid.json").write_text(json.dumps({"package_hash_sha256": "mock_invalid"}), encoding="utf-8")
+    manifest = d / "manifest.txt"
+    manifest.write_text("pkg_valid.json\npkg_invalid.json\n", encoding="utf-8")
+
+    with patch("ilc_core.cli.canon_cluster_a_replay_proof.verify_cluster_a_replay_proof_batch") as mock_batch:
+        mock_batch.return_value = {
+            "ok": True,
+            "results": [],
+            "report_version": "v0.1",
+            "fail_count": 0,
+            "ok_count": 2,
+            "total_packages": 2,
+            "error_token_counts": {},
+            "batch_errors": []
+        }
+
+        code, out = run_cli_command(["verify-batch", "--manifest", str(manifest)])
+
+        assert code == 0
+        assert mock_batch.called
+        package_items, source_ids = mock_batch.call_args[0]
+        assert len(package_items) == 2
+        assert source_ids == ["pkg_valid.json", "pkg_invalid.json"]
+
 def test_verify_batch_input_dir(tmp_path):
     d = tmp_path / "dir_scan"
     d.mkdir()
