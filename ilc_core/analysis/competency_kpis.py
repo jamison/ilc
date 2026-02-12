@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping, Any, TypedDict, TypeAlias
+from typing import Dict, Iterable, TypedDict, TypeAlias
 
-from ilc_core.analysis.problem_space_kpis import ProblemSpace, infer_problem_space
+from ilc_core.analysis.problem_space_kpis import ProblemSpace, TaskRowLike, infer_problem_space
 
 BarrierLevel = str  # or Literal["low", "medium", "high"]
 
@@ -44,7 +44,7 @@ class AgentCompetencyRow:
     def success_rate(self) -> float:
         return self.successes / self.tasks_completed if self.tasks_completed > 0 else 0.0
 
-def infer_barrier_level(row: Mapping[str, Any]) -> BarrierLevel:
+def infer_barrier_level(row: TaskRowLike) -> BarrierLevel:
     """
     Heuristic barrier inference:
       - If 'barrier_level' is explicitly present, use it.
@@ -72,7 +72,7 @@ def infer_barrier_level(row: Mapping[str, Any]) -> BarrierLevel:
         return "high"
 
 def compute_agent_competency_kpis(
-    task_rows: Iterable[Mapping[str, Any]]
+    task_rows: Iterable[TaskRowLike]
 ) -> Dict[str, Dict[ProblemSpace, AgentCompetencyRow]]:
     """
     Aggregate competency metrics per (agent, problem_space).

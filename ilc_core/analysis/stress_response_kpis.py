@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping, Any
+from typing import Dict, Iterable
 
 from ilc_core.analysis.agent_profiles import AgentProfile
+from ilc_core.analysis.problem_space_kpis import TaskRowLike
 
 def bucket_stress_level(
     total_stress: float,
@@ -53,7 +54,7 @@ class AgentStressResponseRow:
         return "neutral"
 
 def compute_agent_stress_response(
-    samples: Iterable[Mapping[str, Any]],
+    samples: Iterable[TaskRowLike],
 ) -> Dict[str, AgentStressResponseRow]:
     """
     Aggregate stress response metrics per agent from a sequence of samples.

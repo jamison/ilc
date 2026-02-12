@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, TypedDict, TypeAlias
+from typing import Dict, List, Literal, Mapping, TypedDict, TypeAlias
 
 # We keep this as a Literal set for now; can be expanded later.
 ProblemSpace = Literal[
@@ -23,7 +23,11 @@ class ProblemSpaceKpiRow(TypedDict):
 
 ProblemSpaceKpiMap: TypeAlias = Dict[str, ProblemSpaceKpiRow]
 
-def infer_problem_space(task_row: Dict[str, str]) -> str:
+TaskFieldValue: TypeAlias = str | int | float | bool | None
+TaskRowLike: TypeAlias = Mapping[str, TaskFieldValue]
+
+
+def infer_problem_space(task_row: TaskRowLike) -> str:
     """
     Infer the problem space for a task.
 
@@ -54,7 +58,7 @@ def infer_problem_space(task_row: Dict[str, str]) -> str:
 
 
 def compute_problem_space_kpis(
-    task_rows: List[Dict[str, str]],
+    task_rows: List[TaskRowLike],
 ) -> ProblemSpaceKpiMap:
     """
     Aggregate task counts per agent and per problem space.

@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping, Any, Set
+from typing import Dict, Iterable, Set
 
 from ilc_core.graph import EpistemicGraph
-from ilc_core.types import ClaimRecord, LinkRecord
-from ilc_core.analysis.problem_space_kpis import ProblemSpace, infer_problem_space
+from ilc_core.analysis.problem_space_kpis import TaskRowLike, infer_problem_space
 
 @dataclass
 class AgentLightConeRow:
@@ -18,7 +17,7 @@ class AgentLightConeRow:
 
 def compute_agent_light_cone_kpis(
     graph: EpistemicGraph,
-    task_rows: Iterable[Mapping[str, Any]],
+    task_rows: Iterable[TaskRowLike],
 ) -> Dict[str, AgentLightConeRow]:
     """
     Compute epistemic light cone KPIs per agent.

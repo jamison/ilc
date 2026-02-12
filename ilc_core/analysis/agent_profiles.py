@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional, TypedDict, TypeAlias
+from typing import Dict, List, Optional, TypedDict, TypeAlias
 from ilc_core.analysis.claim_scores import ClaimInfluenceRow
 from ilc_core.analysis.competency_kpis import AgentCompetencySummaryMap
 from ilc_core.analysis.light_cone_kpis import AgentLightConeRow
@@ -23,6 +23,9 @@ class AgentInfluenceRow(TypedDict):
 
 AgentInfluenceMap: TypeAlias = Dict[str, AgentInfluenceRow]
 AgentLightConeMap: TypeAlias = Dict[str, AgentLightConeRow]
+ProfileNestedMap: TypeAlias = Dict[str, object]
+ProfileValue: TypeAlias = str | int | float | bool | None | ProfileNestedMap
+AgentProfileDict: TypeAlias = Dict[str, ProfileValue]
 
 @dataclass
 class AgentProfile:
@@ -39,20 +42,20 @@ class AgentProfile:
     influence: Dict[str, float] = field(default_factory=dict)
 
     # Competency (from attach_competency_to_profiles)
-    competency: Dict[str, Any] = field(default_factory=dict)
+    competency: ProfileNestedMap = field(default_factory=dict)
 
     # Stress response patterns (from stress_response_kpis)
-    stress_response: Dict[str, Any] = field(default_factory=dict)
+    stress_response: ProfileNestedMap = field(default_factory=dict)
 
     # Light Cone KPIs (from light_cone_kpis)
-    light_cone: Dict[str, Any] = field(default_factory=dict)
+    light_cone: ProfileNestedMap = field(default_factory=dict)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> AgentProfileDict:
         """
         Flatten into a single dict for printing/JSON export.
         Namespaces econ_* and claim_* keys to avoid collisions.
         """
-        data: Dict[str, Any] = {"agent_id": self.agent_id}
+        data: AgentProfileDict = {"agent_id": self.agent_id}
         if self.node_id is not None:
             data["node_id"] = self.node_id
 
