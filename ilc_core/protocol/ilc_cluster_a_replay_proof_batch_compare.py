@@ -1,16 +1,31 @@
 import json
 from typing import Any, Dict, List, Optional
 from pathlib import Path
+from importlib import resources
 from jsonschema import Draft7Validator
 
-# Load schema once
-_SCHEMA_PATH = Path(__file__).parent.parent.parent / "docs" / "specs" / "ilc_cluster_a_replay_proof_batch_report_v0.1.json"
-try:
-    with open(_SCHEMA_PATH, "r", encoding="utf-8") as f:
-        _BATCH_REPORT_SCHEMA = json.load(f)
-except Exception:
-    # Fail closed through schema_invalid_* response if schema is unavailable.
-    _BATCH_REPORT_SCHEMA = {}
+
+def _load_batch_report_schema() -> Dict[str, Any]:
+    """
+    Load batch report schema from packaged resources first, then repo fallback.
+    """
+    schema_filename = "ilc_cluster_a_replay_proof_batch_report_v0.1.json"
+    try:
+        schema_text = resources.files("ilc_core.protocol.schemas").joinpath(schema_filename).read_text(encoding="utf-8")
+        return json.loads(schema_text)
+    except Exception:
+        pass
+
+    fallback = Path(__file__).resolve().parents[2] / "docs" / "specs" / schema_filename
+    try:
+        with open(fallback, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        # Fail closed through schema_invalid_* response if schema is unavailable.
+        return {}
+
+
+_BATCH_REPORT_SCHEMA = _load_batch_report_schema()
 
 _BATCH_REPORT_VALIDATOR = Draft7Validator(_BATCH_REPORT_SCHEMA) if _BATCH_REPORT_SCHEMA else None
 

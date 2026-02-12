@@ -151,6 +151,57 @@ def test_verify_and_compare_manifest_source_id_normalization(tmp_path):
     assert contract["ok"] is True
 
 
+def test_verify_and_compare_manifest_escape_entry_is_parse_error(tmp_path):
+    expected = OPS_FIXTURES_DIR / "report_match.json"
+    manifest = tmp_path / "manifest_escape.txt"
+    manifest.write_text("../pkg_valid.json\n", encoding="utf-8")
+
+    code, out = run_cli_command([
+        "verify-and-compare",
+        "--manifest", str(manifest),
+        "--expected", str(expected),
+    ])
+
+    contract = _parse_contract(out)
+    jsonschema.validate(instance=contract, schema=_load_ops_schema())
+    assert code == contract["exit_code"] == 2
+    assert contract["error_token"] == "manifest_parse_error"
+
+
+def test_verify_and_compare_manifest_absolute_entry_is_parse_error(tmp_path):
+    expected = OPS_FIXTURES_DIR / "report_match.json"
+    manifest = tmp_path / "manifest_absolute.txt"
+    manifest.write_text("/tmp/pkg_valid.json\n", encoding="utf-8")
+
+    code, out = run_cli_command([
+        "verify-and-compare",
+        "--manifest", str(manifest),
+        "--expected", str(expected),
+    ])
+
+    contract = _parse_contract(out)
+    jsonschema.validate(instance=contract, schema=_load_ops_schema())
+    assert code == contract["exit_code"] == 2
+    assert contract["error_token"] == "manifest_parse_error"
+
+
+def test_verify_and_compare_manifest_effective_duplicate_is_parse_error(tmp_path):
+    expected = OPS_FIXTURES_DIR / "report_match.json"
+    manifest = tmp_path / "manifest_dup_norm.txt"
+    manifest.write_text("pkg_valid.json\n./pkg_valid.json\n", encoding="utf-8")
+
+    code, out = run_cli_command([
+        "verify-and-compare",
+        "--manifest", str(manifest),
+        "--expected", str(expected),
+    ])
+
+    contract = _parse_contract(out)
+    jsonschema.validate(instance=contract, schema=_load_ops_schema())
+    assert code == contract["exit_code"] == 2
+    assert contract["error_token"] == "manifest_parse_error"
+
+
 def test_verify_and_compare_deterministic_contract_output():
     manifest = OPS_FIXTURES_DIR / "manifest.txt"
     expected = OPS_FIXTURES_DIR / "report_match.json"

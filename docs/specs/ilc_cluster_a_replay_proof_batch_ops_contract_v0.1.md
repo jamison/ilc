@@ -28,6 +28,7 @@ This contract defines the output structure of the `verify-and-compare` operation
     -   `1`: Mismatch (`batch_ok=true`, `compare_ok=false`).
     -   `2`: Error (Schema, IO, or internal failure).
 -   **`error_token`** (string | null, required): Stable error token if `exit_code` is `2`.
+    -   `manifest_parse_error` covers malformed manifest content, normalized duplicate entries, or invalid path forms (absolute path / parent traversal).
 
 ## Example
 

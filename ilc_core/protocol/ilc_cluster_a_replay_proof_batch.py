@@ -1,8 +1,38 @@
 from typing import List, Dict, Any
 from pathlib import Path
 from collections import Counter
+import posixpath
+import re
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import verify_cluster_a_replay_proof_package
+
+_WINDOWS_ABS_PATH_RE = re.compile(r"^[A-Za-z]:/")
+
+
+def _normalize_manifest_path(raw_path: str) -> str:
+    """
+    Normalize and validate a manifest entry path.
+
+    Returns a portable POSIX-like relative path.
+    Raises ValueError on invalid path forms.
+    """
+    normalized = raw_path.replace("\\", "/")
+    normalized = posixpath.normpath(normalized)
+
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+
+    if normalized in ("", "."):
+        raise ValueError("schema_violation:invalid_manifest_path")
+
+    # Reject traversal and absolute paths; manifests must stay relative.
+    if normalized == ".." or normalized.startswith("../"):
+        raise ValueError("schema_violation:manifest_path_escape")
+    if normalized.startswith("/") or _WINDOWS_ABS_PATH_RE.match(normalized):
+        raise ValueError("schema_violation:manifest_path_not_relative")
+
+    return normalized
+
 
 def load_manifest_paths(path: Path) -> List[str]:
     """
@@ -29,10 +59,11 @@ def load_manifest_paths(path: Path) -> List[str]:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        if line in seen:
+        normalized = _normalize_manifest_path(line)
+        if normalized in seen:
             raise ValueError("schema_violation:duplicate_manifest_path")
-        seen.add(line)
-        out.append(line)
+        seen.add(normalized)
+        out.append(normalized)
     return out
 
 def verify_cluster_a_replay_proof_batch(

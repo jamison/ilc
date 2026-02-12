@@ -33,3 +33,5 @@ See [ilc_cluster_a_replay_proof_batch_report_v0.1.json](./ilc_cluster_a_replay_p
 1.  **Ordering:** The `results` array MUST preserve the order of inputs. The `error_token_counts` keys MUST be sorted lexicographically. `batch_errors` MUST be sorted lexicographically.
 2.  **Formatting:** When serialized to canonical bytes, use compact separators (`","`, `":"`), sorted keys, and no trailing whitespace.
 3.  **Source IDs:** Must be normalized relative paths to ensure portability across environments (no absolute paths).
+4.  **Manifest path safety:** Manifest entries must remain within the manifest directory scope. Absolute paths and parent traversal (`..`) are invalid input forms.
+5.  **Effective duplicate rejection:** Duplicate manifest entries are rejected after normalization (for example `pkg.json` and `./pkg.json` are treated as duplicates).

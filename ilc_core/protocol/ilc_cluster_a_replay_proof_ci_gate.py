@@ -1,6 +1,7 @@
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 import json
+from importlib import resources
 
 from jsonschema import Draft7Validator
 
@@ -15,13 +16,26 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
 GATE_VERSION = "v0.1"
 COMPARE_VERSION = "v0.1"
 
-# Load gate report schema once
-_GATE_SCHEMA_PATH = Path(__file__).parent.parent.parent / "docs" / "specs" / "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
-try:
-    with open(_GATE_SCHEMA_PATH, "r", encoding="utf-8") as _f:
-        _GATE_REPORT_SCHEMA = json.load(_f)
-except Exception:
-    _GATE_REPORT_SCHEMA = {}
+def _load_gate_report_schema() -> Dict[str, Any]:
+    """
+    Load CI gate report schema from packaged resources first, then repo fallback.
+    """
+    schema_filename = "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
+    try:
+        schema_text = resources.files("ilc_core.protocol.schemas").joinpath(schema_filename).read_text(encoding="utf-8")
+        return json.loads(schema_text)
+    except Exception:
+        pass
+
+    fallback = Path(__file__).resolve().parents[2] / "docs" / "specs" / schema_filename
+    try:
+        with open(fallback, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+_GATE_REPORT_SCHEMA = _load_gate_report_schema()
 
 _GATE_REPORT_VALIDATOR = Draft7Validator(_GATE_REPORT_SCHEMA) if _GATE_REPORT_SCHEMA else None
 

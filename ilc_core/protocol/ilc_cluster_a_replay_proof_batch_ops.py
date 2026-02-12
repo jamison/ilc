@@ -29,6 +29,20 @@ def _normalize_source_id(raw_path: str) -> str:
     return normalized
 
 
+def _resolve_manifest_entry(base_dir: Path, manifest_entry: str) -> Path:
+    """
+    Resolve a normalized manifest entry path to an absolute path under base_dir.
+
+    Raises ManifestParseError if the resolved path escapes the manifest directory.
+    """
+    candidate = (base_dir / manifest_entry).resolve()
+    try:
+        candidate.relative_to(base_dir.resolve())
+    except ValueError as exc:
+        raise ManifestParseError(f"manifest_path_escape:{manifest_entry}") from exc
+    return candidate
+
+
 def run_batch_verify_from_manifest(manifest_path: Path) -> Dict[str, Any]:
     """
     Run batch verification from a manifest file.
@@ -46,10 +60,15 @@ def run_batch_verify_from_manifest(manifest_path: Path) -> Dict[str, Any]:
     base_dir = manifest_path.parent
     package_items = []
     source_ids = []
+    seen_source_ids = set()
 
     for rp in rel_paths:
         source_id = _normalize_source_id(rp)
-        pkg_path = base_dir / rp
+        if source_id in seen_source_ids:
+            raise ManifestParseError("schema_violation:duplicate_manifest_path")
+        seen_source_ids.add(source_id)
+
+        pkg_path = _resolve_manifest_entry(base_dir, rp)
         if not pkg_path.exists():
             raise ManifestEntryNotFoundError(source_id)
 

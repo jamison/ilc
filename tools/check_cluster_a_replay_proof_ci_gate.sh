@@ -72,8 +72,11 @@ if [ -n "${BASELINE}" ]; then
 fi
 echo ""
 
+# Capture non-zero gate exits while still honoring strict mode elsewhere.
+set +e
 "${CMD[@]}"
 EXIT_CODE=$?
+set -e
 
 echo ""
 echo "Exit code: ${EXIT_CODE}"

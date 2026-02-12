@@ -55,6 +55,44 @@ def test_manifest_duplicate_error(tmp_path):
     with pytest.raises(ValueError, match="schema_violation:duplicate_manifest_path"):
         load_manifest_paths(manifest)
 
+
+def test_manifest_duplicate_after_normalization_error(tmp_path):
+    manifest = tmp_path / "manifest_dup_norm.txt"
+    manifest.write_text("file1.json\n./file1.json\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="schema_violation:duplicate_manifest_path"):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_path_escape_error(tmp_path):
+    manifest = tmp_path / "manifest_escape.txt"
+    manifest.write_text("../file1.json\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="schema_violation:manifest_path_escape"):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_path_not_relative_error(tmp_path):
+    manifest = tmp_path / "manifest_abs.txt"
+    manifest.write_text("/tmp/file1.json\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="schema_violation:manifest_path_not_relative"):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_windows_path_not_relative_error(tmp_path):
+    manifest = tmp_path / "manifest_windows_abs.txt"
+    manifest.write_text("C:\\\\tmp\\\\file1.json\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="schema_violation:manifest_path_not_relative"):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_path_normalization(tmp_path):
+    manifest = tmp_path / "manifest_norm.txt"
+    manifest.write_text(".\\\\sub\\\\..\\\\file1.json\n", encoding="utf-8")
+    assert load_manifest_paths(manifest) == ["file1.json"]
+
 def test_batch_verify_mixed_results(mock_verifier):
     packages = [VALID_PKG, INVALID_PKG, VALID_PKG]
     source_ids = ["src1", "src2", "src3"]
