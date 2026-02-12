@@ -69,3 +69,4 @@ automation/phase_queue.json
 automation/reports/
 automation/review_queue/
 automation/state/
+output/

@@ -165,3 +165,76 @@ def test_batch_report_matches_expected_fixture():
     ]
     report = verify_cluster_a_replay_proof_batch(packages, rel_paths)
     assert report == expected
+
+
+# --- Phase 151: Parametrized manifest path contract tests ---
+
+@pytest.mark.parametrize(
+    "entries,expected_error",
+    [
+        (["./a.json", "a.json"], "schema_violation:duplicate_manifest_path"),
+        (["x/../a.json", "a.json"], "schema_violation:duplicate_manifest_path"),
+        (["../a.json"], "schema_violation:manifest_path_escape"),
+        (["/tmp/a.json"], "schema_violation:manifest_path_not_relative"),
+        (["C:/tmp/a.json"], "schema_violation:manifest_path_not_relative"),
+    ],
+)
+def test_manifest_path_contract(entries, expected_error, tmp_path):
+    """Manifest must reject invalid path forms with deterministic tokens."""
+    manifest = tmp_path / "manifest.txt"
+    manifest.write_text("\n".join(entries) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=expected_error):
+        load_manifest_paths(manifest)
+
+
+@pytest.mark.parametrize(
+    "entry,expected_error",
+    [
+        (".", "schema_violation:invalid_manifest_path"),
+        ("./", "schema_violation:invalid_manifest_path"),
+    ],
+)
+def test_manifest_empty_dot_rejection(entry, expected_error, tmp_path):
+    """Dot and dot-slash entries are invalid manifest paths."""
+    manifest = tmp_path / "manifest.txt"
+    manifest.write_text(entry + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=expected_error):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_blank_lines_skipped(tmp_path):
+    """Blank/empty lines in manifests are silently skipped, not errors."""
+    manifest = tmp_path / "manifest.txt"
+    manifest.write_text("\n\n   \n\n", encoding="utf-8")
+    paths = load_manifest_paths(manifest)
+    assert paths == []
+
+
+def test_manifest_mixed_separator_normalization(tmp_path):
+    """Backslash and slash separators normalize identically."""
+    manifest = tmp_path / "manifest.txt"
+    manifest.write_text("sub\\file.json\n", encoding="utf-8")
+    paths = load_manifest_paths(manifest)
+    assert paths == ["sub/file.json"]
+
+
+def test_manifest_traversal_collapse_normalization(tmp_path):
+    """x/../a.json normalizes to a.json."""
+    manifest = tmp_path / "manifest.txt"
+    manifest.write_text("x/../a.json\n", encoding="utf-8")
+    paths = load_manifest_paths(manifest)
+    assert paths == ["a.json"]
+
+
+def test_schema_loader_packaged_resource_available():
+    """Packaged schema resources must be loadable from ilc_core.protocol.schemas."""
+    from importlib import resources
+    schema_names = [
+        "ilc_cluster_a_replay_proof_batch_report_v0.1.json",
+        "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json",
+    ]
+    for name in schema_names:
+        text = resources.files("ilc_core.protocol.schemas").joinpath(name).read_text(encoding="utf-8")
+        schema = json.loads(text)
+        assert "$schema" in schema, f"Packaged schema {name} missing $schema field"
+        assert "properties" in schema, f"Packaged schema {name} missing properties"
