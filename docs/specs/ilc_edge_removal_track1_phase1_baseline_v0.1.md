@@ -19,10 +19,7 @@ This baseline freezes current `Edge` compatibility surfaces for Track 1 full edg
 
 - `ilc_core/types.py` (canonical `Edge` model definition)
 - `ilc_core/graph.py`
-- `tests/test_contradiction.py`
 - `tests/test_graph_edges.py`
-- `tests/test_task_primitive.py`
-- `tests/test_versioning.py`
 
 ## Deterministic Inventory Commands
 
@@ -34,4 +31,4 @@ rg -n "\\.edges\\.append\\(" ilc_core tests | sort
 ## Notes
 
 - Guardrail enforcement is implemented by `tests/test_edge_removal_phase1_guardrails.py`.
-- This baseline is expected to shrink in phases 974 and later until `Edge` compatibility is fully removed.
+- This baseline was reduced in phases 974 and 975 to compatibility-only surfaces.

@@ -1,11 +1,18 @@
 import sys
 import os
+from dataclasses import dataclass
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.consensus.engine import ConsensusEngine
 from ilc_core.agent import EveAgent
-from ilc_core.types import Edge
+
+
+@dataclass(frozen=True)
+class RelationEvent:
+    source_id: str
+    target_id: str
+    type: str
 
 def test_version_update():
     print("\n--- TEST: EVOLUTION (NO SLASHING) ---")
@@ -29,7 +36,7 @@ def test_version_update():
     node_v2 = agent_b.mine_thought("IP List: [1.1.1.2]", "axiom:logic:01", stake=5.0)
     
     # 3. The Link (Supersedes)
-    update_edge = Edge(
+    update_edge = RelationEvent(
         source_id=node_v2.id,
         target_id=node_v1.id,
         type="supersedes"

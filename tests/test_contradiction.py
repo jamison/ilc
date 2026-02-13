@@ -1,11 +1,18 @@
 import sys
 import os
+from dataclasses import dataclass
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.agent import EveAgent
 from ilc_core.consensus.engine import ConsensusEngine
-from ilc_core.types import Edge
+
+
+@dataclass(frozen=True)
+class RelationEvent:
+    source_id: str
+    target_id: str
+    type: str
 
 def test_contradiction_economy():
     print("\n--- TEST: THE CONTRADICTION ECONOMY ---")
@@ -33,8 +40,8 @@ def test_contradiction_economy():
     good_agent.wallet_balance = 100.0
     
     print("\n2. Good Agent refutes the lie with 10.0 Stake...")
-    # In a full system, Refutation is a Node. Here we simulate the Edge directly.
-    refutation_edge = Edge(
+    # In a full system, Refutation is a Node. Here we simulate a relation event directly.
+    refutation_edge = RelationEvent(
         source_id="agent:audit:01",
         target_id=lie_node.id,
         type="refutes"

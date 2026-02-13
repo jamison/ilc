@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ilc_core.types import Node, Edge
+from ilc_core.types import Node
 
 def test_task_lineage():
     print("\n--- TEST: INTELLIGENT LABOR LINEAGE ---")
@@ -34,15 +34,15 @@ def test_task_lineage():
     result_node.id = result_node.compute_id()
     
     # 3. Link Result -> Task
-    edge = Edge(
-        source_id=result_node.id,
-        target_id=task_node.id,
-        type="derives_from"
-    )
+    lineage = {
+        "source_id": result_node.id,
+        "target_id": task_node.id,
+        "type": "derives_from",
+    }
     
     print(f"Task ID: {task_node.id[:8]}")
     print(f"Claim ID: {result_node.id[:8]}")
-    print(f"Link: Claim derives from Task? {edge.type == 'derives_from'}")
+    print(f"Link: Claim derives from Task? {lineage['type'] == 'derives_from'}")
     
     assert task_node.type == "task"
     assert isinstance(task_node.content, dict)

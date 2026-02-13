@@ -10,10 +10,7 @@ TARGET_DIRS = [ROOT / "ilc_core", ROOT / "tests"]
 EDGE_USAGE_ALLOWLIST = {
     "ilc_core/types.py",
     "ilc_core/graph.py",
-    "tests/test_contradiction.py",
     "tests/test_graph_edges.py",
-    "tests/test_task_primitive.py",
-    "tests/test_versioning.py",
 }
 
 DIRECT_EDGE_APPEND_ALLOWLIST = {
