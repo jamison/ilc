@@ -13,6 +13,12 @@ EDGE_USAGE_ALLOWLIST: set[str] = set()
 # After phase 977, direct edge-list append compatibility is fully removed.
 DIRECT_EDGE_APPEND_ALLOWLIST: set[str] = set()
 
+# After phase 978 closure, only the explicit removal sentinel may reference
+# the `edges` attribute as a deliberate AttributeError assertion.
+EDGE_ATTRIBUTE_USAGE_ALLOWLIST = {
+    "tests/test_graph_edges.py",
+}
+
 DIRECT_APPEND_PATTERN = re.compile(r"\.edges\.append\(")
 
 
@@ -53,6 +59,19 @@ def _edge_symbol_findings(path: Path) -> list[tuple[int, str]]:
     return sorted(set(findings))
 
 
+def _edge_attribute_findings(path: Path) -> list[tuple[int, str]]:
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    tree = ast.parse(text, filename=str(path))
+    findings: list[tuple[int, str]] = []
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and node.attr == "edges":
+            findings.append((node.lineno, _line_at(lines, node.lineno)))
+
+    return sorted(set(findings))
+
+
 def test_no_new_direct_edge_append_outside_allowlist() -> None:
     offenders: list[str] = []
     for path in _iter_python_files():
@@ -64,7 +83,7 @@ def test_no_new_direct_edge_append_outside_allowlist() -> None:
 
     if offenders:
         raise AssertionError(
-            "Track 1 phase-1 freeze violation: direct .edges.append usage detected after sunset:\n"
+            "Track 1 closure violation: direct .edges.append usage detected after sunset:\n"
             + "\n".join(offenders)
         )
 
@@ -82,6 +101,24 @@ def test_no_new_edge_symbol_spread_outside_allowlist() -> None:
 
     if offenders:
         raise AssertionError(
-            "Track 1 phase-1 freeze violation: Edge symbol usage detected after eviction:\n"
+            "Track 1 closure violation: Edge symbol usage detected after eviction:\n"
+            + "\n".join(offenders)
+        )
+
+
+def test_no_public_edges_attribute_usage_outside_allowlist() -> None:
+    offenders: list[str] = []
+    for path in _iter_python_files():
+        rel = _rel(path)
+        findings = _edge_attribute_findings(path)
+        if not findings:
+            continue
+        if rel not in EDGE_ATTRIBUTE_USAGE_ALLOWLIST:
+            for lineno, line in findings:
+                offenders.append(f"{rel}:{lineno}: {line}")
+
+    if offenders:
+        raise AssertionError(
+            "Track 1 closure violation: public `.edges` attribute usage detected outside allowlist:\n"
             + "\n".join(offenders)
         )
