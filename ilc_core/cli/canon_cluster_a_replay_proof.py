@@ -128,22 +128,48 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch import (
     ReplayBatchReport,
 )
 
+
+class BatchInputEntry(TypedDict):
+    path: Path
+    source_id: str
+    error_file: str
+
+
+BatchInputEntryList: TypeAlias = list[BatchInputEntry]
+
+
+def _collect_manifest_batch_entries(manifest_path: Path) -> BatchInputEntryList:
+    rel_paths = load_manifest_paths(manifest_path)
+    base_dir = manifest_path.parent
+    return [
+        {"path": base_dir / rel_path, "source_id": rel_path, "error_file": rel_path}
+        for rel_path in rel_paths
+    ]
+
+
+def _collect_input_dir_batch_entries(input_dir: Path, pattern: str) -> BatchInputEntryList:
+    all_files = sorted(input_dir.rglob(pattern), key=lambda p: p.as_posix())
+    return [
+        {
+            "path": p,
+            "source_id": p.relative_to(input_dir).as_posix(),
+            "error_file": str(p),
+        }
+        for p in all_files
+    ]
+
+
 def handle_verify_batch(args):
     """Handle verify-batch subcommand."""
-    package_items = []
-    source_ids = []
+    package_items: list[CliJsonObject] = []
+    source_ids: list[str] = []
     
     # Deterministic source selection
-    paths = []
+    entries: BatchInputEntryList
     if args.manifest:
         try:
             manifest_path = Path(args.manifest)
-            rel_paths = load_manifest_paths(manifest_path)
-            base_dir = manifest_path.parent
-            for p_str in rel_paths:
-                # Resolve package files relative to the manifest directory,
-                # while preserving normalized manifest entry as source_id.
-                paths.append((base_dir / p_str, p_str))
+            entries = _collect_manifest_batch_entries(manifest_path)
         except FileNotFoundError:
             print(json.dumps({"error": "manifest_not_found", "file": str(Path(args.manifest))}))
             sys.exit(EXIT_ERROR)
@@ -166,27 +192,16 @@ def handle_verify_batch(args):
         # We need deterministic sort of resolved paths
         # "normalized relative path from --input-dir"
         
-        # Gather all files
-        all_files = sorted(input_dir.rglob(pattern), key=lambda p: p.as_posix())
-        paths = all_files
+        entries = _collect_input_dir_batch_entries(input_dir, pattern)
     else:
         print(json.dumps({"error": "usage_error:missing_input_source"}))
         sys.exit(EXIT_ERROR)
 
     # Process files
-    for item in paths:
-        # Source ID definition:
-        # - form manifest: normalized relative path as written (trimmed)
-        # - from directory scan: normalized relative path from --input-dir
-        
-        if args.manifest:
-            p, source_id = item
-            error_file = source_id
-        else:
-            p = item
-            # Relative to input_dir
-            source_id = p.relative_to(args.input_dir).as_posix()
-            error_file = str(p)
+    for entry in entries:
+        p = entry["path"]
+        source_id = entry["source_id"]
+        error_file = entry["error_file"]
             
         try:
             if not p.exists():
@@ -226,7 +241,7 @@ def handle_verify_batch(args):
                    print(json.dumps({"error": E_NOT_OBJECT, "file": str(p)}))
                    sys.exit(EXIT_ERROR)
                 
-                package_items.append(data)
+                package_items.append(cast(CliJsonObject, data))
                 source_ids.append(source_id)
 
         except json.JSONDecodeError:
