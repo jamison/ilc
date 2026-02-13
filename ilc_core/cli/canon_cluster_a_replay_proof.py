@@ -9,7 +9,7 @@ canonical replay proof packages.
 import sys
 import json
 import argparse
-from typing import Dict, Optional, TypedDict, TypeAlias, cast
+from typing import Dict, Optional, TypedDict, TypeAlias, cast, NoReturn
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
@@ -43,25 +43,45 @@ class OpsContract(TypedDict):
     error_token: str | None
 
 
+class CliErrorPayload(TypedDict, total=False):
+    error: str
+    file: str
+    detail: str
+
+
+def _build_cli_error_payload(
+    error: str, *, file: Optional[str] = None, detail: Optional[str] = None
+) -> CliErrorPayload:
+    payload: CliErrorPayload = {"error": error}
+    if file is not None:
+        payload["file"] = file
+    if detail is not None:
+        payload["detail"] = detail
+    return payload
+
+
+def _emit_cli_error(
+    error: str, *, file: Optional[str] = None, detail: Optional[str] = None
+) -> NoReturn:
+    print(json.dumps(_build_cli_error_payload(error, file=file, detail=detail)))
+    sys.exit(EXIT_ERROR)
+
+
 def _read_json_file(path: str) -> CliJsonObject:
     """Read a JSON file strictly."""
     try:
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             if not isinstance(data, dict):
-                print(json.dumps({"error": E_NOT_OBJECT, "file": path}))
-                sys.exit(EXIT_ERROR)
+                _emit_cli_error(E_NOT_OBJECT, file=path)
             return data
     except FileNotFoundError:
-        print(json.dumps({"error": E_FILE_NOT_FOUND, "file": path}))
-        sys.exit(EXIT_ERROR)
+        _emit_cli_error(E_FILE_NOT_FOUND, file=path)
     except json.JSONDecodeError:
-        print(json.dumps({"error": E_INVALID_JSON, "file": path}))
-        sys.exit(EXIT_ERROR)
+        _emit_cli_error(E_INVALID_JSON, file=path)
     except Exception:
         # Fallback for perm errors etc
-        print(json.dumps({"error": E_IO_ERROR, "file": path}))
-        sys.exit(EXIT_ERROR)
+        _emit_cli_error(E_IO_ERROR, file=path)
 
 def _write_json_output(data: object, path: Optional[str], pretty: bool, quiet: bool) -> None:
     """Write JSON output to file or stdout."""
@@ -77,8 +97,7 @@ def _write_json_output(data: object, path: Optional[str], pretty: bool, quiet: b
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(content)
         except Exception:
-            print(json.dumps({"error": E_IO_WRITE_ERROR, "file": path}))
-            sys.exit(EXIT_ERROR)
+            _emit_cli_error(E_IO_WRITE_ERROR, file=path)
     elif not quiet:
         print(content)
 
@@ -104,8 +123,7 @@ def handle_build(args):
         # Protocol level error
         # We should print JSON error
         # Ideally protocol raises known exceptions, but here we trap generic
-        print(json.dumps({"error": E_BUILD_ERROR}))
-        sys.exit(EXIT_ERROR)
+        _emit_cli_error(E_BUILD_ERROR)
 
 def handle_verify(args):
     """Handle verify subcommand."""
@@ -171,19 +189,15 @@ def handle_verify_batch(args):
             manifest_path = Path(args.manifest)
             entries = _collect_manifest_batch_entries(manifest_path)
         except FileNotFoundError:
-            print(json.dumps({"error": "manifest_not_found", "file": str(Path(args.manifest))}))
-            sys.exit(EXIT_ERROR)
+            _emit_cli_error("manifest_not_found", file=str(Path(args.manifest)))
         except ValueError as e:
-            print(json.dumps({"error": "manifest_parse_error", "detail": str(e)}))
-            sys.exit(EXIT_ERROR)
+            _emit_cli_error("manifest_parse_error", detail=str(e))
         except Exception:
-            print(json.dumps({"error": "manifest_parse_error", "detail": "manifest_read_error"}))
-            sys.exit(EXIT_ERROR)
+            _emit_cli_error("manifest_parse_error", detail="manifest_read_error")
     elif args.input_dir:
         input_dir = Path(args.input_dir)
         if not input_dir.is_dir():
-             print(json.dumps({"error": "input_dir_not_found"}))
-             sys.exit(EXIT_ERROR)
+             _emit_cli_error("input_dir_not_found")
         
         # sorted lexicographically by normalized path
         # glob pattern
@@ -194,8 +208,7 @@ def handle_verify_batch(args):
         
         entries = _collect_input_dir_batch_entries(input_dir, pattern)
     else:
-        print(json.dumps({"error": "usage_error:missing_input_source"}))
-        sys.exit(EXIT_ERROR)
+        _emit_cli_error("usage_error:missing_input_source")
 
     # Process files
     for entry in entries:
@@ -209,8 +222,7 @@ def handle_verify_batch(args):
                  # "For missing file in manifest, fail with exit code 2 and stable JSON token"
                  # Directory scan won't have missing files unless race condition.
                  if args.manifest:
-                     print(json.dumps({"error": "manifest_file_not_found", "file": error_file}))
-                     sys.exit(EXIT_ERROR)
+                     _emit_cli_error("manifest_file_not_found", file=error_file)
                  continue # Should not happen for dir scan
                  
             with open(p, 'r', encoding='utf-8') as f:
@@ -238,18 +250,15 @@ def handle_verify_batch(args):
                     #   But `package_items` is typed List[Dict]. So we must ensure dict.
                     #   If not dict, we can't pass to batch verifier as is.
                     #   We will just print error and exit 2 per "treat as input error with exit 2" interpretation if "otherwise" covers "not parseable to object".
-                   print(json.dumps({"error": E_NOT_OBJECT, "file": str(p)}))
-                   sys.exit(EXIT_ERROR)
+                   _emit_cli_error(E_NOT_OBJECT, file=str(p))
                 
                 package_items.append(cast(CliJsonObject, data))
                 source_ids.append(source_id)
 
         except json.JSONDecodeError:
-            print(json.dumps({"error": E_INVALID_JSON, "file": error_file}))
-            sys.exit(EXIT_ERROR)
+            _emit_cli_error(E_INVALID_JSON, file=error_file)
         except OSError:
-            print(json.dumps({"error": E_IO_ERROR, "file": error_file}))
-            sys.exit(EXIT_ERROR)
+            _emit_cli_error(E_IO_ERROR, file=error_file)
 
     # Run batch verification
     report: ReplayBatchReport = verify_cluster_a_replay_proof_batch(package_items, source_ids)
