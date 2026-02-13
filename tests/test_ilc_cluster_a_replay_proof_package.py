@@ -4,6 +4,7 @@ import copy
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
     verify_cluster_a_replay_proof_package,
+    _canonical_package_digest,
     E_SCHEMA_INVALID_PACKAGE,
     E_MISSING_FIELD_PACKAGE,
     E_HASH_MISMATCH_PACKAGE,
@@ -99,7 +100,6 @@ def test_verify_fails_contract_hash_mismatch(governance_record, apply_result, co
     # So we MUST update package hash.
     
     # Re-sign the package with the bad contract hash
-    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
     package["package_hash_sha256"] = _canonical_package_digest(package)
     
     res = verify_cluster_a_replay_proof_package(package)
@@ -119,7 +119,6 @@ def test_verify_fails_record_hash_mismatch(governance_record, apply_result, conf
     package["replay_contract"]["governance_record"]["payload"]["foo"] = "baz"
     
     # Update package hash
-    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
     package["package_hash_sha256"] = _canonical_package_digest(package)
     
     res = verify_cluster_a_replay_proof_package(package)
@@ -138,7 +137,6 @@ def test_verify_fails_attestation_mismatch(governance_record, apply_result, conf
     package["replay_contract"]["conformance_result"]["ok"] = False
     
     # Update package hash
-    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
     package["package_hash_sha256"] = _canonical_package_digest(package)
     
     res = verify_cluster_a_replay_proof_package(package)
@@ -205,7 +203,6 @@ def test_verify_fails_malformed_evidence(governance_record, apply_result, confor
     package["evidence"] = "not a dict"
     
     # Recalculate package hash to pass step 2
-    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import _canonical_package_digest
     package["package_hash_sha256"] = _canonical_package_digest(package)
     
     res = verify_cluster_a_replay_proof_package(package)
@@ -233,12 +230,6 @@ def test_verify_fails_malformed_contract(governance_record, apply_result, confor
 
 
 def test_verify_fails_unknown_package_field(governance_record, apply_result, conformance_result, evidence):
-    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
-        build_cluster_a_replay_proof_package, 
-        verify_cluster_a_replay_proof_package,
-        E_SCHEMA_INVALID_PACKAGE
-    )
-    
     package = build_cluster_a_replay_proof_package(
         evidence=evidence,
         governance_record=governance_record,
@@ -256,12 +247,6 @@ def test_verify_fails_unknown_package_field(governance_record, apply_result, con
 
 
 def test_verify_fails_unknown_contract_field(governance_record, apply_result, conformance_result, evidence):
-    from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
-        build_cluster_a_replay_proof_package, 
-        verify_cluster_a_replay_proof_package,
-        E_SCHEMA_INVALID_PACKAGE
-    )
-    
     package = build_cluster_a_replay_proof_package(
         evidence=evidence,
         governance_record=governance_record,

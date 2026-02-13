@@ -44,8 +44,12 @@ def test_validate_schema_invalid_const_check(valid_evidence):
     # Invalid item in list
     valid_evidence["constitution_checks"].append({"check_id": "C3"}) # missing status
     errors = validate_evidence_schema(valid_evidence)
-    # The error depends on index
-    assert any("schema_violation:invalid_constitution_check_item_shape" in e for e in errors)
+    # Index is implementation-dependent; assert canonical missing-field token shape.
+    assert any(
+        e.startswith("schema_violation:missing_field_constitution_check_item_")
+        and e.endswith("_status")
+        for e in errors
+    )
 
 def test_canonical_digest_stability(valid_evidence):
     # Digest should be stable

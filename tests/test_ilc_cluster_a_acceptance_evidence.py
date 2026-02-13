@@ -4,7 +4,11 @@ Phase 141.
 """
 import pytest
 import datetime
-from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import build_cluster_a_acceptance_evidence
+from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import (
+    build_cluster_a_acceptance_evidence,
+    validate_evidence_schema,
+    _sorted_unique_str,
+)
 
 # Fixtures
 @pytest.fixture
@@ -107,8 +111,6 @@ def test_build_strict_timestamp_validation(mock_gov_record, mock_apply_res, mock
         )
 
 def test_normalization_type_safety():
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import _sorted_unique_str
-    
     # Valid
     assert _sorted_unique_str(["b", "a"]) == ["a", "b"]
     
@@ -121,7 +123,6 @@ def test_normalization_type_safety():
         _sorted_unique_str(["a", 1])
 
 def test_validate_evidence_rejection_extra_fields(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -136,7 +137,6 @@ def test_validate_evidence_rejection_extra_fields(mock_gov_record, mock_apply_re
     assert "schema_violation:unknown_field_extra_field" in errors
 
 def test_validate_evidence_rejection_bad_hash(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -154,7 +154,6 @@ def test_validate_evidence_rejection_bad_hash(mock_gov_record, mock_apply_res, m
     assert "schema_violation:invalid_type_record_hash_sha256" in errors
 
 def test_validate_evidence_rejection_bad_timestamp_format(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -172,7 +171,6 @@ def test_validate_evidence_rejection_bad_timestamp_format(mock_gov_record, mock_
     assert "schema_violation:invalid_format_generated_at_iso8601" in errors
 
 def test_validate_evidence_rejection_missing_fields(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -184,7 +182,6 @@ def test_validate_evidence_rejection_missing_fields(mock_gov_record, mock_apply_
     assert "schema_violation:missing_field_artifact_kind" in errors
 
 def test_validate_evidence_rejection_check_item_shape(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -217,7 +214,6 @@ def test_validate_evidence_rejection_check_item_shape(mock_gov_record, mock_appl
     assert "schema_violation:missing_field_constitution_check_item_0_status" in errors
 
 def test_validate_evidence_rejection_uid_length(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -229,7 +225,6 @@ def test_validate_evidence_rejection_uid_length(mock_gov_record, mock_apply_res,
     assert "schema_violation:invalid_length_record_uid" in errors
 
 def test_validate_evidence_rejection_bad_check_status_legacy(mock_gov_record, mock_apply_res, mock_conf_res):
-    from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import validate_evidence_schema
     ev = build_cluster_a_acceptance_evidence(
         governance_record=mock_gov_record,
         apply_result=mock_apply_res,
@@ -250,4 +245,3 @@ def test_validate_evidence_rejection_bad_check_status_legacy(mock_gov_record, mo
     ev["constitution_checks"] = [{"check_id": "C1", "status": "not_applicable"}]
     errors = validate_evidence_schema(ev)
     assert errors == []
-

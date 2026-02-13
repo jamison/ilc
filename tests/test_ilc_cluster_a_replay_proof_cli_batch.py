@@ -151,8 +151,7 @@ def test_verify_batch_input_dir(tmp_path):
 def test_verify_batch_missing_file_manifest(tmp_path):
     manifest = tmp_path / "bad_manifest.txt"
     manifest.write_text("missing.json", encoding="utf-8")
-    
-    import os
+
     old_cwd = os.getcwd()
     os.chdir(tmp_path)
     try:

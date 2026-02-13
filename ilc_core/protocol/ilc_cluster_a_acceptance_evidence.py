@@ -14,6 +14,137 @@ import json
 import hashlib
 
 
+_ALLOWED_EVIDENCE_KEYS = {
+    "artifact_kind",
+    "artifact_version",
+    "record_uid",
+    "record_hash_sha256",
+    "transcript_hash_sha256",
+    "conformance_ok",
+    "constitution_checks",
+    "accepted",
+    "acceptance_errors",
+    "acceptance_warnings",
+    "policy_state_delta",
+    "generated_at",
+}
+_REQUIRED_EVIDENCE_KEYS = {
+    "artifact_kind",
+    "artifact_version",
+    "record_uid",
+    "record_hash_sha256",
+    "generated_at",
+    "accepted",
+    "conformance_ok",
+    "acceptance_errors",
+    "acceptance_warnings",
+    "constitution_checks",
+}
+_ALLOWED_CONSTITUTION_CHECK_KEYS = {"check_id", "status", "error_code", "details"}
+_REQUIRED_CONSTITUTION_CHECK_KEYS = {"check_id", "status"}
+_ALLOWED_CONSTITUTION_STATUSES = {"pass", "fail", "not_applicable"}
+_SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+
+
+def _validate_unknown_and_missing_root_fields(present_keys: set[str]) -> List[str]:
+    errors: List[str] = []
+    for key in sorted(present_keys - _ALLOWED_EVIDENCE_KEYS):
+        errors.append(f"schema_violation:unknown_field_{key}")
+    for key in sorted(_REQUIRED_EVIDENCE_KEYS - present_keys):
+        errors.append(f"schema_violation:missing_field_{key}")
+    return errors
+
+
+def _validate_record_uid(value: Any) -> List[str]:
+    if not isinstance(value, str):
+        return ["schema_violation:invalid_type_record_uid"]
+    if len(value) < 1:
+        return ["schema_violation:invalid_length_record_uid"]
+    return []
+
+
+def _validate_required_sha256(value: Any, field: str) -> List[str]:
+    if not isinstance(value, str):
+        return [f"schema_violation:invalid_type_{field}"]
+    if not _SHA256_PATTERN.match(value):
+        return [f"schema_violation:invalid_format_{field}"]
+    return []
+
+
+def _validate_optional_sha256(value: Any, field: str) -> List[str]:
+    if value is None:
+        return []
+    return _validate_required_sha256(value, field)
+
+
+def _validate_string_list(value: Any, field: str) -> List[str]:
+    if not isinstance(value, list):
+        return [f"schema_violation:invalid_type_{field}"]
+    for item in value:
+        if not isinstance(item, str):
+            return [f"schema_violation:invalid_item_type_{field}"]
+    return []
+
+
+def _validate_constitution_check_item(item: Any, index: int) -> List[str]:
+    if not isinstance(item, dict):
+        return [f"schema_violation:invalid_type_constitution_check_item_{index}"]
+
+    errors: List[str] = []
+    item_keys = set(item.keys())
+    for key in sorted(item_keys - _ALLOWED_CONSTITUTION_CHECK_KEYS):
+        errors.append(f"schema_violation:unknown_field_constitution_check_item_{index}_{key}")
+    for key in sorted(_REQUIRED_CONSTITUTION_CHECK_KEYS - item_keys):
+        errors.append(f"schema_violation:missing_field_constitution_check_item_{index}_{key}")
+
+    check_id = item.get("check_id")
+    if "check_id" in item:
+        if not isinstance(check_id, str):
+            errors.append(f"schema_violation:invalid_type_constitution_check_item_{index}_check_id")
+        elif len(check_id) < 1:
+            errors.append(f"schema_violation:invalid_length_constitution_check_item_{index}_check_id")
+
+    status = item.get("status")
+    if "status" in item and status not in _ALLOWED_CONSTITUTION_STATUSES:
+        errors.append(f"schema_violation:invalid_value_constitution_check_item_{index}_status")
+
+    error_code = item.get("error_code")
+    if "error_code" in item and error_code is not None and not isinstance(error_code, str):
+        errors.append(f"schema_violation:invalid_type_constitution_check_item_{index}_error_code")
+
+    details = item.get("details")
+    if "details" in item and details is not None and not isinstance(details, dict):
+        errors.append(f"schema_violation:invalid_type_constitution_check_item_{index}_details")
+    return errors
+
+
+def _validate_constitution_checks(value: Any) -> List[str]:
+    if not isinstance(value, list):
+        return ["schema_violation:invalid_type_constitution_checks"]
+    errors: List[str] = []
+    for index, item in enumerate(value):
+        errors.extend(_validate_constitution_check_item(item, index))
+    return errors
+
+
+def _validate_generated_at(value: Any) -> List[str]:
+    if not isinstance(value, str):
+        return ["schema_violation:invalid_type_generated_at"]
+    if not value.endswith("Z"):
+        return ["schema_violation:invalid_format_generated_at_utc_suffix"]
+    try:
+        datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return ["schema_violation:invalid_format_generated_at_iso8601"]
+    return []
+
+
+def _validate_policy_state_delta(value: Any) -> List[str]:
+    if value is not None and not isinstance(value, dict):
+        return ["schema_violation:invalid_type_policy_state_delta"]
+    return []
+
+
 
 
 def canonical_evidence_contract_digest(evidence: Dict[str, Any]) -> str:
@@ -68,179 +199,48 @@ def validate_evidence_schema(evidence: Dict[str, Any]) -> List[str]:
     Enforces types, formats, and no extraneous fields.
     Returns sorted list of deterministic error tokens.
     """
-    errors = []
-    
+    errors: List[str] = []
+
     # 0. Root Type
     if not isinstance(evidence, dict):
         return ["schema_violation:evidence_not_dict"]
 
-    # 1. Unknown Fields (additionalProperties: false)
-    ALLOWED_KEYS = {
-        "artifact_kind", "artifact_version", "record_uid", "record_hash_sha256",
-        "transcript_hash_sha256", "conformance_ok", "constitution_checks",
-        "accepted", "acceptance_errors", "acceptance_warnings",
-        "policy_state_delta", "generated_at"
-    }
-    
-    present_keys = set(evidence.keys())
-    unknown_keys = present_keys - ALLOWED_KEYS
-    for k in sorted(unknown_keys):
-        errors.append(f"schema_violation:unknown_field_{k}")
+    # 1. Root field membership checks
+    errors.extend(_validate_unknown_and_missing_root_fields(set(evidence.keys())))
 
-    # 2. Required Fields
-    REQUIRED_KEYS = {
-        "artifact_kind", "artifact_version", "record_uid", "record_hash_sha256",
-        "generated_at", "accepted", "conformance_ok", 
-        "acceptance_errors", "acceptance_warnings", "constitution_checks"
-    }
-    missing_keys = REQUIRED_KEYS - present_keys
-    for k in sorted(missing_keys):
-        errors.append(f"schema_violation:missing_field_{k}")
-        
-    # 3. Value Validation (for present fields)
-    
-    # Constant Checks
+    # 2. Value validation checks
     if "artifact_kind" in evidence and evidence["artifact_kind"] != "cluster_a_acceptance_evidence":
         errors.append("schema_violation:invalid_kind")
     if "artifact_version" in evidence and evidence["artifact_version"] != "v0.1":
         errors.append("schema_violation:invalid_version")
-        
-    # UID
+
     if "record_uid" in evidence:
-        uid = evidence["record_uid"]
-        if not isinstance(uid, str):
-            errors.append("schema_violation:invalid_type_record_uid")
-        elif len(uid) < 1:
-            errors.append("schema_violation:invalid_length_record_uid")
-        
-    # Hash Format (SHA-256 hex)
-    sha256_pattern = re.compile(r"^[a-f0-9]{64}$")
-    
+        errors.extend(_validate_record_uid(evidence["record_uid"]))
+
     if "record_hash_sha256" in evidence:
-        val = evidence["record_hash_sha256"]
-        if not isinstance(val, str):
-            errors.append("schema_violation:invalid_type_record_hash_sha256")
-        elif not sha256_pattern.match(val):
-            errors.append("schema_violation:invalid_format_record_hash_sha256")
-            
+        errors.extend(_validate_required_sha256(evidence["record_hash_sha256"], "record_hash_sha256"))
+
     if "transcript_hash_sha256" in evidence:
-        val = evidence["transcript_hash_sha256"]
-        if val is not None:
-             if not isinstance(val, str):
-                 errors.append("schema_violation:invalid_type_transcript_hash_sha256")
-             elif not sha256_pattern.match(val):
-                 errors.append("schema_violation:invalid_format_transcript_hash_sha256")
-                 
-    # Booleans
+        errors.extend(
+            _validate_optional_sha256(evidence["transcript_hash_sha256"], "transcript_hash_sha256")
+        )
+
     for f in ["accepted", "conformance_ok"]:
         if f in evidence and not isinstance(evidence[f], bool):
             errors.append(f"schema_violation:invalid_type_{f}")
-            
-    # Lists of Strings
+
     for f in ["acceptance_errors", "acceptance_warnings"]:
         if f in evidence:
-            val = evidence[f]
-            if not isinstance(val, list):
-                errors.append(f"schema_violation:invalid_type_{f}")
-            else:
-                for i, item in enumerate(val):
-                    if not isinstance(item, str):
-                        errors.append(f"schema_violation:invalid_item_type_{f}")
-                        break
+            errors.extend(_validate_string_list(evidence[f], f))
 
-    # Constitution Checks
     if "constitution_checks" in evidence:
-        val = evidence["constitution_checks"]
-        if not isinstance(val, list):
-            errors.append("schema_violation:invalid_type_constitution_checks")
-        else:
-            ALLOWED_ITEM_KEYS = {"check_id", "status", "error_code", "details"}
-            REQUIRED_ITEM_KEYS = {"check_id", "status"}
-            
-            for i, item in enumerate(val):
-                if not isinstance(item, dict):
-                    errors.append(f"schema_violation:invalid_type_constitution_check_item_{i}")
-                    continue
-                
-                # Unknown keys
-                item_keys = set(item.keys())
-                unknown_item_keys = item_keys - ALLOWED_ITEM_KEYS
-                for k in sorted(unknown_item_keys):
-                    errors.append(f"schema_violation:unknown_field_constitution_check_item_{i}_{k}")
-                    
-                # Required keys
-                missing_item_keys = REQUIRED_ITEM_KEYS - item_keys
-                for k in sorted(missing_item_keys):
-                    errors.append(f"schema_violation:missing_field_constitution_check_item_{i}_{k}")
-                    
-                # check_id validation
-                if "check_id" in item:
-                    cid = item["check_id"]
-                    if not isinstance(cid, str):
-                        errors.append(f"schema_violation:invalid_type_constitution_check_item_{i}_check_id")
-                    elif len(cid) < 1:
-                        errors.append(f"schema_violation:invalid_length_constitution_check_item_{i}_check_id")
-                
-                # status validation
-                if "status" in item:
-                    status = item["status"]
-                    if status not in {"pass", "fail", "not_applicable"}:
-                        # Note: 'not_applicable' added based on implementation plan/prompt update
-                        # Prompt said: "pass, fail, not_applicable". Wait, let me check carefully.
-                        # Prompt: "status must be exactly one of: pass, fail, not_applicable"
-                        # But earlier code used "pass", "fail", "warn", "skip".
-                        # Plan says: "enum: pass/fail/not_applicable".
-                        # If I strictly follow plan, I might break existing code providing "warn" or "skip".
-                        # I should probably allow "warn" and "skip" too if they are legacy, but plan says "exact".
-                        # Let's check existing tests or logic.
-                        # Test output earlier showed: "warn_c", "warn_a".
-                        # Wait, those were warnings in 'acceptance_warnings', not check statuses.
-                        # `constitution_checks` fixture in tests says: `[{"check_id": "CONST-002", "status": "pass"}]`.
-                        # I will support "pass", "fail", "not_applicable" as per plan instructions.
-                        # I will ADD "warn" and "skip" if safe, or stick to plan?
-                        # Plan Anti-patterns: "Do not broaden accepted status enums (no warn/skip aliases in evidence contract logic)."
-                        # Uh oh. Previous code had `{"pass", "fail", "warn", "skip"}`.
-                        # The plan explicitly says "status must be exactly one of: pass, fail, not_applicable".
-                        # This implies "warn" and "skip" are NOT allowed in the strict schema.
-                        # I will follow the plan strictly.
-                        errors.append(f"schema_violation:invalid_value_constitution_check_item_{i}_status")
+        errors.extend(_validate_constitution_checks(evidence["constitution_checks"]))
 
-                # error_code validation (nullable string)
-                if "error_code" in item:
-                    ec = item["error_code"]
-                    if ec is not None and not isinstance(ec, str):
-                         errors.append(f"schema_violation:invalid_type_constitution_check_item_{i}_error_code")
-                         
-                # details validation (nullable dict)
-                if "details" in item:
-                    dt = item["details"]
-                    if dt is not None and not isinstance(dt, dict):
-                         errors.append(f"schema_violation:invalid_type_constitution_check_item_{i}_details")
-
-    # Timestamp
     if "generated_at" in evidence:
-        val = evidence["generated_at"]
-        if not isinstance(val, str):
-            errors.append("schema_violation:invalid_type_generated_at")
-        else:
-            # Strict ISO 8601 UTC (ends in Z)
-            # YYYY-MM-DDTHH:MM:SS.mmmmmmZ or YYYY-MM-DDTHH:MM:SSZ
-            # Simple check:
-            if not val.endswith("Z"):
-                 errors.append("schema_violation:invalid_format_generated_at_utc_suffix")
-            else:
-                try:
-                    # Validate parsing
-                    # remove Z for fromisoformat if < 3.11, but explicit Z check is main gate
-                    dt = datetime.datetime.fromisoformat(val.replace("Z", "+00:00"))
-                except ValueError:
-                    errors.append("schema_violation:invalid_format_generated_at_iso8601")
+        errors.extend(_validate_generated_at(evidence["generated_at"]))
 
-    # Policy Delta (Nullable Dict)
     if "policy_state_delta" in evidence:
-        val = evidence["policy_state_delta"]
-        if val is not None and not isinstance(val, dict):
-            errors.append("schema_violation:invalid_type_policy_state_delta")
+        errors.extend(_validate_policy_state_delta(evidence["policy_state_delta"]))
 
     return sorted(errors)
 
