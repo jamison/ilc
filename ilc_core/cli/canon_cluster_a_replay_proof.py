@@ -278,6 +278,24 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import (
     BatchCompareReport,
 )
 
+
+MismatchReasonSet: TypeAlias = set[str]
+
+
+def _extract_compare_mismatch_reasons(report: BatchCompareReport) -> MismatchReasonSet:
+    reasons: MismatchReasonSet = set()
+    for mismatch in report.get("mismatches", []):
+        if isinstance(mismatch, dict):
+            reason = mismatch.get("reason")
+            if isinstance(reason, str):
+                reasons.add(reason)
+    return reasons
+
+
+def _has_schema_invalid_reason(reasons: MismatchReasonSet) -> bool:
+    return "schema_invalid_left" in reasons or "schema_invalid_right" in reasons
+
+
 def handle_compare_reports(args):
     """Handle compare-reports subcommand."""
     left = _read_json_file(args.left)
@@ -294,8 +312,8 @@ def handle_compare_reports(args):
     if report["ok"]:
         sys.exit(EXIT_OK)
     # Schema-invalid compare results are input/schema errors.
-    reasons = {m.get("reason") for m in report.get("mismatches", []) if isinstance(m, dict)}
-    if "schema_invalid_left" in reasons or "schema_invalid_right" in reasons:
+    reasons = _extract_compare_mismatch_reasons(report)
+    if _has_schema_invalid_reason(reasons):
         sys.exit(EXIT_ERROR)
     else:
         sys.exit(EXIT_VERIFICATION_FAILED)
@@ -429,12 +447,12 @@ def handle_verify_and_compare(args):
 
     batch_ok = bool(batch_report.get("ok", False))
     compare_ok = bool(compare_report.get("ok", False))
-    reasons = {m.get("reason") for m in compare_report.get("mismatches", []) if isinstance(m, dict)}
+    reasons = _extract_compare_mismatch_reasons(compare_report)
 
     if compare_ok:
         exit_code = EXIT_OK
         error_token = None
-    elif "schema_invalid_left" in reasons or "schema_invalid_right" in reasons:
+    elif _has_schema_invalid_reason(reasons):
         exit_code = EXIT_ERROR
         error_token = OPS_TOKEN_EXPECTED_SCHEMA_INVALID if "schema_invalid_right" in reasons else OPS_TOKEN_RUNTIME_ERROR
     else:
