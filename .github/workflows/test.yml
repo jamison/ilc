@@ -14,6 +14,5 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
       - run: pip install -e .
-      - run: python -m pytest tests/test_ilc_cluster_a_replay_proof_ci_gate.py -q
-      - run: python -m pytest tests/test_ilc_cluster_a_replay_proof_ci_gate_baseline.py -q
-      - run: python -m pytest tests/test_ilc_cluster_a_replay_proof_cli_ci_gate.py -q
+      - run: bash tools/check_track1_closure_guardrails.sh
+      - run: python -m pytest -q
