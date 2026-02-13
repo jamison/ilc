@@ -1,15 +1,17 @@
-from typing import Dict, Any
+from typing import Dict, List, TypedDict
 from pathlib import Path
 import json
 import posixpath
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_batch import (
+    ReplayBatchReport,
     verify_cluster_a_replay_proof_batch,
     load_manifest_paths,
 )
 from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import (
     compare_cluster_a_replay_proof_batch_reports,
 )
+from ilc_core.protocol.ilc_cluster_a_replay_proof_package import ReplayObject
 
 
 class ManifestParseError(ValueError):
@@ -18,6 +20,11 @@ class ManifestParseError(ValueError):
 
 class ManifestEntryNotFoundError(FileNotFoundError):
     """A manifest-referenced package file does not exist."""
+
+
+class BatchVerifyAndCompareResult(TypedDict):
+    batch_report: ReplayBatchReport
+    compare_report: Dict[str, object]
 
 
 def _normalize_source_id(raw_path: str) -> str:
@@ -43,7 +50,7 @@ def _resolve_manifest_entry(base_dir: Path, manifest_entry: str) -> Path:
     return candidate
 
 
-def run_batch_verify_from_manifest(manifest_path: Path) -> Dict[str, Any]:
+def run_batch_verify_from_manifest(manifest_path: Path) -> ReplayBatchReport:
     """
     Run batch verification from a manifest file.
 
@@ -58,8 +65,8 @@ def run_batch_verify_from_manifest(manifest_path: Path) -> Dict[str, Any]:
         raise ManifestParseError(str(exc)) from exc
 
     base_dir = manifest_path.parent
-    package_items = []
-    source_ids = []
+    package_items: List[ReplayObject] = []
+    source_ids: List[str] = []
     seen_source_ids = set()
 
     for rp in rel_paths:
@@ -89,7 +96,9 @@ def run_batch_verify_from_manifest(manifest_path: Path) -> Dict[str, Any]:
     return verify_cluster_a_replay_proof_batch(package_items, source_ids)
 
 
-def run_batch_verify_and_compare(manifest_path: Path, expected_report: Dict[str, Any]) -> Dict[str, Any]:
+def run_batch_verify_and_compare(
+    manifest_path: Path, expected_report: ReplayBatchReport
+) -> BatchVerifyAndCompareResult:
     """
     Run batch verification and compare against expected report.
     Returns both reports for higher-level command composition.

@@ -7,7 +7,7 @@ Provides logic to build and verify canonical replay proof packages.
 
 import json
 import hashlib
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, TypedDict, TypeAlias
 
 from ilc_core.protocol.ilc_cluster_a_ingest import canonical_governance_record_digest
 from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import (
@@ -24,7 +24,19 @@ E_RECORD_HASH_MISMATCH = "context_violation:replay_proof_record_hash_mismatch"
 E_CONTRACT_HASH_MISMATCH = "context_violation:replay_proof_evidence_contract_hash_mismatch"
 E_ATTESTATION_FAILED = "context_violation:replay_proof_attestation_failed"
 
-def _canonical_package_digest(package: Dict[str, Any]) -> str:
+ReplayObject: TypeAlias = Dict[str, object]
+ReplayCheckMap: TypeAlias = Dict[str, object]
+ReplayCheckList: TypeAlias = List[ReplayCheckMap]
+
+
+class ReplayVerifyResult(TypedDict):
+    ok: bool
+    errors: List[str]
+    warnings: List[str]
+    checks: ReplayCheckList
+
+
+def _canonical_package_digest(package: ReplayObject) -> str:
     """
     Compute canonical SHA-256 digest of the package.
     Excludes signature/hash fields if present? No, spec says:
@@ -37,11 +49,11 @@ def _canonical_package_digest(package: Dict[str, Any]) -> str:
 
 def build_cluster_a_replay_proof_package(
     *,
-    evidence: Dict[str, Any],
-    governance_record: Dict[str, Any],
-    apply_result: Dict[str, Any],
-    conformance_result: Dict[str, Any]
-) -> Dict[str, Any]:
+    evidence: ReplayObject,
+    governance_record: ReplayObject,
+    apply_result: ReplayObject,
+    conformance_result: ReplayObject
+) -> ReplayObject:
     """
     Build a deterministic replay proof package.
     """
@@ -81,14 +93,14 @@ def build_cluster_a_replay_proof_package(
     
     return package
 
-def verify_cluster_a_replay_proof_package(package: Dict[str, Any]) -> Dict[str, Any]:
+def verify_cluster_a_replay_proof_package(package: object) -> ReplayVerifyResult:
     """
     Verify a replay proof package.
     Returns result dict with ok/errors.
     Safe against malformed input.
     """
     errors: List[str] = []
-    checks: List[Dict[str, Any]] = []
+    checks: ReplayCheckList = []
     
     def _add_check(name: str, ok: bool, err: Optional[str] = None):
         checks.append({"check": name, "status": "pass" if ok else "fail", "error_code": err})

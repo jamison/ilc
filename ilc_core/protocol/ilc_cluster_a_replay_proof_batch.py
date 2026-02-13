@@ -1,12 +1,36 @@
-from typing import List, Dict, Any
+from typing import Dict, List, TypedDict
 from pathlib import Path
 from collections import Counter
 import posixpath
 import re
 
-from ilc_core.protocol.ilc_cluster_a_replay_proof_package import verify_cluster_a_replay_proof_package
+from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
+    ReplayCheckList,
+    ReplayObject,
+    verify_cluster_a_replay_proof_package,
+)
 
 _WINDOWS_ABS_PATH_RE = re.compile(r"^[A-Za-z]:/")
+
+
+class ReplayBatchResultRow(TypedDict):
+    input_index: int
+    source_id: str
+    ok: bool
+    errors: List[str]
+    warnings: List[str]
+    checks: ReplayCheckList
+
+
+class ReplayBatchReport(TypedDict):
+    report_version: str
+    total_packages: int
+    ok_count: int
+    fail_count: int
+    ok: bool
+    results: List[ReplayBatchResultRow]
+    error_token_counts: Dict[str, int]
+    batch_errors: List[str]
 
 
 def _normalize_manifest_path(raw_path: str) -> str:
@@ -67,9 +91,9 @@ def load_manifest_paths(path: Path) -> List[str]:
     return out
 
 def verify_cluster_a_replay_proof_batch(
-    package_items: List[Dict[str, Any]], 
+    package_items: List[ReplayObject], 
     source_ids: List[str]
-) -> Dict[str, Any]:
+) -> ReplayBatchReport:
     """
     Verifies a batch of replay proof packages and produces a deterministic report.
     
@@ -93,7 +117,7 @@ def verify_cluster_a_replay_proof_batch(
             "batch_errors": ["context_violation:batch_input_length_mismatch"]
         }
 
-    results = []
+    results: List[ReplayBatchResultRow] = []
     token_counter = Counter()
 
     for idx, (package, source_id) in enumerate(zip(package_items, source_ids)):
@@ -113,7 +137,7 @@ def verify_cluster_a_replay_proof_batch(
         if not isinstance(checks, list):
             checks = []
 
-        entry = {
+        entry: ReplayBatchResultRow = {
             "input_index": idx,
             "source_id": source_id,
             "ok": pkg_result["ok"],
@@ -136,7 +160,7 @@ def verify_cluster_a_replay_proof_batch(
     ok_count = sum(1 for r in results if r["ok"])
     fail_count = total_packages - ok_count
     
-    report = {
+    report: ReplayBatchReport = {
         "report_version": "v0.1",
         "total_packages": total_packages,
         "ok_count": ok_count,
