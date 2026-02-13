@@ -8,12 +8,68 @@ canon_state.json artifacts without mutating them.
 import json
 import sys
 import argparse
-from typing import Dict, Any, Union
+from typing import TypedDict, TypeAlias, cast
 from os import PathLike
 
 from ilc_core.ledger.canon_loader import verify_canon_state
 
-def summarize_canon_state(path: Union[str, PathLike]) -> Dict[str, Any]:
+CanonMeta: TypeAlias = dict[str, int | str | None]
+
+
+class CanonSummary(TypedDict, total=False):
+    ok: bool
+    canon_hash: str | None
+    computed_hash: str | None
+    errors: list[str]
+    meta: CanonMeta
+    canon_export_version: str
+    epoch_count: int
+    snapshot_count: int
+    balance_count: int
+
+
+def _default_meta() -> CanonMeta:
+    return {
+        "canon_export_version": None,
+        "epoch_count": None,
+        "snapshot_count": None,
+        "balance_count": None,
+        "kpi_epoch_count": None,
+        "kpi_snapshot_count": None,
+        "kpi_balance_count": None,
+    }
+
+
+def _as_object_map(value: object) -> dict[str, object]:
+    if isinstance(value, dict):
+        return cast(dict[str, object], value)
+    return {}
+
+
+def _coerce_optional_str(value: object) -> str | None:
+    return value if isinstance(value, str) else None
+
+
+def _coerce_errors(value: object) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value]
+
+
+def _coerce_meta(value: object) -> CanonMeta:
+    meta = _default_meta()
+    if not isinstance(value, dict):
+        return meta
+
+    value_map = cast(dict[str, object], value)
+    for key in meta:
+        candidate = value_map.get(key)
+        if isinstance(candidate, (int, str)) or candidate is None:
+            meta[key] = candidate
+    return meta
+
+
+def summarize_canon_state(path: str | PathLike[str]) -> CanonSummary:
     """
     Return a deterministic summary dict for canon_state.json.
     
@@ -33,38 +89,35 @@ def summarize_canon_state(path: Union[str, PathLike]) -> Dict[str, Any]:
         - balance_count (int, optional): Number of agent balances
         - error (str, optional): Error message if verification failed
     """
-    report = verify_canon_state(path)
+    report = _as_object_map(verify_canon_state(path))
+    report_ok = bool(report.get("ok", False))
     
     # Base response shape
-    result = {
-        "ok": report["ok"],
-        "canon_hash": report.get("canon_hash"),
-        "computed_hash": report.get("computed_hash"),
-        "errors": report.get("errors", []),
-        "meta": report.get("meta", {
-            "canon_export_version": None,
-            "epoch_count": None,
-            "snapshot_count": None,
-            "balance_count": None,
-            "kpi_epoch_count": None,
-            "kpi_snapshot_count": None,
-            "kpi_balance_count": None
-        })
+    result: CanonSummary = {
+        "ok": report_ok,
+        "canon_hash": _coerce_optional_str(report.get("canon_hash")),
+        "computed_hash": _coerce_optional_str(report.get("computed_hash")),
+        "errors": _coerce_errors(report.get("errors")),
+        "meta": _coerce_meta(report.get("meta")),
     }
     
-    if not report["ok"]:
+    if not report_ok:
         return result
     
     # Reload to extract counts (verify_canon_state verifies but doesn't return full payload)
     try:
         with open(path, "r") as f:
-            payload = json.load(f)
-            
+            payload = _as_object_map(json.load(f))
+
         result.update({
-            "canon_export_version": payload.get("canon_export_version", "unknown"),
-            "epoch_count": len(payload.get("epoch_records", {})),
-            "snapshot_count": len(payload.get("stake_snapshots", {})),
-            "balance_count": len(payload.get("balances", {})),
+            "canon_export_version": (
+                payload.get("canon_export_version")
+                if isinstance(payload.get("canon_export_version"), str)
+                else "unknown"
+            ),
+            "epoch_count": len(_as_object_map(payload.get("epoch_records"))),
+            "snapshot_count": len(_as_object_map(payload.get("stake_snapshots"))),
+            "balance_count": len(_as_object_map(payload.get("balances"))),
         })
         return result
     except Exception as e:
@@ -169,23 +222,12 @@ def main() -> int:
 
     if args.report:
         # Report mode: emit single-line JSON with stable key order
-        report = verify_canon_state(args.path)
-        meta = report.get(
-            "meta",
-            {
-                "canon_export_version": None,
-                "epoch_count": None,
-                "snapshot_count": None,
-                "balance_count": None,
-                "kpi_epoch_count": None,
-                "kpi_snapshot_count": None,
-                "kpi_balance_count": None,
-            },
-        )
+        report = _as_object_map(verify_canon_state(args.path))
+        meta = _coerce_meta(report.get("meta"))
         ordered_report = {
-            "ok": report.get("ok", False),
-            "canon_hash": report.get("canon_hash"),
-            "computed_hash": report.get("computed_hash"),
+            "ok": bool(report.get("ok", False)),
+            "canon_hash": _coerce_optional_str(report.get("canon_hash")),
+            "computed_hash": _coerce_optional_str(report.get("computed_hash")),
             "errors": errors,
             "meta": meta,
         }

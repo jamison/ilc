@@ -2,20 +2,45 @@ import argparse
 import json
 import sys
 import requests
-from typing import Optional, Any, List
+from typing import Optional, List, Protocol, TypeAlias, cast
+
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+
+
+class HttpResponseLike(Protocol):
+    status_code: int
+    text: str
+
+    def json(self) -> JsonValue:
+        ...
+
+
+class HttpClientLike(Protocol):
+    def get(self, path: str) -> HttpResponseLike:
+        ...
+
+    def post(self, path: str, json: object) -> HttpResponseLike:
+        ...
+
+
+def _as_json_object(value: JsonValue) -> dict[str, JsonValue]:
+    if isinstance(value, dict):
+        return cast(dict[str, JsonValue], value)
+    return {}
 
 class HttpClient:
     """Simple wrapper for requests to match the interface needed by the CLI."""
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip("/")
 
-    def get(self, path: str) -> Any:
+    def get(self, path: str) -> requests.Response:
         return requests.get(f"{self.base_url}{path}")
 
-    def post(self, path: str, json: Any) -> Any:
+    def post(self, path: str, json: object) -> requests.Response:
         return requests.post(f"{self.base_url}{path}", json=json)
 
-def _handle_schema(client: Any) -> int:
+def _handle_schema(client: HttpClientLike) -> int:
     try:
         res = client.get("/v1/protocol/ep_task_schema")
         if res.status_code == 200:
@@ -28,22 +53,23 @@ def _handle_schema(client: Any) -> int:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
-def _handle_submit(client: Any, file_path: Optional[str]) -> int:
+def _handle_submit(client: HttpClientLike, file_path: Optional[str]) -> int:
     try:
         if file_path:
             with open(file_path, "r") as f:
-                payload = json.load(f)
+                payload = cast(object, json.load(f))
         else:
             # Read from stdin
             if sys.stdin.isatty():
                 print("Reading JSON from stdin...", file=sys.stderr)
-            payload = json.load(sys.stdin)
+            payload = cast(object, json.load(sys.stdin))
 
         res = client.post("/v1/protocol/ep_task", json=payload)
         if res.status_code == 200:
             data = res.json()
-            ep = data.get("ep_task", {})
-            td = data.get("task_descriptor", {})
+            data_obj = _as_json_object(data)
+            ep = _as_json_object(data_obj.get("ep_task"))
+            td = _as_json_object(data_obj.get("task_descriptor"))
             print(f"Accepted EpistemicWorkTask: {ep.get('task_id')}")
             print(f"  Class: {ep.get('task_class')}")
             print(f"  Mapped Task Type: {td.get('task_type')}")
@@ -61,7 +87,7 @@ def _handle_submit(client: Any, file_path: Optional[str]) -> int:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
-def _handle_demo(client: Any) -> int:
+def _handle_demo(client: HttpClientLike) -> int:
     try:
         payload = {
             "task_id": "task:demo:cli",
@@ -108,7 +134,7 @@ def _build_cli_parser() -> argparse.ArgumentParser:
     
     return parser
 
-def _dispatch_cli_command(args: argparse.Namespace, client: Any) -> int:
+def _dispatch_cli_command(args: argparse.Namespace, client: HttpClientLike) -> int:
     """Helper to route CLI commands to handlers."""
     if args.command == "schema":
         return _handle_schema(client)
@@ -121,7 +147,7 @@ def _dispatch_cli_command(args: argparse.Namespace, client: Any) -> int:
 
     return 0
 
-def run_ep_task_cli(argv: Optional[List[str]] = None, client: Any = None) -> int:
+def run_ep_task_cli(argv: Optional[List[str]] = None, client: Optional[HttpClientLike] = None) -> int:
     """
     CLI entrypoint for Epistemic Work Task operations.
     
