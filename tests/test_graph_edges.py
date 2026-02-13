@@ -1,5 +1,5 @@
-from ilc_core.graph import EpistemicGraph
-from ilc_core.types import ClaimRecord, Edge
+from ilc_core.graph import EpistemicGraph, GraphEdge
+from ilc_core.types import ClaimRecord
 
 
 def _seed_graph() -> EpistemicGraph:
@@ -13,7 +13,7 @@ def _seed_graph() -> EpistemicGraph:
 
 def test_add_edge_and_iterators():
     g = _seed_graph()
-    edge = Edge(source_id="c1", target_id="c2", type="derives_from")
+    edge = GraphEdge(source_id="c1", target_id="c2", type="derives_from")
     g.add_edge(edge)
 
     out_edges = list(g.iter_edges_from("c1"))
@@ -39,7 +39,7 @@ def test_add_edge_by_ids_and_edge_count():
 
 def test_iterators_track_legacy_direct_append():
     g = _seed_graph()
-    g.edges.append(Edge(source_id="c1", target_id="c2", type="derives_from"))
+    g.edges.append(GraphEdge(source_id="c1", target_id="c2", type="derives_from"))
 
     # Lazy index rebuild should detect legacy mutation and still provide correct results.
     out_edges = list(g.iter_edges_from("c1"))
@@ -51,7 +51,7 @@ def test_add_edge_missing_node_raises():
     g = _seed_graph()
 
     try:
-        g.add_edge(Edge(source_id="missing", target_id="c2", type="derives_from"))
+        g.add_edge(GraphEdge(source_id="missing", target_id="c2", type="derives_from"))
     except KeyError:
         pass
     else:
@@ -61,7 +61,7 @@ def test_add_edge_missing_node_raises():
 def test_legacy_direct_append_warns_once(caplog):
     g = _seed_graph()
     with caplog.at_level("WARNING"):
-        g.edges.append(Edge(source_id="c1", target_id="c2", type="derives_from"))
+        g.edges.append(GraphEdge(source_id="c1", target_id="c2", type="derives_from"))
         list(g.iter_edges_from("c1"))
         list(g.iter_edges_from("c1"))
 

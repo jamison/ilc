@@ -1,19 +1,35 @@
 import json
 import os
 import logging
-from typing import Dict, List, Optional, Iterable
-from .types import Node, Edge, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Iterable, Protocol, runtime_checkable
+from .types import Node, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord
 from .links import validate_link_type, is_symmetric
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass(frozen=True)
+class GraphEdge:
+    source_id: str
+    target_id: str
+    type: str
+    weight: float = 1.0
+
+
+@runtime_checkable
+class EdgeEventLike(Protocol):
+    source_id: str
+    target_id: str
+    type: str
+
+
 class EpistemicGraph:
     def __init__(self):
         self.nodes: Dict[str, Node] = {}
-        self.edges: List[Edge] = []
-        self.outgoing_edges: Dict[str, List[Edge]] = {}
-        self.incoming_edges: Dict[str, List[Edge]] = {}
+        self.edges: List[GraphEdge] = []
+        self.outgoing_edges: Dict[str, List[GraphEdge]] = {}
+        self.incoming_edges: Dict[str, List[GraphEdge]] = {}
         self._edge_index_len: int = 0
         self._legacy_edge_mutation_warned: bool = False
         self.links: Dict[str, LinkRecord] = {}
@@ -71,8 +87,17 @@ class EpistemicGraph:
                 self._legacy_edge_mutation_warned = True
             self._rebuild_edge_indexes()
 
-    def add_edge(self, edge: Edge) -> None:
+    def _coerce_edge_event(self, edge_event: EdgeEventLike) -> GraphEdge:
+        return GraphEdge(
+            source_id=edge_event.source_id,
+            target_id=edge_event.target_id,
+            type=edge_event.type,
+            weight=float(getattr(edge_event, "weight", 1.0)),
+        )
+
+    def add_edge(self, edge_event: EdgeEventLike) -> None:
         """Add an edge and update indexes."""
+        edge = self._coerce_edge_event(edge_event)
         if edge.source_id not in self.nodes:
             raise KeyError(f"Unknown source_id: {edge.source_id}")
         if edge.target_id not in self.nodes:
@@ -85,23 +110,23 @@ class EpistemicGraph:
 
     def add_edge_by_ids(self, source_id: str, target_id: str, edge_type: str) -> None:
         """Construct and add an edge using primitive ids for adapter-first callers."""
-        self.add_edge(Edge(source_id=source_id, target_id=target_id, type=edge_type))
+        self.add_edge(GraphEdge(source_id=source_id, target_id=target_id, type=edge_type))
 
     def edge_count(self) -> int:
         """Return current edge-list length for read-only callsites."""
         return len(self.edges)
 
-    def iter_edges_from(self, source_id: str) -> Iterable[Edge]:
+    def iter_edges_from(self, source_id: str) -> Iterable[GraphEdge]:
         self._ensure_edge_indexes()
         for edge in self.outgoing_edges.get(source_id, []):
             yield edge
 
-    def iter_edges_to(self, target_id: str) -> Iterable[Edge]:
+    def iter_edges_to(self, target_id: str) -> Iterable[GraphEdge]:
         self._ensure_edge_indexes()
         for edge in self.incoming_edges.get(target_id, []):
             yield edge
 
-    def iter_edges_between(self, source_id: str, target_id: str) -> Iterable[Edge]:
+    def iter_edges_between(self, source_id: str, target_id: str) -> Iterable[GraphEdge]:
         for edge in self.iter_edges_from(source_id):
             if edge.target_id == target_id:
                 yield edge

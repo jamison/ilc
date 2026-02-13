@@ -7,11 +7,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TARGET_DIRS = [ROOT / "ilc_core", ROOT / "tests"]
 
-EDGE_USAGE_ALLOWLIST = {
-    "ilc_core/types.py",
-    "ilc_core/graph.py",
-    "tests/test_graph_edges.py",
-}
+# After phase 976, no concrete `Edge` symbol usage is allowed in ilc_core/tests.
+EDGE_USAGE_ALLOWLIST: set[str] = set()
 
 DIRECT_EDGE_APPEND_ALLOWLIST = {
     "ilc_core/graph.py",
@@ -87,6 +84,6 @@ def test_no_new_edge_symbol_spread_outside_allowlist() -> None:
 
     if offenders:
         raise AssertionError(
-            "Track 1 phase-1 freeze violation: Edge symbol usage outside allowlist:\n"
+            "Track 1 phase-1 freeze violation: Edge symbol usage detected after eviction:\n"
             + "\n".join(offenders)
         )

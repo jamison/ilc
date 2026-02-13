@@ -16,16 +16,6 @@ NodeType = Literal[
     "genesis.blob"      # Meta: Raw data adhering to a schema
 ]
 
-EdgeType = Literal[
-    "supports",      # Validation (+Stake)
-    "refutes",       # Contradiction (-Stake, Slash)
-    "derives_from",  # Lineage (Task -> Claim)
-    "equivalent",    # Dedup (A == B)
-    "implements",    # Schema Compliance
-    "relates_to",    # General link
-    "supersedes"     # Versioning (New -> Old). No slashing.
-]
-
 LinkType = Literal[
     "supports",
     "refutes",
@@ -65,15 +55,6 @@ class Node(BaseModel):
         # ID depends on Type, Content, and Author (Provenance)
         payload = f"{self.type}:{payload_str}:{self.agent_id}".encode()
         return hashlib.sha256(payload).hexdigest()
-
-class Edge(BaseModel):
-    """
-    The 'citation' or 'semantic link' between two nodes.
-    """
-    source_id: str
-    target_id: str
-    type: EdgeType
-    weight: float = 1.0
 
 class ClaimRecord(BaseModel):
     """
