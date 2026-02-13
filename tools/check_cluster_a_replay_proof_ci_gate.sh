@@ -48,6 +48,11 @@ mkdir -p "${OUTPUT_DIR}"
 
 REPORT_PATH="${OUTPUT_DIR}/ci_gate_report.json"
 
+# Step 0: Track 1 closure guardrail gate
+echo "=== CI Gate Step 0: Track 1 Closure Guardrails ==="
+"${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
+echo ""
+
 # Build command
 CMD=(python3 -m ilc_core.cli.canon_cluster_a_replay_proof ci-gate
     --fixtures-root "${FIXTURES_ROOT}"

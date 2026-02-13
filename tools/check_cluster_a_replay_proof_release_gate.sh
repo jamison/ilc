@@ -36,6 +36,11 @@ done
 
 mkdir -p "${OUTPUT_DIR}"
 
+# --- Step 0: Track 1 closure guardrail gate ---
+echo "=== Release Gate Step 0: Track 1 Closure Guardrails ==="
+"${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
+echo ""
+
 # --- Step 1: CI Gate with baseline enforcement ---
 
 BASELINE="${FIXTURES_ROOT}/cluster_a_replay_proof_ci_gate_v0_1/release_v0_1_baseline.json"
