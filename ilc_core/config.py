@@ -1,7 +1,6 @@
-import os
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import TypeAlias, cast
 
 try:
     import yaml
@@ -12,8 +11,18 @@ import json
 
 logger = logging.getLogger(__name__)
 
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+GovernanceConfig: TypeAlias = dict[str, JsonValue]
 
-def load_governance_config(path: str | None = None) -> Dict[str, Any]:
+
+def _coerce_governance_config(value: object) -> GovernanceConfig:
+    if isinstance(value, dict):
+        return cast(GovernanceConfig, value)
+    return {}
+
+
+def load_governance_config(path: str | None = None) -> GovernanceConfig:
     """
     Load Governance config from YAML/JSON.
 
@@ -39,14 +48,14 @@ def load_governance_config(path: str | None = None) -> Dict[str, Any]:
     if path.suffix in {".yaml", ".yml"}:
         if yaml:
             with path.open("r", encoding="utf-8") as f:
-                return yaml.safe_load(f) or {}
+                return _coerce_governance_config(yaml.safe_load(f) or {})
         else:
             logger.warning("PyYAML not installed. Cannot load %s.", path)
             return {}
             
     elif path.suffix == ".json":
         with path.open("r", encoding="utf-8") as f:
-            return json.load(f) or {}
+            return _coerce_governance_config(json.load(f) or {})
     else:
         if user_supplied:
             logger.warning("Unsupported config extension for path: %s", path)
