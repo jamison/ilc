@@ -1,6 +1,6 @@
 import csv
 from pathlib import Path
-from typing import Any, Dict, List, TypedDict, TypeAlias, Union
+from typing import Dict, List, TypedDict, TypeAlias, Union
 
 from ilc_core.protocol.event_export import (
     TASK_OUTCOME_HEADERS,
@@ -39,6 +39,7 @@ class ClaimKpiRow(TypedDict):
 
 AgentEconMap: TypeAlias = Dict[str, AgentEconRow]
 ClaimKpiMap: TypeAlias = Dict[str, ClaimKpiRow]
+NumericScalar: TypeAlias = str | int | float | bool | None
 
 def load_tasks_csv(path: PathLike) -> List[Dict[str, str]]:
     """
@@ -79,13 +80,13 @@ def load_claims_csv(path: PathLike) -> List[Dict[str, str]]:
         reader = csv.DictReader(f)
         return list(reader)
 
-def _to_float(value: Any, default: float = 0.0) -> float:
+def _to_float(value: NumericScalar, default: float = 0.0) -> float:
     try:
         return float(value)
     except (TypeError, ValueError):
         return default
 
-def _to_int(value: Any, default: int = 0) -> int:
+def _to_int(value: NumericScalar, default: int = 0) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Mapping, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, TypedDict, TypeAlias
 from pathlib import Path
 
 from ilc_core.network.topology import (
@@ -34,6 +34,36 @@ DEFAULT_CONTROVERSY_RATIO = 0.1
 DEFAULT_VALIDATION_DEPTH_ERROR = 0.0
 DEFAULT_MEAN_ABS_INFLUENCE = 0.5
 
+WorkerIdList: TypeAlias = List[str]
+StressSchedule: TypeAlias = List[float]
+
+
+class ScenarioEntryRequired(TypedDict):
+    label: str
+    stress_schedule: StressSchedule
+
+
+class ScenarioEntryDict(ScenarioEntryRequired, total=False):
+    namespace_id: str
+    num_agents: int
+    topology_kind: str
+    center_id: str
+    worker_ids: WorkerIdList
+    ledger_backend_kind: str
+    ledger_storage_dir: str | None
+
+
+class ScenarioConfigDict(TypedDict, total=False):
+    namespace_id: str
+    num_agents: int
+    topology_kind: str
+    center_id: str
+    worker_ids: WorkerIdList
+    ledger_backend_kind: str
+    ledger_storage_dir: str | None
+    scenarios: List[ScenarioEntryDict]
+
+
 @dataclass
 class DevnetScenarioConfig:
     """
@@ -61,7 +91,7 @@ class DevnetScenarioConfig:
     ledger_backend_kind: str = "memory"  # "memory" or "file"
     ledger_storage_dir: Optional[str] = None
 
-def scenario_from_dict(data: Mapping[str, Any]) -> DevnetScenarioConfig:
+def scenario_from_dict(data: ScenarioEntryDict) -> DevnetScenarioConfig:
     """
     Build a DevnetScenarioConfig from a dictionary.
     
@@ -94,7 +124,7 @@ def scenario_from_dict(data: Mapping[str, Any]) -> DevnetScenarioConfig:
             
     return DevnetScenarioConfig(**kwargs)
 
-def scenarios_from_config(config: Mapping[str, Any]) -> List[DevnetScenarioConfig]:
+def scenarios_from_config(config: ScenarioConfigDict) -> List[DevnetScenarioConfig]:
     """
     Parse a top-level config dict into a list of scenario objects.
     
@@ -255,9 +285,7 @@ def run_scenario(
     
     return summary
 
-def run_scenarios_from_config(
-    config: Mapping[str, Any],
-) -> List[DevnetExperimentSummary]:
+def run_scenarios_from_config(config: ScenarioConfigDict) -> List[DevnetExperimentSummary]:
     """
     Parse and run all scenarios in a config dictionary.
 
