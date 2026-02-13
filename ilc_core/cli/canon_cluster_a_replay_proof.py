@@ -9,7 +9,7 @@ canonical replay proof packages.
 import sys
 import json
 import argparse
-from typing import Dict, Any, Optional
+from typing import Dict, Optional, TypedDict, TypeAlias
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
@@ -29,7 +29,21 @@ E_IO_ERROR = "io_error"
 E_IO_WRITE_ERROR = "io_write_error"
 E_BUILD_ERROR = "build_error"
 
-def _read_json_file(path: str) -> Dict[str, Any]:
+CliJsonObject: TypeAlias = Dict[str, object]
+
+
+class OpsContract(TypedDict):
+    ops_contract_version: str
+    ok: bool
+    batch_report_path: str | None
+    compare_report_path: str | None
+    batch_ok: bool
+    compare_ok: bool
+    exit_code: int
+    error_token: str | None
+
+
+def _read_json_file(path: str) -> CliJsonObject:
     """Read a JSON file strictly."""
     try:
         with open(path, 'r', encoding='utf-8') as f:
@@ -49,7 +63,7 @@ def _read_json_file(path: str) -> Dict[str, Any]:
         print(json.dumps({"error": E_IO_ERROR, "file": path}))
         sys.exit(EXIT_ERROR)
 
-def _write_json_output(data: Any, path: Optional[str], pretty: bool, quiet: bool):
+def _write_json_output(data: object, path: Optional[str], pretty: bool, quiet: bool) -> None:
     """Write JSON output to file or stdout."""
     # Strict determinism: sort_keys=True, no whitespace default
     
@@ -86,7 +100,7 @@ def handle_build(args):
         _write_json_output(package, args.out, args.pretty, args.quiet)
         sys.exit(EXIT_OK)
         
-    except Exception as e:
+    except Exception:
         # Protocol level error
         # We should print JSON error
         # Ideally protocol raises known exceptions, but here we trap generic
@@ -200,8 +214,8 @@ def handle_verify_batch(args):
                     #   Re-reading: "For invalid JSON in one package... continue ... only if ... parseable to object"
                     #   So if it is NOT parseable (JSONDecodeError), we treat as input error (Exit 2).
                     #   If it IS parseable, we proceed.
-                    #   If it is parseable but not a dict, verify_cluster_a_replay_proof_package might crash if not handled?
-                    #   Let's check `verify_cluster_a_replay_proof_package`. It takes Dict[str, Any].
+                    #   If it is parseable but not a dict, verifier calls would violate
+                    #   the expected object contract for package entries.
                     #   We should probably treat non-dict as immediate fail or wrap it?
                     #   Let's strictly fail if not dict for now to be safe, or just pass to verifier?
                     #   Actually, let's treat non-dict as "invalid package" which causes verification fail (Exit 1), not input error (Exit 2).
@@ -277,14 +291,14 @@ OPS_TOKEN_RUNTIME_ERROR = "ops_runtime_error"
 OPS_TOKEN_NO_OUTPUT_SINK = "usage_error:no_output_sink"
 
 
-def _json_dumps(data: Any, pretty: bool) -> str:
+def _json_dumps(data: object, pretty: bool) -> str:
     """Serialize JSON with deterministic key ordering."""
     if pretty:
         return json.dumps(data, indent=2, sort_keys=True)
     return json.dumps(data, separators=(",", ":"), sort_keys=True)
 
 
-def _write_json_file(path: str, data: Any, pretty: bool) -> None:
+def _write_json_file(path: str, data: object, pretty: bool) -> None:
     """Write deterministic JSON content to file."""
     content = _json_dumps(data, pretty)
     with open(path, "w", encoding="utf-8") as f:
@@ -299,7 +313,7 @@ def _build_ops_contract(
     compare_report_path: Optional[str],
     exit_code: int,
     error_token: Optional[str],
-) -> Dict[str, Any]:
+) -> OpsContract:
     return {
         "ops_contract_version": OPS_CONTRACT_VERSION,
         "ok": bool(batch_ok and compare_ok and exit_code == EXIT_OK),
@@ -312,7 +326,9 @@ def _build_ops_contract(
     }
 
 
-def _emit_ops_contract(contract: Dict[str, Any], pretty: bool, quiet: bool, force_stdout: bool = False) -> None:
+def _emit_ops_contract(
+    contract: OpsContract, pretty: bool, quiet: bool, force_stdout: bool = False
+) -> None:
     if not quiet or force_stdout:
         print(_json_dumps(contract, pretty))
 
