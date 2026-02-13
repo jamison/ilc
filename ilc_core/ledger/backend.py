@@ -1,15 +1,61 @@
 """
-ILC Ledger Backend: In-memory settlement implementation.
+ILC Ledger Backend: in-memory settlement implementation.
 
 This module provides the minimal ledger backend for commit.epoch settlement.
 Phase 70B: In-memory only, no persistence, snapshot-based distribution + stub fallback.
 """
 
-from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, Literal
+from __future__ import annotations
 
-from ilc_core.protocol.event_log import ProtocolEvent, validate_commit_epoch_payload
+from abc import ABC, abstractmethod
+from typing import Literal, Optional, TypeAlias, TypedDict, cast
+
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
+from ilc_core.protocol.event_log import ProtocolEvent, validate_commit_epoch_payload
+
+
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class EpochSummary(TypedDict):
+    task_count: int
+    agent_count: int
+    reward_total: float | int
+    stake_total: float | int
+
+
+class EpochChecksums(TypedDict):
+    epoch_events_cid: str
+    epoch_state_cid: str
+
+
+FinalizationState = Literal["committed", "rolled_back", "superseded"]
+
+
+class CommitEpochPayload(TypedDict):
+    event_kind: Literal["commit.epoch"]
+    epoch_index: int
+    epoch_id: str
+    namespace_id: str
+    created_at: str
+    finalization_state: FinalizationState
+    summary: EpochSummary
+    checksums: EpochChecksums
+
+
+class EpochRecord(TypedDict, total=False):
+    epoch_id: str
+    epoch_index: int
+    namespace_id: str
+    created_at: str
+    finalization_state: FinalizationState
+    summary: EpochSummary
+    checksums: EpochChecksums
+    status: str
+    distribution_status: str
+    superseded_by: str
 
 
 class LedgerBackend(ABC):
@@ -19,88 +65,83 @@ class LedgerBackend(ABC):
     def apply_epoch_settlement(self, epoch_event: ProtocolEvent) -> None:
         """
         Apply settlement for a commit.epoch event.
-        
+
         Args:
             epoch_event: A ProtocolEvent with kind="commit.epoch"
         """
-        pass
 
     @abstractmethod
     def get_balance(self, agent_id: str) -> float:
         """
         Get the current balance for an agent.
-        
+
         Args:
             agent_id: The agent identifier
-            
+
         Returns:
             Current balance (0.0 if agent has no balance)
         """
-        pass
 
     @abstractmethod
-    def get_epoch_record(self, epoch_id: str) -> Optional[Dict[str, Any]]:
+    def get_epoch_record(self, epoch_id: str) -> Optional[EpochRecord]:
         """
         Get the settlement record for an epoch.
-        
+
         Args:
             epoch_id: The unique epoch identifier
-            
+
         Returns:
             Epoch record dict or None if not found
         """
-        pass
 
     @abstractmethod
     def put_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
         """
         Store a stake snapshot for an epoch.
-        
+
         Args:
             snapshot: The stake snapshot to store
         """
-        pass
 
     @abstractmethod
     def get_stake_snapshot(self, epoch_id: str) -> Optional[StakeSnapshot]:
         """
         Retrieve a stake snapshot for an epoch.
-        
+
         Args:
             epoch_id: The unique epoch identifier
-            
+
         Returns:
             The stake snapshot or None if not found
         """
-        pass
 
 
 class InMemoryLedgerBackend(LedgerBackend):
     """
     In-memory ledger backend for development and testing.
-    
+
     State is not persisted between process restarts.
     """
 
-    def __init__(self):
-        self.balances: Dict[str, float] = {}
-        self.epoch_records: Dict[str, Dict[str, Any]] = {}
-        self.stake_snapshots: Dict[str, StakeSnapshot] = {}
+    def __init__(self) -> None:
+        self.balances: dict[str, float] = {}
+        self.epoch_records: dict[str, EpochRecord] = {}
+        self.stake_snapshots: dict[str, StakeSnapshot] = {}
 
     def apply_epoch_settlement(self, epoch_event: ProtocolEvent) -> None:
         """
         Apply settlement for a commit.epoch event.
-        
+
         Refactored in Phase 74 for clarity and reduced nesting.
         """
         if epoch_event.kind != "commit.epoch":
             raise ValueError(f"Expected commit.epoch event, got {epoch_event.kind}")
 
-        payload = epoch_event.payload
+        payload = cast(CommitEpochPayload, epoch_event.payload)
         validate_commit_epoch_payload(payload)
 
         epoch_id = payload["epoch_id"]
-        
+
         # Idempotency check
         if self._check_idempotency(epoch_id):
             return
@@ -123,7 +164,7 @@ class InMemoryLedgerBackend(LedgerBackend):
         self._store_epoch_record(record)
 
     def _check_idempotency(self, epoch_id: str) -> bool:
-        """Return True if epoch already processed and shouldn't be re-applied."""
+        """Return True if epoch already processed and should not be re-applied."""
         existing = self.epoch_records.get(epoch_id)
         if existing is not None:
             # If already processed and not superseded, no-op
@@ -131,21 +172,31 @@ class InMemoryLedgerBackend(LedgerBackend):
                 return True
         return False
 
+    def _extract_reward_total(self, record: EpochRecord) -> float:
+        summary = record.get("summary")
+        if isinstance(summary, dict):
+            reward_value = summary.get("reward_total", 0.0)
+            if isinstance(reward_value, (int, float)):
+                return float(reward_value)
+        return 0.0
+
     def _process_supersession(self, epoch_index: int, new_epoch_id: str) -> None:
         """Identify and supersede any prior epochs at this index."""
         # Note: Iterating copy of items to allow safe modification
         for prior_id, prior_record in list(self.epoch_records.items()):
-            if (prior_record.get("epoch_index") == epoch_index and 
-                prior_id != new_epoch_id and
-                prior_record.get("status") != "superseded"):
-                
+            if (
+                prior_record.get("epoch_index") == epoch_index
+                and prior_id != new_epoch_id
+                and prior_record.get("status") != "superseded"
+            ):
                 # Reverse effects if it was settled/distributed
-                if (prior_record.get("status") == "settled" and 
-                    prior_record.get("distribution_status") == "distributed"):
-                    
+                if (
+                    prior_record.get("status") == "settled"
+                    and prior_record.get("distribution_status") == "distributed"
+                ):
                     prior_snapshot = self.get_stake_snapshot(prior_id)
                     if prior_snapshot:
-                        prior_rewards = prior_record.get("summary", {}).get("reward_total", 0.0)
+                        prior_rewards = self._extract_reward_total(prior_record)
                         self._apply_rewards(prior_snapshot, -prior_rewards)
 
                 # Mark prior as superseded
@@ -153,7 +204,7 @@ class InMemoryLedgerBackend(LedgerBackend):
                 prior_record["superseded_by"] = new_epoch_id
                 self._store_epoch_record(prior_record)
 
-    def _create_pending_record(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def _create_pending_record(self, payload: CommitEpochPayload) -> EpochRecord:
         """Create the initial epoch record structure."""
         return {
             "epoch_id": payload["epoch_id"],
@@ -166,42 +217,50 @@ class InMemoryLedgerBackend(LedgerBackend):
             "status": "pending",
         }
 
-    def _finalize_committed(self, record: Dict[str, Any], payload: Dict[str, Any]) -> None:
+    def _finalize_committed(
+        self, record: EpochRecord, payload: CommitEpochPayload
+    ) -> None:
         """Apply committed state logic: rewards distribution."""
         record["status"] = "settled"
         epoch_id = payload["epoch_id"]
-        
+
         snapshot = self.get_stake_snapshot(epoch_id)
         if snapshot:
-            # Consistency Checks
+            # Consistency checks
             if snapshot.epoch_id != epoch_id:
-                raise ValueError(f"Snapshot epoch_id {snapshot.epoch_id} != payload {epoch_id}")
+                raise ValueError(
+                    f"Snapshot epoch_id {snapshot.epoch_id} != payload {epoch_id}"
+                )
             if snapshot.epoch_index != payload["epoch_index"]:
-                raise ValueError(f"Snapshot epoch_index {snapshot.epoch_index} != payload {payload['epoch_index']}")
+                raise ValueError(
+                    f"Snapshot epoch_index {snapshot.epoch_index} != payload {payload['epoch_index']}"
+                )
             if snapshot.namespace_id != payload["namespace_id"]:
-                raise ValueError(f"Snapshot namespace_id {snapshot.namespace_id} != payload {payload['namespace_id']}")
+                raise ValueError(
+                    f"Snapshot namespace_id {snapshot.namespace_id} != payload {payload['namespace_id']}"
+                )
 
-            rewards = payload["summary"]["reward_total"]
+            rewards = float(payload["summary"]["reward_total"])
             self._apply_rewards(snapshot, rewards)
             record["distribution_status"] = "distributed"
         else:
             record["distribution_status"] = "stub_no_snapshot"
 
-    def _finalize_rolled_back(self, record: Dict[str, Any]) -> None:
+    def _finalize_rolled_back(self, record: EpochRecord) -> None:
         """Apply rolled_back state logic."""
         record["status"] = "rolled_back"
         # No balance changes
 
-    def _finalize_superseded(self, record: Dict[str, Any]) -> None:
+    def _finalize_superseded(self, record: EpochRecord) -> None:
         """Apply superseded state logic (for event itself)."""
         record["status"] = "superseded"
         # No balance changes
 
     def _apply_rewards(self, snapshot: StakeSnapshot, total_rewards: float) -> None:
-        """Helper to apply (or reverse) rewards based on logic."""
+        """Apply (or reverse) rewards based on stake share."""
         if snapshot.total_stake <= 0:
             return
-            
+
         for agent_id, stake in snapshot.stakes.items():
             share = (stake / snapshot.total_stake) * total_rewards
             current = self.balances.get(agent_id, 0.0)
@@ -211,27 +270,29 @@ class InMemoryLedgerBackend(LedgerBackend):
         """Set an agent's balance."""
         self.balances[agent_id] = new_balance
 
-    def _store_epoch_record(self, record: Dict[str, Any]) -> None:
+    def _store_epoch_record(self, record: EpochRecord) -> None:
         """Store an epoch record."""
-        self.epoch_records[record["epoch_id"]] = record
+        epoch_id = cast(str, record["epoch_id"])
+        self.epoch_records[epoch_id] = record
 
     def get_balance(self, agent_id: str) -> float:
         """Get agent balance. Returns 0.0 if not found."""
         return self.balances.get(agent_id, 0.0)
 
-    def get_epoch_record(self, epoch_id: str) -> Optional[Dict[str, Any]]:
+    def get_epoch_record(self, epoch_id: str) -> Optional[EpochRecord]:
         """Get epoch settlement record."""
         return self.epoch_records.get(epoch_id)
 
     def put_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
         """Store a stake snapshot."""
         self.stake_snapshots[snapshot.epoch_id] = snapshot
-        # Hook for persistence subclass can override this or use _store_snapshot if added
+        # Hook for persistence subclass can override this.
         self._store_stake_snapshot(snapshot)
 
     def _store_stake_snapshot(self, snapshot: StakeSnapshot) -> None:
         """Hook for persisting snapshot."""
-        pass  # InMemory stores in put_stake_snapshot; persistence backends can override
+        # InMemory stores in put_stake_snapshot; persistence backends can override.
+        pass
 
     def get_stake_snapshot(self, epoch_id: str) -> Optional[StakeSnapshot]:
         """Retrieve a stake snapshot."""
@@ -241,7 +302,7 @@ class InMemoryLedgerBackend(LedgerBackend):
 def settle_commit_epoch(ledger: LedgerBackend, event: ProtocolEvent) -> None:
     """
     Settlement entrypoint for commit.epoch events.
-    
+
     Args:
         ledger: The ledger backend to use
         event: A ProtocolEvent with kind="commit.epoch"
