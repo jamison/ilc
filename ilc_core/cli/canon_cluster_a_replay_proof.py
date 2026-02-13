@@ -9,7 +9,7 @@ canonical replay proof packages.
 import sys
 import json
 import argparse
-from typing import Dict, Optional, TypedDict, TypeAlias
+from typing import Dict, Optional, TypedDict, TypeAlias, cast
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
@@ -124,7 +124,8 @@ def handle_verify(args):
 from pathlib import Path
 from ilc_core.protocol.ilc_cluster_a_replay_proof_batch import (
     verify_cluster_a_replay_proof_batch,
-    load_manifest_paths
+    load_manifest_paths,
+    ReplayBatchReport,
 )
 
 def handle_verify_batch(args):
@@ -236,7 +237,7 @@ def handle_verify_batch(args):
             sys.exit(EXIT_ERROR)
 
     # Run batch verification
-    report = verify_cluster_a_replay_proof_batch(package_items, source_ids)
+    report: ReplayBatchReport = verify_cluster_a_replay_proof_batch(package_items, source_ids)
     
     # Write output
     output_path = args.out # Optional
@@ -248,7 +249,10 @@ def handle_verify_batch(args):
     else:
          sys.exit(EXIT_VERIFICATION_FAILED)
 
-from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import compare_cluster_a_replay_proof_batch_reports
+from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import (
+    compare_cluster_a_replay_proof_batch_reports,
+    BatchCompareReport,
+)
 
 def handle_compare_reports(args):
     """Handle compare-reports subcommand."""
@@ -256,7 +260,7 @@ def handle_compare_reports(args):
     right = _read_json_file(args.right)
     
     # Run comparison
-    report = compare_cluster_a_replay_proof_batch_reports(left, right)
+    report: BatchCompareReport = compare_cluster_a_replay_proof_batch_reports(left, right)
     
     # Write output
     output_path = args.out # Optional
@@ -276,6 +280,7 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
     run_batch_verify_and_compare,
     ManifestParseError,
     ManifestEntryNotFoundError,
+    BatchVerifyAndCompareResult,
 )
 
 OPS_CONTRACT_VERSION = "v0.1"
@@ -352,23 +357,26 @@ def handle_verify_and_compare(args):
 
     try:
         with open(args.expected, "r", encoding="utf-8") as f:
-            expected_report = json.load(f)
+            expected_report_raw = json.load(f)
     except json.JSONDecodeError:
         _emit_ops_error(OPS_TOKEN_EXPECTED_INVALID_JSON, pretty=args.pretty, quiet=args.quiet)
     except OSError:
         _emit_ops_error(OPS_TOKEN_IO_ERROR, pretty=args.pretty, quiet=args.quiet)
 
-    if not isinstance(expected_report, dict):
+    if not isinstance(expected_report_raw, dict):
         _emit_ops_error(OPS_TOKEN_EXPECTED_NOT_OBJECT, pretty=args.pretty, quiet=args.quiet)
+    expected_report = cast(ReplayBatchReport, expected_report_raw)
 
     manifest_path = Path(args.manifest)
     if not manifest_path.exists():
         _emit_ops_error(OPS_TOKEN_MANIFEST_NOT_FOUND, pretty=args.pretty, quiet=args.quiet)
 
     try:
-        result_map = run_batch_verify_and_compare(manifest_path, expected_report)
-        batch_report = result_map["batch_report"]
-        compare_report = result_map["compare_report"]
+        result_map: BatchVerifyAndCompareResult = run_batch_verify_and_compare(
+            manifest_path, expected_report
+        )
+        batch_report: ReplayBatchReport = result_map["batch_report"]
+        compare_report: BatchCompareReport = result_map["compare_report"]
     except ManifestEntryNotFoundError:
         _emit_ops_error(OPS_TOKEN_MANIFEST_FILE_NOT_FOUND, pretty=args.pretty, quiet=args.quiet)
     except ManifestParseError:
@@ -424,7 +432,30 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate import (
     run_cluster_a_replay_proof_ci_gate,
     load_ci_gate_baseline,
     compare_ci_gate_report_to_baseline,
+    GateReport,
+    GateBaselineCompareReport,
 )
+
+
+def _build_ci_gate_error_report(profile: str, error_token: str) -> GateReport:
+    return {
+        "gate_version": "v0.1",
+        "profile": profile,
+        "ok": False,
+        "pass_count": 0,
+        "fail_count": 0,
+        "checks": [],
+        "error_token_counts": {error_token: 1},
+        "exit_code": EXIT_ERROR,
+        "error_token": error_token,
+        "baseline_compare": None,
+    }
+
+
+def _exit_ci_gate_error(profile: str, error_token: str, pretty: bool) -> None:
+    print(_json_dumps(_build_ci_gate_error_report(profile, error_token), pretty))
+    sys.exit(EXIT_ERROR)
+
 
 def handle_ci_gate(args):
     """Handle ci-gate subcommand."""
@@ -437,23 +468,10 @@ def handle_ci_gate(args):
     
     # Guard: quiet and no output sink
     if quiet and not out_path:
-        err_report = {
-            "gate_version": "v0.1",
-            "profile": args.profile,
-            "ok": False,
-            "pass_count": 0,
-            "fail_count": 0,
-            "checks": [],
-            "error_token_counts": {"usage_error:no_output_sink": 1},
-            "exit_code": EXIT_ERROR,
-            "error_token": "usage_error:no_output_sink",
-            "baseline_compare": None,
-        }
-        print(_json_dumps(err_report, pretty))
-        sys.exit(EXIT_ERROR)
+        _exit_ci_gate_error(args.profile, "usage_error:no_output_sink", pretty)
 
     # Gate logic
-    report = run_cluster_a_replay_proof_ci_gate(fixtures_root, args.profile)
+    report: GateReport = run_cluster_a_replay_proof_ci_gate(fixtures_root, args.profile)
 
     # Baseline enforcement
     baseline_path = getattr(args, 'baseline', None)
@@ -461,85 +479,22 @@ def handle_ci_gate(args):
 
     if baseline_path:
         try:
-            baseline = load_ci_gate_baseline(Path(baseline_path))
+            baseline: GateReport = load_ci_gate_baseline(Path(baseline_path))
         except FileNotFoundError:
-            err_report = {
-                "gate_version": "v0.1",
-                "profile": args.profile,
-                "ok": False,
-                "pass_count": 0,
-                "fail_count": 0,
-                "checks": [],
-                "error_token_counts": {"baseline_not_found": 1},
-                "exit_code": EXIT_ERROR,
-                "error_token": "baseline_not_found",
-                "baseline_compare": None,
-            }
-            print(_json_dumps(err_report, pretty))
-            sys.exit(EXIT_ERROR)
+            _exit_ci_gate_error(args.profile, "baseline_not_found", pretty)
         except json.JSONDecodeError:
-            err_report = {
-                "gate_version": "v0.1",
-                "profile": args.profile,
-                "ok": False,
-                "pass_count": 0,
-                "fail_count": 0,
-                "checks": [],
-                "error_token_counts": {"baseline_invalid_json": 1},
-                "exit_code": EXIT_ERROR,
-                "error_token": "baseline_invalid_json",
-                "baseline_compare": None,
-            }
-            print(_json_dumps(err_report, pretty))
-            sys.exit(EXIT_ERROR)
+            _exit_ci_gate_error(args.profile, "baseline_invalid_json", pretty)
         except ValueError:
-            err_report = {
-                "gate_version": "v0.1",
-                "profile": args.profile,
-                "ok": False,
-                "pass_count": 0,
-                "fail_count": 0,
-                "checks": [],
-                "error_token_counts": {"baseline_schema_invalid": 1},
-                "exit_code": EXIT_ERROR,
-                "error_token": "baseline_schema_invalid",
-                "baseline_compare": None,
-            }
-            print(_json_dumps(err_report, pretty))
-            sys.exit(EXIT_ERROR)
+            _exit_ci_gate_error(args.profile, "baseline_schema_invalid", pretty)
         except Exception:
-            err_report = {
-                "gate_version": "v0.1",
-                "profile": args.profile,
-                "ok": False,
-                "pass_count": 0,
-                "fail_count": 0,
-                "checks": [],
-                "error_token_counts": {"baseline_compare_runtime_error": 1},
-                "exit_code": EXIT_ERROR,
-                "error_token": "baseline_compare_runtime_error",
-                "baseline_compare": None,
-            }
-            print(_json_dumps(err_report, pretty))
-            sys.exit(EXIT_ERROR)
+            _exit_ci_gate_error(args.profile, "baseline_compare_runtime_error", pretty)
 
         try:
-            cmp_report = compare_ci_gate_report_to_baseline(report, baseline)
+            cmp_report: GateBaselineCompareReport = compare_ci_gate_report_to_baseline(
+                report, baseline
+            )
         except Exception:
-            err_report = {
-                "gate_version": "v0.1",
-                "profile": args.profile,
-                "ok": False,
-                "pass_count": 0,
-                "fail_count": 0,
-                "checks": [],
-                "error_token_counts": {"baseline_compare_runtime_error": 1},
-                "exit_code": EXIT_ERROR,
-                "error_token": "baseline_compare_runtime_error",
-                "baseline_compare": None,
-            }
-            print(_json_dumps(err_report, pretty))
-            sys.exit(EXIT_ERROR)
+            _exit_ci_gate_error(args.profile, "baseline_compare_runtime_error", pretty)
 
         report["baseline_compare"] = cmp_report
 
@@ -557,20 +512,7 @@ def handle_ci_gate(args):
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(output_str)
         except OSError:
-             err_report = {
-                "gate_version": "v0.1",
-                "profile": args.profile,
-                "ok": False,
-                "pass_count": 0,
-                "fail_count": 0,
-                "checks": [],
-                "error_token_counts": {E_IO_WRITE_ERROR: 1},
-                "exit_code": EXIT_ERROR,
-                "error_token": E_IO_WRITE_ERROR,
-                "baseline_compare": None,
-             }
-             print(_json_dumps(err_report, pretty))
-             sys.exit(EXIT_ERROR)
+             _exit_ci_gate_error(args.profile, E_IO_WRITE_ERROR, pretty)
 
     # Print to stdout unless quiet
     if not quiet:
