@@ -1,6 +1,6 @@
 from typing import Optional
 import logging
-from .types import Node, Edge
+from .types import Node
 from .graph import EpistemicGraph
 from .consensus.engine import ConsensusEngine
 from .mining.benchmark import PoWBenchmark
@@ -118,9 +118,8 @@ class EveAgent:
             signature=DRAFT_SIGNATURE,
         )
         node.id = node.compute_id()
-        edge = Edge(source_id=node.id, target_id=parent_id, type="derives_from")
         self.graph.add_node(node)
-        self.graph.add_edge(edge)
+        self.graph.add_edge_by_ids(node.id, parent_id, "derives_from")
 
         # Deduct the chosen stake and register it with the consensus engine.
         self.wallet_balance -= chosen_stake

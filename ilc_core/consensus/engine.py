@@ -1,17 +1,23 @@
 from __future__ import annotations
 
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Protocol
 import math
 import time
 import logging
 from datetime import timezone
 
-from ..types import Node, Edge
+from ..types import Node
 from ..graph import EpistemicGraph
 from .clustering import SponsorGraph
 from .governance import Governance, BacklogMetrics
 
 logger = logging.getLogger(__name__)
+
+
+class EdgeEventLike(Protocol):
+    source_id: str
+    target_id: str
+    type: str
 
 
 def _engine_update_epoch_metrics(
@@ -287,7 +293,7 @@ class ConsensusEngine:
         age = self.get_node_age(node)
         return _engine_compute_bounty_amount(base_stake, age, node.id)
 
-    def process_edge(self, edge: Edge, stake_amount: float = 0.0) -> None:
+    def process_edge(self, edge: EdgeEventLike, stake_amount: float = 0.0) -> None:
         """
         Dispatch edge processing based on type.
         """
@@ -318,7 +324,7 @@ class ConsensusEngine:
     # ------------------------------------------------------------------
     # Supersedes / evolution handling
     # ------------------------------------------------------------------
-    def process_update(self, edge: Edge) -> None:
+    def process_update(self, edge: EdgeEventLike) -> None:
         """
         Handles 'supersedes' links.
 

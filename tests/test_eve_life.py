@@ -32,7 +32,7 @@ def test_eve_awakening():
     # 5. Verification
     assert thought is not None
     assert thought.id in graph.nodes
-    assert len(graph.edges) > 0
+    assert graph.edge_count() > 0
     
     print(f"EVE successfully mined thought {thought.id} linked to {parent}")
     print("LIFE SYSTEMS: VERIFIED")

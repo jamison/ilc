@@ -11,6 +11,7 @@ def test_version_update():
     print("\n--- TEST: EVOLUTION (NO SLASHING) ---")
     
     graph = EpistemicGraph()
+    graph.load_genesis()
     consensus = ConsensusEngine(graph)
     
     # We patch the agent to have the new engine

@@ -27,6 +27,16 @@ def test_add_edge_and_iterators():
     assert out_edges[0].target_id == "c2"
 
 
+def test_add_edge_by_ids_and_edge_count():
+    g = _seed_graph()
+    g.add_edge_by_ids("c1", "c2", "derives_from")
+
+    assert g.edge_count() == 1
+    out_edges = list(g.iter_edges_from("c1"))
+    assert len(out_edges) == 1
+    assert out_edges[0].target_id == "c2"
+
+
 def test_iterators_track_legacy_direct_append():
     g = _seed_graph()
     g.edges.append(Edge(source_id="c1", target_id="c2", type="derives_from"))

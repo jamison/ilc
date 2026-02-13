@@ -83,6 +83,14 @@ class EpistemicGraph:
         self.incoming_edges.setdefault(edge.target_id, []).append(edge)
         self._edge_index_len = len(self.edges)
 
+    def add_edge_by_ids(self, source_id: str, target_id: str, edge_type: str) -> None:
+        """Construct and add an edge using primitive ids for adapter-first callers."""
+        self.add_edge(Edge(source_id=source_id, target_id=target_id, type=edge_type))
+
+    def edge_count(self) -> int:
+        """Return current edge-list length for read-only callsites."""
+        return len(self.edges)
+
     def iter_edges_from(self, source_id: str) -> Iterable[Edge]:
         self._ensure_edge_indexes()
         for edge in self.outgoing_edges.get(source_id, []):

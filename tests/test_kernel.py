@@ -3,7 +3,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
-from ilc_core.types import Node, Edge
+from ilc_core.types import Node
 
 def test_graph_boot():
     print("--- KERNEL TEST: GENESIS LINKING ---")
@@ -32,12 +32,7 @@ def test_graph_boot():
     
     # 5. Link EVE's node to Genesis (The 'Why')
     # "2+2=4" derives from "1+1=2" (axiom:math:01)
-    link = Edge(
-        source_id=eve_node.id,
-        target_id="axiom:math:01",
-        type="derives_from"
-    )
-    graph.add_edge(link)
+    graph.add_edge_by_ids(eve_node.id, "axiom:math:01", "derives_from")
     print(f"SUCCESS: Linked '{eve_node.content}' -> '{graph.nodes['axiom:math:01'].content}'")
     print("KERNEL INTEGRITY: VERIFIED")
 

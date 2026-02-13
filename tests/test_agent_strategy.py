@@ -47,6 +47,6 @@ def test_mine_thought_uses_strategy_and_succeeds_with_funds():
     assert thought is not None
     assert thought.signature == DRAFT_SIGNATURE
     assert thought.id in graph.nodes
-    assert len(graph.edges) > 0
+    assert graph.edge_count() > 0
     assert consensus.node_stakes.get(thought.id, 0.0) > 0.0
     assert agent.wallet_balance < 10.0  # stake was deducted
