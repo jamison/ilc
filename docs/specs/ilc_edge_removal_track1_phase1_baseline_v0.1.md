@@ -8,12 +8,11 @@ This baseline freezes current edge compatibility surfaces for Track 1 full edge-
 
 - New direct `.edges.append(` usage is forbidden outside an explicit allowlist.
 - Concrete `Edge` import/constructor usage is forbidden everywhere in `ilc_core` and `tests`.
-- Phase 1 compatibility now preserves only temporary direct append behavior in bounded surfaces.
+- Direct append compatibility has been sunset; edge writes must go through explicit graph APIs.
 
 ## Direct Edge Append Allowlist
 
-- `ilc_core/graph.py`
-- `tests/test_graph_edges.py`
+- None (direct append compatibility removed in phase 977).
 
 ## Edge Usage Allowlist
 
@@ -29,4 +28,4 @@ rg -n "\\.edges\\.append\\(" ilc_core tests | sort
 ## Notes
 
 - Guardrail enforcement is implemented by `tests/test_edge_removal_phase1_guardrails.py`.
-- This baseline was reduced in phases 974 and 975 and moved to zero `Edge`-symbol usage in phase 976.
+- This baseline was reduced in phases 974 and 975, moved to zero `Edge`-symbol usage in phase 976, and removed direct append compatibility in phase 977.

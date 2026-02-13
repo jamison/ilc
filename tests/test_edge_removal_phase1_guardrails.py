@@ -10,10 +10,8 @@ TARGET_DIRS = [ROOT / "ilc_core", ROOT / "tests"]
 # After phase 976, no concrete `Edge` symbol usage is allowed in ilc_core/tests.
 EDGE_USAGE_ALLOWLIST: set[str] = set()
 
-DIRECT_EDGE_APPEND_ALLOWLIST = {
-    "ilc_core/graph.py",
-    "tests/test_graph_edges.py",
-}
+# After phase 977, direct edge-list append compatibility is fully removed.
+DIRECT_EDGE_APPEND_ALLOWLIST: set[str] = set()
 
 DIRECT_APPEND_PATTERN = re.compile(r"\.edges\.append\(")
 
@@ -66,7 +64,7 @@ def test_no_new_direct_edge_append_outside_allowlist() -> None:
 
     if offenders:
         raise AssertionError(
-            "Track 1 phase-1 freeze violation: direct .edges.append usage outside allowlist:\n"
+            "Track 1 phase-1 freeze violation: direct .edges.append usage detected after sunset:\n"
             + "\n".join(offenders)
         )
 

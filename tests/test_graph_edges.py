@@ -1,5 +1,6 @@
 from ilc_core.graph import EpistemicGraph, GraphEdge
 from ilc_core.types import ClaimRecord
+import pytest
 
 
 def _seed_graph() -> EpistemicGraph:
@@ -20,7 +21,7 @@ def test_add_edge_and_iterators():
     in_edges = list(g.iter_edges_to("c2"))
     between = list(g.iter_edges_between("c1", "c2"))
 
-    assert len(g.edges) == 1
+    assert g.edge_count() == 1
     assert len(out_edges) == 1
     assert len(in_edges) == 1
     assert len(between) == 1
@@ -37,14 +38,10 @@ def test_add_edge_by_ids_and_edge_count():
     assert out_edges[0].target_id == "c2"
 
 
-def test_iterators_track_legacy_direct_append():
+def test_public_edges_surface_removed():
     g = _seed_graph()
-    g.edges.append(GraphEdge(source_id="c1", target_id="c2", type="derives_from"))
-
-    # Lazy index rebuild should detect legacy mutation and still provide correct results.
-    out_edges = list(g.iter_edges_from("c1"))
-    assert len(out_edges) == 1
-    assert out_edges[0].target_id == "c2"
+    with pytest.raises(AttributeError):
+        _ = g.edges
 
 
 def test_add_edge_missing_node_raises():
@@ -56,14 +53,3 @@ def test_add_edge_missing_node_raises():
         pass
     else:
         raise AssertionError("Expected KeyError for unknown source_id")
-
-
-def test_legacy_direct_append_warns_once(caplog):
-    g = _seed_graph()
-    with caplog.at_level("WARNING"):
-        g.edges.append(GraphEdge(source_id="c1", target_id="c2", type="derives_from"))
-        list(g.iter_edges_from("c1"))
-        list(g.iter_edges_from("c1"))
-
-    messages = [record.getMessage() for record in caplog.records]
-    assert sum("legacy_edge_mutation_detected" in msg for msg in messages) == 1

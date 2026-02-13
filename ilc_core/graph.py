@@ -27,11 +27,9 @@ class EdgeEventLike(Protocol):
 class EpistemicGraph:
     def __init__(self):
         self.nodes: Dict[str, Node] = {}
-        self.edges: List[GraphEdge] = []
         self.outgoing_edges: Dict[str, List[GraphEdge]] = {}
         self.incoming_edges: Dict[str, List[GraphEdge]] = {}
-        self._edge_index_len: int = 0
-        self._legacy_edge_mutation_warned: bool = False
+        self._edge_count: int = 0
         self.links: Dict[str, LinkRecord] = {}
         self.outgoing_links: Dict[str, List[str]] = {}
         self.incoming_links: Dict[str, List[str]] = {}
@@ -65,28 +63,6 @@ class EpistemicGraph:
         self.nodes[node.id] = node
         return True
 
-    def _rebuild_edge_indexes(self) -> None:
-        """Rebuild edge indexes from the legacy edge list."""
-        self.outgoing_edges.clear()
-        self.incoming_edges.clear()
-        for edge in self.edges:
-            self.outgoing_edges.setdefault(edge.source_id, []).append(edge)
-            self.incoming_edges.setdefault(edge.target_id, []).append(edge)
-        self._edge_index_len = len(self.edges)
-
-    def _ensure_edge_indexes(self) -> None:
-        """
-        Keep edge indexes coherent even if legacy code mutates graph.edges directly.
-        """
-        if self._edge_index_len != len(self.edges):
-            if not self._legacy_edge_mutation_warned:
-                logger.warning(
-                    "legacy_edge_mutation_detected: rebuild_edge_indexes len=%s",
-                    len(self.edges),
-                )
-                self._legacy_edge_mutation_warned = True
-            self._rebuild_edge_indexes()
-
     def _coerce_edge_event(self, edge_event: EdgeEventLike) -> GraphEdge:
         return GraphEdge(
             source_id=edge_event.source_id,
@@ -103,26 +79,23 @@ class EpistemicGraph:
         if edge.target_id not in self.nodes:
             raise KeyError(f"Unknown target_id: {edge.target_id}")
 
-        self.edges.append(edge)
         self.outgoing_edges.setdefault(edge.source_id, []).append(edge)
         self.incoming_edges.setdefault(edge.target_id, []).append(edge)
-        self._edge_index_len = len(self.edges)
+        self._edge_count += 1
 
     def add_edge_by_ids(self, source_id: str, target_id: str, edge_type: str) -> None:
         """Construct and add an edge using primitive ids for adapter-first callers."""
         self.add_edge(GraphEdge(source_id=source_id, target_id=target_id, type=edge_type))
 
     def edge_count(self) -> int:
-        """Return current edge-list length for read-only callsites."""
-        return len(self.edges)
+        """Return current graph edge relation count."""
+        return self._edge_count
 
     def iter_edges_from(self, source_id: str) -> Iterable[GraphEdge]:
-        self._ensure_edge_indexes()
         for edge in self.outgoing_edges.get(source_id, []):
             yield edge
 
     def iter_edges_to(self, target_id: str) -> Iterable[GraphEdge]:
-        self._ensure_edge_indexes()
         for edge in self.incoming_edges.get(target_id, []):
             yield edge
 
