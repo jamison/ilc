@@ -90,12 +90,7 @@ def compute_agent_light_cone_kpis(
         agent_task_counts[agent_id] = agent_task_counts.get(agent_id, 0) + 1
         
         # Domain
-        # We need to infer problem space. infer_problem_space expects a TaskRecord-like object or dict.
-        # It handles dicts gracefully? Let's check imports.
-        # infer_problem_space takes (task: Any). Inside it does getattr or get item.
-        # So passing the row dict is fine.
-        # Wait, infer_problem_space returns a ProblemSpace enum (or string if not enum).
-        # It returns a string in the current codebase (Literal/str).
+        # infer_problem_space in this module consumes TaskRowLike mappings.
         p_space = infer_problem_space(row)
         if agent_id not in agent_domains:
             agent_domains[agent_id] = set()
