@@ -1,11 +1,30 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, TypedDict, TypeAlias
 from pathlib import Path
 from importlib import resources
 from jsonschema import Draft7Validator
 
+BatchReportSchemaMap: TypeAlias = Dict[str, object]
 
-def _load_batch_report_schema() -> Dict[str, Any]:
+
+class BatchCompareMismatch(TypedDict, total=False):
+    path: str
+    reason: str
+    detail: str | None
+    left: object | None
+    right: object | None
+
+
+class BatchCompareReport(TypedDict):
+    compare_version: str
+    ok: bool
+    left_report_version: str | None
+    right_report_version: str | None
+    mismatch_count: int
+    mismatches: List[BatchCompareMismatch]
+
+
+def _load_batch_report_schema() -> BatchReportSchemaMap:
     """
     Load batch report schema from packaged resources first, then repo fallback.
     """
@@ -40,7 +59,7 @@ def _path_join(parent: str, key: str) -> str:
         return f"/{token}"
     return f"{parent}/{token}"
 
-def _validate_schema(data: Any) -> Optional[str]:
+def _validate_schema(data: object) -> Optional[str]:
     """
     Validate data against batch report schema.
     Returns error string if invalid, None if valid.
@@ -54,7 +73,9 @@ def _validate_schema(data: Any) -> Optional[str]:
     errors.sort(key=lambda e: (list(e.absolute_path), e.message))
     return f"schema_validation_failed: {errors[0].message}"
 
-def _schema_invalid_report(reason: str, left: Any, right: Any, detail: str) -> Dict[str, Any]:
+def _schema_invalid_report(
+    reason: str, left: object, right: object, detail: str
+) -> BatchCompareReport:
     """Build deterministic schema-invalid compare response."""
     return {
         "compare_version": "v0.1",
@@ -71,7 +92,9 @@ def _schema_invalid_report(reason: str, left: Any, right: Any, detail: str) -> D
         }]
     }
 
-def _compare_recursive(path: str, left: Any, right: Any, mismatches: List[Dict[str, Any]]) -> None:
+def _compare_recursive(
+    path: str, left: object, right: object, mismatches: List[BatchCompareMismatch]
+) -> None:
     """
     Recursively compare left and right structures.
     Populates mismatches list.
@@ -157,7 +180,9 @@ def _compare_recursive(path: str, left: Any, right: Any, mismatches: List[Dict[s
             "right": right
         })
 
-def compare_cluster_a_replay_proof_batch_reports(left: Any, right: Any) -> Dict[str, Any]:
+def compare_cluster_a_replay_proof_batch_reports(
+    left: object, right: object
+) -> BatchCompareReport:
     """
     Compare two batch reports structurally and return deterministic diff report.
     """
@@ -171,7 +196,7 @@ def compare_cluster_a_replay_proof_batch_reports(left: Any, right: Any) -> Dict[
         return _schema_invalid_report("schema_invalid_right", left, right, right_err)
         
     # 2. Deep Compare
-    mismatches: List[Dict[str, Any]] = []
+    mismatches: List[BatchCompareMismatch] = []
     _compare_recursive("/", left, right, mismatches)
     
     # 3. Sort Deterministically

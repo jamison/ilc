@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional
+from typing import Dict, List, Optional, TypedDict, TypeAlias
 from pathlib import Path
 import json
 from importlib import resources
@@ -16,7 +16,46 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
 GATE_VERSION = "v0.1"
 COMPARE_VERSION = "v0.1"
 
-def _load_gate_report_schema() -> Dict[str, Any]:
+GateSchemaMap: TypeAlias = Dict[str, object]
+
+
+class GateCheckResult(TypedDict):
+    check_id: str
+    ok: bool
+    expected: object
+    actual: object
+    error_token: str | None
+
+
+class GateBaselineMismatch(TypedDict, total=False):
+    path: str
+    reason: str
+    left: object | None
+    right: object | None
+    detail: str | None
+
+
+class GateBaselineCompareReport(TypedDict):
+    compare_version: str
+    ok: bool
+    mismatch_count: int
+    mismatches: List[GateBaselineMismatch]
+
+
+class GateReport(TypedDict):
+    gate_version: str
+    profile: str
+    ok: bool
+    pass_count: int
+    fail_count: int
+    checks: List[GateCheckResult]
+    error_token_counts: Dict[str, int]
+    exit_code: int
+    error_token: str | None
+    baseline_compare: GateBaselineCompareReport | None
+
+
+def _load_gate_report_schema() -> GateSchemaMap:
     """
     Load CI gate report schema from packaged resources first, then repo fallback.
     """
@@ -43,10 +82,10 @@ _GATE_REPORT_VALIDATOR = Draft7Validator(_GATE_REPORT_SCHEMA) if _GATE_REPORT_SC
 def _build_check_result(
     check_id: str,
     ok: bool,
-    expected: Any,
-    actual: Any,
+    expected: object,
+    actual: object,
     error_token: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> GateCheckResult:
     return {
         "check_id": check_id,
         "ok": ok,
@@ -56,7 +95,7 @@ def _build_check_result(
     }
 
 
-def _check_package_verify_valid(fixtures_root: Path) -> Dict[str, Any]:
+def _check_package_verify_valid(fixtures_root: Path) -> GateCheckResult:
     # Target: tests/fixtures/cluster_a_replay_proof_v0_1/package_valid.json
     target = fixtures_root / "cluster_a_replay_proof_v0_1" / "package_valid.json"
     if not target.exists():
@@ -90,7 +129,7 @@ def _check_package_verify_valid(fixtures_root: Path) -> Dict[str, Any]:
         )
 
 
-def _check_package_verify_tampered_hash(fixtures_root: Path) -> Dict[str, Any]:
+def _check_package_verify_tampered_hash(fixtures_root: Path) -> GateCheckResult:
     # Target: tests/fixtures/cluster_a_replay_proof_v0_1/package_tampered_hash.json
     target = fixtures_root / "cluster_a_replay_proof_v0_1" / "package_tampered_hash.json"
     if not target.exists():
@@ -126,7 +165,7 @@ def _check_package_verify_tampered_hash(fixtures_root: Path) -> Dict[str, Any]:
         )
 
 
-def _check_batch_verify_manifest(fixtures_root: Path) -> Dict[str, Any]:
+def _check_batch_verify_manifest(fixtures_root: Path) -> GateCheckResult:
     # Target: tests/fixtures/cluster_a_replay_proof_batch_v0_1/manifest_mixed.json
     # Note: Phase 148 discovered load_manifest_paths expects TXT path list, NOT JSON dict.
     # We should look for tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt
@@ -166,7 +205,7 @@ def _check_batch_verify_manifest(fixtures_root: Path) -> Dict[str, Any]:
         )
 
 
-def _check_compare_reports_mismatch(fixtures_root: Path) -> Dict[str, Any]:
+def _check_compare_reports_mismatch(fixtures_root: Path) -> GateCheckResult:
     # Target: verify-and-compare fixtures for mismatch scenario
     # manifest: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt
     # expected: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/report_mismatch.json
@@ -218,7 +257,7 @@ def _check_compare_reports_mismatch(fixtures_root: Path) -> Dict[str, Any]:
         )
 
 
-def _check_verify_and_compare_contract(fixtures_root: Path) -> Dict[str, Any]:
+def _check_verify_and_compare_contract(fixtures_root: Path) -> GateCheckResult:
     # Target: verify-and-compare success scenario
     # manifest: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt
     # expected: tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/report_match.json
@@ -262,7 +301,7 @@ def _check_verify_and_compare_contract(fixtures_root: Path) -> Dict[str, Any]:
         )
 
 
-def _count_error_tokens(checks: List[Dict[str, Any]]) -> Dict[str, int]:
+def _count_error_tokens(checks: List[GateCheckResult]) -> Dict[str, int]:
     counts = {}
     for c in checks:
         if not c["ok"] and c["error_token"]:
@@ -272,7 +311,9 @@ def _count_error_tokens(checks: List[Dict[str, Any]]) -> Dict[str, int]:
     return dict(sorted(counts.items()))
 
 
-def run_cluster_a_replay_proof_ci_gate(fixtures_root: Path | str, profile: str = "release_v0_1") -> Dict[str, Any]:
+def run_cluster_a_replay_proof_ci_gate(
+    fixtures_root: Path | str, profile: str = "release_v0_1"
+) -> GateReport:
     """
     Executes a deterministic sequence of replay-proof checks.
     """
@@ -324,7 +365,7 @@ def run_cluster_a_replay_proof_ci_gate(fixtures_root: Path | str, profile: str =
 # --- Baseline Load and Drift Compare ---
 
 
-def _validate_gate_report_schema(data: Any) -> Optional[str]:
+def _validate_gate_report_schema(data: object) -> Optional[str]:
     """Validate data against CI gate report schema. Returns error string if invalid, None if valid."""
     if _GATE_REPORT_VALIDATOR is None:
         return "internal_error:schema_not_loaded"
@@ -335,7 +376,7 @@ def _validate_gate_report_schema(data: Any) -> Optional[str]:
     return f"schema_validation_failed: {errors[0].message}"
 
 
-def load_ci_gate_baseline(path: Path | str) -> Dict[str, Any]:
+def load_ci_gate_baseline(path: Path | str) -> GateReport:
     """
     Load and validate a CI gate baseline file.
     Raises FileNotFoundError, json.JSONDecodeError, or ValueError (schema invalid).
@@ -364,7 +405,9 @@ def _path_join(parent: str, key: str) -> str:
     return f"{parent}/{token}"
 
 
-def _compare_recursive(path: str, left: Any, right: Any, mismatches: List[Dict[str, Any]]) -> None:
+def _compare_recursive(
+    path: str, left: object, right: object, mismatches: List[GateBaselineMismatch]
+) -> None:
     """Recursively compare left and right structures. Populates mismatches list."""
     if type(left) != type(right):
         mismatches.append({
@@ -410,7 +453,9 @@ def _compare_recursive(path: str, left: Any, right: Any, mismatches: List[Dict[s
         })
 
 
-def compare_ci_gate_report_to_baseline(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[str, Any]:
+def compare_ci_gate_report_to_baseline(
+    current: object, baseline: object
+) -> GateBaselineCompareReport:
     """
     Compare a current CI gate report to a baseline report.
     Returns a deterministic compare report with stable reason tokens.
@@ -447,7 +492,7 @@ def compare_ci_gate_report_to_baseline(current: Dict[str, Any], baseline: Dict[s
         }
 
     # Deep compare (current=left, baseline=right)
-    mismatches: List[Dict[str, Any]] = []
+    mismatches: List[GateBaselineMismatch] = []
     _compare_recursive("/", current, baseline, mismatches)
 
     # Deterministic sort
