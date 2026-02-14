@@ -215,7 +215,7 @@ def main() -> int:
     except Exception as e:
         report["ok"] = False
         report["errors"].append("pipeline_failed")
-        print(f"Internal error: {e}", file=sys.stderr)
+        report.setdefault("warnings", []).append(f"pipeline_internal_error:{e}")
 
     return _finalize(args, report)
 

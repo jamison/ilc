@@ -9,17 +9,22 @@ canonical replay proof packages.
 import sys
 import json
 import argparse
-from typing import Dict, Optional, TypedDict, TypeAlias, cast, NoReturn
+from typing import Dict, Optional, TypedDict, TypeAlias, cast
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
     verify_cluster_a_replay_proof_package
 )
+from ilc_core.cli._cli_error import (
+    CliErrorPayload,
+    EXIT_ERROR,
+    build_cli_error_payload,
+    emit_cli_error,
+)
 
 # Exit Codes
 EXIT_OK = 0
 EXIT_VERIFICATION_FAILED = 1
-EXIT_ERROR = 2
 
 # Failure Tokens
 E_FILE_NOT_FOUND = "file_not_found"
@@ -43,28 +48,8 @@ class OpsContract(TypedDict):
     error_token: str | None
 
 
-class CliErrorPayload(TypedDict, total=False):
-    error: str
-    file: str
-    detail: str
-
-
-def _build_cli_error_payload(
-    error: str, *, file: Optional[str] = None, detail: Optional[str] = None
-) -> CliErrorPayload:
-    payload: CliErrorPayload = {"error": error}
-    if file is not None:
-        payload["file"] = file
-    if detail is not None:
-        payload["detail"] = detail
-    return payload
-
-
-def _emit_cli_error(
-    error: str, *, file: Optional[str] = None, detail: Optional[str] = None
-) -> NoReturn:
-    print(json.dumps(_build_cli_error_payload(error, file=file, detail=detail)))
-    sys.exit(EXIT_ERROR)
+_build_cli_error_payload = build_cli_error_payload
+_emit_cli_error = emit_cli_error
 
 
 def _read_json_file(path: str) -> CliJsonObject:

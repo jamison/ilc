@@ -5,12 +5,12 @@ import sys
 from pathlib import Path
 from typing import NoReturn
 
+from ilc_core.cli._cli_error import emit_cli_error
 from ilc_core.ledger.canon_export_format import export_canon_format_v0_1
 from ilc_core.ledger.canon_export_validate import validate_canon_export_v0_1
 
-def fail(msg: str) -> NoReturn:
-    print(f"Error: {msg}", file=sys.stderr)
-    sys.exit(1)
+def fail(error: str, detail: str) -> NoReturn:
+    emit_cli_error(error, detail=detail, exit_code=1)
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Export canon state to standardized v0.1 format.")
@@ -27,25 +27,25 @@ def main() -> int:
     
     # 1. Load Input
     if not input_path.exists():
-        fail(f"Input file not found: {input_path}")
+        fail("input_file_not_found", f"Input file not found: {input_path}")
         
     try:
         with open(input_path, "r", encoding="utf-8") as f:
             canon_state = json.load(f)
     except json.JSONDecodeError as e:
-        fail(f"Invalid JSON in input file: {e}")
+        fail("invalid_input_json", f"Invalid JSON in input file: {e}")
     except Exception as e:
-        fail(f"Failed to read input file: {e}")
+        fail("input_read_error", f"Failed to read input file: {e}")
         
     # 2. Generate Export
     try:
         export_payload = export_canon_format_v0_1(canon_state)
     except ValueError as e:
-        fail(f"Export generation failed: {e}")
+        fail("export_generation_failed", f"Export generation failed: {e}")
         
     # 3. Write Output
     if output_path.exists() and not args.overwrite:
-        fail(f"Output file exists (use --overwrite to force): {output_path}")
+        fail("output_exists", f"Output file exists (use --overwrite to force): {output_path}")
         
     try:
         if not output_path.parent.exists():
@@ -58,7 +58,7 @@ def main() -> int:
                 json.dump(export_payload, f, separators=(",", ":"))
                 
     except Exception as e:
-        fail(f"Failed to write output file: {e}")
+        fail("output_write_error", f"Failed to write output file: {e}")
         
     # 4. Optional Validation
     if args.validate:

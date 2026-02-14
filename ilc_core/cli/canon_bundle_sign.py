@@ -47,12 +47,9 @@ def main() -> int:
             return _emit_report(_fail("signature_exists"))
 
     except Exception as e:
-        # In a real unexpected error we might want to log to stderr, 
-        # but per prompt "No stderr output on expected errors. Only unexpected internal exceptions may use stderr."
-        # The prompt says: "unexpected_error (optional fallback for non-expected exceptions)"
-        # and "No stderr output on expected errors."
-        print(f"Internal error: {e}", file=sys.stderr)
-        return _emit_report(_fail("unexpected_error"))
+        report = _fail("unexpected_error")
+        report["warnings"].append(f"internal_error:{e}")
+        return _emit_report(report)
 
     return _emit_report({"ok": True, "errors": [], "warnings": []})
 

@@ -67,7 +67,11 @@ class TestMCPCLIAdapter:
             )
             
             assert result.returncode != 0
-            assert "Invalid JSON" in result.stderr
+            error_payload = json.loads(result.stdout.strip())
+            assert error_payload["ok"] is False
+            assert error_payload["error"] == "mcp_payload_error"
+            assert "Invalid JSON" in error_payload["detail"]
+            assert result.stderr == ""
 
     def test_cli_accepts_payload_file(self) -> None:
         """CLI accepts --payload-file option."""
@@ -151,5 +155,4 @@ class TestMCPCLIAdapter:
             log_content = log_file.read_text()
             assert "mcp_tool_call" in log_content
             assert "custom-test-node" in log_content
-
 

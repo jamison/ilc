@@ -4,6 +4,8 @@ import sys
 import requests
 from typing import Optional, List, Protocol, TypeAlias, cast
 
+from ilc_core.cli._cli_error import build_cli_error_payload
+
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 
@@ -29,6 +31,12 @@ def _as_json_object(value: JsonValue) -> dict[str, JsonValue]:
         return cast(dict[str, JsonValue], value)
     return {}
 
+
+def _emit_cli_error(error: str, detail: str | None = None) -> int:
+    payload = build_cli_error_payload(error, detail=detail)
+    print(json.dumps(payload, separators=(",", ":")))
+    return 1
+
 class HttpClient:
     """Simple wrapper for requests to match the interface needed by the CLI."""
     def __init__(self, base_url: str):
@@ -46,12 +54,11 @@ def _handle_schema(client: HttpClientLike) -> int:
         if res.status_code == 200:
             print(json.dumps(res.json(), indent=2))
             return 0
-        else:
-            print(f"Error fetching schema: {res.status_code}", file=sys.stderr)
-            return 1
+        return _emit_cli_error(
+            "schema_fetch_failed", detail=f"Error fetching schema: {res.status_code}"
+        )
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
+        return _emit_cli_error("schema_fetch_error", detail=f"Error: {e}")
 
 def _handle_submit(client: HttpClientLike, file_path: Optional[str]) -> int:
     try:
@@ -77,15 +84,17 @@ def _handle_submit(client: HttpClientLike, file_path: Optional[str]) -> int:
             print(json.dumps(data, indent=2))
             return 0
         else:
-            print(f"Error submitting task: {res.status_code}", file=sys.stderr)
+            response_body = ""
             try:
-                print(res.json(), file=sys.stderr)
+                response_body = json.dumps(res.json(), separators=(",", ":"))
             except Exception:
-                print(res.text, file=sys.stderr)
-            return 1
+                response_body = res.text
+            return _emit_cli_error(
+                "submit_failed",
+                detail=f"Error submitting task: {res.status_code}; response: {response_body}",
+            )
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
+        return _emit_cli_error("submit_error", detail=f"Error: {e}")
 
 def _handle_demo(client: HttpClientLike) -> int:
     try:
@@ -109,11 +118,11 @@ def _handle_demo(client: HttpClientLike) -> int:
             print(json.dumps(data, indent=2))
             return 0
         else:
-            print(f"Error submitting demo task: {res.status_code}", file=sys.stderr)
-            return 1
+            return _emit_cli_error(
+                "demo_submit_failed", detail=f"Error submitting demo task: {res.status_code}"
+            )
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
+        return _emit_cli_error("demo_submit_error", detail=f"Error: {e}")
 
 def _build_cli_parser() -> argparse.ArgumentParser:
     """Helper to construct the CLI argument parser."""

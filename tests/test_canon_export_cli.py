@@ -132,7 +132,11 @@ class TestCanonExportCLI:
             text=True
         )
         assert result.returncode == 1
-        assert "Output file exists" in result.stderr
+        error_payload = json.loads(result.stdout)
+        assert error_payload["ok"] is False
+        assert error_payload["error"] == "output_exists"
+        assert "Output file exists" in error_payload["detail"]
+        assert result.stderr == ""
         
         # With --overwrite
         result2 = subprocess.run(
@@ -170,7 +174,11 @@ class TestCanonExportCLI:
             text=True
         )
         assert result.returncode == 1
-        assert "Input file not found" in result.stderr
+        error_payload = json.loads(result.stdout)
+        assert error_payload["ok"] is False
+        assert error_payload["error"] == "input_file_not_found"
+        assert "Input file not found" in error_payload["detail"]
+        assert result.stderr == ""
 
     def test_exported_at_is_utc(self, tmp_path):
         """Exported timestamp should be UTC."""
