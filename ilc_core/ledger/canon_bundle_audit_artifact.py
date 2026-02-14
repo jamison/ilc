@@ -3,21 +3,55 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import TypeAlias, TypedDict
 
 from ilc_core.ledger.canon_bundle_utils import file_sha256
+
+
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class PipelineAuditReport(TypedDict, total=False):
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+    steps: JsonObject
+
+
+class AuditArtifact(TypedDict):
+    audit_version: str
+    bundle_path: str
+    timestamp: str
+    pipeline_ok: bool
+    errors: list[str]
+    warnings: list[str]
+    steps: JsonObject
+    report_path: str | None
+    audit_path: str
+    bundle_exists: bool
+    signature_present: bool
+    manifest_hash: str | None
+    signature_hash: str | None
+    report_hash: str | None
+    pipeline_json: str
+    key_id: str | None
+    sig_alg: str | None
+    signed_at: str | None
+    key_status: str | None
 
 
 
 def create_audit_artifact(
     bundle_path: Path,
-    report: Dict[str, Any],
-    report_path: Optional[Path],
+    report: PipelineAuditReport,
+    report_path: Path | None,
     audit_path: Path,
     json_output: str,
-    report_content: Optional[str] = None,
-    timestamp: Optional[str] = None,
-) -> Dict[str, Any]:
+    report_content: str | None = None,
+    timestamp: str | None = None,
+) -> AuditArtifact:
     """
     Create an audit artifact dictionary for a bundle pipeline run.
     
@@ -65,7 +99,7 @@ def create_audit_artifact(
         registry = get_registry()
         key_status = registry.status(key_id)
     
-    audit = {
+    audit: AuditArtifact = {
         "audit_version": "v0.1",
         "bundle_path": str(bundle_path.resolve()),
         "timestamp": ts,
@@ -90,7 +124,7 @@ def create_audit_artifact(
     return audit
 
 
-def write_audit_artifact(audit: Dict[str, Any], audit_path: Path) -> bool:
+def write_audit_artifact(audit: AuditArtifact, audit_path: Path) -> bool:
     """
     Write the audit artifact to a JSON file.
     

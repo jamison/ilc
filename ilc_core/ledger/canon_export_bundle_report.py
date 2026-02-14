@@ -1,8 +1,16 @@
-
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import TypedDict
 
-def render_bundle_report(bundle_path: str, report: Dict[str, Any], timestamp: Optional[str] = None) -> str:
+
+class BundleReportResult(TypedDict, total=False):
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+
+
+def render_bundle_report(
+    bundle_path: str, report: BundleReportResult, timestamp: str | None = None
+) -> str:
     """
     Render a Markdown validation report for a canon export bundle.
     

@@ -1,14 +1,34 @@
-
 import json
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import TypedDict
+
+
+class PipelineSteps(TypedDict, total=False):
+    validate: bool
+    sign: bool
+    verify: bool
+    report: bool
+
+
+class PipelineReport(TypedDict, total=False):
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+    steps: PipelineSteps
+
+
+class SignatureMetadata(TypedDict, total=False):
+    key_id: str
+    sig_alg: str
+    signed_at: str
+    key_status: str
 
 def render_pipeline_report(
     bundle_path: str, 
-    report: Dict[str, Any], 
-    timestamp: Optional[str] = None,
-    json_output: Optional[str] = None,
-    key_metadata: Optional[Dict[str, str]] = None,
+    report: PipelineReport, 
+    timestamp: str | None = None,
+    json_output: str | None = None,
+    key_metadata: SignatureMetadata | None = None,
 ) -> str:
     """
     Render a Markdown report for the canon bundle pipeline.
@@ -79,4 +99,3 @@ def render_pipeline_report(
     ])
     
     return "\n".join(lines)
-

@@ -1,9 +1,23 @@
-
 import json
 from datetime import datetime, timezone
-from typing import Dict, Any, List, Optional
+from typing import TypeAlias, TypedDict
 
 REPORT_VERSION = "canon_bundle_replay_report_v0.1"
+
+
+class ReplayMismatchEntry(TypedDict, total=False):
+    expected: object
+    actual: object
+
+
+ReplayMismatchMap: TypeAlias = dict[str, ReplayMismatchEntry]
+
+
+class ReplayJsonPayload(TypedDict, total=False):
+    ok: bool
+    pipeline_ok: bool
+    replay_matches: bool
+
 
 def severity_for_field(field: str) -> str:
     """Determine severity based on field name."""
@@ -18,12 +32,12 @@ def render_replay_report(
     *,
     bundle_path: str,
     audit_path: str,
-    export_root: Optional[str],
-    replay_json: Dict[str, Any],
-    mismatches: Dict[str, Dict[str, Any]],
-    warnings: List[str],
-    errors: List[str],
-    created_at: Optional[str] = None,
+    export_root: str | None,
+    replay_json: ReplayJsonPayload,
+    mismatches: ReplayMismatchMap,
+    warnings: list[str],
+    errors: list[str],
+    created_at: str | None = None,
 ) -> str:
     """
     Render a Markdown report for canon bundle replay verification.

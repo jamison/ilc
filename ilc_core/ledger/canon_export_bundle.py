@@ -1,18 +1,35 @@
-
 import json
 import hashlib
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import TypeAlias, TypedDict
 
 def _sha256_bytes(data: bytes) -> str:
     """Compute SHA-256 hexdigest of bytes."""
     return hashlib.sha256(data).hexdigest()
 
+
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class CanonBundleManifest(TypedDict):
+    bundle_format: str
+    export_format: JsonValue
+    hash_alg: str
+    created_at: str
+    export_hash: str
+    validate_hash: str
+    canon_hash: JsonValue
+    export_path: str
+    validate_path: str
+
+
 def write_canon_export_bundle(
-    export: Dict[str, Any], 
-    validation: Dict[str, Any], 
+    export: JsonObject, 
+    validation: JsonObject, 
     bundle_dir: Path, 
-    created_at: Optional[str] = None, 
+    created_at: str | None = None, 
     overwrite: bool = False
 ) -> Path:
     """
@@ -62,7 +79,7 @@ def write_canon_export_bundle(
     # 6. Create Manifest
     created_at = created_at or "2026-02-05T00:00:00+00:00" # Default, usually caller passes UTC now
     
-    manifest = {
+    manifest: CanonBundleManifest = {
         "bundle_format": "v0.1",
         "export_format": export_fmt,
         "hash_alg": "sha256",

@@ -1,5 +1,6 @@
+from __future__ import annotations
 
-from typing import Dict, Any, List
+from typing import TypeAlias
 from pathlib import Path
 from os import PathLike
 import json
@@ -9,7 +10,12 @@ from dataclasses import asdict
 
 from ilc_core.ledger.backend import LedgerBackend
 
-def compute_canon_hash(payload: Dict[str, Any]) -> str:
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+def compute_canon_hash(payload: JsonObject) -> str:
     """
     Compute a deterministic SHA-256 hash of the canon payload.
     The payload MUST NOT contain the 'canon_hash' field (or it should be empty).
@@ -24,7 +30,7 @@ def export_canon_state_json(
     path: PathLike, 
     *, 
     canon_version: str = "v0.1"
-) -> Dict[str, Any]:
+) -> JsonObject:
     """
     Export canonical, deterministic ledger state to a JSON file.
     
@@ -41,20 +47,20 @@ def export_canon_state_json(
     # Sort stake snapshots by epoch_id (or some stable key)
     # The ledger stores them as a dict, so json dump verify sort_keys=True handles the map keys.
     # We just need to ensure the values inside are also stable.
-    stake_snapshots_data = {
+    stake_snapshots_data: dict[str, JsonObject] = {
         k: asdict(v) for k, v in ledger.stake_snapshots.items()
     }
     
     # Sort epoch records
-    epoch_records_data = {
-        k: v for k, v in ledger.epoch_records.items()
+    epoch_records_data: dict[str, JsonObject] = {
+        k: dict(v) for k, v in ledger.epoch_records.items()
     }
     
     # Balances are a simple dict, sort_keys=True handles it.
-    balances_data = ledger.balances.copy()
+    balances_data: dict[str, float] = ledger.balances.copy()
     
     # 2. Build payload structure
-    payload = {
+    payload: JsonObject = {
         "canon_export_version": canon_version,
         "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         # canon_hash will be inserted after computation

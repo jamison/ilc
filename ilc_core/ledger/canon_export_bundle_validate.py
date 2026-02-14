@@ -1,11 +1,21 @@
-
 import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Set
+from typing import TypeAlias, TypedDict
 
 from ilc_core.ledger.canon_bundle_key_registry import get_registry
+
+
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class BundleValidationResult(TypedDict):
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
 
 REQUIRED_MANIFEST_KEYS = {
     "bundle_format", "created_at", "export_hash", "validate_hash",
@@ -16,7 +26,9 @@ OPTIONAL_MANIFEST_KEYS = {
 }
 
 
-def _append_key_status_issues(manifest: Dict[str, Any], errors: List[str], warnings: List[str]) -> None:
+def _append_key_status_issues(
+    manifest: JsonObject, errors: list[str], warnings: list[str]
+) -> None:
     key_id = manifest.get("key_id")
     if not key_id:
         return
@@ -36,7 +48,7 @@ def _hash_file_content(path: Path) -> str:
         data = data[:-1]
     return hashlib.sha256(data).hexdigest()
 
-def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
+def validate_canon_export_bundle(bundle_dir: Path) -> BundleValidationResult:
     """
     Validate the integrity and structure of a canon export bundle.
     
@@ -46,8 +58,8 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
     Returns:
         Dict with keys: ok (bool), errors (List[str]), warnings (List[str]).
     """
-    errors: List[str] = []
-    warnings: List[str] = []
+    errors: list[str] = []
+    warnings: list[str] = []
     
     # 1. Directory Existence
     if not bundle_dir.exists() or not bundle_dir.is_dir():
@@ -67,9 +79,12 @@ def validate_canon_export_bundle(bundle_dir: Path) -> Dict[str, Any]:
         
     # 3. Load Manifest
     try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest_raw = json.loads(manifest_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {"ok": False, "errors": ["manifest.json is not valid JSON"], "warnings": warnings}
+    if not isinstance(manifest_raw, dict):
+        return {"ok": False, "errors": ["manifest.json is not valid JSON"], "warnings": warnings}
+    manifest: JsonObject = manifest_raw
         
     # 4. Check Manifest Keys
     manifest_keys = set(manifest.keys())

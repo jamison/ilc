@@ -1,9 +1,40 @@
 from __future__ import annotations
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional, List
+from typing import TypeAlias, TypedDict
 
 
-def export_canon_format_v0_1(canon_state: Dict[str, Any], exported_at: Optional[str] = None) -> Dict[str, Any]:
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class CanonExportMeta(TypedDict):
+    canon_export_version: JsonValue
+    epoch_count: int
+    snapshot_count: int
+    balance_count: int
+
+
+class CanonExportKpis(TypedDict):
+    epoch_count: int
+    snapshot_count: int
+    balance_count: int
+
+
+class CanonExportFormatV01(TypedDict, total=False):
+    canon_export_format: str
+    canon_hash: JsonValue
+    exported_at: str
+    meta: CanonExportMeta
+    epochs: list[JsonValue]
+    snapshots: list[JsonValue]
+    kpis: CanonExportKpis
+    computed_hash: JsonValue
+
+
+def export_canon_format_v0_1(
+    canon_state: dict[str, JsonValue], exported_at: str | None = None
+) -> CanonExportFormatV01:
     """
     Transform a raw canon_state dict into the standardized v0.1 export format.
 
@@ -24,20 +55,24 @@ def export_canon_format_v0_1(canon_state: Dict[str, Any], exported_at: Optional[
     exported_at = exported_at or datetime.now(timezone.utc).isoformat()
 
     # Extract core data with defaults
-    epochs: List[Any] = canon_state.get("epochs", [])
-    snapshots: List[Any] = canon_state.get("snapshots", [])
-    balances: Dict[str, float] = canon_state.get("balances", {})
+    epochs_raw = canon_state.get("epochs", [])
+    snapshots_raw = canon_state.get("snapshots", [])
+    balances_raw = canon_state.get("balances", {})
 
     # Validate types minimally to ensure schema compliance
-    if not isinstance(epochs, list):
+    if not isinstance(epochs_raw, list):
         raise ValueError("Field 'epochs' must be a list")
-    if not isinstance(snapshots, list):
+    if not isinstance(snapshots_raw, list):
         raise ValueError("Field 'snapshots' must be a list")
-    if not isinstance(balances, dict):
+    if not isinstance(balances_raw, dict):
         raise ValueError("Field 'balances' must be a dict")
+    
+    epochs: list[JsonValue] = epochs_raw
+    snapshots: list[JsonValue] = snapshots_raw
+    balances: dict[str, JsonValue] = balances_raw
 
     # Construct Metadata
-    meta = {
+    meta: CanonExportMeta = {
         "canon_export_version": canon_state.get("canon_export_version"),
         "epoch_count": len(epochs),
         "snapshot_count": len(snapshots),
@@ -45,7 +80,7 @@ def export_canon_format_v0_1(canon_state: Dict[str, Any], exported_at: Optional[
     }
 
     # Construct Payload
-    payload = {
+    payload: CanonExportFormatV01 = {
         "canon_export_format": "v0.1",
         "canon_hash": canon_state.get("canon_hash"),
         "exported_at": exported_at,

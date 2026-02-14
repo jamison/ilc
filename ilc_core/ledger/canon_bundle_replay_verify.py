@@ -1,6 +1,5 @@
-
 from pathlib import Path
-from typing import Dict, Any
+from typing import TypeAlias, TypedDict, cast
 
 from ilc_core.ledger.canon_export_bundle_validate import validate_canon_export_bundle
 from ilc_core.ledger.canon_bundle_utils import file_sha256, normalized_multiset
@@ -13,7 +12,40 @@ REQUIRED_AUDIT_KEYS = {
 SUPPORTED_AUDIT_VERSIONS = {"v0.1"}
 
 
-def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
+class ReplayMismatchEntry(TypedDict):
+    expected: object
+    actual: object
+
+
+ReplayMismatchMap: TypeAlias = dict[str, ReplayMismatchEntry]
+
+
+class ReplayVerifyResult(TypedDict):
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+    replay_matches: bool
+    mismatch: ReplayMismatchMap
+
+
+class AuditSteps(TypedDict, total=False):
+    validate: bool
+    verify: bool
+
+
+class ReplayAuditArtifact(TypedDict, total=False):
+    audit_version: str
+    bundle_path: str
+    manifest_hash: str | None
+    signature_hash: str | None
+    pipeline_json: str
+    steps: AuditSteps
+    errors: list[str]
+    warnings: list[str]
+    pipeline_ok: bool
+
+
+def replay_verify(bundle_path: Path, audit: ReplayAuditArtifact) -> ReplayVerifyResult:
 
     """
     Replay-verify a bundle against an audit artifact.
@@ -27,9 +59,9 @@ def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
     """
     errors = []
     warnings = []
-    mismatch = {}
+    mismatch: ReplayMismatchMap = {}
     
-    def check(field: str, expected: Any, actual: Any):
+    def check(field: str, expected: object, actual: object) -> None:
         if expected != actual:
             mismatch[field] = {"expected": expected, "actual": actual}
     
@@ -97,7 +129,7 @@ def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
         current_warnings = []
     
     # Compare steps (validate + verify)
-    audit_steps = audit.get("steps", {})
+    audit_steps = cast(AuditSteps, audit.get("steps", {}))
     check("steps.validate", audit_steps.get("validate"), current_validate_step)
     if audit_sig_hash is None:
         current_verify_step = current_sig_hash is None
@@ -107,8 +139,8 @@ def replay_verify(bundle_path: Path, audit: Dict[str, Any]) -> Dict[str, Any]:
     
     # Compare pipeline_ok based on current replay state
     audit_pipeline_ok = audit.get("pipeline_ok", False)
-    audit_errors = audit.get("errors", [])
-    audit_warnings = audit.get("warnings", [])
+    audit_errors = cast(list[str], audit.get("errors", []))
+    audit_warnings = cast(list[str], audit.get("warnings", []))
     
     # Check recorded errors/warnings using normalized multisets (tolerates wording changes)
     expected_errors = normalized_multiset(audit_errors)
