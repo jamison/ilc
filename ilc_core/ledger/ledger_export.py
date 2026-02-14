@@ -3,18 +3,45 @@ import csv
 from os import PathLike
 from pathlib import Path
 from dataclasses import asdict
-from typing import Any, Dict, Optional, List
+from typing import TypeAlias, TypedDict
 
-from ilc_core.ledger.backend import LedgerBackend
-from ilc_core.ledger.settlement_verification import verify_stake_distribution
+from ilc_core.ledger.backend import EpochRecord, LedgerBackend
+from ilc_core.ledger.settlement_verification import (
+    SettlementVerificationResult,
+    verify_stake_distribution,
+)
+
+
+JsonScalar: TypeAlias = str | int | float | bool | None
+JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+JsonObject: TypeAlias = dict[str, JsonValue]
+
+
+class LedgerStateExport(TypedDict):
+    epoch_records: dict[str, EpochRecord]
+    stake_snapshots: dict[str, JsonObject]
+    balances: dict[str, float]
+
+
+class LedgerDistributionCheck(TypedDict, total=False):
+    epoch_id: str
+    ok: bool
+    total_delta: float
+    expected_total: float
+    max_agent_error: float
+    top_errors: list[str]
+    input_hash: str
+
+
+VerificationResult: TypeAlias = SettlementVerificationResult | dict[str, object]
 
 def export_ledger_state_json(
     ledger: LedgerBackend, 
     path: PathLike,
     *,
-    balances_before: Optional[Dict[str, float]] = None,
-    target_epoch_id: Optional[str] = None
-) -> Dict[str, Any]:
+    balances_before: dict[str, float] | None = None,
+    target_epoch_id: str | None = None
+) -> VerificationResult:
     """
     Export full ledger state to a JSON file.
     
@@ -32,20 +59,20 @@ def export_ledger_state_json(
     raw_snapshots = getattr(ledger, "stake_snapshots", {})
     
     # Convert snapshots to dicts
-    snapshots_data = {}
+    snapshots_data: dict[str, JsonObject] = {}
     for epoch_id, snap in raw_snapshots.items():
         if hasattr(snap, "to_dict"):
             snapshots_data[epoch_id] = snap.to_dict()
         else:
             snapshots_data[epoch_id] = asdict(snap)
             
-    data = {
+    data: LedgerStateExport = {
         "epoch_records": epoch_records,
         "stake_snapshots": snapshots_data,
         "balances": balances
     }
     
-    check_result = {}
+    check_result: VerificationResult = {}
     
     # Optional Verification (Task B)
     if balances_before is not None and target_epoch_id:
@@ -88,8 +115,8 @@ def export_ledger_state_csv(ledger: LedgerBackend, path: PathLike) -> None:
         return
 
     # Flatten logic
-    rows = []
-    headers = set()
+    rows: list[dict[str, object]] = []
+    headers: set[str] = set()
     
     # Pre-scan for headers (optional, or just use hardcoded common ones then dynamic)
     # We want a stable order.
@@ -126,7 +153,7 @@ def export_ledger_state_csv(ledger: LedgerBackend, path: PathLike) -> None:
             writer.writerow(r)
 
 def export_ledger_distribution_checks_csv(
-    checks: List[Dict[str, Any]],
+    checks: list[LedgerDistributionCheck],
     path: PathLike,
 ) -> None:
     """

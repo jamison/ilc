@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TypedDict
 from urllib.parse import urlparse
 
 from ilc_core.ledger.canon_bundle_key_registry_channel import (
@@ -43,16 +43,86 @@ def _now_iso8601() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+class SourceAttempt(TypedDict):
+    index: int
+    source: str
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+    attempt_duration_ms: int
+
+
+class SyncFetchResult(TypedDict, total=False):
+    ok: bool
+    errors: list[str]
+    warnings: list[str]
+    bundle_dir: str
+    installed_to: str
+    registry_hash: str
+    key_id: str
+
+
+class LastSyncPayload(TypedDict, total=False):
+    channel: str
+    source: str
+    timestamp: str
+    bundle_hash: str | None
+    key_id: str | None
+    ok: bool
+    warnings: list[str]
+    errors: list[str]
+    source_attempts: list[SourceAttempt]
+    selected_source_reason: str
+
+
+class FreshnessResult(TypedDict, total=False):
+    rollback_check_applied: bool
+    freshness_decision: str | None
+    rollback_override: bool
+    seen_seq: int | None
+    seen_hash: str | None
+    _new_state: ChannelFreshnessState
+
+
+class SyncResult(TypedDict, total=False):
+    ok: bool
+    dry_run: bool
+    channel: str
+    source: str | None
+    source_index: int
+    attempted_sources: int
+    failed_sources: int
+    successful_source_index: int | None
+    channel_version: str
+    channel_version_policy: str
+    channel_version_override_used: bool
+    rollback_check_applied: bool
+    freshness_decision: str | None
+    rollback_override: bool
+    seen_seq: int | None
+    seen_hash: str | None
+    sources_to_attempt: list[str]
+    dest: str
+    failover_enabled: bool
+    actions: list[str]
+    errors: list[str]
+    warnings: list[str]
+    last_sync: LastSyncPayload
+    bundle_hash: str
+    key_id: str
+    installed_path: str
+
+
 @dataclass(frozen=True)
 class VersionPolicyDecision:
     ok: bool
     policy: str
-    errors: List[str]
-    warnings: List[str]
+    errors: list[str]
+    warnings: list[str]
 
 
 def evaluate_channel_version_policy(
-    version: Optional[str],
+    version: str | None,
     *,
     prod: bool,
     allow_v03: bool,
@@ -109,21 +179,21 @@ def evaluate_channel_version_policy(
 
 @dataclass
 class LastSyncRecord:
-    channel: Optional[str] = None
-    source: Optional[str] = None
+    channel: str | None = None
+    source: str | None = None
     ok: bool = False
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    source_attempts: List[Dict[str, Any]] = field(default_factory=list)
-    selected_source_reason: Optional[str] = None
-    bundle_hash: Optional[str] = None
-    key_id: Optional[str] = None
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    source_attempts: list[SourceAttempt] = field(default_factory=list)
+    selected_source_reason: str | None = None
+    bundle_hash: str | None = None
+    key_id: str | None = None
 
 
 def _record_last_sync(
     channel_file: Path,
     record: LastSyncRecord,
-) -> dict:
+) -> LastSyncPayload:
     """Best-effort write of last_sync metadata."""
     last_sync = {
         "channel": record.channel if record.channel is not None else "unknown",
@@ -149,14 +219,14 @@ def _record_last_sync(
 
 def _fail_with_last_sync(
     ctx: "SyncContext",
-    channel: Optional[str],
-    errors: List[str],
-    warnings: List[str],
+    channel: str | None,
+    errors: list[str],
+    warnings: list[str],
     selected_source_reason: str,
-    channel_version: Optional[str] = None,
-    channel_version_policy: Optional[str] = None,
-    source: Optional[str] = None,
-) -> dict:
+    channel_version: str | None = None,
+    channel_version_policy: str | None = None,
+    source: str | None = None,
+) -> SyncResult:
     """Create standardized sync failure result with sidecar last_sync."""
     last_sync = _record_last_sync(
         ctx.channel_file,
@@ -201,11 +271,11 @@ def _fail_with_last_sync(
 
 def _validate_sync_policy(
     channel_file: Path,
-    channel_key: Optional[bytes],
-    channel_sig_path: Optional[Path],
+    channel_key: bytes | None,
+    channel_sig_path: Path | None,
     require_signed: bool,
-    warnings: list,
-) -> tuple[bool, list, list]:
+    warnings: list[str],
+) -> tuple[bool, list[str], list[str]]:
     """Validate channel signature policy. Returns (ok, errors, warnings)."""
     if channel_key:
         verify_result = verify_channel_file_signature(
@@ -230,12 +300,12 @@ def _validate_sync_policy(
 
 
 def _resolve_sync_window(
-    channel_data: dict,
+    channel_data: dict[str, object],
     channel: str,
     source_index: int,
-    max_sources: Optional[int],
+    max_sources: int | None,
     failover: bool,
-) -> tuple[list, list]:
+) -> tuple[list[str], list[str]]:
     """Resolve attempt window sources. Returns (window, errors)."""
     sources_map = channel_data.get("sources")
     if sources_map is None:
@@ -267,7 +337,7 @@ class SyncContext:
     channel_file: Path
     key: bytes
     dest_dir: Path
-    channel: Optional[str] = None
+    channel: str | None = None
     source_index: int = 0
     allow_network: bool = False
     strict: bool = True
@@ -276,12 +346,12 @@ class SyncContext:
     keep_temp: bool = False
     timeout: int = 20
     failover: bool = True
-    max_sources: Optional[int] = None
-    channel_key: Optional[bytes] = None
-    channel_sig_path: Optional[Path] = None
+    max_sources: int | None = None
+    channel_key: bytes | None = None
+    channel_sig_path: Path | None = None
     require_signed_channel: bool = False
     allow_channel_rollback: bool = False
-    sync_state_file: Optional[Path] = None
+    sync_state_file: Path | None = None
     prod: bool = False
     allow_legacy_channel_v03: bool = False
     allow_legacy_channel_v02_v01: bool = False
@@ -289,13 +359,13 @@ class SyncContext:
 
 
 def _attempt_sync_from_window(
-    window: List[str],
+    window: list[str],
     source_index: int,
     ctx: SyncContext,
-) -> tuple[Optional[dict], List[Dict[str, Any]]]:
+) -> tuple[SyncFetchResult | None, list[SourceAttempt]]:
     """Attempt sync from a window of sources. Returns (success_result, attempts)."""
-    attempts = []
-    success_result = None
+    attempts: list[SourceAttempt] = []
+    success_result: SyncFetchResult | None = None
     
     for idx_offset, source in enumerate(window):
         current_index = source_index + idx_offset
@@ -304,7 +374,11 @@ def _attempt_sync_from_window(
         
         parsed = urlparse(source)
         if parsed.scheme == "https" and not ctx.allow_network:
-            res = {"ok": False, "errors": ["network_disabled"], "warnings": []}
+            res: SyncFetchResult = {
+                "ok": False,
+                "errors": ["network_disabled"],
+                "warnings": [],
+            }
         else:
             res = fetch_registry_bundle(
                 source=source,
@@ -338,11 +412,11 @@ def _finalize_sync(
     ctx: SyncContext,
     channel: str,
     channel_version: str,
-    success_result: Optional[dict],
-    attempts: List[Dict[str, Any]],
-    warnings: List[str],
-    freshness_result: Optional[dict] = None,
-) -> dict:
+    success_result: SyncFetchResult | None,
+    attempts: list[SourceAttempt],
+    warnings: list[str],
+    freshness_result: FreshnessResult | None = None,
+) -> SyncResult:
     """Finalize sync result, record metadata and return statistics."""
     # Determine overall status and selection
     ok = success_result is not None
@@ -365,13 +439,13 @@ def _finalize_sync(
         selected_source_reason = "window_exhausted" if ctx.failover else "no_failover"
     
     # Aggregate errors/warnings for return
-    final_errors = []
+    final_errors: list[str] = []
     final_warnings = list(warnings)
     
     if not ok:
         final_errors.append("sync_failed_all_sources")
         # Collect unique errors from attempts
-        seen_errors = set()
+        seen_errors: set[str] = set()
         for attempt in attempts:
             for err in attempt["errors"]:
                 if err not in seen_errors:
@@ -412,7 +486,7 @@ def _finalize_sync(
     if channel_version_policy in ("compat_v03", "legacy_breakglass"):
         channel_version_override_used = True
 
-    result = {
+    result: SyncResult = {
         "ok": ok,
         "errors": final_errors,
         "warnings": final_warnings,
@@ -445,12 +519,12 @@ def _finalize_sync(
 
 def _do_freshness_check(
     ctx: SyncContext,
-    channel_data: dict,
-    current_state: Optional[ChannelFreshnessState],
-    warnings: list,
-) -> tuple[Optional[dict], dict]:
+    channel_data: dict[str, object],
+    current_state: ChannelFreshnessState | None,
+    warnings: list[str],
+) -> tuple[SyncResult | None, FreshnessResult]:
     """Execute core freshness logic given loaded state."""
-    freshness_result = {
+    freshness_result: FreshnessResult = {
         "rollback_check_applied": False,
         "freshness_decision": None,
         "rollback_override": False,
@@ -532,9 +606,9 @@ def _do_freshness_check(
 
 def _check_channel_freshness(
     ctx: SyncContext,
-    channel_data: dict,
-    warnings: list,
-) -> tuple[Optional[dict], Optional[dict]]:
+    channel_data: dict[str, object],
+    warnings: list[str],
+) -> tuple[SyncResult | None, FreshnessResult | None]:
     """
     Check channel freshness against local state.
     Returns (error_result, freshness_result).
@@ -544,7 +618,7 @@ def _check_channel_freshness(
         sync_state_path = ctx.channel_file.with_suffix(ctx.channel_file.suffix + ".sync_state.json")
     
     # Default empty result if we crash early
-    freshness_result = {} 
+    freshness_result: FreshnessResult = {}
 
     try:
         with file_lock(sync_state_path):
@@ -581,9 +655,15 @@ def _check_channel_freshness(
 
 def _prepare_sync_channel(
     ctx: SyncContext,
-    channel_data: dict,
-    warnings: List[str],
-) -> tuple[Optional[dict], Optional[dict], List[str], Optional[str], Optional[str]]:
+    channel_data: dict[str, object],
+    warnings: list[str],
+) -> tuple[
+    SyncResult | None,
+    dict[str, object] | None,
+    list[str],
+    str | None,
+    str | None,
+]:
     """
     Validate channel schema/policy and return normalized sync inputs.
     Returns (error_result, channel_data, warnings, channel_version, audit_channel).
@@ -663,7 +743,7 @@ def _prepare_sync_channel(
 
 
 
-def sync_channel_registry(ctx: SyncContext) -> dict:
+def sync_channel_registry(ctx: SyncContext) -> SyncResult:
     """
     Sync a channel's registry bundle with deterministic failover.
     
@@ -673,7 +753,7 @@ def sync_channel_registry(ctx: SyncContext) -> dict:
     Returns:
         Dict with execution results and audit metadata.
     """
-    warnings = []
+    warnings: list[str] = []
     
     # Load channel file
     load_result = load_channel_file(ctx.channel_file)
