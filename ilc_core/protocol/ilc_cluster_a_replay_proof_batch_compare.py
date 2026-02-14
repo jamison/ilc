@@ -1,8 +1,11 @@
 import json
+import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 from pathlib import Path
 from importlib import resources
 from jsonschema import Draft7Validator
+
+logger = logging.getLogger(__name__)
 
 BatchReportSchemaMap: TypeAlias = Dict[str, object]
 
@@ -32,14 +35,15 @@ def _load_batch_report_schema() -> BatchReportSchemaMap:
     try:
         schema_text = resources.files("ilc_core.protocol.schemas").joinpath(schema_filename).read_text(encoding="utf-8")
         return json.loads(schema_text)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("batch_compare_packaged_schema_fallback: %s", exc, exc_info=True)
 
     fallback = Path(__file__).resolve().parents[2] / "docs" / "specs" / schema_filename
     try:
         with open(fallback, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception:
+    except Exception as exc:
+        logger.debug("batch_compare_file_schema_fallback: %s", exc, exc_info=True)
         # Fail closed through schema_invalid_* response if schema is unavailable.
         return {}
 

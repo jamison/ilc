@@ -7,6 +7,7 @@ Provides logic to build and verify canonical replay proof packages.
 
 import json
 import hashlib
+import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 
 from ilc_core.protocol.ilc_cluster_a_ingest import canonical_governance_record_digest
@@ -15,6 +16,8 @@ from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import (
     canonical_evidence_contract_digest,
 )
 from ilc_core.protocol.ilc_cluster_a_replay_attestation import attest_cluster_a_replay
+
+logger = logging.getLogger(__name__)
 
 # --- Failure Tokens ---
 E_SCHEMA_INVALID_PACKAGE = "schema_violation:invalid_replay_proof_package_shape"
@@ -265,7 +268,8 @@ def verify_cluster_a_replay_proof_package(package: object) -> ReplayVerifyResult
         _verify_contract_hash(typed_package, evidence, errors, checks)
         _verify_record_hash(typed_package, replay_contract, errors, checks)
         _verify_replay_attestation(evidence, replay_contract, errors, checks)
-    except Exception:
+    except Exception as exc:
+        logger.debug("package_verify_processing_exception: %s", exc, exc_info=True)
         return {
             "ok": False,
             "errors": [E_SCHEMA_INVALID_PACKAGE],

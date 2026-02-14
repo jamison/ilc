@@ -8,6 +8,7 @@ for Cluster A artifacts (Wire, Receipt, Transcript, Governance Record).
 
 import json
 import hashlib
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -16,6 +17,8 @@ from ilc_core.protocol.ilc_wire_validate import validate_wire_event
 from ilc_core.protocol.ilc_receipt_validate import validate_receipt_record
 from ilc_core.protocol.ilc_transcript_validate import validate_transcript
 from ilc_core.protocol.ilc_governance_record_validate import validate_governance_record
+
+logger = logging.getLogger(__name__)
 
 # --- Helpers ---
 
@@ -301,7 +304,8 @@ def verify_ed25519_signature(public_key_bytes: bytes, message: bytes, signature_
     try:
         pk.verify(sig, message)
         return True
-    except Exception:
+    except Exception as exc:
+        logger.debug("ingest_verify_signature_failure: %s", exc, exc_info=True)
         return False
 
 
@@ -407,11 +411,12 @@ def _verify_governance_signatures(
             if verify_ed25519_signature(pub_key, canonical_payload, sig_hex):
                 valid_key_ids.add(key_id)
             else:
-                 _add("context_violation:signature_verification_failed", key_id=key_id)
+                _add("context_violation:signature_verification_failed", key_id=key_id)
         except ValueError as e:
             _add(f"value_violation:{str(e)}", key_id=key_id)
-        except Exception:
-             _add("context_violation:signature_verification_failed", key_id=key_id)
+        except Exception as exc:
+            logger.debug("ingest_signature_verification_guard: %s", exc, exc_info=True)
+            _add("context_violation:signature_verification_failed", key_id=key_id)
 
     # Check Threshold
     if len(valid_key_ids) < min_valid_signatures:

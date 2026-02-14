@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 from pathlib import Path
 import json
@@ -12,6 +13,7 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
     run_batch_verify_and_compare,
 )
 
+logger = logging.getLogger(__name__)
 
 GATE_VERSION = "v0.1"
 COMPARE_VERSION = "v0.1"
@@ -63,14 +65,15 @@ def _load_gate_report_schema() -> GateSchemaMap:
     try:
         schema_text = resources.files("ilc_core.protocol.schemas").joinpath(schema_filename).read_text(encoding="utf-8")
         return json.loads(schema_text)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("ci_gate_packaged_schema_fallback: %s", exc, exc_info=True)
 
     fallback = Path(__file__).resolve().parents[2] / "docs" / "specs" / schema_filename
     try:
         with open(fallback, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception:
+    except Exception as exc:
+        logger.debug("ci_gate_file_schema_fallback: %s", exc, exc_info=True)
         return {}
 
 
@@ -119,7 +122,8 @@ def _check_package_verify_valid(fixtures_root: Path) -> GateCheckResult:
             f"ok={str(ok).lower()}",
             None if ok else "verify_failed",
         )
-    except Exception:
+    except Exception as exc:
+        logger.debug("ci_gate_check_package_verify_valid_exception: %s", exc, exc_info=True)
         return _build_check_result(
             "check_package_verify_valid",
             False,
@@ -155,7 +159,8 @@ def _check_package_verify_tampered_hash(fixtures_root: Path) -> GateCheckResult:
             f"ok={str(ok).lower()}",
             None if check_ok else "verify_succeeded_unexpectedly",
         )
-    except Exception:
+    except Exception as exc:
+        logger.debug("ci_gate_check_tampered_hash_exception: %s", exc, exc_info=True)
         return _build_check_result(
             "check_package_verify_tampered_hash",
             False,
@@ -195,7 +200,8 @@ def _check_batch_verify_manifest(fixtures_root: Path) -> GateCheckResult:
             f"batch_ok={str(ok).lower()}",
             None if ok else "batch_verify_failed",
         )
-    except Exception:
+    except Exception as exc:
+        logger.debug("ci_gate_check_batch_verify_manifest_exception: %s", exc, exc_info=True)
         return _build_check_result(
             "check_batch_verify_manifest",
             False,
@@ -247,7 +253,8 @@ def _check_compare_reports_mismatch(fixtures_root: Path) -> GateCheckResult:
             None if success else "mismatch_detection_failed",
         )
             
-    except Exception:
+    except Exception as exc:
+        logger.debug("ci_gate_check_compare_mismatch_exception: %s", exc, exc_info=True)
         return _build_check_result(
             "check_compare_reports_mismatch",
             False,
@@ -291,7 +298,8 @@ def _check_verify_and_compare_contract(fixtures_root: Path) -> GateCheckResult:
             None if compare_ok else "contract_verification_failed",
         )
             
-    except Exception:
+    except Exception as exc:
+        logger.debug("ci_gate_check_verify_compare_contract_exception: %s", exc, exc_info=True)
         return _build_check_result(
             "check_verify_and_compare_contract",
             False,

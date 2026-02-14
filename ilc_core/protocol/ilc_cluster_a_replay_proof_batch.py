@@ -3,12 +3,15 @@ from pathlib import Path
 from collections import Counter
 import posixpath
 import re
+import logging
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     ReplayCheckList,
     ReplayObject,
     verify_cluster_a_replay_proof_package,
 )
+
+logger = logging.getLogger(__name__)
 
 _WINDOWS_ABS_PATH_RE = re.compile(r"^[A-Za-z]:/")
 
@@ -73,7 +76,8 @@ def load_manifest_paths(path: Path) -> List[str]:
     out: List[str] = []
     try:
         content = path.read_text(encoding="utf-8")
-    except Exception:
+    except Exception as exc:
+        logger.debug("batch_manifest_read_guard: %s", exc, exc_info=True)
         # If we can't read the manifest, let the caller handle the IO error, 
         # but the specific requirement covers malformed content logic.
         # Here we assume file exists and is readable if passed to this function in a valid flow.
