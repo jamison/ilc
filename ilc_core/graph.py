@@ -4,6 +4,7 @@ import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Iterable, Protocol, runtime_checkable
 from .types import Node, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord
+from .exceptions import DuplicateNodeError, GraphIntegrityError, NodeNotFoundError
 from .links import validate_link_type, is_symmetric
 
 logger = logging.getLogger(__name__)
@@ -59,7 +60,7 @@ class EpistemicGraph:
 
     def add_node(self, node: Node):
         if node.id in self.nodes:
-            raise ValueError("Node already exists")
+            raise DuplicateNodeError(node.id, message="Node already exists")
         self.nodes[node.id] = node
         return True
 
@@ -75,9 +76,13 @@ class EpistemicGraph:
         """Add an edge and update indexes."""
         edge = self._coerce_edge_event(edge_event)
         if edge.source_id not in self.nodes:
-            raise KeyError(f"Unknown source_id: {edge.source_id}")
+            raise NodeNotFoundError(
+                edge.source_id, message=f"Unknown source_id: {edge.source_id}"
+            )
         if edge.target_id not in self.nodes:
-            raise KeyError(f"Unknown target_id: {edge.target_id}")
+            raise NodeNotFoundError(
+                edge.target_id, message=f"Unknown target_id: {edge.target_id}"
+            )
 
         self.outgoing_edges.setdefault(edge.source_id, []).append(edge)
         self.incoming_edges.setdefault(edge.target_id, []).append(edge)
@@ -122,13 +127,17 @@ class EpistemicGraph:
         link_type = validate_link_type(link.link_type)
 
         if link.id in self.links:
-            raise ValueError(f"Link with id={link.id} already exists")
+            raise GraphIntegrityError(f"Link with id={link.id} already exists")
 
         # Optional: ensure both endpoints exist as nodes
         if link.source_id not in self.nodes:
-            raise KeyError(f"Unknown source_id: {link.source_id}")
+            raise NodeNotFoundError(
+                link.source_id, message=f"Unknown source_id: {link.source_id}"
+            )
         if link.target_id not in self.nodes:
-            raise KeyError(f"Unknown target_id: {link.target_id}")
+            raise NodeNotFoundError(
+                link.target_id, message=f"Unknown target_id: {link.target_id}"
+            )
 
         self.links[link.id] = link
 

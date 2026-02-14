@@ -24,6 +24,7 @@ from ..protocol.ndjson_bundle import b64u_encode
 from ..encoding.dag_cbor import encode_dag_cbor
 from ..encoding.cidv1 import node_id_from_bytes
 from ..crypto.cose_sign1 import cose_sign1_sign
+from ..exceptions import NgramExtractionError, TokenizationError
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -39,18 +40,6 @@ ALLOWED_NGRAM_ORDERS = frozenset({2, 3, 4})
 
 SCHEMA_URI = "ilc.star.map.ngram.route_index@v1"
 CANONICALIZER_URI = "ilc.text.canon@v1"
-
-
-# === Exceptions ===
-
-class TokenizationError(ValueError):
-    """Raised when tokenization limits are exceeded or tokens are invalid."""
-    pass
-
-
-class NgramExtractionError(ValueError):
-    """Raised when n-gram extraction fails due to invalid parameters."""
-    pass
 
 
 # === Canonicalization (Section 5) ===

@@ -12,14 +12,7 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import (
     compare_cluster_a_replay_proof_batch_reports,
 )
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import ReplayObject
-
-
-class ManifestParseError(ValueError):
-    """Manifest or package content is malformed for batch ops."""
-
-
-class ManifestEntryNotFoundError(FileNotFoundError):
-    """A manifest-referenced package file does not exist."""
+from ilc_core.exceptions import ManifestEntryNotFoundError, ManifestParseError
 
 
 class BatchVerifyAndCompareResult(TypedDict):

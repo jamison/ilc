@@ -8,6 +8,7 @@ except ImportError:
     yaml = None
 
 import json
+from ilc_core.exceptions import ConfigNotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def load_governance_config(path: str | None = None) -> GovernanceConfig:
     if not path.exists():
         if user_supplied:
             logger.error("Config path not found: %s", path)
-            raise FileNotFoundError(f"config_not_found:{path}")
+            raise ConfigNotFoundError(str(path), message=f"config_not_found:{path}")
         return {}
 
     if path.suffix in {".yaml", ".yml"}:

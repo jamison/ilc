@@ -8,6 +8,7 @@ from datetime import timezone
 
 from ..types import Node
 from ..graph import EpistemicGraph
+from ..exceptions import InsufficientStakeError
 from .clustering import SponsorGraph
 from .governance import Governance, BacklogMetrics
 
@@ -193,7 +194,12 @@ class ConsensusEngine:
           leaving the monetary layer to convert ECU <-> ILC externally.
         """
         if amount < 0:
-            raise ValueError("Cannot stake negative amount")
+            raise InsufficientStakeError(
+                node_id,
+                stake=amount,
+                required=0.0,
+                message="Cannot stake negative amount",
+            )
 
         # Minimum ECU-based fee for submitting/supporting a claim.
         required_fee = self.governance.get_task_fee_ecu("claim.submit")

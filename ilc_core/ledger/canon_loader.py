@@ -7,10 +7,7 @@ from pathlib import Path
 from typing import TypedDict, cast
 
 from ilc_core.ledger.canon_export import compute_canon_hash
-
-
-class CanonVerificationError(ValueError):
-    """Raised when canon verification fails."""
+from ilc_core.exceptions import CanonVerificationError
 
 
 JsonObject = dict[str, object]

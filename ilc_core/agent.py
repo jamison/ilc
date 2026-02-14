@@ -2,6 +2,7 @@ from typing import Optional
 import logging
 from .types import Node
 from .graph import EpistemicGraph
+from .exceptions import InsufficientStakeError
 from .consensus.engine import ConsensusEngine
 from .mining.benchmark import PoWBenchmark
 from .economics.onboarding import OnboardingVault
@@ -50,7 +51,12 @@ class EveAgent:
         - If wallet_balance < required_fee, return 0.0 to signal "cannot stake".
         """
         if requested_stake < 0:
-            raise ValueError("requested_stake cannot be negative")
+            raise InsufficientStakeError(
+                self.id,
+                stake=requested_stake,
+                required=0.0,
+                message="requested_stake cannot be negative",
+            )
 
         # Ask consensus governance for current ECU fee.
         required_fee = self.consensus.governance.get_task_fee_ecu("claim.submit")
