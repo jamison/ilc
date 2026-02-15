@@ -1,6 +1,7 @@
 import sys
 import os
 from datetime import datetime, timedelta, timezone
+import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -48,6 +49,17 @@ def test_calculate_maintenance_tax_decreases_with_age():
     tax_new = engine.calculate_maintenance_tax(new_node)
 
     assert tax_old < tax_new
+
+
+def test_get_node_age_rejects_naive_timestamp():
+    graph = EpistemicGraph()
+    engine = ConsensusEngine(graph)
+
+    node = _make_node("node_naive", age_seconds=100, net_stake=1.0)
+    node.timestamp = node.timestamp.replace(tzinfo=None)
+
+    with pytest.raises(ValueError, match="node_timestamp_naive_not_allowed"):
+        engine.get_node_age(node)
 
 
 def test_process_contradiction_reduces_stake():

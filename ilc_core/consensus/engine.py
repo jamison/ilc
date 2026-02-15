@@ -4,7 +4,6 @@ from typing import Dict, Optional, List, Protocol
 import math
 import time
 import logging
-from datetime import timezone
 
 from ..types import Node
 from ..graph import EpistemicGraph
@@ -263,7 +262,7 @@ class ConsensusEngine:
         now = time.time()
         ts = node.timestamp
         if ts.tzinfo is None:
-            ts = ts.replace(tzinfo=timezone.utc)
+            raise ValueError("node_timestamp_naive_not_allowed")
         return max(1.0, now - ts.timestamp())
 
     def calculate_maintenance_tax(self, node: Node) -> float:
