@@ -8,6 +8,9 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch import (
     verify_cluster_a_replay_proof_batch,
     load_manifest_paths
 )
+from ilc_core.protocol.ilc_cluster_a_replay_proof_schemas import (
+    load_replay_proof_schema,
+)
 
 # Mock packages for testing logic without filesystem
 VALID_PKG = {"mock": "valid"}
@@ -232,9 +235,16 @@ def test_schema_loader_packaged_resource_available():
     schema_names = [
         "ilc_cluster_a_replay_proof_batch_report_v0.1.json",
         "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json",
+        "ilc_cluster_a_replay_proof_batch_compare_v0.1.json",
+        "ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json",
     ]
     for name in schema_names:
         text = resources.files("ilc_core.protocol.schemas").joinpath(name).read_text(encoding="utf-8")
         schema = json.loads(text)
         assert "$schema" in schema, f"Packaged schema {name} missing $schema field"
         assert "properties" in schema, f"Packaged schema {name} missing properties"
+
+
+def test_replay_proof_schema_loader_missing_returns_empty_map():
+    schema = load_replay_proof_schema("missing_schema_v0.0.json")
+    assert schema == {}

@@ -1,9 +1,9 @@
-import json
 import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
-from pathlib import Path
-from importlib import resources
 from jsonschema import Draft7Validator
+from ilc_core.protocol.ilc_cluster_a_replay_proof_schemas import (
+    load_replay_proof_schema,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -28,24 +28,8 @@ class BatchCompareReport(TypedDict):
 
 
 def _load_batch_report_schema() -> BatchReportSchemaMap:
-    """
-    Load batch report schema from packaged resources first, then repo fallback.
-    """
-    schema_filename = "ilc_cluster_a_replay_proof_batch_report_v0.1.json"
-    try:
-        schema_text = resources.files("ilc_core.protocol.schemas").joinpath(schema_filename).read_text(encoding="utf-8")
-        return json.loads(schema_text)
-    except Exception as exc:
-        logger.debug("batch_compare_packaged_schema_fallback: %s", exc, exc_info=True)
-
-    fallback = Path(__file__).resolve().parents[2] / "docs" / "specs" / schema_filename
-    try:
-        with open(fallback, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as exc:
-        logger.debug("batch_compare_file_schema_fallback: %s", exc, exc_info=True)
-        # Fail closed through schema_invalid_* response if schema is unavailable.
-        return {}
+    """Load batch report schema from packaged resources."""
+    return load_replay_proof_schema("ilc_cluster_a_replay_proof_batch_report_v0.1.json")
 
 
 _BATCH_REPORT_SCHEMA = _load_batch_report_schema()

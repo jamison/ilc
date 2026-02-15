@@ -2,7 +2,6 @@ import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 from pathlib import Path
 import json
-from importlib import resources
 
 from jsonschema import Draft7Validator
 
@@ -11,6 +10,9 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
 )
 from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
     run_batch_verify_and_compare,
+)
+from ilc_core.protocol.ilc_cluster_a_replay_proof_schemas import (
+    load_replay_proof_schema,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,23 +60,8 @@ class GateReport(TypedDict):
 
 
 def _load_gate_report_schema() -> GateSchemaMap:
-    """
-    Load CI gate report schema from packaged resources first, then repo fallback.
-    """
-    schema_filename = "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
-    try:
-        schema_text = resources.files("ilc_core.protocol.schemas").joinpath(schema_filename).read_text(encoding="utf-8")
-        return json.loads(schema_text)
-    except Exception as exc:
-        logger.debug("ci_gate_packaged_schema_fallback: %s", exc, exc_info=True)
-
-    fallback = Path(__file__).resolve().parents[2] / "docs" / "specs" / schema_filename
-    try:
-        with open(fallback, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as exc:
-        logger.debug("ci_gate_file_schema_fallback: %s", exc, exc_info=True)
-        return {}
+    """Load CI-gate schema from packaged resources."""
+    return load_replay_proof_schema("ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json")
 
 
 _GATE_REPORT_SCHEMA = _load_gate_report_schema()

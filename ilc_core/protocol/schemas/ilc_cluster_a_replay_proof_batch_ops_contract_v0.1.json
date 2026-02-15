@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://schemas.ilc.org/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json",
+    "title": "ILC Cluster A Replay Proof Batch Ops Contract v0.1",
+    "type": "object",
+    "required": [
+        "ops_contract_version",
+        "ok",
+        "batch_report_path",
+        "compare_report_path",
+        "batch_ok",
+        "compare_ok",
+        "exit_code",
+        "error_token"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "ops_contract_version": {
+            "type": "string",
+            "const": "v0.1"
+        },
+        "ok": {
+            "type": "boolean"
+        },
+        "batch_report_path": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "compare_report_path": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "batch_ok": {
+            "type": "boolean"
+        },
+        "compare_ok": {
+            "type": "boolean"
+        },
+        "exit_code": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ]
+        },
+        "error_token": {
+            "type": [
+                "string",
+                "null"
+            ]
+        }
+    }
+}
