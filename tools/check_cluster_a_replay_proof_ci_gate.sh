@@ -20,16 +20,25 @@ PROFILE="release_v0_1"
 DEFAULT_BASELINE="${FIXTURES_ROOT}/cluster_a_replay_proof_ci_gate_v0_1/release_v0_1_baseline.json"
 BASELINE=""
 ENFORCE="true"
+DRY_RUN="false"
 
 # Parse arguments
 while [ $# -gt 0 ]; do
     case "$1" in
         --baseline)
+            if [ $# -lt 2 ] || [ -z "${2}" ]; then
+                echo "Missing value for --baseline" >&2
+                exit 2
+            fi
             BASELINE="$2"
             shift 2
             ;;
         --no-enforce)
             ENFORCE="false"
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN="true"
             shift
             ;;
         *)
@@ -44,14 +53,7 @@ if [ -z "${BASELINE}" ] && [ -f "${DEFAULT_BASELINE}" ]; then
     BASELINE="${DEFAULT_BASELINE}"
 fi
 
-mkdir -p "${OUTPUT_DIR}"
-
 REPORT_PATH="${OUTPUT_DIR}/ci_gate_report.json"
-
-# Step 0: Track 1 closure guardrail gate
-echo "=== CI Gate Step 0: Track 1 Closure Guardrails ==="
-"${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
-echo ""
 
 # Build command
 CMD=(python3 -m ilc_core.cli.canon_cluster_a_replay_proof ci-gate
@@ -66,6 +68,28 @@ if [ -n "${BASELINE}" ]; then
         CMD+=(--enforce-baseline)
     fi
 fi
+
+if [ "${DRY_RUN}" = "true" ]; then
+    echo "Dry run: replay-proof ci-gate command plan"
+    echo "  Fixtures: ${FIXTURES_ROOT}"
+    echo "  Profile:  ${PROFILE}"
+    echo "  Output:   ${REPORT_PATH}"
+    if [ -n "${BASELINE}" ]; then
+        echo "  Baseline: ${BASELINE}"
+        echo "  Enforce:  ${ENFORCE}"
+    fi
+    echo "  Step0: ${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
+    echo "  Step1: ${CMD[*]}"
+    echo "Dry run complete: no commands executed"
+    exit 0
+fi
+
+mkdir -p "${OUTPUT_DIR}"
+
+# Step 0: Track 1 closure guardrail gate
+echo "=== CI Gate Step 0: Track 1 Closure Guardrails ==="
+"${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
+echo ""
 
 echo "Running CI Gate..."
 echo "  Fixtures: ${FIXTURES_ROOT}"
