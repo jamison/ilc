@@ -107,3 +107,31 @@ class TokenizationError(IlcError, ValueError):
 
 class NgramExtractionError(IlcError, ValueError):
     """Raised when n-gram extraction parameters are invalid."""
+
+
+class ProtocolError(IlcError, ValueError):
+    """Base exception for protocol-surface errors."""
+
+
+class ProtocolSchemaLoadError(ProtocolError):
+    """Raised when a protocol schema cannot be loaded or parsed."""
+
+
+class ProtocolMappingError(ProtocolError):
+    """Raised when internal models cannot be mapped to protocol contracts."""
+
+
+class ReplayProofError(IlcError, ValueError):
+    """Base exception for replay-proof contract failures."""
+
+
+class ReplayProofManifestError(ReplayProofError):
+    """Raised when replay-proof manifest content violates contract rules."""
+
+
+class ReplayProofPackageError(ReplayProofError):
+    """Raised when replay-proof package content violates contract rules."""
+
+
+class ReplayProofBaselineError(ReplayProofError):
+    """Raised when replay-proof baseline reports are invalid."""
