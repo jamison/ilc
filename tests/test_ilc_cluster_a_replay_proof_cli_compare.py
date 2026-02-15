@@ -3,6 +3,9 @@ import sys
 from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
+from importlib import resources
+
+import jsonschema
 
 from ilc_core.cli.canon_cluster_a_replay_proof import main
 
@@ -16,6 +19,13 @@ def run_cli_command(args_list):
                 return 0, output.getvalue()
             except SystemExit as e:
                 return e.code, output.getvalue()
+
+
+def _load_packaged_compare_schema() -> dict[str, object]:
+    text = resources.files("ilc_core.protocol.schemas").joinpath(
+        "ilc_cluster_a_replay_proof_batch_compare_v0.1.json"
+    ).read_text(encoding="utf-8")
+    return json.loads(text)
 
 
 def test_compare_reports_ok(tmp_path: Path):
@@ -120,3 +130,32 @@ def test_compare_reports_not_found(tmp_path: Path):
     assert code == 2
     err = json.loads(out)
     assert err["error"] == "file_not_found"
+
+
+def test_compare_reports_out_file_integration_schema_valid(tmp_path: Path):
+    fixtures = Path("tests/fixtures/cluster_a_replay_proof_batch_compare_v0_1")
+    left = fixtures / "report_left.json"
+    right = fixtures / "report_right.json"
+    expected = json.loads((fixtures / "compare_expected.json").read_text(encoding="utf-8"))
+    out_path = tmp_path / "compare_out.json"
+
+    code, out = run_cli_command(
+        [
+            "compare-reports",
+            "--left",
+            str(left),
+            "--right",
+            str(right),
+            "--out",
+            str(out_path),
+        ]
+    )
+    assert code == 1
+    assert out.strip() == ""
+    assert out_path.exists()
+
+    report = json.loads(out_path.read_text(encoding="utf-8"))
+    assert report == expected
+
+    schema = _load_packaged_compare_schema()
+    jsonschema.validate(instance=report, schema=schema)
