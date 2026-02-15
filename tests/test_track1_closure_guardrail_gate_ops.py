@@ -3,6 +3,7 @@ import subprocess
 
 
 GUARDRAIL_GATE_SCRIPT = Path("tools/check_track1_closure_guardrails.sh")
+DOMAIN_EXCEPTION_GATE_SCRIPT = Path("tools/check_domain_exception_migration_guardrails.sh")
 SCHEMA_PARITY_GATE_SCRIPT = Path("tools/check_replay_proof_schema_parity.sh")
 CI_GATE_SCRIPT = Path("tools/check_cluster_a_replay_proof_ci_gate.sh")
 RELEASE_GATE_SCRIPT = Path("tools/check_cluster_a_replay_proof_release_gate.sh")
@@ -63,11 +64,15 @@ def test_ops_gate_scripts_include_track1_guardrail_prestep() -> None:
     ci_text = CI_GATE_SCRIPT.read_text(encoding="utf-8")
     release_text = RELEASE_GATE_SCRIPT.read_text(encoding="utf-8")
 
+    assert DOMAIN_EXCEPTION_GATE_SCRIPT.name in ci_text
+    assert "=== CI Gate Step -2: Domain Exception Migration Guardrails ===" in ci_text
     assert 'check_replay_proof_schema_parity.sh' in ci_text
     assert "=== CI Gate Step -1: Replay-Proof Schema Parity ===" in ci_text
     assert 'check_track1_closure_guardrails.sh' in ci_text
     assert "=== CI Gate Step 0: Track 1 Closure Guardrails ===" in ci_text
 
+    assert DOMAIN_EXCEPTION_GATE_SCRIPT.name in release_text
+    assert "=== Release Gate Step -2: Domain Exception Migration Guardrails ===" in release_text
     assert 'check_replay_proof_schema_parity.sh' in release_text
     assert "=== Release Gate Step -1: Replay-Proof Schema Parity ===" in release_text
     assert 'check_track1_closure_guardrails.sh' in release_text
@@ -91,6 +96,7 @@ def test_ci_gate_dry_run_lists_deterministic_command_plan() -> None:
     result = _run_ci_gate(["--dry-run"])
     assert result.returncode == 0
     assert "Dry run: replay-proof ci-gate command plan" in result.stdout
+    assert "check_domain_exception_migration_guardrails.sh" in result.stdout
     assert "check_replay_proof_schema_parity.sh" in result.stdout
     assert "check_track1_closure_guardrails.sh" in result.stdout
     assert "ilc_core.cli.canon_cluster_a_replay_proof ci-gate" in result.stdout
@@ -134,6 +140,7 @@ def test_release_gate_dry_run_lists_deterministic_commands() -> None:
     result = _run_release_gate(["--dry-run"])
     assert result.returncode == 0
     assert "Dry run: replay-proof release gate command plan" in result.stdout
+    assert "check_domain_exception_migration_guardrails.sh" in result.stdout
     assert "check_replay_proof_schema_parity.sh" in result.stdout
     assert "check_track1_closure_guardrails.sh" in result.stdout
     assert "ilc_core.cli.canon_cluster_a_replay_proof ci-gate" in result.stdout

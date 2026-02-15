@@ -86,6 +86,7 @@ if [ "${DRY_RUN}" = "true" ]; then
     echo "  Fixtures: ${FIXTURES_ROOT}"
     echo "  Output:   ${OUTPUT_DIR}"
     echo "  Enforce:  ${ENFORCE}"
+    echo "  Step-2: ${SCRIPT_DIR}/check_domain_exception_migration_guardrails.sh"
     echo "  Step-1: ${SCRIPT_DIR}/check_replay_proof_schema_parity.sh"
     echo "  Step0:  ${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
     echo "  Step1:  ${GATE_CMD[*]}"
@@ -97,6 +98,11 @@ if [ "${DRY_RUN}" = "true" ]; then
     echo "Dry run complete: no commands executed"
     exit 0
 fi
+
+# --- Step -2: Domain exception migration guardrail preflight ---
+echo "=== Release Gate Step -2: Domain Exception Migration Guardrails ==="
+"${SCRIPT_DIR}/check_domain_exception_migration_guardrails.sh"
+echo ""
 
 # --- Step -1: Replay-proof schema parity preflight ---
 echo "=== Release Gate Step -1: Replay-Proof Schema Parity ==="
