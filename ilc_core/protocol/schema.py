@@ -2,6 +2,7 @@ import json
 import os
 from typing import Any, Dict
 
+from ilc_core.exceptions import ProtocolSchemaLoadError
 
 def load_protocol_schema(
     path: str = None,
@@ -20,5 +21,10 @@ def load_protocol_schema(
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         path = os.path.join(base_dir, "protocol", "ilc_protocol_mvp.json")
 
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError as exc:
+        raise ProtocolSchemaLoadError(f"protocol_schema_not_found:{path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ProtocolSchemaLoadError(f"protocol_schema_invalid_json:{path}") from exc

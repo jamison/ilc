@@ -1,6 +1,7 @@
 import pytest
 from ilc_core.types import Node
 from ilc_core.economics.outcome import TaskOutcome
+from ilc_core.exceptions import ProtocolMappingError
 from ilc_core.protocol.mapper import (
     node_to_protocol_claim,
     node_to_protocol_refute,
@@ -59,6 +60,34 @@ def test_node_to_protocol_refute_missing_target_defaults_none():
     # target_id defaults to None
     proto = node_to_protocol_refute(node)
     assert proto["target_claim_id"] is None
+
+
+def test_node_to_protocol_claim_invalid_type_raises_domain_error():
+    node = Node(
+        id="bad-claim-type",
+        type="refutation",
+        content="wrong mapper call",
+        agent_id="agent:test",
+        signature="sig",
+        net_stake=1.0,
+    )
+    with pytest.raises(ProtocolMappingError) as exc:
+        node_to_protocol_claim(node)
+    assert str(exc.value) == "protocol_mapping_invalid_claim_node_type:refutation"
+
+
+def test_node_to_protocol_refute_invalid_type_raises_domain_error():
+    node = Node(
+        id="bad-refute-type",
+        type="claim",
+        content="wrong mapper call",
+        agent_id="agent:test",
+        signature="sig",
+        net_stake=1.0,
+    )
+    with pytest.raises(ProtocolMappingError) as exc:
+        node_to_protocol_refute(node)
+    assert str(exc.value) == "protocol_mapping_invalid_refute_node_type:claim"
 
 def test_outcome_to_protocol_task_outcome_basic():
     outcome = TaskOutcome(

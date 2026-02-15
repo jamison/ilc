@@ -1,4 +1,7 @@
+import pytest
+
 from ilc_core.protocol.schema import load_protocol_schema
+from ilc_core.exceptions import ProtocolSchemaLoadError
 
 
 def test_protocol_schema_has_core_objects():
@@ -19,3 +22,18 @@ def test_protocol_schema_has_core_objects():
     # Check specific fields for epoch_summary
     epoch_fields = objects["epoch_summary"]["fields"]
     assert "clearing_price_ilc_per_ecu" in epoch_fields
+
+
+def test_protocol_schema_missing_path_raises_domain_error(tmp_path):
+    missing = tmp_path / "missing_protocol_schema.json"
+    with pytest.raises(ProtocolSchemaLoadError) as exc:
+        load_protocol_schema(str(missing))
+    assert "protocol_schema_not_found:" in str(exc.value)
+
+
+def test_protocol_schema_invalid_json_raises_domain_error(tmp_path):
+    bad = tmp_path / "invalid_protocol_schema.json"
+    bad.write_text("{not valid json}", encoding="utf-8")
+    with pytest.raises(ProtocolSchemaLoadError) as exc:
+        load_protocol_schema(str(bad))
+    assert "protocol_schema_invalid_json:" in str(exc.value)

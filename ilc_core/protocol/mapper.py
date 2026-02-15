@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Union
 from ilc_core.types import Node, node_to_claim_record
 from ilc_core.economics.outcome import TaskOutcome
+from ilc_core.exceptions import ProtocolMappingError
 
 
 def node_to_protocol_claim(node: Node) -> Dict[str, Any]:
@@ -10,7 +11,9 @@ def node_to_protocol_claim(node: Node) -> Dict[str, Any]:
     This does NOT write to disk or perform validation beyond basic type checks.
     """
     if node.type != "claim":
-        raise ValueError("node_to_protocol_claim expects a 'claim' node")
+        raise ProtocolMappingError(
+            f"protocol_mapping_invalid_claim_node_type:{node.type}"
+        )
 
     claim = node_to_claim_record(node)
     return {
@@ -33,7 +36,9 @@ def node_to_protocol_refute(node: Node) -> Dict[str, Any]:
     # Note: types.py defines 'refutation', but brief mentioned 'refute'.
     # We accept 'refutation' as the internal type.
     if node.type not in ("refute", "refutation"):
-        raise ValueError("node_to_protocol_refute expects a 'refute' or 'refutation' node")
+        raise ProtocolMappingError(
+            f"protocol_mapping_invalid_refute_node_type:{node.type}"
+        )
 
     claim = node_to_claim_record(node)
     
