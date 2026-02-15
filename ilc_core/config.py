@@ -23,6 +23,13 @@ def _coerce_governance_config(value: object) -> GovernanceConfig:
     return {}
 
 
+def _default_governance_config_path() -> Path:
+    root = Path(__file__).resolve().parents[1]
+    if yaml:
+        return root / "config" / "governance_mvp.yaml"
+    return root / "config" / "governance_mvp.json"
+
+
 def load_governance_config(path: str | None = None) -> GovernanceConfig:
     """
     Load Governance config from YAML/JSON.
@@ -31,33 +38,39 @@ def load_governance_config(path: str | None = None) -> GovernanceConfig:
     """
     user_supplied = path is not None
     if path is None:
-        root = Path(__file__).resolve().parents[1]
-        # Default to YAML if available, else JSON
-        if yaml:
-            path = root / "config" / "governance_mvp.yaml"
-        else:
-            path = root / "config" / "governance_mvp.json"
+        path_obj = _default_governance_config_path()
     else:
-        path = Path(path)
+        path_obj = Path(path)
 
-    if not path.exists():
+    if not path_obj.exists():
         if user_supplied:
-            logger.error("Config path not found: %s", path)
-            raise ConfigNotFoundError(str(path), message=f"config_not_found:{path}")
+            logger.error("governance_config_path_not_found path=%s", path_obj)
+            raise ConfigNotFoundError(str(path_obj), message=f"config_not_found:{path_obj}")
+        logger.warning(
+            "governance_config_default_missing path=%s fallback=empty_config",
+            path_obj,
+        )
         return {}
 
-    if path.suffix in {".yaml", ".yml"}:
+    if path_obj.suffix in {".yaml", ".yml"}:
         if yaml:
-            with path.open("r", encoding="utf-8") as f:
+            with path_obj.open("r", encoding="utf-8") as f:
                 return _coerce_governance_config(yaml.safe_load(f) or {})
         else:
-            logger.warning("PyYAML not installed. Cannot load %s.", path)
+            logger.warning(
+                "governance_config_yaml_loader_missing path=%s fallback=empty_config",
+                path_obj,
+            )
             return {}
             
-    elif path.suffix == ".json":
-        with path.open("r", encoding="utf-8") as f:
+    elif path_obj.suffix == ".json":
+        with path_obj.open("r", encoding="utf-8") as f:
             return _coerce_governance_config(json.load(f) or {})
     else:
-        if user_supplied:
-            logger.warning("Unsupported config extension for path: %s", path)
+        logger.warning(
+            "governance_config_unsupported_extension path=%s suffix=%s user_supplied=%s fallback=empty_config",
+            path_obj,
+            path_obj.suffix,
+            user_supplied,
+        )
         return {}
