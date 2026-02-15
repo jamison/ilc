@@ -22,7 +22,7 @@ class PeerManager:
         address = f"{host}:{port}"
         if address not in self.banned and address != f"127.0.0.1:{self.local_port}":
             self.peers.add(address)
-            logger.info("[Network] Added peer: %s", address)
+            logger.info("network_peer_added address=%s", address)
 
     def broadcast(self, endpoint: str, payload: dict):
         """
@@ -34,7 +34,12 @@ class PeerManager:
         fanout = min(len(self.peers), 3) # Gossip to 3 peers
         targets = random.sample(list(self.peers), fanout) if self.peers else []
         
-        logger.info("[Gossip] Broadcasting to %s peers: %s", len(targets), targets)
+        logger.info(
+            "network_gossip_broadcast endpoint=%s fanout=%s targets=%s",
+            endpoint,
+            len(targets),
+            targets,
+        )
         for target in targets:
             # Real network send path can be enabled later:
             # requests.post(f"http://{target}{endpoint}", json=payload, timeout=1)

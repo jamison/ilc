@@ -133,7 +133,7 @@ def receive_gossip(node_data: dict, request: Request):
     try:
         node = Node(**node_data)
         node_id = node.id
-        logger.info("[Gossip] Received Node %s from peer.", node_id)
+        logger.info("gossip_receive_inbound node=%s", node_id)
 
         if not node.signature:
             raise ValueError("gossip_signature_missing")
@@ -145,10 +145,10 @@ def receive_gossip(node_data: dict, request: Request):
             return {"status": "ignored", "reason": "already_have"}
 
         state.graph.add_node(node)
-        logger.info("[Gossip] Accepted new knowledge: %s", node_id)
+        logger.info("gossip_receive_accepted node=%s", node_id)
         return {"status": "accepted"}
-    except Exception as e:
-        logger.error("[Gossip] Error processing: %s", e)
+    except Exception as exc:
+        logger.exception("gossip_receive_failed reason=%s", exc)
         raise HTTPException(status_code=400, detail="Invalid Gossip")
 
 @app.post("/peers/add")

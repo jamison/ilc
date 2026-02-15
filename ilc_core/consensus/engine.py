@@ -41,10 +41,12 @@ def _engine_update_epoch_metrics(
 
     # Debug/logging (safe to keep for now; can be swapped for proper logger).
     logger.info(
-        f"[Consensus] Epoch {epoch_index + 1} "
-        f"backlog={backlog_len}, finalized={finalized_last_epoch}, "
-        f"hardware_scale={governance.hardware_scale:.4f}, "
-        f"congestion_mult={governance.congestion_multiplier:.4f}"
+        "consensus_epoch_metrics epoch=%s backlog=%s finalized=%s hardware_scale=%.4f congestion_mult=%.4f",
+        epoch_index + 1,
+        backlog_len,
+        finalized_last_epoch,
+        governance.hardware_scale,
+        governance.congestion_multiplier,
     )
 
 def _engine_compute_tax_rate(
@@ -73,8 +75,11 @@ def _engine_compute_bounty_amount(
 
     total_bounty = base_stake + paradigm_bonus
     logger.info(
-        f"[Consensus] Node {node_id[:8]} Age: {age:.1f}s. "
-        f"Bounty: {total_bounty:.4f} (Bonus: {paradigm_bonus:.4f})"
+        "consensus_bounty_computed node=%s age_seconds=%.1f bounty=%.4f paradigm_bonus=%.4f",
+        node_id[:8],
+        age,
+        total_bounty,
+        paradigm_bonus,
     )
     return total_bounty
 
@@ -91,8 +96,9 @@ def _engine_apply_slash(
     node_stakes[target_id] = new_balance
 
     logger.info(
-        f"[Consensus] ⚔️ PARADIGM SHIFT! "
-        f"Refuter earns Jackpot (theoretical): {bounty:.4f} units"
+        "consensus_paradigm_shift_jackpot target=%s bounty=%.4f",
+        target_id[:8],
+        bounty,
     )
     # Post-MVP: bounty transfer moved to project deferred items file (Consensus section).
 
@@ -205,8 +211,10 @@ class ConsensusEngine:
 
         if amount < required_fee:
             logger.warning(
-                f"[Consensus] REJECTED: Stake {amount} < "
-                f"Min ECU Fee {required_fee}"
+                "consensus_stake_rejected node=%s stake=%.4f min_fee=%.4f",
+                node_id[:8],
+                amount,
+                required_fee,
             )
             return False
 
@@ -214,12 +222,15 @@ class ConsensusEngine:
         self.node_stakes[node_id] = current + amount
 
         logger.info(
-            f"[Consensus] Stake accepted ({amount} units). "
-            f"Min ECU Fee was {required_fee}"
+            "consensus_stake_accepted node=%s stake=%.4f min_fee=%.4f",
+            node_id[:8],
+            amount,
+            required_fee,
         )
         logger.info(
-            f"[Consensus] Stake added to {node_id[:8]}. "
-            f"Net: {self.node_stakes[node_id]}"
+            "consensus_stake_total node=%s net=%.4f",
+            node_id[:8],
+            self.node_stakes[node_id],
         )
         return True
 
@@ -244,8 +255,9 @@ class ConsensusEngine:
         """
         unique_roots = self.sponsor_graph.get_cluster_count(validators)
         logger.info(
-            f"[Consensus] Independence Check: "
-            f"{len(validators)} agents -> {unique_roots} clusters."
+            "consensus_independence_check validators=%s clusters=%s",
+            len(validators),
+            unique_roots,
         )
         return unique_roots >= 3
 
@@ -344,16 +356,19 @@ class ConsensusEngine:
 
         if old_id in self.node_stakes:
             logger.info(
-                f"[Consensus] 🔄 EVOLUTION: Node {new_id[:8]} supersedes {old_id[:8]}."
+                "consensus_supersedes_applied new=%s old=%s",
+                new_id[:8],
+                old_id[:8],
             )
             logger.info(
-                f"            (Old node stake {self.node_stakes[old_id]} "
-                f"preserved, not slashed)"
+                "consensus_supersedes_preserved old=%s stake=%.4f",
+                old_id[:8],
+                self.node_stakes[old_id],
             )
         else:
             logger.warning(
-                f"[Consensus] Warning: Superseded node {old_id[:8]} "
-                f"not found in ledger."
+                "consensus_supersedes_missing_old old=%s",
+                old_id[:8],
             )
 
     # ------------------------------------------------------------------
