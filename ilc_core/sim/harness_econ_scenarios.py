@@ -22,6 +22,7 @@ from ilc_core.sim.devnet_experiments import (
 )
 from ilc_core.ledger import get_ledger_backend
 
+logger = logging.getLogger(__name__)
 
 OverrideScalar: TypeAlias = str | int | float | bool | None
 EconOverrideMap: TypeAlias = Dict[str, OverrideScalar]
@@ -53,7 +54,7 @@ def default_apply_econ(overrides: EconOverrideMap) -> None:
         if k in valid_keys:
             filtered_overrides[k] = v
         else:
-            logging.warning(f"Unknown econ override key: {k} (ignored)")
+            logger.warning("econ_override_unknown_key key=%s ignored=true", k)
             
     # Instantiate params to demonstrate valid shape (and catch type errors)
     if filtered_overrides:
@@ -61,7 +62,7 @@ def default_apply_econ(overrides: EconOverrideMap) -> None:
         # instance. We do not mutate any global state yet; wiring to a real
         # parameter registry is a future phase.
         params = ProtocolParams(**filtered_overrides)
-        logging.debug(f"Effective econ params for this run: {params}")
+        logger.debug("econ_override_effective_params params=%s", params)
 
 def run_econ_scenarios_on_devnet(
     base_scenario: DevnetScenarioConfig,

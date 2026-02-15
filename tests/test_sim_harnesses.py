@@ -20,16 +20,15 @@ def test_default_apply_econ_normalizes_legacy_keys(caplog):
         # 2. Call handler
         default_apply_econ(overrides)
         
-        # 3. Assert NO warnings for these keys
-        # "Unknown econ override key"
+        # 3. Assert no unknown-key warning token for normalized keys.
         for record in caplog.records:
-            assert "Unknown econ override key" not in record.message
+            assert "econ_override_unknown_key" not in record.message
             
         # 4. (Optional) Verify they would have warned if not normalized?
         # A bad key should still warn
         default_apply_econ({"bad_key_xyz": 123})
         found = False
         for record in caplog.records:
-            if "Unknown econ override key: bad_key_xyz" in record.message:
+            if "econ_override_unknown_key key=bad_key_xyz" in record.message:
                 found = True
         assert found
