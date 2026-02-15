@@ -5,17 +5,19 @@ from pathlib import Path
 from unittest.mock import patch
 import sys
 from io import StringIO
+from importlib import resources
 
 from ilc_core.cli.canon_cluster_a_replay_proof import main
 
 # Paths
 FIXTURES_ROOT = Path("tests/fixtures").absolute()
 BASELINE_PATH = FIXTURES_ROOT / "cluster_a_replay_proof_ci_gate_v0_1" / "release_v0_1_baseline.json"
-SCHEMA_PATH = Path("docs/specs/ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json")
 
 def load_schema():
-    with open(SCHEMA_PATH, "r") as f:
-        return json.load(f)
+    text = resources.files("ilc_core.protocol.schemas").joinpath(
+        "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
+    ).read_text(encoding="utf-8")
+    return json.loads(text)
 
 def run_cli_command(args_list):
     with patch.object(sys, "argv", ["prog"] + args_list):

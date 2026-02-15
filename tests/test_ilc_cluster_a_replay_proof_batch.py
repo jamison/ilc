@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from importlib import resources
 
 import jsonschema
 import pytest
@@ -15,6 +16,11 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_schemas import (
 # Mock packages for testing logic without filesystem
 VALID_PKG = {"mock": "valid"}
 INVALID_PKG = {"mock": "invalid"}
+
+
+def _load_packaged_replay_schema(name: str) -> dict[str, object]:
+    text = resources.files("ilc_core.protocol.schemas").joinpath(name).read_text(encoding="utf-8")
+    return json.loads(text)
 
 @pytest.fixture
 def mock_verifier():
@@ -149,10 +155,7 @@ def test_batch_report_schema_with_real_fixtures():
     ]
     report = verify_cluster_a_replay_proof_batch(packages, rel_paths)
 
-    schema = json.loads(
-        Path("docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json")
-        .read_text(encoding="utf-8")
-    )
+    schema = _load_packaged_replay_schema("ilc_cluster_a_replay_proof_batch_report_v0.1.json")
     jsonschema.Draft7Validator(schema).validate(report)
 
 def test_batch_report_matches_expected_fixture():
@@ -231,7 +234,6 @@ def test_manifest_traversal_collapse_normalization(tmp_path):
 
 def test_schema_loader_packaged_resource_available():
     """Packaged schema resources must be loadable from ilc_core.protocol.schemas."""
-    from importlib import resources
     schema_names = [
         "ilc_cluster_a_replay_proof_batch_report_v0.1.json",
         "ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json",

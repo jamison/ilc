@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from io import StringIO
+from importlib import resources
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,6 +14,11 @@ import pytest
 from ilc_core.cli.canon_cluster_a_replay_proof import main, handle_verify_batch
 
 FIXTURES_DIR = Path("tests/fixtures/cluster_a_replay_proof_batch_v0_1")
+
+
+def _load_packaged_replay_schema(name: str) -> dict[str, object]:
+    text = resources.files("ilc_core.protocol.schemas").joinpath(name).read_text(encoding="utf-8")
+    return json.loads(text)
 
 # Helper to capture stdout
 class CaptureOutput:
@@ -203,10 +209,7 @@ def test_verify_batch_manifest_duplicate_entry(tmp_path):
         os.chdir(old_cwd)
 
 def test_cli_batch_report_schema_manifest_real():
-    schema = json.loads(
-        Path("docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json")
-        .read_text(encoding="utf-8")
-    )
+    schema = _load_packaged_replay_schema("ilc_cluster_a_replay_proof_batch_report_v0.1.json")
     old_cwd = os.getcwd()
     os.chdir(FIXTURES_DIR)
     try:
@@ -218,10 +221,7 @@ def test_cli_batch_report_schema_manifest_real():
         os.chdir(old_cwd)
 
 def test_cli_batch_report_schema_input_dir_real(tmp_path):
-    schema = json.loads(
-        Path("docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json")
-        .read_text(encoding="utf-8")
-    )
+    schema = _load_packaged_replay_schema("ilc_cluster_a_replay_proof_batch_report_v0.1.json")
     # Copy fixture files into tmp dir so input-dir scan is controlled
     for name in [
         "package_valid.json",

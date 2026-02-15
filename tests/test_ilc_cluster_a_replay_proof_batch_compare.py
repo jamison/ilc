@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from importlib import resources
 
 import jsonschema
 
@@ -10,11 +11,16 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import (
 
 
 FIXTURES_DIR = Path("tests/fixtures/cluster_a_replay_proof_batch_compare_v0_1")
-COMPARE_SCHEMA_PATH = Path("docs/specs/ilc_cluster_a_replay_proof_batch_compare_v0.1.json")
+COMPARE_SCHEMA_NAME = "ilc_cluster_a_replay_proof_batch_compare_v0.1.json"
 
 
 def _load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _load_packaged_schema(name: str) -> dict[str, object]:
+    text = resources.files("ilc_core.protocol.schemas").joinpath(name).read_text(encoding="utf-8")
+    return json.loads(text)
 
 
 VALID_REPORT = {
@@ -37,7 +43,7 @@ def test_escape_path_token():
 
 
 def test_identical_reports_and_schema_valid():
-    schema = _load_json(COMPARE_SCHEMA_PATH)
+    schema = _load_packaged_schema(COMPARE_SCHEMA_NAME)
     res = compare_cluster_a_replay_proof_batch_reports(VALID_REPORT, VALID_REPORT)
     assert res["ok"] is True
     assert res["mismatch_count"] == 0

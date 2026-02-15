@@ -3,6 +3,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
+from importlib import resources
 
 import jsonschema
 
@@ -10,7 +11,7 @@ from ilc_core.cli.canon_cluster_a_replay_proof import main
 
 
 OPS_FIXTURES_DIR = Path("tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1")
-OPS_CONTRACT_SCHEMA_PATH = Path("docs/specs/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json")
+OPS_CONTRACT_SCHEMA_NAME = "ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json"
 
 
 def run_cli_command(args_list):
@@ -25,7 +26,8 @@ def run_cli_command(args_list):
 
 
 def _load_ops_schema():
-    return json.loads(OPS_CONTRACT_SCHEMA_PATH.read_text(encoding="utf-8"))
+    text = resources.files("ilc_core.protocol.schemas").joinpath(OPS_CONTRACT_SCHEMA_NAME).read_text(encoding="utf-8")
+    return json.loads(text)
 
 
 def _parse_contract(out: str):
