@@ -9,6 +9,11 @@ def test_ci_workflow_runs_track1_guardrail_preflight() -> None:
     assert "bash tools/check_track1_closure_guardrails.sh" in workflow
 
 
+def test_ci_workflow_runs_domain_exception_guardrail_preflight() -> None:
+    workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "bash tools/check_domain_exception_migration_guardrails.sh" in workflow
+
+
 def test_ci_workflow_runs_runtime_logging_guardrail_preflight() -> None:
     workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
     assert "bash tools/check_runtime_logging_guardrails.sh" in workflow
