@@ -5,8 +5,22 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from fastapi.testclient import TestClient
 from ilc_core.server import app
+from ilc_core.types import Node
 
 client = TestClient(app)
+
+
+def _build_gossip_node_payload(content: str, node_id: str) -> dict:
+    node = Node(
+        id=node_id,
+        type="claim",
+        content=content,
+        agent_id="agent:gossip:test",
+        signature="sig:gossip:test",
+        net_stake=1.0,
+    )
+    node.id = node.compute_id()
+    return node.model_dump(mode="json")
 
 def test_api_lifecycle():
     """Smoke-test the legacy HTTP API: pulse, mine, and read-back a node."""
@@ -32,6 +46,31 @@ def test_api_lifecycle():
     assert res_read.status_code == 200
     assert res_read.json()["content"] == "Hello World via API"
     print("Read Back: OK")
+
+
+def test_gossip_receive_accepts_valid_new_node():
+    payload = _build_gossip_node_payload("gossip_accept_payload", "placeholder")
+    response = client.post("/gossip/receive", json=payload)
+    assert response.status_code == 200
+    assert response.json() == {"status": "accepted"}
+    assert payload["id"] in app.state.graph.nodes
+
+
+def test_gossip_receive_rejects_id_mismatch():
+    payload = _build_gossip_node_payload("gossip_bad_id_payload", "placeholder")
+    payload["id"] = "not_the_expected_hash"
+    response = client.post("/gossip/receive", json=payload)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid Gossip"
+
+
+def test_gossip_receive_ignores_existing_node():
+    payload = _build_gossip_node_payload("gossip_duplicate_payload", "placeholder")
+    first = client.post("/gossip/receive", json=payload)
+    second = client.post("/gossip/receive", json=payload)
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert second.json() == {"status": "ignored", "reason": "already_have"}
 
 def test_get_protocol_schema():
     """Ensure /v1/protocol/schema returns the MVP protocol schema with core objects."""

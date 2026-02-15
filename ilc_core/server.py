@@ -127,23 +127,24 @@ def receive_gossip(node_data: dict, request: Request):
     """
     Endpoint for other nodes to push data to us.
     """
-    # 1. Parse Node
     state = _state(request)
     try:
-        # Simple validation logic (would be deeper in production)
-        node_id = node_data.get("id")
+        node = Node(**node_data)
+        node_id = node.id
         logger.info("[Gossip] Received Node %s from peer.", node_id)
-        
-        # 2. Add to Graph (if new)
-        # In a real system, we'd verify signature here first!
-        if node_id not in state.graph.nodes:
-            # Reconstruct node object (simplified for MVP)
-            # graph.add_node(Node(**node_data))
-            logger.info("[Gossip] Accepted new knowledge: %s", node_id)
-            return {"status": "accepted"}
-        else:
+
+        if not node.signature:
+            raise ValueError("gossip_signature_missing")
+        expected_id = node.compute_id()
+        if node_id != expected_id:
+            raise ValueError("gossip_node_id_mismatch")
+
+        if node_id in state.graph.nodes:
             return {"status": "ignored", "reason": "already_have"}
-            
+
+        state.graph.add_node(node)
+        logger.info("[Gossip] Accepted new knowledge: %s", node_id)
+        return {"status": "accepted"}
     except Exception as e:
         logger.error("[Gossip] Error processing: %s", e)
         raise HTTPException(status_code=400, detail="Invalid Gossip")
