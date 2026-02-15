@@ -16,6 +16,15 @@ def _run_guardrail_gate(args: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def _run_release_gate(args: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["bash", str(RELEASE_GATE_SCRIPT), *args],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
 def test_guardrail_gate_dry_run_lists_deterministic_commands() -> None:
     result = _run_guardrail_gate(["--dry-run"])
     assert result.returncode == 0
@@ -40,3 +49,25 @@ def test_ops_gate_scripts_include_track1_guardrail_prestep() -> None:
 
     assert 'check_track1_closure_guardrails.sh' in release_text
     assert "=== Release Gate Step 0: Track 1 Closure Guardrails ===" in release_text
+
+
+def test_release_gate_dry_run_lists_deterministic_commands() -> None:
+    result = _run_release_gate(["--dry-run"])
+    assert result.returncode == 0
+    assert "Dry run: replay-proof release gate command plan" in result.stdout
+    assert "check_track1_closure_guardrails.sh" in result.stdout
+    assert "ilc_core.cli.canon_cluster_a_replay_proof ci-gate" in result.stdout
+    assert "ilc_core.cli.canon_cluster_a_replay_proof verify-and-compare" in result.stdout
+    assert "Dry run complete: no commands executed" in result.stdout
+
+
+def test_release_gate_unknown_argument_fails_with_code_2() -> None:
+    result = _run_release_gate(["--bad-arg"])
+    assert result.returncode == 2
+    assert "Unknown argument: --bad-arg" in result.stderr
+
+
+def test_release_gate_dry_run_no_enforce_reflected() -> None:
+    result = _run_release_gate(["--dry-run", "--no-enforce"])
+    assert result.returncode == 0
+    assert "Enforce:  false" in result.stdout
