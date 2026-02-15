@@ -10,6 +10,7 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     ReplayObject,
     verify_cluster_a_replay_proof_package,
 )
+from ilc_core.exceptions import ReplayProofManifestError
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ def _normalize_manifest_path(raw_path: str) -> str:
     Normalize and validate a manifest entry path.
 
     Returns a portable POSIX-like relative path.
-    Raises ValueError on invalid path forms.
+    Raises ReplayProofManifestError on invalid path forms.
     """
     normalized = raw_path.replace("\\", "/")
     normalized = posixpath.normpath(normalized)
@@ -50,13 +51,13 @@ def _normalize_manifest_path(raw_path: str) -> str:
         normalized = normalized[2:]
 
     if normalized in ("", "."):
-        raise ValueError("schema_violation:invalid_manifest_path")
+        raise ReplayProofManifestError("schema_violation:invalid_manifest_path")
 
     # Reject traversal and absolute paths; manifests must stay relative.
     if normalized == ".." or normalized.startswith("../"):
-        raise ValueError("schema_violation:manifest_path_escape")
+        raise ReplayProofManifestError("schema_violation:manifest_path_escape")
     if normalized.startswith("/") or _WINDOWS_ABS_PATH_RE.match(normalized):
-        raise ValueError("schema_violation:manifest_path_not_relative")
+        raise ReplayProofManifestError("schema_violation:manifest_path_not_relative")
 
     return normalized
 
@@ -89,7 +90,7 @@ def load_manifest_paths(path: Path) -> List[str]:
             continue
         normalized = _normalize_manifest_path(line)
         if normalized in seen:
-            raise ValueError("schema_violation:duplicate_manifest_path")
+            raise ReplayProofManifestError("schema_violation:duplicate_manifest_path")
         seen.add(normalized)
         out.append(normalized)
     return out

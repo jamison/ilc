@@ -5,6 +5,7 @@ from importlib import resources
 import jsonschema
 import pytest
 from unittest.mock import patch
+from ilc_core.exceptions import ReplayProofManifestError
 from ilc_core.protocol.ilc_cluster_a_replay_proof_batch import (
     verify_cluster_a_replay_proof_batch,
     load_manifest_paths
@@ -94,6 +95,20 @@ def test_manifest_windows_path_not_relative_error(tmp_path):
     manifest.write_text("C:\\\\tmp\\\\file1.json\n", encoding="utf-8")
 
     with pytest.raises(ValueError, match="schema_violation:manifest_path_not_relative"):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_domain_exception_type_duplicate(tmp_path):
+    manifest = tmp_path / "manifest_dup_type.txt"
+    manifest.write_text("a.json\na.json\n", encoding="utf-8")
+    with pytest.raises(ReplayProofManifestError, match="schema_violation:duplicate_manifest_path"):
+        load_manifest_paths(manifest)
+
+
+def test_manifest_domain_exception_type_escape(tmp_path):
+    manifest = tmp_path / "manifest_escape_type.txt"
+    manifest.write_text("../x.json\n", encoding="utf-8")
+    with pytest.raises(ReplayProofManifestError, match="schema_violation:manifest_path_escape"):
         load_manifest_paths(manifest)
 
 
