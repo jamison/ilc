@@ -95,7 +95,12 @@ class EveAgent:
         result = self.benchmark_engine.run(self.id)
         self.trust_vector["potential"] = result["score"]
         self.trust_vector["tier"] = result["tier"]
-        logger.info("[%s] Hardware Verified: %s (%s)", self.id, result["device"], result["tier"])
+        logger.info(
+            "agent_hardware_verified agent=%s device=%s tier=%s",
+            self.id,
+            result["device"],
+            result["tier"],
+        )
         return result["score"]
 
     def mine_thought(self, content: str, parent_id: str, stake: float) -> Optional[Node]:
@@ -112,7 +117,12 @@ class EveAgent:
 
         # If we cannot stake anything meaningful, abort with the existing message.
         if chosen_stake <= 0 or self.wallet_balance < chosen_stake:
-            logger.warning("[%s] Insufficient funds to stake.", self.id)
+            logger.warning(
+                "agent_stake_insufficient_funds agent=%s wallet=%.4f chosen=%.4f",
+                self.id,
+                self.wallet_balance,
+                chosen_stake,
+            )
             return None
 
         # Construct the node exactly as before.
@@ -134,10 +144,14 @@ class EveAgent:
             # In case governance rejects the stake (e.g., ECU fee changed mid-flight),
             # revert the wallet deduction and abort.
             self.wallet_balance += chosen_stake
-            logger.warning("[%s] Stake rejected by consensus (fee too low?).", self.id)
+            logger.warning(
+                "agent_stake_rejected_by_consensus agent=%s chosen=%.4f",
+                self.id,
+                chosen_stake,
+            )
             return None
 
-        logger.info("[%s] Minted %s", self.id, node.id[:8])
+        logger.info("agent_claim_minted agent=%s node=%s", self.id, node.id[:8])
         return node
 
     def auto_mine_claim(self, content: str, parent_id: str) -> Optional[Node]:
@@ -182,7 +196,12 @@ class EveAgent:
         chosen = self.decide_stake_for_claim(candidate_stake)
 
         if chosen <= 0 or self.wallet_balance < chosen:
-            logger.warning("[%s] Auto-mine aborted (insufficient funds or fee too high).", self.id)
+            logger.warning(
+                "agent_auto_mine_aborted agent=%s wallet=%.4f chosen=%.4f",
+                self.id,
+                self.wallet_balance,
+                chosen,
+            )
             return None
 
         # Delegate actual minting to the existing mine_thought path.
@@ -195,14 +214,21 @@ class EveAgent:
             self.wallet_balance += net
             # Credit balance is technically liability, but simplistic tracking here:
             if repayment > 0:
-                logger.info("[%s] Repaid %.4f. Net Earnings: %.4f", self.id, repayment, net)
+                logger.info(
+                    "agent_reward_repayment agent=%s repaid=%.4f net=%.4f",
+                    self.id,
+                    repayment,
+                    net,
+                )
         else:
             self.wallet_balance += amount
 
     def refute_node(self, target_id: str, stake: float):
         if self.wallet_balance < stake:
             logger.warning(
-                "Insufficient balance for refutation: wallet_balance=%.4f stake=%.4f",
+                "agent_refute_insufficient_balance agent=%s target=%s wallet=%.4f stake=%.4f",
+                self.id,
+                target_id,
                 self.wallet_balance,
                 stake,
             )
