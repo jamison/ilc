@@ -9,6 +9,7 @@ from .types import Node
 from .network.peer import PeerManager
 from .config import load_governance_config
 from .logging_config import configure_logging
+from .exceptions import GossipValidationError
 from fastapi.responses import JSONResponse
 from typing import List, Optional
 from ilc_core.economics.outcome import TaskOutcome
@@ -136,10 +137,10 @@ def receive_gossip(node_data: dict, request: Request):
         logger.info("gossip_receive_inbound node=%s", node_id)
 
         if not node.signature:
-            raise ValueError("gossip_signature_missing")
+            raise GossipValidationError("gossip_signature_missing")
         expected_id = node.compute_id()
         if node_id != expected_id:
-            raise ValueError("gossip_node_id_mismatch")
+            raise GossipValidationError("gossip_node_id_mismatch")
 
         if node_id in state.graph.nodes:
             return {"status": "ignored", "reason": "already_have"}
@@ -147,8 +148,11 @@ def receive_gossip(node_data: dict, request: Request):
         state.graph.add_node(node)
         logger.info("gossip_receive_accepted node=%s", node_id)
         return {"status": "accepted"}
-    except Exception as exc:
-        logger.exception("gossip_receive_failed reason=%s", exc)
+    except GossipValidationError as exc:
+        logger.warning("gossip_receive_rejected token=%s", exc.token)
+        raise HTTPException(status_code=400, detail="Invalid Gossip")
+    except Exception:
+        logger.exception("gossip_receive_failed token=gossip_unexpected_error")
         raise HTTPException(status_code=400, detail="Invalid Gossip")
 
 @app.post("/peers/add")

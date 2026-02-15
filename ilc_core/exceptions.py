@@ -61,6 +61,14 @@ class NodeNotFoundError(IlcError, KeyError):
         super().__init__(message or f"Node not found: {node_id}")
 
 
+class GossipValidationError(IlcError, ValueError):
+    """Raised when an inbound gossip payload fails validation."""
+
+    def __init__(self, token: str, message: str = "") -> None:
+        self.token = token
+        super().__init__(message or token)
+
+
 class ManifestError(IlcError, ValueError):
     """Base for manifest-related errors."""
 
