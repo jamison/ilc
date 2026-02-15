@@ -3,7 +3,7 @@
 # Run the Cluster A Replay Proof CI Gate and optionally enforce baseline.
 #
 # Usage:
-#   ./tools/check_cluster_a_replay_proof_ci_gate.sh [--baseline <path>] [--no-enforce]
+#   ./tools/check_cluster_a_replay_proof_ci_gate.sh [--baseline <path>] [--no-enforce] [--dry-run] [--help|-h]
 #
 # By default, if a baseline is found at the standard location, baseline
 # enforcement is enabled. Pass --no-enforce to disable strict mode.
@@ -21,6 +21,12 @@ DEFAULT_BASELINE="${FIXTURES_ROOT}/cluster_a_replay_proof_ci_gate_v0_1/release_v
 BASELINE=""
 ENFORCE="true"
 DRY_RUN="false"
+
+print_usage() {
+    cat <<'EOF'
+Usage: check_cluster_a_replay_proof_ci_gate.sh [--baseline <path>] [--no-enforce] [--dry-run] [--help|-h]
+EOF
+}
 
 # Parse arguments
 while [ $# -gt 0 ]; do
@@ -40,6 +46,10 @@ while [ $# -gt 0 ]; do
         --dry-run)
             DRY_RUN="true"
             shift
+            ;;
+        --help|-h)
+            print_usage
+            exit 0
             ;;
         *)
             echo "Unknown argument: $1" >&2

@@ -87,6 +87,21 @@ def test_ci_gate_dry_run_no_enforce_reflected() -> None:
     assert "Enforce:  false" in result.stdout
 
 
+def test_ci_gate_help_contract() -> None:
+    result = _run_ci_gate(["--help"])
+    assert result.returncode == 0
+    assert "Usage: check_cluster_a_replay_proof_ci_gate.sh" in result.stdout
+    assert "--baseline <path>" in result.stdout
+    assert "--no-enforce" in result.stdout
+    assert "--dry-run" in result.stdout
+
+
+def test_ci_gate_short_help_contract() -> None:
+    result = _run_ci_gate(["-h"])
+    assert result.returncode == 0
+    assert "Usage: check_cluster_a_replay_proof_ci_gate.sh" in result.stdout
+
+
 def test_release_gate_dry_run_lists_deterministic_commands() -> None:
     result = _run_release_gate(["--dry-run"])
     assert result.returncode == 0
@@ -107,3 +122,11 @@ def test_release_gate_dry_run_no_enforce_reflected() -> None:
     result = _run_release_gate(["--dry-run", "--no-enforce"])
     assert result.returncode == 0
     assert "Enforce:  false" in result.stdout
+
+
+def test_release_gate_help_contract() -> None:
+    result = _run_release_gate(["--help"])
+    assert result.returncode == 0
+    assert "Usage: check_cluster_a_replay_proof_release_gate.sh" in result.stdout
+    assert "--no-enforce" in result.stdout
+    assert "--dry-run" in result.stdout

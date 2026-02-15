@@ -7,7 +7,7 @@
 # Exits non-zero on any drift, security, or contract violation.
 #
 # Usage:
-#   ./tools/check_cluster_a_replay_proof_release_gate.sh [--no-enforce]
+#   ./tools/check_cluster_a_replay_proof_release_gate.sh [--no-enforce] [--dry-run] [--help|-h]
 
 set -euo pipefail
 
@@ -21,6 +21,12 @@ ENFORCE="true"
 DRY_RUN="false"
 OVERALL_EXIT=0
 
+print_usage() {
+    cat <<'EOF'
+Usage: check_cluster_a_replay_proof_release_gate.sh [--no-enforce] [--dry-run] [--help|-h]
+EOF
+}
+
 # Parse arguments
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -31,6 +37,10 @@ while [ $# -gt 0 ]; do
         --dry-run)
             DRY_RUN="true"
             shift
+            ;;
+        --help|-h)
+            print_usage
+            exit 0
             ;;
         *)
             echo "Unknown argument: $1" >&2
