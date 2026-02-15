@@ -88,13 +88,19 @@ if [ "${DRY_RUN}" = "true" ]; then
         echo "  Baseline: ${BASELINE}"
         echo "  Enforce:  ${ENFORCE}"
     fi
-    echo "  Step0: ${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
-    echo "  Step1: ${CMD[*]}"
+    echo "  Step-1: ${SCRIPT_DIR}/check_replay_proof_schema_parity.sh"
+    echo "  Step0:  ${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
+    echo "  Step1:  ${CMD[*]}"
     echo "Dry run complete: no commands executed"
     exit 0
 fi
 
 mkdir -p "${OUTPUT_DIR}"
+
+# Step -1: Replay-proof schema parity preflight
+echo "=== CI Gate Step -1: Replay-Proof Schema Parity ==="
+"${SCRIPT_DIR}/check_replay_proof_schema_parity.sh"
+echo ""
 
 # Step 0: Track 1 closure guardrail gate
 echo "=== CI Gate Step 0: Track 1 Closure Guardrails ==="

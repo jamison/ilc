@@ -86,16 +86,22 @@ if [ "${DRY_RUN}" = "true" ]; then
     echo "  Fixtures: ${FIXTURES_ROOT}"
     echo "  Output:   ${OUTPUT_DIR}"
     echo "  Enforce:  ${ENFORCE}"
-    echo "  Step0: ${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
-    echo "  Step1: ${GATE_CMD[*]}"
+    echo "  Step-1: ${SCRIPT_DIR}/check_replay_proof_schema_parity.sh"
+    echo "  Step0:  ${SCRIPT_DIR}/check_track1_closure_guardrails.sh"
+    echo "  Step1:  ${GATE_CMD[*]}"
     if [ -f "${MANIFEST}" ] && [ -f "${EXPECTED_REPORT}" ]; then
-        echo "  Step2: ${VC_CMD[*]}"
+        echo "  Step2:  ${VC_CMD[*]}"
     else
-        echo "  Step2: skipped (fixtures not found)"
+        echo "  Step2:  skipped (fixtures not found)"
     fi
     echo "Dry run complete: no commands executed"
     exit 0
 fi
+
+# --- Step -1: Replay-proof schema parity preflight ---
+echo "=== Release Gate Step -1: Replay-Proof Schema Parity ==="
+"${SCRIPT_DIR}/check_replay_proof_schema_parity.sh"
+echo ""
 
 # --- Step 0: Track 1 closure guardrail gate ---
 echo "=== Release Gate Step 0: Track 1 Closure Guardrails ==="
