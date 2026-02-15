@@ -8,6 +8,7 @@ from .agent import EveAgent
 from .types import Node
 from .network.peer import PeerManager
 from .config import load_governance_config
+from .logging_config import configure_logging
 from fastapi.responses import JSONResponse
 from typing import List, Optional
 from ilc_core.economics.outcome import TaskOutcome
@@ -21,6 +22,7 @@ from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
 from ilc_core.genesis.schema import load_epistemic_work_task_schema
 from ilc_core.work.task_queue import TaskDescriptor
 
+configure_logging()
 logger = logging.getLogger(__name__)
 
 

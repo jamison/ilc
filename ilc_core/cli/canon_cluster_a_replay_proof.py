@@ -11,6 +11,7 @@ import json
 import argparse
 from typing import Dict, Optional, TypedDict, TypeAlias, cast
 
+from ilc_core.logging_config import configure_logging
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
     verify_cluster_a_replay_proof_package
@@ -21,6 +22,8 @@ from ilc_core.cli._cli_error import (
     build_cli_error_payload,
     emit_cli_error,
 )
+
+configure_logging()
 
 # Exit Codes
 EXIT_OK = 0
