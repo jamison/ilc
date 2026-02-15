@@ -3,6 +3,7 @@ from pathlib import Path
 from importlib import resources
 
 import jsonschema
+import ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare as batch_compare_module
 
 from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_compare import (
     _escape_path_token,
@@ -108,3 +109,13 @@ def test_mismatch_ordering_is_deterministic():
     res = compare_cluster_a_replay_proof_batch_reports(left, right)
     paths = [m["path"] for m in res["mismatches"]]
     assert paths == sorted(paths)
+
+
+def test_schema_unavailable_returns_fail_closed_internal_error(monkeypatch):
+    monkeypatch.setattr(batch_compare_module, "_BATCH_REPORT_VALIDATOR", None)
+    res = compare_cluster_a_replay_proof_batch_reports(VALID_REPORT, VALID_REPORT)
+    assert res["ok"] is False
+    assert res["mismatch_count"] == 1
+    mismatch = res["mismatches"][0]
+    assert mismatch["reason"] == "schema_invalid_left"
+    assert mismatch["detail"] == "internal_error:schema_not_loaded"

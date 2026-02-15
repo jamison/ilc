@@ -1,6 +1,7 @@
 import pytest
 import json
 from pathlib import Path
+import ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate as ci_gate_module
 from ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate import (
     run_cluster_a_replay_proof_ci_gate,
     load_ci_gate_baseline,
@@ -34,6 +35,12 @@ def test_load_baseline_schema_invalid(tmp_path):
     bad.write_text(json.dumps({"not_a_valid_report": True}), encoding="utf-8")
     with pytest.raises(ValueError):
         load_ci_gate_baseline(bad)
+
+
+def test_load_baseline_schema_unavailable_raises_value_error(monkeypatch):
+    monkeypatch.setattr(ci_gate_module, "_GATE_REPORT_VALIDATOR", None)
+    with pytest.raises(ValueError, match="internal_error:schema_not_loaded"):
+        load_ci_gate_baseline(BASELINE_PATH)
 
 # --- compare_ci_gate_report_to_baseline ---
 
@@ -82,6 +89,14 @@ def test_compare_schema_invalid_baseline():
     cmp = compare_ci_gate_report_to_baseline(report, bad_baseline)
     assert cmp["ok"] is False
     assert cmp["mismatches"][0]["reason"] == "schema_invalid_baseline"
+
+
+def test_compare_schema_unavailable_current_returns_fail_closed(monkeypatch):
+    monkeypatch.setattr(ci_gate_module, "_GATE_REPORT_VALIDATOR", None)
+    cmp = compare_ci_gate_report_to_baseline({"gate_version": "v0.1"}, {"gate_version": "v0.1"})
+    assert cmp["ok"] is False
+    assert cmp["mismatches"][0]["reason"] == "schema_invalid_current"
+    assert cmp["mismatches"][0]["detail"] == "internal_error:schema_not_loaded"
 
 def test_compare_mismatch_paths_sorted():
     """Mismatches must be deterministically sorted by (path, reason)."""
