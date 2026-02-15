@@ -1,6 +1,7 @@
 import pytest
 import json
 from pathlib import Path
+from ilc_core.exceptions import ReplayProofBaselineError
 import ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate as ci_gate_module
 from ilc_core.protocol.ilc_cluster_a_replay_proof_ci_gate import (
     run_cluster_a_replay_proof_ci_gate,
@@ -33,13 +34,13 @@ def test_load_baseline_invalid_json(tmp_path):
 def test_load_baseline_schema_invalid(tmp_path):
     bad = tmp_path / "invalid_schema.json"
     bad.write_text(json.dumps({"not_a_valid_report": True}), encoding="utf-8")
-    with pytest.raises(ValueError):
+    with pytest.raises(ReplayProofBaselineError):
         load_ci_gate_baseline(bad)
 
 
 def test_load_baseline_schema_unavailable_raises_value_error(monkeypatch):
     monkeypatch.setattr(ci_gate_module, "_GATE_REPORT_VALIDATOR", None)
-    with pytest.raises(ValueError, match="internal_error:schema_not_loaded"):
+    with pytest.raises(ReplayProofBaselineError, match="internal_error:schema_not_loaded"):
         load_ci_gate_baseline(BASELINE_PATH)
 
 # --- compare_ci_gate_report_to_baseline ---

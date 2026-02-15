@@ -14,6 +14,7 @@ from ilc_core.protocol.ilc_cluster_a_replay_proof_batch_ops import (
 from ilc_core.protocol.ilc_cluster_a_replay_proof_schemas import (
     load_replay_proof_schema,
 )
+from ilc_core.exceptions import ReplayProofBaselineError
 
 logger = logging.getLogger(__name__)
 
@@ -380,10 +381,10 @@ def load_ci_gate_baseline(path: Path | str) -> GateReport:
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     if not isinstance(data, dict):
-        raise ValueError("baseline is not a JSON object")
+        raise ReplayProofBaselineError("baseline is not a JSON object")
     err = _validate_gate_report_schema(data)
     if err:
-        raise ValueError(err)
+        raise ReplayProofBaselineError(err)
     return data
 
 
