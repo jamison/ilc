@@ -10,6 +10,7 @@ import hashlib
 import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 
+from ilc_core.exceptions import ReplayProofPackageError
 from ilc_core.protocol.ilc_cluster_a_ingest import canonical_governance_record_digest
 from ilc_core.protocol.ilc_cluster_a_acceptance_evidence import (
     validate_evidence_schema,
@@ -61,16 +62,18 @@ def build_cluster_a_replay_proof_package(
     Build a deterministic replay proof package.
     """
     # 0. Validate Inputs exist/schema? We trust inputs here mostly but should ensure stability.
-    # Validate evidence roughly
-    if validate_evidence_schema(evidence):
-        raise ValueError("Invalid evidence provided to package builder")
+    if not isinstance(evidence, dict):
+        raise ReplayProofPackageError("schema_violation:invalid_evidence_input")
 
     # 1. Compute Hashes
     record_hash = evidence.get("record_hash_sha256")
     if not record_hash:
         # Recompute? Or require it present?
         # Evidence schema requires it.
-        raise ValueError("Evidence missing record_hash_sha256")
+        raise ReplayProofPackageError("schema_violation:evidence_missing_record_hash_sha256")
+    # Validate evidence roughly
+    if validate_evidence_schema(evidence):
+        raise ReplayProofPackageError("schema_violation:invalid_evidence_input")
         
     contract_hash = canonical_evidence_contract_digest(evidence)
     
@@ -207,7 +210,7 @@ def _verify_record_hash(
 ) -> None:
     gov_rec_obj = replay_contract["governance_record"]
     if not isinstance(gov_rec_obj, dict):
-        raise ValueError("governance_record must be dict")
+        raise ReplayProofPackageError("schema_violation:governance_record_not_object")
 
     computed_rec_hash = canonical_governance_record_digest(gov_rec_obj)
     claimed_rec_hash = package["record_hash_sha256"]
@@ -228,7 +231,7 @@ def _verify_replay_attestation(
 ) -> None:
     gov_rec_obj = replay_contract["governance_record"]
     if not isinstance(gov_rec_obj, dict):
-        raise ValueError("governance_record must be dict")
+        raise ReplayProofPackageError("schema_violation:governance_record_not_object")
 
     attest_res = attest_cluster_a_replay(
         evidence=evidence,

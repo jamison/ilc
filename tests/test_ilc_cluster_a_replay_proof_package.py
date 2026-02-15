@@ -1,6 +1,7 @@
 
 import pytest
 import copy
+from ilc_core.exceptions import ReplayProofPackageError
 from ilc_core.protocol.ilc_cluster_a_replay_proof_package import (
     build_cluster_a_replay_proof_package,
     verify_cluster_a_replay_proof_package,
@@ -68,6 +69,30 @@ def test_build_and_verify_success(governance_record, apply_result, conformance_r
     assert "check_evidence_contract_hash_match" in checks
     assert "check_record_hash_match" in checks
     assert "check_replay_attest" in checks
+
+
+def test_build_fails_with_domain_exception_on_invalid_evidence(governance_record, apply_result, conformance_result):
+    with pytest.raises(ReplayProofPackageError, match="schema_violation:invalid_evidence_input"):
+        build_cluster_a_replay_proof_package(
+            evidence="bad-evidence-object",
+            governance_record=governance_record,
+            apply_result=apply_result,
+            conformance_result=conformance_result,
+        )
+
+
+def test_build_fails_with_domain_exception_on_missing_record_hash(
+    governance_record, apply_result, conformance_result, evidence
+):
+    bad_evidence = copy.deepcopy(evidence)
+    bad_evidence.pop("record_hash_sha256", None)
+    with pytest.raises(ReplayProofPackageError, match="schema_violation:evidence_missing_record_hash_sha256"):
+        build_cluster_a_replay_proof_package(
+            evidence=bad_evidence,
+            governance_record=governance_record,
+            apply_result=apply_result,
+            conformance_result=conformance_result,
+        )
 
 def test_verify_fails_package_hash_mismatch(governance_record, apply_result, conformance_result, evidence):
     package = build_cluster_a_replay_proof_package(
