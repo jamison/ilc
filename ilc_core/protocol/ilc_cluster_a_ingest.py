@@ -336,9 +336,19 @@ def _resolve_known_records_hash_mode(state: Dict[str, Any]) -> Dict[str, Any]:
 
     mode = state.get("known_records_hash_mode")
     if mode == KNOWN_RECORDS_HASH_MODE_PAYLOAD:
-        return {"ok": True, "mode": KNOWN_RECORDS_HASH_MODE_PAYLOAD, "warnings": []}
+        return {
+            "ok": True,
+            "mode": KNOWN_RECORDS_HASH_MODE_PAYLOAD,
+            "warnings": [],
+            "telemetry": {},
+        }
     if mode == KNOWN_RECORDS_HASH_MODE_DIGEST:
-        return {"ok": True, "mode": KNOWN_RECORDS_HASH_MODE_DIGEST, "warnings": []}
+        return {
+            "ok": True,
+            "mode": KNOWN_RECORDS_HASH_MODE_DIGEST,
+            "warnings": [],
+            "telemetry": {},
+        }
 
     if known_records:
         return {
@@ -348,6 +358,7 @@ def _resolve_known_records_hash_mode(state: Dict[str, Any]) -> Dict[str, Any]:
                 "code": "context_violation:known_records_hash_mode_required",
                 "known_records_hash_mode": mode,
                 "known_records_count": len(known_records),
+                "telemetry_counter": "known_records_hash_mode_required_rejects",
             }],
         }
 
@@ -355,6 +366,9 @@ def _resolve_known_records_hash_mode(state: Dict[str, Any]) -> Dict[str, Any]:
         "ok": True,
         "mode": KNOWN_RECORDS_HASH_MODE_DIGEST,
         "warnings": ["known_records_hash_mode_defaulted_to_record_digest_v1"],
+        "telemetry": {
+            "known_records_hash_mode_defaulted_to_record_digest_v1": 1,
+        },
     }
 
 def _verify_governance_signatures(
@@ -503,6 +517,7 @@ def apply_governance_record(
 
     known_records_mode = mode_resolution["mode"]
     mode_warnings = mode_resolution.get("warnings", [])
+    mode_telemetry = mode_resolution.get("telemetry", {})
 
     known_records_raw = current_policy_state.get("known_records", {}) # map id -> hash
     known_records = known_records_raw if isinstance(known_records_raw, dict) else {}
@@ -539,6 +554,7 @@ def apply_governance_record(
             "record_digest": current_digest,
             "record_digest_mode": KNOWN_RECORDS_HASH_MODE_DIGEST,
             "known_records_hash_mode_effective": known_records_mode,
+            "telemetry": mode_telemetry,
             "policy_state_delta": {
                 "proposals": {proposal_id: new_state},
                 "known_records": {rec_id: known_record_value},
