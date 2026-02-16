@@ -3,6 +3,8 @@ import hashlib
 from pathlib import Path
 from typing import TypeAlias, TypedDict
 
+from ilc_core.exceptions import LedgerExportContractError
+
 def _sha256_bytes(data: bytes) -> str:
     """Compute SHA-256 hexdigest of bytes."""
     return hashlib.sha256(data).hexdigest()
@@ -46,12 +48,12 @@ def write_canon_export_bundle(
         The path to the created bundle directory.
         
     Raises:
-        ValueError: If export is missing required fields.
+        LedgerExportContractError: If export is missing required fields.
         FileExistsError: If bundle_dir is not empty and overwrite is False.
     """
     # 1. Validate Input
     if "canon_hash" not in export:
-        raise ValueError("export payload missing required 'canon_hash'")
+        raise LedgerExportContractError("export payload missing required 'canon_hash'")
         
     export_fmt = export.get("canon_export_format", "unknown")
     

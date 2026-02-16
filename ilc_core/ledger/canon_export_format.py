@@ -2,6 +2,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import TypeAlias, TypedDict
 
+from ilc_core.exceptions import LedgerExportContractError
+
 
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
@@ -47,10 +49,10 @@ def export_canon_format_v0_1(
         Dict conforming to the canon_export_format_v0.1 schema.
 
     Raises:
-        ValueError: If required keys are missing or types are incorrect.
+        LedgerExportContractError: If required keys are missing or types are incorrect.
     """
     if "canon_hash" not in canon_state or "canon_export_version" not in canon_state:
-        raise ValueError("canon_state missing required keys: 'canon_hash' and 'canon_export_version' are mandatory")
+        raise LedgerExportContractError("canon_state missing required keys: 'canon_hash' and 'canon_export_version' are mandatory")
 
     exported_at = exported_at or datetime.now(timezone.utc).isoformat()
 
@@ -61,11 +63,11 @@ def export_canon_format_v0_1(
 
     # Validate types minimally to ensure schema compliance
     if not isinstance(epochs_raw, list):
-        raise ValueError("Field 'epochs' must be a list")
+        raise LedgerExportContractError("Field 'epochs' must be a list")
     if not isinstance(snapshots_raw, list):
-        raise ValueError("Field 'snapshots' must be a list")
+        raise LedgerExportContractError("Field 'snapshots' must be a list")
     if not isinstance(balances_raw, dict):
-        raise ValueError("Field 'balances' must be a dict")
+        raise LedgerExportContractError("Field 'balances' must be a dict")
     
     epochs: list[JsonValue] = epochs_raw
     snapshots: list[JsonValue] = snapshots_raw

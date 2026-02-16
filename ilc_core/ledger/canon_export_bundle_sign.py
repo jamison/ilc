@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
+from ilc_core.exceptions import LedgerExportContractError
 from ilc_core.ledger.canon_bundle_utils import derive_key_id
 
 
@@ -15,11 +16,11 @@ def load_key_from_file(path: Path) -> bytes:
     """Load a base64-encoded key from a file."""
     raw = path.read_text(encoding="utf-8").strip()
     if not raw:
-        raise ValueError("Key file is empty")
+        raise LedgerExportContractError("Key file is empty")
     try:
         return base64.b64decode(raw)
     except binascii.Error as exc:
-        raise ValueError("invalid_key_file") from exc
+        raise LedgerExportContractError("invalid_key_file") from exc
 
 
 def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path:
@@ -68,4 +69,3 @@ def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path
     sig_path.write_bytes(sig_b64 + b"\n")
     
     return sig_path
-
