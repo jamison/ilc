@@ -141,6 +141,10 @@ class EventLogValidationError(ProtocolError):
     """Raised when protocol event-log payloads fail validation contracts."""
 
 
+class NodeValueInputValidationError(ProtocolError):
+    """Raised when node-value scoring input events fail canon validation."""
+
+
 class ClauseBindingValidationError(ProtocolError):
     """Raised when constitution clause-binding check payloads are invalid."""
 
