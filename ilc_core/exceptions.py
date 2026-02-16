@@ -153,6 +153,10 @@ class GovernanceWeightError(ProtocolError):
     """Raised when governance-weight policy or inputs violate contract rules."""
 
 
+class RewardGovernorError(ProtocolError):
+    """Raised when utility-flow reward allocation policy inputs are invalid."""
+
+
 class ClauseBindingValidationError(ProtocolError):
     """Raised when constitution clause-binding check payloads are invalid."""
 
