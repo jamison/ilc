@@ -149,6 +149,10 @@ class NodeValueKernelError(ProtocolError):
     """Raised when node-value score kernel inputs or weights are invalid."""
 
 
+class GovernanceWeightError(ProtocolError):
+    """Raised when governance-weight policy or inputs violate contract rules."""
+
+
 class ClauseBindingValidationError(ProtocolError):
     """Raised when constitution clause-binding check payloads are invalid."""
 
