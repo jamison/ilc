@@ -100,6 +100,18 @@ Normative usage details are specified in `docs/specs/ilc_replay_routing_ops_term
 | **Devnet Topology** | Structured peer and agent arrangement used in deterministic simulation and development-network validation. | Use `Devnet Topology` for explicit simulation arrangement and validation topology language. |
 | **Staking** | Economic collateral mechanism that binds participation and penalty surfaces to posted stake. | Use `Staking` for collateral and participation-bound economics references. |
 
+### 2.8 Near-Term Non-Governance Pre-Alignment Contracts (Phase 992)
+
+The following terms are pre-aligned `Near` contracts to standardize wording before full promotion.
+They remain pre-alignment artifacts and do not imply governance ratification.
+Normative pre-alignment details are specified in `docs/specs/ilc_near_prep_non_governance_term_contracts_v0.1.md`.
+
+| Term | Pre-Alignment Role | Canon Rule |
+| :--- | :--- | :--- |
+| **Canonical JSON** | Deterministic fallback text-encoding terminology when binary canonical encoding is unavailable. | Use `Canonical JSON` only as a fallback profile and keep determinism language explicit. |
+| **Convergent Consensus** | Explanatory terminology for convergence outcomes across independent validation paths. | Use `Convergent Consensus` as explanatory wording, not as a separate consensus primitive name. |
+| **Node Load Metrics** | Runtime load measurement terminology for diagnostics and balancing discussions. | Use `Node Load Metrics` for queue, throughput, and pressure indicator language in operations docs. |
+
 ---
 
 ## 3. Architectural Invariants

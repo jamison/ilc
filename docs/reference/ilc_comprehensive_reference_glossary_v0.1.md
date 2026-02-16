@@ -227,7 +227,7 @@ Term-by-term elevation planning and lane assignment are tracked in:
 | **Semantic Compression** | Compression of graph/state by preserving epistemically relevant structure rather than raw events. | **Research candidate** |
 | **Epistemic Geometry** | The idea of representing validated graph state as geometric/structured summaries. | **Discussed, not included in current ILC core** |
 | **Graph Geometry** | Historical term for geometric abstractions built from graph topology and validation outputs. | **Discussed, not included in current ILC core** |
-| **Convergent Consensus** | Consensus framing where independent validators converge on equivalent outcomes. | **Discussed, not included in current ILC core** |
+| **Convergent Consensus** | Consensus framing where independent validators converge on equivalent outcomes. | **Discussed (near-prealigned contract)** |
 | **PONTI** | Historical acronym used in some drafts for task execution/proof stages. | **Discussed, not included in current ILC core** |
 | **PORCC** | Historical acronym used in some drafts for convergence/quorum validation phases. | **Discussed, not included in current ILC core** |
 | **POEG** | Historical acronym used in some drafts for graph-to-geometry collapse stages. | **Discussed, not included in current ILC core** |
@@ -285,14 +285,14 @@ Term-by-term elevation planning and lane assignment are tracked in:
 | **Node ID** | Deterministic identifier used to reference a Graph Node across serialization, validation, and replay boundaries. | **Canonical-adjacent (active contract)** |
 | **Canonical Encoding** | Deterministic serialization constraints that ensure identical content hashes and replay outcomes across implementations. | **Canonical-adjacent (active contract)** |
 | **Deterministic CBOR** | CBOR encoding profile constrained for stable byte output and cross-runtime hash parity. | **Canonical-adjacent (active contract)** |
-| **Canonical JSON** | JSON normalization discipline used where CBOR is unavailable, preserving deterministic field/value interpretation. | **Canonical-adjacent** |
+| **Canonical JSON** | JSON normalization discipline used where CBOR is unavailable, preserving deterministic field/value interpretation. | **Canonical-adjacent (near-prealigned contract)** |
 | **Directed Acyclic Graph (DAG)** | A graph structure without cycles, used as a mental model for causality/order in knowledge dependencies. | **Discussed, not included in current ILC core** |
 | **Directed Node** | Historical phrase for an explicitly linked/typed node; retained for traceability but superseded by canonical Graph Node language. | **Historical** |
 | **Namespace Hierarchy** | Structured namespace layering used for governance boundaries, compatibility, and modular extension. | **Canonical-adjacent** |
 | **Task Routing Protocol (TRP)** | Routing lifecycle for dispatching workloads/tasks to appropriate execution/verifier paths. | **Canonical-adjacent (active contract)** |
 | **Reward Surface** | Function family mapping verified work quality and policy constraints into payout outcomes. | **Canonical-adjacent** |
 | **Epoch Reward Ledger** | Per-epoch accounting surface recording validated reward events and settlement inputs. | **Canonical-adjacent** |
-| **Node Load Metrics** | Runtime load measurements (for example compute, queue, throughput) used in balancing and policy tuning. | **Canonical-adjacent** |
+| **Node Load Metrics** | Runtime load measurements (for example compute, queue, throughput) used in balancing and policy tuning. | **Canonical-adjacent (near-prealigned contract)** |
 | **Graph KPIs** | Aggregated graph/network indicators used for diagnostics, governance tuning, and release gating evidence. | **Canonical-adjacent (active contract)** |
 | **Governance Config Surface** | The explicit set of configurable governance parameters exposed for policy control and versioned evolution. | **Canonical-adjacent** |
 | **Protocol Council** | Historical governance role label for a bounded reviewer set; not yet a ratified canonical role primitive. | **Discussed, not included in current ILC core** |
