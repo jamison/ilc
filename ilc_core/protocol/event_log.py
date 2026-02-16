@@ -93,6 +93,8 @@ class EventLogger:
     ) -> None:
         if kind == "commit.epoch":
             validate_commit_epoch_payload(payload)
+        elif kind == "epoch_summary":
+            validate_epoch_summary_payload(payload)
         evt = make_event(kind, payload, source=source)
         self.events.append(evt)
 
