@@ -1,4 +1,4 @@
-# Commit Epoch Event Schema v0.1
+# Commit.Epoch Event Schema v0.1
 
 **Version:** 0.1  
 **Status:** DRAFT  
