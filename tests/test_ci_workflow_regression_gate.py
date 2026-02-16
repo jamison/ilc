@@ -37,11 +37,17 @@ def test_ci_workflow_runs_main_track_return_preflight_gate() -> None:
     assert "bash tools/check_main_track_return_preflight_193_199.sh" in workflow
 
 
+def test_ci_workflow_runs_main_track_return_preflight_203_209_gate() -> None:
+    workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "bash tools/check_main_track_return_preflight_203_209.sh" in workflow
+
+
 def test_ci_workflow_main_track_preflight_runs_before_full_pytest() -> None:
     workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
-    idx_preflight = workflow.index("bash tools/check_main_track_return_preflight_193_199.sh")
+    idx_preflight_193_199 = workflow.index("bash tools/check_main_track_return_preflight_193_199.sh")
+    idx_preflight_203_209 = workflow.index("bash tools/check_main_track_return_preflight_203_209.sh")
     idx_full_pytest = workflow.index("python -m pytest -q")
-    assert idx_preflight < idx_full_pytest
+    assert idx_preflight_193_199 < idx_preflight_203_209 < idx_full_pytest
 
 
 def test_ci_workflow_runs_full_pytest_suite() -> None:
