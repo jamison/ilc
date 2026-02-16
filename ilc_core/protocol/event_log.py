@@ -16,6 +16,24 @@ EventKind = Literal[
     "commit.epoch",
 ]  # keep small for now
 
+_ALLOWED_EVENT_KINDS = {
+    "task_outcome",
+    "epoch_summary",
+    "epoch_config",
+    "claim",
+    "refutation",
+    "mcp_tool_call",
+    "commit.epoch",
+}
+
+
+def _validate_event_envelope(kind: Any, payload: Any) -> None:
+    if not isinstance(kind, str):
+        raise EventLogValidationError("event_envelope_invalid_kind_type")
+    if kind not in _ALLOWED_EVENT_KINDS:
+        raise EventLogValidationError(f"event_envelope_unknown_kind:{kind}")
+    if not isinstance(payload, dict):
+        raise EventLogValidationError("event_envelope_invalid_payload_type")
 
 
 
@@ -41,6 +59,7 @@ class ProtocolEventLog:
         self.path = Path(path)
 
     def append(self, event: ProtocolEvent) -> None:
+        _validate_event_envelope(event.kind, event.payload)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a", encoding="utf-8") as f:
             json.dump(asdict(event), f)
@@ -91,6 +110,7 @@ class EventLogger:
         payload: Dict[str, Any],
         source: str = "sim",
     ) -> None:
+        _validate_event_envelope(kind, payload)
         if kind == "commit.epoch":
             validate_commit_epoch_payload(payload)
         elif kind == "epoch_summary":
@@ -107,6 +127,7 @@ def write_events_to_file(events: List[ProtocolEvent], path: Path | str) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("w", encoding="utf-8") as f:
         for evt in events:
+            _validate_event_envelope(evt.kind, evt.payload)
             json.dump(asdict(evt), f)
             f.write("\n")
 
