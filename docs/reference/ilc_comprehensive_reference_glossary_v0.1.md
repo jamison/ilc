@@ -233,7 +233,7 @@ Term-by-term elevation planning and lane assignment are tracked in:
 | **POEG** | Historical acronym used in some drafts for graph-to-geometry collapse stages. | **Discussed, not included in current ILC core** |
 | **Quorum** | A minimum validator subset required for a decision to be considered valid. | **Canonical-adjacent** |
 | **Slashing** | Economic penalty for provably bad behavior by staked actors. | **Canonical-adjacent** |
-| **Staking** | Economic collateral posted by agents/operators to align incentives and absorb penalties. | **Canonical-adjacent** |
+| **Staking** | Economic collateral posted by agents/operators to align incentives and absorb penalties. | **Canonical-adjacent (active contract)** |
 | **Proof of Useful Work** | Work validation framing where only useful verified outputs are rewarded. | **Historical synonym / discussed** |
 | **Proof of Intelligence Work** | Early term (PoIW) used for intelligence-bound production proofs. | **Historical synonym / discussed** |
 | **Proof of Useful Intelligent Labor** | Expanded phrase used in historical drafts for utility-validated labor proofs. | **Historical synonym / discussed** |
@@ -245,7 +245,7 @@ Term-by-term elevation planning and lane assignment are tracked in:
 | **System Maintainer** | Historical role label for infrastructure operators providing availability and validation services. | **Discussed, not included in current ILC core** |
 | **Block Composer** | Historical role label for actors assembling validated outputs into settlement-ready structures. | **Discussed, not included in current ILC core** |
 | **Validator** | Actor/role that verifies claims, tasks, or settlement artifacts under protocol rules. | **Canonical-adjacent** |
-| **Backwards Verifiability** | Ability to replay and re-verify state from earlier history or genesis checkpoints. | **Canonical-adjacent (replay-proof line)** |
+| **Backwards Verifiability** | Ability to replay and re-verify state from earlier history or genesis checkpoints. | **Canonical-adjacent (active contract)** |
 | **Epistemological Addressing** | Historical term for addressing schemes tied to claim semantics/provenance. | **Discussed, not included in current ILC core** |
 | **Thermodynamic Economy** | Metaphor describing PoW-style systems where value tracks energy expenditure. | **Discussed metaphor** |
 | **Epistemic-Geometry Economy** | Historical metaphor describing ILC as value from verified intelligence structure rather than pure energy burn. | **Discussed metaphor** |
@@ -289,14 +289,14 @@ Term-by-term elevation planning and lane assignment are tracked in:
 | **Directed Acyclic Graph (DAG)** | A graph structure without cycles, used as a mental model for causality/order in knowledge dependencies. | **Discussed, not included in current ILC core** |
 | **Directed Node** | Historical phrase for an explicitly linked/typed node; retained for traceability but superseded by canonical Graph Node language. | **Historical** |
 | **Namespace Hierarchy** | Structured namespace layering used for governance boundaries, compatibility, and modular extension. | **Canonical-adjacent** |
-| **Task Routing Protocol (TRP)** | Routing lifecycle for dispatching workloads/tasks to appropriate execution/verifier paths. | **Canonical-adjacent** |
+| **Task Routing Protocol (TRP)** | Routing lifecycle for dispatching workloads/tasks to appropriate execution/verifier paths. | **Canonical-adjacent (active contract)** |
 | **Reward Surface** | Function family mapping verified work quality and policy constraints into payout outcomes. | **Canonical-adjacent** |
 | **Epoch Reward Ledger** | Per-epoch accounting surface recording validated reward events and settlement inputs. | **Canonical-adjacent** |
 | **Node Load Metrics** | Runtime load measurements (for example compute, queue, throughput) used in balancing and policy tuning. | **Canonical-adjacent** |
-| **Graph KPIs** | Aggregated graph/network indicators used for diagnostics, governance tuning, and release gating evidence. | **Canonical-adjacent** |
+| **Graph KPIs** | Aggregated graph/network indicators used for diagnostics, governance tuning, and release gating evidence. | **Canonical-adjacent (active contract)** |
 | **Governance Config Surface** | The explicit set of configurable governance parameters exposed for policy control and versioned evolution. | **Canonical-adjacent** |
 | **Protocol Council** | Historical governance role label for a bounded reviewer set; not yet a ratified canonical role primitive. | **Discussed, not included in current ILC core** |
-| **Devnet Topology** | Explicit peer/agent arrangement used in simulation and development-network validation. | **Canonical-adjacent** |
+| **Devnet Topology** | Explicit peer/agent arrangement used in simulation and development-network validation. | **Canonical-adjacent (active contract)** |
 | **Consensus Engine** | Runtime component that applies validation and settlement rules to produce accepted state transitions. | **Canonical-adjacent (active contract)** |
 | **Agent Communication Protocol** | Message and interaction contract space for agent-to-agent coordination and delegation flows. | **Research candidate** |
 | **Node Indexing** | Index structures that accelerate retrieval/traversal compared with full-scan edge walks. | **Canonical-adjacent (active contract)** |

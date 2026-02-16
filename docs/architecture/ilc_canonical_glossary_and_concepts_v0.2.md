@@ -87,6 +87,19 @@ Normative usage details are specified in `docs/specs/ilc_protocol_runtime_term_c
 | **Consensus Engine** | Runtime component that applies acceptance, validation, and settlement rules to candidate state transitions. | Use `Consensus Engine` as the architecture term for this runtime subsystem. |
 | **Node Indexing** | Index-based retrieval model that avoids full-scan graph traversal for common lookup paths. | Use `Node Indexing` when describing indexed retrieval and traversal acceleration contracts. |
 
+### 2.7 Replay, Routing, and Operations Contracts (Phase 991)
+
+The following terms are active canonical-adjacent contracts for replay integrity, routing behavior, and operations diagnostics language.
+Normative usage details are specified in `docs/specs/ilc_replay_routing_ops_term_contracts_v0.1.md`.
+
+| Term | Contract Role | Canon Rule |
+| :--- | :--- | :--- |
+| **Backwards Verifiability** | Replay and historical re-verification requirement across canon checkpoints and evidence surfaces. | Use `Backwards Verifiability` for replay-proof re-verification expectations. |
+| **Task Routing Protocol (TRP)** | Task dispatch and routing lifecycle term for assigning execution and verifier paths. | Use `Task Routing Protocol (TRP)` for routing lifecycle references in protocol/runtime docs. |
+| **Graph KPIs** | Aggregated graph and network indicators used for diagnostics, release evidence, and policy tuning. | Use `Graph KPIs` when describing measured network/graph operational metrics. |
+| **Devnet Topology** | Structured peer and agent arrangement used in deterministic simulation and development-network validation. | Use `Devnet Topology` for explicit simulation arrangement and validation topology language. |
+| **Staking** | Economic collateral mechanism that binds participation and penalty surfaces to posted stake. | Use `Staking` for collateral and participation-bound economics references. |
+
 ---
 
 ## 3. Architectural Invariants
