@@ -112,6 +112,22 @@ Normative pre-alignment details are specified in `docs/specs/ilc_near_prep_non_g
 | **Convergent Consensus** | Explanatory terminology for convergence outcomes across independent validation paths. | Use `Convergent Consensus` as explanatory wording, not as a separate consensus primitive name. |
 | **Node Load Metrics** | Runtime load measurement terminology for diagnostics and balancing discussions. | Use `Node Load Metrics` for queue, throughput, and pressure indicator language in operations docs. |
 
+### 2.9 Governance and Economics Near-Term Contracts (Phase 994)
+
+These terms are promoted to active canonical-adjacent contract language after scoped governance conflict-set ratification in Phase 993.
+Normative usage details are specified in `docs/specs/ilc_governance_economics_near_term_contracts_v0.1.md`.
+
+| Term | Contract Role | Canon Rule |
+| :--- | :--- | :--- |
+| **Quorum** | Minimum required validator/governance participation threshold for valid decisions. | Use `Quorum` when describing threshold semantics for governance and validation processes. |
+| **Slashing** | Penalty mechanism for provable protocol and governance violations under stake-backed participation. | Use `Slashing` for stake-linked penalty and deterrence language. |
+| **Token Sink** | Emission-control mechanism that removes or locks circulating tokens under policy-defined conditions. | Use `Token Sink` for supply-reduction and lockup semantics in economics language. |
+| **Validator** | Verification role family that evaluates claims, artifacts, and governance-relevant evidence paths. | Use `Validator` for verification-role references that are distinct from runtime subsystems. |
+| **Reward Surface** | Function family mapping validated work and policy constraints to payout outcomes. | Use `Reward Surface` when describing reward/payout mapping semantics. |
+| **Epoch Reward Ledger** | Per-epoch accounting surface for validated reward events and settlement inputs. | Use `Epoch Reward Ledger` for epoch-scoped payout accounting references. |
+| **Governance Config Surface** | Explicit set of governance policy/config parameters exposed for controlled evolution. | Use `Governance Config Surface` for policy parameter boundary references. |
+| **Namespace Hierarchy** | Structured namespace layering for governance boundaries and compatibility management. | Use `Namespace Hierarchy` for namespace governance and compatibility boundary language. |
+
 ---
 
 ## 3. Architectural Invariants
