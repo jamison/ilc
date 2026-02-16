@@ -91,6 +91,8 @@ class EventLogger:
         payload: Dict[str, Any],
         source: str = "sim",
     ) -> None:
+        if kind == "commit.epoch":
+            validate_commit_epoch_payload(payload)
         evt = make_event(kind, payload, source=source)
         self.events.append(evt)
 

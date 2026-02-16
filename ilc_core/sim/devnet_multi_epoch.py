@@ -99,7 +99,11 @@ def _settle_epoch(
     
     # 5. Log Event
     if event_logger:
-        event_logger.events.append(commit_evt)
+        event_logger.emit(
+            kind="commit.epoch",
+            payload=commit_evt.payload,
+            source=commit_evt.source,
+        )
         
     return balances_before
 
