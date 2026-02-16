@@ -157,6 +157,10 @@ class RewardGovernorError(ProtocolError):
     """Raised when utility-flow reward allocation policy inputs are invalid."""
 
 
+class PolicyMigrationError(ProtocolError):
+    """Raised when policy migration inputs violate strict or bridge contracts."""
+
+
 class ClauseBindingValidationError(ProtocolError):
     """Raised when constitution clause-binding check payloads are invalid."""
 
