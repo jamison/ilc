@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import APIRouter, FastAPI, HTTPException, Request
 import logging
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
@@ -48,8 +48,7 @@ async def lifespan(app_obj: FastAPI):
     _init_runtime_state(app_obj)
     yield
 
-
-app = FastAPI(title="ILC Node Daemon", version="0.1.0", lifespan=lifespan)
+router = APIRouter()
 
 
 def _state(request: Request):
@@ -87,7 +86,7 @@ class ProtocolTaskOutcomeRequest(BaseModel):
     reward_paid: float
     success: bool
 
-@app.get("/")
+@router.get("/")
 def read_root(request: Request):
     state = _state(request)
     return {
@@ -98,7 +97,7 @@ def read_root(request: Request):
         "genesis_hash": state.graph.nodes["axiom:math:01"].id if "axiom:math:01" in state.graph.nodes else "unknown"
     }
 
-@app.post("/mine")
+@router.post("/mine")
 def mine_claim(req: ClaimRequest, request: Request):
     """
     Public Endpoint: Ask the internal agent to perform labor.
@@ -118,14 +117,14 @@ def mine_claim(req: ClaimRequest, request: Request):
         "net_stake": state.consensus.node_stakes.get(node.id, 0.0)
     }
 
-@app.get("/node/{node_id}")
+@router.get("/node/{node_id}")
 def get_node(node_id: str, request: Request):
     state = _state(request)
     if node_id not in state.graph.nodes:
         raise HTTPException(status_code=404, detail="Node not found")
     return state.graph.nodes[node_id]
 
-@app.post("/gossip/receive")
+@router.post("/gossip/receive")
 def receive_gossip(node_data: dict, request: Request):
     """
     Endpoint for other nodes to push data to us.
@@ -155,7 +154,7 @@ def receive_gossip(node_data: dict, request: Request):
         logger.exception("gossip_receive_failed token=gossip_unexpected_error")
         raise HTTPException(status_code=400, detail="Invalid Gossip")
 
-@app.post("/peers/add")
+@router.post("/peers/add")
 def add_peer_endpoint(host: str, port: int, request: Request):
     state = _state(request)
     state.peer_manager.add_peer(host, port)
@@ -170,12 +169,12 @@ def add_peer_endpoint(host: str, port: int, request: Request):
 # This keeps the API in lockstep with protocol/ilc_protocol_mvp.json without
 # hard-coding JSON structures here.
 
-@app.get("/v1/protocol/schema")
+@router.get("/v1/protocol/schema")
 def get_protocol_schema():
     schema = load_protocol_schema()
     return JSONResponse(schema)
 
-@app.post("/v1/protocol/claim")
+@router.post("/v1/protocol/claim")
 def submit_protocol_claim(req: ProtocolClaimRequest):
     # Build a Node; keep it simple and deterministic
     node = Node(
@@ -195,7 +194,7 @@ def submit_protocol_claim(req: ProtocolClaimRequest):
     proto = node_to_protocol_claim(node)
     return {"claim": proto}
 
-@app.post("/v1/protocol/refute")
+@router.post("/v1/protocol/refute")
 def submit_protocol_refute(req: ProtocolRefuteRequest):
     node = Node(
         id="",
@@ -211,7 +210,7 @@ def submit_protocol_refute(req: ProtocolRefuteRequest):
     proto = node_to_protocol_refute(node)
     return {"refute": proto}
 
-@app.post("/v1/protocol/task_outcome")
+@router.post("/v1/protocol/task_outcome")
 def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
     outcome = TaskOutcome(
         task_type=req.task_type,
@@ -227,7 +226,7 @@ def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
     )
     return {"task_outcome": proto}
 
-@app.get("/v1/protocol/ep_task_schema")
+@router.get("/v1/protocol/ep_task_schema")
 def get_ep_task_schema():
     """
     Return the canonical JSON schema for EpistemicWorkTask.
@@ -238,7 +237,7 @@ def get_ep_task_schema():
     schema = load_epistemic_work_task_schema()
     return JSONResponse(schema)
 
-@app.post("/v1/protocol/ep_task")
+@router.post("/v1/protocol/ep_task")
 def submit_ep_task(ep_task: EpistemicWorkTask):
     """
     Intake endpoint for a single EpistemicWorkTask.
@@ -273,3 +272,12 @@ def submit_ep_task(ep_task: EpistemicWorkTask):
         "ep_task": ep_json,
         "task_descriptor": td_dict,
     }
+
+
+def create_app() -> FastAPI:
+    app_obj = FastAPI(title="ILC Node Daemon", version="0.1.0", lifespan=lifespan)
+    app_obj.include_router(router)
+    return app_obj
+
+
+app = create_app()
