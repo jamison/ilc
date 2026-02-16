@@ -145,6 +145,10 @@ class NodeValueInputValidationError(ProtocolError):
     """Raised when node-value scoring input events fail canon validation."""
 
 
+class NodeValueKernelError(ProtocolError):
+    """Raised when node-value score kernel inputs or weights are invalid."""
+
+
 class ClauseBindingValidationError(ProtocolError):
     """Raised when constitution clause-binding check payloads are invalid."""
 

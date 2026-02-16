@@ -1,0 +1,91 @@
+import pytest
+
+from ilc_core.analysis.node_value_kernel import (
+    DEFAULT_EW_WEIGHTS,
+    compute_node_scores,
+    compute_utility_flow,
+    validate_ew_weights,
+)
+from ilc_core.exceptions import NodeValueKernelError
+
+
+def _sample_events() -> list[dict[str, object]]:
+    return [
+        {
+            "kind": "claim",
+            "payload": {
+                "id": "node-a",
+                "agent_id": "agent-1",
+                "timestamp": "2026-02-16T00:00:00Z",
+                "net_stake": 10.0,
+                "parent_ids": ["root"],
+                "target_id": "genesis-node",
+            },
+        },
+        {
+            "kind": "claim",
+            "payload": {
+                "id": "node-b",
+                "agent_id": "agent-2",
+                "timestamp": "2026-02-16T00:01:00Z",
+                "net_stake": 6.0,
+                "parent_ids": ["node-a"],
+                "target_id": "node-a",
+            },
+        },
+        {
+            "kind": "refutation",
+            "payload": {
+                "id": "refute-1",
+                "agent_id": "agent-3",
+                "timestamp": "2026-02-16T00:02:00Z",
+                "target_id": "node-a",
+                "net_stake": 2.0,
+            },
+        },
+    ]
+
+
+def test_compute_node_scores_is_deterministic_and_sorted() -> None:
+    scores_first = compute_node_scores(_sample_events())
+    scores_second = compute_node_scores(_sample_events())
+
+    assert scores_first == scores_second
+    assert [row["node_id"] for row in scores_first] == sorted(
+        row["node_id"] for row in scores_first
+    )
+    assert any(row["node_id"] == "node-a" for row in scores_first)
+    node_a = next(row for row in scores_first if row["node_id"] == "node-a")
+    assert node_a["epistemic_weight"] >= 0.0
+    assert node_a["utility_flow"] >= 0.0
+
+
+def test_validate_weights_requires_expected_keys_and_sum_one() -> None:
+    validate_ew_weights(DEFAULT_EW_WEIGHTS)
+
+    with pytest.raises(NodeValueKernelError) as exc_keys:
+        validate_ew_weights({"reuse": 1.0})
+    assert str(exc_keys.value) == "node_value_kernel_invalid_weight_keys"
+
+    with pytest.raises(NodeValueKernelError) as exc_sum:
+        validate_ew_weights(
+            {
+                "reuse": 0.4,
+                "contradiction_resilience": 0.3,
+                "validation_integrity": 0.2,
+                "path_uplift": 0.2,
+            }
+        )
+    assert str(exc_sum.value) == "node_value_kernel_weight_sum_not_one"
+
+
+def test_utility_flow_gate_contracts() -> None:
+    assert compute_utility_flow(0.5, 2.0, 1.0) == 1.0
+
+    with pytest.raises(NodeValueKernelError) as exc_usage:
+        compute_utility_flow(0.5, -1.0, 1.0)
+    assert str(exc_usage.value) == "node_value_kernel_negative_usage_window"
+
+    with pytest.raises(NodeValueKernelError) as exc_freshness:
+        compute_utility_flow(0.5, 1.0, 1.5)
+    assert str(exc_freshness.value) == "node_value_kernel_invalid_freshness_gate"
