@@ -9,6 +9,8 @@ to executable runtime checks.
 from typing import Any, Dict, List, Optional
 import enum
 
+from ilc_core.exceptions import ClauseBindingValidationError
+
 # --- Constants ---
 
 class CheckStatus(str, enum.Enum):
@@ -36,9 +38,9 @@ def _validate_check_shape(c: Dict[str, Any]) -> None:
     Enforce strict shape and status enum.
     """
     if "check_id" not in c:
-        raise ValueError("missing_check_id")
+        raise ClauseBindingValidationError("missing_check_id")
     if c.get("status") not in [s.value for s in CheckStatus]:
-        raise ValueError(f"invalid_check_status:{c.get('status')}")
+        raise ClauseBindingValidationError(f"invalid_check_status:{c.get('status')}")
 
 def _result(check_id: str, status: CheckStatus, error_code: Optional[str] = None, details: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     res = {

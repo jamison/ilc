@@ -5,6 +5,7 @@ Tests for event log validators (lenient validators for epoch_config, task_outcom
 import pytest
 from datetime import datetime, timezone
 
+from ilc_core.exceptions import EventLogValidationError
 from ilc_core.protocol.event_log import (
     validate_epoch_config_payload,
     validate_task_outcome_payload,
@@ -189,3 +190,35 @@ class TestHelperConstructors:
         assert evt.kind == "epoch_summary"
         assert evt.payload["total_tasks"] == 50
         assert evt.payload["backlog_count"] == 5
+
+
+class TestDomainExceptionTypeContracts:
+    def test_epoch_config_uses_event_log_validation_error(self):
+        payload = {
+            "epoch_index": "not_an_int",
+            "benchmark_suite_id": "suite",
+            "created_at": "2026-02-03T08:00:00Z",
+            "namespace_id": "ns",
+        }
+        with pytest.raises(EventLogValidationError):
+            validate_epoch_config_payload(payload)
+
+    def test_task_outcome_uses_event_log_validation_error(self):
+        payload = {
+            "agent_id": "agent_1",
+            "epoch_index": 10,
+            "namespace_id": "ns_1",
+            "task_type": "reasoning",
+            "reward": -1.0,
+            "success": True,
+        }
+        with pytest.raises(EventLogValidationError):
+            validate_task_outcome_payload(payload)
+
+    def test_epoch_summary_uses_event_log_validation_error(self):
+        payload = {
+            "epoch_index": 100,
+            "total_reward": 250.0,
+        }
+        with pytest.raises(EventLogValidationError):
+            validate_epoch_summary_payload(payload)

@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, Literal, Optional, List
 import json
 
+from ilc_core.exceptions import EventLogValidationError
+
 EventKind = Literal[
     "task_outcome",
     "epoch_summary",
@@ -108,10 +110,10 @@ def write_events_to_file(events: List[ProtocolEvent], path: Path | str) -> None:
 def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
     """
     Validate that a payload matches the commit.epoch schema.
-    Raises ValueError if invalid.
+    Raises EventLogValidationError if invalid.
     """
     if not isinstance(payload, dict):
-        raise ValueError("Payload must be a dict")
+        raise EventLogValidationError("Payload must be a dict")
 
     required_top = {
         "event_kind",
@@ -126,67 +128,67 @@ def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
     payload_keys = set(payload.keys())
     missing = required_top - payload_keys
     if missing:
-        raise ValueError(f"Missing required top-level fields: {missing}")
+        raise EventLogValidationError(f"Missing required top-level fields: {missing}")
     extra = payload_keys - required_top
     if extra:
-        raise ValueError(f"Unexpected top-level fields: {extra}")
+        raise EventLogValidationError(f"Unexpected top-level fields: {extra}")
 
     if payload["event_kind"] != "commit.epoch":
-        raise ValueError(f"Invalid event_kind: {payload.get('event_kind')}")
+        raise EventLogValidationError(f"Invalid event_kind: {payload.get('event_kind')}")
 
     if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
-        raise ValueError("epoch_index must be a non-negative integer")
+        raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["epoch_id"], str):
-        raise ValueError("epoch_id must be a string")
+        raise EventLogValidationError("epoch_id must be a string")
     if not isinstance(payload["namespace_id"], str):
-        raise ValueError("namespace_id must be a string")
+        raise EventLogValidationError("namespace_id must be a string")
     if not isinstance(payload["created_at"], str):
-        raise ValueError("created_at must be a string")
+        raise EventLogValidationError("created_at must be a string")
     try:
         datetime.fromisoformat(payload["created_at"].replace("Z", "+00:00"))
     except ValueError as exc:
-        raise ValueError("created_at must be ISO 8601 with UTC timezone") from exc
+        raise EventLogValidationError("created_at must be ISO 8601 with UTC timezone") from exc
 
     if payload["finalization_state"] not in {"committed", "rolled_back", "superseded"}:
-        raise ValueError(f"Invalid finalization_state: {payload.get('finalization_state')}")
+        raise EventLogValidationError(f"Invalid finalization_state: {payload.get('finalization_state')}")
 
     # Validate summary
     summary = payload["summary"]
     if not isinstance(summary, dict):
-        raise ValueError("summary must be a dict")
+        raise EventLogValidationError("summary must be a dict")
     required_summary = {"task_count", "agent_count", "reward_total", "stake_total"}
     summary_keys = set(summary.keys())
     missing_summary = required_summary - summary_keys
     if missing_summary:
-        raise ValueError(f"Missing required summary fields: {missing_summary}")
+        raise EventLogValidationError(f"Missing required summary fields: {missing_summary}")
     extra_summary = summary_keys - required_summary
     if extra_summary:
-        raise ValueError(f"Unexpected summary fields: {extra_summary}")
+        raise EventLogValidationError(f"Unexpected summary fields: {extra_summary}")
     if not isinstance(summary["task_count"], int) or summary["task_count"] < 0:
-        raise ValueError("summary.task_count must be a non-negative integer")
+        raise EventLogValidationError("summary.task_count must be a non-negative integer")
     if not isinstance(summary["agent_count"], int) or summary["agent_count"] < 0:
-        raise ValueError("summary.agent_count must be a non-negative integer")
+        raise EventLogValidationError("summary.agent_count must be a non-negative integer")
     if not isinstance(summary["reward_total"], (int, float)) or summary["reward_total"] < 0:
-        raise ValueError("summary.reward_total must be a non-negative number")
+        raise EventLogValidationError("summary.reward_total must be a non-negative number")
     if not isinstance(summary["stake_total"], (int, float)) or summary["stake_total"] < 0:
-        raise ValueError("summary.stake_total must be a non-negative number")
+        raise EventLogValidationError("summary.stake_total must be a non-negative number")
 
     # Validate checksums
     checksums = payload["checksums"]
     if not isinstance(checksums, dict):
-        raise ValueError("checksums must be a dict")
+        raise EventLogValidationError("checksums must be a dict")
     required_checksums = {"epoch_events_cid", "epoch_state_cid"}
     checksum_keys = set(checksums.keys())
     missing_checksums = required_checksums - checksum_keys
     if missing_checksums:
-        raise ValueError(f"Missing required checksums fields: {missing_checksums}")
+        raise EventLogValidationError(f"Missing required checksums fields: {missing_checksums}")
     extra_checksums = checksum_keys - required_checksums
     if extra_checksums:
-        raise ValueError(f"Unexpected checksums fields: {extra_checksums}")
+        raise EventLogValidationError(f"Unexpected checksums fields: {extra_checksums}")
     if not isinstance(checksums["epoch_events_cid"], str):
-        raise ValueError("checksums.epoch_events_cid must be a string")
+        raise EventLogValidationError("checksums.epoch_events_cid must be a string")
     if not isinstance(checksums["epoch_state_cid"], str):
-        raise ValueError("checksums.epoch_state_cid must be a string")
+        raise EventLogValidationError("checksums.epoch_state_cid must be a string")
 
 
 def make_commit_epoch_event(
@@ -232,21 +234,21 @@ def validate_epoch_config_payload(payload: Dict[str, Any]) -> None:
     Validates required keys + basic types. Allows extra keys.
     """
     if not isinstance(payload, dict):
-        raise ValueError("payload must be a dict")
+        raise EventLogValidationError("payload must be a dict")
 
     required = {"epoch_index", "benchmark_suite_id", "created_at", "namespace_id"}
     missing = required - set(payload.keys())
     if missing:
-        raise ValueError(f"Missing required epoch_config fields: {missing}")
+        raise EventLogValidationError(f"Missing required epoch_config fields: {missing}")
 
     if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
-        raise ValueError("epoch_index must be a non-negative integer")
+        raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["benchmark_suite_id"], str):
-        raise ValueError("benchmark_suite_id must be a string")
+        raise EventLogValidationError("benchmark_suite_id must be a string")
     if not isinstance(payload["created_at"], str):
-        raise ValueError("created_at must be a string")
+        raise EventLogValidationError("created_at must be a string")
     if not isinstance(payload["namespace_id"], str):
-        raise ValueError("namespace_id must be a string")
+        raise EventLogValidationError("namespace_id must be a string")
 
 
 def validate_task_outcome_payload(payload: Dict[str, Any]) -> None:
@@ -255,25 +257,25 @@ def validate_task_outcome_payload(payload: Dict[str, Any]) -> None:
     Validates required keys + basic types. Allows extra keys.
     """
     if not isinstance(payload, dict):
-        raise ValueError("payload must be a dict")
+        raise EventLogValidationError("payload must be a dict")
 
     required = {"agent_id", "epoch_index", "namespace_id", "task_type", "reward", "success"}
     missing = required - set(payload.keys())
     if missing:
-        raise ValueError(f"Missing required task_outcome fields: {missing}")
+        raise EventLogValidationError(f"Missing required task_outcome fields: {missing}")
 
     if not isinstance(payload["agent_id"], str):
-        raise ValueError("agent_id must be a string")
+        raise EventLogValidationError("agent_id must be a string")
     if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
-        raise ValueError("epoch_index must be a non-negative integer")
+        raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["namespace_id"], str):
-        raise ValueError("namespace_id must be a string")
+        raise EventLogValidationError("namespace_id must be a string")
     if not isinstance(payload["task_type"], str):
-        raise ValueError("task_type must be a string")
+        raise EventLogValidationError("task_type must be a string")
     if not isinstance(payload["reward"], (int, float)) or payload["reward"] < 0:
-        raise ValueError("reward must be a non-negative number")
+        raise EventLogValidationError("reward must be a non-negative number")
     if not isinstance(payload["success"], bool):
-        raise ValueError("success must be a boolean")
+        raise EventLogValidationError("success must be a boolean")
 
 
 def validate_epoch_summary_payload(payload: Dict[str, Any]) -> None:
@@ -282,19 +284,19 @@ def validate_epoch_summary_payload(payload: Dict[str, Any]) -> None:
     Validates required keys + basic types. Allows extra keys.
     """
     if not isinstance(payload, dict):
-        raise ValueError("payload must be a dict")
+        raise EventLogValidationError("payload must be a dict")
 
     required = {"epoch_index", "total_tasks", "total_reward"}
     missing = required - set(payload.keys())
     if missing:
-        raise ValueError(f"Missing required epoch_summary fields: {missing}")
+        raise EventLogValidationError(f"Missing required epoch_summary fields: {missing}")
 
     if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
-        raise ValueError("epoch_index must be a non-negative integer")
+        raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["total_tasks"], int) or payload["total_tasks"] < 0:
-        raise ValueError("total_tasks must be a non-negative integer")
+        raise EventLogValidationError("total_tasks must be a non-negative integer")
     if not isinstance(payload["total_reward"], (int, float)) or payload["total_reward"] < 0:
-        raise ValueError("total_reward must be a non-negative number")
+        raise EventLogValidationError("total_reward must be a non-negative number")
 
 
 # ============================================================
@@ -370,4 +372,3 @@ def make_epoch_summary_event(
     }
     validate_epoch_summary_payload(payload)
     return make_event(kind="epoch_summary", payload=payload, source=source)
-

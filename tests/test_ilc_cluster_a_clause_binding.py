@@ -1,8 +1,10 @@
 import pytest
+from ilc_core.exceptions import ClauseBindingValidationError
 from ilc_core.protocol.ilc_cluster_a_clause_binding import (
     evaluate_cluster_a_constitution_checks,
     CheckStatus,
-    REQUIRED_CHECKS
+    REQUIRED_CHECKS,
+    _validate_check_shape,
 )
 
 def test_binding_perfect_pass():
@@ -107,3 +109,8 @@ def test_required_checks_present():
     res = evaluate_cluster_a_constitution_checks(ctx)
     ids = {c["check_id"] for c in res["checks"]}
     assert set(REQUIRED_CHECKS).issubset(ids)
+
+
+def test_check_shape_raises_clause_binding_validation_error():
+    with pytest.raises(ClauseBindingValidationError, match="missing_check_id"):
+        _validate_check_shape({"status": "pass"})
