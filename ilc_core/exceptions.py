@@ -135,3 +135,27 @@ class ReplayProofPackageError(ReplayProofError):
 
 class ReplayProofBaselineError(ReplayProofError):
     """Raised when replay-proof baseline reports are invalid."""
+
+
+class EventLogValidationError(ProtocolError):
+    """Raised when protocol event-log payloads fail validation contracts."""
+
+
+class ClauseBindingValidationError(ProtocolError):
+    """Raised when constitution clause-binding check payloads are invalid."""
+
+
+class GovernanceIngestValidationError(ProtocolError):
+    """Raised when governance ingest verification inputs fail validation."""
+
+
+class LedgerExportContractError(LedgerError):
+    """Raised when ledger export/bundle payloads violate export contracts."""
+
+
+class CliPayloadError(IlcError, ValueError):
+    """Raised when a CLI payload source is missing or structurally invalid."""
+
+
+class CliToolInvocationError(IlcError, ValueError):
+    """Raised when a CLI tool invocation fails pre-output validation."""
