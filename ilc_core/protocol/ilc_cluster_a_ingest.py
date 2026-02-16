@@ -17,6 +17,7 @@ from ilc_core.protocol.ilc_wire_validate import validate_wire_event
 from ilc_core.protocol.ilc_receipt_validate import validate_receipt_record
 from ilc_core.protocol.ilc_transcript_validate import validate_transcript
 from ilc_core.protocol.ilc_governance_record_validate import validate_governance_record
+from ilc_core.exceptions import GovernanceIngestValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ def _emit(errors: List[str], details: List[Dict[str, Any]], code: str, **ctx) ->
     if code not in ALLOWED_CODES:
         # Fail fast in tests, or could log warning in prod. 
         # For this phase, we treat adherence as mandatory.
-        raise ValueError(f"unapproved_error_code:{code}")
+        raise GovernanceIngestValidationError(f"unapproved_error_code:{code}")
         
     errors.append(code)
     if ctx:
@@ -284,21 +285,21 @@ def canonical_governance_payload_bytes(record: Dict[str, Any]) -> bytes:
 def verify_ed25519_signature(public_key_bytes: bytes, message: bytes, signature_hex: str) -> bool:
     """
     Verify Ed25519 signature.
-    Raises ValueError on invalid input format.
+    Raises GovernanceIngestValidationError on invalid input format.
     """
     if not _HAS_CRYPTO:
         raise RuntimeError("cryptography library missing")
 
     if len(public_key_bytes) != 32:
-        raise ValueError("invalid_public_key_bytes")
+        raise GovernanceIngestValidationError("invalid_public_key_bytes")
     
     try:
         sig = bytes.fromhex(signature_hex)
     except ValueError:
-        raise ValueError("invalid_signature_hex")
+        raise GovernanceIngestValidationError("invalid_signature_hex")
 
     if len(sig) != 64:
-        raise ValueError("invalid_signature_length")
+        raise GovernanceIngestValidationError("invalid_signature_length")
         
     pk = ed25519.Ed25519PublicKey.from_public_bytes(public_key_bytes)
     try:
@@ -412,7 +413,7 @@ def _verify_governance_signatures(
                 valid_key_ids.add(key_id)
             else:
                 _add("context_violation:signature_verification_failed", key_id=key_id)
-        except ValueError as e:
+        except GovernanceIngestValidationError as e:
             _add(f"value_violation:{str(e)}", key_id=key_id)
         except Exception as exc:
             logger.debug("ingest_signature_verification_guard: %s", exc, exc_info=True)
