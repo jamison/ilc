@@ -38,4 +38,5 @@ jobs:
       - run: bash tools/check_domain_exception_migration_guardrails.sh
       - run: bash tools/check_track1_closure_guardrails.sh
       - run: bash tools/check_runtime_logging_guardrails.sh
+      - run: bash tools/check_main_track_return_preflight_193_199.sh
       - run: python -m pytest -q

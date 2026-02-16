@@ -32,6 +32,18 @@ def test_ci_workflow_runs_runtime_logging_guardrail_preflight() -> None:
     assert "bash tools/check_runtime_logging_guardrails.sh" in workflow
 
 
+def test_ci_workflow_runs_main_track_return_preflight_gate() -> None:
+    workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "bash tools/check_main_track_return_preflight_193_199.sh" in workflow
+
+
+def test_ci_workflow_main_track_preflight_runs_before_full_pytest() -> None:
+    workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+    idx_preflight = workflow.index("bash tools/check_main_track_return_preflight_193_199.sh")
+    idx_full_pytest = workflow.index("python -m pytest -q")
+    assert idx_preflight < idx_full_pytest
+
+
 def test_ci_workflow_runs_full_pytest_suite() -> None:
     workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
     assert "python -m pytest -q" in workflow
