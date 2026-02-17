@@ -70,3 +70,8 @@ automation/reports/
 automation/review_queue/
 automation/state/
 output/
+
+# =========================
+# Local historical corpus
+# =========================
+Z_Past_Chats/

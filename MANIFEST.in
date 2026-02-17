@@ -1,0 +1,4 @@
+prune Z_Past_Chats
+prune docs/archive
+exclude *.rtf
+global-exclude .DS_Store
