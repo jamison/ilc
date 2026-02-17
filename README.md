@@ -44,6 +44,7 @@ python3 tools/demo_walkthrough.py
     *   `analysis/`, `sim/`: analysis kernels and simulation harnesses.
     *   `genesis/`, `economics/`, `consensus/`, `network/`: bootstrap and policy/runtime modules.
 *   `tools/`: bootstrapping, guardrail gates, migration utilities, and maintenance scripts.
+*   `config/`: operator runtime configs (`config/README.md` documents policy and fallback behavior).
 *   `tests/`: focused phase gates and regression suites.
 *   `docs/`: specs, ADRs, walkthroughs, and planning artifacts.
 *   `whitepaper/`: protocol narrative and constitution layer.
