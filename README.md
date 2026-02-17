@@ -62,3 +62,8 @@ python3 tools/scan_duplicates.py                 # Duplicate imports/lines
 ilc-canon-summary --path tests/fixtures/canon_state_v0.1.json
 ilc-canon-summary --path tests/fixtures/canon_state_v0.1.json --report
 ```
+
+## 📘 Next Docs
+
+- External operator/developer guide: `docs/GETTING_STARTED.md`
+- Runtime configuration policy: `config/README.md`
