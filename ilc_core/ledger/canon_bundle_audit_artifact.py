@@ -140,5 +140,5 @@ def write_audit_artifact(audit: AuditArtifact, audit_path: Path) -> bool:
         json_content = json.dumps(audit, separators=(",", ":"), sort_keys=False)
         audit_path.write_text(json_content, encoding="utf-8")
         return True
-    except Exception:
+    except (OSError, TypeError, ValueError):
         return False

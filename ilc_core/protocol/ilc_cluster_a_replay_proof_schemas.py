@@ -30,7 +30,14 @@ def load_replay_proof_schema(schema_filename: str) -> ReplayProofSchemaMap:
             type(parsed).__name__,
         )
         return {}
-    except Exception as exc:
+    except (
+        FileNotFoundError,
+        ModuleNotFoundError,
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        TypeError,
+    ) as exc:
         logger.debug(
             "replay_proof_schema_load_failed: %s (%s)",
             schema_filename,

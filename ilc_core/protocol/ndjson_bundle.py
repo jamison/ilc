@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 import base64
+import binascii
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Iterator, TextIO, Iterable
@@ -70,7 +71,7 @@ def b64u_decode(s: str) -> bytes:
         s = s + "=" * padding
     try:
         return base64.urlsafe_b64decode(s)
-    except Exception as e:
+    except (binascii.Error, ValueError) as e:
         raise ValueError(f"Invalid base64url encoding: {e}")
 
 

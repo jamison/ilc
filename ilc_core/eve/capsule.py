@@ -12,10 +12,12 @@ See: docs/specs/eve_capsule_format_v0.1.md
 from __future__ import annotations
 
 import base64
+import binascii
 import json
 from pathlib import Path
 from typing import Any, Union
 
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.crypto.cose_sign1 import cose_sign1_decode, cose_sign1_verify
@@ -135,7 +137,7 @@ def verify_capsule_signature(
         # Verify signature
         cose_sign1_verify(cose_bytes, public_key)
         return True
-    except Exception:
+    except (binascii.Error, ValueError, TypeError, InvalidSignature):
         return False
 
 
@@ -158,7 +160,7 @@ def load_capsule_manifest_cbor(path: Union[str, Path]) -> dict:
     data = path.read_bytes()
     try:
         manifest = decode_dag_cbor(data)
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         raise ValueError(f"Invalid DAG-CBOR manifest: {e}") from e
     
     if not isinstance(manifest, dict):
@@ -212,6 +214,5 @@ def verify_manifest_cid(manifest: dict, cose_sign1_bytes: bytes) -> bool:
             return False
             
         return True
-    except Exception:
+    except (ValueError, TypeError, KeyError):
         return False
-

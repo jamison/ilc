@@ -63,7 +63,7 @@ def validate_canonical_cbor_bytes(data: bytes) -> None:
     
     try:
         obj = cbor_loads(data)
-    except Exception as e:
+    except (cbor2.CBORDecodeError, ValueError, TypeError) as e:
         raise ValueError(f"Invalid CBOR: {e}")
     
     reencoded = cbor_dumps_canonical(obj)

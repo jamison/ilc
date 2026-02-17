@@ -1,7 +1,9 @@
 
 import base64
+import binascii
 import hashlib
 import hmac
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -51,9 +53,8 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
         return False
 
     try:
-        import json
         manifest_json = json.loads(manifest_text)
-    except Exception:
+    except json.JSONDecodeError:
         return False
 
     key_id = manifest_json.get("key_id")
@@ -88,9 +89,8 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     
     # Decode signature
     try:
-        actual = base64.b64decode(sig_b64)
-    except Exception:
+        actual = base64.b64decode(sig_b64, validate=True)
+    except (binascii.Error, ValueError):
         return False
         
     return hmac.compare_digest(actual, expected)
-

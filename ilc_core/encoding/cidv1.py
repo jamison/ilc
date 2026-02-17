@@ -11,6 +11,7 @@ Creates content identifiers using:
 from __future__ import annotations
 import hashlib
 import base64
+import binascii
 from typing import Any
 
 from .varint import encode_uvarint, decode_uvarint
@@ -94,7 +95,7 @@ def cidv1_from_str(cid_str: str) -> bytes:
     
     try:
         return base64.b32decode(b32_padded)
-    except Exception as e:
+    except (binascii.Error, ValueError) as e:
         raise ValueError(f"Invalid base32 encoding: {e}")
 
 

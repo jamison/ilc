@@ -77,7 +77,7 @@ def load_manifest_paths(path: Path) -> List[str]:
     out: List[str] = []
     try:
         content = path.read_text(encoding="utf-8")
-    except Exception as exc:
+    except OSError as exc:
         logger.debug("batch_manifest_read_guard: %s", exc, exc_info=True)
         # If we can't read the manifest, let the caller handle the IO error, 
         # but the specific requirement covers malformed content logic.
