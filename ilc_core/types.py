@@ -46,7 +46,7 @@ class Node(BaseModel):
     parent_ids: List[str] = Field(default_factory=list)
 
     def _legacy_id_payload(self) -> bytes:
-        """Build legacy SHA-256 payload bytes for transitional compatibility."""
+        """Build legacy SHA-256 payload bytes for offline migration tooling."""
         if isinstance(self.content, dict):
             payload_str = json.dumps(self.content, sort_keys=True)
         else:
@@ -56,7 +56,7 @@ class Node(BaseModel):
         return f"{self.type}:{payload_str}:{self.agent_id}".encode()
 
     def compute_legacy_id(self) -> str:
-        """Compute legacy SHA-256 hex node id contract."""
+        """Compute legacy SHA-256 hex node id contract (migration utility only)."""
         return hashlib.sha256(self._legacy_id_payload()).hexdigest()
 
     def _canonical_id_object(self) -> dict[str, Any]:
@@ -77,14 +77,10 @@ class Node(BaseModel):
         """
         Default node id contract.
 
-        Canonical default is CIDv1 over the canonical node-id object.
-        Legacy SHA-256 hex remains available via compute_legacy_id() and is
-        used as a deterministic fallback for payloads not yet DAG-CBOR-safe.
+        Canonical-only CIDv1 over the canonical node-id object.
+        Payloads that are not canonical DAG-CBOR encodable raise.
         """
-        try:
-            return self.compute_canonical_id()
-        except (TypeError, ValueError):
-            return self.compute_legacy_id()
+        return self.compute_canonical_id()
 
 class ClaimRecord(BaseModel):
     """

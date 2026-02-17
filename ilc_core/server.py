@@ -60,27 +60,6 @@ def _state(request: Request):
     return state
 
 
-def _resolve_node_id_mode(node: Node, node_id: str) -> str:
-    """
-    Resolve accepted NodeID mode for runtime compatibility.
-
-    Returns:
-        "legacy" if supplied id matches legacy SHA-256 contract,
-        "canonical" if supplied id matches CIDv1 canonical contract.
-
-    Raises:
-        GossipValidationError when supplied id matches neither contract.
-    """
-    legacy_id = node.compute_legacy_id()
-    if node_id == legacy_id:
-        return "legacy"
-
-    canonical_id = node.compute_canonical_id()
-    if node_id == canonical_id:
-        return "canonical"
-
-    raise GossipValidationError("gossip_node_id_mismatch")
-
 # Request Models
 class ClaimRequest(BaseModel):
     content: str
@@ -159,13 +138,15 @@ def receive_gossip(node_data: dict, request: Request):
 
         if not node.signature:
             raise GossipValidationError("gossip_signature_missing")
-        node_id_mode = _resolve_node_id_mode(node, node_id)
+        canonical_node_id = node.compute_canonical_id()
+        if node_id != canonical_node_id:
+            raise GossipValidationError("gossip_node_id_mismatch")
 
         if node_id in state.graph.nodes:
             return {"status": "ignored", "reason": "already_have"}
 
         state.graph.add_node(node)
-        logger.info("gossip_receive_accepted node=%s node_id_mode=%s", node_id, node_id_mode)
+        logger.info("gossip_receive_accepted node=%s node_id_mode=canonical", node_id)
         return {"status": "accepted"}
     except GossipValidationError as exc:
         logger.warning("gossip_receive_rejected token=%s", exc.token)

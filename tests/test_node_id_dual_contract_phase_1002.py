@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import pytest
 
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.types import Node
@@ -43,7 +44,7 @@ def test_dual_id_determinism() -> None:
     assert HEX64_RE.match(node_a.compute_legacy_id())
 
 
-def test_compute_id_falls_back_to_legacy_for_non_dag_cbor_payload() -> None:
+def test_compute_id_rejects_non_dag_cbor_payload() -> None:
     node = Node(
         id="",
         type="task",
@@ -51,6 +52,5 @@ def test_compute_id_falls_back_to_legacy_for_non_dag_cbor_payload() -> None:
         agent_id="agent:test",
         signature="sig",
     )
-    default_id = node.compute_id()
-    assert default_id == node.compute_legacy_id()
-    assert HEX64_RE.match(default_id)
+    with pytest.raises(TypeError):
+        _ = node.compute_id()

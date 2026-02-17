@@ -11,7 +11,7 @@ def test_task_lineage():
     task_payload = {
         "method": "matrix_inversion_v1",
         "inputs_hash": "a1b2c3...",
-        "compute_cost_joules": 0.05
+        "compute_cost_millijoules": 50
     }
     
     task_node = Node(

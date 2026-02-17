@@ -16,7 +16,7 @@ def _make_node(content: str = "bridge-test") -> Node:
     )
 
 
-def test_gossip_accepts_legacy_node_id() -> None:
+def test_gossip_rejects_legacy_node_id() -> None:
     app = create_app()
     client = TestClient(app)
 
@@ -24,8 +24,8 @@ def test_gossip_accepts_legacy_node_id() -> None:
     node.id = node.compute_legacy_id()
 
     resp = client.post("/gossip/receive", json=node.model_dump(mode="json"))
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "accepted"
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Invalid Gossip"
 
 
 def test_gossip_accepts_canonical_node_id() -> None:
