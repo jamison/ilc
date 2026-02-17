@@ -45,16 +45,42 @@ class Node(BaseModel):
     # Optional parent lineage for claim/refutation nodes.
     parent_ids: List[str] = Field(default_factory=list)
 
-    def compute_id(self) -> str:
-        """Calculates SHA-256 ID. Dicts are canonicalized."""
+    def _legacy_id_payload(self) -> bytes:
+        """Build legacy SHA-256 payload bytes for transitional compatibility."""
         if isinstance(self.content, dict):
             payload_str = json.dumps(self.content, sort_keys=True)
         else:
             payload_str = str(self.content)
-            
+
         # ID depends on Type, Content, and Author (Provenance)
-        payload = f"{self.type}:{payload_str}:{self.agent_id}".encode()
-        return hashlib.sha256(payload).hexdigest()
+        return f"{self.type}:{payload_str}:{self.agent_id}".encode()
+
+    def compute_legacy_id(self) -> str:
+        """Compute legacy SHA-256 hex node id contract."""
+        return hashlib.sha256(self._legacy_id_payload()).hexdigest()
+
+    def _canonical_id_object(self) -> dict[str, Any]:
+        """Build canonical object for CIDv1 node id generation."""
+        return {
+            "type": self.type,
+            "content": self.content,
+            "agent_id": self.agent_id,
+        }
+
+    def compute_canonical_id(self) -> str:
+        """Compute canonical CIDv1 node id contract."""
+        from ilc_core.encoding.cidv1 import node_id_from_obj
+
+        return node_id_from_obj(self._canonical_id_object())
+
+    def compute_id(self) -> str:
+        """
+        Transitional node id contract.
+
+        Phase-1 migration keeps compute_id pinned to legacy behavior while
+        canonical id adoption is rolled out through runtime boundaries.
+        """
+        return self.compute_legacy_id()
 
 class ClaimRecord(BaseModel):
     """
