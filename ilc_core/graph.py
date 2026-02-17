@@ -9,9 +9,13 @@ from .links import validate_link_type, is_symmetric
 
 logger = logging.getLogger(__name__)
 
+# Track-1007 boundary: edge path is compatibility-only lineage relation.
+EDGE_COMPATIBILITY_TYPES = frozenset({"derives_from"})
+
 
 @dataclass(frozen=True)
 class GraphEdge:
+    """Compatibility lineage edge record (non-semantic relation surface)."""
     source_id: str
     target_id: str
     type: str
@@ -65,15 +69,20 @@ class EpistemicGraph:
         return True
 
     def _coerce_edge_event(self, edge_event: EdgeEventLike) -> GraphEdge:
+        edge_type = str(edge_event.type)
+        if edge_type not in EDGE_COMPATIBILITY_TYPES:
+            raise GraphIntegrityError(
+                f"edge_compatibility_type_unsupported:{edge_type}"
+            )
         return GraphEdge(
             source_id=edge_event.source_id,
             target_id=edge_event.target_id,
-            type=edge_event.type,
+            type=edge_type,
             weight=float(getattr(edge_event, "weight", 1.0)),
         )
 
     def add_edge(self, edge_event: EdgeEventLike) -> None:
-        """Add an edge and update indexes."""
+        """Add compatibility lineage edge and update indexes."""
         edge = self._coerce_edge_event(edge_event)
         if edge.source_id not in self.nodes:
             raise NodeNotFoundError(
@@ -123,6 +132,7 @@ class EpistemicGraph:
         return node_to_claim_record(node)
 
     def add_link(self, link: LinkRecord) -> None:
+        """Add semantic relation link (`supports/refutes/equivalent/depends_on`)."""
         # Validate link_type
         link_type = validate_link_type(link.link_type)
 
