@@ -89,3 +89,43 @@ def test_utility_flow_gate_contracts() -> None:
     with pytest.raises(NodeValueKernelError) as exc_freshness:
         compute_utility_flow(0.5, 1.0, 1.5)
     assert str(exc_freshness.value) == "node_value_kernel_invalid_freshness_gate"
+
+
+def test_compute_node_scores_consumes_path_lift_witnesses_when_provided() -> None:
+    path_witnesses = [
+        {
+            "witness_id": "w1",
+            "source_id": "root",
+            "target_id": "node-b",
+            "nodes": [
+                {"node_id": "genesis-node", "agent_id": "agent-0"},
+                {"node_id": "node-a", "agent_id": "agent-1"},
+                {"node_id": "node-b", "agent_id": "agent-2"},
+            ],
+            "path_weight": 1.0,
+            "path_cost": 3.0,
+        },
+        {
+            "witness_id": "w2",
+            "source_id": "root",
+            "target_id": "node-a",
+            "nodes": [
+                {"node_id": "genesis-node", "agent_id": "agent-0"},
+                {"node_id": "node-a", "agent_id": "agent-1"},
+            ],
+            "path_weight": 1.0,
+            "path_cost": 2.0,
+        },
+    ]
+
+    baseline_rows = {
+        row["node_id"]: row for row in compute_node_scores(_sample_events())
+    }
+    lifted_rows = {
+        row["node_id"]: row
+        for row in compute_node_scores(_sample_events(), path_witnesses=path_witnesses)
+    }
+
+    assert lifted_rows["node-a"]["path_component"] == pytest.approx(1.0)
+    assert lifted_rows["node-b"]["path_component"] == pytest.approx(0.4)
+    assert lifted_rows["node-a"]["path_component"] > baseline_rows["node-a"]["path_component"]

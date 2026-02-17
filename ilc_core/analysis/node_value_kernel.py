@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from typing import Mapping, TypedDict
 
+from ilc_core.analysis.path_lift_counterfactual import (
+    build_normalized_path_lift_by_node,
+    compute_path_lift_counterfactual,
+)
+
 from ilc_core.analysis.node_value_input_canon import NodeValueInputEvent
 from ilc_core.exceptions import NodeValueKernelError
 
@@ -84,7 +89,7 @@ def _validation_component(unique_agents_using: float) -> float:
     return _clamp(unique_agents_using / 3.0)
 
 
-def _path_component(reuse_count: float) -> float:
+def _legacy_path_component(reuse_count: float) -> float:
     return _clamp(reuse_count / 4.0)
 
 
@@ -92,6 +97,7 @@ def compute_epistemic_weight(
     evidence: NodeEvidenceVector,
     *,
     weights: Mapping[str, float] = DEFAULT_EW_WEIGHTS,
+    path_lift_score: float | None = None,
 ) -> tuple[float, float, float, float, float]:
     ew_weights = validate_ew_weights(weights)
 
@@ -101,7 +107,10 @@ def compute_epistemic_weight(
         float(evidence["refutation_stake_against"]),
     )
     validation_component = _validation_component(float(evidence["unique_agents_using"]))
-    path_component = _path_component(float(evidence["reuse_count"]))
+    if path_lift_score is None:
+        path_component = _legacy_path_component(float(evidence["reuse_count"]))
+    else:
+        path_component = _clamp(path_lift_score)
 
     epistemic_weight = (
         ew_weights["reuse"] * reuse_component
@@ -195,17 +204,28 @@ def compute_node_scores(
     events: list[NodeValueInputEvent],
     *,
     weights: Mapping[str, float] = DEFAULT_EW_WEIGHTS,
+    path_witnesses: list[Mapping[str, object]] | None = None,
 ) -> list[NodeScoreVector]:
     vectors = build_node_evidence_vectors(events)
+    path_lift_by_node: dict[str, float] = {}
+    if path_witnesses is not None:
+        path_lift_report = compute_path_lift_counterfactual(path_witnesses)
+        path_lift_by_node = build_normalized_path_lift_by_node(path_lift_report)
+
     output: list[NodeScoreVector] = []
     for vector in vectors:
+        path_lift_score = path_lift_by_node.get(vector["node_id"])
         (
             reuse_component,
             contradiction_component,
             validation_component,
             path_component,
             epistemic_weight,
-        ) = compute_epistemic_weight(vector, weights=weights)
+        ) = compute_epistemic_weight(
+            vector,
+            weights=weights,
+            path_lift_score=path_lift_score,
+        )
         utility_flow = compute_utility_flow(
             epistemic_weight,
             float(vector["usage_window"]),
