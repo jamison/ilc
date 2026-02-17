@@ -6,8 +6,11 @@ from ilc_core.analysis.path_lift_counterfactual import (
     build_normalized_path_lift_by_node,
     compute_path_lift_counterfactual,
 )
-
 from ilc_core.analysis.node_value_input_canon import NodeValueInputEvent
+from ilc_core.analysis.reuse_diversity_invariants import (
+    DEFAULT_REUSE_DIVERSITY_POLICY,
+    compute_reuse_diversity_multiplier,
+)
 from ilc_core.exceptions import NodeValueKernelError
 
 
@@ -24,6 +27,7 @@ class NodeEvidenceVector(TypedDict):
     claim_net_stake: float
     refutation_stake_against: float
     unique_agents_using: float
+    max_agent_reuse_share: float
     usage_window: float
     freshness_gate: float
 
@@ -34,6 +38,7 @@ class NodeScoreVector(TypedDict):
     contradiction_component: float
     validation_component: float
     path_component: float
+    reuse_diversity_multiplier: float
     epistemic_weight: float
     utility_flow: float
 
@@ -98,10 +103,13 @@ def compute_epistemic_weight(
     *,
     weights: Mapping[str, float] = DEFAULT_EW_WEIGHTS,
     path_lift_score: float | None = None,
+    reuse_diversity_multiplier: float = 1.0,
 ) -> tuple[float, float, float, float, float]:
     ew_weights = validate_ew_weights(weights)
 
-    reuse_component = _reuse_component(float(evidence["reuse_count"]))
+    reuse_component = _clamp(
+        _reuse_component(float(evidence["reuse_count"])) * float(reuse_diversity_multiplier)
+    )
     contradiction_component = _contradiction_component(
         float(evidence["claim_net_stake"]),
         float(evidence["refutation_stake_against"]),
@@ -138,6 +146,7 @@ def compute_utility_flow(epistemic_weight: float, usage_window: float, freshness
 def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeEvidenceVector]:
     evidence: dict[str, NodeEvidenceVector] = {}
     agents_per_node: dict[str, set[str]] = {}
+    agent_reuse_counts_by_node: dict[str, dict[str, int]] = {}
 
     for event in events:
         kind = event["kind"]
@@ -153,6 +162,7 @@ def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeE
                     "claim_net_stake": 0.0,
                     "refutation_stake_against": 0.0,
                     "unique_agents_using": 0.0,
+                    "max_agent_reuse_share": 0.0,
                     "usage_window": 1.0,
                     "freshness_gate": 1.0,
                 },
@@ -168,12 +178,16 @@ def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeE
                     "claim_net_stake": 0.0,
                     "refutation_stake_against": 0.0,
                     "unique_agents_using": 0.0,
+                    "max_agent_reuse_share": 0.0,
                     "usage_window": 1.0,
                     "freshness_gate": 1.0,
                 },
             )
             target_row["reuse_count"] += 1.0
-            agents_per_node.setdefault(target_id, set()).add(str(payload["agent_id"]))
+            agent_id = str(payload["agent_id"])
+            agents_per_node.setdefault(target_id, set()).add(agent_id)
+            counts = agent_reuse_counts_by_node.setdefault(target_id, {})
+            counts[agent_id] = counts.get(agent_id, 0) + 1
 
         elif kind == "refutation":
             target_id = str(payload["target_id"])
@@ -185,17 +199,31 @@ def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeE
                     "claim_net_stake": 0.0,
                     "refutation_stake_against": 0.0,
                     "unique_agents_using": 0.0,
+                    "max_agent_reuse_share": 0.0,
                     "usage_window": 1.0,
                     "freshness_gate": 1.0,
                 },
             )
             target_row["refutation_stake_against"] += float(payload["net_stake"])
             target_row["reuse_count"] += 1.0
-            agents_per_node.setdefault(target_id, set()).add(str(payload["agent_id"]))
+            agent_id = str(payload["agent_id"])
+            agents_per_node.setdefault(target_id, set()).add(agent_id)
+            counts = agent_reuse_counts_by_node.setdefault(target_id, {})
+            counts[agent_id] = counts.get(agent_id, 0) + 1
 
     for node_id, agents in agents_per_node.items():
-        evidence[node_id]["unique_agents_using"] = float(len(agents))
-        evidence[node_id]["usage_window"] = float(evidence[node_id]["reuse_count"])
+        row = evidence[node_id]
+        row["unique_agents_using"] = float(len(agents))
+        row["usage_window"] = float(row["reuse_count"])
+
+        reuse_count = float(row["reuse_count"])
+        counts = agent_reuse_counts_by_node.get(node_id, {})
+        max_agent_count = max(counts.values(), default=0)
+        row["max_agent_reuse_share"] = (
+            float(max_agent_count) / reuse_count
+            if reuse_count > 0.0
+            else 0.0
+        )
 
     return [evidence[node_id] for node_id in sorted(evidence.keys())]
 
@@ -205,6 +233,7 @@ def compute_node_scores(
     *,
     weights: Mapping[str, float] = DEFAULT_EW_WEIGHTS,
     path_witnesses: list[Mapping[str, object]] | None = None,
+    reuse_diversity_policy: Mapping[str, object] = DEFAULT_REUSE_DIVERSITY_POLICY,
 ) -> list[NodeScoreVector]:
     vectors = build_node_evidence_vectors(events)
     path_lift_by_node: dict[str, float] = {}
@@ -214,6 +243,14 @@ def compute_node_scores(
 
     output: list[NodeScoreVector] = []
     for vector in vectors:
+        reuse_diversity_multiplier = compute_reuse_diversity_multiplier(
+            {
+                "reuse_count": vector["reuse_count"],
+                "distinct_agent_count": vector["unique_agents_using"],
+                "max_agent_reuse_share": vector["max_agent_reuse_share"],
+            },
+            policy=reuse_diversity_policy,
+        )
         path_lift_score = path_lift_by_node.get(vector["node_id"])
         (
             reuse_component,
@@ -225,6 +262,7 @@ def compute_node_scores(
             vector,
             weights=weights,
             path_lift_score=path_lift_score,
+            reuse_diversity_multiplier=reuse_diversity_multiplier,
         )
         utility_flow = compute_utility_flow(
             epistemic_weight,
@@ -238,6 +276,7 @@ def compute_node_scores(
                 "contradiction_component": contradiction_component,
                 "validation_component": validation_component,
                 "path_component": path_component,
+                "reuse_diversity_multiplier": reuse_diversity_multiplier,
                 "epistemic_weight": epistemic_weight,
                 "utility_flow": utility_flow,
             }

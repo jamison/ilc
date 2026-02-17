@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import logging
 from typing import Iterable, Literal, Mapping, TypedDict
 
 from ilc_core.exceptions import RewardGovernorError
+
+logger = logging.getLogger(__name__)
 
 
 UtilityFlowActionKind = Literal["validation", "refutation", "other"]
@@ -25,6 +28,8 @@ class UtilityFlowRewardInput(UtilityFlowRewardInputRequired, total=False):
     stake_spent: float
     effort_units: float
     pairing_key: str
+    reuse_diversity_multiplier: float
+    diversity_applied_in_scoring: bool
 
 
 class RewardGovernorPolicy(TypedDict):
@@ -42,6 +47,9 @@ class UtilityFlowRewardAllocation(TypedDict):
     stake_spent: float
     effort_units: float
     pairing_key: str
+    reuse_diversity_multiplier: float
+    effective_diversity_multiplier: float
+    diversity_applied_in_scoring: bool
     reward_share: float
     reward_amount: float
     net_reward: float
@@ -106,6 +114,8 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
     stake_spent = row.get("stake_spent", 0.0)
     effort_units = row.get("effort_units", utility_flow)
     pairing_key = row.get("pairing_key", "")
+    reuse_diversity_multiplier = row.get("reuse_diversity_multiplier")
+    diversity_applied_in_scoring = row.get("diversity_applied_in_scoring", False)
 
     if not isinstance(node_id, str) or node_id == "":
         raise RewardGovernorError("reward_governor_invalid_node_id")
@@ -121,6 +131,16 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
         raise RewardGovernorError("reward_governor_invalid_effort_units")
     if not isinstance(pairing_key, str):
         raise RewardGovernorError("reward_governor_invalid_pairing_key")
+    if reuse_diversity_multiplier is not None:
+        if (
+            isinstance(reuse_diversity_multiplier, bool)
+            or not isinstance(reuse_diversity_multiplier, (int, float))
+            or float(reuse_diversity_multiplier) < 0.0
+            or float(reuse_diversity_multiplier) > 1.0
+        ):
+            raise RewardGovernorError("reward_governor_invalid_reuse_diversity_multiplier")
+    if not isinstance(diversity_applied_in_scoring, bool):
+        raise RewardGovernorError("reward_governor_invalid_diversity_applied_in_scoring")
 
     return {
         "node_id": node_id,
@@ -130,7 +150,27 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
         "stake_spent": float(stake_spent),
         "effort_units": float(effort_units),
         "pairing_key": pairing_key,
+        "reuse_diversity_multiplier": (
+            float(reuse_diversity_multiplier)
+            if reuse_diversity_multiplier is not None
+            else None
+        ),
+        "diversity_applied_in_scoring": diversity_applied_in_scoring,
     }
+
+
+def _resolve_effective_diversity_multiplier(row: UtilityFlowRewardInput) -> float:
+    if row["diversity_applied_in_scoring"]:
+        return 1.0
+
+    provided_multiplier = row["reuse_diversity_multiplier"]
+    if provided_multiplier is None:
+        logger.warning(
+            "reward_governor_missing_reuse_diversity_multiplier_fallback:%s",
+            row["node_id"],
+        )
+        return 1.0
+    return float(provided_multiplier)
 
 
 def compute_reward_allocations(
@@ -150,16 +190,30 @@ def compute_reward_allocations(
         normalized_rows.append(row)
 
     threshold = resolved_policy["min_flow_threshold"]
-    eligible_rows = [row for row in normalized_rows if row["utility_flow"] >= threshold and row["utility_flow"] > 0.0]
+    eligible_rows = [
+        row for row in normalized_rows if row["utility_flow"] >= threshold and row["utility_flow"] > 0.0
+    ]
+    effective_diversity_multiplier_by_node: dict[str, float] = {
+        row["node_id"]: _resolve_effective_diversity_multiplier(row)
+        for row in eligible_rows
+    }
     total_flow = sum(
-        row["utility_flow"] * _ACTION_UTILITY_MULTIPLIERS[row["action_kind"]]
+        row["utility_flow"]
+        * _ACTION_UTILITY_MULTIPLIERS[row["action_kind"]]
+        * effective_diversity_multiplier_by_node[row["node_id"]]
         for row in eligible_rows
     )
 
     budget = resolved_policy["epoch_reward_budget"]
     allocations: list[UtilityFlowRewardAllocation] = []
     for row in sorted(eligible_rows, key=lambda item: item["node_id"]):
-        weighted_flow = row["utility_flow"] * _ACTION_UTILITY_MULTIPLIERS[row["action_kind"]]
+        effective_diversity_multiplier = effective_diversity_multiplier_by_node[row["node_id"]]
+
+        weighted_flow = (
+            row["utility_flow"]
+            * _ACTION_UTILITY_MULTIPLIERS[row["action_kind"]]
+            * effective_diversity_multiplier
+        )
         reward_share = (weighted_flow / total_flow) if total_flow > 0.0 else 0.0
         reward_amount = budget * reward_share
         allocations.append(
@@ -172,6 +226,13 @@ def compute_reward_allocations(
                 "stake_spent": row["stake_spent"],
                 "effort_units": row["effort_units"],
                 "pairing_key": row["pairing_key"],
+                "reuse_diversity_multiplier": (
+                    float(row["reuse_diversity_multiplier"])
+                    if row["reuse_diversity_multiplier"] is not None
+                    else 1.0
+                ),
+                "effective_diversity_multiplier": effective_diversity_multiplier,
+                "diversity_applied_in_scoring": row["diversity_applied_in_scoring"],
                 "reward_share": reward_share,
                 "reward_amount": reward_amount,
                 "net_reward": reward_amount - row["stake_spent"],

@@ -69,3 +69,57 @@ def test_duplicate_node_id_rejected() -> None:
     with pytest.raises(RewardGovernorError) as exc_info:
         compute_reward_allocations(rows)
     assert str(exc_info.value) == "reward_governor_duplicate_node_id"
+
+
+def test_missing_diversity_multiplier_falls_back_to_neutral_with_warning(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    caplog.set_level("WARNING")
+    rows = [
+        {
+            "node_id": "validator-node",
+            "utility_flow": 2.0,
+            "is_genesis": False,
+            "action_kind": "validation",
+        },
+        {
+            "node_id": "refuter-node",
+            "utility_flow": 2.0,
+            "is_genesis": False,
+            "action_kind": "refutation",
+            "reuse_diversity_multiplier": 1.0,
+        },
+    ]
+    allocations = compute_reward_allocations(rows)
+    by_id = {row["node_id"]: row for row in allocations}
+
+    assert by_id["validator-node"]["effective_diversity_multiplier"] == pytest.approx(1.0)
+    assert by_id["validator-node"]["reuse_diversity_multiplier"] == pytest.approx(1.0)
+    assert "reward_governor_missing_reuse_diversity_multiplier_fallback:validator-node" in caplog.text
+
+
+def test_diversity_applied_in_scoring_avoids_double_penalty() -> None:
+    allocations = compute_reward_allocations(
+        [
+            {
+                "node_id": "already-weighted",
+                "utility_flow": 2.0,
+                "is_genesis": False,
+                "action_kind": "validation",
+                "reuse_diversity_multiplier": 0.85,
+                "diversity_applied_in_scoring": True,
+            },
+            {
+                "node_id": "plain",
+                "utility_flow": 2.0,
+                "is_genesis": False,
+                "action_kind": "validation",
+                "reuse_diversity_multiplier": 1.0,
+            },
+        ]
+    )
+    by_id = {row["node_id"]: row for row in allocations}
+
+    assert by_id["already-weighted"]["effective_diversity_multiplier"] == pytest.approx(1.0)
+    assert by_id["plain"]["effective_diversity_multiplier"] == pytest.approx(1.0)
+    assert by_id["already-weighted"]["reward_amount"] == pytest.approx(by_id["plain"]["reward_amount"])

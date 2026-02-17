@@ -87,3 +87,43 @@ def test_phase_212_invariant_check_rejects_epoch_rows_that_violate_constraint() 
         assert_refutation_profitability_invariant(violating_rows)
     assert str(exc_info.value) == "reward_invariant_refutation_not_more_profitable"
 
+
+def test_phase_212_refutation_profitability_holds_after_diversity_weighting() -> None:
+    report = allocate_rewards_with_governor(
+        [
+            {
+                "node_id": "validator-node",
+                "utility_flow": 10.0,
+                "is_genesis": False,
+                "action_kind": "validation",
+                "stake_spent": 1.0,
+                "effort_units": 5.0,
+                "pairing_key": "claim-99",
+                "reuse_diversity_multiplier": 1.0,
+            },
+            {
+                "node_id": "refuter-node",
+                "utility_flow": 10.0,
+                "is_genesis": False,
+                "action_kind": "refutation",
+                "stake_spent": 1.0,
+                "effort_units": 5.0,
+                "pairing_key": "claim-99",
+                "reuse_diversity_multiplier": 0.85,
+            },
+        ],
+        policy={
+            "epoch_reward_budget": 120.0,
+            "max_genesis_share": 1.0,
+            "min_flow_threshold": 0.0,
+        },
+    )
+
+    allocations = {row["node_id"]: row for row in report["allocations"]}
+    validator = allocations["validator-node"]
+    refuter = allocations["refuter-node"]
+
+    assert refuter["effective_diversity_multiplier"] < validator["effective_diversity_multiplier"]
+    assert refuter["reward_amount"] > validator["reward_amount"]
+    assert refuter["net_reward"] > validator["net_reward"]
+    assert report["refutation_profitability"]["ok"] is True
