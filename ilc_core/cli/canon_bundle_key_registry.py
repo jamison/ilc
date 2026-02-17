@@ -11,11 +11,11 @@ Usage:
 """
 
 import argparse
-import base64
 import json
 import os
 import sys
 from pathlib import Path
+import logging
 
 from ilc_core.ledger.canon_bundle_key_registry import (
     validate_registry_file,
@@ -25,21 +25,9 @@ from ilc_core.ledger.canon_bundle_key_registry import (
     backup_registry,
     restore_registry,
 )
+from ilc_core.cli._key_utils import load_key_bytes_with_b64_fallback
 
-
-def _load_key_bytes(key_path: Path) -> bytes:
-    """Load key bytes from file, decoding base64 if applicable."""
-    content = key_path.read_bytes().strip()
-    # Try base64 decode (consistent with bundle signing)
-    try:
-        decoded = base64.b64decode(content, validate=True)
-        # If successfully decoded and looks like raw bytes, use it
-        if len(decoded) >= 16:
-            return decoded
-    except Exception:
-        pass
-    # Otherwise use raw bytes
-    return content
+logger = logging.getLogger(__name__)
 
 
 def _setup_parser() -> argparse.ArgumentParser:
@@ -211,7 +199,7 @@ def _handle_sign(registry_path: Path, key_file: str, sig_file: str, default_sig_
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    key = _load_key_bytes(key_path)
+    key = load_key_bytes_with_b64_fallback(key_path)
     sig_path = Path(sig_file) if sig_file else (default_sig_path if default_sig_path else None)
     
     result = sign_registry_file(registry_path, key, sig_path)
@@ -309,7 +297,7 @@ def main() -> int:
             result["errors"].append("key_file_not_found")
             result["ok"] = False
         else:
-            key = _load_key_bytes(key_path)
+            key = load_key_bytes_with_b64_fallback(key_path)
             sig_path = Path(args.sig) if args.sig else (default_sig_path if default_sig_path else None)
             
             sig_result = verify_registry_file_signature(registry_path, key, sig_path)
@@ -333,8 +321,8 @@ def main() -> int:
             key_counts["previous"] = len(data.get("previous_keys", []))
             key_counts["deprecated"] = len(data.get("deprecated_keys", []))
             registry_version = data.get("registry_version")
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("registry_summary_parse_skipped path=%s error=%s", registry_path, exc)
     
     output = {
         "ok": result["ok"],

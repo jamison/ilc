@@ -8,24 +8,12 @@ Usage:
 """
 
 import argparse
-import base64
 import json
 import sys
 from pathlib import Path
 
 from ilc_core.ledger.canon_bundle_key_registry_fetch import fetch_registry_bundle
-
-
-def _load_key_bytes(key_path: Path) -> bytes:
-    """Load key bytes from file, decoding base64 if applicable."""
-    content = key_path.read_bytes().strip()
-    try:
-        decoded = base64.b64decode(content, validate=True)
-        if len(decoded) >= 16:
-            return decoded
-    except Exception:
-        pass
-    return content
+from ilc_core.cli._key_utils import load_key_bytes_with_b64_fallback
 
 
 def main() -> int:
@@ -104,7 +92,7 @@ def main() -> int:
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    key = _load_key_bytes(key_path)
+    key = load_key_bytes_with_b64_fallback(key_path)
     dest_dir = Path(args.dest).resolve()
     
     result = fetch_registry_bundle(

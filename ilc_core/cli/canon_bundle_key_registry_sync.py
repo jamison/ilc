@@ -7,25 +7,13 @@ Usage:
 """
 
 import argparse
-import base64
 import json
 import os
 import sys
 from pathlib import Path
 
 from ilc_core.ledger.canon_bundle_key_registry_sync import sync_channel_registry, SyncContext
-
-
-def _load_key_bytes(key_path: Path) -> bytes:
-    """Load key bytes from file, decoding base64 if applicable."""
-    content = key_path.read_bytes().strip()
-    try:
-        decoded = base64.b64decode(content, validate=True)
-        if len(decoded) >= 16:
-            return decoded
-    except Exception:
-        pass
-    return content
+from ilc_core.cli._key_utils import load_key_bytes_with_b64_fallback
 
 
 def resolve_require_signed_channel(args) -> bool:
@@ -205,7 +193,7 @@ def main() -> int:
         print(json.dumps(output, separators=(",", ":")))
         return 2
     
-    registry_key = _load_key_bytes(registry_key_path)
+    registry_key = load_key_bytes_with_b64_fallback(registry_key_path)
     
     channel_key = None
     if args.channel_key_file:
@@ -214,7 +202,7 @@ def main() -> int:
             output = {"ok": False, "errors": ["channel_key_file_not_found"], "warnings": []}
             print(json.dumps(output, separators=(",", ":")))
             return 2
-        channel_key = _load_key_bytes(c_key_path)
+        channel_key = load_key_bytes_with_b64_fallback(c_key_path)
     
     # Resolve policy
     require_signed = resolve_require_signed_channel(args)

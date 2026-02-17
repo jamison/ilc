@@ -7,24 +7,12 @@ Usage:
 """
 
 import argparse
-import base64
 import json
 import sys
 from pathlib import Path
 
 from ilc_core.ledger.canon_bundle_key_registry_channel_signing import verify_channel_file_signature
-
-
-def _load_key_bytes(key_path: Path) -> bytes:
-    """Load key bytes from file, decoding base64 if applicable."""
-    content = key_path.read_bytes().strip()
-    try:
-        decoded = base64.b64decode(content, validate=True)
-        if len(decoded) >= 16:
-            return decoded
-    except Exception:
-        pass
-    return content
+from ilc_core.cli._key_utils import load_key_bytes_with_b64_fallback
 
 
 def main() -> int:
@@ -61,7 +49,7 @@ def main() -> int:
         return 2
     
     try:
-        key = _load_key_bytes(key_path)
+        key = load_key_bytes_with_b64_fallback(key_path)
     except Exception as e:
         output = {"ok": False, "errors": [f"key_read_failed:{e}"], "warnings": []}
         print(json.dumps(output, separators=(",", ":")))
