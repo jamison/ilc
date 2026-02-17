@@ -4,11 +4,14 @@ from dataclasses import dataclass
 from typing import Dict, Any, Optional
 from pathlib import Path
 import json
+import logging
 
 try:
     import yaml
 except ImportError:
     yaml = None  # YAML optional
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -29,30 +32,54 @@ def load_hardware_archetypes(
     branch on hardware type – it only sees benchmark potential, stake, and
     epistemic results.
     """
+    root = Path(__file__).resolve().parents[1]  # ilc_core/ -> project root
+    default_json_path = root / "config" / "hardware_archetypes_mvp.json"
+    default_yaml_path = root / "config" / "hardware_archetypes_mvp.yaml"
+
     if config_path is None:
-        root = Path(__file__).resolve().parents[1]  # ilc_core/ -> project root
-        yaml_path = root / "config" / "hardware_archetypes_mvp.yaml"
-        json_path = root / "config" / "hardware_archetypes_mvp.json"
+        requested_path = default_json_path
+        fallback_yaml_path = default_yaml_path
     else:
-        yaml_path = Path(config_path)
-        json_path = yaml_path.with_suffix(".json")
+        requested_path = Path(config_path)
+        fallback_yaml_path = requested_path.with_suffix(".yaml")
 
     data: Dict[str, Any] = {}
 
-    if yaml is not None and yaml_path.exists():
-        with yaml_path.open("r", encoding="utf-8") as f:
-            data = yaml.safe_load(f) or {}
-    elif json_path.exists():
-        with json_path.open("r", encoding="utf-8") as f:
-            data = json.load(f) or {}
+    if requested_path.suffix in {".yaml", ".yml"}:
+        if yaml is not None and requested_path.exists():
+            with requested_path.open("r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        else:
+            fallback_json_path = requested_path.with_suffix(".json")
+            if fallback_json_path.exists():
+                logger.warning(
+                    "hardware_config_yaml_loader_missing_json_fallback path=%s fallback=%s",
+                    requested_path,
+                    fallback_json_path,
+                )
+                with fallback_json_path.open("r", encoding="utf-8") as f:
+                    data = json.load(f) or {}
+            elif config_path is None and default_json_path.exists():
+                with default_json_path.open("r", encoding="utf-8") as f:
+                    data = json.load(f) or {}
+            else:
+                return {}
     else:
-        # If neither exists, we might just return empty or raise.
-        # For MVP, let's raise if we expected default config to be there.
-        # But if we are in a test env where config doesn't exist, empty is safer.
-        # Let's check if we are using default path and it's missing.
-        if config_path is None and not yaml_path.exists() and not json_path.exists():
-             raise FileNotFoundError("No hardware archetype config found.")
-        return {}
+        if requested_path.exists():
+            with requested_path.open("r", encoding="utf-8") as f:
+                data = json.load(f) or {}
+        elif config_path is None and fallback_yaml_path.exists() and yaml is not None:
+            logger.warning(
+                "hardware_config_default_json_missing_yaml_fallback path=%s fallback=%s",
+                requested_path,
+                fallback_yaml_path,
+            )
+            with fallback_yaml_path.open("r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        elif config_path is None:
+            raise FileNotFoundError("No hardware archetype config found.")
+        else:
+            return {}
 
     raw = data.get("hardware_archetypes", {})
     archetypes: Dict[str, HardwareArchetype] = {}

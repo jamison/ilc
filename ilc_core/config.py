@@ -25,8 +25,6 @@ def _coerce_governance_config(value: object) -> GovernanceConfig:
 
 def _default_governance_config_path() -> Path:
     root = Path(__file__).resolve().parents[1]
-    if yaml:
-        return root / "config" / "governance_mvp.yaml"
     return root / "config" / "governance_mvp.json"
 
 
@@ -57,6 +55,15 @@ def load_governance_config(path: str | None = None) -> GovernanceConfig:
             with path_obj.open("r", encoding="utf-8") as f:
                 return _coerce_governance_config(yaml.safe_load(f) or {})
         else:
+            fallback_json_path = path_obj.with_suffix(".json")
+            if fallback_json_path.exists():
+                logger.warning(
+                    "governance_config_yaml_loader_missing_json_fallback path=%s fallback=%s",
+                    path_obj,
+                    fallback_json_path,
+                )
+                with fallback_json_path.open("r", encoding="utf-8") as f:
+                    return _coerce_governance_config(json.load(f) or {})
             logger.warning(
                 "governance_config_yaml_loader_missing path=%s fallback=empty_config",
                 path_obj,
