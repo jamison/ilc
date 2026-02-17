@@ -14,5 +14,5 @@ if __name__ == "__main__":
     logger.info("node_daemon_api_endpoint url=http://127.0.0.1:8000")
     logger.info("node_daemon_docs_endpoint url=http://127.0.0.1:8000/docs")
     
-    # Run the FastAPI app from the ilc_core.server module
-    uvicorn.run("ilc_core.server:app", host="127.0.0.1", port=8000, reload=True)
+    # Run FastAPI app via factory to avoid server-module import side effects.
+    uvicorn.run("ilc_core.server:create_app", factory=True, host="127.0.0.1", port=8000, reload=True)

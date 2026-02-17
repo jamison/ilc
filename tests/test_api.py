@@ -4,7 +4,7 @@ import json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from fastapi.testclient import TestClient
-from ilc_core.server import app
+from ilc_core.asgi import app
 from ilc_core.types import Node
 
 client = TestClient(app)

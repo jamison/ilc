@@ -278,6 +278,3 @@ def create_app() -> FastAPI:
     app_obj = FastAPI(title="ILC Node Daemon", version="0.1.0", lifespan=lifespan)
     app_obj.include_router(router)
     return app_obj
-
-
-app = create_app()

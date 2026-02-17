@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from ilc_core.server import app, create_app
+from ilc_core.asgi import app
+from ilc_core.server import create_app
 
 
 def test_phase_198_create_app_returns_distinct_instances() -> None:

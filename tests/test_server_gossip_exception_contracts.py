@@ -4,7 +4,7 @@ import logging
 
 from fastapi.testclient import TestClient
 
-from ilc_core.server import app
+from ilc_core.asgi import app
 from ilc_core.types import Node
 
 

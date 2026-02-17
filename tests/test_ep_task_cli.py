@@ -2,7 +2,7 @@ import json
 import sys
 from io import StringIO
 from fastapi.testclient import TestClient
-from ilc_core.server import app
+from ilc_core.asgi import app
 from ilc_core.cli.ep_task_cli import run_ep_task_cli
 
 client = TestClient(app)
