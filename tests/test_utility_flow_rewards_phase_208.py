@@ -57,6 +57,7 @@ def test_min_threshold_filters_low_flows() -> None:
     assert len(report["allocations"]) == 1
     assert report["allocations"][0]["node_id"] == "node-b"
     assert report["governor"]["ok"] is True
+    assert report["refutation_profitability"]["ok"] is True
 
 
 def test_duplicate_node_id_rejected() -> None:

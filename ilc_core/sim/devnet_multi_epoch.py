@@ -18,6 +18,10 @@ from ilc_core.ledger.ledger_export import (
     export_ledger_distribution_checks_csv
 )
 from ilc_core.ledger.canon_export import export_canon_state_json
+from ilc_core.analysis.utility_flow_rewards import (
+    assert_refutation_profitability_invariant,
+    UtilityFlowRewardAllocation,
+)
 
 BalanceSnapshot: TypeAlias = Dict[str, float]
 NodeLoadRow: TypeAlias = Dict[str, float]
@@ -69,6 +73,35 @@ def _settle_epoch(
     # 2. Compute Summary from Result
     total_tasks = int(sum(m.get("num_tasks", 0) for m in result.node_load_metrics.values()))
     total_reward = float(sum(m.get("total_reward", 0.0) for m in result.node_load_metrics.values()))
+
+    invariant_rows: list[UtilityFlowRewardAllocation] = []
+    for index, task in enumerate(result.routed_task_rows):
+        reward = task.get("reward")
+        if not isinstance(reward, (int, float)) or reward <= 0.0:
+            continue
+        task_type = str(task.get("task_type", "")).lower()
+        action_kind = "other"
+        if "refute" in task_type:
+            action_kind = "refutation"
+        elif "valid" in task_type:
+            action_kind = "validation"
+
+        invariant_rows.append(
+            {
+                "node_id": f"{task.get('agent_id', 'agent')}:{index}",
+                "is_genesis": False,
+                "utility_flow": float(reward),
+                "weighted_utility_flow": float(reward),
+                "action_kind": action_kind,
+                "stake_spent": 0.0,
+                "effort_units": 1.0,
+                "pairing_key": str(task.get("problem_space", "")),
+                "reward_share": 0.0,
+                "reward_amount": float(reward),
+                "net_reward": float(reward),
+            }
+        )
+    assert_refutation_profitability_invariant(invariant_rows)
     
     # 3. Create Commit Event
     commit_evt = make_commit_epoch_event(
