@@ -75,12 +75,16 @@ class Node(BaseModel):
 
     def compute_id(self) -> str:
         """
-        Transitional node id contract.
+        Default node id contract.
 
-        Phase-1 migration keeps compute_id pinned to legacy behavior while
-        canonical id adoption is rolled out through runtime boundaries.
+        Canonical default is CIDv1 over the canonical node-id object.
+        Legacy SHA-256 hex remains available via compute_legacy_id() and is
+        used as a deterministic fallback for payloads not yet DAG-CBOR-safe.
         """
-        return self.compute_legacy_id()
+        try:
+            return self.compute_canonical_id()
+        except (TypeError, ValueError):
+            return self.compute_legacy_id()
 
 class ClaimRecord(BaseModel):
     """

@@ -19,12 +19,12 @@ def _sample_node() -> Node:
     )
 
 
-def test_compute_id_remains_legacy_in_phase1() -> None:
+def test_compute_id_defaults_to_canonical_after_flip() -> None:
     node = _sample_node()
-    legacy = node.compute_legacy_id()
-    transitional = node.compute_id()
-    assert transitional == legacy
-    assert HEX64_RE.match(transitional)
+    canonical = node.compute_canonical_id()
+    default_id = node.compute_id()
+    assert default_id == canonical
+    assert default_id.startswith("b")
 
 
 def test_compute_canonical_id_returns_cidv1() -> None:
@@ -40,3 +40,17 @@ def test_dual_id_determinism() -> None:
     node_b = _sample_node()
     assert node_a.compute_legacy_id() == node_b.compute_legacy_id()
     assert node_a.compute_canonical_id() == node_b.compute_canonical_id()
+    assert HEX64_RE.match(node_a.compute_legacy_id())
+
+
+def test_compute_id_falls_back_to_legacy_for_non_dag_cbor_payload() -> None:
+    node = Node(
+        id="",
+        type="task",
+        content={"compute_cost_joules": 0.05},
+        agent_id="agent:test",
+        signature="sig",
+    )
+    default_id = node.compute_id()
+    assert default_id == node.compute_legacy_id()
+    assert HEX64_RE.match(default_id)
