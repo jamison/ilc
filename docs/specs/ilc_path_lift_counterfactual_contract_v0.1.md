@@ -53,6 +53,13 @@ Across all witnesses:
 - `max_raw_path_lift = max(raw_path_lift)`
 - `normalized_path_lift = raw_path_lift / max_raw_path_lift` when `max_raw_path_lift > 0`, else `0`.
 
+## 4.1 Method Interpretation
+
+This contract is a Shapley-adjacent marginal-contribution method:
+- it captures per-node counterfactual contribution signal deterministically,
+- it avoids full Shapley coalition enumeration (combinatorially expensive on large graphs),
+- it uses batch-relative normalization so path-lift scores are comparative inputs for scoring kernels, not absolute payout values.
+
 ## 5. Output Contract
 
 Each output row contains:

@@ -36,11 +36,11 @@ Triage reference:
 | CDL-008 | CDP-010 | Layer boundary: fixed core vs policy-loaded layers | ratified | heavy fixed core, minimal fixed core, split-by-domain | split-by-domain | architecture appendix + ADR |
 | CDL-009 | CDP-009 | Fork legitimacy/user signaling | ratified | naming-only, signature-badge, signature-badge+eligibility rules | signature-badge+eligibility rules | client UX + policy docs |
 | CDL-010 | CDP-003 | Pseudonymity/accountability balance | ratified | strict anonymity, pseudonymous attestations, doxxed governance | pseudonymous attestations | comms policy + incident policy |
-| CDL-011 | ADR-0008 / NodeValueTrack | Node usefulness formula ratification (`EW`) | open | reuse-heavy, balanced composite, resilience-heavy | balanced composite | deterministic score vectors + conformance tests |
-| CDL-012 | ADR-0008 / NodeValueTrack | Utility-flow reward linkage (`UF`) | open | usage-only, usage+freshness, full composite | usage+freshness | payout simulation + regression tests |
-| CDL-013 | ADR-0008 / NodeValueTrack | Governance-weight decay and Genesis baseline | open | decay-all, decay-non-genesis-only, hybrid baseline | decay-non-genesis-only | governance normalization tests + policy docs |
-| CDL-014 | ADR-0008 / NodeValueTrack | Path-level marginal contribution method | open | local delta, counterfactual path-lift, market-only proxy | counterfactual path-lift | replayable counterfactual harness |
-| CDL-015 | ADR-0008 / NodeValueTrack | Implementation order lock (refactor avoidance) | open | ad-hoc order, dependency-ordered sequence, strict phase gate | strict phase gate | ratification plan + master plan sequencing |
+| CDL-011 | ADR-0008 / NodeValueTrack | Node usefulness formula ratification (`EW`) | ratified | reuse-heavy, balanced composite, resilience-heavy | balanced composite | deterministic score vectors + conformance tests |
+| CDL-012 | ADR-0008 / NodeValueTrack | Utility-flow reward linkage (`UF`) | ratified | usage-only, usage+freshness, full composite | usage+freshness | payout simulation + regression tests |
+| CDL-013 | ADR-0008 / NodeValueTrack | Governance-weight decay and Genesis baseline | ratified | decay-all, decay-non-genesis-only, hybrid baseline | decay-non-genesis-only | governance normalization tests + policy docs |
+| CDL-014 | ADR-0008 / NodeValueTrack | Path-level marginal contribution method | ratified | local delta, counterfactual path-lift, market-only proxy | counterfactual path-lift | replayable counterfactual harness |
+| CDL-015 | ADR-0008 / NodeValueTrack | Implementation order lock (refactor avoidance) | ratified | ad-hoc order, dependency-ordered sequence, strict phase gate | strict phase gate | ratification plan + master plan sequencing |
 
 ## Scoped Ratification Record (Phase 993)
 
@@ -56,6 +56,19 @@ The following decision IDs were ratified in the Phase 993 governance conflict-se
 
 Conflict-cluster mapping and rationale record:
 - `docs/specs/ilc_governance_conflict_set_ratification_v0.1.md`
+
+## Scoped Ratification Record (Phase 215)
+
+The following decision IDs were ratified in the Phase 215 node-value/governance ratification evidence closure:
+
+- `CDL-011`: selected `balanced composite`
+- `CDL-012`: selected `usage+freshness`
+- `CDL-013`: selected `decay-non-genesis-only`
+- `CDL-014`: selected `counterfactual path-lift`
+- `CDL-015`: selected `strict phase gate`
+
+Ratification evidence package:
+- `docs/specs/ilc_cdl_011_015_ratification_evidence_bundle_v0.1.md`
 
 ## Conflict Notes
 

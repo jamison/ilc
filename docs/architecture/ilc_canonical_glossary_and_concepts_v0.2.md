@@ -128,6 +128,18 @@ Normative usage details are specified in `docs/specs/ilc_governance_economics_ne
 | **Governance Config Surface** | Explicit set of governance policy/config parameters exposed for controlled evolution. | Use `Governance Config Surface` for policy parameter boundary references. |
 | **Namespace Hierarchy** | Structured namespace layering for governance boundaries and compatibility management. | Use `Namespace Hierarchy` for namespace governance and compatibility boundary language. |
 
+### 2.10 Node-Value Counterfactual Marginal Contribution Contracts (Phase 214)
+
+These terms standardize language for `CDL-014` evidence and node-value path contribution analysis.
+Normative details are specified in `docs/specs/ilc_path_lift_counterfactual_contract_v0.1.md`.
+
+| Term | Contract Role | Canon Rule |
+| :--- | :--- | :--- |
+| **Path-Lift Counterfactual Harness** | Deterministic offline harness that computes per-node path-level marginal contribution from replayable witness paths. | Use `Path-Lift Counterfactual Harness` for offline replayable counterfactual scoring evidence. |
+| **Baseline Efficiency** | Per-witness ratio of path utility to path cost used as the incremental contribution unit before aggregation. | Use `Baseline Efficiency` for `path_weight / path_cost` witness-level contribution language. |
+| **Shapley-Adjacent Marginal Contribution** | Practical approximation approach that captures marginal contribution signal without full combinatorial coalition enumeration. | Use `Shapley-Adjacent Marginal Contribution` when describing counterfactual path-lift rationale; do not claim exact Shapley valuation. |
+| **Relative Path-Lift Normalization** | Batch-local normalization of raw path lift by batch maximum for stable comparable scoring inputs. | Use `Relative Path-Lift Normalization` to emphasize batch-relative scaling, not global absolute value. |
+
 ---
 
 ## 3. Architectural Invariants

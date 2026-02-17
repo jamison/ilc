@@ -295,6 +295,10 @@ Term-by-term elevation planning and lane assignment are tracked in:
 | **Node Load Metrics** | Runtime load measurements (for example compute, queue, throughput) used in balancing and policy tuning. | **Canonical-adjacent (near-prealigned contract)** |
 | **Graph KPIs** | Aggregated graph/network indicators used for diagnostics, governance tuning, and release gating evidence. | **Canonical-adjacent (active contract)** |
 | **Governance Config Surface** | The explicit set of configurable governance parameters exposed for policy control and versioned evolution. | **Canonical-adjacent (active contract)** |
+| **Path-Lift Counterfactual Harness** | Deterministic offline harness that computes per-node path-level marginal contribution using replayable witness paths. | **Canonical-adjacent (active contract)** |
+| **Baseline Efficiency** | Witness-level efficiency ratio (`path_weight / path_cost`) used as the additive raw-lift unit in path-lift scoring. | **Canonical-adjacent (active contract)** |
+| **Shapley-Adjacent Marginal Contribution** | Practical marginal-contribution framing used by path-lift scoring that preserves Shapley-like signal without combinatorial coalition computation. | **Canonical-adjacent (active contract rationale)** |
+| **Relative Path-Lift Normalization** | Batch-local scaling (`raw_path_lift / batch_max`) that makes path-lift values comparable within a replay batch while avoiding false global absolutes. | **Canonical-adjacent (active contract)** |
 | **Protocol Council** | Historical governance role label for a bounded reviewer set; not yet a ratified canonical role primitive. | **Discussed, not included in current ILC core** |
 | **Devnet Topology** | Explicit peer/agent arrangement used in simulation and development-network validation. | **Canonical-adjacent (active contract)** |
 | **Consensus Engine** | Runtime component that applies validation and settlement rules to produce accepted state transitions. | **Canonical-adjacent (active contract)** |

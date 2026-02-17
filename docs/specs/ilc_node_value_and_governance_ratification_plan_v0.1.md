@@ -27,7 +27,9 @@ Each gate must be explicitly marked `ratified` before downstream implementation 
 8. Genesis governance baseline rule and dilution semantics are fixed.
 9. Emergency Genesis authority policy is fixed (or explicitly rejected).
 10. Reward-link function from utility flow to payouts is fixed.
-11. Global Genesis accrual governor policy (approximately 5 percent lifetime target) is fixed.
+11. Global Genesis accrual governor policy is fixed with:
+   - hard constitutional cap `1/20` (`0.05`),
+   - soft taper target `exp(-3)` (`~0.049787068`).
 12. Conformance hooks and telemetry schema are fixed for all above rules.
 
 ## 3. Proposed Default Formula Set (Ratification Candidate)
@@ -57,6 +59,25 @@ Where:
 Constraint:
 - Share always global-normalized by total `GW`.
 - Genesis influence must dilute as system participation grows.
+
+### 3.6 Genesis Accrual Governor (Candidate)
+
+Lifetime share signal:
+`r_genesis = genesis_cumulative_accrual / total_cumulative_issuance`
+
+Policy constants:
+- hard cap: `theta_hard = 1/20 = 0.05` (constitutional bound),
+- soft taper target: `theta_soft = exp(-3) ~= 0.049787068` (modeling target),
+- taper steepness: `k > 0` (policy parameter; deterministic).
+
+Candidate taper:
+`taper_multiplier(r) = 0` when `r >= theta_hard`, else
+`sigmoid(k * (theta_soft - r)) / sigmoid(k * theta_soft)`, clamped to `[0, 1]`.
+
+Operational rules:
+- apply the share signal to aggregate Genesis-controlled wallets as one policy principal,
+- compute using cumulative accrual, not current spendable balance,
+- enforce hard cap independently of taper model to avoid parameter-bypass risk.
 
 ## 4. Historical Anchors (High Signal)
 
@@ -91,6 +112,7 @@ Order is mandatory. Starting later steps before earlier gates are fixed increase
    - Add Genesis baseline as policy-gated feature.
 5. **RA-05: Economics Linkage**
    - Wire `UF` into reward allocation and governor policy checks.
+   - Add Genesis accrual governor trajectory with `theta_soft = exp(-3)` and hard cap `theta_hard = 0.05`.
 6. **RA-06: Policy Ratification and Migration**
    - Ratify unresolved options and migrate any temporary compatibility behavior.
 
@@ -111,4 +133,3 @@ This plan is complete only when:
 - All 12 decision gates are `ratified` in the constitutional decision log.
 - Corresponding conformance tests are green.
 - Master plan and TODO sequencing references are updated and consistent.
-
