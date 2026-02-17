@@ -8,12 +8,14 @@ canon_state.json artifacts without mutating them.
 import json
 import sys
 import argparse
+import logging
 from typing import TypedDict, TypeAlias, cast
 from os import PathLike
 
 from ilc_core.ledger.canon_loader import verify_canon_state
 
 CanonMeta: TypeAlias = dict[str, int | str | None]
+logger = logging.getLogger(__name__)
 
 
 class CanonSummary(TypedDict, total=False):
@@ -216,9 +218,9 @@ def main() -> int:
             with open(log_path, "a", encoding="utf-8") as f:
                 json.dump(record, f, separators=(",", ":"))
                 f.write("\n")
-        except Exception:
+        except Exception as exc:
             # Audit logging failures should not break main execution flow
-            pass
+            logger.debug("canon_consumer_audit_log_write_skipped error=%s", exc)
 
     if args.report:
         # Report mode: emit single-line JSON with stable key order
