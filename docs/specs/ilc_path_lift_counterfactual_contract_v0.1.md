@@ -60,6 +60,15 @@ This contract is a Shapley-adjacent marginal-contribution method:
 - it avoids full Shapley coalition enumeration (combinatorially expensive on large graphs),
 - it uses batch-relative normalization so path-lift scores are comparative inputs for scoring kernels, not absolute payout values.
 
+## 4.2 Historical lineage note (SG-04)
+
+Historical HFM-002 framing models reward unlocks with diminishing returns over depth and difficulty.
+
+The implemented Phase-214 contract is mechanically different (witness-level path efficiency aggregation rather than explicit depth-ramp formula), but preserves the same directional intent:
+- downstream utility contribution is rewarded,
+- deeper or higher-cost paths reduce marginal contribution sensitivity,
+- outputs remain deterministic and replayable for constitutional conformance.
+
 ## 5. Output Contract
 
 Each output row contains:
