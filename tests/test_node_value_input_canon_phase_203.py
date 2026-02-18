@@ -89,3 +89,46 @@ def test_collect_reports_telemetry_for_unknown_and_invalid_shapes() -> None:
         "rejected_invalid_shape": 1,
         "rejected_unknown_kind": 1,
     }
+
+
+def test_validate_claim_event_accepts_optional_freshness_fields() -> None:
+    event: Mapping[str, object] = {
+        "kind": "claim",
+        "payload": {
+            "id": "claim-1",
+            "agent_id": "agent-a",
+            "timestamp": "2026-02-18T00:00:00Z",
+            "net_stake": 2.5,
+            "parent_ids": ["root"],
+            "target_id": "node-1",
+            "age_epochs": 3.0,
+            "is_genesis": False,
+            "target_age_epochs": 12.0,
+            "target_is_genesis": True,
+        },
+    }
+
+    normalized = validate_node_value_input_event(event)
+    payload = normalized["payload"]
+    assert payload["age_epochs"] == pytest.approx(3.0)
+    assert payload["target_age_epochs"] == pytest.approx(12.0)
+    assert payload["target_is_genesis"] is True
+
+
+def test_validate_claim_event_rejects_invalid_optional_freshness_fields() -> None:
+    event: Mapping[str, object] = {
+        "kind": "claim",
+        "payload": {
+            "id": "claim-1",
+            "agent_id": "agent-a",
+            "timestamp": "2026-02-18T00:00:00Z",
+            "net_stake": 2.5,
+            "parent_ids": ["root"],
+            "target_id": "node-1",
+            "target_age_epochs": -1.0,
+        },
+    }
+
+    with pytest.raises(NodeValueInputValidationError) as exc_info:
+        validate_node_value_input_event(event)
+    assert str(exc_info.value) == "node_value_input_invalid_target_age_epochs"

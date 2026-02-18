@@ -28,8 +28,10 @@ class UtilityFlowRewardInput(UtilityFlowRewardInputRequired, total=False):
     stake_spent: float
     effort_units: float
     pairing_key: str
-    reuse_diversity_multiplier: float
+    reuse_diversity_multiplier: float | None
     diversity_applied_in_scoring: bool
+    freshness_gate: float | None
+    freshness_applied_in_scoring: bool
 
 
 class RewardGovernorPolicy(TypedDict):
@@ -50,6 +52,9 @@ class UtilityFlowRewardAllocation(TypedDict):
     reuse_diversity_multiplier: float
     effective_diversity_multiplier: float
     diversity_applied_in_scoring: bool
+    freshness_gate: float
+    effective_freshness_multiplier: float
+    freshness_applied_in_scoring: bool
     reward_share: float
     reward_amount: float
     net_reward: float
@@ -81,6 +86,14 @@ DEFAULT_REWARD_GOVERNOR_POLICY: RewardGovernorPolicy = {
     "max_genesis_share": 0.50,
     "min_flow_threshold": 0.0,
 }
+
+
+def get_action_utility_multiplier(action_kind: UtilityFlowActionKind) -> float:
+    return float(_ACTION_UTILITY_MULTIPLIERS[action_kind])
+
+
+def get_refutation_utility_multiplier() -> float:
+    return get_action_utility_multiplier("refutation")
 
 
 def validate_reward_governor_policy(policy: Mapping[str, object]) -> RewardGovernorPolicy:
@@ -116,6 +129,8 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
     pairing_key = row.get("pairing_key", "")
     reuse_diversity_multiplier = row.get("reuse_diversity_multiplier")
     diversity_applied_in_scoring = row.get("diversity_applied_in_scoring", False)
+    freshness_gate = row.get("freshness_gate")
+    freshness_applied_in_scoring = row.get("freshness_applied_in_scoring", False)
 
     if not isinstance(node_id, str) or node_id == "":
         raise RewardGovernorError("reward_governor_invalid_node_id")
@@ -141,6 +156,16 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
             raise RewardGovernorError("reward_governor_invalid_reuse_diversity_multiplier")
     if not isinstance(diversity_applied_in_scoring, bool):
         raise RewardGovernorError("reward_governor_invalid_diversity_applied_in_scoring")
+    if freshness_gate is not None:
+        if (
+            isinstance(freshness_gate, bool)
+            or not isinstance(freshness_gate, (int, float))
+            or float(freshness_gate) < 0.0
+            or float(freshness_gate) > 1.0
+        ):
+            raise RewardGovernorError("reward_governor_invalid_freshness_gate")
+    if not isinstance(freshness_applied_in_scoring, bool):
+        raise RewardGovernorError("reward_governor_invalid_freshness_applied_in_scoring")
 
     return {
         "node_id": node_id,
@@ -156,6 +181,12 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
             else None
         ),
         "diversity_applied_in_scoring": diversity_applied_in_scoring,
+        "freshness_gate": (
+            float(freshness_gate)
+            if freshness_gate is not None
+            else None
+        ),
+        "freshness_applied_in_scoring": freshness_applied_in_scoring,
     }
 
 
@@ -171,6 +202,20 @@ def _resolve_effective_diversity_multiplier(row: UtilityFlowRewardInput) -> floa
         )
         return 1.0
     return float(provided_multiplier)
+
+
+def _resolve_effective_freshness_multiplier(row: UtilityFlowRewardInput) -> float:
+    if row["freshness_applied_in_scoring"]:
+        return 1.0
+
+    provided_gate = row["freshness_gate"]
+    if provided_gate is None:
+        logger.warning(
+            "reward_governor_missing_freshness_gate_fallback:%s",
+            row["node_id"],
+        )
+        return 1.0
+    return float(provided_gate)
 
 
 def compute_reward_allocations(
@@ -197,10 +242,15 @@ def compute_reward_allocations(
         row["node_id"]: _resolve_effective_diversity_multiplier(row)
         for row in eligible_rows
     }
+    effective_freshness_multiplier_by_node: dict[str, float] = {
+        row["node_id"]: _resolve_effective_freshness_multiplier(row)
+        for row in eligible_rows
+    }
     total_flow = sum(
         row["utility_flow"]
         * _ACTION_UTILITY_MULTIPLIERS[row["action_kind"]]
         * effective_diversity_multiplier_by_node[row["node_id"]]
+        * effective_freshness_multiplier_by_node[row["node_id"]]
         for row in eligible_rows
     )
 
@@ -208,11 +258,13 @@ def compute_reward_allocations(
     allocations: list[UtilityFlowRewardAllocation] = []
     for row in sorted(eligible_rows, key=lambda item: item["node_id"]):
         effective_diversity_multiplier = effective_diversity_multiplier_by_node[row["node_id"]]
+        effective_freshness_multiplier = effective_freshness_multiplier_by_node[row["node_id"]]
 
         weighted_flow = (
             row["utility_flow"]
             * _ACTION_UTILITY_MULTIPLIERS[row["action_kind"]]
             * effective_diversity_multiplier
+            * effective_freshness_multiplier
         )
         reward_share = (weighted_flow / total_flow) if total_flow > 0.0 else 0.0
         reward_amount = budget * reward_share
@@ -233,6 +285,13 @@ def compute_reward_allocations(
                 ),
                 "effective_diversity_multiplier": effective_diversity_multiplier,
                 "diversity_applied_in_scoring": row["diversity_applied_in_scoring"],
+                "freshness_gate": (
+                    float(row["freshness_gate"])
+                    if row["freshness_gate"] is not None
+                    else 1.0
+                ),
+                "effective_freshness_multiplier": effective_freshness_multiplier,
+                "freshness_applied_in_scoring": row["freshness_applied_in_scoring"],
                 "reward_share": reward_share,
                 "reward_amount": reward_amount,
                 "net_reward": reward_amount - row["stake_spent"],

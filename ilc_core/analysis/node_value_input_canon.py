@@ -25,6 +25,10 @@ class ClaimInputPayload(TypedDict, total=False):
     net_stake: float
     parent_ids: list[str]
     target_id: str
+    age_epochs: float
+    is_genesis: bool
+    target_age_epochs: float
+    target_is_genesis: bool
 
 
 class RefutationInputPayload(TypedDict, total=False):
@@ -33,6 +37,8 @@ class RefutationInputPayload(TypedDict, total=False):
     timestamp: str
     target_id: str
     net_stake: float
+    target_age_epochs: float
+    target_is_genesis: bool
 
 
 class CommitEpochInputPayload(TypedDict):
@@ -99,6 +105,32 @@ def _expect_bool(payload: Mapping[str, object], key: str, token: str) -> bool:
     return value
 
 
+def _expect_optional_non_negative_float(
+    payload: Mapping[str, object],
+    key: str,
+    token: str,
+) -> float | None:
+    value = payload.get(key)
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or float(value) < 0.0:
+        raise NodeValueInputValidationError(token)
+    return float(value)
+
+
+def _expect_optional_bool(
+    payload: Mapping[str, object],
+    key: str,
+    token: str,
+) -> bool | None:
+    value = payload.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, bool):
+        raise NodeValueInputValidationError(token)
+    return value
+
+
 def _expect_str_list(payload: Mapping[str, object], key: str, token: str) -> list[str]:
     value = payload.get(key)
     if value is None:
@@ -126,7 +158,7 @@ def _validate_task_outcome_payload(payload: Mapping[str, object]) -> TaskOutcome
 
 
 def _validate_claim_payload(payload: Mapping[str, object]) -> ClaimInputPayload:
-    return {
+    out: ClaimInputPayload = {
         "id": _expect_str(payload, "id", "node_value_input_missing_claim_id"),
         "agent_id": _expect_str(payload, "agent_id", "node_value_input_missing_agent_id"),
         "timestamp": _expect_str(payload, "timestamp", "node_value_input_missing_timestamp"),
@@ -134,16 +166,66 @@ def _validate_claim_payload(payload: Mapping[str, object]) -> ClaimInputPayload:
         "parent_ids": _expect_str_list(payload, "parent_ids", "node_value_input_invalid_parent_ids"),
         "target_id": _expect_str(payload, "target_id", "node_value_input_missing_target_id"),
     }
+    age_epochs = _expect_optional_non_negative_float(
+        payload,
+        "age_epochs",
+        "node_value_input_invalid_age_epochs",
+    )
+    if age_epochs is not None:
+        out["age_epochs"] = age_epochs
+
+    is_genesis = _expect_optional_bool(
+        payload,
+        "is_genesis",
+        "node_value_input_invalid_is_genesis",
+    )
+    if is_genesis is not None:
+        out["is_genesis"] = is_genesis
+
+    target_age_epochs = _expect_optional_non_negative_float(
+        payload,
+        "target_age_epochs",
+        "node_value_input_invalid_target_age_epochs",
+    )
+    if target_age_epochs is not None:
+        out["target_age_epochs"] = target_age_epochs
+
+    target_is_genesis = _expect_optional_bool(
+        payload,
+        "target_is_genesis",
+        "node_value_input_invalid_target_is_genesis",
+    )
+    if target_is_genesis is not None:
+        out["target_is_genesis"] = target_is_genesis
+
+    return out
 
 
 def _validate_refutation_payload(payload: Mapping[str, object]) -> RefutationInputPayload:
-    return {
+    out: RefutationInputPayload = {
         "id": _expect_str(payload, "id", "node_value_input_missing_refutation_id"),
         "agent_id": _expect_str(payload, "agent_id", "node_value_input_missing_agent_id"),
         "timestamp": _expect_str(payload, "timestamp", "node_value_input_missing_timestamp"),
         "target_id": _expect_str(payload, "target_id", "node_value_input_missing_target_id"),
         "net_stake": _expect_float(payload, "net_stake", "node_value_input_invalid_net_stake"),
     }
+    target_age_epochs = _expect_optional_non_negative_float(
+        payload,
+        "target_age_epochs",
+        "node_value_input_invalid_target_age_epochs",
+    )
+    if target_age_epochs is not None:
+        out["target_age_epochs"] = target_age_epochs
+
+    target_is_genesis = _expect_optional_bool(
+        payload,
+        "target_is_genesis",
+        "node_value_input_invalid_target_is_genesis",
+    )
+    if target_is_genesis is not None:
+        out["target_is_genesis"] = target_is_genesis
+
+    return out
 
 
 def _validate_commit_epoch_payload(payload: Mapping[str, object]) -> CommitEpochInputPayload:

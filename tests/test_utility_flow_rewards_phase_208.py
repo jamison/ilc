@@ -123,3 +123,61 @@ def test_diversity_applied_in_scoring_avoids_double_penalty() -> None:
     assert by_id["already-weighted"]["effective_diversity_multiplier"] == pytest.approx(1.0)
     assert by_id["plain"]["effective_diversity_multiplier"] == pytest.approx(1.0)
     assert by_id["already-weighted"]["reward_amount"] == pytest.approx(by_id["plain"]["reward_amount"])
+
+
+def test_missing_freshness_gate_falls_back_to_neutral_with_warning(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    caplog.set_level("WARNING")
+    rows = [
+        {
+            "node_id": "validator-node",
+            "utility_flow": 2.0,
+            "is_genesis": False,
+            "action_kind": "validation",
+            "reuse_diversity_multiplier": 1.0,
+        },
+        {
+            "node_id": "refuter-node",
+            "utility_flow": 2.0,
+            "is_genesis": False,
+            "action_kind": "refutation",
+            "reuse_diversity_multiplier": 1.0,
+            "freshness_gate": 1.0,
+        },
+    ]
+    allocations = compute_reward_allocations(rows)
+    by_id = {row["node_id"]: row for row in allocations}
+
+    assert by_id["validator-node"]["effective_freshness_multiplier"] == pytest.approx(1.0)
+    assert by_id["validator-node"]["freshness_gate"] == pytest.approx(1.0)
+    assert "reward_governor_missing_freshness_gate_fallback:validator-node" in caplog.text
+
+
+def test_freshness_applied_in_scoring_avoids_double_penalty() -> None:
+    allocations = compute_reward_allocations(
+        [
+            {
+                "node_id": "already-weighted",
+                "utility_flow": 2.0,
+                "is_genesis": False,
+                "action_kind": "validation",
+                "freshness_gate": 0.85,
+                "freshness_applied_in_scoring": True,
+                "reuse_diversity_multiplier": 1.0,
+            },
+            {
+                "node_id": "plain",
+                "utility_flow": 2.0,
+                "is_genesis": False,
+                "action_kind": "validation",
+                "freshness_gate": 1.0,
+                "reuse_diversity_multiplier": 1.0,
+            },
+        ]
+    )
+    by_id = {row["node_id"]: row for row in allocations}
+
+    assert by_id["already-weighted"]["effective_freshness_multiplier"] == pytest.approx(1.0)
+    assert by_id["plain"]["effective_freshness_multiplier"] == pytest.approx(1.0)
+    assert by_id["already-weighted"]["reward_amount"] == pytest.approx(by_id["plain"]["reward_amount"])

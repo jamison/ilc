@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import Mapping, TypedDict
 
+from ilc_core.analysis.freshness_gate import (
+    DEFAULT_FRESHNESS_GATE_POLICY,
+    compute_freshness_gate,
+)
 from ilc_core.analysis.path_lift_counterfactual import (
     build_normalized_path_lift_by_node,
     compute_path_lift_counterfactual,
@@ -29,6 +33,8 @@ class NodeEvidenceVector(TypedDict):
     unique_agents_using: float
     max_agent_reuse_share: float
     usage_window: float
+    age_epochs: float
+    is_genesis: bool
     freshness_gate: float
 
 
@@ -40,6 +46,7 @@ class NodeScoreVector(TypedDict):
     path_component: float
     reuse_diversity_multiplier: float
     epistemic_weight: float
+    freshness_gate: float
     utility_flow: float
 
 
@@ -143,7 +150,60 @@ def compute_utility_flow(epistemic_weight: float, usage_window: float, freshness
     return epistemic_weight * usage_window * freshness_gate
 
 
-def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeEvidenceVector]:
+def _build_default_node_evidence_row(node_id: str) -> NodeEvidenceVector:
+    return {
+        "node_id": node_id,
+        "reuse_count": 0.0,
+        "claim_net_stake": 0.0,
+        "refutation_stake_against": 0.0,
+        "unique_agents_using": 0.0,
+        "max_agent_reuse_share": 0.0,
+        "usage_window": 1.0,
+        "age_epochs": 0.0,
+        "is_genesis": False,
+        "freshness_gate": 1.0,
+    }
+
+
+def _read_optional_age_epochs(payload: Mapping[str, object], key: str) -> float | None:
+    value = payload.get(key)
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or float(value) < 0.0:
+        raise NodeValueKernelError("freshness_gate_invalid_age_epochs")
+    return float(value)
+
+
+def _read_optional_is_genesis(payload: Mapping[str, object], key: str) -> bool | None:
+    value = payload.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, bool):
+        raise NodeValueKernelError("freshness_gate_invalid_is_genesis")
+    return value
+
+
+def _apply_freshness_metadata(
+    row: NodeEvidenceVector,
+    *,
+    age_epochs: float | None,
+    is_genesis: bool | None,
+) -> None:
+    if age_epochs is not None:
+        row["age_epochs"] = (
+            age_epochs
+            if row["age_epochs"] <= 0.0
+            else min(float(row["age_epochs"]), age_epochs)
+        )
+    if is_genesis is not None:
+        row["is_genesis"] = bool(row["is_genesis"]) or is_genesis
+
+
+def build_node_evidence_vectors(
+    events: list[NodeValueInputEvent],
+    *,
+    freshness_policy: Mapping[str, object] = DEFAULT_FRESHNESS_GATE_POLICY,
+) -> list[NodeEvidenceVector]:
     evidence: dict[str, NodeEvidenceVector] = {}
     agents_per_node: dict[str, set[str]] = {}
     agent_reuse_counts_by_node: dict[str, dict[str, int]] = {}
@@ -154,36 +214,22 @@ def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeE
 
         if kind == "claim":
             node_id = str(payload["id"])
-            row = evidence.setdefault(
-                node_id,
-                {
-                    "node_id": node_id,
-                    "reuse_count": 0.0,
-                    "claim_net_stake": 0.0,
-                    "refutation_stake_against": 0.0,
-                    "unique_agents_using": 0.0,
-                    "max_agent_reuse_share": 0.0,
-                    "usage_window": 1.0,
-                    "freshness_gate": 1.0,
-                },
-            )
+            row = evidence.setdefault(node_id, _build_default_node_evidence_row(node_id))
             row["claim_net_stake"] = float(payload["net_stake"])
+            _apply_freshness_metadata(
+                row,
+                age_epochs=_read_optional_age_epochs(payload, "age_epochs"),
+                is_genesis=_read_optional_is_genesis(payload, "is_genesis"),
+            )
 
             target_id = str(payload["target_id"])
-            target_row = evidence.setdefault(
-                target_id,
-                {
-                    "node_id": target_id,
-                    "reuse_count": 0.0,
-                    "claim_net_stake": 0.0,
-                    "refutation_stake_against": 0.0,
-                    "unique_agents_using": 0.0,
-                    "max_agent_reuse_share": 0.0,
-                    "usage_window": 1.0,
-                    "freshness_gate": 1.0,
-                },
-            )
+            target_row = evidence.setdefault(target_id, _build_default_node_evidence_row(target_id))
             target_row["reuse_count"] += 1.0
+            _apply_freshness_metadata(
+                target_row,
+                age_epochs=_read_optional_age_epochs(payload, "target_age_epochs"),
+                is_genesis=_read_optional_is_genesis(payload, "target_is_genesis"),
+            )
             agent_id = str(payload["agent_id"])
             agents_per_node.setdefault(target_id, set()).add(agent_id)
             counts = agent_reuse_counts_by_node.setdefault(target_id, {})
@@ -191,21 +237,14 @@ def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeE
 
         elif kind == "refutation":
             target_id = str(payload["target_id"])
-            target_row = evidence.setdefault(
-                target_id,
-                {
-                    "node_id": target_id,
-                    "reuse_count": 0.0,
-                    "claim_net_stake": 0.0,
-                    "refutation_stake_against": 0.0,
-                    "unique_agents_using": 0.0,
-                    "max_agent_reuse_share": 0.0,
-                    "usage_window": 1.0,
-                    "freshness_gate": 1.0,
-                },
-            )
+            target_row = evidence.setdefault(target_id, _build_default_node_evidence_row(target_id))
             target_row["refutation_stake_against"] += float(payload["net_stake"])
             target_row["reuse_count"] += 1.0
+            _apply_freshness_metadata(
+                target_row,
+                age_epochs=_read_optional_age_epochs(payload, "target_age_epochs"),
+                is_genesis=_read_optional_is_genesis(payload, "target_is_genesis"),
+            )
             agent_id = str(payload["agent_id"])
             agents_per_node.setdefault(target_id, set()).add(agent_id)
             counts = agent_reuse_counts_by_node.setdefault(target_id, {})
@@ -225,6 +264,15 @@ def build_node_evidence_vectors(events: list[NodeValueInputEvent]) -> list[NodeE
             else 0.0
         )
 
+    for row in evidence.values():
+        row["freshness_gate"] = compute_freshness_gate(
+            {
+                "age_epochs": float(row["age_epochs"]),
+                "is_genesis": bool(row["is_genesis"]),
+            },
+            policy=freshness_policy,
+        )
+
     return [evidence[node_id] for node_id in sorted(evidence.keys())]
 
 
@@ -234,8 +282,9 @@ def compute_node_scores(
     weights: Mapping[str, float] = DEFAULT_EW_WEIGHTS,
     path_witnesses: list[Mapping[str, object]] | None = None,
     reuse_diversity_policy: Mapping[str, object] = DEFAULT_REUSE_DIVERSITY_POLICY,
+    freshness_policy: Mapping[str, object] = DEFAULT_FRESHNESS_GATE_POLICY,
 ) -> list[NodeScoreVector]:
-    vectors = build_node_evidence_vectors(events)
+    vectors = build_node_evidence_vectors(events, freshness_policy=freshness_policy)
     path_lift_by_node: dict[str, float] = {}
     if path_witnesses is not None:
         path_lift_report = compute_path_lift_counterfactual(path_witnesses)
@@ -278,6 +327,7 @@ def compute_node_scores(
                 "path_component": path_component,
                 "reuse_diversity_multiplier": reuse_diversity_multiplier,
                 "epistemic_weight": epistemic_weight,
+                "freshness_gate": float(vector["freshness_gate"]),
                 "utility_flow": utility_flow,
             }
         )
