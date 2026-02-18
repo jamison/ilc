@@ -4,6 +4,9 @@ Status: active reviewer pack
 Date: 2026-02-18
 Scope: constitutional, architecture, economics, and anti-gaming review context
 
+Delta supplement:
+- `docs/specs/ilc_reviewer_context_pack_v0.2_delta.md` (gap-focused reviewer update + historical/canon backtrace map)
+
 ## 1. Purpose
 
 Provide one deterministic orientation pack for architectural reviewers so feedback is anchored to ratified artifacts, not fragmented memory.
@@ -96,6 +99,7 @@ For architecture reviews:
 7. `docs/specs/ilc_constitutional_context_audit_response_v0.1.md`
 8. `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md` (non-normative strategic supplement)
 9. `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md` (non-normative strategic supplement)
+10. `docs/specs/ilc_reviewer_context_pack_v0.2_delta.md`
 
 ## 9. Companion document
 
@@ -103,5 +107,6 @@ This pack is paired with:
 - `docs/specs/ilc_anti_gaming_simulation_findings_v0.1.md`
 - `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md`
 - `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
+- `docs/specs/ilc_reviewer_context_pack_v0.2_delta.md`
 
 These companion specs summarize anti-gaming rationale, mining economics framing, and pre-epoch capability strategy for reviewer context.
