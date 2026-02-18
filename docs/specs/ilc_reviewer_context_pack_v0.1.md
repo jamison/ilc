@@ -108,5 +108,8 @@ This pack is paired with:
 - `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md`
 - `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
 - `docs/specs/ilc_reviewer_context_pack_v0.2_delta.md`
+- `docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md`
+- `docs/specs/ilc_bootstrap_operations_runbook_draft_v0.1.md`
+- `docs/specs/ilc_genesis_runtime_boundary_statement_draft_v0.1.md`
 
 These companion specs summarize anti-gaming rationale, mining economics framing, and pre-epoch capability strategy for reviewer context.

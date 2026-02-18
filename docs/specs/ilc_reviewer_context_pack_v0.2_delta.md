@@ -40,6 +40,9 @@ This document does not replace the v0.1 pack; it augments it.
 7. `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
 8. `docs/research/constitution_dredge_matrix_v0.2.md` (only for raw-id backtrace checks listed in Section 2)
 9. `docs/specs/ilc_claude_extraction_brief_v0.1.md` (tasked extraction contract for weak-context areas)
+10. `docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md` (non-normative draft output)
+11. `docs/specs/ilc_bootstrap_operations_runbook_draft_v0.1.md` (non-normative draft output)
+12. `docs/specs/ilc_genesis_runtime_boundary_statement_draft_v0.1.md` (non-normative draft output)
 
 ## 5. Non-Normative Reminder
 
@@ -48,3 +51,10 @@ The two strategic supplements are intentionally non-normative:
 - `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
 
 They provide direction and provenance linkage but do not override ratified decision-log state.
+
+## 6. Extraction Outputs Registered
+
+The following artifacts were produced via the extraction brief workflow and are now tracked for review/promotion:
+- `docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md`
+- `docs/specs/ilc_bootstrap_operations_runbook_draft_v0.1.md`
+- `docs/specs/ilc_genesis_runtime_boundary_statement_draft_v0.1.md`
