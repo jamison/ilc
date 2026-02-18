@@ -70,6 +70,20 @@ The following decision IDs were ratified in the Phase 215 node-value/governance 
 Ratification evidence package:
 - `docs/specs/ilc_cdl_011_015_ratification_evidence_bundle_v0.1.md`
 
+## Scoped Remediation Record (Phase 227)
+
+The following decision IDs remain `open` and received bounded remediation-contract notes in Phase 227:
+
+- `CDL-001`: remediation scope lock published in `docs/specs/ilc_cdl_001_signer_lineage_trust_root_contract_v0.1.md`
+- `CDL-002`: remediation scope lock published in `docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md`
+- `CDL-007`: remediation scope lock published in `docs/specs/ilc_cdl_007_rollback_resistance_baseline_contract_v0.1.md`
+
+Phase-227 package record:
+- `docs/specs/ilc_phase_227_blocker_remediation_package_v0.1.md`
+
+Status mutation rule for this scoped record:
+- No Phase-227 status promotion is applied; `CDL-001`, `CDL-002`, and `CDL-007` remain `open` until a later ratification phase proves closure criteria.
+
 ## Conflict Notes
 
 - Historical sources include both high-level ideals and implementation-era tactical discussion. Tactical excerpts are not automatically constitutional.
