@@ -39,6 +39,7 @@ This document does not replace the v0.1 pack; it augments it.
 6. `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md`
 7. `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
 8. `docs/research/constitution_dredge_matrix_v0.2.md` (only for raw-id backtrace checks listed in Section 2)
+9. `docs/specs/ilc_claude_extraction_brief_v0.1.md` (tasked extraction contract for weak-context areas)
 
 ## 5. Non-Normative Reminder
 
