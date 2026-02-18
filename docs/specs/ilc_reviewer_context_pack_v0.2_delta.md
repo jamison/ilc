@@ -43,6 +43,7 @@ This document does not replace the v0.1 pack; it augments it.
 10. `docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md` (non-normative draft output)
 11. `docs/specs/ilc_bootstrap_operations_runbook_draft_v0.1.md` (non-normative draft output)
 12. `docs/specs/ilc_genesis_runtime_boundary_statement_draft_v0.1.md` (non-normative draft output)
+13. `docs/specs/ilc_capability_proof_activation_readiness_gates_v0.1.md` (implementation/activation gate map)
 
 ## 5. Non-Normative Reminder
 
@@ -58,3 +59,4 @@ The following artifacts were produced via the extraction brief workflow and are 
 - `docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md`
 - `docs/specs/ilc_bootstrap_operations_runbook_draft_v0.1.md`
 - `docs/specs/ilc_genesis_runtime_boundary_statement_draft_v0.1.md`
+- `docs/specs/ilc_capability_proof_activation_readiness_gates_v0.1.md`
