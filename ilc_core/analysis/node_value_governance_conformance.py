@@ -286,3 +286,24 @@ def build_node_value_governance_conformance_report(
         "checks": checks,
         "overall_ok": overall_ok,
     }
+
+
+def evaluate_node_value_governance_conformance(
+    events: list[NodeValueInputEvent],
+    *,
+    reward_allocations: Iterable[UtilityFlowRewardAllocation] | None = None,
+    genesis_signal: Mapping[str, object] | None = None,
+    weights: Mapping[str, float] = DEFAULT_EW_WEIGHTS,
+    reuse_diversity_policy: Mapping[str, object] = DEFAULT_REUSE_DIVERSITY_POLICY,
+    freshness_policy: Mapping[str, object] = DEFAULT_FRESHNESS_GATE_POLICY,
+    genesis_governor_policy: Mapping[str, object] = DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY,
+) -> NodeValueGovernanceConformanceReport:
+    return build_node_value_governance_conformance_report(
+        events,
+        reward_allocations=reward_allocations,
+        genesis_signal=genesis_signal,
+        weights=weights,
+        reuse_diversity_policy=reuse_diversity_policy,
+        freshness_policy=freshness_policy,
+        genesis_governor_policy=genesis_governor_policy,
+    )
