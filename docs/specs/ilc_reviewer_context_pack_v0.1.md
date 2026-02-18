@@ -94,10 +94,14 @@ For architecture reviews:
 5. `docs/specs/ilc_anti_gaming_simulation_findings_v0.1.md`
 6. `docs/specs/ilc_constitutional_context_audit_v0.1.md`
 7. `docs/specs/ilc_constitutional_context_audit_response_v0.1.md`
+8. `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md` (non-normative strategic supplement)
+9. `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md` (non-normative strategic supplement)
 
 ## 9. Companion document
 
 This pack is paired with:
 - `docs/specs/ilc_anti_gaming_simulation_findings_v0.1.md`
+- `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md`
+- `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
 
-That document summarizes anti-gaming rationale and implementation anchors for reviewer context.
+These companion specs summarize anti-gaming rationale, mining economics framing, and pre-epoch capability strategy for reviewer context.

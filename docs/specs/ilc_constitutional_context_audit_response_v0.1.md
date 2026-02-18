@@ -123,3 +123,5 @@ This cross-examination confirms the audit's overall conclusion: ratified decisio
 - `docs/specs/ilc_reviewer_context_pack_v0.1.md`
 - `docs/specs/ilc_main_track_return_213_220_handoff_v0.1.md`
 - `docs/specs/ilc_genesis_packaging_distribution_sequence_222_229_v0.1.md`
+- `docs/specs/ilc_mining_economics_and_bootstrapping_strategy_v0.1.md` (non-normative strategic supplement)
+- `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md` (non-normative strategic supplement)
