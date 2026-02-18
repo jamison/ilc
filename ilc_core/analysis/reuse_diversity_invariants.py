@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Mapping, TypedDict
 
 from ilc_core.exceptions import NodeValueKernelError
@@ -50,6 +51,7 @@ def validate_reuse_diversity_policy(policy: Mapping[str, object]) -> ReuseDivers
     if (
         isinstance(max_single_agent_share, bool)
         or not isinstance(max_single_agent_share, (int, float))
+        or not math.isfinite(float(max_single_agent_share))
         or float(max_single_agent_share) <= 0.0
         or float(max_single_agent_share) > 1.0
     ):
@@ -57,6 +59,7 @@ def validate_reuse_diversity_policy(policy: Mapping[str, object]) -> ReuseDivers
     if (
         isinstance(penalty_floor, bool)
         or not isinstance(penalty_floor, (int, float))
+        or not math.isfinite(float(penalty_floor))
         or float(penalty_floor) < 0.0
         or float(penalty_floor) > 1.0
     ):
@@ -78,17 +81,24 @@ def validate_reuse_diversity_metrics(metrics: Mapping[str, object]) -> ReuseDive
     distinct_agent_count = metrics.get("distinct_agent_count")
     max_agent_reuse_share = metrics.get("max_agent_reuse_share")
 
-    if isinstance(reuse_count, bool) or not isinstance(reuse_count, (int, float)) or float(reuse_count) < 0.0:
+    if (
+        isinstance(reuse_count, bool)
+        or not isinstance(reuse_count, (int, float))
+        or not math.isfinite(float(reuse_count))
+        or float(reuse_count) < 0.0
+    ):
         raise NodeValueKernelError("reuse_diversity_invalid_reuse_count")
     if (
         isinstance(distinct_agent_count, bool)
         or not isinstance(distinct_agent_count, (int, float))
+        or not math.isfinite(float(distinct_agent_count))
         or float(distinct_agent_count) < 0.0
     ):
         raise NodeValueKernelError("reuse_diversity_invalid_distinct_agent_count")
     if (
         isinstance(max_agent_reuse_share, bool)
         or not isinstance(max_agent_reuse_share, (int, float))
+        or not math.isfinite(float(max_agent_reuse_share))
         or float(max_agent_reuse_share) < 0.0
         or float(max_agent_reuse_share) > 1.0
     ):
