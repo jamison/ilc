@@ -110,7 +110,11 @@ For future constitutional reviews, standardize:
 
 This becomes the required governance workflow for constitutional-impact findings.
 
-## 7. Canonical Anchors
+## 7. Cross-Examination Confirmation
+
+This cross-examination confirms the audit's overall conclusion: ratified decisions are substantively correct, and identified gaps are primarily provenance/scope and process-tracking gaps rather than implementation correctness defects.
+
+## 8. Canonical Anchors
 
 - `docs/specs/ilc_constitutional_context_audit_v0.1.md`
 - `docs/specs/ilc_constitutional_decision_log_v0.1.md`
