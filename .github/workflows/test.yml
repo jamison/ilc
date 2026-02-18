@@ -40,4 +40,5 @@ jobs:
       - run: bash tools/check_runtime_logging_guardrails.sh
       - run: bash tools/check_main_track_return_preflight_193_199.sh
       - run: bash tools/check_main_track_return_preflight_203_209.sh
+      - run: bash tools/check_main_track_return_preflight_214_219.sh
       - run: python -m pytest -q
