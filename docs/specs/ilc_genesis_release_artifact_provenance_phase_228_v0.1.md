@@ -22,3 +22,9 @@ Build method summary:
 
 Both artifacts were subsequently install-validated in clean virtual environments during Phase-228 execution.
 
+## Provenance scope limitation
+
+Checksums recorded here are from a single authoritative build at Phase-228 execution time.
+They are not continuously re-verified by the test suite against fresh rebuild outputs.
+Independent verification requires rebuilding from the same commit (for example with `python -m build`)
+and comparing SHA-256 outputs with this artifact.

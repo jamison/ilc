@@ -37,6 +37,10 @@ Provenance artifact must include:
 - SHA-256 digest,
 - source output path.
 
+Scope note:
+- checksum values are authoritative for the Phase-228 build event,
+- tests enforce artifact/provenance shape and installability, not continuous checksum-equivalence against every future rebuild.
+
 ## 5. Release notes boundary contract
 
 Phase 228 release notes in `docs/specs/ilc_genesis_release_notes_v0.1.md` must include:
@@ -50,4 +54,3 @@ Phase 228 release notes in `docs/specs/ilc_genesis_release_notes_v0.1.md` must i
 This contract is enforced by:
 - `tests/test_genesis_release_artifacts_phase_228.py`
 - `tools/check_genesis_release_artifacts_phase_228.sh`
-

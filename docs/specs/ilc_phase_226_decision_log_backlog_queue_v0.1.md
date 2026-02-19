@@ -12,10 +12,10 @@ Queue pending dredge `decision_log` rows into deterministic disposition classes 
 
 - total matrix rows: `300`
 - total rows with `action = decision_log`: `94`
-- total existing `CDL-*` rows in decision log register: `15`
+- total existing `CDL-*` rows in decision log register: `16`
 - resulting pending backlog count used for queueing: `94`
 
-Count method note: pending backlog is row-based (`action = decision_log` rows). Existing `CDL-*` count is retained as register-state context; there is no deterministic one-to-one raw-row mapping for all existing CDLs in this phase.
+Count method note: pending backlog is row-based (`action = decision_log` rows). Existing `CDL-*` count is retained as current register-state context; there is no deterministic one-to-one raw-row mapping for all existing CDLs in this phase.
 
 ## 3. Two-pass backlog method evidence
 

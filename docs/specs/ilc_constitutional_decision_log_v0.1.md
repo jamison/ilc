@@ -41,6 +41,7 @@ Triage reference:
 | CDL-013 | ADR-0008 / NodeValueTrack | Governance-weight decay and Genesis baseline | ratified | decay-all, decay-non-genesis-only, hybrid baseline | decay-non-genesis-only | governance normalization tests + policy docs |
 | CDL-014 | ADR-0008 / NodeValueTrack | Path-level marginal contribution method | ratified | local delta, counterfactual path-lift, market-only proxy | counterfactual path-lift | replayable counterfactual harness |
 | CDL-015 | ADR-0008 / NodeValueTrack | Implementation order lock (refactor avoidance) | ratified | ad-hoc order, dependency-ordered sequence, strict phase gate | strict phase gate | ratification plan + master plan sequencing |
+| CDL-019 | ADR-0008 / NodeValueTrack | Multiplier-governance surface: resolve relationship between flat Genesis constant (1.2x), refutation-profitability invariant floor, and eventual dynamic ranking-based multiplier mechanism | open | flat Genesis constant only, governed constant + invariant floor, governed constant + dynamic ranking mechanism | governed constant + invariant floor (dynamic ranking deferred) | multiplier policy contract update, invariant regression coverage, governance migration plan |
 
 ## Scoped Ratification Record (Phase 993)
 
@@ -83,6 +84,14 @@ Phase-227 package record:
 
 Status mutation rule for this scoped record:
 - No Phase-227 status promotion is applied; `CDL-001`, `CDL-002`, and `CDL-007` remain `open` until a later ratification phase proves closure criteria.
+
+## Scoped Queue Entry Record (Phase 230 Preparation)
+
+- `CDL-019` created from Phase-229 carry-forward debt.
+- status: `open`
+- description: "Multiplier-governance surface: resolve relationship between flat Genesis constant (1.2x), refutation-profitability invariant floor, and eventual dynamic ranking-based multiplier mechanism"
+- action: `decision_log`
+- phase identified: `229`
 
 ## Conflict Notes
 
