@@ -27,3 +27,5 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0005](ADR_0005_Star_Map_Observational_Feeds.md) | Star Map Observational Feeds | Accepted |
 | [ADR-0006](ADR_0006_EVE_Canonical_Capsule_Integrity.md) | EVE Canonical Capsule Integrity | Accepted |
 | [ADR-0007](ADR_0007_Constitutional_Baseline_and_Ratification_Process.md) | Constitutional Baseline and Ratification Process | Accepted |
+| [ADR-0008](ADR_0008_Node_Usefulness_vs_Governance_Weight_and_Genesis_Dilution.md) | Node Usefulness vs Governance Weight and Genesis Dilution | Proposed |
+| [ADR-0009](ADR_0009_Four_Layer_Protocol_Native_Bundle_Distribution.md) | Four-Layer Protocol-Native Bundle Distribution Architecture | Proposed |
