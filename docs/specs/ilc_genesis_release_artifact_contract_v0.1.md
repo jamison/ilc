@@ -40,6 +40,9 @@ Provenance artifact must include:
 Scope note:
 - checksum values are authoritative for the Phase-228 build event,
 - tests enforce artifact/provenance shape and installability, not continuous checksum-equivalence against every future rebuild.
+- same-platform reproducibility is enforced by the Phase-230 deterministic rebuild gate.
+- Phase-230 reproducible-build gate adds same-platform deterministic rebuild validation with `SOURCE_DATE_EPOCH=0`.
+- cross-platform bit-for-bit equivalence remains out of scope for this contract version.
 
 ## 5. Release notes boundary contract
 

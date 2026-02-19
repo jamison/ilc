@@ -28,3 +28,8 @@ Checksums recorded here are from a single authoritative build at Phase-228 execu
 They are not continuously re-verified by the test suite against fresh rebuild outputs.
 Independent verification requires rebuilding from the same commit (for example with `python -m build`)
 and comparing SHA-256 outputs with this artifact.
+
+Phase-230 reproducibility baseline clarification:
+- deterministic rebuild checks are enforced for same-platform builds via `tools/check_reproducible_build.sh`,
+- the gate pins `SOURCE_DATE_EPOCH=0` for both rebuild runs before checksum comparison,
+- cross-platform checksum identity is not required by the current Genesis release contract.
