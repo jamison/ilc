@@ -42,6 +42,20 @@ Triage reference:
 | CDL-014 | ADR-0008 / NodeValueTrack | Path-level marginal contribution method | ratified | local delta, counterfactual path-lift, market-only proxy | counterfactual path-lift | replayable counterfactual harness |
 | CDL-015 | ADR-0008 / NodeValueTrack | Implementation order lock (refactor avoidance) | ratified | ad-hoc order, dependency-ordered sequence, strict phase gate | strict phase gate | ratification plan + master plan sequencing |
 | CDL-019 | ADR-0008 / NodeValueTrack | Multiplier-governance surface: resolve relationship between flat Genesis constant (1.2x), refutation-profitability invariant floor, and eventual dynamic ranking-based multiplier mechanism | open | flat Genesis constant only, governed constant + invariant floor, governed constant + dynamic ranking mechanism | governed constant + invariant floor (dynamic ranking deferred) | multiplier policy contract update, invariant regression coverage, governance migration plan |
+| CDL-020 | ADM-001 / Roadmap v0.3 | Protocol-native bundle schema and complete type system | open | full schema catalog, minimal schema catalog, phased schema catalog | full schema catalog (proposed) | D2 schema artifact set, bundle generator/verifier tooling, test vectors |
+| CDL-021 | ADM-001 / Roadmap v0.3 | Rust kernel port and WASM distribution | open | defer indefinitely, milestone-triggered rust port, immediate rust migration | milestone-triggered rust port (proposed) | D4 implementation plan, parity tests, WASM packaging evidence |
+| CDL-022 | ADM-001 / Roadmap v0.3 | Genesis state bundle specification and signing ceremony | open | genesis bundle only, genesis bundle + ceremony, ad hoc bootstrapping | genesis bundle + ceremony (proposed) | D2b schema/spec, generator/verifier tooling, ceremony checklist |
+| CDL-023 | ADM-001 / Roadmap v0.3 | Epoch snapshot mechanism and fast-bootstrap protocol | open | periodic snapshots, triggered snapshots, hybrid model | hybrid model (proposed) | D2c snapshot schema, generator/verifier tooling, retention policy |
+| CDL-024 | ADM-001 / Roadmap v0.3 | Wire protocol specification and transport bindings | open | single transport binding, transport-agnostic + reference bindings, framework-specific bindings | transport-agnostic + reference bindings (proposed) | D2d message schema set, transport requirements, conformance tests |
+| CDL-025 | CDL-005 | Terminal issuance model (hard cap vs. tail emission reconciliation) | open | asymptotic cap (Model A), fee-funded tail (Model B), burn-offset tail (Model C) | fee-funded tail / Model B (planning recommendation — not ratified) | terminal model spec, issuance simulation |
+| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | open | explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | cap lock spec, regression tests |
+| CDL-027 | CDL-005 / CDL-026 | Decay formulation and schedule constants (`H` or `lambda`) | open | discrete halving period `H`, continuous decay rate `lambda` | depends on CDL-026 closure | decay schedule spec, schedule simulation |
+| CDL-028 | CDL-005 / CDL-025 | Fee-burn split ratio | open | 30% burn, 50% burn, other percentages | depends on CDL-025 terminal model closure | fee model spec, payout regression |
+| CDL-029 | CDL-005 / CDL-011 | Allocation split (performer/auditor/genesis) validation and lock | open | confirm 80/15/5, revise split, redesign | 80/15/5 proposed — requires `theta_hard = 1/20` validation | allocation validation tests, governance spec alignment |
+| CDL-030 | CDL-005 / CDL-027 | ECU price clamp bounds (`P_min`, `P_max`) | open | bounds derived from issuance schedule | derived from CDL-027 decay schedule | ECU clamp spec, pricing simulation |
+| CDL-031 | CDL-019 / ADR-0008 | Dynamic ranking-based multiplier policy (if admitted after CDL-019 closure) | open | defer indefinitely, admit with guardrails and CDL-019 prerequisite satisfied | deferred until CDL-019 closure | ranking policy spec, invariant regression coverage |
+| CDL-032 | ADM-002 | CLI-first Agent SDK interface contract and command surface | open | single CLI entry point, split library + CLI, API-first | CLI-first (proposed) — see `ilc_adm_002_cli_first_agent_sdk_v0.1.md` | ADM-002 ratification artifact, command surface spec, I/O contract schema |
+| CDL-033 | ADM-002 / CDL-032 | OpenClaw skill specification and ClawHub publication contract | open | skill-only, skill + dedicated agent, full fleet config | skill-only initial (proposed) — dedicated agent config deferred to Phase B | SKILL.md spec, ClawHub PR, working CLI binary (CDL-032 prerequisite) |
 
 ## Scoped Ratification Record (Phase 993)
 
@@ -92,6 +106,52 @@ Status mutation rule for this scoped record:
 - description: "Multiplier-governance surface: resolve relationship between flat Genesis constant (1.2x), refutation-profitability invariant floor, and eventual dynamic ranking-based multiplier mechanism"
 - action: `decision_log`
 - phase identified: `229`
+
+## Scoped Queue Entry Record (Phase 233 Preparation)
+
+The following decision IDs were created from Phase-233 issuance-governance planning. All entries are `open` placeholders; no parameter ratification was performed in Phase 233.
+
+| CDL ID | Topic | Phase identified |
+| --- | --- | --- |
+| CDL-025 | Terminal issuance model (hard cap vs. tail emission reconciliation) | 233 |
+| CDL-026 | `C_max` total supply cap lock | 233 |
+| CDL-027 | Decay formulation (`H` or `lambda`) and schedule constants | 233 |
+| CDL-028 | Fee-burn split ratio | 233 |
+| CDL-029 | Allocation split (performer/auditor/genesis) validation and lock | 233 |
+| CDL-030 | ECU price clamp bounds (`P_min`, `P_max`) | 233 |
+| CDL-031 | Dynamic ranking-based multiplier policy (if admitted after CDL-019 closure) | 233 |
+
+Status mutation rule for this scoped record:
+- No Phase-233 status promotion is applied; CDL-025 through CDL-031 remain `open` until ratification criteria are met.
+- Dependency ordering is governed by the Phase-233 planning artifact: `docs/specs/ilc_issuance_governance_plan_233_v0.1.md`.
+- CDL-020 through CDL-024 were formalized in Phase 237 using roadmap v0.3 routing labels.
+
+## Scoped Formalization Record (Phase 237 Integration Alignment)
+
+The following decision IDs were formalized from existing roadmap-routing labels during Phase 237 integration coherence work. All entries are `open` placeholders and were not ratified in this phase.
+
+| CDL ID | Topic | Source |
+| --- | --- | --- |
+| CDL-020 | Protocol-native bundle schema and complete type system | `docs/specs/ilc_distribution_architecture_roadmap_v0.3.md` |
+| CDL-021 | Rust kernel port and WASM distribution | `docs/specs/ilc_distribution_architecture_roadmap_v0.3.md` |
+| CDL-022 | Genesis state bundle specification and signing ceremony | `docs/specs/ilc_distribution_architecture_roadmap_v0.3.md` |
+| CDL-023 | Epoch snapshot mechanism and fast-bootstrap protocol | `docs/specs/ilc_distribution_architecture_roadmap_v0.3.md` |
+| CDL-024 | Wire protocol specification and transport bindings | `docs/specs/ilc_distribution_architecture_roadmap_v0.3.md` |
+
+## Scoped Queue Entry Record (Phase 233 Post-Work — OpenClaw/SDK)
+
+The following decision IDs were created from the OpenClaw architecture analysis (`ilc_openclaw_findings_integration_plan_v0.3.md`). Committed to repo as Phase-233 post-work housekeeping. All entries are `open` placeholders.
+
+| CDL ID | Topic | Phase identified |
+| --- | --- | --- |
+| CDL-032 | CLI-first Agent SDK interface contract and command surface (ADM-002) | 233 post-work |
+| CDL-033 | OpenClaw skill specification and ClawHub publication contract | 233 post-work |
+
+Status mutation rule for this scoped record:
+- CDL-032 requires D2e roadmap phase and ADM-002 ratification before closure is eligible.
+- CDL-033 requires CDL-032 closure (working CLI, D2e-03) before closure is eligible.
+- Neither CDL-032 nor CDL-033 disrupts the 230-239 sequence lock.
+- Source documents: `docs/specs/ilc_openclaw_findings_integration_plan_v0.3.md`, `docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.1.md`.
 
 ## Conflict Notes
 
