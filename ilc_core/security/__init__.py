@@ -27,6 +27,13 @@ from .key_compromise_runtime import (
     CompromiseIncidentRecord,
     KeyCompromiseResponseRuntime,
 )
+from .rollback_resistance_runtime import (
+    CLAWBACK_NOT_REQUIRED,
+    CLAWBACK_REQUIRED,
+    FINALIZATION_STATE_ROLLED_BACK,
+    RollbackResistanceRuntime,
+    RollbackSupersessionEvent,
+)
 
 __all__ = [
     "ACTIVE",
@@ -54,4 +61,9 @@ __all__ = [
     "CompromiseDecision",
     "CompromiseIncidentRecord",
     "KeyCompromiseResponseRuntime",
+    "FINALIZATION_STATE_ROLLED_BACK",
+    "CLAWBACK_REQUIRED",
+    "CLAWBACK_NOT_REQUIRED",
+    "RollbackSupersessionEvent",
+    "RollbackResistanceRuntime",
 ]
