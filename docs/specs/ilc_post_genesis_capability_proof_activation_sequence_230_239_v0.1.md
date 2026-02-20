@@ -106,4 +106,8 @@ Carry-forward debt list anchored at sequence start:
 - `CDL-001`, `CDL-002`, `CDL-007` runtime implementation remains open,
 - `CDL-019` multiplier-governance surface remains open,
 - issuance-policy closure parameters remain open,
-- capability-proof advanced lanes (`AWP/IIH`, optional QATPS coupling) remain deferred behind readiness gates.
+- capability-proof advanced lanes (`AWP/IIH`, optional QATPS coupling) remain deferred behind readiness gates,
+- canonical lineage lifecycle event schema (`register`, `rotate`, `revoke`, `recover`) required by Phase-232 entry criteria is not yet created; Phase-239 handoff must carry this forward as a hard prerequisite for Phase-240 prompt scope with required outputs:
+  - schema spec artifact path (new),
+  - schema contract tests (new),
+  - explicit anchor back to `docs/specs/ilc_security_runtime_implementation_plan_232_v0.1.md` Section 6.1.
