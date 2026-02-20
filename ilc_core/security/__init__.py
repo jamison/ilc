@@ -13,6 +13,20 @@ from .signer_lineage_runtime import (
     SignerLineageRegistry,
     VerificationResult,
 )
+from .key_compromise_runtime import (
+    COMPROMISE_CONFIRMED,
+    COMPROMISE_SUSPECTED,
+    FREEZE_AUTHORITY,
+    QUARANTINE_LINEAGE,
+    SUSPEND_NEW_CANONICAL_SIGNATURES,
+    TRIGGER_COERCION_SIGNAL,
+    TRIGGER_CRYPTO_COMPROMISE,
+    TRIGGER_CUSTODY_LOSS,
+    TRIGGER_SIGNER_ANOMALY,
+    CompromiseDecision,
+    CompromiseIncidentRecord,
+    KeyCompromiseResponseRuntime,
+)
 
 __all__ = [
     "ACTIVE",
@@ -28,4 +42,16 @@ __all__ = [
     "LineageTransitionRecord",
     "SignerLineageRegistry",
     "VerificationResult",
+    "COMPROMISE_SUSPECTED",
+    "COMPROMISE_CONFIRMED",
+    "TRIGGER_SIGNER_ANOMALY",
+    "TRIGGER_CUSTODY_LOSS",
+    "TRIGGER_COERCION_SIGNAL",
+    "TRIGGER_CRYPTO_COMPROMISE",
+    "FREEZE_AUTHORITY",
+    "QUARANTINE_LINEAGE",
+    "SUSPEND_NEW_CANONICAL_SIGNATURES",
+    "CompromiseDecision",
+    "CompromiseIncidentRecord",
+    "KeyCompromiseResponseRuntime",
 ]
