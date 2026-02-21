@@ -13,7 +13,6 @@ Verifies:
 - no ratification language for unrelated CDLs
 """
 
-import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
@@ -155,9 +154,10 @@ class TestUnchangedCDLs:
         row = self._get_row("CDL-031")
         assert "open" in row
 
-    def test_cdl_032_remains_open(self):
+    def test_cdl_032_not_ratified_by_phase_251(self):
+        # CDL-032 must not have been ratified by Phase 251 (it may be ratified in a later phase)
         row = self._get_row("CDL-032")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
     def test_cdl_033_remains_open(self):
         row = self._get_row("CDL-033")
