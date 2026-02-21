@@ -27,7 +27,7 @@ Sonnet was tasked with validating this principle against the codebase and 45+ pa
 
 ### Action 1: Phase 259 Handoff Amendment
 
-The Phase 259 handoff artifact (`ilc_cdl_ratification_window_250_258_handoff_v0.1.md`) already includes a soft carry-forward section. Add the following item:
+Phase 259 must produce a handoff artifact (`ilc_cdl_ratification_window_250_258_handoff_v0.1.md`). That artifact must include a soft carry-forward section containing the following item (this artifact does not yet exist — currently at Phase 256):
 
 > **Signing provider interface specification** — Pre-D2e-07 planning dependency. Before D2e-07 (identity/signing subsystem implementation) is scoped, a brief specification is needed defining: (a) signing provider types (local keyfile, hardware wallet/HSM, external wallet SDK callback), (b) secp256k1-to-COSE-Sign1 bridging via RFC 9053 algorithm ID `-47`, (c) signing provider interface contract (`sign(payload_bytes) → COSE_Sign1_structure`). See: Opus wallet integration review (2026-02-21), Sonnet codebase review response (`docs/phases/sonnet_review_wallet_integration_strategy_response_2026_02_21.md`).
 
@@ -51,9 +51,9 @@ File: `docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.2.md`
 - §5: Change "Key path handling must avoid unsafe transcript leakage" → "Signing provider credential handling must avoid unsafe transcript leakage." Same security intent, removes implicit local-file assumption.
 
 **Amendment 2c: Lineage Lifecycle Event Schema**
-File: `docs/specs/ilc_lineage_lifecycle_event_schema_v0.1.md`
+File: `docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md` *(versioned successor — do NOT mutate the locked v0.1)*
 
-- Add new section (§10 or appendix): *"Lifecycle coordination with external signing providers: ILC's signer-lineage registry does not observe external wallet key rotation or revocation events. When an external wallet key is rotated or compromised, the agent or operator must explicitly trigger the corresponding ILC registry event (`rotate`/`revoke`). The registry maintains protocol-layer lifecycle state; it is not a proxy for the signing provider's key management system."*
+- `ilc_lineage_lifecycle_event_schema_v0.1.md` is marked **Status: Locked** (Phase 241, ratified Phase 251). In-place amendment is not permitted under CDL mutation-scope rules. Amendment 2c must be delivered as `ilc_lineage_lifecycle_event_schema_v0.2.md`, which supersedes v0.1. The new document adds the following section (§10 or appendix): *"Lifecycle coordination with external signing providers: ILC's signer-lineage registry does not observe external wallet key rotation or revocation events. When an external wallet key is rotated or compromised, the agent or operator must explicitly trigger the corresponding ILC registry event (`rotate`/`revoke`). The registry maintains protocol-layer lifecycle state; it is not a proxy for the signing provider's key management system."*
 
 ### Action 3: ADM-003 — Reference Agent Architecture
 
@@ -65,6 +65,7 @@ A new architectural decision memo is accumulating enough content to justify crea
 - Supported wallet types: Coinbase agentic wallets, Bitcoin wallets (secp256k1), Ethereum wallets (MetaMask, WalletConnect), hardware wallets, local keyfiles
 - Signing provider interface: `--key` resolves to provider, provider returns COSE Sign1
 - Lifecycle coordination responsibility: agent/operator must propagate external wallet events to ILC registry
+- Compatibility vs. privacy precedence: Cross-domain key reuse (one key for x402 USDC + ILC signing) is supported for ergonomic compatibility; dedicated per-domain keys are preferred for privacy. These are not contradictory positions — the SHOULD-level preference reflects the privacy tradeoff without mandating separate key management overhead. Agents choose based on their operational context.
 - Key isolation: Agents SHOULD use dedicated signing keys for ILC protocol operations, separate from keys used for external payments (x402/USDC) or other blockchain transactions. Cross-domain key reuse creates correlation risk between ILC protocol identity and on-chain transaction history, particularly if the COSE `kid` field is set to public key material. Signing provider implementations SHOULD use a protocol-internal opaque identifier (such as `lineage_id`) as the COSE `kid` value rather than raw or hashed public key material.
 - Privacy model: agent anonymity/disclosure level is an informed opt-in choice, not a Genesis protocol requirement. Claims are public; agent identity linkage is optional.
 
@@ -122,10 +123,9 @@ To be explicit about scope boundaries:
 
 For Codex reference, the full analysis chain:
 
-1. `sonnet_review_prompt_wallet_integration_strategy.md` — Opus → Sonnet review prompt (in `Downloads/`)
-2. `docs/phases/sonnet_review_wallet_integration_strategy_response_2026_02_21.md` — Sonnet codebase and past-chat findings
-3. Opus review of Sonnet findings (conversation, 2026-02-21) — GO verdict, priority correction (D2e-07 trigger, not D2e-02)
-3a. `docs/phases/sonnet_review_key_isolation_privacy_response_2026_02_21.md` — Sonnet key isolation and privacy vector analysis (follow-up, 2026-02-21)
+1. `docs/phases/sonnet_review_wallet_integration_strategy_response_2026_02_21.md` — Sonnet codebase and past-chat findings; includes the original Opus review prompt in its header as context
+2. `docs/phases/sonnet_review_key_isolation_privacy_response_2026_02_21.md` — Sonnet key isolation and privacy vector analysis (follow-up, 2026-02-21); COSE `kid` gap identified here
+3. This document (`ilc_wallet_agnostic_signing_strategy_codex_handoff_v0.1.md`) — Opus GO verdict and priority correction (D2e-07 trigger, not D2e-02) are codified in §"What Does NOT Change" and §"Priority Summary"
 4. `docs/antigravity_tasks/phase_250_259_prompt_drafting_guidance.md` — Phase 250-259 guidelines (context for where carry-forward items land)
 
 ---
