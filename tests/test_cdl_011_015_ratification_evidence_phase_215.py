@@ -29,13 +29,15 @@ def test_phase_215_target_rows_are_ratified() -> None:
 def test_phase_215_non_target_rows_keep_expected_statuses() -> None:
     text = _read(DECISION_LOG)
     expected = {
-        "CDL-001": "open",
-        "CDL-002": "open",
+        # Ratified in Phase 251 security CDL batch ratification.
+        "CDL-001": "ratified",
+        "CDL-002": "ratified",
         "CDL-003": "ratified",
         "CDL-004": "ratified",
         "CDL-005": "ratified",
         "CDL-006": "ratified",
-        "CDL-007": "open",
+        # Ratified in Phase 251 security CDL batch ratification.
+        "CDL-007": "ratified",
         "CDL-008": "ratified",
         "CDL-009": "ratified",
         "CDL-010": "ratified",

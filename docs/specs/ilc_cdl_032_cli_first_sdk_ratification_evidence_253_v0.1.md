@@ -34,7 +34,7 @@ Boundary statement: No runtime implementation was introduced in this ratificatio
 ### 2.1 Evidence chain details
 
 **Source citation (promotion criterion 1):**
-`CDL-032` was formalized in Phase-233 post-work from `docs/specs/ilc_openclaw_findings_integration_plan_v0.3.md` and `docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.1.md`. The decision is rooted in ADM-002 which establishes the CLI-first architecture decision for the ILC Agent SDK.
+`CDL-032` was formalized in the decision log under the Phase-233 post-work queue-entry record and is grounded in ADM-002 (`docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.2.md`). The decision is rooted in ADM-002, which establishes the CLI-first architecture decision for the ILC Agent SDK.
 
 **Chosen option with rationale (promotion criterion 2):**
 Option selected: CLI-first (single CLI entry point). Rationale: ADM-002 v0.2 establishes that `ilc` is the canonical user-facing protocol interface. Framework adapters wrap CLI semantics and do not redefine protocol behavior. The boundary contract (`ilc_sdk_boundary_contract_234_v0.1.md`) locks the protocol surface (primitives + operational commands) as SDK-owned and excludes orchestration, runtime, and `star.map` routing from the SDK contract.

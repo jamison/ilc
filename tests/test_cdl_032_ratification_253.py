@@ -93,6 +93,10 @@ class TestCDL032StatusRatified:
         assert "evidence_document" in row
         assert "ilc_cdl_032_cli_first_sdk_ratification_evidence_253_v0.1.md" in row
 
+    def test_cdl_032_current_candidate_text_is_preserved(self):
+        row = self._get_cdl_row("CDL-032")
+        assert "CLI-first (proposed)" in row
+
 
 class TestPreviouslyRatifiedCDLsUnchanged:
     def setup_method(self):
