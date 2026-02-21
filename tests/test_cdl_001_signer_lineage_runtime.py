@@ -161,3 +161,80 @@ class TestLifecycleTransitionCoverage:
         assert len(replayed.transition_log) == 3
         assert replayed.entries["lineage-alpha"].state == REVOKED
 
+
+class TestVerifyCanonicalAuthorityStateGating:
+    """Verify that only ACTIVE and RECOVERED states confer canonical signing authority."""
+
+    def _base_registry(self) -> SignerLineageRegistry:
+        registry = SignerLineageRegistry()
+        registry.register(
+            lineage_id="lineage-alpha",
+            canonical_root_key="root-001",
+            authority_recovery_key="recovery-001",
+            operational_signer_key="ops-001",
+            authorizer_signer_id="root-001",
+            reason_code="genesis_register",
+            event_ts="2026-02-20T00:00:00Z",
+        )
+        return registry
+
+    def test_verify_canonical_authority_accepts_active_state(self) -> None:
+        registry = self._base_registry()
+        assert registry.entries["lineage-alpha"].state == ACTIVE
+
+        result = registry.verify_canonical_authority(
+            canonical_root_key="root-001",
+            lineage_id="lineage-alpha",
+            signer_id="ops-001",
+        )
+
+        assert result.accepted is True
+        assert result.reason == "accepted"
+
+    def test_verify_canonical_authority_rejects_rotated_state(self) -> None:
+        registry = self._base_registry()
+        registry.rotate(
+            lineage_id="lineage-alpha",
+            replacement_signer_id="ops-002",
+            authorizer_signer_id="root-001",
+            reason_code="scheduled_rotation",
+            event_ts="2026-02-20T00:01:00Z",
+        )
+        assert registry.entries["lineage-alpha"].state == ROTATED
+
+        result = registry.verify_canonical_authority(
+            canonical_root_key="root-001",
+            lineage_id="lineage-alpha",
+            signer_id="ops-002",
+        )
+
+        assert result.accepted is False
+        assert result.reason == "lineage_not_canonical_authority_state"
+
+    def test_verify_canonical_authority_accepts_recovered_state(self) -> None:
+        registry = self._base_registry()
+        registry.revoke(
+            lineage_id="lineage-alpha",
+            authorizer_signer_id="root-001",
+            reason_code="compromise_confirmed",
+            event_ts="2026-02-20T00:01:00Z",
+        )
+        registry.recover(
+            lineage_id="lineage-alpha",
+            replacement_signer_id="ops-002",
+            recovery_ticket_id="ticket-001",
+            authorizer_signer_id="recovery-001",
+            reason_code="recovery_authorized",
+            event_ts="2026-02-20T00:02:00Z",
+        )
+        assert registry.entries["lineage-alpha"].state == RECOVERED
+
+        result = registry.verify_canonical_authority(
+            canonical_root_key="root-001",
+            lineage_id="lineage-alpha",
+            signer_id="ops-002",
+        )
+
+        assert result.accepted is True
+        assert result.reason == "accepted"
+

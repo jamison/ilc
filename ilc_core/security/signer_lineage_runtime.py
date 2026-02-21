@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Mapping, Optional, Sequence, Tuple
+from dataclasses import dataclass
+from typing import Dict, List, Mapping, Optional, Sequence
 import copy
 import hashlib
 
@@ -233,6 +233,13 @@ class SignerLineageRegistry:
         lineage_id: str,
         signer_id: str,
     ) -> VerificationResult:
+        """Check whether signer_id holds canonical signing authority for lineage_id.
+
+        Authority-eligible states: ``active`` and ``recovered`` only.
+        ``rotated`` is non-authoritative — replacement authority is established only
+        after the full ``revoke`` → ``recover`` cycle completes (``recovered`` state).
+        ``revoked`` is never authoritative.
+        """
         entry = self._entries.get(lineage_id)
         if entry is None:
             return VerificationResult(False, "unknown_lineage")
