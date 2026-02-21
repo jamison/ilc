@@ -53,7 +53,7 @@ File: `docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.2.md`
 **Amendment 2c: Lineage Lifecycle Event Schema**
 File: `docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md` *(versioned successor — do NOT mutate the locked v0.1)*
 
-- `ilc_lineage_lifecycle_event_schema_v0.1.md` is marked **Status: Locked** (Phase 241, ratified Phase 251). In-place amendment is not permitted under CDL mutation-scope rules. Amendment 2c must be delivered as `ilc_lineage_lifecycle_event_schema_v0.2.md`, which supersedes v0.1. The new document adds the following section (§10 or appendix): *"Lifecycle coordination with external signing providers: ILC's signer-lineage registry does not observe external wallet key rotation or revocation events. When an external wallet key is rotated or compromised, the agent or operator must explicitly trigger the corresponding ILC registry event (`rotate`/`revoke`). The registry maintains protocol-layer lifecycle state; it is not a proxy for the signing provider's key management system."*
+- `ilc_lineage_lifecycle_event_schema_v0.1.md` is marked **Status: Locked** (Phase 240) and is part of the CDL-001 runtime path ratified in Phase 251. In-place amendment is not permitted under locked-artifact versioning discipline. Amendment 2c must be delivered as `ilc_lineage_lifecycle_event_schema_v0.2.md`, which supersedes v0.1. The new document adds the following section (§10 or appendix): *"Lifecycle coordination with external signing providers: ILC's signer-lineage registry does not observe external wallet key rotation or revocation events. When an external wallet key is rotated or compromised, the agent or operator must explicitly trigger the corresponding ILC registry event (`rotate`/`revoke`). The registry maintains protocol-layer lifecycle state; it is not a proxy for the signing provider's key management system."*
 
 ### Action 3: ADM-003 — Reference Agent Architecture
 
@@ -125,7 +125,7 @@ For Codex reference, the full analysis chain:
 
 1. `docs/phases/sonnet_review_wallet_integration_strategy_response_2026_02_21.md` — Sonnet codebase and past-chat findings; includes the original Opus review prompt in its header as context
 2. `docs/phases/sonnet_review_key_isolation_privacy_response_2026_02_21.md` — Sonnet key isolation and privacy vector analysis (follow-up, 2026-02-21); COSE `kid` gap identified here
-3. This document (`ilc_wallet_agnostic_signing_strategy_codex_handoff_v0.1.md`) — Opus GO verdict and priority correction (D2e-07 trigger, not D2e-02) are codified in §"What Does NOT Change" and §"Priority Summary"
+3. `docs/specs/ilc_wallet_agnostic_signing_strategy_codex_handoff_v0.1.md` — Decision record codifying Opus GO verdict and priority correction (D2e-07 trigger, not D2e-02) in §"What Does NOT Change" and §"Priority Summary"
 4. `docs/antigravity_tasks/phase_250_259_prompt_drafting_guidance.md` — Phase 250-259 guidelines (context for where carry-forward items land)
 
 ---
