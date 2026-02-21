@@ -26,13 +26,13 @@ Triage reference:
 
 | decision_id | related_clause | decision_topic | status | options | current_candidate | required_artifacts |
 |---|---|---|---|---|---|---|
-| CDL-001 | CDP-001/CDP-002 | Canonical signer lineage definition | open | strict lineage, lineage+timelock, lineage+multi-sig council | lineage+timelock | key registry spec update, validator tests |
-| CDL-002 | CDP-001 | Emergency key compromise response | open | immediate revoke, revoke+grace period, staged migration | revoke+grace period | incident policy text, integration tests |
+| CDL-001 | CDP-001/CDP-002 | Canonical signer lineage definition | ratified | strict lineage, lineage+timelock, lineage+multi-sig council | lineage+timelock | key registry spec update, validator tests | ratified_phase: 251 | ratified_date: 2026-02-21 | evidence_document: docs/specs/ilc_security_cdl_ratification_evidence_251_v0.1.md |
+| CDL-002 | CDP-001 | Emergency key compromise response | ratified | immediate revoke, revoke+grace period, staged migration | revoke+grace period | incident policy text, integration tests | ratified_phase: 251 | ratified_date: 2026-02-21 | evidence_document: docs/specs/ilc_security_cdl_ratification_evidence_251_v0.1.md |
 | CDL-003 | CDP-003 | Founder fade-out mechanics | ratified | fixed sunset, trigger-based sunset, governance-vote sunset | trigger-based sunset | governance spec section, telemetry obligations |
 | CDL-004 | CDP-003/CDP-008 | Founder operational caps | ratified | soft norms, hard protocol caps, hard caps + public reporting | hard caps + reporting | economics/governance spec alignment |
 | CDL-005 | CDP-007 | Issuance/cap constitutional wording | ratified | cap-only, cap+trajectory, cap+trajectory+guardrails | cap+trajectory+guardrails | economics spec + regression tests |
 | CDL-006 | CDP-004/CDP-005 | Governance override/challenge process | ratified | single-body, dual-body, multi-body checks | multi-body checks | challenge node spec, audit path tests |
-| CDL-007 | CDP-006 | Rollback resistance baseline | open | seq-only, seq+hash-link, seq+hash+signed checkpoints | seq+hash+signed checkpoints | channel spec + negative tests |
+| CDL-007 | CDP-006 | Rollback resistance baseline | ratified | seq-only, seq+hash-link, seq+hash+signed checkpoints | seq+hash+signed checkpoints | channel spec + negative tests | ratified_phase: 251 | ratified_date: 2026-02-21 | evidence_document: docs/specs/ilc_security_cdl_ratification_evidence_251_v0.1.md |
 | CDL-008 | CDP-010 | Layer boundary: fixed core vs policy-loaded layers | ratified | heavy fixed core, minimal fixed core, split-by-domain | split-by-domain | architecture appendix + ADR |
 | CDL-009 | CDP-009 | Fork legitimacy/user signaling | ratified | naming-only, signature-badge, signature-badge+eligibility rules | signature-badge+eligibility rules | client UX + policy docs |
 | CDL-010 | CDP-003 | Pseudonymity/accountability balance | ratified | strict anonymity, pseudonymous attestations, doxxed governance | pseudonymous attestations | comms policy + incident policy |
@@ -84,6 +84,22 @@ The following decision IDs were ratified in the Phase 215 node-value/governance 
 
 Ratification evidence package:
 - `docs/specs/ilc_cdl_011_015_ratification_evidence_bundle_v0.1.md`
+
+## Scoped Ratification Record (Phase 251)
+
+The following decision IDs were ratified in the Phase 251 security CDL batch ratification:
+
+- `CDL-001`: selected `lineage+timelock`
+- `CDL-002`: selected `revoke+grace period`
+- `CDL-007`: selected `seq+hash+signed checkpoints`
+
+Ratification evidence package:
+- `docs/specs/ilc_security_cdl_ratification_evidence_251_v0.1.md`
+
+Ceremony protocol reference:
+- `docs/specs/ilc_cdl_ratification_and_d2e_activation_sequence_250_259_v0.1.md` §6
+
+---
 
 ## Scoped Remediation Record (Phase 227)
 
