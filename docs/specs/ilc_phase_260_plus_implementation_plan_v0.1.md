@@ -105,6 +105,9 @@ Implementation note:
 ### Phase 268 (sensitive): CDL-019 ratification
 - Ratify multiplier-governance closure only after migration/invariant evidence is complete.
 - Keep dynamic ranking policy (`CDL-031`) deferred unless explicit closure criteria are met.
+- Entry criteria must run cross-phase regression checks:
+  - `python3 -m pytest tests/test_cdl_032_ratification_253.py tests/test_security_cdl_ratification_251.py -q`
+  - this protects against stale "remains open" assumptions after later ratifications.
 
 ### Phase 269 (sensitive): ratification verification gate + handoff
 - Add composed gate verifying:

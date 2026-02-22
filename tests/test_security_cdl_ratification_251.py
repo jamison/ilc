@@ -126,9 +126,10 @@ class TestUnchangedCDLs:
         assert "| open |" in row or "open" in row.split("|")[3].strip(), \
             f"CDL-019 should be open; row: {row}"
 
-    def test_cdl_025_remains_open(self):
+    def test_cdl_025_not_ratified_in_phase_251(self):
+        # CDL-025 was open during Phase 251 and ratified later in Phase 267.
         row = self._get_row("CDL-025")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
     def test_cdl_026_remains_open(self):
         row = self._get_row("CDL-026")

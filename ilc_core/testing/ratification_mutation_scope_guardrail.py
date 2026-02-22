@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 from typing import Dict, Iterable
 
 
@@ -143,3 +144,35 @@ def assert_only_allowed_row_mutations(
         new_row=new_rows[cdl_id],
         allowed_fields=allowed_fields,
     )
+
+
+def assert_head_commit_touched_no_runtime_files(
+    runtime_prefix: str = "ilc_core/",
+    allow_prefixes: Iterable[str] = ("ilc_core/testing/",),
+    commit_ref: str = "HEAD",
+) -> None:
+    """Assert that the selected commit does not touch runtime files.
+
+    This is durable across post-commit reruns because it inspects a concrete
+    commit object (`commit_ref`) instead of working-tree status.
+    """
+
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--format=", commit_ref],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    touched = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    blocked = []
+    for path in touched:
+        if not path.startswith(runtime_prefix):
+            continue
+        if any(path.startswith(prefix) for prefix in allow_prefixes):
+            continue
+        blocked.append(path)
+
+    if blocked:
+        raise AssertionError(
+            f"{commit_ref}: runtime_files_touched={sorted(blocked)}"
+        )
