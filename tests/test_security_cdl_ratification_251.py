@@ -121,10 +121,10 @@ class TestUnchangedCDLs:
         assert row is not None, f"{cdl_id} row not found in decision log"
         return row
 
-    def test_cdl_019_remains_open(self):
+    def test_cdl_019_not_ratified_in_phase_251(self):
+        # CDL-019 was open during Phase 251 and ratified later in Phase 268.
         row = self._get_row("CDL-019")
-        assert "| open |" in row or "open" in row.split("|")[3].strip(), \
-            f"CDL-019 should be open; row: {row}"
+        assert "ratified_phase: 251" not in row
 
     def test_cdl_025_not_ratified_in_phase_251(self):
         # CDL-025 was open during Phase 251 and ratified later in Phase 267.
