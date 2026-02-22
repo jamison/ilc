@@ -127,10 +127,11 @@ def test_previously_ratified_rows_remain_ratified() -> None:
         assert rows[cdl_id]["status"] == "ratified", cdl_id
 
 
-def test_non_target_issuance_rows_remain_open() -> None:
+def test_non_target_issuance_rows_not_ratified_in_phase_268() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     for cdl_id in ["CDL-026", "CDL-027", "CDL-028", "CDL-029", "CDL-030", "CDL-031"]:
-        assert rows[cdl_id]["status"] == "open", cdl_id
+        # Phase-scoped invariant: these rows must not be ratified by Phase 268.
+        assert rows[cdl_id].get("ratified_phase") != "268", cdl_id
 
 
 def test_phase_268_commit_touched_no_runtime_files() -> None:

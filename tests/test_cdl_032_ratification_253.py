@@ -9,9 +9,9 @@ Verifies:
 - all seven primitive commands are present in the surface lock
 - explicit star.map exclusion is present
 - CDL-001/002/007 remain ratified
-- CDL-019 remains open
-- CDL-025 through CDL-031 unchanged (open)
-- CDL-033 unchanged (open)
+- CDL-019 was not ratified in Phase 253
+- CDL-025 through CDL-031 were not ratified in Phase 253
+- CDL-033 was not ratified in Phase 253
 - no ilc_core/ files touched (verified by checking no new py imports from ilc_core in test or surface lock)
 """
 
@@ -143,33 +143,32 @@ class TestUnchangedOpenCDLs:
         row = self._get_cdl_row("CDL-025")
         assert "ratified_phase: 253" not in row
 
-    def test_cdl_026_remains_open(self):
+    def test_cdl_026_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-026")
-        assert "open" in row
+        assert "ratified_phase: 253" not in row
 
-    def test_cdl_027_remains_open(self):
+    def test_cdl_027_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-027")
-        assert "open" in row
+        assert "ratified_phase: 253" not in row
 
-    def test_cdl_028_remains_open(self):
+    def test_cdl_028_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-028")
-        assert "open" in row
+        assert "ratified_phase: 253" not in row
 
-    def test_cdl_029_remains_open(self):
+    def test_cdl_029_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-029")
-        assert "open" in row
+        assert "ratified_phase: 253" not in row
 
-    def test_cdl_030_remains_open(self):
+    def test_cdl_030_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-030")
-        assert "open" in row
+        assert "ratified_phase: 253" not in row
 
-    def test_cdl_031_remains_open(self):
+    def test_cdl_031_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-031")
-        assert "open" in row
+        assert "ratified_phase: 253" not in row
 
-    def test_cdl_033_remains_open(self):
+    def test_cdl_033_not_ratified_in_phase_253(self):
         row = self._get_cdl_row("CDL-033")
-        assert "open" in row
         assert "ratified_phase: 253" not in row
 
 

@@ -121,12 +121,13 @@ def test_mutation_scope_guardrail_allows_only_ratification_fields_for_cdl_025() 
     assert_only_allowed_row_mutations(old_register, new_register, cdl_id="CDL-025")
 
 
-def test_non_target_rows_preserve_expected_statuses() -> None:
+def test_non_target_rows_not_ratified_in_phase_267() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     # CDL-019 was open during Phase 267 and ratified later in Phase 268.
     assert rows["CDL-019"].get("ratified_phase") != "267", "CDL-019"
     for cdl_id in ["CDL-026", "CDL-027", "CDL-028", "CDL-029", "CDL-030", "CDL-031"]:
-        assert rows[cdl_id]["status"] == "open", cdl_id
+        # Phase-scoped invariant: these rows must not be ratified by Phase 267.
+        assert rows[cdl_id].get("ratified_phase") != "267", cdl_id
 
 
 def test_previously_ratified_cdls_unchanged() -> None:
