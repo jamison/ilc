@@ -63,6 +63,7 @@ Excluded orchestration responsibilities:
 
 Excluded runtime responsibilities:
 - key storage and access control at rest (operator environment concern),
+- `--key` selects a signing provider; provider may be a local keyfile, a hardware wallet/HSM, or an external wallet SDK callback (provider selection is operator/runtime concern),
 - transport configuration and endpoint routing policy,
 - daemon/server lifecycle management,
 - deployment environment composition (container runtime, OS, package manager, PATH shaping).
@@ -82,6 +83,7 @@ Excluded runtime responsibilities:
 | Operation | Boundary verdict | Rationale |
 | --- | --- | --- |
 | `ilc assert --claim "..." --key ./agent.key` | In boundary (protocol surface) | Core epistemic primitive command |
+| `ilc assert --claim "..." --key coinbase://agent-wallet-id` | In boundary (protocol surface) | `--key` is provider-selected and not limited to local file paths |
 | `ilc refute --cid <cid> --proof proof.json --key ./agent.key` | In boundary (protocol surface) | Core contradiction/refutation primitive |
 | `ilc capproof --run` on actual host hardware | In boundary (protocol surface) | CapProof probe execution is protocol-native |
 | `ilc bundle --verify <bundle-cid>` | In boundary (protocol surface) | Bundle validation is protocol-native precondition |

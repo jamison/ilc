@@ -45,7 +45,7 @@ Roadmap anchor:
 
 ## 5. Security and operational constraints
 
-- Key path handling must avoid unsafe transcript leakage.
+- Signing provider credential handling must avoid unsafe transcript leakage.
 - Economic actions must keep explicit user/agent confirmation boundaries.
 - CLI contract stability takes precedence over backend implementation churn.
 
