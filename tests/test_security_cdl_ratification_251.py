@@ -6,10 +6,10 @@ Verifies:
 - per-CDL evidence tables present for CDL-001, CDL-002, CDL-007
 - CDL-001/002/007 status is ratified in decision log
 - each ratified CDL has ratified_phase and evidence_document fields
-- CDL-019 remains open
-- CDL-025 through CDL-031 unchanged (open)
-- CDL-032 unchanged (open)
-- CDL-033 unchanged (open)
+- CDL-019 was not ratified in Phase 251
+- CDL-025 through CDL-031 were not ratified in Phase 251
+- CDL-032 was not ratified in Phase 251
+- CDL-033 was not ratified in Phase 251
 - no ratification language for unrelated CDLs
 """
 
@@ -131,29 +131,29 @@ class TestUnchangedCDLs:
         row = self._get_row("CDL-025")
         assert "ratified_phase: 251" not in row
 
-    def test_cdl_026_remains_open(self):
+    def test_cdl_026_not_ratified_in_phase_251(self):
         row = self._get_row("CDL-026")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
-    def test_cdl_027_remains_open(self):
+    def test_cdl_027_not_ratified_in_phase_251(self):
         row = self._get_row("CDL-027")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
-    def test_cdl_028_remains_open(self):
+    def test_cdl_028_not_ratified_in_phase_251(self):
         row = self._get_row("CDL-028")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
-    def test_cdl_029_remains_open(self):
+    def test_cdl_029_not_ratified_in_phase_251(self):
         row = self._get_row("CDL-029")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
-    def test_cdl_030_remains_open(self):
+    def test_cdl_030_not_ratified_in_phase_251(self):
         row = self._get_row("CDL-030")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
-    def test_cdl_031_remains_open(self):
+    def test_cdl_031_not_ratified_in_phase_251(self):
         row = self._get_row("CDL-031")
-        assert "open" in row
+        assert "ratified_phase: 251" not in row
 
     def test_cdl_032_not_ratified_by_phase_251(self):
         # CDL-032 must not have been ratified by Phase 251 (it may be ratified in a later phase)
@@ -169,11 +169,6 @@ class TestNoSpuriousRatification:
     def setup_method(self):
         self.text = CDL_LOG.read_text()
         self.lines = self.text.splitlines()
-
-    def test_no_ratification_language_for_cdl_019(self):
-        row = next((l for l in self.lines if l.startswith("| CDL-019 ")), None)
-        assert row is not None
-        assert "ratified_phase: 251" not in row
 
     def test_no_ratification_language_for_cdl_025_031(self):
         for cdl_id in ["CDL-025", "CDL-026", "CDL-027", "CDL-028", "CDL-029", "CDL-030", "CDL-031"]:
