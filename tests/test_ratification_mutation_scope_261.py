@@ -4,6 +4,7 @@ from pathlib import Path
 
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     ALLOWED_RATIFICATION_MUTATION_FIELDS,
+    assert_head_commit_touched_no_runtime_files,
     assert_only_allowed_row_mutations,
     parse_decision_register_rows,
 )
@@ -114,3 +115,40 @@ def test_parser_reads_cdl_032_row_from_decision_log() -> None:
     rows = parse_decision_register_rows(text)
     assert "CDL-032" in rows
     assert rows["CDL-032"]["decision_id"] == "CDL-032"
+
+
+def test_head_commit_runtime_guardrail_accepts_non_runtime_file_list(monkeypatch) -> None:
+    class _Result:
+        stdout = (
+            "docs/specs/ilc_cdl_032_cli_first_sdk_ratification_evidence_253_v0.1.md\n"
+            "tests/test_cdl_032_ratification_253.py\n"
+        )
+
+    def _fake_run(*args, **kwargs):
+        return _Result()
+
+    monkeypatch.setattr(
+        "ilc_core.testing.ratification_mutation_scope_guardrail.subprocess.run",
+        _fake_run,
+    )
+    assert_head_commit_touched_no_runtime_files()
+
+
+def test_head_commit_runtime_guardrail_rejects_runtime_file_list(monkeypatch) -> None:
+    class _Result:
+        stdout = "ilc_core/runtime/engine.py\n"
+
+    def _fake_run(*args, **kwargs):
+        return _Result()
+
+    monkeypatch.setattr(
+        "ilc_core.testing.ratification_mutation_scope_guardrail.subprocess.run",
+        _fake_run,
+    )
+    try:
+        assert_head_commit_touched_no_runtime_files()
+        assert False, "expected runtime file assertion"
+    except AssertionError as exc:
+        text = str(exc)
+        assert "runtime_files_touched" in text
+        assert "engine.py" in text

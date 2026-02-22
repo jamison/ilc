@@ -136,9 +136,10 @@ class TestUnchangedOpenCDLs:
         assert "open" in row, f"CDL-019 should remain open; row: {row}"
         assert "ratified_phase: 253" not in row
 
-    def test_cdl_025_remains_open(self):
+    def test_cdl_025_not_ratified_in_phase_253(self):
+        # CDL-025 was open during Phase 253 and ratified later in Phase 267.
+        # Preserve the Phase 253 invariant only: this phase did not ratify it.
         row = self._get_cdl_row("CDL-025")
-        assert "open" in row
         assert "ratified_phase: 253" not in row
 
     def test_cdl_026_remains_open(self):
