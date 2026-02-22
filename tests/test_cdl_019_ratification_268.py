@@ -12,10 +12,10 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 
 
 EVIDENCE_PATH = Path(
-    "docs/specs/ilc_cdl_025_terminal_issuance_model_ratification_evidence_267_v0.1.md"
+    "docs/specs/ilc_cdl_019_multiplier_governance_surface_ratification_evidence_268_v0.1.md"
 )
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
-PHASE_267_COMMIT_SUBJECT = "docs(g8): phase 267 cdl-025 terminal issuance model ratification"
+PHASE_268_COMMIT_SUBJECT = "docs(g8): phase 268 cdl-019 multiplier governance ratification"
 
 _BASE_HEADERS = [
     "decision_id",
@@ -27,11 +27,12 @@ _BASE_HEADERS = [
     "required_artifacts",
 ]
 
-_PRE_267_CDL_025_ROW = (
-    "| CDL-025 | CDL-005 | Terminal issuance model (hard cap vs. tail emission reconciliation) | "
-    "open | asymptotic cap (Model A), fee-funded tail (Model B), burn-offset tail (Model C) | "
-    "fee-funded tail / Model B (planning recommendation — not ratified) | "
-    "terminal model spec, issuance simulation |"
+_PRE_268_CDL_019_ROW = (
+    "| CDL-019 | ADR-0008 / NodeValueTrack | Multiplier-governance surface: resolve relationship between "
+    "flat Genesis constant (1.2x), refutation-profitability invariant floor, and eventual dynamic ranking-based "
+    "multiplier mechanism | open | flat Genesis constant only, governed constant + invariant floor, governed "
+    "constant + dynamic ranking mechanism | governed constant + invariant floor (dynamic ranking deferred) | "
+    "multiplier policy contract update, invariant regression coverage, governance migration plan |"
 )
 
 
@@ -64,7 +65,7 @@ def _register_row_text(row: dict[str, str]) -> str:
     return "| " + " | ".join(cells) + " |"
 
 
-def _resolve_phase_267_commit_ref() -> str:
+def _resolve_phase_268_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
         check=True,
@@ -75,7 +76,7 @@ def _resolve_phase_267_commit_ref() -> str:
         if "\t" not in line:
             continue
         commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_267_COMMIT_SUBJECT:
+        if subject.strip() == PHASE_268_COMMIT_SUBJECT:
             return commit_hash
     return "HEAD"
 
@@ -86,55 +87,52 @@ def test_ratification_evidence_file_exists_and_has_required_content() -> None:
     headings = [
         "## 1. Purpose and scope",
         "## 2. Evidence chain summary",
-        "## 3. CDL-025 option selection statement",
-        "## 4. Mutation protocol confirmation",
-        "## 5. Non-goals",
-        "## 6. Canonical anchors",
+        "## 3. CDL-019 option selection statement",
+        "## 4. Invariant and migration closure statement",
+        "## 5. Mutation protocol confirmation",
+        "## 6. Non-goals",
+        "## 7. Canonical anchors",
     ]
     for heading in headings:
         assert heading in text
-    assert any(model in text for model in ("Model A", "Model B", "Model C"))
-    assert (
-        "ilc_issuance_governance_activation_survey_247_v0.1.md" in text
-        or "Phase-247" in text
-    )
+    assert "governed constant + invariant floor" in text
+    assert "CDL-031" in text
+    assert "deferred" in text
 
 
-def test_decision_log_cdl_025_is_ratified_with_expected_metadata() -> None:
+def test_decision_log_cdl_019_is_ratified_with_expected_metadata() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    row = rows["CDL-025"]
+    row = rows["CDL-019"]
     assert row["status"] == "ratified"
-    assert row["ratified_phase"] == "267"
+    assert row["ratified_phase"] == "268"
     ratified_date = datetime.date.fromisoformat(row["ratified_date"])
     assert ratified_date.isoformat() == row["ratified_date"]
     assert (
         row["evidence_document"]
-        == "docs/specs/ilc_cdl_025_terminal_issuance_model_ratification_evidence_267_v0.1.md"
+        == "docs/specs/ilc_cdl_019_multiplier_governance_surface_ratification_evidence_268_v0.1.md"
     )
 
 
-def test_mutation_scope_guardrail_allows_only_ratification_fields_for_cdl_025() -> None:
+def test_mutation_scope_guardrail_allows_only_ratification_fields_for_cdl_019() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    old_register = _mini_register(_PRE_267_CDL_025_ROW)
-    new_register = _mini_register(_register_row_text(rows["CDL-025"]))
+    old_register = _mini_register(_PRE_268_CDL_019_ROW)
+    new_register = _mini_register(_register_row_text(rows["CDL-019"]))
 
-    assert_only_allowed_row_mutations(old_register, new_register, cdl_id="CDL-025")
-
-
-def test_non_target_rows_preserve_expected_statuses() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    # CDL-019 was open during Phase 267 and ratified later in Phase 268.
-    assert rows["CDL-019"].get("ratified_phase") != "267", "CDL-019"
-    for cdl_id in ["CDL-026", "CDL-027", "CDL-028", "CDL-029", "CDL-030", "CDL-031"]:
-        assert rows[cdl_id]["status"] == "open", cdl_id
+    assert_only_allowed_row_mutations(old_register, new_register, cdl_id="CDL-019")
 
 
-def test_previously_ratified_cdls_unchanged() -> None:
+def test_previously_ratified_rows_remain_ratified() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     for cdl_id in ["CDL-001", "CDL-002", "CDL-007", "CDL-025", "CDL-032"]:
         assert rows[cdl_id]["status"] == "ratified", cdl_id
 
 
-def test_phase_267_commit_touched_no_runtime_files() -> None:
-    commit_ref = _resolve_phase_267_commit_ref()
+def test_non_target_issuance_rows_remain_open() -> None:
+    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    for cdl_id in ["CDL-026", "CDL-027", "CDL-028", "CDL-029", "CDL-030", "CDL-031"]:
+        assert rows[cdl_id]["status"] == "open", cdl_id
+
+
+def test_phase_268_commit_touched_no_runtime_files() -> None:
+    commit_ref = _resolve_phase_268_commit_ref()
     assert_head_commit_touched_no_runtime_files(commit_ref=commit_ref)

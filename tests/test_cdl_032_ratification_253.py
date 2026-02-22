@@ -131,9 +131,10 @@ class TestUnchangedOpenCDLs:
         assert row is not None, f"{cdl_id} row not found in decision log"
         return row
 
-    def test_cdl_019_remains_open(self):
+    def test_cdl_019_not_ratified_in_phase_253(self):
+        # CDL-019 was open during Phase 253 and ratified later in Phase 268.
+        # Preserve the Phase 253 invariant only: this phase did not ratify it.
         row = self._get_cdl_row("CDL-019")
-        assert "open" in row, f"CDL-019 should remain open; row: {row}"
         assert "ratified_phase: 253" not in row
 
     def test_cdl_025_not_ratified_in_phase_253(self):
