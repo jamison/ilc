@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import re
 import subprocess
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 EVIDENCE_PATH = Path("docs/specs/ilc_cdl_028_fee_burn_split_ratification_evidence_274_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 PHASE_274_COMMIT_SUBJECT = "docs(g8): phase 274 cdl-028 fee-burn split ratification"
+FIX1_EVIDENCE_PATH = Path("docs/specs/ilc_cdl_028_fee_burn_split_candidate_lock_274_fix1_v0.1.md")
 
 _BASE_HEADERS = [
     "decision_id",
@@ -76,6 +78,27 @@ def _resolve_phase_274_commit_ref() -> str:
     return "HEAD"
 
 
+def _decision_log_text_at_ref(ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{DECISION_LOG_PATH}"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"unable_to_read_decision_log_at_ref:{ref}: {result.stderr.strip()}"
+        )
+    return result.stdout
+
+
+def _extract_percent_token(*, text: str, pattern: str, label: str) -> str:
+    match = re.search(pattern, text)
+    if not match:
+        raise AssertionError(f"missing_{label}_percent_token")
+    return match.group(1)
+
+
 def test_ratification_evidence_file_exists_and_has_required_content() -> None:
     assert EVIDENCE_PATH.exists()
     text = _read(EVIDENCE_PATH)
@@ -131,3 +154,42 @@ def test_non_target_issuance_rows_not_ratified_in_phase_274() -> None:
 def test_phase_274_commit_touched_no_runtime_files() -> None:
     commit_ref = _resolve_phase_274_commit_ref()
     assert_head_commit_touched_no_runtime_files(commit_ref=commit_ref)
+
+
+def test_ratified_value_exactly_matches_fix1_simulation_selected_candidate() -> None:
+    assert FIX1_EVIDENCE_PATH.exists(), "fix1 evidence missing"
+    fix1_text = _read(FIX1_EVIDENCE_PATH)
+    evidence_text = _read(EVIDENCE_PATH)
+
+    fix1_percent = _extract_percent_token(
+        text=fix1_text,
+        pattern=r"percentage:\s*`([^`]+)`",
+        label="fix1",
+    )
+    ratified_percent = _extract_percent_token(
+        text=evidence_text,
+        pattern=r"fee-burn ratio\s*=\s*`([^`]+)`",
+        label="ratification",
+    )
+    assert ratified_percent == fix1_percent
+
+
+def test_full_non_target_row_mutation_guard_for_phase_274() -> None:
+    commit_ref = _resolve_phase_274_commit_ref()
+
+    old_text = _decision_log_text_at_ref(f"{commit_ref}^1")
+    new_text = _decision_log_text_at_ref(commit_ref)
+
+    old_rows = parse_decision_register_rows(old_text)
+    new_rows = parse_decision_register_rows(new_text)
+
+    assert set(old_rows.keys()) == set(new_rows.keys())
+
+    target_old = _mini_register(_register_row_text(old_rows["CDL-028"]))
+    target_new = _mini_register(_register_row_text(new_rows["CDL-028"]))
+    assert_only_allowed_row_mutations(target_old, target_new, cdl_id="CDL-028")
+
+    for cdl_id in old_rows:
+        if cdl_id == "CDL-028":
+            continue
+        assert old_rows[cdl_id] == new_rows[cdl_id], f"Row {cdl_id} unlawfully mutated in Phase 274"
