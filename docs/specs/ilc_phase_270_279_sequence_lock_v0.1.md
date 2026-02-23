@@ -39,6 +39,11 @@ Entry baseline from `docs/specs/ilc_cdl_ratification_window_260_269_handoff_v0.1
 | 9 | 278 | `integration-doc` | Coherence report and context capsule v0.6. | Phase 277 complete. | Integration coherence tests pass. |
 | 10 | 279 | `ratification-verification-gate + handoff` | Compose verification for phases 272-277 and publish 280+ handoff. | Phase 278 complete. | Verification gate dry-run/full-run pass. |
 
+Fix-pack dependency inside Step 5:
+- before executing sensitive Phase 274 ratification, complete `Phase 274-fix1` (non-sensitive) candidate simulation prelock and produce:
+  - `docs/specs/ilc_cdl_028_fee_burn_split_candidate_lock_274_fix1_v0.1.md`,
+  - `tests/test_cdl_028_fee_burn_candidate_lock_274_fix1.py`.
+
 ## 4. Per-phase sensitivity classification
 
 | Phase | Classification |
@@ -79,6 +84,8 @@ Locked ordering in this window:
   - `bash tools/check_cdl_ratification_verification_gate_phase_269.sh`,
   - `python3 -m pytest tests/test_ratification_mutation_scope_261.py -q`,
   - cross-phase regression suites from 251/253/267/268.
+- sensitive Phase 274 ratification must additionally require Phase 274-fix1 candidate lock test:
+  - `python3 -m pytest tests/test_cdl_028_fee_burn_candidate_lock_274_fix1.py -q`.
 - ratification lanes must use phase-scoped non-target assertions (`ratified_phase != <phase>`),
   not `status == open` checks.
 - evidence-closure lanes (271, 275) are non-ratifying and must include explicit decision-log non-mutation boundaries.
