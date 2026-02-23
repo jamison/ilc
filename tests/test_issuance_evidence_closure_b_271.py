@@ -3,27 +3,34 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
+from ilc_core.testing.ratification_mutation_scope_guardrail import (
+    assert_head_commit_touched_no_runtime_files,
+    parse_decision_register_rows,
+)
 
 
 EVIDENCE_PATH = Path("docs/specs/ilc_issuance_evidence_closure_b_271_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
+PHASE_271_COMMIT_SUBJECT = (
+    "docs(g8): phase 271 issuance evidence closure b (cdl-029 cdl-026 cdl-028)"
+)
 
 
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _working_tree_paths() -> list[str]:
+def _resolve_phase_271_commit_ref() -> str:
     result = subprocess.run(
-        ["git", "status", "--porcelain"], check=True, capture_output=True, text=True
+        ["git", "log", "--format=%H%x09%s"], check=True, capture_output=True, text=True
     )
-    paths: list[str] = []
     for line in result.stdout.splitlines():
-        if len(line) < 4:
+        if "\t" not in line:
             continue
-        paths.append(line[3:])
-    return paths
+        commit_hash, subject = line.split("\t", 1)
+        if subject.strip() == PHASE_271_COMMIT_SUBJECT:
+            return commit_hash
+    return "HEAD"
 
 
 def test_evidence_artifact_exists() -> None:
@@ -78,5 +85,5 @@ def test_decision_log_has_no_phase_271_mutation_marker() -> None:
 
 
 def test_no_runtime_files_touched_in_this_phase() -> None:
-    for path in _working_tree_paths():
-        assert not path.startswith("ilc_core/"), path
+    commit_ref = _resolve_phase_271_commit_ref()
+    assert_head_commit_touched_no_runtime_files(commit_ref=commit_ref)
