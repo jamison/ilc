@@ -50,6 +50,11 @@ Additional modeling recommended to close outstanding evidence gaps:
 - allocation split resilience checks against concentration and gaming,
 - clamp-bound stability tests under volatile reward demand.
 
+Progress note (post-256, non-ratifying):
+- epoch-duration wall-clock mapping and policy candidate table (`A/B/C`) now captured in
+  `docs/specs/ilc_epoch_duration_candidate_matrix_and_policy_options_274_fix2_v0.1.md`,
+- this narrows the schedule-selection ambiguity for `CDL-027` but does not ratify schedule constants.
+
 ## 5. Cross-reference and drift check
 
 Cross-reference to activation survey:
