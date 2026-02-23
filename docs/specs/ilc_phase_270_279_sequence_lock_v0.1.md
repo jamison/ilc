@@ -32,7 +32,7 @@ Entry baseline from `docs/specs/ilc_cdl_ratification_window_260_269_handoff_v0.1
 | 2 | 271 | `issuance-evidence-closure-B` | Evidence closure for CDL-029, CDL-026, CDL-028. | Phase 270 complete. | Evidence-closure tests pass. |
 | 3 | 272 | `cdl-ratification` | CDL-029 allocation split ratification. | Phases 270, 271 complete. | Ratification tests + mutation-scope checks pass. |
 | 4 | 273 | `cdl-ratification` | CDL-026 C_max lock ratification. | Phase 272 complete. | Ratification tests + mutation-scope checks pass. |
-| 5 | 274 | `cdl-ratification` | CDL-028 fee-burn split ratification. | Phase 273 complete. | Ratification tests + mutation-scope checks pass. |
+| 5 | 274 | `cdl-ratification` | CDL-028 fee-burn split ratification. | Phase 273 complete plus 274 fix-pack preconditions. | Ratification tests + mutation-scope checks pass. |
 | 6 | 275 | `issuance-evidence-closure-C` | Evidence closure for CDL-027 and CDL-030 methodology. | Phase 274 complete. | Evidence-closure tests pass. |
 | 7 | 276 | `cdl-ratification` | CDL-027 decay formulation ratification. | Phase 275 complete. | Ratification tests + mutation-scope checks pass. |
 | 8 | 277 | `cdl-ratification` | CDL-030 ECU price clamp ratification. | Phase 276 complete. | Ratification tests + mutation-scope checks pass. |
@@ -43,6 +43,12 @@ Fix-pack dependency inside Step 5:
 - before executing sensitive Phase 274 ratification, complete `Phase 274-fix1` (non-sensitive) candidate simulation prelock and produce:
   - `docs/specs/ilc_cdl_028_fee_burn_split_candidate_lock_274_fix1_v0.1.md`,
   - `tests/test_cdl_028_fee_burn_candidate_lock_274_fix1.py`.
+- before executing sensitive Phase 274 ratification, complete `Phase 274-fix2` (non-sensitive) numeric `C_max` candidate prelock and produce:
+  - `docs/specs/ilc_cdl_026_numeric_cmax_candidate_lock_274_fix2_v0.1.md`,
+  - `tests/test_cdl_026_numeric_cmax_candidate_lock_274_fix2.py`.
+- before executing sensitive Phase 274 ratification, complete `Phase 274-fix3` (sensitive) numeric `C_max` binding addendum for `CDL-026` and produce:
+  - `docs/specs/ilc_cdl_026_numeric_cmax_binding_ratification_addendum_274_fix3_v0.1.md`,
+  - `tests/test_cdl_026_numeric_cmax_binding_ratification_274_fix3.py`.
 
 ## 4. Per-phase sensitivity classification
 
@@ -86,9 +92,15 @@ Locked ordering in this window:
   - cross-phase regression suites from 251/253/267/268.
 - sensitive Phase 274 ratification must additionally require Phase 274-fix1 candidate lock test:
   - `python3 -m pytest tests/test_cdl_028_fee_burn_candidate_lock_274_fix1.py -q`.
+- sensitive Phase 274 ratification must additionally require Phase 274-fix2 and 274-fix3 verification tests:
+  - `python3 -m pytest tests/test_cdl_026_numeric_cmax_candidate_lock_274_fix2.py -q`,
+  - `python3 -m pytest tests/test_cdl_026_numeric_cmax_binding_ratification_274_fix3.py -q`.
 - ratification lanes must use phase-scoped non-target assertions (`ratified_phase != <phase>`),
   not `status == open` checks.
 - evidence-closure lanes (271, 275) are non-ratifying and must include explicit decision-log non-mutation boundaries.
+- Phase 275 evidence closure must include epoch-duration wall-clock mapping and explicit `A/B/C`
+  policy-option evaluation anchored to:
+  - `docs/specs/ilc_epoch_duration_candidate_matrix_and_policy_options_274_fix2_v0.1.md`.
 - phase 279 gate must compose prior-window gate and current-window ratification tests.
 
 ## 7. Non-goals and out-of-scope boundaries
