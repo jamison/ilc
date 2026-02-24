@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
 )
@@ -18,7 +20,6 @@ CSV_PATH = Path("out/phase_274_fix1/cdl_028_fee_burn_candidate_sweep.csv")
 JSON_PATH = Path("out/phase_274_fix1/cdl_028_candidate_selection.json")
 EVIDENCE_PATH = Path("docs/specs/ilc_cdl_028_fee_burn_split_candidate_lock_274_fix1_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
-PHASE_274_FIX1_COMMIT_SUBJECT = "docs(g8): phase 274 fix1 cdl-028 candidate simulation prelock"
 
 
 def _read_text(path: Path) -> str:
@@ -34,19 +35,7 @@ def _sha256(path: Path) -> str:
 
 
 def _resolve_phase_274_fix1_commit_ref() -> str:
-    result = subprocess.run(
-        ["git", "log", "--format=%H%x09%s"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    for line in result.stdout.splitlines():
-        if "\t" not in line:
-            continue
-        commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_274_FIX1_COMMIT_SUBJECT:
-            return commit_hash
-    pytest.skip("phase_commit_subject_not_found: commit-scoped assertions skipped")
+    return resolve_phase_commit_ref_or_skip("phase_274_fix1")
 
 
 def test_simulation_script_exists_and_runs() -> None:

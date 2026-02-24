@@ -10,9 +10,10 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 
 CLI_CMD = [sys.executable, "-m", "ilc_core.cli.main"]
-PHASE_294_COMMIT_SUBJECT = "feat(g8): phase 294 d2e-04 identity subsystem initial implementation tranche"
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 
 
@@ -117,19 +118,7 @@ def test_bare_identity_command_preserves_d2e03_compatibility(tmp_path: Path) -> 
 
 
 def _resolve_phase_294_commit_ref() -> str:
-    result = subprocess.run(
-        ["git", "log", "--format=%H%x09%s"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    for line in result.stdout.splitlines():
-        if "\t" not in line:
-            continue
-        commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_294_COMMIT_SUBJECT:
-            return commit_hash
-    pytest.skip("phase_294_commit_subject_not_found: commit-scoped assertion skipped")
+    return resolve_phase_commit_ref_or_skip("phase_294")
 
 
 def test_no_decision_log_file_changed_in_phase_commit() -> None:

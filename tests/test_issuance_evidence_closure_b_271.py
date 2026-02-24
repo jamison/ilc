@@ -3,6 +3,10 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+import pytest
+
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
     parse_decision_register_rows,
@@ -11,9 +15,6 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 
 EVIDENCE_PATH = Path("docs/specs/ilc_issuance_evidence_closure_b_271_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
-PHASE_271_COMMIT_SUBJECT = (
-    "docs(g8): phase 271 issuance evidence closure b (cdl-029 cdl-026 cdl-028)"
-)
 
 
 def _read(path: Path) -> str:
@@ -21,16 +22,7 @@ def _read(path: Path) -> str:
 
 
 def _resolve_phase_271_commit_ref() -> str:
-    result = subprocess.run(
-        ["git", "log", "--format=%H%x09%s"], check=True, capture_output=True, text=True
-    )
-    for line in result.stdout.splitlines():
-        if "\t" not in line:
-            continue
-        commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_271_COMMIT_SUBJECT:
-            return commit_hash
-    return "HEAD"
+    return resolve_phase_commit_ref_or_skip("phase_271")
 
 
 def test_evidence_artifact_exists() -> None:
