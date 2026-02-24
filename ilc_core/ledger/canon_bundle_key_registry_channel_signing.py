@@ -35,6 +35,11 @@ def _derive_key_id(key: bytes) -> str:
     return hashlib.sha256(key).hexdigest()[:16]
 
 
+def _derive_key_fingerprint(key: bytes) -> str:
+    """Derive canonical signer fingerprint from key bytes (full SHA-256)."""
+    return hashlib.sha256(key).hexdigest()
+
+
 def canonical_channel_bytes(channel_path: Path) -> bytes:
     """
     Return canonical bytes for a channel file.
@@ -83,10 +88,12 @@ def sign_channel_file(
     channel_hash = hashlib.sha256(canonical).hexdigest()
     signature_hex = hmac.new(key, canonical, hashlib.sha256).hexdigest()
     key_id = _derive_key_id(key)
+    key_fingerprint = _derive_key_fingerprint(key)
     
     sig_data = {
         "sig_alg": "hmac-sha256",
         "key_id": key_id,
+        "key_fingerprint": key_fingerprint,
         "signed_at": _now_iso8601(),
         "channel_hash": channel_hash,
         "signature_hex": signature_hex,
@@ -113,6 +120,7 @@ def sign_channel_file(
         "sig_path": str(resolved_sig),
         "sig_alg": "hmac-sha256",
         "key_id": key_id,
+        "key_fingerprint": key_fingerprint,
         "channel_hash": channel_hash,
     }
 
@@ -194,6 +202,12 @@ def verify_channel_file_signature(
         # But if the sig is valid otherwise, it might be signed by another key.
         # Since we passed a specific key, we expect it to match.
         errors.append("channel_signature_key_unknown")
+
+    # 9. Canonical fingerprint check (compatibility mode: optional for legacy sidecars)
+    if "key_fingerprint" in sig_data:
+        expected_fingerprint = _derive_key_fingerprint(key)
+        if sig_data["key_fingerprint"] != expected_fingerprint:
+            errors.append("channel_signature_fingerprint_mismatch")
     
     if errors:
         return {
@@ -203,6 +217,7 @@ def verify_channel_file_signature(
             "sig_path": str(resolved_sig),
             "sig_alg": sig_data.get("sig_alg"),
             "key_id": sig_data.get("key_id"),
+            "key_fingerprint": sig_data.get("key_fingerprint"),
             "channel_hash": sig_data.get("channel_hash"),
         }
     
@@ -213,5 +228,6 @@ def verify_channel_file_signature(
         "sig_path": str(resolved_sig),
         "sig_alg": sig_data["sig_alg"],
         "key_id": sig_data["key_id"],
+        "key_fingerprint": sig_data.get("key_fingerprint"),
         "channel_hash": sig_data["channel_hash"],
     }
