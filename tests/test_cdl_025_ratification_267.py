@@ -8,6 +8,7 @@ import pytest
 
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
+    assert_no_non_target_rows_marked_with_phase,
     assert_only_allowed_row_mutations,
     parse_decision_register_rows,
 )
@@ -125,11 +126,11 @@ def test_mutation_scope_guardrail_allows_only_ratification_fields_for_cdl_025() 
 
 def test_non_target_rows_not_ratified_in_phase_267() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    # CDL-019 was open during Phase 267 and ratified later in Phase 268.
-    assert rows["CDL-019"].get("ratified_phase") != "267", "CDL-019"
-    for cdl_id in ["CDL-026", "CDL-027", "CDL-028", "CDL-029", "CDL-030", "CDL-031"]:
-        # Phase-scoped invariant: these rows must not be ratified by Phase 267.
-        assert rows[cdl_id].get("ratified_phase") != "267", cdl_id
+    assert_no_non_target_rows_marked_with_phase(
+        rows,
+        phase="267",
+        target_cdls={"CDL-025"},
+    )
 
 
 def test_previously_ratified_cdls_unchanged() -> None:

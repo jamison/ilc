@@ -118,6 +118,39 @@ def assert_allowed_row_mutation(
         )
 
 
+def assert_no_non_target_rows_marked_with_phase(
+    rows: Dict[str, Dict[str, str]],
+    *,
+    phase: str,
+    target_cdls: Iterable[str],
+) -> None:
+    """Assert no non-target CDL rows are phase-stamped with the provided phase.
+
+    This protects against accidental or unauthorized `ratified_phase` poisoning
+    on rows outside the intended ratification target set.
+    """
+
+    target_set = set(target_cdls)
+    if not target_set:
+        raise AssertionError("target_cdls_empty")
+
+    missing_targets = sorted(cdl for cdl in target_set if cdl not in rows)
+    if missing_targets:
+        raise AssertionError(f"target_cdl_missing_in_register: {missing_targets}")
+
+    offenders = sorted(
+        cdl_id
+        for cdl_id, row in rows.items()
+        if cdl_id.startswith("CDL-")
+        and cdl_id not in target_set
+        and row.get("ratified_phase") == phase
+    )
+    if offenders:
+        raise AssertionError(
+            f"unauthorized_phase_stamp phase={phase} offenders={offenders}"
+        )
+
+
 def assert_only_allowed_row_mutations(
     old_markdown: str,
     new_markdown: str,
