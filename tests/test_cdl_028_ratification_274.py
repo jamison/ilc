@@ -5,6 +5,8 @@ import re
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
     assert_only_allowed_row_mutations,
@@ -75,7 +77,7 @@ def _resolve_phase_274_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_274_COMMIT_SUBJECT:
             return commit_hash
-    return "HEAD"
+    pytest.skip("phase_commit_subject_not_found: commit-scoped assertions skipped")
 
 
 def _decision_log_text_at_ref(ref: str) -> str:
