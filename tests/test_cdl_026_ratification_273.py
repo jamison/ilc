@@ -8,6 +8,7 @@ import pytest
 
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
+    assert_no_non_target_rows_marked_with_phase,
     assert_only_allowed_row_mutations,
     parse_decision_register_rows,
 )
@@ -125,8 +126,11 @@ def test_previously_ratified_rows_remain_ratified() -> None:
 
 def test_non_target_issuance_rows_not_ratified_in_phase_273() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    for cdl_id in ["CDL-027", "CDL-028", "CDL-030", "CDL-031"]:
-        assert rows[cdl_id].get("ratified_phase") != "273", cdl_id
+    assert_no_non_target_rows_marked_with_phase(
+        rows,
+        phase="273",
+        target_cdls={"CDL-026"},
+    )
 
 
 def test_phase_273_commit_touched_no_runtime_files() -> None:
