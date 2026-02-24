@@ -3,6 +3,10 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+import pytest
+
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
 )
@@ -10,7 +14,6 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 
 CAPSULE_PATH = Path("docs/specs/ilc_antigravity_context_capsule_v0.6.md")
 REPORT_PATH = Path("docs/specs/ilc_integration_coherence_report_278_v0.1.md")
-PHASE_278_COMMIT_SUBJECT = "docs(g8): phase 278 integration coherence report and capsule v0.6"
 
 
 def _read(path: Path) -> str:
@@ -18,19 +21,7 @@ def _read(path: Path) -> str:
 
 
 def _resolve_phase_278_commit_ref() -> str:
-    result = subprocess.run(
-        ["git", "log", "--format=%H%x09%s"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    for line in result.stdout.splitlines():
-        if "\t" not in line:
-            continue
-        commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_278_COMMIT_SUBJECT:
-            return commit_hash
-    return "HEAD"
+    return resolve_phase_commit_ref_or_skip("phase_278")
 
 
 def test_coherence_report_exists_with_required_sections() -> None:

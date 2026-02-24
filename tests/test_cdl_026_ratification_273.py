@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
     assert_no_non_target_rows_marked_with_phase,
@@ -16,7 +18,6 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 
 EVIDENCE_PATH = Path("docs/specs/ilc_cdl_026_cmax_lock_ratification_evidence_273_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
-PHASE_273_COMMIT_SUBJECT = "docs(g8): phase 273 cdl-026 cmax lock ratification"
 
 _BASE_HEADERS = [
     "decision_id",
@@ -64,19 +65,7 @@ def _register_row_text(row: dict[str, str]) -> str:
 
 
 def _resolve_phase_273_commit_ref() -> str:
-    result = subprocess.run(
-        ["git", "log", "--format=%H%x09%s"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    for line in result.stdout.splitlines():
-        if "\t" not in line:
-            continue
-        commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_273_COMMIT_SUBJECT:
-            return commit_hash
-    pytest.skip("phase_commit_subject_not_found: commit-scoped assertions skipped")
+    return resolve_phase_commit_ref_or_skip("phase_273")
 
 
 def test_ratification_evidence_file_exists_and_has_required_content() -> None:

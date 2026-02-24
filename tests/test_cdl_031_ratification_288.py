@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 from ilc_core.testing.ratification_mutation_scope_guardrail import (
     assert_head_commit_touched_no_runtime_files,
     assert_no_non_target_rows_marked_with_phase,
@@ -18,7 +20,6 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 EVIDENCE_PATH = Path("docs/specs/ilc_cdl_031_dynamic_ranking_policy_ratification_evidence_288_v0.1.md")
 CLOSURE_PATH = Path("docs/specs/ilc_cdl_031_ranking_policy_evidence_closure_287_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
-PHASE_288_COMMIT_SUBJECT = "docs(g8): phase 288 cdl-031 ratification"
 
 _BASE_HEADERS = [
     "decision_id",
@@ -67,19 +68,7 @@ def _register_row_text(row: dict[str, str]) -> str:
 
 
 def _resolve_phase_288_commit_ref() -> str:
-    result = subprocess.run(
-        ["git", "log", "--format=%H%x09%s"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    for line in result.stdout.splitlines():
-        if "\t" not in line:
-            continue
-        commit_hash, subject = line.split("\t", 1)
-        if subject.strip() == PHASE_288_COMMIT_SUBJECT:
-            return commit_hash
-    pytest.skip("phase_288_commit_subject_not_found: commit-scoped assertions skipped")
+    return resolve_phase_commit_ref_or_skip("phase_288")
 
 
 def _decision_log_text_at_ref(ref: str) -> str:

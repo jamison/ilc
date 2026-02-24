@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 
 CAPSULE_PATH = Path("docs/specs/ilc_antigravity_context_capsule_v0.5.md")
 REPORT_PATH = Path("docs/specs/ilc_integration_coherence_report_258_v0.1.md")
@@ -15,26 +17,7 @@ def _read(path: Path) -> str:
 
 
 def _phase_commit_hash() -> str:
-    result = subprocess.run(
-        [
-            "git",
-            "log",
-            "--format=%H",
-            "--fixed-strings",
-            "--grep",
-            "docs(g8): phase 258 integration coherence and capsule v0.5",
-            "-n",
-            "1",
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    assert result.returncode == 0
-    commit_hash = result.stdout.strip()
-    if not commit_hash:
-        pytest.skip("phase_258_commit_subject_not_found: commit-scoped assertion skipped")
-    return commit_hash
+    return resolve_phase_commit_ref_or_skip("phase_258")
 
 
 def test_capsule_exists_and_supersedes_v0_4() -> None:

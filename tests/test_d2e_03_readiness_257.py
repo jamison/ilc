@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.testing.phase_commit_manifest import resolve_phase_commit_ref_or_skip
+
 
 READINESS_PATH = Path("docs/specs/ilc_d2e_03_readiness_assessment_257_v0.1.md")
 VECTORS_PATH = Path("docs/specs/ilc_d2_schema_test_vectors_spec_257_v0.1.md")
@@ -15,26 +17,7 @@ def _read(path: Path) -> str:
 
 
 def _phase_commit_hash() -> str:
-    result = subprocess.run(
-        [
-            "git",
-            "log",
-            "--format=%H",
-            "--fixed-strings",
-            "--grep",
-            "docs(g8): phase 257 D2e-03 readiness assessment and test vectors",
-            "-n",
-            "1",
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    assert result.returncode == 0
-    commit_hash = result.stdout.strip()
-    if not commit_hash:
-        pytest.skip("phase_257_commit_subject_not_found: commit-scoped assertion skipped")
-    return commit_hash
+    return resolve_phase_commit_ref_or_skip("phase_257")
 
 
 def test_readiness_doc_exists() -> None:
