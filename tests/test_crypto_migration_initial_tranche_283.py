@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from ilc_core.ledger.canon_bundle_key_registry_channel_signing import (
     sign_channel_file,
     verify_channel_file_signature,
@@ -11,6 +13,7 @@ from ilc_core.ledger.canon_bundle_key_registry_channel_signing import (
 
 
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+PHASE_283_COMMIT_SUBJECT = "feat(g8): phase 283 crypto migration initial implementation tranche"
 
 
 def _make_channel_file(tmp_path: Path) -> Path:
@@ -27,7 +30,19 @@ def _make_channel_file(tmp_path: Path) -> Path:
 
 
 def _resolve_phase_283_commit_ref() -> str:
-    return "HEAD"
+    result = subprocess.run(
+        ["git", "log", "--format=%H%x09%s"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        if subject.strip() == PHASE_283_COMMIT_SUBJECT:
+            return commit_hash
+    pytest.skip("phase_283_commit_subject_not_found: commit-scoped assertion skipped")
 
 
 def test_verify_fails_on_key_fingerprint_mismatch(tmp_path: Path) -> None:

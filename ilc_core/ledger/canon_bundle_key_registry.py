@@ -252,6 +252,11 @@ def _derive_key_id(key: bytes) -> str:
     return hashlib.sha256(key).hexdigest()[:16]
 
 
+def _derive_key_fingerprint(key: bytes) -> str:
+    """Derive canonical key fingerprint from key bytes (full SHA-256)."""
+    return hashlib.sha256(key).hexdigest()
+
+
 def sign_registry_file(
     registry_path: Path,
     key: bytes,
@@ -283,10 +288,12 @@ def sign_registry_file(
     signature = hmac.new(key, canonical, hashlib.sha256).hexdigest()
     key_id = _derive_key_id(key)
     signed_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    key_fingerprint = _derive_key_fingerprint(key)
     
     sig_data = {
         "sig_alg": "hmac-sha256",
         "key_id": key_id,
+        "key_fingerprint": key_fingerprint,
         "signed_at": signed_at,
         "registry_hash": registry_hash,
         "signature_hex": signature,
@@ -300,6 +307,7 @@ def sign_registry_file(
     return {
         "ok": True,
         "key_id": key_id,
+        "key_fingerprint": key_fingerprint,
         "sig_alg": "hmac-sha256",
         "sig_path": str(sig_path),
         "registry_hash": registry_hash,
@@ -309,7 +317,8 @@ def sign_registry_file(
 def verify_registry_file_signature(
     registry_path: Path,
     key: bytes,
-    sig_path: Optional[Path] = None
+    sig_path: Optional[Path] = None,
+    mode: str = "compatibility",
 ) -> dict:
     """
     Verify a registry file signature.
@@ -318,10 +327,14 @@ def verify_registry_file_signature(
         registry_path: Path to registry JSON file.
         key: Signing key bytes.
         sig_path: Optional signature file path. Defaults to registry_path + .sig.
-    
+        mode: Verification mode (`compatibility` or `asymmetric_required`).
+
     Returns:
         Dict with {ok: bool, errors: list, warnings: list, registry_hash: str, key_id: str}.
     """
+
+    if mode not in {"compatibility", "asymmetric_required"}:
+        return {"ok": False, "errors": ["signature_invalid_mode"], "warnings": []}
 
     
     if sig_path is None:
@@ -378,6 +391,15 @@ def verify_registry_file_signature(
     computed_key_id = _derive_key_id(key)
     if computed_key_id != sig_data.get("key_id"):
         errors.append("signature_key_unknown")
+
+    # Check canonical fingerprint when present (compatibility mode: optional)
+    if mode == "asymmetric_required" and "key_fingerprint" not in sig_data:
+        errors.append("signature_missing_fingerprint")
+
+    if "key_fingerprint" in sig_data:
+        computed_fingerprint = _derive_key_fingerprint(key)
+        if computed_fingerprint != sig_data.get("key_fingerprint"):
+            errors.append("signature_fingerprint_mismatch")
     
     return {
         "ok": len(errors) == 0,
