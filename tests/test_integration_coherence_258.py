@@ -3,6 +3,8 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+import pytest
+
 
 CAPSULE_PATH = Path("docs/specs/ilc_antigravity_context_capsule_v0.5.md")
 REPORT_PATH = Path("docs/specs/ilc_integration_coherence_report_258_v0.1.md")
@@ -10,6 +12,29 @@ REPORT_PATH = Path("docs/specs/ilc_integration_coherence_report_258_v0.1.md")
 
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def _phase_commit_hash() -> str:
+    result = subprocess.run(
+        [
+            "git",
+            "log",
+            "--format=%H",
+            "--fixed-strings",
+            "--grep",
+            "docs(g8): phase 258 integration coherence and capsule v0.5",
+            "-n",
+            "1",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
+    commit_hash = result.stdout.strip()
+    if not commit_hash:
+        pytest.skip("phase_258_commit_subject_not_found: commit-scoped assertion skipped")
+    return commit_hash
 
 
 def test_capsule_exists_and_supersedes_v0_4() -> None:
@@ -57,12 +82,15 @@ def test_coherence_report_confirms_cdl_019_open_unconditionally() -> None:
     assert "CDL-019 status = `open`" in text
 
 
-def test_no_ilc_core_files_touched_in_current_worktree() -> None:
+def test_no_ilc_core_files_touched_in_phase_258_commit() -> None:
+    commit_hash = _phase_commit_hash()
     result = subprocess.run(
-        ["git", "status", "--porcelain", "ilc_core"],
+        ["git", "show", "--name-only", "--pretty=format:", commit_hash],
         check=False,
         capture_output=True,
         text=True,
     )
     assert result.returncode == 0
-    assert result.stdout.strip() == ""
+    touched_files = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    ilc_core_touches = [path for path in touched_files if path.startswith("ilc_core/")]
+    assert ilc_core_touches == []

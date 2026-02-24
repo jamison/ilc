@@ -109,14 +109,11 @@ class SignerLineageRegistry:
         record = self._make_record(
             event_name=REGISTER,
             lineage_id=lineage_id,
-            subject_signer_id=operational_signer_key,
-            authorizer_signer_id=authorizer_signer_id,
             reason_code=reason_code,
             event_ts=event_ts,
-            prev_state="none",
-            next_state=ACTIVE,
-            canonical_root_key=canonical_root_key,
-            authority_recovery_key=authority_recovery_key,
+            transition=("none", ACTIVE),
+            signers=(operational_signer_key, authorizer_signer_id),
+            root_keys=(canonical_root_key, authority_recovery_key),
         )
         self._append_record(record)
         return record
@@ -140,12 +137,10 @@ class SignerLineageRegistry:
         record = self._make_record(
             event_name=ROTATE,
             lineage_id=lineage_id,
-            subject_signer_id=replacement_signer_id,
-            authorizer_signer_id=authorizer_signer_id,
             reason_code=reason_code,
             event_ts=event_ts,
-            prev_state=prev_state,
-            next_state=ROTATED,
+            transition=(prev_state, ROTATED),
+            signers=(replacement_signer_id, authorizer_signer_id),
             replacement_signer_id=replacement_signer_id,
         )
         self._append_record(record)
@@ -168,12 +163,10 @@ class SignerLineageRegistry:
         record = self._make_record(
             event_name=REVOKE,
             lineage_id=lineage_id,
-            subject_signer_id=entry.operational_signer_key,
-            authorizer_signer_id=authorizer_signer_id,
             reason_code=reason_code,
             event_ts=event_ts,
-            prev_state=prev_state,
-            next_state=REVOKED,
+            transition=(prev_state, REVOKED),
+            signers=(entry.operational_signer_key, authorizer_signer_id),
         )
         self._append_record(record)
         return record
@@ -198,12 +191,10 @@ class SignerLineageRegistry:
         record = self._make_record(
             event_name=RECOVER,
             lineage_id=lineage_id,
-            subject_signer_id=replacement_signer_id,
-            authorizer_signer_id=authorizer_signer_id,
             reason_code=reason_code,
             event_ts=event_ts,
-            prev_state=prev_state,
-            next_state=RECOVERED,
+            transition=(prev_state, RECOVERED),
+            signers=(replacement_signer_id, authorizer_signer_id),
             replacement_signer_id=replacement_signer_id,
             recovery_ticket_id=recovery_ticket_id,
         )
@@ -319,17 +310,17 @@ class SignerLineageRegistry:
         *,
         event_name: str,
         lineage_id: str,
-        subject_signer_id: str,
-        authorizer_signer_id: str,
         reason_code: str,
         event_ts: str,
-        prev_state: str,
-        next_state: str,
+        transition: tuple[str, str],
+        signers: tuple[str, str],
+        root_keys: tuple[Optional[str], Optional[str]] = (None, None),
         replacement_signer_id: Optional[str] = None,
         recovery_ticket_id: Optional[str] = None,
-        canonical_root_key: Optional[str] = None,
-        authority_recovery_key: Optional[str] = None,
     ) -> LineageTransitionRecord:
+        prev_state, next_state = transition
+        subject_signer_id, authorizer_signer_id = signers
+        canonical_root_key, authority_recovery_key = root_keys
         self._event_counter += 1
         event_id = self._derive_event_id(
             event_name=event_name,
