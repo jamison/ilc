@@ -33,6 +33,12 @@ def _git_commit_exists(commit_ref: str) -> bool:
     return result.returncode == 0
 
 
+def _skip(reason: str) -> None:
+    import pytest
+
+    pytest.skip(reason)
+
+
 def resolve_phase_commit_ref_or_skip(phase_id: str) -> str:
     payload = load_phase_commit_manifest()
     phases = payload["phases"]
@@ -47,17 +53,13 @@ def resolve_phase_commit_ref_or_skip(phase_id: str) -> str:
     status = entry.get("status")
 
     if not commit_ref:
-        import pytest
-
         note = entry.get("note", "commit_unavailable")
-        pytest.skip(f"{phase_id}_commit_unavailable:{status}:{note}")
+        _skip(f"{phase_id}_commit_unavailable:{status}:{note}")
 
     if not isinstance(commit_ref, str):
         raise AssertionError(f"phase_commit_manifest_invalid_commit_type:{phase_id}")
 
     if not _git_commit_exists(commit_ref):
-        import pytest
-
-        pytest.skip(f"{phase_id}_commit_not_present_in_local_history:{commit_ref}")
+        _skip(f"{phase_id}_commit_not_present_in_local_history:{commit_ref}")
 
     return commit_ref
