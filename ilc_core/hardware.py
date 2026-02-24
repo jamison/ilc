@@ -22,6 +22,18 @@ class HardwareArchetype:
     stake_fraction_max: float
 
 
+def _load_json_config(path: Path) -> Dict[str, Any]:
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f) or {}
+
+
+def _try_load_yaml_config(path: Path) -> Dict[str, Any] | None:
+    if yaml is None or not path.exists():
+        return None
+    with path.open("r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
 def load_hardware_archetypes(
     config_path: Optional[str] = None,
 ) -> Dict[str, HardwareArchetype]:
@@ -43,12 +55,11 @@ def load_hardware_archetypes(
         requested_path = Path(config_path)
         fallback_yaml_path = requested_path.with_suffix(".yaml")
 
-    data: Dict[str, Any] = {}
-
+    data: Dict[str, Any]
     if requested_path.suffix in {".yaml", ".yml"}:
-        if yaml is not None and requested_path.exists():
-            with requested_path.open("r", encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+        yaml_data = _try_load_yaml_config(requested_path)
+        if yaml_data is not None:
+            data = yaml_data
         else:
             fallback_json_path = requested_path.with_suffix(".json")
             if fallback_json_path.exists():
@@ -57,29 +68,25 @@ def load_hardware_archetypes(
                     requested_path,
                     fallback_json_path,
                 )
-                with fallback_json_path.open("r", encoding="utf-8") as f:
-                    data = json.load(f) or {}
+                data = _load_json_config(fallback_json_path)
             elif config_path is None and default_json_path.exists():
-                with default_json_path.open("r", encoding="utf-8") as f:
-                    data = json.load(f) or {}
+                data = _load_json_config(default_json_path)
             else:
                 return {}
-    else:
-        if requested_path.exists():
-            with requested_path.open("r", encoding="utf-8") as f:
-                data = json.load(f) or {}
-        elif config_path is None and fallback_yaml_path.exists() and yaml is not None:
-            logger.warning(
-                "hardware_config_default_json_missing_yaml_fallback path=%s fallback=%s",
-                requested_path,
-                fallback_yaml_path,
-            )
-            with fallback_yaml_path.open("r", encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
-        elif config_path is None:
+    elif requested_path.exists():
+        data = _load_json_config(requested_path)
+    elif config_path is None:
+        yaml_data = _try_load_yaml_config(fallback_yaml_path)
+        if yaml_data is None:
             raise FileNotFoundError("No hardware archetype config found.")
-        else:
-            return {}
+        logger.warning(
+            "hardware_config_default_json_missing_yaml_fallback path=%s fallback=%s",
+            requested_path,
+            fallback_yaml_path,
+        )
+        data = yaml_data
+    else:
+        return {}
 
     raw = data.get("hardware_archetypes", {})
     archetypes: Dict[str, HardwareArchetype] = {}

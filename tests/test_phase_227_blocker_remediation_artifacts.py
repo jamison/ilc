@@ -67,7 +67,7 @@ def test_phase_227_backlog_disposition_counts_match_phase_226_queue() -> None:
     assert package_subsumed + package_additional == package_total
 
 
-def test_phase_227_decision_log_notes_scoped_and_open_status_preserved() -> None:
+def test_phase_227_decision_log_notes_scoped_and_phase_boundary_preserved() -> None:
     text = _read(DECISION_LOG)
 
     scoped_section_match = re.search(
@@ -83,15 +83,20 @@ def test_phase_227_decision_log_notes_scoped_and_open_status_preserved() -> None
     assert "`CDL-007`" in scoped_text
     assert "`CDL-003`" not in scoped_text
     assert "`CDL-011`" not in scoped_text
+    assert "No Phase-227 status promotion is applied" in scoped_text
 
     register_rows = {
-        "CDL-001": re.search(r"\| CDL-001 \|[^\n]*\| (open|ratified) \|", text),
-        "CDL-002": re.search(r"\| CDL-002 \|[^\n]*\| (open|ratified) \|", text),
-        "CDL-007": re.search(r"\| CDL-007 \|[^\n]*\| (open|ratified) \|", text),
+        "CDL-001": re.search(r"^\| CDL-001 \|[^\n]*$", text, flags=re.MULTILINE),
+        "CDL-002": re.search(r"^\| CDL-002 \|[^\n]*$", text, flags=re.MULTILINE),
+        "CDL-007": re.search(r"^\| CDL-007 \|[^\n]*$", text, flags=re.MULTILINE),
     }
     for match in register_rows.values():
         assert match is not None
-        assert match.group(1) == "open"
+        row_text = match.group(0)
+        assert " | open | " in row_text or " | ratified | " in row_text
+        if " | ratified | " in row_text:
+            assert "ratified_phase:" in row_text
+            assert "phase_227" not in row_text
 
 
 def test_phase_227_gate_script_contracts() -> None:
@@ -121,5 +126,4 @@ def test_phase_227_gate_script_contracts() -> None:
     )
     assert unknown.returncode == 2
     assert "Unknown argument: --unknown-arg" in unknown.stderr
-
 
