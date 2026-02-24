@@ -21,10 +21,11 @@ def test_required_sections_present() -> None:
         "## 3. Locked phase table (298-307)",
         "## 4. Per-phase sensitivity classification",
         "## 5. Parallel-track dependency and synchronization map",
-        "## 6. No-ratification-before-lock gate",
-        "## 7. Closure-gate skeleton requirements for phase 307",
-        "## 8. Non-goals and explicit boundaries",
-        "## 9. Forward pointer",
+        "## 6. Mandatory entry and exit gates per phase",
+        "## 7. No-ratification-before-lock gate",
+        "## 8. Closure-gate skeleton requirements for phase 307",
+        "## 9. Non-goals and explicit boundaries",
+        "## 10. Forward pointer",
     ):
         assert heading in text
 
@@ -33,6 +34,30 @@ def test_phase_table_covers_298_to_307() -> None:
     text = _read()
     for phase in range(298, 308):
         assert f"Phase {phase}" in text
+
+
+def test_lane_table_has_strict_298_to_307_order() -> None:
+    text = _read()
+    section = text.split("## 3. Locked phase table (298-307)", maxsplit=1)[1]
+    section = section.split("## 4. Per-phase sensitivity classification", maxsplit=1)[0]
+    expected_rows = [
+        "| 1 | Phase 298 |",
+        "| 2 | Phase 299 |",
+        "| 3 | Phase 300 |",
+        "| 4 | Phase 301 |",
+        "| 5 | Phase 302 |",
+        "| 6 | Phase 303 |",
+        "| 7 | Phase 304 |",
+        "| 8 | Phase 305 |",
+        "| 9 | Phase 306 |",
+        "| 10 | Phase 307 |",
+    ]
+    last_idx = -1
+    for row in expected_rows:
+        idx = section.find(row)
+        assert idx != -1
+        assert idx > last_idx
+        last_idx = idx
 
 
 def test_two_track_map_is_explicit() -> None:
@@ -45,6 +70,28 @@ def test_no_ratification_before_lock_guard_present() -> None:
     text = _read()
     assert "No ratification lane may execute in this 298-307 window" in text
     assert "no direct CDL mutation lane is authorized by Phase 298" in text
+
+
+def test_mandatory_entry_exit_gates_exist_for_each_phase() -> None:
+    text = _read()
+    section = text.split("## 6. Mandatory entry and exit gates per phase", maxsplit=1)[1]
+    section = section.split("## 7. No-ratification-before-lock gate", maxsplit=1)[0]
+    for phase in range(298, 308):
+        assert f"| Phase {phase} |" in section
+    assert "Mandatory entry gate" in section
+    assert "Mandatory exit gate" in section
+
+
+def test_dependency_edges_are_explicit() -> None:
+    text = _read()
+    for edge in (
+        "`299` is required before `300` begins.",
+        "`301` is required before `302` begins.",
+        "`303` is required before `304` begins.",
+        "`305` is required before `306` begins.",
+        "`306` completion evidence is required before closure in `307`.",
+    ):
+        assert edge in text
 
 
 def test_closure_gate_skeleton_declares_required_categories() -> None:

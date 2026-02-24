@@ -60,13 +60,28 @@ Synchronization rules:
 4. `305` is required before `306` begins.
 5. `306` completion evidence is required before closure in `307`.
 
-## 6. No-ratification-before-lock gate
+## 6. Mandatory entry and exit gates per phase
+
+| Phase | Mandatory entry gate | Mandatory exit gate |
+| --- | --- | --- |
+| Phase 298 | Phase 297 canary contract and handoff are present. | Sequence lock artifact, tests, walkthrough, and STATUS entry are complete. |
+| Phase 299 | Phase 298 sequence lock is complete. | Query contract/schema artifact and tests are complete; no `ilc_core/` runtime mutation. |
+| Phase 300 | Phase 299 contract tests pass and schema boundaries are locked. | Query runtime tranche tests pass; no decision-log mutation. |
+| Phase 301 | Phase 300 runtime handoff is complete. | Verify contract/schema artifact and tests are complete; no `ilc_core/` runtime mutation. |
+| Phase 302 | Phase 301 contract tests pass and schema boundaries are locked. | Verify runtime tranche tests pass; no decision-log mutation. |
+| Phase 303 | Phase 302 runtime handoff is complete. | Bundle contract/provider-boundary artifact and tests are complete; no decision-log mutation. |
+| Phase 304 | Phase 303 contract tests pass and provider boundaries are locked. | Bundle runtime tranche tests pass; no decision-log mutation. |
+| Phase 305 | Phase 304 runtime handoff is complete. | Economic monitoring rollout artifact and tests are complete; no decision-log mutation. |
+| Phase 306 | Phase 305 monitoring baseline and dependencies are complete. | Composed integration preflight tests pass with explicit runtime boundary statement. |
+| Phase 307 | Phase 306 integration preflight is complete and green. | Closure gate passes all required command categories and handoff artifact is published. |
+
+## 7. No-ratification-before-lock gate
 
 Window-level ratification guard:
 - No ratification lane may execute in this 298-307 window unless its prelock/evidence lane is explicitly listed in this sequence lock and completed first.
 - This window is currently planned as implementation and closure work; no direct CDL mutation lane is authorized by Phase 298.
 
-## 7. Closure-gate skeleton requirements for phase 307
+## 8. Closure-gate skeleton requirements for phase 307
 
 Phase 307 must implement a composed closure gate that includes these command categories:
 1. Prompt contract validation category (`tools/validate_phase_prompt.py` for Phase 307 prompt).
@@ -76,7 +91,7 @@ Phase 307 must implement a composed closure gate that includes these command cat
 5. CLI contract category (`--dry-run`, `--help`, unknown-arg exit 2 for any new gate scripts).
 6. Walkthrough hygiene category (`tests/test_no_ellipses_in_walkthroughs.py`).
 
-## 8. Non-goals and explicit boundaries
+## 9. Non-goals and explicit boundaries
 
 This phase-298 sequence lock does not:
 - ratify or reopen any CDL row,
@@ -84,6 +99,6 @@ This phase-298 sequence lock does not:
 - implement runtime behavior in `ilc_core/`,
 - select policy values that require constitutional ratification.
 
-## 9. Forward pointer
+## 10. Forward pointer
 
 Phase 299 starts the first schema/evidence lane (`D2e-05 query contract and schema boundary lock`), and Phase 300 remains blocked until Phase 299 completion evidence is present.
