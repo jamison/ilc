@@ -50,6 +50,18 @@ class TestChannelSigning:
         res_verify = verify_channel_file_signature(channel_file, key)
         assert res_verify["ok"] is True
         assert res_verify["channel_hash"] == res_sign["channel_hash"]
+        assert "key_fingerprint" in res_sign
+        assert len(res_sign["key_fingerprint"]) == 64
+
+    def test_sign_sidecar_includes_key_fingerprint(self, setup_channel):
+        """Signed sidecar includes canonical key fingerprint field."""
+        channel_file, key = setup_channel
+        sign_channel_file(channel_file, key)
+
+        sig_path = channel_file.with_suffix(channel_file.suffix + ".sig")
+        sig_data = json.loads(sig_path.read_text())
+        assert "key_fingerprint" in sig_data
+        assert len(sig_data["key_fingerprint"]) == 64
 
     def test_verify_fails_on_channel_tamper(self, setup_channel):
         """Verify fails if channel file modified."""
