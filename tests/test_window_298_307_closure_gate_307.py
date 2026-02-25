@@ -76,14 +76,10 @@ def test_gate_full_run_exits_zero_on_pass_snapshot() -> None:
 
 
 def test_gate_full_run_enforces_conditional_exit_and_override_token() -> None:
-    if os.environ.get("ILC_PHASE_307_GATE_SELFTEST") == "1":
-        pytest.skip("phase_307_selftest_context_skip_verdict_simulation")
     original = _backup_snapshot()
     try:
         _set_snapshot_verdict("conditional")
-        env = os.environ.copy()
-        env["ILC_PHASE_307_SKIP_EXECUTION"] = "1"
-        result = _run_gate([], env=env)
+        result = _run_gate([])
         assert result.returncode == 3
         assert "phase_307_override_required=human" in result.stdout
         assert "phase_307_snapshot_gate=failed" in result.stdout
@@ -92,14 +88,10 @@ def test_gate_full_run_enforces_conditional_exit_and_override_token() -> None:
 
 
 def test_gate_full_run_enforces_blocked_exit() -> None:
-    if os.environ.get("ILC_PHASE_307_GATE_SELFTEST") == "1":
-        pytest.skip("phase_307_selftest_context_skip_verdict_simulation")
     original = _backup_snapshot()
     try:
         _set_snapshot_verdict("blocked")
-        env = os.environ.copy()
-        env["ILC_PHASE_307_SKIP_EXECUTION"] = "1"
-        result = _run_gate([], env=env)
+        result = _run_gate([])
         assert result.returncode == 1
         assert "phase_307_snapshot_gate=failed" in result.stdout
     finally:
@@ -148,7 +140,7 @@ def _resolve_phase_307_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_307_COMMIT_SUBJECT:
             return commit_hash
-    pytest.skip("phase_307_commit_not_present_in_local_history")
+    raise AssertionError("phase_307_commit_not_present_in_local_history")
 
 
 def test_no_decision_log_mutation_in_phase_commit() -> None:
@@ -161,3 +153,16 @@ def test_no_decision_log_mutation_in_phase_commit() -> None:
     )
     changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
     assert DECISION_LOG_PATH not in changed
+
+
+def test_no_ilc_core_runtime_feature_mutation_in_phase_commit() -> None:
+    commit_ref = _resolve_phase_307_commit_ref()
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
+    forbidden = [path for path in changed if path.startswith("ilc_core/")]
+    assert not forbidden, f"phase_307_runtime_feature_mutations:{forbidden}"
