@@ -36,6 +36,7 @@ def test_bundle_command_surface_and_subcommands_are_explicit() -> None:
         "`ilc bundle inspect --bundle-cid <cid>`",
         "`ilc bundle verify --bundle-cid <cid>`",
         "`ilc bundle validate-local --bundle-cid <cid> --graph-state <path>`",
+        "subcommand `--graph-state` is authoritative",
     ):
         assert token in text
 
@@ -47,6 +48,7 @@ def test_json_envelope_schema_and_checks_fields_are_explicit() -> None:
     assert "`303.v0.1`" in text
     for token in ("`subject`", "`result`", "`checks`", "`check_type`", "`passed`"):
         assert token in text
+    assert "bundle lane uses `result` (not `verdict`) intentionally" in text
 
 
 def test_error_and_exit_code_contract_is_explicit() -> None:
