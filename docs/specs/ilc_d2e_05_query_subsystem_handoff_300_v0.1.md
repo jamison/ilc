@@ -27,6 +27,11 @@ Phase-300 query behavior is schema-conservative:
 - no new reputation/reuse/sybil canonical field mappings,
 - node payloads are returned as stored-state records without remapping.
 
+Node identifier lookup boundary in this tranche:
+- `query node` resolves `node_id` first and falls back to `id` when `node_id` is absent,
+- this fallback is compatibility behavior for mixed fixture/state formats and should be treated as read-compat only,
+- no canonical node-ID schema migration is performed in Phase 300.
+
 Carry-forward:
 - any canonical reputation/sybil query-schema expansion is deferred to Phase 302+ contract/runtime lanes.
 
