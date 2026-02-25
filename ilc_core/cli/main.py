@@ -16,6 +16,7 @@ from typing import Any
 
 
 SCHEMA_VERSION = "254.v0.1"
+QUERY_SCHEMA_VERSION = "299.v0.1"
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -39,6 +40,15 @@ OPERATIONAL_COMMANDS = (
 )
 
 ALL_COMMANDS = PRIMITIVE_COMMANDS + OPERATIONAL_COMMANDS
+
+
+class QueryCommandError(Exception):
+    """Typed error carrying query contract error token and message."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
 
 
 def _now_rfc3339_utc() -> str:
@@ -78,16 +88,54 @@ def _infer_command_from_argv() -> str:
     return "unknown"
 
 
+def _infer_query_command_token_from_argv() -> str:
+    if len(sys.argv) >= 3 and not sys.argv[2].startswith("-"):
+        return f"query {sys.argv[2]}"
+    return "query"
+
+
+def _query_success_payload(command_token: str, data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ok": True,
+        "data": data,
+        "meta": {
+            "command": command_token,
+            "schema_version": QUERY_SCHEMA_VERSION,
+            "generated_at": _now_rfc3339_utc(),
+        },
+    }
+
+
+def _query_error_payload(command_token: str, code: str, message: str) -> dict[str, Any]:
+    return {
+        "ok": False,
+        "error": {"code": code, "message": message},
+        "meta": {
+            "command": command_token,
+            "schema_version": QUERY_SCHEMA_VERSION,
+            "generated_at": _now_rfc3339_utc(),
+        },
+    }
+
+
 class JsonArgumentParser(argparse.ArgumentParser):
     """ArgumentParser that emits JSON errors with exit code 2."""
 
     def error(self, message: str) -> None:  # pragma: no cover - exercised via subprocess
-        payload = _error_payload(
-            command=_infer_command_from_argv(),
-            code=2,
-            message=message,
-            details={"usage": self.format_usage().strip()},
-        )
+        command = _infer_command_from_argv()
+        if command == "query":
+            payload = _query_error_payload(
+                command_token=_infer_query_command_token_from_argv(),
+                code="query_invalid_input",
+                message=message,
+            )
+        else:
+            payload = _error_payload(
+                command=command,
+                code=2,
+                message=message,
+                details={"usage": self.format_usage().strip()},
+            )
         print(json.dumps(payload), file=sys.stderr)
         raise SystemExit(2)
 
@@ -201,6 +249,188 @@ def _ensure_local_graph_state(path: Path, command: str) -> None:
     path.write_text(json.dumps(obj, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
+def _identity_state_path(graph_state_path: Path) -> Path:
+    env_override = os.environ.get("ILC_IDENTITY_STATE_PATH")
+    if env_override:
+        return Path(env_override)
+    return graph_state_path.with_name(".ilc_d2e04_identity_state.json")
+
+
+def _load_identity_state(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    raw = path.read_text(encoding="utf-8")
+    data = json.loads(raw)
+    if not isinstance(data, dict):
+        raise ValueError("identity_state_not_object")
+    return data
+
+
+def _write_identity_state(path: Path, state: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+
+def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -> dict[str, Any]:
+    state_path = _identity_state_path(graph_state_path)
+    subcommand = getattr(args, "identity_subcommand", None)
+
+    # Preserve D2e-03 compatibility for bare `ilc identity`.
+    if not subcommand:
+        return {
+            "lineage_id": "lineage-local",
+            "status": "active",
+            "export_ref": "identity-local",
+            "mode": "prototype_compat",
+        }
+
+    current = _load_identity_state(state_path)
+
+    if subcommand == "init":
+        if current is not None:
+            raise ValueError("identity_already_initialized")
+        lineage_id = getattr(args, "lineage_id", None) or "lineage-local"
+        key_ref = getattr(args, "key_ref", None) or "key-local-0"
+        state = {
+            "lineage_id": lineage_id,
+            "status": "active",
+            "key_ref": key_ref,
+            "rotation_count": 0,
+            "updated_at": _now_rfc3339_utc(),
+        }
+        _write_identity_state(state_path, state)
+        return {"action": "init", "state_path": str(state_path), "state": state}
+
+    if current is None:
+        raise ValueError("identity_not_initialized")
+
+    if subcommand == "show":
+        return {"action": "show", "state_path": str(state_path), "state": current}
+
+    if subcommand == "rotate":
+        new_key_ref = getattr(args, "new_key_ref", None)
+        next_count = int(current.get("rotation_count", 0)) + 1
+        current["rotation_count"] = next_count
+        current["key_ref"] = new_key_ref or f"key-local-{next_count}"
+        current["status"] = "active"
+        current["updated_at"] = _now_rfc3339_utc()
+        _write_identity_state(state_path, current)
+        return {"action": "rotate", "state_path": str(state_path), "state": current}
+
+    if subcommand == "export":
+        return {
+            "action": "export",
+            "state_path": str(state_path),
+            "export": {
+                "lineage_id": current.get("lineage_id"),
+                "status": current.get("status"),
+                "rotation_count": current.get("rotation_count"),
+                "key_ref": current.get("key_ref"),
+            },
+        }
+
+    raise ValueError(f"unknown_identity_subcommand:{subcommand}")
+
+
+def _load_graph_state(path: Path) -> dict[str, Any]:
+    raw = path.read_text(encoding="utf-8")
+    data = json.loads(raw)
+    if not isinstance(data, dict):
+        raise QueryCommandError("query_backend_unavailable", "graph_state_not_object")
+    return data
+
+
+def _sorted_mapping(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {key: _sorted_mapping(obj[key]) for key in sorted(obj)}
+    if isinstance(obj, list):
+        return [_sorted_mapping(item) for item in obj]
+    return obj
+
+
+def _coerce_list(obj: Any, code: str, message: str) -> list[dict[str, Any]]:
+    if obj is None:
+        return []
+    if not isinstance(obj, list):
+        raise QueryCommandError(code, message)
+    rows: list[dict[str, Any]] = []
+    for item in obj:
+        if isinstance(item, dict):
+            rows.append(item)
+    return rows
+
+
+def _query_node(state: dict[str, Any], node_id: str) -> dict[str, Any]:
+    nodes = _coerce_list(state.get("nodes"), "query_backend_unavailable", "graph_nodes_not_list")
+    node: dict[str, Any] | None = None
+    for candidate in nodes:
+        token = candidate.get("node_id", candidate.get("id"))
+        if token is not None and str(token) == node_id:
+            node = candidate
+            break
+    if node is None:
+        raise QueryCommandError("query_not_found", f"node_not_found:{node_id}")
+    return {"node_id": node_id, "node": _sorted_mapping(node), "query": "node"}
+
+
+def _query_epoch(state: dict[str, Any], epoch_token: int) -> dict[str, Any]:
+    epochs = _coerce_list(state.get("epochs"), "query_backend_unavailable", "graph_epochs_not_list")
+    epoch: dict[str, Any] | None = None
+    for candidate in epochs:
+        value = candidate.get("epoch")
+        if value is None:
+            value = candidate.get("epoch_id")
+        if value is None:
+            continue
+        if str(value) == str(epoch_token):
+            epoch = candidate
+            break
+    if epoch is None:
+        raise QueryCommandError("query_not_found", f"epoch_not_found:{epoch_token}")
+    return {"epoch": _sorted_mapping(epoch), "query": "epoch", "requested_epoch": epoch_token}
+
+
+def _query_claim(state: dict[str, Any], claim_id: str) -> dict[str, Any]:
+    nodes = _coerce_list(state.get("nodes"), "query_backend_unavailable", "graph_nodes_not_list")
+    matches: list[dict[str, Any]] = []
+    for candidate in nodes:
+        token = candidate.get("claim_id")
+        if token is not None and str(token) == claim_id:
+            matches.append(candidate)
+    if not matches:
+        raise QueryCommandError("query_not_found", f"claim_not_found:{claim_id}")
+    stable_matches = sorted(
+        (_sorted_mapping(match) for match in matches),
+        key=lambda item: json.dumps(item, sort_keys=True),
+    )
+    return {
+        "claim_id": claim_id,
+        "count": len(stable_matches),
+        "matches": stable_matches,
+        "query": "claim",
+    }
+
+
+def _query_command_token(args: argparse.Namespace) -> str:
+    subcommand = getattr(args, "query_subcommand", None)
+    if subcommand:
+        return f"query {subcommand}"
+    return "query"
+
+
+def _run_query_subcommand(args: argparse.Namespace, graph_state_path: Path) -> tuple[str, dict[str, Any]]:
+    state = _load_graph_state(graph_state_path)
+    subcommand = getattr(args, "query_subcommand", None)
+
+    if subcommand == "node":
+        return _query_command_token(args), _query_node(state, str(args.node_id))
+    if subcommand == "epoch":
+        return _query_command_token(args), _query_epoch(state, int(args.epoch))
+    if subcommand == "claim":
+        return _query_command_token(args), _query_claim(state, str(args.claim_id))
+    raise QueryCommandError("query_invalid_input", "query_subcommand_missing")
+
+
 def _build_parser() -> JsonArgumentParser:
     parser = JsonArgumentParser(
         prog="ilc",
@@ -219,7 +449,37 @@ def _build_parser() -> JsonArgumentParser:
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ALL_COMMANDS:
-        subparsers.add_parser(command, help=f"Prototype `{command}` command")
+        if command == "query":
+            query_parser = subparsers.add_parser("query", help="Prototype `query` command")
+            query_subparsers = query_parser.add_subparsers(dest="query_subcommand", required=True)
+
+            p_node = query_subparsers.add_parser("node", help="Query by node identifier")
+            p_node.add_argument("--node-id", required=True, help="Node identifier")
+
+            p_epoch = query_subparsers.add_parser("epoch", help="Query by epoch identifier")
+            p_epoch.add_argument("--epoch", type=int, required=True, help="Epoch number")
+
+            p_claim = query_subparsers.add_parser("claim", help="Query by claim identifier")
+            p_claim.add_argument("--claim-id", required=True, help="Claim identifier")
+            continue
+
+        if command != "identity":
+            subparsers.add_parser(command, help=f"Prototype `{command}` command")
+            continue
+
+        identity_parser = subparsers.add_parser("identity", help="Prototype `identity` command")
+        identity_subparsers = identity_parser.add_subparsers(dest="identity_subcommand")
+
+        p_init = identity_subparsers.add_parser("init", help="Initialize local identity state")
+        p_init.add_argument("--lineage-id", default="lineage-local", help="Lineage identifier")
+        p_init.add_argument("--key-ref", default="key-local-0", help="Initial key reference")
+
+        identity_subparsers.add_parser("show", help="Show local identity state")
+
+        p_rotate = identity_subparsers.add_parser("rotate", help="Rotate identity key reference")
+        p_rotate.add_argument("--new-key-ref", default=None, help="Replacement key reference")
+
+        identity_subparsers.add_parser("export", help="Export sanitized identity snapshot")
 
     return parser
 
@@ -241,11 +501,28 @@ def main() -> int:
         return 3
 
     try:
-        _ensure_local_graph_state(Path(args.graph_state), command)
-        data = _prototype_data_for_command(command)
-        payload = _success_payload(command, data)
+        graph_state_path = Path(args.graph_state)
+        _ensure_local_graph_state(graph_state_path, command)
+
+        if command == "query":
+            query_command, data = _run_query_subcommand(args, graph_state_path)
+            payload = _query_success_payload(query_command, data)
+        elif command == "identity":
+            data = _run_identity_subcommand(args, graph_state_path)
+            payload = _success_payload(command, data)
+        else:
+            data = _prototype_data_for_command(command)
+            payload = _success_payload(command, data)
         print(json.dumps(payload, sort_keys=True))
         return 0
+    except QueryCommandError as exc:
+        payload = _query_error_payload(
+            command_token=_query_command_token(args),
+            code=exc.code,
+            message=exc.message,
+        )
+        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
+        return 1
     except ValueError as exc:
         payload = _error_payload(
             command=command,
