@@ -7,6 +7,7 @@ command surface. DAG-CBOR encoding remains deferred to later phases.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -18,6 +19,7 @@ from typing import Any
 SCHEMA_VERSION = "254.v0.1"
 QUERY_SCHEMA_VERSION = "299.v0.1"
 VERIFY_SCHEMA_VERSION = "301.v0.1"
+BUNDLE_SCHEMA_VERSION = "303.v0.1"
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -54,6 +56,15 @@ class QueryCommandError(Exception):
 
 class VerifyCommandError(Exception):
     """Typed error carrying verify contract error token and message."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
+
+
+class BundleCommandError(Exception):
+    """Typed error carrying bundle contract error token and message."""
 
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
@@ -110,6 +121,12 @@ def _infer_verify_command_token_from_argv() -> str:
     return "verify"
 
 
+def _infer_bundle_command_token_from_argv() -> str:
+    if len(sys.argv) >= 3 and not sys.argv[2].startswith("-"):
+        return f"bundle {sys.argv[2]}"
+    return "bundle"
+
+
 def _query_success_payload(command_token: str, data: dict[str, Any]) -> dict[str, Any]:
     return {
         "ok": True,
@@ -158,6 +175,30 @@ def _verify_error_payload(command_token: str, code: str, message: str) -> dict[s
     }
 
 
+def _bundle_success_payload(command_token: str, data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ok": True,
+        "data": data,
+        "meta": {
+            "command": command_token,
+            "schema_version": BUNDLE_SCHEMA_VERSION,
+            "generated_at": _now_rfc3339_utc(),
+        },
+    }
+
+
+def _bundle_error_payload(command_token: str, code: str, message: str) -> dict[str, Any]:
+    return {
+        "ok": False,
+        "error": {"code": code, "message": message},
+        "meta": {
+            "command": command_token,
+            "schema_version": BUNDLE_SCHEMA_VERSION,
+            "generated_at": _now_rfc3339_utc(),
+        },
+    }
+
+
 class JsonArgumentParser(argparse.ArgumentParser):
     """ArgumentParser that emits JSON errors with exit code 2."""
 
@@ -173,6 +214,12 @@ class JsonArgumentParser(argparse.ArgumentParser):
             payload = _verify_error_payload(
                 command_token=_infer_verify_command_token_from_argv(),
                 code="verify_invalid_input",
+                message=message,
+            )
+        elif command == "bundle":
+            payload = _bundle_error_payload(
+                command_token=_infer_bundle_command_token_from_argv(),
+                code="bundle_invalid_input",
                 message=message,
             )
         else:
@@ -272,6 +319,10 @@ def _prototype_data_for_command(command: str) -> dict[str, Any]:
 
 def _default_graph_state_path() -> Path:
     return Path(os.environ.get("ILC_CLI_GRAPH_STATE_PATH", ".ilc_d2e03_graph.json"))
+
+
+def _default_bundle_state_path() -> Path:
+    return Path(os.environ.get("ILC_BUNDLE_STATE_PATH", ".ilc_d2e07_bundle_state.json"))
 
 
 def _ensure_local_graph_state(path: Path, command: str) -> None:
@@ -406,6 +457,22 @@ def _load_graph_state_for_verify(path: Path) -> dict[str, Any]:
         raise VerifyCommandError("verify_backend_unavailable", str(exc)) from exc
 
 
+def _load_graph_state_for_bundle(path: Path) -> dict[str, Any]:
+    try:
+        return _read_graph_state(path)
+    except ValueError as exc:
+        raise BundleCommandError("bundle_backend_unavailable", str(exc)) from exc
+
+
+def _load_bundle_state_for_bundle(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"schema_version": "d2e07.v0.1", "bundles": []}
+    try:
+        return _read_graph_state(path)
+    except ValueError as exc:
+        raise BundleCommandError("bundle_backend_unavailable", str(exc)) from exc
+
+
 def _sorted_mapping(obj: Any) -> Any:
     if isinstance(obj, dict):
         return {key: _sorted_mapping(obj[key]) for key in sorted(obj)}
@@ -414,11 +481,16 @@ def _sorted_mapping(obj: Any) -> Any:
     return obj
 
 
-def _coerce_list(obj: Any, code: str, message: str) -> list[dict[str, Any]]:
+def _coerce_list(
+    obj: Any,
+    error_cls: type[QueryCommandError] | type[VerifyCommandError] | type[BundleCommandError],
+    code: str,
+    message: str,
+) -> list[dict[str, Any]]:
     if obj is None:
         return []
     if not isinstance(obj, list):
-        raise QueryCommandError(code, message)
+        raise error_cls(code, message)
     rows: list[dict[str, Any]] = []
     for item in obj:
         if isinstance(item, dict):
@@ -427,7 +499,9 @@ def _coerce_list(obj: Any, code: str, message: str) -> list[dict[str, Any]]:
 
 
 def _query_node(state: dict[str, Any], node_id: str) -> dict[str, Any]:
-    nodes = _coerce_list(state.get("nodes"), "query_backend_unavailable", "graph_nodes_not_list")
+    nodes = _coerce_list(
+        state.get("nodes"), QueryCommandError, "query_backend_unavailable", "graph_nodes_not_list"
+    )
     node: dict[str, Any] | None = None
     for candidate in nodes:
         token = candidate.get("node_id", candidate.get("id"))
@@ -440,7 +514,9 @@ def _query_node(state: dict[str, Any], node_id: str) -> dict[str, Any]:
 
 
 def _query_epoch(state: dict[str, Any], epoch_token: int) -> dict[str, Any]:
-    epochs = _coerce_list(state.get("epochs"), "query_backend_unavailable", "graph_epochs_not_list")
+    epochs = _coerce_list(
+        state.get("epochs"), QueryCommandError, "query_backend_unavailable", "graph_epochs_not_list"
+    )
     epoch: dict[str, Any] | None = None
     for candidate in epochs:
         value = candidate.get("epoch")
@@ -457,7 +533,9 @@ def _query_epoch(state: dict[str, Any], epoch_token: int) -> dict[str, Any]:
 
 
 def _query_claim(state: dict[str, Any], claim_id: str) -> dict[str, Any]:
-    nodes = _coerce_list(state.get("nodes"), "query_backend_unavailable", "graph_nodes_not_list")
+    nodes = _coerce_list(
+        state.get("nodes"), QueryCommandError, "query_backend_unavailable", "graph_nodes_not_list"
+    )
     matches: list[dict[str, Any]] = []
     for candidate in nodes:
         token = candidate.get("claim_id")
@@ -512,7 +590,9 @@ def _check(check_type: str, passed: bool, detail: dict[str, Any] | None = None) 
 
 
 def _verify_claim(state: dict[str, Any], claim_id: str) -> dict[str, Any]:
-    nodes = _coerce_list(state.get("nodes"), "verify_backend_unavailable", "graph_nodes_not_list")
+    nodes = _coerce_list(
+        state.get("nodes"), VerifyCommandError, "verify_backend_unavailable", "graph_nodes_not_list"
+    )
     matches = [candidate for candidate in nodes if str(candidate.get("claim_id", "")) == claim_id]
     checks = [
         _check("subject_exists", len(matches) > 0),
@@ -528,7 +608,9 @@ def _verify_claim(state: dict[str, Any], claim_id: str) -> dict[str, Any]:
 
 
 def _verify_node(state: dict[str, Any], node_id: str) -> dict[str, Any]:
-    nodes = _coerce_list(state.get("nodes"), "verify_backend_unavailable", "graph_nodes_not_list")
+    nodes = _coerce_list(
+        state.get("nodes"), VerifyCommandError, "verify_backend_unavailable", "graph_nodes_not_list"
+    )
     node: dict[str, Any] | None = None
     for candidate in nodes:
         token = candidate.get("node_id", candidate.get("id"))
@@ -585,6 +667,210 @@ def _run_verify_subcommand(args: argparse.Namespace, graph_state_path: Path) -> 
     raise VerifyCommandError("verify_invalid_input", "verify_subcommand_missing")
 
 
+def _bundle_command_token(args: argparse.Namespace) -> str:
+    subcommand = getattr(args, "bundle_subcommand", None)
+    if subcommand:
+        return f"bundle {subcommand}"
+    return "bundle"
+
+
+def _bundle_entry(
+    state: dict[str, Any],
+    bundle_cid: str,
+) -> dict[str, Any]:
+    bundles = _coerce_list(
+        state.get("bundles"),
+        BundleCommandError,
+        "bundle_backend_unavailable",
+        "bundle_entries_not_list",
+    )
+    for candidate in bundles:
+        token = candidate.get("bundle_cid")
+        if token is not None and str(token) == bundle_cid:
+            return candidate
+    raise BundleCommandError("bundle_not_found", f"bundle_not_found:{bundle_cid}")
+
+
+def _canonical_sha256(value: Any) -> str:
+    stable = json.dumps(_sorted_mapping(value), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(stable.encode("utf-8")).hexdigest()
+
+
+def _bundle_inspect(bundle_cid: str, entry: dict[str, Any], bundle_state_path: Path) -> dict[str, Any]:
+    provider = str(entry.get("provider", "local"))
+    if provider == "blocked":
+        raise BundleCommandError("bundle_provider_blocked", f"bundle_provider_blocked:{bundle_cid}")
+
+    manifest = entry.get("manifest")
+    checks = [
+        _check("subject_exists", True),
+        _check("manifest_object_present", isinstance(manifest, dict)),
+        _check("provider_policy_allowed", True, {"provider": provider}),
+    ]
+    if not isinstance(manifest, dict):
+        raise BundleCommandError("bundle_manifest_invalid", f"bundle_manifest_missing:{bundle_cid}")
+
+    return {
+        "subject": {
+            "bundle_cid": bundle_cid,
+            "bundle_state_path": str(bundle_state_path),
+            "provider": provider,
+            "subcommand": "inspect",
+        },
+        "result": {
+            "status": "inspected",
+            "manifest_keys": sorted(str(key) for key in manifest.keys()),
+            "manifest_sha256": _canonical_sha256(manifest),
+        },
+        "checks": checks,
+    }
+
+
+def _bundle_verify(bundle_cid: str, entry: dict[str, Any], bundle_state_path: Path) -> dict[str, Any]:
+    provider = str(entry.get("provider", "local"))
+    if provider == "blocked":
+        raise BundleCommandError("bundle_provider_blocked", f"bundle_provider_blocked:{bundle_cid}")
+
+    manifest = entry.get("manifest")
+    if not isinstance(manifest, dict):
+        raise BundleCommandError("bundle_manifest_invalid", f"bundle_manifest_missing:{bundle_cid}")
+
+    integrity: dict[str, Any] = {}
+    raw_integrity = entry.get("integrity")
+    if isinstance(raw_integrity, dict):
+        integrity = raw_integrity
+    expected_digest = None
+    if isinstance(entry.get("manifest_sha256"), str):
+        expected_digest = str(entry["manifest_sha256"])
+    elif isinstance(integrity.get("manifest_sha256"), str):
+        expected_digest = str(integrity["manifest_sha256"])
+
+    observed_digest = _canonical_sha256(manifest)
+    digest_matches = expected_digest is None or expected_digest == observed_digest
+    checks = [
+        _check("subject_exists", True),
+        _check("manifest_object_present", True),
+        _check("integrity_digest_available", expected_digest is not None),
+        _check("integrity_digest_matches", digest_matches),
+    ]
+    if not digest_matches:
+        raise BundleCommandError("bundle_manifest_invalid", f"bundle_digest_mismatch:{bundle_cid}")
+
+    return {
+        "subject": {
+            "bundle_cid": bundle_cid,
+            "bundle_state_path": str(bundle_state_path),
+            "provider": provider,
+            "subcommand": "verify",
+        },
+        "result": {
+            "status": "verified",
+            "digest_source": "provided" if expected_digest is not None else "computed",
+            "manifest_sha256": observed_digest,
+        },
+        "checks": checks,
+    }
+
+
+def _bundle_validate_local(
+    bundle_cid: str,
+    entry: dict[str, Any],
+    graph_state_path: Path,
+    bundle_state_path: Path,
+) -> dict[str, Any]:
+    provider = str(entry.get("provider", "local"))
+    if provider == "blocked":
+        raise BundleCommandError("bundle_provider_blocked", f"bundle_provider_blocked:{bundle_cid}")
+
+    graph_state = _load_graph_state_for_bundle(graph_state_path)
+    nodes = _coerce_list(
+        graph_state.get("nodes"),
+        BundleCommandError,
+        "bundle_backend_unavailable",
+        "graph_nodes_not_list",
+    )
+
+    graph_refs = entry.get("graph_refs")
+    if graph_refs is None:
+        graph_refs = {}
+    if not isinstance(graph_refs, dict):
+        raise BundleCommandError("bundle_manifest_invalid", f"bundle_graph_refs_invalid:{bundle_cid}")
+
+    referenced_node_ids = graph_refs.get("node_ids", [])
+    referenced_claim_ids = graph_refs.get("claim_ids", [])
+    if not isinstance(referenced_node_ids, list) or not isinstance(referenced_claim_ids, list):
+        raise BundleCommandError("bundle_manifest_invalid", f"bundle_graph_refs_invalid:{bundle_cid}")
+
+    node_id_set = {
+        str(item.get("node_id", item.get("id")))
+        for item in nodes
+        if item.get("node_id", item.get("id")) is not None
+    }
+    claim_id_set = {str(item.get("claim_id")) for item in nodes if item.get("claim_id") is not None}
+
+    requested_nodes = [str(token) for token in referenced_node_ids]
+    requested_claims = [str(token) for token in referenced_claim_ids]
+    missing_nodes = sorted(token for token in requested_nodes if token not in node_id_set)
+    missing_claims = sorted(token for token in requested_claims if token not in claim_id_set)
+    nodes_ok = not missing_nodes
+    claims_ok = not missing_claims
+
+    checks = [
+        _check("subject_exists", True),
+        _check("graph_state_loaded", True, {"graph_state_path": str(graph_state_path)}),
+        _check("referenced_nodes_present", nodes_ok, {"missing_nodes": missing_nodes}),
+        _check("referenced_claims_present", claims_ok, {"missing_claims": missing_claims}),
+    ]
+    if not nodes_ok or not claims_ok:
+        raise BundleCommandError("bundle_manifest_invalid", f"bundle_graph_refs_missing:{bundle_cid}")
+
+    return {
+        "subject": {
+            "bundle_cid": bundle_cid,
+            "bundle_state_path": str(bundle_state_path),
+            "graph_state_path": str(graph_state_path),
+            "provider": provider,
+            "subcommand": "validate-local",
+        },
+        "result": {
+            "status": "validated_local",
+            "validated_node_refs": len(requested_nodes),
+            "validated_claim_refs": len(requested_claims),
+        },
+        "checks": checks,
+    }
+
+
+def _run_bundle_subcommand(args: argparse.Namespace, _graph_state_path: Path) -> tuple[str, dict[str, Any]]:
+    bundle_state_path = _default_bundle_state_path()
+    subcommand = getattr(args, "bundle_subcommand", None)
+    bundle_cid = str(getattr(args, "bundle_cid", ""))
+    if not subcommand or not bundle_cid:
+        raise BundleCommandError("bundle_invalid_input", "bundle_subcommand_missing")
+
+    try:
+        state = _load_bundle_state_for_bundle(bundle_state_path)
+        entry = _bundle_entry(state, bundle_cid)
+
+        if subcommand == "inspect":
+            return _bundle_command_token(args), _bundle_inspect(bundle_cid, entry, bundle_state_path)
+        if subcommand == "verify":
+            return _bundle_command_token(args), _bundle_verify(bundle_cid, entry, bundle_state_path)
+        if subcommand == "validate-local":
+            graph_state_path = Path(str(args.bundle_graph_state))
+            return _bundle_command_token(args), _bundle_validate_local(
+                bundle_cid,
+                entry,
+                graph_state_path,
+                bundle_state_path,
+            )
+        raise BundleCommandError("bundle_invalid_input", "bundle_subcommand_missing")
+    except BundleCommandError:
+        raise
+    except Exception as exc:  # pragma: no cover - defensive mapping to contract token
+        raise BundleCommandError("bundle_internal_error", str(exc)) from exc
+
+
 def _build_parser() -> JsonArgumentParser:
     parser = JsonArgumentParser(
         prog="ilc",
@@ -631,6 +917,35 @@ def _build_parser() -> JsonArgumentParser:
             p_verify_lineage.add_argument("--lineage-id", required=True, help="Lineage identifier")
             continue
 
+        if command == "bundle":
+            bundle_parser = subparsers.add_parser("bundle", help="Prototype `bundle` command")
+            bundle_subparsers = bundle_parser.add_subparsers(dest="bundle_subcommand", required=True)
+
+            p_bundle_inspect = bundle_subparsers.add_parser(
+                "inspect",
+                help="Inspect bundle metadata from local bundle state",
+            )
+            p_bundle_inspect.add_argument("--bundle-cid", required=True, help="Bundle CID")
+
+            p_bundle_verify = bundle_subparsers.add_parser(
+                "verify",
+                help="Verify bundle manifest integrity from local bundle state",
+            )
+            p_bundle_verify.add_argument("--bundle-cid", required=True, help="Bundle CID")
+
+            p_bundle_validate_local = bundle_subparsers.add_parser(
+                "validate-local",
+                help="Validate bundle graph references against supplied graph state path",
+            )
+            p_bundle_validate_local.add_argument("--bundle-cid", required=True, help="Bundle CID")
+            p_bundle_validate_local.add_argument(
+                "--graph-state",
+                dest="bundle_graph_state",
+                required=True,
+                help="Path used only for validate-local graph-state checks",
+            )
+            continue
+
         if command != "identity":
             subparsers.add_parser(command, help=f"Prototype `{command}` command")
             continue
@@ -670,7 +985,7 @@ def main() -> int:
 
     try:
         graph_state_path = Path(args.graph_state)
-        if command not in {"query", "verify"}:
+        if command not in {"query", "verify", "bundle"}:
             _ensure_local_graph_state(graph_state_path, command)
 
         if command == "query":
@@ -679,6 +994,9 @@ def main() -> int:
         elif command == "verify":
             verify_command, data = _run_verify_subcommand(args, graph_state_path)
             payload = _verify_success_payload(verify_command, data)
+        elif command == "bundle":
+            bundle_command, data = _run_bundle_subcommand(args, graph_state_path)
+            payload = _bundle_success_payload(bundle_command, data)
         elif command == "identity":
             data = _run_identity_subcommand(args, graph_state_path)
             payload = _success_payload(command, data)
@@ -698,6 +1016,14 @@ def main() -> int:
     except VerifyCommandError as exc:
         payload = _verify_error_payload(
             command_token=_verify_command_token(args),
+            code=exc.code,
+            message=exc.message,
+        )
+        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
+        return 1
+    except BundleCommandError as exc:
+        payload = _bundle_error_payload(
+            command_token=_bundle_command_token(args),
             code=exc.code,
             message=exc.message,
         )

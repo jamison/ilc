@@ -21,6 +21,10 @@ Contracted subcommands for Phase-304 implementation:
 - `ilc bundle verify --bundle-cid <cid>`
 - `ilc bundle validate-local --bundle-cid <cid> --graph-state <path>`
 
+Argument precedence note:
+- for `validate-local`, subcommand `--graph-state` is authoritative for validation input path,
+- top-level CLI `--graph-state` (shared CLI flag) is not used for `validate-local` validation path resolution.
+
 Command-surface compatibility requirements:
 - `--help` must print usage and exit `0`,
 - unknown arguments must exit `2`,
@@ -46,6 +50,9 @@ Success `data` minimum shape:
 - `subject`: object identifying target bundle and invocation context,
 - `result`: object with `status` token and operation-specific summary fields,
 - `checks`: list of check-result objects.
+
+Design rationale:
+- bundle lane uses `result` (not `verdict`) intentionally because bundle operations may return richer operational outcomes than binary verification judgments used in D2e-06 verify lane.
 
 Minimum check-result schema:
 - `check_type`: string token,
