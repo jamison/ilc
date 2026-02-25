@@ -21,6 +21,10 @@ Contracted subcommands for Phase-302 implementation:
 - `ilc verify node --node-id <id>`
 - `ilc verify lineage --lineage-id <id>`
 
+Lineage scope boundary for Phase 302:
+- `verify lineage` validates against local identity-state surface only,
+- Phase 302 does not import or mutate CDL-001 signer-lineage runtime modules in `ilc_core/security/`.
+
 Command-surface compatibility requirements:
 - `--help` must print usage and exit `0`,
 - unknown arguments must exit `2`,
@@ -46,6 +50,11 @@ Success `data` minimum shape:
 - `subject`: object with identifier fields for verified target,
 - `verdict`: object with `verified` boolean and `verdict_code` token,
 - `checks`: list of check-result objects.
+
+Minimum check-result schema:
+- `check_type`: string token,
+- `passed`: boolean,
+- additional fields are permitted but must be deterministic.
 
 Schema boundary:
 - response `data` shape must be command-specific and versioned,

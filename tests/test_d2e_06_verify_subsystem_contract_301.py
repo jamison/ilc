@@ -44,6 +44,8 @@ def test_json_envelope_language_and_schema_tag_are_explicit() -> None:
     assert '{"ok": true, "data": <object>, "meta": <object>}' in text
     assert '{"ok": false, "error": {"code": <string>, "message": <string>}, "meta": <object>}' in text
     assert "`301.v0.1`" in text
+    for token in ("`subject`", "`verdict`", "`checks`", "`check_type`", "`passed`"):
+        assert token in text
 
 
 def test_error_and_exit_code_contract_is_explicit() -> None:
@@ -67,6 +69,7 @@ def test_determinism_and_phase302_handoff_gates_are_explicit() -> None:
     for token in (
         "identical request input over identical backing state must yield byte-equivalent JSON",
         "`checks` list ordering must be stable and explicitly documented per subcommand",
+        "`verify lineage` validates against local identity-state surface only",
         "Phase 302 may begin only when:",
         "Phase-300 query regression remains green",
     ):

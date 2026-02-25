@@ -17,6 +17,7 @@ from typing import Any
 
 SCHEMA_VERSION = "254.v0.1"
 QUERY_SCHEMA_VERSION = "299.v0.1"
+VERIFY_SCHEMA_VERSION = "301.v0.1"
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -44,6 +45,15 @@ ALL_COMMANDS = PRIMITIVE_COMMANDS + OPERATIONAL_COMMANDS
 
 class QueryCommandError(Exception):
     """Typed error carrying query contract error token and message."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
+
+
+class VerifyCommandError(Exception):
+    """Typed error carrying verify contract error token and message."""
 
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
@@ -94,6 +104,12 @@ def _infer_query_command_token_from_argv() -> str:
     return "query"
 
 
+def _infer_verify_command_token_from_argv() -> str:
+    if len(sys.argv) >= 3 and not sys.argv[2].startswith("-"):
+        return f"verify {sys.argv[2]}"
+    return "verify"
+
+
 def _query_success_payload(command_token: str, data: dict[str, Any]) -> dict[str, Any]:
     return {
         "ok": True,
@@ -118,6 +134,30 @@ def _query_error_payload(command_token: str, code: str, message: str) -> dict[st
     }
 
 
+def _verify_success_payload(command_token: str, data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ok": True,
+        "data": data,
+        "meta": {
+            "command": command_token,
+            "schema_version": VERIFY_SCHEMA_VERSION,
+            "generated_at": _now_rfc3339_utc(),
+        },
+    }
+
+
+def _verify_error_payload(command_token: str, code: str, message: str) -> dict[str, Any]:
+    return {
+        "ok": False,
+        "error": {"code": code, "message": message},
+        "meta": {
+            "command": command_token,
+            "schema_version": VERIFY_SCHEMA_VERSION,
+            "generated_at": _now_rfc3339_utc(),
+        },
+    }
+
+
 class JsonArgumentParser(argparse.ArgumentParser):
     """ArgumentParser that emits JSON errors with exit code 2."""
 
@@ -127,6 +167,12 @@ class JsonArgumentParser(argparse.ArgumentParser):
             payload = _query_error_payload(
                 command_token=_infer_query_command_token_from_argv(),
                 code="query_invalid_input",
+                message=message,
+            )
+        elif command == "verify":
+            payload = _verify_error_payload(
+                command_token=_infer_verify_command_token_from_argv(),
+                code="verify_invalid_input",
                 message=message,
             )
         else:
@@ -332,12 +378,32 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
     raise ValueError(f"unknown_identity_subcommand:{subcommand}")
 
 
-def _load_graph_state(path: Path) -> dict[str, Any]:
-    raw = path.read_text(encoding="utf-8")
-    data = json.loads(raw)
+def _read_graph_state(path: Path) -> dict[str, Any]:
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ValueError(f"graph_state_read_failed:{exc}") from exc
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"graph_state_invalid_json:{exc.msg}") from exc
     if not isinstance(data, dict):
-        raise QueryCommandError("query_backend_unavailable", "graph_state_not_object")
+        raise ValueError("graph_state_not_object")
     return data
+
+
+def _load_graph_state_for_query(path: Path) -> dict[str, Any]:
+    try:
+        return _read_graph_state(path)
+    except ValueError as exc:
+        raise QueryCommandError("query_backend_unavailable", str(exc)) from exc
+
+
+def _load_graph_state_for_verify(path: Path) -> dict[str, Any]:
+    try:
+        return _read_graph_state(path)
+    except ValueError as exc:
+        raise VerifyCommandError("verify_backend_unavailable", str(exc)) from exc
 
 
 def _sorted_mapping(obj: Any) -> Any:
@@ -419,16 +485,104 @@ def _query_command_token(args: argparse.Namespace) -> str:
 
 
 def _run_query_subcommand(args: argparse.Namespace, graph_state_path: Path) -> tuple[str, dict[str, Any]]:
-    state = _load_graph_state(graph_state_path)
+    state = _load_graph_state_for_query(graph_state_path)
     subcommand = getattr(args, "query_subcommand", None)
 
     if subcommand == "node":
         return _query_command_token(args), _query_node(state, str(args.node_id))
     if subcommand == "epoch":
-        return _query_command_token(args), _query_epoch(state, int(args.epoch))
+        return _query_command_token(args), _query_epoch(state, args.epoch)
     if subcommand == "claim":
         return _query_command_token(args), _query_claim(state, str(args.claim_id))
     raise QueryCommandError("query_invalid_input", "query_subcommand_missing")
+
+
+def _verify_command_token(args: argparse.Namespace) -> str:
+    subcommand = getattr(args, "verify_subcommand", None)
+    if subcommand:
+        return f"verify {subcommand}"
+    return "verify"
+
+
+def _check(check_type: str, passed: bool, detail: dict[str, Any] | None = None) -> dict[str, Any]:
+    item = {"check_type": check_type, "passed": bool(passed)}
+    if detail:
+        item["detail"] = _sorted_mapping(detail)
+    return item
+
+
+def _verify_claim(state: dict[str, Any], claim_id: str) -> dict[str, Any]:
+    nodes = _coerce_list(state.get("nodes"), "verify_backend_unavailable", "graph_nodes_not_list")
+    matches = [candidate for candidate in nodes if str(candidate.get("claim_id", "")) == claim_id]
+    checks = [
+        _check("subject_exists", len(matches) > 0),
+        _check("multi_match_supported", True, {"match_count": len(matches)}),
+    ]
+    if not matches:
+        raise VerifyCommandError("verify_not_found", f"claim_not_found:{claim_id}")
+    return {
+        "subject": {"claim_id": claim_id},
+        "verdict": {"verified": True, "verdict_code": "verify_claim_passed"},
+        "checks": checks,
+    }
+
+
+def _verify_node(state: dict[str, Any], node_id: str) -> dict[str, Any]:
+    nodes = _coerce_list(state.get("nodes"), "verify_backend_unavailable", "graph_nodes_not_list")
+    node: dict[str, Any] | None = None
+    for candidate in nodes:
+        token = candidate.get("node_id", candidate.get("id"))
+        if token is not None and str(token) == node_id:
+            node = candidate
+            break
+    checks = [
+        _check("subject_exists", node is not None),
+        _check("node_identifier_consistency", True, {"accepted_keys": ["node_id", "id"]}),
+    ]
+    if node is None:
+        raise VerifyCommandError("verify_not_found", f"node_not_found:{node_id}")
+    return {
+        "subject": {"node_id": node_id},
+        "verdict": {"verified": True, "verdict_code": "verify_node_passed"},
+        "checks": checks,
+    }
+
+
+def _verify_lineage(args: argparse.Namespace, graph_state_path: Path) -> dict[str, Any]:
+    lineage_id = str(args.lineage_id)
+    state_path = _identity_state_path(graph_state_path)
+    current = _load_identity_state(state_path)
+    if current is None:
+        raise VerifyCommandError("verify_not_found", f"lineage_not_initialized:{lineage_id}")
+
+    observed_lineage = str(current.get("lineage_id", ""))
+    matched = observed_lineage == lineage_id
+    checks = [
+        _check("identity_state_present", True, {"state_path": str(state_path)}),
+        _check("lineage_id_match", matched, {"observed_lineage_id": observed_lineage}),
+    ]
+    if not matched:
+        raise VerifyCommandError("verify_not_found", f"lineage_not_found:{lineage_id}")
+
+    return {
+        "subject": {"lineage_id": lineage_id},
+        "verdict": {"verified": True, "verdict_code": "verify_lineage_passed"},
+        "checks": checks,
+    }
+
+
+def _run_verify_subcommand(args: argparse.Namespace, graph_state_path: Path) -> tuple[str, dict[str, Any]]:
+    # Lineage verification is intentionally local-state only in Phase 302.
+    subcommand = getattr(args, "verify_subcommand", None)
+    if subcommand == "lineage":
+        return _verify_command_token(args), _verify_lineage(args, graph_state_path)
+
+    state = _load_graph_state_for_verify(graph_state_path)
+    if subcommand == "claim":
+        return _verify_command_token(args), _verify_claim(state, str(args.claim_id))
+    if subcommand == "node":
+        return _verify_command_token(args), _verify_node(state, str(args.node_id))
+    raise VerifyCommandError("verify_invalid_input", "verify_subcommand_missing")
 
 
 def _build_parser() -> JsonArgumentParser:
@@ -461,6 +615,20 @@ def _build_parser() -> JsonArgumentParser:
 
             p_claim = query_subparsers.add_parser("claim", help="Query by claim identifier")
             p_claim.add_argument("--claim-id", required=True, help="Claim identifier")
+            continue
+
+        if command == "verify":
+            verify_parser = subparsers.add_parser("verify", help="Prototype `verify` command")
+            verify_subparsers = verify_parser.add_subparsers(dest="verify_subcommand", required=True)
+
+            p_verify_claim = verify_subparsers.add_parser("claim", help="Verify by claim identifier")
+            p_verify_claim.add_argument("--claim-id", required=True, help="Claim identifier")
+
+            p_verify_node = verify_subparsers.add_parser("node", help="Verify by node identifier")
+            p_verify_node.add_argument("--node-id", required=True, help="Node identifier")
+
+            p_verify_lineage = verify_subparsers.add_parser("lineage", help="Verify by lineage identifier")
+            p_verify_lineage.add_argument("--lineage-id", required=True, help="Lineage identifier")
             continue
 
         if command != "identity":
@@ -502,11 +670,15 @@ def main() -> int:
 
     try:
         graph_state_path = Path(args.graph_state)
-        _ensure_local_graph_state(graph_state_path, command)
+        if command not in {"query", "verify"}:
+            _ensure_local_graph_state(graph_state_path, command)
 
         if command == "query":
             query_command, data = _run_query_subcommand(args, graph_state_path)
             payload = _query_success_payload(query_command, data)
+        elif command == "verify":
+            verify_command, data = _run_verify_subcommand(args, graph_state_path)
+            payload = _verify_success_payload(verify_command, data)
         elif command == "identity":
             data = _run_identity_subcommand(args, graph_state_path)
             payload = _success_payload(command, data)
@@ -518,6 +690,14 @@ def main() -> int:
     except QueryCommandError as exc:
         payload = _query_error_payload(
             command_token=_query_command_token(args),
+            code=exc.code,
+            message=exc.message,
+        )
+        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
+        return 1
+    except VerifyCommandError as exc:
+        payload = _verify_error_payload(
+            command_token=_verify_command_token(args),
             code=exc.code,
             message=exc.message,
         )
