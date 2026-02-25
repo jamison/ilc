@@ -49,6 +49,7 @@ def test_json_envelope_schema_and_checks_fields_are_explicit() -> None:
     for token in ("`subject`", "`result`", "`checks`", "`check_type`", "`passed`"):
         assert token in text
     assert "bundle lane uses `result` (not `verdict`) intentionally" in text
+    assert "`validate-local`: `graph_state_path`" in text
 
 
 def test_error_and_exit_code_contract_is_explicit() -> None:

@@ -51,6 +51,10 @@ Success `data` minimum shape:
 - `result`: object with `status` token and operation-specific summary fields,
 - `checks`: list of check-result objects.
 
+`subject` minimum fields by subcommand:
+- all subcommands: `bundle_cid`,
+- `validate-local`: `graph_state_path` (the authoritative subcommand path used for validation input).
+
 Design rationale:
 - bundle lane uses `result` (not `verdict`) intentionally because bundle operations may return richer operational outcomes than binary verification judgments used in D2e-06 verify lane.
 
