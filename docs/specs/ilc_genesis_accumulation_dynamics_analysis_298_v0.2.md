@@ -105,6 +105,7 @@ Not safe to claim yet:
 5. Decide whether denominator-mode alternatives are purely exploratory or require constitutional classification.
 
 Recommended target lane: the planned economic monitoring rollout lane (Phase 305 track).
+Execution checklist anchor: `docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md`.
 
 ---
 
