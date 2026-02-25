@@ -70,12 +70,7 @@ resolve_gate_verdict() {
     return 1
   fi
 
-  local verdict="${snapshot_verdict}"
-  if [[ -n "${ILC_PHASE_307_TEST_VERDICT:-}" ]]; then
-    verdict="${ILC_PHASE_307_TEST_VERDICT}"
-  fi
-
-  case "$verdict" in
+  case "$snapshot_verdict" in
     pass)
       echo "phase_307_snapshot_gate=passed"
       return 0
@@ -109,10 +104,6 @@ run_full_gate() {
   for idx in "${!labels[@]}"; do
     printf '[%s/%s] %s\n' "$((idx + 1))" "$total" "${labels[$idx]}"
     printf '%s\n' "${commands[$idx]}"
-
-    if [[ "${ILC_PHASE_307_SKIP_EXECUTION:-0}" == "1" ]]; then
-      continue
-    fi
 
     if [[ "$idx" -eq 4 ]]; then
       ILC_PHASE_307_GATE_SELFTEST=1 bash -lc "${commands[$idx]}"
