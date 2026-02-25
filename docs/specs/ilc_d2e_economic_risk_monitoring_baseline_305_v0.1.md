@@ -53,6 +53,11 @@ The six monitoring planes are mandatory and mapped to D2e surfaces:
 
 Each KPI is measured per command lane and reported as a ratio in `[0.0, 1.0]` unless marked otherwise.
 
+Measurement-window rule:
+- for operational monitoring, denominators are per-epoch request/check totals,
+- for Phase-306 composed preflight snapshot, denominators are scenario executions per lane within that preflight run,
+- Phase-306 snapshot metadata must include `preflight_scope: true` and explicit lane denominator counts.
+
 ### 3.1 Query KPIs
 
 - `kpi_query_invalid_input_rate`
@@ -113,6 +118,42 @@ Each KPI is measured per command lane and reported as a ratio in `[0.0, 1.0]` un
   - formula: `median(command_latency_ms)`
   - unit: milliseconds
 
+### 3.5 Governance hygiene KPIs
+
+- `kpi_out_of_scope_file_mutation_count`
+  - formula: `out_of_scope_file_mutations_per_phase`
+  - unit: count
+- `kpi_missing_evidence_anchor_count`
+  - formula: `missing_required_evidence_anchors_per_phase`
+  - unit: count
+- `kpi_non_target_guardrail_failure_count`
+  - formula: `failed_non_target_guardrail_checks_per_phase`
+  - unit: count
+
+### 3.6 Operational resilience KPIs
+
+- `kpi_local_state_path_failure_rate`
+  - formula: `local_state_path_failures / total_state_path_reads`
+  - unit: ratio
+- `kpi_provider_blocked_recovery_ratio`
+  - formula: `resolved_provider_blocked_events / total_provider_blocked_events`
+  - unit: ratio
+- `kpi_runbook_recency_days`
+  - formula: `days_since_last_preflight_or_incident_drill`
+  - unit: days
+
+### 3.7 Narrative integrity KPIs
+
+- `kpi_utility_framing_coverage`
+  - formula: `artifacts_with_utility_framing / total_public_artifacts_reviewed`
+  - unit: ratio
+- `kpi_macro_hedge_claim_incidents`
+  - formula: `macro_hedge_claim_incidents_per_window`
+  - unit: count
+- `kpi_vendor_lock_language_incidents`
+  - formula: `vendor_lock_phrasing_incidents_per_window`
+  - unit: count
+
 ## 4. Severity thresholds and release gates
 
 Severity levels:
@@ -123,10 +164,16 @@ Severity levels:
 
 Default thresholds:
 - `kpi_query_backend_unavailable_rate > 0.01` -> `S2`
+- `kpi_query_invalid_input_rate > 0.10` -> `S1`
+- `kpi_query_not_found_rate > 0.20` -> `S1`
 - `kpi_verify_backend_unavailable_rate > 0.01` -> `S2`
 - `kpi_bundle_backend_unavailable_rate > 0.01` -> `S2`
 - `kpi_verify_check_failure_ratio > 0.05` -> `S2`
 - `kpi_bundle_manifest_invalid_rate > 0.05` -> `S2`
+- `kpi_out_of_scope_file_mutation_count > 0` -> `S3`
+- `kpi_non_target_guardrail_failure_count > 0` -> `S3`
+- `kpi_macro_hedge_claim_incidents > 0` -> `S1`
+- `kpi_vendor_lock_language_incidents > 0` -> `S1`
 - any phase-scoped mutation boundary violation -> `S3`
 - any fail-closed contract violation -> `S3`
 
@@ -144,7 +191,14 @@ Required cadence:
 Artifact paths:
 - `out/monitoring/d2e_risk_snapshot_phase_<phase>.json`
 - `docs/specs/ilc_d2e_risk_monitoring_rollup_298_307_v0.1.md`
-- `docs/phases/phase_30x_..._walkthrough.md` KPI summary section
+- `docs/phases/phase_<phase>_..._walkthrough.md` KPI summary section
+
+Required snapshot metadata fields:
+- `phase`,
+- `generated_at`,
+- `preflight_scope`,
+- `lane_request_counts`,
+- `severity_summary`.
 
 ## 6. Owner and escalation path
 

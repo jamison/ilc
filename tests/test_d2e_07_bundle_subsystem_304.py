@@ -141,6 +141,40 @@ def test_bundle_error_paths_use_nested_error_object(tmp_path: Path) -> None:
     assert unknown_payload["error"]["code"] == "bundle_invalid_input"
 
 
+def test_bundle_provider_blocked_fails_closed(tmp_path: Path) -> None:
+    graph_path = tmp_path / "graph.json"
+    bundle_path = tmp_path / "bundle.json"
+    _write_graph_state(graph_path)
+    _write_bundle_state(bundle_path, blocked=True)
+
+    env = os.environ.copy()
+    env["ILC_CLI_GRAPH_STATE_PATH"] = str(graph_path)
+    env["ILC_BUNDLE_STATE_PATH"] = str(bundle_path)
+
+    result = _run_cli(["bundle", "inspect", "--bundle-cid", "bafy-bundle-1"], env)
+    assert result.returncode == 1
+    payload = _payload(result)
+    assert payload["ok"] is False
+    assert payload["error"]["code"] == "bundle_provider_blocked"
+
+
+def test_bundle_backend_unavailable_returns_contract_token(tmp_path: Path) -> None:
+    graph_path = tmp_path / "graph.json"
+    bundle_path = tmp_path / "bundle.json"
+    _write_graph_state(graph_path)
+    bundle_path.write_text("{invalid_json", encoding="utf-8")
+
+    env = os.environ.copy()
+    env["ILC_CLI_GRAPH_STATE_PATH"] = str(graph_path)
+    env["ILC_BUNDLE_STATE_PATH"] = str(bundle_path)
+
+    result = _run_cli(["bundle", "inspect", "--bundle-cid", "bafy-bundle-1"], env)
+    assert result.returncode == 1
+    payload = _payload(result)
+    assert payload["ok"] is False
+    assert payload["error"]["code"] == "bundle_backend_unavailable"
+
+
 def test_bundle_determinism_for_repeated_requests(tmp_path: Path) -> None:
     graph_path = tmp_path / "graph.json"
     bundle_path = tmp_path / "bundle.json"

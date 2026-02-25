@@ -52,6 +52,34 @@ def test_query_verify_bundle_kpi_tokens_and_formulas_are_explicit() -> None:
         assert token in text
 
 
+def test_measurement_window_and_preflight_scope_rules_are_explicit() -> None:
+    text = _read()
+    for token in (
+        "Measurement-window rule:",
+        "for operational monitoring, denominators are per-epoch request/check totals",
+        "for Phase-306 composed preflight snapshot, denominators are scenario executions per lane",
+        "`preflight_scope: true`",
+        "lane denominator counts",
+    ):
+        assert token in text
+
+
+def test_governance_operational_and_narrative_plane_kpis_are_explicit() -> None:
+    text = _read()
+    for token in (
+        "kpi_out_of_scope_file_mutation_count",
+        "kpi_missing_evidence_anchor_count",
+        "kpi_non_target_guardrail_failure_count",
+        "kpi_local_state_path_failure_rate",
+        "kpi_provider_blocked_recovery_ratio",
+        "kpi_runbook_recency_days",
+        "kpi_utility_framing_coverage",
+        "kpi_macro_hedge_claim_incidents",
+        "kpi_vendor_lock_language_incidents",
+    ):
+        assert token in text
+
+
 def test_severity_levels_and_release_blockers_are_explicit() -> None:
     text = _read()
     for token in (
@@ -62,6 +90,8 @@ def test_severity_levels_and_release_blockers_are_explicit() -> None:
         "Release-blocking gate for Phase 306",
         "no `S3` indicators may be open",
         "all `S2` indicators require documented mitigation or explicit GO override",
+        "kpi_query_invalid_input_rate > 0.10",
+        "kpi_query_not_found_rate > 0.20",
     ):
         assert token in text
 
@@ -74,6 +104,11 @@ def test_cadence_and_reporting_paths_are_explicit() -> None:
         "per-window consolidated rollup",
         "out/monitoring/d2e_risk_snapshot_phase_<phase>.json",
         "docs/specs/ilc_d2e_risk_monitoring_rollup_298_307_v0.1.md",
+        "docs/phases/phase_<phase>_..._walkthrough.md",
+        "Required snapshot metadata fields:",
+        "`preflight_scope`",
+        "`lane_request_counts`",
+        "`severity_summary`",
     ):
         assert token in text
 
