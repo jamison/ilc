@@ -53,11 +53,11 @@ Phase-307 closure gate executes and records the six sequence-lock categories in 
 Locked carry-forward snapshot facts:
 - `phase == "306"`,
 - `preflight_scope: true`,
-- lane denominator counts present (`query`, `verify`, `bundle`),
-- release verdict carried forward from snapshot severity summary.
+- lane denominator counts: `query=25`, `verify=25`, `bundle=120`,
+- release verdict: `pass`.
 
 Threshold sensitivity note:
-- `kpi_bundle_backend_unavailable_rate` remains close to the `S2` boundary and should stay explicitly tracked in 308+ closure/readiness reporting.
+- `kpi_bundle_backend_unavailable_rate = 0.00833333`, `S2` threshold is `> 0.01`, leaving approximately 16.7% headroom before crossing into `S2`; keep this explicitly tracked in 308+ closure/readiness reporting.
 
 ## 5. KPI provenance policy for closure interpretation
 

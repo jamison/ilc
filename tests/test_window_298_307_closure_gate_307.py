@@ -22,18 +22,20 @@ def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.
     return subprocess.run(GATE_CMD + args, capture_output=True, text=True, env=env, check=False)
 
 
-def _backup_snapshot() -> str:
-    return SNAPSHOT_PATH.read_text(encoding="utf-8")
-
-
-def _restore_snapshot(payload: str) -> None:
-    SNAPSHOT_PATH.write_text(payload, encoding="utf-8")
-
-
-def _set_snapshot_verdict(verdict: str) -> None:
+def _snapshot_override_env(tmp_path: Path, verdict: str) -> dict[str, str]:
     payload = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
-    payload.setdefault("severity_summary", {})["verdict"] = verdict
-    SNAPSHOT_PATH.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    severity = payload.get("severity_summary")
+    assert isinstance(severity, dict), "snapshot_missing_severity_summary"
+    for key in ("s1_indicators", "s2_indicators", "s3_indicators", "verdict"):
+        assert key in severity, f"snapshot_missing_severity_key:{key}"
+    severity["verdict"] = verdict
+
+    snapshot_copy = tmp_path / "snapshot_override.json"
+    snapshot_copy.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+    env = os.environ.copy()
+    env["ILC_PHASE_307_SNAPSHOT_PATH"] = str(snapshot_copy)
+    return env
 
 
 def test_gate_script_exists() -> None:
@@ -75,27 +77,23 @@ def test_gate_full_run_exits_zero_on_pass_snapshot() -> None:
     assert "phase_307_verdict=pass" in result.stdout
 
 
-def test_gate_full_run_enforces_conditional_exit_and_override_token() -> None:
-    original = _backup_snapshot()
-    try:
-        _set_snapshot_verdict("conditional")
-        result = _run_gate([])
-        assert result.returncode == 3
-        assert "phase_307_override_required=human" in result.stdout
-        assert "phase_307_snapshot_gate=failed" in result.stdout
-    finally:
-        _restore_snapshot(original)
+def test_gate_full_run_enforces_conditional_exit_and_override_token(tmp_path: Path) -> None:
+    if os.environ.get("ILC_PHASE_307_GATE_SELFTEST") == "1":
+        pytest.skip("phase_307_selftest_context_skip_verdict_simulation")
+    env = _snapshot_override_env(tmp_path, "conditional")
+    result = _run_gate([], env=env)
+    assert result.returncode == 3
+    assert "phase_307_override_required=human" in result.stdout
+    assert "phase_307_snapshot_gate=failed" in result.stdout
 
 
-def test_gate_full_run_enforces_blocked_exit() -> None:
-    original = _backup_snapshot()
-    try:
-        _set_snapshot_verdict("blocked")
-        result = _run_gate([])
-        assert result.returncode == 1
-        assert "phase_307_snapshot_gate=failed" in result.stdout
-    finally:
-        _restore_snapshot(original)
+def test_gate_full_run_enforces_blocked_exit(tmp_path: Path) -> None:
+    if os.environ.get("ILC_PHASE_307_GATE_SELFTEST") == "1":
+        pytest.skip("phase_307_selftest_context_skip_verdict_simulation")
+    env = _snapshot_override_env(tmp_path, "blocked")
+    result = _run_gate([], env=env)
+    assert result.returncode == 1
+    assert "phase_307_snapshot_gate=failed" in result.stdout
 
 
 def test_handoff_exists_and_contains_required_sections_and_pointers() -> None:
