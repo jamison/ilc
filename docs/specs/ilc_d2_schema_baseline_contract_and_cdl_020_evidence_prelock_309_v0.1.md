@@ -71,8 +71,11 @@ Phase-309 prelock output is admissibility-focused:
 ## 6. Phase-310 runtime entry criteria lock
 
 Phase 310 may begin only when all of the following are true:
-- this contract artifact is present and tested,
-- CDL-020 remains `status: open` with unchanged row text,
+- `python3 -m pytest tests/test_phase_308_sequence_lock.py -q` passes,
+- `python3 -m pytest tests/test_d2_schema_baseline_contract_and_cdl_020_evidence_prelock_309.py -q` passes,
+- `python3 -m pytest tests/test_window_298_307_closure_gate_307.py -q` passes,
+- `bash tools/check_window_298_307_closure_gate_phase_307.sh` exits `0`,
+- CDL-020 parse gate confirms `status: open` from `parse_decision_register_rows`,
 - runtime scope is limited to D2 schema baseline implementation tranche,
 - no implicit ratification language is introduced in runtime outputs.
 

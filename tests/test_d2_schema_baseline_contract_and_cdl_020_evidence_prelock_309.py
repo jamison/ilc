@@ -45,7 +45,7 @@ def test_cdl_020_state_and_option_inventory_are_explicit() -> None:
         assert option_token in text
 
 
-def test_runtime_deferral_and_phase_310_entry_criteria_are_explicit() -> None:
+def test_runtime_scope_boundary_and_phase_310_entry_criteria_are_explicit() -> None:
     text = _read()
     for token in (
         "Phase 310 may begin only when all of the following are true",
