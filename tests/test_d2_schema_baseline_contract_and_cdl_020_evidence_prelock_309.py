@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 
-import pytest
+from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
 
 
 ARTIFACT_PATH = Path("docs/specs/ilc_d2_schema_baseline_contract_and_cdl_020_evidence_prelock_309_v0.1.md")
@@ -37,15 +37,12 @@ def test_required_sections_present() -> None:
 
 def test_cdl_020_state_and_option_inventory_are_explicit() -> None:
     text = _read()
-    for token in (
-        "CDL-020",
-        "status: open",
-        "current_candidate: full schema catalog (proposed)",
-        "full schema catalog",
-        "minimal schema catalog",
-        "phased schema catalog",
-    ):
-        assert token in text
+    row = parse_decision_register_rows(Path(DECISION_LOG_PATH).read_text(encoding="utf-8"))["CDL-020"]
+    assert "CDL-020" in text
+    assert f"status: {row.get('status')}" in text
+    assert f"current_candidate: {row.get('current_candidate')}" in text
+    for option_token in [token.strip() for token in row.get("options", "").split(",") if token.strip()]:
+        assert option_token in text
 
 
 def test_runtime_deferral_and_phase_310_entry_criteria_are_explicit() -> None:
@@ -83,7 +80,7 @@ def _resolve_phase_309_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_309_COMMIT_SUBJECT:
             return commit_hash
-    pytest.skip("phase_309_commit_not_present_in_local_history")
+    raise AssertionError("phase_309_commit_not_present_in_local_history")
 
 
 def test_no_decision_log_mutation_in_phase_commit() -> None:

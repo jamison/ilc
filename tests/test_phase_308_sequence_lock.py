@@ -5,8 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 
-import pytest
-
 
 ARTIFACT_PATH = Path("docs/specs/ilc_phase_308_317_sequence_lock_v0.1.md")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
@@ -139,7 +137,7 @@ def _resolve_phase_308_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_308_COMMIT_SUBJECT:
             return commit_hash
-    pytest.skip("phase_308_commit_not_present_in_local_history")
+    raise AssertionError("phase_308_commit_not_present_in_local_history")
 
 
 def test_no_decision_log_mutation_in_phase_commit() -> None:
