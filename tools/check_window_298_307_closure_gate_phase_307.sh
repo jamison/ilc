@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROMPT_PATH="docs/antigravity_tasks/antigravity_prompt__phase_307_g8_constitution_cluster_a_window_298_307_closure_verification_gate_and_308_plus_handoff.md"
-SNAPSHOT_PATH="out/monitoring/d2e_risk_snapshot_phase_306.json"
+SNAPSHOT_PATH="${ILC_PHASE_307_SNAPSHOT_PATH:-out/monitoring/d2e_risk_snapshot_phase_306.json}"
 
 labels=(
   "prompt_contract_validation"
@@ -44,18 +44,20 @@ print_dry_run() {
 }
 
 read_snapshot_fields() {
-  python3 - <<'PY'
+  python3 - "$SNAPSHOT_PATH" <<'PY'
 import json
+import sys
 from pathlib import Path
 
-path = Path("out/monitoring/d2e_risk_snapshot_phase_306.json")
+path = Path(sys.argv[1])
 if not path.exists():
     raise SystemExit("missing_snapshot")
 obj = json.loads(path.read_text(encoding="utf-8"))
 phase = str(obj.get("phase", ""))
-scope = bool(obj.get("preflight_scope") is True)
+is_preflight = obj.get("preflight_scope") is True
 verdict = str(obj.get("severity_summary", {}).get("verdict", ""))
-print(f"{phase}|{str(scope).lower()}|{verdict}")
+scope = "true" if is_preflight else "false"
+print(f"{phase}|{scope}|{verdict}")
 PY
 }
 
@@ -106,9 +108,9 @@ run_full_gate() {
     printf '%s\n' "${commands[$idx]}"
 
     if [[ "$idx" -eq 4 ]]; then
-      ILC_PHASE_307_GATE_SELFTEST=1 bash -lc "${commands[$idx]}"
+      ILC_PHASE_307_GATE_SELFTEST=1 bash -c "${commands[$idx]}"
     else
-      bash -lc "${commands[$idx]}"
+      bash -c "${commands[$idx]}"
     fi
   done
 
