@@ -78,7 +78,7 @@ def _resolve_phase_310_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_310_COMMIT_SUBJECT:
             return commit_hash
-    pytest.skip("phase_310_commit_not_present_in_local_history")
+    raise AssertionError("phase_310_commit_not_present_in_local_history")
 
 
 def test_runtime_surface_is_invocable() -> None:
@@ -141,6 +141,54 @@ def test_canonical_test_vectors_validate_generator_and_verifier_surface() -> Non
         "catalog_digest_matches",
     ]
     assert all(item["passed"] is True for item in checks)
+
+
+@pytest.mark.parametrize(
+    ("catalog", "token"),
+    [
+        (["not", "a", "dict"], "d2_schema_catalog_not_object"),
+        (
+            {
+                "catalog_version": "d2_schema_baseline_invalid.v0.1",
+                "entries": canonical_schema_vectors(),
+                "catalog_sha256": "placeholder",
+            },
+            "d2_schema_invalid_catalog_version",
+        ),
+    ],
+)
+def test_verify_schema_catalog_invalid_inputs_raise_expected_tokens(
+    catalog: Any,
+    token: str,
+) -> None:
+    with pytest.raises(D2SchemaValidationError) as exc:
+        verify_schema_catalog(catalog)  # type: ignore[arg-type]
+    assert exc.value.token == token
+
+
+def test_verify_schema_catalog_digest_missing_raises_expected_token() -> None:
+    catalog = generate_schema_catalog(canonical_schema_vectors())
+    del catalog["catalog_sha256"]
+    with pytest.raises(D2SchemaValidationError) as exc:
+        verify_schema_catalog(catalog)
+    assert exc.value.token == "d2_schema_catalog_digest_missing"
+
+
+def test_verify_schema_catalog_digest_mismatch_raises_expected_token() -> None:
+    catalog = generate_schema_catalog(canonical_schema_vectors())
+    catalog["catalog_sha256"] = "0" * 64
+    with pytest.raises(D2SchemaValidationError) as exc:
+        verify_schema_catalog(catalog)
+    assert exc.value.token == "d2_schema_catalog_digest_mismatch"
+
+
+def test_verify_schema_catalog_non_canonical_raises_expected_token() -> None:
+    catalog = generate_schema_catalog(canonical_schema_vectors())
+    # Corrupt canonical content while preserving top-level shape.
+    catalog["entries"][0]["field_count"] = -1
+    with pytest.raises(D2SchemaValidationError) as exc:
+        verify_schema_catalog(catalog)
+    assert exc.value.token == "d2_schema_catalog_not_canonical"
 
 
 def test_runtime_integration_does_not_regress_query_verify_bundle_or_identity_envelopes(tmp_path: Path) -> None:

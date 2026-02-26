@@ -86,3 +86,4 @@ Non-goals in this tranche:
 
 Carry-forward pointer:
 - Phase 311 should lock genesis state bundle contract/evidence using this schema runtime baseline as a prerequisite runtime surface.
+- Phase 311 must reference the locked schema baseline version token `d2_schema_baseline_310.v0.1` as a hard dependency.
