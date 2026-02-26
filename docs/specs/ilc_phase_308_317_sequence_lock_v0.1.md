@@ -65,7 +65,8 @@ Window 308-317 intent:
 
 Track model:
 - Runtime/provider track phases: `310`, `312`, `314`, `316`.
-- Schema/evidence track phases: `309`, `311`, `313`, `315`, `317`.
+- Schema/evidence track phases: `309`, `311`, `313`, `315`.
+- Closure/handoff lane phase: `317`.
 
 Synchronization rules:
 1. `309` is required before `310` begins.

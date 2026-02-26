@@ -70,7 +70,8 @@ def test_lane_table_has_strict_308_to_317_order() -> None:
 def test_two_track_map_is_explicit() -> None:
     text = _read()
     assert "Runtime/provider track phases: `310`, `312`, `314`, `316`." in text
-    assert "Schema/evidence track phases: `309`, `311`, `313`, `315`, `317`." in text
+    assert "Schema/evidence track phases: `309`, `311`, `313`, `315`." in text
+    assert "Closure/handoff lane phase: `317`." in text
 
 
 def test_no_ratification_before_lock_guard_present() -> None:
