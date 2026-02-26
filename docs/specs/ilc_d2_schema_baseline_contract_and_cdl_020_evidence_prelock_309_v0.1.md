@@ -13,6 +13,7 @@ This phase is contract/evidence only. It does not implement `ilc_core/` runtime 
 ## 2. CDL-020 state and option inventory
 
 Source of truth: `docs/specs/ilc_constitutional_decision_log_v0.1.md`.
+Values below are derived from the parsed CDL-020 row in the decision log at phase execution time.
 
 Current CDL-020 row state:
 - `status: open`
