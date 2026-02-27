@@ -7,17 +7,18 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from ilc_core.ledger.canon_bundle_utils import derive_key_id
+from ilc_core.ledger.canon_bundle_utils import derive_key_fingerprint, derive_key_id
 from ilc_core.ledger.canon_bundle_key_registry import get_registry
 
 
-def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
+def verify_manifest_signature(bundle_dir: Path, key: bytes, mode: str = "compatibility") -> bool:
     """
     Verify the HMAC-SHA256 signature of a bundle's manifest.
     
     Args:
         bundle_dir: Path to the bundle directory.
         key: The byte string shared secret key.
+        mode: Verification mode (`compatibility` or `asymmetric_required`).
         
     Returns:
         True if signature is valid, False otherwise.
@@ -25,6 +26,9 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
     Raises:
         FileNotFoundError: If manifest.json or manifest.sig are missing.
     """
+    if mode not in {"compatibility", "asymmetric_required"}:
+        return False
+
     manifest_path = bundle_dir / "manifest.json"
     sig_path = bundle_dir / "manifest.sig"
     
@@ -68,6 +72,12 @@ def verify_manifest_signature(bundle_dir: Path, key: bytes) -> bool:
         return False
 
     if key_id != derive_key_id(key):
+        return False
+
+    key_fingerprint = manifest_json.get("key_fingerprint")
+    if mode == "asymmetric_required" and key_fingerprint is None:
+        return False
+    if key_fingerprint is not None and key_fingerprint != derive_key_fingerprint(key):
         return False
 
     try:

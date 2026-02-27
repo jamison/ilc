@@ -6,6 +6,7 @@ import base64
 import hashlib
 import hmac
 import json
+from tempfile import TemporaryDirectory
 from pathlib import Path
 
 import pytest
@@ -42,8 +43,6 @@ def _rewrite_manifest_and_resign(bundle_dir: Path, key: bytes, mutate_fn) -> Non
 def test_bundle_mode_switch_enforces_fingerprint_presence() -> None:
     key = b"secret_key"
 
-    from tempfile import TemporaryDirectory
-
     with TemporaryDirectory() as tmp:
         bundle = Path(tmp) / "bundle"
         write_canon_export_bundle({"canon_hash": "abc"}, {"ok": True}, bundle)
@@ -57,8 +56,6 @@ def test_bundle_mode_switch_enforces_fingerprint_presence() -> None:
 
 def test_bundle_invalid_mode_rejected() -> None:
     key = b"secret_key"
-
-    from tempfile import TemporaryDirectory
 
     with TemporaryDirectory() as tmp:
         bundle = Path(tmp) / "bundle"

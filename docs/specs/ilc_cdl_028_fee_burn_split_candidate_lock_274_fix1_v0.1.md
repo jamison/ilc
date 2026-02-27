@@ -54,6 +54,9 @@ Hard constraints applied before winner selection:
 Selection rule:
 - choose lowest `composite_score` among candidates that pass all hard constraints.
 
+Calibration disclosure:
+- penalty anchors in the scoring geometry (`0.10`, `0.11`, `0.12`) were calibrated to align with prior Phase-256/271 economic analysis; they are deterministic working parameters for this prelock and are not independently ratified policy constants.
+
 Output artifacts:
 - `out/phase_274_fix1/cdl_028_fee_burn_candidate_sweep.csv`
 - `out/phase_274_fix1/cdl_028_candidate_selection.json`
@@ -69,6 +72,9 @@ Selected candidate from deterministic sweep:
 Runner-up candidates and rejection rationale:
 1. candidate `0.15` (`15%`, option `other percentages`) — rejected due to higher composite score (`0.090559`) than selected candidate.
 2. candidate `0.05` (`5%`, option `other percentages`) — rejected due to higher composite score (`0.096036`) than selected candidate.
+
+Named-option viability under this constraint set:
+- `0.30` (`30% burn`) and `0.50` (`50% burn`) failed hard constraints in this sweep and were not eligible for winner selection.
 
 Phase 274 ratification carry-forward rule:
 - the sensitive Phase 274 lane must copy this selected value unchanged and must not override it.

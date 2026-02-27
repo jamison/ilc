@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 from ilc_core.exceptions import LedgerExportContractError
-from ilc_core.ledger.canon_bundle_utils import derive_key_id
+from ilc_core.ledger.canon_bundle_utils import derive_key_fingerprint, derive_key_id
 
 
 def load_key_from_file(path: Path) -> bytes:
@@ -52,6 +52,7 @@ def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path
     # Load manifest, add key metadata, and rewrite
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["key_id"] = derive_key_id(key)
+    manifest["key_fingerprint"] = derive_key_fingerprint(key)
     manifest["sig_alg"] = "hmac-sha256"
     manifest["signed_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     
