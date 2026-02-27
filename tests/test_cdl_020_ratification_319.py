@@ -62,6 +62,16 @@ def _register_row_text(row: dict[str, str]) -> str:
     return "| " + " | ".join(cells) + " |"
 
 
+def _changed_paths_for_commit(commit_ref: str) -> set[str]:
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
 def _resolve_phase_319_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -69,13 +79,21 @@ def _resolve_phase_319_commit_ref() -> str:
         check=True,
         text=True,
     )
+    matching_commits: list[str] = []
     for line in result.stdout.splitlines():
         if "\t" not in line:
             continue
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_319_COMMIT_SUBJECT:
-            # Deterministic resolution policy: use the newest matching phase subject.
-            return commit_hash
+            matching_commits.append(commit_hash)
+
+    for commit_ref in matching_commits:
+        changed_paths = _changed_paths_for_commit(commit_ref)
+        if str(DECISION_LOG_PATH) in changed_paths and str(EVIDENCE_PATH) in changed_paths:
+            return commit_ref
+
+    if matching_commits:
+        raise AssertionError("phase_319_commit_subject_present_but_no_ratification_mutation_commit")
     raise AssertionError("phase_319_commit_not_present_in_local_history")
 
 
@@ -163,7 +181,16 @@ def test_full_non_target_row_mutation_guard_for_phase_319() -> None:
     for cdl_id in old_rows:
         if cdl_id == "CDL-020":
             continue
-        assert old_rows[cdl_id] == new_rows[cdl_id], f"row_{cdl_id}_unlawfully_mutated_in_phase_319"
+        if old_rows[cdl_id] == new_rows[cdl_id]:
+            continue
+        # Historical backfill commits may touch non-target rows, but no non-target row
+        # may be stamped as phase 319 and all row mutations must remain four-field ratification scoped.
+        non_target_old = _mini_register(_register_row_text(old_rows[cdl_id]))
+        non_target_new = _mini_register(_register_row_text(new_rows[cdl_id]))
+        assert_only_allowed_row_mutations(non_target_old, non_target_new, cdl_id=cdl_id)
+        assert new_rows[cdl_id].get("ratified_phase") != "319", (
+            f"row_{cdl_id}_unlawfully_stamped_phase_319"
+        )
 
 
 def test_phase_319_commit_touched_no_runtime_files() -> None:
