@@ -12,3 +12,6 @@ cryptography>=41.0.0
 
 # MCP schema validation (Phase 66D)
 jsonschema>=4.0.0
+
+# Testing (Phase 236)
+pytest>=8.0.0
