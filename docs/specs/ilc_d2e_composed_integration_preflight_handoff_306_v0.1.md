@@ -68,7 +68,9 @@ Boundary confirmations for this phase:
 
 Residual risks:
 - preflight remains synthetic and does not replace operational epoch telemetry,
-- medium-latency tails are visible in snapshot and should remain under watch in closure reporting.
+- medium-latency tails are visible in snapshot and should remain under watch in closure reporting,
+- `kpi_bundle_backend_unavailable_rate` has tight `S2` headroom in this preflight (single-event numerator against the lane denominator), so Phase 307 should call out threshold sensitivity explicitly,
+- `kpi_provider_blocked_recovery_ratio` in this preflight reflects true recovery events only; provider-blocked error handling alone must not be interpreted as recovery.
 
 Carry-forward pointer:
 - Phase 307 closure gate should consume this snapshot and handoff, rerun composed preflight categories, and verify closure-gate command categories remain green before 308+ handoff.

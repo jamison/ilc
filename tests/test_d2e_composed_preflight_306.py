@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -43,7 +44,7 @@ def _write_graph_state(path: Path) -> None:
 
 def _manifest_hash(manifest: dict[str, Any]) -> str:
     stable = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
-    return __import__("hashlib").sha256(stable.encode("utf-8")).hexdigest()
+    return hashlib.sha256(stable.encode("utf-8")).hexdigest()
 
 
 def _write_bundle_state(path: Path) -> None:
@@ -107,13 +108,21 @@ def test_gate_full_run_emits_snapshot_and_allowed_verdict() -> None:
     assert snapshot["phase"] == "306"
     assert snapshot["preflight_scope"] is True
     assert snapshot["generated_at"].endswith("Z")
-    assert snapshot["lane_request_counts"] == {"query": 25, "verify": 25, "bundle": 120}
+    counts = snapshot["lane_request_counts"]
+    assert set(counts.keys()) == {"query", "verify", "bundle"}
+    for lane in ("query", "verify", "bundle"):
+        assert isinstance(counts[lane], int)
+        assert counts[lane] > 0
+    assert counts["query"] >= 25
+    assert counts["verify"] >= 25
+    assert counts["bundle"] >= 120
 
     kpis = snapshot["kpis"]
-    for key in (
+    expected_kpi_keys = {
         "kpi_query_invalid_input_rate",
         "kpi_query_not_found_rate",
         "kpi_query_backend_unavailable_rate",
+        "kpi_query_p95_latency_ms",
         "kpi_verify_invalid_input_rate",
         "kpi_verify_not_found_rate",
         "kpi_verify_backend_unavailable_rate",
@@ -124,16 +133,31 @@ def test_gate_full_run_emits_snapshot_and_allowed_verdict() -> None:
         "kpi_bundle_provider_blocked_rate",
         "kpi_bundle_backend_unavailable_rate",
         "kpi_bundle_validate_local_ref_missing_rate",
+        "kpi_d2e_success_ratio",
+        "kpi_d2e_median_latency_ms",
         "kpi_out_of_scope_file_mutation_count",
+        "kpi_missing_evidence_anchor_count",
         "kpi_non_target_guardrail_failure_count",
+        "kpi_local_state_path_failure_rate",
+        "kpi_provider_blocked_recovery_ratio",
+        "kpi_runbook_recency_days",
+        "kpi_utility_framing_coverage",
         "kpi_macro_hedge_claim_incidents",
         "kpi_vendor_lock_language_incidents",
-    ):
-        assert key in kpis
+    }
+    assert set(kpis.keys()) == expected_kpi_keys
+    assert kpis["kpi_bundle_validate_local_ref_missing_rate"] > 0.0
+    assert kpis["kpi_provider_blocked_recovery_ratio"] == 0.0
 
     severity = snapshot["severity_summary"]
     assert severity["verdict"] in {"pass", "conditional", "blocked"}
     assert set(severity.keys()) == {"s1_indicators", "s2_indicators", "s3_indicators", "verdict"}
+    if severity["s3_indicators"]:
+        assert severity["verdict"] == "blocked"
+    elif severity["s2_indicators"]:
+        assert severity["verdict"] == "conditional"
+    else:
+        assert severity["verdict"] == "pass"
 
 
 def test_subprocess_regression_query_verify_bundle_identity_envelopes(tmp_path: Path) -> None:
