@@ -9,6 +9,7 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decisio
 
 
 ARTIFACT_PATH = Path("docs/specs/ilc_wire_transport_contract_and_cdl_024_evidence_prelock_322_v0.1.md")
+TEST_PATH = Path("tests/test_wire_transport_contract_and_cdl_024_evidence_prelock_322.py")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 PHASE_322_COMMIT_SUBJECT = "docs(g8): phase 322 wire transport contract and cdl-024 evidence prelock"
 
@@ -81,6 +82,16 @@ def test_boundary_statements_are_explicit() -> None:
         assert token in text
 
 
+def _changed_paths_for_commit(commit_ref: str) -> set[str]:
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
 def _resolve_phase_322_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -88,12 +99,19 @@ def _resolve_phase_322_commit_ref() -> str:
         check=True,
         text=True,
     )
+    matching_commits: list[str] = []
     for line in result.stdout.splitlines():
         if "\t" not in line:
             continue
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_322_COMMIT_SUBJECT:
-            return commit_hash
+            matching_commits.append(commit_hash)
+    for commit_ref in matching_commits:
+        changed_paths = _changed_paths_for_commit(commit_ref)
+        if str(ARTIFACT_PATH) in changed_paths and str(TEST_PATH) in changed_paths:
+            return commit_ref
+    if matching_commits:
+        raise AssertionError("phase_322_commit_subject_present_but_no_contract_artifact_commit")
     raise AssertionError("phase_322_commit_not_present_in_local_history")
 
 
