@@ -40,7 +40,8 @@ def test_cdl_022_state_candidate_and_option_inventory_are_explicit() -> None:
     text = _read()
     row = parse_decision_register_rows(Path(DECISION_LOG_PATH).read_text(encoding="utf-8"))["CDL-022"]
     assert "CDL-022" in text
-    assert f"status: {row.get('status')}" in text
+    # Phase-311 is a historical prelock artifact and must preserve pre-ratification state.
+    assert "status: open" in text
     assert f"current_candidate: {row.get('current_candidate')}" in text
     for option_token in [token.strip() for token in row.get("options", "").split(",") if token.strip()]:
         assert option_token in text
