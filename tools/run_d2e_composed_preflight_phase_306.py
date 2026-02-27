@@ -12,6 +12,7 @@ import os
 import subprocess
 import sys
 import time
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -47,13 +48,18 @@ def _payload(result: subprocess.CompletedProcess[str]) -> dict[str, Any]:
     return json.loads(blob)
 
 
-def _write_graph_state(path: Path) -> None:
+def _write_graph_state(path: Path, *, with_refs: bool = True) -> None:
+    nodes = (
+        [
+            {"id": "node-1", "claim_id": "claim-a", "payload": {"text": "alpha"}},
+            {"id": "node-2", "claim_id": "claim-b", "payload": {"text": "beta"}},
+        ]
+        if with_refs
+        else []
+    )
     state = {
         "schema_version": "d2e03.v0.1",
-        "nodes": [
-            {"id": "node-1", "claim_id": "claim-a", "payload": {"text": "alpha"}},
-            {"node_id": "node-2", "claim_id": "claim-b", "payload": {"text": "beta"}},
-        ],
+        "nodes": nodes,
         "edges": [],
         "epochs": [{"epoch": 9, "issued_ilc": 42.0}],
     }
@@ -73,7 +79,7 @@ def _write_identity_state(path: Path) -> None:
 
 def _manifest_hash(manifest: dict[str, Any]) -> str:
     stable = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
-    return __import__("hashlib").sha256(stable.encode("utf-8")).hexdigest()
+    return hashlib.sha256(stable.encode("utf-8")).hexdigest()
 
 
 def _write_bundle_state(path: Path) -> None:
@@ -251,7 +257,11 @@ def _run_verify_lane(env: dict[str, str]) -> dict[str, Any]:
     }
 
 
-def _run_bundle_lane(env: dict[str, str], broken_bundle_env: dict[str, str]) -> dict[str, Any]:
+def _run_bundle_lane(
+    env: dict[str, str],
+    broken_bundle_env: dict[str, str],
+    missing_ref_graph_path: Path,
+) -> dict[str, Any]:
     total = 0
     invalid = 0
     not_found = 0
@@ -274,7 +284,7 @@ def _run_bundle_lane(env: dict[str, str], broken_bundle_env: dict[str, str]) -> 
         total += 1
         latencies.append(elapsed)
 
-    for _ in range(39):
+    for _ in range(38):
         result, elapsed = _run_cli(
             [
                 "bundle",
@@ -290,12 +300,28 @@ def _run_bundle_lane(env: dict[str, str], broken_bundle_env: dict[str, str]) -> 
         total += 1
         latencies.append(elapsed)
 
+    result, elapsed = _run_cli(
+        [
+            "bundle",
+            "validate-local",
+            "--bundle-cid",
+            "bafy-bundle-local",
+            "--graph-state",
+            str(missing_ref_graph_path),
+        ],
+        env,
+    )
+    _expect(result, 1, "bundle_manifest_invalid")
+    total += 1
+    latencies.append(elapsed)
+    manifest_invalid += 1
+    validate_ref_missing += 1
+
     result, elapsed = _run_cli(["bundle", "inspect", "--bundle-cid", "bafy-bundle-blocked"], env)
     _expect(result, 1, "bundle_provider_blocked")
     total += 1
     latencies.append(elapsed)
     provider_blocked += 1
-    provider_blocked_resolved += 1
 
     result, elapsed = _run_cli(["bundle", "inspect", "--bundle-cid", "bafy-bundle-local"], broken_bundle_env)
     _expect(result, 1, "bundle_backend_unavailable")
@@ -443,11 +469,13 @@ def main() -> int:
     with TemporaryDirectory(prefix="phase306_preflight_") as tmpdir:
         work = Path(tmpdir)
         graph_path = work / "graph.json"
+        missing_ref_graph_path = work / "missing_ref_graph.json"
         identity_path = work / "identity.json"
         bundle_path = work / "bundle.json"
         broken_bundle_path = work / "bundle_broken.json"
 
-        _write_graph_state(graph_path)
+        _write_graph_state(graph_path, with_refs=True)
+        _write_graph_state(missing_ref_graph_path, with_refs=False)
         _write_identity_state(identity_path)
         _write_bundle_state(bundle_path)
         broken_bundle_path.write_text("{broken_json", encoding="utf-8")
@@ -462,7 +490,7 @@ def main() -> int:
 
         query_metrics = _run_query_lane(env)
         verify_metrics = _run_verify_lane(env)
-        bundle_metrics = _run_bundle_lane(env, broken_bundle_env)
+        bundle_metrics = _run_bundle_lane(env, broken_bundle_env, missing_ref_graph_path)
         _run_cross_lane_envelope_regression(env)
 
         snapshot = _build_snapshot(query_metrics, verify_metrics, bundle_metrics)
