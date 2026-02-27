@@ -23,6 +23,11 @@ def derive_key_id(key_bytes: bytes) -> str:
     return sha256(key_bytes).hexdigest()[:16]
 
 
+def derive_key_fingerprint(key_bytes: bytes) -> str:
+    """Derive the canonical full SHA-256 signer fingerprint from key bytes."""
+    return sha256(key_bytes).hexdigest()
+
+
 
 # Known issue patterns for normalization
 KNOWN_ISSUE_MAP = {

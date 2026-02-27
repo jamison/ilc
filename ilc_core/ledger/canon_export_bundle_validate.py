@@ -22,7 +22,7 @@ REQUIRED_MANIFEST_KEYS = {
     "canon_hash", "export_path", "validate_path", "hash_alg"
 }
 OPTIONAL_MANIFEST_KEYS = {
-    "export_format", "key_id", "sig_alg", "signed_at",
+    "export_format", "key_id", "key_fingerprint", "sig_alg", "signed_at",
 }
 
 

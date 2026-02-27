@@ -129,6 +129,7 @@ def verify_channel_file_signature(
     channel_path: Path,
     key: bytes,
     sig_path: Optional[Path] = None,
+    mode: str = "compatibility",
 ) -> dict:
     """
     Verify a detached channel file signature.
@@ -137,10 +138,14 @@ def verify_channel_file_signature(
         channel_path: Path to channel file.
         key: Verification key bytes.
         sig_path: Optional path to .sig file.
+        mode: Verification mode (`compatibility` or `asymmetric_required`).
     
     Returns:
         Dict with {ok, errors, warnings, ...}.
     """
+    if mode not in {"compatibility", "asymmetric_required"}:
+        return {"ok": False, "errors": ["channel_signature_invalid_mode"], "warnings": []}
+
     errors = []
     warnings = []
     
@@ -203,7 +208,11 @@ def verify_channel_file_signature(
         # Since we passed a specific key, we expect it to match.
         errors.append("channel_signature_key_unknown")
 
-    # 9. Canonical fingerprint check (compatibility mode: optional for legacy sidecars)
+    # 9. Canonical fingerprint check
+    if mode == "asymmetric_required" and "key_fingerprint" not in sig_data:
+        errors.append("channel_signature_missing_fingerprint")
+
+    # compatibility mode: optional for legacy sidecars
     if "key_fingerprint" in sig_data:
         expected_fingerprint = _derive_key_fingerprint(key)
         if sig_data["key_fingerprint"] != expected_fingerprint:

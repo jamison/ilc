@@ -96,6 +96,18 @@ class TestCanonExportBundleVerifySig:
         _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
         assert verify_manifest_signature(signed_bundle, test_key) is False
 
+    def test_verify_key_fingerprint_mismatch(self, signed_bundle, test_key):
+        def mutate(manifest):
+            manifest["key_fingerprint"] = "f" * 64
+        _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
+        assert verify_manifest_signature(signed_bundle, test_key) is False
+
+    def test_verify_accepts_legacy_manifest_without_key_fingerprint(self, signed_bundle, test_key):
+        def mutate(manifest):
+            manifest.pop("key_fingerprint", None)
+        _rewrite_manifest_and_resign(signed_bundle, test_key, mutate)
+        assert verify_manifest_signature(signed_bundle, test_key) is True
+
     def test_cli_integration(self, signed_bundle, tmp_path):
         # Write key file
         key_file = tmp_path / "key.txt"

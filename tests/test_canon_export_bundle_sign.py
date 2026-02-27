@@ -6,7 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
-from ilc_core.ledger.canon_bundle_utils import derive_key_id
+from ilc_core.ledger.canon_bundle_utils import derive_key_fingerprint, derive_key_id
 
 class TestCanonExportBundleSign:
     
@@ -78,6 +78,8 @@ class TestCanonExportBundleSign:
         sign_manifest(valid_bundle, test_key, overwrite=True)
         manifest = json.loads((valid_bundle / "manifest.json").read_text())
         assert "key_id" in manifest
+        assert "key_fingerprint" in manifest
+        assert len(manifest["key_fingerprint"]) == 64
         assert manifest["sig_alg"] == "hmac-sha256"
         assert manifest["signed_at"].endswith("Z")
 
@@ -89,3 +91,9 @@ class TestCanonExportBundleSign:
         assert manifest["key_id"] == expected_key_id
         assert len(manifest["key_id"]) == 16
 
+    def test_key_fingerprint_derived_from_key_bytes(self, valid_bundle, test_key):
+        """key_fingerprint should be derived from full sha256(key)."""
+        sign_manifest(valid_bundle, test_key, overwrite=True)
+        manifest = json.loads((valid_bundle / "manifest.json").read_text())
+        expected_key_fingerprint = derive_key_fingerprint(test_key)
+        assert manifest["key_fingerprint"] == expected_key_fingerprint

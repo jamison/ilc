@@ -58,6 +58,8 @@ class TestRegistrySigningVerification:
         assert sig_path.exists()
         sig_data = json.loads(sig_path.read_text())
         assert sig_data["sig_alg"] == "hmac-sha256"
+        assert "key_fingerprint" in sig_data
+        assert len(sig_data["key_fingerprint"]) == 64
         assert "signature_hex" in sig_data
         assert "registry_hash" in sig_data
     
@@ -111,6 +113,31 @@ class TestRegistrySigningVerification:
         verify_result = verify_registry_file_signature(valid_registry, test_key)
         assert not verify_result["ok"]
         assert "signature_mismatch" in verify_result["errors"]
+
+    def test_verify_fingerprint_mismatch_fails(self, valid_registry, test_key):
+        """Verification fails when canonical fingerprint does not match."""
+        sign_registry_file(valid_registry, test_key)
+
+        sig_path = valid_registry.with_suffix(valid_registry.suffix + ".sig")
+        sig_data = json.loads(sig_path.read_text())
+        sig_data["key_fingerprint"] = "f" * 64
+        sig_path.write_text(json.dumps(sig_data))
+
+        verify_result = verify_registry_file_signature(valid_registry, test_key)
+        assert not verify_result["ok"]
+        assert "signature_fingerprint_mismatch" in verify_result["errors"]
+
+    def test_verify_accepts_legacy_sidecar_without_fingerprint(self, valid_registry, test_key):
+        """Legacy sidecars without fingerprint remain valid in compatibility mode."""
+        sign_registry_file(valid_registry, test_key)
+
+        sig_path = valid_registry.with_suffix(valid_registry.suffix + ".sig")
+        sig_data = json.loads(sig_path.read_text())
+        sig_data.pop("key_fingerprint", None)
+        sig_path.write_text(json.dumps(sig_data))
+
+        verify_result = verify_registry_file_signature(valid_registry, test_key)
+        assert verify_result["ok"]
     
     def test_custom_sig_path(self, valid_registry, test_key, tmp_path):
         """Custom signature path works."""
