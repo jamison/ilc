@@ -97,7 +97,7 @@ Interpretation:
 ## 5. Exploratory simulation readout (mode-qualified)
 
 Exploratory assets (not canonical):
-- Script: `simulations/sim_genesis_accrual_centrality_reputation_sweep_274_exploratory.py` (untracked/uncommitted).
+- Script: `simulations/sim_genesis_accrual_centrality_reputation_sweep_274_exploratory.py` (tracked exploratory artifact; not a canonical policy surface).
 - Local outputs: `out/genesis_accrual_sweep_274_exploratory/*.csv|*.json` (working-tree local evidence only).
 
 Observed sweep size:

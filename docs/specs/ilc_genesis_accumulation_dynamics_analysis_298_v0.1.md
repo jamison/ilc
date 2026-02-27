@@ -162,7 +162,7 @@ The clamp has no direct impact on how many ILC tokens Genesis receives per epoch
 
 ### Current status
 
-`simulations/sim_genesis_accrual_centrality_reputation_sweep_274_exploratory.py` exists as an **untracked, uncommitted** file. It was written during the Phase 274 window and contains a stale mechanism note: "CDL-027 schedule constants remain open." CDL-027 is now ratified (H=48, monthly epochs).
+`simulations/sim_genesis_accrual_centrality_reputation_sweep_274_exploratory.py` exists as a tracked exploratory artifact. It was written during the Phase 274 window and is retained as historical exploratory evidence rather than canonical ratified policy.
 
 ### What the simulation models
 
