@@ -5,8 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 
-from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
-
 
 ARTIFACT_PATH = Path("docs/specs/ilc_genesis_state_bundle_contract_and_cdl_022_evidence_prelock_311_v0.1.md")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
@@ -38,12 +36,15 @@ def test_required_sections_present() -> None:
 
 def test_cdl_022_state_candidate_and_option_inventory_are_explicit() -> None:
     text = _read()
-    row = parse_decision_register_rows(Path(DECISION_LOG_PATH).read_text(encoding="utf-8"))["CDL-022"]
     assert "CDL-022" in text
     # Phase-311 is a historical prelock artifact and must preserve pre-ratification state.
     assert "status: open" in text
-    assert f"current_candidate: {row.get('current_candidate')}" in text
-    for option_token in [token.strip() for token in row.get("options", "").split(",") if token.strip()]:
+    assert "current_candidate: genesis bundle + ceremony (proposed)" in text
+    for option_token in (
+        "genesis bundle only",
+        "genesis bundle + ceremony",
+        "ad hoc bootstrapping",
+    ):
         assert option_token in text
 
 

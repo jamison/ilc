@@ -5,8 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 
-import pytest
-
 
 ARTIFACT_PATH = Path("docs/specs/ilc_phase_318_327_sequence_lock_v0.1.md")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
@@ -136,7 +134,7 @@ def test_mandatory_entry_exit_gates_exist_for_each_phase() -> None:
         assert f"| Phase {phase} |" in section
 
 
-def _resolve_phase_318_commit_ref_or_skip() -> str:
+def _resolve_phase_318_commit_ref_or_fail() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
         capture_output=True,
@@ -149,11 +147,11 @@ def _resolve_phase_318_commit_ref_or_skip() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_318_COMMIT_SUBJECT:
             return commit_hash
-    pytest.skip("phase_318_commit_not_present_in_local_history")
+    raise AssertionError("phase_318_commit_not_present_in_local_history")
 
 
 def test_no_decision_log_mutation_in_phase_commit() -> None:
-    commit_ref = _resolve_phase_318_commit_ref_or_skip()
+    commit_ref = _resolve_phase_318_commit_ref_or_fail()
     result = subprocess.run(
         ["git", "show", "--name-only", "--pretty=", commit_ref],
         capture_output=True,
@@ -165,7 +163,7 @@ def test_no_decision_log_mutation_in_phase_commit() -> None:
 
 
 def test_no_runtime_mutation_in_phase_commit() -> None:
-    commit_ref = _resolve_phase_318_commit_ref_or_skip()
+    commit_ref = _resolve_phase_318_commit_ref_or_fail()
     result = subprocess.run(
         ["git", "show", "--name-only", "--pretty=", commit_ref],
         capture_output=True,
