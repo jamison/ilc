@@ -73,6 +73,7 @@ def test_phase_233_queue_mapping_and_dependency_ordering_present() -> None:
     assert "CDL-019" in queue
     assert "CDL-025" in queue
     assert "CDL-030" in queue
+    assert "CDL-031" in queue
 
     deps = _section(text, "## 6. Dependency map")
     assert "must precede" in deps
