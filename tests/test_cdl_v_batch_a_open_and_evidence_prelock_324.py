@@ -165,11 +165,13 @@ def test_evidence_prelock_files_exist_and_have_required_tokens() -> None:
 
 def test_decision_log_contains_exact_new_rows() -> None:
     text = _read(DECISION_LOG_PATH)
-    for row_text in (EXPECTED_V1_ROW, EXPECTED_V2_ROW, EXPECTED_V3_ROW):
+    historical_text = _decision_log_text_at_ref(_resolve_phase_324_commit_ref())
+    # The Phase-324 `CDL-V1` row is a historical prelock reference and later ratification must not invalidate it.
+    assert EXPECTED_V1_ROW in historical_text
+    for row_text in (EXPECTED_V2_ROW, EXPECTED_V3_ROW):
         assert row_text in text
 
     rows = parse_decision_register_rows(text)
-    assert rows["CDL-V1"]["status"] == "open"
     assert rows["CDL-V1"]["current_candidate"] == "exponential half-life decay (proposed)"
     assert rows["CDL-V2"]["status"] == "open"
     assert rows["CDL-V2"]["current_candidate"] == "hybrid heuristic resistance (proposed)"
@@ -179,7 +181,7 @@ def test_decision_log_contains_exact_new_rows() -> None:
 
 def test_new_rows_have_no_ratification_metadata() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    for cdl_id in sorted(EXPECTED_NEW_IDS):
+    for cdl_id in ("CDL-V2", "CDL-V3"):
         row = rows[cdl_id]
         assert row["status"] == "open"
         assert "ratified_phase" not in row, cdl_id
