@@ -25,6 +25,17 @@ def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.
     return subprocess.run(["bash", str(GATE_PATH)] + args, capture_output=True, text=True, env=env, check=False)
 
 
+def _clean_phase_317_gate_env() -> dict[str, str]:
+    blocked = {
+        "ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE",
+        "ILC_PHASE_316_SNAPSHOT_PATH",
+        "ILC_PHASE_317_SNAPSHOT_PATH",
+        "ILC_PHASE_317_GATE_SELFTEST",
+        "ILC_PHASE_327_GATE_SELFTEST",
+        "ILC_PHASE_327_SNAPSHOT_PATH",
+    }
+    return {key: value for key, value in os.environ.items() if key not in blocked}
+
 
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
@@ -148,7 +159,7 @@ def test_phase_317_gate_is_no_write_by_default_and_opt_in_write_uses_override_on
     canonical_hash_before = hashlib.sha256(canonical_before).hexdigest()
     canonical_mtime_before = SNAPSHOT_PATH.stat().st_mtime_ns
 
-    result = _run_gate([])
+    result = _run_gate([], env=_clean_phase_317_gate_env())
     assert result.returncode == 0
     assert "phase_317_verdict=pass" in result.stdout
 
@@ -159,7 +170,7 @@ def test_phase_317_gate_is_no_write_by_default_and_opt_in_write_uses_override_on
     assert canonical_mtime_after == canonical_mtime_before
 
     override_path = tmp_path / "phase_316_override_snapshot.json"
-    env = os.environ.copy()
+    env = _clean_phase_317_gate_env()
     env["ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE"] = "1"
     env["ILC_PHASE_316_SNAPSHOT_PATH"] = str(override_path)
     result_override = _run_gate([], env=env)
