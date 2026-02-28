@@ -107,7 +107,22 @@ run_full_gate() {
     printf '[%s/%s] %s\n' "$((idx + 1))" "$total" "${labels[$idx]}"
     printf '%s\n' "${commands[$idx]}"
 
-    if [[ "$idx" -eq 4 ]]; then
+    if [[ "$idx" -eq 2 ]]; then
+      if [[ "${ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE:-0}" == "1" ]]; then
+        bash -c "${commands[$idx]}"
+      else
+        local tmp_snapshot
+        tmp_snapshot="$(mktemp "${TMPDIR:-/tmp}/ilc_phase_317_snapshot_XXXXXX.json")"
+        if ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" bash -c "${commands[$idx]}"; then
+          :
+        else
+          local rc=$?
+          rm -f "${tmp_snapshot}"
+          return "${rc}"
+        fi
+        rm -f "${tmp_snapshot}"
+      fi
+    elif [[ "$idx" -eq 4 ]]; then
       ILC_PHASE_317_GATE_SELFTEST=1 bash -c "${commands[$idx]}"
     else
       bash -c "${commands[$idx]}"
