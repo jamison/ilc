@@ -191,13 +191,16 @@ def test_evidence_prelock_files_exist_and_have_required_tokens() -> None:
 
 def test_decision_log_contains_exact_new_rows() -> None:
     text = _read(DECISION_LOG_PATH)
-    for row_text in (EXPECTED_V4_ROW, EXPECTED_V5_ROW, EXPECTED_V6_ROW, EXPECTED_V7_ROW):
-        assert row_text in text
+    historical_text = _decision_log_text_at_ref(_resolve_phase_325_commit_ref())
+    assert EXPECTED_V4_ROW in text
+    # The Phase-325 `CDL-V5` row is a historical prelock reference and later ratification must not invalidate it.
+    assert EXPECTED_V5_ROW in historical_text
+    assert EXPECTED_V6_ROW in text
+    assert EXPECTED_V7_ROW in text
 
     rows = parse_decision_register_rows(text)
     assert rows["CDL-V4"]["status"] == "open"
     assert rows["CDL-V4"]["current_candidate"] == "minority dissent trigger plus formal reopening protocol (proposed)"
-    assert rows["CDL-V5"]["status"] == "open"
     assert rows["CDL-V5"]["current_candidate"] == "schema epoch markers plus explicit cross-version translation (proposed)"
     assert rows["CDL-V6"]["status"] == "open"
     assert rows["CDL-V6"]["current_candidate"] == "documented Genesis override with sunset and audit trail (proposed)"
@@ -207,7 +210,7 @@ def test_decision_log_contains_exact_new_rows() -> None:
 
 def test_new_rows_have_no_ratification_metadata() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    for cdl_id in sorted(EXPECTED_NEW_IDS):
+    for cdl_id in ("CDL-V4", "CDL-V6", "CDL-V7"):
         row = rows[cdl_id]
         assert row["status"] == "open"
         assert "ratified_phase" not in row, cdl_id
