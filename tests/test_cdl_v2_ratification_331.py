@@ -152,8 +152,11 @@ def test_ratification_evidence_file_exists_and_has_required_content() -> None:
 def test_phase_324_historical_prelock_hardening_patch_is_active() -> None:
     text = _read(PHASE_324_TEST_PATH)
     assert "assert EXPECTED_V2_ROW in historical_text" in text
+    assert "assert EXPECTED_V3_ROW in historical_text" in text
     assert 'assert rows["CDL-V2"]["status"] == "open"' not in text
-    assert 'for cdl_id in ("CDL-V3",)' in text
+    assert 'assert rows["CDL-V3"]["status"] == "open"' not in text
+    assert "historical_rows = parse_decision_register_rows(historical_text)" in text
+    assert 'for cdl_id in ("CDL-V1", "CDL-V2", "CDL-V3")' in text
     assert "historical prelock reference" in text
 
 
