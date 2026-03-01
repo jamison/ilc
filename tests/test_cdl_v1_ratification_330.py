@@ -154,13 +154,13 @@ def test_phase_324_historical_prelock_hardening_patch_is_active() -> None:
     text = _read(PHASE_324_TEST_PATH)
     assert "historical_text = _decision_log_text_at_ref(_resolve_phase_324_commit_ref())" in text
     assert "assert EXPECTED_V1_ROW in historical_text" in text
+    assert "assert EXPECTED_V3_ROW in historical_text" in text
     assert 'assert rows["CDL-V1"]["status"] == "open"' not in text
-    assert (
-        'for cdl_id in ("CDL-V2", "CDL-V3")' in text
-        or 'for cdl_id in ("CDL-V3",)' in text
-    )
+    assert 'assert rows["CDL-V3"]["status"] == "open"' not in text
+    assert "historical_rows = parse_decision_register_rows(historical_text)" in text
+    assert 'for cdl_id in ("CDL-V1", "CDL-V2", "CDL-V3")' in text
     assert 'assert rows["CDL-V2"]["current_candidate"] == "hybrid heuristic resistance (proposed)"' in text
-    assert 'assert rows["CDL-V3"]["status"] == "open"' in text
+    assert 'assert rows["CDL-V3"]["current_candidate"] == "cluster diversity floor (proposed)"' in text
     assert "historical prelock reference" in text
 
 

@@ -170,19 +170,21 @@ def test_decision_log_contains_exact_new_rows() -> None:
     assert EXPECTED_V1_ROW in historical_text
     # The Phase-324 `CDL-V2` row is a historical prelock reference and later ratification must not invalidate it.
     assert EXPECTED_V2_ROW in historical_text
-    assert EXPECTED_V3_ROW in text
+    # The Phase-324 `CDL-V3` row is a historical prelock reference and later ratification must not invalidate it.
+    assert EXPECTED_V3_ROW in historical_text
 
     rows = parse_decision_register_rows(text)
     assert rows["CDL-V1"]["current_candidate"] == "exponential half-life decay (proposed)"
     assert rows["CDL-V2"]["current_candidate"] == "hybrid heuristic resistance (proposed)"
-    assert rows["CDL-V3"]["status"] == "open"
     assert rows["CDL-V3"]["current_candidate"] == "cluster diversity floor (proposed)"
 
 
 def test_new_rows_have_no_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    for cdl_id in ("CDL-V3",):
-        row = rows[cdl_id]
+    historical_text = _decision_log_text_at_ref(_resolve_phase_324_commit_ref())
+    historical_rows = parse_decision_register_rows(historical_text)
+    # The Phase-324 rows are historical opening references and later ratifications must not invalidate this metadata check.
+    for cdl_id in ("CDL-V1", "CDL-V2", "CDL-V3"):
+        row = historical_rows[cdl_id]
         assert row["status"] == "open"
         assert "ratified_phase" not in row, cdl_id
         assert "ratified_date" not in row, cdl_id
