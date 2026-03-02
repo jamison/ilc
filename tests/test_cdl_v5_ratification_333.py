@@ -152,11 +152,16 @@ def test_ratification_evidence_file_exists_and_has_required_content() -> None:
 
 def test_phase_325_historical_prelock_hardening_patch_is_active() -> None:
     text = _read(PHASE_325_TEST_PATH)
+    assert "assert EXPECTED_V4_ROW in historical_text" in text
     assert "assert EXPECTED_V5_ROW in historical_text" in text
+    assert "assert EXPECTED_V6_ROW in historical_text" in text
+    assert 'assert rows["CDL-V4"]["status"] == "open"' not in text
     assert 'assert rows["CDL-V5"]["status"] == "open"' not in text
-    assert 'for cdl_id in ("CDL-V4", "CDL-V6", "CDL-V7")' in text
-    assert "sorted(EXPECTED_NEW_IDS)" not in text
-    assert "historical prelock reference" in text
+    assert 'assert rows["CDL-V6"]["status"] == "open"' not in text
+    assert 'for cdl_id in ("CDL-V7",)' in text
+    assert 'for cdl_id in ("CDL-V4", "CDL-V6", "CDL-V7")' not in text
+    assert "# The Phase-325 `CDL-V4` row is a historical prelock reference" in text
+    assert "# The Phase-325 `CDL-V6` row is a historical prelock reference" in text
 
 
 def test_decision_log_cdl_v5_is_ratified_with_expected_metadata() -> None:
