@@ -198,20 +198,21 @@ def test_decision_log_contains_exact_new_rows() -> None:
     assert EXPECTED_V5_ROW in historical_text
     # The Phase-325 `CDL-V6` row is a historical prelock reference and later dual ratification must not invalidate the Phase-325 artifact.
     assert EXPECTED_V6_ROW in historical_text
-    assert EXPECTED_V7_ROW in text
+    # The Phase-325 `CDL-V7` row is a historical prelock reference and later ratification must not invalidate the Phase-325 artifact.
+    assert EXPECTED_V7_ROW in historical_text
 
     rows = parse_decision_register_rows(text)
     assert rows["CDL-V4"]["current_candidate"] == "minority dissent trigger plus formal reopening protocol (proposed)"
     assert rows["CDL-V5"]["current_candidate"] == "schema epoch markers plus explicit cross-version translation (proposed)"
     assert rows["CDL-V6"]["current_candidate"] == "documented Genesis override with sunset and audit trail (proposed)"
-    assert rows["CDL-V7"]["status"] == "open"
     assert rows["CDL-V7"]["current_candidate"] == "Popperian basic-statement gate for agent decomposition (proposed)"
 
 
 def test_new_rows_have_no_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    for cdl_id in ("CDL-V7",):
-        row = rows[cdl_id]
+    historical_text = _decision_log_text_at_ref(_resolve_phase_325_commit_ref())
+    historical_rows = parse_decision_register_rows(historical_text)
+    for cdl_id in ("CDL-V4", "CDL-V5", "CDL-V6", "CDL-V7"):
+        row = historical_rows[cdl_id]
         assert row["status"] == "open"
         assert "ratified_phase" not in row, cdl_id
         assert "ratified_date" not in row, cdl_id
