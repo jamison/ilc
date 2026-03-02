@@ -112,7 +112,7 @@ run_full_gate() {
         bash -c "${commands[$idx]}"
       else
         local tmp_snapshot
-        tmp_snapshot="$(mktemp "${TMPDIR:-/tmp}/ilc_phase_317_snapshot_XXXXXX.json")"
+        tmp_snapshot="$(mktemp "${TMPDIR%/}/ilc_phase_317_snapshot_XXXXXX")"
         if ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" bash -c "${commands[$idx]}"; then
           :
         else
