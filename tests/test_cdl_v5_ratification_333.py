@@ -155,13 +155,19 @@ def test_phase_325_historical_prelock_hardening_patch_is_active() -> None:
     assert "assert EXPECTED_V4_ROW in historical_text" in text
     assert "assert EXPECTED_V5_ROW in historical_text" in text
     assert "assert EXPECTED_V6_ROW in historical_text" in text
+    assert "assert EXPECTED_V7_ROW in historical_text" in text
     assert 'assert rows["CDL-V4"]["status"] == "open"' not in text
     assert 'assert rows["CDL-V5"]["status"] == "open"' not in text
     assert 'assert rows["CDL-V6"]["status"] == "open"' not in text
-    assert 'for cdl_id in ("CDL-V7",)' in text
+    assert 'assert rows["CDL-V7"]["status"] == "open"' not in text
+    assert "historical_rows = parse_decision_register_rows(historical_text)" in text
+    assert 'for cdl_id in ("CDL-V4", "CDL-V5", "CDL-V6", "CDL-V7")' in text
     assert 'for cdl_id in ("CDL-V4", "CDL-V6", "CDL-V7")' not in text
+    assert 'for cdl_id in ("CDL-V7",)' not in text
     assert "# The Phase-325 `CDL-V4` row is a historical prelock reference" in text
+    assert "# The Phase-325 `CDL-V5` row is a historical prelock reference" in text
     assert "# The Phase-325 `CDL-V6` row is a historical prelock reference" in text
+    assert "# The Phase-325 `CDL-V7` row is a historical prelock reference" in text
 
 
 def test_decision_log_cdl_v5_is_ratified_with_expected_metadata() -> None:
