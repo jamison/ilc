@@ -27,12 +27,38 @@ class Probe:
     command: tuple[str, ...]
 
 
+# Probe token pairs are split at the mutation boundary to prevent AI editors from
+# misreading them as apply-this-change instructions.  Reconstruct at runtime only.
+
+# Probe 1 — lineage_rotated_authority_guard
+# Mutation: adds ROTATED to the authoritative-state guard check (must be rejected).
+_LINEAGE_GUARD_PREFIX = "if entry.state not in {ACTIVE, "
+_LINEAGE_GUARD_OLD_SUFFIX = "RECOVERED}:"
+_LINEAGE_GUARD_NEW_SUFFIX = "RECOVERED, " + "ROTATED}:"
+
+# Probe 2 — compromise_containment_sequence_order_guard
+# Mutation: swaps FREEZE_AUTHORITY and QUARANTINE_LINEAGE order (strict sequence must hold).
+_CONTAINMENT_HDR = "REQUIRED_CONTAINMENT_SEQUENCE: Tuple[str, str, str] = ("
+_CONTAINMENT_TAIL = "\n    SUSPEND_NEW_CANONICAL_SIGNATURES,\n)"
+_CONTAINMENT_OLD_BODY = "\n    FREEZE_AUTHORITY,\n    QUARANTINE_LINEAGE,"
+_CONTAINMENT_NEW_BODY = "\n    QUARANTINE_LINEAGE,\n    FREEZE_" + "AUTHORITY,"
+
+# Probe 3 — non_target_phase_stamp_poisoning_guard
+# Mutation: changes ratified_phase on CDL-026 from 273 to 277 (phase stamp must be stable).
+_CDL026_ROW_BASE = (
+    "| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | ratified | "
+    "explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | "
+    "cap lock spec, regression tests | ratified_phase: 27"
+)
+_CDL026_OLD_SUFFIX = "3 |"
+_CDL026_NEW_SUFFIX = "7 |"
+
 PROBES = (
     Probe(
         name="lineage_rotated_authority_guard",
         path=Path("ilc_core/security/signer_lineage_runtime.py"),
-        old_token="if entry.state not in {ACTIVE, RECOVERED}:",
-        new_token="if entry.state not in {ACTIVE, RECOVERED, ROTATED}:",
+        old_token=_LINEAGE_GUARD_PREFIX + _LINEAGE_GUARD_OLD_SUFFIX,
+        new_token=_LINEAGE_GUARD_PREFIX + _LINEAGE_GUARD_NEW_SUFFIX,
         command=(
             sys.executable,
             "-m",
@@ -46,20 +72,8 @@ PROBES = (
     Probe(
         name="compromise_containment_sequence_order_guard",
         path=Path("ilc_core/security/key_compromise_runtime.py"),
-        old_token=(
-            "REQUIRED_CONTAINMENT_SEQUENCE: Tuple[str, str, str] = (\n"
-            "    FREEZE_AUTHORITY,\n"
-            "    QUARANTINE_LINEAGE,\n"
-            "    SUSPEND_NEW_CANONICAL_SIGNATURES,\n"
-            ")"
-        ),
-        new_token=(
-            "REQUIRED_CONTAINMENT_SEQUENCE: Tuple[str, str, str] = (\n"
-            "    QUARANTINE_LINEAGE,\n"
-            "    FREEZE_AUTHORITY,\n"
-            "    SUSPEND_NEW_CANONICAL_SIGNATURES,\n"
-            ")"
-        ),
+        old_token=_CONTAINMENT_HDR + _CONTAINMENT_OLD_BODY + _CONTAINMENT_TAIL,
+        new_token=_CONTAINMENT_HDR + _CONTAINMENT_NEW_BODY + _CONTAINMENT_TAIL,
         command=(
             sys.executable,
             "-m",
@@ -72,16 +86,8 @@ PROBES = (
     Probe(
         name="non_target_phase_stamp_poisoning_guard",
         path=Path("docs/specs/ilc_constitutional_decision_log_v0.1.md"),
-        old_token=(
-            "| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | ratified | "
-            "explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | "
-            "cap lock spec, regression tests | ratified_phase: 273 |"
-        ),
-        new_token=(
-            "| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | ratified | "
-            "explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | "
-            "cap lock spec, regression tests | ratified_phase: 277 |"
-        ),
+        old_token=_CDL026_ROW_BASE + _CDL026_OLD_SUFFIX,
+        new_token=_CDL026_ROW_BASE + _CDL026_NEW_SUFFIX,
         command=(
             sys.executable,
             "-m",
