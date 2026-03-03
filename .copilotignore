@@ -1,0 +1,4 @@
+# Prevent editor-side AI tooling from mutating core runtime files during
+# constitutional/documentation lanes. Narrow later if runtime implementation
+# work needs targeted Copilot assistance.
+ilc_core/
