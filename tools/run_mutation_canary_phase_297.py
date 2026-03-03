@@ -72,8 +72,16 @@ PROBES = (
     Probe(
         name="non_target_phase_stamp_poisoning_guard",
         path=Path("docs/specs/ilc_constitutional_decision_log_v0.1.md"),
-        old_token="ratified_phase: 273",
-        new_token="ratified_phase: 277",
+        old_token=(
+            "| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | ratified | "
+            "explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | "
+            "cap lock spec, regression tests | ratified_phase: 273 |"
+        ),
+        new_token=(
+            "| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | ratified | "
+            "explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | "
+            "cap lock spec, regression tests | ratified_phase: 277 |"
+        ),
         command=(
             sys.executable,
             "-m",
