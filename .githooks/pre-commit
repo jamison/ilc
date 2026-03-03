@@ -26,6 +26,25 @@ if [[ -z "$phase" ]]; then
   exit 1
 fi
 
+# Block if any ilc_core/ files differ from HEAD (staged or worktree) — IDE phantom edit guard.
+# A CDL-authorized commit must not touch ilc_core/ in any way.
+dirty_runtime="$(git diff HEAD --name-only -- ilc_core/ 2>/dev/null)"
+if [[ -n "$dirty_runtime" ]]; then
+  cat <<EOF >&2
+Blocked CDL-authorized commit: ilc_core/ files are dirty.
+
+A CDL-authorized commit must not coexist with ilc_core/ changes (staged or worktree).
+Dirty ilc_core/ files:
+${dirty_runtime}
+
+Inspect and restore before committing:
+  git diff HEAD -- ilc_core/
+  git restore <file>   # if the change is unintentional (IDE phantom edit)
+  git add <file>       # only if the change is intentional and in scope
+EOF
+  exit 1
+fi
+
 git_dir="$(git rev-parse --git-dir)"
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo detached)"
 head_ref="$(git rev-parse --short HEAD 2>/dev/null || echo unborn)"
