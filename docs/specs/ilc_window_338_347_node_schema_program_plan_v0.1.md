@@ -106,6 +106,7 @@ Notably deferred from this window as a separate CDL candidate:
 - custom-extension namespace boundary and reserved-field collision rules,
 - `primitive_type` candidate set,
 - `epistemic_type` / `gate_routing` boundary,
+- explicit disposition of `confidence` and `uncertainty_note`,
 - single-primary-epistemic-lane rule,
 - explicit ban on in-place historical payload mutation.
 
@@ -161,11 +162,13 @@ Notably deferred from this window as a separate CDL candidate:
 - publish private-to-public promotion continuity prelock.
 
 **Required topics:**
+- promotion changes visibility only by creating a successor public node plus a `promotion_receipt`, never by mutating the original node,
 - provenance continuity,
 - `promotion_receipt` structure,
 - no automatic public corroboration/reuse credit carry-forward,
 - disclosed lineage and audit history rules,
-- interaction with private/semi-private/public visibility.
+- interaction with private/semi-private/public visibility,
+- explicit cross-reference to the `CDL-034` reserved-field and custom-extension model.
 
 ## Phase 345 — Reputation and Agent-Profile Adjoint Contract
 
@@ -176,6 +179,12 @@ Notably deferred from this window as a separate CDL candidate:
 - how `Agent Profile` should carry derived trust data,
 - why mutable inline node-level reputation fields remain forbidden,
 - why reputation remains downstream of lifecycle semantics.
+
+**Boundary constraints:**
+- do not lock quorum thresholds for reputation,
+- do not treat L-tier quorum levels as reputation tiers,
+- do not embed `CDL-V3` diversity criteria as implicit reputation defaults,
+- do not create a de facto reputation CDL without opening one explicitly.
 
 **Reason for non-sensitive classification:** This phase should not yet add a CDL row. It should constrain the future space and explicitly decide whether reputation deserves its own CDL lane later.
 
