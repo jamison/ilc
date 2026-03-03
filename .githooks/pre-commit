@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+readonly CDL_PATH="docs/specs/ilc_constitutional_decision_log_v0.1.md"
+
+if ! git diff --cached --name-only --diff-filter=ACMR | grep -Fxq "$CDL_PATH"; then
+  exit 0
+fi
+
+if [[ "${ILC_CDL_MUTATION_AUTHORIZED:-}" != "1" ]]; then
+  cat <<'EOF' >&2
+Blocked staged CDL mutation.
+
+`docs/specs/ilc_constitutional_decision_log_v0.1.md` is staged.
+Set `ILC_CDL_MUTATION_AUTHORIZED=1` and `ILC_CDL_MUTATION_PHASE=<phase>` to proceed.
+EOF
+  exit 1
+fi
+
+phase="${ILC_CDL_MUTATION_PHASE:-}"
+if [[ -z "$phase" ]]; then
+  echo "Blocked staged CDL mutation: ILC_CDL_MUTATION_PHASE is required for audit logging." >&2
+  exit 1
+fi
+
+git_dir="$(git rev-parse --git-dir)"
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo detached)"
+head_ref="$(git rev-parse --short HEAD 2>/dev/null || echo unborn)"
+timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+printf '%s phase=%s branch=%s head=%s path=%s\n' \
+  "$timestamp" "$phase" "$branch" "$head_ref" "$CDL_PATH" \
+  >> "${git_dir}/ilc_cdl_mutation_audit.log"
+
+exit 0
