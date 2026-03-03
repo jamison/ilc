@@ -43,13 +43,13 @@ Reputation should influence who gets trusted to evaluate, not what is true.
 
 The L-tier ladder should not become a disguised reputation ladder.
 
-The contract must do not lock quorum thresholds for reputation.
+The contract must not lock quorum thresholds for reputation; do not lock quorum thresholds for reputation.
 
-The contract must do not treat L-tier quorum levels as reputation tiers.
+The contract must not treat L-tier quorum levels as reputation tiers; do not treat L-tier quorum levels as reputation tiers.
 
-The contract must do not embed CDL-V3 diversity criteria as implicit reputation defaults.
+The contract must not embed CDL-V3 diversity criteria as implicit reputation defaults; do not embed CDL-V3 diversity criteria as implicit reputation defaults.
 
-The contract must do not create a de facto reputation CDL without opening one explicitly.
+The contract must not create a de facto reputation CDL without opening one explicitly; do not create a de facto reputation CDL without opening one explicitly.
 
 ## 6. CDL decision: does reputation require its own lane in Window 348+?
 
