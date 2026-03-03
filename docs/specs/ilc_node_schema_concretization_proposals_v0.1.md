@@ -472,6 +472,11 @@ Recommended ordering:
    - shadow-history disclosure rules
    - no automatic public credit carry-forward
 
+This breakdown is now sequenced concretely in:
+- `docs/specs/ilc_window_338_347_node_schema_program_plan_v0.1.md`
+
+That program plan keeps Window 338-347 limited to role resolution, CDL opening, and prelock work. Ratification and any later runtime implementation are deliberately deferred.
+
 ---
 
 ## 7. Recommended Defaults to Carry Forward Immediately
@@ -508,8 +513,10 @@ These are approaches I do **not** recommend:
 This document concretizes questions raised in:
 - `docs/specs/ilc_node_schema_architectural_synthesis_v0.1.md`
 - `docs/specs/ilc_cil_window_336_node_schema_session_v0.1.md`
+- `docs/specs/ilc_window_338_347_node_schema_program_plan_v0.1.md`
 
 It should be read as the next-step proposal layer:
 - synthesis = what we know,
 - CIL = what needs follow-up,
-- concretization proposals = what we should tentatively decide unless stronger evidence appears.
+- concretization proposals = what we should tentatively decide unless stronger evidence appears,
+- program plan = how the tentatively decided work should be sequenced.

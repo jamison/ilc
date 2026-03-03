@@ -248,6 +248,10 @@ A structured capture of architectural discussions from the Window 336 coherence 
 
 `docs/specs/ilc_node_schema_concretization_proposals_v0.1.md` — proposed answers and default architectural decisions intended to turn the synthesis questions into a concrete future work plan.
 
+### Follow-up artifact to review third
+
+`docs/specs/ilc_window_338_347_node_schema_program_plan_v0.1.md` — proposed Window 338-347 sequencing for the node-schema contract window, with runtime work explicitly deferred until after later ratification.
+
 ### Top 5 questions for Codex (in priority order)
 
 1. **ADM-003** (Item 13): What should the 7+1 panel's graph monitoring role look like as a spec? New ADM-003 section or separate governance doc?

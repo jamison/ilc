@@ -495,10 +495,10 @@ Before any of the above CDL lanes open:
 
 | Phase window | Recommended schema work |
 |---|---|
-| Window 338-347 | ADM-003 gap resolution; `primitive_type` canonicalization CDL |
-| Window 348-357 | `validation_state` lifecycle CDL; gate verdict format CDL |
-| Window 358-367 | Executable node CDL; privacy model CDL |
-| Window 368+ | Node header / wire protocol CDL; custom field namespace CDL |
+| Window 338-347 | ADM-003 gap resolution; `CDL-034` through `CDL-038` opening lanes and prelock artifacts; no runtime implementation |
+| Window 348-357 | Controlled ratification of `CDL-034` through `CDL-038`; runtime remains deferred until the relevant CDL is ratified |
+| Window 358-367 | First implementation window for ratified node-schema surfaces; executable-node runtime remains separately gated by its safety contract |
+| Window 368+ | Reputation CDL decision if needed; validator-core ordering lock only after dissemination/header contract proves stable |
 
 ---
 
@@ -558,5 +558,6 @@ The Narwhal/Tusk + Bullshark design pattern is well-understood in the distribute
 - `docs/specs/ilc_antigravity_context_capsule_v0.8.md` — primary context doc for Window 328-337
 - `docs/specs/ilc_integration_coherence_report_336_v0.1.md` — 7+1 panel architecture, L-tier disambiguation, ADM-003 gap
 - `docs/specs/ilc_node_schema_concretization_proposals_v0.1.md` — proposed default answers and design decisions derived from this synthesis
+- `docs/specs/ilc_window_338_347_node_schema_program_plan_v0.1.md` — proposed sequencing of the node-schema contract window and its follow-on ratification window
 - `docs/whitepaper/ilc_glossary_epistemological_constitutional_terms_v0.1.md` — canonical definitions
 - `docs/specs/ilc_reuse_diversity_anti_sybil_contract_v0.1.md` — anti-Sybil invariants, diversity penalties
