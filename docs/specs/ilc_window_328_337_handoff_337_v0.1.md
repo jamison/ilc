@@ -98,7 +98,7 @@ Phase 338+ must:
 
 Boundary statement:
 - `no decision-log mutation`
-- `no new `ilc_core/` runtime feature implementation`
+- no new `ilc_core/` runtime feature implementation
 - Phase 337 is closure-only and does not reopen or revise ratified rows.
 
 ## 10. Canonical anchors and next-sequence pointer
