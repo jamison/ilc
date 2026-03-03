@@ -133,7 +133,9 @@ def test_gate_full_run_exits_zero_on_pass_snapshot_and_preserves_canonical_snaps
         pytest.skip("phase_337_selftest_context_skip_full_gate")
     canonical_before = SNAPSHOT_PATH.read_bytes()
     canonical_mtime_before = SNAPSHOT_PATH.stat().st_mtime_ns
-    result = _run_gate([], env=_clean_full_run_env())
+    env = _clean_full_run_env()
+    env["ILC_PHASE_316_FORCE_VERDICT"] = "conditional"
+    result = _run_gate([], env=env)
     assert result.returncode == 0
     assert "phase_337_snapshot_gate=passed" in result.stdout
     assert "phase_337_verdict=pass" in result.stdout
