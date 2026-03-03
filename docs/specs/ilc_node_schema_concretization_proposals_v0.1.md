@@ -376,6 +376,8 @@ authored_payload:
   parent_edges: [CID]
   signature: bytes
   epistemic_type: enum
+  confidence: float | null
+  uncertainty_note: string | null
   visibility: enum
   channel: enum
   meta: object
@@ -393,6 +395,7 @@ Suggested contents:
 ```yaml
 protocol_interpretation:
   validation_state: enum
+  gate_routing: enum
   gate_verdict_refs: [CID]
   quorum_record_refs: [CID]
   corroboration_count: uint
@@ -401,6 +404,9 @@ protocol_interpretation:
   promotion_receipt_ref: CID | null
   attribution_status: object
 ```
+
+`gate_routing` belongs here if it is materialized at all. It is a protocol-layer derivation from
+`epistemic_type` plus any ratified override rules. It is not submitter-controlled authored payload.
 
 This should generally live as attached objects / derived views, not as inline mutation of Envelope A.
 
