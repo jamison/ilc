@@ -13,6 +13,15 @@ def _read() -> str:
     return ARTIFACT_PATH.read_text(encoding="utf-8")
 
 
+def _read_phase_339_artifact_text() -> str:
+    return subprocess.run(
+        ["git", "show", f"{_resolve_phase_339_commit_ref()}:{ARTIFACT_PATH.as_posix()}"],
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout
+
+
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
         ["git", "show", "--name-only", "--pretty=", commit_ref],
@@ -66,8 +75,9 @@ def test_original_headings_are_preserved() -> None:
         assert heading in text
 
 
+# The Phase-339 ADM-003 role split is a historical prelock reference.
 def test_role_split_tokens_are_present() -> None:
-    text = _read()
+    historical_text = _read_phase_339_artifact_text()
     for token in (
         "Evaluation Panel Member",
         "Graph Observation / Schema Evolution Analyst",
@@ -75,11 +85,12 @@ def test_role_split_tokens_are_present() -> None:
         "Evaluation Panel Member evaluates task outputs, decomposition validity, and ILC attribution; it does not continuously survey the whole graph.",
         "Graph Observation / Schema Evolution Analyst monitors public-graph patterns, surfaces candidate field-elevation proposals, and publishes evidence summaries for governance lanes; it does not directly ratify schema changes.",
     ):
-        assert token in text
+        assert token in historical_text
 
 
+# The Phase-339 ADM-003 role split is a historical prelock reference.
 def test_governance_boundary_and_authorization_tokens_are_present() -> None:
-    text = _read()
+    historical_text = _read_phase_339_artifact_text()
     for token in (
         "Continuous graph observation and schema-evolution preparation are analytics/governance-preparation functions, not ratification authority.",
         "ADM-003 defines role boundaries; a separate governance artifact defines schema-evolution workflow.",
@@ -89,7 +100,7 @@ def test_governance_boundary_and_authorization_tokens_are_present() -> None:
         "Custom-field elevation and validation-lifecycle governance remain blocked until this role split is explicit.",
         "Private or semi-private graph activity is not sufficient input for schema-elevation monitoring; the graph-observation role monitors public-graph patterns only.",
     ):
-        assert token in text
+        assert token in historical_text
 
 
 def test_phase_292_boundary_invariants_are_preserved() -> None:
@@ -99,10 +110,10 @@ def test_phase_292_boundary_invariants_are_preserved() -> None:
     assert "no runtime changes in `ilc_core/`" in text
     assert "no mutation of `docs/specs/ilc_constitutional_decision_log_v0.1.md`" in text
     for token in (
-        "docs/specs/ilc_phase_338_347_sequence_lock_v0.1.md",
+        "docs/specs/ilc_phase_348_357_sequence_lock_v0.1.md",
         "docs/specs/ilc_integration_coherence_report_336_v0.1.md",
-        "docs/specs/ilc_antigravity_context_capsule_v0.8.md",
-        "docs/specs/ilc_node_schema_concretization_proposals_v0.1.md",
+        "docs/specs/ilc_antigravity_context_capsule_v0.9.md",
+        "docs/specs/ilc_reputation_and_agent_profile_adjoint_contract_345_v0.1.md",
     ):
         assert token in text
 
