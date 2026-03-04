@@ -19,6 +19,7 @@ EXPECTED_ROW = (
     "open | raw executable payload embedded in authored envelope, structured descriptor without sandboxing, structured descriptor with sandboxed runtime binding | "
     "structured descriptor with sandboxed runtime binding (proposed) | executable descriptor schema, safety contract model, sandbox boundary semantics |"
 )
+# The Phase-343 `CDL-037` row is a historical prelock reference.
 
 
 def _read(path: Path) -> str:
@@ -168,30 +169,28 @@ def test_artifact_boundary_tokens_are_explicit() -> None:
 
 
 def test_decision_log_contains_exact_new_row_and_open_state() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_ROW in text
-    rows = parse_decision_register_rows(text)
-    row = rows["CDL-037"]
+    historical_text = _decision_log_text_at_ref(_resolve_phase_343_commit_ref())
+    assert EXPECTED_ROW in historical_text
+    historical_rows = parse_decision_register_rows(historical_text)
+    row = historical_rows["CDL-037"]
     assert row["status"] == "open"
-    assert row["current_candidate"] == "structured descriptor with sandboxed runtime binding (proposed)"
     assert "ratified_phase" not in row
     assert "ratified_date" not in row
     assert "evidence_document" not in row
 
 
 def test_mutation_scope_for_cdl_037_is_additive_only() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    assert rows["CDL-037"]["status"] == "open"
     historical_rows = parse_decision_register_rows(
         _decision_log_text_at_ref(_resolve_phase_343_commit_ref())
     )
+    assert historical_rows["CDL-037"]["status"] == "open"
     assert historical_rows["CDL-036"]["status"] == "open"
-    assert "ratified_phase" not in rows["CDL-037"]
+    assert "ratified_phase" not in historical_rows["CDL-037"]
 
 
 def test_new_row_is_appended_after_cdl_036_in_raw_line_order() -> None:
-    text = _read(DECISION_LOG_PATH)
-    register_lines = _decision_register_lines(text)
+    historical_text = _decision_log_text_at_ref(_resolve_phase_343_commit_ref())
+    register_lines = _decision_register_lines(historical_text)
     cdl_036_index = next(i for i, line in enumerate(register_lines) if line.startswith("| CDL-036 |"))
     assert register_lines[cdl_036_index + 1] == EXPECTED_ROW
 
