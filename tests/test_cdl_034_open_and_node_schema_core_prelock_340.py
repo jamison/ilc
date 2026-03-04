@@ -160,15 +160,13 @@ def test_artifact_has_required_tokens_and_authoritative_items() -> None:
 
 
 def test_decision_log_contains_exact_new_row() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_ROW in text
-    rows = parse_decision_register_rows(text)
-    assert rows["CDL-034"]["status"] == "open"
-    assert rows["CDL-034"]["current_candidate"] == "three-envelope authored/protocol/transport split (proposed)"
+    historical_text = _decision_log_text_at_ref(_resolve_phase_340_commit_ref())
+    assert EXPECTED_ROW in historical_text
 
 
 def test_new_row_has_no_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-340 `CDL-034` row is a historical prelock reference.
+    rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_340_commit_ref()))
     row = rows["CDL-034"]
     assert row["status"] == "open"
     assert "ratified_phase" not in row
@@ -177,8 +175,8 @@ def test_new_row_has_no_ratification_metadata() -> None:
 
 
 def test_new_row_is_appended_after_cdl_v7_in_raw_line_order() -> None:
-    text = _read(DECISION_LOG_PATH)
-    register_lines = _decision_register_lines(text)
+    historical_text = _decision_log_text_at_ref(_resolve_phase_340_commit_ref())
+    register_lines = _decision_register_lines(historical_text)
     v7_index = next(i for i, line in enumerate(register_lines) if line.startswith("| CDL-V7 |"))
     assert register_lines[v7_index + 1] == EXPECTED_ROW
 
