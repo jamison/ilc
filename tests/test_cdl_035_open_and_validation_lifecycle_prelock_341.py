@@ -188,8 +188,11 @@ def test_decision_log_contains_exact_new_row_and_open_state() -> None:
 def test_mutation_scope_for_cdl_035_is_additive_only() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     assert rows["CDL-035"]["status"] == "open"
-    assert rows["CDL-034"]["status"] == "open"
     assert "ratified_phase" not in rows["CDL-035"]
+    historical_rows = parse_decision_register_rows(
+        _decision_log_text_at_ref(_resolve_phase_341_commit_ref())
+    )
+    assert historical_rows["CDL-034"]["status"] == "open"
 
 
 def test_new_row_is_appended_after_cdl_034_in_raw_line_order() -> None:
