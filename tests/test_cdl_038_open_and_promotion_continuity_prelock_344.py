@@ -175,6 +175,8 @@ def test_mutation_scope_for_cdl_038_is_additive_only() -> None:
     assert historical_rows["CDL-038"]["status"] == "open"
     assert historical_rows["CDL-037"]["status"] == "open"
     assert "ratified_phase" not in historical_rows["CDL-038"]
+    assert "ratified_date" not in historical_rows["CDL-038"]
+    assert "evidence_document" not in historical_rows["CDL-038"]
 
 
 def test_new_row_is_appended_after_cdl_037_in_raw_line_order() -> None:

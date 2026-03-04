@@ -201,16 +201,17 @@ def test_phase_343_historical_prelock_hardening_patch_is_active() -> None:
 def test_phase_344_cross_cdl_hardening_patch_is_active() -> None:
     phase_344_text = _read(PHASE_344_TEST_PATH)
     assert 'assert rows["CDL-037"]["status"] == "open"' not in phase_344_text
+    assert 'assert rows["CDL-038"]["status"] == "open"' not in phase_344_text
     assert (
         'historical_rows = parse_decision_register_rows(' in phase_344_text
     )
     assert (
         '_decision_log_text_at_ref(_resolve_phase_344_commit_ref())' in phase_344_text
     )
-    assert 'assert rows["CDL-038"]["status"] == "open"' in phase_344_text
-    assert 'assert "ratified_phase" not in rows["CDL-038"]' in phase_344_text
-    assert 'assert "ratified_date" not in rows["CDL-038"]' not in phase_344_text
-    assert 'assert "evidence_document" not in rows["CDL-038"]' not in phase_344_text
+    assert 'assert historical_rows["CDL-038"]["status"] == "open"' in phase_344_text
+    assert 'assert "ratified_phase" not in historical_rows["CDL-038"]' in phase_344_text
+    assert 'assert "ratified_date" not in historical_rows["CDL-038"]' in phase_344_text
+    assert 'assert "evidence_document" not in historical_rows["CDL-038"]' in phase_344_text
 
 
 def test_decision_log_cdl_037_is_ratified_with_expected_metadata_and_scope() -> None:
