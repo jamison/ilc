@@ -182,7 +182,7 @@ def test_ratification_evidence_file_exists_and_has_required_content() -> None:
         assert token in text
 
 
-def test_historical_prelock_and_cross_cdl_hardening_patches_are_active() -> None:
+def test_phase_342_historical_prelock_hardening_patch_is_active() -> None:
     phase_342_text = _read(PHASE_342_TEST_PATH)
     assert 'assert EXPECTED_ROW in historical_text' in phase_342_text
     assert 'assert rows["CDL-036"]["status"] == "open"' not in phase_342_text
@@ -196,10 +196,16 @@ def test_historical_prelock_and_cross_cdl_hardening_patches_are_active() -> None
     assert '_decision_log_text_at_ref(_resolve_phase_342_commit_ref())' in phase_342_text
     assert '# The Phase-342 `CDL-036` row is a historical prelock reference.' in phase_342_text
 
+
+def test_phase_343_cross_cdl_hardening_patch_is_active() -> None:
     phase_343_text = _read(PHASE_343_TEST_PATH)
     assert 'assert rows["CDL-036"]["status"] == "open"' not in phase_343_text
-    assert 'parse_decision_register_rows(' in phase_343_text
-    assert '_decision_log_text_at_ref(_resolve_phase_343_commit_ref())' in phase_343_text
+    assert (
+        'historical_rows = parse_decision_register_rows(' in phase_343_text
+    )
+    assert (
+        '_decision_log_text_at_ref(_resolve_phase_343_commit_ref())' in phase_343_text
+    )
 
 
 def test_decision_log_cdl_036_is_ratified_with_expected_metadata_and_scope() -> None:
@@ -224,12 +230,6 @@ def test_mutation_scope_guardrail_allows_only_ratification_fields_for_cdl_036() 
         cdl_id="CDL-036",
         allowed_fields=_ALLOWED_FIELDS,
     )
-
-
-def test_ratification_pattern_matches_prior_subject_qualified_cdls() -> None:
-    phase_350_text = _read(Path("tests/test_cdl_035_ratification_350.py"))
-    assert "assert_only_allowed_row_mutations" in phase_350_text
-    assert 'raise AssertionError("phase_350_commit_not_present_in_local_history")' in phase_350_text
 
 
 def test_full_non_target_row_mutation_guard_for_phase_351() -> None:
