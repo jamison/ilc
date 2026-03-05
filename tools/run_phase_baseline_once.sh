@@ -10,7 +10,7 @@ Behavior:
   - Runs each command in order and fails on first non-zero exit.
   - Caches successful execution keyed by:
       * git HEAD
-      * tracked working-tree status hash
+      * working-tree status hash (tracked + untracked, excluding baseline stamp files)
       * command-list hash
   - Reuses the cached success when all key parts match.
 
@@ -66,7 +66,10 @@ mkdir -p out/monitoring
 STAMP_PATH="out/monitoring/phase_baseline_cache_${KEY}.env"
 
 HEAD_SHA="$(git rev-parse HEAD)"
-STATUS_HASH="$(git status --porcelain --untracked-files=no | shasum -a 256 | awk '{print $1}')"
+TRACKED_STATUS="$(git status --porcelain --untracked-files=no)"
+UNTRACKED_STATUS="$(git ls-files --others --exclude-standard || true)"
+UNTRACKED_STATUS="$(printf '%s\n' "$UNTRACKED_STATUS" | grep -Ev '^out/monitoring/phase_baseline_cache_.*\.env$' || true)"
+STATUS_HASH="$(printf '%s\n--\n%s\n' "$TRACKED_STATUS" "$UNTRACKED_STATUS" | shasum -a 256 | awk '{print $1}')"
 CMD_HASH="$(printf '%s\n' "${CMDS[@]}" | shasum -a 256 | awk '{print $1}')"
 
 if [[ "$FORCE" -eq 0 && -f "$STAMP_PATH" ]]; then

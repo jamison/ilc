@@ -256,11 +256,12 @@ def generate_node_dissemination_record(payload: dict[str, Any]) -> dict[str, Any
 
 
 def _validate_header_fields(header: dict[str, Any], node_id: str) -> None:
-    observed = tuple(header.keys())
-    if observed != CANDIDATE_HEADER_FIELDS:
+    observed = set(header.keys())
+    expected = set(CANDIDATE_HEADER_FIELDS)
+    if observed != expected:
         raise NodeDisseminationRuntimeError(
             "node_dissemination_header_field_set_invalid",
-            f"header_field_set_invalid:{node_id}:{observed}",
+            f"header_field_set_invalid:{node_id}:{tuple(sorted(observed))}",
         )
 
     for field in CANDIDATE_HEADER_FIELDS:

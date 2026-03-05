@@ -124,6 +124,21 @@ def test_invalid_header_field_set_and_signature_scope_violations_fail_with_token
     vector = canonical_node_dissemination_vectors()[0]
     record = generate_node_dissemination_record(vector)
 
+    reordered_header_record = copy.deepcopy(record)
+    original_header = reordered_header_record["envelopes"]["transport"]["header"]
+    reordered_header_record["envelopes"]["transport"]["header"] = {
+        "signature": original_header["signature"],
+        "payload_cid": original_header["payload_cid"],
+        "epoch_created": original_header["epoch_created"],
+        "channel": original_header["channel"],
+        "visibility": original_header["visibility"],
+        "epistemic_type": original_header["epistemic_type"],
+        "creator_agent_id": original_header["creator_agent_id"],
+        "node_id": original_header["node_id"],
+    }
+    verified = verify_node_dissemination_record(reordered_header_record)
+    assert verified["valid"] is True
+
     missing_header_field_record = copy.deepcopy(record)
     missing_header_field_record["envelopes"]["transport"]["header"].pop("payload_cid")
     try:
