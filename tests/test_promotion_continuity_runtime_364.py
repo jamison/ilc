@@ -123,6 +123,17 @@ def test_deterministic_output_for_repeated_identical_vectors() -> None:
 def test_invalid_receipt_shape_and_visibility_transitions_fail_with_tokens() -> None:
     vector = canonical_promotion_continuity_vectors()[0]
 
+    reordered_receipt = {
+        "public_successor_node_cid": vector["promotion_receipt"]["public_successor_node_cid"],
+        "promotion_epoch": vector["promotion_receipt"]["promotion_epoch"],
+        "disclosed_lineage_reference": vector["promotion_receipt"]["disclosed_lineage_reference"],
+        "original_node_cid": vector["promotion_receipt"]["original_node_cid"],
+    }
+    reordered_payload = copy.deepcopy(vector)
+    reordered_payload["promotion_receipt"] = reordered_receipt
+    verified = verify_promotion_continuity_record(generate_promotion_continuity_record(reordered_payload))
+    assert verified["valid"] is True
+
     invalid_receipt = copy.deepcopy(vector)
     invalid_receipt["promotion_receipt"].pop("promotion_epoch")
     try:

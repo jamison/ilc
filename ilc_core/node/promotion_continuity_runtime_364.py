@@ -212,11 +212,12 @@ def _normalize_promotion_receipt(raw_receipt: Any) -> dict[str, Any]:
             "promotion_receipt_not_object",
         )
 
-    observed_fields = tuple(raw_receipt.keys())
-    if observed_fields != _PROMOTION_RECEIPT_FIELDS:
+    observed_fields = set(raw_receipt.keys())
+    expected_fields = set(_PROMOTION_RECEIPT_FIELDS)
+    if observed_fields != expected_fields:
         raise PromotionContinuityRuntimeError(
             "promotion_receipt_field_set_invalid",
-            f"promotion_receipt_field_set_invalid:{observed_fields}",
+            f"promotion_receipt_field_set_invalid:{tuple(sorted(observed_fields))}",
         )
 
     original_node_cid = _validate_non_empty_string(
