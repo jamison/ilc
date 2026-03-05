@@ -172,6 +172,9 @@ def _resolve_phase_365_commit_ref_or_fail() -> str:
             "simulations/run_phase_365_simulations.py",
             "docs/specs/ilc_sim_001_002_003_commissioning_results_365_v0.1.md",
             "tests/test_phase_365_sim_commissioning.py",
+            "out/simulations/sim_001_bootstrap_threshold/run_manifest.json",
+            "out/simulations/sim_002_micro_agent_economics/run_manifest.json",
+            "out/simulations/sim_003_graph_growth/run_manifest.json",
         }.issubset(changed):
             return commit_hash
     if saw_subject_match:
