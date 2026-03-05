@@ -27,11 +27,23 @@ from .node_dissemination_runtime_362 import (
     generate_node_dissemination_record,
     verify_node_dissemination_record,
 )
+from .executable_descriptor_runtime_363 import (
+    CDL_037_DEPENDENCY,
+    EXECUTABLE_DESCRIPTOR_RUNTIME_VERSION,
+    NODE_DISSEMINATION_DEPENDENCY,
+    ExecutableDescriptorRuntimeError,
+    canonical_executable_descriptor_vectors,
+    generate_executable_descriptor_record,
+    verify_executable_descriptor_record,
+)
 
 __all__ = [
     "CDL_034_DEPENDENCY",
     "CDL_035_DEPENDENCY",
     "CDL_036_DEPENDENCY",
+    "CDL_037_DEPENDENCY",
+    "EXECUTABLE_DESCRIPTOR_RUNTIME_VERSION",
+    "NODE_DISSEMINATION_DEPENDENCY",
     "NODE_SCHEMA_CORE_DEPENDENCY",
     "NODE_DISSEMINATION_RUNTIME_VERSION",
     "NODE_SCHEMA_CORE_RUNTIME_VERSION",
@@ -40,14 +52,18 @@ __all__ = [
     "VALIDATION_LIFECYCLE_RUNTIME_VERSION",
     "NodeDisseminationRuntimeError",
     "NodeSchemaCoreValidationError",
+    "ExecutableDescriptorRuntimeError",
     "ValidationLifecycleRuntimeError",
+    "canonical_executable_descriptor_vectors",
     "canonical_node_dissemination_vectors",
     "canonical_node_schema_core_vectors",
     "canonical_validation_lifecycle_vectors",
     "generate_node_dissemination_record",
+    "generate_executable_descriptor_record",
     "generate_node_schema_core_record",
     "generate_validation_lifecycle_record",
     "verify_node_dissemination_record",
+    "verify_executable_descriptor_record",
     "verify_node_schema_core_record",
     "verify_validation_lifecycle_record",
 ]
