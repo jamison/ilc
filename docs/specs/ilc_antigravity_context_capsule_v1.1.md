@@ -16,6 +16,16 @@ ILC remains a ratification-first constitutional protocol project for autonomous 
 - Constitutional mutations remain controlled by CDL process authority, not runtime shortcuts.
 - 7+1 panel architecture remains locked for task-level epistemic evaluation (`panel_size=8`, `independence_k=3`, `outsider_seat=true`, `k=5 of m=7`).
 
+Canonical carried-forward panel and governance tokens:
+- `Quorum: k=5 of m=7 reviewers with VRF-selected outsider seat`
+- `VRF-selected outsider seat is the anti-capture mechanism`
+- `trust-tier quorum ladder: L0=3, L1=5, L2=7, L3=9, appeals escalate by +2`
+- `CDL-V3 cluster diversity floor operationalizes independence_k=3`
+- `CDL-V7 Popperian gate is the test specification; the 7+1 panel is the testing mechanism`
+- `The quorum ladder L-tiers correspond to graph epistemic tiers, not protocol/genesis-layer authority tiers and not agent reputation tiers.`
+- `The 7+1 panel quorum mechanism governs knowledge claim evaluation for task outputs, decomposition validity, and ILC attribution; it does not govern constitutional or genesis-layer protocol changes.`
+- `Genesis and constitutional changes are governed by the CDL process plus Genesis-epoch founder authority (CDL-023), CDL-V4 reopening protocol, and CDL-V6 emergency intervention.`
+
 ## 3. Project state (as of Phase 366 completion)
 
 Phase 366 complete.

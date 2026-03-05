@@ -72,6 +72,9 @@ def test_capsule_v11_has_required_state_tokens() -> None:
         "CDL-034 through CDL-038 runtime implementation tranches are complete in phases 360-364.",
         "CDL-039 remains open and implementation-barred in this window.",
         "ILC co-opts existing wallet trust rather than building competing wallet infrastructure.",
+        "Quorum: k=5 of m=7 reviewers with VRF-selected outsider seat",
+        "The quorum ladder L-tiers correspond to graph epistemic tiers, not protocol/genesis-layer authority tiers and not agent reputation tiers.",
+        "Genesis and constitutional changes are governed by the CDL process plus Genesis-epoch founder authority (CDL-023), CDL-V4 reopening protocol, and CDL-V6 emergency intervention.",
     ):
         assert token in text
 
