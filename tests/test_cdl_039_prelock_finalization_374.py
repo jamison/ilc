@@ -6,6 +6,8 @@ from pathlib import Path
 import re
 import subprocess
 
+from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
+
 
 ARTIFACT_PATH = Path("docs/specs/ilc_cdl_039_prelock_finalization_374_v0.1.md")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
@@ -104,6 +106,18 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _decision_log_text_at_ref(ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{DECISION_LOG_PATH}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_decision_log_at_ref:{ref}: {result.stderr.strip()}")
+    return result.stdout
+
+
 def _resolve_phase_374_commit_ref_or_fail() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -131,6 +145,16 @@ def _resolve_phase_374_commit_ref_or_fail() -> str:
     if matching_commits:
         raise AssertionError("phase_374_commit_subject_present_but_no_qualifying_finalization_commit")
     raise AssertionError("phase_374_commit_not_present_in_local_history")
+
+
+def test_phase_374_cdl039_row_is_historical_open_reference() -> None:
+    # The Phase-374 `CDL-039` row is a historical prelock reference.
+    rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_374_commit_ref_or_fail()))
+    row = rows["CDL-039"]
+    assert row["status"] == "open"
+    assert "ratified_phase" not in row
+    assert "ratified_date" not in row
+    assert "evidence_document" not in row
 
 
 def test_phase_374_commit_touched_required_paths_and_not_decision_log() -> None:
