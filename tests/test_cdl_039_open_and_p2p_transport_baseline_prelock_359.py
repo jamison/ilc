@@ -146,13 +146,14 @@ def test_artifact_has_required_tokens_and_authoritative_items() -> None:
 
 
 def test_decision_log_contains_exact_new_row() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_ROW in text
+    # The Phase-359 `CDL-039` row is a historical prelock reference.
+    historical_text = _decision_log_text_at_ref(_resolve_phase_359_commit_ref())
+    assert EXPECTED_ROW in historical_text
 
 
 def test_new_row_has_no_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    row = rows["CDL-039"]
+    historical_rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_359_commit_ref()))
+    row = historical_rows["CDL-039"]
     assert row["status"] == "open"
     assert "ratified_phase" not in row
     assert "ratified_date" not in row
@@ -160,7 +161,7 @@ def test_new_row_has_no_ratification_metadata() -> None:
 
 
 def test_new_row_is_appended_after_cdl_038_in_raw_line_order() -> None:
-    register_lines = _decision_register_lines(_read(DECISION_LOG_PATH))
+    register_lines = _decision_register_lines(_decision_log_text_at_ref(_resolve_phase_359_commit_ref()))
     idx = next(i for i, line in enumerate(register_lines) if line.startswith("| CDL-038 |"))
     assert register_lines[idx + 1] == EXPECTED_ROW
 
