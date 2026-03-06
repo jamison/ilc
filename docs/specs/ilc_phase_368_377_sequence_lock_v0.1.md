@@ -98,6 +98,7 @@ D2d carry-forward rules:
 - D2d runtime implementation remains deferred to Window 378+.
 - No P2P peering loop, routing loop, or gossip runtime implementation is authorized in Window 368-377.
 - Window 368 sequence-lock drafting must evaluate Levin gossip + coordinate mechanism proposals as D2d wire-protocol inputs.
+- Phase 368 records Levin proposals as carry-forward design inputs; detailed mechanism evaluation is scheduled for Phase 372 topology/privacy hardening.
 
 ## 11. Non-goals and explicit exclusions
 
