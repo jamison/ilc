@@ -40,6 +40,7 @@ Primary modeled outputs:
 - recommended stake recovery policy from policy sweep: `full`
 - maximum modeled orphaned-claim rate: `0.34`
 - maximum modeled unresolved orphan backlog rate: `0.338368`
+- epoch interpretation for this simulation: validation epoch (`1 minute`, from `ilc_core/consensus/reputation.py` implied constants), so `timeout_epochs=2` implies a `2-minute` timeout horizon under this model assumption
 
 Observed trend:
 - orphan backlog rises with longer timeout horizons and lower liveness probe cadence,
@@ -66,5 +67,10 @@ Out of scope for Phase 370:
 - CDL mutation or ratification actions,
 - D2d runtime implementation,
 - protocol-constant locking for timeout and stake recovery policy.
+
+Model limitations to carry into Phase 371/372:
+- this is a deterministic analytical model, not a stochastic network simulation (`seed=370005` is provenance metadata only),
+- timeout and liveness behavior are modeled on a validation-epoch proxy and should be revalidated against explicit D2d wire-timing semantics once specified,
+- fairness and backlog metrics are calibrated proxies to inform policy direction, not empirical performance claims.
 
 No decision-log mutation occurred. No ilc_core runtime files were changed.
