@@ -50,8 +50,12 @@ def test_artifact_contains_required_planning_boundary_tokens() -> None:
 
 def test_matrix_contains_all_four_v_series_rows() -> None:
     text = _read(ARTIFACT_PATH)
-    for row_label in ("`CDL-V1`", "`CDL-V2`", "`CDL-V3`", "`CDL-V7`"):
-        assert row_label in text
+    for row_id in ("CDL-V1", "CDL-V2", "CDL-V3", "CDL-V7"):
+        pattern = (
+            rf"\|\s*`{row_id}`\s*\|\s*[^|]+\|\s*`"
+            r"(ready_for_window_378_authorization|requires_additional_governance_input)`\s*\|"
+        )
+        assert re.search(pattern, text), f"missing_or_malformed_matrix_row:{row_id}"
 
 
 def test_matrix_uses_only_allowed_planning_status_values() -> None:

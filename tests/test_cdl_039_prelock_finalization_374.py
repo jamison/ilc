@@ -74,6 +74,11 @@ def test_artifact_contains_disposition_entries_for_all_parameter_groups() -> Non
             "`deferred_with_reason`",
         )
     )
+    # Section 6 must carry substantive clause text, not only the disposition label.
+    assert "## 6. CDL-038 scope boundary disposition" in text
+    assert "Proposed CDL-039 prelock clause text for post-expiry recovery semantics:" in text
+    assert "must re-enter via a successor-node re-assertion path" in text
+    assert "no automatic carry-forward of expired-node promotion eligibility is permitted" in text
 
 
 def test_artifact_contains_non_ratifying_finalization_statement() -> None:
