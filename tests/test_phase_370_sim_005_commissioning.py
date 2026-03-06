@@ -90,6 +90,8 @@ def test_deterministic_rerun_preserves_output_hashes(_outputs_ready: None) -> No
     assert manifest["phase"] == 370
     assert manifest["sim_id"] == "SIM-005"
     assert isinstance(manifest["seed"], int)
+    assert manifest["epoch_context"]["epoch_type"] == "validation_epoch"
+    assert manifest["epoch_context"]["epoch_duration_canonical"] == "1 minute"
     assert manifest["artifacts"], "phase_370_manifest_artifacts_empty"
 
 
