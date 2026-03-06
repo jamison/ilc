@@ -111,7 +111,12 @@ run_full_gate() {
       local tmpdir tmp_snapshot
       tmpdir="${TMPDIR:-/tmp}"
       tmp_snapshot="$(mktemp "${tmpdir%/}/ilc_phase_367_snapshot_XXXXXX")"
-      if env -u ILC_PHASE_316_FORCE_VERDICT -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" bash -c "${commands[$idx]}"; then
+      if env -u ILC_PHASE_316_FORCE_VERDICT -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
+        ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" \
+        ILC_PHASE_357_GATE_SELFTEST=1 \
+        ILC_PHASE_347_GATE_SELFTEST=1 \
+        ILC_PHASE_337_GATE_SELFTEST=1 \
+        bash -c "${commands[$idx]}"; then
         :
       else
         local rc=$?
