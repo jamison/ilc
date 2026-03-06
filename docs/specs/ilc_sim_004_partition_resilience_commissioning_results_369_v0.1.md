@@ -39,6 +39,7 @@ Primary modeled outputs:
 - minimum-divergence partition duration (under conflict threshold `0.18`): `34` epochs
 - maximum modeled conflict rate in sweep: `0.569174`
 - recommended reconciliation rule from model sweep: `highest_ecu_wins`
+- epoch interpretation for this simulation: issuance epoch (`1 month`, CDL-027 ratified Phase 276), so `T=34` implies `34 months` (approximately `2.8 years`)
 
 Observed trend:
 - conflict rate increases monotonically with partition duration and cross-partition reference pressure,
@@ -64,5 +65,10 @@ Out of scope for Phase 369:
 - CDL mutation or ratification actions,
 - D2d runtime implementation,
 - protocol-constant locking for reconnection policy.
+
+Model limitations to carry into Phase 371/372:
+- this is a deterministic analytical model, not a stochastic network simulation (`seed=369004` is provenance metadata only),
+- threshold identification is bracketed by the coarse sweep (`T=34` below threshold, `T=50` above threshold), not a precise crossover estimate,
+- cross-partition reference behavior is calibrated by fixed coefficients and should be treated as policy guidance input, not empirical measurement.
 
 No decision-log mutation occurred. No ilc_core runtime files were changed.
