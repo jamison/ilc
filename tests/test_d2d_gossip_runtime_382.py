@@ -146,17 +146,36 @@ def test_invariant_creator_agent_id_absent_from_transport_structures() -> None:
     )
     assert "creator_agent_id" not in envelope["transport_headers"]
 
+    forbidden_key_variants = (
+        "creator_agent_id",
+        "Creator_Agent_Id",
+        "creator-agent-id",
+        "CREATOR.AGENT.ID",
+    )
+    for key_variant in forbidden_key_variants:
+        try:
+            build_transport_envelope(
+                message_id="msg-382-002",
+                payload_cid="bafybeibohv7i2fylx5vzo3h5smzqj2pvyew53kkr7bt7sn4l3vhh2n7zeu",
+                channel_id="cid:9f7a8c42bb11ddee99aa22cc33ff44aa",
+                sender_peer_id="peer:beta-02",
+                transport_headers={key_variant: "cid:bad", "topic": "node.fetch"},
+            )
+            raise AssertionError("expected_creator_agent_id_rejection")
+        except D2dGossipValidationError as exc:
+            assert exc.token == "d2d_creator_agent_id_forbidden"
+
     try:
         build_transport_envelope(
-            message_id="msg-382-002",
+            message_id="msg-382-002b",
             payload_cid="bafybeibohv7i2fylx5vzo3h5smzqj2pvyew53kkr7bt7sn4l3vhh2n7zeu",
             channel_id="cid:9f7a8c42bb11ddee99aa22cc33ff44aa",
             sender_peer_id="peer:beta-02",
-            transport_headers={"creator_agent_id": "cid:bad", "topic": "node.fetch"},
+            transport_headers={"Topic": "node.fetch", "topic": "node.header"},
         )
-        raise AssertionError("expected_creator_agent_id_rejection")
+        raise AssertionError("expected_header_collision_rejection")
     except D2dGossipValidationError as exc:
-        assert exc.token == "d2d_creator_agent_id_forbidden"
+        assert exc.token == "d2d_transport_header_key_collision"
 
 
 def test_invariant_channel_field_is_opaque_identifier() -> None:

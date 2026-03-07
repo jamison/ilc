@@ -6,9 +6,10 @@ This module enforces CDL-039 transport invariants: no creator_agent_id in transp
 from __future__ import annotations
 
 import hashlib
+import re
 from typing import Any, Mapping, Sequence
 
-from .interface import validate_d2d_channel, validate_d2d_peer_id
+from .interface import D2dInterfaceValidationError, validate_d2d_channel, validate_d2d_peer_id
 from .peer import D2D_PEERING_DEPENDENCY
 
 
@@ -38,6 +39,12 @@ def _validate_non_empty_string(value: Any, token: str, message: str) -> str:
     return normalized
 
 
+def _canonical_header_alias(value: str) -> str:
+    """Canonicalize header aliases for invariant checks only."""
+
+    return re.sub(r"[-.]", "_", value.lower())
+
+
 def sanitize_transport_headers(headers: Mapping[str, Any]) -> dict[str, str]:
     """Normalize transport headers and enforce creator-agent exclusion."""
 
@@ -54,17 +61,24 @@ def sanitize_transport_headers(headers: Mapping[str, Any]) -> dict[str, str]:
             "d2d_transport_header_key_invalid",
             "transport_header_key_invalid",
         )
-        if key == "creator_agent_id":
+        key_lower = key.lower()
+        key_alias = _canonical_header_alias(key_lower)
+        if key_alias == "creator_agent_id":
             raise D2dGossipValidationError(
                 "d2d_creator_agent_id_forbidden",
                 "creator_agent_id_forbidden_in_transport_headers",
             )
+        if key_lower in normalized:
+            raise D2dGossipValidationError(
+                "d2d_transport_header_key_collision",
+                f"transport_header_key_collision:{key_lower}",
+            )
         value = _validate_non_empty_string(
             raw_value,
             "d2d_transport_header_value_invalid",
-            f"transport_header_value_invalid:{key}",
+            f"transport_header_value_invalid:{key_lower}",
         )
-        normalized[key] = value
+        normalized[key_lower] = value
 
     return {k: normalized[k] for k in sorted(normalized)}
 
@@ -74,10 +88,8 @@ def validate_gossip_channel(channel_id: Any) -> str:
 
     try:
         return str(validate_d2d_channel(channel_id))
-    except Exception as exc:
-        token = getattr(exc, "token", "d2d_channel_invalid")
-        message = getattr(exc, "message", str(exc))
-        raise D2dGossipValidationError(token, message) from exc
+    except D2dInterfaceValidationError as exc:
+        raise D2dGossipValidationError(exc.token, exc.message) from exc
 
 
 def build_transport_envelope(
