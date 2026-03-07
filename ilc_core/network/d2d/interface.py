@@ -14,6 +14,13 @@ WIRE_TRANSPORT_DEPENDENCY = "wire_transport_runtime_323.v0.1"
 
 D2dChannel = NewType("D2dChannel", str)
 
+# ILC channel identifiers use a structured opaque prefix convention:
+#   "cid:<hex>"  - deterministic channel bytes (NOT an IPFS CIDv1)
+#   "rand:<hex>" - uniformly random channel bytes
+# Payload CIDs (for example bafy... strings) are content-addresses carried in
+# payload fields and are intentionally distinct from routing channel identifiers.
+_ILC_CHANNEL_OPAQUE_PREFIXES = frozenset({"cid", "rand"})
+
 _CANONICAL_D2D_INTERFACE_VECTORS: list[dict[str, Any]] = [
     {
         "message_id": "msg-001",
@@ -89,6 +96,12 @@ def _validate_non_empty_string(value: Any, token: str, message: str) -> str:
     return normalized
 
 
+def _canonical_header_alias(value: str) -> str:
+    """Canonicalize header aliases for invariant checks only."""
+
+    return re.sub(r"[-.]", "_", value.lower())
+
+
 def validate_d2d_channel(value: Any) -> D2dChannel:
     """Validate a channel identifier as opaque transport metadata."""
 
@@ -106,7 +119,7 @@ def validate_d2d_channel(value: Any) -> D2dChannel:
     prefix, suffix = raw.split(":", 1)
     prefix = prefix.lower().strip()
     suffix = suffix.lower().strip()
-    if prefix not in {"cid", "rand"}:
+    if prefix not in _ILC_CHANNEL_OPAQUE_PREFIXES:
         raise D2dInterfaceValidationError(
             "d2d_channel_not_opaque",
             f"channel_id_prefix_not_opaque:{raw}",
@@ -171,12 +184,24 @@ def validate_d2d_message_envelope(raw: Any) -> dict[str, Any]:
             "d2d_transport_header_key_invalid",
             f"transport_header_key_invalid:{message_id}",
         )
+        key_lower = normalized_key.lower()
+        key_alias = _canonical_header_alias(key_lower)
+        if key_alias == "creator_agent_id":
+            raise D2dInterfaceValidationError(
+                "d2d_creator_agent_id_forbidden",
+                f"creator_agent_id_forbidden_in_transport_headers:{message_id}",
+            )
+        if key_lower in normalized_headers:
+            raise D2dInterfaceValidationError(
+                "d2d_transport_header_key_collision",
+                f"transport_header_key_collision:{message_id}:{key_lower}",
+            )
         normalized_value = _validate_non_empty_string(
             value,
             "d2d_transport_header_value_invalid",
-            f"transport_header_value_invalid:{message_id}:{normalized_key}",
+            f"transport_header_value_invalid:{message_id}:{key_lower}",
         )
-        normalized_headers[normalized_key] = normalized_value
+        normalized_headers[key_lower] = normalized_value
 
     return {
         "message_id": message_id,

@@ -118,6 +118,34 @@ def test_runtime_surface_is_invocable_and_deterministic() -> None:
     peer_id = validate_d2d_peer_id(vectors[0]["sender_peer_id"])
     assert peer_id == vectors[0]["sender_peer_id"]
 
+    try:
+        validate_d2d_message_envelope(
+            {
+                "message_id": "msg-creator-variant",
+                "payload_cid": vectors[0]["payload_cid"],
+                "channel_id": vectors[0]["channel_id"],
+                "sender_peer_id": vectors[0]["sender_peer_id"],
+                "transport_headers": {"Creator_Agent_Id": "cid:not-allowed", "topic": "node.fetch"},
+            }
+        )
+        raise AssertionError("expected_creator_agent_id_rejection")
+    except D2dInterfaceValidationError as exc:
+        assert exc.token == "d2d_creator_agent_id_forbidden"
+
+    try:
+        validate_d2d_message_envelope(
+            {
+                "message_id": "msg-header-collision",
+                "payload_cid": vectors[0]["payload_cid"],
+                "channel_id": vectors[0]["channel_id"],
+                "sender_peer_id": vectors[0]["sender_peer_id"],
+                "transport_headers": {"Topic": "node.fetch", "topic": "node.header"},
+            }
+        )
+        raise AssertionError("expected_transport_header_collision_rejection")
+    except D2dInterfaceValidationError as exc:
+        assert exc.token == "d2d_transport_header_key_collision"
+
 
 def test_runtime_constants_lock_exact_dependency_and_version_tokens() -> None:
     assert D2D_INTERFACE_RUNTIME_VERSION == "d2d_interface_runtime_380.v0.1"
