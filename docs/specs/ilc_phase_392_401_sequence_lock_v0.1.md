@@ -25,6 +25,8 @@ SIM-006 favorable branch is locked: recommended_panel_assignment_policy: diversi
 
 Phase 396 remains the CDL-V3/V7 governance authorization lock under the favorable SIM-006 branch; no unfavorable fallback branch is authorized in this artifact.
 
+SIM-006 capability-vector tiers are directionally valid but were commissioned with placeholder vocabulary; Phase 396 must preserve favorable-branch authorization while acknowledging this calibration limitation.
+
 SIM-007 carry-forward to CDL-035 amendment lane is locked: recommended_orphan_timeout_epochs: 4; recommended_recovery_policy: stake_full_release.
 
 ## 4. Locked phase table (392-401)
