@@ -14,6 +14,7 @@ ILC remains a ratification-first constitutional protocol for epistemic-graph coo
 - Envelope separation remains mandatory (authored payload, transport envelope, protocol interpretation).
 - D2d runtime enforcement and constitutional lane outputs remain separated by sensitivity and mutation-scope contracts.
 - Governance-procedural V-series work remains distinct from computational V-series implementation.
+- Wallet-agnostic signing remains mandatory: signer-lineage lifecycle is protocol-layer and signing-provider key custody is an operator concern.
 
 ## 3. Project state (as of Phase 390 completion)
 

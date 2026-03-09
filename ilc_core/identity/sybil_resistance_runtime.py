@@ -39,6 +39,14 @@ def _require_unit_interval(name: str, value: float) -> float:
     return number
 
 
+def _require_validation_epoch(epoch_type: str) -> None:
+    if epoch_type != "validation_epoch":
+        raise SybilResistanceValidationError(
+            "cdl_v2_sybil_epoch_context_invalid",
+            "sybil-resistance heuristics are validation-epoch scoped",
+        )
+
+
 def compute_identity_cluster_risk(
     *,
     shared_operator_fraction: float,
@@ -64,6 +72,7 @@ def compute_burst_write_penalty(
     writes_per_validation_epoch: float,
     baseline_writes_per_validation_epoch: float,
     burst_sensitivity: float = 0.35,
+    epoch_type: str = "validation_epoch",
 ) -> float:
     """Compute bounded penalty for burst-write anomalies."""
 
@@ -72,6 +81,7 @@ def compute_burst_write_penalty(
         "baseline_writes_per_validation_epoch", baseline_writes_per_validation_epoch
     )
     sensitivity = _require_numeric("burst_sensitivity", burst_sensitivity)
+    _require_validation_epoch(epoch_type)
 
     if writes < 0.0 or baseline <= 0.0:
         raise SybilResistanceValidationError(

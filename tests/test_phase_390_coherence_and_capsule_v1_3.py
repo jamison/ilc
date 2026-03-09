@@ -42,6 +42,7 @@ def test_coherence_contains_required_tokens_and_coverage() -> None:
         "ilc_core/network/d2d/",
         "CDL-V1 temporal decay runtime implemented",
         "CDL-V2 sybil-resistance runtime implemented",
+        "Wallet-agnostic signing carry-forward remains active:",
     ):
         assert token in text
 
@@ -76,6 +77,7 @@ def test_capsule_contains_required_state_and_boundary_tokens() -> None:
         "CDL-V1 temporal decay and CDL-V2 sybil resistance are computationally enforced as of Phases 388/389.",
         "CDL-040/041/043 prelocks are complete and non-ratifying; ratification is deferred to Window 392+.",
         "CDL-V3 and CDL-V7 governance resolution: deferred to Window 392+.",
+        "Wallet-agnostic signing remains mandatory:",
     ):
         assert token in text
 
