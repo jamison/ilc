@@ -18,7 +18,7 @@
 ### Unlocked and queueing
 
 - CDL-042 opening (agent identity namespace) — deferred from 378-391 by CDL-039/040 scope dependency; that dependency resolves at Phase 391 close
-- CDL-044 opening (operational emergency response) — SIM-005 results available since Phase 370
+- CDL-045 opening (operational emergency response) — SIM-005 results available since Phase 370; CDL-044 is now the retention_epochs amendment lane (opened Phase 392)
 - CDL-035 timed_out amendment — SIM-007 results available from Phase 386
 
 ### Conditionally authorized (SIM-006 outcome from Phase 386)
@@ -50,7 +50,7 @@
 
 ### Conditional note on Phases 397-398
 
-If Phase 396 declares CDL-V3/V7 still `requires_additional_governance_input` (unfavorable SIM-006), these phases are replaced by an SIM-008 commissioning (another simulation round with SIM-006 results as input) and a CDL-042/CDL-044 prelock pair. Window 401 closure would carry V-series runtime forward to Window 402+.
+If Phase 396 declares CDL-V3/V7 still `requires_additional_governance_input` (unfavorable SIM-006), these phases are replaced by an SIM-008 commissioning (another simulation round with SIM-006 results as input) and a CDL-042/CDL-045 prelock pair. Window 401 closure would carry V-series runtime forward to Window 402+.
 
 ### Structural note on Phase 399
 
@@ -62,13 +62,13 @@ The `retention_epochs` amendment follows the CDL-039 lifecycle pattern — opene
 
 | Phase | Topic | Character |
 |---|---|---|
-| 402 | Seq lock + CDL-042 opening + CDL-044 opening (two-CDL opening batch) | Foundation |
+| 402 | Seq lock + CDL-042 opening + CDL-045 opening (two-CDL opening batch) | Foundation |
 | 403 | CDL-042 prelock hardening (agent identity namespace) | Constitutional |
-| 404 | CDL-044 prelock hardening (operational emergency response) | Constitutional |
+| 404 | CDL-045 prelock hardening (operational emergency response) | Constitutional |
 | 405 | CDL-035 timed_out amendment open + prelock (SIM-007 evidence) | Constitutional |
 | 406 | SIM-008/009 commissioning (CDL-V3/V7 follow-on if deferred from Window 401) | Simulation |
 | 407 | CDL-042 ratification | Constitutional |
-| 408 | CDL-044 ratification | Constitutional |
+| 408 | CDL-045 ratification | Constitutional |
 | 409 | CDL-035 timed_out ratification | Constitutional |
 | 410 | D2e Agent SDK — Part 1 (D2e-01 through D2e-05: identity, query, verify) | Runtime |
 | 411 | D2e Agent SDK — Part 2 (D2e-06 through D2e-11: bundle, epoch, balance, integration) | Runtime |

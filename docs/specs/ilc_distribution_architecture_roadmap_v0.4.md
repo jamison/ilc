@@ -61,7 +61,7 @@ The Window 368 lock must explicitly evaluate Levin gossip + coordinate mechanism
 ## 5. Window 378+ preview
 
 Future constitutional expansion and runtime lanes:
-- CDL-040 through CDL-044
+- CDL-040 through CDL-045 (CDL-044 = retention_epochs amendment, CDL-045 = operational emergency response)
 - D2d implementation lane
 - D2e implementation lane
 
