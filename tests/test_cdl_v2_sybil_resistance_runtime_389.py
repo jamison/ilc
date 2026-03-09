@@ -189,6 +189,16 @@ def test_invalid_rate_inputs_raise_tokenized_error() -> None:
     assert exc.value.token == "cdl_v2_sybil_rate_non_positive"
 
 
+def test_burst_penalty_rejects_non_validation_epoch() -> None:
+    with pytest.raises(SybilResistanceValidationError) as exc:
+        compute_burst_write_penalty(
+            writes_per_validation_epoch=8,
+            baseline_writes_per_validation_epoch=5,
+            epoch_type="issuance_epoch",
+        )
+    assert exc.value.token == "cdl_v2_sybil_epoch_context_invalid"
+
+
 def test_handoff_artifact_has_required_headings_and_tokens() -> None:
     assert HANDOFF_PATH.exists()
     text = HANDOFF_PATH.read_text(encoding="utf-8")
@@ -208,6 +218,8 @@ def test_handoff_artifact_has_required_headings_and_tokens() -> None:
         "CDL-V2 sybil-resistance enforcement is computational and deterministic.",
         "Phase 389 uses Phase-387 authorization targets as binding scope.",
         "No decision-log mutation occurred in Phase 389.",
+        "compute_sybil_penalty` is intentionally bounded to a practical maximum of `0.90`",
+        "`cdl_v2_sybil_epoch_context_invalid`",
     ):
         assert token in text
 
