@@ -138,8 +138,9 @@ def test_decision_log_contains_exact_new_row_and_open_state() -> None:
     assert rows["CDL-041"]["status"] == "open"
 
 
-def test_cdl_040_row_remains_open_in_live_decision_log() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+def test_cdl_040_row_is_historical_open_reference_for_phase_384() -> None:
+    # The Phase-384 `CDL-040` dependency is a historical prelock reference.
+    rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_384_commit_ref()))
     assert rows["CDL-040"]["status"] == "open"
 
 
