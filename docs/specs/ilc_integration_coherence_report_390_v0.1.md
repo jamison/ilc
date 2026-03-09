@@ -70,6 +70,8 @@ Test-state summary:
 
 CDL-V3 and CDL-V7 governance resolution remains deferred to Window 392+ based on current SIM-006 evidence state.
 
+Wallet-agnostic signing carry-forward remains active: ILC protocol signing is wallet-agnostic, signer-lineage lifecycle is protocol-layer, and signing-provider key custody remains an operator concern.
+
 Window 392+ forward boundary open items:
 - first constitutional action must open the named retention_epochs amendment required by CDL-039 ratification.
 - ratification planning for CDL-040/041/043 prelocks.

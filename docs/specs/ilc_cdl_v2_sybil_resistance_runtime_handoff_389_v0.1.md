@@ -24,6 +24,12 @@ Runtime heuristics cover:
 - diversity-floor contribution,
 - bounded risk-to-penalty mapping.
 
+Epoch context boundary:
+- burst-write anomaly penalty is validation-epoch scoped and rejects non-validation epoch contexts.
+
+Calibration headroom note:
+- `compute_sybil_penalty` is intentionally bounded to a practical maximum of `0.90` under current coefficients, leaving calibration headroom for future constitutional amendments.
+
 ## 4. Deterministic failure-token catalog
 
 Validation errors use deterministic tokens:
@@ -32,6 +38,7 @@ Validation errors use deterministic tokens:
 - `cdl_v2_sybil_rate_non_positive`
 - `cdl_v2_sybil_burst_sensitivity_out_of_range`
 - `cdl_v2_sybil_diversity_floor_invalid`
+- `cdl_v2_sybil_epoch_context_invalid`
 
 ## 5. Mutation-scope boundary statement
 
