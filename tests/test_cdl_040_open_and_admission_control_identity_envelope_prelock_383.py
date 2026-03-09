@@ -131,10 +131,11 @@ def test_calibration_section_tokens_are_scoped_to_section_five_only() -> None:
 
 
 def test_decision_log_contains_exact_new_row_and_open_state() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_ROW in text
-    rows = parse_decision_register_rows(text)
-    assert rows["CDL-040"]["status"] == "open"
+    # The Phase-383 `CDL-040` row is a historical prelock reference.
+    historical_text = _decision_log_text_at_ref(_resolve_phase_383_commit_ref())
+    assert EXPECTED_ROW in historical_text
+    historical_rows = parse_decision_register_rows(historical_text)
+    assert historical_rows["CDL-040"]["status"] == "open"
 
 
 def test_cdl_039_row_remains_ratified_in_live_decision_log() -> None:
