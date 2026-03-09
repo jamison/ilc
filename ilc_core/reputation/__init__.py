@@ -1,0 +1,17 @@
+"""CDL-V1 temporal-decay runtime package."""
+
+from .temporal_decay_runtime import (
+    CDL_V1_DEPENDENCY,
+    CDL_V1_RUNTIME_VERSION,
+    TemporalDecayValidationError,
+    apply_temporal_decay,
+    compute_decay_multiplier,
+)
+
+__all__ = [
+    "CDL_V1_RUNTIME_VERSION",
+    "CDL_V1_DEPENDENCY",
+    "TemporalDecayValidationError",
+    "compute_decay_multiplier",
+    "apply_temporal_decay",
+]
