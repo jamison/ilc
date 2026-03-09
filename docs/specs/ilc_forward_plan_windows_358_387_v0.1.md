@@ -241,7 +241,7 @@ The following items from `docs/specs/ilc_open_requirements_and_unknown_unknowns_
 | Item | Reason for deferral | Earliest viable window |
 |---|---|---|
 | CDL-042: agent identity namespace | Depends on CDL-039/040 admission control scope | Window 388+ |
-| CDL-044: operational emergency response | Requires SIM-005 results to calibrate thresholds | Window 388+ |
+| CDL-045: operational emergency response | Requires SIM-005 results to calibrate thresholds (renumbered after CDL-044 retention_epochs opening in Phase 392) | Window 392+ |
 | UU-1 partition semantics (CDL specification) | Requires SIM-004 results | Window 378+ |
 | UU-3 clock synchronization (CDL) | Requires SIM-005 results + external VDF evaluation | Window 388+ |
 | UU-8 human-agent distinction | Low priority; purely mechanism-design | Not scheduled |
