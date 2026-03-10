@@ -175,12 +175,14 @@ def test_ratification_evidence_exists_and_has_required_content() -> None:
 def test_calibration_section_is_structured_and_resolves_all_parameter_groups() -> None:
     text = _read(EVIDENCE_PATH)
     section = _extract_calibration_section(text)
+    outside = text.replace(section, "", 1)
     for token in (
         "identity_binding_grace_epochs",
         "admission_stake_floor",
         "admission_quorum_floor",
     ):
         assert token in section
+        assert token not in outside
     assert "bounded_range" not in section
 
 
