@@ -150,8 +150,9 @@ def test_cdl_044_row_is_appended_after_cdl_043_in_raw_order() -> None:
     assert row_044_index == row_043_index + 1
 
 
-def test_cdl_043_row_remains_open_in_live_decision_log() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+def test_cdl_043_row_is_historical_open_reference_for_phase_392() -> None:
+    # The Phase-392 `CDL-043` dependency is a historical prelock reference.
+    rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_392_commit_ref()))
     assert rows["CDL-043"]["status"] == "open"
 
 
