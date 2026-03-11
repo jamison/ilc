@@ -110,7 +110,7 @@ run_full_gate() {
     if [[ "$idx" -eq 2 ]]; then
       local tmp_snapshot
       tmp_snapshot="$(mktemp "${TMPDIR%/}/ilc_phase_327_snapshot_XXXXXX")"
-      if ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" bash -c "${commands[$idx]}"; then
+      if env -u ILC_PHASE_316_FORCE_VERDICT ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" bash -c "${commands[$idx]}"; then
         :
       else
         local rc=$?
