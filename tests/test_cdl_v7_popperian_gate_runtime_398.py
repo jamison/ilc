@@ -166,6 +166,20 @@ def test_invalid_bool_and_out_of_range_numeric_raise_tokenized_errors() -> None:
         meets_reproducibility_threshold(agreement_score=1.2, reproducibility_threshold=0.85)
     assert exc_num.value.token == "cdl_v7_popperian_out_of_range"
 
+    with pytest.raises(PopperianGateValidationError) as exc_nan:
+        meets_reproducibility_threshold(
+            agreement_score=float("nan"),
+            reproducibility_threshold=0.85,
+        )
+    assert exc_nan.value.token == "cdl_v7_popperian_invalid_numeric"
+
+    with pytest.raises(PopperianGateValidationError) as exc_inf:
+        meets_reproducibility_threshold(
+            agreement_score=0.9,
+            reproducibility_threshold=float("inf"),
+        )
+    assert exc_inf.value.token == "cdl_v7_popperian_invalid_numeric"
+
 
 def test_handoff_artifact_has_required_headings_and_tokens() -> None:
     assert HANDOFF_PATH.exists()
