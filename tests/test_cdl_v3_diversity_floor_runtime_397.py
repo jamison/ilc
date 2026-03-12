@@ -161,6 +161,10 @@ def test_helpers_reject_non_numeric_inputs() -> None:
         meets_distinct_cluster_floor(distinct_clusters="three", distinct_cluster_floor=3)
     assert exc.value.token == "cdl_v3_diversity_floor_invalid_numeric"
 
+    with pytest.raises(DiversityFloorValidationError) as exc_nan:
+        compute_max_cluster_share(largest_cluster_slots=float("nan"), total_panel_slots=8)
+    assert exc_nan.value.token == "cdl_v3_diversity_floor_invalid_numeric"
+
 
 def test_handoff_artifact_has_required_headings_and_tokens() -> None:
     assert HANDOFF_PATH.exists()

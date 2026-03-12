@@ -6,6 +6,8 @@ and tokenized validation failures.
 
 from __future__ import annotations
 
+import math
+
 from ilc_core.reputation.temporal_decay_runtime import CDL_V1_DEPENDENCY
 
 CDL_V2_RUNTIME_VERSION = "cdl_v2_sybil_resistance_runtime_389.v0.1"
@@ -26,7 +28,13 @@ def _require_numeric(name: str, value: float) -> float:
             "cdl_v2_sybil_invalid_numeric",
             f"{name} must be a numeric value",
         )
-    return float(value)
+    number = float(value)
+    if not math.isfinite(number):
+        raise SybilResistanceValidationError(
+            "cdl_v2_sybil_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        )
+    return number
 
 
 def _require_unit_interval(name: str, value: float) -> float:

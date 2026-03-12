@@ -179,6 +179,14 @@ def test_invalid_unit_interval_inputs_raise_tokenized_error() -> None:
         )
     assert exc.value.token == "cdl_v2_sybil_out_of_range"
 
+    with pytest.raises(SybilResistanceValidationError) as exc_nan:
+        compute_sybil_penalty(
+            cluster_risk=float("nan"),
+            burst_write_penalty=0.3,
+            diversity_floor_contribution=0.3,
+        )
+    assert exc_nan.value.token == "cdl_v2_sybil_invalid_numeric"
+
 
 def test_invalid_rate_inputs_raise_tokenized_error() -> None:
     with pytest.raises(SybilResistanceValidationError) as exc:
