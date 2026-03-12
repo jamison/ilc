@@ -6,6 +6,8 @@ ratified Popperian basic-statement gate.
 
 from __future__ import annotations
 
+import math
+
 from ilc_core.consensus.diversity_floor_runtime import CDL_V3_DEPENDENCY
 
 CDL_V7_RUNTIME_VERSION = "cdl_v7_popperian_gate_runtime_398.v0.1"
@@ -57,6 +59,11 @@ def _require_unit_interval(name: str, value: float) -> float:
             f"{name} must be a numeric value",
         )
     number = float(value)
+    if not math.isfinite(number):
+        raise PopperianGateValidationError(
+            "cdl_v7_popperian_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        )
     if number < 0.0 or number > 1.0:
         raise PopperianGateValidationError(
             "cdl_v7_popperian_out_of_range",
