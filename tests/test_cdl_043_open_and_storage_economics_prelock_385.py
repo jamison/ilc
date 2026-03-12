@@ -12,6 +12,7 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import (
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 ARTIFACT_PATH = Path("docs/specs/ilc_cdl_043_storage_economics_prelock_385_v0.1.md")
 PHASE_385_SUBJECT_TOKEN = "phase 385 cdl-043 open and storage economics prelock"
+PHASE_392_SUBJECT_TOKEN = "phase 392 seq lock and retention epochs amendment open"
 EXPECTED_ROW = (
     "| CDL-043 | SIM-003 / CDL-V2 / CDL-V3 | Storage economics, graph pruning policy, and active-graph retention "
     "constraints | open | fixed-threshold pruning with static retention, adaptive pruning with bounded retention windows | "
@@ -67,6 +68,35 @@ def _resolve_phase_385_commit_ref() -> str:
     if matching:
         raise AssertionError("phase_385_commit_subject_present_but_no_constitutional_opening_commit")
     raise AssertionError("phase_385_commit_not_present_in_local_history")
+
+
+def _resolve_phase_392_commit_ref() -> str:
+    result = subprocess.run(
+        ["git", "log", "--format=%H%x09%s"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    matching: list[str] = []
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        if PHASE_392_SUBJECT_TOKEN in subject.lower():
+            matching.append(commit_hash)
+
+    required_paths = {
+        str(DECISION_LOG_PATH),
+        "tests/test_phase_392_retention_epochs_cdl_amendment_open.py",
+    }
+    for commit_ref in matching:
+        changed_paths = _changed_paths_for_commit(commit_ref)
+        if required_paths.issubset(changed_paths):
+            return commit_ref
+
+    if matching:
+        raise AssertionError("phase_392_commit_subject_present_but_no_constitutional_opening_commit")
+    raise AssertionError("phase_392_commit_not_present_in_local_history")
 
 
 def _decision_log_text_at_ref(ref: str) -> str:
@@ -141,10 +171,13 @@ def test_cdl_041_dependency_is_historical_reference_and_live_neighbor_state_is_c
     # The Phase-385 `CDL-041` dependency is a historical prelock reference.
     historical_rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_385_commit_ref()))
     assert historical_rows["CDL-041"]["status"] == "open"
+    # The Phase-385 `CDL-044` neighbor-state check is a historical amendment-open reference.
+    phase_392_rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_392_commit_ref()))
+    assert phase_392_rows["CDL-044"]["status"] == "open"
 
     live_rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     assert live_rows["CDL-041"]["status"] == "ratified"
-    assert live_rows["CDL-044"]["status"] == "open"
+    assert live_rows["CDL-043"]["status"] == "ratified"
 
 
 def test_phase_385_commit_additive_only_non_target_shield_and_new_row_guard() -> None:
