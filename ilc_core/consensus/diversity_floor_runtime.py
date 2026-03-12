@@ -6,6 +6,8 @@ machine-auditable validation tokens.
 
 from __future__ import annotations
 
+import math
+
 from ilc_core.identity.sybil_resistance_runtime import CDL_V2_DEPENDENCY
 
 CDL_V3_RUNTIME_VERSION = "cdl_v3_diversity_floor_runtime_397.v0.1"
@@ -26,7 +28,13 @@ def _require_numeric(name: str, value: float) -> float:
             "cdl_v3_diversity_floor_invalid_numeric",
             f"{name} must be a numeric value",
         )
-    return float(value)
+    number = float(value)
+    if not math.isfinite(number):
+        raise DiversityFloorValidationError(
+            "cdl_v3_diversity_floor_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        )
+    return number
 
 
 def _require_positive(name: str, value: float) -> float:

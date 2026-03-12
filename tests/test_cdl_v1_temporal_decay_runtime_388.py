@@ -174,6 +174,25 @@ def test_floor_must_be_within_unit_interval() -> None:
     assert exc.value.token == "cdl_v1_temporal_decay_floor_out_of_range"
 
 
+def test_non_finite_numeric_inputs_raise_tokenized_error() -> None:
+    with pytest.raises(TemporalDecayValidationError) as exc:
+        compute_decay_multiplier(
+            elapsed_issuance_epochs=float("nan"),
+            half_life_epochs=8,
+            floor_multiplier=0.2,
+        )
+    assert exc.value.token == "cdl_v1_temporal_decay_invalid_numeric"
+
+    with pytest.raises(TemporalDecayValidationError) as exc_inf:
+        apply_temporal_decay(
+            base_ecu_score=10.0,
+            elapsed_issuance_epochs=1,
+            half_life_epochs=float("inf"),
+            floor_multiplier=0.2,
+        )
+    assert exc_inf.value.token == "cdl_v1_temporal_decay_invalid_numeric"
+
+
 def test_base_score_must_be_non_negative() -> None:
     with pytest.raises(TemporalDecayValidationError) as exc:
         apply_temporal_decay(

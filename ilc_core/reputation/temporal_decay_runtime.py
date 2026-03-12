@@ -26,7 +26,13 @@ def _require_numeric(name: str, value: float) -> float:
             "cdl_v1_temporal_decay_invalid_numeric",
             f"{name} must be a numeric value",
         )
-    return float(value)
+    number = float(value)
+    if not math.isfinite(number):
+        raise TemporalDecayValidationError(
+            "cdl_v1_temporal_decay_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        )
+    return number
 
 
 def compute_decay_multiplier(
