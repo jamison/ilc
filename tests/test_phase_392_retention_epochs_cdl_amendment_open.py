@@ -136,11 +136,15 @@ def test_prelock_exists_and_contains_required_headings_and_tokens() -> None:
 
 
 def test_decision_log_contains_exact_cdl_044_opening_row_and_token() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_ROW in text
-    rows = parse_decision_register_rows(text)
+    # The Phase-392 `CDL-044` row is a historical amendment-open reference.
+    historical_text = _decision_log_text_at_ref(_resolve_phase_392_commit_ref())
+    assert EXPECTED_ROW in historical_text
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-044"]["status"] == "open"
     assert "Phase-379 retention obligation token" in rows["CDL-044"]["required_artifacts"]
+
+    live_rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    assert live_rows["CDL-043"]["status"] == "ratified"
 
 
 def test_cdl_044_row_is_appended_after_cdl_043_in_raw_order() -> None:
