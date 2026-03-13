@@ -39,6 +39,7 @@ REQUIRED_TOKENS = (
     "CDL-045 prelock hardening confirms the proposed candidate: automated circuit breaker with CDL-V3 diversity quorum trigger and CDL-V6 sunset.",
     "Emergency circuit-breaker invocation requires CDL-V3 cluster diversity quorum authorization; no single-cluster operator coalition can trigger a network-wide emergency shutdown.",
     "Every circuit-breaker invocation carries an automatic CDL-V6 sunset obligation; the network cannot remain in emergency state indefinitely.",
+    "Resumption of normal operation requires a positive governance action through CDL-V6 sunset review, not merely the expiry of an implicit timer.",
     "Mandatory post hoc CDL-V4 review is required after every circuit-breaker invocation; emergency status does not waive governance review.",
     "Manual governance-only emergency response is rejected because human deliberation speed may be insufficient during fast-propagating failure modes at SIM-005 stress conditions.",
     "Tiered escalation with automated rate-limit and mandatory governance confirmation is rejected because multi-tier threshold design introduces unbounded governance complexity and attack surfaces without calibrated simulation evidence for tier boundaries.",
@@ -46,6 +47,10 @@ REQUIRED_TOKENS = (
     "SIM-005 modeled a maximum unresolved orphan backlog rate of 0.338 under representative stress conditions; this propagation speed motivates automated response capability rather than manual-only governance deliberation.",
     "Phase 408 is the targeted CDL-045 ratification lane; this hardening artifact constitutes the primary prelock evidence.",
     "No CDL row mutation occurs in Phase 404.",
+    "The Phase-397 runtime handoff confirms this dependency is computationally available in the current system: diversity-floor enforcement is deterministic, runtime-bound, and implemented as the ratified enforcement primitive for diversity-sensitive governance checks.",
+)
+REQUIRED_CANONICAL_ANCHORS = (
+    "docs/specs/ilc_cdl_v3_quorum_diversity_ratification_evidence_332_v0.1.md",
 )
 
 
@@ -112,6 +117,8 @@ def test_hardening_artifact_exists_and_contains_required_headings_and_tokens() -
         assert heading in text
     for token in REQUIRED_TOKENS:
         assert token in text
+    for anchor in REQUIRED_CANONICAL_ANCHORS:
+        assert anchor in text
 
 
 def test_cdl_045_row_remains_open_and_matches_expected_opening_row() -> None:

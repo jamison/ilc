@@ -53,11 +53,13 @@ CDL-V3's ratified cluster diversity floor is the invocation authorization mechan
 
 Emergency invocation is therefore constitutionally gated by a quorum composition requirement that prevents epistemic capture through homogeneous cluster control.
 
-The Phase-397 runtime handoff confirms this dependency is computationally live in the current system: diversity-floor enforcement is deterministic, runtime-bound, and already implemented as the active gate for diversity-sensitive governance decisions.
+The Phase-397 runtime handoff confirms this dependency is computationally available in the current system: diversity-floor enforcement is deterministic, runtime-bound, and implemented as the ratified enforcement primitive for diversity-sensitive governance checks.
 
 ## 6. CDL-V6 sunset obligation and CDL-V4 post hoc review requirement
 
 Every circuit-breaker invocation carries an automatic CDL-V6 sunset obligation; the network cannot remain in emergency state indefinitely.
+
+Resumption of normal operation requires a positive governance action through CDL-V6 sunset review, not merely the expiry of an implicit timer.
 
 Mandatory post hoc CDL-V4 review is required after every circuit-breaker invocation; emergency status does not waive governance review.
 
