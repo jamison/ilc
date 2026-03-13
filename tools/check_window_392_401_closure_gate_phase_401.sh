@@ -127,9 +127,12 @@ run_full_gate() {
       fi
       rm -f "${tmp_snapshot}"
     elif [[ "$idx" -eq 4 ]]; then
-      ILC_PHASE_401_GATE_SELFTEST=1 bash -c "${commands[$idx]}"
+      env -u ILC_PHASE_316_FORCE_VERDICT -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
+        ILC_PHASE_401_GATE_SELFTEST=1 \
+        bash -c "${commands[$idx]}"
     else
-      bash -c "${commands[$idx]}"
+      env -u ILC_PHASE_316_FORCE_VERDICT -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
+        bash -c "${commands[$idx]}"
     fi
   done
 
