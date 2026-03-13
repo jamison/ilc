@@ -112,10 +112,11 @@ def test_hardening_artifact_exists_and_contains_required_headings_and_tokens() -
 
 
 def test_cdl_042_row_remains_open_and_matches_expected_opening_row() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
+    # The Phase-403 `CDL-042` row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_403_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-042"]["status"] == "open"
-    assert EXPECTED_CDL_042_ROW in text
+    assert EXPECTED_CDL_042_ROW in historical_text
 
 
 def test_phase_402_opening_prelock_stub_is_preserved() -> None:
@@ -135,7 +136,9 @@ def test_cdl_042_and_cdl_045_register_order_preserved() -> None:
 
 
 def test_cdl_042_has_no_premature_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-403 `CDL-042` row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_403_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-042"]["status"] != "ratified"
     assert rows["CDL-042"].get("ratified_date") is None
 
