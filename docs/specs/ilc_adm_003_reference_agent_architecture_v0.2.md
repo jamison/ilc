@@ -80,5 +80,5 @@ Non-goals in this artifact:
 Canonical anchors:
 - `docs/specs/ilc_adm_003_reference_agent_architecture_v0.1.md`
 - `docs/specs/ilc_antigravity_context_capsule_v1.3.md`
-- `docs/specs/ilc_integration_coherence_report_390_v0.1.md`
+- `docs/specs/ilc_integration_coherence_report_400_v0.1.md`
 - `docs/specs/ilc_cdl_044_retention_epochs_amendment_ratification_evidence_399_v0.1.md`
