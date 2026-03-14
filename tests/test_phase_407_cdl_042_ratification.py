@@ -170,12 +170,11 @@ def test_cdl_042_row_is_ratified_with_correct_fields() -> None:
 
 
 def test_cdl_045_and_cdl_046_rows_unchanged() -> None:
-    # The Phase-407 `CDL-045` neighbor-state check is a historical ratification reference.
+    # The Phase-407 `CDL-045` and `CDL-046` neighbor-state checks are historical ratification references.
     historical_text = _read_file_at_ref(_resolve_phase_407_commit_ref(), str(DECISION_LOG_PATH))
     historical_rows = parse_decision_register_rows(historical_text)
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     assert historical_rows["CDL-045"]["status"] == "open"
-    assert rows["CDL-046"]["status"] == "open"
+    assert historical_rows["CDL-046"]["status"] == "open"
 
 
 def test_phase_403_cdl_042_row_open_assertion_is_hardened() -> None:
