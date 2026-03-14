@@ -17,6 +17,7 @@ DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 EVIDENCE_PATH = Path("docs/specs/ilc_cdl_045_operational_emergency_response_ratification_evidence_408_v0.1.md")
 PHASE_404_TEST_PATH = Path("tests/test_phase_404_cdl_045_prelock_hardening.py")
 PHASE_402_TEST_PATH = Path("tests/test_phase_402_cdl_042_and_cdl_045_opening.py")
+PHASE_407_TEST_PATH = Path("tests/test_phase_407_cdl_042_ratification.py")
 PHASE_408_COMMIT_SUBJECT = "docs(g8): phase 408 cdl-045 operational emergency response ratification"
 
 REQUIRED_HEADINGS = (
@@ -41,6 +42,10 @@ REQUIRED_TOKENS = (
     "Tiered escalation with automated rate-limit and mandatory governance confirmation is rejected because multi-tier threshold design introduces unbounded governance complexity and attack surfaces without calibrated simulation evidence for tier boundaries.",
     "Exact circuit-breaker activation thresholds, detection horizons, and cooldown windows are deferred to D2e Agent SDK implementation in Phases 410-411.",
     "SIM-005 modeled a maximum unresolved orphan backlog rate of 0.338 under representative stress conditions and a 2-minute timeout horizon at validation-epoch scale; these results justify automated emergency response capability but do not directly calibrate CDL-045 trigger thresholds.",
+)
+
+REQUIRED_CANONICAL_ANCHORS = (
+    "docs/specs/ilc_sim_005_agent_death_orphaning_commissioning_results_370_v0.1.md",
 )
 
 _BASE_HEADERS = [
@@ -156,6 +161,8 @@ def test_ratification_evidence_contains_required_headings_and_tokens() -> None:
         assert heading in text
     for token in REQUIRED_TOKENS:
         assert token in text
+    for anchor in REQUIRED_CANONICAL_ANCHORS:
+        assert anchor in text
 
 
 def test_cdl_045_row_is_ratified_with_correct_fields() -> None:
@@ -179,7 +186,7 @@ def test_cdl_042_and_cdl_046_rows_unchanged() -> None:
     assert rows["CDL-046"]["status"] == "open"
 
 
-def test_phase_404_and_phase_402_open_assertions_are_hardened() -> None:
+def test_phase_404_phase_402_and_phase_407_open_assertions_are_hardened() -> None:
     phase_404_text = _read(PHASE_404_TEST_PATH)
     assert '# The Phase-404 `CDL-045` row is a historical prelock reference.' in phase_404_text
     assert phase_404_text.count("_read_file_at_ref(_resolve_phase_404_commit_ref(), str(DECISION_LOG_PATH))") >= 2
@@ -194,6 +201,13 @@ def test_phase_404_and_phase_402_open_assertions_are_hardened() -> None:
     assert "EXPECTED_CDL_045_ROW in historical_text" in phase_402_text
     assert 'rows["CDL-045"]["status"] == "open"' in phase_402_text
     assert phase_402_text.count("_read(DECISION_LOG_PATH)") == 1
+
+    phase_407_text = _read(PHASE_407_TEST_PATH)
+    assert '# The Phase-407 `CDL-045` neighbor-state check is a historical ratification reference.' in phase_407_text
+    assert "_read_file_at_ref(_resolve_phase_407_commit_ref(), str(DECISION_LOG_PATH))" in phase_407_text
+    assert "historical_rows = parse_decision_register_rows(historical_text)" in phase_407_text
+    assert 'historical_rows["CDL-045"]["status"] == "open"' in phase_407_text
+    assert 'rows["CDL-046"]["status"] == "open"' in phase_407_text
 
 
 def test_cdl_045_register_order_preserved_after_ratification() -> None:
