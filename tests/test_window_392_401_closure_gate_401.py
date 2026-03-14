@@ -73,6 +73,18 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _read_file_at_ref(ref: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{path}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_file_at_ref:{ref}:{path}:{result.stderr.strip()}")
+    return result.stdout
+
+
 def _resolve_phase_401_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -226,11 +238,9 @@ def test_gate_assertions_and_handoff_contract_tokens() -> None:
         for token in ("ratified_phase:", "ratified_date:", "evidence_document:"):
             assert token in row
 
-    cdl_042_match = re.search(r"^\| CDL-042 \|.*$", decision_log_text, flags=re.MULTILINE)
-    if cdl_042_match:
-        row_042 = cdl_042_match.group(0)
-        assert "| open |" in row_042
-        assert "ratified_phase:" not in row_042
+    historical_decision_log_text = _read_file_at_ref(_resolve_phase_401_commit_ref(), str(DECISION_LOG_PATH))
+    cdl_042_match = re.search(r"^\| CDL-042 \|.*$", historical_decision_log_text, flags=re.MULTILINE)
+    assert cdl_042_match is None
 
     handoff_text = HANDOFF_PATH.read_text(encoding="utf-8")
     for heading in (
