@@ -206,11 +206,11 @@ def test_phase_404_phase_402_and_phase_407_open_assertions_are_hardened() -> Non
     assert phase_402_text.count("_read(DECISION_LOG_PATH)") == 1
 
     phase_407_text = _read(PHASE_407_TEST_PATH)
-    assert '# The Phase-407 `CDL-045` neighbor-state check is a historical ratification reference.' in phase_407_text
+    assert '# The Phase-407 `CDL-045` and `CDL-046` neighbor-state checks are historical ratification references.' in phase_407_text
     assert "_read_file_at_ref(_resolve_phase_407_commit_ref(), str(DECISION_LOG_PATH))" in phase_407_text
     assert "historical_rows = parse_decision_register_rows(historical_text)" in phase_407_text
     assert 'historical_rows["CDL-045"]["status"] == "open"' in phase_407_text
-    assert 'rows["CDL-046"]["status"] == "open"' in phase_407_text
+    assert 'historical_rows["CDL-046"]["status"] == "open"' in phase_407_text
 
 
 def test_cdl_045_register_order_preserved_after_ratification() -> None:
