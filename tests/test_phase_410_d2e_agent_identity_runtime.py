@@ -110,6 +110,13 @@ def test_node_schema_dependency_chain_imported() -> None:
     assert NODE_SCHEMA_DEPENDENCY == "cdl_038_ratified_353.v0.1"
 
 
+def test_derive_agent_id_known_vector() -> None:
+    # Locks the exact derivation formula: domain-separated SHA-256 with prefix b"ilc-agent-id-v1:".
+    # If this assertion fails, the derivation formula has changed — a protocol-breaking identity change.
+    expected = "agent-070ec3ad1e9141e73f8fe0d3feec00add72ff332e8a4ffcd67987774763f2a5b"
+    assert derive_agent_id(b"canonical-root-key-test-bytes") == expected
+
+
 def test_derive_agent_id_is_deterministic() -> None:
     first = derive_agent_id(b"canonical-root-key-test-bytes")
     second = derive_agent_id(b"canonical-root-key-test-bytes")

@@ -12,8 +12,14 @@ from ilc_core.node.promotion_continuity_runtime_364 import CDL_038_DEPENDENCY
 
 AGENT_ID_RUNTIME_VERSION = "agent_id_runtime_410.v0.1"
 CDL_042_DEPENDENCY = "cdl_042_ratified_407.v0.1"
+# NODE_SCHEMA_DEPENDENCY anchors the full node-schema runtime stack (CDL-034 through CDL-038)
+# as a prerequisite. No CDL-040 runtime module has been implemented; CDL-038 is the terminal
+# ratified node-schema runtime constant available for import. CDL-042 related_clause includes
+# CDL-040, but CDL-038 is the closest available chain tip.
 NODE_SCHEMA_DEPENDENCY = CDL_038_DEPENDENCY
 
+# Changing _AGENT_ID_DOMAIN_PREFIX is a protocol-breaking identity-derivation change:
+# it invalidates all previously derived agent_ids. Any modification requires a new CDL lane.
 _AGENT_ID_DOMAIN_PREFIX = b"ilc-agent-id-v1:"
 
 
