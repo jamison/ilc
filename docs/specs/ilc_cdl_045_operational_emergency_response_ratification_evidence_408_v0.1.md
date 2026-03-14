@@ -86,6 +86,7 @@ Any later runtime implementation must remain within the ratified control model a
 - `docs/specs/ilc_constitutional_decision_log_v0.1.md`
 - `docs/specs/ilc_cdl_045_operational_emergency_response_prelock_hardening_404_v0.1.md`
 - `docs/specs/ilc_phase_402_413_sequence_lock_v0.1.md`
+- `docs/specs/ilc_sim_005_agent_death_orphaning_commissioning_results_370_v0.1.md`
 - `docs/specs/ilc_cdl_v3_quorum_diversity_ratification_evidence_332_v0.1.md`
 - `docs/specs/ilc_cdl_v6_genesis_intervention_protocol_ratification_evidence_334_v0.1.md`
 - `docs/specs/ilc_cdl_v4_reopening_protocol_ratification_evidence_334_v0.1.md`
