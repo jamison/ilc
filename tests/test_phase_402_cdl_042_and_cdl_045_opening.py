@@ -177,10 +177,11 @@ def test_cdl_045_prelock_exists_and_contains_required_headings_and_tokens() -> N
 
 
 def test_decision_log_contains_exact_cdl_042_and_cdl_045_opening_rows() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_CDL_042_ROW in text
-    assert EXPECTED_CDL_045_ROW in text
-    rows = parse_decision_register_rows(text)
+    # The Phase-402 `CDL-042` and `CDL-045` rows are historical opening references.
+    historical_text = _decision_log_text_at_ref(_resolve_phase_402_commit_ref())
+    assert EXPECTED_CDL_042_ROW in historical_text
+    assert EXPECTED_CDL_045_ROW in historical_text
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-042"]["status"] == "open"
     assert rows["CDL-045"]["status"] == "open"
 
