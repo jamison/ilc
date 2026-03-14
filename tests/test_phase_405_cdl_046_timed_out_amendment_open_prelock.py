@@ -146,9 +146,10 @@ def test_prelock_exists_and_contains_required_headings_tokens_and_anchors() -> N
 
 
 def test_decision_log_contains_exact_cdl_046_opening_row() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
-    assert EXPECTED_CDL_046_ROW in text
+    # The Phase-405 `CDL-046` row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_405_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
+    assert EXPECTED_CDL_046_ROW in historical_text
     assert rows["CDL-046"]["status"] == "open"
 
 
@@ -169,7 +170,9 @@ def test_cdl_046_row_is_appended_after_cdl_045_and_sequence_lock_convention_rema
 
 
 def test_cdl_046_has_no_premature_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-405 `CDL-046` row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_405_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-046"]["status"] != "ratified"
     assert "ratified_phase" not in rows["CDL-046"]
 
