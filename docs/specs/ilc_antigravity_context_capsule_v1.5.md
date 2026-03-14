@@ -14,6 +14,7 @@ ILC remains a governance-first constitutional protocol with bounded runtime impl
 - Runtime mutation scope remains phase-authorized and test-anchored.
 - Envelope separation remains mandatory for authored, protocol-interpretation, and transport boundaries.
 - Wallet-agnostic signing remains mandatory at protocol boundary.
+- Ratified constants and dependency tokens remain machine-auditable once promoted into runtime.
 
 ## 3. Project state (as of Phase 412 completion)
 
