@@ -219,8 +219,10 @@ def test_gate_assertions_and_handoff_contract_tokens() -> None:
     node_cli_text = NODE_CLI_PATH.read_text(encoding="utf-8")
     assert 'D2E_LIFECYCLE_CLI_VERSION = "d2e_lifecycle_cli_421.v0.1"' in node_cli_text
 
-    main_text = MAIN_CLI_PATH.read_text(encoding="utf-8")
-    assert '"agent"' in main_text and '"node"' in main_text
+    from ilc_core.cli.main import OPERATIONAL_COMMANDS
+
+    assert "agent" in OPERATIONAL_COMMANDS
+    assert "node" in OPERATIONAL_COMMANDS
 
     capsule_text = CAPSULE_PATH.read_text(encoding="utf-8")
     assert "Supersedes: docs/specs/ilc_antigravity_context_capsule_v1.5.md" in capsule_text
