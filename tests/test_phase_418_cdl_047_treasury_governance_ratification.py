@@ -195,14 +195,14 @@ def test_cdl_047_row_is_ratified_with_correct_fields() -> None:
 
 
 def test_cdl_048_remains_open_without_ratification_metadata() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
-    row = rows["CDL-048"]
-    assert row["status"] == "open"
-    assert "ratified_phase" not in row
-    assert "ratified_date" not in row
-    assert "evidence_document" not in row
-    assert "governed conversion deadline with anti-hoarding forced circulation (proposed)" in text
+    # The Phase-418 `CDL-048` non-ratification boundary check is a historical Phase-418-commit reference.
+    historical_text = _read_file_at_ref(_resolve_phase_418_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
+    assert rows["CDL-048"]["status"] == "open"
+    assert "ratified_phase" not in rows["CDL-048"]
+    assert "ratified_date" not in rows["CDL-048"]
+    assert "evidence_document" not in rows["CDL-048"]
+    assert "governed conversion deadline with anti-hoarding forced circulation (proposed)" in historical_text
 
 
 def test_phase_414_and_phase_415_tests_are_historicalized_for_cdl_047_open_state() -> None:
@@ -211,7 +211,10 @@ def test_phase_414_and_phase_415_tests_are_historicalized_for_cdl_047_open_state
     assert '_decision_log_text_at_ref(_resolve_phase_414_commit_ref())' in phase_414_text
     assert 'EXPECTED_CDL_047_ROW in historical_text' in phase_414_text
     assert 'rows["CDL-047"]["status"] == "open"' in phase_414_text
-    assert 'live_rows["CDL-048"]["status"] == "open"' in phase_414_text
+    # Phase-419 removed the live CDL-048 check from the Phase-414 test; verify the historical form.
+    assert 'live_rows["CDL-048"]["status"] == "open"' not in phase_414_text
+    assert '# The Phase-414 `CDL-048` row is a historical opening reference.' in phase_414_text
+    assert 'rows["CDL-048"]["status"] == "open"' in phase_414_text
 
     phase_415_text = _read(PHASE_415_TEST_PATH)
     assert '# The Phase-415 `CDL-047` row is a historical prelock reference.' in phase_415_text
@@ -225,7 +228,9 @@ def test_phase_417_test_is_historicalized_for_cdl_047_while_live_cdl_048_and_cdl
     assert '# The Phase-417 `CDL-047` open-state check is a historical governance-review reference.' in phase_417_text
     assert '_read_file_at_ref(_resolve_phase_417_commit_ref(), str(DECISION_LOG_PATH))' in phase_417_text
     assert 'historical_rows["CDL-047"]["status"] == "open"' in phase_417_text
-    assert 'live_rows["CDL-048"]["status"] == "open"' in phase_417_text
+    assert '# The Phase-417 `CDL-048` open-state check is a historical governance-review reference.' in phase_417_text
+    assert 'historical_rows["CDL-048"]["status"] == "open"' in phase_417_text
+    assert 'live_rows["CDL-048"]["status"] == "open"' not in phase_417_text
     assert 'assert "CDL-049" not in live_rows' in phase_417_text
 
 
