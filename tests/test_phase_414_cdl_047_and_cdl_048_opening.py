@@ -177,12 +177,16 @@ def test_cdl_048_opening_stub_exists_and_contains_required_headings_and_tokens()
 
 
 def test_decision_log_contains_exact_cdl_047_and_cdl_048_opening_rows() -> None:
-    text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_CDL_047_ROW in text
-    assert EXPECTED_CDL_048_ROW in text
-    rows = parse_decision_register_rows(text)
+    # The Phase-414 `CDL-047` row is a historical opening reference.
+    historical_text = _decision_log_text_at_ref(_resolve_phase_414_commit_ref())
+    assert EXPECTED_CDL_047_ROW in historical_text
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-047"]["status"] == "open"
-    assert rows["CDL-048"]["status"] == "open"
+
+    live_text = _read(DECISION_LOG_PATH)
+    assert EXPECTED_CDL_048_ROW in live_text
+    live_rows = parse_decision_register_rows(live_text)
+    assert live_rows["CDL-048"]["status"] == "open"
 
 
 def test_cdl_047_and_cdl_048_rows_appended_after_cdl_046_in_correct_order() -> None:

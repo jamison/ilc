@@ -104,10 +104,14 @@ def test_review_artifact_exists_and_contains_required_headings_and_tokens() -> N
 
 
 def test_cdl_047_and_cdl_048_are_still_open_and_cdl_049_absent() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    assert rows["CDL-047"]["status"] == "open"
-    assert rows["CDL-048"]["status"] == "open"
-    assert "CDL-049" not in rows
+    # The Phase-417 `CDL-047` open-state check is a historical governance-review reference.
+    historical_text = _read_file_at_ref(_resolve_phase_417_commit_ref(), str(DECISION_LOG_PATH))
+    historical_rows = parse_decision_register_rows(historical_text)
+    assert historical_rows["CDL-047"]["status"] == "open"
+
+    live_rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    assert live_rows["CDL-048"]["status"] == "open"
+    assert "CDL-049" not in live_rows
 
 
 def test_phase_414_phase_415_and_phase_416_artifacts_remain_present() -> None:
