@@ -40,6 +40,7 @@ OPERATIONAL_COMMANDS = (
     "shard",
     "capproof",
     "config",
+    "agent",
 )
 
 ALL_COMMANDS = PRIMITIVE_COMMANDS + OPERATIONAL_COMMANDS
@@ -946,6 +947,25 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "agent":
+            agent_parser = subparsers.add_parser("agent", help="D2e agent identity commands")
+            agent_subparsers = agent_parser.add_subparsers(dest="agent_subcommand", required=True)
+
+            p_derive = agent_subparsers.add_parser("derive", help="Derive agent_id from root key hex")
+            p_derive.add_argument(
+                "--root-key-hex",
+                required=True,
+                help="Hex-encoded canonical root key bytes",
+            )
+
+            p_inspect = agent_subparsers.add_parser("inspect", help="Inspect serialized agent record JSON")
+            p_inspect.add_argument(
+                "--record-json",
+                required=True,
+                help="Path to agent record JSON file",
+            )
+            continue
+
         if command != "identity":
             subparsers.add_parser(command, help=f"Prototype `{command}` command")
             continue
@@ -985,7 +1005,7 @@ def main() -> int:
 
     try:
         graph_state_path = Path(args.graph_state)
-        if command not in {"query", "verify", "bundle"}:
+        if command not in {"query", "verify", "bundle", "agent"}:
             _ensure_local_graph_state(graph_state_path, command)
 
         if command == "query":
@@ -999,6 +1019,11 @@ def main() -> int:
             payload = _bundle_success_payload(bundle_command, data)
         elif command == "identity":
             data = _run_identity_subcommand(args, graph_state_path)
+            payload = _success_payload(command, data)
+        elif command == "agent":
+            from ilc_core.cli.d2e_agent_cli import run_agent_command
+
+            data = run_agent_command(args)
             payload = _success_payload(command, data)
         else:
             data = _prototype_data_for_command(command)
