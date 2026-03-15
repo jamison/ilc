@@ -37,6 +37,8 @@ def _clean_full_run_env() -> dict[str, str]:
     blocked = {
         "ILC_PHASE_413_SNAPSHOT_PATH",
         "ILC_PHASE_401_SNAPSHOT_PATH",
+        "ILC_PHASE_337_SNAPSHOT_PATH",
+        "ILC_PHASE_327_SNAPSHOT_PATH",
         "ILC_PHASE_316_SNAPSHOT_PATH",
         "ILC_PHASE_316_FORCE_VERDICT",
         "ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE",
@@ -47,6 +49,8 @@ def _clean_full_run_env() -> dict[str, str]:
         "ILC_PHASE_367_GATE_SELFTEST",
         "ILC_PHASE_357_GATE_SELFTEST",
         "ILC_PHASE_347_GATE_SELFTEST",
+        "ILC_PHASE_337_GATE_SELFTEST",
+        "ILC_PHASE_327_GATE_SELFTEST",
     }
     return {key: value for key, value in os.environ.items() if key not in blocked}
 
@@ -152,9 +156,14 @@ def test_gate_full_run_exits_zero_on_pass_snapshot_and_preserves_canonical_snaps
     canonical_mtime_before = SNAPSHOT_PATH.stat().st_mtime_ns
     canonical_sha_before = hashlib.sha256(canonical_before).hexdigest()
     env = os.environ.copy()
+    env["ILC_PHASE_401_SNAPSHOT_PATH"] = "/tmp/phase_401_should_be_sanitized.json"
+    env["ILC_PHASE_337_SNAPSHOT_PATH"] = "/tmp/phase_337_should_be_sanitized.json"
+    env["ILC_PHASE_327_SNAPSHOT_PATH"] = "/tmp/phase_327_should_be_sanitized.json"
     env["ILC_PHASE_316_FORCE_VERDICT"] = "conditional"
     env["ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE"] = "1"
     env["ILC_PHASE_401_GATE_SELFTEST"] = "1"
+    env["ILC_PHASE_337_GATE_SELFTEST"] = "1"
+    env["ILC_PHASE_327_GATE_SELFTEST"] = "1"
     result = _run_gate([], env=env)
     assert result.returncode == 0
     assert "phase_413_snapshot_gate=passed" in result.stdout
