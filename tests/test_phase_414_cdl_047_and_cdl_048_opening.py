@@ -183,10 +183,9 @@ def test_decision_log_contains_exact_cdl_047_and_cdl_048_opening_rows() -> None:
     rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-047"]["status"] == "open"
 
-    live_text = _read(DECISION_LOG_PATH)
-    assert EXPECTED_CDL_048_ROW in live_text
-    live_rows = parse_decision_register_rows(live_text)
-    assert live_rows["CDL-048"]["status"] == "open"
+    # The Phase-414 `CDL-048` row is a historical opening reference.
+    assert EXPECTED_CDL_048_ROW in historical_text
+    assert rows["CDL-048"]["status"] == "open"
 
 
 def test_cdl_047_and_cdl_048_rows_appended_after_cdl_046_in_correct_order() -> None:
