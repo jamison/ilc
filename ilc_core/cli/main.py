@@ -41,6 +41,7 @@ OPERATIONAL_COMMANDS = (
     "capproof",
     "config",
     "agent",
+    "node",
 )
 
 ALL_COMMANDS = PRIMITIVE_COMMANDS + OPERATIONAL_COMMANDS
@@ -966,6 +967,35 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "node":
+            node_parser = subparsers.add_parser("node", help="D2e node lifecycle commands")
+            node_subparsers = node_parser.add_subparsers(dest="node_subcommand", required=True)
+
+            node_subparsers.add_parser("constants", help="Show ratified timed-out lifecycle constants")
+
+            p_node_inspect = node_subparsers.add_parser("timed-out-inspect", help="Inspect timed-out lifecycle status from a record")
+            p_node_inspect.add_argument(
+                "--record-json", required=True, help="Path to node or claim record JSON file"
+            )
+            p_node_inspect.add_argument(
+                "--current-epoch", type=int, required=True, help="Current issuance epoch"
+            )
+
+            p_node_d2d = node_subparsers.add_parser("timed-out-d2d", help="Build D2d dissemination envelope for a timed-out claim")
+            p_node_d2d.add_argument(
+                "--record-json", required=True, help="Path to node or claim record JSON file"
+            )
+            p_node_d2d.add_argument(
+                "--current-epoch", type=int, required=True, help="Current issuance epoch"
+            )
+            p_node_d2d.add_argument(
+                "--channel-id", required=True, help="Opaque D2d channel identifier"
+            )
+            p_node_d2d.add_argument(
+                "--sender-peer-id", required=True, help="D2d sender peer identifier"
+            )
+            continue
+
         if command != "identity":
             subparsers.add_parser(command, help=f"Prototype `{command}` command")
             continue
@@ -1005,7 +1035,7 @@ def main() -> int:
 
     try:
         graph_state_path = Path(args.graph_state)
-        if command not in {"query", "verify", "bundle", "agent"}:
+        if command not in {"query", "verify", "bundle", "agent", "node"}:
             _ensure_local_graph_state(graph_state_path, command)
 
         if command == "query":
@@ -1024,6 +1054,11 @@ def main() -> int:
             from ilc_core.cli.d2e_agent_cli import run_agent_command
 
             data = run_agent_command(args)
+            payload = _success_payload(command, data)
+        elif command == "node":
+            from ilc_core.cli.d2e_lifecycle_cli import run_node_command
+
+            data = run_node_command(args)
             payload = _success_payload(command, data)
         else:
             data = _prototype_data_for_command(command)
