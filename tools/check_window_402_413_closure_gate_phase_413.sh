@@ -94,6 +94,8 @@ run_sanitized_command() {
   env \
     -u ILC_PHASE_413_SNAPSHOT_PATH \
     -u ILC_PHASE_401_SNAPSHOT_PATH \
+    -u ILC_PHASE_337_SNAPSHOT_PATH \
+    -u ILC_PHASE_327_SNAPSHOT_PATH \
     -u ILC_PHASE_316_SNAPSHOT_PATH \
     -u ILC_PHASE_316_FORCE_VERDICT \
     -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
@@ -104,6 +106,8 @@ run_sanitized_command() {
     -u ILC_PHASE_367_GATE_SELFTEST \
     -u ILC_PHASE_357_GATE_SELFTEST \
     -u ILC_PHASE_347_GATE_SELFTEST \
+    -u ILC_PHASE_337_GATE_SELFTEST \
+    -u ILC_PHASE_327_GATE_SELFTEST \
     bash -c "$command"
 }
 
@@ -132,6 +136,8 @@ run_full_gate() {
       if env \
         -u ILC_PHASE_413_SNAPSHOT_PATH \
         -u ILC_PHASE_401_SNAPSHOT_PATH \
+        -u ILC_PHASE_337_SNAPSHOT_PATH \
+        -u ILC_PHASE_327_SNAPSHOT_PATH \
         -u ILC_PHASE_316_SNAPSHOT_PATH \
         -u ILC_PHASE_316_FORCE_VERDICT \
         -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
@@ -142,6 +148,8 @@ run_full_gate() {
         -u ILC_PHASE_367_GATE_SELFTEST \
         -u ILC_PHASE_357_GATE_SELFTEST \
         -u ILC_PHASE_347_GATE_SELFTEST \
+        -u ILC_PHASE_337_GATE_SELFTEST \
+        -u ILC_PHASE_327_GATE_SELFTEST \
         ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" \
         ILC_PHASE_401_GATE_SELFTEST=1 \
         ILC_PHASE_391_GATE_SELFTEST=1 \
@@ -149,6 +157,7 @@ run_full_gate() {
         ILC_PHASE_367_GATE_SELFTEST=1 \
         ILC_PHASE_357_GATE_SELFTEST=1 \
         ILC_PHASE_347_GATE_SELFTEST=1 \
+        ILC_PHASE_337_GATE_SELFTEST=1 \
         bash -c "${commands[$idx]}"; then
         :
       else
@@ -161,6 +170,8 @@ run_full_gate() {
       env \
         -u ILC_PHASE_413_SNAPSHOT_PATH \
         -u ILC_PHASE_401_SNAPSHOT_PATH \
+        -u ILC_PHASE_337_SNAPSHOT_PATH \
+        -u ILC_PHASE_327_SNAPSHOT_PATH \
         -u ILC_PHASE_316_SNAPSHOT_PATH \
         -u ILC_PHASE_316_FORCE_VERDICT \
         -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
@@ -170,6 +181,8 @@ run_full_gate() {
         -u ILC_PHASE_367_GATE_SELFTEST \
         -u ILC_PHASE_357_GATE_SELFTEST \
         -u ILC_PHASE_347_GATE_SELFTEST \
+        -u ILC_PHASE_337_GATE_SELFTEST \
+        -u ILC_PHASE_327_GATE_SELFTEST \
         ILC_PHASE_413_GATE_SELFTEST=1 \
         bash -c "${commands[$idx]}"
     else
