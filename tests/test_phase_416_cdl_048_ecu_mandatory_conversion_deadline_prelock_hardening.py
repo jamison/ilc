@@ -157,14 +157,17 @@ def test_cdl_047_and_cdl_048_register_order_preserved() -> None:
 
 
 def test_cdl_048_row_is_open() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
+    # The Phase-416 `CDL-048` row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_416_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-048"]["status"] == "open"
-    assert EXPECTED_CDL_048_ROW in text
+    assert EXPECTED_CDL_048_ROW in historical_text
 
 
 def test_cdl_048_has_no_premature_ratification_metadata() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-416 `CDL-048` row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_416_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-048"]["status"] != "ratified"
     assert "ratified_date" not in rows["CDL-048"]
     assert "ratified_phase" not in rows["CDL-048"]
