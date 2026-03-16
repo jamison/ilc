@@ -151,14 +151,16 @@ def test_cdl_049_register_order_preserved() -> None:
 
 
 def test_cdl_049_row_is_open() -> None:
-    text = _read(DECISION_LOG_PATH)
+    # The Phase-425 CDL-049 open-state row is a historical prelock reference.
+    text = _read_file_at_ref(_resolve_phase_425_commit_ref(), str(DECISION_LOG_PATH))
     rows = parse_decision_register_rows(text)
     assert rows["CDL-049"]["status"] == "open"
     assert EXPECTED_CDL_049_ROW in text
 
 
 def test_cdl_049_has_no_premature_ratification_metadata() -> None:
-    text = _read(DECISION_LOG_PATH)
+    # The Phase-425 CDL-049 pre-ratification state is a historical prelock reference.
+    text = _read_file_at_ref(_resolve_phase_425_commit_ref(), str(DECISION_LOG_PATH))
     rows = parse_decision_register_rows(text)
     assert rows["CDL-049"]["status"] != "ratified"
     assert "ratified_date" not in rows["CDL-049"]

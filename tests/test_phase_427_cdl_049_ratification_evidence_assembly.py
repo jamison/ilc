@@ -141,8 +141,10 @@ def test_evidence_artifact_exists_and_contains_required_headings_tokens_and_chec
 
 
 def test_phase_424_opening_stub_and_cdl_049_register_state_preserved() -> None:
+    # The Phase-427 CDL-049 open-state check is a historical prelock reference.
     assert CDL_049_STUB_PATH.exists()
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_427_commit_ref()
+    rows = parse_decision_register_rows(_read_file_at_ref(commit_ref, str(DECISION_LOG_PATH)))
     assert rows["CDL-049"]["status"] == "open"
     assert "ratified_date" not in rows["CDL-049"]
     assert "ratified_phase" not in rows["CDL-049"]
