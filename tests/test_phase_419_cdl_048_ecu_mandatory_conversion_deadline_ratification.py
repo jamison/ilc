@@ -208,7 +208,12 @@ def test_cdl_047_remains_ratified_and_cdl_049_absent() -> None:
     rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
     assert rows["CDL-047"]["status"] == "ratified"
     assert rows["CDL-047"]["ratified_phase"] == "418"
-    assert "CDL-049" not in rows
+
+    # The Phase-419 `CDL-049` absence check is a historical pre-Window-424 reference.
+    historical_rows = parse_decision_register_rows(
+        _read_file_at_ref(_resolve_phase_419_commit_ref(), str(DECISION_LOG_PATH))
+    )
+    assert "CDL-049" not in historical_rows
     assert_no_non_target_rows_marked_with_phase(rows, phase="419", target_cdls={"CDL-048"})
 
 
@@ -233,7 +238,8 @@ def test_phase_417_and_phase_418_tests_are_historicalized_for_cdl_048_open_state
     assert '# The Phase-417 `CDL-048` open-state check is a historical governance-review reference.' in phase_417_text
     assert 'historical_rows["CDL-048"]["status"] == "open"' in phase_417_text
     assert 'live_rows["CDL-048"]["status"] == "open"' not in phase_417_text
-    assert 'assert "CDL-049" not in live_rows' in phase_417_text
+    assert '# The Phase-417 `CDL-049` absence check is a historical pre-Window-424 reference.' in phase_417_text
+    assert 'assert "CDL-049" not in historical_rows' in phase_417_text
 
     phase_418_text = _read(PHASE_418_TEST_PATH)
     assert '# The Phase-418 `CDL-048` non-ratification boundary check is a historical Phase-418-commit reference.' in phase_418_text

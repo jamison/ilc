@@ -112,8 +112,8 @@ def test_cdl_047_and_cdl_048_are_still_open_and_cdl_049_absent() -> None:
     # The Phase-417 `CDL-048` open-state check is a historical governance-review reference.
     assert historical_rows["CDL-048"]["status"] == "open"
 
-    live_rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
-    assert "CDL-049" not in live_rows
+    # The Phase-417 `CDL-049` absence check is a historical pre-Window-424 reference.
+    assert "CDL-049" not in historical_rows
 
 
 def test_phase_414_phase_415_and_phase_416_artifacts_remain_present() -> None:
