@@ -40,6 +40,18 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _read_file_at_ref(ref: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{path}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_file_at_ref:{ref}:{path}:{result.stderr.strip()}")
+    return result.stdout
+
+
 def _resolve_phase_398_commit_ref_or_fail() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -114,9 +126,17 @@ def test_runtime_constants_lock_exact_dependency_and_version_tokens() -> None:
 
 def test_claim_form_admissibility_for_ratified_forms() -> None:
     assert is_claim_form_admissible(claim_form="singular")
-    assert is_claim_form_admissible(claim_form="existential")
+    assert is_claim_form_admissible(claim_form="bounded_existential")
     assert is_claim_form_admissible(claim_form="falsifiable_positive")
+    assert not is_claim_form_admissible(claim_form="existential")
     assert not is_claim_form_admissible(claim_form="inadmissible_counterexample")
+
+
+def test_phase_398_historical_runtime_preserved_unqualified_existential() -> None:
+    # The Phase-398 admissible claim-form set is a historical pre-amendment reference.
+    text = _read_file_at_ref(_resolve_phase_398_commit_ref_or_fail(), str(RUNTIME_PATH))
+    assert '    "existential",' in text
+    assert '    "bounded_existential",' not in text
 
 
 def test_falsifiability_gate_requires_boolean_true() -> None:
