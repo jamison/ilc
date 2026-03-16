@@ -105,7 +105,8 @@ def test_review_artifact_exists_and_contains_required_headings_and_tokens() -> N
 
 
 def test_cdl_049_remains_open_and_phase_424_425_artifacts_present() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-426 CDL-049 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(_read_file_at_ref(_resolve_phase_426_commit_ref(), str(DECISION_LOG_PATH)))
     assert rows["CDL-049"]["status"] == "open"
     assert CDL_049_STUB_PATH.exists()
     assert PHASE_425_HARDENING_PATH.exists()
