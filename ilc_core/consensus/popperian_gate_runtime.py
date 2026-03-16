@@ -15,7 +15,7 @@ CDL_V7_DEPENDENCY = "cdl_v7_popperian_gate_398.v0.1"
 
 _ADMISSIBLE_CLAIM_FORMS = {
     "singular",
-    "existential",
+    "bounded_existential",
     "falsifiable_positive",
 }
 
