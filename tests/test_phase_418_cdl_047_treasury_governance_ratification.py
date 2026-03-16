@@ -223,7 +223,7 @@ def test_phase_414_and_phase_415_tests_are_historicalized_for_cdl_047_open_state
     assert 'rows["CDL-047"]["status"] == "open"' in phase_415_text
 
 
-def test_phase_417_test_is_historicalized_for_cdl_047_while_live_cdl_048_and_cdl_049_checks_remain() -> None:
+def test_phase_417_test_is_historicalized_for_cdl_047_cdl_048_and_cdl_049_window_boundary() -> None:
     phase_417_text = _read(PHASE_417_TEST_PATH)
     assert '# The Phase-417 `CDL-047` open-state check is a historical governance-review reference.' in phase_417_text
     assert '_read_file_at_ref(_resolve_phase_417_commit_ref(), str(DECISION_LOG_PATH))' in phase_417_text
@@ -231,7 +231,8 @@ def test_phase_417_test_is_historicalized_for_cdl_047_while_live_cdl_048_and_cdl
     assert '# The Phase-417 `CDL-048` open-state check is a historical governance-review reference.' in phase_417_text
     assert 'historical_rows["CDL-048"]["status"] == "open"' in phase_417_text
     assert 'live_rows["CDL-048"]["status"] == "open"' not in phase_417_text
-    assert 'assert "CDL-049" not in live_rows' in phase_417_text
+    assert '# The Phase-417 `CDL-049` absence check is a historical pre-Window-424 reference.' in phase_417_text
+    assert 'assert "CDL-049" not in historical_rows' in phase_417_text
 
 
 def test_phase_418_commit_mutated_only_cdl_047_and_left_prior_artifacts_unchanged() -> None:
