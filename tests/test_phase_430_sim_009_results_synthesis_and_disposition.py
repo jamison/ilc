@@ -17,7 +17,12 @@ PHASE_426_REVIEW_PATH = Path("docs/specs/ilc_treasury_pe_stabilization_governanc
 SUMMARY_TABLE_PATH = Path("out/simulations/sim_009_pe_stabilization/summary_table.md")
 MANIFEST_PATH = Path("out/simulations/sim_009_pe_stabilization/run_manifest.json")
 RESULTS_CSV_PATH = Path("out/simulations/sim_009_pe_stabilization/results.csv")
+RESULTS_TSV_PATH = Path("out/simulations/sim_009_pe_stabilization/results.tsv")
 PHASE_430_SUBJECT_TOKEN = "phase 430 sim-009 results synthesis and pe stabilization disposition"
+MAIN_COMMIT_PATHS = {
+    str(SYNTHESIS_PATH),
+    "tests/test_phase_430_sim_009_results_synthesis_and_disposition.py",
+}
 REQUIRED_HEADINGS = (
     "## 1. Scope and non-ratifying boundary",
     "## 2. SIM-009 headline results recap",
@@ -78,13 +83,9 @@ def _resolve_phase_430_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if PHASE_430_SUBJECT_TOKEN in subject.lower():
             matches.append(commit_hash)
-    required_paths = {
-        str(SYNTHESIS_PATH),
-        "tests/test_phase_430_sim_009_results_synthesis_and_disposition.py",
-    }
     for commit_ref in matches:
         changed = _changed_paths_for_commit(commit_ref)
-        if required_paths.issubset(changed):
+        if changed == MAIN_COMMIT_PATHS:
             return commit_ref
     raise AssertionError("phase_430_commit_not_present_in_local_history")
 
@@ -150,6 +151,10 @@ def test_phase_430_commit_touched_no_decision_log_or_sim_009_inputs() -> None:
     old_results = _read_file_at_ref(f"{commit_ref}^1", str(RESULTS_CSV_PATH))
     new_results = _read_file_at_ref(commit_ref, str(RESULTS_CSV_PATH))
     assert old_results == new_results, "phase_430_commit_modified_sim_009_results_unlawfully"
+
+    old_results_tsv = _read_file_at_ref(f"{commit_ref}^1", str(RESULTS_TSV_PATH))
+    new_results_tsv = _read_file_at_ref(commit_ref, str(RESULTS_TSV_PATH))
+    assert old_results_tsv == new_results_tsv, "phase_430_commit_modified_sim_009_results_tsv_unlawfully"
 
 
 def test_phase_430_commit_touched_no_runtime_files() -> None:
