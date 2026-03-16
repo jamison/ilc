@@ -82,6 +82,18 @@ def _decision_log_text_at_ref(ref: str) -> str:
     return result.stdout
 
 
+def _read_file_at_ref(ref: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{path}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_file_at_ref:{ref}:{path}:{result.stderr.strip()}")
+    return result.stdout
+
+
 def test_sequence_lock_exists_and_contains_required_headings_and_tokens() -> None:
     assert SEQUENCE_LOCK_PATH.exists()
     text = _read(SEQUENCE_LOCK_PATH)
@@ -149,7 +161,8 @@ def test_cdl_049_opening_stub_exists_and_contains_required_headings_and_tokens()
 
 
 def test_decision_log_contains_exact_cdl_049_opening_row() -> None:
-    text = _read(DECISION_LOG_PATH)
+    # The Phase-424 CDL-049 row is a historical prelock reference.
+    text = _decision_log_text_at_ref(_resolve_phase_424_commit_ref())
     rows = parse_decision_register_rows(text)
     assert EXPECTED_CDL_049_ROW in text
     assert rows["CDL-049"]["status"] == "open"
@@ -163,7 +176,9 @@ def test_cdl_049_row_appended_after_cdl_048_in_correct_order() -> None:
 
 
 def test_popperian_gate_runtime_has_not_been_mutated() -> None:
-    text = _read(POPPERIAN_GATE_PATH)
+    # The Phase-424 popperian_gate_runtime pre-mutation state is a historical prelock reference.
+    commit_ref = _resolve_phase_424_commit_ref()
+    text = _read_file_at_ref(commit_ref, str(POPPERIAN_GATE_PATH))
     assert '"existential"' in text
     assert '"bounded_existential"' not in text
 

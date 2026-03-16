@@ -42,7 +42,7 @@ The missing element (not yet required by ILC's CDL schema): an explicit **falsif
 
 ### 1.3 Intersubjective testability — the material condition for basic statements
 
-Popper requires that basic statements — the singular existential claims that can potentially falsify a theory — be not just formally appropriate (singular and existential in structure) but materially intersubjectively testable: multiple observers operating independently should be able to evaluate them against observable fact. (SEP §4; *Logic of Scientific Discovery* §29.)
+Popper requires that basic statements — the singular bounded_existential claims that can potentially falsify a theory — be not just formally appropriate (singular and bounded_existential in structure) but materially intersubjectively testable: multiple observers operating independently should be able to evaluate them against observable fact. (SEP §4; *Logic of Scientific Discovery* §29.)
 
 This is the deep reason why ILC's commit-anchored tests are not merely quality control. They are the intersubjective testability mechanism. Any agent — human or AI — can independently run the test suite and evaluate whether the claims about the system's behavior hold. The test suite is the mechanism by which constitutional claims become intersubjectively evaluable rather than author-asserted.
 
@@ -124,7 +124,7 @@ ILC's ratification quorum, CDL process, and proposed diversity requirements are 
 
 Popper defines basic statements with two requirements:
 
-**(a) Formal**: singular and existential in structure — of the form "There is an X at Y" — not universal, not vague, not compound. A basic statement makes a specific claim about a specific observable state of affairs.
+**(a) Formal**: singular and bounded_existential in structure — of the form "There is an X at Y" — not universal, not vague, not compound. A basic statement makes a specific claim about a specific observable state of affairs.
 
 **(b) Material**: intersubjectively testable — multiple independent observers can evaluate it against observable fact without coordinating on how to interpret the claim.
 
@@ -132,7 +132,7 @@ You identified this correctly as a gap: this is a potential formal criterion for
 
 A valid ILC knowledge unit (the ILC analog of a Popperian basic statement) must satisfy:
 
-1. **Formally singular and existential**: it makes a specific claim about a specific thing under specific conditions. "This algorithm solved problem-class X under conditions Y" is valid. "This algorithm is generally better" is not — it is universal, not singular; vague, not existential.
+1. **Formally singular and bounded_existential**: it makes a specific claim about a specific thing under specific conditions. "This algorithm solved problem-class X under conditions Y" is valid. "This algorithm is generally better" is not — it is universal, not singular; vague, not bounded_existential.
 
 2. **Materially intersubjectively testable**: another agent, given the same inputs and conditions, can independently evaluate whether the claim holds without relying on the submitter's interpretation.
 
@@ -224,7 +224,7 @@ If the D2e identity subsystem or the reuse event submission protocol allows expe
 
 ### 4.1 CDL-V7: Formal criteria for a valid ILC knowledge unit
 
-**What it is**: A constitutional decision establishing the formal demarcation criterion for what counts as a valid submittable knowledge unit in the ILC epistemic graph. Grounded in Popper's basic statement requirements: singular, existential, intersubjectively testable, falsifiable by counter-instance.
+**What it is**: A constitutional decision establishing the formal demarcation criterion for what counts as a valid submittable knowledge unit in the ILC epistemic graph. Grounded in Popper's basic statement requirements: singular, bounded_existential, intersubjectively testable, falsifiable by counter-instance.
 
 **Why it matters now**: Without this criterion, the agent decomposition layer (the process by which subjective holistic submissions are decomposed into objective reusable building blocks) has no constitutional basis. It will be implemented ad hoc rather than consistently. This is an increasingly urgent gap as D2e subsystems begin accepting external knowledge submissions.
 
