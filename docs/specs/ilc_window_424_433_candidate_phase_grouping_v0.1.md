@@ -132,7 +132,22 @@ The D2e-01 through D2e-11 specification was the original target for D2e CLI impl
 
 ---
 
-## 6. Rationale for single-window scope
+## 6. Parallel administrative track: public export and release engineering
+
+The public-export / release-engineering track identified in `TODO.txt` remains active, but it is not part of the numbered constitutional window. It should run as a parallel administrative track rather than consuming Phases 424-433 tail slots that are reserved for constitutional uncertainty around `CDL-049`, Treasury `P_e`, and possible `SIM-009` follow-on.
+
+Recommended scope for the parallel track:
+
+1. define the public allowlist / denylist manifest,
+2. implement the allowlist-based export or sync script for ongoing publication,
+3. document the one-time public repo bootstrap method (including whether `git filter-repo` is used once for initial history shaping),
+4. prepare the public release packaging checklist for wheel / container / tarball outputs.
+
+This track may proceed in parallel with Window 424-433 so long as it does not mutate constitutional artifacts, interfere with active phase execution, or force premature refactoring of legacy namespaces solely for packaging purposes. If release engineering begins during this window, it should use a separate working context and treat the private canonical repo as the source of truth.
+
+---
+
+## 7. Rationale for single-window scope
 
 Window 424-433 is proposed as a single 10-phase candidate window because:
 
