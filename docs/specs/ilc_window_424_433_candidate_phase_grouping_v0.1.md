@@ -33,6 +33,8 @@ CDL-049 is the bounded-existential claim-form alignment lane. Its scope is narro
 2. `docs/specs/ilc_popper_ilc_analysis_v0.1.md` — review corpus language references existential forms without the bounded qualifier; CDL-049 must update or supersede the relevant active sections. If a passage is preserved as a historical quotation or citation, the correct fix is a superseding note or adjacent alignment note rather than rewriting the quoted historical text itself.
 3. Downstream propagation — active forward-facing runtime, analysis, and current-context sources consuming CDL-V7 semantics must be aligned if they still use unqualified `existential` vocabulary. Historical ratification evidence artifacts, quoted historical source passages, closed-window handoffs, and closed-phase walkthroughs/prompts are read-only and are not mutated.
 
+Non-goal: `docs/specs/ilc_cdl_v7_agent_decomposition_criteria_ratification_evidence_335_v0.1.md` is a historical ratification evidence artifact named by the Phase 417 finding, but CDL-049 does not patch it. The correct fix is to narrow future active runtime and forward-facing references, not to rewrite historical evidence.
+
 CDL-049 does not reopen or mutate the historical CDL-V7 row or its ratification evidence. CDL-V7 remains ratified as a historical constitutional artifact. CDL-049 instead ratifies a downstream narrowing override for future active runtime and forward-facing references: the admitted claim-form vocabulary becomes `bounded_existential` rather than unqualified `existential`.
 
 ---
@@ -63,7 +65,7 @@ D2e CLI Part 3 is lower priority than the constitutionally grounded P_e branch. 
 | 424 | Seq lock + CDL-049 opening (bounded-existential claim-form alignment) | Foundation / Constitutional (first action) |
 | 425 | CDL-049 prelock hardening | Constitutional |
 | 426 | Treasury P_e stabilization governance review (SIM-009 authorization gate) | Governance review |
-| 427 | CDL-049 ratification prep (historicalization plan + runtime-patch contract lock) | Constitutional / Runtime-prep |
+| 427 | CDL-049 ratification evidence assembly (vocabulary propagation scope + runtime-patch contract) | Constitutional / Runtime-prep |
 | 428 | CDL-049 ratification (runtime patch + bounded-vocabulary propagation) | Constitutional / Runtime |
 | 429 | Conditional tail slot 1: P_e constitutional continuation, SIM-009 commissioning, or D2e CLI Part 3 only if constitutional tail is not consumed | Conditional |
 | 430 | Conditional tail slot 2: P_e constitutional continuation, SIM-009 results processing, or reserve / gap closure | Conditional |
@@ -75,7 +77,7 @@ D2e CLI Part 3 is lower priority than the constitutionally grounded P_e branch. 
 
 Three baseline scenarios are possible depending on Phase 426 outcome and D2e CLI gap assessment:
 
-**Scenario A1 (SIM-008 sufficient; P_e amendment path fits in-window):** Phase 429 = `CDL-047` amendment opening + prelock; Phase 430 = `CDL-047` amendment ratification; Phase 431 = D2e CLI Part 3 only if a real gap remains, otherwise reserve / gap closure.
+**Scenario A1 (SIM-008 sufficient; P_e amendment path fits in-window):** Phase 429 = `CDL-047` amendment opening; Phase 430 = `CDL-047` amendment prelock; Phase 431 = `CDL-047` amendment ratification. Under this path, D2e CLI Part 3 is deferred rather than compressed into the same tail.
 
 **Scenario A2 (SIM-008 sufficient; new CDL-050 lane required):** Phase 429 = `CDL-050` opening; Phase 430 = `CDL-050` prelock; Phase 431 = `CDL-050` ratification. Under this path, D2e CLI Part 3 is deferred rather than compressed into the same tail.
 
@@ -91,12 +93,13 @@ Phase 426 is a governance review phase (parallel to Phase 417 in Window 414-423)
 
 ### Note on Phase 428 runtime mutation pattern
 
-Phase 428 is the first CDL ratification in ILC history that directly amends an already-ratified runtime file (`popperian_gate_runtime.py`). The commit resolver must qualify via both the CDL path and `ilc_core/consensus/popperian_gate_runtime.py` being present in the commit's changed files. The test must implement a custom runtime-mutation scope check (NOT `assert_head_commit_touched_no_runtime_files`) and must assert:
+Phase 428 is the first CDL ratification in ILC history that directly amends an already-ratified runtime file (`popperian_gate_runtime.py`). The commit resolver must qualify via at least these paths being present in the commit's changed files: the CDL path, `ilc_core/consensus/popperian_gate_runtime.py`, the Phase 427 evidence artifact, the new Phase 428 ratification test, and the historicalized Phase 424 prelock test. The test must implement a custom runtime-mutation scope check (NOT `assert_head_commit_touched_no_runtime_files`) and must assert:
 
 - `"bounded_existential" in popperian_gate_runtime_text` (positive vocabulary token)
-- unqualified `"existential"` absent from `_ADMISSIBLE_CLAIM_FORMS` (negative vocabulary assertion)
+- the exact quoted legacy token is absent from the `_ADMISSIBLE_CLAIM_FORMS` source-text block, e.g. `'"existential"' not in admissible_claim_forms_block`, rather than a loose whole-file word search
 - CDL-049 row carries ratification metadata (status, ratified_phase, ratified_date)
 - only the `CDL-049` row may change inside `docs/specs/ilc_constitutional_decision_log_v0.1.md`; non-target row shield remains mandatory
+- the Phase 424 prelock test is patched in the same Phase 428 commit to read the historical pre-ratification decision log state and assert `CDL-049` remained `open` at that historical commit
 
 ---
 
