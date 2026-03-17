@@ -32,6 +32,8 @@ constitutional compression.
 
 CDL-047, CDL-048, and CDL-049 are ratified in the current constitutional register.
 
+CDL-049 remains independent of the Treasury P_e lane and is unaffected by Phase 431.
+
 `CDL-050` remains unopened in Window 424-433.
 
 Treasury P_e constitutional lane carries into Window 434+ with provisional planning anchor 0.2 / 0.02 and no locked P_e constants.
@@ -59,9 +61,17 @@ carry-forward decision.
 Treasury P_e trigger and limit constants remain unratified because the current evidence basis is
 insufficient for immediate constitutional locking.
 
+Window 434+ P_e lane advancement requires satisfying at least one of the following prerequisites
+(from Phase 431 Section 4):
+- recovery criterion decoupled from the trigger threshold,
+- explicit treasury-risk tolerance judgment,
+- additional simulation evidence that discriminates intervention-limit trade-offs.
+
 ## 7. Wallet-agnostic signing and runtime-integrity continuity
 
 Wallet-agnostic signing remains mandatory: signer-lineage lifecycle is protocol-layer and signing-provider key custody is an operator concern.
+
+ADM-003 v0.2 remains the active signing-provider interface closure for wallet-agnostic implementation lanes.
 
 Runtime-integrity note: V-series validators reject non-finite numeric inputs (NaN/Inf).
 
@@ -78,7 +88,10 @@ Changed relative to v1.6:
 - added the Treasury P_e Scenario B carry-forward state from Phases 426, 430, and 431,
 - updated Popperian runtime state to bounded-existential vocabulary,
 - updated forward-boundary framing from Window 423 closure readiness to Window 433 closure readiness,
-- preserved wallet-agnostic signing and runtime-integrity carry-forward unchanged.
+- preserved wallet-agnostic signing and runtime-integrity carry-forward unchanged,
+- re-stated ADM-003 v0.2 signing-provider interface closure (present in v1.6, omitted from initial v1.7 draft — restored by post-execution audit patch),
+- added CDL-049 independence-from-P_e-lane statement to Section 4,
+- added three Window 434+ P_e advancement prerequisites to Section 6.
 
 ## 10. Key canonical anchors
 
@@ -90,3 +103,4 @@ Changed relative to v1.6:
 - `docs/specs/ilc_sim_009_results_synthesis_and_pe_stabilization_disposition_430_v0.1.md`
 - `docs/specs/ilc_pe_stabilization_carry_forward_decision_431_v0.1.md`
 - `docs/specs/ilc_integration_coherence_report_432_v0.1.md`
+- `docs/specs/ilc_adm_003_reference_agent_architecture_v0.2.md`
