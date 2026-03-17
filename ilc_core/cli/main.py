@@ -1017,6 +1017,96 @@ def _build_parser() -> JsonArgumentParser:
     return parser
 
 
+def _write_json_payload(payload: dict[str, Any], *, stderr: bool = False) -> None:
+    print(json.dumps(payload, sort_keys=True), file=sys.stderr if stderr else sys.stdout)
+
+
+def _simulate_network_error_result(command: str) -> tuple[int, dict[str, Any]]:
+    return 3, _error_payload(
+        command=command,
+        code=3,
+        message="simulated network transport failure",
+        details={"phase": "264"},
+    )
+
+
+def _run_top_level_command(
+    command: str,
+    args: argparse.Namespace,
+    graph_state_path: Path,
+) -> dict[str, Any]:
+    if command not in {"query", "verify", "bundle", "agent", "node"}:
+        _ensure_local_graph_state(graph_state_path, command)
+
+    if command == "query":
+        query_command, data = _run_query_subcommand(args, graph_state_path)
+        return _query_success_payload(query_command, data)
+    if command == "verify":
+        verify_command, data = _run_verify_subcommand(args, graph_state_path)
+        return _verify_success_payload(verify_command, data)
+    if command == "bundle":
+        bundle_command, data = _run_bundle_subcommand(args, graph_state_path)
+        return _bundle_success_payload(bundle_command, data)
+    if command == "identity":
+        data = _run_identity_subcommand(args, graph_state_path)
+        return _success_payload(command, data)
+    if command == "agent":
+        from ilc_core.cli.d2e_agent_cli import run_agent_command
+
+        data = run_agent_command(args)
+        return _success_payload(command, data)
+    if command == "node":
+        from ilc_core.cli.d2e_lifecycle_cli import run_node_command
+
+        data = run_node_command(args)
+        return _success_payload(command, data)
+
+    data = _prototype_data_for_command(command)
+    return _success_payload(command, data)
+
+
+def _query_error_result(
+    args: argparse.Namespace,
+    exc: QueryCommandError,
+) -> tuple[int, dict[str, Any]]:
+    return 1, _query_error_payload(
+        command_token=_query_command_token(args),
+        code=exc.code,
+        message=exc.message,
+    )
+
+
+def _verify_error_result(
+    args: argparse.Namespace,
+    exc: VerifyCommandError,
+) -> tuple[int, dict[str, Any]]:
+    return 1, _verify_error_payload(
+        command_token=_verify_command_token(args),
+        code=exc.code,
+        message=exc.message,
+    )
+
+
+def _bundle_error_result(
+    args: argparse.Namespace,
+    exc: BundleCommandError,
+) -> tuple[int, dict[str, Any]]:
+    return 1, _bundle_error_payload(
+        command_token=_bundle_command_token(args),
+        code=exc.code,
+        message=exc.message,
+    )
+
+
+def _value_error_result(command: str, exc: ValueError) -> tuple[int, dict[str, Any]]:
+    return 1, _error_payload(
+        command=command,
+        code=1,
+        message=str(exc),
+        details={"phase": "264"},
+    )
+
+
 def main() -> int:
     parser = _build_parser()
     args = parser.parse_args()
@@ -1024,80 +1114,27 @@ def main() -> int:
     command = str(args.command)
 
     if args.simulate_network_error:
-        payload = _error_payload(
-            command=command,
-            code=3,
-            message="simulated network transport failure",
-            details={"phase": "264"},
-        )
-        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
-        return 3
+        code, payload = _simulate_network_error_result(command)
+        _write_json_payload(payload, stderr=True)
+        return code
+
+    graph_state_path = Path(args.graph_state)
 
     try:
-        graph_state_path = Path(args.graph_state)
-        if command not in {"query", "verify", "bundle", "agent", "node"}:
-            _ensure_local_graph_state(graph_state_path, command)
-
-        if command == "query":
-            query_command, data = _run_query_subcommand(args, graph_state_path)
-            payload = _query_success_payload(query_command, data)
-        elif command == "verify":
-            verify_command, data = _run_verify_subcommand(args, graph_state_path)
-            payload = _verify_success_payload(verify_command, data)
-        elif command == "bundle":
-            bundle_command, data = _run_bundle_subcommand(args, graph_state_path)
-            payload = _bundle_success_payload(bundle_command, data)
-        elif command == "identity":
-            data = _run_identity_subcommand(args, graph_state_path)
-            payload = _success_payload(command, data)
-        elif command == "agent":
-            from ilc_core.cli.d2e_agent_cli import run_agent_command
-
-            data = run_agent_command(args)
-            payload = _success_payload(command, data)
-        elif command == "node":
-            from ilc_core.cli.d2e_lifecycle_cli import run_node_command
-
-            data = run_node_command(args)
-            payload = _success_payload(command, data)
-        else:
-            data = _prototype_data_for_command(command)
-            payload = _success_payload(command, data)
-        print(json.dumps(payload, sort_keys=True))
+        payload = _run_top_level_command(command, args, graph_state_path)
+        _write_json_payload(payload)
         return 0
     except QueryCommandError as exc:
-        payload = _query_error_payload(
-            command_token=_query_command_token(args),
-            code=exc.code,
-            message=exc.message,
-        )
-        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
-        return 1
+        code, payload = _query_error_result(args, exc)
     except VerifyCommandError as exc:
-        payload = _verify_error_payload(
-            command_token=_verify_command_token(args),
-            code=exc.code,
-            message=exc.message,
-        )
-        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
-        return 1
+        code, payload = _verify_error_result(args, exc)
     except BundleCommandError as exc:
-        payload = _bundle_error_payload(
-            command_token=_bundle_command_token(args),
-            code=exc.code,
-            message=exc.message,
-        )
-        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
-        return 1
+        code, payload = _bundle_error_result(args, exc)
     except ValueError as exc:
-        payload = _error_payload(
-            command=command,
-            code=1,
-            message=str(exc),
-            details={"phase": "264"},
-        )
-        print(json.dumps(payload, sort_keys=True), file=sys.stderr)
-        return 1
+        code, payload = _value_error_result(command, exc)
+
+    _write_json_payload(payload, stderr=True)
+    return code
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entrypoint
