@@ -16,11 +16,10 @@ The scope of this baseline is limited to the numbered main-track runtime tranche
 
 This sequence lock inherits the settled closure state from Window 424-433:
 - `CDL-049` is ratified.
-- `CDL-050` is not pre-authorized at Phase 434 entry.
+- CDL-050 is not pre-authorized at Phase 434 entry.
 - Window 434+ may advance the Treasury P_e constitutional lane only after satisfying at least one Phase 431 prerequisite.
 - The SIM-009 pair `0.2 / 0.02` remains a provisional planning anchor only.
 - Release engineering packaging/bootstrap remains a parallel administrative track and does not consume numbered phases in this baseline.
-- CDL-050 is not pre-authorized at Phase 434 entry.
 
 ## 3. Runtime tranche authorization and release-engineering separation
 
