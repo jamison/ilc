@@ -280,15 +280,7 @@ def _validate_header_fields(header: dict[str, Any], node_id: str) -> None:
             )
 
 
-def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
-    """Verify deterministic dissemination runtime output."""
-
-    if not isinstance(record, dict):
-        raise NodeDisseminationRuntimeError(
-            "node_dissemination_record_not_object",
-            "record_not_object",
-        )
-
+def _validate_record_metadata(record: dict[str, Any]) -> None:
     if record.get("runtime_version") != NODE_DISSEMINATION_RUNTIME_VERSION:
         raise NodeDisseminationRuntimeError(
             "node_dissemination_runtime_version_invalid",
@@ -305,6 +297,8 @@ def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
             f"validation_lifecycle_dependency_invalid:{record.get('validation_lifecycle_dependency')}",
         )
 
+
+def _extract_record_envelopes(record: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
     envelopes = record.get("envelopes")
     if not isinstance(envelopes, dict):
         raise NodeDisseminationRuntimeError(
@@ -312,24 +306,29 @@ def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
             "envelopes_not_object",
         )
 
-    authored_payload = envelopes.get("authored_payload")
     transport = envelopes.get("transport")
-    protocol_interpretation = envelopes.get("protocol_interpretation")
-
     if not isinstance(transport, dict):
         raise NodeDisseminationRuntimeError(
             "node_dissemination_transport_envelope_not_object",
             "transport_envelope_not_object",
         )
+
+    protocol_interpretation = envelopes.get("protocol_interpretation")
     if not isinstance(protocol_interpretation, dict):
         raise NodeDisseminationRuntimeError(
             "node_dissemination_protocol_envelope_not_object",
             "protocol_envelope_not_object",
         )
 
-    normalized_authored = _normalize_authored_payload(authored_payload)
-    node_id = normalized_authored["node_id"]
+    normalized_authored = _normalize_authored_payload(envelopes.get("authored_payload"))
+    return envelopes, normalized_authored, transport, protocol_interpretation
 
+
+def _verify_transport_header(
+    transport: dict[str, Any],
+    normalized_authored: dict[str, Any],
+) -> tuple[str, str]:
+    node_id = normalized_authored["node_id"]
     header = transport.get("header")
     if not isinstance(header, dict):
         raise NodeDisseminationRuntimeError(
@@ -356,6 +355,14 @@ def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
             f"signature_scope_violation:{node_id}",
         )
 
+    return node_id, expected_payload_cid
+
+
+def _verify_fetch_contract(
+    transport: dict[str, Any],
+    node_id: str,
+    expected_payload_cid: str,
+) -> None:
     fetch_contract = transport.get("fetch_contract")
     if not isinstance(fetch_contract, dict):
         raise NodeDisseminationRuntimeError(
@@ -389,6 +396,13 @@ def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
             f"content_address_verification_missing:{node_id}",
         )
 
+
+def _verify_routing(
+    transport: dict[str, Any],
+    protocol_interpretation: dict[str, Any],
+    normalized_authored: dict[str, Any],
+) -> None:
+    node_id = normalized_authored["node_id"]
     if transport.get("dissemination_mode") != "pull_dominant_soft_push_signals":
         raise NodeDisseminationRuntimeError(
             "node_dissemination_mode_invalid",
@@ -400,25 +414,27 @@ def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
             f"orderer_mode_forbidden:{node_id}:{transport.get('orderer_mode')}",
         )
 
-    transport_routing = transport.get("routing_inputs")
-    protocol_routing = protocol_interpretation.get("routing_inputs")
-    if transport_routing != {
+    expected_routing = {
         "visibility": normalized_authored["visibility"],
         "channel": normalized_authored["channel"],
-    }:
+    }
+    if transport.get("routing_inputs") != expected_routing:
         raise NodeDisseminationRuntimeError(
             "node_dissemination_routing_inputs_invalid",
             f"routing_inputs_invalid:{node_id}:transport",
         )
-    if protocol_routing != {
-        "visibility": normalized_authored["visibility"],
-        "channel": normalized_authored["channel"],
-    }:
+    if protocol_interpretation.get("routing_inputs") != expected_routing:
         raise NodeDisseminationRuntimeError(
             "node_dissemination_routing_inputs_invalid",
             f"routing_inputs_invalid:{node_id}:protocol",
         )
 
+
+def _verify_regenerated_record(
+    record: dict[str, Any],
+    normalized_authored: dict[str, Any],
+) -> dict[str, Any]:
+    node_id = normalized_authored["node_id"]
     regenerated = generate_node_dissemination_record({"authored_payload": normalized_authored})
 
     observed_core = {
@@ -450,6 +466,25 @@ def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
             "node_dissemination_record_digest_mismatch",
             f"record_digest_mismatch:{node_id}",
         )
+
+    return regenerated
+
+
+def verify_node_dissemination_record(record: dict[str, Any]) -> dict[str, Any]:
+    """Verify deterministic dissemination runtime output."""
+
+    if not isinstance(record, dict):
+        raise NodeDisseminationRuntimeError(
+            "node_dissemination_record_not_object",
+            "record_not_object",
+        )
+
+    _validate_record_metadata(record)
+    _, normalized_authored, transport, protocol_interpretation = _extract_record_envelopes(record)
+    node_id, expected_payload_cid = _verify_transport_header(transport, normalized_authored)
+    _verify_fetch_contract(transport, node_id, expected_payload_cid)
+    _verify_routing(transport, protocol_interpretation, normalized_authored)
+    regenerated = _verify_regenerated_record(record, normalized_authored)
 
     return {
         "valid": True,
