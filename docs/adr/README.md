@@ -34,3 +34,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0012](ADR_0012_ECU_ILC_Graph_Coupling_and_Anti_Reflexivity.md) | ECU-ILC-Graph Coupling and Anti-Reflexivity Contract | Proposed |
 | [ADR-0013](ADR_0013_External_Payment_Boundary_and_Third_Party_Independence.md) | External Payment Boundary and Third-Party Independence | Proposed |
 | [ADR-0014](ADR_0014_Identity_Sybil_and_Admission_Control_Envelope.md) | Identity, Sybil, and Admission Control Envelope | Proposed |
+| [ADR-0019](ADR_0019_Graph_Native_Governance_Compilation_Boundary.md) | Graph-Native Governance Compilation Boundary | Proposed |
