@@ -171,7 +171,7 @@ def test_gate_full_run_exits_zero_on_pass_snapshot_and_preserves_canonical_snaps
     canonical_before = SNAPSHOT_PATH.read_bytes()
     canonical_mtime_before = SNAPSHOT_PATH.stat().st_mtime_ns
     canonical_sha_before = hashlib.sha256(canonical_before).hexdigest()
-    env = os.environ.copy()
+    env = _clean_full_run_env()
     env["ILC_PHASE_433_SNAPSHOT_PATH"] = "/tmp/phase_433_should_be_sanitized.json"
     env["ILC_PHASE_423_SNAPSHOT_PATH"] = "/tmp/phase_423_should_be_sanitized.json"
     env["ILC_PHASE_413_SNAPSHOT_PATH"] = "/tmp/phase_413_should_be_sanitized.json"
