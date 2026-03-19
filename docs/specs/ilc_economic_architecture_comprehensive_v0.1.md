@@ -288,7 +288,7 @@ ILC becomes a genuine store of value — appreciated over time because the knowl
 |---|---|---|---|
 | ADR-0015: Node Transfer Economics | ADR | Transfer tax, cooling period, governance decoupling, creator attribution, public goods dedication, leasehold model | Phase 358+ roadmap |
 | ADR-0016: Productive ECU Expansion (Bounty + Funding Request) | ADR | Protocol-issued bounties (top-down), peer-funded bounties (pull), funding requests (push), conditional ECU creation, reputation feedback loop, anti-abuse constraints | Phase 358+ roadmap |
-| ADR-0017: Post-Issuance Economic Transition | ADR | Fee-burn adaptation, treasury stabilization, velocity monitoring, leasehold reversion revenue | Phase 358+ roadmap |
+| ADR-0017: Post-Issuance Economic Transition | ADR | Fee-burn adaptation, ECU-side credit governance (bounty stimulus, escrow tightening, velocity control), leasehold reversion revenue | Phase 358+ roadmap |
 | ADR-0018: Sequestered Financial Shard | ADR | Dedicated shard type for securities/HFT, separate conversion budget, contagion firewalls | Post-launch |
 | CDL-045+ cluster | CDL | Node property rights, transfer mechanism, IP dispute resolution | Future window |
 | CDL-04x | CDL | Bounty mechanism constitutional constraints | Future window |
