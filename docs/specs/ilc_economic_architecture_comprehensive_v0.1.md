@@ -3,7 +3,7 @@
 **Status:** Non-normative economic architecture document — for review and future CDL/ADR derivation  
 **Date:** 2026-03-05  
 **Authors:** Jamie (ILC Project Lead) + Claude Opus 4.6 (Strategic Architectural Reviewer)  
-**Source conversation:** `Z_Past_Chats/2026_03_05_Opus_Conversation_Economic_Architecture_Deep_Dive.md`  
+**Source conversation:** `Z_Past_Chats/2026_03_05_Opus_Conversation_Economic_Architecture_Deep_Dive.md` *(source provenance — full transcript not committed to repo; Z_Past_Chats/ is empty)*
 **Anchors:** CDL-025 through CDL-031 (ratified issuance parameters), ADM-001 v0.2 (four-layer architecture), CDL-034 (three-envelope node schema), CDL-V1 through CDL-V7 (enforcement mechanisms), Economic Paper Draft v0.2, ECU Profiles & Payout Scaling v0.2
 
 ---
@@ -277,7 +277,7 @@ ILC becomes a genuine store of value — appreciated over time because the knowl
 | SIM-002 | Micro-agent cost floor — can new agents organically bootstrap? | 2 | Section 5.2 |
 | SIM-008 (new) | Long-horizon post-issuance dynamics: ILC loss rate, fee sustainability, P_e stability, velocity | Pre-launch | Section 7 |
 | SIM-009 (new) | Optimal node lease duration under various growth and decay scenarios | Window 358-368 | Section 3.8 |
-| SIM-010 (new) | Transfer tax rate calibration: speculation deterrence vs market liquidity | Window 358-368 | Section 3.2 |
+| SIM-010 (new) | Transfer tax rate calibration: speculation deterrence vs market liquidity | Window 358-368 | Section 3.2 | *(Note: a separate Opus analysis proposes SIM-010 as adversarial Monte Carlo Treasury simulation; neither proposal is ratified — naming conflict exists between two non-normative documents)* |
 | SIM-011 (new) | Bounty and funding request market dynamics: push-pull equilibrium, funder return model comparison, reputation feedback effects on capital allocation efficiency | Window 358-368 | Sections 5.3, 5.4, 5.5, 5.6 |
 
 ---
@@ -317,9 +317,9 @@ ILC becomes a genuine store of value — appreciated over time because the knowl
 - `docs/whitepaper/whitepaper_ecu_profiles_and_payouts_v0.2.md`
 - `docs/ILC_Economic_Paper_Draft_v0.2.md`
 - `docs/specs/ilc_adm_001_protocol_native_bundle_distribution_v0.2.md`
-- `docs/specs/ilc_adm_003_reference_agent_architecture_v0.1.md`
+- `docs/specs/ilc_adm_003_reference_agent_architecture_v0.2.md`
 - `docs/specs/ilc_open_requirements_and_unknown_unknowns_analysis_354_v0.1.md`
-- `Z_Past_Chats/2026_03_05_Opus_Conversation_Economic_Architecture_Deep_Dive.md`
+- `Z_Past_Chats/2026_03_05_Opus_Conversation_Economic_Architecture_Deep_Dive.md` *(source provenance anchor — full transcript not committed to repo)*
 
 ---
 

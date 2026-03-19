@@ -32,12 +32,14 @@ The Treasury should NOT manipulate ILC supply or the B_e budget to defend the P_
 
 Instead, the Treasury's intervention toolkit operates exclusively on the ECU side:
 
-- **Stimulus (ECU expansion):** Protocol bounties and peer-funded bounties (ADR-0016 push/pull mechanism) to expand productive ECU creation during downturns
-- **Cooling (ECU contraction):** Dynamic escrow tightening (raise ILC escrow required to publish claims), vesting time-lock extension (lock newly minted ECU for longer periods during overheating), tautology slashing (burn ECU from non-productive claims)
-- **Velocity control:** Adjust vesting/time-lock periods to control how fast ECU enters circulation
-- **Long-tail sustainability:** Transaction fee diversion and stabilization levy on locked stake when new ILC issuance approaches zero
+- **Stimulus (ECU expansion):** Protocol bounties and peer-funded bounties (ADR-0016 push/pull mechanism) to expand productive ECU creation during downturns. This is the Treasury's primary expansionary lever.
+- **Cooling (ECU contraction):** Dynamic escrow tightening (raise ILC escrow required to publish claims), vesting time-lock extension (lock newly minted ECU for longer periods during overheating), tautology slashing (burn ECU from non-productive claims).
+- **Velocity control:** Adjust vesting/time-lock periods to control how fast ECU enters circulation. During stress, extend vesting to reduce sell pressure on the conversion bridge.
+- **Long-tail sustainability:** Transaction fee diversion and stabilization levy on locked stake when new ILC issuance approaches zero.
 
-P_e becomes an observed output of healthy ECU management, not a target defended by ILC manipulation. Protocol-governed, not discretionary — the stabilization triggers and limits are constitutional parameters with sunset fuses.
+P_e becomes an observed output of healthy ECU management, not a target defended by ILC manipulation. The P_e clamp (0.75-1.30, CDL-030) provides hard boundaries, but within those boundaries, P_e floats based on the organic relationship between ECU supply and the fixed ILC budget. If the Treasury's ECU-side governance is working correctly, P_e remains stable without any ILC-side intervention.
+
+Protocol-governed, not discretionary — the intervention triggers and limits are constitutional parameters with sunset fuses.
 
 ### Bounty mechanism as counter-cyclical stimulus
 
@@ -63,7 +65,7 @@ ECU should have a finite lifespan — automatic conversion to ILC after N epochs
 
 - The early-to-late economy transition becomes a gradual, predictable shift rather than a cliff
 - Multiple revenue sources (fees, transfer tax, reversion, tail emission) provide B_e resilience
-- Counter-cyclical mechanisms (treasury stabilization, bounty stimulus) prevent deflationary spirals
+- Counter-cyclical mechanisms (ECU-side credit governance, bounty stimulus) prevent deflationary spirals
 - Adaptive fee-burn prevents aggressive deflation in the late economy
 - Velocity monitoring provides early warning of circulation problems
 - The expected late equilibrium: ILC as store of value, ECU as circulating medium, knowledge graph continuing to grow, economy evolving from growth-stage to steady-state
@@ -81,4 +83,4 @@ ECU should have a finite lifespan — automatic conversion to ILC after N epochs
 
 - **No adaptive mechanisms (fixed parameters forever):** Rejected because 17-year economic transitions are unpredictable. Fixed parameters that work in year 1 may be destructive in year 15.
 - **Aggressive demurrage on ILC holdings (forced decay):** Considered but tabled. The dual-token architecture (ECU for circulation, ILC for savings) already separates the two functions. ECU's temporal decay and mandatory conversion provide circulation incentives. ILC demurrage may not be necessary if the late-economy mitigations above are sufficient. Revisit if SIM-008 shows late-economy hoarding is critically damaging despite other mechanisms.
-- **No treasury stabilization (let P_e float freely):** Rejected because fee-only B_e is inherently volatile, and P_e volatility undermines productive work incentives. Counter-cyclical stabilization is preferable to pro-cyclical volatility.
+- **No treasury stabilization (let P_e float freely):** Rejected because fee-only B_e is inherently volatile, and P_e volatility undermines productive work incentives. ECU-side credit governance (bounty expansion, escrow tightening, velocity control) is preferable to either unmanaged volatility or ILC-side manipulation.
