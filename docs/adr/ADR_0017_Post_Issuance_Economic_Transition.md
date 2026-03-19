@@ -22,11 +22,22 @@ CDL-028 ratified a fee-burn split. The burn fraction destroys ILC permanently. I
 
 Design requirement: the fee-burn ratio must be epoch-adaptive as a governance parameter (autopilot-eligible). In late epochs, the burn fraction should trend toward zero to prevent deflationary spiral. The specific transition triggers and target ratios require simulation (SIM-008).
 
-### Treasury as P_e stabilization fund
+### Treasury as ECU-side credit governor
 
-The treasury (funded by 5% genesis allocation per CDL-029, ongoing fee revenue, transfer tax revenue per ADR-0015, and node reversion revenue) should be designed to function as a counter-cyclical P_e stabilizer in the late economy.
+> *Correction (2026-03-19): This section was revised per Opus analysis to shift Treasury intervention from ILC-side stabilization to ECU-side credit governance. The original ILC-side model replicated central bank currency-peg defense, which contradicts the protocol's hard-money design for ILC. See: `docs/research/ilc_opus_treasury_jubilee_and_graph_dependency_analysis_v0.1.md`*
 
-Mechanism: treasury absorbs excess ILC when fees are high (building reserves), releases ILC into B_e when fees are low (supporting P_e). Protocol-governed, not discretionary — the stabilization triggers and limits are constitutional parameters with sunset fuses.
+The treasury (funded by 5% genesis allocation per CDL-029, ongoing fee revenue, transfer tax revenue per ADR-0015, and node reversion revenue) should be designed to govern ECU-side credit conditions as a counter-cyclical economic stabilizer in the late economy.
+
+The Treasury should NOT manipulate ILC supply or the B_e budget to defend the P_e conversion rate. ILC is the hard monetary base and must remain untouched by stabilization mechanics.
+
+Instead, the Treasury's intervention toolkit operates exclusively on the ECU side:
+
+- **Stimulus (ECU expansion):** Protocol bounties and peer-funded bounties (ADR-0016 push/pull mechanism) to expand productive ECU creation during downturns
+- **Cooling (ECU contraction):** Dynamic escrow tightening (raise ILC escrow required to publish claims), vesting time-lock extension (lock newly minted ECU for longer periods during overheating), tautology slashing (burn ECU from non-productive claims)
+- **Velocity control:** Adjust vesting/time-lock periods to control how fast ECU enters circulation
+- **Long-tail sustainability:** Transaction fee diversion and stabilization levy on locked stake when new ILC issuance approaches zero
+
+P_e becomes an observed output of healthy ECU management, not a target defended by ILC manipulation. Protocol-governed, not discretionary — the stabilization triggers and limits are constitutional parameters with sunset fuses.
 
 ### Bounty mechanism as counter-cyclical stimulus
 
