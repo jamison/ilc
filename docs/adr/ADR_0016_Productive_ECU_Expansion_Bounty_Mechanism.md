@@ -77,6 +77,7 @@ Successful funding request delivery: requesting agent gains reputation (stronger
 - Reputation feedback loop creates natural selection: successful agents graduate from funded to self-sustaining to funders
 - Architectural affordance should be built into Genesis specification (hooks in node schema and epoch scoring pipeline) even if not activated immediately
 - Becomes essential for counter-cyclical stimulus in the late economy (Section 7 of economic architecture)
+- Under the corrected ECU-side Treasury governance model (see ADR-0017 correction and `docs/research/ilc_opus_treasury_jubilee_and_graph_dependency_analysis_v0.1.md`), the ADR-0016 push/pull bounty mechanism is the Treasury's **primary expansionary lever** — not a supplementary feature. Protocol-issued bounties (stimulus) and peer-funded bounties (demand-side pull) are the main tool for ECU credit expansion during downturns, replacing the ILC-side reserve manipulation model previously described in ADR-0017.
 
 ## Open questions
 
