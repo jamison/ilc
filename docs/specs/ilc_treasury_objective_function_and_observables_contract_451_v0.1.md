@@ -33,7 +33,7 @@ No blocker closes on prose alone.
 ## 3. Observable definitions
 
 `P_e clamp-respect rate`
-- Definition: the share of measured epochs in which `P_e` remains within the constitutionally accepted clamp band.
+- Definition: the share of measured epochs in which `P_e` remains within the ratified `CDL-030` clamp band (`0.75-1.30`) unless a later constitutional amendment explicitly changes that band.
 - Why it matters: it measures whether Treasury interventions preserve the bounded external price surface without making that surface the only thing that counts.
 
 `organic ECU production rate`
@@ -80,6 +80,13 @@ Tier 4 - narrative-only discussion
 - non-reproducible argument without metric traceability.
 
 Window 450-459 may use Tier 3 material to explain results, but the observables are only evidenced by Tier 1 and Tier 2 material. Tier 4 is non-authoritative for blocker closure.
+
+Observable-to-evidence binding:
+- `P_e clamp-respect rate` is evidenced by Tier 1 and Tier 2 artifacts only, using the ratified `CDL-030` clamp band (`0.75-1.30`) as the constitutional measurement surface.
+- `organic ECU production rate` is evidenced by Tier 1 and Tier 2 artifacts only, with intervention-contaminated categories defined explicitly in the commissioned simulation brief.
+- `productive backlog / queue-clearance behavior` is evidenced by Tier 1 and Tier 2 artifacts only, using reproducible queue-depth and clearance summaries rather than narrative descriptions.
+- `release-shock amplitude after time-lock expiry` is evidenced by Tier 1 and Tier 2 artifacts only, using reproducible post-expiry volatility or destabilization measurements.
+- `intervention duration and intervention cost` is evidenced by Tier 1 and Tier 2 artifacts only, using explicit duration and cost tables derived from the commissioned runs.
 
 ## 5. Anti-goals
 
