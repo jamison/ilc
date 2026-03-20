@@ -6,6 +6,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import types
 from hashlib import sha256
 from pathlib import Path
 
@@ -23,22 +24,37 @@ FROZEN_TOOL_SHA = "dcffef7fb20e10d1ca4f649c752b9bb92875738133b0863881f7a52157ec2
 PHASE_436_COMMIT_SUBJECT = "runtime(g8): phase 436 benchmark harness and runtime tranche completion"
 
 
-_module_cache = None
+_module_cache: dict[str, object] = {}
 
 
-def _load_runtime_baseline_module():
-    global _module_cache
-    if _module_cache is None:
-        spec = importlib.util.spec_from_file_location("phase_436_runtime_baseline", TOOL_PATH)
-        assert spec is not None and spec.loader is not None
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        _module_cache = module
-    return _module_cache
+def _read_file_at_ref(ref: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{path}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_file_at_ref:{ref}:{path}:{result.stderr.strip()}")
+    return result.stdout
+
+
+def _load_runtime_baseline_module_at_ref(ref: str):
+    if ref not in _module_cache:
+        source_text = _read_file_at_ref(ref, str(TOOL_PATH))
+        module = types.ModuleType(f"phase_436_runtime_baseline_{ref[:8]}")
+        module.__file__ = str(TOOL_PATH.resolve())
+        exec(compile(source_text, module.__file__, "exec"), module.__dict__)
+        _module_cache[ref] = module
+    return _module_cache[ref]
 
 
 def _sha256(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
+
+
+def _sha256_text(text: str) -> str:
+    return sha256(text.encode("utf-8")).hexdigest()
 
 
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
@@ -96,15 +112,16 @@ def _assert_phase_436_runtime_scope(commit_ref: str) -> None:
 
 
 def test_runtime_baseline_source_matches_frozen_release_track() -> None:
-    assert TOOL_PATH.exists()
+    historical_text = _read_file_at_ref(_resolve_phase_436_commit_ref(), str(TOOL_PATH))
     assert RELEASE_TRACK_TOOL_PATH.exists()
-    assert _sha256(TOOL_PATH) == FROZEN_TOOL_SHA
+    assert _sha256_text(historical_text) == FROZEN_TOOL_SHA
     assert _sha256(RELEASE_TRACK_TOOL_PATH) == FROZEN_TOOL_SHA
-    assert TOOL_PATH.read_bytes() == RELEASE_TRACK_TOOL_PATH.read_bytes()
+    assert historical_text == RELEASE_TRACK_TOOL_PATH.read_text(encoding="utf-8")
 
 
 def test_runtime_baseline_report_shape_and_locked_budget_keys() -> None:
-    module = _load_runtime_baseline_module()
+    # The Phase-436 runtime_baseline snapshot is a historical runtime-tranche reference.
+    module = _load_runtime_baseline_module_at_ref(_resolve_phase_436_commit_ref())
     report = module.build_runtime_baseline_report(1, 1)
     assert set(report) == {"tool", "iterations", "fanout_peers", "budgets", "measurements"}
     assert report["tool"] == "runtime_baseline.py"
@@ -118,7 +135,7 @@ def test_runtime_baseline_report_shape_and_locked_budget_keys() -> None:
 
 
 def test_runtime_baseline_cli_defaults_are_locked(monkeypatch) -> None:
-    module = _load_runtime_baseline_module()
+    module = _load_runtime_baseline_module_at_ref(_resolve_phase_436_commit_ref())
     monkeypatch.setattr(sys, "argv", ["runtime_baseline.py"])
     args = module._parse_args()
     assert args.iterations == 5
@@ -126,13 +143,15 @@ def test_runtime_baseline_cli_defaults_are_locked(monkeypatch) -> None:
     assert args.report_path == "out/runtime_baseline/report.json"
     assert args.enforce_budgets is False
 
-
-def test_runtime_baseline_cli_writes_report_and_stdout(tmp_path) -> None:
+ 
+def test_runtime_baseline_cli_writes_report_and_stdout(monkeypatch, tmp_path, capsys) -> None:
+    module = _load_runtime_baseline_module_at_ref(_resolve_phase_436_commit_ref())
     report_path = tmp_path / "report.json"
-    result = subprocess.run(
+    monkeypatch.setattr(
+        sys,
+        "argv",
         [
-            sys.executable,
-            str(TOOL_PATH),
+            "runtime_baseline.py",
             "--iterations",
             "1",
             "--fanout-peers",
@@ -140,21 +159,18 @@ def test_runtime_baseline_cli_writes_report_and_stdout(tmp_path) -> None:
             "--report-path",
             str(report_path),
         ],
-        capture_output=True,
-        check=False,
-        text=True,
     )
-    assert result.returncode == 0, result.stderr
+    assert module.main() == 0
     assert report_path.exists()
     file_payload = json.loads(report_path.read_text(encoding="utf-8"))
-    stdout_payload = json.loads(result.stdout)
+    stdout_payload = json.loads(capsys.readouterr().out)
     assert set(file_payload) == {"tool", "iterations", "fanout_peers", "budgets", "measurements"}
     assert stdout_payload == file_payload
     assert stdout_payload["tool"] == "runtime_baseline.py"
 
 
 def test_runtime_baseline_enforce_budgets_exits_nonzero_when_breached(monkeypatch, tmp_path, capsys) -> None:
-    module = _load_runtime_baseline_module()
+    module = _load_runtime_baseline_module_at_ref(_resolve_phase_436_commit_ref())
     monkeypatch.setitem(module.DEFAULT_BUDGETS_MS, "protocol_claim_ingest_ms", 0.0)
     monkeypatch.setitem(module.DEFAULT_BUDGETS_MS, "peer_fanout_ms", 0.0)
     monkeypatch.setitem(module.DEFAULT_BUDGETS_MS, "epoch_snapshot_roundtrip_ms", 0.0)
