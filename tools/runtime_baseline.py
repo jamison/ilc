@@ -30,8 +30,6 @@ from ilc_core.consensus.finality_evaluator import (
     resolve_fork,
 )
 from ilc_core.network.peer import PeerManager
-from ilc_core.node.node_v0 import ILCNodeV0
-from ilc_core.server import create_app
 
 
 DEFAULT_BUDGETS_MS = {
@@ -73,8 +71,9 @@ def _measure_ms(iterations: int, fn: Callable[[], Any]) -> dict[str, Any]:
 
 
 def _claim_ingest_measurement(iterations: int) -> dict[str, Any]:
-    # Keep the FastAPI test client dependency local so the consensus-only
-    # baseline section can be imported in environments without FastAPI.
+    # Keep server and FastAPI imports local so the consensus-only baseline
+    # section can be imported in environments without these dependencies.
+    from ilc_core.server import create_app
     from fastapi.testclient import TestClient
 
     app = create_app()
@@ -129,6 +128,10 @@ def _epoch_snapshot_measurement(iterations: int) -> dict[str, Any]:
 
 
 def _event_export_measurement(iterations: int) -> dict[str, Any]:
+    # Keep node import local so the consensus-only baseline section can be
+    # imported in environments without the full protocol stack.
+    from ilc_core.node.node_v0 import ILCNodeV0
+
     def _run() -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
