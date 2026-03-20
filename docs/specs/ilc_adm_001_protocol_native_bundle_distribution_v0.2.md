@@ -255,7 +255,19 @@ OpenClaw consumes:
 - **Layer 2 Snapshots** for fleet health monitoring (agent state, shard topology, graph growth metrics)
 - **Layer 3** is not consumed by OpenClaw — it's agent-to-agent/agent-to-network communication
 
-### 7.5 Minimal agent container (enhanced)
+### 7.5 NemoClaw security layer (2026-03-19 research note)
+
+OpenClaw has a documented security vulnerability: third-party skills can perform prompt
+injection and data exfiltration without user awareness (Cisco AI security research, 2026).
+NVIDIA's NemoClaw framework (March 2026, alpha, open-source: github.com/NVIDIA/NemoClaw) is
+the security-hardened variant of OpenClaw, adding process isolation via the OpenShell sandbox
+runtime. For ILC agents executing untrusted verification traces, NemoClaw is the candidate
+replacement for base OpenClaw in the distribution target below.
+
+Non-normative: see `docs/research/ilc_nemoclaw_integration_proposal_v0.1.md` for the full
+research proposal, open items, and API boundary design requirements.
+
+### 7.6 Minimal agent container (enhanced)
 
 With the four-layer architecture, a minimal agent container needs:
 - CBOR parser (~100KB)

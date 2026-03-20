@@ -319,6 +319,9 @@ ILC becomes a genuine store of value — appreciated over time because the knowl
 - `docs/specs/ilc_adm_001_protocol_native_bundle_distribution_v0.2.md`
 - `docs/specs/ilc_adm_003_reference_agent_architecture_v0.2.md`
 - `docs/specs/ilc_open_requirements_and_unknown_unknowns_analysis_354_v0.1.md`
+- `docs/research/ilc_nemoclaw_integration_proposal_v0.1.md` *(non-normative research input — post-genesis agent execution sandbox and unified distribution target; extends ADM-001 v0.2 Section 7)*
+- `docs/research/ilc_native_threshold_signing_service_proposal_v0.1.md` *(non-normative research input — Phase B L2 native threshold signing service using CDL-051 quorum math; Phase B unlock conditions defined)*
+- `docs/research/ilc_zkp_identity_recovery_proposal_v0.1.md` *(non-normative research input — provider-agnostic ZKP/TEE proof-of-identity for CDL-002 key recovery; contains axiom-level design constraints for CDL-002 runtime implementation to avoid refactoring)*
 - `Z_Past_Chats/2026_03_05_Opus_Conversation_Economic_Architecture_Deep_Dive.md` *(source provenance anchor — full transcript not committed to repo)*
 
 ---
