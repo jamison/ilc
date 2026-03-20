@@ -161,6 +161,7 @@ def resolve_fork(epoch_states: list[dict[str, Any]]) -> dict[str, Any]:
         )
 
     epoch_index: int | None = None
+    candidate_block_hashes: set[str] = set()
     state_digests: list[str] = []
     for raw_state in epoch_states:
         state = _require_mapping(
@@ -181,12 +182,25 @@ def resolve_fork(epoch_states: list[dict[str, Any]]) -> dict[str, Any]:
                 "consensus_fork_resolution_epoch_index_mismatch",
                 "all epoch-state records must share one epoch_index",
             )
+        candidate_block_hashes.add(
+            _require_non_empty_str(
+                state.get("candidate_block_hash"),
+                "consensus_fork_resolution_state_invalid",
+                "candidate_block_hash is required",
+            )
+        )
         state_digests.append(
             _require_non_empty_str(
                 state.get("state_digest"),
                 "consensus_fork_resolution_state_digest_missing",
                 "state_digest is required",
             )
+        )
+
+    if len(candidate_block_hashes) < 2:
+        raise ConsensusFinalityEvaluatorError(
+            "consensus_fork_resolution_non_conflicting_candidates",
+            "fork resolution requires at least two distinct candidate_block_hash values",
         )
 
     selected_state_digest = min(state_digests)
