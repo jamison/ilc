@@ -39,11 +39,11 @@ Local benchmark command:
 python3 tools/runtime_baseline.py --iterations 5 --fanout-peers 3 --report-path out/runtime_baseline/phase_446_report.json
 ```
 
-Consensus timing results from that local run:
-- `quorum_record_generation_ms`: avg `0.018 ms`, min `0.017 ms`, max `0.021 ms`, samples `[0.021, 0.019, 0.017, 0.017, 0.017]`
-- `epoch_state_generation_ms`: avg `0.026 ms`, min `0.021 ms`, max `0.034 ms`, samples `[0.034, 0.027, 0.023, 0.022, 0.021]`
-- `finality_evaluation_ms`: avg `0.010 ms`, min `0.006 ms`, max `0.022 ms`, samples `[0.022, 0.010, 0.007, 0.007, 0.006]`
-- `fork_resolution_ms`: avg `0.005 ms`, min `0.003 ms`, max `0.011 ms`, samples `[0.011, 0.005, 0.004, 0.003, 0.003]`
+Consensus timing results recorded in `out/runtime_baseline/phase_446_report.json`:
+- `quorum_record_generation_ms`: avg `0.019 ms`, min `0.017 ms`, max `0.022 ms`, samples `[0.022, 0.020, 0.018, 0.017, 0.017]`
+- `epoch_state_generation_ms`: avg `0.027 ms`, min `0.022 ms`, max `0.035 ms`, samples `[0.035, 0.030, 0.025, 0.023, 0.022]`
+- `finality_evaluation_ms`: avg `0.012 ms`, min `0.006 ms`, max `0.030 ms`, samples `[0.030, 0.011, 0.007, 0.006, 0.006]`
+- `fork_resolution_ms`: avg `0.006 ms`, min `0.003 ms`, max `0.012 ms`, samples `[0.012, 0.005, 0.004, 0.003, 0.003]`
 
 All four consensus benchmark paths remained within the Phase-446 local budget envelope.
 
