@@ -22,6 +22,15 @@ from ilc_core.epoch.epoch_snapshot_runtime import (
     generate_epoch_snapshot,
     verify_epoch_snapshot,
 )
+from ilc_core.consensus.epoch_state_runtime import (
+    canonical_epoch_state_vectors,
+    generate_epoch_state_record,
+    generate_quorum_record,
+)
+from ilc_core.consensus.finality_evaluator import (
+    evaluate_epoch_finality,
+    resolve_fork,
+)
 from ilc_core.network.peer import PeerManager
 from ilc_core.node.node_v0 import ILCNodeV0
 from ilc_core.server import create_app
@@ -32,6 +41,13 @@ DEFAULT_BUDGETS_MS = {
     "peer_fanout_ms": 50.0,
     "epoch_snapshot_roundtrip_ms": 25.0,
     "event_export_ms": 100.0,
+}
+
+CONSENSUS_BUDGETS_MS = {
+    "quorum_record_generation_ms": 10.0,
+    "epoch_state_generation_ms": 10.0,
+    "finality_evaluation_ms": 10.0,
+    "fork_resolution_ms": 10.0,
 }
 
 
@@ -136,6 +152,84 @@ def _event_export_measurement(iterations: int) -> dict[str, Any]:
     return _measure_ms(iterations, _run)
 
 
+def _consensus_quorum_record_measurement(iterations: int) -> dict[str, Any]:
+    vector = canonical_epoch_state_vectors()[0]
+    raw_record = vector["quorum_records"][0]
+
+    def _run() -> None:
+        record = generate_quorum_record(raw_record)
+        assert record["record_digest"]
+
+    return _measure_ms(iterations, _run)
+
+
+def _consensus_epoch_state_measurement(iterations: int) -> dict[str, Any]:
+    vector = canonical_epoch_state_vectors()[0]
+    raw_state = vector["epoch_state"]
+
+    def _run() -> None:
+        state = generate_epoch_state_record(raw_state)
+        assert state["state_digest"]
+
+    return _measure_ms(iterations, _run)
+
+
+def _consensus_finality_measurement(iterations: int) -> dict[str, Any]:
+    vector = canonical_epoch_state_vectors()[1]
+    quorum_records = vector["quorum_records"]
+    quorum_threshold = vector["epoch_state"]["quorum_threshold"]
+
+    def _run() -> None:
+        result = evaluate_epoch_finality(quorum_records, quorum_threshold)
+        assert result["finality_status"] == "conflict"
+
+    return _measure_ms(iterations, _run)
+
+
+def _consensus_fork_resolution_measurement(iterations: int) -> dict[str, Any]:
+    vector = canonical_epoch_state_vectors()[1]
+    base_state = dict(vector["epoch_state"])
+    candidate_a = generate_epoch_state_record(base_state)
+
+    competing_state = dict(base_state)
+    competing_state["candidate_block_hash"] = "block-gamma"
+    competing_state["quorum_record_digests"] = sorted(
+        {f"{digest}-alt" for digest in base_state["quorum_record_digests"]}
+    )
+    candidate_b = generate_epoch_state_record(competing_state)
+
+    def _run() -> None:
+        result = resolve_fork([candidate_a, candidate_b])
+        assert result["selected_state_digest"] in {
+            candidate_a["state_digest"],
+            candidate_b["state_digest"],
+        }
+
+    return _measure_ms(iterations, _run)
+
+
+def build_consensus_baseline_section(iterations: int) -> dict[str, Any]:
+    measurements = {
+        "quorum_record_generation_ms": _consensus_quorum_record_measurement(iterations),
+        "epoch_state_generation_ms": _consensus_epoch_state_measurement(iterations),
+        "finality_evaluation_ms": _consensus_finality_measurement(iterations),
+        "fork_resolution_ms": _consensus_fork_resolution_measurement(iterations),
+    }
+
+    budgets = {}
+    for key, budget_ms in CONSENSUS_BUDGETS_MS.items():
+        budgets[key] = {
+            "budget_ms": budget_ms,
+            "observed_avg_ms": measurements[key]["avg_ms"],
+            "within_budget": measurements[key]["avg_ms"] <= budget_ms,
+        }
+
+    return {
+        "budgets": budgets,
+        "measurements": measurements,
+    }
+
+
 def build_runtime_baseline_report(iterations: int, fanout_peers: int) -> dict[str, Any]:
     measurements = {
         "protocol_claim_ingest_ms": _claim_ingest_measurement(iterations),
@@ -152,12 +246,15 @@ def build_runtime_baseline_report(iterations: int, fanout_peers: int) -> dict[st
             "within_budget": measurements[key]["avg_ms"] <= budget_ms,
         }
 
+    consensus = build_consensus_baseline_section(iterations)
+
     return {
         "tool": "runtime_baseline.py",
         "iterations": iterations,
         "fanout_peers": fanout_peers,
         "budgets": budgets,
         "measurements": measurements,
+        "consensus": consensus,
     }
 
 
@@ -187,7 +284,8 @@ def main() -> int:
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2, sort_keys=True))
 
-    if args.enforce_budgets and not all(item["within_budget"] for item in report["budgets"].values()):
+    all_budget_results = list(report["budgets"].values()) + list(report["consensus"]["budgets"].values())
+    if args.enforce_budgets and not all(item["within_budget"] for item in all_budget_results):
         return 1
     return 0
 
