@@ -11,8 +11,6 @@ import time
 from pathlib import Path
 from typing import Any, Callable
 
-from fastapi.testclient import TestClient
-
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -75,6 +73,10 @@ def _measure_ms(iterations: int, fn: Callable[[], Any]) -> dict[str, Any]:
 
 
 def _claim_ingest_measurement(iterations: int) -> dict[str, Any]:
+    # Keep the FastAPI test client dependency local so the consensus-only
+    # baseline section can be imported in environments without FastAPI.
+    from fastapi.testclient import TestClient
+
     app = create_app()
     with TestClient(app) as client:
         client.get("/")
