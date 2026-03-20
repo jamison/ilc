@@ -195,24 +195,27 @@ def test_phase_441_cdl_051_opening_stub_is_preserved() -> None:
 
 
 def test_cdl_051_register_order_preserved() -> None:
-    lines = _read(DECISION_LOG_PATH).splitlines()
+    text = _read(DECISION_LOG_PATH)
+    lines = text.splitlines()
     cdl_049_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-049 "))
     cdl_051_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-051 "))
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(text)
     assert cdl_051_index == cdl_049_index + 1
     assert "CDL-050" not in rows
 
 
 def test_cdl_051_row_is_open() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
+    # The Phase-442 CDL-051 row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_442_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-051"]["status"] == "open"
-    assert EXPECTED_CDL_051_ROW in text
+    assert EXPECTED_CDL_051_ROW in historical_text
 
 
 def test_cdl_051_has_no_premature_ratification_metadata() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
+    # The Phase-442 CDL-051 row is a historical prelock reference.
+    historical_text = _read_file_at_ref(_resolve_phase_442_commit_ref(), str(DECISION_LOG_PATH))
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-051"]["status"] != "ratified"
     assert "ratified_date" not in rows["CDL-051"]
     assert "ratified_phase" not in rows["CDL-051"]
