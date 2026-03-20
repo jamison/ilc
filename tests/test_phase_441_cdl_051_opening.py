@@ -162,7 +162,8 @@ def test_cdl_051_opening_stub_exists_and_contains_required_headings_and_tokens()
 
 
 def test_decision_log_contains_exact_cdl_051_opening_row() -> None:
-    text = _read(DECISION_LOG_PATH)
+    # The Phase-441 CDL-051 opening row is a historical reference.
+    text = _decision_log_text_at_ref(_resolve_phase_441_commit_ref())
     rows = parse_decision_register_rows(text)
     assert EXPECTED_CDL_051_ROW in text
     assert rows["CDL-051"]["status"] == "open"
@@ -176,7 +177,8 @@ def test_cdl_051_row_appended_after_cdl_049_in_correct_order() -> None:
 
 
 def test_decision_log_inventory_still_shows_cdl_049_ratified_and_cdl_050_absent() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-441 opening inventory state is a historical reference.
+    rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_441_commit_ref()))
     assert rows["CDL-049"]["status"] == "ratified"
     assert "CDL-050" not in rows
     assert rows["CDL-051"]["status"] == "open"
