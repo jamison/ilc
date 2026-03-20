@@ -216,6 +216,21 @@ def test_missing_threshold_and_insufficient_candidates_fail_with_deterministic_t
         resolve_fork([single_state])
     assert insufficient_candidates.value.token == "consensus_fork_resolution_insufficient_candidates"
 
+    same_candidate_state = generate_epoch_state_record(
+        {
+            "candidate_block_hash": "block-solo",
+            "epoch_index": 33,
+            "finality_status": "conflict",
+            "parent_epoch_state_digest": "state-32-root",
+            "quorum_record_digests": ["digest-second"],
+            "quorum_state_digest": "quorum-state-33-b",
+            "quorum_threshold": {"numerator": 2, "denominator": 3},
+        }
+    )
+    with pytest.raises(ConsensusFinalityEvaluatorError) as non_conflicting_candidates:
+        resolve_fork([single_state, same_candidate_state])
+    assert non_conflicting_candidates.value.token == "consensus_fork_resolution_non_conflicting_candidates"
+
 
 def test_phase_445_commit_touches_exactly_required_paths() -> None:
     commit_ref = _resolve_phase_445_commit_ref()
