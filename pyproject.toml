@@ -22,8 +22,25 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Minimal install for consensus-only testing. Consensus modules have no
+# external dependencies beyond stdlib; only pytest is required.
+# Usage: pip install -e ".[consensus-only]"
+consensus-only = [
+    "pytest>=7.0.0",
+]
+# Full development environment including server, protocol, and test stack.
+# Usage: pip install -e ".[dev]"
 dev = [
     "pytest>=7.0.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "pydantic>=2.0.0",
+    "requests>=2.31.0",
+    "httpx>=0.24.0",
+    "numpy>=1.24.0",
+    "cbor2>=5.0.0",
+    "cryptography>=41.0.0",
+    "jsonschema>=4.0.0",
 ]
 
 [tool.setuptools.packages.find]
