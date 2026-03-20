@@ -94,6 +94,13 @@ def test_contract_contains_required_anti_goal_and_non_authorization_tokens() -> 
         "No blocker closes on prose alone.",
         "No parameter locks without pre-registered discriminating metrics.",
         "No CDL-050 opening or ratification occurs in Phase 451.",
+        "CDL-030` clamp band (`0.75-1.30`)",
+        "Observable-to-evidence binding:",
+        "`P_e clamp-respect rate` is evidenced by Tier 1 and Tier 2 artifacts only",
+        "`organic ECU production rate` is evidenced by Tier 1 and Tier 2 artifacts only",
+        "`productive backlog / queue-clearance behavior` is evidenced by Tier 1 and Tier 2 artifacts only",
+        "`release-shock amplitude after time-lock expiry` is evidenced by Tier 1 and Tier 2 artifacts only",
+        "`intervention duration and intervention cost` is evidenced by Tier 1 and Tier 2 artifacts only",
     ):
         assert token in text
 
