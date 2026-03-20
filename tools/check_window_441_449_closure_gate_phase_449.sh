@@ -1,0 +1,265 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROMPT_PATH="docs/antigravity_tasks/antigravity_prompt__phase_449_g8_closure_gate_and_450_plus_handoff.md"
+SNAPSHOT_PATH="${ILC_PHASE_449_SNAPSHOT_PATH:-out/monitoring/infrastructure_risk_snapshot_phase_316.json}"
+
+labels=(
+  "prompt_contract_validation"
+  "lane_contract_tests"
+  "cross_phase_regression"
+  "mutation_canary"
+  "closure_gate_cli_contract"
+  "walkthrough_hygiene"
+)
+
+commands=(
+  "python3 tools/validate_phase_prompt.py ${PROMPT_PATH}"
+  "python3 -m pytest tests/test_phase_448_coherence_and_capsule_v1_9.py tests/test_phase_447_consensus_adversarial_regression.py tests/test_phase_446_consensus_runtime_iii_harness_integration.py tests/test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution.py tests/test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces.py tests/test_phase_443_cdl_051_ratification.py tests/test_phase_442_cdl_051_constitutional_consensus_and_epoch_finality_prelock_hardening.py tests/test_phase_441_cdl_051_opening.py -q"
+  "python3 -m pytest tests/test_network.py tests/test_network_gossip.py tests/test_node_dissemination_runtime_362.py tests/test_code_health.py tests/test_phase_commit_manifest_296.py tests/test_d2_schema_baseline_runtime_310.py tests/test_genesis_state_bundle_runtime_312.py tests/test_epoch_snapshot_runtime_314.py tests/test_infrastructure_economic_risk_monitoring_update_315.py tests/test_infrastructure_composed_preflight_316.py tests/test_wire_transport_runtime_323.py tests/test_window_378_391_closure_gate_391.py tests/test_window_368_377_closure_gate_377.py tests/test_window_358_367_closure_gate_367.py tests/test_window_348_357_closure_gate_357.py tests/test_window_338_347_closure_gate_347.py tests/test_window_328_337_closure_gate_337.py tests/test_window_392_401_closure_gate_401.py tests/test_window_402_413_closure_gate_413.py tests/test_window_414_423_closure_gate_423.py tests/test_window_424_433_closure_gate_433.py tests/test_window_434_440_closure_gate_440.py -q"
+  "python3 tools/run_mutation_canary_phase_297.py"
+  "python3 -m pytest tests/test_window_441_449_closure_gate_449.py -q"
+  "python3 -m pytest tests/test_no_ellipses_in_walkthroughs.py -q"
+)
+
+usage() {
+  cat <<'USAGE'
+Usage: tools/check_window_441_449_closure_gate_phase_449.sh [--dry-run|--help]
+
+Runs the Phase 449 window 441-449 closure verification gate.
+
+Options:
+  --dry-run   Print deterministic category + command lines and exit 0.
+  --help      Print this help and exit 0.
+USAGE
+}
+
+print_dry_run() {
+  local total="${#labels[@]}"
+  local idx
+  for idx in "${!labels[@]}"; do
+    printf '[%s/%s] %s\n' "$((idx + 1))" "$total" "${labels[$idx]}"
+    printf '%s\n' "${commands[$idx]}"
+  done
+}
+
+read_snapshot_fields() {
+  python3 - "$SNAPSHOT_PATH" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+if not path.exists():
+    raise SystemExit("missing_snapshot")
+obj = json.loads(path.read_text(encoding="utf-8"))
+phase = str(obj.get("phase", ""))
+is_preflight = obj.get("preflight_scope") is True
+verdict = str(obj.get("severity_summary", {}).get("verdict", ""))
+scope = "true" if is_preflight else "false"
+print(f"{phase}|{scope}|{verdict}")
+PY
+}
+
+resolve_gate_verdict() {
+  local snapshot_phase="$1"
+  local snapshot_scope="$2"
+  local snapshot_verdict="$3"
+
+  if [[ "$snapshot_phase" != "316" || "$snapshot_scope" != "true" ]]; then
+    echo "phase_449_snapshot_gate=failed"
+    echo "phase_449_snapshot_details=phase:${snapshot_phase},preflight_scope:${snapshot_scope}"
+    return 1
+  fi
+
+  case "$snapshot_verdict" in
+    pass)
+      echo "phase_449_snapshot_gate=passed"
+      return 0
+      ;;
+    conditional)
+      echo "phase_449_override_required=human"
+      echo "phase_449_snapshot_gate=failed"
+      return 3
+      ;;
+    blocked|*)
+      echo "phase_449_snapshot_gate=failed"
+      return 1
+      ;;
+  esac
+}
+
+run_sanitized_command() {
+  local command="$1"
+  env \
+    -u ILC_PHASE_449_GATE_SELFTEST \
+    -u ILC_PHASE_440_GATE_SELFTEST \
+    -u ILC_PHASE_433_GATE_SELFTEST \
+    -u ILC_PHASE_423_GATE_SELFTEST \
+    -u ILC_PHASE_413_GATE_SELFTEST \
+    -u ILC_PHASE_401_GATE_SELFTEST \
+    -u ILC_PHASE_391_GATE_SELFTEST \
+    -u ILC_PHASE_377_GATE_SELFTEST \
+    -u ILC_PHASE_367_GATE_SELFTEST \
+    -u ILC_PHASE_357_GATE_SELFTEST \
+    -u ILC_PHASE_347_GATE_SELFTEST \
+    -u ILC_PHASE_337_GATE_SELFTEST \
+    -u ILC_PHASE_327_GATE_SELFTEST \
+    -u ILC_PHASE_449_SNAPSHOT_PATH \
+    -u ILC_PHASE_440_SNAPSHOT_PATH \
+    -u ILC_PHASE_433_SNAPSHOT_PATH \
+    -u ILC_PHASE_423_SNAPSHOT_PATH \
+    -u ILC_PHASE_413_SNAPSHOT_PATH \
+    -u ILC_PHASE_401_SNAPSHOT_PATH \
+    -u ILC_PHASE_391_SNAPSHOT_PATH \
+    -u ILC_PHASE_377_SNAPSHOT_PATH \
+    -u ILC_PHASE_367_SNAPSHOT_PATH \
+    -u ILC_PHASE_357_SNAPSHOT_PATH \
+    -u ILC_PHASE_347_SNAPSHOT_PATH \
+    -u ILC_PHASE_337_SNAPSHOT_PATH \
+    -u ILC_PHASE_327_SNAPSHOT_PATH \
+    -u ILC_PHASE_316_SNAPSHOT_PATH \
+    -u ILC_PHASE_316_FORCE_VERDICT \
+    -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
+    bash -c "$command"
+}
+
+run_full_gate() {
+  local snapshot_info
+  snapshot_info="$(read_snapshot_fields)"
+  local snapshot_phase snapshot_scope snapshot_verdict
+  IFS='|' read -r snapshot_phase snapshot_scope snapshot_verdict <<<"${snapshot_info}"
+
+  local verdict_rc=0
+  resolve_gate_verdict "$snapshot_phase" "$snapshot_scope" "$snapshot_verdict" || verdict_rc=$?
+  if [[ "$verdict_rc" -ne 0 ]]; then
+    return "$verdict_rc"
+  fi
+
+  local total="${#labels[@]}"
+  local idx
+  for idx in "${!labels[@]}"; do
+    printf '[%s/%s] %s\n' "$((idx + 1))" "$total" "${labels[$idx]}"
+    printf '%s\n' "${commands[$idx]}"
+
+    if [[ "$idx" -eq 2 ]]; then
+      local tmpdir tmp_snapshot rc
+      tmpdir="${TMPDIR:-/tmp}"
+      tmp_snapshot="$(mktemp "${tmpdir%/}/ilc_phase_449_snapshot_XXXXXX")"
+      if env \
+        -u ILC_PHASE_449_GATE_SELFTEST \
+        -u ILC_PHASE_440_GATE_SELFTEST \
+        -u ILC_PHASE_433_GATE_SELFTEST \
+        -u ILC_PHASE_423_GATE_SELFTEST \
+        -u ILC_PHASE_413_GATE_SELFTEST \
+        -u ILC_PHASE_401_GATE_SELFTEST \
+        -u ILC_PHASE_391_GATE_SELFTEST \
+        -u ILC_PHASE_377_GATE_SELFTEST \
+        -u ILC_PHASE_367_GATE_SELFTEST \
+        -u ILC_PHASE_357_GATE_SELFTEST \
+        -u ILC_PHASE_347_GATE_SELFTEST \
+        -u ILC_PHASE_337_GATE_SELFTEST \
+        -u ILC_PHASE_327_GATE_SELFTEST \
+        -u ILC_PHASE_449_SNAPSHOT_PATH \
+        -u ILC_PHASE_440_SNAPSHOT_PATH \
+        -u ILC_PHASE_433_SNAPSHOT_PATH \
+        -u ILC_PHASE_423_SNAPSHOT_PATH \
+        -u ILC_PHASE_413_SNAPSHOT_PATH \
+        -u ILC_PHASE_401_SNAPSHOT_PATH \
+        -u ILC_PHASE_391_SNAPSHOT_PATH \
+        -u ILC_PHASE_377_SNAPSHOT_PATH \
+        -u ILC_PHASE_367_SNAPSHOT_PATH \
+        -u ILC_PHASE_357_SNAPSHOT_PATH \
+        -u ILC_PHASE_347_SNAPSHOT_PATH \
+        -u ILC_PHASE_337_SNAPSHOT_PATH \
+        -u ILC_PHASE_327_SNAPSHOT_PATH \
+        -u ILC_PHASE_316_SNAPSHOT_PATH \
+        -u ILC_PHASE_316_FORCE_VERDICT \
+        -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
+        ILC_PHASE_316_SNAPSHOT_PATH="${tmp_snapshot}" \
+        ILC_PHASE_440_GATE_SELFTEST=1 \
+        ILC_PHASE_433_GATE_SELFTEST=1 \
+        ILC_PHASE_423_GATE_SELFTEST=1 \
+        ILC_PHASE_413_GATE_SELFTEST=1 \
+        ILC_PHASE_401_GATE_SELFTEST=1 \
+        ILC_PHASE_391_GATE_SELFTEST=1 \
+        ILC_PHASE_377_GATE_SELFTEST=1 \
+        ILC_PHASE_367_GATE_SELFTEST=1 \
+        ILC_PHASE_357_GATE_SELFTEST=1 \
+        ILC_PHASE_347_GATE_SELFTEST=1 \
+        ILC_PHASE_337_GATE_SELFTEST=1 \
+        bash -c "${commands[$idx]}"; then
+        :
+      else
+        rc=$?
+        rm -f "${tmp_snapshot}"
+        return "$rc"
+      fi
+      rm -f "${tmp_snapshot}"
+    elif [[ "$idx" -eq 4 ]]; then
+      env \
+        -u ILC_PHASE_449_SNAPSHOT_PATH \
+        -u ILC_PHASE_440_SNAPSHOT_PATH \
+        -u ILC_PHASE_433_SNAPSHOT_PATH \
+        -u ILC_PHASE_423_SNAPSHOT_PATH \
+        -u ILC_PHASE_413_SNAPSHOT_PATH \
+        -u ILC_PHASE_401_SNAPSHOT_PATH \
+        -u ILC_PHASE_391_SNAPSHOT_PATH \
+        -u ILC_PHASE_377_SNAPSHOT_PATH \
+        -u ILC_PHASE_367_SNAPSHOT_PATH \
+        -u ILC_PHASE_357_SNAPSHOT_PATH \
+        -u ILC_PHASE_347_SNAPSHOT_PATH \
+        -u ILC_PHASE_337_SNAPSHOT_PATH \
+        -u ILC_PHASE_327_SNAPSHOT_PATH \
+        -u ILC_PHASE_316_SNAPSHOT_PATH \
+        -u ILC_PHASE_316_FORCE_VERDICT \
+        -u ILC_PHASE_317_ALLOW_SNAPSHOT_WRITE \
+        -u ILC_PHASE_440_GATE_SELFTEST \
+        -u ILC_PHASE_433_GATE_SELFTEST \
+        -u ILC_PHASE_423_GATE_SELFTEST \
+        -u ILC_PHASE_413_GATE_SELFTEST \
+        -u ILC_PHASE_401_GATE_SELFTEST \
+        -u ILC_PHASE_391_GATE_SELFTEST \
+        -u ILC_PHASE_377_GATE_SELFTEST \
+        -u ILC_PHASE_367_GATE_SELFTEST \
+        -u ILC_PHASE_357_GATE_SELFTEST \
+        -u ILC_PHASE_347_GATE_SELFTEST \
+        -u ILC_PHASE_337_GATE_SELFTEST \
+        -u ILC_PHASE_327_GATE_SELFTEST \
+        ILC_PHASE_449_GATE_SELFTEST=1 \
+        bash -c "${commands[$idx]}"
+    else
+      run_sanitized_command "${commands[$idx]}"
+    fi
+  done
+
+  echo "phase_449_verdict=pass"
+  return 0
+}
+
+if [[ $# -gt 1 ]]; then
+  echo "unknown argument count: $#" >&2
+  usage >&2
+  exit 2
+fi
+
+if [[ $# -eq 1 ]]; then
+  case "$1" in
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    --dry-run)
+      print_dry_run
+      exit 0
+      ;;
+    *)
+      echo "unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+fi
+
+run_full_gate
+exit $?
