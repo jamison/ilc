@@ -351,3 +351,16 @@ Failure path:
   may still proceed as standalone research and scoping phases,
 - the window closure gate in Phase 468 must report cleanly on all phases actually completed;
   it must not report completed phases as pending or pending phases as completed.
+
+---
+
+## 9. Post-window forward research pointer
+
+CDL-053 (inverted ECU model) is out of scope for Window 460-468. The pre-canon research
+synthesis is at `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md` (2026-03-22).
+CDL-053 design depends on CDL-052 ratification because CDL-052's epistemic quality signal
+is the credit-quality discriminator for the inverted model. CDL-053 is a candidate for
+Window 469+ sequence lock planning.
+
+This note is informational. It does not pre-authorize CDL-053 design work and does not
+expand the scope of Window 460-468.
