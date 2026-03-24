@@ -359,14 +359,17 @@ Failure path:
 Pressure-flow / Werner / long-tail work is out of scope for Window 460-468. The relevant
 background research artifacts are:
 
+- `docs/adr/ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md`
 - `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md`
 - `docs/research/ilc_pressure_flow_reputation_and_entropy_intelligence_research_note_v0.2.md`
 - `docs/research/ilc_pressure_flow_reputation_conversation_context_v0.2.md`
 - `docs/research/ilc_pressure_flow_scope_and_long_tail_research_memo_v0.1.md`
+- `docs/research/ilc_rights_licenses_and_gated_access_surfaces_memo_v0.1.md`
 
-The planning carry-forward placeholder for the future lane is:
+The planning carry-forward placeholders for the future lanes are:
 
 - `docs/specs/ilc_window_469_plus_cdl_053_and_long_tail_research_placeholder_v0.1.md`
+- `docs/specs/ilc_private_gated_shard_rights_and_access_hardening_placeholder_v0.1.md`
 
 Planning posture:
 
@@ -374,8 +377,19 @@ Planning posture:
   bootstrap legitimacy,
 - downstream non-Genesis issuance mechanics remain open,
 - minimum-scope `CDL-053` is a post-460 candidate only,
+- private/gated shard + rights/access hardening remains a distinct future lane rather than
+  an implicit side effect of minimum-scope `CDL-053`,
 - long-tail / post-issuance economics remains a separate research track and not a Window
   460-468 obligation.
+
+Carry-forward note for the next capsule refresh:
+
+- the next capsule update should explicitly reference `ADR-0022` as the active
+  local-first/private-use boundary,
+- disposition minimum-scope `CDL-053` separately from the private/gated shard
+  rights/access lane,
+- and state that shard-header, access-right, and rights/licensing hardening remain future
+  planning lanes rather than silently activated protocol law.
 
 This note is informational. It does not pre-authorize `CDL-053` design work and does not
 expand the scope of Window 460-468.
