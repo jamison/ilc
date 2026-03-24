@@ -46,6 +46,8 @@ Background research inputs for this placeholder are:
 - `docs/adr/ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md`
 - `docs/specs/ilc_private_gated_shard_header_and_capability_token_contract_candidate_v0.1.md`
 - `docs/specs/ilc_private_gated_shard_rights_and_access_hardening_placeholder_v0.1.md`
+- `docs/research/ilc_jones_nemoclaw_dredge_intake_memo_v0.1.md`
+- `docs/research/ilc_jones_nemoclaw_analysis_and_architectural_implications_v0.1.md`
 - `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md`
 - `docs/research/ilc_pressure_flow_reputation_and_entropy_intelligence_research_note_v0.2.md`
 - `docs/research/ilc_pressure_flow_reputation_conversation_context_v0.2.md`
@@ -135,6 +137,29 @@ constitutional text unless the following are satisfied:
 5. live data indicates a real post-issuance incentive gap,
 6. Beta-style demand surfaces are decomposed into at least organic, obligation, and
    subsidized components before they are used as policy inputs.
+
+---
+
+## 6.1 External verification carry-forward requirement
+
+Future planning should preserve a separate requirement set for ILC as an external verification
+and provenance substrate. The principle itself is strong enough to carry now, but future
+planning must not overclaim full operational coverage until the following protocol surfaces are
+materially present:
+
+1. stable public identity and authorship surfaces,
+2. ratified public quality-verification paths,
+3. dependency and serviceability verification,
+4. private/public continuity plus gated-access surfaces,
+5. external-consumption surfaces for outside developers and agent systems.
+
+Primary anchor:
+
+- `docs/research/ilc_jones_nemoclaw_dredge_intake_memo_v0.1.md`
+
+Supporting note:
+
+- `docs/research/ilc_jones_nemoclaw_analysis_and_architectural_implications_v0.1.md`
 
 ---
 
