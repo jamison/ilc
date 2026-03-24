@@ -45,6 +45,7 @@ Background research inputs for this placeholder are:
 
 - `docs/adr/ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md`
 - `docs/specs/ilc_private_gated_shard_header_and_capability_token_contract_candidate_v0.1.md`
+- `docs/specs/ilc_private_gated_shard_rights_and_access_hardening_placeholder_v0.1.md`
 - `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md`
 - `docs/research/ilc_pressure_flow_reputation_and_entropy_intelligence_research_note_v0.2.md`
 - `docs/research/ilc_pressure_flow_reputation_conversation_context_v0.2.md`
@@ -151,6 +152,7 @@ Disposition objects:
 - LT-0 present-day affordances
 - minimum-scope `CDL-053`
 - Long-Tail and Post-Issuance Economics Research Track
+- private/gated shard + rights/access hardening lane
 
 Suggested carry-forward surfaces:
 
@@ -179,6 +181,9 @@ Near-term planning should do the following:
 1. carry the LT-0 affordances into active implementation planning,
 2. reserve a named simulation lane for pressure-flow / Werner evidence work,
 3. keep `Option C+` and long-tail redesign out of near-term constitutional bundles,
-4. require the next relevant planning refresh to disposition this placeholder explicitly.
+4. require the next relevant planning refresh to disposition this placeholder explicitly,
+5. require the next capsule refresh to reference `ADR-0022` and the distinct
+   private/gated shard rights/access hardening lane as separate from minimum-scope
+   `CDL-053`.
 
 This is enough to keep the work alive without prematurely forcing constitutional closure.
