@@ -34,4 +34,9 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0012](ADR_0012_ECU_ILC_Graph_Coupling_and_Anti_Reflexivity.md) | ECU-ILC-Graph Coupling and Anti-Reflexivity Contract | Proposed |
 | [ADR-0013](ADR_0013_External_Payment_Boundary_and_Third_Party_Independence.md) | External Payment Boundary and Third-Party Independence | Proposed |
 | [ADR-0014](ADR_0014_Identity_Sybil_and_Admission_Control_Envelope.md) | Identity, Sybil, and Admission Control Envelope | Proposed |
+| [ADR-0015](ADR_0015_Node_Transfer_Economics.md) | Node Transfer Economics | Proposed |
+| [ADR-0016](ADR_0016_Productive_ECU_Expansion_Bounty_Mechanism.md) | Productive ECU Expansion Bounty Mechanism | Proposed |
+| [ADR-0017](ADR_0017_Post_Issuance_Economic_Transition.md) | Post-Issuance Economic Transition | Proposed |
 | [ADR-0019](ADR_0019_Graph_Native_Governance_Compilation_Boundary.md) | Graph-Native Governance Compilation Boundary | Proposed |
+| [ADR-0020](ADR_0020_Knowledge_Node_First_Design_Principle.md) | Knowledge-Node-First Design Principle | Proposed |
+| [ADR-0022](ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md) | Local-First Private Use and Publication-Bound Economics | Proposed |

@@ -356,11 +356,26 @@ Failure path:
 
 ## 9. Post-window forward research pointer
 
-CDL-053 (inverted ECU model) is out of scope for Window 460-468. The pre-canon research
-synthesis is at `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md` (2026-03-22).
-CDL-053 design depends on CDL-052 ratification because CDL-052's epistemic quality signal
-is the credit-quality discriminator for the inverted model. CDL-053 is a candidate for
-Window 469+ sequence lock planning.
+Pressure-flow / Werner / long-tail work is out of scope for Window 460-468. The relevant
+background research artifacts are:
 
-This note is informational. It does not pre-authorize CDL-053 design work and does not
+- `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md`
+- `docs/research/ilc_pressure_flow_reputation_and_entropy_intelligence_research_note_v0.2.md`
+- `docs/research/ilc_pressure_flow_reputation_conversation_context_v0.2.md`
+- `docs/research/ilc_pressure_flow_scope_and_long_tail_research_memo_v0.1.md`
+
+The planning carry-forward placeholder for the future lane is:
+
+- `docs/specs/ilc_window_469_plus_cdl_053_and_long_tail_research_placeholder_v0.1.md`
+
+Planning posture:
+
+- Genesis may be treated as settled at the level of constitutional ECU authorization and
+  bootstrap legitimacy,
+- downstream non-Genesis issuance mechanics remain open,
+- minimum-scope `CDL-053` is a post-460 candidate only,
+- long-tail / post-issuance economics remains a separate research track and not a Window
+  460-468 obligation.
+
+This note is informational. It does not pre-authorize `CDL-053` design work and does not
 expand the scope of Window 460-468.
