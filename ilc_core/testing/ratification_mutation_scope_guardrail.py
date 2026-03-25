@@ -58,14 +58,14 @@ def parse_decision_register_rows(markdown_content: str) -> Dict[str, Dict[str, s
         if len(cells) < len(headers):
             raise AssertionError("decision_register_row_column_count_too_small")
 
-        row = {headers[i]: cells[i] for i in range(len(headers))}
+        row = {headers[i].strip().lower(): cells[i] for i in range(len(headers))}
         for extra_cell in cells[len(headers) :]:
             if not extra_cell:
                 continue
             if ":" not in extra_cell:
                 continue
             key, value = extra_cell.split(":", 1)
-            row[key.strip()] = value.strip()
+            row[key.strip().lower()] = value.strip()
 
         decision_id = row.get("decision_id", "")
         if not decision_id.startswith("CDL-"):

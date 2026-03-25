@@ -26,10 +26,24 @@ EXACT_REQUIRED_PATHS = {
     str(WALKTHROUGH_PATH),
     str(STATUS_PATH),
 }
+EXACT_REQUIRED_FILE_PATHS = (
+    SYNTHESIS_PATH,
+    TEST_PATH,
+    WALKTHROUGH_PATH,
+    STATUS_PATH,
+)
 
 
 def _read(path: Path) -> str:
     return path.read_text(encoding='utf-8')
+
+
+def _section_body(text: str, heading: str) -> str:
+    escaped = re.escape(heading)
+    match = re.search(rf'{escaped}\n\n(.*?)(?=\n## |\Z)', text, flags=re.S)
+    if not match:
+        raise AssertionError(f'section_not_found:{heading}')
+    return match.group(1).strip()
 
 
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
@@ -72,15 +86,19 @@ def _resolve_phase_455_commit_ref() -> str:
 def test_synthesis_exists_and_contains_required_headings() -> None:
     assert SYNTHESIS_PATH.exists()
     text = _read(SYNTHESIS_PATH)
-    for heading in (
+    headings = (
         '## 1. Evidence base',
         '## 2. Candidate comparison',
         '## 3. Discrimination assessment',
         '## 4. Candidate ranking',
         '## 5. Blocker 3 disposition',
         '## 6. Non-authorization statement',
-    ):
+    )
+    for heading in headings:
         assert heading in text
+        body = _section_body(text, heading)
+        assert body
+        assert len([line for line in body.splitlines() if line.strip()]) >= 2
 
 
 def test_synthesis_contains_required_tokens_and_blocker_disposition() -> None:
@@ -91,12 +109,20 @@ def test_synthesis_contains_required_tokens_and_blocker_disposition() -> None:
         'No CDL-050 opening or ratification occurs in Phase 455.',
     ):
         assert token in text
+    blocker_section = _section_body(text, '## 5. Blocker 3 disposition')
+    assert 'Reasoning:' in blocker_section
+    assert '`Scenario 4 - Long-tail zero-issuance stress test`' in blocker_section
+    assert re.search(r'`\d+` percentage points', blocker_section)
 
 
 def test_synthesis_references_phase_454_and_phase_453_inputs() -> None:
     text = _read(SYNTHESIS_PATH)
     assert PHASE_454_EVIDENCE_PATH in text
     assert PHASE_453_BRIEF_PATH in text
+    comparison_section = _section_body(text, '## 2. Candidate comparison')
+    ranking_section = _section_body(text, '## 4. Candidate ranking')
+    assert comparison_section.count('| `Scenario ') == 5
+    assert ranking_section.count('. `Scenario ') == 5
     for family in (
         'Scenario 1 - Escrow multiplier discrimination',
         'Scenario 2 - Vesting lock duration discrimination',
@@ -105,10 +131,21 @@ def test_synthesis_references_phase_454_and_phase_453_inputs() -> None:
         'Scenario 5 - Recovery criterion exit validation',
     ):
         assert family in text
+        assert family in comparison_section
+        assert family in ranking_section
+    for candidate_token in (
+        'escrow_5x',
+        'vesting_50_epoch',
+        'boundary_enforced',
+        'mixed_control',
+        'production_band_5_epoch',
+    ):
+        assert candidate_token in comparison_section
+        assert candidate_token in ranking_section
 
 
 def test_no_forbidden_treasury_mutation_token_appears() -> None:
-    for path in (SYNTHESIS_PATH, TEST_PATH):
+    for path in EXACT_REQUIRED_FILE_PATHS:
         assert FORBIDDEN_TREASURY_TOKEN not in _read(path)
 
 
@@ -116,7 +153,6 @@ def test_phase_455_commit_touches_expected_paths_only() -> None:
     commit_ref = _resolve_phase_455_commit_ref()
     changed = _changed_paths_for_commit(commit_ref)
     assert changed == EXACT_REQUIRED_PATHS
-    assert str(DECISION_LOG_PATH) not in changed
     assert_head_commit_touched_no_runtime_files(commit_ref=commit_ref)
 
 
