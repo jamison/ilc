@@ -117,6 +117,24 @@ def test_parser_reads_cdl_032_row_from_decision_log() -> None:
     assert rows["CDL-032"]["decision_id"] == "CDL-032"
 
 
+def test_parser_normalizes_mixed_case_headers_and_extra_fields() -> None:
+    text = "\n".join(
+        [
+            "## Decision Register",
+            "",
+            "| Decision_ID | Related_Clause | Decision_Topic | Status | Options | Current_Candidate | Required_Artifacts |",
+            "|---|---|---|---|---|---|---|",
+            "| CDL-032 | ADM-002 | topic | ratified | options | candidate | evidence | Ratified_Phase: 253 | Evidence_Document: docs/specs/example.md |",
+            "",
+            "## Scoped Ratification Record",
+        ]
+    )
+    rows = parse_decision_register_rows(text)
+    assert rows["CDL-032"]["decision_id"] == "CDL-032"
+    assert rows["CDL-032"]["ratified_phase"] == "253"
+    assert rows["CDL-032"]["evidence_document"] == "docs/specs/example.md"
+
+
 def test_head_commit_runtime_guardrail_accepts_non_runtime_file_list(monkeypatch) -> None:
     class _Result:
         stdout = (
