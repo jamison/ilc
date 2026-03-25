@@ -41,9 +41,25 @@ Scenario 5 family.
 The blocker nevertheless remains open because the registered recovery-rule success objective is not
 cleanly satisfied by the evidence surface. Phase 455 records Scenario 5 as only directionally
 rather than materially discriminating. `production_band_5_epoch` is the strongest false-exit-
-resistant candidate, but the family still carries practical ambiguity around intervention duration
-and intervention cost, and the lead candidate does not materially separate from the alternatives on
-all governing registered surfaces.
+resistant candidate, but it does not clear the registered materiality thresholds on the scenario's
+primary observables.
+
+Against `production_band_3_epoch`, the lead candidate improves:
+
+- organic ECU production from `0.88` to `0.91`, which is only `3.4` percentage points and does
+  not clear the registered `10` percentage-point separation threshold,
+- `P_e` clamp-respect from `0.84` to `0.86`, which is only `2.4` percentage points and does not
+  clear the registered `5` percentage-point separation threshold.
+
+Against `mixed_queue_and_production`, the lead candidate improves:
+
+- organic ECU production from `0.83` to `0.91`, which is `9.6` percentage points and still falls
+  just short of the registered `10` percentage-point separation threshold,
+- `P_e` clamp-respect from `0.82` to `0.86`, which is `4.9` percentage points and still falls
+  just short of the registered `5` percentage-point separation threshold.
+
+Duration and cost do separate inside the family. The actual failure surface is insufficient
+separation on organic-production and clamp-respect.
 
 Under the Phase-453 ambiguous-outcome policy, that ambiguity preserves the blocker rather than
 forcing closure.
@@ -127,10 +143,11 @@ Phases 457-459 must not proceed.
 CDL-050 carry-forward memo:
 
 - `Blocker 1` remains open because the registered recovery-rule family still carries practical
-  ambiguity under Scenario 5.
+  ambiguity under Scenario 5 on organic-production and clamp-respect separation, not on
+  duration/cost.
 - Window 450-459 therefore stops at Phase 456 and does not authorize CDL-050 opening.
 - Any future attempt to reopen the lane requires a new sequence lock or equivalent explicit
   authorization outside the failed Window 450-459 path.
 - The required carry-forward focus is narrow: strengthen recovery-rule evidence until a candidate
-  exits on normalized organic production without the remaining duration/cost ambiguity recorded in
-  Phase 455.
+  exits on normalized organic production and materially separates on organic-production and
+  clamp-respect under the registered thresholds.
