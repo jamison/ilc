@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import subprocess
 import sys
 from pathlib import Path
@@ -55,3 +56,34 @@ def test_full_run_kills_all_required_mutants() -> None:
     assert "[compromise_containment_sequence_order_guard] MUTATION_KILLED" in result.stdout
     assert "[non_target_phase_stamp_poisoning_guard] MUTATION_KILLED" in result.stdout
     assert "PASS: all mutation canary probes were killed by target tests" in result.stdout
+
+
+def test_full_run_restores_security_files_without_mtime_drift() -> None:
+    targets = (
+        Path("ilc_core/security/signer_lineage_runtime.py"),
+        Path("ilc_core/security/key_compromise_runtime.py"),
+    )
+    before = {
+        path: (
+            path.stat().st_mtime_ns,
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
+        for path in targets
+    }
+
+    result = _run([])
+
+    assert result.returncode == 0
+    for path in targets:
+        after_mtime = path.stat().st_mtime_ns
+        after_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        assert after_hash == before[path][1]
+        assert after_mtime == before[path][0]
+
+    status = subprocess.run(
+        ["git", "status", "--short", "ilc_core/security/"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert status.stdout.strip() == ""
