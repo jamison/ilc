@@ -44,6 +44,7 @@ This placeholder assumes:
 Background research inputs for this placeholder are:
 
 - `docs/adr/ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md`
+- `docs/specs/ilc_external_verification_and_developer_consumption_surfaces_placeholder_v0.1.md`
 - `docs/specs/ilc_private_gated_shard_header_and_capability_token_contract_candidate_v0.1.md`
 - `docs/specs/ilc_private_gated_shard_rights_and_access_hardening_placeholder_v0.1.md`
 - `docs/research/ilc_jones_nemoclaw_dredge_intake_memo_v0.1.md`
@@ -178,6 +179,7 @@ Disposition objects:
 - minimum-scope `CDL-053`
 - Long-Tail and Post-Issuance Economics Research Track
 - private/gated shard + rights/access hardening lane
+- external verification + developer-consumption surfaces lane
 
 Suggested carry-forward surfaces:
 
