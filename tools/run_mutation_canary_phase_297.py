@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -101,6 +102,8 @@ PROBES = (
 
 def _run_probe(probe: Probe) -> bool:
     original = probe.path.read_text(encoding="utf-8")
+    original_stat = probe.path.stat()
+    original_times_ns = (original_stat.st_atime_ns, original_stat.st_mtime_ns)
     if probe.old_token not in original:
         print(f"[{probe.name}] setup_error: token_not_found", file=sys.stderr)
         return False
@@ -126,6 +129,13 @@ def _run_probe(probe: Probe) -> bool:
     finally:
         try:
             probe.path.write_text(original, encoding="utf-8")
+            os.utime(probe.path, ns=original_times_ns)
+            subprocess.run(
+                ["git", "update-index", "--refresh", "--", str(probe.path)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
             restored = True
         finally:
             if not restored:
