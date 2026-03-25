@@ -102,6 +102,7 @@ def test_artifact_exists_and_contains_required_headings() -> None:
         assert heading in text
         body = _section_body(text, heading)
         assert body
+        assert len([line for line in body.splitlines() if line.strip()]) >= 2
 
 
 def test_verdict_tokens_match_expected_phase_456_results() -> None:
@@ -117,6 +118,10 @@ def test_gate_sections_contain_substantive_reasoning() -> None:
     assert 'docs/specs/ilc_treasury_sim_t_commission_brief_453_v0.1.md' in text
     assert 'docs/specs/ilc_treasury_sim_t_evidence_package_454_v0.1.md' in text
     assert 'docs/specs/ilc_treasury_sim_t_comparative_synthesis_455_v0.1.md' in text
+    blocker_1 = _section_body(text, '## 2. Blocker 1 verdict')
+    assert 'organic ECU production' in blocker_1
+    assert 'clamp-respect' in blocker_1
+    assert 'Duration and cost do separate inside the family.' in blocker_1
     assert '18 epochs / 0.49 units' in _section_body(text, '## 3. Blocker 2 verdict')
     assert '`19` percentage points' in _section_body(text, '## 4. Blocker 3 verdict')
 
@@ -137,7 +142,7 @@ def test_walkthrough_and_status_record_fail_gate_and_next_pointer() -> None:
     assert 'CDL-050 remains unopened' in walkthrough
     assert 'carry-forward outside Window 450-459' in walkthrough
     assert '## Phase 456' in status
-    assert 'gate verdict `fail`' in status or 'gate verdict `fail`' in status.lower()
+    assert 'gate verdict `fail`' in status.lower()
 
 
 def test_no_forbidden_treasury_mutation_token_appears() -> None:
@@ -157,5 +162,6 @@ def test_phase_456_commit_does_not_open_cdl_050() -> None:
     before_rows = parse_decision_register_rows(_read_file_at_ref(f'{commit_ref}^1', str(DECISION_LOG_PATH)))
     after_rows = parse_decision_register_rows(_read_file_at_ref(commit_ref, str(DECISION_LOG_PATH)))
     assert before_rows == after_rows
+    assert before_rows['CDL-051']['status'] == 'ratified'
     assert 'CDL-050' not in before_rows
     assert 'CDL-050' not in after_rows
