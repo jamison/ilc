@@ -1,27 +1,30 @@
-# ILC Window 460+: Consensus Follow-on Candidate Phase Grouping
+# ILC Post-468 Consensus Follow-on Candidate Phase Grouping
 
 Author: GPT-5 Codex (planning draft)
-Date: 2026-03-20
-Baseline assumption: Window `450-459` is reserved for Treasury ECU-governor / `CDL-050`
-closure work and should not be displaced by consensus follow-on implementation.
+Date: 2026-03-27
+Current baseline: Window `450-459` is closed and Window `460-468` is now the active
+candidate block for `CDL-052` scope freeze, gate clearing, and ratification.
 
-Planning note: this is a candidate grouping only. It does not amend the active `441-449`
-baseline, does not pre-authorize any post-`449` execution, and does not override the
-Treasury-first posture already recorded for Window `450-459`.
+Planning note: this is a deferred candidate grouping only. It does not amend the active
+`460-468` candidate block, does not pre-authorize any post-`468` execution, and does not
+override the active CDL-052-first posture already recorded for Window `460-468`.
+
+This document is no longer the canonical immediate `460+` scheduling guide. It is retained as
+background planning for a later post-`468` consensus follow-on lane.
 
 ---
 
 ## 1. Preferred planning posture
 
-The next substantive consensus lane should not compete with Treasury closure in Window
-`450-459`.
+The next substantive consensus lane should not compete with the active CDL-052 window.
 
 Use this split:
-- Treasury / `CDL-050` closure remains the main numbered track for Window `450-459`.
+- Window `460-468` remains the main numbered track for CDL-052 scope freeze, gate clearing,
+  and ratification.
 - consensus follow-on work should either:
   - land as a narrow `Fix1` / `Fix2` prompt only if a bounded post-audit correction is needed,
     or
-  - wait for a dedicated post-`459` consensus window if the work changes constitutional
+  - wait for a dedicated post-`468` consensus window if the work changes constitutional
     semantics, runtime behavior, or measurement scope in a material way.
 
 Practical rule:
@@ -64,7 +67,7 @@ Examples that fit `Fix1` / `Fix2`:
 - missing deterministic error token coverage,
 - a narrow adversarial regression that hardens already-ratified behavior without expanding scope.
 
-### Use a new post-`459` numbered lane if any of the following are true
+### Use a new post-`468` numbered lane if any of the following are true
 
 - diversity-floor semantics change how finality is determined,
 - new distributed or degraded-network measurement harnesses are introduced,
@@ -76,13 +79,13 @@ That is the likely case for most of the follow-on items below.
 
 ---
 
-## 4. Candidate follow-on window theme
+## 4. Candidate follow-on window theme after Window 460-468
 
 Suggested title:
-- **Window 460+: Consensus Diversity, Distributed Measurement, and Adversarial Hardening**
+- **Window 469+: Consensus Diversity, Distributed Measurement, and Adversarial Hardening**
 
 This lane should stay narrow:
-- no Treasury `CDL-050` spillover,
+- no CDL-052 spillover,
 - no packaging/bootstrap work,
 - no broad network-stack rewrite unless explicitly elevated,
 - no unrelated governance compilation work unless separately authorized.
@@ -146,19 +149,19 @@ Expected output:
 
 ---
 
-## 6. Candidate baseline grouping after Window 450-459
+## 6. Candidate baseline grouping after Window 460-468
 
-If Treasury closure consumes Window `450-459` as expected, the earliest clean slot for a
-substantive consensus follow-on is a later post-`459` window. A minimal candidate grouping is:
+With Window `460-468` reserved for the CDL-052 lane, the earliest clean slot for a substantive
+consensus follow-on is a later post-`468` window. A minimal candidate grouping is:
 
 | Order | Candidate phase | Topic | Character | Sensitivity |
 |-------|-----------------|-------|-----------|-------------|
-| 1 | 460 | Consensus diversity-floor contract / amendment decision | Constitutional / Architecture | SENSITIVE |
-| 2 | 461 | Runtime diversity-floor enforcement in finality evaluation | Runtime | SENSITIVE |
-| 3 | 462 | Distributed and degraded-network measurement harness | Runtime / Tooling / Measurement | SENSITIVE |
-| 4 | 463 | Bridge-realism and adversarial transport exercise | Runtime / Adversarial | SENSITIVE |
-| 5 | 464 | Expanded adversarial regression hardening + findings memo | Review / Stabilization | SENSITIVE |
-| 6 | 465 | Closure gate and next-handoff | Gate | SENSITIVE |
+| 1 | 469 | Consensus diversity-floor contract / amendment decision | Constitutional / Architecture | SENSITIVE |
+| 2 | 470 | Runtime diversity-floor enforcement in finality evaluation | Runtime | SENSITIVE |
+| 3 | 471 | Distributed and degraded-network measurement harness | Runtime / Tooling / Measurement | SENSITIVE |
+| 4 | 472 | Bridge-realism and adversarial transport exercise | Runtime / Adversarial | SENSITIVE |
+| 5 | 473 | Expanded adversarial regression hardening + findings memo | Review / Stabilization | SENSITIVE |
+| 6 | 474 | Closure gate and next-handoff | Gate | SENSITIVE |
 
 This is intentionally smaller than Window `441-449`.
 
@@ -189,11 +192,11 @@ Short version:
 
 For now:
 - keep the new obligations recorded as planning/TODO material,
-- keep Window `450-459` focused on `CDL-050` closure,
-- allow only bounded consensus fixpacks during that Treasury window if an audit finds a real
+- keep Window `460-468` focused on the CDL-052 gate-and-ratification lane,
+- allow only bounded consensus fixpacks during that active CDL-052 window if an audit finds a real
   corrective gap,
-- queue the substantive consensus follow-on as a post-`459` candidate lane.
+- queue the substantive consensus follow-on as a post-`468` candidate lane.
 
 That is the cleanest way to preserve both priorities:
-- close `CDL-050`,
+- close the CDL-052 constitutional lane cleanly,
 - and avoid losing the important consensus follow-on work identified after Phase `446`.
