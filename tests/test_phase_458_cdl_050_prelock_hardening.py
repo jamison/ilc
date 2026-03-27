@@ -121,14 +121,15 @@ def test_prelock_artifact_contains_required_tokens() -> None:
 
 
 def test_decision_log_contains_exact_required_prelock_row() -> None:
-    text = _read(DECISION_LOG_PATH)
-    rows = parse_decision_register_rows(text)
-    assert EXPECTED_PRELOCK_ROW in text
+    historical_text = _decision_log_text_at_ref(_resolve_phase_458_commit_ref())
+    rows = parse_decision_register_rows(historical_text)
+    assert EXPECTED_PRELOCK_ROW in historical_text
     assert rows["CDL-050"]["status"] == "prelock"
 
 
 def test_cdl_050_has_no_premature_ratification_metadata_and_candidate_is_unchanged() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    historical_text = _decision_log_text_at_ref(_resolve_phase_458_commit_ref())
+    rows = parse_decision_register_rows(historical_text)
     assert rows["CDL-050"]["status"] == "prelock"
     assert rows["CDL-050"]["current_candidate"] == (
         "bounded Treasury ECU-governor lane with decoupled recovery criterion and explicit ECU-side lever ceilings (proposed)"
