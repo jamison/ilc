@@ -1,14 +1,18 @@
 # ILC Window 460-468: Candidate Phase Grouping
 
 Author: Claude Code (planning synthesis)
-Date: 2026-03-20
-Baseline assumption: Window 450-459 closes cleanly with `CDL-050` ratified and `CDL-051`
+Date: 2026-03-27
+Current baseline: Window 450-459 is closed with `CDL-050` ratified and `CDL-051`
 remaining ratified. Both synthesis documents that prepare this window
 (`docs/specs/ilc_simplified_epistemic_model_synthesis_v0.1.md` and
 `docs/specs/ilc_refutation_novelty_requirement_v0.1.md`) are committed at `00b57e9`.
 
 Planning note: this is a candidate grouping only. It does not amend the active `450-459`
 sequence lock and does not authorize post-`459` execution by itself.
+
+Post-window supplements from Phase 459 Post1 through Phase 459 Post5 are engineering and
+attestation artifacts only. They do not amend the constitutional scope or authority of
+Window 460-468.
 
 ---
 
@@ -45,6 +49,8 @@ This candidate window assumes the following are true at entry:
 - `CDL-050` is ratified (Treasury ECU-Governor lane).
 - `CDL-051` is ratified (constitutional consensus and epoch-finality).
 - the constitutional capsule has been advanced to v2.0 by Phase 459.
+- Phase 459 Post1 through Phase 459 Post5 may exist as post-window supplements, but they do
+  not change the authority or scope of this window.
 - both synthesis documents exist and are committed:
   `docs/specs/ilc_simplified_epistemic_model_synthesis_v0.1.md`
   `docs/specs/ilc_refutation_novelty_requirement_v0.1.md`
@@ -130,7 +136,8 @@ Suggested title:
 
 This baseline is intentionally narrower than Window 450-459. If Gate 1 (ADR-0021) reveals
 a scope conflict, Phases 464-466 must not proceed until the conflict is resolved with a
-CDL-052 scope amendment. The carry-forward path is the correct response, not a rushed opening.
+Phase 460 sequence-lock or scope-freeze amendment, or a carry-forward memo. The carry-forward
+path is the correct response, not a rushed opening.
 
 ---
 
@@ -192,7 +199,7 @@ Purpose:
 - explicitly clear or flag Gate 1 for the CDL-052 opening.
 
 Primary inputs:
-- CDL-051 ratification evidence (`docs/specs/ilc_cdl_051_...ratification_evidence_443_v0.1.md`),
+- CDL-051 ratification evidence (`docs/specs/ilc_cdl_051_constitutional_consensus_and_epoch_finality_ratification_evidence_443_v0.1.md`),
 - Phase 447 findings memo (epistemic finality research from Window 441-449),
 - `docs/specs/ilc_epistemological_foundations_canonical_v0.1.md`.
 
@@ -343,8 +350,8 @@ Non-goals for Window 460-468:
 
 Failure path:
 - if Gate 1 (ADR-0021 compatibility) reveals a scope conflict between CDL-051 finality
-  semantics and the CDL-052 three-mode routing model, the correct response is a CDL-052
-  scope amendment in Phase 460 or a carry-forward memo, not a forced opening,
+  semantics and the CDL-052 three-mode routing model, the correct response is a Phase 460
+  sequence-lock or scope-freeze amendment, or a carry-forward memo, not a forced opening,
 - if Phase 462 or Phase 463 leaves a material open item that would result in uncapped paths
   or unspecified reward surfaces in CDL-052, the opening must be deferred,
 - Phases 467-468 do not depend on the CDL-052 lane; if CDL-052 is deferred, Phases 467-468
