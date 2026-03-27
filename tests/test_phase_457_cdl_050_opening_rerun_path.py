@@ -139,7 +139,8 @@ def test_cdl_050_row_is_inserted_between_cdl_049_and_cdl_051() -> None:
 
 
 def test_cdl_051_remains_ratified_and_unchanged() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-457 CDL-050 row is a historical opening reference.
+    rows = parse_decision_register_rows(_decision_log_text_for_opening_assertions())
     assert rows["CDL-051"]["status"] == "ratified"
     assert rows["CDL-050"]["status"] == "open"
 
