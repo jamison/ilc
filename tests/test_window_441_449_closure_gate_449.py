@@ -140,6 +140,18 @@ def _resolve_phase_449_commit_ref() -> str:
     raise AssertionError("phase_449_commit_not_present_in_local_history")
 
 
+def _decision_log_text_at_ref(ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{DECISION_LOG_PATH}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_decision_log_at_ref:{ref}:{result.stderr.strip()}")
+    return result.stdout
+
+
 def test_gate_script_exists() -> None:
     assert GATE_PATH.exists()
 
@@ -260,10 +272,10 @@ def test_gate_assertions_and_handoff_contract_tokens() -> None:
     ):
         assert path.exists(), f"missing_phase_test:{path}"
 
-    decision_log_text = DECISION_LOG_PATH.read_text(encoding="utf-8")
-    rows = parse_decision_register_rows(decision_log_text)
-    assert rows["CDL-051"].get("status") == "ratified"
-    assert "CDL-050" not in rows
+    live_rows = parse_decision_register_rows(DECISION_LOG_PATH.read_text(encoding="utf-8"))
+    assert live_rows["CDL-051"].get("status") == "ratified"
+    historical_rows = parse_decision_register_rows(_decision_log_text_at_ref(_resolve_phase_449_commit_ref()))
+    assert "CDL-050" not in historical_rows
 
     sequence_lock_text = SEQUENCE_LOCK_PATH.read_text(encoding="utf-8")
     for token in (
