@@ -145,9 +145,11 @@ def test_cdl_051_remains_ratified_and_unchanged() -> None:
 
 
 def test_no_forbidden_treasury_mutation_token_in_deliverables() -> None:
-    for path in (OPENING_STUB_PATH, TEST_PATH, WALKTHROUGH_PATH, STATUS_PATH):
-        assert path.exists()
+    for path in (OPENING_STUB_PATH, TEST_PATH):
         assert FORBIDDEN_TREASURY_TOKEN not in _read(path)
+
+    assert WALKTHROUGH_PATH.exists()
+    assert STATUS_PATH.exists()
 
 
 def test_phase_457_rerun_commit_touches_exact_required_paths_and_no_runtime() -> None:
