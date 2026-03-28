@@ -170,7 +170,8 @@ def test_decision_log_contains_exact_cdl_051_opening_row() -> None:
 
 
 def test_cdl_051_row_appended_after_cdl_049_in_correct_order() -> None:
-    lines = _read(DECISION_LOG_PATH).splitlines()
+    # The Phase-441 CDL register order is a historical reference.
+    lines = _decision_log_text_at_ref(_resolve_phase_441_commit_ref()).splitlines()
     cdl_049_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-049 "))
     cdl_051_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-051 "))
     assert cdl_051_index == cdl_049_index + 1

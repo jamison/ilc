@@ -222,7 +222,8 @@ def test_cdl_051_row_is_ratified_with_correct_fields() -> None:
 
 
 def test_cdl_049_row_unchanged_and_cdl_050_absent() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-443 CDL inventory state is a historical reference.
+    rows = parse_decision_register_rows(_read_file_at_ref(_resolve_phase_443_commit_ref(), str(DECISION_LOG_PATH)))
     assert rows["CDL-049"]["status"] == "ratified"
     assert "CDL-050" not in rows
 
@@ -233,11 +234,12 @@ def test_phase_442_prelock_tests_are_historically_hardened() -> None:
     assert text.count("_read_file_at_ref(_resolve_phase_442_commit_ref(), str(DECISION_LOG_PATH))") >= 2
     assert 'rows["CDL-051"]["status"] == "open"' in text
     assert "EXPECTED_CDL_051_ROW in historical_text" in text
-    assert text.count("_read(DECISION_LOG_PATH)") == 1
+    assert text.count("_read(DECISION_LOG_PATH)") == 0
 
 
 def test_cdl_051_register_order_preserved_after_ratification() -> None:
-    lines = _read(DECISION_LOG_PATH).splitlines()
+    # The Phase-443 CDL register order is a historical reference.
+    lines = _read_file_at_ref(_resolve_phase_443_commit_ref(), str(DECISION_LOG_PATH)).splitlines()
     cdl_049_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-049 "))
     cdl_051_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-051 "))
     assert cdl_049_index + 1 == cdl_051_index
