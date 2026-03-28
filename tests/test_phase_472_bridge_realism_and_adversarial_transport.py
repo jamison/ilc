@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -19,6 +20,12 @@ EXACT_REQUIRED_MAIN_PATHS = {
     str(TEST_PATH),
 }
 EXPECTED_CASES = {'nominal_forwarding', 'reordered_delivery', 'duplicate_delivery', 'partial_bridge_loss'}
+EXPECTED_CASE_OUTCOMES = {
+    'nominal_forwarding': ('finalized', 'finalized', True),
+    'reordered_delivery': ('finalized', 'finalized', True),
+    'duplicate_delivery': ('finalized', 'finalized', True),
+    'partial_bridge_loss': ('provisional', 'provisional', True),
+}
 FORBIDDEN_TREASURY_TOKEN = 'ILC_CDL_MUTATION_' + 'AUTHORIZED'
 
 
@@ -67,10 +74,19 @@ def test_exercise_artifact_headings_and_tokens() -> None:
         assert token in text
 
 
-def test_tool_exists_and_is_runnable() -> None:
+def test_tool_exists_and_is_runnable(tmp_path: Path) -> None:
     assert TOOL_PATH.exists()
-    result = subprocess.run(['python3', str(TOOL_PATH)], capture_output=True, text=True, check=False)
+    original_report = REPORT_PATH.read_bytes()
+    original_summary = SUMMARY_PATH.read_bytes()
+    env = dict(os.environ)
+    env['ILC_PHASE_472_REPORT_PATH'] = str(tmp_path / 'phase_472_report.json')
+    env['ILC_PHASE_472_SUMMARY_PATH'] = str(tmp_path / 'phase_472_summary.md')
+    result = subprocess.run(['python3', str(TOOL_PATH)], capture_output=True, text=True, env=env, check=False)
     assert result.returncode == 0
+    assert (tmp_path / 'phase_472_report.json').exists()
+    assert (tmp_path / 'phase_472_summary.md').exists()
+    assert REPORT_PATH.read_bytes() == original_report
+    assert SUMMARY_PATH.read_bytes() == original_summary
 
 
 def test_report_json_exists_with_all_required_cases() -> None:
@@ -87,9 +103,13 @@ def test_summary_markdown_exists_with_all_case_names() -> None:
 def test_report_records_deterministic_verdict_fields() -> None:
     report = json.loads(_read(REPORT_PATH))
     for case in report['cases']:
+        expected = EXPECTED_CASE_OUTCOMES[case['case_name']]
         assert 'legacy_status' in case
         assert 'diversity_status' in case
         assert 'determinism_preserved' in case
+        assert case['legacy_status'] == expected[0]
+        assert case['diversity_status'] == expected[1]
+        assert case['determinism_preserved'] is expected[2]
 
 
 def test_no_forbidden_treasury_mutation_token_appears() -> None:

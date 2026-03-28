@@ -13,6 +13,10 @@ HANDOFF_PATH = Path('docs/specs/ilc_window_469_474_handoff_474_v0.1.md')
 GATE_PATH = Path('tools/check_window_469_474_closure_gate_phase_474.sh')
 DECISION_LOG_PATH = Path('docs/specs/ilc_constitutional_decision_log_v0.1.md')
 SNAPSHOT_PATH = Path('out/monitoring/infrastructure_risk_snapshot_phase_316.json')
+MEASUREMENT_REPORT_PATH = Path('out/consensus_measurement/phase_471_report.json')
+MEASUREMENT_SUMMARY_PATH = Path('out/consensus_measurement/phase_471_summary.md')
+BRIDGE_REPORT_PATH = Path('out/consensus_bridge/phase_472_report.json')
+BRIDGE_SUMMARY_PATH = Path('out/consensus_bridge/phase_472_summary.md')
 TEST_PATH = Path('tests/test_window_469_474_closure_gate_474.py')
 PHASE_474_SUBJECT_TOKEN = 'phase 474 window 469-474 closure gate and handoff'
 EXACT_REQUIRED_MAIN_PATHS = {
@@ -42,6 +46,11 @@ def _read(path: Path) -> str:
 
 def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(['bash', str(GATE_PATH)] + args, capture_output=True, text=True, env=env, check=False)
+
+
+def _fingerprint(path: Path) -> tuple[str, int]:
+    raw = path.read_bytes()
+    return hashlib.sha256(raw).hexdigest(), path.stat().st_mtime_ns
 
 
 def _clean_gate_env() -> dict[str, str]:
@@ -91,12 +100,23 @@ def test_full_gate_run_passes_and_preserves_snapshot_isolation() -> None:
     before = SNAPSHOT_PATH.read_bytes()
     before_mtime = SNAPSHOT_PATH.stat().st_mtime_ns
     before_sha = hashlib.sha256(before).hexdigest()
+    tracked_output_fingerprints = {
+        path: _fingerprint(path)
+        for path in (
+            MEASUREMENT_REPORT_PATH,
+            MEASUREMENT_SUMMARY_PATH,
+            BRIDGE_REPORT_PATH,
+            BRIDGE_SUMMARY_PATH,
+        )
+    }
     result = _run_gate([], env=_clean_gate_env())
     assert result.returncode == 0
     assert 'phase_474_verdict=pass' in result.stdout
     assert SNAPSHOT_PATH.read_bytes() == before
     assert SNAPSHOT_PATH.stat().st_mtime_ns == before_mtime
     assert hashlib.sha256(SNAPSHOT_PATH.read_bytes()).hexdigest() == before_sha
+    for path, fingerprint in tracked_output_fingerprints.items():
+        assert _fingerprint(path) == fingerprint
 
 
 def test_handoff_artifact_exists_with_required_headings_and_tokens() -> None:
