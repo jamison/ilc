@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -19,6 +20,12 @@ EXACT_REQUIRED_MAIN_PATHS = {
     str(TEST_PATH),
 }
 EXPECTED_SCENARIOS = {'local_nominal', 'degraded_latency', 'cross_cluster_loss', 'concentration_edge'}
+EXPECTED_SCENARIO_OUTCOMES = {
+    'local_nominal': ('finalized', 'finalized', 'diversity_pass'),
+    'degraded_latency': ('finalized', 'finalized', 'diversity_pass'),
+    'cross_cluster_loss': ('provisional', 'provisional', 'not_evaluated'),
+    'concentration_edge': ('finalized', 'insufficient_diversity', 'diversity_fail'),
+}
 FORBIDDEN_TREASURY_TOKEN = 'ILC_CDL_MUTATION_' + 'AUTHORIZED'
 
 
@@ -67,16 +74,30 @@ def test_contract_artifact_exists_with_required_headings_and_tokens() -> None:
         assert token in text
 
 
-def test_measurement_tool_exists_and_is_runnable() -> None:
+def test_measurement_tool_exists_and_is_runnable(tmp_path: Path) -> None:
     assert TOOL_PATH.exists()
-    result = subprocess.run(['python3', str(TOOL_PATH)], capture_output=True, text=True, check=False)
+    original_report = REPORT_PATH.read_bytes()
+    original_summary = SUMMARY_PATH.read_bytes()
+    env = dict(os.environ)
+    env['ILC_PHASE_471_REPORT_PATH'] = str(tmp_path / 'phase_471_report.json')
+    env['ILC_PHASE_471_SUMMARY_PATH'] = str(tmp_path / 'phase_471_summary.md')
+    result = subprocess.run(['python3', str(TOOL_PATH)], capture_output=True, text=True, env=env, check=False)
     assert result.returncode == 0
+    assert (tmp_path / 'phase_471_report.json').exists()
+    assert (tmp_path / 'phase_471_summary.md').exists()
+    assert REPORT_PATH.read_bytes() == original_report
+    assert SUMMARY_PATH.read_bytes() == original_summary
 
 
 def test_report_json_exists_with_all_required_scenarios() -> None:
     report = json.loads(_read(REPORT_PATH))
     scenario_names = {entry['scenario_name'] for entry in report['scenarios']}
     assert scenario_names == EXPECTED_SCENARIOS
+    for entry in report['scenarios']:
+        expected = EXPECTED_SCENARIO_OUTCOMES[entry['scenario_name']]
+        assert entry['legacy']['finality_status'] == expected[0]
+        assert entry['diversity']['finality_status'] == expected[1]
+        assert entry['diversity']['diversity_status'] == expected[2]
 
 
 def test_summary_markdown_exists_with_scenario_names_and_timing_keys() -> None:

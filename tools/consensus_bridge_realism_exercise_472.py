@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -11,8 +12,8 @@ if str(ROOT) not in sys.path:
 from ilc_core.consensus.finality_evaluator import evaluate_epoch_finality, evaluate_epoch_finality_with_diversity
 from ilc_core.consensus.epoch_state_runtime import canonical_epoch_state_vectors
 
-REPORT_PATH = Path('out/consensus_bridge/phase_472_report.json')
-SUMMARY_PATH = Path('out/consensus_bridge/phase_472_summary.md')
+REPORT_PATH = Path(os.environ.get('ILC_PHASE_472_REPORT_PATH', 'out/consensus_bridge/phase_472_report.json'))
+SUMMARY_PATH = Path(os.environ.get('ILC_PHASE_472_SUMMARY_PATH', 'out/consensus_bridge/phase_472_summary.md'))
 
 
 def _base_records() -> list[dict[str, object]]:
@@ -49,6 +50,12 @@ def build_report() -> dict[str, object]:
     baseline_records = _base_records()
     baseline = _evaluate(baseline_records)
     cases: list[dict[str, object]] = []
+    expected_statuses = {
+        'nominal_forwarding': ('finalized', 'finalized'),
+        'reordered_delivery': ('finalized', 'finalized'),
+        'duplicate_delivery': ('finalized', 'finalized'),
+        'partial_bridge_loss': ('provisional', 'provisional'),
+    }
 
     transformed_cases = {
         'nominal_forwarding': baseline_records,
@@ -59,11 +66,11 @@ def build_report() -> dict[str, object]:
 
     for case_name, records in transformed_cases.items():
         result = _evaluate(records)
+        expected_legacy, expected_diversity = expected_statuses[case_name]
         determinism_preserved = (
-            case_name != 'partial_bridge_loss'
-            and result['legacy']['finality_status'] == baseline['legacy']['finality_status']
-            and result['diversity']['finality_status'] == baseline['diversity']['finality_status']
-        ) or case_name == 'partial_bridge_loss'
+            result['legacy']['finality_status'] == expected_legacy
+            and result['diversity']['finality_status'] == expected_diversity
+        )
         cases.append(
             {
                 'case_name': case_name,
