@@ -26,6 +26,18 @@ EXPECTED_PHASE_ROWS = (
 )
 
 
+def _cdl_text_at_ref(ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{DECISION_LOG_PATH}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_decision_log_at_ref:{ref}:{result.stderr.strip()}")
+    return result.stdout
+
+
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
         ["git", "show", "--name-only", "--pretty=", commit_ref],
@@ -126,7 +138,8 @@ def test_sequence_lock_phase_table_contains_exact_434_440_baseline() -> None:
 
 
 def test_decision_log_inventory_still_shows_cdl_049_ratified_and_cdl_050_absent() -> None:
-    rows = parse_decision_register_rows(DECISION_LOG_PATH.read_text(encoding="utf-8"))
+    # The Phase-434 CDL inventory state is a historical reference.
+    rows = parse_decision_register_rows(_cdl_text_at_ref(_resolve_phase_434_commit_ref()))
     assert rows["CDL-049"]["status"] == "ratified"
     assert "CDL-050" not in rows
 
