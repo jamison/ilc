@@ -24,6 +24,7 @@ The exercise writes:
 - `out/consensus_bridge/phase_472_summary.md`
 
 Each case records deterministic verdict fields for the legacy and diversity-aware finality paths.
+The duplicate-delivery case records both the input transport count and the deduped effective count.
 
 ## 4. Explicit non-goals
 

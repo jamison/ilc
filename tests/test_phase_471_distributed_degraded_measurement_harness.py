@@ -23,7 +23,7 @@ EXPECTED_SCENARIOS = {'local_nominal', 'degraded_latency', 'cross_cluster_loss',
 EXPECTED_SCENARIO_OUTCOMES = {
     'local_nominal': ('finalized', 'finalized', 'diversity_pass'),
     'degraded_latency': ('finalized', 'finalized', 'diversity_pass'),
-    'cross_cluster_loss': ('provisional', 'provisional', 'not_evaluated'),
+    'cross_cluster_loss': ('finalized', 'insufficient_diversity', 'diversity_fail'),
     'concentration_edge': ('finalized', 'insufficient_diversity', 'diversity_fail'),
 }
 FORBIDDEN_TREASURY_TOKEN = 'ILC_CDL_MUTATION_' + 'AUTHORIZED'
@@ -91,13 +91,26 @@ def test_measurement_tool_exists_and_is_runnable(tmp_path: Path) -> None:
 
 def test_report_json_exists_with_all_required_scenarios() -> None:
     report = json.loads(_read(REPORT_PATH))
-    scenario_names = {entry['scenario_name'] for entry in report['scenarios']}
+    indexed = {entry['scenario_name']: entry for entry in report['scenarios']}
+    scenario_names = set(indexed)
     assert scenario_names == EXPECTED_SCENARIOS
-    for entry in report['scenarios']:
+    for entry in indexed.values():
         expected = EXPECTED_SCENARIO_OUTCOMES[entry['scenario_name']]
         assert entry['legacy']['finality_status'] == expected[0]
         assert entry['diversity']['finality_status'] == expected[1]
         assert entry['diversity']['diversity_status'] == expected[2]
+        assert 'scenario_description' in entry
+        assert 'aggregate_weights' in entry['legacy']
+        assert 'threshold_fraction' in entry['legacy']
+        assert 'aggregate_weights' in entry['diversity']
+        assert 'threshold_fraction' in entry['diversity']
+    assert indexed['local_nominal']['legacy']['aggregate_weights'] == {'block-alpha': 0.75}
+    assert indexed['degraded_latency']['legacy']['aggregate_weights'] == {
+        'block-alpha': 0.67,
+        'block-beta': 0.15,
+    }
+    assert indexed['cross_cluster_loss']['diversity']['distinct_clusters'] == 1
+    assert indexed['cross_cluster_loss']['diversity']['max_cluster_share'] == 1.0
 
 
 def test_summary_markdown_exists_with_scenario_names_and_timing_keys() -> None:
