@@ -103,7 +103,7 @@ def test_roadmap_v04_supersedes_v03_and_contains_required_tokens() -> None:
         "signing provider",
         "CDL-034",
         "CDL-038",
-        "CDL-040 through CDL-044",
+        "CDL-040 through CDL-045",
         "| D1 Genesis reproducibility | completed |",
         "| D2 Protocol bundle/type system | completed |",
         "| D2b Genesis state bundle | completed |",
