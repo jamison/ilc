@@ -10,6 +10,15 @@ from .diversity_floor_runtime import (
     meets_distinct_cluster_floor,
     meets_max_cluster_share_ceiling,
 )
+from .finality_evaluator import (
+    CDL_051_RATIFICATION_DEPENDENCY,
+    DIVERSITY_AWARE_FINALITY_VERSION,
+    FINALITY_EVALUATOR_VERSION,
+    ConsensusFinalityEvaluatorError,
+    evaluate_epoch_finality,
+    evaluate_epoch_finality_with_diversity,
+    resolve_fork,
+)
 from .popperian_gate_runtime import (
     CDL_V7_DEPENDENCY,
     CDL_V7_RUNTIME_VERSION,
@@ -22,17 +31,24 @@ from .popperian_gate_runtime import (
 )
 
 __all__ = [
+    "CDL_051_RATIFICATION_DEPENDENCY",
+    "CDL_V2_DEPENDENCY",
     "CDL_V3_RUNTIME_VERSION",
     "CDL_V3_DEPENDENCY",
-    "CDL_V2_DEPENDENCY",
     "CDL_V7_RUNTIME_VERSION",
     "CDL_V7_DEPENDENCY",
+    "DIVERSITY_AWARE_FINALITY_VERSION",
+    "FINALITY_EVALUATOR_VERSION",
     "DiversityFloorValidationError",
+    "ConsensusFinalityEvaluatorError",
     "PopperianGateValidationError",
     "compute_max_cluster_share",
     "meets_distinct_cluster_floor",
     "meets_max_cluster_share_ceiling",
     "compute_diversity_floor_penalty",
+    "evaluate_epoch_finality",
+    "evaluate_epoch_finality_with_diversity",
+    "resolve_fork",
     "is_claim_form_admissible",
     "passes_falsifiability_gate",
     "reject_inadmissible_counterexample",

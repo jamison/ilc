@@ -100,6 +100,17 @@ def _resolve_phase_447_commit_ref() -> str:
     raise AssertionError("phase_447_commit_not_present_in_local_history")
 
 
+def _evaluator_text_at_ref(ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{FINALITY_EVALUATOR_PATH}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_finality_evaluator_at_ref:{ref}:{result.stderr.strip()}")
+    return result.stdout
+
 def test_findings_memo_exists_and_contains_required_headings_and_tokens() -> None:
     text = _read(FINDINGS_MEMO_PATH)
 
@@ -111,10 +122,10 @@ def test_findings_memo_exists_and_contains_required_headings_and_tokens() -> Non
         assert token in text
     for key in REQUIRED_TIMING_KEYS:
         assert re.search(rf"`{re.escape(key)}`:[^\n]*[0-9]+(?:\.[0-9]+)?\s*ms", text)
-    evaluator_text = _read(FINALITY_EVALUATOR_PATH)
-    assert "diversity_floor_runtime" not in evaluator_text
-    assert "distinct_cluster_floor" not in evaluator_text
-    assert "max_cluster_share_ceiling" not in evaluator_text
+    historical_evaluator_text = _evaluator_text_at_ref(_resolve_phase_447_commit_ref())
+    assert "diversity_floor_runtime" not in historical_evaluator_text
+    assert "distinct_cluster_floor" not in historical_evaluator_text
+    assert "max_cluster_share_ceiling" not in historical_evaluator_text
 
 
 def test_adversarial_missing_quorum_threshold_under_various_invalid_inputs() -> None:
