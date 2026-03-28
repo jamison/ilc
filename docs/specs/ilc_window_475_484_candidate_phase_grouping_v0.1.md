@@ -134,6 +134,8 @@ Extends `ilc_core/genesis/`:
 - Functions: `generate_validator_enrollment_record`, `verify_genesis_enrollment`,
   `materialize_epoch_zero_state`, `verify_epoch_zero_state`.
 - Deterministic ceremony-sequence verification (validators are enrolled in a locked order).
+- Deterministic epoch-zero construction must include `quorum_record_seed` in addition to
+  `validator_set_hash`; Phase 480 should define and test the seed-derivation rule explicitly.
 - `CDL_051_RATIFICATION_DEPENDENCY` version token, matching the exported constant in
   `ilc_core/consensus/finality_evaluator.py` (value: `"cdl_051_constitutional_consensus_and_epoch_finality_443.v0.1"`).
   Phase 480 must use this exact name — NOT `CDL_051_DEPENDENCY`.
@@ -160,7 +162,8 @@ Extends `ilc_core/genesis/`:
   `enforce_genesis_admission`.
 - Links to CDL-040 identity-envelope ratification for admission-control semantics.
 - Deterministic rejection tokens for unauthorized validator attempts.
-- `CDL_040_DEPENDENCY` version token.
+- `CDL_040_DEPENDENCY` version token. No canonical runtime export currently exists, so
+  Phase 481 should declare the ratified token locally rather than inventing an import path.
 
 Out of scope in Phase 481: validator network join and recovery flow (deferred to later lane).
 
@@ -186,7 +189,8 @@ Out of scope in Phase 481: validator network join and recovery flow (deferred to
 - CDL-051 consensus machinery (Phase 445 runtime) governs validator identity and membership.
   Phase 480 must reference the Phase 445 finality evaluator's validator_id semantics.
 - CDL-040 admission-control ratification (Phase 393) governs the admission-control contract.
-  Phase 481 must import the CDL-040 dependency token.
+  Because no canonical runtime export exists yet, Phase 481 should declare the
+  `CDL_040_DEPENDENCY` ratified token locally and document why.
 - CDL-042 flat agent namespace (Phase 407 ratification) governs key-derived agent_id. Phase
   480 enrollment record generation must be consistent with this namespace.
 
