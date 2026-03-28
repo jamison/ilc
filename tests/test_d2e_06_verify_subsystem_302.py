@@ -190,7 +190,7 @@ def _resolve_phase_302_commit_ref() -> str:
         commit_hash, subject = line.split("\t", 1)
         if subject.strip() == PHASE_302_COMMIT_SUBJECT:
             return commit_hash
-    return "HEAD"
+    raise AssertionError("phase_302_commit_not_present_in_local_history")
 
 
 def test_no_decision_log_mutation_in_phase_commit() -> None:
