@@ -12,12 +12,13 @@ The Phase 471 harness compares flat and diversity-aware finality evaluation unde
 ## 2. Scenario matrix
 
 The harness covers:
-- `local_nominal`
-- `degraded_latency`
-- `cross_cluster_loss`
-- `concentration_edge`
+- `local_nominal` - nominal quorum and diversity pass with two-cluster support.
+- `degraded_latency` - reduced-slack degraded-delivery proxy where quorum still finalizes but with a delayed minority rival vote.
+- `cross_cluster_loss` - quorum survives after losing one cluster, so diversity evaluation runs and the distinct-cluster floor fails.
+- `concentration_edge` - quorum survives through one cluster, breaching both the diversity floor and the concentration ceiling.
 
 Each scenario records legacy and diversity-aware outcomes plus timing overhead.
+The degraded-latency scenario is a finality-input proxy, not a transport-runtime implementation.
 
 ## 3. Report contract
 
@@ -25,7 +26,7 @@ The harness writes:
 - `out/consensus_measurement/phase_471_report.json`
 - `out/consensus_measurement/phase_471_summary.md`
 
-The report records both semantic outcomes and timing information for each scenario.
+The report records semantic outcomes, aggregate quorum weights, and timing information for each scenario.
 
 ## 4. Non-goals
 

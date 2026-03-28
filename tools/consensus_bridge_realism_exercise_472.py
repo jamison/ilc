@@ -60,11 +60,12 @@ def build_report() -> dict[str, object]:
     transformed_cases = {
         'nominal_forwarding': baseline_records,
         'reordered_delivery': list(reversed(baseline_records)),
-        'duplicate_delivery': _dedupe_records(baseline_records + [dict(baseline_records[0])]),
+        'duplicate_delivery': baseline_records + [dict(baseline_records[0])],
         'partial_bridge_loss': [baseline_records[0]],
     }
 
-    for case_name, records in transformed_cases.items():
+    for case_name, input_records in transformed_cases.items():
+        records = _dedupe_records(input_records) if case_name == 'duplicate_delivery' else input_records
         result = _evaluate(records)
         expected_legacy, expected_diversity = expected_statuses[case_name]
         determinism_preserved = (
@@ -77,7 +78,8 @@ def build_report() -> dict[str, object]:
                 'legacy_status': result['legacy']['finality_status'],
                 'diversity_status': result['diversity']['finality_status'],
                 'determinism_preserved': determinism_preserved,
-                'record_count': len(records),
+                'input_record_count': len(input_records),
+                'effective_record_count': len(records),
             }
         )
     return {
@@ -96,12 +98,12 @@ def write_outputs() -> None:
     lines = [
         '# Phase 472 Consensus Bridge Exercise Summary',
         '',
-        '| case | legacy_status | diversity_status | determinism_preserved | record_count |',
-        '| --- | --- | --- | --- | ---: |',
+        '| case | legacy_status | diversity_status | determinism_preserved | input_record_count | effective_record_count |',
+        '| --- | --- | --- | --- | ---: | ---: |',
     ]
     for case in report['cases']:
         lines.append(
-            '| {case_name} | {legacy_status} | {diversity_status} | {determinism_preserved} | {record_count} |'.format(**case)
+            '| {case_name} | {legacy_status} | {diversity_status} | {determinism_preserved} | {input_record_count} | {effective_record_count} |'.format(**case)
         )
     SUMMARY_PATH.write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
