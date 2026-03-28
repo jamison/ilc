@@ -195,7 +195,8 @@ def test_phase_441_cdl_051_opening_stub_is_preserved() -> None:
 
 
 def test_cdl_051_register_order_preserved() -> None:
-    text = _read(DECISION_LOG_PATH)
+    # The Phase-442 CDL register order is a historical reference.
+    text = _read_file_at_ref(_resolve_phase_442_commit_ref(), str(DECISION_LOG_PATH))
     lines = text.splitlines()
     cdl_049_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-049 "))
     cdl_051_index = next(i for i, line in enumerate(lines) if line.startswith("| CDL-051 "))

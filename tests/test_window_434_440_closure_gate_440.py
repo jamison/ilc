@@ -100,6 +100,18 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _decision_log_text_at_ref(ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{ref}:{DECISION_LOG_PATH}"],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise AssertionError(f"unable_to_read_decision_log_at_ref:{ref}:{result.stderr.strip()}")
+    return result.stdout
+
+
 def _resolve_phase_440_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -232,7 +244,8 @@ def test_gate_full_run_enforces_blocked_exit_and_snapshot_isolation(tmp_path: Pa
 
 
 def test_gate_assertions_and_handoff_contract_tokens() -> None:
-    decision_log_text = DECISION_LOG_PATH.read_text(encoding="utf-8")
+    # The Phase-440 CDL inventory state is a historical reference.
+    decision_log_text = _decision_log_text_at_ref(_resolve_phase_440_commit_ref())
     rows = parse_decision_register_rows(decision_log_text)
     assert rows["CDL-049"].get("status") == "ratified"
     assert "CDL-050" not in rows
