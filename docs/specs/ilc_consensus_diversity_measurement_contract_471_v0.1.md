@@ -1,0 +1,35 @@
+# ILC Consensus Diversity Measurement Contract 471 v0.1
+
+Status: measurement-contract
+Date: 2026-03-28
+Owner lane: G8 Constitution Cluster A
+
+## 1. Harness scope
+
+Distributed and degraded-network measurement scoping is complete as of Phase 471.
+The Phase 471 harness compares flat and diversity-aware finality evaluation under deterministic scenarios.
+
+## 2. Scenario matrix
+
+The harness covers:
+- `local_nominal`
+- `degraded_latency`
+- `cross_cluster_loss`
+- `concentration_edge`
+
+Each scenario records legacy and diversity-aware outcomes plus timing overhead.
+
+## 3. Report contract
+
+The harness writes:
+- `out/consensus_measurement/phase_471_report.json`
+- `out/consensus_measurement/phase_471_summary.md`
+
+The report records both semantic outcomes and timing information for each scenario.
+
+## 4. Non-goals
+
+No decision-log mutation occurred in Phase 471.
+This phase does not alter consensus semantics.
+It does not run a bridge exercise.
+Phase 472 is the next authorized phase.
