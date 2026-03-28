@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -17,8 +18,8 @@ from ilc_core.consensus.finality_evaluator import (
 )
 from ilc_core.consensus.epoch_state_runtime import canonical_epoch_state_vectors
 
-REPORT_PATH = Path('out/consensus_measurement/phase_471_report.json')
-SUMMARY_PATH = Path('out/consensus_measurement/phase_471_summary.md')
+REPORT_PATH = Path(os.environ.get('ILC_PHASE_471_REPORT_PATH', 'out/consensus_measurement/phase_471_report.json'))
+SUMMARY_PATH = Path(os.environ.get('ILC_PHASE_471_SUMMARY_PATH', 'out/consensus_measurement/phase_471_summary.md'))
 ITERATIONS = 200
 
 
