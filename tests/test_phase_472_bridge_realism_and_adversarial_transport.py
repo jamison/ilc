@@ -21,10 +21,10 @@ EXACT_REQUIRED_MAIN_PATHS = {
 }
 EXPECTED_CASES = {'nominal_forwarding', 'reordered_delivery', 'duplicate_delivery', 'partial_bridge_loss'}
 EXPECTED_CASE_OUTCOMES = {
-    'nominal_forwarding': ('finalized', 'finalized', True),
-    'reordered_delivery': ('finalized', 'finalized', True),
-    'duplicate_delivery': ('finalized', 'finalized', True),
-    'partial_bridge_loss': ('provisional', 'provisional', True),
+    'nominal_forwarding': ('finalized', 'finalized', True, 2, 2),
+    'reordered_delivery': ('finalized', 'finalized', True, 2, 2),
+    'duplicate_delivery': ('finalized', 'finalized', True, 3, 2),
+    'partial_bridge_loss': ('provisional', 'provisional', True, 1, 1),
 }
 FORBIDDEN_TREASURY_TOKEN = 'ILC_CDL_MUTATION_' + 'AUTHORIZED'
 
@@ -98,6 +98,8 @@ def test_summary_markdown_exists_with_all_case_names() -> None:
     text = _read(SUMMARY_PATH)
     for case_name in EXPECTED_CASES:
         assert case_name in text
+    for key in ('input_record_count', 'effective_record_count'):
+        assert key in text
 
 
 def test_report_records_deterministic_verdict_fields() -> None:
@@ -107,9 +109,13 @@ def test_report_records_deterministic_verdict_fields() -> None:
         assert 'legacy_status' in case
         assert 'diversity_status' in case
         assert 'determinism_preserved' in case
+        assert 'input_record_count' in case
+        assert 'effective_record_count' in case
         assert case['legacy_status'] == expected[0]
         assert case['diversity_status'] == expected[1]
         assert case['determinism_preserved'] is expected[2]
+        assert case['input_record_count'] == expected[3]
+        assert case['effective_record_count'] == expected[4]
 
 
 def test_no_forbidden_treasury_mutation_token_appears() -> None:

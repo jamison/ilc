@@ -28,9 +28,44 @@ def _scenario_payloads() -> list[dict[str, object]]:
     base_records = [dict(item) for item in vector0['quorum_records']]
     for index, record in enumerate(base_records, start=1):
         record['validator_id'] = f'validator-{index}'
+    degraded_latency_records = [
+        {
+            'block_hash': 'block-alpha',
+            'epoch_index': 7,
+            'vote_weight': 0.40,
+            'validator_id': 'validator-1',
+        },
+        {
+            'block_hash': 'block-alpha',
+            'epoch_index': 7,
+            'vote_weight': 0.27,
+            'validator_id': 'validator-2',
+        },
+        {
+            'block_hash': 'block-beta',
+            'epoch_index': 7,
+            'vote_weight': 0.15,
+            'validator_id': 'validator-3',
+        },
+    ]
+    cross_cluster_loss_records = [
+        {
+            'block_hash': 'block-alpha',
+            'epoch_index': 7,
+            'vote_weight': 0.40,
+            'validator_id': 'validator-1',
+        },
+        {
+            'block_hash': 'block-alpha',
+            'epoch_index': 7,
+            'vote_weight': 0.35,
+            'validator_id': 'validator-2',
+        },
+    ]
     return [
         {
             'scenario_name': 'local_nominal',
+            'scenario_description': 'nominal quorum and diversity pass with two-cluster support',
             'records': base_records,
             'threshold': {'numerator': 2, 'denominator': 3},
             'clusters': {'validator-1': 'cluster-a', 'validator-2': 'cluster-b'},
@@ -38,20 +73,27 @@ def _scenario_payloads() -> list[dict[str, object]]:
         },
         {
             'scenario_name': 'degraded_latency',
-            'records': base_records,
+            'scenario_description': 'reduced-slack degraded-delivery proxy; quorum still finalizes but with a delayed minority rival vote',
+            'records': degraded_latency_records,
             'threshold': {'numerator': 2, 'denominator': 3},
-            'clusters': {'validator-1': 'cluster-a', 'validator-2': 'cluster-b'},
+            'clusters': {
+                'validator-1': 'cluster-a',
+                'validator-2': 'cluster-b',
+                'validator-3': 'cluster-c',
+            },
             'policy': {'distinct_cluster_floor': 2, 'max_cluster_share_ceiling': 0.60},
         },
         {
             'scenario_name': 'cross_cluster_loss',
-            'records': [base_records[0]],
+            'scenario_description': 'quorum survives after losing one cluster, but diversity floor fails',
+            'records': cross_cluster_loss_records,
             'threshold': {'numerator': 2, 'denominator': 3},
-            'clusters': {'validator-1': 'cluster-a'},
-            'policy': {'distinct_cluster_floor': 1, 'max_cluster_share_ceiling': 1.00},
+            'clusters': {'validator-1': 'cluster-a', 'validator-2': 'cluster-a'},
+            'policy': {'distinct_cluster_floor': 2, 'max_cluster_share_ceiling': 1.00},
         },
         {
             'scenario_name': 'concentration_edge',
+            'scenario_description': 'quorum survives through one cluster, breaching both floor and concentration ceiling',
             'records': [
                 {
                     'block_hash': 'block-delta',
@@ -108,13 +150,18 @@ def build_report() -> dict[str, object]:
         scenarios.append(
             {
                 'scenario_name': payload['scenario_name'],
+                'scenario_description': payload['scenario_description'],
                 'legacy': {
                     'finality_status': legacy_result['finality_status'],
                     'canonical_block_hash': legacy_result['canonical_block_hash'],
+                    'aggregate_weights': legacy_result['aggregate_weights'],
+                    'threshold_fraction': legacy_result['threshold_fraction'],
                 },
                 'diversity': {
                     'finality_status': diversity_result['finality_status'],
                     'canonical_block_hash': diversity_result['canonical_block_hash'],
+                    'aggregate_weights': diversity_result['aggregate_weights'],
+                    'threshold_fraction': diversity_result['threshold_fraction'],
                     'diversity_status': diversity_result['diversity_status'],
                     'distinct_clusters': diversity_result['distinct_clusters'],
                     'max_cluster_share': diversity_result['max_cluster_share'],
