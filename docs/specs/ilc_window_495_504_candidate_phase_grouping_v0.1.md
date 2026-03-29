@@ -71,8 +71,9 @@ Next fresh CDL numbering rule for this window:
 ### 3.2 Research and scoping obligations
 
 - **Trust-tier governance boundary analysis (Phase 497)** — determines whether CDL-056 requires
-  a new CDL, an ADM-001 amendment, or both, and establishes the constitutional compatibility
-  argument with CDL-V3 and CDL-046 liveness threshold.
+  the new CDL-056 lane plus a companion ADM-001 amendment, or whether the trust-tier path must
+  remain deferred, and establishes the constitutional compatibility argument with CDL-V3 and
+  CDL-046 liveness threshold.
 - **Epoch-boundary enforcement architectural scoping (Phase 498)** — assesses whether validator
   attestation as witness for ECU→ILC conversion batches requires a CDL-030 or CDL-051 amendment.
   Result is a scoping artifact, not a CDL opening.
@@ -93,7 +94,8 @@ Next fresh CDL numbering rule for this window:
 The following are not eligible for constitutional lock until Phase 497 governance boundary
 analysis produces a passing output:
 
-- whether CDL-056 is a new CDL lane or an ADM-001 amendment,
+- whether CDL-056 is the required constitutional lane or whether the trust-tier path must
+  remain deferred,
 - the trust-tier flag eligibility criteria (liveness threshold, genesis vs non-genesis
   validators),
 - the constitutional compatibility argument with CDL-V3 diversity floor and CDL-046 liveness.
@@ -202,9 +204,9 @@ governance boundary analysis that:
 - states the trust-tier eligibility criteria clearly,
 - confirms compatibility with CDL-V3 diversity floor and CDL-046 liveness threshold.
 
-If Phase 497 determines that trust-tier elevation requires only an ADM-001 amendment (not a
-new CDL), then Phases 499-501 do not execute and Phase 502 executes earlier as a standalone
-ADM-001 v0.3 amendment. Phase 504 records either outcome.
+If Phase 497 does not support `CDL-056` as the required constitutional lane, then Phases
+499-502 do not execute and Phase 504 records the blocked carry-forward path. `ADM-001 v0.3`
+is a companion amendment to CDL-056, not a substitute for it.
 
 ### Note on Phase 504 non-ratifying boundary
 
@@ -212,7 +214,7 @@ Phase 504 closes the window and records one of two states:
 
 - **Scenario A** — CDL-055 ratified and CDL-056 ratified and ADM-001 v0.3 published, or
 - **Scenario B** — CDL-055 ratified but CDL-056 governance boundary analysis blocked the CDL
-  opening (ADM-001 v0.3 amendment produced instead, or deferred).
+  opening (ADM-001 v0.3 deferred with CDL-056).
 
 Phase 504 never opens a new CDL.
 
@@ -258,7 +260,10 @@ locked. No new stake calibration permitted at ratification time.
 
 ### Phase 497
 
-Governance boundary analysis only. Produces `ilc_cdl_056_validator_trust_tier_governance_boundary_analysis_497_v0.1.md`. Determines the CDL vs ADM-amendment path and states constitutional compatibility explicitly.
+Governance boundary analysis only. Produces
+`ilc_cdl_056_validator_trust_tier_governance_boundary_analysis_497_v0.1.md`. Determines
+whether CDL-056 is the required lane or whether the trust-tier path remains deferred, and
+states constitutional compatibility explicitly.
 
 ### Phase 498
 
