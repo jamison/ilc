@@ -62,6 +62,8 @@ for different evaluation needs, all stored as transparent labeled metadata on ea
   not_objective_truth: true`
 - Gate status: INFORMATIONAL ONLY — no node is rejected for low aesthetic consensus score
 - Bootstrap function: provides early quality signal before use-history has accumulated
+- Storage contract: this layer stores a normalized `quality_score` in `[0,1]`, not a raw
+  economic multiplier
 
 ### Layer 3 — Use Centrality (new, pre-constitutional)
 
@@ -88,12 +90,45 @@ for different evaluation needs, all stored as transparent labeled metadata on ea
 
 ### Proof of Use as ECU Primitive
 
-- At each epoch boundary, nodes earn passive ECU attribution proportional to their
-  accumulated use centrality (weighted by quality multiplier from Layer 2 if available)
+- At each epoch boundary, nodes earn passive ECU attribution proportional to a bounded
+  passive-attribution signal derived from direct-use centrality and a separate quality factor
 - This converts the existing ECU attribution pipeline from transaction-only to
   transaction + passive
 - Passive attribution is bounded by a per-epoch cap and drawn from the B_e budget (not
   additive to supply); simulation evidence required for calibration
+
+### Score/Factor separation (new clarification)
+
+The raw quality signal and the ECU-facing multiplier are distinct objects.
+
+- `quality_score q_i ∈ [0,1]` is the normalized measurement layer
+- `quality_factor m_i` is the bounded economic policy map derived from `q_i`
+
+Recommended v1 mapping:
+
+```
+m_i = 1 + gamma * (2*q_i - 1)
+```
+
+with `gamma = 0.15`, producing the bounded range `[0.85, 1.15]`.
+
+This mirrors the existing ILC pattern used in capability/benchmark scoring:
+measure -> normalize into `[0,1]` -> clamp -> apply a separate bounded economic or governance
+effect. The separation preserves compressibility, keeps the stored score easy to compare, and
+prevents raw quality measurements from directly causing runaway payouts.
+
+Recommended v1 passive-attribution structure:
+
+```
+eligible_use_i = max(0, direct_use_centrality_i - u_floor)
+signal_i = eligible_use_i * m_i + novelty_bonus_i
+passive_ecu_i = B_passive * signal_i / Σ_j signal_j
+```
+
+where:
+- `direct_use_centrality` is single-hop only in v1 (multi-hop deferred),
+- `B_passive = rho * B_e` is a bounded passive-attribution pool inside the epoch budget,
+- `novelty_bonus_i` is temporary and decays as organic use accumulates.
 
 ---
 
