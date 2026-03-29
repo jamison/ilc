@@ -42,7 +42,9 @@ The canonical bundle payload contains:
 
 `bundle_integrity_hash` is computed as `sha256` over the deterministically serialized payload.
 Enrollment records are normalized and sorted by `validator_id` before hashing. The epoch-zero
-state must already satisfy the Phase 480 verification contract.
+state must already satisfy the Phase 480 verification contract. Phase 481 additionally requires
+that `epoch_zero_state.validator_set_hash` and `epoch_zero_state.quorum_record_seed` match the
+canonical enrollment set used to build the bundle.
 
 ## 4. Enforcement contract
 
@@ -61,6 +63,7 @@ Phase 481 introduces or relies on the following deterministic failure tokens:
 - `ADMISSION_BUNDLE_MISSING_REQUIRED_FIELD`
 - `ADMISSION_BUNDLE_INVALID_PART1_DEPENDENCY`
 - `ADMISSION_BUNDLE_INVALID_VALIDATOR_SET`
+- `ADMISSION_BUNDLE_EPOCH_STATE_MISMATCH`
 - `ADMISSION_BUNDLE_HASH_MISMATCH`
 - `ADMISSION_BUNDLE_NOT_INITIALIZED`
 - `ADMISSION_BUNDLE_INVALID_VALIDATOR_ID`

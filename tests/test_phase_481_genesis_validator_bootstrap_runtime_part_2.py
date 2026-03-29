@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import subprocess
 from pathlib import Path
 
@@ -92,7 +93,7 @@ def test_build_genesis_admission_control_bundle_produces_integrity_hash() -> Non
     assert bundle['admitted_validator_ids'] == [validator_id]
 
 
-def test_verify_admission_control_bundle_raises_when_hash_mismatched() -> None:
+def test_verify_admission_control_bundle_raises_when_hash_or_epoch_state_mismatched() -> None:
     bundle, _ = _bundle()
     bundle['bundle_integrity_hash'] = 'deadbeef'
     try:
@@ -101,6 +102,18 @@ def test_verify_admission_control_bundle_raises_when_hash_mismatched() -> None:
         assert exc.token == 'ADMISSION_BUNDLE_HASH_MISMATCH'
     else:
         raise AssertionError('expected_hash_mismatch_error')
+    bundle, _ = _bundle()
+    bundle['epoch_zero_state'] = dict(bundle['epoch_zero_state'])
+    bundle['epoch_zero_state']['validator_set_hash'] = 'deadbeef'
+    bundle['epoch_zero_state']['quorum_record_seed'] = hashlib.sha256(
+        f"{bundle['epoch_zero_state']['genesis_block_cid']}:deadbeef".encode('utf-8')
+    ).hexdigest()
+    try:
+        verify_admission_control_bundle(bundle)
+    except GenesisBootstrapError as exc:
+        assert exc.token == 'ADMISSION_BUNDLE_EPOCH_STATE_MISMATCH'
+    else:
+        raise AssertionError('expected_epoch_state_mismatch_error')
 
 
 def test_enforce_genesis_admission_returns_true_for_enrolled_validator_id() -> None:

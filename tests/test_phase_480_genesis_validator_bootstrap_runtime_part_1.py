@@ -118,7 +118,7 @@ def test_materialize_epoch_zero_state_produces_deterministic_epoch_zero_record()
     assert isinstance(state['quorum_record_seed'], str) and state['quorum_record_seed']
 
 
-def test_verify_epoch_zero_state_raises_for_non_zero_epoch_or_missing_quorum_record_seed() -> None:
+def test_verify_epoch_zero_state_raises_for_non_zero_epoch_missing_seed_or_invalid_derivation() -> None:
     state = materialize_epoch_zero_state('block-alpha', [_enrollment_record()])
     bad_epoch = dict(state)
     bad_epoch['epoch'] = 1
@@ -136,6 +136,14 @@ def test_verify_epoch_zero_state_raises_for_non_zero_epoch_or_missing_quorum_rec
         assert exc.token == 'GENESIS_BOOTSTRAP_MISSING_REQUIRED_FIELD'
     else:
         raise AssertionError('expected_missing_seed_error')
+    invalid_seed = dict(state)
+    invalid_seed['quorum_record_seed'] = 'deadbeef'
+    try:
+        verify_epoch_zero_state(invalid_seed)
+    except GenesisBootstrapError as exc:
+        assert exc.token == 'GENESIS_BOOTSTRAP_INVALID_EPOCH_STATE'
+    else:
+        raise AssertionError('expected_invalid_seed_derivation_error')
 
 
 def test_phase_480_main_commit_touches_expected_paths_and_only_genesis_package() -> None:
