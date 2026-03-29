@@ -7,7 +7,6 @@ import json
 from typing import Any
 
 from .validator_bootstrap_runtime import (
-    GENESIS_BOOTSTRAP_VERSION,
     GenesisBootstrapError,
     verify_epoch_zero_state,
     verify_genesis_enrollment,
@@ -26,6 +25,10 @@ def _stable_sha256(value: Any) -> str:
     return hashlib.sha256(_stable_json(value).encode("utf-8")).hexdigest()
 
 
+def _expected_quorum_record_seed(genesis_block_cid: str, validator_set_hash: str) -> str:
+    return hashlib.sha256(f"{genesis_block_cid}:{validator_set_hash}".encode("utf-8")).hexdigest()
+
+
 def build_genesis_admission_control_bundle(
     enrollment_records: list[dict[str, Any]],
     epoch_zero_state: dict[str, Any],
@@ -41,11 +44,26 @@ def build_genesis_admission_control_bundle(
         normalized_records.append(dict(record))
     normalized_records.sort(key=lambda record: record["validator_id"])
     verify_epoch_zero_state(epoch_zero_state)
+    validator_set_hash = _stable_sha256(normalized_records)
+    expected_quorum_record_seed = _expected_quorum_record_seed(
+        epoch_zero_state["genesis_block_cid"],
+        validator_set_hash,
+    )
+    if epoch_zero_state["validator_set_hash"] != validator_set_hash:
+        raise GenesisBootstrapError(
+            "ADMISSION_BUNDLE_EPOCH_STATE_MISMATCH",
+            "epoch_zero_state.validator_set_hash does not match canonical enrollment set",
+        )
+    if epoch_zero_state["quorum_record_seed"] != expected_quorum_record_seed:
+        raise GenesisBootstrapError(
+            "ADMISSION_BUNDLE_EPOCH_STATE_MISMATCH",
+            "epoch_zero_state.quorum_record_seed does not match canonical enrollment set",
+        )
     payload = {
         "enrollment_records": normalized_records,
         "epoch_zero_state": dict(epoch_zero_state),
         "admitted_validator_ids": [record["validator_id"] for record in normalized_records],
-        "part1_dependency": GENESIS_BOOTSTRAP_VERSION,
+        "part1_dependency": GENESIS_BOOTSTRAP_PART1_DEPENDENCY,
     }
     return {
         **payload,
@@ -76,7 +94,7 @@ def verify_admission_control_bundle(bundle: dict[str, Any]) -> None:
         bundle["enrollment_records"],
         bundle["epoch_zero_state"],
     )
-    if bundle["part1_dependency"] != GENESIS_BOOTSTRAP_VERSION:
+    if bundle["part1_dependency"] != GENESIS_BOOTSTRAP_PART1_DEPENDENCY:
         raise GenesisBootstrapError(
             "ADMISSION_BUNDLE_INVALID_PART1_DEPENDENCY",
             "bundle part1_dependency does not match Phase 480 runtime token",

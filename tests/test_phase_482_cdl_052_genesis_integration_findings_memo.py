@@ -94,13 +94,9 @@ def test_governance_priority_list_contains_at_least_three_items() -> None:
 def test_no_ilc_core_files_changed_at_phase_482_commit_snapshot() -> None:
     text = MEMO_PATH.read_text(encoding='utf-8')
     assert 'No ilc_core/ implementation occurs in Phase 482.' in text
-    current_diff = subprocess.run(
-        ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'],
-        capture_output=True,
-        check=True,
-        text=True,
-    ).stdout.splitlines()
-    assert all(not path.startswith('ilc_core/') for path in current_diff if path)
+    commit_ref = _resolve_phase_482_commit_ref()
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert all(not path.startswith('ilc_core/') for path in changed_paths)
 
 
 def test_phase_482_main_commit_touches_expected_paths_only() -> None:
