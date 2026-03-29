@@ -19,8 +19,8 @@ threefold:
 1. ratify the carried-forward `CDL-055` Validator Staking and Liveness Enforcement lane,
 2. open, harden, and ratify `CDL-056` Validator Trust-Tier Elevation after a governance boundary
    analysis confirms the constitutional pathway,
-3. scope the epoch-boundary economic enforcement witness surface and record an `ADM-001 v0.3`
-   amendment incorporating the trust-tier elevation rule.
+3. scope the epoch-boundary economic enforcement witness surface and, if `CDL-056` ratifies,
+   record an `ADM-001 v0.3` amendment incorporating the trust-tier elevation rule.
 
 This window is not the place to open `CDL-053`, redesign the 7+1 panel, advance long-tail
 economics, or carry optional validator co-location. Those remain separate lanes.
@@ -314,7 +314,7 @@ drafting the gate script.
 - Phase 496 must complete before Phase 499.
 - Phase 497 must complete before Phase 499.
 - Phase 499-501 must not silently ratify staking constants — those are locked by CDL-055.
-- Phase 502 must complete before Phase 503.
+- If executed, Phase 502 must complete before Phase 503.
 - Phase 504 must check both the validator roadmap and CDL-053 placeholder for carry-forward
   consistency.
 
