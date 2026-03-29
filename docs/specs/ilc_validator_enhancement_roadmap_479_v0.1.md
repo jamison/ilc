@@ -227,13 +227,14 @@ constitutionally locked. This prevents arbitrary or non-evidence-based parameter
 
 | Window candidate | Primary work |
 |---|---|
-| Window 475–484 | Genesis validator bootstrap spec (Phase 479), validator enrollment runtime, admission bundle enforcement (Phases 479–481). Current window. Validator enhancements are OUT OF SCOPE. |
-| Window 485–494 | SIM-010 execution + Validator Economic Incentive Framework CDL opening + Staking and Liveness CDL opening |
-| Window 495–504 | Validator Trust-Tier Elevation CDL + circuit breaker surface implementation + epoch boundary economic enforcement scoping |
+| Window 475–484 | Genesis validator bootstrap spec (Phase 479), validator enrollment runtime, and admission bundle enforcement (Phases 479–481). Completed window; validator enhancements remained OUT OF SCOPE. |
+| Window 485–494 | SIM-010 execution + circuit breaker surface implementation + Validator Economic Incentive Framework CDL opening + Staking and Liveness CDL opening |
+| Window 495–504 | Validator Trust-Tier Elevation CDL + epoch boundary economic enforcement scoping |
 | Window 505+ | Optional co-location CDL (post-genesis launch) |
 
-Planning rule: no validator enhancement CDL should open before Phase 484 (current window
-close), and no CDL should open before its SIM-010 pass criteria are satisfied.
+Planning rule: no validator enhancement CDL should open before a future Window 485–494
+sequence lock exists, and no CDL should open before its SIM-010 pass criteria are
+satisfied.
 
 ---
 
@@ -292,5 +293,5 @@ The minimum dispositions required at each next window grouping are:
 
 - Window 485–494 grouping: disposition SIM-010 and Validator Economic Incentive Framework CDL,
 - Window 495–504 grouping: disposition Staking/Liveness CDL and Trust-Tier Elevation CDL,
-- Any capsule refresh through v2.0: reference this roadmap explicitly as a standing
+- The next capsule refresh after v2.2: reference this roadmap explicitly as a standing
   forward obligation under the validator infrastructure heading.

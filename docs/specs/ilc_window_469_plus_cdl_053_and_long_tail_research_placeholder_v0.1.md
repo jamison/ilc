@@ -33,13 +33,20 @@ This placeholder exists to keep that lane visible.
 
 ## 2. Inherited assumptions
 
-This placeholder assumes:
+This placeholder assumes the following current canonical state:
 
-- Window `450-459` remains the narrow Treasury / `CDL-050` closure lane.
-- Window `460-468` remains the `CDL-052` ratification and architecture-scoping lane.
+- Window `450-459` is closed with `CDL-050` and `CDL-051` ratified.
+- Window `460-468` is closed with `CDL-052` ratified.
+- Window `469-474` is closed with no new CDL row opened.
+- Window `475-484` is closed with bounded `CDL-052` runtime work and bounded genesis
+  validator bootstrap work completed, but no new CDL row opened.
+- There is no active post-484 sequence lock yet.
 - Genesis may be treated as settled at the level of constitutional ECU authorization and
-  bootstrap legitimacy.
+  bounded bootstrap legitimacy.
 - The exact downstream non-Genesis issuance mechanics remain open.
+- Validator enhancement planning is carried separately in
+  `docs/specs/ilc_validator_enhancement_roadmap_479_v0.1.md` and must not be folded into
+  minimum-scope `CDL-053`.
 
 Background research inputs for this placeholder are:
 
@@ -188,6 +195,10 @@ Suggested carry-forward surfaces:
 - future context capsule updates
 - roadmap / TODO artifacts
 
+Future grouping documents that address Window `485+` planning should disposition this
+placeholder separately from the validator enhancement roadmap so the two lanes do not blur
+into a single constitutional bundle.
+
 ---
 
 ## 8. Canonical staging note
@@ -196,7 +207,7 @@ This placeholder is not itself canonical law. Its constitutional value is stagin
 
 - settle Genesis at the authority layer now,
 - keep downstream issuance mechanics open,
-- preserve the narrowness of current windows,
+- preserve the narrowness of near-term windows,
 - and ensure future constitutional openings are evidence-gated rather than theory-gated.
 
 ---
@@ -209,7 +220,7 @@ Near-term planning should do the following:
 2. reserve a named simulation lane for pressure-flow / Werner evidence work,
 3. keep `Option C+` and long-tail redesign out of near-term constitutional bundles,
 4. require the next relevant planning refresh to disposition this placeholder explicitly,
-5. require the next capsule refresh to reference `ADR-0022` and the distinct
+5. require the next capsule refresh after `v2.2` to reference `ADR-0022` and the distinct
    private/gated shard rights/access hardening lane as separate from minimum-scope
    `CDL-053`.
 
