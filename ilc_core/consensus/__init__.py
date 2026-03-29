@@ -1,5 +1,13 @@
 """CDL-V3/V7 consensus runtime package."""
 
+from .circuit_breaker_interface import (
+    CDL_045_DEPENDENCY,
+    CIRCUIT_BREAKER_INTERFACE_VERSION,
+    CircuitBreakerInterfaceError,
+    build_circuit_breaker_request,
+    summarize_circuit_breaker_quorum_state,
+    verify_circuit_breaker_request,
+)
 from .diversity_floor_runtime import (
     CDL_V2_DEPENDENCY,
     CDL_V3_DEPENDENCY,
@@ -31,17 +39,23 @@ from .popperian_gate_runtime import (
 )
 
 __all__ = [
+    "CDL_045_DEPENDENCY",
     "CDL_051_RATIFICATION_DEPENDENCY",
     "CDL_V2_DEPENDENCY",
     "CDL_V3_RUNTIME_VERSION",
     "CDL_V3_DEPENDENCY",
     "CDL_V7_RUNTIME_VERSION",
     "CDL_V7_DEPENDENCY",
+    "CIRCUIT_BREAKER_INTERFACE_VERSION",
     "DIVERSITY_AWARE_FINALITY_VERSION",
     "FINALITY_EVALUATOR_VERSION",
     "DiversityFloorValidationError",
+    "CircuitBreakerInterfaceError",
     "ConsensusFinalityEvaluatorError",
     "PopperianGateValidationError",
+    "build_circuit_breaker_request",
+    "summarize_circuit_breaker_quorum_state",
+    "verify_circuit_breaker_request",
     "compute_max_cluster_share",
     "meets_distinct_cluster_floor",
     "meets_max_cluster_share_ceiling",
