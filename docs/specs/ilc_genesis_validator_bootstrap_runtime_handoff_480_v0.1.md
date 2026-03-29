@@ -33,6 +33,7 @@ the deterministic epoch-zero state.
 `verify_epoch_zero_state(epoch_zero_state)` validates the state record.
 
 quorum_record_seed is deterministically derived from genesis_block_cid and validator_set_hash.
+verify_epoch_zero_state recomputes quorum_record_seed from genesis_block_cid and validator_set_hash.
 
 ## 5. Deterministic failure-token catalog
 

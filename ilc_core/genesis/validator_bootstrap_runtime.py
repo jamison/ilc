@@ -31,6 +31,10 @@ def _stable_sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def _expected_quorum_record_seed(genesis_block_cid: str, validator_set_hash: str) -> str:
+    return _stable_sha256_text(f"{genesis_block_cid}:{validator_set_hash}")
+
+
 def _decode_public_key_b64url(public_key_b64url: str) -> bytes:
     if not isinstance(public_key_b64url, str) or not public_key_b64url:
         raise GenesisBootstrapError(
@@ -133,7 +137,7 @@ def materialize_epoch_zero_state(
         normalized_records.append(dict(record))
     normalized_records.sort(key=lambda record: record["validator_id"])
     validator_set_hash = _stable_sha256_text(_stable_json(normalized_records))
-    quorum_record_seed = _stable_sha256_text(f"{genesis_block_cid}:{validator_set_hash}")
+    quorum_record_seed = _expected_quorum_record_seed(genesis_block_cid, validator_set_hash)
     return {
         "epoch": 0,
         "genesis_block_cid": genesis_block_cid,
@@ -163,3 +167,12 @@ def verify_epoch_zero_state(epoch_zero_state: dict) -> None:
                 "GENESIS_BOOTSTRAP_INVALID_EPOCH_STATE",
                 f"{field} must be a non-empty string",
             )
+    expected_quorum_record_seed = _expected_quorum_record_seed(
+        epoch_zero_state["genesis_block_cid"],
+        epoch_zero_state["validator_set_hash"],
+    )
+    if epoch_zero_state["quorum_record_seed"] != expected_quorum_record_seed:
+        raise GenesisBootstrapError(
+            "GENESIS_BOOTSTRAP_INVALID_EPOCH_STATE",
+            "quorum_record_seed does not match genesis_block_cid and validator_set_hash",
+        )

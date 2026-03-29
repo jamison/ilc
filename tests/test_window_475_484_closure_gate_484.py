@@ -202,7 +202,17 @@ def test_gate_script_returns_exit_code_1_on_blocked_snapshot(tmp_path: Path) -> 
 
 
 def test_phase_484_cdl_inventory_is_historicalized() -> None:
-    historical_text = _decision_log_text_at_ref('HEAD')
+    try:
+        commit_ref = _resolve_phase_484_commit_ref()
+    except AssertionError as exc:
+        if str(exc) not in {
+            'phase_484_commit_not_present_in_local_history',
+            'phase_484_commit_subject_present_but_no_qualifying_closure_commit',
+        }:
+            raise
+        historical_text = _decision_log_text_at_ref('HEAD')
+    else:
+        historical_text = _decision_log_text_at_ref(commit_ref)
     rows = parse_decision_register_rows(historical_text)
     assert rows['CDL-052']['status'] == 'ratified'
     assert 'CDL-053' not in rows
