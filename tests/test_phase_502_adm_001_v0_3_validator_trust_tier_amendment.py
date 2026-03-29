@@ -3,6 +3,8 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
+
 ARTIFACT_PATH = Path('docs/specs/ilc_adm_001_v0_3_validator_trust_tier_amendment_502_v0.1.md')
 DECISION_LOG_PATH = Path('docs/specs/ilc_constitutional_decision_log_v0.1.md')
 TEST_PATH = Path('tests/test_phase_502_adm_001_v0_3_validator_trust_tier_amendment.py')
@@ -89,10 +91,10 @@ def test_adm_amendment_records_non_changes_to_quorum_and_diversity() -> None:
 
 
 def test_live_decision_log_keeps_cdl_056_ratified() -> None:
-    assert DECISION_LOG_PATH.exists()
-    text = DECISION_LOG_PATH.read_text(encoding='utf-8')
-    assert '| CDL-056 |' in text
-    assert '| ratified |' in text
+    rows = parse_decision_register_rows(DECISION_LOG_PATH.read_text(encoding='utf-8'))
+    assert rows['CDL-056']['status'] == 'ratified'
+    assert rows['CDL-056']['ratified_phase'] == '501'
+    assert 'CDL-053' not in rows
 
 
 def test_phase_502_main_commit_snapshot_touches_expected_paths_only() -> None:

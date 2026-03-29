@@ -132,13 +132,38 @@ def _decision_log_text_at_ref(ref: str) -> str:
     return result.stdout
 
 
+def _set_decision_row_status(text: str, decision_id: str, new_status: str) -> str:
+    updated_lines: list[str] = []
+    found = False
+    for line in text.splitlines():
+        if not line.startswith(f'| {decision_id} |'):
+            updated_lines.append(line)
+            continue
+        cells = [cell.strip() for cell in line.strip().split('|')[1:-1]]
+        if len(cells) < 4:
+            raise AssertionError(f'malformed_decision_row:{decision_id}')
+        cells[3] = new_status
+        updated_lines.append('| ' + ' | '.join(cells) + ' |')
+        found = True
+    if not found:
+        raise AssertionError(f'decision_row_not_found:{decision_id}')
+    return '\n'.join(updated_lines) + '\n'
+
+
+def _monitoring_state() -> dict[Path, tuple[str, int, int]]:
+    return {
+        path: (path.read_text(encoding='utf-8'), path.stat().st_mtime_ns, path.stat().st_size)
+        for path in MONITORING_PATHS
+    }
+
+
 def _decision_log_override_env(tmp_path: Path, scenario: str) -> dict[str, str]:
     text = DECISION_LOG_PATH.read_text(encoding='utf-8')
     if scenario == 'blocked_path':
         lines = [line for line in text.splitlines() if not line.startswith('| CDL-056 |')]
         text = '\n'.join(lines) + '\n'
     elif scenario == 'invalid_cdl_055_open':
-        text = text.replace('| CDL-055 | Validator roadmap 479 / CDL-046 / SIM-010 | Validator Staking and Liveness Enforcement for validator participation stake, liveness penalties, and equivocation slash boundaries | ratified |', '| CDL-055 | Validator roadmap 479 / CDL-046 / SIM-010 | Validator Staking and Liveness Enforcement for validator participation stake, liveness penalties, and equivocation slash boundaries | open |', 1)
+        text = _set_decision_row_status(text, 'CDL-055', 'open')
     else:
         raise AssertionError(f'unknown_override_scenario:{scenario}')
     override_path = tmp_path / 'phase_504_decision_log_override.md'
@@ -190,7 +215,7 @@ def test_window_handoff_artifact_exists_and_contains_required_headings_and_token
 def test_gate_script_passes_reports_success_path_and_preserves_canonical_monitoring(tmp_path: Path) -> None:
     if os.environ.get('ILC_PHASE_504_GATE_SELFTEST') == '1':
         pytest.skip('phase_504_selftest_context_skip_full_gate')
-    before = {path: path.read_text(encoding='utf-8') for path in MONITORING_PATHS}
+    before = _monitoring_state()
     env = _clean_gate_env()
     env['ILC_PHASE_504_SNAPSHOT_PATH'] = str(tmp_path / 'phase_504_snapshot.json')
     result = _run_gate([], env=env)
@@ -198,7 +223,7 @@ def test_gate_script_passes_reports_success_path_and_preserves_canonical_monitor
     assert 'phase_504_window_state=success_path' in result.stdout
     assert 'phase_504_verdict=pass' in result.stdout
     assert (tmp_path / 'phase_504_snapshot.json').exists()
-    after = {path: path.read_text(encoding='utf-8') for path in MONITORING_PATHS}
+    after = _monitoring_state()
     assert before == after
 
 
