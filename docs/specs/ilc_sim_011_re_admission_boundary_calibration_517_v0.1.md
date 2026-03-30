@@ -41,11 +41,15 @@ Scenario C — voluntary exit:
 
 ## 4. Recommended cooldown constants
 
+re_admission_cooldown_epoch_type: issuance_epoch
+
 recommended_cooldown_epochs_liveness_miss: 2
 recommended_cooldown_epochs_equivocation: 12
 recommended_cooldown_epochs_voluntary_exit: 1
 
 Calibration rationale:
+- cooldown constants are issuance epochs (1 month each), not validation epochs (1 minute each);
+  the validator monitoring threshold remains a separate validation-epoch surface under `CDL-055`
 - `recommended_cooldown_epochs_liveness_miss = 2` gives a short remediation window after a
   recoverable liveness failure without collapsing validator continuity.
 - `recommended_cooldown_epochs_equivocation = 12` is deliberately stricter because equivocation
