@@ -9,7 +9,7 @@ from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decisio
 SIM_DOC_PATH = Path('docs/specs/ilc_sim_passive_ecu_01_attribution_formula_calibration_542_v0.1.md')
 DECISION_LOG_PATH = Path('docs/specs/ilc_constitutional_decision_log_v0.1.md')
 TEST_PATH = Path('tests/test_phase_542_sim_passive_ecu_01_attribution_formula.py')
-PHASE_542_SUBJECT_TOKEN = 'phase 542 sim-passive-ecu-01 attribution formula'
+PHASE_542_SUBJECT_TOKEN = 'phase 542 sim-passive-ecu-01 passive ecu attribution formula calibration'
 EXACT_REQUIRED_MAIN_PATHS = {
     str(SIM_DOC_PATH),
     str(TEST_PATH),
