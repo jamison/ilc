@@ -26,6 +26,7 @@ REQUIRED_TOKENS = (
     'recommended_cooldown_epochs_liveness_miss',
     'recommended_cooldown_epochs_equivocation',
     'recommended_cooldown_epochs_voluntary_exit',
+    're_admission_cooldown_epoch_type: issuance_epoch',
     'sim_011_sufficient',
     'cdl_046_timed_out_orthogonal',
 )
@@ -88,7 +89,7 @@ def test_synthesis_document_contains_required_tokens() -> None:
     text = _read(ARTIFACT_PATH)
     for token in REQUIRED_TOKENS:
         assert token in text
-    assert text.count('sim_011_sufficient') == 1
+    assert re.findall(r'^sim_011_sufficient$', text, flags=re.MULTILINE) == ['sim_011_sufficient']
 
 
 def test_synthesis_document_contains_three_cooldown_constants_with_valid_ordering() -> None:

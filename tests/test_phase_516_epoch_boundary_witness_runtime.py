@@ -4,6 +4,7 @@ import importlib
 import subprocess
 from pathlib import Path
 
+import ilc_core.epoch as epoch_pkg
 from ilc_core.validator import staking_liveness_runtime
 from ilc_core.epoch import epoch_boundary_witness_runtime
 
@@ -81,6 +82,15 @@ def test_is_blocking_authority_active_is_false() -> None:
 def test_record_epoch_boundary_witness_returns_expected_payload() -> None:
     assert epoch_boundary_witness_runtime.record_epoch_boundary_witness('validator-1', '42', 'cid-1') == {
         'status': 'witnessed',
+        'batch_cid': 'cid-1',
+        'provenance_tag': 'validator-1@epoch_42',
+    }
+
+
+def test_record_epoch_boundary_witness_accepts_integer_epoch_id() -> None:
+    assert epoch_boundary_witness_runtime.record_epoch_boundary_witness('validator-1', 42, 'cid-1') == {
+        'status': 'witnessed',
+        'batch_cid': 'cid-1',
         'provenance_tag': 'validator-1@epoch_42',
     }
 
@@ -103,6 +113,15 @@ def test_record_epoch_boundary_witness_rejects_empty_epoch_id() -> None:
         raise AssertionError('expected ValueError for empty epoch_id')
 
 
+def test_record_epoch_boundary_witness_rejects_non_numeric_epoch_id() -> None:
+    try:
+        epoch_boundary_witness_runtime.record_epoch_boundary_witness('validator-1', 'not-a-number', 'cid-1')
+    except ValueError as exc:
+        assert str(exc) == 'epoch_id_must_be_non_negative_int_or_digit_string'
+    else:
+        raise AssertionError('expected ValueError for non-numeric epoch_id')
+
+
 def test_record_epoch_boundary_witness_rejects_empty_batch_cid() -> None:
     try:
         epoch_boundary_witness_runtime.record_epoch_boundary_witness('validator-1', '42', '')
@@ -123,3 +142,13 @@ def test_phase_516_main_commit_respects_scope_and_cdl_log() -> None:
     assert str(DECISION_LOG_PATH) not in changed_paths
     assert 'ilc_core/epoch/epoch_snapshot_runtime.py' not in changed_paths
     assert 'ilc_core/epoch/__init__.py' not in changed_paths
+
+
+def test_epoch_package_re_exports_witness_runtime_surface() -> None:
+    assert epoch_pkg.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION == 'epoch_boundary_witness_runtime_516.v0.1'
+    assert epoch_pkg.CDL_057_DEPENDENCY == 'cdl_057_ratified_511.v0.1'
+    assert epoch_pkg.record_epoch_boundary_witness('validator-1', '42', 'cid-1') == {
+        'status': 'witnessed',
+        'batch_cid': 'cid-1',
+        'provenance_tag': 'validator-1@epoch_42',
+    }

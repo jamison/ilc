@@ -76,10 +76,7 @@ def _resolve_phase_515_commit_ref() -> str:
 
 
 def _phase_515_decision_log_text() -> str:
-    try:
-        commit_ref = _resolve_phase_515_commit_ref()
-    except AssertionError:
-        return _read(DECISION_LOG_PATH)
+    commit_ref = _resolve_phase_515_commit_ref()
     return _commit_text(str(DECISION_LOG_PATH), commit_ref)
 
 
