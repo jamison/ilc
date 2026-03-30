@@ -42,6 +42,16 @@ def _read(path: Path) -> str:
     return path.read_text(encoding='utf-8')
 
 
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ['git', 'show', f'{commit_ref}:{path}'],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
         ['git', 'show', '--name-only', '--pretty=', commit_ref],
@@ -99,7 +109,9 @@ def test_phase_539_test_historicalization_patch_is_active() -> None:
 
 
 def test_live_decision_log_preserves_required_statuses_and_absences() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_540_commit_ref()
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
+    # The Phase-540 CDL-060 open-state check is a historical prelock reference.
     assert rows['CDL-036']['status'] == 'ratified'
     assert rows['CDL-039']['status'] == 'ratified'
     assert rows['CDL-052']['status'] == 'ratified'
