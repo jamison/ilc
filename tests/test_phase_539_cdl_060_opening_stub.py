@@ -130,7 +130,8 @@ def test_opening_stub_contains_required_governance_tokens() -> None:
 
 
 def test_live_decision_log_contains_open_cdl_060_row_and_preserves_other_rows() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-539 CDL-060 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), _resolve_phase_539_commit_ref()))
     assert rows['CDL-036']['status'] == 'ratified'
     assert rows['CDL-039']['status'] == 'ratified'
     assert rows['CDL-052']['status'] == 'ratified'
