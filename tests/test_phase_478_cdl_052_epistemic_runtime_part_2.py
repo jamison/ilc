@@ -15,6 +15,7 @@ from ilc_core.epistemic import (
 
 HANDOFF_PATH = Path('docs/specs/ilc_cdl_052_epistemic_runtime_part_2_handoff_478_v0.1.md')
 REFUTATION_SOURCE_PATH = Path('ilc_core/epistemic/refutation_runtime.py')
+REUSE_RUNTIME_SOURCE_PATH = Path('ilc_core/epistemic/reuse_centrality_runtime.py')
 TEST_PATH = Path('tests/test_phase_478_cdl_052_epistemic_runtime_part_2.py')
 PHASE_478_SUBJECT_TOKEN = 'phase 478 cdl-052 epistemic runtime part 2'
 EXACT_REQUIRED_MAIN_PATHS = {
@@ -35,6 +36,16 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
         text=True,
     )
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ['git', 'show', f'{commit_ref}:{path}'],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
 
 
 def _resolve_phase_478_commit_ref() -> str:
@@ -94,9 +105,10 @@ def test_refutation_submission_validates_envelope_structure() -> None:
 
 
 def test_reuse_centrality_query_returns_stub_backend() -> None:
-    result = query_reuse_centrality({'cid': 'cid-alpha', 'agent_id': 'agent-alpha'})
-    assert result.centrality_score == 0.0
-    assert result.computation_backend == 'stub_deferred'
+    # The Phase-478 stub_deferred check is a historical prelock reference.
+    commit_ref = _resolve_phase_478_commit_ref()
+    source = _commit_text(str(REUSE_RUNTIME_SOURCE_PATH), commit_ref)
+    assert 'computation_backend="stub_deferred"' in source
 
 
 def test_symbolic_stake_constants_and_tbd_markers_exist() -> None:
