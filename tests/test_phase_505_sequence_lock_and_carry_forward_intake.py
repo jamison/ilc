@@ -94,7 +94,9 @@ def test_sequence_lock_lists_all_ten_phases() -> None:
 
 
 def test_live_cdl_inventory_matches_entry_conditions() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_505_commit_ref()
+    # The Phase-505 CDL-058 absent check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows['CDL-055']['status'] == 'ratified'
     assert rows['CDL-056']['status'] == 'ratified'
     assert 'CDL-053' not in rows
