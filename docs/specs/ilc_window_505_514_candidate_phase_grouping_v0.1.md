@@ -77,7 +77,7 @@ Scope:
   - `STAKING_LIVENESS_RUNTIME_VERSION = "staking_liveness_runtime_506.v0.1"`
   - `CDL_055_DEPENDENCY = "cdl_055_ratified_496.v0.1"`
   - `GENESIS_STAKE_AMOUNT` (anchored to SIM-010 recommended value)
-  - `LIVENESS_MISS_THRESHOLD` (anchored to SIM-010 recommended value)
+  - `LIVENESS_MISS_THRESHOLD` (integer count of consecutive missed epochs anchored to SIM-010)
   - `EQUIVOCATION_FULL_SLASH` constant
   - `validate_staking_and_liveness_state()` enforcement function
 - Explicit exclusion: `re_admission_boundary` is NOT defined in this module.
@@ -100,8 +100,8 @@ Scope:
   - `TRUST_TIER_RUNTIME_VERSION = "trust_tier_runtime_507.v0.1"`
   - `CDL_056_DEPENDENCY = "cdl_056_ratified_501.v0.1"`
   - `CDL_055_STAKING_DEPENDENCY = "staking_liveness_runtime_506.v0.1"` (dep chain)
-  - `is_trust_tier_eligible(validator_liveness_score, equivocation_state)` function
-  - `revoke_trust_tier_if_below_threshold(validator_state)` function
+  - `is_trust_tier_eligible(consecutive_missed_epochs, liveness_miss_threshold, equivocation_state)` function
+  - `revoke_trust_tier_if_below_threshold(current_flag, consecutive_missed_epochs, liveness_miss_threshold)` function
   - `apply_consensus_dispute_tiebreaker(dispute_type, candidates)` function
 - `dispute_type` must be validated against an explicit enumeration of consensus-related dispute
   categories (block-proposal dispute, equivocation dispute, fork-choice dispute). Non-consensus
