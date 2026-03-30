@@ -92,6 +92,7 @@ def test_cdl_inventory_matches_entry_conditions() -> None:
     assert rows['CDL-052']['status'] == 'ratified'
     assert rows['CDL-059']['status'] == 'ratified'
     assert 'CDL-053' not in rows
+    # The Phase-535 CDL-060 absent check will be historicalized when Phase 539 opens CDL-060.
     assert 'CDL-060' not in rows
 
 

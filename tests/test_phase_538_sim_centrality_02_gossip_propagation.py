@@ -81,9 +81,15 @@ def test_sim_document_contains_required_governance_tokens() -> None:
 
 def test_sim_document_contains_all_calibration_constants() -> None:
     text = _read(SIM_DOC_PATH)
-    assert re.search(r'recommended_fanout:\s*\d+', text)
-    assert re.search(r'recommended_convergence_epochs:\s*\d+', text)
-    assert re.search(r'recommended_privacy_budget_fraction:\s*[0-9]+(?:\.[0-9]+)?', text)
+    fanout_match = re.search(r'recommended_fanout:\s*(\d+)', text)
+    convergence_match = re.search(r'recommended_convergence_epochs:\s*(\d+)', text)
+    privacy_match = re.search(r'recommended_privacy_budget_fraction:\s*([0-9]+(?:\.[0-9]+)?)', text)
+    assert fanout_match is not None
+    assert convergence_match is not None
+    assert privacy_match is not None
+    assert int(fanout_match.group(1)) == 3
+    assert int(convergence_match.group(1)) == 4
+    assert float(privacy_match.group(1)) == 0.25
 
 
 def test_live_decision_log_preserves_required_statuses_and_absences() -> None:

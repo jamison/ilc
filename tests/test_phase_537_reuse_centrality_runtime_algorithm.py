@@ -135,6 +135,26 @@ def test_query_with_malformed_usage_data_raises_submission_error() -> None:
             'agent_id': 'agent-alpha',
             'usage_data': {'direct_use_count': 1, 'total_pool_size': 0},
         },
+        {
+            'cid': 'cid-alpha',
+            'agent_id': 'agent-alpha',
+            'usage_data': {'total_pool_size': 10},
+        },
+        {
+            'cid': 'cid-alpha',
+            'agent_id': 'agent-alpha',
+            'usage_data': {'direct_use_count': 1},
+        },
+        {
+            'cid': 'cid-alpha',
+            'agent_id': 'agent-alpha',
+            'usage_data': {'direct_use_count': '1', 'total_pool_size': 10},
+        },
+        {
+            'cid': 'cid-alpha',
+            'agent_id': 'agent-alpha',
+            'usage_data': {'direct_use_count': 1, 'total_pool_size': True},
+        },
     )
     for query in bad_queries:
         try:
