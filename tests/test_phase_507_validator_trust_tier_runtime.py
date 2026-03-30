@@ -73,6 +73,9 @@ def test_module_imports_and_runtime_exports() -> None:
     module = importlib.import_module("ilc_core.validator.trust_tier_runtime")
     assert module.TRUST_TIER_RUNTIME_VERSION == "trust_tier_runtime_507.v0.1"
     assert hasattr(module, "revoke_trust_tier_if_below_threshold")
+    assert getattr(importlib.import_module("ilc_core.validator"), "TRUST_TIER_RUNTIME_VERSION") == (
+        "trust_tier_runtime_507.v0.1"
+    )
 
 
 def test_cdl_056_dependency_constant_value() -> None:
@@ -104,8 +107,27 @@ def test_is_trust_tier_eligible_returns_false_for_unresolved_equivocation() -> N
     assert trust_tier_runtime.is_trust_tier_eligible(0, 8, True) is False
 
 
+def test_is_trust_tier_eligible_rejects_invalid_inputs() -> None:
+    invalid_cases = (
+        ((True, 8, False), "consecutive_missed_epochs_must_be_non_negative_int"),
+        ((0, True, False), "liveness_miss_threshold_must_be_positive_int"),
+        ((0, 8, "no"), "equivocation_state_must_be_bool"),
+    )
+    for args, expected_token in invalid_cases:
+        try:
+            trust_tier_runtime.is_trust_tier_eligible(*args)
+        except ValueError as exc:
+            assert str(exc) == expected_token
+        else:
+            raise AssertionError(f"expected ValueError for args={args!r}")
+
+
 def test_revoke_trust_tier_if_below_threshold_revokes_failing_validator() -> None:
     assert trust_tier_runtime.revoke_trust_tier_if_below_threshold(True, 8, 8) is False
+
+
+def test_revoke_trust_tier_if_below_threshold_preserves_false_flag() -> None:
+    assert trust_tier_runtime.revoke_trust_tier_if_below_threshold(False, 8, 8) is False
 
 
 def test_apply_consensus_dispute_tiebreaker_accepts_consensus_types() -> None:
@@ -116,6 +138,19 @@ def test_apply_consensus_dispute_tiebreaker_accepts_consensus_types() -> None:
     for dispute_type in trust_tier_runtime.CONSENSUS_DISPUTE_TYPES:
         result = trust_tier_runtime.apply_consensus_dispute_tiebreaker(dispute_type, candidates)
         assert result == {"validator_id": "v2", "trust_tier": True}
+
+
+def test_apply_consensus_dispute_tiebreaker_falls_back_to_first_candidate_without_trust_tier() -> None:
+    candidates = [
+        {"validator_id": "v1", "trust_tier": False},
+        {"validator_id": "v2", "trust_tier": False},
+    ]
+    result = trust_tier_runtime.apply_consensus_dispute_tiebreaker("block_proposal", candidates)
+    assert result == {"validator_id": "v1", "trust_tier": False}
+
+
+def test_apply_consensus_dispute_tiebreaker_returns_none_for_empty_candidates() -> None:
+    assert trust_tier_runtime.apply_consensus_dispute_tiebreaker("equivocation", []) is None
 
 
 def test_apply_consensus_dispute_tiebreaker_raises_for_governance_vote() -> None:

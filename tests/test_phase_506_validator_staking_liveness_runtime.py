@@ -71,6 +71,7 @@ def _resolve_phase_506_commit_ref() -> str:
 def test_validator_package_and_module_import() -> None:
     importlib.import_module('ilc_core.validator.staking_liveness_runtime')
     assert validator_pkg.STAKING_LIVENESS_RUNTIME_VERSION == 'staking_liveness_runtime_506.v0.1'
+    assert validator_pkg.LIVENESS_PENALTY_FRACTION == 0.25
 
 
 def test_runtime_version_constant_value() -> None:
@@ -92,8 +93,9 @@ def test_liveness_miss_threshold_positive_integer() -> None:
     assert staking_liveness_runtime.LIVENESS_MISS_THRESHOLD > 0
 
 
-def test_equivocation_full_slash_value() -> None:
+def test_penalty_fraction_constants() -> None:
     assert staking_liveness_runtime.EQUIVOCATION_FULL_SLASH == 1.0
+    assert staking_liveness_runtime.LIVENESS_PENALTY_FRACTION == 0.25
 
 
 def test_active_state_validation() -> None:
@@ -109,6 +111,23 @@ def test_liveness_penalty_state() -> None:
 def test_equivocation_slash_state() -> None:
     result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 0, True)
     assert result == {'status': 'equivocation_slash', 'penalty_fraction': 1.0}
+
+
+def test_validate_staking_and_liveness_state_rejects_invalid_inputs() -> None:
+    invalid_cases = (
+        ((True, 0, False), 'stake_must_be_positive'),
+        (('400', 0, False), 'stake_must_be_positive'),
+        ((0.0, 0, False), 'stake_must_be_positive'),
+        ((400.0, -1, False), 'consecutive_missed_epochs_must_be_non_negative_int'),
+        ((400.0, 0, 'no'), 'equivocation_state_must_be_bool'),
+    )
+    for args, expected_token in invalid_cases:
+        try:
+            staking_liveness_runtime.validate_staking_and_liveness_state(*args)
+        except ValueError as exc:
+            assert str(exc) == expected_token
+        else:
+            raise AssertionError(f'expected ValueError for args={args!r}')
 
 
 def test_forbidden_token_absent_from_module_source() -> None:

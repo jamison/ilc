@@ -116,7 +116,6 @@ Scope:
 Deliverables:
 - `docs/specs/ilc_cdl_058_re_admission_boundary_opening_stub_518_v0.1.md`
 - `tests/test_phase_518_cdl_058_opening_stub.py`
-- historicalization patch to `tests/test_phase_512_re_admission_boundary_cdl_scoping.py`
 - historicalization patch to `tests/test_phase_517_sim_011_re_admission_calibration.py`
 - CDL log mutation (additive CDL-058 row only)
 
@@ -124,6 +123,8 @@ Scope:
 - Opens CDL-058 (re_admission_boundary) using Phase 512 scoping + Phase 517 SIM-011 evidence.
 - Selected option: cooldown period per exit-reason type, anchored to SIM-011 constants.
 - Entry criteria require `sim_011_sufficient` in the Phase 517 synthesis document.
+- Must preserve the pre-hardened historical CDL-058 absence checks already landed in the
+  Phase 505 / Phase 512 / Phase 513 test suites.
 - Pre-commit split: 5 passed / 2 failed. Post-commit: 7 passed.
 
 ---
