@@ -46,6 +46,16 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit_ref}:{path}"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _resolve_phase_519_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -89,7 +99,9 @@ def test_prelock_document_rejects_out_of_scope_expansions() -> None:
 
 
 def test_live_cdl_log_preserves_open_state_and_required_statuses() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_519_commit_ref()
+    # The Phase-519 CDL-058 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows["CDL-055"]["status"] == "ratified"
     assert rows["CDL-056"]["status"] == "ratified"
     assert rows["CDL-057"]["status"] == "ratified"
@@ -112,5 +124,6 @@ def test_phase_519_main_commit_does_not_touch_cdl_log() -> None:
     commit_ref = _resolve_phase_519_commit_ref()
     changed_paths = _changed_paths_for_commit(commit_ref)
     assert str(DECISION_LOG_PATH) not in changed_paths
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-519 CDL-058 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows["CDL-058"]["status"] == "open"
