@@ -43,6 +43,16 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit_ref}:{path}"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _resolve_phase_525_commit_ref() -> str:
     result = subprocess.run(
         ['git', 'log', '--format=%H%x09%s'],
@@ -84,8 +94,14 @@ def test_sequence_lock_lists_all_ten_phases() -> None:
         assert f'| {phase} |' in text
 
 
+def _phase_525_decision_log_text() -> str:
+    commit_ref = _resolve_phase_525_commit_ref()
+    return _commit_text(str(DECISION_LOG_PATH), commit_ref)
+
+
 def test_cdl_inventory_matches_entry_conditions() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-525 CDL-059 absent check is a historical prelock reference.
+    rows = parse_decision_register_rows(_phase_525_decision_log_text())
     assert rows['CDL-055']['status'] == 'ratified'
     assert rows['CDL-056']['status'] == 'ratified'
     assert rows['CDL-057']['status'] == 'ratified'
