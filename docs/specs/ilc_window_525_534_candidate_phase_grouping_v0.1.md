@@ -142,8 +142,9 @@ Scope:
 Deliverables:
 - `docs/specs/ilc_cdl_059_aesthetic_panel_governance_opening_stub_529_v0.1.md`
 - `tests/test_phase_529_cdl_059_opening_stub.py`
-- historicalization patches to `tests/test_phase_525_sequence_lock_and_carry_forward_intake.py`
-  and `tests/test_phase_522_adr_0023_cdl_scoping_analysis.py`
+- historicalization patches to `tests/test_phase_525_sequence_lock_and_carry_forward_intake.py`,
+  `tests/test_phase_522_adr_0023_cdl_scoping_analysis.py`, and
+  `tests/test_phase_523_coherence_report_and_capsule_v2_5.py`
 - CDL log mutation (additive CDL-059 row only)
 
 Scope:
@@ -151,7 +152,7 @@ Scope:
 - Entry criteria require `cdl_059_opening_authorized` in Phase 528 synthesis document.
 - Selected option: diversity-maximizing aesthetic panel for Register 2 expressive content,
   informational only (no blocking authority).
-- Must patch Phase 522 and Phase 525 tests to historicalize CDL-059 absent assertions.
+- Must patch Phase 522, Phase 523, and Phase 525 tests to historicalize CDL-059 absent assertions.
 - Pre-commit split: 5 passed / 2 failed. Post-commit: 7 passed.
 - Skipped entirely if Phase 528 outputs `cdl_059_opening_deferred`.
 
