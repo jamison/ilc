@@ -45,6 +45,16 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit_ref}:{path}"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _resolve_phase_526_commit_ref() -> str:
     result = subprocess.run(
         ['git', 'log', '--format=%H%x09%s'],
@@ -88,7 +98,9 @@ def test_sim_document_states_rejection_rationale_for_non_selected_alternatives()
 
 
 def test_live_decision_log_preserves_required_statuses_and_absences() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_526_commit_ref()
+    # The Phase-526 CDL-059 absent check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows['CDL-055']['status'] == 'ratified'
     assert rows['CDL-056']['status'] == 'ratified'
     assert rows['CDL-057']['status'] == 'ratified'
@@ -120,5 +132,6 @@ def test_phase_526_main_commit_does_not_touch_cdl_log_and_cdl_059_remains_absent
     commit_ref = _resolve_phase_526_commit_ref()
     changed_paths = _changed_paths_for_commit(commit_ref)
     assert str(DECISION_LOG_PATH) not in changed_paths
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-526 CDL-059 absent check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert 'CDL-059' not in rows
