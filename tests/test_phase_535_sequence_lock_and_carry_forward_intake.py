@@ -44,6 +44,16 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ['git', 'show', f'{commit_ref}:{path}'],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _resolve_phase_535_commit_ref() -> str:
     result = subprocess.run(
         ['git', 'log', '--format=%H%x09%s'],
@@ -86,13 +96,14 @@ def test_sequence_lock_lists_all_ten_phases() -> None:
 
 
 def test_cdl_inventory_matches_entry_conditions() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_535_commit_ref()
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows['CDL-036']['status'] == 'ratified'
     assert rows['CDL-039']['status'] == 'ratified'
     assert rows['CDL-052']['status'] == 'ratified'
     assert rows['CDL-059']['status'] == 'ratified'
     assert 'CDL-053' not in rows
-    # The Phase-535 CDL-060 absent check will be historicalized when Phase 539 opens CDL-060.
+    # The Phase-535 CDL-060 absent check is a historical prelock reference.
     assert 'CDL-060' not in rows
 
 
