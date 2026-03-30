@@ -13,7 +13,7 @@ PHASE_538_DOC_PATH = Path('docs/specs/ilc_sim_centrality_02_gossip_propagation_c
 TEST_PATH = Path('tests/test_phase_541_cdl_060_ratification_evidence.py')
 PHASE_536_SUBJECT_TOKEN = 'phase 536 cdl-060 gossip extension scoping'
 PHASE_538_SUBJECT_TOKEN = 'phase 538 sim-centrality-02 gossip propagation'
-PHASE_541_SUBJECT_TOKEN = 'phase 541 cdl-060 ratification'
+PHASE_541_SUBJECT_TOKEN = 'phase 541 cdl-060 gossip centrality extension ratification'
 EXACT_REQUIRED_MAIN_PATHS = {
     str(EVIDENCE_PATH),
     str(DECISION_LOG_PATH),
