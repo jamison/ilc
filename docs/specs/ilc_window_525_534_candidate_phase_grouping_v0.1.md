@@ -12,18 +12,21 @@ The Phase 525 sequence lock will canonicalize and may amend this grouping.
 ## 1. Window purpose
 
 Window 525-534 implements the ADR-0023 quality signal simulation evidence chain and advances
-CDL-059 (aesthetic panel governance) through its full lifecycle (opening → prelock → ratification
-→ runtime). Three dedicated simulation phases build the constitutional evidence base: SIM-AESTHETIC-01
-validates diversity-maximizing panel composition, SIM-CENTRALITY-01 validates incremental use
-centrality convergence and ECU stability, and SIM-NOVELTY-01 calibrates novelty bonus parameters.
-A synthesis phase (528) combines the simulation evidence and produces the CDL-059 opening
-authorization gate.
+CDL-059 (aesthetic panel governance) to a constitutional opening decision. If Phase 528 produces
+`cdl_059_opening_authorized`, the window continues through the CDL-059 full lifecycle
+(opening -> prelock -> ratification -> runtime). If Phase 528 produces
+`cdl_059_opening_deferred`, the window closes honestly on a blocked carry-forward path without
+executing Phases 529-532. Three dedicated simulation phases build the constitutional evidence
+base: SIM-AESTHETIC-01 validates diversity-maximizing panel composition, SIM-CENTRALITY-01
+validates incremental use centrality convergence and ECU stability, and SIM-NOVELTY-01
+calibrates novelty bonus parameters. A synthesis phase (528) combines the simulation evidence
+and produces the CDL-059 opening authorization gate.
 
 Two primary deliverables:
 1. Three simulation documents establishing the constitutional evidence chain for CDL-059
    (SIM-AESTHETIC-01, SIM-CENTRALITY-01, SIM-NOVELTY-01), and
-2. CDL-059 aesthetic panel governance full lifecycle (synthesis gate → opening → prelock →
-   ratification → runtime in `ilc_core/epistemic/`).
+2. Conditional CDL-059 aesthetic panel governance lifecycle on the authorized path
+   (synthesis gate -> opening -> prelock -> ratification -> runtime in `ilc_core/epistemic/`).
 
 CDL-036 gossip schema amendment (centrality_delta message type) and passive ECU attribution
 formula are Window 535+ items — they require CDL-059 to be ratified first and are
@@ -51,7 +54,7 @@ explicitly deferred from this window.
 | CDL-056 | ratified (Phase 501) | unchanged |
 | CDL-057 | ratified (Phase 511) | unchanged |
 | CDL-058 | ratified (Phase 520) | consumed by Phase 532 dep chain |
-| CDL-059 (aesthetic panel governance) | not yet opened | synthesis gate Phase 528 → open Phase 529 |
+| CDL-059 (aesthetic panel governance) | not yet opened | synthesis gate Phase 528 -> open Phase 529 only if authorized |
 | CDL-053 | reserved (unopened) | protected throughout window |
 
 ---
@@ -150,6 +153,7 @@ Scope:
   informational only (no blocking authority).
 - Must patch Phase 522 and Phase 525 tests to historicalize CDL-059 absent assertions.
 - Pre-commit split: 5 passed / 2 failed. Post-commit: 7 passed.
+- Skipped entirely if Phase 528 outputs `cdl_059_opening_deferred`.
 
 ---
 
@@ -168,6 +172,7 @@ Scope:
   attribution formula, multi-hop centrality in v1.
 - No CDL mutation in Phase 530.
 - Pre-commit split: 5 passed / 2 failed. Post-commit: 7 passed.
+- Executes only on the authorized path after Phase 529 opens CDL-059.
 
 ---
 
@@ -182,12 +187,13 @@ Deliverables:
 Scope:
 - Ratifies CDL-059 per evidence ladder anchored to SIM-AESTHETIC-01.
 - CDL-059 moves `open → ratified`.
-- Evidence section 6 heading: `## 6. Section-6 ratification readiness evidence checklist satisfaction`
+- Evidence section 6 heading: `## 6. Section-5 ratification readiness evidence checklist satisfaction`
 - Governance tokens: `cdl_059_governs_aesthetic_panel_governance`, `layer_2_informational_only`,
   `cdl_v7_7_plus_1_panel_orthogonal`, `cdl_052_layer_3_orthogonal`, `cdl_053_reserved`,
   `sim_aesthetic_01_evidence_anchored`.
 - CDL mutation: `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=531`.
 - Pre-commit split: 5 passed / 2 failed. Post-commit: 7 passed.
+- Executes only on the authorized path after Phase 530.
 
 ---
 
@@ -213,6 +219,7 @@ Scope:
 - CRITICAL: `is_blocking_authority_active()` must always return False; tested explicitly.
 - CRITICAL: `format_transparency_label` must include `not_objective_truth: true` in output.
 - Test count: 12 tests.
+- Executes only on the authorized path after Phase 531 ratifies CDL-059.
 
 ---
 
@@ -224,10 +231,14 @@ Deliverables:
 - `tests/test_phase_533_coherence_report_and_capsule_v2_6.py`
 
 Scope:
-- Coherence report covers: ADR-0023 simulation evidence chain, CDL-059 lifecycle, aesthetic panel
-  runtime integration, CDL-036/passive-attribution deferral, snapshot isolation.
+- Always executes. On the success path it covers ADR-0023 simulation evidence chain, CDL-059
+  lifecycle, aesthetic panel runtime integration, CDL-036/passive-attribution deferral, and
+  snapshot isolation. On the blocked path it records the Phase 528 deferral outcome, exact
+  blocker list, and Window 535+ carry-forward obligations without claiming CDL-059 ratification
+  or runtime delivery.
 - Capsule v2.6 supersedes v2.5. §1 required text: "Window 525-534 remains active at Phase 533."
-- CDL-059 state handling must reflect ratification status at Phase 533 (success path or blocked path).
+- CDL-059 state handling must reflect ratification status at Phase 533: `ratified` on the success
+  path, `absent` on the blocked path.
 - No CDL mutation. No ilc_core/ mutation.
 
 ---
@@ -242,13 +253,19 @@ Deliverables:
 Scope:
 - 6-category gate: prompt_contract_validation, lane_contract_tests, cross_window_regression,
   mutation_canary, closure_gate_cli_contract, walkthrough_hygiene.
-- Lane contract tests: Phases 525-533 (9 tests).
+- Lane contract tests are scenario-aware:
+  - success path: Phases 525-533 (9 tests)
+  - blocked path: Phases 525-528 and Phase 533 only (6 tests)
 - Cross-window regression: all prior closure gate tests from 307 through 524.
 - Selftest chain must include `ILC_PHASE_524_GATE_SELFTEST=1` and `ILC_PHASE_514_GATE_SELFTEST=1`;
   verify by reading actual prior gate test files.
-- Window states: success_path (CDL-059 ratified + Phase 532 runtime implemented, CDL-053 absent),
-  blocked_path (CDL-059 not ratified = deferred carry-forward, CDL-053 absent),
-  invalid (CDL-059 opening_authorized but runtime absent = fail).
+- Window states:
+  - success_path: CDL-059 ratified + Phase 532 runtime implemented, CDL-053 absent
+  - blocked_path: Phase 528 deferred CDL-059 opening, CDL-059 absent, Phase 532 runtime absent,
+    CDL-053 absent
+  - invalid: any mismatch between the Phase 528 synthesis disposition and the live CDL/runtime
+    state (including `cdl_059_opening_authorized` without ratification/runtime, or deferred path
+    with stray CDL-059/runtime artifacts)
 - Snapshot isolation: `ILC_PHASE_534_SNAPSHOT_PATH` override; no canonical `out/monitoring/` mutation.
 
 ---
