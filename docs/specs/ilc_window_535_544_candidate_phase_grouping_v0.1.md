@@ -19,19 +19,22 @@ CDL-060 cites CDL-036 and CDL-039 as related clauses and must preserve CDL-039 t
 privacy constraints throughout its design, prelock, and ratification.
 
 **Secondary lane**: CDL-052 Mode 3 reuse-centrality runtime advancement — replacing the
-`reuse_centrality_runtime.py` stub with an algorithm implementing Phase 527 calibration
-constants (u_floor=0.05, alpha=0.60, beta=0.40, gamma=0.15) for single-hop direct-use
-centrality computation.
+`reuse_centrality_runtime.py` stub with a single-hop direct-use algorithm consuming the
+Phase 527 `recommended_u_floor = 0.05` runtime input. The Phase 527 `recommended_alpha`,
+`recommended_beta`, and `recommended_gamma` constants remain downstream discovery/passive-ECU
+inputs and are not part of the Phase 537 centrality-score computation itself.
 
 **Evidence lanes**: SIM-CENTRALITY-02 (Phase 538) calibrates gossip propagation parameters
 required before CDL-060 can be opened. SIM-PASSIVE-ECU-01 (Phase 542) calibrates the
 passive ECU attribution formula (ADR-0023 §Layer 3 economic model), which is a Window 535+
 carry-forward independent of CDL-060 ratification.
 
-Three deliverables remain out of window scope:
-1. CDL-060 gossip runtime (`ilc_core/network/` extension for centrality_delta message type)
-   — Window 545+ carry-forward.
+Two implementation deliverables remain out of window scope:
+1. CDL-060 gossip runtime (`ilc_core/network/d2d/` extension for the `centrality_delta`
+   message type, expected to land via the D2d gossip surface) — Window 545+ carry-forward.
 2. Multi-hop centrality (SIM-MULTI-HOP-01) — Window 545+ carry-forward.
+
+Protected boundary:
 3. CDL-053 remains reserved and unopened throughout this window.
 
 ---
@@ -40,7 +43,7 @@ Three deliverables remain out of window scope:
 
 | Item | Source | Window 535-544 action |
 |---|---|---|
-| CDL-036 gossip schema amendment (centrality_delta) | Phase 534 handoff | CDL-060 lifecycle Phases 538-541 |
+| CDL-036 gossip schema amendment (centrality_delta) | Phase 534 handoff | Phase 536 scoping plus CDL-060 opening/prelock/ratification in Phases 539-541 |
 | Passive ECU attribution formula | Phase 534 handoff | SIM-PASSIVE-ECU-01 Phase 542 |
 | Multi-hop centrality (SIM-MULTI-HOP-01) | Phase 534 handoff | Window 545+ carry-forward |
 | CDL-052 reuse-centrality runtime stub | `ilc_core/epistemic/reuse_centrality_runtime.py` | Phase 537 stub→algorithm |
@@ -296,7 +299,7 @@ The following boundaries must remain intact throughout Window 535-544:
   produced or described in this window.
 - CDL-036 row must not be modified (CDL-060 is a new row that cites CDL-036 in related_clause).
 - Multi-hop centrality deferred to Window 545+ (v1 explicit out-of-scope).
-- CDL-060 gossip runtime (`ilc_core/network/` extension) deferred to Window 545+.
+- CDL-060 gossip runtime (`ilc_core/network/d2d/` extension) deferred to Window 545+.
 - `ilc_core/epistemic/__init__.py` must not be modified in Phase 537.
 - No other `ilc_core/epistemic/` files may be modified in Phase 537.
 - Passive ECU attribution formula implementation deferred to Window 545+ (SIM-PASSIVE-ECU-01
@@ -312,7 +315,7 @@ The following boundaries must remain intact throughout Window 535-544:
 
 - `docs/specs/ilc_window_525_534_handoff_534_v0.1.md` — Window 525-534 closure
 - `docs/specs/ilc_antigravity_context_capsule_v2.6.md` — current capsule (superseded by v2.7 at Phase 543)
-- `docs/specs/ilc_sim_centrality_01_and_novelty_01_calibration_527_v0.1.md` — Phase 527 calibration (u_floor=0.05, alpha=0.60, beta=0.40, gamma=0.15)
+- `docs/specs/ilc_sim_centrality_01_and_novelty_01_calibration_527_v0.1.md` — Phase 527 calibration (`recommended_u_floor = 0.05` for Phase 537; `recommended_alpha = 0.60`, `recommended_beta = 0.40`, `recommended_gamma = 0.15` carried forward for later discovery/passive-ECU work)
 - `docs/adr/ADR_0023_Multi_Layer_Quality_Signal_Architecture.md` — ADR-0023 (design input for SIM-PASSIVE-ECU-01)
 - `ilc_core/epistemic/reuse_centrality_runtime.py` — stub to be advanced in Phase 537
 - `tests/test_phase_478_cdl_052_epistemic_runtime_part_2.py` — contains stub_deferred assertion requiring Phase 537 historicalization patch
