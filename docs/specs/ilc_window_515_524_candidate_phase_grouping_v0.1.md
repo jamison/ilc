@@ -116,6 +116,8 @@ Scope:
 Deliverables:
 - `docs/specs/ilc_cdl_058_re_admission_boundary_opening_stub_518_v0.1.md`
 - `tests/test_phase_518_cdl_058_opening_stub.py`
+- historicalization patch to `tests/test_phase_512_re_admission_boundary_cdl_scoping.py`
+- historicalization patch to `tests/test_phase_517_sim_011_re_admission_calibration.py`
 - CDL log mutation (additive CDL-058 row only)
 
 Scope:
@@ -147,6 +149,7 @@ Scope:
 Deliverables:
 - `docs/specs/ilc_cdl_058_re_admission_boundary_ratification_evidence_520_v0.1.md`
 - `tests/test_phase_520_cdl_058_ratification_evidence.py`
+- historicalization patch to `tests/test_phase_519_cdl_058_prelock_hardening.py`
 - CDL log mutation (CDL-058 only: open → ratified)
 
 Scope:
@@ -168,6 +171,8 @@ Deliverables:
 
 Scope:
 - New module in existing `ilc_core/validator/` subpackage (additive only).
+- `ilc_core/validator/__init__.py`, `staking_liveness_runtime.py`, and `trust_tier_runtime.py`
+  must remain unchanged.
 - Runtime module exports:
   - `RE_ADMISSION_RUNTIME_VERSION = "re_admission_runtime_521.v0.1"`
   - `CDL_058_DEPENDENCY = "cdl_058_ratified_520.v0.1"`
@@ -195,8 +200,9 @@ Deliverables:
 Scope:
 - Analytical phase only. No CDL mutation (CDL-059 opening, if recommended, is Window 525+).
 - Evaluates whether ADR-0023 quality signal architecture requires constitutional protection or
-  can remain ADM-only guidance.
-- Output: explicit recommendation — either open CDL-059 (Window 525+) or maintain as research.
+  can remain ADR/research guidance outside the CDL inventory.
+- Output: explicit recommendation — either open CDL-059 (Window 525+) or maintain ADR-0023 as
+  research guidance.
 - Test count: 7 tests.
 
 ---
@@ -212,6 +218,8 @@ Scope:
 - Coherence report covers: CDL-057 runtime integration, SIM-011 calibration, CDL-058 lifecycle,
   ADR-0023 scoping disposition, snapshot isolation.
 - Capsule v2.5 supersedes v2.4. §1 required text: "Window 515-524 remains active at Phase 523."
+- CDL-058 state handling must remain scenario-aware: either ratified with Phase 521 runtime
+  implemented, or deferred as a Window 525+ constitutional/runtime carry-forward.
 - No CDL mutation. No ilc_core/ mutation.
 
 ---
@@ -229,8 +237,9 @@ Scope:
 - Lane contract tests: Phases 515-523 (9 tests).
 - Cross-window regression: all prior closure gate tests from 307 through 514.
 - Selftest chain must include `ILC_PHASE_514_GATE_SELFTEST=1`; verify by reading actual test files.
-- Window states: success_path (CDL-057 runtime + CDL-058 ratified), blocked_path (CDL-058
-  absent = deferred), invalid (CDL-057 runtime absent = fail).
+- Window states: success_path (CDL-057 runtime + CDL-058 ratified + Phase 521 runtime),
+  blocked_path (CDL-058 not ratified = deferred carry-forward), invalid
+  (CDL-057 runtime absent = fail).
 - Snapshot isolation: `ILC_PHASE_524_SNAPSHOT_PATH` override; no canonical `out/monitoring/` mutation.
 
 ---
@@ -275,7 +284,9 @@ The following boundaries must remain intact throughout Window 515-524:
 - ADR-0022 private/gated boundary separate from validator and epoch-boundary work.
 - Werner credit lane (CDL-053) separate from re_admission_boundary work.
 - `epoch_snapshot_runtime.py` must not be modified by Phase 516.
-- `staking_liveness_runtime.py` and `trust_tier_runtime.py` must not be modified by Phase 521.
+- `ilc_core/epoch/__init__.py` must not be modified by Phase 516.
+- `ilc_core/validator/__init__.py`, `staking_liveness_runtime.py`, and `trust_tier_runtime.py`
+  must not be modified by Phase 521.
 - Blocking authority for epoch-boundary witnesses remains deferred (CDL-057 provenance-only scope).
 
 ---
