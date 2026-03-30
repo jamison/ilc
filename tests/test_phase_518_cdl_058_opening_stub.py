@@ -111,7 +111,9 @@ def test_opening_stub_anchors_phase_512_scoping_and_phase_517_sim_011() -> None:
 
 
 def test_live_decision_log_contains_open_cdl_058_row() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_518_commit_ref()
+    # The Phase-518 CDL-058 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows["CDL-055"]["status"] == "ratified"
     assert rows["CDL-056"]["status"] == "ratified"
     assert rows["CDL-057"]["status"] == "ratified"
