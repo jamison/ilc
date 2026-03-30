@@ -100,6 +100,13 @@ def test_evaluate_re_admission_eligibility_returns_false_below_equivocation_cool
     }
 
 
+def test_evaluate_re_admission_eligibility_returns_true_after_voluntary_exit_cooldown() -> None:
+    assert re_admission_runtime.evaluate_re_admission_eligibility("voluntary_exit", 1) == {
+        "eligible": True,
+        "cooldown_remaining": 0,
+    }
+
+
 def test_evaluate_re_admission_eligibility_raises_for_unrecognized_exit_reason() -> None:
     try:
         re_admission_runtime.evaluate_re_admission_eligibility("governance_vote", 0)

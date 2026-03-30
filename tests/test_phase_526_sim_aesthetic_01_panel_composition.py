@@ -110,17 +110,9 @@ def test_live_decision_log_preserves_required_statuses_and_absences() -> None:
 
 
 def test_head_commit_touches_no_ilc_core_runtime_files() -> None:
-    changed_paths = {
-        path.strip()
-        for path in subprocess.run(
-            ['git', 'diff', 'HEAD', '--name-only', '--', 'ilc_core/'],
-            capture_output=True,
-            check=True,
-            text=True,
-        ).stdout.splitlines()
-        if path.strip()
-    }
-    assert changed_paths == set()
+    commit_ref = _resolve_phase_526_commit_ref()
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert not any(path.startswith('ilc_core/') for path in changed_paths)
 
 
 def test_phase_526_main_commit_touches_expected_paths_only() -> None:
