@@ -95,10 +95,8 @@ def test_opening_stub_contains_required_governance_tokens() -> None:
     text = _read(ARTIFACT_PATH)
     for token in REQUIRED_TOKENS:
         assert token in text
-    assert (
-        "epoch_boundary_blocking_authority_deferred" in text
-        or "epoch_boundary_blocking_authority_in_scope" in text
-    )
+    assert "epoch_boundary_blocking_authority_deferred" in text
+    assert "epoch_boundary_blocking_authority_in_scope" not in text
 
 
 def test_opening_stub_cites_phase_508_vehicle_selection_and_phase_498_scoping() -> None:

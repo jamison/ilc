@@ -60,6 +60,8 @@ elif rows.get('CDL-056', {}).get('status') != 'ratified':
     print('invalid|cdl_056_not_ratified')
 elif rows.get('CDL-057', {}).get('status') == 'ratified':
     print('success|cdl_057_ratified')
+elif rows.get('CDL-057', {}).get('status') == 'open':
+    print('invalid|cdl_057_not_yet_ratified')
 elif 'CDL-057' not in rows:
     print('blocked|cdl_057_absent')
 else:

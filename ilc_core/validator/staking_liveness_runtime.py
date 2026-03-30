@@ -5,8 +5,7 @@ CDL_055_DEPENDENCY = "cdl_055_ratified_496.v0.1"
 GENESIS_STAKE_AMOUNT = 400.0
 LIVENESS_MISS_THRESHOLD = 8
 EQUIVOCATION_FULL_SLASH = 1.0
-
-_LIVENESS_PENALTY_FRACTION = 0.25
+LIVENESS_PENALTY_FRACTION = 0.25
 
 
 def validate_staking_and_liveness_state(
@@ -29,7 +28,7 @@ def validate_staking_and_liveness_state(
     if consecutive_missed_epochs >= LIVENESS_MISS_THRESHOLD:
         return {
             'status': 'liveness_penalty',
-            'penalty_fraction': _LIVENESS_PENALTY_FRACTION,
+            'penalty_fraction': LIVENESS_PENALTY_FRACTION,
         }
     return {
         'status': 'active',
@@ -42,6 +41,7 @@ __all__ = [
     'EQUIVOCATION_FULL_SLASH',
     'GENESIS_STAKE_AMOUNT',
     'LIVENESS_MISS_THRESHOLD',
+    'LIVENESS_PENALTY_FRACTION',
     'STAKING_LIVENESS_RUNTIME_VERSION',
     'validate_staking_and_liveness_state',
 ]

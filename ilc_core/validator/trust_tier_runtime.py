@@ -1,6 +1,13 @@
+"""Validator trust-tier runtime.
+
+The consensus-dispute tiebreaker never sorts candidates internally. Callers must provide
+deterministic candidate ordering, because the first candidate becomes the fallback winner
+when no trust-tier candidate is available.
+"""
+
 from __future__ import annotations
 
-from ilc_core.validator import staking_liveness_runtime
+from . import staking_liveness_runtime
 
 TRUST_TIER_RUNTIME_VERSION = "trust_tier_runtime_507.v0.1"
 CDL_056_DEPENDENCY = "cdl_056_ratified_501.v0.1"
@@ -9,12 +16,12 @@ CONSENSUS_DISPUTE_TYPES = frozenset(("block_proposal", "equivocation", "fork_cho
 
 
 def _require_non_negative_int(value: int, field_name: str) -> None:
-    if not isinstance(value, int) or value < 0:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ValueError(f"{field_name}_must_be_non_negative_int")
 
 
 def _require_positive_int(value: int, field_name: str) -> None:
-    if not isinstance(value, int) or value <= 0:
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
         raise ValueError(f"{field_name}_must_be_positive_int")
 
 
@@ -50,6 +57,7 @@ def apply_consensus_dispute_tiebreaker(
     dispute_type: str,
     candidates: list[dict[str, object]],
 ) -> dict[str, object] | None:
+    """Return the trust-tier winner or the first caller-supplied candidate deterministically."""
     if dispute_type not in CONSENSUS_DISPUTE_TYPES:
         raise ValueError("non_consensus_dispute_type")
     if not candidates:
@@ -59,6 +67,7 @@ def apply_consensus_dispute_tiebreaker(
     ]
     if trust_tier_candidates:
         return trust_tier_candidates[0]
+    # Caller-supplied ordering is the deterministic fallback when no trust-tier flag is present.
     return candidates[0]
 
 
