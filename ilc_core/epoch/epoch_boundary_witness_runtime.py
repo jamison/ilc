@@ -17,12 +17,27 @@ def _require_non_empty_string(value: str, field_name: str) -> str:
     return value.strip()
 
 
-def record_epoch_boundary_witness(validator_id: str, epoch_id: str, batch_cid: str) -> dict[str, str]:
+def _require_epoch_id(value: int | str) -> str:
+    if isinstance(value, bool):
+        raise ValueError("epoch_id_must_be_non_negative_int_or_digit_string")
+    if isinstance(value, int):
+        if value < 0:
+            raise ValueError("epoch_id_must_be_non_negative_int_or_digit_string")
+        return str(value)
+    epoch = _require_non_empty_string(value, "epoch_id")
+    if not epoch.isdigit():
+        raise ValueError("epoch_id_must_be_non_negative_int_or_digit_string")
+    return epoch
+
+
+def record_epoch_boundary_witness(validator_id: str, epoch_id: int | str, batch_cid: str) -> dict[str, str]:
     validator = _require_non_empty_string(validator_id, "validator_id")
-    epoch = _require_non_empty_string(epoch_id, "epoch_id")
-    _require_non_empty_string(batch_cid, "batch_cid")
+    epoch = _require_epoch_id(epoch_id)
+    batch = _require_non_empty_string(batch_cid, "batch_cid")
     return {
         "status": "witnessed",
+        # Keep the witness tied to a specific conversion batch without widening into blocking authority.
+        "batch_cid": batch,
         "provenance_tag": f"{validator}@epoch_{epoch}",
     }
 
