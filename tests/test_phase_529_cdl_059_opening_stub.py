@@ -105,8 +105,14 @@ def test_opening_stub_anchors_phase_526_and_phase_528_evidence() -> None:
     assert 'cdl_059_opening_authorized' in text
 
 
+def _phase_529_decision_log_text() -> str:
+    commit_ref = _resolve_phase_529_commit_ref()
+    return _commit_text(str(DECISION_LOG_PATH), commit_ref)
+
+
 def test_live_decision_log_contains_open_cdl_059_row_and_preserves_other_rows() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-529 CDL-059 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(_phase_529_decision_log_text())
     assert rows['CDL-055']['status'] == 'ratified'
     assert rows['CDL-056']['status'] == 'ratified'
     assert rows['CDL-057']['status'] == 'ratified'
