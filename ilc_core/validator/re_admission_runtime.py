@@ -26,7 +26,9 @@ def _cooldown_for_exit_reason(exit_reason: str) -> int:
         return COOLDOWN_EPOCHS_LIVENESS_MISS
     if exit_reason == "equivocation":
         return COOLDOWN_EPOCHS_EQUIVOCATION
-    return COOLDOWN_EPOCHS_VOLUNTARY_EXIT
+    if exit_reason == "voluntary_exit":
+        return COOLDOWN_EPOCHS_VOLUNTARY_EXIT
+    raise AssertionError("recognized_exit_reason_without_cooldown_mapping")
 
 
 def evaluate_re_admission_eligibility(exit_reason: str, epochs_since_exit: int) -> dict[str, bool | int]:

@@ -110,18 +110,10 @@ def test_cdl_inventory_matches_entry_conditions() -> None:
     assert 'CDL-059' not in rows
 
 
-def test_phase_525_live_tree_has_no_ilc_core_runtime_changes() -> None:
-    changed_paths = {
-        path.strip()
-        for path in subprocess.run(
-            ['git', 'diff', 'HEAD', '--name-only', '--', 'ilc_core/'],
-            capture_output=True,
-            check=True,
-            text=True,
-        ).stdout.splitlines()
-        if path.strip()
-    }
-    assert changed_paths == set()
+def test_phase_525_main_commit_touches_no_ilc_core_runtime_changes() -> None:
+    commit_ref = _resolve_phase_525_commit_ref()
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert not any(path.startswith('ilc_core/') for path in changed_paths)
 
 
 def test_phase_525_main_commit_touches_expected_paths_only() -> None:

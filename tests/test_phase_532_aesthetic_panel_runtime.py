@@ -124,6 +124,19 @@ def test_compose_aesthetic_panel_raises_for_missing_required_keys() -> None:
         raise AssertionError('expected ValueError for missing keys')
 
 
+def test_compose_aesthetic_panel_rejects_duplicate_agent_ids() -> None:
+    pool = [
+        {'agent_id': 'a1', 'model_type': 'm1'},
+        {'agent_id': 'a1', 'model_type': 'm2'},
+    ]
+    try:
+        runtime.compose_aesthetic_panel(pool, 1)
+    except ValueError as exc:
+        assert str(exc) == 'duplicate_agent_id_in_pool'
+    else:
+        raise AssertionError('expected ValueError for duplicate agent ids')
+
+
 def test_compute_aesthetic_score_returns_mean_and_rejects_empty_votes() -> None:
     assert runtime.compute_aesthetic_score([0.25, 0.75]) == 0.5
     try:

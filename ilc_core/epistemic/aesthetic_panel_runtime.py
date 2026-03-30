@@ -10,9 +10,19 @@ BLOCKING_AUTHORITY_ACTIVE = False
 
 def _validated_pool(agent_pool: list[dict]) -> list[dict]:
     validated: list[dict] = []
+    seen_agent_ids: set[str] = set()
     for agent in agent_pool:
+        if not isinstance(agent, dict):
+            raise ValueError('agent_pool_entries_require_agent_id_and_model_type')
         if 'agent_id' not in agent or 'model_type' not in agent:
             raise ValueError('agent_pool_entries_require_agent_id_and_model_type')
+        agent_id = str(agent['agent_id'])
+        model_type = str(agent['model_type'])
+        if not agent_id or not model_type:
+            raise ValueError('agent_pool_entries_require_agent_id_and_model_type')
+        if agent_id in seen_agent_ids:
+            raise ValueError('duplicate_agent_id_in_pool')
+        seen_agent_ids.add(agent_id)
         validated.append(agent)
     return validated
 
