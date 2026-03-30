@@ -43,7 +43,7 @@ obligation. CDL-058 opening is deferred to Window 515+.
 | CDL-055 | ratified (Phase 496) | runtime implementation Phase 506 |
 | CDL-056 | ratified (Phase 501) | runtime implementation Phase 507 |
 | CDL-053 | reserved (unopened) | protected throughout window |
-| CDL-057 (or CDL-030/051 amendment) | not yet opened | vehicle selection Phase 508; open Phase 509 |
+| CDL-057 | not yet opened | Phase 508 selects whether CDL-057 is justified as a CDL-030 extension, CDL-051 extension, or standalone lane; open Phase 509 |
 | CDL-058 (re_admission_boundary) | not yet opened | scoping only Phase 512; open Window 515+ |
 
 ---
@@ -126,8 +126,7 @@ Scope:
   1. CDL-030 extension (P_e conversion surface amendment)
   2. CDL-051 extension (epoch transition amendment)
   3. New CDL-057 (narrow epoch-boundary witness lane)
-- Output: explicit written selection of one vehicle with rationale, OR explicit deferral with
-  stated blocking conditions.
+- Output: explicit written selection of one vehicle with rationale.
 - Phase 498 scoping document is a required input.
 - Recommendation must state whether the selected vehicle supports only provenance tagging (no CDL
   required per Phase 498) or also includes future blocking-quorum authority (CDL required).
@@ -137,13 +136,14 @@ Scope:
 ### Phase 509 — Epoch-boundary CDL opening (SENSITIVE — CDL mutation)
 
 Deliverables:
-- `docs/specs/ilc_cdl_057_epoch_boundary_witness_opening_stub_509_v0.1.md`
-  (or CDL-030/CDL-051 amendment opening artifact, per Phase 508 decision)
+- `docs/specs/ilc_epoch_boundary_witness_opening_stub_509_v0.1.md`
 - `tests/test_phase_509_epoch_boundary_cdl_opening_stub.py`
-- CDL log mutation (additive only — new row)
+- CDL log mutation (additive CDL-057 row only)
 
 Scope:
-- Opens CDL-057 (or amends existing CDL row) per Phase 508 vehicle selection.
+- Opens CDL-057 as the numbered epoch-boundary witness lane.
+- Phase 508 selects whether CDL-057 is constitutionally justified as a CDL-030 extension,
+  CDL-051 extension, or standalone lane.
 - Opening stub must cite Phase 508 vehicle selection document as a required anchor.
 - Must preserve CDL-053 reserved status.
 - Must distinguish the provenance-tagging scope (no CDL required) from the future
@@ -155,7 +155,7 @@ Scope:
 ### Phase 510 — Epoch-boundary CDL prelock hardening (NON-SENSITIVE)
 
 Deliverables:
-- `docs/specs/ilc_cdl_057_epoch_boundary_witness_prelock_hardening_510_v0.1.md`
+- `docs/specs/ilc_epoch_boundary_witness_prelock_hardening_510_v0.1.md`
 - `tests/test_phase_510_epoch_boundary_cdl_prelock_hardening.py`
 
 Scope:
@@ -170,12 +170,14 @@ Scope:
 ### Phase 511 — Epoch-boundary CDL ratification (SENSITIVE — CDL mutation)
 
 Deliverables:
-- `docs/specs/ilc_cdl_057_epoch_boundary_witness_ratification_evidence_511_v0.1.md`
+- `docs/specs/ilc_epoch_boundary_witness_ratification_evidence_511_v0.1.md`
 - `tests/test_phase_511_epoch_boundary_cdl_ratification_evidence.py`
-- CDL log mutation (status: open → ratified)
+- CDL log mutation (CDL-057 only)
 
 Scope:
-- Ratifies CDL-057 (or CDL-030/051 amendment) per evidence ladder.
+- Ratifies the epoch-boundary witness lane per evidence ladder.
+- CDL-057 moves `open -> ratified`.
+- Phase 508's vehicle choice controls the ratification rationale, not the row identifier.
 - 3-path commit resolver (CDL + evidence + test).
 - Evidence section heading: `## 6. Section-5 ratification readiness evidence checklist satisfaction`
 - Governance tokens must include: `epoch_boundary_witness_scope`, `provenance_tag_only`,
@@ -236,7 +238,7 @@ Scope:
 - Lane contract tests: Phases 505-513.
 - Cross-window regression: all prior closure gate tests (307, 317, 327, 337, 347, 357, 367, 377,
   391, 401, 413, 423, 433, 440, 449, 459, 468, 474 (no selftest guard), 484 (no selftest guard),
-  494, 504, 514).
+  494, 504).
 - Selftest chain: must include ILC_PHASE_NNN_GATE_SELFTEST=1 for every prior gate with a
   `test_gate_full_run_*` function. Verify by reading each test file — do not copy by analogy.
 - Snapshot isolation: gate must write to `ILC_PHASE_514_SNAPSHOT_PATH` override; never to
@@ -253,7 +255,7 @@ Scope:
 | 506 | None |
 | 507 | None |
 | 508 | None |
-| 509 | CDL-057 (or CDL-030/051 amendment) row addition |
+| 509 | add new CDL-057 row with Phase 508-selected vehicle rationale |
 | 510 | None |
 | 511 | CDL-057 status: open → ratified |
 | 512 | None |
@@ -282,7 +284,7 @@ The following boundaries must remain intact throughout Window 505-514:
 - CDL-V3 diversity floor protections unchanged.
 - 7+1 quorum ladder unchanged.
 - ADR-0022 private/gated boundary separate from validator work.
-- Werner credit lane separate from CDL-057 epoch-boundary lane.
+- Werner credit lane separate from the epoch-boundary witness lane.
 - `re_admission_boundary` excluded from CDL-055 runtime implementation.
 
 ---
