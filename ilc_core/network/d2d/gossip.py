@@ -6,10 +6,14 @@ This module enforces CDL-039 transport invariants: no creator_agent_id in transp
 from __future__ import annotations
 
 import hashlib
-import re
 from typing import Any, Mapping, Sequence
 
-from .interface import D2dInterfaceValidationError, validate_d2d_channel, validate_d2d_peer_id
+from .interface import (
+    D2dInterfaceValidationError,
+    _canonical_header_alias,
+    validate_d2d_channel,
+    validate_d2d_peer_id,
+)
 from .peer import D2D_PEERING_DEPENDENCY
 
 
@@ -37,13 +41,6 @@ def _validate_non_empty_string(value: Any, token: str, message: str) -> str:
     if not normalized:
         raise D2dGossipValidationError(token, message)
     return normalized
-
-
-def _canonical_header_alias(value: str) -> str:
-    """Canonicalize header aliases for invariant checks only."""
-
-    return re.sub(r"[-.]", "_", value.lower())
-
 
 def sanitize_transport_headers(headers: Mapping[str, Any]) -> dict[str, str]:
     """Normalize transport headers and enforce creator-agent exclusion."""
