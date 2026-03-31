@@ -14,6 +14,14 @@ TEST_PATH = Path('tests/test_phase_541_cdl_060_ratification_evidence.py')
 PHASE_536_SUBJECT_TOKEN = 'phase 536 cdl-060 gossip extension scoping'
 PHASE_538_SUBJECT_TOKEN = 'phase 538 sim-centrality-02 gossip propagation'
 PHASE_541_SUBJECT_TOKEN = 'phase 541 cdl-060 gossip centrality extension ratification'
+PHASE_536_REQUIRED_PATHS = {
+    str(PHASE_536_DOC_PATH),
+    'tests/test_phase_536_cdl_060_gossip_extension_scoping.py',
+}
+PHASE_538_REQUIRED_PATHS = {
+    str(PHASE_538_DOC_PATH),
+    'tests/test_phase_538_sim_centrality_02_gossip_propagation.py',
+}
 EXACT_REQUIRED_MAIN_PATHS = {
     str(EVIDENCE_PATH),
     str(DECISION_LOG_PATH),
@@ -63,7 +71,14 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
-def _resolve_commit_ref(subject_token: str, required_paths: set[str] | None = None, must_touch: str | None = None) -> str:
+def _resolve_commit_ref(
+    subject_token: str,
+    *,
+    required_paths: set[str] | None = None,
+    must_touch: str | None = None,
+    present_error: str,
+    missing_error: str,
+) -> str:
     result = subprocess.run(
         ['git', 'log', '--format=%H%x09%s'],
         capture_output=True,
@@ -86,20 +101,38 @@ def _resolve_commit_ref(subject_token: str, required_paths: set[str] | None = No
             continue
         return commit_ref
     if matching:
-        raise AssertionError('commit_subject_present_but_no_qualifying_ratification_commit')
-    raise AssertionError('phase_541_commit_not_present_in_local_history')
+        raise AssertionError(present_error)
+    raise AssertionError(missing_error)
 
 
 def _resolve_phase_536_commit_ref() -> str:
-    return _resolve_commit_ref(PHASE_536_SUBJECT_TOKEN, must_touch=str(PHASE_536_DOC_PATH))
+    return _resolve_commit_ref(
+        PHASE_536_SUBJECT_TOKEN,
+        required_paths=PHASE_536_REQUIRED_PATHS,
+        must_touch=str(PHASE_536_DOC_PATH),
+        present_error='phase_536_commit_subject_present_but_no_qualifying_scoping_commit',
+        missing_error='phase_536_commit_not_present_in_local_history',
+    )
 
 
 def _resolve_phase_538_commit_ref() -> str:
-    return _resolve_commit_ref(PHASE_538_SUBJECT_TOKEN, must_touch=str(PHASE_538_DOC_PATH))
+    return _resolve_commit_ref(
+        PHASE_538_SUBJECT_TOKEN,
+        required_paths=PHASE_538_REQUIRED_PATHS,
+        must_touch=str(PHASE_538_DOC_PATH),
+        present_error='phase_538_commit_subject_present_but_no_qualifying_sim_commit',
+        missing_error='phase_538_commit_not_present_in_local_history',
+    )
 
 
 def _resolve_phase_541_commit_ref() -> str:
-    return _resolve_commit_ref(PHASE_541_SUBJECT_TOKEN, required_paths=EXACT_REQUIRED_MAIN_PATHS, must_touch=str(DECISION_LOG_PATH))
+    return _resolve_commit_ref(
+        PHASE_541_SUBJECT_TOKEN,
+        required_paths=EXACT_REQUIRED_MAIN_PATHS,
+        must_touch=str(DECISION_LOG_PATH),
+        present_error='phase_541_commit_subject_present_but_no_qualifying_ratification_commit',
+        missing_error='phase_541_commit_not_present_in_local_history',
+    )
 
 
 def test_evidence_artifact_contains_required_headings() -> None:

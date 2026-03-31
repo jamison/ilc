@@ -45,8 +45,11 @@ Window 545+ carry-forwards are:
 
 Window 545+ must decide epoch-boundary commit semantics for `centrality_delta` accumulation
 before CDL-060 gossip runtime design begins.
-Phase 542 aligned `recommended_decay_floor = 0.05` with `U_FLOOR = 0.05`, but a general
-cross-metric signal-floor policy remains a Window 545+ carry-forward.
+Phase 542 aligned `recommended_decay_floor = 0.05` with `U_FLOOR = 0.05`, but Window 545+
+must preserve the invariant `recommended_decay_floor >= recommended_u_floor` or document any
+deliberate deviation.
+Window 545+ must also state attribution-cap application at the passive-ECU output layer and
+make the direct authorship reward baseline explicit when proving authorship primacy.
 CDL-053 remains reserved and unopened.
 
 ## 6. Snapshot isolation verification
