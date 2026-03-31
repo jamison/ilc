@@ -45,6 +45,8 @@ machine proof reproducible rather than ad hoc.
   governance.
 - Packaging target for the first three-machine testbed is `venv + systemd`.
 - Static peer configuration format for v1 is JSON.
+- NDJSON remains the format for append-only event logs and test traces, not for
+  static operator configuration.
 - HTTP/2 fallback is enabled only through an explicit operator config switch in
   this window; automatic fallback is deferred to a later hardening tranche.
 
@@ -118,6 +120,9 @@ Unlocks for the later orchestration redesign:
 - Stable adapter API for send/receive.
 - Explicit startup contract for transport listeners.
 - A black-box smoke harness that can be preserved while internals are refactored.
+- Enough runtime separation that a fuller node-integrated D2d runtime can later
+  replace the wrapper without rewriting peer-config, genesis, or test harness
+  expectations.
 
 ### 4.2 Packaging and genesis deliverables
 
@@ -307,6 +312,14 @@ three-machine milestone:
 - automatic fallback from HTTP/3 to HTTP/2
 - richer peer-registry operations
 - more polished genesis/bootstrap ceremony
+
+Expected prerequisites for those later upgrades:
+- fuller orchestration: stable transport adapter API, stable startup contract,
+  deterministic smoke harness, and separated config/runtime boundaries
+- mutual TLS: certificate issuance flow, trust-store distribution, peer identity
+  binding, rotation procedure, and negative-path tests for handshake failures
+- automatic fallback: deterministic downgrade policy, explicit operator-visible
+  markers, and tests proving that fallback does not hide transport regressions
 
 Recommended release framing:
 - RC0 infrastructure proof: after Window 565-574.
