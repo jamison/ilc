@@ -30,7 +30,7 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0008](ADR_0008_Node_Usefulness_vs_Governance_Weight_and_Genesis_Dilution.md) | Node Usefulness vs Governance Weight and Genesis Dilution | Proposed |
 | [ADR-0009](ADR_0009_Four_Layer_Protocol_Native_Bundle_Distribution.md) | Four-Layer Protocol-Native Bundle Distribution Architecture | Proposed |
 | [ADR-0010](ADR_0010_Communication_Plane_Separation_and_Performance_Boundaries.md) | Communication Plane Separation and Performance Boundaries | Proposed |
-| [ADR-0011](ADR_0011_Native_P2P_Transport_Baseline_for_Agent_Communication.md) | Native P2P Transport Baseline for Agent Communication | Proposed |
+| [ADR-0011](ADR_0011_Native_P2P_Transport_Baseline_for_Agent_Communication.md) | Native P2P Transport Baseline for Agent Communication | Accepted |
 | [ADR-0012](ADR_0012_ECU_ILC_Graph_Coupling_and_Anti_Reflexivity.md) | ECU-ILC-Graph Coupling and Anti-Reflexivity Contract | Proposed |
 | [ADR-0013](ADR_0013_External_Payment_Boundary_and_Third_Party_Independence.md) | External Payment Boundary and Third-Party Independence | Proposed |
 | [ADR-0014](ADR_0014_Identity_Sybil_and_Admission_Control_Envelope.md) | Identity, Sybil, and Admission Control Envelope | Proposed |
@@ -40,3 +40,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0019](ADR_0019_Graph_Native_Governance_Compilation_Boundary.md) | Graph-Native Governance Compilation Boundary | Proposed |
 | [ADR-0020](ADR_0020_Knowledge_Node_First_Design_Principle.md) | Knowledge-Node-First Design Principle | Proposed |
 | [ADR-0022](ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md) | Local-First Private Use and Publication-Bound Economics | Proposed |
+| [ADR-0025](ADR_0025_D2d_HTTP_Gossip_Transport_Binding.md) | D2d HTTP/3 Gossip Transport Binding | Accepted |
