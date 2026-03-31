@@ -86,14 +86,24 @@ def test_sim_document_contains_required_governance_tokens() -> None:
 
 def test_sim_document_contains_all_calibration_constants() -> None:
     text = _read(SIM_DOC_PATH)
-    for constant in REQUIRED_CONSTANTS:
-        assert constant in text
+    passive_rate_match = re.search(r'recommended_passive_attribution_rate:\s*([0-9]+(?:\.[0-9]+)?)', text)
+    decay_floor_match = re.search(r'recommended_decay_floor:\s*([0-9]+(?:\.[0-9]+)?)', text)
+    attribution_cap_match = re.search(r'recommended_attribution_cap:\s*([0-9]+(?:\.[0-9]+)?)', text)
+    assert passive_rate_match is not None
+    assert decay_floor_match is not None
+    assert attribution_cap_match is not None
+    assert float(passive_rate_match.group(1)) == 0.20
+    assert float(decay_floor_match.group(1)) == 0.05
+    assert float(attribution_cap_match.group(1)) == 0.15
 
 
 def test_sim_document_consumes_phase_527_upstream_constants() -> None:
     text = _read(SIM_DOC_PATH)
     assert 'recommended_u_floor = 0.05' in text
     assert 'recommended_gamma = 0.15' in text
+    assert 'recommended_decay_floor >= recommended_u_floor' in text
+    assert 'direct originator reward baseline before passive sharing' in text
+    assert 'passive_ecu = min(base_reward * passive_attribution_rate * centrality_score * m_i, base_reward * attribution_cap)' in text
 
 
 def test_live_cdl_inventory_preserves_cdl_060_and_no_new_rows() -> None:

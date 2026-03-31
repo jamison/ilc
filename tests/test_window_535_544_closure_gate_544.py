@@ -191,7 +191,8 @@ def test_window_handoff_artifact_exists_and_contains_required_headings_and_token
         'Passive ECU attribution runtime is a Window 545+ carry-forward.',
         'Multi-hop centrality remains a Window 545+ carry-forward.',
         'Window 545+ must decide epoch-boundary commit semantics for `centrality_delta` accumulation',
-        'A general signal-floor policy remains a Window 545+ carry-forward beyond the aligned `0.05`',
+        'Window 545+ must preserve the invariant `recommended_decay_floor >= recommended_u_floor`',
+        'Window 545+ must state attribution-cap application at the passive-ECU output layer',
     ):
         assert token in text
 

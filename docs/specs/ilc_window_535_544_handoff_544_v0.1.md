@@ -41,8 +41,10 @@ Passive ECU attribution runtime is a Window 545+ carry-forward.
 Multi-hop centrality remains a Window 545+ carry-forward.
 Window 545+ must decide epoch-boundary commit semantics for `centrality_delta` accumulation
 before the CDL-060 gossip runtime is designed.
-A general signal-floor policy remains a Window 545+ carry-forward beyond the aligned `0.05`
-floor used in Phase 542.
+Window 545+ must preserve the invariant `recommended_decay_floor >= recommended_u_floor` or
+document any deliberate deviation from the aligned `0.05` floor used in Phase 542.
+Window 545+ must state attribution-cap application at the passive-ECU output layer and make
+the direct authorship reward baseline explicit when proving authorship primacy.
 
 ## 6. Closure gate result
 

@@ -31,7 +31,8 @@ COHERENCE_TOKENS = (
     'sim_centrality_02_sufficient',
     'sim_passive_ecu_01_sufficient',
     'Window 545+ must decide epoch-boundary commit semantics for `centrality_delta` accumulation',
-    'cross-metric signal-floor policy remains a Window 545+ carry-forward.',
+    'must preserve the invariant `recommended_decay_floor >= recommended_u_floor`',
+    'must also state attribution-cap application at the passive-ECU output layer',
     'CDL-053 remains reserved and unopened.',
 )
 
