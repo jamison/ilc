@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-03-31
-**Accepted:** 2026-03-31 (post-Phase 547 architectural review; Codex review confirmed architecture sound; ADR-0011 accepted concurrently)
+**Accepted:** 2026-03-31 (post-Phase 547 architectural review; Codex review confirmed architecture sound; ADR-0011 confirmed as the accepted baseline during the same review)
 **Context:** Window 555-564 transport binding design; Post-Phase 547 architectural review
 **Supersedes:** Nothing (extends CDL-024 and ADR-0011 for the gossip sub-layer)
 **See also:** ADR-0011 (Native P2P Transport Baseline), CDL-024 (wire transport), CDL-039 (topology privacy), CDL-060 (gossip centrality extension), `docs/research/ilc_http_gossip_transport_x402_context_v0.1.md`
@@ -38,7 +38,7 @@ POST /ilc/gossip/{message_type}  HTTP/3
 ILC-Gossip-Type:  {centrality_delta | ...}
 ILC-Channel:      <opaque-value>
 ILC-Epoch:        <validation_epoch_number>
-ILC-Hop-Count:    <hop_depth>
+ILC-Hop-Count:    1  (fixed by CDL-060; future multi-hop requires a new CDL lane)
 ILC-Signature:    <base64-encoded signed envelope>
 Content-Type:     application/cbor
 
