@@ -60,9 +60,10 @@ class GossipPeerRegistry:
     """Static v1 peer registry — no dynamic discovery."""
 
     def __init__(self, peers: list[str]) -> None:
-        if len(peers) > MAX_PEERS:
+        normalized_peers = list(dict.fromkeys(validate_peer_endpoint(peer) for peer in peers))
+        if len(normalized_peers) > MAX_PEERS:
             raise ValueError('peer_registry_exceeds_max_peers')
-        self._peers = [validate_peer_endpoint(peer) for peer in peers]
+        self._peers = normalized_peers
 
     def peer_count(self) -> int:
         return len(self._peers)
