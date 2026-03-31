@@ -219,6 +219,7 @@ def test_gate_snapshot_override_env_is_honoured(tmp_path: Path) -> None:
     payload = json.loads(override_path.read_text(encoding='utf-8'))
     assert payload['phase'] == 564
     assert payload['window'] == '555-564'
+    assert payload['verdict'] == 'pass'
     assert payload['state'] == 'pass'
     assert _monitoring_state() == before
 
@@ -242,7 +243,7 @@ def test_handoff_artifact_exists_with_required_headings_and_tokens() -> None:
         '## 2. CDL-061 ratification record',
         '## 3. Transport layer dep chain (final state)',
         '## 4. Module inventory (new files committed in this window)',
-        '## 5. Canary probe inventory (final state - 8 probes)',
+        '## 5. Canary probe inventory (final state — 8 probes)',
         '## 6. Open items carried forward to Window 565-574',
         '## 7. Context capsule reference',
     ):

@@ -47,7 +47,7 @@ New `ilc_core/` modules committed in Window 555-564:
 - `ilc_core/network/d2d/gossip_transport.py` — Phase 558, version `gossip_transport_runtime_558.v0.1`
 - `ilc_core/network/d2d/gossip_peer_registry.py` — Phase 562, version `gossip_peer_registry_562.v0.1`
 
-## 5. Canary probe inventory (final state - 8 probes)
+## 5. Canary probe inventory (final state — 8 probes)
 
 The final mutation canary inventory is 8 probes:
 
