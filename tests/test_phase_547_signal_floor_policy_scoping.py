@@ -30,6 +30,16 @@ def _read(path: Path) -> str:
     return path.read_text(encoding='utf-8')
 
 
+def _commit_text(path_str: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ['git', 'show', f'{commit_ref}:{path_str}'],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
         ['git', 'show', '--name-only', '--pretty=', commit_ref],
@@ -87,14 +97,15 @@ def test_scoping_document_enumerates_all_four_expected_floor_sources() -> None:
 
 
 def test_live_cdl_inventory_preserves_required_statuses_and_absences() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    commit_ref = _resolve_phase_547_commit_ref()
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows['CDL-036']['status'] == 'ratified'
     assert rows['CDL-039']['status'] == 'ratified'
     assert rows['CDL-052']['status'] == 'ratified'
     assert rows['CDL-059']['status'] == 'ratified'
     assert rows['CDL-060']['status'] == 'ratified'
     assert 'CDL-053' not in rows
-    # The Phase-547 CDL-061 absent check will be historicalized when CDL-061 opens.
+    # The Phase-547 CDL-061 absent check is a historical prelock reference.
     assert 'CDL-061' not in rows
 
 
