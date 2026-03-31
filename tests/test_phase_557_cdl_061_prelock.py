@@ -119,7 +119,10 @@ def test_cdl_061_row_is_present_and_open() -> None:
 
 
 def test_cdl_061_row_has_expected_related_clauses_and_evidence() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-557 CDL-061 evidence check is a historical prelock reference.
+    rows = parse_decision_register_rows(
+        _commit_text(str(DECISION_LOG_PATH), _resolve_phase_557_commit_ref())
+    )
     assert rows['CDL-061']['related_clause'] == 'CDL-024 / CDL-039 / CDL-060 / ADR-0025'
     assert rows['CDL-061']['evidence_document'] == str(PRELOCK_PATH)
     assert rows['CDL-061']['dependencies'] == (

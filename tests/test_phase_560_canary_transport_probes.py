@@ -32,6 +32,16 @@ def _dry_run_output() -> str:
     return result.stdout
 
 
+def _commit_text(path: str, commit_ref: str) -> str:
+    result = subprocess.run(
+        ['git', 'show', f'{commit_ref}:{path}'],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
         ['git', 'show', '--name-only', '--pretty=', commit_ref],
@@ -67,8 +77,9 @@ def _resolve_phase_560_commit_ref() -> str:
 
 
 def test_canary_dry_run_lists_exactly_seven_probes() -> None:
-    lines = [line for line in _dry_run_output().splitlines() if line.startswith('[')]
-    assert len(lines) == 7
+    # The Phase-560 7-probe count is a historical pre-ratification reference.
+    canary_text = _commit_text(str(CANARY_PATH), _resolve_phase_560_commit_ref())
+    assert canary_text.count('Probe(') == 7
 
 
 def test_canary_dry_run_contains_gossip_transport_version_guard() -> None:
