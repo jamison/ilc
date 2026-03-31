@@ -109,7 +109,10 @@ def _parent_commit(commit_ref: str) -> str:
 
 
 def test_cdl_061_row_is_present_and_open() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # The Phase-557 CDL-061 open-state check is a historical prelock reference.
+    rows = parse_decision_register_rows(
+        _commit_text(str(DECISION_LOG_PATH), _resolve_phase_557_commit_ref())
+    )
     assert rows['CDL-061']['status'] == 'open'
     assert 'ratified_phase' not in rows['CDL-061']
     assert 'ratified_date' not in rows['CDL-061']
