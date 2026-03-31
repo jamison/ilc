@@ -46,10 +46,12 @@ Window 545-554 closed the economic signal lane:
 
 Window 555-564 closed the transport-governance lane:
 - ADR-0025 accepted HTTP/3 over QUIC as production with HTTP/2 fallback
-- ADR-0023 recorded `recommended_decay_floor >= recommended_u_floor`
 - CDL-061 was opened, implemented against, and ratified
 - `gossip_transport.py` and `gossip_peer_registry.py` are now committed and tested
 - the mutation canary grew to 8 probes
+
+Window 555-564 also closed one cross-module administrative invariant:
+- ADR-0023 recorded `recommended_decay_floor >= recommended_u_floor`
 
 ### 1.3 Critical observation: protocol surface exists, deployment surface does not
 
