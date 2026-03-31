@@ -74,6 +74,15 @@ _TRANSPORT_FORBIDDEN_PREFIX = 'FORBIDDEN_HEADER_KEYS = frozenset({\n    "'
 _TRANSPORT_FORBIDDEN_OLD = 'creator_agent_id",'
 _TRANSPORT_FORBIDDEN_NEW = 'REMOVED_FOR_MUTATION",'
 
+# Probe 7 — gossip_transport_version_guard
+# Mutation: changes the Phase 558 transport runtime version constant.
+_TRANSPORT_VERSION_LINE = (
+    'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v0.1"'
+)
+_TRANSPORT_VERSION_MUTANT = (
+    'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v9.9"'
+)
+
 PROBES = (
     Probe(
         name="lineage_rotated_authority_guard",
@@ -154,6 +163,19 @@ PROBES = (
             "pytest",
             "-q",
             "tests/test_phase_559_gossip_transport_hardening.py::test_cdl_039_creator_agent_id_is_in_forbidden_set",
+        ),
+    ),
+    Probe(
+        name="gossip_transport_version_guard",
+        path=Path("ilc_core/network/d2d/gossip_transport.py"),
+        old_token=_TRANSPORT_VERSION_LINE,
+        new_token=_TRANSPORT_VERSION_MUTANT,
+        command=(
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_phase_558_gossip_transport_adapter.py::test_all_constants_have_exact_expected_values",
         ),
     ),
 )
