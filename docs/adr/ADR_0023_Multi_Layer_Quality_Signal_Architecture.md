@@ -235,3 +235,34 @@ per-fetch constant-time computation and proven convergence (Bahmani et al. 2010)
 - ILC CDL-036, CDL-V3, CDL-V7, CDL-049, ADM-001 v0.2, d2d/gossip.py, ADR-0016
 - Brin & Page (1998); Bonacich (1972); Scott Page (2007); Bahmani et al. (2010)
 - Arrow (1951); Condorcet (1785); List & Pettit (2002)
+
+## Signal Floor Cross-Module Invariant (Phase 556 addition)
+
+`recommended_decay_floor >= recommended_u_floor`
+
+Current values:
+- `recommended_decay_floor = 0.05` (Phase 542 calibration; `DECAY_FLOOR` in
+  `ilc_core/economics/passive_ecu_attribution_runtime.py`)
+- `recommended_u_floor = 0.05` (CDL-060 ratified lane; `U_FLOOR` in
+  `ilc_core/network/d2d/centrality_delta_gossip_runtime.py`)
+
+Governance basis:
+- `signal_floor_governance_adm_only`
+- `signal_floor_cross_module_invariant_documented_phase_556`
+
+Rationale:
+- If `U_FLOOR > recommended_decay_floor`, nodes would suppress gossip deltas that the passive
+  ECU attribution formula would otherwise treat as valid signals, producing an incoherent
+  attribution boundary between the gossip runtime and the economics lane.
+
+Enforcement:
+- The cross-module invariant is verified by inspection at each window where either floor
+  constant changes.
+- A future CDL may be warranted if the floors diverge; the escalation condition remains the
+  Phase 547 disposition token `signal_floor_cdl_warranted`.
+
+Forward note:
+- CDL-061 (Phase 557) does not alter `U_FLOOR`.
+- Phase 558 transport adapter implementation does not alter `U_FLOOR`.
+- The invariant remains stable through the end of Window 555-564.
+
