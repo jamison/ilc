@@ -68,6 +68,12 @@ _CDL060_GOSSIP_VERSION_MUTANT = (
 _CDL060_D2D_DEPENDENCY_LINE = 'D2D_GOSSIP_DEPENDENCY = "d2d_gossip_382.v0.1"'
 _CDL060_D2D_DEPENDENCY_MUTANT = 'D2D_GOSSIP_DEPENDENCY = "d2d_gossip_999.v0.1"'
 
+# Probe 6 — gossip_transport_cdl_039_forbidden_key_guard
+# Mutation: removes "creator_agent_id" from FORBIDDEN_HEADER_KEYS set.
+_TRANSPORT_FORBIDDEN_PREFIX = 'FORBIDDEN_HEADER_KEYS = frozenset({\n    "'
+_TRANSPORT_FORBIDDEN_OLD = 'creator_agent_id",'
+_TRANSPORT_FORBIDDEN_NEW = 'REMOVED_FOR_MUTATION",'
+
 PROBES = (
     Probe(
         name="lineage_rotated_authority_guard",
@@ -135,6 +141,19 @@ PROBES = (
             "pytest",
             "-q",
             "tests/test_phase_548_centrality_delta_gossip_runtime.py::test_exact_constant_values_are_locked",
+        ),
+    ),
+    Probe(
+        name="gossip_transport_cdl_039_forbidden_key_guard",
+        path=Path("ilc_core/network/d2d/gossip_transport.py"),
+        old_token=_TRANSPORT_FORBIDDEN_PREFIX + _TRANSPORT_FORBIDDEN_OLD,
+        new_token=_TRANSPORT_FORBIDDEN_PREFIX + _TRANSPORT_FORBIDDEN_NEW,
+        command=(
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_phase_559_gossip_transport_hardening.py::test_cdl_039_creator_agent_id_is_in_forbidden_set",
         ),
     ),
 )
