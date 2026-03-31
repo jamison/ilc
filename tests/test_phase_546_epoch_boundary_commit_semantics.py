@@ -1,0 +1,116 @@
+from __future__ import annotations
+
+import subprocess
+from pathlib import Path
+
+from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
+
+DECISION_DOC_PATH = Path('docs/specs/ilc_epoch_boundary_commit_semantics_decision_546_v0.1.md')
+DECISION_LOG_PATH = Path('docs/specs/ilc_constitutional_decision_log_v0.1.md')
+TEST_PATH = Path('tests/test_phase_546_epoch_boundary_commit_semantics.py')
+PHASE_546_SUBJECT_TOKEN = 'phase 546 epoch-boundary commit semantics'
+EXACT_REQUIRED_MAIN_PATHS = {
+    str(DECISION_DOC_PATH),
+    str(TEST_PATH),
+}
+REQUIRED_HEADINGS = (
+    '## 1. Decision scope',
+    '## 2. Model A: write-through per message',
+    '## 3. Model B: epoch-boundary atomic commit',
+    '## 4. CDL-039 privacy analysis',
+    '## 5. Failure-recovery analysis',
+    '## 6. Selected model and rationale',
+    '## 7. Phase 548 unblock declaration',
+)
+MODEL_TOKENS = (
+    'accumulation_model_epoch_boundary_atomic',
+    'accumulation_model_write_through',
+)
+REQUIRED_TOKENS = (
+    'epoch_boundary_commit_semantics_decision',
+    'cdl_060_gossip_runtime_design_unblocked',
+)
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding='utf-8')
+
+
+def _changed_paths_for_commit(commit_ref: str) -> set[str]:
+    result = subprocess.run(
+        ['git', 'show', '--name-only', '--pretty=', commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
+def _resolve_phase_546_commit_ref() -> str:
+    result = subprocess.run(
+        ['git', 'log', '--format=%H%x09%s'],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    matching: list[str] = []
+    for line in result.stdout.splitlines():
+        if '\t' not in line:
+            continue
+        commit_hash, subject = line.split('\t', 1)
+        if PHASE_546_SUBJECT_TOKEN not in subject.lower():
+            continue
+        matching.append(commit_hash)
+    for commit_ref in matching:
+        if _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS:
+            return commit_ref
+    if matching:
+        raise AssertionError('phase_546_commit_subject_present_but_no_qualifying_decision_commit')
+    raise AssertionError('phase_546_commit_not_present_in_local_history')
+
+
+def test_decision_document_exists_and_contains_required_headings() -> None:
+    text = _read(DECISION_DOC_PATH)
+    for heading in REQUIRED_HEADINGS:
+        assert heading in text
+
+
+def test_decision_document_contains_required_governance_tokens() -> None:
+    text = _read(DECISION_DOC_PATH)
+    for token in REQUIRED_TOKENS:
+        assert token in text
+
+
+def test_decision_document_contains_exactly_one_model_selection_token() -> None:
+    text = _read(DECISION_DOC_PATH)
+    present = [token for token in MODEL_TOKENS if token in text]
+    assert len(present) == 1
+
+
+def test_decision_document_contains_accumulation_model_assignment_string() -> None:
+    text = _read(DECISION_DOC_PATH)
+    assert 'ACCUMULATION_MODEL = "epoch_boundary_atomic"' in text or 'ACCUMULATION_MODEL = "write_through"' in text
+
+
+def test_live_cdl_inventory_preserves_required_statuses_and_absences() -> None:
+    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    assert rows['CDL-036']['status'] == 'ratified'
+    assert rows['CDL-039']['status'] == 'ratified'
+    assert rows['CDL-052']['status'] == 'ratified'
+    assert rows['CDL-059']['status'] == 'ratified'
+    assert rows['CDL-060']['status'] == 'ratified'
+    assert 'CDL-053' not in rows
+    # The Phase-546 CDL-061 absent check will be historicalized when CDL-061 opens.
+    assert 'CDL-061' not in rows
+
+
+def test_phase_546_main_commit_touches_expected_paths_only() -> None:
+    commit_ref = _resolve_phase_546_commit_ref()
+    assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS
+
+
+def test_phase_546_main_commit_does_not_touch_cdl_log_or_any_ilc_core_path() -> None:
+    commit_ref = _resolve_phase_546_commit_ref()
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert str(DECISION_LOG_PATH) not in changed_paths
+    assert not any(path.startswith('ilc_core/') for path in changed_paths)
