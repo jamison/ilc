@@ -54,6 +54,20 @@ _CDL026_ROW_BASE = (
 _CDL026_OLD_SUFFIX = "3 |"
 _CDL026_NEW_SUFFIX = "7 |"
 
+# Probe 4 — centrality_delta_gossip_version_guard
+# Mutation: changes the ratified Phase 548 runtime version constant.
+_CDL060_GOSSIP_VERSION_LINE = (
+    'CDL_060_GOSSIP_RUNTIME_VERSION = "cdl_060_gossip_runtime_548.v0.1"'
+)
+_CDL060_GOSSIP_VERSION_MUTANT = (
+    'CDL_060_GOSSIP_RUNTIME_VERSION = "cdl_060_gossip_runtime_548.v9.9"'
+)
+
+# Probe 5 — centrality_delta_gossip_d2d_dependency_guard
+# Mutation: changes the D2d dependency constant away from the ratified Phase 382 token.
+_CDL060_D2D_DEPENDENCY_LINE = 'D2D_GOSSIP_DEPENDENCY = "d2d_gossip_382.v0.1"'
+_CDL060_D2D_DEPENDENCY_MUTANT = 'D2D_GOSSIP_DEPENDENCY = "d2d_gossip_999.v0.1"'
+
 PROBES = (
     Probe(
         name="lineage_rotated_authority_guard",
@@ -95,6 +109,32 @@ PROBES = (
             "pytest",
             "-q",
             "tests/test_cdl_030_ratification_277.py::test_non_target_rows_not_ratified_in_phase_277",
+        ),
+    ),
+    Probe(
+        name="centrality_delta_gossip_version_guard",
+        path=Path("ilc_core/network/d2d/centrality_delta_gossip_runtime.py"),
+        old_token=_CDL060_GOSSIP_VERSION_LINE,
+        new_token=_CDL060_GOSSIP_VERSION_MUTANT,
+        command=(
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_phase_548_centrality_delta_gossip_runtime.py::test_exact_constant_values_are_locked",
+        ),
+    ),
+    Probe(
+        name="centrality_delta_gossip_d2d_dependency_guard",
+        path=Path("ilc_core/network/d2d/centrality_delta_gossip_runtime.py"),
+        old_token=_CDL060_D2D_DEPENDENCY_LINE,
+        new_token=_CDL060_D2D_DEPENDENCY_MUTANT,
+        command=(
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_phase_548_centrality_delta_gossip_runtime.py::test_exact_constant_values_are_locked",
         ),
     ),
 )

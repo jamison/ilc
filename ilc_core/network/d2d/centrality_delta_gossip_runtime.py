@@ -29,6 +29,8 @@ CDL_052_DEPENDENCY = "cdl_052_ratified_466.v0.1"
 ACCUMULATION_MODEL = "epoch_boundary_atomic"
 MAX_FANOUT = 3
 U_FLOOR = 0.05
+EPOCH_BUFFER_ZEROED_EVENT = "epoch_buffer_zeroed"
+EPOCH_BUFFER_ZEROED_REASON = "crash_recovery_graceful_zero"
 
 assert _CDL_052_CHECK == CDL_052_DEPENDENCY, f"dep chain mismatch: {_CDL_052_CHECK}"
 assert _D2D_GOSSIP_CHECK == D2D_GOSSIP_DEPENDENCY, f"dep chain mismatch: {_D2D_GOSSIP_CHECK}"
@@ -65,6 +67,15 @@ def _normalized_delta(delta: float) -> float:
     if delta < U_FLOOR:
         return 0.0
     return round(delta, 12)
+
+
+def _validate_channel(value: Any) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("cdl_060_channel_opacity_violation: channel_must_be_opaque")
+    try:
+        return str(validate_gossip_channel(value))
+    except Exception as exc:  # pragma: no cover - normalized to the ratified token
+        raise ValueError("cdl_060_channel_opacity_violation: channel_must_be_opaque") from exc
 
 
 def _state_event_log(state: dict[str, Any]) -> list[dict[str, Any]]:
@@ -117,13 +128,7 @@ def validate_centrality_delta_message(msg: dict) -> bool:
     if fanout < 1 or fanout > MAX_FANOUT:
         raise ValueError("cdl_060_fanout_violation: exceeds_bounded_fanout")
 
-    channel = msg_map.get("channel")
-    if not isinstance(channel, str) or channel == "":
-        raise ValueError("cdl_060_channel_opacity_violation: channel_must_be_opaque")
-    try:
-        validate_gossip_channel(channel)
-    except Exception as exc:  # pragma: no cover - normalized to the ratified token
-        raise ValueError("cdl_060_channel_opacity_violation: channel_must_be_opaque") from exc
+    _validate_channel(msg_map.get("channel"))
 
     return True
 
@@ -174,9 +179,9 @@ def commit_epoch_buffer(epoch: int, state: dict) -> dict:
         zeroed_epochs.remove(normalized_epoch)
         event_log.append(
             {
-                "event": "epoch_buffer_zeroed",
+                "event": EPOCH_BUFFER_ZEROED_EVENT,
                 "epoch": normalized_epoch,
-                "reason": "crash_recovery_graceful_zero",
+                "reason": EPOCH_BUFFER_ZEROED_REASON,
             }
         )
         return state_map
