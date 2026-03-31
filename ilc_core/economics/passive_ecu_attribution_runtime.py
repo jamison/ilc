@@ -42,7 +42,9 @@ def compute_passive_ecu(base_reward: float, centrality_score: float, q_i: float)
     if isinstance(base_reward, bool) or not isinstance(base_reward, (int, float)):
         raise ValueError("base_reward_must_be_non_negative_float")
     normalized_base_reward = float(base_reward)
-    if normalized_base_reward <= 0.0:
+    if normalized_base_reward < 0.0:
+        raise ValueError("base_reward_must_be_non_negative_float")
+    if normalized_base_reward == 0.0:
         return 0.0
 
     if isinstance(centrality_score, bool) or not isinstance(centrality_score, (int, float)):
