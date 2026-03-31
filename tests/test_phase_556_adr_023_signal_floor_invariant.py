@@ -19,8 +19,9 @@ def _read(path: Path) -> str:
 
 
 def _section_text(text: str) -> str:
-    start = text.index(SECTION_HEADING)
-    return text[start:]
+    if SECTION_HEADING not in text:
+        raise AssertionError('phase_556_invariant_section_missing')
+    return text.split(SECTION_HEADING, 1)[1]
 
 
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
