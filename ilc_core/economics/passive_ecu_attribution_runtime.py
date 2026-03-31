@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
     CDL_060_GOSSIP_RUNTIME_VERSION as _CDL_060_GOSSIP_RUNTIME_CHECK,
 )
@@ -31,7 +33,7 @@ def quality_factor(q_i: float) -> float:
     if isinstance(q_i, bool) or not isinstance(q_i, (int, float)):
         raise ValueError("q_i_must_be_float_in_unit_interval")
     normalized = float(q_i)
-    if normalized < 0.0 or normalized > 1.0:
+    if not math.isfinite(normalized) or normalized < 0.0 or normalized > 1.0:
         raise ValueError("q_i_must_be_float_in_unit_interval")
     return round(1.0 + GAMMA * (2.0 * normalized - 1.0), 12)
 
@@ -42,7 +44,7 @@ def compute_passive_ecu(base_reward: float, centrality_score: float, q_i: float)
     if isinstance(base_reward, bool) or not isinstance(base_reward, (int, float)):
         raise ValueError("base_reward_must_be_non_negative_float")
     normalized_base_reward = float(base_reward)
-    if normalized_base_reward < 0.0:
+    if not math.isfinite(normalized_base_reward) or normalized_base_reward < 0.0:
         raise ValueError("base_reward_must_be_non_negative_float")
     if normalized_base_reward == 0.0:
         return 0.0
@@ -50,7 +52,11 @@ def compute_passive_ecu(base_reward: float, centrality_score: float, q_i: float)
     if isinstance(centrality_score, bool) or not isinstance(centrality_score, (int, float)):
         raise ValueError("centrality_score_must_be_non_negative_float")
     normalized_centrality = float(centrality_score)
-    if normalized_centrality < 0.0:
+    if (
+        not math.isfinite(normalized_centrality)
+        or normalized_centrality < 0.0
+        or normalized_centrality > 1.0
+    ):
         raise ValueError("centrality_score_must_be_non_negative_float")
     if normalized_centrality < DECAY_FLOOR:
         return 0.0
