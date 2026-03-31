@@ -74,7 +74,7 @@ def _validate_channel(value: Any) -> str:
         raise ValueError("cdl_060_channel_opacity_violation: channel_must_be_opaque")
     try:
         return str(validate_gossip_channel(value))
-    except Exception as exc:  # pragma: no cover - normalized to the ratified token
+    except ValueError as exc:  # pragma: no cover - normalized to the ratified token
         raise ValueError("cdl_060_channel_opacity_violation: channel_must_be_opaque") from exc
 
 

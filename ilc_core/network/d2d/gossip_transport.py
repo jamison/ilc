@@ -35,6 +35,7 @@ FORBIDDEN_HEADER_KEYS = frozenset({
     "ILC-Creator-Agent-Id",
     "ILC-Node-Id",
 })
+_FORBIDDEN_HEADER_KEYS_LOWER = frozenset(key.lower() for key in FORBIDDEN_HEADER_KEYS)
 ALLOWED_CONTENT_TYPES = frozenset({"application/cbor", "application/json"})
 HTTP_STATUS_BUFFERED = 202
 HTTP_STATUS_SUPPRESSED = 204
@@ -68,7 +69,7 @@ def _validated_channel(value: Any) -> str:
         raise ValueError("cdl_039_channel_must_be_opaque")
     try:
         return str(validate_gossip_channel(value))
-    except Exception as exc:  # pragma: no cover - normalized to the ratified token
+    except ValueError as exc:  # pragma: no cover - normalized to the ratified token
         raise ValueError("cdl_039_channel_must_be_opaque") from exc
 
 
@@ -80,13 +81,17 @@ def _validated_content_type(value: Any) -> str:
 
 
 def _canonical_forbidden_match(key: str) -> bool:
-    lowered = key.lower()
-    return lowered in {
-        "creator_agent_id",
-        "node_id",
-        "ilc-creator-agent-id",
-        "ilc-node-id",
-    }
+    return key.lower() in _FORBIDDEN_HEADER_KEYS_LOWER
+
+
+def _validated_epoch_header(value: Any) -> int:
+    try:
+        normalized = int(str(value).strip())
+    except (TypeError, ValueError) as exc:
+        raise ValueError("epoch_must_be_integer") from exc
+    if normalized < 0:
+        raise ValueError("epoch_must_be_non_negative")
+    return normalized
 
 
 def gossip_request_path(message_type: str) -> str:
@@ -159,6 +164,6 @@ def validate_gossip_headers(headers: dict[str, str]) -> bool:
         headers["ILC-Signature"],
         "gossip_signature_must_be_non_empty_string",
     )
-    int(str(headers["ILC-Epoch"]).strip())
+    _validated_epoch_header(headers["ILC-Epoch"])
 
     return True
