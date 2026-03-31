@@ -98,10 +98,20 @@ def test_sequence_lock_document_contains_required_tokens() -> None:
 
 def test_phase_table_contains_exactly_ten_rows_for_phases_555_564_in_order() -> None:
     text = _read(SEQ_LOCK_PATH)
-    rows = tuple(re.findall(r'^\| 55\d .*$', text, flags=re.MULTILINE)) + tuple(
-        re.findall(r'^\| 56[0-4] .*$', text, flags=re.MULTILINE)
-    )
-    assert rows == EXPECTED_PHASE_ROWS
+    rows: list[str] = []
+    in_phase_table = False
+    for line in text.splitlines():
+        if line == '| Phase | Description | Primary output | Sensitive? |':
+            in_phase_table = True
+            continue
+        if not in_phase_table:
+            continue
+        if line.startswith('| 55') or line.startswith('| 56'):
+            rows.append(line)
+            continue
+        if rows:
+            break
+    assert tuple(rows) == EXPECTED_PHASE_ROWS
 
 
 def test_carry_forward_section_enumerates_all_four_required_items() -> None:
