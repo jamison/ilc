@@ -10,7 +10,7 @@ RUNTIME_PATH = Path('ilc_core/network/d2d/centrality_delta_gossip_runtime.py')
 TEST_PATH = Path('tests/test_phase_548_centrality_delta_gossip_runtime.py')
 DECISION_LOG_PATH = Path('docs/specs/ilc_constitutional_decision_log_v0.1.md')
 PHASE_546_DOC_PATH = Path('docs/specs/ilc_epoch_boundary_commit_semantics_decision_546_v0.1.md')
-PHASE_548_SUBJECT_TOKEN = 'phase 548 cdl-060 gossip runtime'
+PHASE_548_SUBJECT_TOKEN = 'phase 548 cdl-060 centrality delta gossip runtime'
 EXACT_REQUIRED_MAIN_PATHS = {
     str(RUNTIME_PATH),
     str(TEST_PATH),
