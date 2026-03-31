@@ -90,7 +90,7 @@ def test_module_imports_without_error_and_exposes_constants() -> None:
 
 def test_all_constants_have_exact_expected_values() -> None:
     assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == 'gossip_transport_runtime_558.v0.1'
-    assert gossip_transport.CDL_061_DEPENDENCY == 'cdl_061_prelock_557.v0.1'
+    assert gossip_transport.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
     assert gossip_transport.CDL_039_DEPENDENCY == 'cdl_039_ratified_379.v0.1'
     assert gossip_transport.CDL_060_GOSSIP_RUNTIME_DEPENDENCY == 'cdl_060_gossip_runtime_548.v0.1'
     assert gossip_transport.HOP_COUNT_SINGLE == 1

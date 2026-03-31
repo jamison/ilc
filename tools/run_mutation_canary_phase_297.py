@@ -83,6 +83,11 @@ _TRANSPORT_VERSION_MUTANT = (
     'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v9.9"'
 )
 
+# Probe 8 — gossip_transport_cdl_061_dep_guard
+# Mutation: changes CDL-061 dep constant away from the ratified Phase 561 token.
+_TRANSPORT_CDL061_DEP_LINE = 'CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"'
+_TRANSPORT_CDL061_DEP_MUTANT = 'CDL_061_DEPENDENCY = "cdl_061_ratified_999.v0.1"'
+
 PROBES = (
     Probe(
         name="lineage_rotated_authority_guard",
@@ -170,6 +175,19 @@ PROBES = (
         path=Path("ilc_core/network/d2d/gossip_transport.py"),
         old_token=_TRANSPORT_VERSION_LINE,
         new_token=_TRANSPORT_VERSION_MUTANT,
+        command=(
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_phase_558_gossip_transport_adapter.py::test_all_constants_have_exact_expected_values",
+        ),
+    ),
+    Probe(
+        name="gossip_transport_cdl_061_dep_guard",
+        path=Path("ilc_core/network/d2d/gossip_transport.py"),
+        old_token=_TRANSPORT_CDL061_DEP_LINE,
+        new_token=_TRANSPORT_CDL061_DEP_MUTANT,
         command=(
             sys.executable,
             "-m",
