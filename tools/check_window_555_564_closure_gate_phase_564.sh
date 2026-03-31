@@ -74,7 +74,7 @@ except Exception:
     print('blocked|snapshot_read_error')
     raise SystemExit(0)
 
-verdict = str(payload.get('verdict', 'pass')).strip().lower() or 'pass'
+verdict = str(payload.get('verdict', payload.get('state', 'pass'))).strip().lower() or 'pass'
 detail = str(payload.get('detail', 'snapshot_verdict_not_provided')).strip() or 'snapshot_verdict_not_provided'
 if verdict not in {'pass', 'conditional', 'blocked'}:
     print('blocked|snapshot_verdict_invalid')
@@ -145,6 +145,7 @@ path.parent.mkdir(parents=True, exist_ok=True)
 payload = {
     'phase': 564,
     'window': '555-564',
+    'verdict': sys.argv[2],
     'state': sys.argv[2],
     'detail': sys.argv[3],
 }
