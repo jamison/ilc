@@ -27,18 +27,18 @@ RC0.1 is considered ready only when all of the following are true:
 |---|---|---|---|
 | Install shape | A fresh node can be installed into the standard path layout with no hidden local assumptions. | Operator playbook + scripted install flow + successful fresh-host proof | in_progress |
 | Config shape | Node config, genesis reference, environment file, and TLS material can be rendered and staged deterministically. | `tools/testbed/render_testbed_configs.py`, `tools/testbed/push_configs.sh`, config artifacts | in_progress |
-| Bootstrap inventory | Approved peers are represented in a curated inventory that can be rendered, verified, and distributed. | `testbed/bootstrap_peers.json`, render/verify scripts, bootstrap model spec | in_progress |
-| Candidate separation | Candidate peer discovery data is separated from approved bootstrap state. | explicit candidate and override artifacts with documented promotion rules | open |
+| Bootstrap inventory | Approved peers are represented in a curated inventory that can be rendered, verified, and distributed. | `testbed/bootstrap_peers.json`, render/verify scripts, bootstrap model spec | satisfied_for_testbed |
+| Candidate separation | Candidate peer discovery data is separated from approved bootstrap state. | explicit candidate and override artifacts with documented promotion rules | satisfied_for_testbed |
 | Identity posture | Node identity, TLS identity, and peer approval state align deterministically. | exchange checks, TLS generation/rotation path, node config references | in_progress |
 | Node lifecycle | Start, stop, restart, and status checks are script-driven for both home and VPS nodes. | `tools/testbed/start_home_node.sh`, remote service scripts, smoke/recovery drills | in_progress |
-| Diagnostics | Every significant run emits a self-describing diagnostics bundle. | diagnostics bundle directory + manifest + marker summary | open |
+| Diagnostics | Every significant run emits a self-describing diagnostics bundle. | diagnostics bundle directory + manifest + marker summary | satisfied_for_testbed |
 | Recovery | Bad config, bad TLS, restart, and one-node-down cases fail clearly and have bounded repair steps. | recovery drill scripts, negative-path assertions, runbook entries | in_progress |
 | Repo resync | All nodes can resync to the same pushed repo state and re-enter service cleanly. | `tools/testbed/sync_repo.sh` + post-sync smoke proof | satisfied_for_testbed |
 | Three-node exchange | The home node and two VPS nodes exchange real CDL-061 traffic bidirectionally. | `tools/testbed/run_three_node_exchange.sh` + diagnostics bundle | satisfied_for_testbed |
 | Machine-legible surface | The core control surface is CLI-first, file-based, and JSON-friendly. | CLI docs, config artifacts, deterministic script outputs | in_progress |
 | Harness agnosticism | No harness-specific runtime is required for node correctness. | boundary memo + node docs + absence of harness-only assumptions | in_progress |
 | Human auditability | A human operator can inspect what was installed, configured, started, and verified. | playbook, walkthrough, logs, diagnostics evidence | in_progress |
-| Packaging surface | The release artifact shape is explicit enough that RC packaging is extraction rather than reinvention. | near-RC node definition + package/install plan + readiness delta analysis | open |
+| Packaging surface | The release artifact shape is explicit enough that RC packaging is extraction rather than reinvention. | near-RC node definition + package/install plan + readiness delta analysis | in_progress |
 | Release evidence | RC0.1 can cite concrete evidence documents instead of relying on conversation state. | readiness checklist closure record + walkthrough + release notes inputs | open |
 
 ## 4. Interpretation notes
@@ -65,11 +65,11 @@ not a proven operating property.
 ## 5. Immediate closure targets
 
 The next work should close the following rows first:
-1. Candidate separation
-2. Diagnostics
-3. Packaging surface
-4. Release evidence
-5. Remaining recovery negative paths
+1. Packaging surface
+2. Release evidence
+3. Remaining recovery negative paths
+4. Install shape
+5. Human auditability carry-forward closure
 
 These items have the highest leverage because they reduce the amount of manual
 interpretation needed between the testbed and RC0.1.
