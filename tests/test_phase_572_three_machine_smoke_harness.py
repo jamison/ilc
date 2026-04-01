@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -99,8 +101,14 @@ def test_invalid_config_path_emits_smoke_config_failure() -> None:
     assert 'smoke_config_failure' in result.stdout
 
 
-def test_forced_transport_failure_emits_smoke_transport_failure() -> None:
-    result = _run_harness('--local-smoke', '--force-transport-failure')
+def test_forced_transport_failure_emits_smoke_transport_failure(tmp_path: Path) -> None:
+    config_dir = tmp_path / 'broken-smoke'
+    shutil.copytree(FIXTURE_DIR, config_dir)
+    node2_config_path = config_dir / 'node2_config.json'
+    node2_config = json.loads(node2_config_path.read_text(encoding='utf-8'))
+    node2_config['transport']['bind_port'] = 19672
+    node2_config_path.write_text(json.dumps(node2_config, indent=2), encoding='utf-8')
+    result = _run_harness('--local-smoke', '--config-dir', str(config_dir))
     assert result.returncode != 0
     assert 'smoke_transport_failure' in result.stdout
 

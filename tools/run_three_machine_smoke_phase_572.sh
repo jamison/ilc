@@ -163,7 +163,7 @@ PY
   exit 1
 fi
 
-status="$(python3 - <<PY
+if ! status="$(python3 - <<PY
 from ilc_core.node.node_startup_runtime import build_node_startup_context
 from ilc_core.network.d2d.http_gossip_transport_runtime import HttpGossipTransportRuntime
 context = build_node_startup_context('$CONFIG_DIR/node1_config.json', '$CONFIG_DIR/genesis_ref.json')
@@ -171,6 +171,10 @@ runtime = HttpGossipTransportRuntime(context.transport_config)
 print(runtime.send_gossip('https://127.0.0.1:19572', 'centrality_delta', 'cid:1234567890abcdef', 572, 'sig-572'))
 PY
 )"
+then
+  print_marker "smoke_transport_failure"
+  exit 1
+fi
 if [[ "$status" != "202" ]]; then
   print_marker "smoke_transport_failure"
   exit 1
@@ -180,11 +184,16 @@ print_marker "smoke_gossip_receive_ok"
 print_marker "smoke_explicit_http_fallback_ok"
 
 wait "${pids[2]}" 2>/dev/null || true
-python3 "$REPO_ROOT/tools/run_ilc_node_service_v1.py" start \
+if ! python3 "$REPO_ROOT/tools/run_ilc_node_service_v1.py" start \
   --config "$CONFIG_DIR/node3_config.json" \
   --genesis-ref "$CONFIG_DIR/genesis_ref.json" \
   --stay-alive-seconds 0.5 \
   >"$TMP_DIR/node3-restart.log" 2>&1
+then
+  cat "$TMP_DIR/node3-restart.log"
+  print_marker "smoke_lifecycle_failure"
+  exit 1
+fi
 if ! grep -q 'node_service_ready' "$TMP_DIR/node3-restart.log"; then
   cat "$TMP_DIR/node3-restart.log"
   print_marker "smoke_lifecycle_failure"
