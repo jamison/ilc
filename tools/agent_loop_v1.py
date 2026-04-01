@@ -161,6 +161,14 @@ def _require_list_of_strings(name: str, value: Any) -> list[str]:
     return result
 
 
+def _normalize_channel(value: str) -> str:
+    raw = _require_string("channel", value)
+    if raw.startswith("cid:") or raw.startswith("rand:"):
+        return raw
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+    return f"cid:{digest}"
+
+
 def _load_task_spec(
     *,
     task_spec_path: str | None,
@@ -197,7 +205,7 @@ def _load_task_spec(
     _require_string("task_class", task.get("task_class"))
     _require_list_of_strings("region_scope", task.get("region_scope"))
     _require_string("verification_method", task.get("verification_method"))
-    _require_string("channel", task.get("channel"))
+    task["channel"] = _normalize_channel(str(task.get("channel")))
     _require_string("claim_form", task.get("claim_form"))
     _require_float("difficulty_factor", task.get("difficulty_factor"))
     _require_float("ecu_estimate", task.get("ecu_estimate"))
