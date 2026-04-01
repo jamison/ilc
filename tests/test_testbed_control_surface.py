@@ -8,11 +8,14 @@ from pathlib import Path
 import pytest
 
 from tools.testbed import render_bootstrap_peers
+from tools.testbed import render_bootstrap_distribution
 from tools.testbed import render_diagnostics_manifest
+from tools.testbed import render_rc_substrate_evidence
 from tools.testbed import apply_peer_promotion
 from tools.testbed.peer_inventory import load_overrides, resolve_active_peer_map
 from tools.testbed import render_testbed_configs
 from tools.testbed import verify_bootstrap_peers
+from tools.testbed import verify_bootstrap_distribution
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -269,3 +272,122 @@ def test_render_diagnostics_manifest_writes_self_describing_bundle(tmp_path: Pat
     assert manifest['repo_head'] == 'deadbeef'
     assert manifest['hosts']['ilc-node-1']['artifact_count'] >= 3
     assert 'home_node_started:1234' in manifest['hosts']['ilc-node-1']['marker_summary']
+
+
+def test_render_and_verify_bootstrap_distribution_match_curated_inventory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    hosts_path = tmp_path / 'hosts.json'
+    hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
+    output_root = tmp_path / 'configs'
+    bootstrap_path = tmp_path / 'bootstrap_peers.json'
+    distribution_path = tmp_path / 'bootstrap_distribution.json'
+    overrides_path = tmp_path / 'peer_overrides.json'
+    overrides_path.write_text(json.dumps({'version': 'peer_overrides_v0.1'}, indent=2) + '\n', encoding='utf-8')
+
+    render_testbed_configs.render_configs(
+        hosts_path=hosts_path,
+        output_root=output_root,
+        network_id='testnet-0',
+    )
+
+    cert_fixture = Path('tests/fixtures/phase_572_three_machine_smoke/cert.pem')
+    for host_name in ('ilc-node-1', 'ilc-node-2', 'ilc-node-3'):
+        shutil.copy(cert_fixture, output_root / host_name / 'cert.pem')
+
+    render_bootstrap_peers.render_bootstrap_peers(
+        hosts_path=hosts_path,
+        config_root=output_root,
+        output_path=bootstrap_path,
+    )
+    monkeypatch.setattr(render_bootstrap_distribution, '_git_head', lambda _: 'deadbeef')
+    payload = render_bootstrap_distribution.render_distribution(
+        bootstrap_path=bootstrap_path,
+        hosts_path=hosts_path,
+        overrides_path=overrides_path,
+        output_path=distribution_path,
+    )
+
+    assert payload['repo_head'] == 'deadbeef'
+    assert payload['approved_peer_count'] == 3
+    assert verify_bootstrap_distribution.verify_distribution(
+        distribution_path=distribution_path,
+        bootstrap_path=bootstrap_path,
+    ) == []
+
+
+def test_verify_bootstrap_distribution_rejects_tampered_sha(tmp_path: Path) -> None:
+    bootstrap_path = tmp_path / 'bootstrap_peers.json'
+    distribution_path = tmp_path / 'bootstrap_distribution.json'
+    bootstrap_entries = [{'node_id': 'node-1', 'endpoint': 'https://one', 'status': 'approved'}]
+    bootstrap_path.write_text(json.dumps(bootstrap_entries, indent=2) + '\n', encoding='utf-8')
+    distribution_path.write_text(
+        json.dumps(
+            {
+                'version': 'testbed_bootstrap_distribution_v0.1',
+                'entries': bootstrap_entries,
+                'bootstrap_sha256': 'deadbeef',
+                'approved_peer_count': 1,
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+
+    assert verify_bootstrap_distribution.verify_distribution(
+        distribution_path=distribution_path,
+        bootstrap_path=bootstrap_path,
+    ) == ['bootstrap_distribution_sha_mismatch']
+
+
+def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    diagnostics_manifest_path = tmp_path / 'diagnostics_manifest.json'
+    install_manifest_path = tmp_path / 'install_manifest.json'
+    scenario_manifest_path = tmp_path / 'scenario_manifest.json'
+    bootstrap_distribution_path = tmp_path / 'bootstrap_distribution.json'
+    steps_dir = tmp_path / 'steps'
+    steps_dir.mkdir()
+    (steps_dir / 'three_node_exchange.log').write_text('three_node_exchange_ok\n', encoding='utf-8')
+    (steps_dir / 'negative_path_drills.log').write_text('negative_path_drill_ok\n', encoding='utf-8')
+
+    diagnostics_manifest_path.write_text(
+        json.dumps({'hosts': {'ilc-node-1': {'artifact_count': 1}}}, indent=2) + '\n',
+        encoding='utf-8',
+    )
+    install_manifest_path.write_text(
+        json.dumps({'results': [{'host': 'ilc-node-1', 'status': 'ok'}]}, indent=2) + '\n',
+        encoding='utf-8',
+    )
+    scenario_manifest_path.write_text(
+        json.dumps(
+            {
+                'panel_passed': True,
+                'submission_count': 7,
+                'panel_verdict_token': 'panel_quorum_passed',
+                'agreement_score': 0.875,
+                'ecu_claim_count': 6,
+                'reward_total': 5.81,
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    bootstrap_distribution_path.write_text(
+        json.dumps({'approved_peer_count': 3}, indent=2) + '\n',
+        encoding='utf-8',
+    )
+
+    monkeypatch.setattr(render_rc_substrate_evidence, '_git_head', lambda _: 'deadbeef')
+    output_root = tmp_path / 'evidence'
+    manifest = render_rc_substrate_evidence.render_evidence(
+        output_root=output_root,
+        bootstrap_distribution_path=bootstrap_distribution_path,
+        diagnostics_manifest_path=diagnostics_manifest_path,
+        install_proof_manifest_path=install_manifest_path,
+        scenario_manifest_path=scenario_manifest_path,
+        steps_dir=steps_dir,
+    )
+
+    assert manifest['repo_head'] == 'deadbeef'
+    assert manifest['closure_rows']['install_shape'] == 'satisfied_for_testbed'
+    assert manifest['closure_rows']['three_node_seven_agent_path'] == 'satisfied_for_testbed'
+    assert (output_root / 'manifest.json').exists()
+    assert (output_root / 'summary.md').exists()
