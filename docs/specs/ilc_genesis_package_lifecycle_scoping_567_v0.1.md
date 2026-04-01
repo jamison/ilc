@@ -28,8 +28,8 @@ The JSON object must contain, at minimum:
 - `transport.tls_key_path`
 - `peers`
 
-Duplicate peers are rejected at the config-loader boundary as
-`duplicate_peers_rejected_at_config_loader_boundary`.
+Duplicate peers are rejected at the config-loader boundary after endpoint
+normalization as `duplicate_peers_rejected_at_config_loader_boundary`.
 
 ## 3. Test-grade genesis import contract
 
