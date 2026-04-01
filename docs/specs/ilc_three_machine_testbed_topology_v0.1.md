@@ -119,5 +119,9 @@ The topology is now realized in-repo through:
 3. `tools/testbed/` orchestration scripts for repo sync, service install,
    config push, exchange checks, recovery drills, and diagnostics
 4. `docs/ops/ilc_three_machine_operator_playbook_v0.1.md` for the operator flow
+5. `docs/specs/ilc_near_rc_node_definition_v0.1.md` for the canonical node
+   shape this topology should instantiate
+6. `docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md` for the RC-facing proof
+   obligations this topology should satisfy
 
 The next hardening work should stay inside this script-first control surface.

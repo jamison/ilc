@@ -300,6 +300,9 @@ toward:
 - stronger failure-token and diagnostics bundles,
 - stronger CLI/JSON consistency,
 - stronger operator docs written for both humans and digital operators,
+- a formal near-RC node definition,
+- a concrete RC0.1 readiness checklist,
+- a clear core-vs-harness boundary statement,
 - and only then a reference harness wrapper.
 
 This implies that the three-node testbed remains the main proving ground for
@@ -308,6 +311,9 @@ RC0.1 readiness.
 ## 9. Recommended carry-forward references
 
 This document should be read with:
+- `docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md`
+- `docs/specs/ilc_near_rc_node_definition_v0.1.md`
+- `docs/specs/ilc_core_vs_agentic_harness_boundary_v0.1.md`
 - `docs/specs/ilc_three_machine_testbed_topology_v0.1.md`
 - `docs/specs/ilc_remote_control_surface_v0.1.md`
 - `docs/specs/ilc_bootstrap_peer_source_and_promotion_model_v0.1.md`
