@@ -64,16 +64,24 @@ Used for manual allow, deny, and pin rules.
 The current implementation lane uses these script names:
 - `tools/testbed/render_testbed_configs.py`
 - `tools/testbed/generate_testbed_tls.sh`
+- `tools/testbed/render_bootstrap_peers.py`
+- `tools/testbed/verify_bootstrap_peers.py`
 - `tools/testbed/sync_repo.sh`
 - `tools/testbed/install_service.sh`
 - `tools/testbed/push_configs.sh`
 - `tools/testbed/start_nodes.sh`
 - `tools/testbed/stop_nodes.sh`
 - `tools/testbed/restart_nodes.sh`
+- `tools/testbed/start_home_node.sh`
+- `tools/testbed/stop_home_node.sh`
+- `tools/testbed/restart_home_node.sh`
+- `tools/testbed/tail_home_node.sh`
 - `tools/testbed/tail_logs.sh`
 - `tools/testbed/run_remote_smoke.sh`
+- `tools/testbed/check_three_node_exchange.sh`
 - `tools/testbed/collect_diagnostics.sh`
 - `tools/testbed/run_three_node_exchange.sh`
+- `tools/testbed/run_recovery_drills.sh`
 
 ## 5. Script output contract
 
@@ -99,7 +107,9 @@ It does need deterministic retrievable logs.
 
 Required sources:
 - `journalctl` output for `ilc-node-v1.service`
+- captured home-node log output under `out/testbed/home-node.log`
 - captured stdout/stderr from testbed scripts
+- `testbed/bootstrap_peers.json` snapshot in diagnostics bundles
 - optional NDJSON run bundles collected on the home machine
 
 ## 7. Security posture for the control surface

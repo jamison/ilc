@@ -87,6 +87,25 @@ The required promotion flow is:
 
 No step may skip directly from discovery to live admission.
 
+## 6.1 Current three-machine testbed implementation
+
+The current three-machine testbed renders the curated bootstrap inventory
+directly from the authoritative host inventory plus per-node TLS material.
+
+Implemented helpers:
+- `python3 tools/testbed/render_bootstrap_peers.py`
+- `python3 tools/testbed/verify_bootstrap_peers.py`
+
+Current contract:
+- `testbed/bootstrap_peers.json` is the approved peer inventory for the live
+  testbed
+- each node config under `testbed/configs/<host>/node_config.json` must derive
+  its peer set from that approved inventory minus self
+- TLS fingerprints in the curated bootstrap file must match the currently
+  staged testbed certificates
+
+This is still curated admission. It is not autonomous discovery.
+
 ## 7. Minimum bootstrap entry schema
 
 Each bootstrap entry must contain at least:
