@@ -1,0 +1,17 @@
+[Unit]
+Description=ILC Node Service v1
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/ilc/current
+EnvironmentFile=-/etc/ilc/ilc-node-v1.env
+ExecStart=/opt/ilc/venv/bin/python /opt/ilc/current/tools/run_ilc_node_service_v1.py start --config ${ILC_CONFIG_PATH} --genesis-ref ${ILC_GENESIS_REF_PATH} --stay-alive-seconds ${ILC_RUN_SECONDS}
+ExecStop=/opt/ilc/venv/bin/python /opt/ilc/current/tools/run_ilc_node_service_v1.py stop --config ${ILC_CONFIG_PATH} --genesis-ref ${ILC_GENESIS_REF_PATH}
+ExecReload=/opt/ilc/venv/bin/python /opt/ilc/current/tools/run_ilc_node_service_v1.py restart --config ${ILC_CONFIG_PATH} --genesis-ref ${ILC_GENESIS_REF_PATH} --stay-alive-seconds ${ILC_RUN_SECONDS}
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
