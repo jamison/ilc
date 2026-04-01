@@ -11,6 +11,7 @@ from tools.testbed import render_bootstrap_peers
 from tools.testbed import render_bootstrap_distribution
 from tools.testbed import render_diagnostics_manifest
 from tools.testbed import render_rc_substrate_evidence
+from tools.testbed import check_rc0_1_substrate_closure
 from tools.testbed import apply_peer_promotion
 from tools.testbed.peer_inventory import load_overrides, resolve_active_peer_map
 from tools.testbed import render_testbed_configs
@@ -391,3 +392,27 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
     assert manifest['closure_rows']['three_node_seven_agent_path'] == 'satisfied_for_testbed'
     assert (output_root / 'manifest.json').exists()
     assert (output_root / 'summary.md').exists()
+
+
+def test_check_rc0_1_substrate_closure_accepts_satisfied_evidence(tmp_path: Path) -> None:
+    evidence_path = tmp_path / 'evidence.json'
+    evidence_path.write_text(
+        json.dumps(
+            {
+                'closure_rows': {
+                    'install_shape': 'satisfied_for_testbed',
+                    'bootstrap_distribution': 'satisfied_for_testbed',
+                    'diagnostics': 'satisfied_for_testbed',
+                    'three_node_seven_agent_path': 'satisfied_for_testbed',
+                    'release_evidence': 'satisfied_for_testbed',
+                },
+                'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+
+    verdict, failures = check_rc0_1_substrate_closure.check_evidence(evidence_path)
+    assert verdict == 'pass'
+    assert failures == []
