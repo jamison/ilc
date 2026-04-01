@@ -8,6 +8,9 @@ from pathlib import Path
 import pytest
 
 from tools.testbed import render_bootstrap_peers
+from tools.testbed import render_diagnostics_manifest
+from tools.testbed import apply_peer_promotion
+from tools.testbed.peer_inventory import load_overrides, resolve_active_peer_map
 from tools.testbed import render_testbed_configs
 from tools.testbed import verify_bootstrap_peers
 
@@ -151,3 +154,118 @@ def test_verify_bootstrap_peers_rejects_tampered_fingerprint(tmp_path: Path) -> 
         bootstrap_path=bootstrap_path,
         config_root=output_root,
     ) == ['bootstrap_tls_fingerprint_mismatch:ilc-node-1']
+
+
+def test_apply_peer_promotion_uses_bootstrap_and_overrides(tmp_path: Path) -> None:
+    hosts_path = tmp_path / 'hosts.json'
+    hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
+    output_root = tmp_path / 'configs'
+    bootstrap_path = tmp_path / 'bootstrap_peers.json'
+    overrides_path = tmp_path / 'peer_overrides.json'
+
+    render_testbed_configs.render_configs(
+        hosts_path=hosts_path,
+        output_root=output_root,
+        network_id='testnet-0',
+    )
+
+    cert_fixture = Path('tests/fixtures/phase_572_three_machine_smoke/cert.pem')
+    for host_name in ('ilc-node-1', 'ilc-node-2', 'ilc-node-3'):
+        shutil.copy(cert_fixture, output_root / host_name / 'cert.pem')
+
+    render_bootstrap_peers.render_bootstrap_peers(
+        hosts_path=hosts_path,
+        config_root=output_root,
+        output_path=bootstrap_path,
+    )
+    overrides_path.write_text(
+        json.dumps(
+            {
+                'pin_node_ids': ['node-3'],
+                'deny_endpoints': [],
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+
+    assert apply_peer_promotion.apply_peer_promotion(
+        bootstrap_path=bootstrap_path,
+        overrides_path=overrides_path,
+        config_root=output_root,
+    ) == []
+
+    node2 = json.loads((output_root / 'ilc-node-2' / 'node_config.json').read_text(encoding='utf-8'))
+    assert node2['peers'] == [
+        'https://100.108.3.57:19573',
+        'https://100.96.35.87:19571',
+    ]
+
+
+def test_verify_bootstrap_peers_rejects_stale_inventory(tmp_path: Path) -> None:
+    hosts_path = tmp_path / 'hosts.json'
+    hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
+    output_root = tmp_path / 'configs'
+    bootstrap_path = tmp_path / 'bootstrap_peers.json'
+
+    render_testbed_configs.render_configs(
+        hosts_path=hosts_path,
+        output_root=output_root,
+        network_id='testnet-0',
+    )
+
+    cert_fixture = Path('tests/fixtures/phase_572_three_machine_smoke/cert.pem')
+    for host_name in ('ilc-node-1', 'ilc-node-2', 'ilc-node-3'):
+        shutil.copy(cert_fixture, output_root / host_name / 'cert.pem')
+
+    entries = render_bootstrap_peers.render_bootstrap_peers(
+        hosts_path=hosts_path,
+        config_root=output_root,
+        output_path=bootstrap_path,
+    )
+    entries[0]['last_verified_at'] = '2000-01-01T00:00:00Z'
+    bootstrap_path.write_text(json.dumps(entries, indent=2) + '\n', encoding='utf-8')
+
+    assert verify_bootstrap_peers.verify_bootstrap_peers(
+        bootstrap_path=bootstrap_path,
+        config_root=output_root,
+        max_age_hours=24,
+    ) == ['bootstrap_last_verified_stale:node-1']
+
+
+def test_peer_inventory_resolution_stays_bootstrap_authoritative() -> None:
+    bootstrap_entries = [
+        {'node_id': 'node-1', 'endpoint': 'https://one', 'status': 'approved'},
+        {'node_id': 'node-2', 'endpoint': 'https://two', 'status': 'approved'},
+        {'node_id': 'node-3', 'endpoint': 'https://three', 'status': 'approved'},
+    ]
+    overrides = load_overrides(None)
+    peer_map, errors = resolve_active_peer_map(bootstrap_entries, overrides)
+
+    assert errors == []
+    assert peer_map['node-1'] == ['https://three', 'https://two']
+    assert 'https://candidate-only' not in peer_map['node-1']
+
+
+def test_render_diagnostics_manifest_writes_self_describing_bundle(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    hosts_path = tmp_path / 'hosts.json'
+    hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
+    output_root = tmp_path / 'diagnostics'
+    home_dir = output_root / 'ilc-node-1'
+    node2_dir = output_root / 'ilc-node-2'
+    node3_dir = output_root / 'ilc-node-3'
+    for host_dir in (home_dir, node2_dir, node3_dir):
+        host_dir.mkdir(parents=True)
+        (host_dir / 'hostname.txt').write_text(f'{host_dir.name}\n', encoding='utf-8')
+    (home_dir / 'bootstrap_peers.json').write_text('[]\n', encoding='utf-8')
+    (home_dir / 'home_node.log').write_text('home_node_started:1234\nthree_node_exchange_ok\n', encoding='utf-8')
+    (node2_dir / 'journal_tail.txt').write_text('remote_smoke_ok:ilc-node-2:service\n', encoding='utf-8')
+
+    monkeypatch.setattr(render_diagnostics_manifest, '_git_head', lambda _: 'deadbeef')
+    manifest = render_diagnostics_manifest.render_manifest(output_root=output_root, hosts_path=hosts_path)
+
+    manifest_path = output_root / 'manifest.json'
+    assert manifest_path.exists()
+    assert manifest['repo_head'] == 'deadbeef'
+    assert manifest['hosts']['ilc-node-1']['artifact_count'] >= 3
+    assert 'home_node_started:1234' in manifest['hosts']['ilc-node-1']['marker_summary']

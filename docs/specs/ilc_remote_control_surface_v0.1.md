@@ -65,7 +65,10 @@ The current implementation lane uses these script names:
 - `tools/testbed/render_testbed_configs.py`
 - `tools/testbed/generate_testbed_tls.sh`
 - `tools/testbed/render_bootstrap_peers.py`
+- `tools/testbed/render_peer_candidates.py`
+- `tools/testbed/apply_peer_promotion.py`
 - `tools/testbed/verify_bootstrap_peers.py`
+- `tools/testbed/prepare_remote_app.sh`
 - `tools/testbed/sync_repo.sh`
 - `tools/testbed/install_service.sh`
 - `tools/testbed/push_configs.sh`
@@ -82,6 +85,7 @@ The current implementation lane uses these script names:
 - `tools/testbed/collect_diagnostics.sh`
 - `tools/testbed/run_three_node_exchange.sh`
 - `tools/testbed/run_recovery_drills.sh`
+- `tools/testbed/run_negative_path_drills.sh`
 
 ## 5. Script output contract
 
@@ -110,6 +114,9 @@ Required sources:
 - captured home-node log output under `out/testbed/home-node.log`
 - captured stdout/stderr from testbed scripts
 - `testbed/bootstrap_peers.json` snapshot in diagnostics bundles
+- `testbed/peer_candidates.ndjson` and `testbed/peer_overrides.json` snapshots
+  in diagnostics bundles
+- per-run `manifest.json` under each diagnostics bundle root
 - optional NDJSON run bundles collected on the home machine
 
 ## 7. Security posture for the control surface
