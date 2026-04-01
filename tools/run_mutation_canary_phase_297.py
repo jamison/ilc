@@ -88,6 +88,15 @@ _TRANSPORT_VERSION_MUTANT = (
 _TRANSPORT_CDL061_DEP_LINE = 'CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"'
 _TRANSPORT_CDL061_DEP_MUTANT = 'CDL_061_DEPENDENCY = "cdl_061_ratified_999.v0.1"'
 
+# Probe 9 — http_gossip_transport_runtime_version_guard
+# Mutation: changes the Phase 568 real HTTP transport runtime version constant.
+_HTTP_GOSSIP_RUNTIME_VERSION_LINE = (
+    'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v0.1"'
+)
+_HTTP_GOSSIP_RUNTIME_VERSION_MUTANT = (
+    'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v9.9"'
+)
+
 PROBES = (
     Probe(
         name="lineage_rotated_authority_guard",
@@ -194,6 +203,20 @@ PROBES = (
             "pytest",
             "-q",
             "tests/test_phase_558_gossip_transport_adapter.py::test_all_constants_have_exact_expected_values",
+        ),
+    ),
+    Probe(
+        name="http_gossip_transport_runtime_version_guard",
+        path=Path("ilc_core/network/d2d/http_gossip_transport_runtime.py"),
+        old_token=_HTTP_GOSSIP_RUNTIME_VERSION_LINE,
+        new_token=_HTTP_GOSSIP_RUNTIME_VERSION_MUTANT,
+        command=(
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "tests/test_phase_568_real_http_transport_wrapper_runtime.py::"
+            "test_module_imports_and_exposes_exact_constants",
         ),
     ),
 )
