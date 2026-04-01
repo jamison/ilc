@@ -93,7 +93,8 @@ Three separate machines still need a reproducible way to receive genesis state, 
 - 7+1 panel wiring in the submission pipeline
 - ECU attribution claims integrated with the ledger path
 - CDL-V7 reproducibility rubric operationalized
-- outbound x402 skill lane attached through existing MCP integration
+- outbound HTTP machine-payment skill lane attached through existing MCP
+  integration
 
 ### Gap 4 — Three-machine / seven-agent integration harness
 
@@ -106,9 +107,11 @@ Once transport operationalization, packaging, and the agent loop exist, the next
 - ops playbook v2
 - production-readiness delta analysis
 
-### Deferred lane — Inbound x402 task submission
+### Deferred lane — Inbound HTTP machine-payment ingress
 
-Inbound x402 remains explicitly out of the launch-critical path. It is treasury-governed and should not be merged into transport or agent-loop work.
+Inbound HTTP machine-payment ingress remains explicitly out of the
+launch-critical path. It is treasury-governed and should not be merged into
+transport or agent-loop work.
 
 **Estimated scope**: Window 595+.
 **Governance note**: requires stablecoin-to-ECU conversion rules under CDL-047.
@@ -120,9 +123,9 @@ Inbound x402 remains explicitly out of the launch-critical path. It is treasury-
 | Window | Focus | Approx phases | Key gate |
 |---|---|---|---|
 | **565-574** | Transport operationalization + multi-machine packaging | ~10 | 3 machines can exchange CDL-061 envelope traffic with static peers and imported genesis state |
-| **575-584** | Agent behavioral loop v1 + outbound x402 skill lane | ~10 | 7 agent processes wired to the protocol with panel evaluation and ECU claim flow |
+| **575-584** | Agent behavioral loop v1 + outbound HTTP machine-payment skill lane | ~10 | 7 agent processes wired to the protocol with panel evaluation and ECU claim flow |
 | **585-594** | Three-machine / seven-agent integration test | ~10 | One deterministic end-to-end task cycle passes across all 3 machines and 7 agents |
-| **595+** | Inbound x402 task submission lane | TBD | Treasury-governed conversion model defined separately from launch-critical transport work |
+| **595+** | Inbound HTTP machine-payment ingress lane | TBD | Treasury-governed conversion model defined separately from launch-critical transport work |
 
 **First testable milestone: approximately Phase 594** — now roughly 30 phases from the close of Window 555-564, assuming the remaining windows close on their primary path.
 
@@ -137,7 +140,7 @@ Minimum work items:
 6. Ops playbook v1 and packaging choice for test deployment
 7. Coherence report + closure gate
 
-### Window 575-584: agent behavioral loop v1 + outbound x402
+### Window 575-584: agent behavioral loop v1 + outbound HTTP machine-payment skill
 
 Minimum work items:
 1. Agent loop spec
@@ -145,8 +148,26 @@ Minimum work items:
 3. 7+1 panel wiring in the submission pipeline
 4. ECU attribution claim submission flow
 5. CDL-V7 reproducibility harness and governance resolution
-6. x402 outbound MCP skill for external service payments
+6. HTTP machine-payment outbound MCP skill for external service payments
 7. Coherence report + closure gate
+
+### Security progression across the next windows
+
+- Window 565-574 proves the first three-machine testbed with server TLS plus
+  protocol-layer `ILC-Signature`. This is the minimum acceptable identity
+  posture for the infrastructure proof; mutual TLS is intentionally out of
+  scope here.
+- Window 575-584 should continue on that same posture while the agent loop is
+  brought online. The objective in that window is behavioral integration, not
+  transport re-authentication redesign.
+- Window 585-594 is the first deterministic RC0 public-release-candidate
+  evaluation milestone. It should still assume the already-proven server TLS +
+  `ILC-Signature` posture unless a dedicated hardening window is inserted
+  earlier.
+- Mutual TLS belongs in the first post-RC0 hardening tranche, immediately after
+  the Window 585-594 integration milestone closes successfully. The hardening
+  work should include certificate issuance, trust-store distribution, peer
+  identity binding, rotation, and negative-path handshake testing.
 
 ### Window 585-594: three-machine / seven-agent integration test
 
@@ -167,8 +188,8 @@ Minimum work items:
 | Multi-machine HTTP/3 operationalization is more complex than the ratified envelope layer suggests | MODERATE | 565-574 | Governance is done; complexity is now in runtime, packaging, and observability |
 | Node lifecycle under CDL-046 needs more explicit runtime semantics for crash recovery | MODERATE | 565-574 | Deployment crashes are not the same as stake or admission failures |
 | CDL-V7 reproducibility rubric requires a new CDL rather than an ADM update | MODERATE | 575-584 | Still unresolved and must close before the agent loop is protocol-compliant |
-| Outbound x402 integration expands external dependency surface | LOW | 575-584 | Operational and provider risk, not a transport-architecture blocker |
-| Inbound x402 pressures bleed into launch planning too early | LOW | 595+ | Keep treasury-governed inbound payments separate from the launch-critical path |
+| Outbound HTTP machine-payment integration expands external dependency surface | LOW | 575-584 | Operational and provider risk, not a transport-architecture blocker |
+| Inbound HTTP machine-payment pressures bleed into launch planning too early | LOW | 595+ | Keep treasury-governed inbound payments separate from the launch-critical path |
 
 ---
 
