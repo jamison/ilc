@@ -45,14 +45,22 @@ Recommended path:
 
 Used for curated bootstrap distribution and verification.
 
-### 3.3 Candidate discovery cache
+### 3.3 Published bootstrap distribution
+
+Recommended path:
+- `testbed/bootstrap_distribution.json`
+
+Used for the GitHub-distributed bootstrap payload that remote nodes stage under
+`/etc/ilc/`.
+
+### 3.4 Candidate discovery cache
 
 Recommended path:
 - `testbed/peer_candidates.ndjson`
 
 Append-only observations only.
 
-### 3.4 Local overrides
+### 3.5 Local overrides
 
 Recommended path:
 - `testbed/peer_overrides.json`
@@ -65,9 +73,12 @@ The current implementation lane uses these script names:
 - `tools/testbed/render_testbed_configs.py`
 - `tools/testbed/generate_testbed_tls.sh`
 - `tools/testbed/render_bootstrap_peers.py`
+- `tools/testbed/render_bootstrap_distribution.py`
 - `tools/testbed/render_peer_candidates.py`
 - `tools/testbed/apply_peer_promotion.py`
 - `tools/testbed/verify_bootstrap_peers.py`
+- `tools/testbed/verify_bootstrap_distribution.py`
+- `tools/testbed/refresh_bootstrap_distribution.sh`
 - `tools/testbed/prepare_remote_app.sh`
 - `tools/testbed/sync_repo.sh`
 - `tools/testbed/install_service.sh`
@@ -86,6 +97,12 @@ The current implementation lane uses these script names:
 - `tools/testbed/run_three_node_exchange.sh`
 - `tools/testbed/run_recovery_drills.sh`
 - `tools/testbed/run_negative_path_drills.sh`
+- `tools/testbed/prove_install_shape.py`
+- `tools/testbed/run_three_node_seven_agent_scenario.py`
+- `tools/testbed/render_rc_substrate_evidence.py`
+- `tools/testbed/check_rc0_1_substrate_closure.py`
+- `tools/testbed/run_rc0_1_substrate_closure.py`
+- `tools/package_rc0_1_bundle.py`
 
 ## 5. Script output contract
 
@@ -114,10 +131,12 @@ Required sources:
 - captured home-node log output under `out/testbed/home-node.log`
 - captured stdout/stderr from testbed scripts
 - `testbed/bootstrap_peers.json` snapshot in diagnostics bundles
+- `testbed/bootstrap_distribution.json` snapshot in diagnostics bundles
 - `testbed/peer_candidates.ndjson` and `testbed/peer_overrides.json` snapshots
   in diagnostics bundles
 - per-run `manifest.json` under each diagnostics bundle root
 - optional NDJSON run bundles collected on the home machine
+- RC substrate evidence manifests and bundle manifests on the home machine
 
 ## 7. Security posture for the control surface
 
