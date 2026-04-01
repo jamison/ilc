@@ -1,0 +1,270 @@
+"""Phase 568 real HTTP transport wrapper runtime.
+
+This module operationalizes the ratified CDL-061 envelope over real HTTP I/O
+without redesigning the node orchestration layer. The first proof lane uses the
+explicit ADR-0025 `kind=http` binding and delegates envelope construction and
+validation to `gossip_transport.py`.
+"""
+
+from __future__ import annotations
+
+import ssl
+import threading
+import urllib.request
+from dataclasses import dataclass
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from typing import Any
+
+from ilc_core.network.d2d import gossip_transport
+from ilc_core.network.d2d.gossip_peer_registry import (
+    GOSSIP_PEER_REGISTRY_VERSION as _GOSSIP_PEER_REGISTRY_CHECK,
+    validate_peer_endpoint,
+)
+
+
+HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v0.1"
+CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
+GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
+GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
+TRANSPORT_KIND_QUIC = "quic"
+TRANSPORT_KIND_HTTP = "http"
+
+assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == GOSSIP_TRANSPORT_DEPENDENCY, (
+    f"dep chain mismatch: {gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION}"
+)
+assert _GOSSIP_PEER_REGISTRY_CHECK == GOSSIP_PEER_REGISTRY_DEPENDENCY, (
+    f"dep chain mismatch: {_GOSSIP_PEER_REGISTRY_CHECK}"
+)
+
+
+@dataclass(frozen=True)
+class TransportRuntimeConfig:
+    transport_kind: str
+    bind_host: str
+    bind_port: int
+    tls_cert_path: str
+    tls_key_path: str
+    request_timeout_seconds: float = 2.0
+
+
+class HttpGossipTransportRuntime:
+    """Minimal real-HTTP wrapper around the ratified envelope helpers."""
+
+    def __init__(self, config: TransportRuntimeConfig) -> None:
+        self.config = config
+        self.state: dict[str, Any] = {
+            "transport_kind": config.transport_kind,
+            "event_log": [],
+            "last_error": None,
+            "last_status_code": None,
+            "bound_port": None,
+            "running": False,
+        }
+        self._server: ThreadingHTTPServer | None = None
+        self._thread: threading.Thread | None = None
+
+    def _record(self, event: str, **payload: Any) -> None:
+        entry = {"event": event, **payload}
+        self.state["event_log"].append(entry)
+
+    def _canonicalize_headers(self, headers: dict[str, str]) -> dict[str, str]:
+        canonical_by_lower = {
+            key.lower(): key for key in gossip_transport.REQUIRED_HEADERS
+        }
+        normalized: dict[str, str] = {}
+        for key, value in headers.items():
+            if isinstance(key, str):
+                normalized[canonical_by_lower.get(key.lower(), key)] = value
+            else:
+                normalized[key] = value
+        return normalized
+
+    def _normalize_transport_kind(self) -> str:
+        kind = self.config.transport_kind
+        if not isinstance(kind, str) or not kind.strip():
+            raise ValueError("transport_kind_unsupported")
+        normalized = kind.strip()
+        if normalized not in {TRANSPORT_KIND_HTTP, TRANSPORT_KIND_QUIC}:
+            raise ValueError("transport_kind_unsupported")
+        return normalized
+
+    def _require_path(self, value: str, missing_token: str, not_found_token: str) -> Path:
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(missing_token)
+        path = Path(value)
+        if not path.is_file():
+            raise ValueError(not_found_token)
+        return path
+
+    def _server_ssl_context(self) -> ssl.SSLContext:
+        cert_path = self._require_path(
+            self.config.tls_cert_path,
+            "tls_cert_path_required",
+            "tls_cert_path_not_found",
+        )
+        key_path = self._require_path(
+            self.config.tls_key_path,
+            "tls_key_path_required",
+            "tls_key_path_not_found",
+        )
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        try:
+            context.load_cert_chain(str(cert_path), str(key_path))
+        except ssl.SSLError as exc:
+            raise ValueError("tls_context_load_failed") from exc
+        return context
+
+    def _client_ssl_context(self) -> ssl.SSLContext:
+        self._require_path(
+            self.config.tls_cert_path,
+            "tls_cert_path_required",
+            "tls_cert_path_not_found",
+        )
+        self._require_path(
+            self.config.tls_key_path,
+            "tls_key_path_required",
+            "tls_key_path_not_found",
+        )
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return context
+
+    def start(self) -> None:
+        kind = self._normalize_transport_kind()
+        if kind == TRANSPORT_KIND_QUIC:
+            raise ValueError("transport_kind_quic_not_operationalized")
+        if self._server is not None:
+            return
+        ssl_context = self._server_ssl_context()
+        self._record("listener_starting", transport_kind=kind)
+        runtime = self
+
+        class _Handler(BaseHTTPRequestHandler):
+            def do_POST(self) -> None:  # noqa: N802
+                headers = {key: value for key, value in self.headers.items()}
+                content_length = int(self.headers.get("Content-Length", "0"))
+                if content_length:
+                    self.rfile.read(content_length)
+                status_code = runtime.handle_gossip_request(self.path, headers)
+                self.send_response(status_code)
+                self.end_headers()
+
+            def log_message(self, format: str, *args: object) -> None:
+                return
+
+        server = ThreadingHTTPServer((self.config.bind_host, self.config.bind_port), _Handler)
+        server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        self._server = server
+        self._thread = thread
+        self.state["bound_port"] = int(server.server_address[1])
+        self.state["running"] = True
+        self._record(
+            "listener_ready",
+            transport_kind=kind,
+            bind_host=self.config.bind_host,
+            bind_port=self.state["bound_port"],
+        )
+
+    def stop(self) -> None:
+        if self._server is None:
+            self.state["running"] = False
+            return
+        self._record("listener_stopping", transport_kind=self.state["transport_kind"])
+        self._server.shutdown()
+        self._server.server_close()
+        if self._thread is not None:
+            self._thread.join(timeout=2.0)
+        self._server = None
+        self._thread = None
+        self.state["running"] = False
+
+    def handle_gossip_request(self, path: str, headers: dict[str, str]) -> int:
+        normalized_headers = self._canonicalize_headers(headers)
+        try:
+            gossip_type = str(normalized_headers["ILC-Gossip-Type"]).strip()
+            expected_path = gossip_transport.gossip_request_path(gossip_type)
+            if path != expected_path:
+                self._record("incoming_envelope_rejected", token="gossip_request_path_mismatch")
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            gossip_transport.validate_gossip_headers(normalized_headers)
+        except (KeyError, ValueError) as exc:
+            token = str(exc) or exc.__class__.__name__
+            self._record("incoming_envelope_rejected", token=token)
+            self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+
+        self._record("incoming_envelope_buffered", path=path)
+        self.state["last_status_code"] = gossip_transport.HTTP_STATUS_BUFFERED
+        return gossip_transport.HTTP_STATUS_BUFFERED
+
+    def send_gossip(
+        self,
+        peer_endpoint: str,
+        gossip_type: str,
+        channel: str,
+        epoch: int,
+        signature: str,
+        payload: bytes | str = b"",
+        *,
+        content_type: str = "application/cbor",
+    ) -> int:
+        kind = self._normalize_transport_kind()
+        if kind == TRANSPORT_KIND_QUIC:
+            raise ValueError("transport_kind_quic_not_operationalized")
+        if kind != TRANSPORT_KIND_HTTP:
+            raise ValueError("transport_kind_unsupported")
+
+        normalized_endpoint = validate_peer_endpoint(peer_endpoint)
+        request_path = gossip_transport.gossip_request_path(gossip_type)
+        headers = gossip_transport.build_gossip_headers(
+            gossip_type=gossip_type,
+            channel=channel,
+            epoch=epoch,
+            hop_count=gossip_transport.HOP_COUNT_SINGLE,
+            signature=signature,
+            content_type=content_type,
+        )
+        if isinstance(payload, str):
+            request_body = payload.encode("utf-8")
+        elif isinstance(payload, bytes):
+            request_body = payload
+        else:
+            raise ValueError("gossip_payload_must_be_bytes_or_string")
+
+        request = urllib.request.Request(
+            url=f"{normalized_endpoint}{request_path}",
+            data=request_body,
+            headers=headers,
+            method="POST",
+        )
+        ssl_context = self._client_ssl_context()
+        try:
+            with urllib.request.urlopen(
+                request,
+                timeout=self.config.request_timeout_seconds,
+                context=ssl_context,
+            ) as response:
+                status_code = int(response.getcode())
+        except Exception as exc:  # pragma: no cover - exercised in transport hardening tests
+            self.state["last_error"] = {
+                "token": "transport_request_failed",
+                "transport_kind": kind,
+                "detail": exc.__class__.__name__,
+            }
+            self._record("transport_request_failed", detail=exc.__class__.__name__)
+            raise RuntimeError("transport_request_failed") from exc
+
+        self.state["last_status_code"] = status_code
+        self._record(
+            "outgoing_gossip_sent",
+            endpoint=normalized_endpoint,
+            path=request_path,
+            status_code=status_code,
+            transport_kind=kind,
+        )
+        return status_code
