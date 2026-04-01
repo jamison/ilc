@@ -68,3 +68,8 @@ The next window must carry forward at minimum:
 ## 7. Context capsule reference
 
 The current context reference is `docs/specs/ilc_antigravity_context_capsule_v3.0.md`.
+
+## 8. Post-window three-machine hardening reference
+
+The post-window script-first hardening lane is recorded in
+`docs/phases/three_machine_testbed_strike_force_hardening_walkthrough_2026_04_01.md`.

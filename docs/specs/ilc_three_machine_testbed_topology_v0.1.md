@@ -111,10 +111,13 @@ This topology does not include:
 - automatic peer promotion from discovered candidates
 - multi-hop routing
 
-## 8. Immediate next implementation targets
+## 8. Current control-plane realization
 
-This topology implies the next concrete implementation targets:
-1. host inventory file and remote control scripts
-2. curated bootstrap peer source file
-3. operator playbook for VPS setup and smoke execution
-4. LLM workflow policy for one canonical repo with separated audit lanes
+The topology is now realized in-repo through:
+1. `testbed/hosts.json` for the home machine and both VPS nodes
+2. `testbed/bootstrap_peers.json` as the curated approved-peer inventory
+3. `tools/testbed/` orchestration scripts for repo sync, service install,
+   config push, exchange checks, recovery drills, and diagnostics
+4. `docs/ops/ilc_three_machine_operator_playbook_v0.1.md` for the operator flow
+
+The next hardening work should stay inside this script-first control surface.

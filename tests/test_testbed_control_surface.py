@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 from pathlib import Path
 
 import pytest
 
+from tools.testbed import render_bootstrap_peers
 from tools.testbed import render_testbed_configs
+from tools.testbed import verify_bootstrap_peers
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -88,3 +91,63 @@ def test_render_testbed_configs_requires_all_three_named_hosts(tmp_path: Path) -
             output_root=tmp_path / 'configs',
             network_id='testnet-0',
         )
+
+
+def test_render_and_verify_bootstrap_peers_match_local_configs(tmp_path: Path) -> None:
+    hosts_path = tmp_path / 'hosts.json'
+    hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
+    output_root = tmp_path / 'configs'
+    bootstrap_path = tmp_path / 'bootstrap_peers.json'
+
+    render_testbed_configs.render_configs(
+        hosts_path=hosts_path,
+        output_root=output_root,
+        network_id='testnet-0',
+    )
+
+    cert_fixture = Path('tests/fixtures/phase_572_three_machine_smoke/cert.pem')
+    for host_name in ('ilc-node-1', 'ilc-node-2', 'ilc-node-3'):
+        shutil.copy(cert_fixture, output_root / host_name / 'cert.pem')
+
+    entries = render_bootstrap_peers.render_bootstrap_peers(
+        hosts_path=hosts_path,
+        config_root=output_root,
+        output_path=bootstrap_path,
+    )
+
+    assert len(entries) == 3
+    assert bootstrap_path.exists()
+    assert verify_bootstrap_peers.verify_bootstrap_peers(
+        bootstrap_path=bootstrap_path,
+        config_root=output_root,
+    ) == []
+
+
+def test_verify_bootstrap_peers_rejects_tampered_fingerprint(tmp_path: Path) -> None:
+    hosts_path = tmp_path / 'hosts.json'
+    hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
+    output_root = tmp_path / 'configs'
+    bootstrap_path = tmp_path / 'bootstrap_peers.json'
+
+    render_testbed_configs.render_configs(
+        hosts_path=hosts_path,
+        output_root=output_root,
+        network_id='testnet-0',
+    )
+
+    cert_fixture = Path('tests/fixtures/phase_572_three_machine_smoke/cert.pem')
+    for host_name in ('ilc-node-1', 'ilc-node-2', 'ilc-node-3'):
+        shutil.copy(cert_fixture, output_root / host_name / 'cert.pem')
+
+    entries = render_bootstrap_peers.render_bootstrap_peers(
+        hosts_path=hosts_path,
+        config_root=output_root,
+        output_path=bootstrap_path,
+    )
+    entries[0]['tls_fingerprint'] = 'sha256:deadbeef'
+    bootstrap_path.write_text(json.dumps(entries, indent=2) + '\n', encoding='utf-8')
+
+    assert verify_bootstrap_peers.verify_bootstrap_peers(
+        bootstrap_path=bootstrap_path,
+        config_root=output_root,
+    ) == ['bootstrap_tls_fingerprint_mismatch:ilc-node-1']
