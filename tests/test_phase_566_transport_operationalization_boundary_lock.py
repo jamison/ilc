@@ -83,6 +83,7 @@ def test_runtime_boundary_names_http_gossip_transport_runtime_explicitly() -> No
     text = _read(DOC_PATH)
     assert 'ilc_core/network/d2d/http_gossip_transport_runtime.py' in text
     assert 'must not duplicate the CDL-061 header contract' in text
+    assert 'delegate path and header build/validation to `gossip_transport.py`' in text
 
 
 def test_transport_kind_rule_preserves_quic_and_permits_explicit_http_proof() -> None:

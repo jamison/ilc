@@ -108,7 +108,7 @@ def test_phase_table_contains_exactly_ten_rows_for_phases_565_574_in_order() -> 
             continue
         if not in_phase_table:
             continue
-        if line.startswith('| 56') or line.startswith('| 57'):
+        if line in EXPECTED_PHASE_ROWS:
             rows.append(line)
             continue
         if rows:

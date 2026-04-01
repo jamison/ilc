@@ -21,6 +21,8 @@ This wrapper must:
 - consume `gossip_transport.py`
 - consume `gossip_peer_registry.py`
 - must not duplicate the CDL-061 header contract
+- delegate path and header build/validation to `gossip_transport.py` rather than
+  re-declaring those invariants inside the wrapper
 - leave a clean adapter seam for the later node-orchestration redesign
 
 The selected boundary is recorded as `minimal_http_transport_wrapper_selected`.
