@@ -38,6 +38,16 @@ assert _GOSSIP_PEER_REGISTRY_CHECK == GOSSIP_PEER_REGISTRY_DEPENDENCY, (
 )
 
 
+class TransportRuntimeError(RuntimeError):
+    """Structured transport runtime failure surface for operator-visible errors."""
+
+    def __init__(self, token: str, transport_kind: str, detail: str) -> None:
+        super().__init__(token)
+        self.token = token
+        self.transport_kind = transport_kind
+        self.detail = detail
+
+
 @dataclass(frozen=True)
 class TransportRuntimeConfig:
     transport_kind: str
@@ -67,6 +77,15 @@ class HttpGossipTransportRuntime:
     def _record(self, event: str, **payload: Any) -> None:
         entry = {"event": event, **payload}
         self.state["event_log"].append(entry)
+
+    def _record_transport_error(self, token: str, detail: str) -> None:
+        payload = {
+            "token": token,
+            "transport_kind": self.state["transport_kind"],
+            "detail": detail,
+        }
+        self.state["last_error"] = payload
+        self._record("transport_error", **payload)
 
     def _canonicalize_headers(self, headers: dict[str, str]) -> dict[str, str]:
         canonical_by_lower = {
@@ -162,6 +181,7 @@ class HttpGossipTransportRuntime:
         self._thread = thread
         self.state["bound_port"] = int(server.server_address[1])
         self.state["running"] = True
+        self.state["explicit_fallback_proof"] = kind == TRANSPORT_KIND_HTTP
         self._record(
             "listener_ready",
             transport_kind=kind,
@@ -251,13 +271,12 @@ class HttpGossipTransportRuntime:
             ) as response:
                 status_code = int(response.getcode())
         except Exception as exc:  # pragma: no cover - exercised in transport hardening tests
-            self.state["last_error"] = {
-                "token": "transport_request_failed",
-                "transport_kind": kind,
-                "detail": exc.__class__.__name__,
-            }
-            self._record("transport_request_failed", detail=exc.__class__.__name__)
-            raise RuntimeError("transport_request_failed") from exc
+            self._record_transport_error("transport_request_failed", exc.__class__.__name__)
+            raise TransportRuntimeError(
+                "transport_request_failed",
+                kind,
+                exc.__class__.__name__,
+            ) from exc
 
         self.state["last_status_code"] = status_code
         self._record(
