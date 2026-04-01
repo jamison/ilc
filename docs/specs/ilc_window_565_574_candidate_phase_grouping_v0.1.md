@@ -47,8 +47,9 @@ machine proof reproducible rather than ad hoc.
 - Static peer configuration format for v1 is JSON.
 - NDJSON remains the format for append-only event logs and test traces, not for
   static operator configuration.
-- HTTP/2 fallback is enabled only through an explicit operator config switch in
-  this window; automatic fallback is deferred to a later hardening tranche.
+- The ADR-0025 fallback lane under `kind=http` is enabled only through an
+  explicit operator config switch in this window; automatic fallback is deferred
+  to a later hardening tranche.
 
 ### 2.2 Identity, security, and lifecycle decisions
 
@@ -88,8 +89,8 @@ Window 565-574 passes only if all of the following are true:
    real HTTP transport.
 5. Recipients validate the envelope, enforce the ratified header contract, and
    record deterministic success or failure in operator-visible logs.
-6. HTTP/2 fallback can be enabled explicitly and tested in an environment where
-   QUIC or UDP is unavailable.
+6. The ADR-0025 fallback lane under `kind=http` can be enabled explicitly and
+   tested in an environment where QUIC or UDP is unavailable.
 7. Restarting a node preserves the minimum required state for startup and does
    not destroy the ability to rejoin the static peer set.
 8. No DHT, dynamic peer discovery, multi-hop behavior, or agent-loop expansion
@@ -106,7 +107,7 @@ Deliverables:
 - A clean adapter boundary that is thin enough to replace later when the fuller
   node-integrated D2d runtime is designed.
 - Explicit config for `transport_kind=quic` production mode and
-  `transport_kind=http` fallback mode.
+  `transport_kind=http` fallback-proof mode.
 
 Test gates:
 - Build and validate outgoing headers only through the ratified envelope helper.
@@ -176,7 +177,7 @@ Test focus:
 
 Purpose:
 - Lock the minimal wrapper architecture around `gossip_transport.py`.
-- Lock explicit HTTP/2 fallback activation by configuration only.
+- Lock explicit ADR-0025 fallback activation by configuration only.
 - Lock server TLS plus `ILC-Signature` as the testbed identity posture.
 
 Test focus:
@@ -203,7 +204,8 @@ Expected deliverables:
 ### Phase 569 - Transport hardening and fallback activation
 
 Purpose:
-- Harden the runtime around QUIC-primary and explicit HTTP/2 fallback behavior.
+- Harden the runtime around QUIC-primary semantics and explicit `kind=http`
+  fallback behavior.
 - Add negative-path coverage and mutation/canary protections as needed.
 
 Expected deliverables:
