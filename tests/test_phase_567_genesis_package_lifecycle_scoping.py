@@ -95,8 +95,10 @@ def test_document_contains_all_required_tokens() -> None:
 
 def test_peer_config_json_contract_contains_required_fields() -> None:
     text = _read(DOC_PATH)
+    normalized = ' '.join(text.split())
     for field in CONFIG_FIELDS:
         assert field in text
+    assert 'after endpoint normalization' in normalized
 
 
 def test_genesis_import_contract_contains_required_fields() -> None:
