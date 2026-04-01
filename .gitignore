@@ -60,6 +60,9 @@ htmlcov/
 # Simulation output (generated)
 # =========================
 out/
+testbed/pki/
+testbed/configs/*/cert.pem
+testbed/configs/*/key.pem
 
 # =========================
 # Automation runtime state

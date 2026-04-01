@@ -61,15 +61,19 @@ Used for manual allow, deny, and pin rules.
 
 ## 4. Canonical remote scripts
 
-The next implementation lane should reserve these script names:
+The current implementation lane uses these script names:
+- `tools/testbed/render_testbed_configs.py`
+- `tools/testbed/generate_testbed_tls.sh`
+- `tools/testbed/sync_repo.sh`
+- `tools/testbed/install_service.sh`
 - `tools/testbed/push_configs.sh`
-- `tools/testbed/push_genesis.sh`
 - `tools/testbed/start_nodes.sh`
 - `tools/testbed/stop_nodes.sh`
 - `tools/testbed/restart_nodes.sh`
 - `tools/testbed/tail_logs.sh`
 - `tools/testbed/run_remote_smoke.sh`
 - `tools/testbed/collect_diagnostics.sh`
+- `tools/testbed/run_three_node_exchange.sh`
 
 ## 5. Script output contract
 
