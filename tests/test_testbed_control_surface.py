@@ -25,6 +25,7 @@ from tools import prove_rc0_1_economic_state
 from tools import render_rc0_1_readiness_delta
 from tools import run_rc0_1_release_candidate
 from tools import run_rc0_1_release_gate
+from tools.testbed import run_rc0_1_substrate_closure
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -995,6 +996,63 @@ def test_release_candidate_manifest_records_optional_economic_state(monkeypatch:
     assert manifest['economic_manifest_path'].endswith('economic-state/manifest.json')
     assert 'economic_stdout' in manifest
     assert manifest['release_claim_manifest_path'].endswith('claim/manifest.json')
+
+
+def test_substrate_closure_skips_nested_diagnostics_in_recovery_and_negative_drills(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    commands: list[list[str]] = []
+
+    def _fake_run_step(name: str, command: list[str], *, output_root: Path, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+        commands.append(command)
+        if name == 'three_node_seven_agent':
+            scenario_root = Path(command[command.index('--output-root') + 1])
+            scenario_root.mkdir(parents=True, exist_ok=True)
+            (scenario_root / 'economic-state').mkdir(parents=True, exist_ok=True)
+            (scenario_root / 'scenario_manifest.json').write_text(
+                json.dumps(
+                    {
+                        'economic_manifest_path': str(scenario_root / 'economic-state' / 'manifest.json'),
+                    },
+                    indent=2,
+                ) + '\n',
+                encoding='utf-8',
+            )
+            (scenario_root / 'economic-state' / 'manifest.json').write_text(
+                json.dumps({'summary': {'distribution_check_ok': True}}, indent=2) + '\n',
+                encoding='utf-8',
+            )
+        elif name == 'three_node_seven_agent_replay':
+            replay_root = Path(command[command.index('--output-root') + 1])
+            replay_root.mkdir(parents=True, exist_ok=True)
+            (replay_root / 'replay_manifest.json').write_text('{}\n', encoding='utf-8')
+        elif name == 'install_shape_proof':
+            install_root = Path(command[command.index('--output-root') + 1])
+            install_root.mkdir(parents=True, exist_ok=True)
+            (install_root / 'manifest.json').write_text('{}\n', encoding='utf-8')
+        elif name == 'collect_diagnostics':
+            diagnostics_root = Path(env['TESTBED_DIAGNOSTICS_ROOT'])
+            diagnostics_root.mkdir(parents=True, exist_ok=True)
+            (diagnostics_root / 'manifest.json').write_text('{}\n', encoding='utf-8')
+        elif name == 'render_evidence':
+            evidence_root = Path(command[command.index('--output-root') + 1])
+            evidence_root.mkdir(parents=True, exist_ok=True)
+            (evidence_root / 'manifest.json').write_text('{}\n', encoding='utf-8')
+        return subprocess.CompletedProcess(command, 0, stdout='ok', stderr='')
+
+    monkeypatch.setattr(run_rc0_1_substrate_closure, '_run_step', _fake_run_step)
+
+    manifest = run_rc0_1_substrate_closure.run_closure(
+        output_root=tmp_path / 'closure',
+        include_home_install_proof=True,
+    )
+
+    assert manifest['scenario_manifest_path'].endswith('scenario_manifest.json')
+    recovery_command = next(command for command in commands if command[:2] == ['bash', 'tools/testbed/run_recovery_drills.sh'])
+    negative_command = next(command for command in commands if command[:2] == ['bash', 'tools/testbed/run_negative_path_drills.sh'])
+    assert recovery_command[-1] == '--skip-diagnostics'
+    assert negative_command[-1] == '--skip-diagnostics'
 
 
 def test_run_release_gate_uses_generated_economic_proof_manifest(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
