@@ -98,4 +98,5 @@ result.
 - `out/testbed/seven-agent/20260402_1635/economic-state/manifest.json`
 - `out/testbed/rc0_1_substrate/20260402_011353/evidence/manifest.json`
 - `out/rc0_1_bundle/20260402_012439/manifest.json`
-- `out/rc0_1_release_candidate/20260402_110239/economic-state/manifest.json`
+- `out/rc0_1_release_candidate/20260402_190425/substrate/scenario/economic-state/manifest.json`
+- `out/rc0_1_release_candidate/20260402_190425/manifest.json`
