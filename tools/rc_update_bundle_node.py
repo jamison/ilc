@@ -7,11 +7,16 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+for candidate in (REPO_ROOT, SCRIPT_DIR):
+    if str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
 
-from tools.rc_bundle_runtime import RcBundleRuntimeError, update_bundle, write_result
+try:
+    from tools.rc_bundle_runtime import RcBundleRuntimeError, update_bundle, write_result
+except ModuleNotFoundError:
+    from rc_bundle_runtime import RcBundleRuntimeError, update_bundle, write_result
 
 
 def _parser() -> argparse.ArgumentParser:

@@ -71,6 +71,11 @@ def check_release_gate(*, bundle_manifest_path: Path, evidence_manifest_path: Pa
 
     if evidence.get('scenario_summary', {}).get('panel_verdict_token') != 'panel_quorum_passed':
         failures.append('scenario_panel_verdict_not_passed')
+    scenario_replay = evidence.get('scenario_replay_summary', {})
+    if scenario_replay.get('panel_result_matches') is not True:
+        failures.append('scenario_replay_panel_not_matched')
+    if scenario_replay.get('ecu_claims_match') is not True:
+        failures.append('scenario_replay_claims_not_matched')
 
     unsatisfied_rows = sorted(
         area for area, status in checklist_statuses.items() if status != 'satisfied_for_testbed'
@@ -88,6 +93,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--bundle-manifest', required=True)
     parser.add_argument('--evidence-manifest', required=True)
     parser.add_argument('--checklist', default='docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md')
+    parser.add_argument('--proof-manifest')
     return parser
 
 
@@ -98,6 +104,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         evidence_manifest_path=Path(args.evidence_manifest),
         checklist_path=Path(args.checklist),
     )
+    if args.proof_manifest:
+        proof_payload = json.loads(Path(args.proof_manifest).read_text(encoding='utf-8'))
+        proof_failures = [
+            item.get('host', 'unknown')
+            for item in proof_payload.get('results', [])
+            if item.get('status') != 'ok'
+        ]
+        if proof_failures:
+            failures.append(f"bundle_install_proof_failed:{','.join(sorted(proof_failures))}")
     if failures:
         for failure in failures:
             print(failure)
