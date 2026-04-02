@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
@@ -156,19 +157,35 @@ def prove_economic_state(*, manifest_path: Path, output_root: Path) -> dict[str,
 
     wallet_rows = orig_wallets.get("wallets", {}) if isinstance(orig_wallets, dict) else {}
     first_agent_id = next(iter(sorted(wallet_rows)), None)
-    query_payloads = {
-        "summary": query_rc0_1_economic_state.query_summary(manifest_path),
-        "store_summary": query_rc0_1_economic_state.query_store_summary(manifest_path),
-        "quorum_record": query_rc0_1_economic_state.query_quorum_record(manifest_path),
-        "wallet_export": query_rc0_1_economic_state.query_wallet_export(manifest_path),
-    }
+    query_payloads: dict[str, Any] = {}
+    query_timings_ms: dict[str, float] = {}
+
+    def _record_query(name: str, callback: Any) -> None:
+        started = time.perf_counter()
+        query_payloads[name] = callback()
+        query_timings_ms[name] = round((time.perf_counter() - started) * 1000.0, 6)
+
+    _record_query("summary", lambda: query_rc0_1_economic_state.query_summary(manifest_path))
+    _record_query("store_summary", lambda: query_rc0_1_economic_state.query_store_summary(manifest_path))
+    _record_query("quorum_record", lambda: query_rc0_1_economic_state.query_quorum_record(manifest_path))
+    _record_query("wallet_export", lambda: query_rc0_1_economic_state.query_wallet_export(manifest_path))
+    _record_query("graph_summary", lambda: query_rc0_1_economic_state.query_graph_summary(manifest_path))
+    _record_query("graph_links", lambda: query_rc0_1_economic_state.query_graph_links(manifest_path))
+    _record_query("ledger_summary", lambda: query_rc0_1_economic_state.query_ledger_summary(manifest_path))
     if isinstance(first_agent_id, str):
-        query_payloads["wallet_status"] = query_rc0_1_economic_state.query_wallet_status(manifest_path, first_agent_id)
-        query_payloads["wallet_history"] = query_rc0_1_economic_state.query_wallet_history(manifest_path, first_agent_id)
-        query_payloads["graph_node"] = query_rc0_1_economic_state.query_graph(
-            manifest_path,
-            orig_nodes[0].get("id") if orig_nodes else None,
+        _record_query(
+            "wallet_status",
+            lambda: query_rc0_1_economic_state.query_wallet_status(manifest_path, first_agent_id),
         )
+        _record_query(
+            "wallet_history",
+            lambda: query_rc0_1_economic_state.query_wallet_history(manifest_path, first_agent_id),
+        )
+        if orig_nodes:
+            _record_query(
+                "graph_node",
+                lambda: query_rc0_1_economic_state.query_graph_node(manifest_path, str(orig_nodes[0].get("id"))),
+            )
 
     output_path = output_root / "manifest.json"
     proof_manifest = {
@@ -181,6 +198,7 @@ def prove_economic_state(*, manifest_path: Path, output_root: Path) -> dict[str,
         "invariant_summary": invariant_summary,
         "comparison": comparison,
         "query_payloads": query_payloads,
+        "query_timings_ms": query_timings_ms,
         "runtime_store": query_rc0_1_economic_state.load_runtime_store(manifest),
         "replay_runtime_store": replay_manifest.get("runtime_store", {}),
     }

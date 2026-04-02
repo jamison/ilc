@@ -92,6 +92,8 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
     task_id = summary.get("task_id")
     if task_id and quorum_record.get("task_id") != task_id:
         failures.append("economic_quorum_task_id_mismatch")
+    if not isinstance(quorum_record, dict) or not quorum_record:
+        failures.append("economic_quorum_record_missing")
     if task_id and settlement_manifest.get("task_id") != task_id:
         failures.append("economic_settlement_task_id_mismatch")
     if not isinstance(runtime_identity, dict):
@@ -99,6 +101,9 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
         runtime_identity = {}
     if task_id and runtime_identity.get("task_id") != task_id:
         failures.append("economic_runtime_identity_task_id_mismatch")
+    expected_epoch_index = settlement_manifest.get("epoch_index")
+    if isinstance(expected_epoch_index, int) and runtime_identity.get("epoch_index") != expected_epoch_index:
+        failures.append("economic_runtime_identity_epoch_index_mismatch")
 
     expected_node_count = summary.get("node_count")
     if isinstance(expected_node_count, int) and expected_node_count != len(nodes):
@@ -147,6 +152,8 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
     expected_epoch_id = settlement_manifest.get("epoch_id")
     if isinstance(expected_epoch_id, str) and expected_epoch_id and expected_epoch_id not in epoch_records:
         failures.append("economic_epoch_record_missing")
+    if isinstance(expected_epoch_id, str) and expected_epoch_id and runtime_identity.get("epoch_id") != expected_epoch_id:
+        failures.append("economic_runtime_identity_epoch_id_mismatch")
     settlement_status = settlement_manifest.get("settlement_status")
     if settlement_status not in {"applied", "idempotent_replay"}:
         failures.append("economic_settlement_status_invalid")
@@ -155,6 +162,12 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
         failures.append("economic_claim_batch_sha256_missing")
     elif runtime_identity.get("claims_sha256") != claim_batch_sha256:
         failures.append("economic_runtime_identity_claims_mismatch")
+    latest_epoch_id = wallet_manifest.get("latest_epoch_id") if isinstance(wallet_manifest, dict) else None
+    if isinstance(expected_epoch_id, str) and expected_epoch_id and latest_epoch_id != expected_epoch_id:
+        failures.append("economic_wallet_manifest_latest_epoch_mismatch")
+    wallet_claim_batch_sha256 = wallet_manifest.get("claim_batch_sha256") if isinstance(wallet_manifest, dict) else None
+    if isinstance(claim_batch_sha256, str) and claim_batch_sha256 and wallet_claim_batch_sha256 != claim_batch_sha256:
+        failures.append("economic_wallet_manifest_claim_batch_mismatch")
 
     for agent_id, row in sorted(wallet_rows.items()):
         if not isinstance(row, dict):
