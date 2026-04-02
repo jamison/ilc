@@ -149,6 +149,69 @@ def test_cli_run_agent_writes_submission_file(tmp_path: Path) -> None:
     assert (tmp_path / "submission_1.json").exists()
 
 
+def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
+    task = _task()
+    submissions_dir = tmp_path / "submissions"
+    submissions_dir.mkdir()
+    submissions = [
+        _submission(1, "01" * 16, "cluster-a"),
+        _submission(2, "02" * 16, "cluster-b"),
+        _submission(3, "03" * 16, "cluster-c"),
+        _submission(4, "04" * 16, "cluster-a"),
+        _submission(5, "05" * 16, "cluster-b"),
+        _submission(6, "06" * 16, "cluster-c"),
+        _submission(7, "07" * 16, "cluster-d", variant="divergent"),
+    ]
+    for index, submission in enumerate(submissions, start=1):
+        (submissions_dir / f"submission_{index}.json").write_text(
+            json.dumps({"submission": submission}, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+    outsider = agent_loop_v1._build_outsider_submission(task, "08" * 16, "cluster-e", "ilc-node-1")
+    panel_payload = agent_loop_v1.evaluate_panel(task=task, submissions=submissions, outsider_submission=outsider)
+    claim_payload = agent_loop_v1.build_ecu_claim_batch(task, panel_payload)
+    panel_path = tmp_path / "panel_result.json"
+    claims_path = tmp_path / "ecu_claims.json"
+    panel_path.write_text(json.dumps(panel_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    claims_path.write_text(json.dumps(claim_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    task_json_b64 = base64.b64encode(json.dumps(task).encode("utf-8")).decode("ascii")
+    result = subprocess.run(
+        [
+            "python3",
+            "tools/agent_loop_v1.py",
+            "replay-panel",
+            "--submission-dir",
+            str(submissions_dir),
+            "--panel-result-file",
+            str(panel_path),
+            "--ecu-claims-file",
+            str(claims_path),
+            "--outsider-seed-hex",
+            "08" * 16,
+            "--outsider-cluster-id",
+            "cluster-e",
+            "--outsider-node-name",
+            "ilc-node-1",
+            "--emit-dir",
+            str(tmp_path),
+            "--task-json-base64",
+            task_json_b64,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout.strip())
+    assert payload["marker"] == "agent_loop_replay_ok"
+    assert payload["panel_result_matches"] is True
+    assert payload["ecu_claims_match"] is True
+    assert (tmp_path / "panel_replay.json").exists()
+
+
 def test_default_scenario_spec_has_seven_agents_and_outsider() -> None:
     payload = scenario_runner._load_scenario(scenario_runner.DEFAULT_SCENARIO_SPEC)
     assert len(payload["agents"]) == 7

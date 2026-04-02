@@ -40,6 +40,20 @@ def run_release_gate(*, evidence_root: Path, output_root: Path) -> dict[str, obj
     bundle_manifest_path = Path(bundle_payload['manifest']['manifest_path']) if 'manifest_path' in bundle_payload['manifest'] else bundle_output / 'manifest.json'
     if not bundle_manifest_path.exists():
         bundle_manifest_path = bundle_output / 'manifest.json'
+    proof_output = output_root / 'bundle-install-proof'
+    proof_result = _run([
+        'python3',
+        'tools/prove_rc0_1_bundle_install.py',
+        '--bundle-root',
+        str(bundle_output),
+        '--output-root',
+        str(proof_output),
+        '--include-home',
+    ])
+    proof_payload = json.loads(proof_result.stdout.strip())
+    proof_manifest_path = Path(proof_payload['manifest']['manifest_path']) if 'manifest_path' in proof_payload['manifest'] else proof_output / 'manifest.json'
+    if not proof_manifest_path.exists():
+        proof_manifest_path = proof_output / 'manifest.json'
 
     verdict_result = _run([
         'python3',
@@ -48,13 +62,17 @@ def run_release_gate(*, evidence_root: Path, output_root: Path) -> dict[str, obj
         str(bundle_manifest_path),
         '--evidence-manifest',
         str(evidence_root / 'manifest.json'),
+        '--proof-manifest',
+        str(proof_manifest_path),
     ])
     payload = {
         'version': 'rc0_1_release_gate_v0.1',
         'generated_at': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
         'bundle_manifest_path': str(bundle_manifest_path),
+        'bundle_install_proof_manifest_path': str(proof_manifest_path),
         'evidence_manifest_path': str(evidence_root / 'manifest.json'),
         'bundle_stdout': bundle_result.stdout.strip(),
+        'bundle_install_proof_stdout': proof_result.stdout.strip(),
         'release_verdict_stdout': verdict_result.stdout.strip(),
     }
     manifest_path = output_root / 'manifest.json'

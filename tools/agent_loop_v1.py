@@ -703,6 +703,94 @@ def _run_panel_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _normalized_claim_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: value
+        for key, value in payload.items()
+        if key not in {"marker", "runtime_version"}
+    }
+
+
+def replay_panel(
+    *,
+    task: dict[str, Any],
+    submissions: list[dict[str, Any]],
+    outsider_seed_hex: str,
+    outsider_cluster_id: str,
+    outsider_node_name: str,
+    panel_result_payload: dict[str, Any],
+    ecu_claim_payload: dict[str, Any],
+) -> dict[str, Any]:
+    outsider_submission = _build_outsider_submission(
+        task,
+        outsider_seed_hex,
+        outsider_cluster_id,
+        outsider_node_name,
+    )
+    recomputed_panel = evaluate_panel(
+        task=task,
+        submissions=submissions,
+        outsider_submission=outsider_submission,
+    )
+    recomputed_claims = build_ecu_claim_batch(task, recomputed_panel)
+
+    expected_panel = _require_dict(
+        "panel_result",
+        panel_result_payload.get("panel_result", panel_result_payload),
+    )
+    panel_matches = expected_panel == recomputed_panel.get("panel_result")
+    claims_matches = _normalized_claim_payload(ecu_claim_payload) == _normalized_claim_payload(recomputed_claims)
+    if not panel_matches:
+        raise AgentLoopRuntimeError(
+            "agent_loop_panel_replay_mismatch",
+            "recomputed panel result does not match saved panel artifact",
+        )
+    if not claims_matches:
+        raise AgentLoopRuntimeError(
+            "agent_loop_claim_replay_mismatch",
+            "recomputed ECU claim batch does not match saved claim artifact",
+        )
+    return {
+        "marker": "agent_loop_replay_ok",
+        "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
+        "panel_result_matches": panel_matches,
+        "ecu_claims_match": claims_matches,
+        "panel_verdict_token": recomputed_panel["panel_result"]["verdict_token"],
+        "ecu_claim_count": len(recomputed_claims["claims"]),
+        "reward_total": recomputed_claims["ledger"]["rewards_paid"],
+    }
+
+
+def _run_replay_command(args: argparse.Namespace) -> int:
+    task = _load_task_spec(
+        task_spec_path=args.task_spec,
+        task_json=args.task_json,
+        task_json_base64=args.task_json_base64,
+    )
+    submissions = _load_submission_payloads(args.submission_dir)
+    panel_payload = _require_dict(
+        "panel_payload",
+        json.loads(Path(args.panel_result_file).read_text(encoding="utf-8")),
+    )
+    claims_payload = _require_dict(
+        "ecu_claim_payload",
+        json.loads(Path(args.ecu_claims_file).read_text(encoding="utf-8")),
+    )
+    result = replay_panel(
+        task=task,
+        submissions=submissions,
+        outsider_seed_hex=args.outsider_seed_hex,
+        outsider_cluster_id=args.outsider_cluster_id,
+        outsider_node_name=args.outsider_node_name,
+        panel_result_payload=panel_payload,
+        ecu_claim_payload=claims_payload,
+    )
+    if args.emit_dir:
+        _write_json(Path(args.emit_dir) / "panel_replay.json", result)
+    _emit(result)
+    return 0
+
+
 def _run_broadcast_command(args: argparse.Namespace) -> int:
     artifact_path = Path(args.artifact_file)
     payload = _require_dict(
@@ -762,6 +850,16 @@ def _build_parser() -> argparse.ArgumentParser:
     panel.add_argument("--emit-dir")
     add_task_source(panel)
 
+    replay = subparsers.add_parser("replay-panel", help="Replay saved panel artifacts and verify deterministic agreement")
+    replay.add_argument("--submission-dir", required=True)
+    replay.add_argument("--panel-result-file", required=True)
+    replay.add_argument("--ecu-claims-file", required=True)
+    replay.add_argument("--outsider-seed-hex", required=True)
+    replay.add_argument("--outsider-cluster-id", required=True)
+    replay.add_argument("--outsider-node-name", default="ilc-node-1")
+    replay.add_argument("--emit-dir")
+    add_task_source(replay)
+
     broadcast = subparsers.add_parser("broadcast-artifact", help="Broadcast a JSON artifact over the live gossip path")
     broadcast.add_argument("--node-config", required=True)
     broadcast.add_argument("--artifact-file", required=True)
@@ -779,6 +877,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _run_agent_command(args)
         if args.command == "evaluate-panel":
             return _run_panel_command(args)
+        if args.command == "replay-panel":
+            return _run_replay_command(args)
         if args.command == "broadcast-artifact":
             return _run_broadcast_command(args)
         raise AgentLoopRuntimeError("agent_loop_command_unknown", f"unknown command: {args.command}")

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -344,6 +345,7 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
     diagnostics_manifest_path = tmp_path / 'diagnostics_manifest.json'
     install_manifest_path = tmp_path / 'install_manifest.json'
     scenario_manifest_path = tmp_path / 'scenario_manifest.json'
+    scenario_replay_manifest_path = tmp_path / 'scenario_replay_manifest.json'
     bootstrap_distribution_path = tmp_path / 'bootstrap_distribution.json'
     steps_dir = tmp_path / 'steps'
     steps_dir.mkdir()
@@ -372,6 +374,19 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
         ) + '\n',
         encoding='utf-8',
     )
+    scenario_replay_manifest_path.write_text(
+        json.dumps(
+            {
+                'replay_payload': {
+                    'panel_result_matches': True,
+                    'ecu_claims_match': True,
+                    'panel_verdict_token': 'panel_quorum_passed',
+                }
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
     bootstrap_distribution_path.write_text(
         json.dumps({'approved_peer_count': 3}, indent=2) + '\n',
         encoding='utf-8',
@@ -385,12 +400,14 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
         diagnostics_manifest_path=diagnostics_manifest_path,
         install_proof_manifest_path=install_manifest_path,
         scenario_manifest_path=scenario_manifest_path,
+        scenario_replay_manifest_path=scenario_replay_manifest_path,
         steps_dir=steps_dir,
     )
 
     assert manifest['repo_head'] == 'deadbeef'
     assert manifest['closure_rows']['install_shape'] == 'satisfied_for_testbed'
     assert manifest['closure_rows']['three_node_seven_agent_path'] == 'satisfied_for_testbed'
+    assert manifest['closure_rows']['three_node_seven_agent_replay'] == 'satisfied_for_testbed'
     assert (output_root / 'manifest.json').exists()
     assert (output_root / 'summary.md').exists()
 
@@ -405,9 +422,14 @@ def test_check_rc0_1_substrate_closure_accepts_satisfied_evidence(tmp_path: Path
                     'bootstrap_distribution': 'satisfied_for_testbed',
                     'diagnostics': 'satisfied_for_testbed',
                     'three_node_seven_agent_path': 'satisfied_for_testbed',
+                    'three_node_seven_agent_replay': 'satisfied_for_testbed',
                     'release_evidence': 'satisfied_for_testbed',
                 },
                 'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
+                'scenario_replay_summary': {
+                    'panel_result_matches': True,
+                    'ecu_claims_match': True,
+                },
             },
             indent=2,
         ) + '\n',
@@ -448,9 +470,14 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
                     'bootstrap_distribution': 'satisfied_for_testbed',
                     'diagnostics': 'satisfied_for_testbed',
                     'three_node_seven_agent_path': 'satisfied_for_testbed',
+                    'three_node_seven_agent_replay': 'satisfied_for_testbed',
                     'release_evidence': 'satisfied_for_testbed',
                 },
                 'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
+                'scenario_replay_summary': {
+                    'panel_result_matches': True,
+                    'ecu_claims_match': True,
+                },
             },
             indent=2,
         ) + '\n',
@@ -467,6 +494,19 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
         ) + '\n',
         encoding='utf-8',
     )
+    proof_manifest_path = tmp_path / 'proof_manifest.json'
+    proof_manifest_path.write_text(
+        json.dumps(
+            {
+                'results': [
+                    {'host': 'ilc-node-1', 'status': 'ok'},
+                    {'host': 'ilc-node-2', 'status': 'ok'},
+                ]
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
 
     verdict, failures = check_rc0_1_release_gate.check_release_gate(
         bundle_manifest_path=bundle_manifest_path,
@@ -475,3 +515,31 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
     )
     assert verdict == 'pass'
     assert failures == []
+
+    proof_payload = json.loads(proof_manifest_path.read_text(encoding='utf-8'))
+    assert all(item['status'] == 'ok' for item in proof_payload['results'])
+
+
+def test_bundle_installer_scripts_are_runnable_from_copied_bundle_layout(tmp_path: Path) -> None:
+    installer_root = tmp_path / 'installer'
+    installer_root.mkdir()
+    for name in ('rc_bundle_runtime.py', 'rc_install_bundle_node.py', 'rc_update_bundle_node.py'):
+        shutil.copy2(Path('tools') / name, installer_root / name)
+
+    install_result = subprocess.run(
+        ['python3', str(installer_root / 'rc_install_bundle_node.py'), '--help'],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=str(tmp_path),
+    )
+    update_result = subprocess.run(
+        ['python3', str(installer_root / 'rc_update_bundle_node.py'), '--help'],
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=str(tmp_path),
+    )
+
+    assert install_result.returncode == 0, install_result.stderr
+    assert update_result.returncode == 0, update_result.stderr
