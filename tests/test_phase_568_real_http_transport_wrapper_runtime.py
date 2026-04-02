@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 import textwrap
+import urllib.error
 import urllib.request
 from dataclasses import fields
 from pathlib import Path
@@ -312,6 +313,27 @@ def test_handle_gossip_request_uses_validate_gossip_headers(tmp_path: Path, monk
     assert calls['headers'] == headers
 
 
+def test_handle_gossip_request_rejects_payloads_above_cap(tmp_path: Path) -> None:
+    transport = runtime.HttpGossipTransportRuntime(_config(tmp_path))
+    headers = gossip_transport.build_gossip_headers(
+        gossip_type='centrality_delta',
+        channel='cid:1234567890abcdef',
+        epoch=3,
+        hop_count=1,
+        signature='sig-3',
+    )
+
+    status = transport.handle_gossip_request(
+        '/ilc/gossip/centrality_delta',
+        headers,
+        content_length=runtime.MAX_INBOUND_PAYLOAD_BYTES + 1,
+    )
+
+    assert status == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+    assert transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+    assert transport.state['event_log'][-1]['token'] == runtime.PAYLOAD_TOO_LARGE_TOKEN
+
+
 def test_loopback_send_receive_over_real_http_returns_success_status_code(tmp_path: Path) -> None:
     server_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'server'))
     client_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'client'))
@@ -327,6 +349,38 @@ def test_loopback_send_receive_over_real_http_returns_success_status_code(tmp_pa
         )
         assert status == gossip_transport.HTTP_STATUS_BUFFERED
         assert server_transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_BUFFERED
+    finally:
+        server_transport.stop()
+
+
+def test_loopback_rejects_oversized_payload_before_buffering(tmp_path: Path) -> None:
+    server_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'server'))
+    client_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'client'))
+    server_transport.start()
+    try:
+        endpoint = f"https://127.0.0.1:{server_transport.state['bound_port']}"
+        request = urllib.request.Request(
+            url=f"{endpoint}/ilc/gossip/centrality_delta",
+            data=b'x' * (runtime.MAX_INBOUND_PAYLOAD_BYTES + 1),
+            headers=gossip_transport.build_gossip_headers(
+                gossip_type='centrality_delta',
+                channel='cid:1234567890abcdef',
+                epoch=5,
+                hop_count=1,
+                signature='sig-5',
+            ),
+            method='POST',
+        )
+        with pytest.raises((urllib.error.HTTPError, urllib.error.URLError)) as exc_info:
+            urllib.request.urlopen(
+                request,
+                timeout=client_transport.config.request_timeout_seconds,
+                context=client_transport._client_ssl_context(),
+            )
+        if isinstance(exc_info.value, urllib.error.HTTPError):
+            assert exc_info.value.code == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+        assert server_transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+        assert server_transport.state['event_log'][-1]['token'] == runtime.PAYLOAD_TOO_LARGE_TOKEN
     finally:
         server_transport.stop()
 

@@ -29,6 +29,9 @@ GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
 TRANSPORT_KIND_QUIC = "quic"
 TRANSPORT_KIND_HTTP = "http"
+MAX_INBOUND_PAYLOAD_BYTES = 1_048_576
+PAYLOAD_TOO_LARGE_TOKEN = "gossip_payload_too_large"
+CONTENT_LENGTH_INVALID_TOKEN = "gossip_content_length_invalid"
 
 assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == GOSSIP_TRANSPORT_DEPENDENCY, (
     f"dep chain mismatch: {gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION}"
@@ -108,6 +111,17 @@ class HttpGossipTransportRuntime:
             raise ValueError("transport_kind_unsupported")
         return normalized
 
+    def _validated_content_length(self, value: Any) -> int:
+        if value is None:
+            return 0
+        try:
+            normalized = int(str(value).strip())
+        except (TypeError, ValueError) as exc:
+            raise ValueError(CONTENT_LENGTH_INVALID_TOKEN) from exc
+        if normalized < 0:
+            raise ValueError(CONTENT_LENGTH_INVALID_TOKEN)
+        return normalized
+
     def _require_path(self, value: str, missing_token: str, not_found_token: str) -> Path:
         if not isinstance(value, str) or not value.strip():
             raise ValueError(missing_token)
@@ -163,10 +177,24 @@ class HttpGossipTransportRuntime:
         class _Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:  # noqa: N802
                 headers = {key: value for key, value in self.headers.items()}
-                content_length = int(self.headers.get("Content-Length", "0"))
-                if content_length:
+                try:
+                    content_length = runtime._validated_content_length(
+                        self.headers.get("Content-Length")
+                    )
+                except ValueError as exc:
+                    token = str(exc)
+                    runtime._record("incoming_envelope_rejected", token=token)
+                    runtime.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    self.send_response(gossip_transport.HTTP_STATUS_ENVELOPE_ERROR)
+                    self.end_headers()
+                    return
+                status_code = runtime.handle_gossip_request(
+                    self.path,
+                    headers,
+                    content_length=content_length,
+                )
+                if status_code == gossip_transport.HTTP_STATUS_BUFFERED and content_length:
                     self.rfile.read(content_length)
-                status_code = runtime.handle_gossip_request(self.path, headers)
                 self.send_response(status_code)
                 self.end_headers()
 
@@ -202,8 +230,22 @@ class HttpGossipTransportRuntime:
         self._thread = None
         self.state["running"] = False
 
-    def handle_gossip_request(self, path: str, headers: dict[str, str]) -> int:
+    def handle_gossip_request(
+        self,
+        path: str,
+        headers: dict[str, str],
+        *,
+        content_length: int | None = None,
+    ) -> int:
         normalized_headers = self._canonicalize_headers(headers)
+        if content_length is not None and content_length > MAX_INBOUND_PAYLOAD_BYTES:
+            self._record(
+                "incoming_envelope_rejected",
+                token=PAYLOAD_TOO_LARGE_TOKEN,
+                content_length=content_length,
+            )
+            self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
         try:
             gossip_type = str(normalized_headers["ILC-Gossip-Type"]).strip()
             expected_path = gossip_transport.gossip_request_path(gossip_type)
