@@ -67,6 +67,8 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
     economic_proof_manifest_path = None
     economic_proof_manifest = None
     economic_proof_pass = False
+    economic_negative_path_pass = False
+    economic_replay_pass = False
     economic_proof_path_value = release_manifest.get("economic_proof_manifest_path")
     if economic_proof_path_value:
         candidate_economic_proof_manifest = Path(str(economic_proof_path_value))
@@ -76,7 +78,16 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
             comparison = economic_proof_manifest.get("comparison", {})
             if isinstance(comparison, dict) and comparison and all(comparison.values()):
                 runtime_store = (economic_proof_manifest.get("invariant_summary") or {}).get("runtime_store", {})
-                economic_proof_pass = runtime_store.get("store_kind") == "lmdb_public_runtime_v0.1"
+                economic_negative_path_pass = economic_proof_manifest.get("negative_path_verdict") == "pass"
+                economic_replay_pass = (
+                    economic_proof_manifest.get("replay_verdict") == "pass"
+                    and economic_proof_manifest.get("replay_settlement_status") == "idempotent_replay"
+                )
+                economic_proof_pass = (
+                    runtime_store.get("store_kind") == "lmdb_public_runtime_v0.1"
+                    and economic_negative_path_pass
+                    and economic_replay_pass
+                )
     economic_manifest_path = None
     economic_manifest = None
     economic_summary: dict[str, Any] | None = None
@@ -104,6 +115,9 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
             "settlement_status": settlement_manifest.get("settlement_status") if isinstance(settlement_manifest, dict) else None,
             "latest_epoch_id": wallet_manifest.get("latest_epoch_id") if isinstance(wallet_manifest, dict) else None,
             "runtime_store_kind": runtime_store.get("store_kind") if isinstance(runtime_store, dict) else None,
+            "negative_path_verdict": economic_proof_manifest.get("negative_path_verdict") if isinstance(economic_proof_manifest, dict) else None,
+            "replay_verdict": economic_proof_manifest.get("replay_verdict") if isinstance(economic_proof_manifest, dict) else None,
+            "replay_settlement_status": economic_proof_manifest.get("replay_settlement_status") if isinstance(economic_proof_manifest, dict) else None,
         }
     scenario_summary = evidence_manifest.get("scenario_summary", {})
     scenario_replay_summary = evidence_manifest.get("scenario_replay_summary", {})
@@ -160,6 +174,8 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
         "economic_state_present": economic_manifest is not None,
         "economic_summary": economic_summary,
         "economic_claim_summary": economic_claim_summary,
+        "economic_negative_path_pass": economic_negative_path_pass,
+        "economic_replay_pass": economic_replay_pass,
         "unsatisfied_closure_rows": unsatisfied_rows,
         "failed_bundle_hosts": failed_bundle_hosts,
         "publication_pending_items": PUBLICATION_PENDING_ITEMS,

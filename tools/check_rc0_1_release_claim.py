@@ -57,13 +57,29 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
     if not isinstance(economic_claim_summary, dict):
         failures.append("claim_field_missing:economic_claim_summary")
     else:
-        for key in ("task_id", "reward_total", "wallet_count", "rewarded_wallet_count", "settlement_status", "runtime_store_kind"):
+        for key in (
+            "task_id",
+            "reward_total",
+            "wallet_count",
+            "rewarded_wallet_count",
+            "settlement_status",
+            "runtime_store_kind",
+            "negative_path_verdict",
+            "replay_verdict",
+            "replay_settlement_status",
+        ):
             if economic_claim_summary.get(key) in (None, ""):
                 failures.append(f"claim_economic_summary_missing:{key}")
         if economic_claim_summary.get("runtime_store_kind") != "lmdb_public_runtime_v0.1":
             failures.append("claim_economic_runtime_store_kind_invalid")
         if economic_claim_summary.get("settlement_status") not in {"applied", "idempotent_replay"}:
             failures.append("claim_economic_settlement_status_invalid")
+        if economic_claim_summary.get("negative_path_verdict") != "pass":
+            failures.append("claim_economic_negative_path_invalid")
+        if economic_claim_summary.get("replay_verdict") != "pass":
+            failures.append("claim_economic_replay_verdict_invalid")
+        if economic_claim_summary.get("replay_settlement_status") != "idempotent_replay":
+            failures.append("claim_economic_replay_settlement_status_invalid")
     delta_economic_claim_summary = delta_manifest.get("economic_claim_summary")
     if isinstance(economic_claim_summary, dict) and isinstance(delta_economic_claim_summary, dict):
         if economic_claim_summary != delta_economic_claim_summary:
@@ -83,6 +99,10 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
         failures.append("bundle_install_proof_not_pass")
     if delta_manifest.get("economic_proof_pass") is not True:
         failures.append("economic_proof_not_pass")
+    if delta_manifest.get("economic_negative_path_pass") is not True:
+        failures.append("economic_negative_path_not_pass")
+    if delta_manifest.get("economic_replay_pass") is not True:
+        failures.append("economic_replay_not_pass")
     if delta_manifest.get("unsatisfied_closure_rows"):
         failures.append("unsatisfied_closure_rows_present")
     if not delta_manifest.get("publication_pending_items"):
