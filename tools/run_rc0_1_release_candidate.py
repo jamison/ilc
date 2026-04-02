@@ -31,7 +31,7 @@ def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
     return result
 
 
-def run_release_candidate(*, output_root: Path, include_home_install_proof: bool) -> dict[str, object]:
+def run_release_candidate(*, output_root: Path, include_home_install_proof: bool, emit_release_claim: bool) -> dict[str, object]:
     output_root.mkdir(parents=True, exist_ok=True)
     closure_root = output_root / "substrate"
     closure_command = [
@@ -64,6 +64,21 @@ def run_release_candidate(*, output_root: Path, include_home_install_proof: bool
     }
     manifest_path = output_root / "manifest.json"
     manifest_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if emit_release_claim:
+        claim_root = output_root / "claim"
+        claim_result = _run(
+            [
+                "python3",
+                "tools/run_rc0_1_release_claim.py",
+                "--candidate-manifest",
+                str(manifest_path),
+                "--output-root",
+                str(claim_root),
+            ]
+        )
+        payload["release_claim_manifest_path"] = str(claim_root / "manifest.json")
+        payload["release_claim_stdout"] = claim_result.stdout.strip()
+    manifest_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return payload
 
 
@@ -71,6 +86,7 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the full RC0.1 release-candidate flow from substrate closure through release gate.")
     parser.add_argument("--output-root")
     parser.add_argument("--include-home-install-proof", action="store_true")
+    parser.add_argument("--emit-release-claim", action="store_true")
     return parser
 
 
@@ -81,6 +97,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         payload = run_release_candidate(
             output_root=output_root,
             include_home_install_proof=args.include_home_install_proof,
+            emit_release_claim=args.emit_release_claim,
         )
     except ReleaseCandidateError as exc:
         print(json.dumps({"marker": "rc0_1_release_candidate_failed", "detail": str(exc)}, sort_keys=True, separators=(",", ":")))
