@@ -45,6 +45,13 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
         if claim_value and delta_value and str(claim_value) != str(delta_value):
             failures.append(f"claim_delta_path_mismatch:{key}")
 
+    economic_claim_value = claim_manifest.get("economic_manifest_path")
+    economic_delta_value = delta_manifest.get("economic_manifest_path")
+    if economic_claim_value and economic_delta_value and str(economic_claim_value) != str(economic_delta_value):
+        failures.append("claim_delta_path_mismatch:economic_manifest_path")
+    if economic_claim_value and not Path(str(economic_claim_value)).is_file():
+        failures.append(f"claim_path_missing:economic_manifest_path:{economic_claim_value}")
+
     if delta_manifest.get("release_candidate_ready") is not True:
         failures.append("release_candidate_not_ready")
     if delta_manifest.get("closure_pass") is not True:

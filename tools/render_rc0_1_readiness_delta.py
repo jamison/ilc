@@ -64,6 +64,18 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
     bundle_manifest = _load_json(bundle_manifest_path)
     proof_manifest_path = Path(str(release_manifest["bundle_install_proof_manifest_path"]))
     proof_manifest = _load_json(proof_manifest_path)
+    economic_manifest_path = None
+    economic_manifest = None
+    economic_summary: dict[str, Any] | None = None
+    economic_path_value = candidate.get("economic_manifest_path")
+    if economic_path_value:
+        candidate_economic_manifest = Path(str(economic_path_value))
+        if candidate_economic_manifest.is_file():
+            economic_manifest_path = candidate_economic_manifest
+            economic_manifest = _load_json(candidate_economic_manifest)
+            raw_summary = economic_manifest.get("summary")
+            if isinstance(raw_summary, dict):
+                economic_summary = raw_summary
     scenario_summary = evidence_manifest.get("scenario_summary", {})
     scenario_replay_summary = evidence_manifest.get("scenario_replay_summary", {})
     closure_rows = evidence_manifest.get("closure_rows", {})
@@ -103,6 +115,7 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
         "closure_manifest_path": str(closure_manifest_path),
         "release_manifest_path": str(release_manifest_path),
         "evidence_manifest_path": str(evidence_manifest_path),
+        "economic_manifest_path": str(economic_manifest_path) if economic_manifest_path is not None else None,
         "bundle_manifest_path": str(bundle_manifest_path),
         "bundle_install_proof_manifest_path": str(proof_manifest_path),
         "repo_head": evidence_manifest.get("repo_head"),
@@ -112,6 +125,8 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
         "scenario_pass": scenario_pass,
         "scenario_replay_pass": replay_pass,
         "bundle_install_proof_pass": bundle_proof_pass,
+        "economic_state_present": economic_manifest is not None,
+        "economic_summary": economic_summary,
         "unsatisfied_closure_rows": unsatisfied_rows,
         "failed_bundle_hosts": failed_bundle_hosts,
         "publication_pending_items": PUBLICATION_PENDING_ITEMS,

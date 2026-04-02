@@ -21,6 +21,7 @@ from tools.testbed import verify_bootstrap_distribution
 from tools import check_rc0_1_release_gate
 from tools import check_rc0_1_release_claim
 from tools import render_rc0_1_readiness_delta
+from tools import run_rc0_1_release_candidate
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -654,6 +655,37 @@ def test_render_rc0_1_readiness_delta_accepts_passing_candidate(tmp_path: Path) 
     assert manifest['repo_head'] == 'deadbeef'
 
 
+def test_render_rc0_1_readiness_delta_includes_optional_economic_summary(tmp_path: Path) -> None:
+    candidate_manifest_path, _ = _write_release_candidate_fixture(tmp_path)
+    candidate_manifest = json.loads(candidate_manifest_path.read_text(encoding='utf-8'))
+    economic_manifest_path = tmp_path / 'economic_manifest.json'
+    economic_manifest_path.write_text(
+        json.dumps(
+            {
+                'summary': {
+                    'task_id': 'task:test:economic-cycle',
+                    'node_count': 7,
+                    'wallet_count': 8,
+                    'reward_total': 5.0,
+                    'distribution_check_ok': True,
+                }
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    candidate_manifest['economic_manifest_path'] = str(economic_manifest_path)
+    candidate_manifest_path.write_text(json.dumps(candidate_manifest, indent=2) + '\n', encoding='utf-8')
+
+    manifest = render_rc0_1_readiness_delta.render_readiness_delta(
+        candidate_manifest_path=candidate_manifest_path,
+    )
+
+    assert manifest['economic_state_present'] is True
+    assert manifest['economic_manifest_path'] == str(economic_manifest_path)
+    assert manifest['economic_summary']['wallet_count'] == 8
+
+
 def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> None:
     candidate_manifest_path, bundle_manifest_path = _write_release_candidate_fixture(tmp_path)
     delta_manifest_path = tmp_path / 'readiness_delta.json'
@@ -689,3 +721,24 @@ def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> N
 
     assert verdict == 'pass'
     assert failures == []
+
+
+def test_release_candidate_manifest_records_optional_economic_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    calls: list[list[str]] = []
+
+    def _fake_run(command: list[str]) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, stdout='{"marker":"ok"}', stderr='')
+
+    monkeypatch.setattr(run_rc0_1_release_candidate, '_run', _fake_run)
+
+    manifest = run_rc0_1_release_candidate.run_release_candidate(
+        output_root=tmp_path / 'candidate',
+        include_home_install_proof=True,
+        emit_release_claim=True,
+    )
+
+    assert any(command[1] == 'tools/run_rc0_1_economic_cycle.py' for command in calls)
+    assert manifest['economic_manifest_path'].endswith('economic-state/manifest.json')
+    assert 'economic_stdout' in manifest
+    assert manifest['release_claim_manifest_path'].endswith('claim/manifest.json')
