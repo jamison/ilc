@@ -131,6 +131,20 @@ def test_epoch_rollover_behaves_per_selected_accumulation_model() -> None:
     assert 2 not in committed.get('_pending', {})
 
 
+def test_epoch_rollover_caps_committed_centrality_at_one() -> None:
+    state: dict[str, object] = {}
+    runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
+    runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
+    committed = runtime.commit_epoch_buffer(1, state)
+
+    if runtime.ACCUMULATION_MODEL == 'write_through':
+        assert committed['node-cap'] == runtime.CENTRALITY_SCORE_CAP
+        return
+
+    assert committed['node-cap'] == runtime.CENTRALITY_SCORE_CAP
+    assert 1 not in committed.get('_pending', {})
+
+
 def test_mutation_canary_dry_run_lists_new_centrality_delta_probes() -> None:
     result = subprocess.run(
         [sys.executable, 'tools/run_mutation_canary_phase_297.py', '--dry-run'],

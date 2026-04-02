@@ -57,3 +57,16 @@ def test_gossip_runtime_rejects_fanout_zero_with_bounded_fanout_token() -> None:
         assert str(exc) == 'cdl_060_fanout_violation: exceeds_bounded_fanout'
     else:
         raise AssertionError('expected fanout=0 to be rejected')
+
+
+def test_gossip_accumulator_caps_centrality_before_passive_ecu_runtime() -> None:
+    state: dict[str, object] = {}
+    gossip_runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
+    gossip_runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
+    if gossip_runtime.ACCUMULATION_MODEL == 'write_through':
+        committed_score = state['node-cap']
+    else:
+        gossip_runtime.commit_epoch_buffer(1, state)
+        committed_score = state['node-cap']
+    assert committed_score == gossip_runtime.CENTRALITY_SCORE_CAP
+    assert passive_runtime.compute_passive_ecu(1.0, committed_score, 0.5) == 0.15
