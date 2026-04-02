@@ -67,6 +67,42 @@ def _scenario_task_id(scenario_manifest: dict[str, Any]) -> str:
     return f"task::{direct_author}::{scenario_manifest.get('generated_at', 'epoch')}"
 
 
+def _runtime_identity(*, scenario_manifest: dict[str, Any], claims_payload: dict[str, Any], panel_payload: dict[str, Any]) -> dict[str, Any]:
+    task_id = _coerce_task_id(scenario_manifest.get("task_id")) or _scenario_task_id(scenario_manifest)
+    epoch_index = scenario_manifest.get("epoch")
+    if isinstance(epoch_index, bool) or not isinstance(epoch_index, int):
+        epoch_index = 0
+    return {
+        "task_id": task_id,
+        "epoch_index": epoch_index,
+        "epoch_id": f"rc0_1::{task_id}::epoch::{epoch_index}",
+        "claims_sha256": _sha256_json(claims_payload),
+        "panel_sha256": _sha256_json(panel_payload),
+        "scenario_sha256": _sha256_json(scenario_manifest),
+    }
+
+
+def _load_existing_manifest(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    payload = _load_json(path)
+    return payload if isinstance(payload, dict) else None
+
+
+def _assert_runtime_root_compatibility(*, output_root: Path, runtime_identity: dict[str, Any]) -> None:
+    existing_manifest = _load_existing_manifest(output_root / "manifest.json")
+    if existing_manifest is None:
+        return
+    existing_identity = existing_manifest.get("runtime_identity")
+    if not isinstance(existing_identity, dict):
+        raise EconomicCycleRuntimeError("economic_runtime_manifest_invalid")
+    comparable_keys = ("task_id", "epoch_index", "epoch_id", "claims_sha256", "panel_sha256", "scenario_sha256")
+    existing_projection = {key: existing_identity.get(key) for key in comparable_keys}
+    current_projection = {key: runtime_identity.get(key) for key in comparable_keys}
+    if existing_projection != current_projection:
+        raise EconomicCycleRuntimeError("economic_runtime_root_conflict")
+
+
 def _coerce_task_id(value: Any) -> str | None:
     if isinstance(value, str) and value:
         return value
@@ -346,6 +382,22 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
     if total_stake <= 0.0:
         raise EconomicCycleRuntimeError("ecu_claim_reward_total_non_positive")
 
+    claim_batch_sha256 = _sha256_json(claims_payload)
+    existing_epoch_record = ledger.get_epoch_record(epoch_id)
+    settlement_status = "applied"
+    if existing_epoch_record is not None:
+        existing_checksums = existing_epoch_record.get("checksums", {})
+        existing_events_cid = existing_checksums.get("epoch_events_cid") if isinstance(existing_checksums, dict) else None
+        expected_events_cid = f"sha256:{claim_batch_sha256}"
+        if existing_events_cid != expected_events_cid:
+            raise EconomicCycleRuntimeError("economic_epoch_replay_conflict")
+        existing_summary = existing_epoch_record.get("summary", {})
+        existing_reward_total = existing_summary.get("reward_total") if isinstance(existing_summary, dict) else None
+        if isinstance(existing_reward_total, (int, float)) and not isinstance(existing_reward_total, bool):
+            if abs(float(existing_reward_total) - reward_total) > 1e-9:
+                raise EconomicCycleRuntimeError("economic_epoch_reward_conflict")
+        settlement_status = "idempotent_replay"
+
     balances_before = dict(ledger.balances)
     snapshot = StakeSnapshot(
         epoch_id=epoch_id,
@@ -358,7 +410,7 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
     ledger.put_stake_snapshot(snapshot)
 
     checksums = {
-        "epoch_events_cid": f"sha256:{_sha256_json(claims_payload)}",
+        "epoch_events_cid": f"sha256:{claim_batch_sha256}",
         "epoch_state_cid": f"sha256:{_sha256_json(scenario_manifest)}",
     }
     commit_event = make_commit_epoch_event(
@@ -400,8 +452,11 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
         "task_id": task_id,
         "epoch_id": epoch_id,
         "epoch_index": epoch_index,
+        "claim_count": len(claims),
+        "claim_batch_sha256": claim_batch_sha256,
         "reward_total": reward_total,
         "agent_count": len(claim_totals),
+        "settlement_status": settlement_status,
         "ledger_root": str(ledger_root),
         "store_kind": "lmdb",
         "ledger_state_path": str(ledger_json_path),
@@ -411,7 +466,13 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
     }
 
 
-def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dict[str, float]) -> dict[str, Any]:
+def export_wallet_state(
+    *,
+    scenario_root: Path,
+    output_root: Path,
+    balances: dict[str, float],
+    settlement_manifest: dict[str, Any],
+) -> dict[str, Any]:
     claims_payload = _load_json(scenario_root / "panel" / "ecu_claims.json")
     claims = claims_payload.get("claims")
     if not isinstance(claims, list):
@@ -435,6 +496,11 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
     wallet_agent_ids = sorted(set(participants.keys()) | set(balances.keys()) | set(claim_totals.keys()))
     wallet_store_root = output_root / "wallet-store"
     wallet_store = LmdbWalletStore(wallet_store_root)
+    epoch_id = settlement_manifest.get("epoch_id")
+    epoch_index = settlement_manifest.get("epoch_index")
+    settlement_status = settlement_manifest.get("settlement_status")
+    distribution_check_ok = settlement_manifest.get("distribution_check_ok")
+    claim_batch_sha256 = settlement_manifest.get("claim_batch_sha256")
 
     wallet_payload = {
         "version": RUNTIME_VERSION,
@@ -449,6 +515,7 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
                 "slot": participants.get(agent_id, {}).get("slot"),
                 "variant": participants.get(agent_id, {}).get("variant"),
                 "reward_status": "rewarded" if float(balance) > 0.0 else "not_rewarded",
+                "last_settled_epoch_id": epoch_id,
             }
             for agent_id, balance in (
                 (agent_id, balances.get(agent_id, 0.0)) for agent_id in wallet_agent_ids
@@ -463,16 +530,90 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
         if isinstance(epoch_records, dict):
             epoch_history = list(epoch_records.values())
     for agent_id, row in wallet_payload["wallets"].items():
+        existing_history = wallet_store.get_wallet_history(agent_id) or {}
+        existing_claims = existing_history.get("claim_history", [])
+        existing_epochs = existing_history.get("epoch_history", [])
+        existing_balance_history = existing_history.get("balance_history", [])
+        if not isinstance(existing_claims, list):
+            existing_claims = []
+        if not isinstance(existing_epochs, list):
+            existing_epochs = []
+        if not isinstance(existing_balance_history, list):
+            existing_balance_history = []
+        claim_history = [
+            claim
+            for claim in claims
+            if isinstance(claim, dict) and claim.get("agent_id") == agent_id
+        ]
+        claim_ids = sorted(
+            str(claim.get("claim_id"))
+            for claim in claim_history
+            if isinstance(claim.get("claim_id"), str) and claim.get("claim_id")
+        )
+        claim_digest = _sha256_json(claim_history)
+        balance_receipt = {
+            "epoch_id": epoch_id,
+            "epoch_index": epoch_index,
+            "claim_count": len(claim_history),
+            "claim_ids": claim_ids,
+            "claim_digest": claim_digest,
+            "reward_delta_ilc": round(float(row["ecu_claim_total"]), 12),
+            "balance_after_ilc": round(float(row["balance_ilc"]), 12),
+            "reward_status": row["reward_status"],
+            "distribution_check_ok": distribution_check_ok,
+            "settlement_status": settlement_status,
+            "claim_batch_sha256": claim_batch_sha256,
+        }
+        merged_claim_map = {
+            str(item.get("claim_id")): item
+            for item in existing_claims
+            if isinstance(item, dict) and isinstance(item.get("claim_id"), str) and item.get("claim_id")
+        }
+        for claim in claim_history:
+            claim_id = claim.get("claim_id")
+            if isinstance(claim_id, str) and claim_id:
+                merged_claim_map[claim_id] = claim
+        merged_epoch_map = {
+            str(item.get("epoch_id")): item
+            for item in existing_epochs
+            if isinstance(item, dict) and isinstance(item.get("epoch_id"), str) and item.get("epoch_id")
+        }
+        for epoch_row in epoch_history:
+            if isinstance(epoch_row, dict):
+                epoch_row_id = epoch_row.get("epoch_id")
+                if isinstance(epoch_row_id, str) and epoch_row_id:
+                    merged_epoch_map[epoch_row_id] = epoch_row
+        merged_balance_map = {
+            str(item.get("epoch_id")): item
+            for item in existing_balance_history
+            if isinstance(item, dict) and isinstance(item.get("epoch_id"), str) and item.get("epoch_id")
+        }
+        if isinstance(epoch_id, str) and epoch_id:
+            merged_balance_map[epoch_id] = balance_receipt
+        merged_claim_history = [merged_claim_map[key] for key in sorted(merged_claim_map)]
+        merged_epoch_history = [merged_epoch_map[key] for key in sorted(merged_epoch_map)]
+        merged_balance_history = [merged_balance_map[key] for key in sorted(merged_balance_map)]
+        row["lifetime_claim_count"] = len(merged_claim_history)
+        row["settled_epoch_count"] = len(merged_balance_history)
         wallet_store.put_wallet(agent_id, row)
         wallet_store.put_wallet_history(
             agent_id,
             {
-                "claim_history": [
-                    claim
-                    for claim in claims
-                    if isinstance(claim, dict) and claim.get("agent_id") == agent_id
-                ],
-                "epoch_history": epoch_history,
+                "version": RUNTIME_VERSION,
+                "agent_id": agent_id,
+                "generated_at": wallet_payload["generated_at"],
+                "latest_epoch_id": epoch_id,
+                "latest_claim_digest": claim_digest,
+                "claim_history": merged_claim_history,
+                "epoch_history": merged_epoch_history,
+                "balance_history": merged_balance_history,
+                "history_digest": _sha256_json(
+                    {
+                        "claim_history": merged_claim_history,
+                        "epoch_history": merged_epoch_history,
+                        "balance_history": merged_balance_history,
+                    }
+                ),
             },
         )
     wallet_path = output_root / "wallets.json"
@@ -482,6 +623,8 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
         "generated_at": wallet_payload["generated_at"],
         "wallet_count": len(wallet_payload["wallets"]),
         "rewarded_wallet_count": sum(1 for row in wallet_payload["wallets"].values() if float(row["balance_ilc"]) > 0.0),
+        "latest_epoch_id": epoch_id,
+        "claim_batch_sha256": claim_batch_sha256,
         "wallet_store_root": str(wallet_store_root),
         "store_kind": "lmdb",
         "wallet_path": str(wallet_path),
@@ -493,17 +636,28 @@ def materialize_economic_cycle(*, scenario_root: Path, output_root: Path) -> dic
         raise EconomicCycleRuntimeError(f"scenario_root_missing:{scenario_root}")
     graph_root = output_root / "graph"
     economy_root = output_root / "economy"
+    scenario_manifest = _load_json(scenario_root / "scenario_manifest.json")
+    claims_payload = _load_json(scenario_root / "panel" / "ecu_claims.json")
+    panel_payload = _load_json(scenario_root / "panel" / "panel_result.json")
+    runtime_identity = _runtime_identity(
+        scenario_manifest=scenario_manifest,
+        claims_payload=claims_payload,
+        panel_payload=panel_payload,
+    )
+    _assert_runtime_root_compatibility(output_root=output_root, runtime_identity=runtime_identity)
     graph_manifest = materialize_graph_state(scenario_root=scenario_root, output_root=graph_root)
     settlement_manifest = settle_economic_cycle(scenario_root=scenario_root, output_root=economy_root)
     wallet_manifest = export_wallet_state(
         scenario_root=scenario_root,
         output_root=economy_root,
         balances=settlement_manifest["balances"],
+        settlement_manifest=settlement_manifest,
     )
     manifest = {
         "version": RUNTIME_VERSION,
         "generated_at": _utc_now(),
         "scenario_root": str(scenario_root),
+        "runtime_identity": runtime_identity,
         "graph_manifest": graph_manifest,
         "settlement_manifest": settlement_manifest,
         "wallet_manifest": wallet_manifest,

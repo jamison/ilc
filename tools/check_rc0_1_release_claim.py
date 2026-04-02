@@ -53,6 +53,21 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
         failures.append("claim_delta_path_mismatch:economic_manifest_path")
     if economic_claim_value and not Path(str(economic_claim_value)).is_file():
         failures.append(f"claim_path_missing:economic_manifest_path:{economic_claim_value}")
+    economic_claim_summary = claim_manifest.get("economic_claim_summary")
+    if not isinstance(economic_claim_summary, dict):
+        failures.append("claim_field_missing:economic_claim_summary")
+    else:
+        for key in ("task_id", "reward_total", "wallet_count", "rewarded_wallet_count", "settlement_status", "runtime_store_kind"):
+            if economic_claim_summary.get(key) in (None, ""):
+                failures.append(f"claim_economic_summary_missing:{key}")
+        if economic_claim_summary.get("runtime_store_kind") != "lmdb_public_runtime_v0.1":
+            failures.append("claim_economic_runtime_store_kind_invalid")
+        if economic_claim_summary.get("settlement_status") not in {"applied", "idempotent_replay"}:
+            failures.append("claim_economic_settlement_status_invalid")
+    delta_economic_claim_summary = delta_manifest.get("economic_claim_summary")
+    if isinstance(economic_claim_summary, dict) and isinstance(delta_economic_claim_summary, dict):
+        if economic_claim_summary != delta_economic_claim_summary:
+            failures.append("claim_delta_path_mismatch:economic_claim_summary")
 
     if delta_manifest.get("release_candidate_ready") is not True:
         failures.append("release_candidate_not_ready")

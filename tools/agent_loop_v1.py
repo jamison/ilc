@@ -437,6 +437,11 @@ def _build_outsider_submission(task: dict[str, Any], seed_hex: str, cluster_id: 
     )
 
 
+def _direct_author_tiebreak_digest(task: dict[str, Any], majority_hash: str, agent_id: str) -> str:
+    material = f"{task['task_id']}|{task['epoch']}|{majority_hash}|{agent_id}"
+    return hashlib.sha256(material.encode("utf-8")).hexdigest()
+
+
 def evaluate_panel(
     *,
     task: dict[str, Any],
@@ -504,12 +509,15 @@ def evaluate_panel(
     direct_author_agent_id: str | None = None
     if majority_hash is not None:
         candidates = sorted(
-            vote.reviewer_agent_id
+            (
+                _direct_author_tiebreak_digest(task, majority_hash, vote.reviewer_agent_id),
+                vote.reviewer_agent_id,
+            )
             for vote in votes
             if vote.matches_majority and vote.variant != "outsider"
         )
         if candidates:
-            direct_author_agent_id = candidates[0]
+            direct_author_agent_id = candidates[0][1]
 
     passed = bool(gate_ok and diversity_floor_met and quorum_reached and majority_hash is not None)
     if majority_hash is None:
