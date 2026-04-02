@@ -66,7 +66,7 @@ def run_release_gate(*, evidence_root: Path, output_root: Path) -> dict[str, obj
         economic_proof_output = output_root / 'economic-proof'
         economic_proof_result = _run([
             'python3',
-            'tools/prove_rc0_1_economic_state.py',
+            'tools/run_rc0_1_economic_proof.py',
             '--manifest',
             str(economic_manifest_path),
             '--output-root',
@@ -74,7 +74,7 @@ def run_release_gate(*, evidence_root: Path, output_root: Path) -> dict[str, obj
         ])
         economic_proof_payload = json.loads(economic_proof_result.stdout.strip())
         economic_proof_manifest_path = Path(
-            str(economic_proof_payload['manifest'].get('proof_manifest_path', economic_proof_output / 'manifest.json'))
+            str(economic_proof_payload['manifest'].get('proof_runner_manifest_path', economic_proof_output / 'manifest.json'))
         )
         if not economic_proof_manifest_path.exists():
             economic_proof_manifest_path = economic_proof_output / 'manifest.json'

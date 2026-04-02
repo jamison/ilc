@@ -453,9 +453,15 @@ def test_query_helpers_return_quorum_and_wallet_export(tmp_path: Path) -> None:
 
     quorum_payload = query_rc0_1_economic_state.query_quorum_record(manifest_path)
     wallet_export_payload = query_rc0_1_economic_state.query_wallet_export(manifest_path)
+    graph_summary_payload = query_rc0_1_economic_state.query_graph_summary(manifest_path)
+    graph_links_payload = query_rc0_1_economic_state.query_graph_links(manifest_path, agent_id="agent-beta")
+    ledger_summary_payload = query_rc0_1_economic_state.query_ledger_summary(manifest_path)
 
     assert quorum_payload["data"]["quorum_record"]["task_id"] == "task:test:economic-cycle"
     assert wallet_export_payload["data"]["balances"]["agent-alpha"] == 3.0
+    assert graph_summary_payload["data"]["node_count"] == 3
+    assert graph_links_payload["data"]["link_count"] == 1
+    assert ledger_summary_payload["data"]["reward_total"] == 4.0
 
 
 def test_economic_negative_path_drills_emit_expected_tokens(tmp_path: Path) -> None:
@@ -479,6 +485,9 @@ def test_economic_negative_path_drills_emit_expected_tokens(tmp_path: Path) -> N
     assert "economic_negative_path_missing_store_ok" in result.stdout
     assert "economic_negative_path_reward_mismatch_ok" in result.stdout
     assert "economic_negative_path_wallet_count_ok" in result.stdout
+    assert "economic_negative_path_runtime_identity_ok" in result.stdout
+    assert "economic_negative_path_wallet_history_ok" in result.stdout
+    assert "economic_negative_path_quorum_record_ok" in result.stdout
     assert "economic_negative_path_drill_ok" in result.stdout
 
 
@@ -502,3 +511,32 @@ def test_economic_replay_drills_emit_expected_tokens(tmp_path: Path) -> None:
     assert "economic_replay_idempotent_ok" in result.stdout
     assert "economic_replay_conflict_ok" in result.stdout
     assert "economic_replay_drill_ok" in result.stdout
+
+
+def test_run_economic_proof_emits_combined_manifest(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "tools/run_rc0_1_economic_proof.py",
+            "--manifest",
+            str(output_root / "manifest.json"),
+            "--output-root",
+            str(tmp_path / "proof-runner"),
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout.strip())
+    manifest = payload["manifest"]
+    assert manifest["negative_path_verdict"] == "pass"
+    assert manifest["replay_verdict"] == "pass"
+    assert manifest["replay_settlement_status"] == "idempotent_replay"
+    assert manifest["query_payloads"]["ledger_summary"]["data"]["reward_total"] == 4.0
+    assert manifest["query_payloads"]["graph_summary"]["data"]["node_count"] == 3

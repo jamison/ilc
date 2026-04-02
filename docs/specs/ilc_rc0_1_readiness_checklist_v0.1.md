@@ -35,7 +35,7 @@ RC0.1 is considered ready only when all of the following are true:
 | Recovery | Bad config, bad TLS, oversized or stalled inbound payloads, restart, and one-node-down cases fail clearly and have bounded repair steps. | recovery drill scripts, transport timeout assertions, negative-path assertions, runbook entries | satisfied_for_testbed |
 | Repo resync | All nodes can resync to the same pushed repo state and re-enter service cleanly. | `tools/testbed/sync_repo.sh` + post-sync smoke proof | satisfied_for_testbed |
 | Three-node exchange | The home node and two VPS nodes exchange real CDL-061 traffic bidirectionally. | `tools/testbed/run_three_node_exchange.sh` + diagnostics bundle | satisfied_for_testbed |
-| Economic cycle runtime state | The bounded seven-agent scenario emits persisted graph state, settled balances, replay-safe wallet history, and wallet exports directly from the live scenario run, and the resulting public runtime state is queryable from a durable LMDB-backed store. | scenario `economic-state/manifest.json`, `runtime_store`, `tools/check_rc0_1_economic_state.py`, `tools/prove_rc0_1_economic_state.py`, `tools/testbed/run_economic_replay_drills.py`, release gate evidence | satisfied_for_testbed |
+| Economic cycle runtime state | The bounded seven-agent scenario emits persisted graph state, settled balances, replay-safe wallet history, and wallet exports directly from the live scenario run, and the resulting public runtime state is queryable from a durable LMDB-backed store. | scenario `economic-state/manifest.json`, `runtime_store`, `tools/check_rc0_1_economic_state.py`, `tools/run_rc0_1_economic_proof.py`, `tools/testbed/run_economic_replay_drills.py`, release gate evidence | satisfied_for_testbed |
 | Benchmark instrumentation | The testbed emits panel latency, quorum visibility, direct-delivery amplification, and graph RSS growth metrics in a machine-readable artifact. | `tools/testbed/run_rc0_1_benchmarks.py` + benchmark manifest | satisfied_for_testbed |
 | Machine-legible surface | The core control surface is CLI-first, file-based, and JSON-friendly. | CLI docs, config artifacts, deterministic script outputs | satisfied_for_testbed |
 | Harness agnosticism | No harness-specific runtime is required for node correctness. | boundary memo + node docs + absence of harness-only assumptions | satisfied_for_testbed |
@@ -72,7 +72,7 @@ The next work should close the following rows first:
 2. keep the package/bundle builder aligned with the latest evidence bundle,
 3. avoid reintroducing harness-specific assumptions into the node substrate,
 4. keep the durable graph/settlement/wallet runtime proof green on the committed
-   head, including invariant and replay checks,
+   head, including invariant, negative-path, query-surface, and replay checks,
 5. keep audited safety fixes in place on the transport, panel tie-break, and
    settlement paths while the economic lane expands,
 6. extend the live runtime beyond the bounded seven-agent scenario only when the
@@ -105,4 +105,7 @@ result.
 - `out/rc0_1_release_candidate/20260402_204350/release/economic-proof/manifest.json`
 - `out/rc0_1_release_candidate/20260402_204350/claim/manifest.json`
 - `out/rc0_1_release_candidate/20260402_204350/manifest.json`
+- `out/rc0_1_release_candidate/20260402_230241/release/economic-proof/manifest.json`
+- `out/rc0_1_release_candidate/20260402_230241/claim/manifest.json`
+- `out/rc0_1_release_candidate/20260402_230241/manifest.json`
 - `out/testbed/economic-replay/20260402_1940`

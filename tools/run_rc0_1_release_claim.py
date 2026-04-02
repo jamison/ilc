@@ -73,6 +73,9 @@ def _write_release_notes_input(*, delta_manifest: dict[str, Any], output_path: P
         f"- economic_settlement_status: `{(delta_manifest.get('economic_claim_summary') or {}).get('settlement_status')}`",
         f"- economic_rewarded_wallet_count: `{(delta_manifest.get('economic_claim_summary') or {}).get('rewarded_wallet_count')}`",
         f"- economic_epoch_record_count: `{(delta_manifest.get('economic_claim_summary') or {}).get('epoch_record_count')}`",
+        f"- economic_negative_path_verdict: `{(delta_manifest.get('economic_claim_summary') or {}).get('negative_path_verdict')}`",
+        f"- economic_replay_verdict: `{(delta_manifest.get('economic_claim_summary') or {}).get('replay_verdict')}`",
+        f"- economic_replay_settlement_status: `{(delta_manifest.get('economic_claim_summary') or {}).get('replay_settlement_status')}`",
         "",
         "## Publication steps still pending",
     ]

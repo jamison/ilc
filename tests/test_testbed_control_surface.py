@@ -580,6 +580,39 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
                     'epoch_record_count': 1,
                     'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
                 },
+                'negative_path_verdict': 'pass',
+                'replay_verdict': 'pass',
+                'replay_settlement_status': 'idempotent_replay',
+                'query_payloads': {
+                    name: {'ok': True}
+                    for name in (
+                        'summary',
+                        'store_summary',
+                        'quorum_record',
+                        'wallet_export',
+                        'graph_summary',
+                        'graph_links',
+                        'ledger_summary',
+                        'wallet_status',
+                        'wallet_history',
+                        'graph_node',
+                    )
+                },
+                'query_timings_ms': {
+                    name: 1.0
+                    for name in (
+                        'summary',
+                        'store_summary',
+                        'quorum_record',
+                        'wallet_export',
+                        'graph_summary',
+                        'graph_links',
+                        'ledger_summary',
+                        'wallet_status',
+                        'wallet_history',
+                        'graph_node',
+                    )
+                },
             },
             indent=2,
         ) + '\n',
@@ -704,6 +737,39 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     'epoch_record_count': 1,
                     'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
                 },
+                'negative_path_verdict': 'pass',
+                'replay_verdict': 'pass',
+                'replay_settlement_status': 'idempotent_replay',
+                'query_payloads': {
+                    name: {'ok': True}
+                    for name in (
+                        'summary',
+                        'store_summary',
+                        'quorum_record',
+                        'wallet_export',
+                        'graph_summary',
+                        'graph_links',
+                        'ledger_summary',
+                        'wallet_status',
+                        'wallet_history',
+                        'graph_node',
+                    )
+                },
+                'query_timings_ms': {
+                    name: 1.0
+                    for name in (
+                        'summary',
+                        'store_summary',
+                        'quorum_record',
+                        'wallet_export',
+                        'graph_summary',
+                        'graph_links',
+                        'ledger_summary',
+                        'wallet_status',
+                        'wallet_history',
+                        'graph_node',
+                    )
+                },
             },
             indent=2,
         ) + '\n',
@@ -784,8 +850,12 @@ def test_render_rc0_1_readiness_delta_accepts_passing_candidate(tmp_path: Path) 
     assert manifest['scenario_replay_pass'] is True
     assert manifest['bundle_install_proof_pass'] is True
     assert manifest['economic_proof_pass'] is True
+    assert manifest['economic_negative_path_pass'] is True
+    assert manifest['economic_replay_pass'] is True
     assert manifest['economic_claim_summary']['runtime_store_kind'] == 'lmdb_public_runtime_v0.1'
     assert manifest['economic_claim_summary']['settlement_status'] == 'applied'
+    assert manifest['economic_claim_summary']['negative_path_verdict'] == 'pass'
+    assert manifest['economic_claim_summary']['replay_verdict'] == 'pass'
     assert manifest['repo_head'] == 'deadbeef'
 
 
@@ -826,6 +896,8 @@ def test_render_rc0_1_readiness_delta_includes_optional_economic_summary(tmp_pat
     assert manifest['economic_manifest_path'] == str(economic_manifest_path)
     assert manifest['economic_summary']['wallet_count'] == 8
     assert manifest['economic_claim_summary']['settlement_status'] == 'applied'
+    assert manifest['economic_negative_path_pass'] is True
+    assert manifest['economic_replay_pass'] is True
 
 
 def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> None:
@@ -941,6 +1013,11 @@ def test_release_gate_rejects_failed_economic_proof(tmp_path: Path) -> None:
             {
                 'comparison': {'nodes_match': True, 'links_match': False},
                 'invariant_summary': {'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'}},
+                'negative_path_verdict': 'pass',
+                'replay_verdict': 'pass',
+                'replay_settlement_status': 'idempotent_replay',
+                'query_payloads': {'summary': {'ok': True}},
+                'query_timings_ms': {'summary': 1.0},
             },
             indent=2,
         ) + '\n',
@@ -1115,14 +1192,14 @@ def test_run_release_gate_uses_generated_economic_proof_manifest(monkeypatch: py
                 stdout=json.dumps({'marker': 'ok', 'manifest': {'manifest_path': str(proof_manifest_path)}}),
                 stderr='',
             )
-        if command[1] == 'tools/prove_rc0_1_economic_state.py':
+        if command[1] == 'tools/run_rc0_1_economic_proof.py':
             proof_output = Path(_arg_value(command, '--output-root'))
             proof_output.mkdir(parents=True, exist_ok=True)
             proof_manifest_path = proof_output / 'manifest.json'
             proof_manifest_path.write_text(
                 json.dumps(
                     {
-                        'proof_manifest_path': str(proof_manifest_path),
+                        'proof_runner_manifest_path': str(proof_manifest_path),
                         'comparison': {
                             'nodes_match': True,
                             'links_match': True,
@@ -1131,6 +1208,39 @@ def test_run_release_gate_uses_generated_economic_proof_manifest(monkeypatch: py
                             'quorum_match': True,
                         },
                         'invariant_summary': {'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'}},
+                        'negative_path_verdict': 'pass',
+                        'replay_verdict': 'pass',
+                        'replay_settlement_status': 'idempotent_replay',
+                        'query_payloads': {
+                            name: {'ok': True}
+                            for name in (
+                                'summary',
+                                'store_summary',
+                                'quorum_record',
+                                'wallet_export',
+                                'graph_summary',
+                                'graph_links',
+                                'ledger_summary',
+                                'wallet_status',
+                                'wallet_history',
+                                'graph_node',
+                            )
+                        },
+                        'query_timings_ms': {
+                            name: 1.0
+                            for name in (
+                                'summary',
+                                'store_summary',
+                                'quorum_record',
+                                'wallet_export',
+                                'graph_summary',
+                                'graph_links',
+                                'ledger_summary',
+                                'wallet_status',
+                                'wallet_history',
+                                'graph_node',
+                            )
+                        },
                     },
                     indent=2,
                 ) + '\n',
@@ -1139,7 +1249,7 @@ def test_run_release_gate_uses_generated_economic_proof_manifest(monkeypatch: py
             return subprocess.CompletedProcess(
                 command,
                 0,
-                stdout=json.dumps({'marker': 'ok', 'manifest': {'proof_manifest_path': str(proof_manifest_path)}}),
+                stdout=json.dumps({'marker': 'ok', 'manifest': {'proof_runner_manifest_path': str(proof_manifest_path)}}),
                 stderr='',
             )
         if command[1] == 'tools/check_rc0_1_release_gate.py':

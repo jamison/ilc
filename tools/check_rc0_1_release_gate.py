@@ -107,6 +107,39 @@ def check_release_gate(
             invariant_summary = proof_manifest.get('invariant_summary', {})
             if invariant_summary.get('runtime_store', {}).get('store_kind') != 'lmdb_public_runtime_v0.1':
                 failures.append('economic_proof_runtime_store_kind_invalid')
+            if proof_manifest.get('negative_path_verdict') != 'pass':
+                failures.append('economic_proof_negative_path_not_pass')
+            if proof_manifest.get('replay_verdict') != 'pass':
+                failures.append('economic_proof_replay_not_pass')
+            if proof_manifest.get('replay_settlement_status') != 'idempotent_replay':
+                failures.append('economic_proof_replay_settlement_status_invalid')
+            query_payloads = proof_manifest.get('query_payloads', {})
+            required_queries = {
+                'summary',
+                'store_summary',
+                'quorum_record',
+                'wallet_export',
+                'graph_summary',
+                'graph_links',
+                'ledger_summary',
+                'wallet_status',
+                'wallet_history',
+                'graph_node',
+            }
+            if not isinstance(query_payloads, dict):
+                failures.append('economic_proof_query_payloads_invalid')
+            else:
+                missing_queries = sorted(required_queries - set(query_payloads))
+                if missing_queries:
+                    failures.append(f"economic_proof_queries_missing:{','.join(missing_queries)}")
+            query_timings = proof_manifest.get('query_timings_ms', {})
+            if not isinstance(query_timings, dict):
+                failures.append('economic_proof_query_timings_invalid')
+            else:
+                for name in required_queries & set(query_timings):
+                    value = query_timings.get(name)
+                    if isinstance(value, bool) or not isinstance(value, (int, float)) or float(value) < 0.0:
+                        failures.append(f'economic_proof_query_timing_invalid:{name}')
 
     unsatisfied_rows = sorted(
         area for area, status in checklist_statuses.items() if status != 'satisfied_for_testbed'

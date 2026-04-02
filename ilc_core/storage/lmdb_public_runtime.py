@@ -60,6 +60,10 @@ class _LmdbRuntimeBase:
                 rows.append(_decode_json(value))
         return rows
 
+    def _delete(self, db_name: bytes, key: str) -> None:
+        with self.env.begin(write=True, db=self._dbs[db_name]) as txn:
+            txn.delete(_encode_key(key))
+
 
 class LmdbGraphStore(_LmdbRuntimeBase):
     def __init__(self, root: Path | str, *, map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
@@ -101,6 +105,9 @@ class LmdbGraphStore(_LmdbRuntimeBase):
         payload = self._get_json(b"meta", "quorum_record")
         return payload if isinstance(payload, dict) else None
 
+    def delete_quorum_record(self) -> None:
+        self._delete(b"meta", "quorum_record")
+
 
 class LmdbWalletStore(_LmdbRuntimeBase):
     def __init__(self, root: Path | str, *, map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
@@ -129,3 +136,6 @@ class LmdbWalletStore(_LmdbRuntimeBase):
     def get_wallet_history(self, agent_id: str) -> dict[str, Any] | None:
         payload = self._get_json(b"wallet_history", agent_id)
         return payload if isinstance(payload, dict) else None
+
+    def delete_wallet_history(self, agent_id: str) -> None:
+        self._delete(b"wallet_history", agent_id)

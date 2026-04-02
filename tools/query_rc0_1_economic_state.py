@@ -253,11 +253,89 @@ def query_graph(manifest_path: Path, node_id: str | None) -> dict[str, Any]:
     return {"ok": True, "data": {"summary": manifest.get("summary", {}), "node": matched, "links": linked}}
 
 
+def query_graph_summary(manifest_path: Path) -> dict[str, Any]:
+    return query_graph(manifest_path, None)
+
+
+def query_graph_node(manifest_path: Path, node_id: str) -> dict[str, Any]:
+    return query_graph(manifest_path, node_id)
+
+
+def query_graph_links(
+    manifest_path: Path,
+    *,
+    node_id: str | None = None,
+    agent_id: str | None = None,
+    link_type: str | None = None,
+) -> dict[str, Any]:
+    manifest, _nodes, links, _wallets, _ledger, _quorum = load_state(manifest_path)
+    filtered = links
+    if node_id is not None:
+        filtered = [
+            row
+            for row in filtered
+            if row.get("source_id") == node_id or row.get("target_id") == node_id
+        ]
+    if agent_id is not None:
+        filtered = [row for row in filtered if row.get("agent_id") == agent_id]
+    if link_type is not None:
+        filtered = [row for row in filtered if row.get("link_type") == link_type]
+    return {
+        "ok": True,
+        "data": {
+            "summary": manifest.get("summary", {}),
+            "filter": {
+                "node_id": node_id,
+                "agent_id": agent_id,
+                "link_type": link_type,
+            },
+            "link_count": len(filtered),
+            "links": filtered,
+        },
+    }
+
+
 def query_quorum_record(manifest_path: Path) -> dict[str, Any]:
     manifest, _nodes, _links, _wallets, _ledger, quorum_record = load_state(manifest_path)
     if not quorum_record:
         raise ValueError("quorum_record_missing")
     return {"ok": True, "data": {"summary": manifest.get("summary", {}), "quorum_record": quorum_record}}
+
+
+def query_ledger_summary(manifest_path: Path) -> dict[str, Any]:
+    manifest = load_json(manifest_path)
+    _manifest, _nodes, _links, _wallets, ledger, _quorum = load_state(manifest_path)
+    balances = ledger.get("balances", {})
+    epoch_records = ledger.get("epoch_records", {})
+    if not isinstance(balances, dict):
+        raise ValueError("ledger_balances_invalid")
+    if not isinstance(epoch_records, dict):
+        raise ValueError("ledger_epoch_records_invalid")
+    reward_total = round(
+        sum(
+            float(value)
+            for value in balances.values()
+            if isinstance(value, (int, float)) and not isinstance(value, bool)
+        ),
+        12,
+    )
+    latest_epoch_id = next(iter(sorted(epoch_records.keys(), reverse=True)), None)
+    settlement_manifest = manifest.get("settlement_manifest", {})
+    return {
+        "ok": True,
+        "data": {
+            "summary": manifest.get("summary", {}),
+            "reward_total": reward_total,
+            "balance_count": len(balances),
+            "epoch_record_count": len(epoch_records),
+            "latest_epoch_id": latest_epoch_id,
+            "settlement_status": settlement_manifest.get("settlement_status")
+            if isinstance(settlement_manifest, dict)
+            else None,
+            "balances": balances,
+            "epoch_records": epoch_records,
+        },
+    }
 
 
 def query_store_summary(manifest_path: Path) -> dict[str, Any]:
@@ -298,8 +376,18 @@ def _parser() -> argparse.ArgumentParser:
 
     graph_parser = subparsers.add_parser("graph")
     graph_parser.add_argument("--node-id")
+    subparsers.add_parser("graph-summary")
+
+    graph_node_parser = subparsers.add_parser("graph-node")
+    graph_node_parser.add_argument("--node-id", required=True)
+
+    graph_links_parser = subparsers.add_parser("graph-links")
+    graph_links_parser.add_argument("--node-id")
+    graph_links_parser.add_argument("--agent-id")
+    graph_links_parser.add_argument("--link-type")
 
     subparsers.add_parser("quorum-record")
+    subparsers.add_parser("ledger-summary")
     subparsers.add_parser("store-summary")
     return parser
 
@@ -318,8 +406,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = query_wallet_status(manifest_path, args.agent_id)
         elif args.command == "wallet-export":
             payload = query_wallet_export(manifest_path)
+        elif args.command == "graph-summary":
+            payload = query_graph_summary(manifest_path)
+        elif args.command == "graph-node":
+            payload = query_graph_node(manifest_path, args.node_id)
+        elif args.command == "graph-links":
+            payload = query_graph_links(
+                manifest_path,
+                node_id=args.node_id,
+                agent_id=args.agent_id,
+                link_type=args.link_type,
+            )
         elif args.command == "quorum-record":
             payload = query_quorum_record(manifest_path)
+        elif args.command == "ledger-summary":
+            payload = query_ledger_summary(manifest_path)
         elif args.command == "store-summary":
             payload = query_store_summary(manifest_path)
         else:
