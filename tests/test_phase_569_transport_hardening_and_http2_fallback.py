@@ -128,6 +128,13 @@ def test_request_failure_path_produces_structured_transport_error_output(tmp_pat
     assert transport.state['last_error']['transport_kind'] == 'http'
 
 
+def test_content_length_parser_rejects_invalid_values_with_deterministic_token(tmp_path: Path) -> None:
+    transport = runtime.HttpGossipTransportRuntime(_config(tmp_path))
+    for invalid in ('abc', '', '-1'):
+        with pytest.raises(ValueError, match=runtime.CONTENT_LENGTH_INVALID_TOKEN):
+            transport._validated_content_length(invalid)
+
+
 def test_selected_transport_kind_is_observable_in_runtime_state(tmp_path: Path) -> None:
     transport = runtime.HttpGossipTransportRuntime(_config(tmp_path))
     transport.start()
