@@ -64,6 +64,19 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
     bundle_manifest = _load_json(bundle_manifest_path)
     proof_manifest_path = Path(str(release_manifest["bundle_install_proof_manifest_path"]))
     proof_manifest = _load_json(proof_manifest_path)
+    economic_proof_manifest_path = None
+    economic_proof_manifest = None
+    economic_proof_pass = False
+    economic_proof_path_value = release_manifest.get("economic_proof_manifest_path")
+    if economic_proof_path_value:
+        candidate_economic_proof_manifest = Path(str(economic_proof_path_value))
+        if candidate_economic_proof_manifest.is_file():
+            economic_proof_manifest_path = candidate_economic_proof_manifest
+            economic_proof_manifest = _load_json(candidate_economic_proof_manifest)
+            comparison = economic_proof_manifest.get("comparison", {})
+            if isinstance(comparison, dict) and comparison and all(comparison.values()):
+                runtime_store = (economic_proof_manifest.get("invariant_summary") or {}).get("runtime_store", {})
+                economic_proof_pass = runtime_store.get("store_kind") == "lmdb_public_runtime_v0.1"
     economic_manifest_path = None
     economic_manifest = None
     economic_summary: dict[str, Any] | None = None
@@ -104,6 +117,7 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
             scenario_pass,
             replay_pass,
             bundle_proof_pass,
+            economic_proof_pass,
             not unsatisfied_rows,
         ]
     )
@@ -118,6 +132,7 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
         "economic_manifest_path": str(economic_manifest_path) if economic_manifest_path is not None else None,
         "bundle_manifest_path": str(bundle_manifest_path),
         "bundle_install_proof_manifest_path": str(proof_manifest_path),
+        "economic_proof_manifest_path": str(economic_proof_manifest_path) if economic_proof_manifest_path is not None else None,
         "repo_head": evidence_manifest.get("repo_head"),
         "release_candidate_ready": candidate_ready,
         "closure_pass": closure_pass,
@@ -125,6 +140,7 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
         "scenario_pass": scenario_pass,
         "scenario_replay_pass": replay_pass,
         "bundle_install_proof_pass": bundle_proof_pass,
+        "economic_proof_pass": economic_proof_pass,
         "economic_state_present": economic_manifest is not None,
         "economic_summary": economic_summary,
         "unsatisfied_closure_rows": unsatisfied_rows,

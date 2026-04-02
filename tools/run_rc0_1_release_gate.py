@@ -26,7 +26,12 @@ def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
 
 
 def run_release_gate(*, evidence_root: Path, output_root: Path) -> dict[str, object]:
+    evidence_root = evidence_root.resolve()
+    output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
+    evidence_manifest_path = evidence_root / 'manifest.json'
+    evidence_manifest = json.loads(evidence_manifest_path.read_text(encoding='utf-8'))
+    economic_manifest_path = Path(str(evidence_manifest['economic_manifest_path'])) if evidence_manifest.get('economic_manifest_path') else None
     bundle_output = output_root / 'bundle'
     bundle_result = _run([
         'python3',
@@ -55,24 +60,52 @@ def run_release_gate(*, evidence_root: Path, output_root: Path) -> dict[str, obj
     if not proof_manifest_path.exists():
         proof_manifest_path = proof_output / 'manifest.json'
 
-    verdict_result = _run([
+    economic_proof_manifest_path: Path | None = None
+    economic_proof_stdout = ''
+    if economic_manifest_path is not None:
+        economic_proof_output = output_root / 'economic-proof'
+        economic_proof_result = _run([
+            'python3',
+            'tools/prove_rc0_1_economic_state.py',
+            '--manifest',
+            str(economic_manifest_path),
+            '--output-root',
+            str(economic_proof_output),
+        ])
+        economic_proof_payload = json.loads(economic_proof_result.stdout.strip())
+        economic_proof_manifest_path = Path(
+            str(economic_proof_payload['manifest'].get('proof_manifest_path', economic_proof_output / 'manifest.json'))
+        )
+        if not economic_proof_manifest_path.exists():
+            economic_proof_manifest_path = economic_proof_output / 'manifest.json'
+        economic_proof_stdout = economic_proof_result.stdout.strip()
+
+    verdict_command = [
         'python3',
         'tools/check_rc0_1_release_gate.py',
         '--bundle-manifest',
         str(bundle_manifest_path),
         '--evidence-manifest',
-        str(evidence_root / 'manifest.json'),
+        str(evidence_manifest_path),
         '--proof-manifest',
         str(proof_manifest_path),
-    ])
+    ]
+    if economic_manifest_path is not None:
+        verdict_command.extend(['--economic-manifest', str(economic_manifest_path)])
+    if economic_proof_manifest_path is not None:
+        verdict_command.extend(['--economic-proof-manifest', str(economic_proof_manifest_path)])
+    verdict_result = _run(verdict_command)
     payload = {
         'version': 'rc0_1_release_gate_v0.1',
         'generated_at': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
         'bundle_manifest_path': str(bundle_manifest_path),
         'bundle_install_proof_manifest_path': str(proof_manifest_path),
-        'evidence_manifest_path': str(evidence_root / 'manifest.json'),
+        'evidence_manifest_path': str(evidence_manifest_path),
+        'economic_manifest_path': str(economic_manifest_path) if economic_manifest_path is not None else None,
+        'economic_proof_manifest_path': str(economic_proof_manifest_path) if economic_proof_manifest_path is not None else None,
         'bundle_stdout': bundle_result.stdout.strip(),
         'bundle_install_proof_stdout': proof_result.stdout.strip(),
+        'economic_proof_stdout': economic_proof_stdout,
         'release_verdict_stdout': verdict_result.stdout.strip(),
     }
     manifest_path = output_root / 'manifest.json'

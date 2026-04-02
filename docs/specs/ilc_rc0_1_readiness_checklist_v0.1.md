@@ -35,20 +35,21 @@ RC0.1 is considered ready only when all of the following are true:
 | Recovery | Bad config, bad TLS, restart, and one-node-down cases fail clearly and have bounded repair steps. | recovery drill scripts, negative-path assertions, runbook entries | satisfied_for_testbed |
 | Repo resync | All nodes can resync to the same pushed repo state and re-enter service cleanly. | `tools/testbed/sync_repo.sh` + post-sync smoke proof | satisfied_for_testbed |
 | Three-node exchange | The home node and two VPS nodes exchange real CDL-061 traffic bidirectionally. | `tools/testbed/run_three_node_exchange.sh` + diagnostics bundle | satisfied_for_testbed |
-| Economic cycle runtime state | The bounded seven-agent scenario emits persisted graph state, settled balances, and wallet exports directly from the live scenario run, and the resulting public runtime state is queryable from a durable LMDB-backed store. | scenario `economic-state/manifest.json`, `runtime_store`, query tool, substrate closure evidence | satisfied_for_testbed |
+| Economic cycle runtime state | The bounded seven-agent scenario emits persisted graph state, settled balances, and wallet exports directly from the live scenario run, and the resulting public runtime state is queryable from a durable LMDB-backed store. | scenario `economic-state/manifest.json`, `runtime_store`, `tools/check_rc0_1_economic_state.py`, `tools/prove_rc0_1_economic_state.py`, release gate evidence | satisfied_for_testbed |
 | Benchmark instrumentation | The testbed emits panel latency, quorum visibility, direct-delivery amplification, and graph RSS growth metrics in a machine-readable artifact. | `tools/testbed/run_rc0_1_benchmarks.py` + benchmark manifest | satisfied_for_testbed |
 | Machine-legible surface | The core control surface is CLI-first, file-based, and JSON-friendly. | CLI docs, config artifacts, deterministic script outputs | satisfied_for_testbed |
 | Harness agnosticism | No harness-specific runtime is required for node correctness. | boundary memo + node docs + absence of harness-only assumptions | satisfied_for_testbed |
 | Human auditability | A human operator can inspect what was installed, configured, started, and verified. | playbook, walkthrough, logs, diagnostics evidence | satisfied_for_testbed |
 | Packaging surface | The release artifact shape is explicit enough that RC packaging is extraction rather than reinvention. | near-RC node definition + package/install plan + readiness delta analysis | satisfied_for_testbed |
-| Release evidence | RC0.1 can cite concrete evidence documents instead of relying on conversation state. | readiness checklist closure record + walkthrough + release notes inputs | satisfied_for_testbed |
+| Release evidence | RC0.1 can cite concrete evidence documents instead of relying on conversation state. | readiness checklist closure record + walkthrough + release notes inputs + release claim manifest | satisfied_for_testbed |
 
 ## 4. Interpretation notes
 
 ### 4.1 `satisfied_for_testbed`
 
 This means the requirement has been satisfied in the current three-node testbed
-but has not yet been converted into a formal RC0.1 release claim.
+but has not yet been converted into a published RC0.1 release. Several rows now
+also feed the internal release gate and release claim package directly.
 
 ### 4.2 `in_progress`
 
@@ -70,8 +71,8 @@ The next work should close the following rows first:
 1. turn the testbed-satisfied rows into an explicit RC0.1 release claim package,
 2. keep the package/bundle builder aligned with the latest evidence bundle,
 3. avoid reintroducing harness-specific assumptions into the node substrate,
-4. promote the durable graph/settlement/wallet runtime state into the release
-   gate rather than treating it as companion evidence only,
+4. keep the durable graph/settlement/wallet runtime proof green on the committed
+   head, including invariant and replay checks,
 5. extend the live runtime beyond the bounded seven-agent scenario only when the
    protocol lane is constitutionally clear.
 
@@ -98,5 +99,7 @@ result.
 - `out/testbed/seven-agent/20260402_1635/economic-state/manifest.json`
 - `out/testbed/rc0_1_substrate/20260402_011353/evidence/manifest.json`
 - `out/rc0_1_bundle/20260402_012439/manifest.json`
-- `out/rc0_1_release_candidate/20260402_190425/substrate/scenario/economic-state/manifest.json`
-- `out/rc0_1_release_candidate/20260402_190425/manifest.json`
+- `out/rc0_1_release_candidate/20260402_204350/substrate/scenario/economic-state/manifest.json`
+- `out/rc0_1_release_candidate/20260402_204350/release/economic-proof/manifest.json`
+- `out/rc0_1_release_candidate/20260402_204350/claim/manifest.json`
+- `out/rc0_1_release_candidate/20260402_204350/manifest.json`
