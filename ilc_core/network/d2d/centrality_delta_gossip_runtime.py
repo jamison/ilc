@@ -29,6 +29,7 @@ CDL_052_DEPENDENCY = "cdl_052_ratified_466.v0.1"
 ACCUMULATION_MODEL = "epoch_boundary_atomic"
 MAX_FANOUT = 3
 U_FLOOR = 0.05
+CENTRALITY_SCORE_CAP = 1.0
 EPOCH_BUFFER_ZEROED_EVENT = "epoch_buffer_zeroed"
 EPOCH_BUFFER_ZEROED_REASON = "crash_recovery_graceful_zero"
 
@@ -67,6 +68,10 @@ def _normalized_delta(delta: float) -> float:
     if delta < U_FLOOR:
         return 0.0
     return round(delta, 12)
+
+
+def _bounded_centrality_total(current: float, delta: float) -> float:
+    return round(min(CENTRALITY_SCORE_CAP, current + delta), 12)
 
 
 def _validate_channel(value: Any) -> str:
@@ -146,7 +151,7 @@ def accumulate_centrality_delta(node_id: str, delta: float, epoch: int, state: d
             "state_value",
             state_map.get(normalized_node, 0.0),
         )
-        state_map[normalized_node] = round(current + normalized_delta, 12)
+        state_map[normalized_node] = _bounded_centrality_total(current, normalized_delta)
         return state_map
 
     pending = _state_pending_map(state_map)
@@ -157,7 +162,7 @@ def accumulate_centrality_delta(node_id: str, delta: float, epoch: int, state: d
         "state_pending_value",
         epoch_buffer.get(normalized_node, 0.0),
     )
-    epoch_buffer[normalized_node] = round(current + normalized_delta, 12)
+    epoch_buffer[normalized_node] = _bounded_centrality_total(current, normalized_delta)
     return state_map
 
 
@@ -198,6 +203,6 @@ def commit_epoch_buffer(epoch: int, state: dict) -> dict:
             "state_value",
             state_map.get(normalized_node, 0.0),
         )
-        state_map[normalized_node] = round(current + normalized_delta, 12)
+        state_map[normalized_node] = _bounded_centrality_total(current, normalized_delta)
 
     return state_map
