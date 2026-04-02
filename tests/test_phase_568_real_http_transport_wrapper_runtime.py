@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import subprocess
+import socket
+import ssl
 import textwrap
+import time
 import urllib.error
 import urllib.request
 from dataclasses import fields
@@ -98,6 +101,46 @@ def _config(tmp_path: Path, *, transport_kind: str = runtime.TRANSPORT_KIND_HTTP
         tls_cert_path=cert_path,
         tls_key_path=key_path,
     )
+
+
+def _raw_tls_post(
+    *,
+    port: int,
+    path: str,
+    headers: dict[str, str],
+    body_prefix: bytes,
+    body_suffix: bytes = b'',
+    delay_after_prefix: float = 0.0,
+    timeout: float = 1.0,
+) -> bytes:
+    request_headers = [f"POST {path} HTTP/1.1", "Host: 127.0.0.1", "Connection: close"]
+    request_headers.extend(f"{key}: {value}" for key, value in headers.items())
+    request = ("\r\n".join(request_headers) + "\r\n\r\n").encode("utf-8")
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    with socket.create_connection(("127.0.0.1", port), timeout=timeout) as raw_socket:
+        with context.wrap_socket(raw_socket, server_hostname="127.0.0.1") as tls_socket:
+            tls_socket.sendall(request)
+            if body_prefix:
+                tls_socket.sendall(body_prefix)
+            if delay_after_prefix:
+                time.sleep(delay_after_prefix)
+            if body_suffix:
+                try:
+                    tls_socket.sendall(body_suffix)
+                except OSError:
+                    pass
+            response = bytearray()
+            while True:
+                try:
+                    chunk = tls_socket.recv(4096)
+                except OSError:
+                    break
+                if not chunk:
+                    break
+                response.extend(chunk)
+    return bytes(response)
 
 
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
@@ -332,6 +375,45 @@ def test_handle_gossip_request_rejects_payloads_above_cap(tmp_path: Path) -> Non
     assert status == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
     assert transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
     assert transport.state['event_log'][-1]['token'] == runtime.PAYLOAD_TOO_LARGE_TOKEN
+
+
+def test_loopback_rejects_trickle_read_payload_with_timeout_token(tmp_path: Path) -> None:
+    cert_path, key_path = _write_tls_material(tmp_path / 'server')
+    server_transport = runtime.HttpGossipTransportRuntime(
+        runtime.TransportRuntimeConfig(
+            transport_kind='http',
+            bind_host='127.0.0.1',
+            bind_port=0,
+            tls_cert_path=cert_path,
+            tls_key_path=key_path,
+            request_timeout_seconds=0.1,
+        )
+    )
+    server_transport.start()
+    try:
+        payload = b'x' * 32
+        headers = gossip_transport.build_gossip_headers(
+            gossip_type='centrality_delta',
+            channel='cid:1234567890abcdef',
+            epoch=6,
+            hop_count=1,
+            signature='sig-6',
+        )
+        headers['Content-Length'] = str(len(payload))
+        response = _raw_tls_post(
+            port=int(server_transport.state['bound_port']),
+            path=gossip_transport.gossip_request_path('centrality_delta'),
+            headers=headers,
+            body_prefix=payload[:1],
+            body_suffix=payload[1:],
+            delay_after_prefix=0.2,
+            timeout=1.0,
+        )
+        assert b' 400 ' in response.splitlines()[0]
+        assert server_transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+        assert server_transport.state['event_log'][-1]['token'] == runtime.PAYLOAD_READ_TIMEOUT_TOKEN
+    finally:
+        server_transport.stop()
 
 
 def test_loopback_send_receive_over_real_http_returns_success_status_code(tmp_path: Path) -> None:

@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
 from ilc_core.ledger import get_ledger_backend
 from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
@@ -79,3 +81,44 @@ def test_lmdb_ledger_backend_survives_restart_and_factory_supports_it(tmp_path: 
 
     factory_backend = get_ledger_backend("lmdb", storage_dir=str(ledger_root))
     assert isinstance(factory_backend, LmdbLedgerBackend)
+
+
+def test_lmdb_ledger_backend_rolls_back_partial_epoch_settlement_on_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ledger_root = tmp_path / "ledger-store"
+    ledger = LmdbLedgerBackend(ledger_root)
+    snapshot = StakeSnapshot(
+        epoch_id="epoch-rollback",
+        epoch_index=2,
+        namespace_id="test_ns",
+        stakes={"agent-a": 50.0, "agent-b": 50.0},
+        total_stake=100.0,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    ledger.put_stake_snapshot(snapshot)
+
+    original_set_balance = ledger._set_balance
+    call_count = 0
+
+    def flaky_set_balance(agent_id: str, new_balance: float) -> None:
+        nonlocal call_count
+        call_count += 1
+        original_set_balance(agent_id, new_balance)
+        if call_count == 1:
+            raise RuntimeError("simulated_settlement_failure")
+
+    monkeypatch.setattr(ledger, "_set_balance", flaky_set_balance)
+
+    with pytest.raises(RuntimeError, match="simulated_settlement_failure"):
+        ledger.apply_epoch_settlement(_commit_event("epoch-rollback", 2))
+
+    assert ledger.get_balance("agent-a") == 0.0
+    assert ledger.get_balance("agent-b") == 0.0
+    assert ledger.get_epoch_record("epoch-rollback") is None
+
+    reloaded = LmdbLedgerBackend(ledger_root)
+    assert reloaded.get_balance("agent-a") == 0.0
+    assert reloaded.get_balance("agent-b") == 0.0
+    assert reloaded.get_epoch_record("epoch-rollback") is None

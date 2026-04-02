@@ -98,6 +98,37 @@ def test_panel_pass_and_ecu_claim_flow_are_deterministic() -> None:
     assert claim_payload["ledger"]["rewards_paid"] == claim_payload["outcome_summary"]["total_reward"]
 
 
+def test_panel_direct_author_uses_hashed_tiebreak_not_lexicographic_order() -> None:
+    submissions = [
+        _submission(1, "01" * 16, "cluster-a"),
+        _submission(2, "02" * 16, "cluster-b"),
+        _submission(3, "03" * 16, "cluster-c"),
+        _submission(4, "04" * 16, "cluster-a"),
+        _submission(5, "05" * 16, "cluster-b"),
+        _submission(6, "06" * 16, "cluster-c"),
+        _submission(7, "07" * 16, "cluster-d", variant="divergent"),
+    ]
+    outsider = agent_loop_v1._build_outsider_submission(_task(), "08" * 16, "cluster-e", "ilc-node-1")
+    panel_payload = agent_loop_v1.evaluate_panel(task=_task(), submissions=submissions, outsider_submission=outsider)
+    panel = panel_payload["panel_result"]
+
+    majority_agents = sorted(
+        vote["reviewer_agent_id"]
+        for vote in panel["votes"]
+        if vote["matches_majority"] and vote["variant"] != "outsider"
+    )
+    expected_direct_author = min(
+        majority_agents,
+        key=lambda agent_id: (
+            agent_loop_v1._direct_author_tiebreak_digest(_task(), panel["majority_output_hash"], agent_id),
+            agent_id,
+        ),
+    )
+
+    assert panel["direct_author_agent_id"] == expected_direct_author
+    assert panel["direct_author_agent_id"] != majority_agents[0]
+
+
 def test_panel_fails_when_diversity_floor_is_not_met() -> None:
     submissions = [
         _submission(1, "01" * 16, "cluster-a"),

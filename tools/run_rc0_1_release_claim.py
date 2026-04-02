@@ -69,6 +69,10 @@ def _write_release_notes_input(*, delta_manifest: dict[str, Any], output_path: P
         f"- economic_reward_total: `{(delta_manifest.get('economic_summary') or {}).get('reward_total')}`",
         f"- economic_wallet_count: `{(delta_manifest.get('economic_summary') or {}).get('wallet_count')}`",
         f"- economic_node_count: `{(delta_manifest.get('economic_summary') or {}).get('node_count')}`",
+        f"- economic_runtime_store_kind: `{(delta_manifest.get('economic_claim_summary') or {}).get('runtime_store_kind')}`",
+        f"- economic_settlement_status: `{(delta_manifest.get('economic_claim_summary') or {}).get('settlement_status')}`",
+        f"- economic_rewarded_wallet_count: `{(delta_manifest.get('economic_claim_summary') or {}).get('rewarded_wallet_count')}`",
+        f"- economic_epoch_record_count: `{(delta_manifest.get('economic_claim_summary') or {}).get('epoch_record_count')}`",
         "",
         "## Publication steps still pending",
     ]
@@ -115,6 +119,7 @@ def run_release_claim(*, candidate_manifest_path: Path, output_root: Path) -> di
         "bundle_manifest_path": delta_manifest["bundle_manifest_path"],
         "bundle_install_proof_manifest_path": delta_manifest["bundle_install_proof_manifest_path"],
         "economic_proof_manifest_path": delta_manifest.get("economic_proof_manifest_path"),
+        "economic_claim_summary": delta_manifest.get("economic_claim_summary"),
         "release_notes_input_path": str(notes_input_path),
         "delta_manifest_path": str(delta_manifest_path),
         "delta_stdout": delta_result.stdout.strip(),

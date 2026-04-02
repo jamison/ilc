@@ -545,6 +545,13 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
                     'reward_total': 5.0,
                     'distribution_check_ok': True,
                 },
+                'settlement_manifest': {
+                    'settlement_status': 'applied',
+                    'epoch_id': 'rc0_1::task:test:economic-cycle::epoch::12',
+                },
+                'wallet_manifest': {
+                    'latest_epoch_id': 'rc0_1::task:test:economic-cycle::epoch::12',
+                },
                 'runtime_store': {
                     'store_kind': 'lmdb_public_runtime_v0.1',
                     'graph_store_root': str(tmp_path),
@@ -568,6 +575,8 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
                     'quorum_match': True,
                 },
                 'invariant_summary': {
+                    'rewarded_wallet_count': 6,
+                    'epoch_record_count': 1,
                     'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
                 },
             },
@@ -661,6 +670,13 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     'reward_total': 5.0,
                     'distribution_check_ok': True,
                 },
+                'settlement_manifest': {
+                    'settlement_status': 'applied',
+                    'epoch_id': 'rc0_1::task:test:economic-cycle::epoch::12',
+                },
+                'wallet_manifest': {
+                    'latest_epoch_id': 'rc0_1::task:test:economic-cycle::epoch::12',
+                },
                 'runtime_store': {
                     'store_kind': 'lmdb_public_runtime_v0.1',
                     'graph_store_root': str(tmp_path),
@@ -683,6 +699,8 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     'quorum_match': True,
                 },
                 'invariant_summary': {
+                    'rewarded_wallet_count': 6,
+                    'epoch_record_count': 1,
                     'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
                 },
             },
@@ -765,6 +783,8 @@ def test_render_rc0_1_readiness_delta_accepts_passing_candidate(tmp_path: Path) 
     assert manifest['scenario_replay_pass'] is True
     assert manifest['bundle_install_proof_pass'] is True
     assert manifest['economic_proof_pass'] is True
+    assert manifest['economic_claim_summary']['runtime_store_kind'] == 'lmdb_public_runtime_v0.1'
+    assert manifest['economic_claim_summary']['settlement_status'] == 'applied'
     assert manifest['repo_head'] == 'deadbeef'
 
 
@@ -781,7 +801,14 @@ def test_render_rc0_1_readiness_delta_includes_optional_economic_summary(tmp_pat
                     'wallet_count': 8,
                     'reward_total': 5.0,
                     'distribution_check_ok': True,
-                }
+                },
+                'settlement_manifest': {
+                    'settlement_status': 'applied',
+                    'epoch_id': 'rc0_1::task:test:economic-cycle::epoch::12',
+                },
+                'wallet_manifest': {
+                    'latest_epoch_id': 'rc0_1::task:test:economic-cycle::epoch::12',
+                },
             },
             indent=2,
         ) + '\n',
@@ -797,6 +824,7 @@ def test_render_rc0_1_readiness_delta_includes_optional_economic_summary(tmp_pat
     assert manifest['economic_state_present'] is True
     assert manifest['economic_manifest_path'] == str(economic_manifest_path)
     assert manifest['economic_summary']['wallet_count'] == 8
+    assert manifest['economic_claim_summary']['settlement_status'] == 'applied'
 
 
 def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> None:
@@ -821,6 +849,7 @@ def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> N
                 'bundle_manifest_path': str(bundle_manifest_path),
                 'bundle_install_proof_manifest_path': delta_manifest['bundle_install_proof_manifest_path'],
                 'economic_proof_manifest_path': delta_manifest['economic_proof_manifest_path'],
+                'economic_claim_summary': delta_manifest['economic_claim_summary'],
                 'release_notes_input_path': str(release_notes_input_path),
             },
             indent=2,
