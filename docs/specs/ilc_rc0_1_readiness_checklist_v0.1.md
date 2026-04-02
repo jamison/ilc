@@ -94,7 +94,7 @@ result.
 - `docs/specs/ilc_bootstrap_peer_source_and_promotion_model_v0.1.md`
 - `docs/ops/ilc_three_machine_operator_playbook_v0.1.md`
 - `docs/phases/three_machine_testbed_strike_force_hardening_walkthrough_2026_04_01.md`
-- `out/testbed/benchmarks/20260402_live/manifest.json`
+- `out/testbed/benchmarks/20260402_1610/manifest.json`
 - `out/testbed/rc0_1_substrate/20260402_011353/evidence/manifest.json`
 - `out/rc0_1_bundle/20260402_012439/manifest.json`
 - `out/rc0_1_release_candidate/20260402_110239/economic-state/manifest.json`
