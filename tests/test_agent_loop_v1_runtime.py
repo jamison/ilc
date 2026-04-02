@@ -9,6 +9,7 @@ import pytest
 
 from tools import agent_loop_v1
 from tools import query_rc0_1_economic_state
+from tools.testbed import run_rc0_1_benchmarks as benchmark_runner
 from tools.testbed import run_three_node_seven_agent_scenario as scenario_runner
 
 
@@ -150,6 +151,62 @@ def test_cli_run_agent_writes_submission_file(tmp_path: Path) -> None:
     payload = json.loads(result.stdout.strip())
     assert payload["marker"] == "agent_loop_submission_ok"
     assert (tmp_path / "submission_1.json").exists()
+
+
+def test_broadcast_submission_emits_payload_and_latency_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        agent_loop_v1,
+        "_transport_bundle",
+        lambda _config_path: (
+            agent_loop_v1.TransportRuntimeConfig(
+                transport_kind="http",
+                bind_host="127.0.0.1",
+                bind_port=0,
+                tls_cert_path="unused-cert.pem",
+                tls_key_path="unused-key.pem",
+            ),
+            ["https://peer-a.example", "https://peer-b.example"],
+        ),
+    )
+
+    class _FakeRuntime:
+        def __init__(self, _config: object) -> None:
+            self.calls: list[tuple[str, str, str, int, str, bytes, str]] = []
+
+        def send_gossip(
+            self,
+            peer_endpoint: str,
+            gossip_type: str,
+            channel: str,
+            epoch: int,
+            signature: str,
+            payload: bytes | str = b"",
+            *,
+            content_type: str = "application/cbor",
+        ) -> int:
+            normalized = payload if isinstance(payload, bytes) else payload.encode("utf-8")
+            self.calls.append((peer_endpoint, gossip_type, channel, epoch, signature, normalized, content_type))
+            return 202
+
+    monkeypatch.setattr(agent_loop_v1, "HttpGossipTransportRuntime", _FakeRuntime)
+
+    payload = agent_loop_v1.run_agent_once(
+        slot=1,
+        seed_hex="01" * 16,
+        cluster_id="cluster-a",
+        node_name="ilc-node-1",
+        node_config_path="unused.json",
+        variant="canonical",
+        task=_task(),
+        broadcast=True,
+    )
+
+    statuses = payload["submission"]["send_statuses"]
+    assert len(statuses) == 2
+    assert all(status["status_code"] == 202 for status in statuses)
+    assert all(status["payload_bytes"] > 0 for status in statuses)
+    assert all(isinstance(status["payload_sha256"], str) and status["payload_sha256"] for status in statuses)
+    assert all(status["duration_ms"] >= 0.0 for status in statuses)
 
 
 def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
@@ -368,7 +425,23 @@ def test_run_scenario_emits_live_economic_state(monkeypatch: pytest.MonkeyPatch,
     assert manifest["economic_distribution_check_ok"] is True
     assert manifest["economic_wallet_count"] == 8
     assert manifest["economic_reward_total"] == claim_payload["ledger"]["rewards_paid"]
+    assert manifest["benchmark_metrics"]["panel_evaluation_ms"] >= 0.0
+    assert manifest["benchmark_metrics"]["submission_to_panel_verdict_ms"] >= 0.0
+    assert manifest["benchmark_metrics"]["submission_to_network_visibility_ms"] >= 0.0
+    assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["endpoint_delivery_count"] == 0
+    assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["duplicate_endpoint_delivery_ratio"] == 0.0
 
     summary_payload = query_rc0_1_economic_state.query_summary(economic_manifest_path)
     assert summary_payload["data"]["distribution_check_ok"] is True
     assert summary_payload["data"]["wallet_count"] == 8
+
+
+def test_benchmark_distribution_uses_percentile_contract() -> None:
+    distribution = benchmark_runner._distribution([10.0, 20.0, 30.0, 40.0])
+
+    assert distribution["count"] == 4
+    assert distribution["min_ms"] == 10.0
+    assert distribution["max_ms"] == 40.0
+    assert distribution["p50_ms"] == 20.0
+    assert distribution["p95_ms"] == 40.0
+    assert distribution["p99_ms"] == 40.0
