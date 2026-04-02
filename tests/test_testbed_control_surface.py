@@ -349,6 +349,7 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
     install_manifest_path = tmp_path / 'install_manifest.json'
     scenario_manifest_path = tmp_path / 'scenario_manifest.json'
     scenario_replay_manifest_path = tmp_path / 'scenario_replay_manifest.json'
+    economic_manifest_path = tmp_path / 'economic_manifest.json'
     bootstrap_distribution_path = tmp_path / 'bootstrap_distribution.json'
     steps_dir = tmp_path / 'steps'
     steps_dir.mkdir()
@@ -390,6 +391,19 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
         ) + '\n',
         encoding='utf-8',
     )
+    economic_manifest_path.write_text(
+        json.dumps(
+            {
+                'summary': {
+                    'distribution_check_ok': True,
+                    'wallet_count': 8,
+                    'reward_total': 5.81,
+                }
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
     bootstrap_distribution_path.write_text(
         json.dumps({'approved_peer_count': 3}, indent=2) + '\n',
         encoding='utf-8',
@@ -404,6 +418,7 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
         install_proof_manifest_path=install_manifest_path,
         scenario_manifest_path=scenario_manifest_path,
         scenario_replay_manifest_path=scenario_replay_manifest_path,
+        economic_manifest_path=economic_manifest_path,
         steps_dir=steps_dir,
     )
 
@@ -411,6 +426,8 @@ def test_render_rc_substrate_evidence_writes_manifest_and_summary(tmp_path: Path
     assert manifest['closure_rows']['install_shape'] == 'satisfied_for_testbed'
     assert manifest['closure_rows']['three_node_seven_agent_path'] == 'satisfied_for_testbed'
     assert manifest['closure_rows']['three_node_seven_agent_replay'] == 'satisfied_for_testbed'
+    assert manifest['closure_rows']['economic_cycle_projection'] == 'satisfied_for_testbed'
+    assert manifest['economic_summary']['wallet_count'] == 8
     assert (output_root / 'manifest.json').exists()
     assert (output_root / 'summary.md').exists()
 
@@ -426,6 +443,7 @@ def test_check_rc0_1_substrate_closure_accepts_satisfied_evidence(tmp_path: Path
                     'diagnostics': 'satisfied_for_testbed',
                     'three_node_seven_agent_path': 'satisfied_for_testbed',
                     'three_node_seven_agent_replay': 'satisfied_for_testbed',
+                    'economic_cycle_projection': 'satisfied_for_testbed',
                     'release_evidence': 'satisfied_for_testbed',
                 },
                 'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
@@ -433,6 +451,7 @@ def test_check_rc0_1_substrate_closure_accepts_satisfied_evidence(tmp_path: Path
                     'panel_result_matches': True,
                     'ecu_claims_match': True,
                 },
+                'economic_summary': {'distribution_check_ok': True, 'wallet_count': 8},
             },
             indent=2,
         ) + '\n',
@@ -474,6 +493,7 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
                     'diagnostics': 'satisfied_for_testbed',
                     'three_node_seven_agent_path': 'satisfied_for_testbed',
                     'three_node_seven_agent_replay': 'satisfied_for_testbed',
+                    'economic_cycle_projection': 'satisfied_for_testbed',
                     'release_evidence': 'satisfied_for_testbed',
                 },
                 'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
@@ -481,6 +501,7 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
                     'panel_result_matches': True,
                     'ecu_claims_match': True,
                 },
+                'economic_summary': {'distribution_check_ok': True, 'wallet_count': 8},
             },
             indent=2,
         ) + '\n',
@@ -568,6 +589,7 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     'diagnostics': 'satisfied_for_testbed',
                     'three_node_seven_agent_path': 'satisfied_for_testbed',
                     'three_node_seven_agent_replay': 'satisfied_for_testbed',
+                    'economic_cycle_projection': 'satisfied_for_testbed',
                     'release_evidence': 'satisfied_for_testbed',
                 },
                 'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
@@ -575,6 +597,7 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     'panel_result_matches': True,
                     'ecu_claims_match': True,
                 },
+                'economic_summary': {'distribution_check_ok': True, 'wallet_count': 8},
             },
             indent=2,
         ) + '\n',
@@ -728,6 +751,23 @@ def test_release_candidate_manifest_records_optional_economic_state(monkeypatch:
 
     def _fake_run(command: list[str]) -> subprocess.CompletedProcess[str]:
         calls.append(command)
+        if command[1] == 'tools/testbed/run_rc0_1_substrate_closure.py':
+            closure_root = Path(command[3])
+            closure_root.mkdir(parents=True, exist_ok=True)
+            (closure_root / 'scenario' / 'economic-state').mkdir(parents=True, exist_ok=True)
+            (closure_root / 'scenario' / 'economic-state' / 'manifest.json').write_text(
+                json.dumps({'summary': {'distribution_check_ok': True, 'wallet_count': 8}}, indent=2) + '\n',
+                encoding='utf-8',
+            )
+            (closure_root / 'closure_manifest.json').write_text(
+                json.dumps(
+                    {
+                        'economic_manifest_path': str(closure_root / 'scenario' / 'economic-state' / 'manifest.json'),
+                    },
+                    indent=2,
+                ) + '\n',
+                encoding='utf-8',
+            )
         return subprocess.CompletedProcess(command, 0, stdout='{"marker":"ok"}', stderr='')
 
     monkeypatch.setattr(run_rc0_1_release_candidate, '_run', _fake_run)
@@ -738,7 +778,8 @@ def test_release_candidate_manifest_records_optional_economic_state(monkeypatch:
         emit_release_claim=True,
     )
 
-    assert any(command[1] == 'tools/run_rc0_1_economic_cycle.py' for command in calls)
+    assert not any(command[1] == 'tools/run_rc0_1_economic_cycle.py' for command in calls)
+    assert any(command[1] == 'tools/testbed/run_rc0_1_substrate_closure.py' for command in calls)
     assert manifest['economic_manifest_path'].endswith('economic-state/manifest.json')
     assert 'economic_stdout' in manifest
     assert manifest['release_claim_manifest_path'].endswith('claim/manifest.json')

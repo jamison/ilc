@@ -35,7 +35,7 @@ RC0.1 is considered ready only when all of the following are true:
 | Recovery | Bad config, bad TLS, restart, and one-node-down cases fail clearly and have bounded repair steps. | recovery drill scripts, negative-path assertions, runbook entries | satisfied_for_testbed |
 | Repo resync | All nodes can resync to the same pushed repo state and re-enter service cleanly. | `tools/testbed/sync_repo.sh` + post-sync smoke proof | satisfied_for_testbed |
 | Three-node exchange | The home node and two VPS nodes exchange real CDL-061 traffic bidirectionally. | `tools/testbed/run_three_node_exchange.sh` + diagnostics bundle | satisfied_for_testbed |
-| Economic cycle projection | The bounded seven-agent scenario can be materialized into persisted graph state, settled balances, and wallet exports without manual reconstruction. | `tools/run_rc0_1_economic_cycle.py`, query tool, economic-state manifest | in_progress |
+| Economic cycle projection | The bounded seven-agent scenario emits persisted graph state, settled balances, and wallet exports directly from the live scenario run without manual reconstruction. | scenario `economic-state/manifest.json`, query tool, substrate closure evidence | satisfied_for_testbed |
 | Machine-legible surface | The core control surface is CLI-first, file-based, and JSON-friendly. | CLI docs, config artifacts, deterministic script outputs | satisfied_for_testbed |
 | Harness agnosticism | No harness-specific runtime is required for node correctness. | boundary memo + node docs + absence of harness-only assumptions | satisfied_for_testbed |
 | Human auditability | A human operator can inspect what was installed, configured, started, and verified. | playbook, walkthrough, logs, diagnostics evidence | satisfied_for_testbed |
@@ -69,8 +69,8 @@ The next work should close the following rows first:
 1. turn the testbed-satisfied rows into an explicit RC0.1 release claim package,
 2. keep the package/bundle builder aligned with the latest evidence bundle,
 3. avoid reintroducing harness-specific assumptions into the node substrate,
-4. convert the economic-cycle projection from bounded-scenario evidence into a
-   live graph/settlement/wallet proof lane,
+4. extend the live economic-cycle proof lane from bounded-scenario emission to
+   durable graph/settlement/wallet runtime state,
 5. extend the live runtime beyond the bounded seven-agent scenario only when the
    protocol lane is constitutionally clear.
 
