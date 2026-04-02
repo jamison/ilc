@@ -13,9 +13,10 @@ from ilc_core.ledger.ledger_export import (
     export_ledger_state_csv,
     export_ledger_state_json,
 )
-from ilc_core.ledger.persistent_backend import FileLedgerBackend
+from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEventLog, make_commit_epoch_event, make_event
+from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
 from ilc_core.types import LinkRecord, Node
 
 RUNTIME_VERSION = "rc0_1_economic_cycle_v0.1"
@@ -188,6 +189,8 @@ def materialize_graph_state(*, scenario_root: Path, output_root: Path) -> dict[s
     panel_payload = _load_json(scenario_root / "panel" / "panel_result.json")
     claims_payload = _load_json(scenario_root / "panel" / "ecu_claims.json")
     graph = EpistemicGraph()
+    graph_store_root = output_root / "store"
+    graph_store = LmdbGraphStore(graph_store_root)
     event_log = ProtocolEventLog(output_root / "protocol_events.ndjson")
 
     submissions = []
@@ -275,6 +278,11 @@ def materialize_graph_state(*, scenario_root: Path, output_root: Path) -> dict[s
 
     node_exports = sorted((_node_export(node) for node in graph.nodes.values()), key=lambda row: str(row["id"]))
     link_exports = sorted(link_exports, key=lambda row: (str(row["source_id"]), str(row["target_id"]), str(row["id"])))
+    for row in node_exports:
+        graph_store.put_node(str(row["id"]), row)
+    for row in link_exports:
+        graph_store.put_link(str(row["id"]), row)
+    graph_store.put_quorum_record(quorum_record)
     _write_json(output_root / "nodes.json", node_exports)
     _write_json(output_root / "links.json", link_exports)
     _write_json(output_root / "quorum_record.json", quorum_record)
@@ -288,6 +296,8 @@ def materialize_graph_state(*, scenario_root: Path, output_root: Path) -> dict[s
         "panel_verdict_token": panel_result.get("verdict_token"),
         "nodes_sha256": _sha256_json(node_exports),
         "links_sha256": _sha256_json(link_exports),
+        "store_kind": "lmdb",
+        "store_root": str(graph_store_root),
         "nodes_path": str(output_root / "nodes.json"),
         "links_path": str(output_root / "links.json"),
         "quorum_record_path": str(output_root / "quorum_record.json"),
@@ -302,8 +312,8 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
     if not isinstance(claims, list) or not claims:
         raise EconomicCycleRuntimeError("ecu_claims_missing")
 
-    ledger_root = output_root / "ledger"
-    ledger = FileLedgerBackend(str(ledger_root))
+    ledger_root = output_root / "ledger-store"
+    ledger = LmdbLedgerBackend(ledger_root)
 
     claim_totals: dict[str, float] = {}
     for claim in claims:
@@ -393,6 +403,7 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
         "reward_total": reward_total,
         "agent_count": len(claim_totals),
         "ledger_root": str(ledger_root),
+        "store_kind": "lmdb",
         "ledger_state_path": str(ledger_json_path),
         "protocol_event_log_path": str(output_root / "protocol_events.ndjson"),
         "distribution_check_ok": bool(check.get("ok", False)) if isinstance(check, dict) else False,
@@ -422,6 +433,8 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
 
     participants = _participant_profiles(scenario_root)
     wallet_agent_ids = sorted(set(participants.keys()) | set(balances.keys()) | set(claim_totals.keys()))
+    wallet_store_root = output_root / "wallet-store"
+    wallet_store = LmdbWalletStore(wallet_store_root)
 
     wallet_payload = {
         "version": RUNTIME_VERSION,
@@ -442,6 +455,26 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
             )
         },
     }
+    epoch_history = []
+    ledger_state_path = output_root / "ledger_state.json"
+    if ledger_state_path.is_file():
+        ledger_state = _load_json(ledger_state_path)
+        epoch_records = ledger_state.get("epoch_records")
+        if isinstance(epoch_records, dict):
+            epoch_history = list(epoch_records.values())
+    for agent_id, row in wallet_payload["wallets"].items():
+        wallet_store.put_wallet(agent_id, row)
+        wallet_store.put_wallet_history(
+            agent_id,
+            {
+                "claim_history": [
+                    claim
+                    for claim in claims
+                    if isinstance(claim, dict) and claim.get("agent_id") == agent_id
+                ],
+                "epoch_history": epoch_history,
+            },
+        )
     wallet_path = output_root / "wallets.json"
     _write_json(wallet_path, wallet_payload)
     return {
@@ -449,6 +482,8 @@ def export_wallet_state(*, scenario_root: Path, output_root: Path, balances: dic
         "generated_at": wallet_payload["generated_at"],
         "wallet_count": len(wallet_payload["wallets"]),
         "rewarded_wallet_count": sum(1 for row in wallet_payload["wallets"].values() if float(row["balance_ilc"]) > 0.0),
+        "wallet_store_root": str(wallet_store_root),
+        "store_kind": "lmdb",
         "wallet_path": str(wallet_path),
     }
 
@@ -472,6 +507,12 @@ def materialize_economic_cycle(*, scenario_root: Path, output_root: Path) -> dic
         "graph_manifest": graph_manifest,
         "settlement_manifest": settlement_manifest,
         "wallet_manifest": wallet_manifest,
+        "runtime_store": {
+            "store_kind": "lmdb_public_runtime_v0.1",
+            "graph_store_root": graph_manifest["store_root"],
+            "ledger_store_root": settlement_manifest["ledger_root"],
+            "wallet_store_root": wallet_manifest["wallet_store_root"],
+        },
         "summary": {
             "task_id": settlement_manifest["task_id"],
             "node_count": graph_manifest["node_count"],
