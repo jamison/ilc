@@ -293,3 +293,23 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     wallet_payload = json.loads(wallet_result.stdout.strip())
     assert wallet_payload["data"]["wallet"]["balance_ilc"] == 0.0
     assert wallet_payload["data"]["wallet"]["reward_status"] == "not_rewarded"
+
+    history_result = subprocess.run(
+        [
+            sys.executable,
+            "tools/query_rc0_1_economic_state.py",
+            "--manifest",
+            str(manifest_path),
+            "wallet-history",
+            "--agent-id",
+            "agent-alpha",
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert history_result.returncode == 0, history_result.stderr
+    history_payload = json.loads(history_result.stdout.strip())
+    assert len(history_payload["data"]["claim_history"]) == 1
+    assert history_payload["data"]["epoch_history"][0]["epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
