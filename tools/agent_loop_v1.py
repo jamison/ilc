@@ -312,9 +312,12 @@ def _broadcast_submission(
     transport_config, peers = _transport_bundle(config_path)
     runtime = HttpGossipTransportRuntime(transport_config)
     payload = _stable_json_bytes(artifact)
+    payload_sha256 = hashlib.sha256(payload).hexdigest()
+    payload_bytes = len(payload)
     signature = _signature(artifact)
     statuses: list[dict[str, Any]] = []
     for endpoint in peers:
+        started_at = time.perf_counter()
         try:
             status = runtime.send_gossip(
                 endpoint,
@@ -330,12 +333,21 @@ def _broadcast_submission(
                 "agent_loop_transport_request_failed",
                 f"broadcast failed for {endpoint}: {exc.token}",
             ) from exc
+        duration_ms = round((time.perf_counter() - started_at) * 1000.0, 6)
         if status != 202:
             raise AgentLoopRuntimeError(
                 "agent_loop_unexpected_status_code",
                 f"unexpected status {status} from {endpoint}",
             )
-        statuses.append({"endpoint": endpoint, "status_code": status})
+        statuses.append(
+            {
+                "endpoint": endpoint,
+                "status_code": status,
+                "duration_ms": duration_ms,
+                "payload_bytes": payload_bytes,
+                "payload_sha256": payload_sha256,
+            }
+        )
     return statuses
 
 

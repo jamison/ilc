@@ -36,6 +36,7 @@ RC0.1 is considered ready only when all of the following are true:
 | Repo resync | All nodes can resync to the same pushed repo state and re-enter service cleanly. | `tools/testbed/sync_repo.sh` + post-sync smoke proof | satisfied_for_testbed |
 | Three-node exchange | The home node and two VPS nodes exchange real CDL-061 traffic bidirectionally. | `tools/testbed/run_three_node_exchange.sh` + diagnostics bundle | satisfied_for_testbed |
 | Economic cycle projection | The bounded seven-agent scenario emits persisted graph state, settled balances, and wallet exports directly from the live scenario run without manual reconstruction. | scenario `economic-state/manifest.json`, query tool, substrate closure evidence | satisfied_for_testbed |
+| Benchmark instrumentation | The testbed emits panel latency, quorum visibility, direct-delivery amplification, and graph RSS growth metrics in a machine-readable artifact. | `tools/testbed/run_rc0_1_benchmarks.py` + benchmark manifest | satisfied_for_testbed |
 | Machine-legible surface | The core control surface is CLI-first, file-based, and JSON-friendly. | CLI docs, config artifacts, deterministic script outputs | satisfied_for_testbed |
 | Harness agnosticism | No harness-specific runtime is required for node correctness. | boundary memo + node docs + absence of harness-only assumptions | satisfied_for_testbed |
 | Human auditability | A human operator can inspect what was installed, configured, started, and verified. | playbook, walkthrough, logs, diagnostics evidence | satisfied_for_testbed |
@@ -93,6 +94,7 @@ result.
 - `docs/specs/ilc_bootstrap_peer_source_and_promotion_model_v0.1.md`
 - `docs/ops/ilc_three_machine_operator_playbook_v0.1.md`
 - `docs/phases/three_machine_testbed_strike_force_hardening_walkthrough_2026_04_01.md`
+- `out/testbed/benchmarks/20260402_live/manifest.json`
 - `out/testbed/rc0_1_substrate/20260402_011353/evidence/manifest.json`
 - `out/rc0_1_bundle/20260402_012439/manifest.json`
 - `out/rc0_1_release_candidate/20260402_110239/economic-state/manifest.json`
