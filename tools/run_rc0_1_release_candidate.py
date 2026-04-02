@@ -43,17 +43,8 @@ def run_release_candidate(*, output_root: Path, include_home_install_proof: bool
     if include_home_install_proof:
         closure_command.append("--include-home-install-proof")
     closure_result = _run(closure_command)
-    economic_root = output_root / "economic-state"
-    economic_result = _run(
-        [
-            "python3",
-            "tools/run_rc0_1_economic_cycle.py",
-            "--scenario-root",
-            str(closure_root / "scenario"),
-            "--output-root",
-            str(economic_root),
-        ]
-    )
+    closure_manifest = json.loads((closure_root / "closure_manifest.json").read_text(encoding="utf-8"))
+    economic_manifest_path = str(closure_manifest.get("economic_manifest_path", closure_root / "scenario" / "economic-state" / "manifest.json"))
     release_root = output_root / "release"
     release_result = _run(
         [
@@ -69,10 +60,10 @@ def run_release_candidate(*, output_root: Path, include_home_install_proof: bool
         "version": "rc0_1_release_candidate_v0.1",
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "closure_manifest_path": str(closure_root / "closure_manifest.json"),
-        "economic_manifest_path": str(economic_root / "manifest.json"),
+        "economic_manifest_path": economic_manifest_path,
         "release_manifest_path": str(release_root / "manifest.json"),
         "closure_stdout": closure_result.stdout.strip(),
-        "economic_stdout": economic_result.stdout.strip(),
+        "economic_stdout": "economic_state_emitted_in_substrate_closure",
         "release_stdout": release_result.stdout.strip(),
     }
     manifest_path = output_root / "manifest.json"

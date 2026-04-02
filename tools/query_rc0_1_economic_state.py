@@ -17,7 +17,7 @@ def _manifest_root(manifest_path: Path) -> Path:
     raise ValueError("economic_manifest_path_invalid")
 
 
-def _load_state(manifest_path: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
+def _load_state(manifest_path: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
     manifest = _load_json(manifest_path)
     root = _manifest_root(manifest_path)
     nodes = _load_json(root / "graph" / "nodes.json")
@@ -27,12 +27,34 @@ def _load_state(manifest_path: Path) -> tuple[dict[str, Any], dict[str, Any], di
     return manifest, nodes, links, wallets, ledger
 
 
+def _load_claims(manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    scenario_root = manifest.get("scenario_root")
+    if not isinstance(scenario_root, str) or not scenario_root:
+        return []
+    claims_path = Path(scenario_root) / "panel" / "ecu_claims.json"
+    if not claims_path.is_file():
+        return []
+    claims_payload = _load_json(claims_path)
+    claims = claims_payload.get("claims")
+    if not isinstance(claims, list):
+        return []
+    return [row for row in claims if isinstance(row, dict)]
+
+
 def query_summary(manifest_path: Path) -> dict[str, Any]:
     manifest, _nodes, _links, wallets, ledger = _load_state(manifest_path)
+    summary = manifest.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
     return {
         "ok": True,
         "data": {
-            "summary": manifest.get("summary", {}),
+            "summary": summary,
+            "task_id": summary.get("task_id"),
+            "distribution_check_ok": summary.get("distribution_check_ok"),
+            "reward_total": summary.get("reward_total"),
+            "node_count": summary.get("node_count"),
+            "support_link_count": summary.get("support_link_count"),
             "wallet_count": len(wallets.get("wallets", {})),
             "balance_count": len(ledger.get("balances", {})),
         },
@@ -50,6 +72,30 @@ def query_wallets(manifest_path: Path, agent_id: str | None) -> dict[str, Any]:
             raise ValueError(f"wallet_agent_missing:{agent_id}")
         return {"ok": True, "data": {"agent_id": agent_id, "wallet": row, "summary": manifest.get("summary", {})}}
     return {"ok": True, "data": {"wallets": wallet_rows, "summary": manifest.get("summary", {})}}
+
+
+def query_wallet_history(manifest_path: Path, agent_id: str) -> dict[str, Any]:
+    manifest, _nodes, _links, wallets, ledger = _load_state(manifest_path)
+    wallet_rows = wallets.get("wallets", {})
+    if not isinstance(wallet_rows, dict):
+        raise ValueError("wallet_rows_invalid")
+    row = wallet_rows.get(agent_id)
+    if row is None:
+        raise ValueError(f"wallet_agent_missing:{agent_id}")
+    claims = [claim for claim in _load_claims(manifest) if claim.get("agent_id") == agent_id]
+    epoch_records = ledger.get("epoch_records", {})
+    if not isinstance(epoch_records, dict):
+        epoch_records = {}
+    return {
+        "ok": True,
+        "data": {
+            "agent_id": agent_id,
+            "wallet": row,
+            "claim_history": claims,
+            "epoch_history": list(epoch_records.values()),
+            "summary": manifest.get("summary", {}),
+        },
+    }
 
 
 def query_graph(manifest_path: Path, node_id: str | None) -> dict[str, Any]:
@@ -84,6 +130,9 @@ def _parser() -> argparse.ArgumentParser:
     wallet_parser = subparsers.add_parser("wallets")
     wallet_parser.add_argument("--agent-id")
 
+    wallet_history_parser = subparsers.add_parser("wallet-history")
+    wallet_history_parser.add_argument("--agent-id", required=True)
+
     graph_parser = subparsers.add_parser("graph")
     graph_parser.add_argument("--node-id")
     return parser
@@ -97,6 +146,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload = query_summary(manifest_path)
         elif args.command == "wallets":
             payload = query_wallets(manifest_path, args.agent_id)
+        elif args.command == "wallet-history":
+            payload = query_wallet_history(manifest_path, args.agent_id)
         else:
             payload = query_graph(manifest_path, args.node_id)
     except (OSError, json.JSONDecodeError, ValueError) as exc:

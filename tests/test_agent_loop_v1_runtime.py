@@ -5,7 +5,10 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from tools import agent_loop_v1
+from tools import query_rc0_1_economic_state
 from tools.testbed import run_three_node_seven_agent_scenario as scenario_runner
 
 
@@ -216,3 +219,156 @@ def test_default_scenario_spec_has_seven_agents_and_outsider() -> None:
     payload = scenario_runner._load_scenario(scenario_runner.DEFAULT_SCENARIO_SPEC)
     assert len(payload["agents"]) == 7
     assert payload["outsider"]["cluster_id"] == "cluster-e"
+
+
+def test_run_scenario_emits_live_economic_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    hosts_path = tmp_path / "hosts.json"
+    hosts_path.write_text(
+        json.dumps(
+            {
+                "version": "testbed_hosts_v0.1",
+                "control_machine": {
+                    "name": "ilc-node-1",
+                    "tailscale_name": "imac",
+                    "tailscale_ip": "100.96.35.87",
+                    "repo_path": "/tmp/repo",
+                    "role": "control_and_node",
+                },
+                "remote_hosts": [
+                    {
+                        "name": "ilc-node-2",
+                        "ssh_host": "ilc-node-2",
+                        "ssh_user": "ilcops",
+                        "repo_path": "/opt/ilc/current",
+                        "venv_path": "/opt/ilc/venv",
+                        "config_path": "/etc/ilc",
+                    },
+                    {
+                        "name": "ilc-node-3",
+                        "ssh_host": "ilc-node-3",
+                        "ssh_user": "ilcops",
+                        "repo_path": "/opt/ilc/current",
+                        "venv_path": "/opt/ilc/venv",
+                        "config_path": "/etc/ilc",
+                    },
+                ],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    scenario = scenario_runner._load_scenario(scenario_runner.DEFAULT_SCENARIO_SPEC)
+    task_payload = {key: value for key, value in scenario.items() if key not in {"agents", "outsider", "scenario_id"}}
+    payloads_by_slot = {
+        agent["slot"]: {
+            **agent_loop_v1.run_agent_once(
+                slot=int(agent["slot"]),
+                seed_hex=str(agent["seed_hex"]),
+                cluster_id=str(agent["cluster_id"]),
+                node_name=str(agent["node_name"]),
+                node_config_path="unused-when-broadcast-disabled.json",
+                variant=str(agent["variant"]),
+                task=task_payload,
+                broadcast=False,
+            ),
+        }
+        for agent in scenario["agents"]
+    }
+    panel_submissions = [payloads_by_slot[agent["slot"]]["submission"] for agent in scenario["agents"]]
+    outsider_submission = agent_loop_v1._build_outsider_submission(
+        task_payload,
+        str(scenario["outsider"]["seed_hex"]),
+        str(scenario["outsider"]["cluster_id"]),
+        str(scenario["outsider"]["node_name"]),
+    )
+    panel_eval = agent_loop_v1.evaluate_panel(
+        task=task_payload,
+        submissions=panel_submissions,
+        outsider_submission=outsider_submission,
+    )
+    claim_payload = agent_loop_v1.build_ecu_claim_batch(task_payload, panel_eval)
+    combined_panel_payload = {
+        "marker": panel_eval["marker"],
+        "runtime_version": agent_loop_v1.AGENT_LOOP_V1_RUNTIME_VERSION,
+        "panel_result": panel_eval["panel_result"],
+        "ecu_claim_batch": {
+            key: value for key, value in claim_payload.items() if key not in {"marker", "runtime_version"}
+        },
+        "outsider_submission": outsider_submission,
+    }
+
+    monkeypatch.setattr(scenario_runner, "_git_head", lambda: "deadbeef")
+    monkeypatch.setattr(scenario_runner, "_ensure_home_started", lambda: (False, "home_node_running"))
+    monkeypatch.setattr(scenario_runner, "_stop_home_if_needed", lambda _started_here: None)
+    monkeypatch.setattr(
+        scenario_runner,
+        "_run",
+        lambda command, cwd=None, env=None: subprocess.CompletedProcess(command, 0, stdout="ok\n", stderr=""),
+    )
+    monkeypatch.setattr(
+        scenario_runner,
+        "_run_local_agent",
+        lambda agent, task, emit_dir: payloads_by_slot[int(agent["slot"])],
+    )
+
+    def _fake_run_remote_agent(agent: dict[str, object], task: dict[str, object], emit_dir: Path, host_payload: dict[str, object]) -> dict[str, object]:
+        payload = payloads_by_slot[int(agent["slot"])]
+        (emit_dir / f"submission_{agent['slot']}.json").write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        return payload
+
+    monkeypatch.setattr(scenario_runner, "_run_remote_agent", _fake_run_remote_agent)
+
+    def _fake_evaluate_panel(task_payload: dict[str, object], submission_dir: Path, outsider: dict[str, object], emit_dir: Path) -> dict[str, object]:
+        (emit_dir / "panel_result.json").write_text(
+            json.dumps(combined_panel_payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (emit_dir / "ecu_claims.json").write_text(
+            json.dumps(claim_payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        (emit_dir / "outsider_submission.json").write_text(
+            json.dumps(outsider_submission, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        return combined_panel_payload
+
+    monkeypatch.setattr(scenario_runner, "_evaluate_panel", _fake_evaluate_panel)
+    monkeypatch.setattr(
+        scenario_runner,
+        "_broadcast_from_home",
+        lambda task_payload, artifact_file, gossip_type, emit_dir: {
+            "send_statuses": [
+                {"peer": "ilc-node-2", "send_status": 202},
+                {"peer": "ilc-node-3", "send_status": 202},
+            ]
+        },
+    )
+    monkeypatch.setattr(
+        scenario_runner,
+        "_collect_diagnostics",
+        lambda output_root: (output_root / "diagnostics").mkdir(parents=True, exist_ok=True),
+    )
+
+    output_root = tmp_path / "scenario-output"
+    manifest = scenario_runner.run_scenario(
+        scenario_path=scenario_runner.DEFAULT_SCENARIO_SPEC,
+        hosts_path=hosts_path,
+        output_root=output_root,
+    )
+
+    economic_manifest_path = output_root / "economic-state" / "manifest.json"
+    assert economic_manifest_path.is_file()
+    assert manifest["economic_manifest_path"] == str(economic_manifest_path)
+    assert manifest["economic_distribution_check_ok"] is True
+    assert manifest["economic_wallet_count"] == 8
+    assert manifest["economic_reward_total"] == claim_payload["ledger"]["rewards_paid"]
+
+    summary_payload = query_rc0_1_economic_state.query_summary(economic_manifest_path)
+    assert summary_payload["data"]["distribution_check_ok"] is True
+    assert summary_payload["data"]["wallet_count"] == 8
