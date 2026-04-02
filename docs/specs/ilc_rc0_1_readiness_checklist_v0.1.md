@@ -105,7 +105,7 @@ result.
 - `out/rc0_1_release_candidate/20260402_204350/release/economic-proof/manifest.json`
 - `out/rc0_1_release_candidate/20260402_204350/claim/manifest.json`
 - `out/rc0_1_release_candidate/20260402_204350/manifest.json`
-- `out/rc0_1_release_candidate/20260402_230241/release/economic-proof/manifest.json`
-- `out/rc0_1_release_candidate/20260402_230241/claim/manifest.json`
-- `out/rc0_1_release_candidate/20260402_230241/manifest.json`
+- `out/rc0_1_release_candidate/20260402_232125/release/economic-proof/manifest.json`
+- `out/rc0_1_release_candidate/20260402_232125/claim/manifest.json`
+- `out/rc0_1_release_candidate/20260402_232125/manifest.json`
 - `out/testbed/economic-replay/20260402_1940`
