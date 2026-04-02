@@ -149,6 +149,16 @@ def test_accumulate_centrality_delta_accumulates_valid_delta_per_selected_model(
         assert 'node-alpha' not in updated
 
 
+def test_accumulate_centrality_delta_caps_total_at_one() -> None:
+    state: dict[str, object] = {}
+    runtime.accumulate_centrality_delta('node-cap', 0.60, 1, state)
+    updated = runtime.accumulate_centrality_delta('node-cap', 0.60, 1, state)
+    if runtime.ACCUMULATION_MODEL == 'write_through':
+        assert updated['node-cap'] == runtime.CENTRALITY_SCORE_CAP
+    else:
+        assert updated['_pending'][1]['node-cap'] == runtime.CENTRALITY_SCORE_CAP
+
+
 def test_commit_epoch_buffer_behaves_per_selected_model_and_logs_zeroed_epoch() -> None:
     state: dict[str, object] = {}
     updated = runtime.accumulate_centrality_delta('node-alpha', 0.20, 1, state)
