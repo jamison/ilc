@@ -19,6 +19,8 @@ from tools.testbed import render_testbed_configs
 from tools.testbed import verify_bootstrap_peers
 from tools.testbed import verify_bootstrap_distribution
 from tools import check_rc0_1_release_gate
+from tools import check_rc0_1_release_claim
+from tools import render_rc0_1_readiness_delta
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -543,3 +545,147 @@ def test_bundle_installer_scripts_are_runnable_from_copied_bundle_layout(tmp_pat
 
     assert install_result.returncode == 0, install_result.stderr
     assert update_result.returncode == 0, update_result.stderr
+
+
+def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
+    candidate_manifest_path = tmp_path / 'candidate_manifest.json'
+    closure_manifest_path = tmp_path / 'closure_manifest.json'
+    release_manifest_path = tmp_path / 'release_manifest.json'
+    evidence_manifest_path = tmp_path / 'evidence_manifest.json'
+    bundle_manifest_path = tmp_path / 'bundle_manifest.json'
+    proof_manifest_path = tmp_path / 'bundle_install_proof_manifest.json'
+    bundle_archive_path = tmp_path / 'bundle.tar.gz'
+    bundle_archive_path.write_bytes(b'rc-bundle')
+
+    evidence_manifest_path.write_text(
+        json.dumps(
+            {
+                'repo_head': 'deadbeef',
+                'closure_rows': {
+                    'install_shape': 'satisfied_for_testbed',
+                    'bootstrap_distribution': 'satisfied_for_testbed',
+                    'diagnostics': 'satisfied_for_testbed',
+                    'three_node_seven_agent_path': 'satisfied_for_testbed',
+                    'three_node_seven_agent_replay': 'satisfied_for_testbed',
+                    'release_evidence': 'satisfied_for_testbed',
+                },
+                'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
+                'scenario_replay_summary': {
+                    'panel_result_matches': True,
+                    'ecu_claims_match': True,
+                },
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    bundle_manifest_path.write_text(
+        json.dumps(
+            {
+                'archive_path': str(bundle_archive_path),
+                'archive_sha256': hashlib.sha256(b'rc-bundle').hexdigest(),
+                'repo_head': 'deadbeef',
+                'guidance_files': [],
+                'installer_files': [],
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    proof_manifest_path.write_text(
+        json.dumps(
+            {
+                'results': [
+                    {'host': 'ilc-node-1', 'status': 'ok'},
+                    {'host': 'ilc-node-2', 'status': 'ok'},
+                    {'host': 'ilc-node-3', 'status': 'ok'},
+                ]
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    closure_manifest_path.write_text(
+        json.dumps(
+            {
+                'evidence_manifest_path': str(evidence_manifest_path),
+                'verdict_stdout': 'rc0_1_substrate_verdict=pass',
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    release_manifest_path.write_text(
+        json.dumps(
+            {
+                'bundle_manifest_path': str(bundle_manifest_path),
+                'bundle_install_proof_manifest_path': str(proof_manifest_path),
+                'release_verdict_stdout': 'rc0_1_release_verdict=pass',
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    candidate_manifest_path.write_text(
+        json.dumps(
+            {
+                'closure_manifest_path': str(closure_manifest_path),
+                'release_manifest_path': str(release_manifest_path),
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    return candidate_manifest_path, bundle_manifest_path
+
+
+def test_render_rc0_1_readiness_delta_accepts_passing_candidate(tmp_path: Path) -> None:
+    candidate_manifest_path, _ = _write_release_candidate_fixture(tmp_path)
+
+    manifest = render_rc0_1_readiness_delta.render_readiness_delta(
+        candidate_manifest_path=candidate_manifest_path,
+    )
+
+    assert manifest['release_candidate_ready'] is True
+    assert manifest['closure_pass'] is True
+    assert manifest['release_pass'] is True
+    assert manifest['scenario_replay_pass'] is True
+    assert manifest['bundle_install_proof_pass'] is True
+    assert manifest['repo_head'] == 'deadbeef'
+
+
+def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> None:
+    candidate_manifest_path, bundle_manifest_path = _write_release_candidate_fixture(tmp_path)
+    delta_manifest_path = tmp_path / 'readiness_delta.json'
+    release_notes_input_path = tmp_path / 'release_notes_input.md'
+    release_notes_input_path.write_text('# notes\n', encoding='utf-8')
+
+    delta_manifest = render_rc0_1_readiness_delta.render_readiness_delta(
+        candidate_manifest_path=candidate_manifest_path,
+    )
+    delta_manifest_path.write_text(json.dumps(delta_manifest, indent=2) + '\n', encoding='utf-8')
+
+    claim_manifest_path = tmp_path / 'claim_manifest.json'
+    claim_manifest_path.write_text(
+        json.dumps(
+            {
+                'candidate_manifest_path': str(candidate_manifest_path),
+                'closure_manifest_path': delta_manifest['closure_manifest_path'],
+                'release_manifest_path': delta_manifest['release_manifest_path'],
+                'evidence_manifest_path': delta_manifest['evidence_manifest_path'],
+                'bundle_manifest_path': str(bundle_manifest_path),
+                'bundle_install_proof_manifest_path': delta_manifest['bundle_install_proof_manifest_path'],
+                'release_notes_input_path': str(release_notes_input_path),
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+
+    verdict, failures = check_rc0_1_release_claim.check_release_claim(
+        claim_manifest_path=claim_manifest_path,
+        delta_manifest_path=delta_manifest_path,
+    )
+
+    assert verdict == 'pass'
+    assert failures == []
