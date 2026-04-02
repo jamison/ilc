@@ -17,6 +17,7 @@ from tools.testbed.peer_inventory import load_overrides, resolve_active_peer_map
 from tools.testbed import render_testbed_configs
 from tools.testbed import verify_bootstrap_peers
 from tools.testbed import verify_bootstrap_distribution
+from tools import check_rc0_1_release_gate
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -414,5 +415,63 @@ def test_check_rc0_1_substrate_closure_accepts_satisfied_evidence(tmp_path: Path
     )
 
     verdict, failures = check_rc0_1_substrate_closure.check_evidence(evidence_path)
+    assert verdict == 'pass'
+    assert failures == []
+
+
+def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_path: Path) -> None:
+    archive_path = tmp_path / 'bundle.tar.gz'
+    archive_path.write_bytes(b'rc-bundle')
+    bundle_manifest_path = tmp_path / 'bundle_manifest.json'
+    evidence_manifest_path = tmp_path / 'evidence_manifest.json'
+    checklist_path = tmp_path / 'checklist.md'
+
+    bundle_manifest_path.write_text(
+        json.dumps(
+            {
+                'archive_path': str(archive_path),
+                'archive_sha256': hashlib.sha256(b'rc-bundle').hexdigest(),
+                'repo_head': 'deadbeef',
+                'guidance_files': [str(tmp_path / name) for name in sorted(check_rc0_1_release_gate.REQUIRED_GUIDANCE)],
+                'installer_files': [str(tmp_path / name) for name in sorted(check_rc0_1_release_gate.REQUIRED_INSTALLERS)],
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    evidence_manifest_path.write_text(
+        json.dumps(
+            {
+                'repo_head': 'deadbeef',
+                'closure_rows': {
+                    'install_shape': 'satisfied_for_testbed',
+                    'bootstrap_distribution': 'satisfied_for_testbed',
+                    'diagnostics': 'satisfied_for_testbed',
+                    'three_node_seven_agent_path': 'satisfied_for_testbed',
+                    'release_evidence': 'satisfied_for_testbed',
+                },
+                'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    checklist_path.write_text(
+        '\n'.join(
+            [
+                '| Area | Requirement | Minimum evidence | Current pre-RC status |',
+                '|---|---|---|---|',
+                '| Install shape | x | y | satisfied_for_testbed |',
+                '| Release evidence | x | y | satisfied_for_testbed |',
+            ]
+        ) + '\n',
+        encoding='utf-8',
+    )
+
+    verdict, failures = check_rc0_1_release_gate.check_release_gate(
+        bundle_manifest_path=bundle_manifest_path,
+        evidence_manifest_path=evidence_manifest_path,
+        checklist_path=checklist_path,
+    )
     assert verdict == 'pass'
     assert failures == []

@@ -19,6 +19,12 @@ DEFAULT_GUIDANCE_PATHS = [
     'docs/ops/ilc_three_machine_operator_playbook_v0.1.md',
     'docs/specs/ilc_remote_control_surface_v0.1.md',
 ]
+DEFAULT_INSTALLER_PATHS = [
+    'tools/rc_bundle_runtime.py',
+    'tools/rc_install_bundle_node.py',
+    'tools/rc_update_bundle_node.py',
+    'tools/check_rc0_1_release_gate.py',
+]
 
 
 class BundleError(RuntimeError):
@@ -58,6 +64,15 @@ def build_bundle(*, output_root: Path, evidence_root: Path | None) -> dict[str, 
         shutil.copy2(source, target)
         copied_docs.append(str(target))
 
+    copied_installers: list[str] = []
+    installer_root = output_root / 'installer'
+    installer_root.mkdir(exist_ok=True)
+    for rel_path in DEFAULT_INSTALLER_PATHS:
+        source = REPO_ROOT / rel_path
+        target = installer_root / Path(rel_path).name
+        shutil.copy2(source, target)
+        copied_installers.append(str(target))
+
     copied_evidence: list[str] = []
     if evidence_root is not None and evidence_root.exists():
         evidence_out = output_root / 'evidence'
@@ -69,6 +84,46 @@ def build_bundle(*, output_root: Path, evidence_root: Path | None) -> dict[str, 
                 shutil.copy2(source, target)
                 copied_evidence.append(str(target))
 
+    install_md = output_root / 'INSTALL.md'
+    install_md.write_text(
+        '\n'.join(
+            [
+                '# ILC RC0.1 Bundle Install Surface',
+                '',
+                f'- archive: `{archive_path.name}`',
+                '- installer: `installer/rc_install_bundle_node.py`',
+                '- updater: `installer/rc_update_bundle_node.py`',
+                '- release gate: `installer/check_rc0_1_release_gate.py`',
+                '',
+                'Example install command:',
+                '',
+                '```bash',
+                'python3 installer/rc_install_bundle_node.py \\',
+                f'  --bundle {archive_path.name} \\',
+                '  --repo-path /opt/ilc/current \\',
+                '  --venv-path /opt/ilc/venv \\',
+                '  --config-source /etc/ilc \\',
+                '  --config-path /etc/ilc \\',
+                '  --service-unit-dest /etc/systemd/system/ilc-node-v1.service',
+                '```',
+                '',
+                'Example update command:',
+                '',
+                '```bash',
+                'python3 installer/rc_update_bundle_node.py \\',
+                f'  --bundle {archive_path.name} \\',
+                '  --repo-path /opt/ilc/current \\',
+                '  --venv-path /opt/ilc/venv \\',
+                '  --config-source /etc/ilc \\',
+                '  --config-path /etc/ilc \\',
+                '  --service-unit-dest /etc/systemd/system/ilc-node-v1.service',
+                '```',
+                '',
+            ]
+        ) + '\n',
+        encoding='utf-8',
+    )
+
     manifest = {
         'version': 'rc0_1_bundle_v0.1',
         'generated_at': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
@@ -77,9 +132,12 @@ def build_bundle(*, output_root: Path, evidence_root: Path | None) -> dict[str, 
         'archive_sha256': _sha256(archive_path),
         'archive_size_bytes': archive_path.stat().st_size,
         'guidance_files': copied_docs,
+        'installer_files': copied_installers,
         'evidence_files': copied_evidence,
+        'install_instructions': str(install_md),
     }
     manifest_path = output_root / 'manifest.json'
+    manifest['manifest_path'] = str(manifest_path)
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
     return manifest
 
