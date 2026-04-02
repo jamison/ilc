@@ -5,7 +5,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ilc_core.rc.economic_cycle_runtime import materialize_economic_cycle
+import pytest
+
+from ilc_core.rc.economic_cycle_runtime import EconomicCycleRuntimeError, materialize_economic_cycle
 from tools import check_rc0_1_economic_state
 from tools import prove_rc0_1_economic_state
 from tools import query_rc0_1_economic_state
@@ -237,8 +239,13 @@ def test_materialize_economic_cycle_persists_graph_ledger_and_wallet_state(tmp_p
     wallet_rows = wallets["wallets"]
     assert set(wallet_rows) == {"agent-alpha", "agent-beta", "agent-gamma", "agent-outsider"}
     assert wallet_rows["agent-alpha"]["reward_status"] == "rewarded"
+    assert wallet_rows["agent-alpha"]["last_settled_epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
+    assert wallet_rows["agent-alpha"]["lifetime_claim_count"] == 1
+    assert wallet_rows["agent-alpha"]["settled_epoch_count"] == 1
     assert wallet_rows["agent-gamma"]["balance_ilc"] == 0.0
     assert wallet_rows["agent-outsider"]["variant"] == "outsider"
+    assert manifest["settlement_manifest"]["settlement_status"] == "applied"
+    assert manifest["runtime_identity"]["claims_sha256"] == manifest["settlement_manifest"]["claim_batch_sha256"]
 
 
 def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> None:
@@ -320,6 +327,8 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     history_payload = json.loads(history_result.stdout.strip())
     assert len(history_payload["data"]["claim_history"]) == 1
     assert history_payload["data"]["epoch_history"][0]["epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
+    assert history_payload["data"]["balance_history"][0]["reward_delta_ilc"] == 3.0
+    assert history_payload["data"]["latest_epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
 
     wallet_status_result = subprocess.run(
         [
@@ -339,6 +348,8 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     assert wallet_status_result.returncode == 0, wallet_status_result.stderr
     wallet_status_payload = json.loads(wallet_status_result.stdout.strip())
     assert wallet_status_payload["data"]["claim_count"] == 1
+    assert wallet_status_payload["data"]["settled_epoch_count"] == 1
+    assert wallet_status_payload["data"]["latest_balance_receipt"]["reward_delta_ilc"] == 3.0
 
     store_summary_result = subprocess.run(
         [
@@ -403,6 +414,37 @@ def test_prove_economic_state_replays_durable_runtime_state(tmp_path: Path) -> N
     assert proof_manifest["query_payloads"]["quorum_record"]["data"]["quorum_record"]["task_id"] == "task:test:economic-cycle"
 
 
+def test_materialize_economic_cycle_marks_idempotent_replay_on_same_output_root(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+
+    first_manifest = materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+    second_manifest = materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+    assert first_manifest["settlement_manifest"]["settlement_status"] == "applied"
+    assert second_manifest["settlement_manifest"]["settlement_status"] == "idempotent_replay"
+    wallet_row, history = query_rc0_1_economic_state.load_wallet_history(output_root / "manifest.json", "agent-alpha")
+    assert wallet_row["settled_epoch_count"] == 1
+    assert len(history["claim_history"]) == 1
+    assert len(history["balance_history"]) == 1
+
+
+def test_materialize_economic_cycle_rejects_conflicting_reuse_of_output_root(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+    claims_path = scenario_root / "panel" / "ecu_claims.json"
+    claims_payload = json.loads(claims_path.read_text(encoding="utf-8"))
+    claims_payload["claims"][0]["amount"] = 2.5
+    claims_payload["ledger"]["rewards_paid"] = 3.5
+    claims_payload["outcome_summary"]["total_reward"] = 3.5
+    claims_path.write_text(json.dumps(claims_payload, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(EconomicCycleRuntimeError, match="economic_runtime_root_conflict"):
+        materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+
 def test_query_helpers_return_quorum_and_wallet_export(tmp_path: Path) -> None:
     scenario_root = _scenario_fixture(tmp_path)
     output_root = tmp_path / "economic"
@@ -438,3 +480,25 @@ def test_economic_negative_path_drills_emit_expected_tokens(tmp_path: Path) -> N
     assert "economic_negative_path_reward_mismatch_ok" in result.stdout
     assert "economic_negative_path_wallet_count_ok" in result.stdout
     assert "economic_negative_path_drill_ok" in result.stdout
+
+
+def test_economic_replay_drills_emit_expected_tokens(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "tools/testbed/run_economic_replay_drills.py",
+            "--scenario-root",
+            str(scenario_root),
+            "--output-root",
+            str(tmp_path / "economic-replay"),
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "economic_replay_idempotent_ok" in result.stdout
+    assert "economic_replay_conflict_ok" in result.stdout
+    assert "economic_replay_drill_ok" in result.stdout

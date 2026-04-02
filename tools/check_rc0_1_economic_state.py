@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -35,6 +36,20 @@ def _claim_digest(claim: dict[str, Any]) -> str:
     return json.dumps(claim, sort_keys=True, separators=(",", ":"))
 
 
+def _sha256_json(payload: Any) -> str:
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _history_digest(*, claim_history: list[dict[str, Any]], epoch_history: list[dict[str, Any]], balance_history: list[dict[str, Any]]) -> str:
+    return _sha256_json(
+        {
+            "claim_history": claim_history,
+            "epoch_history": epoch_history,
+            "balance_history": balance_history,
+        }
+    )
+
+
 def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str, Any]]:
     manifest = query_rc0_1_economic_state.load_json(manifest_path)
     runtime_store = query_rc0_1_economic_state.load_runtime_store(manifest)
@@ -55,6 +70,7 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
     summary = manifest.get("summary", {})
     settlement_manifest = manifest.get("settlement_manifest", {})
     wallet_manifest = manifest.get("wallet_manifest", {})
+    runtime_identity = manifest.get("runtime_identity", {})
 
     failures: list[str] = []
     wallet_rows = wallets.get("wallets", {})
@@ -78,6 +94,11 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
         failures.append("economic_quorum_task_id_mismatch")
     if task_id and settlement_manifest.get("task_id") != task_id:
         failures.append("economic_settlement_task_id_mismatch")
+    if not isinstance(runtime_identity, dict):
+        failures.append("economic_runtime_identity_invalid")
+        runtime_identity = {}
+    if task_id and runtime_identity.get("task_id") != task_id:
+        failures.append("economic_runtime_identity_task_id_mismatch")
 
     expected_node_count = summary.get("node_count")
     if isinstance(expected_node_count, int) and expected_node_count != len(nodes):
@@ -126,6 +147,14 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
     expected_epoch_id = settlement_manifest.get("epoch_id")
     if isinstance(expected_epoch_id, str) and expected_epoch_id and expected_epoch_id not in epoch_records:
         failures.append("economic_epoch_record_missing")
+    settlement_status = settlement_manifest.get("settlement_status")
+    if settlement_status not in {"applied", "idempotent_replay"}:
+        failures.append("economic_settlement_status_invalid")
+    claim_batch_sha256 = settlement_manifest.get("claim_batch_sha256")
+    if not isinstance(claim_batch_sha256, str) or not claim_batch_sha256:
+        failures.append("economic_claim_batch_sha256_missing")
+    elif runtime_identity.get("claims_sha256") != claim_batch_sha256:
+        failures.append("economic_runtime_identity_claims_mismatch")
 
     for agent_id, row in sorted(wallet_rows.items()):
         if not isinstance(row, dict):
@@ -138,16 +167,43 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
             continue
         claim_history = history.get("claim_history", [])
         epoch_history = history.get("epoch_history", [])
-        if not isinstance(claim_history, list) or not isinstance(epoch_history, list):
+        balance_history = history.get("balance_history", [])
+        if not isinstance(claim_history, list) or not isinstance(epoch_history, list) or not isinstance(balance_history, list):
             failures.append(f"economic_wallet_history_invalid:{agent_id}")
             continue
         ecu_claim_total = row.get("ecu_claim_total")
         if isinstance(ecu_claim_total, (int, float)) and not isinstance(ecu_claim_total, bool):
             if abs(round(float(ecu_claim_total), 12) - _claim_total([claim for claim in claim_history if isinstance(claim, dict)])) > EPSILON:
                 failures.append(f"economic_wallet_claim_total_mismatch:{agent_id}")
+        settled_epoch_count = row.get("settled_epoch_count")
+        if isinstance(settled_epoch_count, int) and settled_epoch_count != len(balance_history):
+            failures.append(f"economic_wallet_settled_epoch_count_mismatch:{agent_id}")
+        lifetime_claim_count = row.get("lifetime_claim_count")
+        if isinstance(lifetime_claim_count, int) and lifetime_claim_count != len(claim_history):
+            failures.append(f"economic_wallet_lifetime_claim_count_mismatch:{agent_id}")
+        last_settled_epoch_id = row.get("last_settled_epoch_id")
+        latest_epoch_id = history.get("latest_epoch_id")
+        if last_settled_epoch_id and latest_epoch_id and str(last_settled_epoch_id) != str(latest_epoch_id):
+            failures.append(f"economic_wallet_latest_epoch_mismatch:{agent_id}")
         digests = [_claim_digest(claim) for claim in claim_history if isinstance(claim, dict)]
         if len(set(digests)) != len(digests):
             failures.append(f"economic_wallet_claim_duplicate:{agent_id}")
+        latest_claim_digest = history.get("latest_claim_digest")
+        expected_claim_digest = _sha256_json([claim for claim in claim_history if isinstance(claim, dict)])
+        if latest_claim_digest not in (None, expected_claim_digest):
+            failures.append(f"economic_wallet_latest_claim_digest_mismatch:{agent_id}")
+        balance_epoch_ids = []
+        for balance_row in balance_history:
+            if not isinstance(balance_row, dict):
+                failures.append(f"economic_wallet_balance_history_invalid:{agent_id}")
+                continue
+            balance_epoch_id = balance_row.get("epoch_id")
+            if isinstance(balance_epoch_id, str) and balance_epoch_id:
+                balance_epoch_ids.append(balance_epoch_id)
+            if balance_row.get("settlement_status") not in {"applied", "idempotent_replay"}:
+                failures.append(f"economic_wallet_balance_history_status_invalid:{agent_id}")
+        if len(set(balance_epoch_ids)) != len(balance_epoch_ids):
+            failures.append(f"economic_wallet_balance_history_duplicate:{agent_id}")
         if isinstance(expected_epoch_id, str) and expected_epoch_id:
             epoch_ids = {
                 str(record.get("epoch_id"))
@@ -156,6 +212,16 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
             }
             if expected_epoch_id not in epoch_ids:
                 failures.append(f"economic_wallet_epoch_history_missing:{agent_id}")
+            if expected_epoch_id not in balance_epoch_ids:
+                failures.append(f"economic_wallet_balance_history_missing:{agent_id}")
+        history_digest = history.get("history_digest")
+        expected_history_digest = _history_digest(
+            claim_history=[claim for claim in claim_history if isinstance(claim, dict)],
+            epoch_history=[epoch for epoch in epoch_history if isinstance(epoch, dict)],
+            balance_history=[item for item in balance_history if isinstance(item, dict)],
+        )
+        if history_digest not in (None, expected_history_digest):
+            failures.append(f"economic_wallet_history_digest_mismatch:{agent_id}")
 
     if summary.get("distribution_check_ok") is not True:
         failures.append("economic_distribution_check_not_pass")
@@ -163,6 +229,7 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
     proof_summary = {
         "task_id": task_id,
         "runtime_store": runtime_store,
+        "runtime_identity": runtime_identity,
         "reward_total": reward_total_float,
         "wallet_balance_total": wallet_balance_total,
         "ledger_balance_total": ledger_balance_total,
@@ -171,6 +238,7 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
         "wallet_count": len(wallet_rows),
         "rewarded_wallet_count": rewarded_wallet_count,
         "epoch_record_count": len(epoch_records),
+        "settlement_status": settlement_status,
     }
     if failures:
         return "fail", failures, proof_summary

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 from typing import cast
@@ -8,6 +9,7 @@ import lmdb
 
 from ilc_core.ledger.backend import EpochRecord, InMemoryLedgerBackend, JsonObject
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
+from ilc_core.protocol.event_log import ProtocolEvent
 
 
 LMDB_LEDGER_BACKEND_VERSION = "lmdb_ledger_backend_v0.1"
@@ -52,6 +54,7 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
         self._balances_db = self.env.open_db(b"balances")
         self._epochs_db = self.env.open_db(b"epochs")
         self._snapshots_db = self.env.open_db(b"snapshots")
+        self._active_txn: lmdb.Transaction | None = None
         self._load_state()
 
     def _load_state(self) -> None:
@@ -103,12 +106,26 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
 
     def _set_balance(self, agent_id: str, new_balance: float) -> None:
         super()._set_balance(agent_id, new_balance)
+        if self._active_txn is not None:
+            self._active_txn.put(
+                _encode_key(agent_id),
+                _encode_json({"amount": new_balance}),
+                db=self._balances_db,
+            )
+            return
         with self.env.begin(write=True, db=self._balances_db) as txn:
             txn.put(_encode_key(agent_id), _encode_json({"amount": new_balance}))
 
     def _store_epoch_record(self, record: EpochRecord) -> None:
         super()._store_epoch_record(record)
         epoch_id = cast(str, record["epoch_id"])
+        if self._active_txn is not None:
+            self._active_txn.put(
+                _encode_key(epoch_id),
+                _encode_json(record),
+                db=self._epochs_db,
+            )
+            return
         with self.env.begin(write=True, db=self._epochs_db) as txn:
             txn.put(_encode_key(epoch_id), _encode_json(record))
 
@@ -122,5 +139,26 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
             "total_stake": snapshot.total_stake,
             "created_at": snapshot.created_at,
         }
+        if self._active_txn is not None:
+            self._active_txn.put(
+                _encode_key(snapshot.epoch_id),
+                _encode_json(payload),
+                db=self._snapshots_db,
+            )
+            return
         with self.env.begin(write=True, db=self._snapshots_db) as txn:
             txn.put(_encode_key(snapshot.epoch_id), _encode_json(payload))
+
+    def apply_epoch_settlement(self, epoch_event: ProtocolEvent) -> None:
+        balances_before = self.balances.copy()
+        epoch_records_before = copy.deepcopy(self.epoch_records)
+        try:
+            with self.env.begin(write=True) as txn:
+                self._active_txn = txn
+                super().apply_epoch_settlement(epoch_event)
+        except Exception:
+            self.balances = balances_before
+            self.epoch_records = epoch_records_before
+            raise
+        finally:
+            self._active_txn = None

@@ -87,8 +87,15 @@ def load_wallet_history(manifest_path: Path, agent_id: str) -> tuple[dict[str, A
             raise ValueError(f"wallet_agent_missing:{agent_id}")
         history = wallet_store.get_wallet_history(agent_id) or {}
         return row, {
+            "version": history.get("version"),
+            "agent_id": history.get("agent_id", agent_id),
+            "generated_at": history.get("generated_at"),
+            "latest_epoch_id": history.get("latest_epoch_id"),
+            "latest_claim_digest": history.get("latest_claim_digest"),
             "claim_history": history.get("claim_history", []),
             "epoch_history": history.get("epoch_history", list(ledger_backend.epoch_records.values())),
+            "balance_history": history.get("balance_history", []),
+            "history_digest": history.get("history_digest"),
         }
 
     manifest, _nodes, _links, wallets, ledger, _quorum = load_state(manifest_path)
@@ -103,8 +110,15 @@ def load_wallet_history(manifest_path: Path, agent_id: str) -> tuple[dict[str, A
     if not isinstance(epoch_records, dict):
         epoch_records = {}
     return row, {
+        "version": manifest.get("version"),
+        "agent_id": agent_id,
+        "generated_at": manifest.get("generated_at"),
+        "latest_epoch_id": next(iter(epoch_records.keys()), None) if epoch_records else None,
+        "latest_claim_digest": None,
         "claim_history": claims,
         "epoch_history": list(epoch_records.values()),
+        "balance_history": [],
+        "history_digest": None,
     }
 
 
@@ -164,6 +178,8 @@ def query_wallet_status(manifest_path: Path, agent_id: str) -> dict[str, Any]:
     row, history = load_wallet_history(manifest_path, agent_id)
     claim_history = history.get("claim_history", [])
     epoch_history = history.get("epoch_history", [])
+    balance_history = history.get("balance_history", [])
+    latest_balance_receipt = balance_history[-1] if isinstance(balance_history, list) and balance_history else None
     return {
         "ok": True,
         "data": {
@@ -171,6 +187,11 @@ def query_wallet_status(manifest_path: Path, agent_id: str) -> dict[str, Any]:
             "wallet": row,
             "claim_count": len(claim_history) if isinstance(claim_history, list) else 0,
             "epoch_count": len(epoch_history) if isinstance(epoch_history, list) else 0,
+            "settled_epoch_count": len(balance_history) if isinstance(balance_history, list) else 0,
+            "latest_epoch_id": history.get("latest_epoch_id"),
+            "latest_claim_digest": history.get("latest_claim_digest"),
+            "history_digest": history.get("history_digest"),
+            "latest_balance_receipt": latest_balance_receipt,
             "summary": manifest.get("summary", {}),
         },
     }
@@ -199,8 +220,14 @@ def query_wallet_history(manifest_path: Path, agent_id: str) -> dict[str, Any]:
         "data": {
             "agent_id": agent_id,
             "wallet": row,
+            "version": history.get("version"),
+            "generated_at": history.get("generated_at"),
+            "latest_epoch_id": history.get("latest_epoch_id"),
+            "latest_claim_digest": history.get("latest_claim_digest"),
             "claim_history": history.get("claim_history", []),
             "epoch_history": history.get("epoch_history", []),
+            "balance_history": history.get("balance_history", []),
+            "history_digest": history.get("history_digest"),
             "summary": manifest.get("summary", {}),
         },
     }

@@ -8,6 +8,7 @@ validation to `gossip_transport.py`.
 
 from __future__ import annotations
 
+import socket
 import ssl
 import threading
 import urllib.request
@@ -30,7 +31,10 @@ GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
 TRANSPORT_KIND_QUIC = "quic"
 TRANSPORT_KIND_HTTP = "http"
 MAX_INBOUND_PAYLOAD_BYTES = 1_048_576
+MAX_INBOUND_READ_CHUNK_BYTES = 64 * 1024
 PAYLOAD_TOO_LARGE_TOKEN = "gossip_payload_too_large"
+PAYLOAD_READ_TIMEOUT_TOKEN = "gossip_payload_read_timeout"
+PAYLOAD_INCOMPLETE_TOKEN = "gossip_payload_incomplete"
 CONTENT_LENGTH_INVALID_TOKEN = "gossip_content_length_invalid"
 
 assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == GOSSIP_TRANSPORT_DEPENDENCY, (
@@ -122,6 +126,14 @@ class HttpGossipTransportRuntime:
             raise ValueError(CONTENT_LENGTH_INVALID_TOKEN)
         return normalized
 
+    def _drain_request_body(self, stream: Any, content_length: int) -> None:
+        remaining = content_length
+        while remaining > 0:
+            chunk = stream.read(min(MAX_INBOUND_READ_CHUNK_BYTES, remaining))
+            if not chunk:
+                raise ConnectionError(PAYLOAD_INCOMPLETE_TOKEN)
+            remaining -= len(chunk)
+
     def _require_path(self, value: str, missing_token: str, not_found_token: str) -> Path:
         if not isinstance(value, str) or not value.strip():
             raise ValueError(missing_token)
@@ -174,6 +186,14 @@ class HttpGossipTransportRuntime:
         self._record("listener_starting", transport_kind=kind)
         runtime = self
 
+        class _TimedThreadingHTTPServer(ThreadingHTTPServer):
+            daemon_threads = True
+
+            def get_request(self) -> tuple[socket.socket, tuple[str, int]]:
+                request, client_address = super().get_request()
+                request.settimeout(runtime.config.request_timeout_seconds)
+                return request, client_address
+
         class _Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:  # noqa: N802
                 headers = {key: value for key, value in self.headers.items()}
@@ -194,14 +214,32 @@ class HttpGossipTransportRuntime:
                     content_length=content_length,
                 )
                 if status_code == gossip_transport.HTTP_STATUS_BUFFERED and content_length:
-                    self.rfile.read(content_length)
+                    try:
+                        runtime._drain_request_body(self.rfile, content_length)
+                    except socket.timeout:
+                        runtime._record(
+                            "incoming_envelope_rejected",
+                            token=PAYLOAD_READ_TIMEOUT_TOKEN,
+                            content_length=content_length,
+                        )
+                        runtime.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                        status_code = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    except ConnectionError:
+                        runtime._record(
+                            "incoming_envelope_rejected",
+                            token=PAYLOAD_INCOMPLETE_TOKEN,
+                            content_length=content_length,
+                        )
+                        runtime.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                        status_code = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                self.close_connection = True
                 self.send_response(status_code)
                 self.end_headers()
 
             def log_message(self, format: str, *args: object) -> None:
                 return
 
-        server = ThreadingHTTPServer((self.config.bind_host, self.config.bind_port), _Handler)
+        server = _TimedThreadingHTTPServer((self.config.bind_host, self.config.bind_port), _Handler)
         server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()

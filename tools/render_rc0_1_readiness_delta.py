@@ -80,6 +80,7 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
     economic_manifest_path = None
     economic_manifest = None
     economic_summary: dict[str, Any] | None = None
+    economic_claim_summary: dict[str, Any] | None = None
     economic_path_value = candidate.get("economic_manifest_path")
     if economic_path_value:
         candidate_economic_manifest = Path(str(economic_path_value))
@@ -89,6 +90,21 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
             raw_summary = economic_manifest.get("summary")
             if isinstance(raw_summary, dict):
                 economic_summary = raw_summary
+    if economic_manifest is not None:
+        settlement_manifest = economic_manifest.get("settlement_manifest", {})
+        wallet_manifest = economic_manifest.get("wallet_manifest", {})
+        invariant_summary = economic_proof_manifest.get("invariant_summary", {}) if isinstance(economic_proof_manifest, dict) else {}
+        runtime_store = invariant_summary.get("runtime_store", {}) if isinstance(invariant_summary, dict) else {}
+        economic_claim_summary = {
+            "task_id": (economic_summary or {}).get("task_id"),
+            "reward_total": (economic_summary or {}).get("reward_total"),
+            "wallet_count": (economic_summary or {}).get("wallet_count"),
+            "rewarded_wallet_count": invariant_summary.get("rewarded_wallet_count") if isinstance(invariant_summary, dict) else None,
+            "epoch_record_count": invariant_summary.get("epoch_record_count") if isinstance(invariant_summary, dict) else None,
+            "settlement_status": settlement_manifest.get("settlement_status") if isinstance(settlement_manifest, dict) else None,
+            "latest_epoch_id": wallet_manifest.get("latest_epoch_id") if isinstance(wallet_manifest, dict) else None,
+            "runtime_store_kind": runtime_store.get("store_kind") if isinstance(runtime_store, dict) else None,
+        }
     scenario_summary = evidence_manifest.get("scenario_summary", {})
     scenario_replay_summary = evidence_manifest.get("scenario_replay_summary", {})
     closure_rows = evidence_manifest.get("closure_rows", {})
@@ -143,6 +159,7 @@ def render_readiness_delta(*, candidate_manifest_path: Path) -> dict[str, Any]:
         "economic_proof_pass": economic_proof_pass,
         "economic_state_present": economic_manifest is not None,
         "economic_summary": economic_summary,
+        "economic_claim_summary": economic_claim_summary,
         "unsatisfied_closure_rows": unsatisfied_rows,
         "failed_bundle_hosts": failed_bundle_hosts,
         "publication_pending_items": PUBLICATION_PENDING_ITEMS,
