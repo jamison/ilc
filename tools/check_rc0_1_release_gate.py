@@ -40,7 +40,14 @@ def _parse_checklist_statuses(path: Path) -> dict[str, str]:
     return statuses
 
 
-def check_release_gate(*, bundle_manifest_path: Path, evidence_manifest_path: Path, checklist_path: Path) -> tuple[str, list[str]]:
+def check_release_gate(
+    *,
+    bundle_manifest_path: Path,
+    evidence_manifest_path: Path,
+    checklist_path: Path,
+    economic_manifest_path: Path | None = None,
+    economic_proof_manifest_path: Path | None = None,
+) -> tuple[str, list[str]]:
     bundle = json.loads(bundle_manifest_path.read_text(encoding='utf-8'))
     evidence = json.loads(evidence_manifest_path.read_text(encoding='utf-8'))
     checklist_statuses = _parse_checklist_statuses(checklist_path)
@@ -77,6 +84,30 @@ def check_release_gate(*, bundle_manifest_path: Path, evidence_manifest_path: Pa
     if scenario_replay.get('ecu_claims_match') is not True:
         failures.append('scenario_replay_claims_not_matched')
 
+    if economic_manifest_path is not None:
+        if not economic_manifest_path.is_file():
+            failures.append(f'economic_manifest_missing:{economic_manifest_path}')
+        else:
+            economic_manifest = json.loads(economic_manifest_path.read_text(encoding='utf-8'))
+            economic_summary = economic_manifest.get('summary', {})
+            if economic_summary.get('distribution_check_ok') is not True:
+                failures.append('economic_manifest_distribution_check_not_passed')
+            runtime_store = economic_manifest.get('runtime_store', {})
+            if runtime_store.get('store_kind') != 'lmdb_public_runtime_v0.1':
+                failures.append('economic_manifest_runtime_store_kind_invalid')
+
+    if economic_proof_manifest_path is not None:
+        if not economic_proof_manifest_path.is_file():
+            failures.append(f'economic_proof_manifest_missing:{economic_proof_manifest_path}')
+        else:
+            proof_manifest = json.loads(economic_proof_manifest_path.read_text(encoding='utf-8'))
+            comparison = proof_manifest.get('comparison', {})
+            if not isinstance(comparison, dict) or not comparison or not all(comparison.values()):
+                failures.append('economic_proof_comparison_failed')
+            invariant_summary = proof_manifest.get('invariant_summary', {})
+            if invariant_summary.get('runtime_store', {}).get('store_kind') != 'lmdb_public_runtime_v0.1':
+                failures.append('economic_proof_runtime_store_kind_invalid')
+
     unsatisfied_rows = sorted(
         area for area, status in checklist_statuses.items() if status != 'satisfied_for_testbed'
     )
@@ -94,6 +125,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--evidence-manifest', required=True)
     parser.add_argument('--checklist', default='docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md')
     parser.add_argument('--proof-manifest')
+    parser.add_argument('--economic-manifest')
+    parser.add_argument('--economic-proof-manifest')
     return parser
 
 
@@ -103,6 +136,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         bundle_manifest_path=Path(args.bundle_manifest),
         evidence_manifest_path=Path(args.evidence_manifest),
         checklist_path=Path(args.checklist),
+        economic_manifest_path=Path(args.economic_manifest) if args.economic_manifest else None,
+        economic_proof_manifest_path=Path(args.economic_proof_manifest) if args.economic_proof_manifest else None,
     )
     if args.proof_manifest:
         proof_payload = json.loads(Path(args.proof_manifest).read_text(encoding='utf-8'))

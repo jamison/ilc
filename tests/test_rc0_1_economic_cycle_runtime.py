@@ -6,6 +6,9 @@ import sys
 from pathlib import Path
 
 from ilc_core.rc.economic_cycle_runtime import materialize_economic_cycle
+from tools import check_rc0_1_economic_state
+from tools import prove_rc0_1_economic_state
+from tools import query_rc0_1_economic_state
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -317,3 +320,121 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     history_payload = json.loads(history_result.stdout.strip())
     assert len(history_payload["data"]["claim_history"]) == 1
     assert history_payload["data"]["epoch_history"][0]["epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
+
+    wallet_status_result = subprocess.run(
+        [
+            sys.executable,
+            "tools/query_rc0_1_economic_state.py",
+            "--manifest",
+            str(manifest_path),
+            "wallet-status",
+            "--agent-id",
+            "agent-alpha",
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert wallet_status_result.returncode == 0, wallet_status_result.stderr
+    wallet_status_payload = json.loads(wallet_status_result.stdout.strip())
+    assert wallet_status_payload["data"]["claim_count"] == 1
+
+    store_summary_result = subprocess.run(
+        [
+            sys.executable,
+            "tools/query_rc0_1_economic_state.py",
+            "--manifest",
+            str(manifest_path),
+            "store-summary",
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert store_summary_result.returncode == 0, store_summary_result.stderr
+    store_summary_payload = json.loads(store_summary_result.stdout.strip())
+    assert store_summary_payload["data"]["runtime_store"]["store_kind"] == "lmdb_public_runtime_v0.1"
+
+
+def test_check_economic_state_accepts_persisted_runtime_store(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+    verdict, failures, summary = check_rc0_1_economic_state.check_economic_state(output_root / "manifest.json")
+
+    assert verdict == "pass"
+    assert failures == []
+    assert summary["wallet_balance_total"] == 4.0
+    assert summary["runtime_store"]["store_kind"] == "lmdb_public_runtime_v0.1"
+
+
+def test_check_economic_state_rejects_reward_total_mismatch(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+    manifest_path = output_root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["summary"]["reward_total"] = 9.0
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+    verdict, failures, _summary = check_rc0_1_economic_state.check_economic_state(manifest_path)
+
+    assert verdict == "fail"
+    assert "economic_reward_total_mismatch:wallets" in failures
+    assert "economic_reward_total_mismatch:ledger" in failures
+
+
+def test_prove_economic_state_replays_durable_runtime_state(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+    proof_manifest = prove_rc0_1_economic_state.prove_economic_state(
+        manifest_path=output_root / "manifest.json",
+        output_root=tmp_path / "proof",
+    )
+
+    assert all(proof_manifest["comparison"].values())
+    assert proof_manifest["runtime_store"]["store_kind"] == "lmdb_public_runtime_v0.1"
+    assert proof_manifest["proof_manifest_path"].endswith("proof/manifest.json")
+    assert proof_manifest["query_payloads"]["quorum_record"]["data"]["quorum_record"]["task_id"] == "task:test:economic-cycle"
+
+
+def test_query_helpers_return_quorum_and_wallet_export(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+    manifest_path = output_root / "manifest.json"
+
+    quorum_payload = query_rc0_1_economic_state.query_quorum_record(manifest_path)
+    wallet_export_payload = query_rc0_1_economic_state.query_wallet_export(manifest_path)
+
+    assert quorum_payload["data"]["quorum_record"]["task_id"] == "task:test:economic-cycle"
+    assert wallet_export_payload["data"]["balances"]["agent-alpha"] == 3.0
+
+
+def test_economic_negative_path_drills_emit_expected_tokens(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    output_root = tmp_path / "economic"
+    materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "tools/testbed/run_economic_negative_path_drills.py",
+            "--manifest",
+            str(output_root / "manifest.json"),
+        ],
+        cwd=str(Path(__file__).resolve().parents[1]),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "economic_negative_path_missing_store_ok" in result.stdout
+    assert "economic_negative_path_reward_mismatch_ok" in result.stdout
+    assert "economic_negative_path_wallet_count_ok" in result.stdout
+    assert "economic_negative_path_drill_ok" in result.stdout

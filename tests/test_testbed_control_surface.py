@@ -18,10 +18,13 @@ from tools.testbed.peer_inventory import load_overrides, resolve_active_peer_map
 from tools.testbed import render_testbed_configs
 from tools.testbed import verify_bootstrap_peers
 from tools.testbed import verify_bootstrap_distribution
+from tools import check_rc0_1_economic_state
 from tools import check_rc0_1_release_gate
 from tools import check_rc0_1_release_claim
+from tools import prove_rc0_1_economic_state
 from tools import render_rc0_1_readiness_delta
 from tools import run_rc0_1_release_candidate
+from tools import run_rc0_1_release_gate
 
 
 def _hosts_payload() -> dict[str, object]:
@@ -531,11 +534,54 @@ def test_check_rc0_1_release_gate_accepts_consistent_bundle_and_evidence(tmp_pat
         ) + '\n',
         encoding='utf-8',
     )
+    economic_manifest_path = tmp_path / 'economic_manifest.json'
+    economic_manifest_path.write_text(
+        json.dumps(
+            {
+                'summary': {
+                    'task_id': 'task:test:economic-cycle',
+                    'node_count': 7,
+                    'wallet_count': 8,
+                    'reward_total': 5.0,
+                    'distribution_check_ok': True,
+                },
+                'runtime_store': {
+                    'store_kind': 'lmdb_public_runtime_v0.1',
+                    'graph_store_root': str(tmp_path),
+                    'wallet_store_root': str(tmp_path),
+                    'ledger_store_root': str(tmp_path),
+                },
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    economic_proof_manifest_path = tmp_path / 'economic_proof_manifest.json'
+    economic_proof_manifest_path.write_text(
+        json.dumps(
+            {
+                'comparison': {
+                    'nodes_match': True,
+                    'links_match': True,
+                    'wallets_match': True,
+                    'ledger_match': True,
+                    'quorum_match': True,
+                },
+                'invariant_summary': {
+                    'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
+                },
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
 
     verdict, failures = check_rc0_1_release_gate.check_release_gate(
         bundle_manifest_path=bundle_manifest_path,
         evidence_manifest_path=evidence_manifest_path,
         checklist_path=checklist_path,
+        economic_manifest_path=economic_manifest_path,
+        economic_proof_manifest_path=economic_proof_manifest_path,
     )
     assert verdict == 'pass'
     assert failures == []
@@ -576,6 +622,8 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
     evidence_manifest_path = tmp_path / 'evidence_manifest.json'
     bundle_manifest_path = tmp_path / 'bundle_manifest.json'
     proof_manifest_path = tmp_path / 'bundle_install_proof_manifest.json'
+    economic_manifest_path = tmp_path / 'economic_manifest.json'
+    economic_proof_manifest_path = tmp_path / 'economic_proof_manifest.json'
     bundle_archive_path = tmp_path / 'bundle.tar.gz'
     bundle_archive_path.write_bytes(b'rc-bundle')
 
@@ -598,6 +646,45 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     'ecu_claims_match': True,
                 },
                 'economic_summary': {'distribution_check_ok': True, 'wallet_count': 8},
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    economic_manifest_path.write_text(
+        json.dumps(
+            {
+                'summary': {
+                    'task_id': 'task:test:economic-cycle',
+                    'node_count': 7,
+                    'wallet_count': 8,
+                    'reward_total': 5.0,
+                    'distribution_check_ok': True,
+                },
+                'runtime_store': {
+                    'store_kind': 'lmdb_public_runtime_v0.1',
+                    'graph_store_root': str(tmp_path),
+                    'wallet_store_root': str(tmp_path),
+                    'ledger_store_root': str(tmp_path),
+                },
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    economic_proof_manifest_path.write_text(
+        json.dumps(
+            {
+                'comparison': {
+                    'nodes_match': True,
+                    'links_match': True,
+                    'wallets_match': True,
+                    'ledger_match': True,
+                    'quorum_match': True,
+                },
+                'invariant_summary': {
+                    'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
+                },
             },
             indent=2,
         ) + '\n',
@@ -644,6 +731,7 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
             {
                 'bundle_manifest_path': str(bundle_manifest_path),
                 'bundle_install_proof_manifest_path': str(proof_manifest_path),
+                'economic_proof_manifest_path': str(economic_proof_manifest_path),
                 'release_verdict_stdout': 'rc0_1_release_verdict=pass',
             },
             indent=2,
@@ -655,6 +743,7 @@ def _write_release_candidate_fixture(tmp_path: Path) -> tuple[Path, Path]:
             {
                 'closure_manifest_path': str(closure_manifest_path),
                 'release_manifest_path': str(release_manifest_path),
+                'economic_manifest_path': str(economic_manifest_path),
             },
             indent=2,
         ) + '\n',
@@ -675,6 +764,7 @@ def test_render_rc0_1_readiness_delta_accepts_passing_candidate(tmp_path: Path) 
     assert manifest['release_pass'] is True
     assert manifest['scenario_replay_pass'] is True
     assert manifest['bundle_install_proof_pass'] is True
+    assert manifest['economic_proof_pass'] is True
     assert manifest['repo_head'] == 'deadbeef'
 
 
@@ -730,6 +820,7 @@ def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> N
                 'evidence_manifest_path': delta_manifest['evidence_manifest_path'],
                 'bundle_manifest_path': str(bundle_manifest_path),
                 'bundle_install_proof_manifest_path': delta_manifest['bundle_install_proof_manifest_path'],
+                'economic_proof_manifest_path': delta_manifest['economic_proof_manifest_path'],
                 'release_notes_input_path': str(release_notes_input_path),
             },
             indent=2,
@@ -744,6 +835,98 @@ def test_check_rc0_1_release_claim_accepts_consistent_claim(tmp_path: Path) -> N
 
     assert verdict == 'pass'
     assert failures == []
+
+
+def test_release_gate_rejects_failed_economic_proof(tmp_path: Path) -> None:
+    archive_path = tmp_path / 'bundle.tar.gz'
+    archive_path.write_bytes(b'rc-bundle')
+    bundle_manifest_path = tmp_path / 'bundle_manifest.json'
+    evidence_manifest_path = tmp_path / 'evidence_manifest.json'
+    checklist_path = tmp_path / 'checklist.md'
+    economic_manifest_path = tmp_path / 'economic_manifest.json'
+    economic_proof_manifest_path = tmp_path / 'economic_proof_manifest.json'
+
+    bundle_manifest_path.write_text(
+        json.dumps(
+            {
+                'archive_path': str(archive_path),
+                'archive_sha256': hashlib.sha256(b'rc-bundle').hexdigest(),
+                'repo_head': 'deadbeef',
+                'guidance_files': [str(tmp_path / name) for name in sorted(check_rc0_1_release_gate.REQUIRED_GUIDANCE)],
+                'installer_files': [str(tmp_path / name) for name in sorted(check_rc0_1_release_gate.REQUIRED_INSTALLERS)],
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    evidence_manifest_path.write_text(
+        json.dumps(
+            {
+                'repo_head': 'deadbeef',
+                'closure_rows': {
+                    'install_shape': 'satisfied_for_testbed',
+                    'bootstrap_distribution': 'satisfied_for_testbed',
+                    'diagnostics': 'satisfied_for_testbed',
+                    'three_node_seven_agent_path': 'satisfied_for_testbed',
+                    'three_node_seven_agent_replay': 'satisfied_for_testbed',
+                    'economic_cycle_projection': 'satisfied_for_testbed',
+                    'release_evidence': 'satisfied_for_testbed',
+                },
+                'scenario_summary': {'panel_verdict_token': 'panel_quorum_passed'},
+                'scenario_replay_summary': {'panel_result_matches': True, 'ecu_claims_match': True},
+                'economic_summary': {'distribution_check_ok': True, 'wallet_count': 8},
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    checklist_path.write_text(
+        '\n'.join(
+            [
+                '| Area | Requirement | Minimum evidence | Current pre-RC status |',
+                '|---|---|---|---|',
+                '| Install shape | x | y | satisfied_for_testbed |',
+                '| Release evidence | x | y | satisfied_for_testbed |',
+            ]
+        ) + '\n',
+        encoding='utf-8',
+    )
+    economic_manifest_path.write_text(
+        json.dumps(
+            {
+                'summary': {'distribution_check_ok': True, 'wallet_count': 8, 'reward_total': 5.0},
+                'runtime_store': {
+                    'store_kind': 'lmdb_public_runtime_v0.1',
+                    'graph_store_root': str(tmp_path),
+                    'wallet_store_root': str(tmp_path),
+                    'ledger_store_root': str(tmp_path),
+                },
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    economic_proof_manifest_path.write_text(
+        json.dumps(
+            {
+                'comparison': {'nodes_match': True, 'links_match': False},
+                'invariant_summary': {'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'}},
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+
+    verdict, failures = check_rc0_1_release_gate.check_release_gate(
+        bundle_manifest_path=bundle_manifest_path,
+        evidence_manifest_path=evidence_manifest_path,
+        checklist_path=checklist_path,
+        economic_manifest_path=economic_manifest_path,
+        economic_proof_manifest_path=economic_proof_manifest_path,
+    )
+
+    assert verdict == 'fail'
+    assert 'economic_proof_comparison_failed' in failures
 
 
 def test_release_candidate_manifest_records_optional_economic_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -783,3 +966,105 @@ def test_release_candidate_manifest_records_optional_economic_state(monkeypatch:
     assert manifest['economic_manifest_path'].endswith('economic-state/manifest.json')
     assert 'economic_stdout' in manifest
     assert manifest['release_claim_manifest_path'].endswith('claim/manifest.json')
+
+
+def test_run_release_gate_uses_generated_economic_proof_manifest(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    evidence_root = tmp_path / 'evidence'
+    evidence_root.mkdir()
+    economic_manifest_path = tmp_path / 'economic' / 'manifest.json'
+    economic_manifest_path.parent.mkdir(parents=True)
+    economic_manifest_path.write_text(
+        json.dumps(
+            {
+                'summary': {'distribution_check_ok': True},
+                'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'},
+            },
+            indent=2,
+        ) + '\n',
+        encoding='utf-8',
+    )
+    (evidence_root / 'manifest.json').write_text(
+        json.dumps({'economic_manifest_path': str(economic_manifest_path)}, indent=2) + '\n',
+        encoding='utf-8',
+    )
+
+    def _arg_value(command: list[str], flag: str) -> str:
+        return command[command.index(flag) + 1]
+
+    def _fake_run(command: list[str]) -> subprocess.CompletedProcess[str]:
+        if command[1] == 'tools/package_rc0_1_bundle.py':
+            bundle_output = Path(_arg_value(command, '--output-root'))
+            bundle_output.mkdir(parents=True, exist_ok=True)
+            bundle_manifest_path = bundle_output / 'manifest.json'
+            bundle_manifest_path.write_text(
+                json.dumps(
+                    {
+                        'archive_path': str(bundle_output / 'ilc_rc0_1_bundle.tar.gz'),
+                        'archive_sha256': hashlib.sha256(b'rc-bundle').hexdigest(),
+                        'repo_head': 'deadbeef',
+                        'guidance_files': [],
+                        'installer_files': [],
+                        'manifest_path': str(bundle_manifest_path),
+                    },
+                    indent=2,
+                ) + '\n',
+                encoding='utf-8',
+            )
+            (bundle_output / 'ilc_rc0_1_bundle.tar.gz').write_bytes(b'rc-bundle')
+            return subprocess.CompletedProcess(
+                command,
+                0,
+                stdout=json.dumps({'marker': 'ok', 'manifest': {'manifest_path': str(bundle_manifest_path)}}),
+                stderr='',
+            )
+        if command[1] == 'tools/prove_rc0_1_bundle_install.py':
+            proof_output = Path(_arg_value(command, '--output-root'))
+            proof_output.mkdir(parents=True, exist_ok=True)
+            proof_manifest_path = proof_output / 'manifest.json'
+            proof_manifest_path.write_text(json.dumps({'results': [{'host': 'ilc-node-1', 'status': 'ok'}]}, indent=2) + '\n', encoding='utf-8')
+            return subprocess.CompletedProcess(
+                command,
+                0,
+                stdout=json.dumps({'marker': 'ok', 'manifest': {'manifest_path': str(proof_manifest_path)}}),
+                stderr='',
+            )
+        if command[1] == 'tools/prove_rc0_1_economic_state.py':
+            proof_output = Path(_arg_value(command, '--output-root'))
+            proof_output.mkdir(parents=True, exist_ok=True)
+            proof_manifest_path = proof_output / 'manifest.json'
+            proof_manifest_path.write_text(
+                json.dumps(
+                    {
+                        'proof_manifest_path': str(proof_manifest_path),
+                        'comparison': {
+                            'nodes_match': True,
+                            'links_match': True,
+                            'wallets_match': True,
+                            'ledger_match': True,
+                            'quorum_match': True,
+                        },
+                        'invariant_summary': {'runtime_store': {'store_kind': 'lmdb_public_runtime_v0.1'}},
+                    },
+                    indent=2,
+                ) + '\n',
+                encoding='utf-8',
+            )
+            return subprocess.CompletedProcess(
+                command,
+                0,
+                stdout=json.dumps({'marker': 'ok', 'manifest': {'proof_manifest_path': str(proof_manifest_path)}}),
+                stderr='',
+            )
+        if command[1] == 'tools/check_rc0_1_release_gate.py':
+            assert _arg_value(command, '--economic-proof-manifest').endswith('/economic-proof/manifest.json')
+            return subprocess.CompletedProcess(command, 0, stdout='rc0_1_release_verdict=pass\n', stderr='')
+        raise AssertionError(f'unexpected command: {command}')
+
+    monkeypatch.setattr(run_rc0_1_release_gate, '_run', _fake_run)
+
+    manifest = run_rc0_1_release_gate.run_release_gate(
+        evidence_root=evidence_root,
+        output_root=tmp_path / 'release',
+    )
+
+    assert manifest['economic_proof_manifest_path'].endswith('/economic-proof/manifest.json')
