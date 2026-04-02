@@ -195,6 +195,9 @@ def _prove_remote(bundle_root: Path, host_payload: dict[str, Any]) -> dict[str, 
 
 
 def prove_bundle_install(*, bundle_root: Path, hosts_path: Path, output_root: Path, include_home: bool) -> dict[str, Any]:
+    bundle_root = bundle_root.resolve()
+    hosts_path = hosts_path.resolve()
+    output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
     hosts_payload = _load_hosts(hosts_path)
     remote_hosts = _remote_host_map(hosts_payload)

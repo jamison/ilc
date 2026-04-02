@@ -32,6 +32,7 @@ def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
 
 
 def run_release_candidate(*, output_root: Path, include_home_install_proof: bool, emit_release_claim: bool) -> dict[str, object]:
+    output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
     closure_root = output_root / "substrate"
     closure_command = [

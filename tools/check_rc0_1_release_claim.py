@@ -23,6 +23,7 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
         "evidence_manifest_path",
         "bundle_manifest_path",
         "bundle_install_proof_manifest_path",
+        "economic_proof_manifest_path",
         "release_notes_input_path",
     ):
         value = claim_manifest.get(key)
@@ -39,6 +40,7 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
         "evidence_manifest_path",
         "bundle_manifest_path",
         "bundle_install_proof_manifest_path",
+        "economic_proof_manifest_path",
     ):
         claim_value = claim_manifest.get(key)
         delta_value = delta_manifest.get(key)
@@ -64,6 +66,8 @@ def check_release_claim(*, claim_manifest_path: Path, delta_manifest_path: Path)
         failures.append("scenario_replay_not_pass")
     if delta_manifest.get("bundle_install_proof_pass") is not True:
         failures.append("bundle_install_proof_not_pass")
+    if delta_manifest.get("economic_proof_pass") is not True:
+        failures.append("economic_proof_not_pass")
     if delta_manifest.get("unsatisfied_closure_rows"):
         failures.append("unsatisfied_closure_rows_present")
     if not delta_manifest.get("publication_pending_items"):
