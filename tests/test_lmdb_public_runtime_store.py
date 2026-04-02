@@ -1,0 +1,81 @@
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from pathlib import Path
+
+from ilc_core.ledger import get_ledger_backend
+from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
+from ilc_core.ledger.stake_snapshot import StakeSnapshot
+from ilc_core.protocol.event_log import ProtocolEvent
+from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
+
+
+def _commit_event(epoch_id: str, index: int, reward: float = 50.0) -> ProtocolEvent:
+    return ProtocolEvent(
+        kind="commit.epoch",
+        received_at=datetime.now(timezone.utc).isoformat(),
+        source="test",
+        payload={
+            "event_kind": "commit.epoch",
+            "epoch_index": index,
+            "epoch_id": epoch_id,
+            "namespace_id": "test_ns",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "finalization_state": "committed",
+            "summary": {
+                "reward_total": reward,
+                "stake_total": 100.0,
+                "task_count": 1,
+                "agent_count": 1,
+            },
+            "checksums": {"epoch_events_cid": "cid-events", "epoch_state_cid": "cid-state"},
+        },
+    )
+
+
+def test_lmdb_graph_store_persists_nodes_links_and_quorum(tmp_path: Path) -> None:
+    store_root = tmp_path / "graph-store"
+    graph_store = LmdbGraphStore(store_root)
+    graph_store.put_node("node-a", {"id": "node-a", "type": "claim"})
+    graph_store.put_node("node-b", {"id": "node-b", "type": "claim"})
+    graph_store.put_link("link-1", {"id": "link-1", "source_id": "node-a", "target_id": "node-b"})
+    graph_store.put_quorum_record({"task_id": "task-1", "verdict_token": "panel_quorum_passed"})
+
+    graph_store_reloaded = LmdbGraphStore(store_root)
+    assert [row["id"] for row in graph_store_reloaded.iter_nodes()] == ["node-a", "node-b"]
+    assert graph_store_reloaded.iter_links()[0]["id"] == "link-1"
+    assert graph_store_reloaded.get_quorum_record()["task_id"] == "task-1"
+
+
+def test_lmdb_wallet_store_persists_wallet_rows_and_history(tmp_path: Path) -> None:
+    store_root = tmp_path / "wallet-store"
+    wallet_store = LmdbWalletStore(store_root)
+    wallet_store.put_wallet("agent-a", {"balance_ilc": 3.0, "reward_status": "rewarded"})
+    wallet_store.put_wallet_history("agent-a", {"claim_history": [{"claim_id": "c1"}], "epoch_history": [{"epoch_id": "e1"}]})
+
+    wallet_store_reloaded = LmdbWalletStore(store_root)
+    assert wallet_store_reloaded.get_wallet("agent-a")["balance_ilc"] == 3.0
+    assert wallet_store_reloaded.get_wallet_history("agent-a")["claim_history"][0]["claim_id"] == "c1"
+
+
+def test_lmdb_ledger_backend_survives_restart_and_factory_supports_it(tmp_path: Path) -> None:
+    ledger_root = tmp_path / "ledger-store"
+    ledger = LmdbLedgerBackend(ledger_root)
+    snapshot = StakeSnapshot(
+        epoch_id="epoch-1",
+        epoch_index=1,
+        namespace_id="test_ns",
+        stakes={"agent-a": 100.0},
+        total_stake=100.0,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    ledger.put_stake_snapshot(snapshot)
+    ledger.apply_epoch_settlement(_commit_event("epoch-1", 1))
+
+    reloaded = LmdbLedgerBackend(ledger_root)
+    assert reloaded.get_balance("agent-a") == 50.0
+    assert reloaded.get_epoch_record("epoch-1")["status"] == "settled"
+    assert reloaded.get_stake_snapshot("epoch-1") == snapshot
+
+    factory_backend = get_ledger_backend("lmdb", storage_dir=str(ledger_root))
+    assert isinstance(factory_backend, LmdbLedgerBackend)

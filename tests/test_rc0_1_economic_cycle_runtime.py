@@ -214,6 +214,10 @@ def test_materialize_economic_cycle_persists_graph_ledger_and_wallet_state(tmp_p
 
     assert manifest["summary"]["reward_total"] == 4.0
     assert manifest["summary"]["distribution_check_ok"] is True
+    assert manifest["runtime_store"]["store_kind"] == "lmdb_public_runtime_v0.1"
+    assert Path(manifest["runtime_store"]["graph_store_root"]).is_dir()
+    assert Path(manifest["runtime_store"]["ledger_store_root"]).is_dir()
+    assert Path(manifest["runtime_store"]["wallet_store_root"]).is_dir()
 
     nodes = json.loads((output_root / "graph" / "nodes.json").read_text(encoding="utf-8"))
     links = json.loads((output_root / "graph" / "links.json").read_text(encoding="utf-8"))

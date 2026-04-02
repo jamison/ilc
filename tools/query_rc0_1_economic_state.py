@@ -6,6 +6,15 @@ import json
 from pathlib import Path
 from typing import Any, Sequence
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+import sys
+
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
+from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
+
 
 def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -19,6 +28,23 @@ def _manifest_root(manifest_path: Path) -> Path:
 
 def _load_state(manifest_path: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
     manifest = _load_json(manifest_path)
+    runtime_store = manifest.get("runtime_store")
+    if isinstance(runtime_store, dict):
+        graph_store_root = runtime_store.get("graph_store_root")
+        wallet_store_root = runtime_store.get("wallet_store_root")
+        ledger_store_root = runtime_store.get("ledger_store_root")
+        if all(isinstance(value, str) and value for value in (graph_store_root, wallet_store_root, ledger_store_root)):
+            graph_store = LmdbGraphStore(Path(graph_store_root))
+            wallet_store = LmdbWalletStore(Path(wallet_store_root))
+            ledger_backend = LmdbLedgerBackend(Path(ledger_store_root))
+            nodes = graph_store.iter_nodes()
+            links = graph_store.iter_links()
+            wallets = {"wallets": wallet_store.iter_wallets()}
+            ledger = {
+                "balances": dict(sorted(ledger_backend.balances.items())),
+                "epoch_records": ledger_backend.epoch_records,
+            }
+            return manifest, nodes, links, wallets, ledger
     root = _manifest_root(manifest_path)
     nodes = _load_json(root / "graph" / "nodes.json")
     links = _load_json(root / "graph" / "links.json")
@@ -75,6 +101,28 @@ def query_wallets(manifest_path: Path, agent_id: str | None) -> dict[str, Any]:
 
 
 def query_wallet_history(manifest_path: Path, agent_id: str) -> dict[str, Any]:
+    manifest = _load_json(manifest_path)
+    runtime_store = manifest.get("runtime_store")
+    if isinstance(runtime_store, dict):
+        wallet_store_root = runtime_store.get("wallet_store_root")
+        ledger_store_root = runtime_store.get("ledger_store_root")
+        if isinstance(wallet_store_root, str) and wallet_store_root and isinstance(ledger_store_root, str) and ledger_store_root:
+            wallet_store = LmdbWalletStore(Path(wallet_store_root))
+            ledger_backend = LmdbLedgerBackend(Path(ledger_store_root))
+            row = wallet_store.get_wallet(agent_id)
+            if row is None:
+                raise ValueError(f"wallet_agent_missing:{agent_id}")
+            history = wallet_store.get_wallet_history(agent_id) or {}
+            return {
+                "ok": True,
+                "data": {
+                    "agent_id": agent_id,
+                    "wallet": row,
+                    "claim_history": history.get("claim_history", []),
+                    "epoch_history": history.get("epoch_history", list(ledger_backend.epoch_records.values())),
+                    "summary": manifest.get("summary", {}),
+                },
+            }
     manifest, _nodes, _links, wallets, ledger = _load_state(manifest_path)
     wallet_rows = wallets.get("wallets", {})
     if not isinstance(wallet_rows, dict):
