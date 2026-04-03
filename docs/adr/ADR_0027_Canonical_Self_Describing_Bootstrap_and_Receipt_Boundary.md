@@ -90,7 +90,7 @@ As Genesis authority recedes, later governance must extend the same canonical
 artifact lineage rather than replacing it with an unrelated foundation.
 
 That means later governance artifacts must remain:
-- signed or otherwise cryptographically attested where required,
+- signed and cryptographically attested at all public-authority boundaries,
 - self-describing,
 - machine-legible,
 - lineage-aware,
@@ -101,7 +101,7 @@ without requiring a separate ontological foundation.
 
 ### 6. Public legitimacy must reference canonical artifact lineage
 
-For the public-release lane, canonical public legitimacy should flow through this
+For the public-release lane, canonical public legitimacy must flow through this
 artifact boundary.
 
 That includes future work on:
@@ -111,7 +111,7 @@ That includes future work on:
 - settlement-linked public legitimacy,
 - public reputation continuity.
 
-These public surfaces should anchor to signed canonical artifact lineage rather
+These public surfaces must anchor to signed canonical artifact lineage rather
 than ad hoc local convention.
 
 ### 7. Explicit exclusions
@@ -145,6 +145,12 @@ This ADR does **not** require:
 ### Immediate implications
 
 - Phase 585+ public-release planning must treat this ADR as a dependency.
+- Before Phase 585+ execution locks, the project must lock a CDL or tight CDL
+  cluster governing the uniform representation discipline for at least:
+  - public identity activation receipts,
+  - public quorum eligibility receipts or proofs,
+  - and any settlement-linked public legitimacy receipts used to establish
+    canonical public authority.
 - Auto-configuration should load only from signed canonical bootstrap artifacts,
   manifests, or receipts with explicit authority scope.
 - Receipt/manifests/state surfaces should converge on uniform representation
