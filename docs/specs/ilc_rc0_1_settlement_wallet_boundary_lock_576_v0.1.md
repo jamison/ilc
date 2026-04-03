@@ -72,6 +72,8 @@ currently surfaced runtime fields:
 - `balance_ilc`
 - `last_settled_epoch_id`
 - `reward_status`
+- `history_digest`
+- `latest_balance_receipt`
 - settled history receipts
 
 `wallet_signing_spend_transfer_deferred_post_rc0_1`.

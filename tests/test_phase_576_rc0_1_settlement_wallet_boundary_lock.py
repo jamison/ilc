@@ -6,10 +6,17 @@ from pathlib import Path
 DOC_PATH = Path('docs/specs/ilc_rc0_1_settlement_wallet_boundary_lock_576_v0.1.md')
 DECISION_LOG_PATH = Path('docs/specs/ilc_constitutional_decision_log_v0.1.md')
 TEST_PATH = Path('tests/test_phase_576_rc0_1_settlement_wallet_boundary_lock.py')
+WALKTHROUGH_PATH = Path('docs/phases/phase_576_g8_rc0_1_settlement_wallet_boundary_lock_walkthrough.md')
+STATUS_PATH = Path('docs/phases/STATUS.md')
 PHASE_576_SUBJECT_TOKEN = 'phase 576 rc0.1 settlement wallet boundary lock'
+PHASE_576_BACKFILL_SUBJECT_TOKEN = 'phase 576 walkthrough and status backfill'
 EXACT_REQUIRED_MAIN_PATHS = {
     str(DOC_PATH),
     str(TEST_PATH),
+}
+EXACT_REQUIRED_BACKFILL_PATHS = {
+    str(WALKTHROUGH_PATH),
+    str(STATUS_PATH),
 }
 REQUIRED_HEADINGS = (
     '## 1. Bounded RC target',
@@ -42,6 +49,10 @@ WALLET_BOUNDARY_RULES = (
     '`reward_status`',
     'settled history receipts',
 )
+AUDIT_HISTORY_SURFACE_RULES = (
+    '`history_digest`',
+    '`latest_balance_receipt`',
+)
 
 
 def _read(path: Path) -> str:
@@ -58,7 +69,7 @@ def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
 
-def _resolve_phase_576_commit_ref() -> str:
+def _resolve_commit_ref(*, subject_token: str, expected_paths: set[str]) -> str:
     result = subprocess.run(
         ['git', 'log', '--format=%H%x09%s'],
         capture_output=True,
@@ -70,13 +81,13 @@ def _resolve_phase_576_commit_ref() -> str:
         if '\t' not in line:
             continue
         commit_hash, subject = line.split('\t', 1)
-        if PHASE_576_SUBJECT_TOKEN not in subject.lower():
+        if subject_token not in subject.lower():
             continue
         matches.append(commit_hash)
     for commit_ref in matches:
-        if _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS:
+        if _changed_paths_for_commit(commit_ref) == expected_paths:
             return commit_ref
-    raise AssertionError('phase_576_commit_not_present_in_local_history')
+    raise AssertionError(f'commit_not_present_in_local_history:{subject_token}')
 
 
 def test_document_exists_and_contains_required_headings() -> None:
@@ -103,13 +114,51 @@ def test_section_four_contains_read_only_wallet_boundary_rules() -> None:
         assert rule in text
 
 
-def test_phase_576_commit_touches_expected_paths_only() -> None:
-    commit_ref = _resolve_phase_576_commit_ref()
+def test_section_four_records_machine_auditable_history_surface() -> None:
+    text = _read(DOC_PATH)
+    for rule in AUDIT_HISTORY_SURFACE_RULES:
+        assert rule in text
+
+
+def test_phase_576_main_commit_touches_expected_paths_only() -> None:
+    commit_ref = _resolve_commit_ref(
+        subject_token=PHASE_576_SUBJECT_TOKEN,
+        expected_paths=EXACT_REQUIRED_MAIN_PATHS,
+    )
     assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS
 
 
-def test_phase_576_commit_touches_no_cdl_path_and_no_ilc_core_path() -> None:
-    commit_ref = _resolve_phase_576_commit_ref()
+def test_phase_576_main_commit_touches_no_adr_cdl_path_and_no_ilc_core_path() -> None:
+    commit_ref = _resolve_commit_ref(
+        subject_token=PHASE_576_SUBJECT_TOKEN,
+        expected_paths=EXACT_REQUIRED_MAIN_PATHS,
+    )
     changed_paths = _changed_paths_for_commit(commit_ref)
     assert str(DECISION_LOG_PATH) not in changed_paths
+    assert not any(path.startswith('docs/adr/') for path in changed_paths)
+    assert not any(path.startswith('docs/specs/ilc_cdl_') for path in changed_paths)
+    assert not any(path.startswith('docs/specs/ilc_cdl-') for path in changed_paths)
+    assert not any('/ilc_cdl_' in path for path in changed_paths)
+    assert not any(path.startswith('ilc_core/') for path in changed_paths)
+
+
+def test_phase_576_backfill_commit_touches_expected_paths_only() -> None:
+    commit_ref = _resolve_commit_ref(
+        subject_token=PHASE_576_BACKFILL_SUBJECT_TOKEN,
+        expected_paths=EXACT_REQUIRED_BACKFILL_PATHS,
+    )
+    assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_BACKFILL_PATHS
+
+
+def test_phase_576_backfill_commit_touches_no_adr_cdl_path_and_no_ilc_core_path() -> None:
+    commit_ref = _resolve_commit_ref(
+        subject_token=PHASE_576_BACKFILL_SUBJECT_TOKEN,
+        expected_paths=EXACT_REQUIRED_BACKFILL_PATHS,
+    )
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert str(DECISION_LOG_PATH) not in changed_paths
+    assert not any(path.startswith('docs/adr/') for path in changed_paths)
+    assert not any(path.startswith('docs/specs/ilc_cdl_') for path in changed_paths)
+    assert not any(path.startswith('docs/specs/ilc_cdl-') for path in changed_paths)
+    assert not any('/ilc_cdl_' in path for path in changed_paths)
     assert not any(path.startswith('ilc_core/') for path in changed_paths)
