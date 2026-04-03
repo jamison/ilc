@@ -179,6 +179,10 @@ Minimum work items:
 5. Production-readiness delta analysis
 6. Coherence report + handoff
 
+Public-release constitutional guidance for this window now lives in:
+- `docs/specs/ilc_window_585_594_candidate_phase_grouping_v0.1.md`
+- `docs/specs/ilc_phase_585_genesis_authority_and_sunset_dependency_note_v0.1.md`
+
 ---
 
 ## 4. Updated Risk Register
