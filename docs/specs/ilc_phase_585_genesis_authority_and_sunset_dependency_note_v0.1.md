@@ -139,10 +139,6 @@ binding law at the same level as ratified CDLs or accepted ADRs.
   - useful as an audit and provenance warning surface
   - not a replacement for ratified closure artifacts
 
-- `docs/research/ilc_genesis_authority_and_sunset_canon_briefing_v0.1.md`
-  - useful consolidated context briefing
-  - not itself a ratification artifact
-
 ## 4. Public-release dependency consequences
 
 Window 585-594 must preserve the following dependency statements:
@@ -230,7 +226,6 @@ between:
 
 ## 7. Related references
 
-- `docs/research/ilc_genesis_authority_and_sunset_canon_briefing_v0.1.md`
 - `docs/adr/ADR_0006_EVE_Canonical_Capsule_Integrity.md`
 - `docs/adr/ADR_0027_Canonical_Self_Describing_Bootstrap_and_Receipt_Boundary.md`
 - `docs/research/ilc_cryptographic_economic_coupling_memo_v0.1.md`
