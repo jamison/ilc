@@ -59,6 +59,15 @@ Explicit promotion is required before runtime peer use.
 Approved runtime peer sets derive from approved inventory plus overrides minus
 self and remain subject to TLS fingerprint verification.
 
+Unknown override identities must fail closed rather than silently expanding the
+active runtime peer set.
+
+Bootstrap verification must preserve deterministic failure surfaces for:
+- `override_unknown_node_id`
+- `override_unknown_endpoint`
+- `bootstrap_tls_fingerprint_mismatch`
+- `bootstrap_peer_set_mismatch`
+
 Override or promotion policy must not silently admit unknown identities.
 
 ## 4. Key-compromise and rollback/tombstone posture
