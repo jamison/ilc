@@ -93,4 +93,11 @@ This packet does not authorize:
 - new persisted-graph roles beyond the Phase 577 minimum contract
 - lineage widening beyond the Phase 578 curated boundary
 
+Carry-forward obligation for Phase 582:
+- `agreement_score` currently stands in as the RC0.1 testnet proxy for
+  `centrality_score` when building passive ECU claims in `tools/agent_loop_v1.py`
+- the bounded CDL-V7 reproducibility disposition must name that proxy as a
+  testnet approximation and preserve the obligation to replace it with graph
+  centrality before any public-release claim widens beyond RC0.1 testnet scope
+
 `phase_581_keeps_576_577_578_meaning_unchanged`.
