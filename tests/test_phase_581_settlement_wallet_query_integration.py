@@ -203,11 +203,29 @@ def test_runtime_store_identity_mismatch_fails_with_expected_token(tmp_path: Pat
         raise AssertionError("expected Phase581IntegrationError")
 
 
+def test_proof_scenario_root_mismatch_fails_with_expected_token(tmp_path: Path) -> None:
+    root, proof_root, replay_proof_root = _write_phase_581_root(tmp_path)
+    manifest_path = proof_root / "manifest.json"
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload["scenario_root"] = str(tmp_path / "wrong-scenario-root")
+    manifest_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    try:
+        phase_581_checker.check_settlement_wallet_query_integration(
+            scenario_root=root,
+            proof_root=proof_root,
+            replay_proof_root=replay_proof_root,
+        )
+    except phase_581_checker.Phase581IntegrationError as exc:
+        assert exc.token == "phase_581_ledger_graph_identity_mismatch"
+    else:
+        raise AssertionError("expected Phase581IntegrationError")
+
+
 def test_claimability_boundary_drift_fails_with_expected_token(tmp_path: Path) -> None:
     root, proof_root, replay_proof_root = _write_phase_581_root(tmp_path)
     manifest_path = proof_root / "manifest.json"
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    payload["query_payloads"]["wallet_status"]["data"]["wallet"]["spend_authority"] = True
+    payload["query_payloads"]["wallet_export"]["data"]["wallets"][next(iter(payload["query_payloads"]["wallet_export"]["data"]["wallets"]))]["spend_authority"] = True
     manifest_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     try:
         phase_581_checker.check_settlement_wallet_query_integration(
