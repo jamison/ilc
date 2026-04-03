@@ -76,7 +76,6 @@ The relevant decision-log cluster for this window includes at minimum:
 These references are not equal canon with the ratified CDL/accepted ADR layer,
 but they are required context for this window and must be distinguished as such
 when used:
-- `docs/research/ilc_genesis_authority_and_sunset_canon_briefing_v0.1.md`
 - `docs/adr/ADR_0008_Node_Usefulness_vs_Governance_Weight_and_Genesis_Dilution.md`
 - `docs/specs/ilc_freshness_gate_contract_v0.1.md`
 - `docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.1.md`
