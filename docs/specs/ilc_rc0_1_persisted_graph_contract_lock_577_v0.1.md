@@ -75,6 +75,14 @@ Runtime-store identity and manifest identity must align deterministically.
 Durable query surfaces must read from runtime state rather than projection-only
 exports when runtime state is present.
 
+Stable RC0.1 graph-facing query surfaces must remain machine-legible and
+include bounded equivalents for:
+- `graph-summary`
+- `graph-node`
+- `graph-links`
+- `quorum-record`
+- `store-summary`
+
 Missing, mismatched, or corrupted graph-state identity must fail closed with
 deterministic tokens.
 
