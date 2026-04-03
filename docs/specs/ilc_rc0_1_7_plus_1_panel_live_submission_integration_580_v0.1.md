@@ -38,6 +38,7 @@ The authoritative artifact set for the integration check is:
 - one live panel artifact with embedded claim batch
 - one standalone claim artifact
 - one replay manifest with replay result
+- one `panel_replay.json` artifact matching the replay manifest payload
 - live panel and claim broadcast artifacts
 - one machine-legible Phase 580 integration manifest
 
@@ -57,6 +58,7 @@ A passing Phase 580 integration requires all of the following:
 - the standalone claim artifact matches the panel-embedded claim batch
 - the outsider reviewer remains review-only and does not receive a passive claim
 - replay over the saved live artifacts produces `agent_loop_replay_ok`
+- the replay manifest version and `panel_replay.json` artifact remain explicit and valid
 - replay agrees with the saved panel and claim artifacts without drift
 - broadcast artifacts point to the live panel and claim files and all broadcast
   statuses are `202`
