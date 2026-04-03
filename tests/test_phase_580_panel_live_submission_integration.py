@@ -129,6 +129,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
         "gossip_type": "agent_submission",
         "output_hash": "hash-outsider",
         "output_payload": {"task_id": "task:three-node-seven-agent:cycle-001"},
+        "ep_task": {"output_hash": "hash-outsider"},
         "profile": {
             "agent_id": outsider_agent_id,
             "cluster_id": "cluster-outsider",
@@ -375,6 +376,38 @@ def test_outsider_boundary_drift_fails_with_expected_token(tmp_path: Path) -> No
     panel_path = root / "panel" / "panel_result.json"
     panel_payload = json.loads(panel_path.read_text(encoding="utf-8"))
     panel_payload["ecu_claim_batch"]["claims"].append(outsider_claim)
+    panel_path.write_text(json.dumps(panel_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    try:
+        phase_580_checker.check_panel_live_submission_integration(scenario_root=root, replay_root=replay_dir)
+    except phase_580_checker.Phase580IntegrationError as exc:
+        assert exc.token == "phase_580_outsider_boundary_invalid"
+    else:
+        raise AssertionError("expected Phase580IntegrationError")
+
+
+def test_embedded_outsider_artifact_mismatch_fails_with_expected_token(tmp_path: Path) -> None:
+    root, replay_dir = _write_integration_root(tmp_path)
+    panel_path = root / "panel" / "panel_result.json"
+    panel_payload = json.loads(panel_path.read_text(encoding="utf-8"))
+    panel_payload["outsider_submission"]["profile"]["agent_id"] = "tampered-outsider"
+    panel_path.write_text(json.dumps(panel_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    try:
+        phase_580_checker.check_panel_live_submission_integration(scenario_root=root, replay_root=replay_dir)
+    except phase_580_checker.Phase580IntegrationError as exc:
+        assert exc.token == "phase_580_outsider_boundary_invalid"
+    else:
+        raise AssertionError("expected Phase580IntegrationError")
+
+
+def test_outsider_task_identity_mismatch_fails_with_expected_token(tmp_path: Path) -> None:
+    root, replay_dir = _write_integration_root(tmp_path)
+    outsider_path = root / "panel" / "outsider_submission.json"
+    outsider_payload = json.loads(outsider_path.read_text(encoding="utf-8"))
+    outsider_payload["task_id"] = "wrong-task"
+    outsider_path.write_text(json.dumps(outsider_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    panel_path = root / "panel" / "panel_result.json"
+    panel_payload = json.loads(panel_path.read_text(encoding="utf-8"))
+    panel_payload["outsider_submission"]["task_id"] = "wrong-task"
     panel_path.write_text(json.dumps(panel_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     try:
         phase_580_checker.check_panel_live_submission_integration(scenario_root=root, replay_root=replay_dir)
