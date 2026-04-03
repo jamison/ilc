@@ -41,3 +41,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0020](ADR_0020_Knowledge_Node_First_Design_Principle.md) | Knowledge-Node-First Design Principle | Proposed |
 | [ADR-0022](ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md) | Local-First Private Use and Publication-Bound Economics | Proposed |
 | [ADR-0025](ADR_0025_D2d_HTTP_Gossip_Transport_Binding.md) | D2d HTTP/3 Gossip Transport Binding | Accepted |
+| [ADR-0026](ADR_0026_Protocol_vs_Harness_Product_Boundary.md) | Protocol vs Harness/Product Boundary | Accepted |

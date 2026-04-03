@@ -193,6 +193,9 @@ Purpose:
 - Close the bounded reproducibility/governance posture for the agent loop and
   attach the outbound support lane if it lands in this window, without widening
   the correctness boundary.
+- Any later harness/operator product work (for example onboarding helpers or
+  budget-aware mining modes) remains a separate post-582 lane over stable
+  protocol surfaces and is not part of this window's correctness gate.
 
 ### Phase 583 - Coherence report and capsule v3.1
 
@@ -231,6 +234,10 @@ This window must not:
   historical roadmap anchor for the agent-loop lane
 - `docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md` - current RC readiness
   surface
+- `docs/adr/ADR_0026_Protocol_vs_Harness_Product_Boundary.md` - accepted
+  protocol-vs-harness boundary for post-582 work
+- `docs/specs/ilc_post_582_harness_sdk_lane_v0.1.md` - post-582 harness/operator
+  planning lane
 - `docs/specs/ilc_agent_native_rc0_1_guidance_synthesis_v0.1.md` - agent-native
   RC framing
 - `docs/research/ilc_rc_phase_575_execution_packets_v0.1.md` - normalized
