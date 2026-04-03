@@ -238,6 +238,8 @@ This window must not:
   protocol-vs-harness boundary for post-582 work
 - `docs/specs/ilc_post_582_harness_sdk_lane_v0.1.md` - post-582 harness/operator
   planning lane
+- `docs/specs/ilc_window_585_594_candidate_phase_grouping_v0.1.md` - forward
+  public-release constitutional closure guidance window
 - `docs/specs/ilc_agent_native_rc0_1_guidance_synthesis_v0.1.md` - agent-native
   RC framing
 - `docs/research/ilc_rc_phase_575_execution_packets_v0.1.md` - normalized
