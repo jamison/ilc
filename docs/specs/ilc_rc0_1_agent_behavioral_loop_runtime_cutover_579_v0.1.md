@@ -18,6 +18,8 @@ Locked points:
 - `seven_live_agent_submissions_required_for_cutover`
 - `panel_and_claim_broadcasts_must_complete_before_cutover_pass`
 - `phase_579_keeps_transport_and_wallet_semantics_unchanged`
+- `scenario_manifest_output_root_and_identity_must_match_cutover_root`
+- `panel_direct_author_must_match_direct_claim`
 
 This packet does not invent new wallet, settlement, graph, or lineage meaning.
 It hardens an existing bounded runtime baseline against the already-locked Phase
@@ -58,8 +60,10 @@ A passing Phase 579 cutover requires all of the following:
 - each submission matches the authoritative scenario identity tuple
 - each submission send-status row exists and every status code is `202`
 - the panel artifact is passing and aligned to the authoritative scenario
-- the standalone claim artifact matches the panel claim batch and has positive
-  settled reward total
+- the scenario manifest output root, task id, and epoch align with the live
+  cutover root
+- the standalone claim artifact matches the panel claim batch, preserves the
+  panel-selected direct author, and has positive settled reward total
 - panel and claim broadcasts both complete with `202` statuses only
 - the scenario manifest points to an existing durable economic manifest
 - the economic manifest aligns with the same scenario root, task id, and reward
@@ -70,6 +74,7 @@ The success marker is:
 
 Required failure tokens are:
 - `phase_579_manifest_missing`
+- `phase_579_manifest_invalid`
 - `phase_579_submission_count_invalid`
 - `phase_579_submission_runtime_version_mismatch`
 - `phase_579_submission_identity_mismatch`
