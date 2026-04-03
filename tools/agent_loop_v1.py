@@ -17,6 +17,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from ilc_core.consensus.diversity_floor_runtime import compute_max_cluster_share
+from ilc_core.crypto.cbor_canonical import cbor_dumps_canonical
 from ilc_core.consensus.popperian_gate_runtime import (
     PopperianGateValidationError,
     evaluate_decomposition_admissibility,
@@ -311,7 +312,9 @@ def _broadcast_submission(
 ) -> list[dict[str, Any]]:
     transport_config, peers = _transport_bundle(config_path)
     runtime = HttpGossipTransportRuntime(transport_config)
-    payload = _stable_json_bytes(artifact)
+    # CDL-061 production traffic stays on canonical CBOR; JSON remains only a
+    # lower-layer fallback path in the transport runtime.
+    payload = cbor_dumps_canonical(artifact)
     payload_sha256 = hashlib.sha256(payload).hexdigest()
     payload_bytes = len(payload)
     signature = _signature(artifact)
@@ -326,7 +329,6 @@ def _broadcast_submission(
                 epoch,
                 signature,
                 payload,
-                content_type="application/json",
             )
         except TransportRuntimeError as exc:
             raise AgentLoopRuntimeError(

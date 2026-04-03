@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.crypto.cbor_canonical import cbor_loads
 from tools import agent_loop_v1
 from tools import query_rc0_1_economic_state
 from tools.testbed import run_rc0_1_benchmarks as benchmark_runner
@@ -184,7 +185,7 @@ def test_cli_run_agent_writes_submission_file(tmp_path: Path) -> None:
     assert (tmp_path / "submission_1.json").exists()
 
 
-def test_broadcast_submission_emits_payload_and_latency_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_broadcast_submission_emits_cbor_payload_and_latency_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         agent_loop_v1,
         "_transport_bundle",
@@ -200,9 +201,11 @@ def test_broadcast_submission_emits_payload_and_latency_metrics(monkeypatch: pyt
         ),
     )
 
+    calls: list[tuple[str, str, str, int, str, bytes, str]] = []
+
     class _FakeRuntime:
         def __init__(self, _config: object) -> None:
-            self.calls: list[tuple[str, str, str, int, str, bytes, str]] = []
+            pass
 
         def send_gossip(
             self,
@@ -216,7 +219,7 @@ def test_broadcast_submission_emits_payload_and_latency_metrics(monkeypatch: pyt
             content_type: str = "application/cbor",
         ) -> int:
             normalized = payload if isinstance(payload, bytes) else payload.encode("utf-8")
-            self.calls.append((peer_endpoint, gossip_type, channel, epoch, signature, normalized, content_type))
+            calls.append((peer_endpoint, gossip_type, channel, epoch, signature, normalized, content_type))
             return 202
 
     monkeypatch.setattr(agent_loop_v1, "HttpGossipTransportRuntime", _FakeRuntime)
@@ -238,6 +241,12 @@ def test_broadcast_submission_emits_payload_and_latency_metrics(monkeypatch: pyt
     assert all(status["payload_bytes"] > 0 for status in statuses)
     assert all(isinstance(status["payload_sha256"], str) and status["payload_sha256"] for status in statuses)
     assert all(status["duration_ms"] >= 0.0 for status in statuses)
+
+    assert len(calls) == 2
+    assert all(call[6] == "application/cbor" for call in calls)
+    decoded = cbor_loads(calls[0][5])
+    assert decoded["artifact_kind"] == "agent_submission"
+    assert decoded["task_id"] == _task()["task_id"]
 
 
 def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
