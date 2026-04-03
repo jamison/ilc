@@ -42,6 +42,10 @@ finish it.
   governance is reopened in this window.
 - LMDB-backed public runtime state remains the durable storage base for the
   curated testnet ledger, graph, and wallet-read surfaces.
+- The bounded implementation baseline already includes `tools/agent_loop_v1.py`,
+  `tools/query_rc0_1_economic_state.py`, `tools/run_rc0_1_economic_proof.py`,
+  and LMDB-backed runtime state; Phases 579-581 convert this baseline into the
+  authoritative live path rather than reopening greenfield design.
 
 ### 2.2 RC maturity split
 
@@ -168,19 +172,20 @@ Purpose:
 ### Phase 579 - Agent behavioral loop runtime cutover
 
 Purpose:
-- Replace remaining bounded-scenario assumptions with the live agent loop path
-  over the three-machine substrate.
+- convert the already-landed bounded agent-loop runtime into the authoritative
+  live cutover path over the three-machine substrate.
 
 ### Phase 580 - 7+1 panel and live submission integration
 
 Purpose:
-- Wire live claim submission through the panel/quorum path and persist the
-  resulting runtime artifacts.
+- harden the existing panel and submission scaffolding into the authoritative
+  live panel/quorum submission path and persist the resulting runtime artifacts.
 
 ### Phase 581 - ECU attribution, settlement, and wallet query integration
 
 Purpose:
-- Complete the durable economic path and wallet query surface over live state.
+- harden the existing durable economic and wallet-query surfaces into the
+  authoritative live settlement path over runtime state.
 
 ### Phase 582 - Reproducibility disposition + outbound HTTP machine-payment skill
 

@@ -68,6 +68,11 @@ The following implementation decisions are locked for the full window:
 - LMDB-backed public runtime state remains the active durable storage base for
   RC0.1 graph, ledger, and wallet-read surfaces; this window does not reopen
   the storage-engine choice.
+- The already-landed bounded implementation baseline for Phases 579-581
+  includes `tools/agent_loop_v1.py`, `tools/query_rc0_1_economic_state.py`,
+  `tools/run_rc0_1_economic_proof.py`, and the LMDB-backed runtime state;
+  Phases 579-581 harden and authorize cutover over this baseline rather than
+  reopen greenfield design.
 - `settlement_wallet_boundary_precedes_agent_loop_runtime`.
 - `persisted_graph_contract_precedes_live_submission_cutover`.
 - `curated_genesis_lineage_testnet_only` remains the lineage posture for this
