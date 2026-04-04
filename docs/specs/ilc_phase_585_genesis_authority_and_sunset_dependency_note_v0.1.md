@@ -126,6 +126,11 @@ binding law at the same level as ratified CDLs or accepted ADRs.
   - useful for the Topological Exemption rationale
   - not a substitute for ratified protocol law
 
+- `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
+  - useful for the separate post-Genesis capability-proof roadmap
+  - not current public-release law and not a substitute for Genesis
+    governance/accrual closure in Window 585-594
+
 - `docs/specs/ilc_epistemological_foundations_canonical_v0.1.md`
   - useful for Genesis-as-oracle reasoning and bootstrap necessity framing
   - should be treated as explanatory context, not direct authority for public
@@ -152,6 +157,15 @@ Window 585-594 must preserve the following dependency statements:
 ## 5. Carry-forward canon queue for non-equal-canon gaps
 
 The following items should be treated as explicit return points in canon.
+
+Priority discipline:
+- `TODO-P585-02`, `TODO-P585-03`, and `TODO-P585-04` are the highest-priority
+  Genesis-return items because they govern Genesis governance dilution,
+  Genesis freshness privilege, and Genesis ILC generation/accrual fade-away
+  semantics.
+- The capability-proof roadmap is a separate future lane. It should be tracked
+  explicitly, but it must not be allowed to displace the higher-priority
+  Genesis governance/accrual closures in this window.
 
 ### TODO-P585-01 - Receipt representation CDL cluster
 
@@ -206,6 +220,20 @@ until a ratified artifact explicitly elevates it into more direct protocol law.
 
 Do not use the whitepaper phrase by itself as a substitute for the ratified
 CDL/ADR stack.
+
+### Related future lane - TODO-P585-07 Post-Genesis capability-proof disposition
+
+`docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md` must remain supporting
+context only until a later ratified vehicle explicitly dispositions the lane.
+
+At minimum, the later vehicle should dispose of:
+- the explicit rule that CapProof does not directly mint additional `ILC`,
+- the bounded Genesis role as an epoch-0 or bootstrap-only capability baseline,
+- the transition from Genesis baseline to a non-privileged reference,
+- and the post-Genesis sequencing `CapProof -> AWP/IIH -> optional QATPS/CIT`.
+
+This is a real future lane, but it is not a blocker for Phases `585-590`
+unless it is misread as already-ratified public-release law.
 
 ## 6. Required references for later phase documents
 
