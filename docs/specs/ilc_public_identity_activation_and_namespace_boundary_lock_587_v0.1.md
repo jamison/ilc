@@ -21,7 +21,9 @@ Required governance tokens:
 - `unbound_key_is_not_canonical_public_participant`
 - `public_namespace_authority_is_first_class_receipt_surface`
 - `namespace_authority_must_bind_to_admitted_identity_lineage`
+- `namespace_authority_receipt_is_derivative_not_alternate_identity_namespace`
 - `canonical_root_key_lineage_not_transaction_hash_identity`
+- `activation_and_namespace_authority_must_respect_cdl_001_canonical_authority_state_gating`
 - `cdl_040_admission_scope_not_claim_acceptance`
 - `display_aliases_are_derivative_not_authoritative`
 - `local_private_identity_remains_permitted_outside_public_legitimacy`
@@ -95,6 +97,12 @@ Public namespace authority is a first-class receipt surface in the public lane.
 A namespace authority receipt must bind handles, usernames, or public labels to
 admitted identity lineage rather than to a free-floating key or operator label.
 
+`namespace_authority_receipt_is_derivative_not_alternate_identity_namespace`.
+
+Namespace authority remains derivative of the ratified globally flat key-derived
+agent_id rule. It must not reopen operator-scoped, epoch-scoped, registry-
+issued, or otherwise alternate identity namespaces.
+
 `namespace_authority_must_not_float_free_of_activation_lineage`.
 
 Namespace authority must not float free of the activation receipt lineage.
@@ -123,6 +131,14 @@ Operational signer rotation does not create a new public agent identity.
 Identity continuity is carried by signer-lineage linkage back to the same
 canonical_root_key, not by transaction-hash-derived identity.
 
+`activation_and_namespace_authority_must_respect_cdl_001_canonical_authority_state_gating`.
+
+Identity continuity is not sufficient by itself for current public authority.
+Activation and namespace authority must remain compatible with CDL-001
+canonical-authority state gating: revoked lineage is non-authoritative, and
+rotated lineage does not regain authority until the recovered-state path
+completes.
+
 `cdl_040_admission_scope_not_claim_acceptance`.
 
 CDL-040 admission control and identity-envelope scope remains distinct from
@@ -139,7 +155,11 @@ The following interpretations are forbidden:
 - treating operator labels or display aliases as canonical public authority
 - treating local/private agent existence as equivalent to canonical public
   activation
+- reopening operator-scoped, epoch-scoped, or registry-issued alternate
+  identity namespaces under the namespace receipt layer
 - treating namespace authority as a free-floating alias system
+- treating rotated or revoked lineage continuity as sufficient current public
+  authority by itself
 - reopening the protocol-vs-harness boundary through identity UX work
 
 ## 7. Explicit deferrals to later phases
