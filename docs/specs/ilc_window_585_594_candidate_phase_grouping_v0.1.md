@@ -161,6 +161,14 @@ state what remains:
 
 The following are explicit canon-return items for this window.
 
+Priority discipline:
+- `TODO-P585-02`, `TODO-P585-03`, and `TODO-P585-04` are the highest-priority
+  Genesis-return items in this window because they determine the honest public
+  posture for Genesis governance, Genesis centrality/fade-away semantics, and
+  Genesis ILC generation/accrual sunset semantics.
+- `TODO-P585-07` is a separate post-Genesis capability-proof lane and must not
+  be blurred into current public-release law by silence.
+
 ### TODO-P585-01 - Receipt representation CDL cluster
 
 Open and close the public receipt-format cluster named in Section 4.1.
@@ -199,6 +207,22 @@ settlement receipt chain.
 
 Keep the Topological Exemption as rationale unless and until a ratified artifact
 promotes it further. Do not use whitepaper phrasing by itself as protocol law.
+
+### TODO-P585-07 - Post-Genesis capability-proof lane disposition
+
+Track the capability-proof roadmap as an explicit future lane rather than
+leaving it implicit in supporting context and `TODO.txt`.
+
+At minimum, dispose of:
+- whether `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md` remains
+  supporting context only, is ratified later as a scoped future lane, or is
+  superseded,
+- the bounded Genesis role in capability-proof bootstrap baselining,
+- the transition from any epoch-0 Genesis capability baseline to a
+  non-privileged rolling, synthetic, or governance-updated reference,
+- the explicit rule that CapProof does not directly mint extra `ILC`,
+- and the sequencing boundary `CapProof -> AWP/IIH -> optional QATPS/CIT`
+  without silently importing that lane into the current public-release window.
 
 ---
 
