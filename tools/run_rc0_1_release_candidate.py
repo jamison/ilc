@@ -31,19 +31,30 @@ def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
     return result
 
 
-def run_release_candidate(*, output_root: Path, include_home_install_proof: bool, emit_release_claim: bool) -> dict[str, object]:
+def run_release_candidate(
+    *,
+    output_root: Path,
+    include_home_install_proof: bool,
+    emit_release_claim: bool,
+    closure_root: Path | None = None,
+) -> dict[str, object]:
     output_root = output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=True)
-    closure_root = output_root / "substrate"
-    closure_command = [
-        "python3",
-        "tools/testbed/run_rc0_1_substrate_closure.py",
-        "--output-root",
-        str(closure_root),
-    ]
-    if include_home_install_proof:
-        closure_command.append("--include-home-install-proof")
-    closure_result = _run(closure_command)
+    if closure_root is None:
+        closure_root = output_root / "substrate"
+        closure_command = [
+            "python3",
+            "tools/testbed/run_rc0_1_substrate_closure.py",
+            "--output-root",
+            str(closure_root),
+        ]
+        if include_home_install_proof:
+            closure_command.append("--include-home-install-proof")
+        closure_result = _run(closure_command)
+        closure_stdout = closure_result.stdout.strip()
+    else:
+        closure_root = closure_root.resolve()
+        closure_stdout = "reused_existing_closure_root"
     closure_manifest = json.loads((closure_root / "closure_manifest.json").read_text(encoding="utf-8"))
     economic_manifest_path = str(closure_manifest.get("economic_manifest_path", closure_root / "scenario" / "economic-state" / "manifest.json"))
     release_root = output_root / "release"
@@ -63,7 +74,7 @@ def run_release_candidate(*, output_root: Path, include_home_install_proof: bool
         "closure_manifest_path": str(closure_root / "closure_manifest.json"),
         "economic_manifest_path": economic_manifest_path,
         "release_manifest_path": str(release_root / "manifest.json"),
-        "closure_stdout": closure_result.stdout.strip(),
+        "closure_stdout": closure_stdout,
         "economic_stdout": "economic_state_emitted_in_substrate_closure",
         "release_stdout": release_result.stdout.strip(),
     }
@@ -92,6 +103,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-root")
     parser.add_argument("--include-home-install-proof", action="store_true")
     parser.add_argument("--emit-release-claim", action="store_true")
+    parser.add_argument("--closure-root")
     return parser
 
 
@@ -103,6 +115,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             output_root=output_root,
             include_home_install_proof=args.include_home_install_proof,
             emit_release_claim=args.emit_release_claim,
+            closure_root=Path(args.closure_root) if args.closure_root else None,
         )
     except ReleaseCandidateError as exc:
         print(json.dumps({"marker": "rc0_1_release_candidate_failed", "detail": str(exc)}, sort_keys=True, separators=(",", ":")))
