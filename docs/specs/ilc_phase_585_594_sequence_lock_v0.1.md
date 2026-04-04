@@ -83,6 +83,16 @@ Minimum decision-log cluster for the window:
 - `CDL-045`
 - `CDL-V6`
 
+Supporting context bundle for the window, never equal canon by silence:
+- `docs/adr/ADR_0008_Node_Usefulness_vs_Governance_Weight_and_Genesis_Dilution.md`
+- `docs/specs/ilc_freshness_gate_contract_v0.1.md`
+- `docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.1.md`
+- `docs/specs/ilc_constitutional_context_audit_v0.1.md`
+- `docs/specs/ilc_epistemological_foundations_canonical_v0.1.md`
+- `docs/specs/ilc_remaining_vulnerability_mechanisms_plan_v0.1.md`
+- `docs/specs/ilc_pre_epoch_capability_proofs_v0.1.md`
+- `whitepaper/02_design_principles.md`
+
 Supporting context may inform this window only when it is explicitly labeled as
 supporting context or unresolved carry-forward. `supporting_context_not_equal_canon`.
 
