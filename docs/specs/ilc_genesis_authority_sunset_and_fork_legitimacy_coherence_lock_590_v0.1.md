@@ -66,7 +66,7 @@ Tier rule for supporting Genesis context:
 
 Inherited canon:
 - `canonical_public_legitimacy_must_flow_through_genesis_rooted_lineage`.
-- `different_genesis_root_means_noncanonical_fork`.
+- `canonical_vs_fork_genesis_consequence_explicit`.
 - `settlement_linked_public_legitimacy_requires_settled_receipt_chain`.
 
 ## 3. Bounded Genesis authority boundary
