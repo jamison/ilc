@@ -207,6 +207,23 @@ promotes it further. Do not use whitepaper phrasing by itself as protocol law.
 This is the candidate sketch only. The exact sequence may tighten at sequence
 lock.
 
+### 6.0 Execution strategy split
+
+Window 585-594 is intentionally split into two bands:
+
+- Phases `587-590`: constitutional closure band
+- Phases `591-594`: integration, claim, coherence, and closure band
+
+Interpretation rule:
+- Phases `587-590` finish the missing public-boundary law.
+- Phase `591` is the first phase allowed to integrate those public-boundary
+  surfaces into the live runtime/proof lane.
+- Phases `592-594` package, verify, and close the public-release claim.
+
+This means Window 585-594 is not fully "closed" by Phase 586. The remaining
+constitutional closure work sits in Phases 587-590, and the remaining
+integration/closure work sits in Phases 591-594.
+
 ### Phase 585 - Window 585-594 sequence lock and dependency freeze
 
 Purpose:
@@ -304,3 +321,10 @@ It should leave behind:
 - a locked public receipt/proof representation discipline,
 - public identity/quorum/settlement legitimacy bound to canonical lineage,
 - and an honest public release-candidate package that does not overclaim.
+
+Operational sequencing preference after Phase 586:
+- continue through Phases 587-590 before returning to unrelated runtime or
+  harness lanes,
+- then decide whether to proceed directly into Phases 591-594 or pause for a
+  narrow runtime feed-in tranche if the public integration surfaces are not yet
+  ready.
