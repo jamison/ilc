@@ -248,6 +248,7 @@ def test_checker_passes_on_deterministic_synthetic_valid_manifest(tmp_path: Path
     _write_json(candidate_manifest_path, {'release_claim_manifest_path': str(claim_manifest_path)})
     _write_json(release_manifest_path, {'release_verdict_stdout': 'rc0_1_release_verdict=pass'})
     _write_json(claim_manifest_path, {
+        'candidate_manifest_path': str(candidate_manifest_path),
         'claim_verdict_stdout': 'rc0_1_release_claim_verdict=pass',
         'economic_claim_summary': economic_claim_summary,
     })
