@@ -24,6 +24,21 @@ Binding dependency bundle for this packet:
 - `docs/research/ilc_canonical_self_describing_bootstrap_and_receipt_boundary_note_v0.1.md`
 - `docs/specs/ilc_constitutional_decision_log_v0.1.md`
 
+Minimum decision-log cluster carried by this packet:
+- `CDL-001`
+- `CDL-002`
+- `CDL-003`
+- `CDL-004`
+- `CDL-007`
+- `CDL-009`
+- `CDL-013`
+- `CDL-022`
+- `CDL-023`
+- `CDL-040`
+- `CDL-042`
+- `CDL-045`
+- `CDL-V6`
+
 Required governance tokens:
 - `public_receipt_representation_cluster_locked`
 - `public_identity_activation_receipt_required`
