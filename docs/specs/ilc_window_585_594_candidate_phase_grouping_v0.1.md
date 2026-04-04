@@ -286,6 +286,7 @@ This window must not:
 
 - `docs/specs/ilc_window_575_584_candidate_phase_grouping_v0.1.md`
 - `docs/specs/ilc_phase_575_584_sequence_lock_v0.1.md`
+- `docs/specs/ilc_post_586_strike_force_runtime_hardening_packet_v0.1.md`
 - `docs/specs/ilc_post_582_harness_sdk_lane_v0.1.md`
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md`
 - `docs/research/ilc_rc_phase_575_execution_packets_v0.1.md`
