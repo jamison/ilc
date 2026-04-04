@@ -34,7 +34,9 @@ REQUIRED_TOKENS = (
     'unbound_key_is_not_canonical_public_participant',
     'public_namespace_authority_is_first_class_receipt_surface',
     'namespace_authority_must_bind_to_admitted_identity_lineage',
+    'namespace_authority_receipt_is_derivative_not_alternate_identity_namespace',
     'canonical_root_key_lineage_not_transaction_hash_identity',
+    'activation_and_namespace_authority_must_respect_cdl_001_canonical_authority_state_gating',
     'cdl_040_admission_scope_not_claim_acceptance',
     'display_aliases_are_derivative_not_authoritative',
     'local_private_identity_remains_permitted_outside_public_legitimacy',
@@ -64,6 +66,7 @@ ACTIVATION_RULES = (
 NAMESPACE_RULES = (
     'Public namespace authority is a first-class receipt surface',
     'A namespace authority receipt must bind handles, usernames, or public labels to',
+    'Namespace authority remains derivative of the ratified globally flat key-derived',
     'Namespace authority must not float free of the activation receipt lineage.',
     'Namespace authority must preserve the reference slot needed for the later',
     'Display aliases, local labels, and operator-friendly naming layers are',
@@ -71,13 +74,16 @@ NAMESPACE_RULES = (
 LINEAGE_RULES = (
     'Canonical public agent identity continuity follows the CDL-001 signer-lineage',
     'Operational signer rotation does not create a new public agent identity.',
+    'Activation and namespace authority must remain compatible with CDL-001',
     'CDL-040 admission control and identity-envelope scope remains distinct from',
 )
 FORBIDDEN_RULES = (
     '- deriving canonical public identity from transaction hashes',
     '- treating operator labels or display aliases as canonical public authority',
     '- treating local/private agent existence as equivalent to canonical public',
+    '- reopening operator-scoped, epoch-scoped, or registry-issued alternate',
     '- treating namespace authority as a free-floating alias system',
+    '- treating rotated or revoked lineage continuity as sufficient current public',
     '- reopening the protocol-vs-harness boundary through identity UX work',
 )
 
