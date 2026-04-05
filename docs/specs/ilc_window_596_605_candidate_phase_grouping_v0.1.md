@@ -264,6 +264,8 @@ Purpose:
 Purpose:
 - disposition the capability-proof roadmap as a separate later lane,
 - make the Genesis bootstrap baseline transition explicit,
+- make any snapshot or fast-bootstrap provenance dependency under `CDL-023`
+  explicit where the transition boundary depends on inherited bootstrap state,
 - and forbid silent import of that lane into current governance, minting, or
   public-release claims.
 
