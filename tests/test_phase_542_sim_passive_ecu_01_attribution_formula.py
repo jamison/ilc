@@ -106,15 +106,22 @@ def test_sim_document_consumes_phase_527_upstream_constants() -> None:
     assert 'passive_ecu = min(base_reward * passive_attribution_rate * centrality_score * m_i, base_reward * attribution_cap)' in text
 
 
-def test_live_cdl_inventory_preserves_cdl_060_and_no_new_rows() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+def test_cdl_inventory_is_historicalized_for_phase_542() -> None:
+    commit_ref = _resolve_phase_542_commit_ref()
+    text = subprocess.run(
+        ['git', 'show', f'{commit_ref}:{DECISION_LOG_PATH}'],
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout
+    rows = parse_decision_register_rows(text)
     assert rows['CDL-036']['status'] == 'ratified'
     assert rows['CDL-039']['status'] == 'ratified'
     assert rows['CDL-052']['status'] == 'ratified'
     assert rows['CDL-059']['status'] == 'ratified'
     assert rows['CDL-060']['status'] == 'ratified'
     assert 'CDL-053' not in rows
-    # The Phase-542 no-new-CDL-above-060 check will be historicalized when CDL-061 opens.
+
     def _is_numbered_cdl_above_060(key: str) -> bool:
         match = re.fullmatch(r'CDL-(\d+)', key)
         return bool(match) and int(match.group(1)) >= 61
