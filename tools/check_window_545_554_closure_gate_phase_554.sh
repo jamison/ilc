@@ -36,18 +36,29 @@ USAGE
 }
 
 resolve_window_state() {
-  python3 - "$DECISION_LOG_PATH" "$CAPSULE_PATH" "$SIM_PATH" "$FLOOR_POLICY_PATH" "$GOSSIP_RUNTIME_PATH" "$PASSIVE_ECU_RUNTIME_PATH" <<'PY'
-from pathlib import Path
+  python3 - "$CAPSULE_PATH" "$SIM_PATH" "$FLOOR_POLICY_PATH" "$GOSSIP_RUNTIME_PATH" "$PASSIVE_ECU_RUNTIME_PATH" <<'PY'
+import os
+import subprocess
 import sys
+from pathlib import Path
 from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
 
-decision_log = Path(sys.argv[1])
-capsule_path = Path(sys.argv[2])
-sim_path = Path(sys.argv[3])
-floor_policy_path = Path(sys.argv[4])
-gossip_runtime_path = Path(sys.argv[5])
-passive_runtime_path = Path(sys.argv[6])
-rows = parse_decision_register_rows(decision_log.read_text(encoding='utf-8'))
+_PHASE_554_CDL_COMMIT = "894a259b"
+_CDL_REPO_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+capsule_path = Path(sys.argv[1])
+sim_path = Path(sys.argv[2])
+floor_policy_path = Path(sys.argv[3])
+gossip_runtime_path = Path(sys.argv[4])
+passive_runtime_path = Path(sys.argv[5])
+cdl_override = os.environ.get("ILC_PHASE_554_DECISION_LOG_PATH")
+if cdl_override:
+    cdl_text = Path(cdl_override).read_text(encoding="utf-8")
+else:
+    cdl_text = subprocess.run(
+        ["git", "show", f"{_PHASE_554_CDL_COMMIT}:{_CDL_REPO_PATH}"],
+        capture_output=True, check=True, text=True,
+    ).stdout
+rows = parse_decision_register_rows(cdl_text)
 sim_text = sim_path.read_text(encoding='utf-8') if sim_path.exists() else ''
 floor_policy_text = floor_policy_path.read_text(encoding='utf-8') if floor_policy_path.exists() else ''
 gossip_text = gossip_runtime_path.read_text(encoding='utf-8') if gossip_runtime_path.exists() else ''

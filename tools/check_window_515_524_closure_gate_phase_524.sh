@@ -47,15 +47,26 @@ print_dry_run() {
 }
 
 resolve_window_state() {
-  python3 - "$DECISION_LOG_PATH" "$EPOCH_RUNTIME_PATH" "$READMISSION_RUNTIME_PATH" <<'PY'
-from pathlib import Path
+  python3 - "$EPOCH_RUNTIME_PATH" "$READMISSION_RUNTIME_PATH" <<'PY'
+import os
+import subprocess
 import sys
+from pathlib import Path
 from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
 
-decision_log = Path(sys.argv[1])
-epoch_runtime = Path(sys.argv[2])
-readmission_runtime = Path(sys.argv[3])
-rows = parse_decision_register_rows(decision_log.read_text(encoding='utf-8'))
+_PHASE_524_CDL_COMMIT = "91e3241a"
+_CDL_REPO_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+epoch_runtime = Path(sys.argv[1])
+readmission_runtime = Path(sys.argv[2])
+cdl_override = os.environ.get("ILC_PHASE_524_DECISION_LOG_PATH")
+if cdl_override:
+    cdl_text = Path(cdl_override).read_text(encoding="utf-8")
+else:
+    cdl_text = subprocess.run(
+        ["git", "show", f"{_PHASE_524_CDL_COMMIT}:{_CDL_REPO_PATH}"],
+        capture_output=True, check=True, text=True,
+    ).stdout
+rows = parse_decision_register_rows(cdl_text)
 
 if 'CDL-053' in rows or 'CDL-059' in rows:
     print('invalid|unexpected_cdl_row_present')
