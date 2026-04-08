@@ -63,6 +63,7 @@ MONITORING_PATHS = (
 )
 EPOCH_RUNTIME_PATH = Path("ilc_core/epoch/epoch_boundary_witness_runtime.py")
 READMISSION_RUNTIME_PATH = Path("ilc_core/validator/re_admission_runtime.py")
+PHASE_524_CDL_COMMIT = "91e3241a"
 
 
 def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -143,7 +144,12 @@ def _monitoring_state() -> dict[Path, tuple[bytes, int, int]]:
 
 
 def _decision_log_override_env(tmp_path: Path, scenario: str) -> dict[str, str]:
-    text = DECISION_LOG_PATH.read_text(encoding="utf-8")
+    text = subprocess.run(
+        ["git", "show", f"{PHASE_524_CDL_COMMIT}:{DECISION_LOG_PATH}"],
+        capture_output=True,
+        check=True,
+        text=True,
+    ).stdout
     if scenario == "blocked_open_row":
         updated: list[str] = []
         found = False
