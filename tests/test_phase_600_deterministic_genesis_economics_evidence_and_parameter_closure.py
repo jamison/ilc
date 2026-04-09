@@ -8,6 +8,7 @@ from tools.check_phase_600_genesis_economics_parameter_closure import (
     Phase600CheckError,
     check_phase_600_parameter_closure,
 )
+from tools.run_phase_600_genesis_economics_parameter_closure import _mode_summary, run_phase_600
 
 DOC_PATH = Path('docs/specs/ilc_deterministic_genesis_economics_evidence_and_parameter_closure_600_v0.1.md')
 RUNNER_PATH = Path('tools/run_phase_600_genesis_economics_parameter_closure.py')
@@ -191,7 +192,7 @@ def _synthetic_manifest(tmp_path: Path) -> Path:
             'future_controller_boundary_preserved': True,
         },
         'closure_decisions': {
-            'status': 'evidence_supplemented_closure',
+            'status': 'decisive_closure_with_evidence_limited_defers',
             'decisive_closures': ['full-tranche realization is demonstrated'],
             'evidence_supplemented_closures': ['timing remains bounded'],
             'explicit_defers': ['Phase 305 canonical output package remains incomplete'],
@@ -270,18 +271,30 @@ def test_checker_accepts_a_synthetic_valid_manifest(tmp_path: Path) -> None:
     assert payload['marker'] == 'phase_600_genesis_economics_parameter_closure_ok'
 
 
-def test_checker_rejects_a_synthetic_manifest_missing_replay_or_parameter_fields(tmp_path: Path) -> None:
+def test_checker_rejects_a_synthetic_manifest_missing_replay_contract(tmp_path: Path) -> None:
     manifest_path = _synthetic_manifest(tmp_path)
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     manifest.pop('replay_contract')
+    manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
+    try:
+        check_phase_600_parameter_closure(spec_path=DOC_PATH, manifest_path=manifest_path)
+    except Phase600CheckError as exc:
+        assert exc.token == 'phase_600_deterministic_replay_failed'
+    else:
+        raise AssertionError('expected_checker_failure_for_missing_replay_contract')
+
+
+def test_checker_rejects_a_synthetic_manifest_missing_subsidy_factors(tmp_path: Path) -> None:
+    manifest_path = _synthetic_manifest(tmp_path)
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     manifest['parameter_matrix'].pop('subsidy_factors')
     manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
     try:
         check_phase_600_parameter_closure(spec_path=DOC_PATH, manifest_path=manifest_path)
     except Phase600CheckError as exc:
-        assert exc.token in {'phase_600_deterministic_replay_failed', 'phase_600_parameter_matrix_incomplete'}
+        assert exc.token == 'phase_600_parameter_matrix_incomplete'
     else:
-        raise AssertionError('expected_checker_failure_for_missing_replay_or_parameter_fields')
+        raise AssertionError('expected_checker_failure_for_missing_subsidy_factors')
 
 
 def test_checker_rejects_a_synthetic_manifest_with_inconsistent_summary_or_escaped_paths(tmp_path: Path) -> None:
@@ -310,6 +323,25 @@ def test_checker_rejects_a_synthetic_manifest_with_inconsistent_summary_or_escap
         assert exc.token == 'phase_600_provenance_alignment_missing'
     else:
         raise AssertionError('expected_checker_failure_for_inconsistent_summary')
+
+
+def test_runner_promotes_closure_status_when_authoritative_full_tranche_is_demonstrated(tmp_path: Path) -> None:
+    payload = run_phase_600(output_root=tmp_path)
+    assert payload['closure_decisions']['status'] == 'decisive_closure_with_evidence_limited_defers'
+    assert payload['findings']['full_tranche_realization_demonstrated_on_authoritative_surface'] is True
+    assert 'rerun_hash' not in payload['replay_contract']
+
+
+def test_mode_summary_uses_consistent_median_semantics_for_even_length_inputs() -> None:
+    rows = [
+        {'reach_target_epoch': 10, 'final_genesis_cumulative_ilc': 100.0, 'full_tranche_realized': True},
+        {'reach_target_epoch': 20, 'final_genesis_cumulative_ilc': 200.0, 'full_tranche_realized': True},
+        {'reach_target_epoch': 30, 'final_genesis_cumulative_ilc': 300.0, 'full_tranche_realized': True},
+        {'reach_target_epoch': 40, 'final_genesis_cumulative_ilc': 400.0, 'full_tranche_realized': False},
+    ]
+    summary = _mode_summary(rows)
+    assert summary['reach_target_epoch_p50'] == 25
+    assert summary['final_genesis_cumulative_ilc_p50'] == 250.0
 
 
 def test_main_commit_touches_exactly_the_required_paths() -> None:
