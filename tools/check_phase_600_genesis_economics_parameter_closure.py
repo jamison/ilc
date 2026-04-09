@@ -57,6 +57,23 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding='utf-8'))
 
 
+def _resolve_evidence_artifact_path(*, manifest_path: Path, raw_path: Any, field: str) -> Path:
+    _require(isinstance(raw_path, str) and raw_path, 'phase_600_input_contract_missing', f'evidence_root_missing:{field}')
+    candidate = Path(raw_path)
+    if candidate.is_absolute():
+        resolved = candidate.resolve()
+    else:
+        resolved = (REPO_ROOT / candidate).resolve()
+    manifest_dir = manifest_path.resolve().parent
+    _require(
+        resolved == manifest_dir or manifest_dir in resolved.parents,
+        'phase_600_input_contract_missing',
+        f'evidence_root_outside_manifest_dir:{field}:{resolved}',
+    )
+    _require(resolved.is_file(), 'phase_600_input_contract_missing', f'evidence_root_not_found:{field}:{resolved}')
+    return resolved
+
+
 def check_phase_600_parameter_closure(*, spec_path: Path, manifest_path: Path) -> dict[str, Any]:
     spec_text = spec_path.read_text(encoding='utf-8')
     for heading in REQUIRED_HEADINGS:
@@ -80,15 +97,71 @@ def check_phase_600_parameter_closure(*, spec_path: Path, manifest_path: Path) -
     _require(isinstance(parameter_matrix.get('multiplier_factors'), list) and parameter_matrix.get('multiplier_factors'), 'phase_600_parameter_matrix_incomplete', 'multiplier_factors_missing')
 
     evidence_roots = manifest.get('evidence_roots', {})
-    for field in ('authoritative_summary_path', 'supporting_sensitivity_summary_path'):
-        value = evidence_roots.get(field)
-        _require(isinstance(value, str) and value, 'phase_600_input_contract_missing', f'evidence_root_missing:{field}')
-        _require(Path(value).is_file(), 'phase_600_input_contract_missing', f'evidence_root_not_found:{field}:{value}')
+    authoritative_summary_path = _resolve_evidence_artifact_path(
+        manifest_path=manifest_path,
+        raw_path=evidence_roots.get('authoritative_summary_path'),
+        field='authoritative_summary_path',
+    )
+    supporting_summary_path = _resolve_evidence_artifact_path(
+        manifest_path=manifest_path,
+        raw_path=evidence_roots.get('supporting_sensitivity_summary_path'),
+        field='supporting_sensitivity_summary_path',
+    )
+    authoritative_summary = _load_json(authoritative_summary_path)
+    supporting_summary = _load_json(supporting_summary_path)
+    _require(
+        authoritative_summary.get('governor_mode') == parameter_matrix.get('authoritative_governor_mode'),
+        'phase_600_provenance_alignment_missing',
+        'authoritative_summary_mode_invalid',
+    )
+    _require(
+        authoritative_summary.get('realization_surface') == parameter_matrix.get('authoritative_realization_surface'),
+        'phase_600_provenance_alignment_missing',
+        'authoritative_summary_surface_invalid',
+    )
+    _require(
+        supporting_summary.get('governor_mode') == parameter_matrix.get('supporting_sensitivity_mode'),
+        'phase_600_provenance_alignment_missing',
+        'supporting_summary_mode_invalid',
+    )
 
     findings = manifest.get('findings', {})
     _require('full_tranche_realization_demonstrated_on_authoritative_surface' in findings, 'phase_600_provenance_alignment_missing', 'full_tranche_field_missing')
     _require('supporting_issued_to_date_reaches_within_horizon' in findings, 'phase_600_provenance_alignment_missing', 'issued_to_date_field_missing')
     _require(findings.get('future_controller_boundary_preserved') is True, 'phase_600_provenance_alignment_missing', 'future_controller_boundary_missing')
+    authoritative_stats = authoritative_summary.get('summary', {})
+    supporting_stats = supporting_summary.get('summary', {})
+    _require(isinstance(authoritative_stats, dict), 'phase_600_provenance_alignment_missing', 'authoritative_summary_stats_missing')
+    _require(isinstance(supporting_stats, dict), 'phase_600_provenance_alignment_missing', 'supporting_summary_stats_missing')
+    _require(
+        authoritative_stats.get('scenario_count') == authoritative_stats.get('full_tranche_realization_count'),
+        'phase_600_provenance_alignment_missing',
+        'authoritative_summary_full_tranche_count_mismatch',
+    )
+    _require(
+        findings.get('full_tranche_realization_demonstrated_on_authoritative_surface')
+        is (authoritative_stats.get('scenario_count', 0) == authoritative_stats.get('full_tranche_realization_count')),
+        'phase_600_provenance_alignment_missing',
+        'authoritative_summary_findings_mismatch',
+    )
+    _require(
+        findings.get('supporting_issued_to_date_reaches_within_horizon')
+        is (supporting_stats.get('scenario_count', 0) == supporting_stats.get('full_tranche_realization_count')),
+        'phase_600_provenance_alignment_missing',
+        'supporting_summary_findings_mismatch',
+    )
+    if 'authoritative_reach_target_epoch_p50' in findings:
+        _require(
+            findings.get('authoritative_reach_target_epoch_p50') == authoritative_stats.get('reach_target_epoch_p50'),
+            'phase_600_provenance_alignment_missing',
+            'authoritative_summary_p50_mismatch',
+        )
+    if 'supporting_issued_to_date_final_genesis_cumulative_ilc_p50' in findings:
+        _require(
+            findings.get('supporting_issued_to_date_final_genesis_cumulative_ilc_p50') == supporting_stats.get('final_genesis_cumulative_ilc_p50'),
+            'phase_600_provenance_alignment_missing',
+            'supporting_summary_p50_mismatch',
+        )
 
     closure_decisions = manifest.get('closure_decisions', {})
     _require(isinstance(closure_decisions.get('status'), str) and closure_decisions.get('status'), 'phase_600_provenance_alignment_missing', 'closure_status_missing')

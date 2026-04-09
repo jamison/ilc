@@ -137,8 +137,35 @@ def _resolve_commit_ref(*, subject_token: str, expected_paths: set[str]) -> str:
 def _synthetic_manifest(tmp_path: Path) -> Path:
     authoritative_summary_path = tmp_path / 'authoritative_summary.json'
     supporting_summary_path = tmp_path / 'supporting_summary.json'
-    authoritative_summary_path.write_text('{}\n', encoding='utf-8')
-    supporting_summary_path.write_text('{}\n', encoding='utf-8')
+    authoritative_summary_path.write_text(
+        json.dumps(
+            {
+                'governor_mode': 'theoretical_cap',
+                'realization_surface': 'fixed_tranche_against_cmax',
+                'summary': {
+                    'scenario_count': 4,
+                    'full_tranche_realization_count': 4,
+                    'reach_target_epoch_p50': 22,
+                    'final_genesis_cumulative_ilc_p50': 1296000.0,
+                },
+            }
+        ),
+        encoding='utf-8',
+    )
+    supporting_summary_path.write_text(
+        json.dumps(
+            {
+                'governor_mode': 'issued_to_date',
+                'summary': {
+                    'scenario_count': 4,
+                    'full_tranche_realization_count': 0,
+                    'reach_target_epoch_p50': None,
+                    'final_genesis_cumulative_ilc_p50': 1241995.6909391996,
+                },
+            }
+        ),
+        encoding='utf-8',
+    )
     manifest = {
         'phase': 600,
         'version': 'phase_600_genesis_economics_parameter_closure_v0.1',
@@ -158,7 +185,9 @@ def _synthetic_manifest(tmp_path: Path) -> Path:
         },
         'findings': {
             'full_tranche_realization_demonstrated_on_authoritative_surface': True,
+            'authoritative_reach_target_epoch_p50': 22,
             'supporting_issued_to_date_reaches_within_horizon': False,
+            'supporting_issued_to_date_final_genesis_cumulative_ilc_p50': 1241995.6909391996,
             'future_controller_boundary_preserved': True,
         },
         'closure_decisions': {
@@ -253,6 +282,34 @@ def test_checker_rejects_a_synthetic_manifest_missing_replay_or_parameter_fields
         assert exc.token in {'phase_600_deterministic_replay_failed', 'phase_600_parameter_matrix_incomplete'}
     else:
         raise AssertionError('expected_checker_failure_for_missing_replay_or_parameter_fields')
+
+
+def test_checker_rejects_a_synthetic_manifest_with_inconsistent_summary_or_escaped_paths(tmp_path: Path) -> None:
+    manifest_path = _synthetic_manifest(tmp_path)
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    escaped_summary_path = tmp_path.parent / 'escaped_supporting_summary.json'
+    escaped_summary_path.write_text('{}\n', encoding='utf-8')
+    manifest['evidence_roots']['supporting_sensitivity_summary_path'] = str(escaped_summary_path)
+    manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
+    try:
+        check_phase_600_parameter_closure(spec_path=DOC_PATH, manifest_path=manifest_path)
+    except Phase600CheckError as exc:
+        assert exc.token == 'phase_600_input_contract_missing'
+    else:
+        raise AssertionError('expected_checker_failure_for_escaped_summary_path')
+
+    manifest_path = _synthetic_manifest(tmp_path)
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    authoritative_summary_path = Path(manifest['evidence_roots']['authoritative_summary_path'])
+    authoritative_summary = json.loads(authoritative_summary_path.read_text(encoding='utf-8'))
+    authoritative_summary['summary']['full_tranche_realization_count'] = 3
+    authoritative_summary_path.write_text(json.dumps(authoritative_summary), encoding='utf-8')
+    try:
+        check_phase_600_parameter_closure(spec_path=DOC_PATH, manifest_path=manifest_path)
+    except Phase600CheckError as exc:
+        assert exc.token == 'phase_600_provenance_alignment_missing'
+    else:
+        raise AssertionError('expected_checker_failure_for_inconsistent_summary')
 
 
 def test_main_commit_touches_exactly_the_required_paths() -> None:
