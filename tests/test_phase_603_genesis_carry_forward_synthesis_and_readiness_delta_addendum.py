@@ -58,6 +58,14 @@ SECTION_FOUR_RULES = (
     'Phase 604 coherence report and capsule update',
     'Phase 605 closure gate and handoff',
 )
+SECTION_SIX_RULES = (
+    'phase_604_coherence_report_must_consume_phase_603_synthesis',
+    'Phase 604 must consume this synthesis addendum',
+    'Phase 605 must consume the resulting coherence state',
+    'canonical intake summary for the remaining',
+    'coherence/gate lane',
+    'not a replacement for the six closure artifacts',
+)
 FORBIDDEN_RULES = (
     '- reopening or weakening Phases 597-602 by summary language,',
     '- using synthesis as substitute for the closure artifacts themselves,',
@@ -133,6 +141,12 @@ def test_section_three_contains_public_honesty_and_readiness_delta_implications(
 def test_section_four_enumerates_remaining_later_lane_defers() -> None:
     text = _read(DOC_PATH)
     for item in SECTION_FOUR_RULES:
+        assert item in text
+
+
+def test_section_six_contains_the_next_lane_handoff_token_set() -> None:
+    text = _read(DOC_PATH)
+    for item in SECTION_SIX_RULES:
         assert item in text
 
 

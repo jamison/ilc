@@ -235,13 +235,19 @@ def _simulate(scenario: Scenario, budgets: list[float]) -> dict[str, Any]:
 def _mode_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     reach_epochs = sorted(row['reach_target_epoch'] for row in rows if int(row['reach_target_epoch']) >= 0)
     final_cumulative = sorted(float(row['final_genesis_cumulative_ilc']) for row in rows)
+
+    def _median_or_none(values: list[float | int]) -> float | int | None:
+        if not values:
+            return None
+        return median(values)
+
     return {
         'scenario_count': len(rows),
         'full_tranche_realization_count': sum(1 for row in rows if row['full_tranche_realized']),
-        'reach_target_epoch_p50': int(median(reach_epochs)) if reach_epochs else None,
+        'reach_target_epoch_p50': int(_median_or_none(reach_epochs)) if reach_epochs else None,
         'reach_target_epoch_p10': int(reach_epochs[max(0, len(reach_epochs) // 10 - 1)]) if reach_epochs else None,
         'reach_target_epoch_p90': int(reach_epochs[min(len(reach_epochs) - 1, int(math.ceil(len(reach_epochs) * 0.9)) - 1)]) if reach_epochs else None,
-        'final_genesis_cumulative_ilc_p50': final_cumulative[len(final_cumulative) // 2] if final_cumulative else None,
+        'final_genesis_cumulative_ilc_p50': _median_or_none(final_cumulative),
         'min_final_genesis_cumulative_ilc': min(final_cumulative) if final_cumulative else None,
         'max_final_genesis_cumulative_ilc': max(final_cumulative) if final_cumulative else None,
     }
@@ -322,7 +328,11 @@ def _build_manifest(output_dir: Path) -> dict[str, Any]:
     # Phase 305 checklist exists but the canonical Phase 305 output package still does not.
     emitted_failure_tokens.append('phase_600_parameter_matrix_incomplete')
 
-    closure_status = 'evidence_supplemented_closure'
+    closure_status = (
+        'decisive_closure_with_evidence_limited_defers'
+        if authoritative_reaches
+        else 'evidence_supplemented_closure'
+    )
     bounded_public_statement = (
         'Genesis has a fixed economic tranche equal to 5 percent of C_max '
         '(1,296,000 ILC); deterministic Phase 600 evidence demonstrates full-tranche '
@@ -379,14 +389,6 @@ def _build_manifest(output_dir: Path) -> dict[str, Any]:
         },
     }
     replay_hash = _sha256_payload(manifest_core)
-    rerun_hash = _sha256_payload({
-        **manifest_core,
-        'replay_contract': {
-            'status': 'pending',
-            'deterministic_hash': replay_hash,
-            'rerun_hash': None,
-        },
-    })
     # Re-run the matrix deterministically and compare stable hashes.
     rerun_matrix_hash = _sha256_payload(_run_matrix())
     primary_matrix_hash = _sha256_payload(matrix)
@@ -394,7 +396,6 @@ def _build_manifest(output_dir: Path) -> dict[str, Any]:
     replay_contract = {
         'status': 'passed',
         'deterministic_hash': replay_hash,
-        'rerun_hash': rerun_hash,
         'matrix_hash': primary_matrix_hash,
     }
     manifest = {**manifest_core, 'replay_contract': replay_contract}
