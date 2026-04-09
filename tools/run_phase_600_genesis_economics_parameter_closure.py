@@ -241,12 +241,18 @@ def _mode_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             return None
         return median(values)
 
+    def _nearest_rank_or_none(values: list[float | int], percentile: float) -> float | int | None:
+        if not values:
+            return None
+        rank = max(1, math.ceil(len(values) * percentile))
+        return values[rank - 1]
+
     return {
         'scenario_count': len(rows),
         'full_tranche_realization_count': sum(1 for row in rows if row['full_tranche_realized']),
         'reach_target_epoch_p50': int(_median_or_none(reach_epochs)) if reach_epochs else None,
-        'reach_target_epoch_p10': int(reach_epochs[max(0, len(reach_epochs) // 10 - 1)]) if reach_epochs else None,
-        'reach_target_epoch_p90': int(reach_epochs[min(len(reach_epochs) - 1, int(math.ceil(len(reach_epochs) * 0.9)) - 1)]) if reach_epochs else None,
+        'reach_target_epoch_p10': int(_nearest_rank_or_none(reach_epochs, 0.10)) if reach_epochs else None,
+        'reach_target_epoch_p90': int(_nearest_rank_or_none(reach_epochs, 0.90)) if reach_epochs else None,
         'final_genesis_cumulative_ilc_p50': _median_or_none(final_cumulative),
         'min_final_genesis_cumulative_ilc': min(final_cumulative) if final_cumulative else None,
         'max_final_genesis_cumulative_ilc': max(final_cumulative) if final_cumulative else None,
