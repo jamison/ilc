@@ -29,7 +29,7 @@ The current Genesis closure band is:
 The 585-595 public and bounded-RC boundary stack remains frozen inherited
 context.
 Phase 604 does not reopen the public boundary handoff from Phase 594 or the
-bounded RC0.1 closure from Phase 595.
+the bounded RC0.1 closure from Phase 595.
 
 ## 4. Remaining later-lane defer state
 

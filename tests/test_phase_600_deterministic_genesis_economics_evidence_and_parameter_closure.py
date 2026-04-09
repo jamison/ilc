@@ -4,11 +4,12 @@ import json
 import subprocess
 from pathlib import Path
 
+import tools.run_phase_600_genesis_economics_parameter_closure as phase600_runner
 from tools.check_phase_600_genesis_economics_parameter_closure import (
     Phase600CheckError,
     check_phase_600_parameter_closure,
 )
-from tools.run_phase_600_genesis_economics_parameter_closure import _mode_summary, run_phase_600
+from tools.run_phase_600_genesis_economics_parameter_closure import _mode_summary
 
 DOC_PATH = Path('docs/specs/ilc_deterministic_genesis_economics_evidence_and_parameter_closure_600_v0.1.md')
 RUNNER_PATH = Path('tools/run_phase_600_genesis_economics_parameter_closure.py')
@@ -325,14 +326,60 @@ def test_checker_rejects_a_synthetic_manifest_with_inconsistent_summary_or_escap
         raise AssertionError('expected_checker_failure_for_inconsistent_summary')
 
 
-def test_runner_promotes_closure_status_when_authoritative_full_tranche_is_demonstrated(tmp_path: Path) -> None:
-    payload = run_phase_600(output_root=tmp_path)
+def test_runner_promotes_closure_status_when_authoritative_full_tranche_is_demonstrated(monkeypatch, tmp_path: Path) -> None:
+    synthetic_matrix = {
+        'constants': {
+            'c_max_ilc': 25_920_000.0,
+            'genesis_target_ilc': 1_296_000.0,
+            'theta_hard': 0.05,
+            'theta_soft': 0.049787068367863944,
+            'halving_h': 48,
+            'horizon_epochs': 480,
+        },
+        'parameter_matrix': {
+            'authoritative_realization_surface': 'fixed_tranche_against_cmax',
+            'authoritative_governor_mode': 'theoretical_cap',
+            'supporting_sensitivity_mode': 'issued_to_date',
+            'subsidy_factors': [0.2, 0.3, 0.4],
+            'multiplier_factors': [1.0, 1.2],
+            'centrality0_values': [0.85],
+            'centrality_half_life_values': [48],
+            'reputation0_values': [0.8],
+            'reputation_half_life_values': [96],
+            'network_midpoint_values': [36],
+            'network_growth_k_values': [0.08],
+            'scenario_count_total': 4,
+        },
+        'authoritative_summary': {
+            'scenario_count': 4,
+            'full_tranche_realization_count': 4,
+            'reach_target_epoch_p10': 16,
+            'reach_target_epoch_p50': 22,
+            'reach_target_epoch_p90': 42,
+            'final_genesis_cumulative_ilc_p50': 1_296_000.0,
+            'min_final_genesis_cumulative_ilc': 1_296_000.0,
+            'max_final_genesis_cumulative_ilc': 1_296_000.0,
+        },
+        'supporting_sensitivity_summary': {
+            'scenario_count': 4,
+            'full_tranche_realization_count': 0,
+            'reach_target_epoch_p10': None,
+            'reach_target_epoch_p50': None,
+            'reach_target_epoch_p90': None,
+            'final_genesis_cumulative_ilc_p50': 1_241_995.6909391996,
+            'min_final_genesis_cumulative_ilc': 1_200_000.0,
+            'max_final_genesis_cumulative_ilc': 1_250_000.0,
+        },
+    }
+    monkeypatch.setattr(phase600_runner, '_verify_inputs', lambda: {'phase_599_closure': {'path': 'x', 'sha256': 'y'}})
+    monkeypatch.setattr(phase600_runner, '_run_matrix', lambda: synthetic_matrix)
+    payload = phase600_runner.run_phase_600(output_root=tmp_path)
     assert payload['closure_decisions']['status'] == 'decisive_closure_with_evidence_limited_defers'
     assert payload['findings']['full_tranche_realization_demonstrated_on_authoritative_surface'] is True
     assert 'rerun_hash' not in payload['replay_contract']
 
 
-def test_mode_summary_uses_consistent_median_semantics_for_even_length_inputs() -> None:
+def test_mode_summary_uses_consistent_percentile_semantics_for_even_length_inputs() -> None:
     rows = [
         {'reach_target_epoch': 10, 'final_genesis_cumulative_ilc': 100.0, 'full_tranche_realized': True},
         {'reach_target_epoch': 20, 'final_genesis_cumulative_ilc': 200.0, 'full_tranche_realized': True},
@@ -340,7 +387,9 @@ def test_mode_summary_uses_consistent_median_semantics_for_even_length_inputs() 
         {'reach_target_epoch': 40, 'final_genesis_cumulative_ilc': 400.0, 'full_tranche_realized': False},
     ]
     summary = _mode_summary(rows)
+    assert summary['reach_target_epoch_p10'] == 10
     assert summary['reach_target_epoch_p50'] == 25
+    assert summary['reach_target_epoch_p90'] == 40
     assert summary['final_genesis_cumulative_ilc_p50'] == 250.0
 
 

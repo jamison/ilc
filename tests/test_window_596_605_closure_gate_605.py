@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 import os
 import subprocess
 from pathlib import Path
@@ -34,6 +35,17 @@ def _run_gate(args: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(['bash', str(GATE_PATH)] + args, capture_output=True, text=True, check=False)
 
 
+@contextmanager
+def _temporarily_replace(path: Path, old: str, new: str):
+    original = path.read_text(encoding='utf-8')
+    assert old in original
+    path.write_text(original.replace(old, new, 1), encoding='utf-8')
+    try:
+        yield
+    finally:
+        path.write_text(original, encoding='utf-8')
+
+
 def test_gate_categories_are_defined() -> None:
     text = GATE_PATH.read_text(encoding='utf-8')
     assert GATE_PATH.exists()
@@ -52,13 +64,27 @@ def test_gate_categories_are_defined() -> None:
     assert [line.strip() for line in dry_run.stdout.splitlines() if line.strip()] == EXPECTED_DRY_RUN_LINES
 
 
-def test_gate_rejects_prompt_count_only_file_count_only_or_synthesis_only_pass_conditions() -> None:
-    text = GATE_PATH.read_text(encoding='utf-8')
-    assert 'prompt counts' in text
-    assert 'file counts' in text
-    assert 'summary prose' in text
-    assert 'synthesis/coherence as substitute for' in text
-    assert 'remaining later-lane defers' in text
+def test_gate_fails_when_required_window_state_tokens_are_missing() -> None:
+    phase_604_path = Path('docs/specs/ilc_integration_coherence_report_604_v0.1.md')
+    with _temporarily_replace(
+        phase_604_path,
+        'phase_605_closure_gate_must_consume_phase_604_coherence_state',
+        'phase_605_gate_consumption_token_missing_broken',
+    ):
+        result = _run_gate([])
+    assert result.returncode != 0
+    assert 'phase_605_window_state=fail' in result.stdout
+    assert 'phase_605_window_state_details=phase_604_coherence_missing' in result.stdout
+
+    with _temporarily_replace(
+        HANDOFF_PATH,
+        'window_606_plus_or_next_approved_lane_is_next_authorized_strategic_boundary',
+        'window_606_lane_broken_token',
+    ):
+        result = _run_gate([])
+    assert result.returncode != 0
+    assert 'phase_605_window_state=fail' in result.stdout
+    assert 'phase_605_window_state_details=handoff_605_missing_or_incomplete' in result.stdout
 
 
 def test_full_run_passes_on_valid_state() -> None:
