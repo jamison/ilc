@@ -58,6 +58,17 @@ SECTION_FOUR_RULES = (
     'the actual capability-proof runtime lane and post-bootstrap non-privileged',
     'the Phase 605 closure gate and handoff',
 )
+CAPSULE_SECTION_THREE_RULES = (
+    'The 585-595 public and bounded-RC boundary stack remains frozen inherited',
+    'Phase 604 does not reopen the public boundary handoff from Phase 594',
+    'the bounded RC0.1 closure from Phase 595',
+)
+CAPSULE_SECTION_FOUR_RULES = (
+    'completion of the Phase 305 canonical output package',
+    'any Genesis economics runtime-alignment packet',
+    'any Genesis-only ECU realization-controller implementation packet',
+    'the actual capability-proof runtime lane and its reference-state details',
+)
 
 
 def _read(path: Path) -> str:
@@ -131,6 +142,14 @@ def test_capsule_v3_2_exists_and_references_phase_605_as_next_only() -> None:
     assert 'Window 596-605 is at coherence-report stage.' in text
     assert 'Phase 605 is the only next authorized closure step for Window 596-605.' in text
     assert 'Window 606+ is not authorized by capsule v3.2 by itself.' in text
+
+
+def test_capsule_v3_2_preserves_frozen_boundaries_and_remaining_defers() -> None:
+    text = _read(CAPSULE_PATH)
+    for item in CAPSULE_SECTION_THREE_RULES:
+        assert item in text
+    for item in CAPSULE_SECTION_FOUR_RULES:
+        assert item in text
 
 
 def test_main_commit_touches_exactly_report_capsule_and_test() -> None:
