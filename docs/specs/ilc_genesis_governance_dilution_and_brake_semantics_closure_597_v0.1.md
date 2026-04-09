@@ -105,10 +105,21 @@ Exact invocation bounds for the retained guardrail are:
 - scope-limited to proposed CDL / accepted ADR / canonical-boundary changes that
   would mutate constitutional law or the Genesis-rooted lineage surface,
 - never applicable to ordinary feature release, RC adoption, routine runtime
-  iteration, product packaging, or harness work,
+  iteration, product packaging, harness work, or CDL-045 operational emergency
+  response,
 - maximum one invocation per proposal identifier,
 - maximum suspension duration of one epoch per invocation,
 - maximum three total lifetime invocations before permanent extinction.
+
+Provenance note for these bounds:
+- the hard epoch ceiling narrows the whitepaper Bootstrap Phase rationale
+  (`Years 0-5`) into an explicit epoch-60 outer limit under the current monthly
+  epoch assumption,
+- the one-epoch suspensive limit and three-invocation lifetime cap are newly
+  ratified closure bounds in this phase rather than inherited constants from
+  ADR-0008 or CDL-V6,
+- CDL-V6 audit-trail and CDL-V4 post hoc review patterns remain the control
+  template for any invocation.
 
 Exact trigger and sunset rules are:
 - the guardrail may be invoked only when a pending constitutional change would
@@ -148,8 +159,9 @@ This packet closes the exact relationship as follows:
   to bootstrap privilege,
 - CDL-V6 remains extraordinary emergency intervention only and must not be
   laundered into ordinary governance weight,
-- the retained bootstrap constitutional veto remains distinct from CDL-V6 and
-  distinct from ordinary release-candidate or feature-adoption processes.
+- the retained bootstrap constitutional veto remains distinct from CDL-V6,
+  distinct from CDL-045 operational emergency response, and distinct from
+  ordinary release-candidate or feature-adoption processes.
 
 `phase_597_governance_closure_must_not_reopen_phase_590_fork_boundary`.
 
@@ -190,8 +202,9 @@ The following interpretations are forbidden:
 - treating any retained Genesis constitutional veto as informal founder
   override,
 - treating any retained Genesis constitutional veto as a veto over ordinary
-  feature release, RC adoption, or product/runtime iteration,
-- treating `CDL-V6` as ordinary governance weight,
+  feature release, RC adoption, product/runtime iteration, or CDL-045
+  operational emergency response,
+- treating `CDL-V6` or CDL-045 as ordinary governance weight,
 - treating poetic fade-away language as equivalent to explicit governance
   rules,
 - treating Genesis economic allocation as if it were an ordinary governance

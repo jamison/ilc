@@ -72,6 +72,8 @@ SECTION_FOUR_RULES = (
     'maximum one invocation per proposal identifier,',
     'maximum suspension duration of one epoch per invocation,',
     'maximum three total lifetime invocations before permanent extinction.',
+    'the hard epoch ceiling narrows the whitepaper Bootstrap Phase rationale',
+    'the one-epoch suspensive limit and three-invocation lifetime cap are newly',
     'the guardrail expires at the earliest of:',
     'epoch 60 from canonical Genesis activation,',
     'every invocation must produce a signed audit record,',
@@ -82,7 +84,7 @@ SECTION_FIVE_RULES = (
     'any retained Genesis constitutional veto is not ordinary governance weight and',
     'later governance must extend Genesis-rooted lineage without remaining captive',
     'CDL-V6 remains extraordinary emergency intervention only and must not be',
-    'the retained bootstrap constitutional veto remains distinct from CDL-V6 and',
+    'distinct from CDL-045 operational emergency response, and distinct from',
     'This phase does not reopen the Phase 590 fork consequence, the Genesis-rooted',
 )
 SECTION_SIX_RULES = (
@@ -97,7 +99,7 @@ FORBIDDEN_RULES = (
     '- treating Genesis bootstrap necessity as permanent governance floor,',
     '- treating any retained Genesis constitutional veto as informal founder',
     '- treating any retained Genesis constitutional veto as a veto over ordinary',
-    '- treating `CDL-V6` as ordinary governance weight,',
+    '- treating `CDL-V6` or CDL-045 as ordinary governance weight,',
     '- treating poetic fade-away language as equivalent to explicit governance',
     '- treating Genesis economic allocation as if it were an ordinary governance',
     '- reopening the Phase 590 fork-legitimacy consequence,',
