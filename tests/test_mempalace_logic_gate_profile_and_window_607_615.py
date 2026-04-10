@@ -79,6 +79,13 @@ def test_window_607_612_doc_exists_and_preserves_boundary_discipline() -> None:
     assert "public auditability is not identical to public identity exposure" in text
     assert "off-chain-first / later-chain direction" in text
     assert "current internal-ledger posture becoming the permanent final substrate" in text
+    assert "The ILC coin (ECU) is protocol-native." in text
+    assert "keep/defer/reject rationale" in text
+    assert "ilc_antigravity_context_capsule_v0.4.md" in text
+    assert "ilc_antigravity_context_capsule_v0.5.md" in text
+    assert "ilc_topological_exemption_boundary_and_public_tokenomics_statement_602_v0.1.md" in text
+    assert "ilc_genesis_accrual_governor_provenance_reconciliation_599_v0.1.md" in text
+    assert "ilc_deterministic_genesis_economics_evidence_and_parameter_closure_600_v0.1.md" in text
 
 
 def test_window_607_615_doc_is_retained_as_superseded_planning_lineage() -> None:
