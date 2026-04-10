@@ -8,11 +8,13 @@ Classification: operating guidance for internal retrieval usage
 
 - MemPalace retrieval is optional internal tooling.
 - Local MemPalace runtime currently requires Python 3.9-3.12 in a dedicated
-  local environment.
+  local environment installed from `docs/tools/mempalace/requirements-mempalace.txt`.
 - MemPalace retrieval never overrides ratified or accepted repo artifacts.
 - Retrieved material must be cited by source path before it is summarized.
 - Agents must verify against the authoritative tier before relying on a
   retrieved result.
+- Wrapper scripts remain the supported ILC workflow even if a local native
+  MemPalace plugin is available.
 - Agents must verify retrieved claims against the authoritative tier before
   turning them into strong conclusions.
 - If a retrieved result conflicts with current handoff, capsule, status, or
@@ -33,6 +35,10 @@ Classification: operating guidance for internal retrieval usage
 7. When a tier contains both broad planning packs and narrow target specs, use
    source-path filters to keep retrieval focused before reading the files
    directly.
+8. Treat `distance` as the underlying collection metric and `relevance_score` as
+   a bounded ranking aid only; do not restate either field as proof of truth.
+9. Tier D optional local-only history may be absent on a fresh clone; treat a
+   missing optional file warning as a corpus-hygiene signal, not as authority failure.
 
 ## 3. Prompt snippet
 

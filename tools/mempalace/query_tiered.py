@@ -20,6 +20,8 @@ room = sys.argv[4] or None
 n_results = int(sys.argv[5])
 client = chromadb.PersistentClient(path=palace_path)
 col = client.get_collection("mempalace_drawers")
+collection_metadata = getattr(col, "metadata", None) or {}
+distance_metric = collection_metadata.get("hnsw:space", "unknown")
 kwargs = {
     "query_texts": [query],
     "n_results": n_results,
@@ -39,13 +41,15 @@ payload = {
     "query": query,
     "wing": wing,
     "room": room,
+    "distance_metric": distance_metric,
     "results": [
         {
             "text": doc,
             "source_file": meta.get("source_file", "?"),
             "wing": meta.get("wing", "unknown"),
             "room": meta.get("room", "unknown"),
-            "similarity": round(1 - dist, 6),
+            "distance": round(float(dist), 6),
+            "relevance_score": round(1.0 / (1.0 + max(float(dist), 0.0)), 6),
         }
         for doc, meta, dist in zip(docs, metas, dists)
     ],
@@ -94,6 +98,8 @@ def render_text(payload: dict) -> str:
         lines.append(f'Tier: {payload["wing"]}')
     if payload.get("room"):
         lines.append(f'Room: {payload["room"]}')
+    if payload.get("distance_metric"):
+        lines.append(f'Distance metric: {payload["distance_metric"]}')
     if payload.get("source_filters"):
         lines.append(f'Source filters: {", ".join(payload["source_filters"])}')
     lines.append("")
@@ -103,7 +109,11 @@ def render_text(payload: dict) -> str:
         return "\n".join(lines)
     for idx, item in enumerate(results, start=1):
         lines.append(f'[{idx}] {item["source_file"]}')
-        lines.append(f'  wing={item["wing"]} room={item["room"]} similarity={item["similarity"]}')
+        lines.append(
+            '  '
+            f'wing={item["wing"]} room={item["room"]} '
+            f'distance={item["distance"]} relevance_score={item["relevance_score"]}'
+        )
         text = item["text"].strip().replace("\n", " ")
         lines.append(f'  text={text[:240]}')
         lines.append("")

@@ -62,12 +62,14 @@ def test_operational_spec_exists_and_contains_required_headings_and_tokens() -> 
         assert token in text
 
 
-def test_install_script_contains_supported_python_order_and_version_pin() -> None:
+def test_install_script_contains_supported_python_order_and_requirements_install() -> None:
     text = _read(INSTALL_SCRIPT)
     assert 'python3.12 python3.11 python3.10 python3.9' in text
-    assert 'MEMPALACE_VERSION="3.1.0"' in text
-    assert 'mempalace==${MEMPALACE_VERSION}' in text
-    assert 'chromadb==0.6.3' in text
+    assert 'requirements-mempalace.txt' in text
+    assert 'pip install -r "$REQS_PATH"' in text
+    reqs = _read(REQS_PATH)
+    assert 'mempalace==3.1.0' in reqs
+    assert 'chromadb==0.6.3' in reqs
 
 
 def test_stage_manifest_stages_files_and_writes_per_tier_config(tmp_path: Path) -> None:

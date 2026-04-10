@@ -77,9 +77,10 @@ def main() -> int:
     require_all(spec, SPEC_TOKENS, 'spec_token')
     require_all(audit, AUDIT_HEADINGS, 'audit_heading')
     assert 'python3.12' in install_script and 'python3.11' in install_script
-    assert 'MEMPALACE_VERSION="3.1.0"' in install_script
-    assert 'mempalace==${MEMPALACE_VERSION}' in install_script
+    assert 'requirements-mempalace.txt' in install_script
+    assert 'pip install -r "$REQS_PATH"' in install_script
     assert 'mempalace==3.1.0' in reqs
+    assert 'chromadb==0.6.3' in reqs
     assert 'Python 3.9-3.12' in guidelines
     assert 'render_retrieval_brief.py' in guidelines
     assert 'render_retrieval_brief.py' in readme
