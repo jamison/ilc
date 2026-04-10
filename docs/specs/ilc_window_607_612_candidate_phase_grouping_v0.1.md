@@ -46,7 +46,10 @@ The current inherited baseline is:
 
 Supporting historical/planning context for this lane includes:
 - `whitepaper/2025_12_03_ILC_whitepaper_v5_2.md`
+- `docs/specs/ilc_antigravity_context_capsule_v0.4.md`
+- `docs/specs/ilc_antigravity_context_capsule_v0.5.md`
 - `docs/specs/ilc_economic_architecture_comprehensive_v0.1.md`
+- `docs/specs/ilc_topological_exemption_boundary_and_public_tokenomics_statement_602_v0.1.md`
 - `docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md`
 - `docs/specs/ilc_claude_extraction_brief_v0.1.md`
 
@@ -258,6 +261,10 @@ Deliverables:
 Required content spec:
 - classify June 2025, December 2025, February 2026, and current runtime
   sources separately
+- explicitly classify capsule `v0.4` / `v0.5` anti-blockchain wording as
+  historical drift-carrier language rather than silently inherited closure
+- explicitly classify Phase 602 public tokenomics language as a bounded
+  current public-claims surface rather than final substrate closure
 - do not let historical chats outrank current canon
 
 Test structure:
@@ -278,6 +285,10 @@ Deliverables:
 Required content spec:
 - current runtime is not allowed to settle the forever substrate by implication
 - public auditability and public identity exposure must be treated separately
+- the wording inconsistency in
+  `docs/specs/ilc_wallet_agnostic_signing_strategy_codex_handoff_v0.1.md`
+  (`The ILC coin (ECU) is protocol-native.`) must be treated as a known
+  reconciliation target rather than stable authority
 
 Test structure:
 - reconciliation token checks
@@ -297,6 +308,7 @@ Deliverables:
 Required content spec:
 - evaluate at minimum internal-ledger-final, custom minimal L1, rollup/L2, and
   deferred-substrate ledger-interface paths
+- require each option to include an explicit keep/defer/reject rationale
 - no implementation work or wallet widening
 
 Test structure:
@@ -443,6 +455,11 @@ But retrieved material must pass through:
 - `docs/specs/ilc_wallet_agnostic_signing_strategy_codex_handoff_v0.1.md`
 - `docs/specs/ilc_rc0_1_settlement_wallet_boundary_lock_576_v0.1.md`
 - `docs/specs/ilc_rc0_1_ecu_settlement_wallet_query_integration_581_v0.1.md`
+- `docs/specs/ilc_genesis_accrual_governor_provenance_reconciliation_599_v0.1.md`
+- `docs/specs/ilc_deterministic_genesis_economics_evidence_and_parameter_closure_600_v0.1.md`
+- `docs/specs/ilc_topological_exemption_boundary_and_public_tokenomics_statement_602_v0.1.md`
+- `docs/specs/ilc_antigravity_context_capsule_v0.4.md`
+- `docs/specs/ilc_antigravity_context_capsule_v0.5.md`
 - `docs/adr/ADR_0013_External_Payment_Boundary_and_Third_Party_Independence.md`
 - `docs/adr/ADR_0026_Protocol_vs_Harness_Product_Boundary.md`
 - `whitepaper/2025_12_03_ILC_whitepaper_v5_2.md`
