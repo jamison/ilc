@@ -3,7 +3,9 @@
 **Author:** Codex (GPT-5) - local implementation reviewer
 **Date:** 2026-04-10
 **Baseline:** Window 596-605 CLOSED (`phase_605_verdict=pass`), Phase 606 MemPalace retrieval-only boundary landed, capsule `v3.2` active.
-**Planning note:** This is a candidate grouping, not a locked sequence. Phases 607-615 are the proposed single-window lane. No inbound payment runtime or wallet-authority widening is pre-authorized in this packet.
+**Planning note:** This is a superseded candidate grouping draft. The targeted reconciliation-first lane in `docs/specs/ilc_window_607_612_candidate_phase_grouping_v0.1.md` now takes precedence before any broader 607+ continuation map may be resumed.
+
+**Supersession note:** Keep this file only as planning lineage. Do not use it as the current active window guide unless the settlement-substrate reconciliation lane explicitly re-authorizes a broader continuation window.
 
 ## 1. Window identity and scope
 
