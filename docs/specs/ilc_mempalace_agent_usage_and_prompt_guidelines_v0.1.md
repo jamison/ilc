@@ -39,6 +39,9 @@ Classification: operating guidance for internal retrieval usage
    a bounded ranking aid only; do not restate either field as proof of truth.
 9. Tier D optional local-only history may be absent on a fresh clone; treat a
    missing optional file warning as a corpus-hygiene signal, not as authority failure.
+10. Apply the reviewer gate profile in
+    `docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0.1.md` before
+    turning retrieval output into planning, boundary, or implementation claims.
 
 ## 3. Prompt snippet
 
@@ -76,3 +79,23 @@ Do not use MemPalace retrieval alone to:
 - override the approved context pack,
 - or answer a public FAQ/oracle query from historical or draft corpora without
   explicit labeling.
+
+## 6. Reviewer gate profile
+
+The standard post-retrieval filter is:
+- `G1` highest relevant authority tier
+- `G2` direct-read confirmation
+- `G3` source-status classification
+- `G4` current-frontier alignment
+- `G5` boundary-impact check
+- `G6` contradiction check
+- `G7` implementation-evidence check
+- `G8` carry-forward state check
+- `G9` historical-label discipline
+- `G10` routing discipline
+
+This profile is defined in:
+- `docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0.1.md`
+
+The gate profile is a retrieval-use filter. It is not a scoring model and does
+not replace direct source review.

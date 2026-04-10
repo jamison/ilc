@@ -11,6 +11,18 @@ DEFAULT_MANIFEST = Path("docs/tools/mempalace/ilc_mempalace_corpus_manifest_v0.1
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BACKTICK_RE = re.compile(r"`([^`]+)`")
 PHASE_PREFIX_RE = re.compile(r"^Phase\s+\d+(?:-G\d+)?(?:\s+Fix\s+\d+)?[:\-]?\s*", re.IGNORECASE)
+LOGIC_GATES = (
+    ("G1", "Start from the highest relevant authority tier before descending."),
+    ("G2", "Read retrieved files directly before relying on them."),
+    ("G3", "Classify each source as canonical, planning, evidence, or historical."),
+    ("G4", "Check alignment with the current capsule, handoff, and STATUS frontier."),
+    ("G5", "Treat any wallet/payment/runtime boundary implication as a direct-read stop sign."),
+    ("G6", "If higher-authority sources conflict, the higher-authority source wins."),
+    ("G7", "Require execution evidence before treating runtime claims as settled."),
+    ("G8", "Confirm whether an item is closed, carried forward, or still deferred."),
+    ("G9", "Label planning or historical material as non-canonical provenance support."),
+    ("G10", "Route boundary changes to the right governance/planning lane instead of smuggling them in."),
+)
 
 
 def load_manifest(path: Path) -> dict:
@@ -88,6 +100,14 @@ def render_brief(doc_path: Path, manifest: dict, repo_root: Path) -> str:
             lines.append(f"- `{query}`")
     else:
         lines.append("- No query suggestions generated.")
+
+    lines.extend(["", "## Reviewer logic gates"])
+    lines.append(
+        "- Apply `docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0.1.md`"
+        " before elevating retrieval output into planning or boundary claims."
+    )
+    for gate, text in LOGIC_GATES:
+        lines.append(f"- `{gate}` - {text}")
 
     lines.extend([
         "",
