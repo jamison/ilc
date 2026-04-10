@@ -186,6 +186,9 @@ Optional MemPalace retrieval appendix:
 - guidance authors may add an optional MemPalace retrieval appendix or
   subsection that lists tier-scoped retrieval queries and rendered retrieval
   brief paths used during drafting
+- if used, the appendix should also name the logic-gate profile
+  `docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0.1.md` and state
+  that retrieved material passed through those gates before being reused
 - this appendix is advisory only and must not replace canonical anchors or
   direct repo reads
 - if present, it should appear after the canonical anchors section or inside
