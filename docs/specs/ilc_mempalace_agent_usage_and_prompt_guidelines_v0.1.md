@@ -7,6 +7,8 @@ Classification: operating guidance for internal retrieval usage
 ## 1. Operating rules
 
 - MemPalace retrieval is optional internal tooling.
+- Local MemPalace runtime currently requires Python 3.9-3.12 in a dedicated
+  local environment.
 - MemPalace retrieval never overrides ratified or accepted repo artifacts.
 - Retrieved material must be cited by source path before it is summarized.
 - Agents must verify against the authoritative tier before relying on a
@@ -26,6 +28,11 @@ Classification: operating guidance for internal retrieval usage
 5. If the answer would affect protocol scope, wallet/payment authority, or
    release posture, verify against current handoff/boundary docs before using
    the result.
+6. Use the staged tiered corpus build as the supported ILC workflow when
+   authority separation matters.
+7. When a tier contains both broad planning packs and narrow target specs, use
+   source-path filters to keep retrieval focused before reading the files
+   directly.
 
 ## 3. Prompt snippet
 
@@ -37,6 +44,9 @@ Use this bounded snippet in future prompts when MemPalace retrieval is allowed:
 > highest relevant authority tier before making a strong claim. Historical or
 > draft retrieval results must be labeled as non-canonical provenance support.
 > Prompts must not treat retrieval results as canon without source checking.
+> Operators may render a retrieval brief with
+> `tools/mempalace/render_retrieval_brief.py`, but final drafting decisions
+> still require direct repo reads.
 
 ## 4. Maintenance triggers
 
@@ -44,6 +54,7 @@ Refresh or re-mine the internal MemPalace corpus after:
 - a new closure gate or handoff lands,
 - a new context capsule supersedes the prior capsule,
 - a new approved planning pack or adoption packet lands,
+- the staged tiered corpus manifest changes,
 - a migration/recovery event changes where session history or context artifacts
   live,
 - or a major window closes and the authoritative frontier moves.

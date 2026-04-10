@@ -182,6 +182,15 @@ Should include (if applicable this window):
 Always close with:
 - "For closure gate (Phase MMM): all Phase NNN–MMM-1 test files and artifacts."
 
+Optional MemPalace retrieval appendix:
+- guidance authors may add an optional MemPalace retrieval appendix or
+  subsection that lists tier-scoped retrieval queries and rendered retrieval
+  brief paths used during drafting
+- this appendix is advisory only and must not replace canonical anchors or
+  direct repo reads
+- if present, it should appear after the canonical anchors section or inside
+  the known-patterns section as drafting support only
+
 ---
 
 ## 9. Evolution notes
