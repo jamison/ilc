@@ -24,19 +24,29 @@ def extract_repo_paths(text: str, repo_root: Path) -> list[str]:
         candidate = match.strip()
         if not candidate:
             continue
-        if candidate.startswith(("docs/", "tools/", "tests/", "ilc_core/", "out/")):
-            normalized = str(Path(candidate).as_posix())
-            resolved = repo_root / normalized
-            if resolved.is_file() and normalized not in seen:
-                seen.add(normalized)
-                paths.append(normalized)
+        if "://" in candidate or candidate.startswith("/"):
+            continue
+        if "/" not in candidate:
+            continue
+        normalized = str(Path(candidate).as_posix())
+        resolved = (repo_root / normalized).resolve()
+        try:
+            resolved.relative_to(repo_root.resolve())
+        except ValueError:
+            continue
+        if resolved.is_file() and normalized not in seen:
+            seen.add(normalized)
+            paths.append(normalized)
     return paths
 
 
 def classify_path_tier(path: str, manifest: dict) -> str | None:
     for tier_name, tier in manifest["tiers"].items():
-        if path in tier.get("include", []):
-            return tier_name
+        for entry in tier.get("include", []):
+            if isinstance(entry, str) and path == entry:
+                return tier_name
+            if isinstance(entry, dict) and path == entry.get("path"):
+                return tier_name
     return None
 
 

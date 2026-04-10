@@ -3,12 +3,12 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 VENV_PATH="${ROOT_DIR}/out/mempalace_runtime"
-MEMPALACE_VERSION="3.1.0"
+REQS_PATH="${ROOT_DIR}/docs/tools/mempalace/requirements-mempalace.txt"
 PYTHON_OVERRIDE="${ILC_MEMPALACE_PYTHON:-}"
 
 usage() {
   cat <<USAGE
-Usage: $0 [--venv PATH] [--python PATH] [--version X.Y.Z]
+Usage: $0 [--venv PATH] [--python PATH] [--requirements PATH]
 
 Create or refresh a dedicated local MemPalace virtualenv.
 Supported Python versions: 3.9-3.12.
@@ -25,8 +25,8 @@ while [[ $# -gt 0 ]]; do
       PYTHON_OVERRIDE="$2"
       shift 2
       ;;
-    --version)
-      MEMPALACE_VERSION="$2"
+    --requirements)
+      REQS_PATH="$2"
       shift 2
       ;;
     -h|--help)
@@ -72,13 +72,14 @@ choose_python() {
 }
 
 PYTHON_BIN="$(choose_python)"
+if [[ ! -f "$REQS_PATH" ]]; then
+  echo "missing_requirements_file:$REQS_PATH" >&2
+  exit 1
+fi
 mkdir -p "$(dirname "$VENV_PATH")"
 rm -rf "$VENV_PATH"
 "$PYTHON_BIN" -m venv "$VENV_PATH"
 PATH="$VENV_PATH/bin:$PATH" python -m pip install --upgrade pip >/dev/null
-PATH="$VENV_PATH/bin:$PATH" python -m pip install "mempalace==${MEMPALACE_VERSION}" >/dev/null
-# Reinstall top-level wheels explicitly so entry points are present even when
-# the first dependency-heavy install path completes without exposing them.
-PATH="$VENV_PATH/bin:$PATH" python -m pip install --no-deps "chromadb==0.6.3" "mempalace==${MEMPALACE_VERSION}" >/dev/null
+PATH="$VENV_PATH/bin:$PATH" python -m pip install -r "$REQS_PATH" >/dev/null
 "$VENV_PATH/bin/mempalace" --help >/dev/null
-printf 'mempalace_env_ready\npython=%s\nvenv=%s\nversion=%s\n' "$PYTHON_BIN" "$VENV_PATH" "$MEMPALACE_VERSION"
+printf 'mempalace_env_ready\npython=%s\nvenv=%s\nrequirements=%s\n' "$PYTHON_BIN" "$VENV_PATH" "$REQS_PATH"
