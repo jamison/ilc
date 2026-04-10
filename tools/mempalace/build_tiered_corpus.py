@@ -19,6 +19,20 @@ def load_manifest(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def normalize_include_entry(tier_name: str, entry: str | dict) -> tuple[str, bool]:
+    if isinstance(entry, str):
+        return entry, False
+    if isinstance(entry, dict):
+        if "path" not in entry:
+            raise ValueError(f"invalid_manifest_include:{tier_name}:missing_path")
+        path = entry["path"]
+        optional = bool(entry.get("optional", False))
+        if not isinstance(path, str) or not path.strip():
+            raise ValueError(f"invalid_manifest_include:{tier_name}:bad_path")
+        return path, optional
+    raise ValueError(f"invalid_manifest_include:{tier_name}:unsupported_entry_type")
+
+
 def _safe_remove(path: Path) -> None:
     if path.exists() or path.is_symlink():
         if path.is_dir() and not path.is_symlink():
@@ -53,13 +67,20 @@ def stage_manifest(
 
     for tier_name in selected:
         tier = manifest["tiers"][tier_name]
+        if "include" not in tier:
+            raise ValueError(f"tier_missing_include:{tier_name}")
         tier_dir = staged_root / tier_name
         tier_dir.mkdir(parents=True, exist_ok=True)
         write_tier_config(tier_dir, tier_name)
         staged_files: list[str] = []
-        for rel in tier.get("include", []):
+        warnings: list[str] = []
+        for entry in tier["include"]:
+            rel, optional = normalize_include_entry(tier_name, entry)
             src = (repo_root / rel).resolve()
             if not src.exists():
+                if optional:
+                    warnings.append(f"missing_optional_manifest_source:{rel}")
+                    continue
                 raise FileNotFoundError(f"missing_manifest_source:{rel}")
             dst = tier_dir / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -73,6 +94,7 @@ def stage_manifest(
             "tier_dir": str(tier_dir),
             "file_count": len(staged_files),
             "staged_files": staged_files,
+            "warnings": warnings,
         }
     return summary
 
