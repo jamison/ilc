@@ -130,7 +130,7 @@ reconciliation execution lock may pass:
 
 | Phase | Description | Primary output | Sensitive? |
 |---|---|---|---|
-| 607 | Window 607-612 sequence lock and issue framing | `ilc_phase_607_612_sequence_lock_v0.1.md` | No |
+| 607 | Window 607-612 sequence lock and issue framing | `ilc_phase_607_612_sequence_lock_v0.1.md` | YES |
 | 608 | Historical lineage and authority audit | historical lineage audit artifact | No |
 | 609 | ECU / ILC / runtime-boundary reconciliation | reconciliation memo | No |
 | 610 | Public-ledger substrate options and rejection matrix | substrate options matrix | No |
