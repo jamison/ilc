@@ -251,13 +251,13 @@ def _run_probe(probe: Probe) -> bool:
     finally:
         try:
             probe.path.write_text(original, encoding="utf-8")
-            os.utime(probe.path, ns=original_times_ns)
             subprocess.run(
-                ["git", "update-index", "--refresh", "--", str(probe.path)],
+                ["git", "checkout", "HEAD", "--", str(probe.path)],
                 check=False,
                 capture_output=True,
                 text=True,
             )
+            os.utime(probe.path, ns=original_times_ns)
             restored = True
         finally:
             if not restored:

@@ -466,18 +466,7 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
     }
 
 
-def export_wallet_state(
-    *,
-    scenario_root: Path,
-    output_root: Path,
-    balances: dict[str, float],
-    settlement_manifest: dict[str, Any],
-) -> dict[str, Any]:
-    claims_payload = _load_json(scenario_root / "panel" / "ecu_claims.json")
-    claims = claims_payload.get("claims")
-    if not isinstance(claims, list):
-        raise EconomicCycleRuntimeError("wallet_claims_missing")
-
+def _aggregate_claim_totals(claims: list[Any]) -> dict[str, dict[str, Any]]:
     claim_totals: dict[str, dict[str, Any]] = {}
     for claim in claims:
         if not isinstance(claim, dict):
@@ -491,7 +480,22 @@ def export_wallet_state(
         claim_kind = claim.get("claim_kind")
         if isinstance(claim_kind, str):
             row["claim_kinds"].append(claim_kind)
+    return claim_totals
 
+
+def export_wallet_state(
+    *,
+    scenario_root: Path,
+    output_root: Path,
+    balances: dict[str, float],
+    settlement_manifest: dict[str, Any],
+) -> dict[str, Any]:
+    claims_payload = _load_json(scenario_root / "panel" / "ecu_claims.json")
+    claims = claims_payload.get("claims")
+    if not isinstance(claims, list):
+        raise EconomicCycleRuntimeError("wallet_claims_missing")
+
+    claim_totals = _aggregate_claim_totals(claims)
     participants = _participant_profiles(scenario_root)
     wallet_agent_ids = sorted(set(participants.keys()) | set(balances.keys()) | set(claim_totals.keys()))
     wallet_store_root = output_root / "wallet-store"
