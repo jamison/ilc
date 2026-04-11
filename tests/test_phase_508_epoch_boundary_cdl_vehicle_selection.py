@@ -97,7 +97,7 @@ def test_live_decision_log_preserves_required_rows_and_absences() -> None:
 
 
 def test_head_commit_touches_no_runtime_files() -> None:
-    assert_head_commit_touched_no_runtime_files(commit_ref="HEAD")
+    assert_head_commit_touched_no_runtime_files(commit_ref=_resolve_phase_508_commit_ref())
 
 
 def test_phase_508_main_commit_touches_expected_paths_only() -> None:

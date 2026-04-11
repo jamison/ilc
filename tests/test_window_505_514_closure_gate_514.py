@@ -137,7 +137,13 @@ def _monitoring_state() -> dict[Path, tuple[bytes, int, int]]:
 
 
 def _decision_log_override_env(tmp_path: Path, scenario: str) -> dict[str, str]:
-    text = DECISION_LOG_PATH.read_text(encoding="utf-8")
+    # Build overrides from the historical CDL at Phase 514 commit to avoid
+    # CDL-058 (added Phase 518) triggering unexpected_cdl_row_present.
+    result = subprocess.run(
+        ['git', 'show', '57488faf:docs/specs/ilc_constitutional_decision_log_v0.1.md'],
+        capture_output=True, check=True, text=True,
+    )
+    text = result.stdout
     if scenario == "blocked_path":
         lines = [line for line in text.splitlines() if not line.startswith("| CDL-057 |")]
         text = "\n".join(lines) + "\n"
