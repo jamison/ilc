@@ -86,7 +86,10 @@ def test_opening_stub_has_required_headings() -> None:
 
 
 def test_live_decision_log_contains_open_cdl_055_row() -> None:
-    rows = parse_decision_register_rows(_read(DECISION_LOG_PATH))
+    # CDL-055 was ratified in Phase 496; read historical state at the Phase 492
+    # opening commit to preserve the invariant that CDL-055 opened at Phase 492.
+    commit_ref = _resolve_phase_492_commit_ref()
+    rows = parse_decision_register_rows(_commit_text(str(DECISION_LOG_PATH), commit_ref))
     assert rows['CDL-055']['status'] == 'open'
 
 

@@ -65,6 +65,14 @@ class TransportRuntimeConfig:
     request_timeout_seconds: float = 2.0
 
 
+def _encode_gossip_payload(payload: bytes | str) -> bytes:
+    if isinstance(payload, str):
+        return payload.encode("utf-8")
+    if isinstance(payload, bytes):
+        return payload
+    raise ValueError("gossip_payload_must_be_bytes_or_string")
+
+
 class HttpGossipTransportRuntime:
     """Minimal real-HTTP wrapper around the ratified envelope helpers."""
 
@@ -329,12 +337,7 @@ class HttpGossipTransportRuntime:
             signature=signature,
             content_type=content_type,
         )
-        if isinstance(payload, str):
-            request_body = payload.encode("utf-8")
-        elif isinstance(payload, bytes):
-            request_body = payload
-        else:
-            raise ValueError("gossip_payload_must_be_bytes_or_string")
+        request_body = _encode_gossip_payload(payload)
 
         request = urllib.request.Request(
             url=f"{normalized_endpoint}{request_path}",
