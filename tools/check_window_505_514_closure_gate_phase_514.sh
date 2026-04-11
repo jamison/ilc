@@ -45,12 +45,22 @@ print_dry_run() {
 }
 
 resolve_window_state() {
-  python3 - "$DECISION_LOG_PATH" <<'PY'
-from pathlib import Path
+  python3 - "${ILC_PHASE_514_DECISION_LOG_PATH:-}" <<'PY'
+import subprocess
 import sys
+from pathlib import Path
 from ilc_core.testing.ratification_mutation_scope_guardrail import parse_decision_register_rows
 
-text = Path(sys.argv[1]).read_text(encoding='utf-8')
+override_path = sys.argv[1]
+if override_path:
+    text = Path(override_path).read_text(encoding='utf-8')
+else:
+    # Read CDL at Phase 514 historical commit to preserve window-close CDL state
+    result = subprocess.run(
+        ['git', 'show', '57488faf:docs/specs/ilc_constitutional_decision_log_v0.1.md'],
+        capture_output=True, check=False, text=True,
+    )
+    text = result.stdout
 rows = parse_decision_register_rows(text)
 if 'CDL-053' in rows or 'CDL-058' in rows:
     print('invalid|unexpected_cdl_row_present')

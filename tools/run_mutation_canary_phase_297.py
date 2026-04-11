@@ -274,12 +274,29 @@ def _run_dry() -> int:
     return 0
 
 
+def _reset_all_probe_targets() -> None:
+    """Hard-reset all probe target files to HEAD after the run completes."""
+    seen: set[Path] = set()
+    for probe in PROBES:
+        if probe.path not in seen:
+            seen.add(probe.path)
+            subprocess.run(
+                ["git", "checkout", "HEAD", "--", str(probe.path)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+
 def _run_full() -> int:
     print("Running mutation canary probes")
     results: list[bool] = []
-    for idx, probe in enumerate(PROBES, start=1):
-        print(f"[{idx}/{len(PROBES)}] {probe.name}")
-        results.append(_run_probe(probe))
+    try:
+        for idx, probe in enumerate(PROBES, start=1):
+            print(f"[{idx}/{len(PROBES)}] {probe.name}")
+            results.append(_run_probe(probe))
+    finally:
+        _reset_all_probe_targets()
 
     if all(results):
         print("PASS: all mutation canary probes were killed by target tests")

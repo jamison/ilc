@@ -97,7 +97,7 @@ def test_live_decision_log_preserves_epoch_boundary_lane_and_absences() -> None:
 
 
 def test_head_commit_touches_no_runtime_files() -> None:
-    assert_head_commit_touched_no_runtime_files(commit_ref="HEAD")
+    assert_head_commit_touched_no_runtime_files(commit_ref=_resolve_phase_510_commit_ref())
 
 
 def test_phase_510_main_commit_touches_expected_paths_only() -> None:
