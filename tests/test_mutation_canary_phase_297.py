@@ -35,9 +35,15 @@ def test_dry_run_contract_and_probe_order() -> None:
     lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
     assert any("Dry run: mutation canary probe plan" in line for line in lines)
     expected = [
-        "[1/3] lineage_rotated_authority_guard",
-        "[2/3] compromise_containment_sequence_order_guard",
-        "[3/3] non_target_phase_stamp_poisoning_guard",
+        "[1/9] lineage_rotated_authority_guard",
+        "[2/9] compromise_containment_sequence_order_guard",
+        "[3/9] non_target_phase_stamp_poisoning_guard",
+        "[4/9] centrality_delta_gossip_version_guard",
+        "[5/9] centrality_delta_gossip_d2d_dependency_guard",
+        "[6/9] gossip_transport_cdl_039_forbidden_key_guard",
+        "[7/9] gossip_transport_version_guard",
+        "[8/9] gossip_transport_cdl_061_dep_guard",
+        "[9/9] http_gossip_transport_runtime_version_guard",
     ]
     for token in expected:
         assert token in lines
@@ -52,9 +58,18 @@ def test_unknown_arg_returns_exit_2() -> None:
 def test_full_run_kills_all_required_mutants() -> None:
     result = _run([])
     assert result.returncode == 0
-    assert "[lineage_rotated_authority_guard] MUTATION_KILLED" in result.stdout
-    assert "[compromise_containment_sequence_order_guard] MUTATION_KILLED" in result.stdout
-    assert "[non_target_phase_stamp_poisoning_guard] MUTATION_KILLED" in result.stdout
+    for probe_name in (
+        "lineage_rotated_authority_guard",
+        "compromise_containment_sequence_order_guard",
+        "non_target_phase_stamp_poisoning_guard",
+        "centrality_delta_gossip_version_guard",
+        "centrality_delta_gossip_d2d_dependency_guard",
+        "gossip_transport_cdl_039_forbidden_key_guard",
+        "gossip_transport_version_guard",
+        "gossip_transport_cdl_061_dep_guard",
+        "http_gossip_transport_runtime_version_guard",
+    ):
+        assert f"[{probe_name}] MUTATION_KILLED" in result.stdout
     assert "PASS: all mutation canary probes were killed by target tests" in result.stdout
 
 
