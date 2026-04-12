@@ -222,6 +222,16 @@ PROBES = (
 )
 
 
+def _invalidate_pyc(path: Path) -> None:
+    """Remove the .pyc for path so Python recompiles from the current source."""
+    import importlib.util
+    cache = importlib.util.cache_from_source(str(path))
+    try:
+        Path(cache).unlink()
+    except FileNotFoundError:
+        pass
+
+
 def _run_probe(probe: Probe) -> bool:
     original = probe.path.read_text(encoding="utf-8")
     original_stat = probe.path.stat()
@@ -238,6 +248,7 @@ def _run_probe(probe: Probe) -> bool:
     restored = False
     try:
         probe.path.write_text(mutated, encoding="utf-8")
+        _invalidate_pyc(probe.path)
         result = subprocess.run(
             list(probe.command),
             check=False,
@@ -257,6 +268,7 @@ def _run_probe(probe: Probe) -> bool:
                 capture_output=True,
                 text=True,
             )
+            _invalidate_pyc(probe.path)
             os.utime(probe.path, ns=original_times_ns)
             restored = True
         finally:
@@ -274,39 +286,45 @@ def _run_dry() -> int:
     return 0
 
 
-def _reset_all_probe_targets() -> None:
-    """Hard-reset all probe target files to HEAD after the run completes."""
+def _reset_all_probe_targets(original_times: dict[Path, tuple[int, int]]) -> None:
+    """Hard-reset all probe target files to HEAD and restore original mtimes."""
     seen: set[Path] = set()
     for probe in PROBES:
         if probe.path not in seen:
             seen.add(probe.path)
-            try:
-                stat = probe.path.stat()
-                times_ns = (stat.st_atime_ns, stat.st_mtime_ns)
-            except OSError:
-                times_ns = None
             subprocess.run(
                 ["git", "checkout", "HEAD", "--", str(probe.path)],
                 check=False,
                 capture_output=True,
                 text=True,
             )
-            if times_ns is not None:
+            _invalidate_pyc(probe.path)
+            if probe.path in original_times:
                 try:
-                    os.utime(probe.path, ns=times_ns)
+                    os.utime(probe.path, ns=original_times[probe.path])
                 except OSError:
                     pass
 
 
 def _run_full() -> int:
     print("Running mutation canary probes")
+    original_times: dict[Path, tuple[int, int]] = {}
+    seen: set[Path] = set()
+    for probe in PROBES:
+        if probe.path not in seen:
+            seen.add(probe.path)
+            try:
+                st = probe.path.stat()
+                original_times[probe.path] = (st.st_atime_ns, st.st_mtime_ns)
+            except OSError:
+                pass
     results: list[bool] = []
     try:
         for idx, probe in enumerate(PROBES, start=1):
             print(f"[{idx}/{len(PROBES)}] {probe.name}")
             results.append(_run_probe(probe))
     finally:
-        _reset_all_probe_targets()
+        _reset_all_probe_targets(original_times)
 
     if all(results):
         print("PASS: all mutation canary probes were killed by target tests")
