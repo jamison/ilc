@@ -9,6 +9,7 @@ import sys
 import types
 from pathlib import Path
 
+import ilc_core.network.peer as peer_runtime
 import requests
 
 from ilc_core.network.peer import PeerManager
@@ -138,8 +139,6 @@ def test_peer_broadcast_returns_zero_result_with_no_peers() -> None:
 
 
 def test_peer_broadcast_records_success_and_failure_logs(monkeypatch, caplog) -> None:
-    import ilc_core.network.peer as peer_runtime
-
     monkeypatch.setattr(peer_runtime.random, "sample", lambda population, k: sorted(population)[:k])
     caplog.set_level(logging.INFO)
 
@@ -163,8 +162,6 @@ def test_peer_broadcast_records_success_and_failure_logs(monkeypatch, caplog) ->
 
 
 def test_peer_broadcast_normalizes_paths_and_keeps_http_boundary_local(monkeypatch, caplog) -> None:
-    import ilc_core.network.peer as peer_runtime
-
     observed: list[tuple[str, float]] = []
 
     def _raising_sender(url: str, payload: dict[str, object], timeout_s: float) -> _Response:
