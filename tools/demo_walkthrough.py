@@ -1,9 +1,10 @@
 # tools/demo_walkthrough.py
-import subprocess
-import time
-import requests
-import sys
 import os
+import subprocess
+import sys
+import time
+
+import requests
 
 def run_demo():
     print("--- 🚀 STARTING ILC GENESIS DEMO ---")
@@ -17,11 +18,12 @@ def run_demo():
     print(f"Launching node from: {run_node_path}")
     
     process = subprocess.Popen(
-        [sys.executable, run_node_path], 
-        stdout=subprocess.PIPE, 
+        [sys.executable, run_node_path],
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
-        cwd=root_dir # Ensure CWD is root so imports work
+        cwd=root_dir,  # Ensure CWD is root so imports work
+        start_new_session=True,  # new process group so we can kill all children
     )
     
     print("Waiting for node to boot...")
@@ -73,13 +75,19 @@ def run_demo():
         # Safest is just to terminate and print what we can.
     finally:
         print("\nShutting down daemon...")
-        process.terminate()
+        try:
+            os.killpg(os.getpgid(process.pid), 15)  # SIGTERM entire process group
+        except (ProcessLookupError, PermissionError):
+            process.terminate()
         try:
             outs, errs = process.communicate(timeout=5)
             if outs: print(f"Daemon Stdout:\n{outs}")
             if errs: print(f"Daemon Stderr:\n{errs}")
         except subprocess.TimeoutExpired:
-            process.kill()
+            try:
+                os.killpg(os.getpgid(process.pid), 9)  # SIGKILL entire process group
+            except (ProcessLookupError, PermissionError):
+                process.kill()
             print("Daemon killed (timeout).")
 
 if __name__ == "__main__":
