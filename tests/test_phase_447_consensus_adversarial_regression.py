@@ -189,7 +189,7 @@ def test_adversarial_duplicate_block_hash_vote_injection() -> None:
     epoch_state["quorum_record_digests"] = [
         record_b["record_digest"],
         record_a["record_digest"],
-        record_a["record_digest"],
+        record_a["record_digest"],  # intentional duplicate: tests deduplication
     ]
     generated_state = generate_epoch_state_record(epoch_state)
 

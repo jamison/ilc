@@ -134,7 +134,7 @@ def test_epoch_rollover_behaves_per_selected_accumulation_model() -> None:
 def test_epoch_rollover_caps_committed_centrality_at_one() -> None:
     state: dict[str, object] = {}
     runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
-    runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
+    runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)  # second call tests cap behavior
     committed = runtime.commit_epoch_buffer(1, state)
 
     if runtime.ACCUMULATION_MODEL == 'write_through':

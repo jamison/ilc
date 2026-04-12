@@ -118,7 +118,7 @@ def load_genesis_import_reference(reference_path: str | Path) -> dict[str, str]:
     raw = _load_json_object(
         path,
         'genesis_import_reference_invalid',
-        'genesis_import_reference_invalid',
+        'genesis_import_reference_invalid'
     )
     base_dir = path.parent
     try:

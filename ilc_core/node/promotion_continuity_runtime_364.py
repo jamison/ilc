@@ -209,7 +209,7 @@ def _normalize_promotion_receipt(raw_receipt: Any) -> dict[str, Any]:
     if not isinstance(raw_receipt, dict):
         raise PromotionContinuityRuntimeError(
             "promotion_receipt_not_object",
-            "promotion_receipt_not_object",
+            "promotion_receipt_not_object"
         )
 
     observed_fields = set(raw_receipt.keys())
@@ -223,17 +223,17 @@ def _normalize_promotion_receipt(raw_receipt: Any) -> dict[str, Any]:
     original_node_cid = _validate_non_empty_string(
         raw_receipt.get("original_node_cid"),
         "promotion_receipt_original_node_cid_missing",
-        "promotion_receipt_original_node_cid_missing",
+        "promotion_receipt_original_node_cid_missing"
     )
     public_successor_node_cid = _validate_non_empty_string(
         raw_receipt.get("public_successor_node_cid"),
         "promotion_receipt_successor_node_cid_missing",
-        "promotion_receipt_successor_node_cid_missing",
+        "promotion_receipt_successor_node_cid_missing"
     )
     disclosed_lineage_reference = _validate_non_empty_string(
         raw_receipt.get("disclosed_lineage_reference"),
         "promotion_receipt_lineage_reference_missing",
-        "promotion_receipt_lineage_reference_missing",
+        "promotion_receipt_lineage_reference_missing"
     )
 
     promotion_epoch = raw_receipt.get("promotion_epoch")
@@ -348,17 +348,17 @@ def verify_promotion_continuity_record(record: dict[str, Any]) -> dict[str, Any]
     if not isinstance(authored_payload, dict):
         raise PromotionContinuityRuntimeError(
             "promotion_authored_payload_not_object",
-            "promotion_authored_payload_not_object",
+            "promotion_authored_payload_not_object"
         )
     if not isinstance(protocol_interpretation, dict):
         raise PromotionContinuityRuntimeError(
             "promotion_protocol_envelope_not_object",
-            "promotion_protocol_envelope_not_object",
+            "promotion_protocol_envelope_not_object"
         )
     if not isinstance(transport, dict):
         raise PromotionContinuityRuntimeError(
             "promotion_transport_envelope_not_object",
-            "promotion_transport_envelope_not_object",
+            "promotion_transport_envelope_not_object"
         )
 
     original_private_node = _normalize_original_private_node(authored_payload.get("original_private_node"))
@@ -376,12 +376,12 @@ def verify_promotion_continuity_record(record: dict[str, Any]) -> dict[str, Any]
     if protocol_interpretation != regenerated["envelopes"]["protocol_interpretation"]:
         raise PromotionContinuityRuntimeError(
             "promotion_protocol_interpretation_mismatch",
-            "promotion_protocol_interpretation_mismatch",
+            "promotion_protocol_interpretation_mismatch"
         )
     if transport != regenerated["envelopes"]["transport"]:
         raise PromotionContinuityRuntimeError(
             "promotion_transport_envelope_mismatch",
-            "promotion_transport_envelope_mismatch",
+            "promotion_transport_envelope_mismatch"
         )
 
     observed_core = {
@@ -399,19 +399,19 @@ def verify_promotion_continuity_record(record: dict[str, Any]) -> dict[str, Any]
     if _stable_json(_sorted_mapping(observed_core)) != _stable_json(_sorted_mapping(expected_core)):
         raise PromotionContinuityRuntimeError(
             "promotion_record_not_canonical",
-            "promotion_record_not_canonical",
+            "promotion_record_not_canonical"
         )
 
     observed_digest = record.get("record_sha256")
     if not isinstance(observed_digest, str):
         raise PromotionContinuityRuntimeError(
             "promotion_record_digest_missing",
-            "promotion_record_digest_missing",
+            "promotion_record_digest_missing"
         )
     if observed_digest != regenerated["record_sha256"]:
         raise PromotionContinuityRuntimeError(
             "promotion_record_digest_mismatch",
-            "promotion_record_digest_mismatch",
+            "promotion_record_digest_mismatch"
         )
 
     return {

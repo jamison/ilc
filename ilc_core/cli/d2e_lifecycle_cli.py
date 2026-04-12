@@ -11,8 +11,6 @@ from ilc_core.network.d2d.gossip import D2D_GOSSIP_DEPENDENCY as GOSSIP_D2D_GOSS
 from ilc_core.network.d2d.gossip import build_transport_envelope
 from ilc_core.node.timed_out_lifecycle_runtime_411 import (
     CDL_046_DEPENDENCY as RUNTIME_CDL_046_DEPENDENCY,
-)
-from ilc_core.node.timed_out_lifecycle_runtime_411 import (
     ORPHAN_TIMEOUT_EPOCHS,
     RECOVERY_POLICY,
     TIMED_OUT_LIFECYCLE_RUNTIME_VERSION,
