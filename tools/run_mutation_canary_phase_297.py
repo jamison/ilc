@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import fcntl
 import os
 import subprocess
 import sys
@@ -225,7 +226,9 @@ PROBES = (
 def _invalidate_pyc(path: Path) -> None:
     """Remove the .pyc for path so Python recompiles from the current source."""
     import importlib.util
-    cache = importlib.util.cache_from_source(str(path))
+    # Resolve to absolute path so the pyc path is unambiguous regardless of CWD.
+    abs_path = path.resolve()
+    cache = importlib.util.cache_from_source(str(abs_path))
     try:
         Path(cache).unlink()
     except FileNotFoundError:
@@ -302,11 +305,27 @@ def _reset_all_probe_targets(original_times: dict[Path, tuple[int, int]]) -> Non
             if probe.path in original_times:
                 try:
                     os.utime(probe.path, ns=original_times[probe.path])
-                except OSError:
-                    pass
+                except OSError as exc:
+                    print(
+                        f"[reset_all] utime_error: {probe.path}: {exc}",
+                        file=sys.stderr,
+                    )
+
+
+_CANARY_LOCK_PATH = Path("/tmp/ilc_mutation_canary.lock")
 
 
 def _run_full() -> int:
+    lock_fh = _CANARY_LOCK_PATH.open("a")
+    try:
+        fcntl.flock(lock_fh, fcntl.LOCK_EX)
+        return _run_full_locked()
+    finally:
+        fcntl.flock(lock_fh, fcntl.LOCK_UN)
+        lock_fh.close()
+
+
+def _run_full_locked() -> int:
     print("Running mutation canary probes")
     original_times: dict[Path, tuple[int, int]] = {}
     seen: set[Path] = set()
