@@ -78,6 +78,10 @@ def test_full_run_restores_security_files_without_mtime_drift() -> None:
         Path("ilc_core/security/signer_lineage_runtime.py"),
         Path("ilc_core/security/key_compromise_runtime.py"),
     )
+    # NOTE: the before/after mtime measurement is not covered by the runner's
+    # flock, so this test requires exclusive access to the probe files.  Run it
+    # in isolation or as part of a sequential gate — not alongside a concurrent
+    # canary invocation (which would legitimately shift mtimes between measurements).
     before = {
         path: (
             path.stat().st_mtime_ns,
