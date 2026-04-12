@@ -62,7 +62,7 @@ def test_gossip_runtime_rejects_fanout_zero_with_bounded_fanout_token() -> None:
 def test_gossip_accumulator_caps_centrality_before_passive_ecu_runtime() -> None:
     state: dict[str, object] = {}
     gossip_runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
-    gossip_runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
+    gossip_runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)  # second call tests cap
     if gossip_runtime.ACCUMULATION_MODEL == 'write_through':
         committed_score = state['node-cap']
     else:

@@ -280,12 +280,22 @@ def _reset_all_probe_targets() -> None:
     for probe in PROBES:
         if probe.path not in seen:
             seen.add(probe.path)
+            try:
+                stat = probe.path.stat()
+                times_ns = (stat.st_atime_ns, stat.st_mtime_ns)
+            except OSError:
+                times_ns = None
             subprocess.run(
                 ["git", "checkout", "HEAD", "--", str(probe.path)],
                 check=False,
                 capture_output=True,
                 text=True,
             )
+            if times_ns is not None:
+                try:
+                    os.utime(probe.path, ns=times_ns)
+                except OSError:
+                    pass
 
 
 def _run_full() -> int:

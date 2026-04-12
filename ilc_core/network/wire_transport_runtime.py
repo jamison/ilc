@@ -333,7 +333,7 @@ def verify_wire_transport_envelope(record: dict[str, Any]) -> dict[str, Any]:
     if _stable_json(_sorted_mapping(observed_core)) != _stable_json(_sorted_mapping(expected_core)):
         raise WireTransportValidationError(
             "wire_transport_not_canonical",
-            "wire_transport_not_canonical",
+            "wire_transport_not_canonical"
         )
 
     return {

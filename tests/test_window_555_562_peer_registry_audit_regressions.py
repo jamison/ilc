@@ -17,7 +17,7 @@ def test_registry_deduplicates_identical_and_case_normalized_endpoints() -> None
 def test_select_fanout_peers_never_returns_duplicate_endpoints_after_dedup() -> None:
     registry = gossip_peer_registry.GossipPeerRegistry([
         'https://a.example.com',
-        'https://a.example.com',
+        'https://a.example.com',  # intentional duplicate: tests dedup behavior
         'https://b.example.com',
         'https://c.example.com',
     ])
