@@ -35,10 +35,10 @@ that processes expiry.
 ## 3. Anti-gaming constitutional clause (prelock form)
 
 Arm's-length invariant: commissioning agent A and performing agent B must have
-distinct canonical agent_ids under the current identity boundary; same-key
-self-commission is prohibited. Any stronger common-control enforcement claim
-must name the evidence surface and the enforcement boundary explicitly rather
-than assuming automatic detectability.
+distinct canonical agent_ids under CDL-042 with distinct key-derivation roots;
+same-key self-commission is prohibited. Any stronger common-control enforcement
+claim must name the evidence surface and the enforcement boundary explicitly
+rather than assuming automatic detectability.
 
 Popperian invariant: commissioned contributions must pass the full CDL-V7
 Popperian gate through the normal authored-envelope path. No earmark grants a
@@ -68,8 +68,13 @@ system for v1 rather than a tiered system.
 
 The candidate fixed values carried forward into Phase 627 are:
 - minimum viable expiry: `240` validation epochs
-- nominal recommended expiry: `1440` validation epochs
+- nominal recommended expiry: `2880` validation epochs
 - maximum sensible expiry: `10080` validation epochs
+
+SIM-COMMISSION-01 also recommends a bounded runtime-only active-earmark cap of
+`8` simultaneous earmarks per commissioning agent per validation epoch window.
+This cap is carry-forward guidance for Phase 628 runtime implementation and is
+not elevated into constitutional text in Phase 626.
 
 Because SIM-COMMISSION-01 rejects a tiered expiry system for v1, Phase 627 may
 ratify the fixed-expiry direction directly without a second runtime branch.

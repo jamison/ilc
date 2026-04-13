@@ -60,12 +60,12 @@ The balance invariant is strict: Agent A cannot earmark more than their current 
 ## 3. Anti-gaming constraints
 
 The bounded anti-gaming rule starts with an arm's-length requirement. Agent A
-and Agent B must have distinct canonical `agent_id` values derived from their
-key material per the current identity boundary. Same-key self-commission is
-prohibited. Same-key self-commission is prohibited as the minimum arm's-length
-boundary. Any stronger common-control enforcement rule would require an
-explicit evidence surface and enforcement boundary; it must not be assumed from
-canonical identity alone.
+and Agent B must have distinct canonical `agent_id` values under the CDL-042
+key-derivation boundary, with distinct key-derivation roots. Same-key
+self-commission is prohibited as the minimum arm's-length boundary. Same-key self-commission is prohibited as the minimum arm's-length boundary. Any
+stronger common-control enforcement rule would require an explicit evidence
+surface and enforcement boundary; it must not be assumed from canonical
+identity alone.
 
 Commissioned contributions may not bypass the normal graph path. Every
 commissioned contribution must enter through the standard authored-envelope
