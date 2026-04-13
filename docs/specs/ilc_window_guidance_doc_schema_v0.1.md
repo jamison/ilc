@@ -186,13 +186,27 @@ Optional MemPalace retrieval appendix:
 - guidance authors may add an optional MemPalace retrieval appendix or
   subsection that lists tier-scoped retrieval queries and rendered retrieval
   brief paths used during drafting
+- if used for ordinary current-frontier work, the appendix should default to
+  the active working-set descriptor
+  `docs/tools/mempalace/ilc_mempalace_active_working_set_v0.1.json`; if some
+  other manifest or palace was used instead, the appendix should say why
 - if used, the appendix should also name the logic-gate profile
   `docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0.1.md` and state
   that retrieved material passed through those gates before being reused
+- if used, the appendix should record the rendered retrieval brief path and any
+  provenance, carry-forward, or contradiction queries that materially shaped
+  the grouping
 - this appendix is advisory only and must not replace canonical anchors or
   direct repo reads
 - if present, it should appear after the canonical anchors section or inside
   the known-patterns section as drafting support only
+
+Expected end-of-window linkage:
+- the closure/handoff document produced at window end should follow
+  `docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md`
+- that closure doc must record a `MemPalace refresh disposition` decision so the
+  project explicitly records whether the active working set should be rebuilt
+  after the window closes
 
 ---
 

@@ -8,6 +8,7 @@ LOGIC_GATE_PATH = Path("docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0
 README_PATH = Path("docs/tools/mempalace/README.md")
 GUIDELINES_PATH = Path("docs/specs/ilc_mempalace_agent_usage_and_prompt_guidelines_v0.1.md")
 SCHEMA_PATH = Path("docs/specs/ilc_window_guidance_doc_schema_v0.1.md")
+HANDOFF_SCHEMA_PATH = Path("docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md")
 ACTIVE_WINDOW_PATH = Path("docs/specs/ilc_window_607_612_candidate_phase_grouping_v0.1.md")
 SUPERSEDED_WINDOW_PATH = Path("docs/specs/ilc_window_607_615_candidate_phase_grouping_v0.1.md")
 MANIFEST_PATH = Path("docs/tools/mempalace/ilc_mempalace_corpus_manifest_v0.1.json")
@@ -40,6 +41,18 @@ def test_readme_guidelines_and_schema_reference_logic_gate_profile() -> None:
     assert "ilc_mempalace_logic_gate_profile_v0.1.md" in _read(README_PATH)
     assert "ilc_mempalace_logic_gate_profile_v0.1.md" in _read(GUIDELINES_PATH)
     assert "ilc_mempalace_logic_gate_profile_v0.1.md" in _read(SCHEMA_PATH)
+
+
+def test_closure_handoff_schema_requires_mempalace_refresh_disposition() -> None:
+    text = _read(HANDOFF_SCHEMA_PATH)
+    assert "## 6. MemPalace refresh disposition" in text
+    assert "Disposition:" in text
+    assert "Active working set impacted:" in text
+    assert "Working-set descriptor:" in text
+    assert "Rebuild command:" in text
+    assert "ilc_mempalace_active_working_set_v0.1.json" in text
+    assert "build_active_working_set.sh" in text
+    assert "documentation contract only" in text
 
 
 def test_retrieval_brief_renders_logic_gate_section(tmp_path: Path) -> None:
