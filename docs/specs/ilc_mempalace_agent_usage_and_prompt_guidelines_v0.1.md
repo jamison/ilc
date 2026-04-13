@@ -9,6 +9,8 @@ Classification: operating guidance for internal retrieval usage
 - MemPalace retrieval is optional internal tooling.
 - Local MemPalace runtime currently requires Python 3.9-3.12 in a dedicated
   local environment installed from `docs/tools/mempalace/requirements-mempalace.txt`.
+- The default current-frontier working surface is
+  `docs/tools/mempalace/ilc_mempalace_active_working_set_v0.1.json`.
 - MemPalace retrieval never overrides ratified or accepted repo artifacts.
 - Retrieved material must be cited by source path before it is summarized.
 - Agents must verify against the authoritative tier before relying on a
@@ -20,30 +22,49 @@ Classification: operating guidance for internal retrieval usage
 - If a retrieved result conflicts with current handoff, capsule, status, or
   accepted ADR material, the authoritative repo source wins.
 
-## 2. Query protocol
+## 2. Standard query-first cases
 
-1. Start with a scoped query against the most authoritative relevant tier.
-2. Read the retrieved file directly rather than trusting a one-line match.
-3. Classify the source as canonical, planning, evidence, or historical before
+Use MemPalace as the first retrieval step when the task is primarily:
+- provenance lineage: where a boundary, defer, or lane was first locked
+- carry-forward state: whether an item is closed, deferred, or still open
+- contradiction checking across canonical, planning, evidence, and historical tiers
+- session or agent onboarding into a broad historical lane
+
+Do not use MemPalace first when a current authoritative source already answers
+the question directly.
+
+## 3. Query protocol
+
+1. If the task matches the standard query-first cases, start from the active
+   working-set descriptor
+   `docs/tools/mempalace/ilc_mempalace_active_working_set_v0.1.json`.
+2. Start with a scoped query against the most authoritative relevant tier.
+3. Read the retrieved file directly rather than trusting a one-line match.
+4. Classify the source as canonical, planning, evidence, or historical before
    answering.
-4. If the result is historical or draft, label it as such in the response.
-5. If the answer would affect protocol scope, wallet/payment authority, or
+5. If the result is historical or draft, label it as such in the response.
+6. If the answer would affect protocol scope, wallet/payment authority, or
    release posture, verify against current handoff/boundary docs before using
    the result.
-6. Use the staged tiered corpus build as the supported ILC workflow when
+7. Use the staged tiered corpus build as the supported ILC workflow when
    authority separation matters.
-7. When a tier contains both broad planning packs and narrow target specs, use
+8. When a tier contains both broad planning packs and narrow target specs, use
    source-path filters to keep retrieval focused before reading the files
    directly.
-8. Treat `distance` as the underlying collection metric and `relevance_score` as
+9. Treat `distance` as the underlying collection metric and `relevance_score` as
    a bounded ranking aid only; do not restate either field as proof of truth.
-9. Tier D optional local-only history may be absent on a fresh clone; treat a
+10. Tier D optional local-only history may be absent on a fresh clone; treat a
    missing optional file warning as a corpus-hygiene signal, not as authority failure.
-10. Apply the reviewer gate profile in
+11. Apply the reviewer gate profile in
     `docs/tools/mempalace/ilc_mempalace_logic_gate_profile_v0.1.md` before
     turning retrieval output into planning, boundary, or implementation claims.
+12. If a rendered retrieval brief informed prompt drafting, window guidance, or
+    an independent audit note, record the brief path in that document as
+    advisory provenance support only.
+13. End-of-window closure or handoff docs should record a `MemPalace refresh disposition`
+    decision using `docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md`.
 
-## 3. Prompt snippet
+## 4. Prompt snippet
 
 Use this bounded snippet in future prompts when MemPalace retrieval is allowed:
 
@@ -53,11 +74,13 @@ Use this bounded snippet in future prompts when MemPalace retrieval is allowed:
 > highest relevant authority tier before making a strong claim. Historical or
 > draft retrieval results must be labeled as non-canonical provenance support.
 > Prompts must not treat retrieval results as canon without source checking.
+> For current-frontier provenance questions, start from
+> `docs/tools/mempalace/ilc_mempalace_active_working_set_v0.1.json`.
 > Operators may render a retrieval brief with
 > `tools/mempalace/render_retrieval_brief.py`, but final drafting decisions
 > still require direct repo reads.
 
-## 4. Maintenance triggers
+## 5. Maintenance triggers
 
 Refresh or re-mine the internal MemPalace corpus after:
 - a new closure gate or handoff lands,
@@ -68,7 +91,13 @@ Refresh or re-mine the internal MemPalace corpus after:
   live,
 - or a major window closes and the authoritative frontier moves.
 
-## 5. Forbidden uses
+The default rebuild entrypoint for current-frontier work is:
+- `bash tools/mempalace/build_active_working_set.sh`
+
+Closure/handoff docs do not need to force a rebuild every time. They must
+record whether the rebuild is required and why.
+
+## 6. Forbidden uses
 
 Do not use MemPalace retrieval alone to:
 - declare canon,
@@ -80,7 +109,7 @@ Do not use MemPalace retrieval alone to:
 - or answer a public FAQ/oracle query from historical or draft corpora without
   explicit labeling.
 
-## 6. Reviewer gate profile
+## 7. Reviewer gate profile
 
 The standard post-retrieval filter is:
 - `G1` highest relevant authority tier

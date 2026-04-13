@@ -1,7 +1,8 @@
 # ADR-0011: Native P2P Transport Baseline for Agent Communication
 
-**Status:** Proposed  
-**Date:** 2026-02-25  
+**Status:** Accepted
+**Date:** 2026-02-25
+**Accepted:** 2026-03-31 (post-Phase 547 architectural review; consistent with CDL-024 allowed transport kinds and ADR-0025)
 **Context:** Independence and low-latency requirements for digital-agent workloads
 
 ## Context
