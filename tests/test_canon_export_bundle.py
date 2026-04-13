@@ -106,3 +106,28 @@ class TestCanonExportBundle:
         e1_text = (path1 / "export.json").read_text().strip()
         # {"a":1,"b":2,"canon_hash":"h"} given alphabetical sort
         assert e1_text.startswith('{"a":1')
+
+    def test_bundle_writer_normalizes_finite_float_scalars_to_canonical_strings(self, tmp_path):
+        bundle_dir = tmp_path / "bundle"
+        export = {
+            "canon_hash": "h1",
+            "canon_export_format": "v0.1",
+            "snapshots": [{"epoch_id": "e1", "balances": {"alice": 1.25}}],
+        }
+        validation = {"ok": True, "score": 2.5}
+
+        write_canon_export_bundle(export, validation, bundle_dir)
+
+        export_doc = json.loads((bundle_dir / "export.json").read_text())
+        validate_doc = json.loads((bundle_dir / "validate.json").read_text())
+
+        assert export_doc["snapshots"][0]["balances"]["alice"] == "1.25"
+        assert validate_doc["score"] == "2.5"
+
+    def test_bundle_writer_rejects_non_finite_numeric_scalars(self, tmp_path):
+        with pytest.raises(ValueError, match="non_finite_numeric_scalar_in_bundle_payload"):
+            write_canon_export_bundle(
+                {"canon_hash": "h1", "bad": float("inf")},
+                {},
+                tmp_path / "bundle",
+            )

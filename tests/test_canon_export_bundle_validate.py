@@ -147,6 +147,32 @@ class TestCanonExportBundleValidate:
         assert not report["ok"]
         assert any("Unsupported hash_alg" in e for e in report["errors"])
 
+    def test_verify_export_json_rejects_non_finite_numeric_literals(self, valid_bundle):
+        export_content = b'{"canon_export_format":"v0.1","canon_hash":"h1","exported_at":"2026-02-05T00:00:00Z","meta":{"canon_export_version":"v","epoch_count":0,"snapshot_count":1,"balance_count":1},"epochs":[],"snapshots":[{"epoch_id":"e1","balances":{"alice":NaN}}]}'
+        (valid_bundle / "export.json").write_bytes(export_content + b"\n")
+
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["export_hash"] = hashlib.sha256(export_content).hexdigest()
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "non_finite_json_numeric_literal:NaN" in report["errors"]
+
+    def test_verify_validate_json_rejects_non_finite_numeric_literals(self, valid_bundle):
+        validate_content = b'{"ok":true,"warnings":[],"score":Infinity}'
+        (valid_bundle / "validate.json").write_bytes(validate_content + b"\n")
+
+        manifest_path = valid_bundle / "manifest.json"
+        data = json.loads(manifest_path.read_text())
+        data["validate_hash"] = hashlib.sha256(validate_content).hexdigest()
+        manifest_path.write_text(json.dumps(data))
+
+        report = validate_canon_export_bundle(valid_bundle)
+        assert not report["ok"]
+        assert "non_finite_json_numeric_literal:Infinity" in report["errors"]
+
     def test_validate_missing_key_id_when_signed(self, valid_bundle):
         """Signature present but no key_id should produce error."""
         manifest_path = valid_bundle / "manifest.json"

@@ -60,7 +60,7 @@ class TestCanonExportValidate:
         assert any("epochs" in e for e in res["errors"])
 
     def test_validate_deep_snapshot_balances(self):
-        """Balances values must be numbers."""
+        """Balances values must be exact numeric values."""
         doc = {
             "canon_export_format": "v0.1",
             "canon_hash": "h", "exported_at": "t",
@@ -70,7 +70,7 @@ class TestCanonExportValidate:
                 {
                     "epoch_id": "e1",
                     "balances": {
-                        "alice": 100,
+                        "alice": "100.25",
                         "bob": "not_a_number" # Error
                     }
                 }
@@ -78,7 +78,25 @@ class TestCanonExportValidate:
         }
         res = validate_canon_export_v0_1(doc)
         assert res["ok"] is False
-        assert any("must be a number" in e for e in res["errors"])
+        assert any("must be a non-negative exact numeric value" in e for e in res["errors"])
+
+    @pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity", float("nan"), float("inf"), float("-inf")])
+    def test_validate_snapshot_balances_reject_non_finite_values(self, value):
+        doc = {
+            "canon_export_format": "v0.1",
+            "canon_hash": "h", "exported_at": "t",
+            "meta": {"canon_export_version": "v", "epoch_count": 0, "snapshot_count": 1, "balance_count": 1},
+            "epochs": [],
+            "snapshots": [
+                {
+                    "epoch_id": "e1",
+                    "balances": {"alice": value}
+                }
+            ]
+        }
+        res = validate_canon_export_v0_1(doc)
+        assert res["ok"] is False
+        assert any("must be a non-negative exact numeric value" in e for e in res["errors"])
 
     def test_validate_epoch_id_missing(self):
         """Epoch items must have epoch_id."""
