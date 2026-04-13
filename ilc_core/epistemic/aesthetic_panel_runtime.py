@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-import random
+import hashlib
 
 AESTHETIC_PANEL_RUNTIME_VERSION = 'aesthetic_panel_runtime_532.v0.1'
 CDL_059_DEPENDENCY = 'cdl_059_ratified_531.v0.1'
@@ -34,12 +34,19 @@ def compose_aesthetic_panel(agent_pool: list[dict], panel_size: int, seed: int |
     if len(validated) < panel_size:
         raise ValueError('insufficient_agent_pool_size')
 
-    rng = random.Random(seed)
     buckets: dict[str, list[str]] = defaultdict(list)
     for agent in validated:
         buckets[str(agent['model_type'])].append(str(agent['agent_id']))
-    for ids in buckets.values():
-        rng.shuffle(ids)
+    seed_token = str(seed) if seed is not None else "none"
+    for model_type, ids in buckets.items():
+        ids.sort(
+            key=lambda agent_id: (
+                hashlib.sha256(
+                    f"{seed_token}|{model_type}|{agent_id}".encode("utf-8")
+                ).hexdigest(),
+                agent_id,
+            )
+        )
 
     ordered_types = sorted(buckets.keys(), key=lambda model_type: (len(buckets[model_type]), model_type))
     selected: list[str] = []
@@ -48,7 +55,7 @@ def compose_aesthetic_panel(agent_pool: list[dict], panel_size: int, seed: int |
         for model_type in ordered_types:
             if not buckets[model_type]:
                 continue
-            selected.append(buckets[model_type].pop())
+            selected.append(buckets[model_type].pop(0))
             progressed = True
             if len(selected) == panel_size:
                 break

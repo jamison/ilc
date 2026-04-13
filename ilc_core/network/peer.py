@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Callable, Set
+import hashlib
+import json
 import logging
-from pydantic import BaseModel
 import requests
-import random
+from pydantic import BaseModel
+from typing import Any, Callable, Set
 
 logger = logging.getLogger(__name__)
 
-PeerSender = Callable[[str, dict[str, Any], float], Any]
+PeerTimeout = tuple[float, float]
+PeerSender = Callable[[str, dict[str, Any], PeerTimeout], Any]
 
 
 class Peer(BaseModel):
@@ -23,12 +25,19 @@ class PeerManager:
         local_port: int,
         *,
         fanout_limit: int = 3,
-        request_timeout_s: float = 1.0,
+        request_timeout_s: float | None = None,
+        connect_timeout_s: float = 2.0,
+        read_timeout_s: float = 30.0,
         sender: PeerSender | None = None,
     ):
+        if request_timeout_s is not None:
+            connect_timeout_s = request_timeout_s
+            read_timeout_s = request_timeout_s
         self.local_port = local_port
         self.fanout_limit = max(1, fanout_limit)
         self.request_timeout_s = request_timeout_s
+        self.connect_timeout_s = connect_timeout_s
+        self.read_timeout_s = read_timeout_s
         self.peers: Set[str] = set() # Set of "host:port" strings
         self.banned: Set[str] = set()
         self._sender = sender or _default_sender
@@ -39,11 +48,28 @@ class PeerManager:
             self.peers.add(address)
             logger.info("network_peer_added address=%s", address)
 
-    def _select_targets(self) -> list[str]:
+    def _selection_salt(self, endpoint: str, payload: dict[str, Any]) -> bytes:
+        canonical_payload = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        return f"{self.local_port}|{endpoint}|{canonical_payload}".encode("utf-8")
+
+    def _select_targets(self, *, endpoint: str, payload: dict[str, Any]) -> list[str]:
         fanout = min(len(self.peers), self.fanout_limit)
         if fanout <= 0:
             return []
-        return random.sample(list(self.peers), fanout)
+        salt = self._selection_salt(endpoint, payload)
+        ranked = sorted(
+            self.peers,
+            key=lambda target: (
+                hashlib.sha256(salt + b"|" + target.encode("utf-8")).hexdigest(),
+                target,
+            ),
+        )
+        return ranked[:fanout]
 
     def _broadcast_url(self, target: str, endpoint: str) -> str:
         normalized_endpoint = endpoint if endpoint.startswith("/") else f"/{endpoint}"
@@ -53,7 +79,7 @@ class PeerManager:
         """
         Attempt delivery to a random subset of peers over HTTP fanout.
         """
-        targets = self._select_targets()
+        targets = self._select_targets(endpoint=endpoint, payload=payload)
 
         logger.info(
             "network_gossip_broadcast endpoint=%s fanout=%s targets=%s",
@@ -80,7 +106,7 @@ class PeerManager:
                     self._sender,
                     target_urls[target],
                     payload,
-                    self.request_timeout_s,
+                    (self.connect_timeout_s, self.read_timeout_s),
                 ): target
                 for target in targets
             }
@@ -118,13 +144,6 @@ class PeerManager:
                         target,
                         exc.__class__.__name__,
                     )
-                except Exception as exc:  # pragma: no cover - defensive logging path
-                    failures += 1
-                    logger.exception(
-                        "network_gossip_delivery_failed target=%s error=%s",
-                        target,
-                        exc.__class__.__name__,
-                    )
 
         return {
             "attempted": len(targets),
@@ -134,5 +153,9 @@ class PeerManager:
         }
 
 
-def _default_sender(url: str, payload: dict[str, Any], timeout_s: float) -> requests.Response:
+def _default_sender(
+    url: str,
+    payload: dict[str, Any],
+    timeout_s: PeerTimeout,
+) -> requests.Response:
     return requests.post(url, json=payload, timeout=timeout_s)

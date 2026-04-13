@@ -171,3 +171,9 @@ def test_runtime_mutation_scope_is_limited_to_runtime_and_test() -> None:
 def test_phase_532_commit_resolver_matches_exact_paths() -> None:
     commit_ref = _resolve_phase_532_commit_ref()
     assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS
+
+
+def test_aesthetic_panel_runtime_uses_hash_derived_ordering_not_random() -> None:
+    text = RUNTIME_PATH.read_text(encoding="utf-8")
+    assert "import random" not in text
+    assert "hashlib.sha256" in text
