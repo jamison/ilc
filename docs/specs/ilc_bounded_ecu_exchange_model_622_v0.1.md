@@ -81,6 +81,10 @@ The bounded loop sequence in spec form is:
    bounded accounting design problem. This phase does not authorize direct ECU
    debit, transfer, spend, or wallet write semantics.
 
+The debit-side enforcement vehicle is intentionally not defined in this phase.
+Any later debit, earmark-enforcement, or settlement-write mechanism requires
+separate later constitutional and runtime work.
+
 What the bounded model does NOT do:
 - It does not create a separate payment channel outside the epoch commit path.
 - It does not allow Agent A to debit Agent B's accrual.
@@ -136,6 +140,10 @@ eventually decided.
 If CDL-053 is later opened, it may extend or refine the credit attribution
 rules that underpin this model, but it is not a prerequisite for this spec.
 
+This means the current spec advances the loop topology and bounded coordination
+surface in spec form, while leaving debit-side enforcement and any real write
+semantics explicitly deferred.
+
 Planning carry-forward items from the Phase 619 handoff remain unchanged here:
 - `cdl_053_werner_credit_architecture_deferred_pending_lt_evidence`
 - `legal_positioning_memo_passive_ecu_and_validator_rewards_pre_rc_prerequisite`
@@ -153,7 +161,7 @@ Planning carry-forward items from the Phase 619 handoff remain unchanged here:
 | AG-5 Harness-agnostic | neutral | The model is protocol-level and does not depend on a specific harness runtime. |
 | AG-6 Near-infinite scale | pass | The coordination model is bounded by accrual authority and does not introduce a centralized approval bottleneck. |
 | AG-7 Machine-legible first | advance | The offer, acceptance, deliverable, and attribution states are framed as protocol messages rather than UI-only flows. |
-| AG-8 Outbound economic loop | advance | This is the primary AG-8 advancement phase for Window 620-622. |
+| AG-8 Outbound economic loop | advance | This is the primary AG-8 advancement phase for Window 620-622 in bounded spec form; debit-side enforcement remains deferred. |
 
 No AG-gate row is a FAIL.
 
