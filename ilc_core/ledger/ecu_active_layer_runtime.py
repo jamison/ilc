@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from decimal import Decimal, InvalidOperation
 
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
+
 
 DEFAULT_FIXED_EXPIRY_VALIDATION_EPOCHS = 2880
 DEFAULT_ACTIVE_EARMARK_CAP_PER_AGENT = 8
@@ -66,11 +68,11 @@ class EcuActiveLayerRuntime:
             raise ValueError("accrued_ecu_cannot_drop_below_reserved_earmarks")
         self._accrued_ecu[agent_id] = normalized_amount
 
-    def get_accrued_ecu(self, agent_id: str) -> float:
-        return float(self._accrued_ecu.get(agent_id, ZERO))
+    def get_accrued_ecu(self, agent_id: str) -> str:
+        return _decimal_to_string(self._accrued_ecu.get(agent_id, ZERO))
 
-    def spendable_ecu(self, agent_id: str) -> float:
-        return float(self._spendable_ecu_decimal(agent_id))
+    def spendable_ecu(self, agent_id: str) -> str:
+        return _decimal_to_string(self._spendable_ecu_decimal(agent_id))
 
     def earmark_propose(
         self,
@@ -335,4 +337,4 @@ def _to_decimal(value: int | float | str | Decimal) -> Decimal:
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    return format(value, "f")
+    return decimal_to_canonical_string(value)
