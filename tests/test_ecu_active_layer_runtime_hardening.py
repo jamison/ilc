@@ -116,6 +116,40 @@ def test_idempotent_epoch_processing_for_terminal_earmarks() -> None:
     assert runtime.get_accrued_ecu("agent-a") == balance_after_first
 
 
+def test_delivery_cannot_bypass_expiry_before_boundary_processing() -> None:
+    runtime = EcuActiveLayerRuntime(fixed_expiry_validation_epochs=5)
+    runtime.set_accrued_ecu("agent-a", "1.0")
+    assert runtime.earmark_propose(
+        earmark_id="e-1",
+        commission_id="c-1",
+        commissioning_agent_id="agent-a",
+        performing_agent_id="agent-b",
+        earmark_amount="0.4",
+        proposal_epoch=10,
+        task_description_hash="hash-1",
+    )["ok"] is True
+    assert runtime.earmark_accept(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        acceptance_epoch=11,
+    )["ok"] is True
+
+    late_delivery = runtime.earmark_deliver(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        contribution_id="contrib-1",
+        delivery_epoch=16,
+    )
+    assert late_delivery["ok"] is False
+    assert late_delivery["token"] == "earmark_past_expiry"
+
+    processed = runtime.process_epoch_boundary(commit_epoch=16)
+    assert processed["ok"] is True
+    assert processed["data"]["debited_earmark_ids"] == []
+    assert processed["data"]["expired_earmark_ids"] == ["e-1"]
+    assert runtime.earmark_status(earmark_id="e-1")["data"]["state"] == "expired"
+
+
 def test_status_and_history_outputs_are_stable_for_decimal_amounts() -> None:
     runtime = EcuActiveLayerRuntime()
     runtime.set_accrued_ecu("agent-a", "0.5")

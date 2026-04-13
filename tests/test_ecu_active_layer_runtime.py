@@ -163,6 +163,45 @@ def test_only_named_performing_agent_can_accept_or_deliver() -> None:
     assert delivered["ok"] is True
 
 
+def test_accept_and_deliver_reject_epochs_past_expiry() -> None:
+    runtime = EcuActiveLayerRuntime(fixed_expiry_validation_epochs=5)
+    runtime.set_accrued_ecu("agent-a", 10.0)
+    proposed = runtime.earmark_propose(
+        earmark_id="e-1",
+        commission_id="c-1",
+        commissioning_agent_id="agent-a",
+        performing_agent_id="agent-b",
+        earmark_amount=2.0,
+        proposal_epoch=10,
+        task_description_hash="hash-1",
+    )
+    assert proposed["ok"] is True
+
+    late_accept = runtime.earmark_accept(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        acceptance_epoch=16,
+    )
+    assert late_accept["ok"] is False
+    assert late_accept["token"] == "earmark_past_expiry"
+
+    accepted = runtime.earmark_accept(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        acceptance_epoch=15,
+    )
+    assert accepted["ok"] is True
+
+    late_deliver = runtime.earmark_deliver(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        contribution_id="contrib-1",
+        delivery_epoch=16,
+    )
+    assert late_deliver["ok"] is False
+    assert late_deliver["token"] == "earmark_past_expiry"
+
+
 def test_set_accrued_ecu_rejects_drop_below_reserved_balance() -> None:
     runtime = EcuActiveLayerRuntime()
     runtime.set_accrued_ecu("agent-a", 10.0)
