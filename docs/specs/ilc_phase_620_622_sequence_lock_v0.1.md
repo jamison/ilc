@@ -64,7 +64,7 @@ FAIL.
 | AG-5 Harness-agnostic | advance | The canonical shared source path is root `skills/`, while harness-specific discovery configuration remains allowed where needed. |
 | AG-6 Near-infinite scale | neutral | The window defines machine-legible planning surfaces that degrade gracefully and do not introduce a new governance chokepoint. |
 | AG-7 Machine-legible first | advance | Skill invocation contracts and bounded exchange surfaces are defined as CLI/file/JSON-first, with human-auditable documentation alongside them. |
-| AG-8 Outbound economic loop | advance | Phase 622 is the first bounded spec-form statement of an agent-commissioning-agent ECU-denominated loop inside the current Option-D posture. |
+| AG-8 Outbound economic loop | advance | Phase 622 is the first bounded spec-form statement of an agent-commissioning-agent ECU-denominated loop inside the current Option-D posture; debit-side enforcement remains deferred. |
 
 `ag_gates_registered_as_planning_filter_for_window_620_622`.
 
