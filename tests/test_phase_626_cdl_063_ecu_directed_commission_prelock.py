@@ -45,9 +45,10 @@ REQUIRED_TOKENS = (
 SIM_REQUIRED_TOKENS = (
     'sim_commission_01_expiry_calibration_complete',
     'sim_commission_01_minimum_expiry_validation_epochs: 240',
-    'sim_commission_01_nominal_expiry_validation_epochs: 1440',
+    'sim_commission_01_nominal_expiry_validation_epochs: 2880',
     'sim_commission_01_maximum_expiry_validation_epochs: 10080',
     'sim_commission_01_tiered_expiry_disposition: reject_tiered_keep_fixed_v1',
+    'sim_commission_01_active_earmark_cap_per_agent: 8',
 )
 
 
@@ -145,6 +146,8 @@ def test_section_two_contains_all_lifecycle_states_and_balance_invariant() -> No
 def test_section_three_contains_all_anti_gaming_invariants() -> None:
     text = _read(PRELOCK_PATH)
     assert 'distinct canonical agent_ids' in text
+    assert 'CDL-042' in text
+    assert 'key-derivation roots' in text
     assert 'same-key' in text
     assert 'full CDL-V7' in text
     assert 'automatically released' in text
@@ -167,7 +170,8 @@ def test_sim_document_contains_required_tokens_and_recommended_values() -> None:
     assert '## 6. Forward pointer' in text
     for token in SIM_REQUIRED_TOKENS:
         assert token in text
-    assert '`recommended_fixed_expiry_validation_epochs = 1440`' in text
+    assert '`recommended_fixed_expiry_validation_epochs = 2880`' in text
+    assert '`recommended_active_earmark_cap_per_agent = 8`' in text
 
 
 def test_phase_626_main_commit_touches_expected_paths_only_and_cdl_063_remains_open() -> None:

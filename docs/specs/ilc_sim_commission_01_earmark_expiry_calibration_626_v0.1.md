@@ -39,20 +39,30 @@ normal validation lag. A floor below `240` validation epochs starts to make a
 same-day commission unreliable.
 
 The nominal value should support typical same-day work while still bounding
-state growth. A fixed expiry of `1440` validation epochs keeps one earmark
-alive for one day, which is long enough for most normal commissioned graph work
-while short enough to prevent earmarks from functioning as long-duration locked
-reserves.
+state growth. A fixed expiry of `2880` validation epochs keeps one earmark
+alive for two days, which gives real buffer above the upper end of the normal
+task band and absorbs asynchronous scheduling and validation lag without
+collapsing into week-scale reserve locking.
 
 The ceiling marks the point where earmarks start impairing the active layer's
-usefulness by freezing too much spendable balance for too long. Above `10080`
-validation epochs, an earmark is effectively a week-long reserve lock, which is
-too expensive for v1 bounded runtime.
+usefulness by freezing too much spendable balance for too long. `10080`
+validation epochs is about 23 percent of one issuance epoch, which is the
+highest tolerable v1 reserve-lock boundary before earmarks start functioning as
+quasi-long-duration locked reserves.
 
 Tiered expiry was evaluated. It improves fit to task complexity in theory, but
 it adds branch complexity to proposal validation, runtime state transitions, and
 hardening. For v1, that complexity is not justified while the runtime lane is
 still being established.
+
+The volume-cap question was also evaluated. A bounded active layer needs a cap
+on simultaneous active earmarks per commissioning agent per validation epoch
+window to prevent high-volume low-quality commission spam from turning the
+runtime into an unbounded reservation surface. A cap that is too low makes the
+active layer unusable for legitimate parallel work; a cap that is too high
+undoes the bounded-state goal. The v1 recommendation is a runtime cap of `8`
+simultaneous active earmarks per commissioning agent per validation epoch
+window.
 
 ## 4. Results
 
@@ -60,18 +70,20 @@ Minimum viable expiry floor:
 - `240` validation epochs
 
 Nominal recommended fixed expiry:
-- `1440` validation epochs
+- `2880` validation epochs
 
 Maximum sensible expiry ceiling:
 - `10080` validation epochs
 
 Recommended v1 rule:
 - fixed expiry, not tiered
-- `recommended_fixed_expiry_validation_epochs = 1440`
+- `recommended_fixed_expiry_validation_epochs = 2880`
+- `recommended_active_earmark_cap_per_agent = 8`
 
 `sim_commission_01_minimum_expiry_validation_epochs: 240`
-`sim_commission_01_nominal_expiry_validation_epochs: 1440`
+`sim_commission_01_nominal_expiry_validation_epochs: 2880`
 `sim_commission_01_maximum_expiry_validation_epochs: 10080`
+`sim_commission_01_active_earmark_cap_per_agent: 8`
 
 ## 5. Governance dispositions
 
@@ -85,8 +97,10 @@ Disposition on fixed vs tiered expiry:
 ## 6. Forward pointer
 
 Phase 627 must lock the fixed-expiry direction into the CDL-063 ratification
-evidence using `recommended_fixed_expiry_validation_epochs = 1440`.
+evidence using `recommended_fixed_expiry_validation_epochs = 2880`.
 
 Phase 628 runtime must implement expiry processing against the fixed horizon and
-Phase 629 hardening must verify that expired earmarks release reserves
-correctly at the epoch boundary.
+should consume `recommended_active_earmark_cap_per_agent = 8` as the bounded
+runtime cap unless a stronger runtime-specific reason is documented. Phase 629
+hardening must verify that expired earmarks release reserves correctly at the
+epoch boundary and that the active-earmark cap is enforced.
