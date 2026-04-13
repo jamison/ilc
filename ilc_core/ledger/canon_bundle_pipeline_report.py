@@ -57,7 +57,12 @@ def render_pipeline_report(
     warnings = report.get("warnings", [])
     
     # JSON output (single-line, verbatim)
-    json_output = json_output or json.dumps(report, separators=(",", ":"), sort_keys=False)
+    json_output = json_output or json.dumps(
+        report,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    )
     
     lines = [
         "# Canon Bundle Pipeline Report",

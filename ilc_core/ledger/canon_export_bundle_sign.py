@@ -12,6 +12,19 @@ from ilc_core.exceptions import LedgerExportContractError
 from ilc_core.ledger.canon_bundle_utils import derive_key_fingerprint, derive_key_id
 
 
+def _reject_non_finite_constant(constant: str) -> None:
+    raise LedgerExportContractError("invalid_manifest_non_finite")
+
+
+def _canonical_manifest_json(manifest: dict) -> str:
+    return json.dumps(
+        manifest,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    )
+
+
 def load_key_from_file(path: Path) -> bytes:
     """Load a base64-encoded key from a file."""
     raw = path.read_text(encoding="utf-8").strip()
@@ -50,14 +63,19 @@ def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path
         raise FileExistsError(f"Signature already exists at {sig_path}")
     
     # Load manifest, add key metadata, and rewrite
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest = json.loads(
+        manifest_path.read_text(encoding="utf-8"),
+        parse_constant=_reject_non_finite_constant,
+    )
+    if not isinstance(manifest, dict):
+        raise LedgerExportContractError("invalid_manifest_shape")
     manifest["key_id"] = derive_key_id(key)
     manifest["key_fingerprint"] = derive_key_fingerprint(key)
     manifest["sig_alg"] = "hmac-sha256"
     manifest["signed_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     
     # Write updated manifest
-    manifest_path.write_text(json.dumps(manifest, separators=(",", ":"), sort_keys=False), encoding="utf-8")
+    manifest_path.write_text(_canonical_manifest_json(manifest), encoding="utf-8")
         
     # Read manifest bytes as-is for signing
     data = manifest_path.read_bytes()

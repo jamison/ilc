@@ -54,7 +54,12 @@ def main() -> int:
             extra_warnings = _write_report(bundle_path, audit_path, result, args.report)
             if extra_warnings:
                 result["warnings"].extend(extra_warnings)
-        json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
+        json_output = json.dumps(
+            result,
+            separators=(",", ":"),
+            sort_keys=True,
+            allow_nan=False,
+        )
         print(json_output)
         return 1
     
@@ -72,7 +77,12 @@ def main() -> int:
             extra_warnings = _write_report(bundle_path, audit_path, result, args.report)
             if extra_warnings:
                 result["warnings"].extend(extra_warnings)
-        json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
+        json_output = json.dumps(
+            result,
+            separators=(",", ":"),
+            sort_keys=True,
+            allow_nan=False,
+        )
         print(json_output)
         return 1
     
@@ -85,7 +95,12 @@ def main() -> int:
         if extra_warnings:
             result["warnings"].extend(extra_warnings)
     
-    json_output = json.dumps(result, separators=(",", ":"), sort_keys=False)
+    json_output = json.dumps(
+        result,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    )
     print(json_output)
     
     return 0 if result.get("replay_matches", False) else 1
