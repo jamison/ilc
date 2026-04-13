@@ -18,6 +18,8 @@ from ilc_core.crypto.cbor_canonical import cbor_dumps_canonical
 from ilc_core.protocol.ndjson_bundle import (
     # Constants
     DEFAULT_MAX_LINE_BYTES,
+    DEFAULT_MAX_RECORDS_PER_BUNDLE,
+    DEFAULT_MAX_TOTAL_BYTES_PER_BUNDLE,
     TYPE_HEADER,
     TYPE_RECORD,
     TYPE_FOOTER,
@@ -240,6 +242,29 @@ class TestStreamingLarge:
                 read_count += 1
         
         assert read_count == record_count
+
+    def test_read_bundle_rejects_record_count_above_limit(self):
+        payloads = [{"message": "a"}, {"message": "b"}]
+        records = []
+        for i, payload in enumerate(payloads, 1):
+            record, _ = make_signed_record(payload, seq=i)
+            records.append(record)
+
+        buf = io.StringIO()
+        write_bundle(buf, header=make_bundle_header(), records=records)
+        buf.seek(0)
+
+        with pytest.raises(ValueError, match="max_records"):
+            read_bundle(buf, max_records=1)
+
+    def test_read_bundle_rejects_total_bytes_above_limit(self):
+        record, _ = make_signed_record({"message": "oversized"}, seq=1)
+        buf = io.StringIO()
+        write_bundle(buf, header=make_bundle_header(), records=[record])
+        buf.seek(0)
+
+        with pytest.raises(ValueError, match="max_total_bytes"):
+            read_bundle(buf, max_total_bytes=64)
 
 
 class TestOrderingViolations:

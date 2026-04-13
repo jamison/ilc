@@ -1,9 +1,16 @@
 import json
 import sys
 from io import StringIO
+from unittest.mock import Mock
+
 from fastapi.testclient import TestClient
 from ilc_core.asgi import app
-from ilc_core.cli.ep_task_cli import run_ep_task_cli
+from ilc_core.cli.ep_task_cli import (
+    CONNECT_TIMEOUT_S,
+    READ_TIMEOUT_S,
+    HttpClient,
+    run_ep_task_cli,
+)
 
 client = TestClient(app)
 
@@ -49,3 +56,37 @@ def test_cli_demo(capsys):
     captured = capsys.readouterr()
     assert "Success!" in captured.out
     assert "task:demo:cli" in captured.out
+
+
+def test_http_client_get_uses_bifurcated_timeouts(monkeypatch):
+    response = Mock()
+    called = {}
+
+    def fake_get(url, timeout):
+        called["url"] = url
+        called["timeout"] = timeout
+        return response
+
+    monkeypatch.setattr("ilc_core.cli.ep_task_cli.requests.get", fake_get)
+    client_wrapper = HttpClient("http://127.0.0.1:8000")
+    assert client_wrapper.get("/test") is response
+    assert called["url"] == "http://127.0.0.1:8000/test"
+    assert called["timeout"] == (CONNECT_TIMEOUT_S, READ_TIMEOUT_S)
+
+
+def test_http_client_post_uses_bifurcated_timeouts(monkeypatch):
+    response = Mock()
+    called = {}
+
+    def fake_post(url, json, timeout):
+        called["url"] = url
+        called["json"] = json
+        called["timeout"] = timeout
+        return response
+
+    monkeypatch.setattr("ilc_core.cli.ep_task_cli.requests.post", fake_post)
+    client_wrapper = HttpClient("http://127.0.0.1:8000")
+    assert client_wrapper.post("/test", {"ok": True}) is response
+    assert called["url"] == "http://127.0.0.1:8000/test"
+    assert called["json"] == {"ok": True}
+    assert called["timeout"] == (CONNECT_TIMEOUT_S, READ_TIMEOUT_S)

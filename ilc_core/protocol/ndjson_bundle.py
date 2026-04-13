@@ -33,6 +33,8 @@ from ..encoding.cidv1 import parse_nodeid_strict
 # === Constants ===
 
 DEFAULT_MAX_LINE_BYTES = 1_048_576  # 1 MiB
+DEFAULT_MAX_RECORDS_PER_BUNDLE = 100_000
+DEFAULT_MAX_TOTAL_BYTES_PER_BUNDLE = 64 * 1024 * 1024  # 64 MiB
 
 BUNDLE_VERSION = 1
 RECORD_KIND_COSE_SIGN1 = "cose_sign1"
@@ -428,6 +430,8 @@ def iter_bundle(
     require_footer: bool = False,
     validate_footer: bool = True,
     max_line_bytes: int = DEFAULT_MAX_LINE_BYTES,
+    max_records: int = DEFAULT_MAX_RECORDS_PER_BUNDLE,
+    max_total_bytes: int = DEFAULT_MAX_TOTAL_BYTES_PER_BUNDLE,
 ) -> Iterator[tuple[str, dict]]:
     """Iterate over bundle lines, yielding (type, obj) tuples.
     
@@ -451,11 +455,19 @@ def iter_bundle(
     prev_seq = None
     record_count = 0
     hasher = hashlib.sha256()
+    total_bytes = 0
     
     pending_footer: dict | None = None
     
     for raw_line in fp:
         line_num += 1
+        line_bytes = raw_line.encode("utf-8")
+        total_bytes += len(line_bytes)
+        if total_bytes > max_total_bytes:
+            raise ValueError(
+                "NDJSON bundle exceeded max_total_bytes "
+                f"({total_bytes} bytes > {max_total_bytes} limit)"
+            )
         obj = _parse_bundle_line(
             raw_line,
             line_num=line_num,
@@ -477,6 +489,11 @@ def iter_bundle(
             validate_bundle_record(obj, line_num=line_num, prev_seq=prev_seq)
             prev_seq = obj["seq"]
             record_count += 1
+            if record_count > max_records:
+                raise ValueError(
+                    "NDJSON bundle exceeded max_records "
+                    f"({record_count} records > {max_records} limit)"
+                )
             
             # Hash using normalized line (ending with \n)
             normalized = raw_line.rstrip("\r\n") + "\n"
@@ -515,6 +532,8 @@ def read_bundle(
     require_footer: bool = False,
     validate_footer: bool = True,
     max_line_bytes: int = DEFAULT_MAX_LINE_BYTES,
+    max_records: int = DEFAULT_MAX_RECORDS_PER_BUNDLE,
+    max_total_bytes: int = DEFAULT_MAX_TOTAL_BYTES_PER_BUNDLE,
 ) -> dict:
     """Read entire bundle into memory.
     
@@ -532,6 +551,8 @@ def read_bundle(
         require_footer=require_footer,
         validate_footer=validate_footer,
         max_line_bytes=max_line_bytes,
+        max_records=max_records,
+        max_total_bytes=max_total_bytes,
     ):
         if event_type == "header":
             result["header"] = obj
