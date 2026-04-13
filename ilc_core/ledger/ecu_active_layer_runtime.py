@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from decimal import Decimal, InvalidOperation
 
 
 DEFAULT_FIXED_EXPIRY_VALIDATION_EPOCHS = 2880
@@ -8,6 +9,7 @@ DEFAULT_ACTIVE_EARMARK_CAP_PER_AGENT = 8
 
 RESERVED_STATES = frozenset({"proposed", "accepted", "delivered"})
 TERMINAL_STATES = frozenset({"debited", "expired"})
+ZERO = Decimal("0")
 
 
 @dataclass
@@ -16,7 +18,7 @@ class EarmarkRecord:
     commission_id: str
     commissioning_agent_id: str
     performing_agent_id: str
-    earmark_amount: float
+    earmark_amount: Decimal
     state: str
     proposal_epoch: int
     expiry_epoch: int
@@ -27,7 +29,9 @@ class EarmarkRecord:
     contribution_id: str | None
 
     def to_json(self) -> dict[str, object]:
-        return asdict(self)
+        payload = asdict(self)
+        payload["earmark_amount"] = _decimal_to_string(self.earmark_amount)
+        return payload
 
 
 class EcuActiveLayerRuntime:
@@ -46,21 +50,22 @@ class EcuActiveLayerRuntime:
 
         self.fixed_expiry_validation_epochs = fixed_expiry_validation_epochs
         self.active_earmark_cap_per_agent = active_earmark_cap_per_agent
-        self._accrued_ecu: dict[str, float] = {}
+        self._accrued_ecu: dict[str, Decimal] = {}
         self._earmarks: dict[str, EarmarkRecord] = {}
 
-    def set_accrued_ecu(self, agent_id: str, amount: float) -> None:
-        if amount < 0:
+    def set_accrued_ecu(self, agent_id: str, amount: int | float | str | Decimal) -> None:
+        normalized_amount = _to_decimal(amount)
+        if normalized_amount < ZERO:
             raise ValueError("accrued_ecu_cannot_be_negative")
-        if float(amount) < self._reserved_earmark_total(agent_id):
+        if normalized_amount < self._reserved_earmark_total(agent_id):
             raise ValueError("accrued_ecu_cannot_drop_below_reserved_earmarks")
-        self._accrued_ecu[agent_id] = float(amount)
+        self._accrued_ecu[agent_id] = normalized_amount
 
     def get_accrued_ecu(self, agent_id: str) -> float:
-        return self._accrued_ecu.get(agent_id, 0.0)
+        return float(self._accrued_ecu.get(agent_id, ZERO))
 
     def spendable_ecu(self, agent_id: str) -> float:
-        return self.get_accrued_ecu(agent_id) - self._reserved_earmark_total(agent_id)
+        return float(self._spendable_ecu_decimal(agent_id))
 
     def earmark_propose(
         self,
@@ -69,13 +74,17 @@ class EcuActiveLayerRuntime:
         commission_id: str,
         commissioning_agent_id: str,
         performing_agent_id: str,
-        earmark_amount: float,
+        earmark_amount: int | float | str | Decimal,
         proposal_epoch: int,
         task_description_hash: str,
     ) -> dict[str, object]:
         if earmark_id in self._earmarks:
             return self._failure("earmark_id_conflict", earmark_id=earmark_id)
-        if earmark_amount <= 0:
+        try:
+            earmark_amount_decimal = _to_decimal(earmark_amount)
+        except ValueError:
+            return self._failure("invalid_earmark_amount", earmark_amount=earmark_amount)
+        if earmark_amount_decimal <= ZERO:
             return self._failure("invalid_earmark_amount", earmark_amount=earmark_amount)
         if commissioning_agent_id == performing_agent_id:
             return self._failure(
@@ -87,11 +96,12 @@ class EcuActiveLayerRuntime:
                 "active_earmark_cap_exceeded",
                 active_earmark_cap_per_agent=self.active_earmark_cap_per_agent,
             )
-        if self.spendable_ecu(commissioning_agent_id) < float(earmark_amount):
+        spendable_ecu_decimal = self._spendable_ecu_decimal(commissioning_agent_id)
+        if spendable_ecu_decimal < earmark_amount_decimal:
             return self._failure(
                 "oversubscribed_earmark_blocked",
-                spendable_ecu=self.spendable_ecu(commissioning_agent_id),
-                earmark_amount=float(earmark_amount),
+                spendable_ecu=_decimal_to_string(spendable_ecu_decimal),
+                earmark_amount=_decimal_to_string(earmark_amount_decimal),
             )
 
         record = EarmarkRecord(
@@ -99,7 +109,7 @@ class EcuActiveLayerRuntime:
             commission_id=commission_id,
             commissioning_agent_id=commissioning_agent_id,
             performing_agent_id=performing_agent_id,
-            earmark_amount=float(earmark_amount),
+            earmark_amount=earmark_amount_decimal,
             state="proposed",
             proposal_epoch=int(proposal_epoch),
             expiry_epoch=int(proposal_epoch) + self.fixed_expiry_validation_epochs,
@@ -190,7 +200,10 @@ class EcuActiveLayerRuntime:
                 continue
             if record.state == "delivered":
                 if record.delivery_epoch is not None and int(commit_epoch) > record.delivery_epoch:
-                    commissioning_balance = self.get_accrued_ecu(record.commissioning_agent_id)
+                    commissioning_balance = self._accrued_ecu.get(
+                        record.commissioning_agent_id,
+                        ZERO,
+                    )
                     self._accrued_ecu[record.commissioning_agent_id] = (
                         commissioning_balance - record.earmark_amount
                     )
@@ -246,12 +259,19 @@ class EcuActiveLayerRuntime:
             if record.commissioning_agent_id == agent_id and record.state in RESERVED_STATES
         )
 
-    def _reserved_earmark_total(self, agent_id: str) -> float:
+    def _reserved_earmark_total(self, agent_id: str) -> Decimal:
         return sum(
-            record.earmark_amount
-            for record in self._earmarks.values()
-            if record.commissioning_agent_id == agent_id and record.state in RESERVED_STATES
+            (
+                record.earmark_amount
+                for record in self._earmarks.values()
+                if record.commissioning_agent_id == agent_id
+                and record.state in RESERVED_STATES
+            ),
+            ZERO,
         )
+
+    def _spendable_ecu_decimal(self, agent_id: str) -> Decimal:
+        return self._accrued_ecu.get(agent_id, ZERO) - self._reserved_earmark_total(agent_id)
 
     def _failure(self, token: str, **data: object) -> dict[str, object]:
         return {
@@ -266,3 +286,24 @@ def item_involves_agent(*, record: EarmarkRecord, agent_id: str) -> bool:
         record.commissioning_agent_id == agent_id
         or record.performing_agent_id == agent_id
     )
+
+
+def _to_decimal(value: int | float | str | Decimal) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError("boolean_not_valid_amount")
+    if isinstance(value, Decimal):
+        return value
+    if isinstance(value, int):
+        return Decimal(value)
+    if isinstance(value, float):
+        return Decimal(str(value))
+    if isinstance(value, str):
+        try:
+            return Decimal(value)
+        except InvalidOperation as exc:
+            raise ValueError("invalid_decimal_string") from exc
+    raise ValueError("unsupported_amount_type")
+
+
+def _decimal_to_string(value: Decimal) -> str:
+    return format(value, "f")
