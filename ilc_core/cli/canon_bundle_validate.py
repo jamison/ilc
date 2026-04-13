@@ -59,7 +59,7 @@ def main() -> int:
         report.setdefault("warnings", []).append("Signature verification skipped")
     
     # Single-line JSON output
-    print(json.dumps(report, separators=(",", ":"), sort_keys=False))
+    print(json.dumps(report, separators=(",", ":"), sort_keys=True, allow_nan=False))
     
     # Optional Report Generation
     if args.report:

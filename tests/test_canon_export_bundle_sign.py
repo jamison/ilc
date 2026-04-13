@@ -97,3 +97,16 @@ class TestCanonExportBundleSign:
         manifest = json.loads((valid_bundle / "manifest.json").read_text())
         expected_key_fingerprint = derive_key_fingerprint(test_key)
         assert manifest["key_fingerprint"] == expected_key_fingerprint
+
+    def test_manifest_is_rewritten_in_canonical_json_form(self, valid_bundle, test_key):
+        sign_manifest(valid_bundle, test_key, overwrite=True)
+        text = (valid_bundle / "manifest.json").read_text(encoding="utf-8")
+        assert ": " not in text
+        loaded = json.loads(text)
+        assert text == json.dumps(loaded, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+    def test_sign_manifest_rejects_non_finite_manifest_constants(self, valid_bundle, test_key):
+        (valid_bundle / "manifest.json").write_text('{"foo":NaN}', encoding="utf-8")
+        with pytest.raises(Exception) as excinfo:
+            sign_manifest(valid_bundle, test_key, overwrite=True)
+        assert "invalid_manifest_non_finite" in str(excinfo.value)

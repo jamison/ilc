@@ -22,7 +22,24 @@ class TestCanonBundlePipeline:
     def valid_bundle(self, tmp_path):
         from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
         bundle = tmp_path / "bundle"
-        export = {"canon_hash": "abc123", "canon_export_format": "v0.1"}
+        export = {
+            "canon_export_format": "v0.1",
+            "canon_hash": "abc123",
+            "exported_at": "2026-04-14T00:00:00Z",
+            "meta": {
+                "canon_export_version": "v0.1",
+                "epoch_count": 0,
+                "snapshot_count": 1,
+                "balance_count": 1,
+            },
+            "epochs": [],
+            "snapshots": [
+                {
+                    "epoch_id": "epoch-0001",
+                    "balances": {"agent:test": "1.0"},
+                }
+            ],
+        }
         validation = {"ok": True, "errors": [], "warnings": []}
         write_canon_export_bundle(export, validation, bundle)
         return bundle
