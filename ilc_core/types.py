@@ -1,8 +1,12 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Literal, Union, Dict, Any
+from decimal import Decimal
+from typing import Any, Dict, List, Literal, Optional, Union
 from datetime import datetime, timezone
 import hashlib
 import json
+
+from pydantic import BaseModel, Field, field_serializer, field_validator
+
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, to_decimal
 
 # THE KERNEL TAXONOMY
 NodeType = Literal[
@@ -23,6 +27,12 @@ LinkType = Literal[
     "depends_on",
 ]
 
+
+def _parse_net_stake(value: object) -> Decimal:
+    if value is None:
+        return Decimal("0")
+    return to_decimal(value, token="invalid_net_stake")
+
 class Node(BaseModel):
     """
     The atomic unit of the Epistemological Graph.
@@ -37,13 +47,22 @@ class Node(BaseModel):
     signature: str = Field(..., description="Cryptographic signature")
     
     # Epistemic State
-    net_stake: float = 0.0
+    net_stake: Decimal = Field(default_factory=lambda: Decimal("0"))
 
     # Optional target for refutation-type nodes.
     # For now, used only when type == "refutation".
     target_id: Optional[str] = None
     # Optional parent lineage for claim/refutation nodes.
     parent_ids: List[str] = Field(default_factory=list)
+
+    @field_validator("net_stake", mode="before")
+    @classmethod
+    def _validate_net_stake(cls, value: object) -> Decimal:
+        return _parse_net_stake(value)
+
+    @field_serializer("net_stake")
+    def _serialize_net_stake(self, value: Decimal) -> str:
+        return decimal_to_canonical_string(value)
 
     def _legacy_id_payload(self) -> bytes:
         """Build legacy SHA-256 payload bytes for offline migration tooling."""
@@ -94,10 +113,19 @@ class ClaimRecord(BaseModel):
     agent_id: str
     content: str
     signature: Optional[str] = None
-    net_stake: float = 0.0
+    net_stake: Decimal = Field(default_factory=lambda: Decimal("0"))
     timestamp: Optional[str] = None
     parent_ids: List[str] = Field(default_factory=list)
     target_id: Optional[str] = None
+
+    @field_validator("net_stake", mode="before")
+    @classmethod
+    def _validate_net_stake(cls, value: object) -> Decimal:
+        return _parse_net_stake(value)
+
+    @field_serializer("net_stake")
+    def _serialize_net_stake(self, value: Decimal) -> str:
+        return decimal_to_canonical_string(value)
 
 def node_to_claim_record(node: Node) -> ClaimRecord:
     """

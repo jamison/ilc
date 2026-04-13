@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Dict, Optional, List, Protocol
 import math
 import time
@@ -51,11 +52,11 @@ def _engine_update_epoch_metrics(
 
 def _engine_compute_tax_rate(
     age: float,
-    net_stake: float
+    net_stake: float | Decimal
 ) -> float:
     """Helper to compute maintenance tax rate based on age and reuse."""
     # Reuse count simulated by net_stake for now.
-    reuse_factor = max(1.0, net_stake)
+    reuse_factor = max(1.0, float(net_stake))
 
     base_tax = 0.01  # 1% per epoch (or per time unit)
     # Decay tax as age and reuse increase.
