@@ -217,7 +217,7 @@ Deliverables:
 - `docs/phases/phase_616_g8_public_receipt_schema_and_query_contract_spec_walkthrough.md`
 - `docs/phases/STATUS.md`
 
-Test structure: 10 tests. Pre-commit split: 8 passed, 2 failed. Main commit: spec + test only.
+Test structure: 11 tests. Pre-commit split: 9 passed, 2 failed. Main commit: spec + test only.
 No `ilc_core/` path. No CDL. No ADR.
 
 Commit subject (main): `docs(g8): phase 616 public receipt schema and query contract spec`
@@ -250,7 +250,7 @@ Deliverables:
 - `docs/phases/phase_618_g8_mvp_gate_synthesis_and_coherence_report_walkthrough.md`
 - `docs/phases/STATUS.md`
 
-Test structure: 8 tests. Main commit: coherence report + capsule + test. Backfill: walkthrough + STATUS.md.
+Test structure: 9 tests. Main commit: coherence report + capsule + test. Backfill: walkthrough + STATUS.md.
 No `ilc_core/` path. No CDL. No ADR. Capsule version bump to v3.3.
 
 Commit subject (main): `docs(g8): phase 618 mvp gate synthesis and coherence report`
@@ -319,9 +319,14 @@ No CDL ratifications occur in this window. Historical prelock hardening is not a
 
 No `ilc_core/` files are mutation targets in this window. All phases must assert `not any(p.startswith("ilc_core/") for p in commit_paths)` in their commit path tests.
 
-### Closure gate selftest guard chain
+### Closure gate structural coverage
 
-Phase 619 closure gate must enumerate all prior gate tests in its category 3 selftest guard chain. Read each gate test file explicitly (do not reason by analogy). The full list includes at minimum: test_phase_607, test_phase_612, and all 613-618 test files.
+Phase 619 closure gate must use the six-category Phase 605 structural pattern
+and explicitly cover the full current-window verification surface rather than
+reasoning by analogy. Category 2 must cover the four MVP spec phase tests
+(Phases 614-617). Category 3 must cover the sequence-lock and coherence tests
+(Phases 613 and 618). The gate does not use the older selftest guard-chain
+pattern.
 
 ---
 
