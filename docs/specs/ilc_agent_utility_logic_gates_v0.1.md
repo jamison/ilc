@@ -209,6 +209,16 @@ pathways and does not block them.
 **Fail criteria:** Any proposal that explicitly prohibits machine-to-machine ECU
 exchange or agent-commissioning-agent pathways as a permanent architectural rule.
 
+**Named-vehicle rule (prospective, applies from Window 624 forward):** Any
+window that touches the economic participation surface — i.e., any window that
+defines, describes, or modifies agent-commissioning, ECU accrual, earmark, or
+debit semantics — must either (a) advance the debit-enforcement side of the
+agent-commissioning loop in that window, or (b) explicitly name a constitutional
+vehicle (CDL number or ADR) and a target window for the debit side. Deferring
+the debit side with no named vehicle and no target window is treated as a gate
+failure, not a neutral assessment. This rule does not apply retroactively to
+Phase 622, which was canon-correct when written.
+
 ---
 
 ## Governance Rule
