@@ -1,13 +1,16 @@
 import argparse
 import json
 import sys
+from typing import List, Optional, Protocol, TypeAlias, cast
+
 import requests
-from typing import Optional, List, Protocol, TypeAlias, cast
 
 from ilc_core.cli._cli_error import build_cli_error_payload
 
 JsonScalar: TypeAlias = str | int | float | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
+CONNECT_TIMEOUT_S = 2.0
+READ_TIMEOUT_S = 30.0
 
 
 class HttpResponseLike(Protocol):
@@ -43,10 +46,14 @@ class HttpClient:
         self.base_url = base_url.rstrip("/")
 
     def get(self, path: str) -> requests.Response:
-        return requests.get(f"{self.base_url}{path}")
+        return requests.get(f"{self.base_url}{path}", timeout=(CONNECT_TIMEOUT_S, READ_TIMEOUT_S))
 
     def post(self, path: str, json: object) -> requests.Response:
-        return requests.post(f"{self.base_url}{path}", json=json)
+        return requests.post(
+            f"{self.base_url}{path}",
+            json=json,
+            timeout=(CONNECT_TIMEOUT_S, READ_TIMEOUT_S),
+        )
 
 def _handle_schema(client: HttpClientLike) -> int:
     try:
@@ -57,7 +64,9 @@ def _handle_schema(client: HttpClientLike) -> int:
         return _emit_cli_error(
             "schema_fetch_failed", detail=f"Error fetching schema: {res.status_code}"
         )
-    except Exception as e:
+    except requests.RequestException as e:
+        return _emit_cli_error("schema_fetch_error", detail=f"Error: {e}")
+    except ValueError as e:
         return _emit_cli_error("schema_fetch_error", detail=f"Error: {e}")
 
 def _handle_submit(client: HttpClientLike, file_path: Optional[str]) -> int:
@@ -87,13 +96,13 @@ def _handle_submit(client: HttpClientLike, file_path: Optional[str]) -> int:
             response_body = ""
             try:
                 response_body = json.dumps(res.json(), separators=(",", ":"))
-            except Exception:
+            except ValueError:
                 response_body = res.text
             return _emit_cli_error(
                 "submit_failed",
                 detail=f"Error submitting task: {res.status_code}; response: {response_body}",
             )
-    except Exception as e:
+    except (OSError, json.JSONDecodeError, requests.RequestException, ValueError) as e:
         return _emit_cli_error("submit_error", detail=f"Error: {e}")
 
 def _handle_demo(client: HttpClientLike) -> int:
@@ -121,7 +130,7 @@ def _handle_demo(client: HttpClientLike) -> int:
             return _emit_cli_error(
                 "demo_submit_failed", detail=f"Error submitting demo task: {res.status_code}"
             )
-    except Exception as e:
+    except (requests.RequestException, ValueError) as e:
         return _emit_cli_error("demo_submit_error", detail=f"Error: {e}")
 
 def _build_cli_parser() -> argparse.ArgumentParser:
