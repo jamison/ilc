@@ -5,6 +5,7 @@ from typing import Any, Dict, Iterable, Literal, Optional, List
 import json
 
 from ilc_core.exceptions import EventLogValidationError
+from ilc_core.ledger.exact_numeric import exact_to_canonical_string, parse_non_negative_decimal
 
 EventKind = Literal[
     "task_outcome",
@@ -193,10 +194,20 @@ def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
         raise EventLogValidationError("summary.task_count must be a non-negative integer")
     if not isinstance(summary["agent_count"], int) or summary["agent_count"] < 0:
         raise EventLogValidationError("summary.agent_count must be a non-negative integer")
-    if not isinstance(summary["reward_total"], (int, float)) or summary["reward_total"] < 0:
-        raise EventLogValidationError("summary.reward_total must be a non-negative number")
-    if not isinstance(summary["stake_total"], (int, float)) or summary["stake_total"] < 0:
-        raise EventLogValidationError("summary.stake_total must be a non-negative number")
+    try:
+        parse_non_negative_decimal(
+            summary["reward_total"],
+            token="summary.reward_total must be a non-negative number",
+        )
+    except ValueError as exc:
+        raise EventLogValidationError(str(exc)) from exc
+    try:
+        parse_non_negative_decimal(
+            summary["stake_total"],
+            token="summary.stake_total must be a non-negative number",
+        )
+    except ValueError as exc:
+        raise EventLogValidationError(str(exc)) from exc
 
     # Validate checksums
     checksums = payload["checksums"]
@@ -236,7 +247,17 @@ def make_commit_epoch_event(
         "namespace_id": namespace_id,
         "created_at": created_at,
         "finalization_state": finalization_state,
-        "summary": summary,
+        "summary": {
+            **summary,
+            "reward_total": exact_to_canonical_string(
+                summary.get("reward_total", "0"),
+                token="summary.reward_total must be a non-negative number",
+            ),
+            "stake_total": exact_to_canonical_string(
+                summary.get("stake_total", "0"),
+                token="summary.stake_total must be a non-negative number",
+            ),
+        },
         "checksums": checksums,
     }
     

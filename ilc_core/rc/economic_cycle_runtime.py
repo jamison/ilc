@@ -8,6 +8,13 @@ from typing import Any
 
 from ilc_core.graph import EpistemicGraph
 from ilc_core.ledger.backend import settle_commit_epoch
+from ilc_core.ledger.exact_numeric import (
+    ZERO,
+    decimal_to_canonical_string,
+    normalize_json_scalars,
+    parse_non_negative_decimal,
+    to_decimal,
+)
 from ilc_core.ledger.ledger_export import (
     export_ledger_distribution_checks_csv,
     export_ledger_state_csv,
@@ -36,7 +43,10 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 def _write_json(path: Path, payload: dict[str, Any] | list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(normalize_json_scalars(payload), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _sha256_bytes(payload: bytes) -> str:
@@ -126,7 +136,15 @@ def _node_from_submission(submission: dict[str, Any]) -> Node:
     if not isinstance(output_hash, str) or not output_hash:
         raise EconomicCycleRuntimeError("submission_output_hash_missing")
     ecu_estimate = ep_task.get("ecu_estimate", ep_task.get("ecu.estimate", 0.0))
-    if isinstance(ecu_estimate, bool) or not isinstance(ecu_estimate, (int, float)):
+    try:
+        ecu_estimate_decimal = parse_non_negative_decimal(
+            ecu_estimate,
+            token="submission_ecu_estimate_invalid",
+        )
+    except ValueError as exc:
+        raise EconomicCycleRuntimeError(str(exc)) from exc
+
+    if isinstance(ecu_estimate, bool):
         raise EconomicCycleRuntimeError("submission_ecu_estimate_invalid")
 
     content = _dag_cbor_safe({
@@ -144,7 +162,7 @@ def _node_from_submission(submission: dict[str, Any]) -> Node:
         content=content,
         agent_id=agent_id,
         signature=f"agent-loop-submission:{output_hash[:24]}",
-        net_stake=float(ecu_estimate),
+        net_stake=float(ecu_estimate_decimal),
     )
     node.id = node.compute_id()
     return node
@@ -351,7 +369,7 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
     ledger_root = output_root / "ledger-store"
     ledger = LmdbLedgerBackend(ledger_root)
 
-    claim_totals: dict[str, float] = {}
+    claim_totals: dict[str, Any] = {}
     for claim in claims:
         if not isinstance(claim, dict):
             raise EconomicCycleRuntimeError("ecu_claim_invalid")
@@ -359,27 +377,37 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
         amount = claim.get("amount")
         if not isinstance(agent_id, str) or not agent_id:
             raise EconomicCycleRuntimeError("ecu_claim_agent_id_invalid")
-        if isinstance(amount, bool) or not isinstance(amount, (int, float)):
-            raise EconomicCycleRuntimeError("ecu_claim_amount_invalid")
-        claim_totals[agent_id] = round(claim_totals.get(agent_id, 0.0) + float(amount), 12)
+        try:
+            amount_decimal = parse_non_negative_decimal(
+                amount,
+                token="ecu_claim_amount_invalid",
+            )
+        except ValueError as exc:
+            raise EconomicCycleRuntimeError(str(exc)) from exc
+        claim_totals[agent_id] = claim_totals.get(agent_id, ZERO) + amount_decimal
 
     ledger_payload = claims_payload.get("ledger")
     if not isinstance(ledger_payload, dict):
         raise EconomicCycleRuntimeError("ecu_claim_ledger_missing")
     rewards_paid = ledger_payload.get("rewards_paid")
-    if isinstance(rewards_paid, bool) or not isinstance(rewards_paid, (int, float)):
-        raise EconomicCycleRuntimeError("ecu_claim_rewards_paid_invalid")
+    try:
+        rewards_paid_decimal = parse_non_negative_decimal(
+            rewards_paid,
+            token="ecu_claim_rewards_paid_invalid",
+        )
+    except ValueError as exc:
+        raise EconomicCycleRuntimeError(str(exc)) from exc
 
     epoch_index = scenario_manifest.get("epoch")
     if isinstance(epoch_index, bool) or not isinstance(epoch_index, int):
         epoch_index = int(claims[0].get("epoch", 0))
     task_id = _coerce_task_id(claims[0].get("task_id")) or _coerce_task_id(scenario_manifest.get("task_id")) or _scenario_task_id(scenario_manifest)
     epoch_id = f"rc0_1::{task_id}::epoch::{epoch_index}"
-    reward_total = round(sum(claim_totals.values()), 12)
-    if abs(reward_total - float(rewards_paid)) > 1e-9:
+    reward_total = sum(claim_totals.values(), ZERO)
+    if reward_total != rewards_paid_decimal:
         raise EconomicCycleRuntimeError("ecu_claim_reward_total_mismatch")
     total_stake = reward_total
-    if total_stake <= 0.0:
+    if total_stake <= ZERO:
         raise EconomicCycleRuntimeError("ecu_claim_reward_total_non_positive")
 
     claim_batch_sha256 = _sha256_json(claims_payload)
@@ -393,8 +421,12 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
             raise EconomicCycleRuntimeError("economic_epoch_replay_conflict")
         existing_summary = existing_epoch_record.get("summary", {})
         existing_reward_total = existing_summary.get("reward_total") if isinstance(existing_summary, dict) else None
-        if isinstance(existing_reward_total, (int, float)) and not isinstance(existing_reward_total, bool):
-            if abs(float(existing_reward_total) - reward_total) > 1e-9:
+        if existing_reward_total is not None:
+            existing_reward_total_decimal = to_decimal(
+                existing_reward_total,
+                token="economic_epoch_reward_conflict",
+            )
+            if existing_reward_total_decimal != reward_total:
                 raise EconomicCycleRuntimeError("economic_epoch_reward_conflict")
         settlement_status = "idempotent_replay"
 
@@ -454,7 +486,7 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
         "epoch_index": epoch_index,
         "claim_count": len(claims),
         "claim_batch_sha256": claim_batch_sha256,
-        "reward_total": reward_total,
+        "reward_total": decimal_to_canonical_string(reward_total),
         "agent_count": len(claim_totals),
         "settlement_status": settlement_status,
         "ledger_root": str(ledger_root),
@@ -462,7 +494,10 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
         "ledger_state_path": str(ledger_json_path),
         "protocol_event_log_path": str(output_root / "protocol_events.ndjson"),
         "distribution_check_ok": bool(check.get("ok", False)) if isinstance(check, dict) else False,
-        "balances": dict(sorted(ledger.balances.items())),
+        "balances": {
+            agent_id: decimal_to_canonical_string(balance)
+            for agent_id, balance in sorted(ledger.balances.items())
+        },
     }
 
 
@@ -473,10 +508,17 @@ def _aggregate_claim_totals(claims: list[Any]) -> dict[str, dict[str, Any]]:
             continue
         agent_id = claim.get("agent_id")
         amount = claim.get("amount")
-        if not isinstance(agent_id, str) or isinstance(amount, bool) or not isinstance(amount, (int, float)):
+        if not isinstance(agent_id, str):
             continue
-        row = claim_totals.setdefault(agent_id, {"ecu_claim_total": 0.0, "claim_kinds": []})
-        row["ecu_claim_total"] = round(float(row["ecu_claim_total"]) + float(amount), 12)
+        try:
+            amount_decimal = parse_non_negative_decimal(
+                amount,
+                token="wallet_claim_amount_invalid",
+            )
+        except ValueError:
+            continue
+        row = claim_totals.setdefault(agent_id, {"ecu_claim_total": ZERO, "claim_kinds": []})
+        row["ecu_claim_total"] = row["ecu_claim_total"] + amount_decimal
         claim_kind = claim.get("claim_kind")
         if isinstance(claim_kind, str):
             row["claim_kinds"].append(claim_kind)
@@ -487,7 +529,7 @@ def export_wallet_state(
     *,
     scenario_root: Path,
     output_root: Path,
-    balances: dict[str, float],
+    balances: dict[str, object],
     settlement_manifest: dict[str, Any],
 ) -> dict[str, Any]:
     claims_payload = _load_json(scenario_root / "panel" / "ecu_claims.json")
@@ -511,18 +553,29 @@ def export_wallet_state(
         "generated_at": _utc_now(),
         "wallets": {
             agent_id: {
-                "balance_ilc": round(float(balance), 12),
-                "ecu_claim_total": round(float(claim_totals.get(agent_id, {}).get("ecu_claim_total", 0.0)), 12),
+                "balance_ilc": decimal_to_canonical_string(
+                    to_decimal(balances.get(agent_id, "0"), token="wallet_balance_invalid")
+                ),
+                "ecu_claim_total": decimal_to_canonical_string(
+                    to_decimal(
+                        claim_totals.get(agent_id, {}).get("ecu_claim_total", ZERO),
+                        token="wallet_claim_total_invalid",
+                    )
+                ),
                 "claim_kinds": sorted(set(claim_totals.get(agent_id, {}).get("claim_kinds", []))),
                 "cluster_id": participants.get(agent_id, {}).get("cluster_id"),
                 "node_name": participants.get(agent_id, {}).get("node_name"),
                 "slot": participants.get(agent_id, {}).get("slot"),
                 "variant": participants.get(agent_id, {}).get("variant"),
-                "reward_status": "rewarded" if float(balance) > 0.0 else "not_rewarded",
+                "reward_status": (
+                    "rewarded"
+                    if to_decimal(balances.get(agent_id, "0"), token="wallet_balance_invalid") > ZERO
+                    else "not_rewarded"
+                ),
                 "last_settled_epoch_id": epoch_id,
             }
             for agent_id, balance in (
-                (agent_id, balances.get(agent_id, 0.0)) for agent_id in wallet_agent_ids
+                (agent_id, balances.get(agent_id, "0")) for agent_id in wallet_agent_ids
             )
         },
     }
@@ -561,8 +614,8 @@ def export_wallet_state(
             "claim_count": len(claim_history),
             "claim_ids": claim_ids,
             "claim_digest": claim_digest,
-            "reward_delta_ilc": round(float(row["ecu_claim_total"]), 12),
-            "balance_after_ilc": round(float(row["balance_ilc"]), 12),
+            "reward_delta_ilc": row["ecu_claim_total"],
+            "balance_after_ilc": row["balance_ilc"],
             "reward_status": row["reward_status"],
             "distribution_check_ok": distribution_check_ok,
             "settlement_status": settlement_status,
@@ -626,7 +679,11 @@ def export_wallet_state(
         "version": RUNTIME_VERSION,
         "generated_at": wallet_payload["generated_at"],
         "wallet_count": len(wallet_payload["wallets"]),
-        "rewarded_wallet_count": sum(1 for row in wallet_payload["wallets"].values() if float(row["balance_ilc"]) > 0.0),
+        "rewarded_wallet_count": sum(
+            1
+            for row in wallet_payload["wallets"].values()
+            if to_decimal(row["balance_ilc"], token="wallet_balance_invalid") > ZERO
+        ),
         "latest_epoch_id": epoch_id,
         "claim_batch_sha256": claim_batch_sha256,
         "wallet_store_root": str(wallet_store_root),

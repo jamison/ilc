@@ -9,8 +9,12 @@ import datetime
 from dataclasses import asdict
 
 from ilc_core.ledger.backend import LedgerBackend
+from ilc_core.ledger.exact_numeric import (
+    exact_to_canonical_string,
+    normalize_json_scalars,
+)
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -48,16 +52,19 @@ def export_canon_state_json(
     # The ledger stores them as a dict, so json dump verify sort_keys=True handles the map keys.
     # We just need to ensure the values inside are also stable.
     stake_snapshots_data: dict[str, JsonObject] = {
-        k: asdict(v) for k, v in ledger.stake_snapshots.items()
+        k: normalize_json_scalars(asdict(v)) for k, v in ledger.stake_snapshots.items()
     }
     
     # Sort epoch records
     epoch_records_data: dict[str, JsonObject] = {
-        k: dict(v) for k, v in ledger.epoch_records.items()
+        k: normalize_json_scalars(dict(v)) for k, v in ledger.epoch_records.items()
     }
     
     # Balances are a simple dict, sort_keys=True handles it.
-    balances_data: dict[str, float] = ledger.balances.copy()
+    balances_data: dict[str, str] = {
+        agent_id: exact_to_canonical_string(amount, token="canon_export_balance_invalid")
+        for agent_id, amount in ledger.balances.items()
+    }
     
     # 2. Build payload structure
     payload: JsonObject = {

@@ -75,7 +75,7 @@ def test_ledger_export_in_memory(tmp_path):
     assert "stake_snapshots" in data
     assert "balances" in data
     assert data["epoch_records"]["ns:0001"]["status"] == "settled"
-    assert data["balances"]["agent_alice"] == 100.0
+    assert data["balances"]["agent_alice"] == "100"
     
     # Check CSV
     # Should have flattened summary_tasks etc
@@ -127,8 +127,8 @@ def test_export_ledger_distribution_checks_csv(tmp_path):
     row = content[1].split(",")
     assert row[0] == "ns:0001"
     assert row[1] == "True"
-    assert row[2] == "100.0"
-    assert row[3] == "100.0"
-    assert row[4] == "0.0"
+    assert row[2] == "100"
+    assert row[3] == "100"
+    assert row[4] == "0"
     assert row[5] == "alice:0.000000;bob:0.000001"
     assert row[6] == "deadbeef"

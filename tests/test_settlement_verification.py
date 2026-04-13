@@ -26,9 +26,9 @@ def test_verify_stake_distribution_ok():
     result = verify_stake_distribution(epoch_record, snapshot, balances_before, balances_after)
     
     assert result["ok"] is True
-    assert result["total_delta"] == 100.0
-    assert result["expected_total"] == 100.0
-    assert result["max_agent_error"] < 1e-6
+    assert result["total_delta"] == "100"
+    assert result["expected_total"] == "100"
+    assert result["max_agent_error"] == "0"
     assert not result["top_errors"]
 
 def test_verify_stub_ok():
@@ -48,8 +48,8 @@ def test_verify_stub_ok():
     result = verify_stake_distribution(epoch_record, None, balances_before, balances_after)
     
     assert result["ok"] is True
-    assert result["total_delta"] == 0.0
-    assert result["expected_total"] == 0.0
+    assert result["total_delta"] == "0"
+    assert result["expected_total"] == "0"
 
 def test_verify_mismatch():
     """
@@ -73,9 +73,9 @@ def test_verify_mismatch():
     result = verify_stake_distribution(epoch_record, snapshot, balances_before, balances_after)
     
     assert result["ok"] is False
-    assert result["total_delta"] == 90.0
-    assert result["expected_total"] == 100.0
-    assert abs(result["max_agent_error"] - 10.0) < 1e-6
+    assert result["total_delta"] == "90"
+    assert result["expected_total"] == "100"
+    assert result["max_agent_error"] == "10"
     assert result["top_errors"] # should contain info about agent 'a'
 
 def test_verify_extra_agent_leak():
@@ -100,7 +100,7 @@ def test_verify_extra_agent_leak():
     result = verify_stake_distribution(epoch_record, snapshot, balances_before, balances_after)
     
     assert result["ok"] is False # Total mismatch (15 vs 10) AND individual mismatch for b
-    assert result["total_delta"] == 15.0
+    assert result["total_delta"] == "15"
 
 def test_verify_distributed_without_snapshot_fails():
     """
