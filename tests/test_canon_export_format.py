@@ -36,7 +36,7 @@ class TestCanonExportFormat:
             "computed_hash": "hash_abc_comp",
             "canon_export_version": "v0.0.1",
             "epochs": [{"epoch_id": "e1"}],
-            "snapshots": [{"epoch_id": "e1", "balances": {"a": 1}}],
+            "snapshots": [{"epoch_id": "e1", "balances": {"a": 1.25}}],
             "balances": {"a": 100.0, "b": 200.0},
         }
         
@@ -49,7 +49,7 @@ class TestCanonExportFormat:
         assert export["meta"]["balance_count"] == 2
         
         assert export["epochs"][0]["epoch_id"] == "e1"
-        assert export["snapshots"][0]["balances"]["a"] == 1
+        assert export["snapshots"][0]["balances"]["a"] == "1.25"
         assert export["kpis"]["balance_count"] == 2
 
     def test_export_missing_required_keys(self):
@@ -93,3 +93,13 @@ class TestCanonExportFormat:
         
         assert "secret_key" not in export
         assert "secret_key" not in export["meta"]
+
+    @pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+    def test_rejects_non_finite_numeric_scalars(self, value):
+        canon_state = {
+            "canon_hash": "h",
+            "canon_export_version": "v",
+            "snapshots": [{"epoch_id": "e1", "balances": {"a": value}}],
+        }
+        with pytest.raises(ValueError, match="non_finite_numeric_scalar_in_canon_export"):
+            export_canon_format_v0_1(canon_state)

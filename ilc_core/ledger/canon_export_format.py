@@ -1,11 +1,14 @@
 from __future__ import annotations
+import math
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import TypeAlias, TypedDict
 
 from ilc_core.exceptions import LedgerExportContractError
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, exact_to_canonical_string
 
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -32,6 +35,28 @@ class CanonExportFormatV01(TypedDict, total=False):
     snapshots: list[JsonValue]
     kpis: CanonExportKpis
     computed_hash: JsonValue
+
+
+def _normalize_export_value(value: object) -> JsonValue:
+    if isinstance(value, bool) or value is None or isinstance(value, str) or isinstance(value, int):
+        return value
+    if isinstance(value, Decimal):
+        return decimal_to_canonical_string(value)
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise LedgerExportContractError("non_finite_numeric_scalar_in_canon_export")
+        return exact_to_canonical_string(
+            value,
+            token="invalid_numeric_scalar_in_canon_export",
+        )
+    if isinstance(value, dict):
+        return {
+            str(key): _normalize_export_value(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_normalize_export_value(item) for item in value]
+    raise LedgerExportContractError("unsupported_scalar_in_canon_export")
 
 
 def export_canon_format_v0_1(
@@ -69,13 +94,19 @@ def export_canon_format_v0_1(
     if not isinstance(balances_raw, dict):
         raise LedgerExportContractError("Field 'balances' must be a dict")
     
-    epochs: list[JsonValue] = epochs_raw
-    snapshots: list[JsonValue] = snapshots_raw
-    balances: dict[str, JsonValue] = balances_raw
+    epochs = _normalize_export_value(epochs_raw)
+    snapshots = _normalize_export_value(snapshots_raw)
+    balances = _normalize_export_value(balances_raw)
+    if not isinstance(epochs, list):
+        raise LedgerExportContractError("epochs must normalize to a list")
+    if not isinstance(snapshots, list):
+        raise LedgerExportContractError("snapshots must normalize to a list")
+    if not isinstance(balances, dict):
+        raise LedgerExportContractError("balances must normalize to a dict")
 
     # Construct Metadata
     meta: CanonExportMeta = {
-        "canon_export_version": canon_state.get("canon_export_version"),
+        "canon_export_version": _normalize_export_value(canon_state.get("canon_export_version")),
         "epoch_count": len(epochs),
         "snapshot_count": len(snapshots),
         "balance_count": len(balances),
@@ -84,7 +115,7 @@ def export_canon_format_v0_1(
     # Construct Payload
     payload: CanonExportFormatV01 = {
         "canon_export_format": "v0.1",
-        "canon_hash": canon_state.get("canon_hash"),
+        "canon_hash": _normalize_export_value(canon_state.get("canon_hash")),
         "exported_at": exported_at,
         "meta": meta,
         "epochs": epochs,
@@ -98,6 +129,6 @@ def export_canon_format_v0_1(
 
     computed_hash = canon_state.get("computed_hash")
     if computed_hash is not None:
-        payload["computed_hash"] = computed_hash
+        payload["computed_hash"] = _normalize_export_value(computed_hash)
 
     return payload

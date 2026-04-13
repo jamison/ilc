@@ -1,6 +1,7 @@
 
 import hashlib
 import json
+from decimal import Decimal
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TypeAlias, TypedDict
@@ -8,7 +9,7 @@ from typing import TypeAlias, TypedDict
 from ilc_core.ledger.canon_bundle_utils import file_sha256
 
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -40,6 +41,10 @@ class AuditArtifact(TypedDict):
     sig_alg: str | None
     signed_at: str | None
     key_status: str | None
+
+
+def _reject_non_finite_json_constant(value: str) -> JsonValue:
+    raise ValueError(f"non_finite_json_numeric_literal:{value}")
 
 
 
@@ -85,11 +90,15 @@ def create_audit_artifact(
     signed_at = None
     if manifest_path.exists():
         try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest = json.loads(
+                manifest_path.read_text(encoding="utf-8"),
+                parse_float=Decimal,
+                parse_constant=_reject_non_finite_json_constant,
+            )
             key_id = manifest.get("key_id")
             sig_alg = manifest.get("sig_alg")
             signed_at = manifest.get("signed_at")
-        except (json.JSONDecodeError, OSError):
+        except (json.JSONDecodeError, OSError, ValueError):
             pass
     
     # Determine key_status from registry
@@ -137,7 +146,12 @@ def write_audit_artifact(audit: AuditArtifact, audit_path: Path) -> bool:
     """
     try:
         audit_path.parent.mkdir(parents=True, exist_ok=True)
-        json_content = json.dumps(audit, separators=(",", ":"), sort_keys=False)
+        json_content = json.dumps(
+            audit,
+            separators=(",", ":"),
+            sort_keys=True,
+            allow_nan=False,
+        )
         audit_path.write_text(json_content, encoding="utf-8")
         return True
     except (OSError, TypeError, ValueError):

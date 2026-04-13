@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TypeAlias, TypedDict
 
+from ilc_core.ledger.exact_numeric import parse_non_negative_decimal
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -14,9 +17,17 @@ class CanonExportValidationResult(TypedDict):
     warnings: list[str]
 
 
-def _is_number(value: object) -> bool:
-    """Return True if value is int or float and NOT bool."""
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+def _is_valid_exact_numeric_scalar(value: object) -> bool:
+    if isinstance(value, Decimal):
+        return value.is_finite() and value >= 0
+    try:
+        parse_non_negative_decimal(
+            value,  # type: ignore[arg-type]
+            token="invalid_snapshot_balance",
+        )
+    except ValueError:
+        return False
+    return True
 
 
 def _validate_required_keys(doc: JsonObject, errors: list[str]) -> bool:
@@ -73,8 +84,10 @@ def _validate_snapshot_balances(idx: int, balances: object, errors: list[str]) -
         errors.append(f"snapshots[{idx}].balances must be a dictionary")
         return
     for agent_id, amount in balances.items():
-        if not _is_number(amount):
-            errors.append(f"snapshots[{idx}].balances['{agent_id}'] must be a number")
+        if not _is_valid_exact_numeric_scalar(amount):
+            errors.append(
+                f"snapshots[{idx}].balances['{agent_id}'] must be a non-negative exact numeric value"
+            )
 
 
 def _validate_snapshots(snapshots: object, errors: list[str]) -> None:
