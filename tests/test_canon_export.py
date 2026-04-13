@@ -76,7 +76,7 @@ def test_canon_export_structure():
         assert "canon_hash" in res
         assert "generated_at" in res
         assert res["canon_export_version"] == "v0.1"
-        assert res["balances"] == {"alice": 10.0}
+        assert res["balances"] == {"alice": "10"}
 
 def test_no_mutation():
     """

@@ -12,24 +12,29 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from ilc_core.ledger.exact_numeric import (
+    ZERO,
+    decimal_to_canonical_string,
+    to_decimal,
+)
 from tools import query_rc0_1_economic_state
 
 
-EPSILON = 1e-9
+def _exact_sum(values: Sequence[Any]) -> Any:
+    return sum((to_decimal(value) for value in values), ZERO)
 
 
-def _rounded_sum(values: Sequence[float]) -> float:
-    return round(sum(values), 12)
-
-
-def _claim_total(claims: list[dict[str, Any]]) -> float:
-    amounts: list[float] = []
+def _claim_total(claims: list[dict[str, Any]]) -> Any:
+    amounts: list[Any] = []
     for claim in claims:
         amount = claim.get("amount")
-        if isinstance(amount, bool) or not isinstance(amount, (int, float)):
+        if isinstance(amount, bool):
             continue
-        amounts.append(float(amount))
-    return _rounded_sum(amounts)
+        try:
+            amounts.append(to_decimal(amount))
+        except ValueError:
+            continue
+    return sum(amounts, ZERO)
 
 
 def _claim_digest(claim: dict[str, Any]) -> str:
@@ -116,35 +121,35 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
         failures.append("economic_wallet_count_mismatch")
 
     reward_total = summary.get("reward_total")
-    if isinstance(reward_total, bool) or not isinstance(reward_total, (int, float)):
+    try:
+        reward_total_decimal = to_decimal(reward_total)
+    except ValueError:
         failures.append("economic_reward_total_invalid")
-        reward_total_float = 0.0
-    else:
-        reward_total_float = round(float(reward_total), 12)
+        reward_total_decimal = ZERO
 
-    wallet_balance_total = _rounded_sum(
-        float(row.get("balance_ilc", 0.0))
+    wallet_balance_total = _exact_sum(
+        row.get("balance_ilc", "0")
         for row in wallet_rows.values()
-        if isinstance(row, dict) and isinstance(row.get("balance_ilc", 0.0), (int, float)) and not isinstance(row.get("balance_ilc"), bool)
+        if isinstance(row, dict) and not isinstance(row.get("balance_ilc"), bool)
     )
-    ledger_balance_total = _rounded_sum(
-        float(value)
+    ledger_balance_total = _exact_sum(
+        value
         for value in balances.values()
-        if isinstance(value, (int, float)) and not isinstance(value, bool)
+        if not isinstance(value, bool)
     )
 
-    if abs(wallet_balance_total - reward_total_float) > EPSILON:
+    if wallet_balance_total != reward_total_decimal:
         failures.append("economic_reward_total_mismatch:wallets")
-    if abs(ledger_balance_total - reward_total_float) > EPSILON:
+    if ledger_balance_total != reward_total_decimal:
         failures.append("economic_reward_total_mismatch:ledger")
-    if abs(wallet_balance_total - ledger_balance_total) > EPSILON:
+    if wallet_balance_total != ledger_balance_total:
         failures.append("economic_balance_surface_mismatch")
 
     expected_rewarded_wallet_count = wallet_manifest.get("rewarded_wallet_count")
     rewarded_wallet_count = sum(
         1
         for row in wallet_rows.values()
-        if isinstance(row, dict) and float(row.get("balance_ilc", 0.0)) > 0.0
+        if isinstance(row, dict) and to_decimal(row.get("balance_ilc", "0")) > ZERO
     )
     if isinstance(expected_rewarded_wallet_count, int) and expected_rewarded_wallet_count != rewarded_wallet_count:
         failures.append("economic_rewarded_wallet_count_mismatch")
@@ -185,8 +190,8 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
             failures.append(f"economic_wallet_history_invalid:{agent_id}")
             continue
         ecu_claim_total = row.get("ecu_claim_total")
-        if isinstance(ecu_claim_total, (int, float)) and not isinstance(ecu_claim_total, bool):
-            if abs(round(float(ecu_claim_total), 12) - _claim_total([claim for claim in claim_history if isinstance(claim, dict)])) > EPSILON:
+        if ecu_claim_total is not None and not isinstance(ecu_claim_total, bool):
+            if to_decimal(ecu_claim_total) != _claim_total([claim for claim in claim_history if isinstance(claim, dict)]):
                 failures.append(f"economic_wallet_claim_total_mismatch:{agent_id}")
         settled_epoch_count = row.get("settled_epoch_count")
         if isinstance(settled_epoch_count, int) and settled_epoch_count != len(balance_history):
@@ -243,9 +248,9 @@ def check_economic_state(manifest_path: Path) -> tuple[str, list[str], dict[str,
         "task_id": task_id,
         "runtime_store": runtime_store,
         "runtime_identity": runtime_identity,
-        "reward_total": reward_total_float,
-        "wallet_balance_total": wallet_balance_total,
-        "ledger_balance_total": ledger_balance_total,
+        "reward_total": decimal_to_canonical_string(reward_total_decimal),
+        "wallet_balance_total": decimal_to_canonical_string(wallet_balance_total),
+        "ledger_balance_total": decimal_to_canonical_string(ledger_balance_total),
         "node_count": len(nodes),
         "link_count": len(links),
         "wallet_count": len(wallet_rows),

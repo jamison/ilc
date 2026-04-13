@@ -100,17 +100,17 @@ def test_penalty_fraction_constants() -> None:
 
 def test_active_state_validation() -> None:
     result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 0, False)
-    assert result == {'status': 'active', 'penalty_fraction': 0.0}
+    assert result == {'status': 'active', 'penalty_fraction': '0'}
 
 
 def test_liveness_penalty_state() -> None:
     result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 8, False)
-    assert result == {'status': 'liveness_penalty', 'penalty_fraction': 0.25}
+    assert result == {'status': 'liveness_penalty', 'penalty_fraction': '0.25'}
 
 
 def test_equivocation_slash_state() -> None:
     result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 0, True)
-    assert result == {'status': 'equivocation_slash', 'penalty_fraction': 1.0}
+    assert result == {'status': 'equivocation_slash', 'penalty_fraction': '1'}
 
 
 def test_validate_staking_and_liveness_state_rejects_invalid_inputs() -> None:

@@ -29,12 +29,12 @@ def test_load_valid_canon():
         
         # 2. Load
         payload = load_canon_state(path)
-        assert payload["balances"]["alice"] == 100.0
+        assert payload["balances"]["alice"] == "100"
         
         # 3. Load Obj
         obj = load_canon_state_obj(path)
         assert isinstance(obj, CanonState)
-        assert obj.balances["alice"] == 100.0
+        assert obj.balances["alice"] == "100"
         assert obj.canon_hash != ""
 
 def test_verify_tampered_payload():
@@ -47,7 +47,7 @@ def test_verify_tampered_payload():
             data = json.load(f)
             
         # Tamper with balance
-        data["balances"]["alice"] = 999.0
+        data["balances"]["alice"] = "999"
         
         # Overwrite file
         with open(path, "w") as f:
@@ -156,7 +156,7 @@ def test_verify_canon_state_helper():
         # 2. Tampered
         with open(path) as f:
             data = json.load(f)
-        data["balances"]["alice"] = 0.0
+        data["balances"]["alice"] = "0"
         with open(path, "w") as f:
             json.dump(data, f)
             

@@ -6,13 +6,17 @@ from dataclasses import asdict
 from typing import TypeAlias, TypedDict
 
 from ilc_core.ledger.backend import EpochRecord, LedgerBackend
+from ilc_core.ledger.exact_numeric import (
+    exact_to_canonical_string,
+    normalize_json_scalars,
+)
 from ilc_core.ledger.settlement_verification import (
     SettlementVerificationResult,
     verify_stake_distribution,
 )
 
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -20,15 +24,15 @@ JsonObject: TypeAlias = dict[str, JsonValue]
 class LedgerStateExport(TypedDict):
     epoch_records: dict[str, EpochRecord]
     stake_snapshots: dict[str, JsonObject]
-    balances: dict[str, float]
+    balances: dict[str, str]
 
 
 class LedgerDistributionCheck(TypedDict, total=False):
     epoch_id: str
     ok: bool
-    total_delta: float
-    expected_total: float
-    max_agent_error: float
+    total_delta: str
+    expected_total: str
+    max_agent_error: str
     top_errors: list[str]
     input_hash: str
 
@@ -39,7 +43,7 @@ def export_ledger_state_json(
     ledger: LedgerBackend, 
     path: PathLike,
     *,
-    balances_before: dict[str, float] | None = None,
+    balances_before: dict[str, object] | None = None,
     target_epoch_id: str | None = None
 ) -> VerificationResult:
     """
@@ -62,14 +66,23 @@ def export_ledger_state_json(
     snapshots_data: dict[str, JsonObject] = {}
     for epoch_id, snap in raw_snapshots.items():
         if hasattr(snap, "to_dict"):
-            snapshots_data[epoch_id] = snap.to_dict()
+            snapshots_data[epoch_id] = normalize_json_scalars(snap.to_dict())
         else:
-            snapshots_data[epoch_id] = asdict(snap)
+            snapshots_data[epoch_id] = normalize_json_scalars(asdict(snap))
+
+    epoch_records_data = {
+        epoch_id: normalize_json_scalars(record)
+        for epoch_id, record in epoch_records.items()
+    }
+    balances_data = {
+        agent_id: exact_to_canonical_string(amount, token="ledger_export_balance_invalid")
+        for agent_id, amount in balances.items()
+    }
             
     data: LedgerStateExport = {
-        "epoch_records": epoch_records,
+        "epoch_records": epoch_records_data,
         "stake_snapshots": snapshots_data,
-        "balances": balances
+        "balances": balances_data,
     }
     
     check_result: VerificationResult = {}
@@ -88,12 +101,12 @@ def export_ledger_state_json(
                  balances_after=balances # current balances are 'after'
              )
              # Attach to record in output
-             record["distribution_check"] = check_result
+             record["distribution_check"] = normalize_json_scalars(check_result)
              # Update data ref just in case it wasn't by ref (it is)
-             data["epoch_records"][target_epoch_id] = record
+             data["epoch_records"][target_epoch_id] = normalize_json_scalars(record)
 
     with p.open("w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=2, sort_keys=True)
         
     return check_result
 
@@ -183,4 +196,10 @@ def export_ledger_distribution_checks_csv(
             # top_errors is list, stringify
             if isinstance(row["top_errors"], list):
                 row["top_errors"] = ";".join(row["top_errors"])
+            for numeric_key in ("total_delta", "expected_total", "max_agent_error"):
+                if row[numeric_key] is not None:
+                    row[numeric_key] = exact_to_canonical_string(
+                        row[numeric_key],
+                        token=f"ledger_distribution_check_{numeric_key}_invalid",
+                    )
             writer.writerow(row)

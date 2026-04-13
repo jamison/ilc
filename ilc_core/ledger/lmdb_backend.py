@@ -8,6 +8,7 @@ from typing import cast
 import lmdb
 
 from ilc_core.ledger.backend import EpochRecord, InMemoryLedgerBackend, JsonObject
+from ilc_core.ledger.exact_numeric import exact_to_canonical_string, to_decimal
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEvent
 
@@ -70,8 +71,11 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
                 if decoded is None:
                     continue
                 amount = decoded.get("amount")
-                if isinstance(amount, (int, float)) and not isinstance(amount, bool):
-                    self.balances[key.decode("utf-8")] = float(amount)
+                if isinstance(amount, (int, float, str)) and not isinstance(amount, bool):
+                    self.balances[key.decode("utf-8")] = to_decimal(
+                        amount,
+                        token="lmdb_balance_invalid",
+                    )
 
     def _load_epoch_records(self) -> None:
         with self.env.begin(db=self._epochs_db) as txn:
@@ -96,25 +100,31 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
                         epoch_id=cast(str, decoded["epoch_id"]),
                         epoch_index=cast(int, decoded["epoch_index"]),
                         namespace_id=cast(str, decoded["namespace_id"]),
-                        stakes=cast(dict[str, float], decoded["stakes"]),
-                        total_stake=cast(float, decoded["total_stake"]),
+                        stakes=cast(dict[str, object], decoded["stakes"]),
+                        total_stake=cast(object, decoded["total_stake"]),
                         created_at=cast(str, decoded["created_at"]),
                     )
                 except (KeyError, ValueError, TypeError):
                     continue
                 self.stake_snapshots[snapshot.epoch_id] = snapshot
 
-    def _set_balance(self, agent_id: str, new_balance: float) -> None:
+    def _set_balance(self, agent_id: str, new_balance: object) -> None:
         super()._set_balance(agent_id, new_balance)
+        balance_payload = {
+            "amount": exact_to_canonical_string(
+                self.balances[agent_id],
+                token="lmdb_balance_invalid",
+            )
+        }
         if self._active_txn is not None:
             self._active_txn.put(
                 _encode_key(agent_id),
-                _encode_json({"amount": new_balance}),
+                _encode_json(balance_payload),
                 db=self._balances_db,
             )
             return
         with self.env.begin(write=True, db=self._balances_db) as txn:
-            txn.put(_encode_key(agent_id), _encode_json({"amount": new_balance}))
+            txn.put(_encode_key(agent_id), _encode_json(balance_payload))
 
     def _store_epoch_record(self, record: EpochRecord) -> None:
         super()._store_epoch_record(record)
@@ -135,8 +145,14 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
             "epoch_id": snapshot.epoch_id,
             "epoch_index": snapshot.epoch_index,
             "namespace_id": snapshot.namespace_id,
-            "stakes": snapshot.stakes,
-            "total_stake": snapshot.total_stake,
+            "stakes": {
+                agent_id: exact_to_canonical_string(amount, token="lmdb_stake_invalid")
+                for agent_id, amount in snapshot.stakes.items()
+            },
+            "total_stake": exact_to_canonical_string(
+                snapshot.total_stake,
+                token="lmdb_total_stake_invalid",
+            ),
             "created_at": snapshot.created_at,
         }
         if self._active_txn is not None:
