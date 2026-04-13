@@ -213,7 +213,10 @@ def test_phase_and_runtime_tests_both_pass() -> None:
         [
             'bash',
             '-lc',
-            'PATH=.venv/bin:$PATH .venv/bin/pytest tests/test_phase_628_ecu_active_layer_runtime_and_accounting_spec.py tests/test_ecu_active_layer_runtime.py -q',
+            "PATH=.venv/bin:$PATH .venv/bin/pytest "
+            "tests/test_phase_628_ecu_active_layer_runtime_and_accounting_spec.py "
+            "-q -k 'not test_phase_and_runtime_tests_both_pass' && "
+            "PATH=.venv/bin:$PATH .venv/bin/pytest tests/test_ecu_active_layer_runtime.py -q",
         ],
         capture_output=True,
         check=True,
