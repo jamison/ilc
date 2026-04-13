@@ -41,7 +41,7 @@ def test_delivered_earmark_remains_reserved_until_debited() -> None:
         delivery_epoch=12,
     )
     assert runtime.earmark_status(earmark_id="e-1")["data"]["state"] == "delivered"
-    assert runtime.spendable_ecu("agent-a") == 7.0
+    assert runtime.spendable_ecu("agent-a") == "7"
 
 
 def test_debit_occurs_only_at_commit_boundary() -> None:
@@ -65,10 +65,10 @@ def test_debit_occurs_only_at_commit_boundary() -> None:
     )
     runtime.process_epoch_boundary(commit_epoch=22)
     assert runtime.earmark_status(earmark_id="e-1")["data"]["state"] == "delivered"
-    assert runtime.get_accrued_ecu("agent-a") == 10.0
+    assert runtime.get_accrued_ecu("agent-a") == "10"
     runtime.process_epoch_boundary(commit_epoch=23)
     assert runtime.earmark_status(earmark_id="e-1")["data"]["state"] == "debited"
-    assert runtime.get_accrued_ecu("agent-a") == 6.0
+    assert runtime.get_accrued_ecu("agent-a") == "6"
 
 
 def test_expiry_releases_reserves() -> None:
@@ -83,10 +83,10 @@ def test_expiry_releases_reserves() -> None:
         proposal_epoch=30,
         task_description_hash="hash-1",
     )
-    assert runtime.spendable_ecu("agent-a") == 6.0
+    assert runtime.spendable_ecu("agent-a") == "6"
     runtime.process_epoch_boundary(commit_epoch=35)
     assert runtime.earmark_status(earmark_id="e-1")["data"]["state"] == "expired"
-    assert runtime.spendable_ecu("agent-a") == 10.0
+    assert runtime.spendable_ecu("agent-a") == "10"
 
 
 def test_active_earmark_cap_enforced() -> None:
@@ -271,7 +271,7 @@ def test_multiple_delivered_earmarks_debit_in_same_epoch_boundary() -> None:
     result = runtime.process_epoch_boundary(commit_epoch=13)
     assert result["ok"] is True
     assert set(result["data"]["debited_earmark_ids"]) == {"e-1", "e-2"}
-    assert runtime.get_accrued_ecu("agent-a") == 5.0
+    assert runtime.get_accrued_ecu("agent-a") == "5"
 
 
 def test_earmark_history_returns_records_for_both_agents() -> None:

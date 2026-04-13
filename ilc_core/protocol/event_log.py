@@ -1,11 +1,11 @@
 from dataclasses import dataclass, asdict
+from decimal import Decimal, InvalidOperation
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, Literal, Optional, List
 import json
 
 from ilc_core.exceptions import EventLogValidationError
-from ilc_core.ledger.exact_numeric import exact_to_canonical_string, parse_non_negative_decimal
 
 EventKind = Literal[
     "task_outcome",
@@ -26,6 +26,7 @@ _ALLOWED_EVENT_KINDS = {
     "mcp_tool_call",
     "commit.epoch",
 }
+ZERO = Decimal("0")
 
 
 def _validate_event_envelope(kind: Any, payload: Any) -> None:
@@ -35,6 +36,66 @@ def _validate_event_envelope(kind: Any, payload: Any) -> None:
         raise EventLogValidationError(f"event_envelope_unknown_kind:{kind}")
     if not isinstance(payload, dict):
         raise EventLogValidationError("event_envelope_invalid_payload_type")
+
+
+def _to_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if isinstance(value, Decimal):
+        number = value
+    elif isinstance(value, int):
+        number = Decimal(value)
+    elif isinstance(value, float):
+        number = Decimal(str(value))
+    elif isinstance(value, str):
+        try:
+            number = Decimal(value)
+        except InvalidOperation as exc:
+            raise ValueError(token) from exc
+    else:
+        raise ValueError(token)
+    if not number.is_finite():
+        raise ValueError(token)
+    return number
+
+
+def _parse_non_negative_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
+    number = _to_decimal(value, token=token)
+    if number < ZERO:
+        raise ValueError(token)
+    return number
+
+
+def _decimal_to_canonical_string(value: Decimal) -> str:
+    if value == ZERO:
+        return "0"
+
+    rendered = format(value, "f")
+    if "." in rendered:
+        rendered = rendered.rstrip("0").rstrip(".")
+
+    if rendered.startswith("-"):
+        sign = "-"
+        body = rendered[1:]
+    else:
+        sign = ""
+        body = rendered
+
+    if "." in body:
+        whole, fractional = body.split(".", 1)
+        whole = whole.lstrip("0") or "0"
+        body = f"{whole}.{fractional}"
+    else:
+        body = body.lstrip("0") or "0"
+
+    normalized = f"{sign}{body}"
+    if normalized in {"-0", "-0.0", ""}:
+        return "0"
+    return normalized
+
+
+def _exact_to_canonical_string(value: int | float | str | Decimal, *, token: str) -> str:
+    return _decimal_to_canonical_string(_to_decimal(value, token=token))
 
 
 
@@ -195,14 +256,14 @@ def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
     if not isinstance(summary["agent_count"], int) or summary["agent_count"] < 0:
         raise EventLogValidationError("summary.agent_count must be a non-negative integer")
     try:
-        parse_non_negative_decimal(
+        _parse_non_negative_decimal(
             summary["reward_total"],
             token="summary.reward_total must be a non-negative number",
         )
     except ValueError as exc:
         raise EventLogValidationError(str(exc)) from exc
     try:
-        parse_non_negative_decimal(
+        _parse_non_negative_decimal(
             summary["stake_total"],
             token="summary.stake_total must be a non-negative number",
         )
@@ -249,11 +310,11 @@ def make_commit_epoch_event(
         "finalization_state": finalization_state,
         "summary": {
             **summary,
-            "reward_total": exact_to_canonical_string(
+            "reward_total": _exact_to_canonical_string(
                 summary.get("reward_total", "0"),
                 token="summary.reward_total must be a non-negative number",
             ),
-            "stake_total": exact_to_canonical_string(
+            "stake_total": _exact_to_canonical_string(
                 summary.get("stake_total", "0"),
                 token="summary.stake_total must be a non-negative number",
             ),
@@ -318,8 +379,13 @@ def validate_task_outcome_payload(payload: Dict[str, Any]) -> None:
         raise EventLogValidationError("namespace_id must be a string")
     if not isinstance(payload["task_type"], str):
         raise EventLogValidationError("task_type must be a string")
-    if not isinstance(payload["reward"], (int, float)) or payload["reward"] < 0:
-        raise EventLogValidationError("reward must be a non-negative number")
+    try:
+        _parse_non_negative_decimal(
+            payload["reward"],
+            token="reward must be a non-negative number",
+        )
+    except ValueError as exc:
+        raise EventLogValidationError(str(exc)) from exc
     if not isinstance(payload["success"], bool):
         raise EventLogValidationError("success must be a boolean")
 
@@ -341,8 +407,13 @@ def validate_epoch_summary_payload(payload: Dict[str, Any]) -> None:
         raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["total_tasks"], int) or payload["total_tasks"] < 0:
         raise EventLogValidationError("total_tasks must be a non-negative integer")
-    if not isinstance(payload["total_reward"], (int, float)) or payload["total_reward"] < 0:
-        raise EventLogValidationError("total_reward must be a non-negative number")
+    try:
+        _parse_non_negative_decimal(
+            payload["total_reward"],
+            token="total_reward must be a non-negative number",
+        )
+    except ValueError as exc:
+        raise EventLogValidationError(str(exc)) from exc
 
 
 # ============================================================
@@ -377,7 +448,7 @@ def make_task_outcome_event(
     epoch_index: int,
     namespace_id: str,
     task_type: str,
-    reward: float,
+    reward: int | float | str | Decimal,
     success: bool,
     source: str = "sim",
     **extra_fields: Any
@@ -386,12 +457,21 @@ def make_task_outcome_event(
     Helper to construct a validated task_outcome event.
     Extra fields are passed through to the payload.
     """
+    try:
+        canonical_reward = _decimal_to_canonical_string(
+            _parse_non_negative_decimal(
+                reward,
+                token="reward must be a non-negative number",
+            )
+        )
+    except ValueError as exc:
+        raise EventLogValidationError(str(exc)) from exc
     payload = {
         "agent_id": agent_id,
         "epoch_index": epoch_index,
         "namespace_id": namespace_id,
         "task_type": task_type,
-        "reward": reward,
+        "reward": canonical_reward,
         "success": success,
         **extra_fields,
     }
@@ -402,7 +482,7 @@ def make_task_outcome_event(
 def make_epoch_summary_event(
     epoch_index: int,
     total_tasks: int,
-    total_reward: float,
+    total_reward: int | float | str | Decimal,
     source: str = "sim",
     **extra_fields: Any
 ) -> ProtocolEvent:
@@ -410,10 +490,19 @@ def make_epoch_summary_event(
     Helper to construct a validated epoch_summary event.
     Extra fields are passed through to the payload.
     """
+    try:
+        canonical_total_reward = _decimal_to_canonical_string(
+            _parse_non_negative_decimal(
+                total_reward,
+                token="total_reward must be a non-negative number",
+            )
+        )
+    except ValueError as exc:
+        raise EventLogValidationError(str(exc)) from exc
     payload = {
         "epoch_index": epoch_index,
         "total_tasks": total_tasks,
-        "total_reward": total_reward,
+        "total_reward": canonical_total_reward,
         **extra_fields,
     }
     validate_epoch_summary_payload(payload)

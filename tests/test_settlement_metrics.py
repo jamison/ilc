@@ -9,7 +9,7 @@ def test_settlement_metrics_empty():
     metrics = compute_settlement_metrics(ledger)
     assert metrics["num_epochs_total"] == 0
     assert metrics["num_snapshots"] == 0
-    assert metrics["total_rewards_distributed"] == 0.0
+    assert metrics["total_rewards_distributed"] == "0"
 
 def test_settlement_metrics_mixed_states():
     ledger = InMemoryLedgerBackend()
@@ -65,6 +65,5 @@ def test_settlement_metrics_mixed_states():
     # Stubbed: 50.0 (from e2)
     # Rolled back (e3) ignored
     # Pending (e4) ignored
-    assert metrics["total_rewards_distributed"] == 100.0
-    assert metrics["total_rewards_stubbed"] == 50.0
-
+    assert metrics["total_rewards_distributed"] == "100"
+    assert metrics["total_rewards_stubbed"] == "50"
