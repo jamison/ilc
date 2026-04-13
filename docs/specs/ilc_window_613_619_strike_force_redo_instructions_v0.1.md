@@ -2,9 +2,38 @@
 
 Author: Local architectural reviewer (Claude Sonnet 4.6)
 Date: 2026-04-13
-Status: Planning instructions for Codex. Not a CDL, not an ADR, not an execution authority.
-This document governs the redo scope only. No phase execution may begin until the prompt
-package is rewritten, validated, and this document has been reviewed by the human.
+Status: SUPERSEDED IN PART — see Section 0.1 below.
+
+The hard-reset git strategy (Section 2 Step 8) is no longer applicable. Window 613-618 is
+now published history on origin/main as of 2026-04-13. The full rollback path is off the
+table. The per-phase content improvements (Sections 3-4) remain valid and are adopted into
+Phase 619 via the strengthened carry-forward approach described in Section 0.1.
+
+---
+
+## 0.1. Supersession note (2026-04-13)
+
+Codex review found that the git assumptions in this document are stale. Window 613-618 is
+already published on origin/main. The hard-reset strategy (Section 2 Step 8) would
+require destructive rewrite of published history, which is not the clean path.
+
+**Adopted path:** Finish Phase 619 with the Option-B readiness improvements from
+Sections 3-4 absorbed directly into the Phase 619 handoff. Specifically:
+- Phase 619 handoff gets a 7th section with the full 9-row Phase 611 checklist-delta table
+- Phase 619 handoff requires `blockers_reduced` and `blockers_unchanged` sections
+- All four Option-B gate carry-forward tokens must appear in the Phase 619 handoff
+- One explicit line: "Window 613-619 advanced Option-B admissibility without changing the
+  active Option-D posture"
+
+This gets most of the value without history surgery. The non-destructive comparison branch
+path (Section 2, Steps 1-4 only, without Step 8 reset) remains available if the human
+decides to create a comparison artifact, but is not the recommended path now.
+
+**Corrections from Codex review also applied to the Option B memo:**
+- Werner framing is planning-level, not canonical ("Phase 609 is controlling canon")
+- Privacy blocker is narrowed but not closed (Phase 611 row 5 remains `not_started`)
+- Gate 3 (BFT) is not required before Window 623+ (only before sovereign L1 selection)
+- Gate 1 (CDL-053) is a planning judgment, not a canonical critical-path gate
 
 ---
 
