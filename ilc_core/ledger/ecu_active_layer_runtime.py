@@ -54,7 +54,12 @@ class EcuActiveLayerRuntime:
         self._earmarks: dict[str, EarmarkRecord] = {}
 
     def set_accrued_ecu(self, agent_id: str, amount: int | float | str | Decimal) -> None:
-        normalized_amount = _to_decimal(amount)
+        try:
+            normalized_amount = _to_decimal(amount)
+        except ValueError as exc:
+            if str(exc) == "non_finite_amount":
+                raise ValueError("accrued_ecu_cannot_be_non_finite") from exc
+            raise
         if normalized_amount < ZERO:
             raise ValueError("accrued_ecu_cannot_be_negative")
         if normalized_amount < self._reserved_earmark_total(agent_id):
@@ -82,7 +87,12 @@ class EcuActiveLayerRuntime:
             return self._failure("earmark_id_conflict", earmark_id=earmark_id)
         try:
             earmark_amount_decimal = _to_decimal(earmark_amount)
-        except ValueError:
+        except ValueError as exc:
+            if str(exc) == "non_finite_amount":
+                return self._failure(
+                    "invalid_earmark_amount_non_finite",
+                    earmark_amount=earmark_amount,
+                )
             return self._failure("invalid_earmark_amount", earmark_amount=earmark_amount)
         if earmark_amount_decimal <= ZERO:
             return self._failure("invalid_earmark_amount", earmark_amount=earmark_amount)
@@ -306,17 +316,22 @@ def _to_decimal(value: int | float | str | Decimal) -> Decimal:
     if isinstance(value, bool):
         raise ValueError("boolean_not_valid_amount")
     if isinstance(value, Decimal):
-        return value
-    if isinstance(value, int):
-        return Decimal(value)
-    if isinstance(value, float):
-        return Decimal(str(value))
-    if isinstance(value, str):
+        number = value
+    elif isinstance(value, int):
+        number = Decimal(value)
+    elif isinstance(value, float):
+        number = Decimal(str(value))
+    elif isinstance(value, str):
         try:
-            return Decimal(value)
+            number = Decimal(value)
         except InvalidOperation as exc:
             raise ValueError("invalid_decimal_string") from exc
-    raise ValueError("unsupported_amount_type")
+    else:
+        raise ValueError("unsupported_amount_type")
+
+    if not number.is_finite():
+        raise ValueError("non_finite_amount")
+    return number
 
 
 def _decimal_to_string(value: Decimal) -> str:
