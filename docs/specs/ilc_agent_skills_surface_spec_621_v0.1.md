@@ -14,7 +14,7 @@ mutate `ilc_core/`, and does not open any CDL.
 Authorization basis:
 - ADR-0024 (Proposed) is the planning design basis for the Tier 1 and Tier 2
   skill structure; it does not become accepted ADR law in this phase.
-- The runtime authorization basis is the Phase 619 handoff token
+- The phase authorization basis is the Phase 619 handoff token
   `agent_skills_deferred_to_post_619_window` together with the Phase 620
   sequence lock that explicitly opened this bounded planning lane.
 - This artifact is spec-form only; implementation is a separate later action
