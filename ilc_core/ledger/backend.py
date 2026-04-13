@@ -8,13 +8,18 @@ Phase 70B: In-memory only, no persistence, snapshot-based distribution + stub fa
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from decimal import Decimal
 from typing import Literal, Optional, TypeAlias, TypedDict, cast
 
+from ilc_core.ledger.exact_numeric import (
+    ZERO,
+    to_decimal,
+)
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEvent, validate_commit_epoch_payload
 
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -22,8 +27,8 @@ JsonObject: TypeAlias = dict[str, JsonValue]
 class EpochSummary(TypedDict):
     task_count: int
     agent_count: int
-    reward_total: float | int
-    stake_total: float | int
+    reward_total: str
+    stake_total: str
 
 
 class EpochChecksums(TypedDict):
@@ -124,7 +129,7 @@ class InMemoryLedgerBackend(LedgerBackend):
     """
 
     def __init__(self) -> None:
-        self.balances: dict[str, float] = {}
+        self.balances: dict[str, Decimal] = {}
         self.epoch_records: dict[str, EpochRecord] = {}
         self.stake_snapshots: dict[str, StakeSnapshot] = {}
 
@@ -172,13 +177,15 @@ class InMemoryLedgerBackend(LedgerBackend):
                 return True
         return False
 
-    def _extract_reward_total(self, record: EpochRecord) -> float:
+    def _extract_reward_total(self, record: EpochRecord) -> Decimal:
         summary = record.get("summary")
         if isinstance(summary, dict):
-            reward_value = summary.get("reward_total", 0.0)
-            if isinstance(reward_value, (int, float)):
-                return float(reward_value)
-        return 0.0
+            reward_value = summary.get("reward_total", "0")
+            try:
+                return to_decimal(reward_value, token="epoch_reward_total_invalid")
+            except ValueError:
+                return ZERO
+        return ZERO
 
     def _process_supersession(self, epoch_index: int, new_epoch_id: str) -> None:
         """Identify and supersede any prior epochs at this index."""
@@ -240,7 +247,10 @@ class InMemoryLedgerBackend(LedgerBackend):
                     f"Snapshot namespace_id {snapshot.namespace_id} != payload {payload['namespace_id']}"
                 )
 
-            rewards = float(payload["summary"]["reward_total"])
+            rewards = to_decimal(
+                payload["summary"]["reward_total"],
+                token="payload_reward_total_invalid",
+            )
             self._apply_rewards(snapshot, rewards)
             record["distribution_status"] = "distributed"
         else:
@@ -256,19 +266,22 @@ class InMemoryLedgerBackend(LedgerBackend):
         record["status"] = "superseded"
         # No balance changes
 
-    def _apply_rewards(self, snapshot: StakeSnapshot, total_rewards: float) -> None:
+    def _apply_rewards(self, snapshot: StakeSnapshot, total_rewards: Decimal) -> None:
         """Apply (or reverse) rewards based on stake share."""
-        if snapshot.total_stake <= 0:
+        if snapshot.total_stake <= ZERO:
             return
 
         for agent_id, stake in snapshot.stakes.items():
             share = (stake / snapshot.total_stake) * total_rewards
-            current = self.balances.get(agent_id, 0.0)
+            current = self.balances.get(agent_id, ZERO)
             self._set_balance(agent_id, current + share)
 
-    def _set_balance(self, agent_id: str, new_balance: float) -> None:
+    def _set_balance(self, agent_id: str, new_balance: Decimal | int | float | str) -> None:
         """Set an agent's balance."""
-        self.balances[agent_id] = new_balance
+        self.balances[agent_id] = to_decimal(
+            new_balance,
+            token="ledger_balance_invalid",
+        )
 
     def _store_epoch_record(self, record: EpochRecord) -> None:
         """Store an epoch record."""
@@ -277,7 +290,7 @@ class InMemoryLedgerBackend(LedgerBackend):
 
     def get_balance(self, agent_id: str) -> float:
         """Get agent balance. Returns 0.0 if not found."""
-        return self.balances.get(agent_id, 0.0)
+        return float(self.balances.get(agent_id, ZERO))
 
     def get_epoch_record(self, epoch_id: str) -> Optional[EpochRecord]:
         """Get epoch settlement record."""

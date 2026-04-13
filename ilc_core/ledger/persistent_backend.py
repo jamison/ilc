@@ -9,6 +9,7 @@ import os
 from typing import cast
 
 from ilc_core.ledger.backend import EpochRecord, InMemoryLedgerBackend, JsonObject
+from ilc_core.ledger.exact_numeric import exact_to_canonical_string, to_decimal
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 
 
@@ -59,7 +60,11 @@ class FileLedgerBackend(InMemoryLedgerBackend):
             return
         data = self._load_json_file(self.balances_file)
         if isinstance(data, dict):
-            self.balances = cast(dict[str, float], data)
+            self.balances = {
+                agent_id: to_decimal(amount, token="file_ledger_balance_invalid")
+                for agent_id, amount in data.items()
+                if isinstance(agent_id, str)
+            }
 
     def _load_epoch_records(self) -> None:
         # Shape: { "epoch_id": "...", "status": "...", ... }
@@ -95,8 +100,8 @@ class FileLedgerBackend(InMemoryLedgerBackend):
                 epoch_id=cast(str, data["epoch_id"]),
                 epoch_index=cast(int, data["epoch_index"]),
                 namespace_id=cast(str, data["namespace_id"]),
-                stakes=cast(dict[str, float], data["stakes"]),
-                total_stake=cast(float, data["total_stake"]),
+                stakes=cast(dict[str, object], data["stakes"]),
+                total_stake=cast(object, data["total_stake"]),
                 created_at=cast(str, data["created_at"]),
             )
         except (KeyError, ValueError):
@@ -119,11 +124,17 @@ class FileLedgerBackend(InMemoryLedgerBackend):
 
     # --- Overrides for persistence ---
 
-    def _set_balance(self, agent_id: str, new_balance: float) -> None:
+    def _set_balance(self, agent_id: str, new_balance: object) -> None:
         """Update balance and persist balances.json."""
         super()._set_balance(agent_id, new_balance)
         # For MVP, we dump the whole balances dict.
-        self._atomic_write(self.balances_file, self.balances)
+        self._atomic_write(
+            self.balances_file,
+            {
+                account_id: exact_to_canonical_string(balance, token="file_ledger_balance_invalid")
+                for account_id, balance in self.balances.items()
+            },
+        )
 
     def _store_epoch_record(self, record: EpochRecord) -> None:
         """Update epoch record and persist individual epoch file."""
@@ -138,8 +149,14 @@ class FileLedgerBackend(InMemoryLedgerBackend):
             "epoch_id": snapshot.epoch_id,
             "epoch_index": snapshot.epoch_index,
             "namespace_id": snapshot.namespace_id,
-            "stakes": snapshot.stakes,
-            "total_stake": snapshot.total_stake,
+            "stakes": {
+                agent_id: exact_to_canonical_string(amount, token="file_ledger_stake_invalid")
+                for agent_id, amount in snapshot.stakes.items()
+            },
+            "total_stake": exact_to_canonical_string(
+                snapshot.total_stake,
+                token="file_ledger_total_stake_invalid",
+            ),
             "created_at": snapshot.created_at,
         }
         path = os.path.join(self.snapshots_dir, f"{snapshot.epoch_id}.json")

@@ -11,6 +11,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from ilc_core.ledger.exact_numeric import (
+    ZERO,
+    decimal_to_canonical_string,
+    to_decimal,
+)
 from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
 
@@ -55,7 +60,10 @@ def load_state(
             graph_store.iter_links(),
             {"wallets": wallet_store.iter_wallets()},
             {
-                "balances": dict(sorted(ledger_backend.balances.items())),
+                "balances": {
+                    agent_id: decimal_to_canonical_string(balance)
+                    for agent_id, balance in sorted(ledger_backend.balances.items())
+                },
                 "epoch_records": ledger_backend.epoch_records,
             },
             graph_store.get_quorum_record() or {},
@@ -311,13 +319,15 @@ def query_ledger_summary(manifest_path: Path) -> dict[str, Any]:
         raise ValueError("ledger_balances_invalid")
     if not isinstance(epoch_records, dict):
         raise ValueError("ledger_epoch_records_invalid")
-    reward_total = round(
+    reward_total = decimal_to_canonical_string(
         sum(
-            float(value)
-            for value in balances.values()
-            if isinstance(value, (int, float)) and not isinstance(value, bool)
-        ),
-        12,
+            (
+                to_decimal(value, token="ledger_summary_balance_invalid")
+                for value in balances.values()
+                if not isinstance(value, bool)
+            ),
+            ZERO,
+        )
     )
     latest_epoch_id = next(iter(sorted(epoch_records.keys(), reverse=True)), None)
     settlement_manifest = manifest.get("settlement_manifest", {})

@@ -217,7 +217,7 @@ def test_materialize_economic_cycle_persists_graph_ledger_and_wallet_state(tmp_p
 
     manifest = materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
 
-    assert manifest["summary"]["reward_total"] == 4.0
+    assert manifest["summary"]["reward_total"] == "4"
     assert manifest["summary"]["distribution_check_ok"] is True
     assert manifest["runtime_store"]["store_kind"] == "lmdb_public_runtime_v0.1"
     assert Path(manifest["runtime_store"]["graph_store_root"]).is_dir()
@@ -233,8 +233,8 @@ def test_materialize_economic_cycle_persists_graph_ledger_and_wallet_state(tmp_p
     assert len(links) == 1
     assert links[0]["link_type"] == "supports"
 
-    assert ledger["balances"]["agent-alpha"] == 3.0
-    assert ledger["balances"]["agent-beta"] == 1.0
+    assert ledger["balances"]["agent-alpha"] == "3"
+    assert ledger["balances"]["agent-beta"] == "1"
 
     wallet_rows = wallets["wallets"]
     assert set(wallet_rows) == {"agent-alpha", "agent-beta", "agent-gamma", "agent-outsider"}
@@ -242,7 +242,7 @@ def test_materialize_economic_cycle_persists_graph_ledger_and_wallet_state(tmp_p
     assert wallet_rows["agent-alpha"]["last_settled_epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
     assert wallet_rows["agent-alpha"]["lifetime_claim_count"] == 1
     assert wallet_rows["agent-alpha"]["settled_epoch_count"] == 1
-    assert wallet_rows["agent-gamma"]["balance_ilc"] == 0.0
+    assert wallet_rows["agent-gamma"]["balance_ilc"] == "0"
     assert wallet_rows["agent-outsider"]["variant"] == "outsider"
     assert manifest["settlement_manifest"]["settlement_status"] == "applied"
     assert manifest["runtime_identity"]["claims_sha256"] == manifest["settlement_manifest"]["claim_batch_sha256"]
@@ -305,7 +305,7 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     )
     assert wallet_result.returncode == 0, wallet_result.stderr
     wallet_payload = json.loads(wallet_result.stdout.strip())
-    assert wallet_payload["data"]["wallet"]["balance_ilc"] == 0.0
+    assert wallet_payload["data"]["wallet"]["balance_ilc"] == "0"
     assert wallet_payload["data"]["wallet"]["reward_status"] == "not_rewarded"
 
     history_result = subprocess.run(
@@ -327,7 +327,7 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     history_payload = json.loads(history_result.stdout.strip())
     assert len(history_payload["data"]["claim_history"]) == 1
     assert history_payload["data"]["epoch_history"][0]["epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
-    assert history_payload["data"]["balance_history"][0]["reward_delta_ilc"] == 3.0
+    assert history_payload["data"]["balance_history"][0]["reward_delta_ilc"] == "3"
     assert history_payload["data"]["latest_epoch_id"] == "rc0_1::task:test:economic-cycle::epoch::12"
 
     wallet_status_result = subprocess.run(
@@ -349,7 +349,7 @@ def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> N
     wallet_status_payload = json.loads(wallet_status_result.stdout.strip())
     assert wallet_status_payload["data"]["claim_count"] == 1
     assert wallet_status_payload["data"]["settled_epoch_count"] == 1
-    assert wallet_status_payload["data"]["latest_balance_receipt"]["reward_delta_ilc"] == 3.0
+    assert wallet_status_payload["data"]["latest_balance_receipt"]["reward_delta_ilc"] == "3"
 
     store_summary_result = subprocess.run(
         [
@@ -378,7 +378,7 @@ def test_check_economic_state_accepts_persisted_runtime_store(tmp_path: Path) ->
 
     assert verdict == "pass"
     assert failures == []
-    assert summary["wallet_balance_total"] == 4.0
+    assert summary["wallet_balance_total"] == "4"
     assert summary["runtime_store"]["store_kind"] == "lmdb_public_runtime_v0.1"
 
 
@@ -458,10 +458,10 @@ def test_query_helpers_return_quorum_and_wallet_export(tmp_path: Path) -> None:
     ledger_summary_payload = query_rc0_1_economic_state.query_ledger_summary(manifest_path)
 
     assert quorum_payload["data"]["quorum_record"]["task_id"] == "task:test:economic-cycle"
-    assert wallet_export_payload["data"]["balances"]["agent-alpha"] == 3.0
+    assert wallet_export_payload["data"]["balances"]["agent-alpha"] == "3"
     assert graph_summary_payload["data"]["node_count"] == 3
     assert graph_links_payload["data"]["link_count"] == 1
-    assert ledger_summary_payload["data"]["reward_total"] == 4.0
+    assert ledger_summary_payload["data"]["reward_total"] == "4"
 
 
 def test_economic_negative_path_drills_emit_expected_tokens(tmp_path: Path) -> None:
@@ -538,5 +538,5 @@ def test_run_economic_proof_emits_combined_manifest(tmp_path: Path) -> None:
     assert manifest["negative_path_verdict"] == "pass"
     assert manifest["replay_verdict"] == "pass"
     assert manifest["replay_settlement_status"] == "idempotent_replay"
-    assert manifest["query_payloads"]["ledger_summary"]["data"]["reward_total"] == 4.0
+    assert manifest["query_payloads"]["ledger_summary"]["data"]["reward_total"] == "4"
     assert manifest["query_payloads"]["graph_summary"]["data"]["node_count"] == 3
