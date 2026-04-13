@@ -96,7 +96,7 @@ def test_submit_protocol_claim():
     assert claim["type"] == "claim"
     assert claim["agent_id"] == "agent:test"
     assert claim["content"] == "1 + 1 = 2"
-    assert claim["net_stake"] == 1.0
+    assert claim["net_stake"] == "1"
     assert claim["id"] is not None
 
 def test_submit_protocol_refute():
