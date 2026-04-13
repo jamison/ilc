@@ -43,8 +43,10 @@ Invalid transitions:
 
 Processing boundaries:
 - proposal: immediate runtime reservation after oversubscription and cap checks
-- acceptance: immediate runtime state transition
-- delivery: immediate runtime state transition after the bounded delivery signal
+- acceptance: immediate runtime state transition only if the attempted
+  acceptance epoch is not past `expiry_epoch`
+- delivery: immediate runtime state transition after the bounded delivery
+  signal only if the attempted delivery epoch is not past `expiry_epoch`
 - debit: only at epoch-boundary processing when `commit_epoch > delivery_epoch`
 - expiry: only at epoch-boundary processing when `commit_epoch >= expiry_epoch`
   for `proposed` or `accepted` earmarks
@@ -125,6 +127,7 @@ Phase 628 does not change the passive Phase 550 proxy values.
 - failure tokens:
   - `earmark_not_found`
   - `performing_agent_mismatch`
+  - `earmark_past_expiry`
   - `invalid_state_transition`
 
 `earmark_deliver(...)`
@@ -136,6 +139,7 @@ Phase 628 does not change the passive Phase 550 proxy values.
 - failure tokens:
   - `earmark_not_found`
   - `performing_agent_mismatch`
+  - `earmark_past_expiry`
   - `invalid_state_transition`
 
 `earmark_status(...)`
@@ -165,8 +169,10 @@ Concrete runtime file landed in Phase 628:
 This runtime implements:
 - bounded in-memory active-layer state
 - earmark proposal with oversubscription and active-cap checks
-- acceptance recording with named performing-agent verification
-- delivery recording with named performing-agent verification
+- acceptance recording with named performing-agent verification and past-expiry
+  rejection
+- delivery recording with named performing-agent verification and past-expiry
+  rejection
 - epoch-bound debit processing
 - expiry processing
 - status and history queries

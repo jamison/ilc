@@ -168,6 +168,7 @@ def test_section_four_defines_interfaces_with_json_outputs_and_failure_tokens() 
         '`earmark_history_returned`',
         '`same_key_self_commission_prohibited`',
         '`performing_agent_mismatch`',
+        '`earmark_past_expiry`',
         '`oversubscribed_earmark_blocked`',
         '`active_earmark_cap_exceeded`',
     ):

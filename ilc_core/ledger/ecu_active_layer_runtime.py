@@ -143,6 +143,13 @@ class EcuActiveLayerRuntime:
                 expected_performing_agent_id=record.performing_agent_id,
                 performing_agent_id=performing_agent_id,
             )
+        if int(acceptance_epoch) > record.expiry_epoch:
+            return self._failure(
+                "earmark_past_expiry",
+                earmark_id=earmark_id,
+                expiry_epoch=record.expiry_epoch,
+                attempted_epoch=int(acceptance_epoch),
+            )
         if record.state != "proposed":
             return self._failure(
                 "invalid_state_transition",
@@ -175,6 +182,13 @@ class EcuActiveLayerRuntime:
                 earmark_id=earmark_id,
                 expected_performing_agent_id=record.performing_agent_id,
                 performing_agent_id=performing_agent_id,
+            )
+        if int(delivery_epoch) > record.expiry_epoch:
+            return self._failure(
+                "earmark_past_expiry",
+                earmark_id=earmark_id,
+                expiry_epoch=record.expiry_epoch,
+                attempted_epoch=int(delivery_epoch),
             )
         if record.state != "accepted":
             return self._failure(
