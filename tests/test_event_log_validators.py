@@ -72,7 +72,7 @@ class TestTaskOutcomeValidator:
             "epoch_index": 10,
             "namespace_id": "ns_1",
             "task_type": "reasoning",
-            "reward": 5.5,
+            "reward": "5.5",
             "success": True,
         }
         validate_task_outcome_payload(payload)
@@ -84,7 +84,7 @@ class TestTaskOutcomeValidator:
             "epoch_index": 10,
             "namespace_id": "ns_1",
             "task_type": "reasoning",
-            "reward": 5.5,
+            "reward": "5.5",
             "success": True,
             "node_id": "node_1",
             "problem_space": "math",
@@ -124,7 +124,7 @@ class TestEpochSummaryValidator:
         payload = {
             "epoch_index": 100,
             "total_tasks": 50,
-            "total_reward": 250.0,
+            "total_reward": "250",
         }
         validate_epoch_summary_payload(payload)
 
@@ -133,7 +133,7 @@ class TestEpochSummaryValidator:
         payload = {
             "epoch_index": 100,
             "total_tasks": 50,
-            "total_reward": 250.0,
+            "total_reward": "250",
             "backlog_count": 5,
             "stress_regime": "medium",
         }
@@ -178,6 +178,7 @@ class TestHelperConstructors:
         assert evt.kind == "task_outcome"
         assert evt.payload["agent_id"] == "agent_1"
         assert evt.payload["node_id"] == "node_1"
+        assert evt.payload["reward"] == "5.5"
 
     def test_make_epoch_summary_event(self):
         """Helper should construct valid epoch_summary event."""
@@ -190,6 +191,44 @@ class TestHelperConstructors:
         assert evt.kind == "epoch_summary"
         assert evt.payload["total_tasks"] == 50
         assert evt.payload["backlog_count"] == 5
+        assert evt.payload["total_reward"] == "250"
+
+    @pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity", float("nan"), float("inf"), float("-inf")])
+    def test_non_finite_values_rejected(self, value: object):
+        with pytest.raises(EventLogValidationError):
+            validate_task_outcome_payload(
+                {
+                    "agent_id": "agent_1",
+                    "epoch_index": 10,
+                    "namespace_id": "ns_1",
+                    "task_type": "reasoning",
+                    "reward": value,
+                    "success": True,
+                }
+            )
+        with pytest.raises(EventLogValidationError):
+            validate_epoch_summary_payload(
+                {
+                    "epoch_index": 100,
+                    "total_tasks": 50,
+                    "total_reward": value,
+                }
+            )
+        with pytest.raises(EventLogValidationError):
+            make_task_outcome_event(
+                agent_id="agent_1",
+                epoch_index=10,
+                namespace_id="ns_1",
+                task_type="reasoning",
+                reward=value,  # type: ignore[arg-type]
+                success=True,
+            )
+        with pytest.raises(EventLogValidationError):
+            make_epoch_summary_event(
+                epoch_index=100,
+                total_tasks=50,
+                total_reward=value,  # type: ignore[arg-type]
+            )
 
 
 class TestDomainExceptionTypeContracts:

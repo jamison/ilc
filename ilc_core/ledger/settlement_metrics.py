@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TypedDict, cast
 
 from ilc_core.ledger.backend import EpochRecord, LedgerBackend
+from ilc_core.ledger.exact_numeric import (
+    decimal_to_canonical_string,
+    parse_non_negative_decimal,
+)
 
 
 class SettlementMetricsResult(TypedDict):
@@ -11,17 +16,22 @@ class SettlementMetricsResult(TypedDict):
     num_epochs_rolled_back: int
     num_epochs_superseded: int
     num_snapshots: int
-    total_rewards_distributed: float
-    total_rewards_stubbed: float
+    total_rewards_distributed: str
+    total_rewards_stubbed: str
 
 
-def _reward_total_from_record(record: EpochRecord) -> float:
+def _reward_total_from_record(record: EpochRecord) -> Decimal:
     summary = record.get("summary", {})
     if isinstance(summary, dict):
-        reward = summary.get("reward_total", 0.0)
-        if isinstance(reward, (int, float)):
-            return float(reward)
-    return 0.0
+        reward = summary.get("reward_total", "0")
+        try:
+            return parse_non_negative_decimal(
+                reward,
+                token="invalid_reward_total",
+            )
+        except ValueError:
+            return Decimal("0")
+    return Decimal("0")
 
 
 def compute_settlement_metrics(ledger: LedgerBackend) -> SettlementMetricsResult:
@@ -46,8 +56,8 @@ def compute_settlement_metrics(ledger: LedgerBackend) -> SettlementMetricsResult
     num_epochs_rolled_back = 0
     num_epochs_superseded = 0
 
-    total_rewards_distributed = 0.0
-    total_rewards_stubbed = 0.0
+    total_rewards_distributed = Decimal("0")
+    total_rewards_stubbed = Decimal("0")
 
     for rec_obj in records.values():
         if not isinstance(rec_obj, dict):
@@ -80,6 +90,6 @@ def compute_settlement_metrics(ledger: LedgerBackend) -> SettlementMetricsResult
         "num_epochs_rolled_back": num_epochs_rolled_back,
         "num_epochs_superseded": num_epochs_superseded,
         "num_snapshots": num_snapshots,
-        "total_rewards_distributed": total_rewards_distributed,
-        "total_rewards_stubbed": total_rewards_stubbed,
+        "total_rewards_distributed": decimal_to_canonical_string(total_rewards_distributed),
+        "total_rewards_stubbed": decimal_to_canonical_string(total_rewards_stubbed),
     }

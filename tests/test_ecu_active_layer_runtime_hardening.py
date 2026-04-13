@@ -28,7 +28,7 @@ def test_decimal_boundary_allows_exact_reservation_of_point_three() -> None:
         task_description_hash="hash-2",
     )
     assert second["ok"] is True
-    assert runtime.spendable_ecu("agent-a") == 0.0
+    assert runtime.spendable_ecu("agent-a") == "0"
 
 
 def test_repeated_small_debits_drain_balance_to_exact_zero() -> None:
@@ -65,7 +65,7 @@ def test_repeated_small_debits_drain_balance_to_exact_zero() -> None:
     processed = runtime.process_epoch_boundary(commit_epoch=13)
     assert processed["ok"] is True
     assert len(processed["data"]["debited_earmark_ids"]) == 10
-    assert runtime.get_accrued_ecu("agent-a") == 0.0
+    assert runtime.get_accrued_ecu("agent-a") == "0"
 
 
 def test_idempotent_epoch_processing_for_terminal_earmarks() -> None:
