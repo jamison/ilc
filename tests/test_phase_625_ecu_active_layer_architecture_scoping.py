@@ -135,6 +135,8 @@ def test_section_two_defines_earmark_lifecycle_states_and_balance_invariant() ->
 def test_section_three_defines_arms_length_popperian_and_expiry_constraints() -> None:
     text = _read(SCOPING_PATH)
     assert 'distinct canonical `agent_id` values' in text
+    assert 'CDL-042' in text
+    assert 'key-derivation roots' in text
     assert 'Same-key self-commission is prohibited' in text
     assert 'must enter through the standard authored-envelope' in text
     assert 'pass the full CDL-V7 Popperian gate' in text
