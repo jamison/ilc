@@ -15,7 +15,7 @@ The window has one authorized track: the first post-612 spec lane covering the p
 
 Agent Skills is explicitly deferred to a post-619 window. Phase 612 Section 3 establishes a strict priority rule: post-612 work must prioritize the init/admission, receipt, lifecycle, and wallet touchpoints before opening new planning sub-lanes. Opening Agent Skills as a parallel track inside this window is prohibited.
 
-No CDL mutation is anticipated in this window. No sovereign substrate execution opens. No wallet widening is authorized. The MVP gate from Phase 612 Section 3 is the pass criterion for the spec lane; the gate must be satisfied in spec form before broader public RC claims are made.
+No CDL mutation is anticipated in this window. No sovereign substrate execution opens. No wallet widening is authorized. The MVP gate from Phase 612 Section 3 requires both spec form AND interface/runtime form before broader public RC claims may proceed. This window satisfies the spec-form half of that gate; spec-form closure is necessary but NOT sufficient. Broader public RC claims remain blocked until both spec form and interface/runtime form are complete.
 
 ---
 
