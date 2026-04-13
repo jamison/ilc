@@ -82,3 +82,37 @@ Repository progress is counted only when it produces one of the following:
 - reproducible operator workflow
 
 File count, scaffold count, or placeholder breadth do not count as progress.
+
+## 9. Protected run lock
+
+Long-running verification and operator commands should use the shared operator
+lock wrapper:
+
+`python3 tools/run_with_operator_lock.py --lock <name> --owner <owner> --label <label> -- <command ...>`
+
+Use this for:
+- full pytest runs
+- window closure gates
+- mutation canary runs
+- release gates
+- long three-machine or testbed runs
+- any background task likely to overlap with another model or operator session
+
+Recommended default lock names:
+- `repo_verification` for full suites, gate stacks, and canary work
+- `rc_operator` for long RC/testbed operations
+
+Status check:
+
+`python3 tools/run_with_operator_lock.py --lock repo_verification --status`
+
+Expected behavior:
+- if no protected run is active, the wrapper acquires the lock and runs the
+  command
+- if another protected run is active, the wrapper exits with code `73` and
+  prints the current owner, label, pid, and command when metadata is available
+- `--wait` is allowed when serialization is preferred over fail-fast behavior
+
+This lock is an operator-safety guard only. It does not replace per-tool or
+per-script locking where true in-process critical sections still require their
+own protection.

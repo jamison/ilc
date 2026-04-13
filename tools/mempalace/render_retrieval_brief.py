@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 DEFAULT_MANIFEST = Path("docs/tools/mempalace/ilc_mempalace_corpus_manifest_v0.1.json")
+ACTIVE_WORKING_SET = Path("docs/tools/mempalace/ilc_mempalace_active_working_set_v0.1.json")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BACKTICK_RE = re.compile(r"`([^`]+)`")
 PHASE_PREFIX_RE = re.compile(r"^Phase\s+\d+(?:-G\d+)?(?:\s+Fix\s+\d+)?[:\-]?\s*", re.IGNORECASE)
@@ -111,7 +112,14 @@ def render_brief(doc_path: Path, manifest: dict, repo_root: Path) -> str:
 
     lines.extend([
         "",
+        "## Standard follow-up checks",
+        "- Provenance question: compare a tier-A current-frontier read with the lower-tier lineage hit before drafting.",
+        "- Carry-forward question: confirm current `STATUS.md` plus the relevant handoff or sequence-lock file after retrieval.",
+        "- Contradiction question: compare higher- and lower-tier hits explicitly and let the higher-authority source win.",
+        "- If this brief influenced prompt drafting, window guidance, or an audit note, record the brief path as advisory provenance support.",
+        "",
         "## Usage note",
+        f"- Default current-frontier working set: `{ACTIVE_WORKING_SET.as_posix()}`.",
         "- Use tiered queries for provenance support.",
         "- Read returned repo files directly before drafting or answering.",
     ])
