@@ -1,13 +1,15 @@
 import hashlib
 import json
+from decimal import Decimal
 from datetime import datetime
 from pathlib import Path
 from typing import TypeAlias, TypedDict
 
 from ilc_core.ledger.canon_bundle_key_registry import get_registry
+from ilc_core.ledger.canon_export_validate import validate_canon_export_v0_1
 
 
-JsonScalar: TypeAlias = str | int | float | bool | None
+JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 
@@ -24,6 +26,21 @@ REQUIRED_MANIFEST_KEYS = {
 OPTIONAL_MANIFEST_KEYS = {
     "export_format", "key_id", "key_fingerprint", "sig_alg", "signed_at",
 }
+
+
+def _reject_non_finite_json_constant(value: str) -> JsonValue:
+    raise ValueError(f"non_finite_json_numeric_literal:{value}")
+
+
+def _load_json_object(path: Path, *, name: str) -> JsonObject:
+    raw = json.loads(
+        path.read_text(encoding="utf-8"),
+        parse_float=Decimal,
+        parse_constant=_reject_non_finite_json_constant,
+    )
+    if not isinstance(raw, dict):
+        raise ValueError(f"{name}_not_json_object")
+    return raw
 
 
 def _append_key_status_issues(
@@ -79,12 +96,11 @@ def validate_canon_export_bundle(bundle_dir: Path) -> BundleValidationResult:
         
     # 3. Load Manifest
     try:
-        manifest_raw = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest = _load_json_object(manifest_path, name="manifest")
     except json.JSONDecodeError:
         return {"ok": False, "errors": ["manifest.json is not valid JSON"], "warnings": warnings}
-    if not isinstance(manifest_raw, dict):
-        return {"ok": False, "errors": ["manifest.json is not valid JSON"], "warnings": warnings}
-    manifest: JsonObject = manifest_raw
+    except ValueError as exc:
+        return {"ok": False, "errors": [str(exc)], "warnings": warnings}
         
     # 4. Check Manifest Keys
     manifest_keys = set(manifest.keys())
@@ -139,6 +155,27 @@ def validate_canon_export_bundle(bundle_dir: Path) -> BundleValidationResult:
         errors.append(f"Failed to compute file hashes: {e}")
 
     # 8. Content Consistency Checks (Lightweight)
+    try:
+        export_doc = _load_json_object(export_path, name="export")
+    except json.JSONDecodeError:
+        errors.append("export.json is not valid JSON")
+        export_doc = None
+    except ValueError as exc:
+        errors.append(str(exc))
+        export_doc = None
+
+    if export_doc is not None and "canon_export_format" in export_doc:
+        export_validation = validate_canon_export_v0_1(export_doc)
+        errors.extend(f"export_json_invalid:{msg}" for msg in export_validation["errors"])
+        warnings.extend(f"export_json_warning:{msg}" for msg in export_validation["warnings"])
+
+    try:
+        _load_json_object(validate_path, name="validate")
+    except json.JSONDecodeError:
+        errors.append("validate.json is not valid JSON")
+    except ValueError as exc:
+        errors.append(str(exc))
+
     export_format_val = manifest.get("export_format")
     if export_format_val is None:
         warnings.append("Missing optional field 'export_format'")
