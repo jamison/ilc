@@ -92,10 +92,12 @@ def test_all_constants_have_exact_expected_values() -> None:
     assert runtime.GAMMA == 0.15
 
 
-def test_authorship_primacy_asserts_present_in_source() -> None:
+def test_authorship_primacy_contract_validation_is_present_in_source() -> None:
     text = RUNTIME_PATH.read_text(encoding="utf-8")
-    assert "PASSIVE_ATTRIBUTION_RATE * (1.0 + GAMMA) < 1.0" in text
-    assert "ATTRIBUTION_CAP < 1.0" in text
+    assert "def _validate_runtime_contract()" in text
+    assert "PassiveECUAttributionContractError" in text
+    assert "PASSIVE_ATTRIBUTION_RATE * (1.0 + GAMMA) >= 1.0" in text
+    assert "ATTRIBUTION_CAP >= 1.0" in text
 
 
 def test_quality_factor_matches_expected_bounds_and_neutral_midpoint() -> None:
@@ -130,10 +132,10 @@ def test_quality_factor_rejects_scores_outside_unit_interval() -> None:
             raise AssertionError("expected ValueError for invalid quality score")
 
 
-def test_source_contains_gossip_runtime_dependency_assertion() -> None:
+def test_source_contains_gossip_runtime_dependency_validation() -> None:
     text = RUNTIME_PATH.read_text(encoding="utf-8")
-    assert "_CDL_060_GOSSIP_RUNTIME_CHECK == CDL_060_GOSSIP_RUNTIME_DEPENDENCY" in text
-    assert 'f"dep chain mismatch: {_CDL_060_GOSSIP_RUNTIME_CHECK}"' in text
+    assert "_CDL_060_GOSSIP_RUNTIME_CHECK != CDL_060_GOSSIP_RUNTIME_DEPENDENCY" in text
+    assert "passive_ecu_dependency_mismatch" in text
 
 
 def test_phase_550_main_commit_touches_expected_paths_only() -> None:
