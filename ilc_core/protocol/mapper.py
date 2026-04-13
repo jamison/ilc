@@ -97,15 +97,15 @@ def epoch_summary_to_protocol(
         "epoch": epoch,
         "total_tasks": int(summary.get("total_tasks", 0)),
         "total_ecu_spent": exact_to_canonical_string(
-            summary.get("total_ecu_spent", 0.0),
+            summary.get("total_ecu_spent", "0"),
             token="protocol_mapping_invalid_total_ecu_spent",
         ),
         "total_reward_paid": exact_to_canonical_string(
-            summary.get("total_reward_paid", 0.0),
+            summary.get("total_reward_paid", "0"),
             token="protocol_mapping_invalid_total_reward_paid",
         ),
         "clearing_price_ilc_per_ecu": exact_to_canonical_string(
-            summary.get("clearing_price_ilc_per_ecu", 0.0),
+            summary.get("clearing_price_ilc_per_ecu", "0"),
             token="protocol_mapping_invalid_clearing_price",
         ),
         "meta": {},
