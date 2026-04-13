@@ -139,7 +139,6 @@ def test_peer_broadcast_returns_zero_result_with_no_peers() -> None:
 
 
 def test_peer_broadcast_records_success_and_failure_logs(monkeypatch, caplog) -> None:
-    monkeypatch.setattr(peer_runtime.random, "sample", lambda population, k: sorted(population)[:k])
     caplog.set_level(logging.INFO)
 
     manager = PeerManager(
@@ -154,7 +153,7 @@ def test_peer_broadcast_records_success_and_failure_logs(monkeypatch, caplog) ->
     assert result["attempted"] == 2
     assert result["succeeded"] == 1
     assert result["failed"] == 1
-    assert result["targets"] == ["10.0.0.1:8100", "10.0.0.2:8101"]
+    assert sorted(result["targets"]) == ["10.0.0.1:8100", "10.0.0.2:8101"]
 
     messages = [record.getMessage() for record in caplog.records]
     assert any("network_gossip_delivery_succeeded" in message for message in messages)
@@ -162,13 +161,16 @@ def test_peer_broadcast_records_success_and_failure_logs(monkeypatch, caplog) ->
 
 
 def test_peer_broadcast_normalizes_paths_and_keeps_http_boundary_local(monkeypatch, caplog) -> None:
-    observed: list[tuple[str, float]] = []
+    observed: list[tuple[str, tuple[float, float]]] = []
 
-    def _raising_sender(url: str, payload: dict[str, object], timeout_s: float) -> _Response:
+    def _raising_sender(
+        url: str,
+        payload: dict[str, object],
+        timeout_s: tuple[float, float],
+    ) -> _Response:
         observed.append((url, timeout_s))
         raise requests.RequestException("boom")
 
-    monkeypatch.setattr(peer_runtime.random, "sample", lambda population, k: sorted(population)[:k])
     caplog.set_level(logging.INFO)
 
     manager = PeerManager(local_port=8000, sender=_raising_sender)
@@ -181,13 +183,15 @@ def test_peer_broadcast_normalizes_paths_and_keeps_http_boundary_local(monkeypat
         "failed": 1,
         "targets": ["10.0.0.3:8102"],
     }
-    assert observed == [("http://10.0.0.3:8102/gossip/receive", 1.0)]
+    assert observed == [("http://10.0.0.3:8102/gossip/receive", (2.0, 30.0))]
     assert any("network_gossip_delivery_failed" in record.getMessage() for record in caplog.records)
 
     text = PEER_PATH.read_text(encoding="utf-8")
     assert "def _default_sender" in text
     assert text.count("requests.post") == 1
     assert "self._sender" in text
+    assert "import random" not in text
+    assert "hashlib.sha256" in text
 
 
 def test_cli_refactor_preserves_exemption_set_and_node_payload_shape(monkeypatch) -> None:

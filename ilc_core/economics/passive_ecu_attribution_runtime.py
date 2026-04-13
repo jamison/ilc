@@ -16,15 +16,27 @@ DECAY_FLOOR = 0.05
 ATTRIBUTION_CAP = 0.15
 GAMMA = 0.15
 
-assert _CDL_060_GOSSIP_RUNTIME_CHECK == CDL_060_GOSSIP_RUNTIME_DEPENDENCY, (
-    f"dep chain mismatch: {_CDL_060_GOSSIP_RUNTIME_CHECK}"
-)
-assert PASSIVE_ATTRIBUTION_RATE * (1.0 + GAMMA) < 1.0, (
-    "authorship_primacy_invariant_violated: passive rate exceeds direct reward"
-)
-assert ATTRIBUTION_CAP < 1.0, (
-    "authorship_primacy_invariant_violated: attribution cap exceeds direct reward"
-)
+
+class PassiveECUAttributionContractError(RuntimeError):
+    """Raised when module-level runtime contract invariants are invalid."""
+
+
+def _validate_runtime_contract() -> None:
+    if _CDL_060_GOSSIP_RUNTIME_CHECK != CDL_060_GOSSIP_RUNTIME_DEPENDENCY:
+        raise PassiveECUAttributionContractError(
+            "passive_ecu_dependency_mismatch"
+        )
+    if PASSIVE_ATTRIBUTION_RATE * (1.0 + GAMMA) >= 1.0:
+        raise PassiveECUAttributionContractError(
+            "authorship_primacy_invariant_violated: passive rate exceeds direct reward"
+        )
+    if ATTRIBUTION_CAP >= 1.0:
+        raise PassiveECUAttributionContractError(
+            "authorship_primacy_invariant_violated: attribution cap exceeds direct reward"
+        )
+
+
+_validate_runtime_contract()
 
 
 def quality_factor(q_i: float) -> float:
