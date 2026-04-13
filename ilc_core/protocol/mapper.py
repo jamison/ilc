@@ -1,4 +1,6 @@
 from typing import Any, Dict, Optional, Union
+
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, exact_to_canonical_string
 from ilc_core.types import Node, node_to_claim_record
 from ilc_core.economics.outcome import TaskOutcome
 from ilc_core.exceptions import ProtocolMappingError
@@ -23,7 +25,7 @@ def node_to_protocol_claim(node: Node) -> Dict[str, Any]:
         "content": claim.content,
         "parent_ids": claim.parent_ids,
         "timestamp": claim.timestamp,
-        "net_stake": claim.net_stake,
+        "net_stake": decimal_to_canonical_string(claim.net_stake),
     }
 
 
@@ -49,7 +51,7 @@ def node_to_protocol_refute(node: Node) -> Dict[str, Any]:
         "target_claim_id": claim.target_id,
         "content": claim.content,
         "timestamp": claim.timestamp,
-        "net_stake": claim.net_stake,
+        "net_stake": decimal_to_canonical_string(claim.net_stake),
     }
 
 
@@ -70,8 +72,14 @@ def outcome_to_protocol_task_outcome(
         "domain": outcome.domain,
         "agent_id": agent_id or getattr(outcome, "agent_id", None),
         "epoch": epoch,
-        "stake_spent": outcome.stake_spent,
-        "reward_paid": outcome.reward_paid,
+        "stake_spent": exact_to_canonical_string(
+            outcome.stake_spent,
+            token="protocol_mapping_invalid_stake_spent",
+        ),
+        "reward_paid": exact_to_canonical_string(
+            outcome.reward_paid,
+            token="protocol_mapping_invalid_reward_paid",
+        ),
         "success": outcome.success,
         "meta": {},
     }
@@ -88,10 +96,17 @@ def epoch_summary_to_protocol(
     return {
         "epoch": epoch,
         "total_tasks": int(summary.get("total_tasks", 0)),
-        "total_ecu_spent": float(summary.get("total_ecu_spent", 0.0)),
-        "total_reward_paid": float(summary.get("total_reward_paid", 0.0)),
-        "clearing_price_ilc_per_ecu": float(
-            summary.get("clearing_price_ilc_per_ecu", 0.0)
+        "total_ecu_spent": exact_to_canonical_string(
+            summary.get("total_ecu_spent", 0.0),
+            token="protocol_mapping_invalid_total_ecu_spent",
+        ),
+        "total_reward_paid": exact_to_canonical_string(
+            summary.get("total_reward_paid", 0.0),
+            token="protocol_mapping_invalid_total_reward_paid",
+        ),
+        "clearing_price_ilc_per_ecu": exact_to_canonical_string(
+            summary.get("clearing_price_ilc_per_ecu", 0.0),
+            token="protocol_mapping_invalid_clearing_price",
         ),
         "meta": {},
     }

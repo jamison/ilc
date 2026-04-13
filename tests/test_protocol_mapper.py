@@ -23,7 +23,7 @@ def test_node_to_protocol_claim_basic():
     assert proto["type"] == "claim"
     assert proto["agent_id"] == "agent:test"
     assert proto["content"] == "1 + 1 = 2"
-    assert proto["net_stake"] == 10.0
+    assert proto["net_stake"] == "10"
     assert "timestamp" in proto
     assert isinstance(proto["parent_ids"], list)
 
@@ -100,8 +100,8 @@ def test_outcome_to_protocol_task_outcome_basic():
     proto = outcome_to_protocol_task_outcome(outcome, epoch=3, agent_id="agent:test")
     assert proto["task_type"] == "claim.submit"
     assert proto["domain"] == "MEDIUM"
-    assert proto["stake_spent"] == 0.1
-    assert proto["reward_paid"] == 0.2
+    assert proto["stake_spent"] == "0.1"
+    assert proto["reward_paid"] == "0.2"
     assert proto["success"] is True
     assert proto["epoch"] == 3
     assert proto["agent_id"] == "agent:test"
@@ -116,6 +116,6 @@ def test_epoch_summary_to_protocol_basic():
     proto = epoch_summary_to_protocol(epoch=7, summary=summary)
     assert proto["epoch"] == 7
     assert proto["total_tasks"] == 10
-    assert proto["total_ecu_spent"] == 1.5
-    assert proto["total_reward_paid"] == 2.0
-    assert proto["clearing_price_ilc_per_ecu"] == 1.3333
+    assert proto["total_ecu_spent"] == "1.5"
+    assert proto["total_reward_paid"] == "2"
+    assert proto["clearing_price_ilc_per_ecu"] == "1.3333"
