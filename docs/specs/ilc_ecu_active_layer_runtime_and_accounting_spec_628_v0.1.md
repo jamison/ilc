@@ -117,6 +117,7 @@ Phase 628 does not change the passive Phase 550 proxy values.
   - `active_earmark_cap_exceeded`
   - `earmark_id_conflict`
   - `invalid_earmark_amount`
+  - `invalid_earmark_amount_non_finite`
 
 `earmark_accept(...)`
 - output shape:
@@ -158,6 +159,10 @@ Phase 628 does not change the passive Phase 550 proxy values.
   - `data.agent_id`
   - `data.history`
 - success token: `earmark_history_returned`
+
+Internal runtime guard:
+- `set_accrued_ecu(...)` rejects non-finite amounts with
+  `accrued_ecu_cannot_be_non_finite`
 
 `machine_legible_interfaces_defined`
 
