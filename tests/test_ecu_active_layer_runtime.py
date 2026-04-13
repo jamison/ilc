@@ -220,6 +220,26 @@ def test_set_accrued_ecu_rejects_drop_below_reserved_balance() -> None:
         runtime.set_accrued_ecu("agent-a", 2.0)
 
 
+@pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity", float("nan"), float("inf"), float("-inf")])
+def test_non_finite_amounts_are_rejected(value: object) -> None:
+    runtime = EcuActiveLayerRuntime()
+
+    with pytest.raises(ValueError, match="accrued_ecu_cannot_be_non_finite"):
+        runtime.set_accrued_ecu("agent-a", value)  # type: ignore[arg-type]
+
+    result = runtime.earmark_propose(
+        earmark_id="e-1",
+        commission_id="c-1",
+        commissioning_agent_id="agent-a",
+        performing_agent_id="agent-b",
+        earmark_amount=value,  # type: ignore[arg-type]
+        proposal_epoch=10,
+        task_description_hash="hash-1",
+    )
+    assert result["ok"] is False
+    assert result["token"] == "invalid_earmark_amount_non_finite"
+
+
 def test_multiple_delivered_earmarks_debit_in_same_epoch_boundary() -> None:
     runtime = EcuActiveLayerRuntime()
     runtime.set_accrued_ecu("agent-a", 10.0)
