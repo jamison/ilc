@@ -163,7 +163,12 @@ def _handle_signing(args, bundle_path: Path, report, steps) -> bool:
 def _finalize(args, report) -> int:
     """Write report/audit (if requested), print JSON, and return exit code."""
     bundle_path = Path(report.get("bundle_path", ""))
-    json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+    json_output = json.dumps(
+        report,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    )
 
     if args.report:
         report_arg_path = Path(args.report)
@@ -171,12 +176,22 @@ def _finalize(args, report) -> int:
 
         # Optimistically mark report as true for JSON/report alignment.
         report["steps"]["report"] = True
-        json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+        json_output = json.dumps(
+            report,
+            separators=(",", ":"),
+            sort_keys=True,
+            allow_nan=False,
+        )
         report_ok, report_content = _write_report(bundle_path, report, report_path, json_output)
         if not report_ok:
             report["steps"]["report"] = False
             report.setdefault("warnings", []).append("report_write_failed")
-            json_output = json.dumps(report, separators=(",", ":"), sort_keys=False)
+            json_output = json.dumps(
+                report,
+                separators=(",", ":"),
+                sort_keys=True,
+                allow_nan=False,
+            )
             report_content = None
             report_path = None
 

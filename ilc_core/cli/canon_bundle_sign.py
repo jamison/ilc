@@ -8,7 +8,7 @@ from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_fro
 
 
 def _emit_report(report: dict) -> int:
-    print(json.dumps(report, separators=(",", ":"), sort_keys=False))
+    print(json.dumps(report, separators=(",", ":"), sort_keys=True, allow_nan=False))
     return 0 if report["ok"] else 1
 
 

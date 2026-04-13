@@ -74,7 +74,12 @@ def render_replay_report(
         })
     
     # JSON output (single-line, verbatim)
-    json_output = json.dumps(replay_json, separators=(",", ":"), sort_keys=False)
+    json_output = json.dumps(
+        replay_json,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    )
     
     lines = [
         f"# Canon Bundle Replay Report ({REPORT_VERSION})",
