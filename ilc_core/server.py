@@ -27,6 +27,11 @@ from ilc_core.protocol.public_init_admission_runtime import (
     PublicInitAdmissionRuntimeError,
     issue_public_init_admission_receipt,
 )
+from ilc_core.protocol.public_receipt_runtime import (
+    PublicReceiptRuntimeError,
+    issue_public_receipt,
+    query_public_receipts,
+)
 from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore
 from ilc_core.work.task_queue import TaskDescriptor
 
@@ -50,6 +55,7 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.agent = agent
     app_obj.state.peer_manager = peer_manager
     app_obj.state.public_runtime_root = public_runtime_root
+    app_obj.state.public_receipt_store = public_admission_store
     app_obj.state.public_admission_store = public_admission_store
 
 
@@ -250,6 +256,52 @@ def submit_public_init_admission(payload: dict, request: Request):
             store=state.public_admission_store,
         )
     except PublicInitAdmissionRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.post("/v1/public/receipt")
+def submit_public_receipt(payload: dict, request: Request):
+    state = _state(request)
+    try:
+        result = issue_public_receipt(
+            payload=payload,
+            store=state.public_receipt_store,
+        )
+    except PublicReceiptRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/receipt/{receipt_id}")
+def query_public_receipt_by_id(receipt_id: str, request: Request):
+    state = _state(request)
+    try:
+        result = query_public_receipts(
+            store=state.public_receipt_store,
+            receipt_id=receipt_id,
+        )
+    except PublicReceiptRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/receipts")
+def query_public_receipt_collection(
+    request: Request,
+    signer_agent_id: str | None = None,
+    artifact_kind: str | None = None,
+    epoch_id: str | None = None,
+):
+    state = _state(request)
+    try:
+        result = query_public_receipts(
+            store=state.public_receipt_store,
+            signer_agent_id=signer_agent_id,
+            artifact_kind=artifact_kind,
+            epoch_id=epoch_id,
+        )
+    except PublicReceiptRuntimeError as exc:
         return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
     return JSONResponse(result, status_code=200)
 
