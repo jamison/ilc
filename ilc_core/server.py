@@ -1,6 +1,8 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
+import tempfile
 from pydantic import BaseModel
 from .graph import EpistemicGraph
 from .consensus.engine import ConsensusEngine
@@ -21,6 +23,11 @@ from ilc_core.protocol.mapper import (
 )
 from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
 from ilc_core.genesis.schema import load_epistemic_work_task_schema
+from ilc_core.protocol.public_init_admission_runtime import (
+    PublicInitAdmissionRuntimeError,
+    issue_public_init_admission_receipt,
+)
+from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore
 from ilc_core.work.task_queue import TaskDescriptor
 
 configure_logging()
@@ -36,10 +43,14 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     agent = EveAgent("agent:local_node", graph, consensus)
     agent.wallet_balance = 1000.0
     peer_manager = PeerManager(local_port=8000)
+    public_runtime_root = Path(tempfile.mkdtemp(prefix="ilc-public-runtime-"))
+    public_admission_store = LmdbAdmissionStore(public_runtime_root / "admission")
     app_obj.state.graph = graph
     app_obj.state.consensus = consensus
     app_obj.state.agent = agent
     app_obj.state.peer_manager = peer_manager
+    app_obj.state.public_runtime_root = public_runtime_root
+    app_obj.state.public_admission_store = public_admission_store
 
 
 @asynccontextmanager
@@ -226,6 +237,21 @@ def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
         agent_id=req.agent_id,
     )
     return {"task_outcome": proto}
+
+
+@router.post("/v1/public/init/admission")
+def submit_public_init_admission(payload: dict, request: Request):
+    state = _state(request)
+    epoch_id = f"public-init-admission::{state.consensus.epoch_index}"
+    try:
+        result = issue_public_init_admission_receipt(
+            payload=payload,
+            epoch_id=epoch_id,
+            store=state.public_admission_store,
+        )
+    except PublicInitAdmissionRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
 
 @router.get("/v1/protocol/ep_task_schema")
 def get_ep_task_schema():
