@@ -44,11 +44,30 @@ def test_calculate_maintenance_tax_decreases_with_age():
 
     old_node = _make_node("node_old", age_seconds=10000, net_stake=10.0)
     new_node = _make_node("node_new", age_seconds=10, net_stake=10.0)
+    graph.nodes[old_node.id] = old_node
+    graph.nodes[new_node.id] = new_node
 
     tax_old = engine.calculate_maintenance_tax(old_node)
     tax_new = engine.calculate_maintenance_tax(new_node)
 
     assert tax_old < tax_new
+
+
+def test_get_node_age_uses_injected_reference_clock_deterministically():
+    graph = EpistemicGraph()
+    reference_seconds = datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp()
+    engine = ConsensusEngine(graph, age_reference_clock=lambda: reference_seconds)
+    node = Node(
+        id="node-1",
+        type="claim",
+        content="test",
+        agent_id="agent:test",
+        signature="sig",
+        timestamp=datetime.fromtimestamp(reference_seconds - 25, tz=timezone.utc),
+        net_stake=1.0,
+    )
+
+    assert engine.get_node_age(node) == 25.0
 
 
 def test_get_node_age_rejects_naive_timestamp():

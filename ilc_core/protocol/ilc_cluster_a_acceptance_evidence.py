@@ -291,33 +291,16 @@ def build_cluster_a_acceptance_evidence(
         governance_record: The raw input record.
         apply_result: Result from apply_governance_record.
         conformance_result: Result from conformance_check_cluster_a_artifact.
-        runtime_context: Optional context containing "timestamp" (ISO-8601). 
-                        If missing, strict UTC now is used.
+        runtime_context: Optional context containing "timestamp" (ISO-8601).
+                        If missing, a deterministic fallback is used.
 
     Returns:
         Deterministic dictionary representing the evidence artifact.
     """
     
     # 1. Resolve Timestamp
-    # Use context timestamp if valid, else strictly generated now-time.
-    to_use_ts = None
-    if runtime_context and "timestamp" in runtime_context:
-        ctx_ts = runtime_context["timestamp"]
-        # Strict ISO-8601 UTC format check (must end in Z)
-        # Regex: YYYY-MM-DDTHH:MM:SS.mmmmmmZ or similar.
-        # Minimalist check: must be string, must end in 'Z', and parseable.
-        if not isinstance(ctx_ts, str) or not ctx_ts.endswith("Z"):
-             raise ValueError("runtime_context['timestamp'] must be a strict ISO-8601 UTC string ending in 'Z'")
-        to_use_ts = ctx_ts
-        
-    if not to_use_ts:
-        # Strict UTC ISO-8601
-        to_use_ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        if not to_use_ts.endswith("Z"):
-            # Ensure Z suffix behavior for python < 3.11 if needed, 
-            # though isoformat() with timezone.utc usually adds +00:00.
-            # We enforce Z for consistency with spec.
-            to_use_ts = to_use_ts.replace("+00:00", "Z")
+    # Use context timestamp if valid, else a deterministic record-scoped fallback.
+    to_use_ts = _resolve_generated_at(governance_record, runtime_context)
 
     # 2. Derive Identity & Hash
     record_uid = governance_record.get("gov_record_id")
@@ -382,3 +365,32 @@ def build_cluster_a_acceptance_evidence(
         raise ValueError(f"CRITICAL: Builder produced invalid evidence schema: {schema_errors}")
         
     return evidence
+
+
+def _resolve_generated_at(
+    governance_record: Dict[str, Any],
+    runtime_context: Optional[Dict[str, Any]],
+) -> str:
+    if runtime_context and "timestamp" in runtime_context:
+        return _require_strict_utc_timestamp(
+            runtime_context["timestamp"],
+            source="runtime_context['timestamp']",
+        )
+
+    if "timestamp" in governance_record and governance_record["timestamp"] is not None:
+        return _require_strict_utc_timestamp(
+            governance_record["timestamp"],
+            source="governance_record['timestamp']",
+        )
+
+    return "1970-01-01T00:00:00Z"
+
+
+def _require_strict_utc_timestamp(value: Any, *, source: str) -> str:
+    if not isinstance(value, str) or not value.endswith("Z"):
+        raise ValueError(f"{source} must be a strict ISO-8601 UTC string ending in 'Z'")
+    try:
+        datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError(f"{source} must be a strict ISO-8601 UTC string ending in 'Z'") from exc
+    return value
