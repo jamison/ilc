@@ -53,6 +53,29 @@ class TestChannelSigning:
         assert "key_fingerprint" in res_sign
         assert len(res_sign["key_fingerprint"]) == 64
 
+    def test_sign_channel_file_explicit_timestamp_is_reproducible(self, setup_channel):
+        channel_file, key = setup_channel
+        signed_at = "2026-04-14T13:00:00Z"
+
+        first = sign_channel_file(channel_file, key, signed_at=signed_at)
+        assert first["ok"] is True
+        sig_path = channel_file.with_suffix(channel_file.suffix + ".sig")
+        sidecar_once = sig_path.read_text(encoding="utf-8")
+
+        second = sign_channel_file(channel_file, key, signed_at=signed_at)
+        assert second["ok"] is True
+        sidecar_twice = sig_path.read_text(encoding="utf-8")
+
+        assert sidecar_once == sidecar_twice
+
+    def test_sign_channel_file_uses_updated_at_as_fallback(self, setup_channel):
+        channel_file, key = setup_channel
+        res = sign_channel_file(channel_file, key)
+        assert res["ok"] is True
+        sig_path = channel_file.with_suffix(channel_file.suffix + ".sig")
+        sig_data = json.loads(sig_path.read_text(encoding="utf-8"))
+        assert sig_data["signed_at"] == "2026-02-07T12:00:00Z"
+
     def test_sign_sidecar_includes_key_fingerprint(self, setup_channel):
         """Signed sidecar includes canonical key fingerprint field."""
         channel_file, key = setup_channel
@@ -127,6 +150,12 @@ class TestChannelSigning:
         sig_path.write_text(json.dumps(sig_data))
         
         res = verify_channel_file_signature(channel_file, key)
+        assert res["ok"] is False
+        assert "channel_signature_invalid_signed_at" in res["errors"]
+
+    def test_sign_channel_file_rejects_invalid_explicit_signed_at(self, setup_channel):
+        channel_file, key = setup_channel
+        res = sign_channel_file(channel_file, key, signed_at="2026-04-14 13:00:00")
         assert res["ok"] is False
         assert "channel_signature_invalid_signed_at" in res["errors"]
 

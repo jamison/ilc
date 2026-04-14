@@ -1,5 +1,6 @@
 """Tests for canon bundle key registry sync."""
 
+import hashlib
 import json
 import pytest
 from pathlib import Path
@@ -83,6 +84,41 @@ class TestSyncChannelRegistry:
         assert last_sync["selected_source_reason"] == "first_success"
         assert len(last_sync["source_attempts"]) == 1
         assert last_sync["source_attempts"][0]["ok"] is True
+
+    def test_sync_uses_explicit_metadata_timestamp_for_bookkeeping(self, tmp_path):
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+
+        result = call_sync(
+            channel_file,
+            key,
+            dest_dir,
+            channel="main",
+            metadata_timestamp="2026-04-14T13:30:00Z",
+        )
+
+        assert result["ok"] is True
+        assert result["last_sync"]["timestamp"] == "2026-04-14T13:30:00Z"
+        state_path = channel_file.with_suffix(".json.sync_state.json")
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["updated_at"] == "2026-04-14T13:30:00Z"
+
+    def test_sync_bookkeeping_does_not_change_channel_signed_identity(self, tmp_path):
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+        before = hashlib.sha256(channel_file.read_bytes()).hexdigest()
+
+        result = call_sync(
+            channel_file,
+            key,
+            dest_dir,
+            channel="main",
+            metadata_timestamp="2026-04-14T13:45:00Z",
+        )
+
+        assert result["ok"] is True
+        after = hashlib.sha256(channel_file.read_bytes()).hexdigest()
+        assert before == after
     
     def test_sync_falls_back_to_second_source_on_first_failure(self, tmp_path):
         """Sync falls back to second source on first failure."""
@@ -252,6 +288,21 @@ class TestSyncChannelRegistry:
         assert result["dry_run"] is True
         assert "sources_to_attempt" in result
         assert not (dest_dir / "canon_key_registry_bundle_v0.1").exists()
+
+    def test_sync_rejects_invalid_explicit_metadata_timestamp(self, tmp_path):
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+
+        result = call_sync(
+            channel_file,
+            key,
+            dest_dir,
+            channel="main",
+            metadata_timestamp="2026-04-14 13:45:00",
+        )
+
+        assert result["ok"] is False
+        assert "invalid_metadata_timestamp" in result["errors"]
     
     def test_force_required_when_dest_exists(self, tmp_path):
         """Force is required when dest already has bundle."""

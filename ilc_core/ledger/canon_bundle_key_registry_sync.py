@@ -6,14 +6,15 @@ operator-friendly sync command.
 """
 
 import json
+import re
 import time
-from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
 from urllib.parse import urlparse
 
 from ilc_core.ledger.canon_bundle_key_registry_channel import (
+    STRICT_ISO8601_TZ_PATTERN,
     load_channel_file,
     validate_channel_file,
     _atomic_write,
@@ -36,11 +37,8 @@ from ilc_core.ledger.canon_bundle_key_registry_bundle import (
     BUNDLE_DIR_NAME,
     verify_registry_bundle,
 )
-
-
-def _now_iso8601() -> str:
-    """Return current UTC time as strict ISO-8601 string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+def _is_strict_iso8601_tz(value: str) -> bool:
+    return bool(re.match(STRICT_ISO8601_TZ_PATTERN, value))
 
 
 class SourceAttempt(TypedDict):
@@ -190,15 +188,36 @@ class LastSyncRecord:
     key_id: str | None = None
 
 
+def _resolve_sync_metadata_timestamp(
+    ctx: "SyncContext",
+    channel_data: dict[str, object] | None,
+) -> str:
+    if ctx.metadata_timestamp is not None:
+        if not _is_strict_iso8601_tz(ctx.metadata_timestamp):
+            raise ValueError("invalid_metadata_timestamp")
+        return ctx.metadata_timestamp
+
+    if channel_data is not None:
+        for field in ("published_at", "updated_at"):
+            value = channel_data.get(field)
+            if isinstance(value, str):
+                if not _is_strict_iso8601_tz(value):
+                    raise ValueError(f"invalid_{field}")
+                return value
+
+    return "1970-01-01T00:00:00Z"
+
+
 def _record_last_sync(
     channel_file: Path,
     record: LastSyncRecord,
+    timestamp: str,
 ) -> LastSyncPayload:
     """Best-effort write of last_sync metadata."""
     last_sync = {
         "channel": record.channel if record.channel is not None else "unknown",
         "source": record.source if record.source is not None else "unknown",
-        "timestamp": _now_iso8601(),
+        "timestamp": timestamp,
         "bundle_hash": record.bundle_hash,
         "key_id": record.key_id,
         "ok": record.ok,
@@ -210,7 +229,7 @@ def _record_last_sync(
         last_sync["selected_source_reason"] = record.selected_source_reason
     try:
         sidecar = channel_file.with_suffix(channel_file.suffix + ".last_sync.json")
-        content = json.dumps(last_sync, indent=2, sort_keys=True)
+        content = json.dumps(last_sync, indent=2, sort_keys=True, allow_nan=False)
         _atomic_write(sidecar, content)
     except OSError:
         pass
@@ -219,6 +238,7 @@ def _record_last_sync(
 
 def _fail_with_last_sync(
     ctx: "SyncContext",
+    channel_data: dict[str, object] | None,
     channel: str | None,
     errors: list[str],
     warnings: list[str],
@@ -228,6 +248,11 @@ def _fail_with_last_sync(
     source: str | None = None,
 ) -> SyncResult:
     """Create standardized sync failure result with sidecar last_sync."""
+    try:
+        timestamp = _resolve_sync_metadata_timestamp(ctx, channel_data)
+    except ValueError as exc:
+        timestamp = "1970-01-01T00:00:00Z"
+        warnings = list(warnings) + [str(exc)]
     last_sync = _record_last_sync(
         ctx.channel_file,
         LastSyncRecord(
@@ -238,6 +263,7 @@ def _fail_with_last_sync(
             warnings=list(warnings),
             selected_source_reason=selected_source_reason,
         ),
+        timestamp,
     )
     res = {
         "ok": False,
@@ -355,6 +381,7 @@ class SyncContext:
     prod: bool = False
     allow_legacy_channel_v03: bool = False
     allow_legacy_channel_v02_v01: bool = False
+    metadata_timestamp: str | None = None
 
 
 
@@ -410,6 +437,7 @@ def _attempt_sync_from_window(
 
 def _finalize_sync(
     ctx: SyncContext,
+    channel_data: dict[str, object],
     channel: str,
     channel_version: str,
     success_result: SyncFetchResult | None,
@@ -464,7 +492,11 @@ def _finalize_sync(
         bundle_hash=success_result.get("registry_hash") if success_result else None,
         key_id=success_result.get("key_id") if success_result else None,
     )
-    last_sync = _record_last_sync(ctx.channel_file, record)
+    last_sync = _record_last_sync(
+        ctx.channel_file,
+        record,
+        _resolve_sync_metadata_timestamp(ctx, channel_data),
+    )
     
     channel_version_policy = "current"
     channel_version_override_used = False
@@ -567,7 +599,7 @@ def _do_freshness_check(
             new_state = ChannelFreshnessState(
                 seen_seq=curr_seq,
                 seen_hash=curr_hash,
-                updated_at=_now_iso8601(),
+                updated_at=_resolve_sync_metadata_timestamp(ctx, channel_data),
             )
             # We need to signal that state should be updated.
             # But we are inside a function that doesn't have the file path or lock context effectively?
@@ -594,7 +626,7 @@ def _do_freshness_check(
                 new_state = ChannelFreshnessState(
                     seen_seq=curr_seq,
                     seen_hash=curr_hash,
-                    updated_at=_now_iso8601(),
+                    updated_at=_resolve_sync_metadata_timestamp(ctx, channel_data),
                 )
                 freshness_result["_new_state"] = new_state
             return None, freshness_result
@@ -675,6 +707,7 @@ def _prepare_sync_channel(
         return (
             _fail_with_last_sync(
                 ctx,
+                channel_data,
                 audit_channel,
                 errors,
                 warnings,
@@ -703,6 +736,7 @@ def _prepare_sync_channel(
         return (
             _fail_with_last_sync(
                 ctx,
+                channel_data,
                 audit_channel,
                 decision.errors,
                 warnings + decision.warnings,
@@ -727,6 +761,7 @@ def _prepare_sync_channel(
         return (
             _fail_with_last_sync(
                 ctx,
+                channel_data,
                 audit_channel,
                 pol_errors,
                 warnings,
@@ -754,6 +789,8 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
         Dict with execution results and audit metadata.
     """
     warnings: list[str] = []
+    if ctx.metadata_timestamp is not None and not _is_strict_iso8601_tz(ctx.metadata_timestamp):
+        return {"ok": False, "errors": ["invalid_metadata_timestamp"], "warnings": warnings}
     
     # Load channel file
     load_result = load_channel_file(ctx.channel_file)
@@ -772,6 +809,7 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
     if fresh_err:
         err_result = _fail_with_last_sync(
             ctx,
+            channel_data,
             audit_channel,
             fresh_err.get("errors", []),
             fresh_err.get("warnings", warnings),
@@ -805,6 +843,7 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
     if err:
         return _fail_with_last_sync(
             ctx,
+            channel_data,
             channel,
             [err],
             warnings,
@@ -818,6 +857,7 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
     if win_errors:
         return _fail_with_last_sync(
             ctx,
+            channel_data,
             channel,
             win_errors,
             warnings,
@@ -847,12 +887,20 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
                 }
                 # No new fetch attempts made
                 return _finalize_sync(
-                    ctx, channel, channel_version, success_result, [], warnings, freshness_result
+                    ctx,
+                    channel_data,
+                    channel,
+                    channel_version,
+                    success_result,
+                    [],
+                    warnings,
+                    freshness_result,
                 )
 
         selected = _canonicalize_source(window[0]) if window else None
         return _fail_with_last_sync(
             ctx,
+            channel_data,
             channel,
             ["dest_exists"],
             warnings,
@@ -879,5 +927,12 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
     success_result, attempts = _attempt_sync_from_window(window, ctx.source_index, ctx)
             
     return _finalize_sync(
-        ctx, channel, channel_version, success_result, attempts, warnings, freshness_result
+        ctx,
+        channel_data,
+        channel,
+        channel_version,
+        success_result,
+        attempts,
+        warnings,
+        freshness_result,
     )

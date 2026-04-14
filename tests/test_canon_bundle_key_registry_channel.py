@@ -208,6 +208,32 @@ class TestSetCurrentChannel:
         # Verify file was updated
         data = json.loads(path.read_text())
         assert data["current_channel"] == "test"
+
+    def test_set_existing_channel_accepts_explicit_updated_at(self, tmp_path):
+        path = self._write_channel(tmp_path, {
+            "channel_version": "v0.1",
+            "updated_at": "2026-02-07T10:00:00Z",
+            "current_channel": "main",
+            "channels": ["main", "test"],
+        })
+
+        result = set_current_channel(path, "test", updated_at="2026-04-14T12:30:00Z")
+        assert result["ok"] is True
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert data["updated_at"] == "2026-04-14T12:30:00Z"
+
+    def test_set_existing_channel_reuses_existing_updated_at_without_explicit_input(self, tmp_path):
+        path = self._write_channel(tmp_path, {
+            "channel_version": "v0.1",
+            "updated_at": "2026-02-07T10:00:00Z",
+            "current_channel": "main",
+            "channels": ["main", "test"],
+        })
+
+        result = set_current_channel(path, "test")
+        assert result["ok"] is True
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert data["updated_at"] == "2026-02-07T10:00:00Z"
     
     def test_set_missing_channel_fails(self, tmp_path):
         """Setting missing channel fails without force."""
@@ -279,6 +305,14 @@ class TestCreateChannelFile:
         data = json.loads(path.read_text())
         assert data["current_channel"] == "main"
         assert data["channels"] == ["main"]
+
+    def test_create_new_file_accepts_explicit_updated_at(self, tmp_path):
+        path = tmp_path / "channel.json"
+
+        result = create_channel_file(path, "main", updated_at="2026-04-14T12:45:00Z")
+        assert result["ok"] is True
+        data = json.loads(path.read_text(encoding="utf-8"))
+        assert data["updated_at"] == "2026-04-14T12:45:00Z"
     
     def test_create_fails_if_exists(self, tmp_path):
         """Create fails if file exists without force."""

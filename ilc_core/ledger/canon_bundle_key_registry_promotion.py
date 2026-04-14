@@ -6,8 +6,8 @@ Enables controlled rollout: experimental -> test -> main
 
 import json
 import os
+import re
 import shutil
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -23,11 +23,22 @@ from ilc_core.ledger.canon_bundle_key_registry_channel import (
 
 
 ALLOWED_FIELDS = CHANNEL_ALLOWED_FIELDS | {"last_promotion", "channel_order"}
+STRICT_ISO8601_TZ_PATTERN = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
 
 
-def _now_iso8601() -> str:
-    """Return current UTC time as strict ISO-8601 string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+def _resolve_promotion_timestamp(channel_data: dict, timestamp: str | None) -> str:
+    if timestamp is not None:
+        if not isinstance(timestamp, str) or not re.match(STRICT_ISO8601_TZ_PATTERN, timestamp):
+            raise ValueError("invalid_promotion_timestamp")
+        return timestamp
+
+    updated_at = channel_data.get("updated_at")
+    if isinstance(updated_at, str):
+        if not re.match(STRICT_ISO8601_TZ_PATTERN, updated_at):
+            raise ValueError("invalid_updated_at")
+        return updated_at
+
+    return "1970-01-01T00:00:00Z"
 
 
 def _validate_promotion_inputs(
@@ -110,12 +121,13 @@ def _update_channel_after_promotion(
     channel_data: dict,
     last_promotion: dict,
     dest_channel: str,
-    switch: bool
+    switch: bool,
+    updated_at: str,
 ) -> dict:
     """Update channel file with promotion metadata."""
     try:
         channel_data["last_promotion"] = last_promotion
-        channel_data["updated_at"] = _now_iso8601()
+        channel_data["updated_at"] = updated_at
         
         if switch:
             channel_data["current_channel"] = dest_channel
@@ -127,7 +139,7 @@ def _update_channel_after_promotion(
             channels.sort()
             channel_data["channels"] = channels
             
-        content = json.dumps(channel_data, indent=2, sort_keys=True)
+        content = json.dumps(channel_data, indent=2, sort_keys=True, allow_nan=False)
         _atomic_write(channel_file, content)
         return {"ok": True}
     except OSError as e:
@@ -144,6 +156,7 @@ def promote_bundle(
     force: bool = False,
     dry_run: bool = False,
     switch: bool = False,
+    timestamp: Optional[str] = None,
 ) -> dict:
     """
     Promote a bundle from one channel to another.
@@ -192,10 +205,15 @@ def promote_bundle(
         return {"ok": False, "errors": val_errors, "warnings": val_warnings}
     
     # Build promotion log
+    try:
+        resolved_timestamp = _resolve_promotion_timestamp(channel_data, timestamp)
+    except ValueError as exc:
+        return {"ok": False, "errors": [str(exc)], "warnings": val_warnings}
+
     last_promotion = {
         "from": src_channel,
         "to": dest_channel,
-        "timestamp": _now_iso8601(),
+        "timestamp": resolved_timestamp,
         "bundle_hash": verify_result.get("registry_hash"),
         "key_id": verify_result.get("key_id"),
     }
@@ -227,7 +245,12 @@ def promote_bundle(
     
     # Update channel file
     update_result = _update_channel_after_promotion(
-        channel_file, channel_data, last_promotion, dest_channel, switch
+        channel_file,
+        channel_data,
+        last_promotion,
+        dest_channel,
+        switch,
+        resolved_timestamp,
     )
     if not update_result["ok"]:
         return {"ok": False, "errors": [update_result["error"]], "warnings": val_warnings}
