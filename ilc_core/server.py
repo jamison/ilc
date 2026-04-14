@@ -2,6 +2,7 @@ from fastapi import APIRouter, FastAPI, HTTPException, Request
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
+import shutil
 import tempfile
 from pydantic import BaseModel
 from .graph import EpistemicGraph
@@ -79,11 +80,34 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.public_wallet_runtime = public_wallet_runtime
 
 
+def _close_runtime_state(app_obj: FastAPI) -> None:
+    state = app_obj.state
+    closeable_attrs = (
+        "public_admission_store",
+        "public_wallet_store",
+    )
+    closed_ids: set[int] = set()
+    for attr in closeable_attrs:
+        value = getattr(state, attr, None)
+        if value is None or id(value) in closed_ids:
+            continue
+        close = getattr(value, "close", None)
+        if callable(close):
+            close()
+            closed_ids.add(id(value))
+    runtime_root = getattr(state, "public_runtime_root", None)
+    if isinstance(runtime_root, Path):
+        shutil.rmtree(runtime_root, ignore_errors=True)
+
+
 @asynccontextmanager
 async def lifespan(app_obj: FastAPI):
     """Initialize runtime resources for the app lifespan."""
     _init_runtime_state(app_obj)
-    yield
+    try:
+        yield
+    finally:
+        _close_runtime_state(app_obj)
 
 router = APIRouter()
 

@@ -33,33 +33,17 @@ class PublicWalletRuntime:
         self.lifecycle_runtime = lifecycle_runtime
 
     def wallet_status(self, *, agent_id: str) -> dict[str, Any]:
-        agent_id = _require_agent_id(agent_id)
-        lifecycle_payload = self.lifecycle_runtime.lifecycle_status(agent_id=agent_id)
-        lifecycle_data = lifecycle_payload["data"]
-        latest_balance_receipt = lifecycle_data.get("latest_balance_receipt")
+        snapshot = self._wallet_snapshot(agent_id=agent_id)
         return {
             "ok": True,
             "token": "wallet_status_found",
-            "data": {
-                "agent_id": agent_id,
-                "balance_ilc": lifecycle_data["balance_ilc"],
-                "ecu_accrual": lifecycle_data["balance_ecu"],
-                "claimability_state": "deferred",
-                "last_settled_epoch_id": lifecycle_data.get("last_settled_epoch_id"),
-                "history_digest": lifecycle_data.get("history_digest"),
-                "latest_balance_receipt": latest_balance_receipt,
-                "latest_balance_receipt_ref": _payload_ref(
-                    prefix="balance_receipt_sha256",
-                    payload=latest_balance_receipt,
-                ),
-                "settled_runtime_root_ref": self._settled_runtime_root_ref(),
-                "wallet_store_kind": "lmdb_wallet_store",
-            },
+            "data": snapshot["status"],
         }
 
     def wallet_history(self, *, agent_id: str) -> dict[str, Any]:
-        status_data = self.wallet_status(agent_id=agent_id)["data"]
-        balance_history = self._balance_history(agent_id=agent_id)
+        snapshot = self._wallet_snapshot(agent_id=agent_id)
+        status_data = snapshot["status"]
+        balance_history = snapshot["records"]
         return {
             "ok": True,
             "token": "wallet_history_found",
@@ -75,8 +59,11 @@ class PublicWalletRuntime:
         }
 
     def wallet_export(self, *, agent_id: str) -> dict[str, Any]:
-        status_data = self.wallet_status(agent_id=agent_id)["data"]
-        history_data = self.wallet_history(agent_id=agent_id)["data"]
+        snapshot = self._wallet_snapshot(agent_id=agent_id)
+        status_data = snapshot["status"]
+        history_data = {
+            "history_digest": snapshot["history_digest"],
+        }
         return {
             "ok": True,
             "token": "wallet_export_found",
@@ -94,12 +81,12 @@ class PublicWalletRuntime:
         }
 
     def ledger_summary(self, *, agent_id: str) -> dict[str, Any]:
-        status_data = self.wallet_status(agent_id=agent_id)["data"]
-        history_data = self.wallet_history(agent_id=agent_id)["data"]
+        snapshot = self._wallet_snapshot(agent_id=agent_id)
+        status_data = snapshot["status"]
         reward_total = sum(
             (
                 to_decimal(record["settled_amount_ilc"], token="wallet_history_invalid")
-                for record in history_data["records"]
+                for record in snapshot["records"]
             ),
             ZERO,
         )
@@ -110,9 +97,9 @@ class PublicWalletRuntime:
                 "agent_id": agent_id,
                 "settled_balance_ilc": status_data["balance_ilc"],
                 "reward_total_ilc": decimal_to_canonical_string(reward_total),
-                "epoch_record_count": history_data["record_count"],
+                "epoch_record_count": len(snapshot["records"]),
                 "latest_epoch_id": status_data.get("last_settled_epoch_id"),
-                "history_digest": history_data.get("history_digest"),
+                "history_digest": snapshot["history_digest"],
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
                 "claimability_state": "deferred",
@@ -120,8 +107,41 @@ class PublicWalletRuntime:
             },
         }
 
-    def _balance_history(self, *, agent_id: str) -> list[dict[str, Any]]:
-        payload = self.wallet_store.get_wallet_history(agent_id) or {}
+    def _wallet_snapshot(self, *, agent_id: str) -> dict[str, Any]:
+        agent_id = _require_agent_id(agent_id)
+        lifecycle_snapshot = self.lifecycle_runtime.lifecycle_snapshot(agent_id=agent_id)
+        lifecycle_data = lifecycle_snapshot["data"]
+        latest_balance_receipt = lifecycle_data.get("latest_balance_receipt")
+        records = self._balance_history(payload=lifecycle_snapshot.get("wallet_history"))
+        settled_runtime_root_ref = self._settled_runtime_root_ref(
+            agent_id=agent_id,
+            lifecycle_data=lifecycle_data,
+            records=records,
+        )
+        latest_balance_receipt_ref = _payload_ref(
+            prefix="balance_receipt_sha256",
+            payload=latest_balance_receipt,
+        )
+        status = {
+            "agent_id": agent_id,
+            "balance_ilc": lifecycle_data["balance_ilc"],
+            "ecu_accrual": lifecycle_data["balance_ecu"],
+            "claimability_state": "deferred",
+            "last_settled_epoch_id": lifecycle_data.get("last_settled_epoch_id"),
+            "history_digest": lifecycle_data.get("history_digest"),
+            "latest_balance_receipt": latest_balance_receipt,
+            "latest_balance_receipt_ref": latest_balance_receipt_ref,
+            "settled_runtime_root_ref": settled_runtime_root_ref,
+            "wallet_store_kind": "lmdb_wallet_store",
+        }
+        return {
+            "status": status,
+            "records": records,
+            "history_digest": lifecycle_data.get("history_digest"),
+        }
+
+    def _balance_history(self, *, payload: dict[str, Any] | None) -> list[dict[str, Any]]:
+        payload = payload or {}
         balance_history = payload.get("balance_history", [])
         if not isinstance(balance_history, list):
             raise PublicWalletRuntimeError("wallet_history_invalid", "balance_history must be a list")
@@ -150,9 +170,26 @@ class PublicWalletRuntime:
             )
         return sorted(records, key=lambda record: str(record["epoch_id"]))
 
-    def _settled_runtime_root_ref(self) -> str:
-        root = str(self.wallet_store.root.resolve())
-        return f"wallet_root_sha256:{hashlib.sha256(root.encode('utf-8')).hexdigest()}"
+    def _settled_runtime_root_ref(
+        self,
+        *,
+        agent_id: str,
+        lifecycle_data: dict[str, Any],
+        records: list[dict[str, Any]],
+    ) -> str:
+        payload = {
+            "agent_id": agent_id,
+            "balance_ilc": lifecycle_data["balance_ilc"],
+            "balance_ecu": lifecycle_data["balance_ecu"],
+            "last_settled_epoch_id": lifecycle_data.get("last_settled_epoch_id"),
+            "history_digest": lifecycle_data.get("history_digest"),
+            "records": records,
+            "latest_balance_receipt": lifecycle_data.get("latest_balance_receipt"),
+        }
+        digest = hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        ).hexdigest()
+        return f"wallet_state_sha256:{digest}"
 
 
 def _require_agent_id(agent_id: str) -> str:
