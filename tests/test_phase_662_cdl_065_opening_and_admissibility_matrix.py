@@ -120,6 +120,16 @@ def _require_commit_or_skip(subject_token: str) -> None:
         pytest.skip(f"commit_not_yet_present:{subject_token}")
 
 
+def _decision_log_at(commit_ref: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit_ref}:{DECISION_LOG_PATH.as_posix()}"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return result.stdout
+
+
 def test_opening_document_exists_and_contains_all_required_headings() -> None:
     text = _read(OPENING_PATH)
     for heading in REQUIRED_OPENING_HEADINGS:
@@ -144,8 +154,13 @@ def test_admissibility_matrix_contains_all_required_tokens() -> None:
         assert token in text
 
 
-def test_decision_log_contains_an_open_row_for_cdl_065() -> None:
-    text = _read(DECISION_LOG_PATH)
+def test_decision_log_contains_an_open_row_for_cdl_065_at_phase_662_commit() -> None:
+    _require_commit_or_skip(PHASE_662_SUBJECT_TOKEN)
+    commit_ref = _resolve_commit_ref(
+        subject_token=PHASE_662_SUBJECT_TOKEN,
+        expected_paths=EXACT_REQUIRED_MAIN_PATHS,
+    )
+    text = _decision_log_at(commit_ref)
     assert "| CDL-065 |" in text
     assert "| open |" in next(line for line in text.splitlines() if line.startswith("| CDL-065 |"))
 
