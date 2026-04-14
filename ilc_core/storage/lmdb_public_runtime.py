@@ -17,7 +17,7 @@ def _encode_key(value: str) -> bytes:
 
 
 def _encode_json(payload: Any) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
 def _decode_json(payload: bytes | None) -> Any:
@@ -139,3 +139,19 @@ class LmdbWalletStore(_LmdbRuntimeBase):
 
     def delete_wallet_history(self, agent_id: str) -> None:
         self._delete(b"wallet_history", agent_id)
+
+
+class LmdbAdmissionStore(_LmdbRuntimeBase):
+    def __init__(self, root: Path | str, *, map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
+        super().__init__(
+            root,
+            db_names=(b"admission_receipts",),
+            map_size=map_size,
+        )
+
+    def put_admission_receipt(self, receipt_id: str, payload: dict[str, Any]) -> None:
+        self._put_json(b"admission_receipts", receipt_id, payload)
+
+    def get_admission_receipt(self, receipt_id: str) -> dict[str, Any] | None:
+        payload = self._get_json(b"admission_receipts", receipt_id)
+        return payload if isinstance(payload, dict) else None
