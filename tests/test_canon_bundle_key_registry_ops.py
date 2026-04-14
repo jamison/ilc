@@ -1,5 +1,6 @@
 """Tests for canon bundle key registry ops: rotate, backup, restore."""
 
+import hashlib
 import json
 import pytest
 from pathlib import Path
@@ -115,7 +116,7 @@ class TestRotateRegistry:
         assert not sig_path.exists()
     
     def test_updated_at_is_updated(self, tmp_path):
-        """Rotation updates updated_at timestamp."""
+        """Rotation advances updated_at deterministically."""
         path = self._write_registry(tmp_path, {
             "registry_version": "v0.1",
             "updated_at": "2020-01-01T00:00:00Z",
@@ -126,8 +127,39 @@ class TestRotateRegistry:
         
         result = rotate_registry(path, "ffffffffffffffff")
         assert result["ok"] is True
-        assert result["updated_at"] != "2020-01-01T00:00:00Z"
-        assert "2026" in result["updated_at"]  # Current year
+        assert result["updated_at"] == "2020-01-01T00:00:01Z"
+
+    def test_updated_at_accepts_explicit_value(self, tmp_path):
+        """Rotation accepts explicit deterministic updated_at."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2020-01-01T00:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+
+        result = rotate_registry(
+            path,
+            "ffffffffffffffff",
+            updated_at="2031-07-04T12:34:56Z",
+        )
+        assert result["ok"] is True
+        assert result["updated_at"] == "2031-07-04T12:34:56Z"
+
+    def test_updated_at_rejects_invalid_explicit_value(self, tmp_path):
+        """Rotation rejects invalid explicit updated_at."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2020-01-01T00:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+
+        result = rotate_registry(path, "ffffffffffffffff", updated_at="not-a-timestamp")
+        assert result["ok"] is False
+        assert result["error"] == "invalid_updated_at"
 
 
 class TestBackupRegistry:
@@ -139,7 +171,7 @@ class TestBackupRegistry:
         return path
     
     def test_backup_creates_file(self, tmp_path):
-        """Backup creates timestamped file."""
+        """Backup creates deterministic file."""
         path = self._write_registry(tmp_path, {
             "registry_version": "v0.1",
             "updated_at": "2026-02-06T10:00:00Z",
@@ -155,6 +187,7 @@ class TestBackupRegistry:
         
         backup_path = Path(result["backup_path"])
         assert backup_path.exists()
+        assert ".20260206-100000." in backup_path.name
         assert ".bak" in backup_path.name
     
     def test_backup_preserves_content(self, tmp_path):
@@ -188,6 +221,54 @@ class TestBackupRegistry:
         result = backup_registry(path, backup_dir)
         assert result["ok"] is True
         assert backup_dir.exists()
+
+    def test_backup_uses_explicit_stamp(self, tmp_path):
+        """Backup accepts explicit deterministic stamp."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": [],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        backup_dir = tmp_path / "backups"
+
+        result = backup_registry(path, backup_dir, backup_stamp="20310704-123456")
+        assert result["ok"] is True
+        backup_path = Path(result["backup_path"])
+        assert ".20310704-123456." in backup_path.name
+
+    def test_backup_name_includes_content_hash(self, tmp_path):
+        """Backup filename includes deterministic content hash."""
+        data = {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        }
+        path = self._write_registry(tmp_path, data)
+        backup_dir = tmp_path / "backups"
+
+        result = backup_registry(path, backup_dir)
+        assert result["ok"] is True
+        expected_hash = hashlib.sha256(path.read_text().encode("utf-8")).hexdigest()[:12]
+        assert f".{expected_hash}.bak" in Path(result["backup_path"]).name
+
+    def test_backup_rejects_invalid_explicit_stamp(self, tmp_path):
+        """Backup rejects invalid explicit stamp."""
+        path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": [],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        backup_dir = tmp_path / "backups"
+
+        result = backup_registry(path, backup_dir, backup_stamp="bad-stamp")
+        assert result["ok"] is False
+        assert result["error"] == "invalid_backup_stamp"
 
 
 class TestRestoreRegistry:

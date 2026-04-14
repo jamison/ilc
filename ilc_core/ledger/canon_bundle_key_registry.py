@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List, Optional
 import hashlib
 import hmac
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 
 @dataclass
@@ -292,6 +292,44 @@ def _resolve_registry_signed_at(data: dict, signed_at: str | None) -> str:
     return "1970-01-01T00:00:00Z"
 
 
+def _parse_strict_iso8601_tz(value: str) -> datetime:
+    if not _is_strict_iso8601_tz(value):
+        raise ValueError("invalid_updated_at")
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def _format_strict_iso8601_tz(value: datetime) -> str:
+    return value.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _resolve_registry_updated_at(data: dict, updated_at: str | None) -> str:
+    if updated_at is not None:
+        if not _is_strict_iso8601_tz(updated_at):
+            raise ValueError("invalid_updated_at")
+        return updated_at
+
+    existing_updated_at = data.get("updated_at")
+    if isinstance(existing_updated_at, str):
+        parsed = _parse_strict_iso8601_tz(existing_updated_at)
+        return _format_strict_iso8601_tz(parsed + timedelta(seconds=1))
+
+    return "1970-01-01T00:00:01Z"
+
+
+def _resolve_registry_backup_stamp(data: dict, backup_stamp: str | None) -> str:
+    if backup_stamp is not None:
+        if not re.match(r"^\d{8}-\d{6}$", backup_stamp):
+            raise ValueError("invalid_backup_stamp")
+        return backup_stamp
+
+    existing_updated_at = data.get("updated_at")
+    if isinstance(existing_updated_at, str):
+        parsed = _parse_strict_iso8601_tz(existing_updated_at)
+        return parsed.astimezone(timezone.utc).strftime("%Y%m%d-%H%M%S")
+
+    return "19700101-000000"
+
+
 def sign_registry_file(
     registry_path: Path,
     key: bytes,
@@ -459,15 +497,11 @@ def _atomic_write(path: Path, data: str) -> None:
     tmp.replace(path)
 
 
-def _now_iso8601() -> str:
-    """Return current UTC time as strict ISO-8601 string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
 def rotate_registry(
     registry_path: Path,
     new_key_id: str,
-    force: bool = False
+    force: bool = False,
+    updated_at: Optional[str] = None,
 ) -> dict:
     """
     Rotate registry: move current→previous→deprecated, insert new key.
@@ -522,8 +556,11 @@ def rotate_registry(
         "current_keys": [new_key_id],
         "previous_keys": old_current,
         "deprecated_keys": sorted(set(old_deprecated) | set(old_previous)),
-        "updated_at": _now_iso8601(),
     }
+    try:
+        new_data["updated_at"] = _resolve_registry_updated_at(data, updated_at)
+    except ValueError as e:
+        return {"ok": False, "error": str(e)}
     
     # Invalidate existing .sig file
     sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
@@ -536,7 +573,7 @@ def rotate_registry(
     
     # Atomic write
     try:
-        _atomic_write(registry_path, json.dumps(new_data, indent=2))
+        _atomic_write(registry_path, json.dumps(new_data, indent=2, allow_nan=False))
     except OSError as e:
         return {"ok": False, "error": f"write_failed:{e}"}
     
@@ -549,7 +586,11 @@ def rotate_registry(
     }
 
 
-def backup_registry(registry_path: Path, backup_dir: Path) -> dict:
+def backup_registry(
+    registry_path: Path,
+    backup_dir: Path,
+    backup_stamp: Optional[str] = None,
+) -> dict:
     """
     Create timestamped backup of registry file.
     
@@ -571,15 +612,20 @@ def backup_registry(registry_path: Path, backup_dir: Path) -> dict:
     except OSError as e:
         return {"ok": False, "error": f"backup_dir_create_failed:{e}"}
     
-    # Generate backup filename
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    backup_name = f"{registry_path.name}.{stamp}.bak"
-    backup_path = backup_dir / backup_name
-    
-    # Copy file
     try:
         content = registry_path.read_text(encoding="utf-8")
+        data = json.loads(content)
+        if not isinstance(data, dict):
+            return {"ok": False, "error": "invalid_registry"}
+        stamp = _resolve_registry_backup_stamp(data, backup_stamp)
+        content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()[:12]
+        backup_name = f"{registry_path.name}.{stamp}.{content_hash}.bak"
+        backup_path = backup_dir / backup_name
         backup_path.write_text(content, encoding="utf-8")
+    except ValueError as e:
+        return {"ok": False, "error": str(e)}
+    except json.JSONDecodeError:
+        return {"ok": False, "error": "invalid_registry"}
     except OSError as e:
         return {"ok": False, "error": f"backup_failed:{e}"}
     
