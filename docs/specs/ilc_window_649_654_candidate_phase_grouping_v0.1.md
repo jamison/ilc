@@ -139,6 +139,9 @@ Deliverables:
 Mission:
 - implement the runtime form of Phase 615
 - expose read-only visible ECU and delayed visible ILC settlement state
+- add a bounded read-only coupling-invariants diagnostic surface that makes the
+  graph-truth-to-settlement ordering visible without claiming the governance
+  lock is already closed
 - preserve exact-numeric, non-finite rejection, and no-transfer/no-claimability
   boundaries
 
@@ -163,6 +166,7 @@ Type: sensitive closure gate
 
 Deliverables:
 - `docs/specs/ilc_window_649_654_runtime_coherence_report_654_v0.1.md`
+- `docs/specs/ilc_option_b_graduation_checklist_state_654_v0.1.json`
 - `tools/run_window_649_654_runtime_closure_gate_phase_654.sh`
 - `tests/test_phase_654_window_649_654_closure_and_handoff.py`
 - `docs/specs/ilc_antigravity_context_capsule_v3.8.md`
@@ -171,6 +175,10 @@ Deliverables:
 Mission:
 - prove the runtime lane is coherent
 - record rows 1-4 as `runtime_closed` if and only if the runtime phases pass
+- emit a machine-legible nine-row checklist-state artifact with evidence basis
+  for each row
+- name the coupling-invariants governance lock as the next constitutional target
+  after this runtime lane without reserving a CDL number
 - preserve rows 5-9 as open and keep `Option D` active
 
 ## 6. Success criteria
@@ -185,6 +193,8 @@ This window succeeds only if:
    canonical-string, and non-finite rejection rules
 7. all touched machine surfaces preserve canonical JSON and fail-closed
    discipline where applicable
+8. the runtime lane leaves behind a machine-legible checklist artifact and an
+   explicit forward pointer to the coupling-invariants governance lane
 
 ## 7. Routing after closure
 
@@ -194,5 +204,7 @@ After Window 649-654:
   explicitly authorized
 - the next major blocker remains the later-lane governance/privacy/substrate
   route, especially the coupling-invariants governance lock
+- the closure packet should leave a machine-legible checklist state and a clear
+  handoff pointer into that coupling-invariants governance lane
 - this window does not by itself authorize broader public RC claims that depend
   on still-open rows 5-9
