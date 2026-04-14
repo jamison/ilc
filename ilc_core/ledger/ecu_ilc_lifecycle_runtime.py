@@ -39,14 +39,22 @@ class EcuIlcLifecycleRuntime:
         self.ecu_runtime = ecu_runtime
 
     def lifecycle_status(self, *, agent_id: str) -> dict[str, Any]:
+        snapshot = self.lifecycle_snapshot(agent_id=agent_id)
+        return {
+            "ok": True,
+            "token": "lifecycle_visibility_found",
+            "data": snapshot["data"],
+        }
+
+    def lifecycle_snapshot(self, *, agent_id: str) -> dict[str, Any]:
         wallet_row = self.wallet_store.get_wallet(agent_id) or {}
         wallet_history = self.wallet_store.get_wallet_history(agent_id) or {}
         latest_balance_receipt = wallet_row.get("latest_balance_receipt")
         if not isinstance(latest_balance_receipt, dict):
             latest_balance_receipt = None
         return {
-            "ok": True,
-            "token": "lifecycle_visibility_found",
+            "wallet_row": wallet_row,
+            "wallet_history": wallet_history,
             "data": {
                 "agent_id": agent_id,
                 "balance_ecu": self.ecu_runtime.get_accrued_ecu(agent_id),
@@ -79,6 +87,46 @@ class EcuIlcLifecycleRuntime:
 
         wallet_row = self.wallet_store.get_wallet(agent_id) or {}
         wallet_history = self.wallet_store.get_wallet_history(agent_id) or {}
+        balance_history = wallet_history.get("balance_history")
+        if not isinstance(balance_history, list):
+            balance_history = []
+
+        existing_entry = next(
+            (
+                item
+                for item in balance_history
+                if isinstance(item, dict) and item.get("epoch_id") == epoch_id
+            ),
+            None,
+        )
+        if existing_entry is not None:
+            existing_delta = decimal_to_canonical_string(
+                to_decimal(
+                    existing_entry.get("reward_delta_ilc", "0"),
+                    token="lifecycle_reward_delta_invalid",
+                )
+            )
+            requested_delta = decimal_to_canonical_string(reward_delta_decimal)
+            if existing_delta != requested_delta:
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_epoch_replay_conflict",
+                    "epoch_id replay conflicts with existing reward delta",
+                )
+            current_wallet_row = self.wallet_store.get_wallet(agent_id) or {
+                "agent_id": agent_id,
+                "balance_ilc": "0",
+                "last_settled_epoch_id": epoch_id,
+                "reward_status": "not_rewarded",
+                "history_digest": wallet_history.get("history_digest"),
+                "latest_balance_receipt": existing_entry,
+                "claimability_state": "deferred",
+            }
+            return {
+                "ok": True,
+                "token": "lifecycle_epoch_commit_idempotent_replay",
+                "data": current_wallet_row,
+            }
+
         prior_balance = to_decimal(
             wallet_row.get("balance_ilc", "0"),
             token="lifecycle_wallet_balance_invalid",
@@ -90,9 +138,6 @@ class EcuIlcLifecycleRuntime:
             "balance_after_ilc": decimal_to_canonical_string(balance_after),
             "settlement_status": "applied",
         }
-        balance_history = wallet_history.get("balance_history")
-        if not isinstance(balance_history, list):
-            balance_history = []
         merged_balance_history = [
             item
             for item in balance_history

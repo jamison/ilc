@@ -96,6 +96,8 @@ Receipt issuance rules:
 - `schema_version` remains `v0.1`
 - `receipt_id` is deterministic SHA-256 over canonical compact JSON bytes of
   the receipt payload
+- `issued_at` is derived deterministically from the bounded `epoch_id` rather
+  than from local wall-clock time
 - `signer_agent_id` and `activated_agent_id` both bind to the canonical
   key-derived identity
 - `verification_status` is `valid` on successful bounded issuance

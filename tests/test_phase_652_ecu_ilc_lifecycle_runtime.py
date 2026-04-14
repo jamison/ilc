@@ -130,6 +130,36 @@ def test_delayed_visible_ilc_appears_only_after_epoch_commit() -> None:
         assert after_payload["latest_balance_receipt"]["settlement_status"] == "applied"
 
 
+def test_same_epoch_same_delta_is_idempotent_and_conflicting_replay_fails_closed() -> None:
+    app = create_app()
+    with TestClient(app):
+        first = app.state.public_lifecycle_runtime.commit_settled_epoch(
+            agent_id="agent-a",
+            epoch_id="epoch-001",
+            reward_delta_ilc="3.25",
+        )
+        assert first["token"] == "lifecycle_epoch_commit_applied"
+
+        replay = app.state.public_lifecycle_runtime.commit_settled_epoch(
+            agent_id="agent-a",
+            epoch_id="epoch-001",
+            reward_delta_ilc="3.25",
+        )
+        assert replay["token"] == "lifecycle_epoch_commit_idempotent_replay"
+        assert replay["data"]["balance_ilc"] == "3.25"
+
+        with pytest.raises(Exception) as exc_info:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="agent-a",
+                epoch_id="epoch-001",
+                reward_delta_ilc="4.00",
+            )
+        assert getattr(exc_info.value, "token", None) == "lifecycle_epoch_replay_conflict"
+
+        status = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")
+        assert status["data"]["balance_ilc"] == "3.25"
+
+
 def test_coupling_invariants_diagnostic_surface_is_present_and_read_only() -> None:
     app = create_app()
     with TestClient(app) as client:

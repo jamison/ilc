@@ -9,7 +9,7 @@ import lmdb
 
 LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
-_ENV_CACHE: dict[str, lmdb.Environment] = {}
+_ENV_CACHE: dict[str, tuple[lmdb.Environment, int]] = {}
 
 
 def _encode_key(value: str) -> bytes:
@@ -30,19 +30,23 @@ class _LmdbRuntimeBase:
     def __init__(self, root: Path | str, *, db_names: tuple[bytes, ...], map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
-        root_key = str(self.root.resolve())
-        self.env = _ENV_CACHE.get(root_key)
-        if self.env is None:
+        self._root_key = str(self.root.resolve())
+        cached = _ENV_CACHE.get(self._root_key)
+        if cached is None:
             self.env = lmdb.open(
-                root_key,
+                self._root_key,
                 create=True,
                 subdir=True,
                 max_dbs=max(1, len(db_names)),
                 map_size=map_size,
                 lock=True,
             )
-            _ENV_CACHE[root_key] = self.env
+            _ENV_CACHE[self._root_key] = (self.env, 1)
+        else:
+            self.env, refcount = cached
+            _ENV_CACHE[self._root_key] = (self.env, refcount + 1)
         self._dbs = {name: self.env.open_db(name) for name in db_names}
+        self._closed = False
 
     def _put_json(self, db_name: bytes, key: str, payload: Any) -> None:
         with self.env.begin(write=True, db=self._dbs[db_name]) as txn:
@@ -63,6 +67,21 @@ class _LmdbRuntimeBase:
     def _delete(self, db_name: bytes, key: str) -> None:
         with self.env.begin(write=True, db=self._dbs[db_name]) as txn:
             txn.delete(_encode_key(key))
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        cached = _ENV_CACHE.get(self._root_key)
+        if cached is None:
+            self.env.close()
+        else:
+            env, refcount = cached
+            if refcount <= 1:
+                env.close()
+                _ENV_CACHE.pop(self._root_key, None)
+            else:
+                _ENV_CACHE[self._root_key] = (env, refcount - 1)
+        self._closed = True
 
 
 class LmdbGraphStore(_LmdbRuntimeBase):

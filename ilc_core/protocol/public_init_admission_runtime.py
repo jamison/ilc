@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import time
 from typing import Any
 
 from ilc_core.identity.agent_id_runtime import AgentIdentityError, verify_agent_id
@@ -60,7 +59,7 @@ def issue_public_init_admission_receipt(
     except AgentIdentityError as exc:
         raise PublicInitAdmissionRuntimeError(exc.token, str(exc)) from exc
 
-    issued_at = int(time.time())
+    issued_at = _deterministic_issued_at(epoch_id)
     receipt_payload = {
         "artifact_kind": PUBLIC_IDENTITY_ACTIVATION_RECEIPT_KIND,
         "schema_version": PUBLIC_INIT_ADMISSION_SCHEMA_VERSION,
@@ -123,6 +122,14 @@ def _require_optional_string(value: Any) -> str | None:
 def _canonical_receipt_id(payload: dict[str, Any]) -> str:
     canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+
+
+def _deterministic_issued_at(epoch_id: str) -> int:
+    suffix = epoch_id.rsplit("::", 1)[-1]
+    if suffix.isdigit():
+        return int(suffix)
+    digest = hashlib.sha256(epoch_id.encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], "big")
 
 
 __all__ = [

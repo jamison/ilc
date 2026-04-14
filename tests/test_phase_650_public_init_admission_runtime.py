@@ -113,8 +113,19 @@ def test_init_admission_runtime_requires_canonical_key_derived_identity_and_pers
         assert receipt["artifact_kind"] == "public_identity_activation_receipt"
         assert receipt["authority_scope"] == "public_init_admission"
         assert receipt["signer_agent_id"] == _valid_payload()["agent_id"]
+        assert receipt["issued_at"] == 0
         persisted = app.state.public_admission_store.get_admission_receipt(receipt["receipt_id"])
         assert persisted == receipt
+
+
+def test_same_epoch_same_payload_produces_deterministic_receipt_id() -> None:
+    app = create_app()
+    with TestClient(app) as client:
+        first = client.post("/v1/public/init/admission", json=_valid_payload())
+        second = client.post("/v1/public/init/admission", json=_valid_payload())
+        assert first.status_code == 200
+        assert second.status_code == 200
+        assert first.json()["receipt"]["receipt_id"] == second.json()["receipt"]["receipt_id"]
 
 
 def test_missing_lineage_scope_and_attestation_fail_closed_with_machine_tokens() -> None:
