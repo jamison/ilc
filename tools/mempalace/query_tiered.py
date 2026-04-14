@@ -3,13 +3,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 DEFAULT_MANIFEST = Path("docs/tools/mempalace/ilc_mempalace_corpus_manifest_v0.1.json")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_TMPDIR = REPO_ROOT / "out" / "mempalace_tmp"
 QUERY_CODE = r'''
 import json
+import re
 import sys
 import chromadb
 
@@ -33,16 +37,64 @@ elif wing:
     kwargs["where"] = {"wing": wing}
 elif room:
     kwargs["where"] = {"room": room}
-results = col.query(**kwargs)
-docs = results["documents"][0]
-metas = results["metadatas"][0]
-dists = results["distances"][0]
-payload = {
-    "query": query,
-    "wing": wing,
-    "room": room,
-    "distance_metric": distance_metric,
-    "results": [
+
+
+def tokenize(text):
+    return re.findall(r"[a-z0-9]+", (text or "").lower())
+
+
+def lexical_fallback():
+    get_kwargs = {
+        "include": ["documents", "metadatas"],
+        "limit": col.count(),
+    }
+    if "where" in kwargs:
+        get_kwargs["where"] = kwargs["where"]
+    rows = col.get(**get_kwargs)
+    docs = rows.get("documents", []) or []
+    metas = rows.get("metadatas", []) or []
+    query_tokens = set(tokenize(query))
+    query_phrase = (query or "").strip().lower()
+    ranked = []
+    for idx, (doc, meta) in enumerate(zip(docs, metas)):
+        source_file = meta.get("source_file", "?")
+        source_tokens = set(tokenize(source_file))
+        doc_tokens = set(tokenize(doc))
+        overlap = len(query_tokens & doc_tokens)
+        source_overlap = len(query_tokens & source_tokens)
+        coverage = overlap / len(query_tokens) if query_tokens else 0.0
+        phrase_bonus = 1.0 if query_phrase and query_phrase in (doc or "").lower() else 0.0
+        source_bonus = 0.25 if source_overlap else 0.0
+        lexical_score = round((phrase_bonus * 2.0) + coverage + source_bonus, 6)
+        if lexical_score <= 0.0:
+            continue
+        ranked.append(
+            (
+                -lexical_score,
+                source_file,
+                idx,
+                {
+                    "text": doc,
+                    "source_file": source_file,
+                    "wing": meta.get("wing", "unknown"),
+                    "room": meta.get("room", "unknown"),
+                    "distance": None,
+                    "relevance_score": lexical_score,
+                },
+            )
+        )
+    ranked.sort()
+    return [item[-1] for item in ranked[:n_results]]
+
+
+query_mode = "semantic"
+semantic_error = None
+try:
+    results = col.query(**kwargs)
+    docs = results["documents"][0]
+    metas = results["metadatas"][0]
+    dists = results["distances"][0]
+    rows = [
         {
             "text": doc,
             "source_file": meta.get("source_file", "?"),
@@ -52,7 +104,20 @@ payload = {
             "relevance_score": round(1.0 / (1.0 + max(float(dist), 0.0)), 6),
         }
         for doc, meta, dist in zip(docs, metas, dists)
-    ],
+    ]
+except Exception as exc:
+    query_mode = "lexical_fallback"
+    semantic_error = f"{type(exc).__name__}: {exc}"
+    rows = lexical_fallback()
+
+payload = {
+    "query": query,
+    "wing": wing,
+    "room": room,
+    "distance_metric": distance_metric,
+    "query_mode": query_mode,
+    "semantic_error": semantic_error,
+    "results": rows,
 }
 print(json.dumps(payload))
 '''
@@ -60,6 +125,13 @@ print(json.dumps(payload))
 
 def load_manifest(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def query_env() -> dict[str, str]:
+    env = os.environ.copy()
+    env["TMPDIR"] = env.get("ILC_MEMPALACE_TMPDIR", env.get("TMPDIR", str(DEFAULT_TMPDIR)))
+    Path(env["TMPDIR"]).mkdir(parents=True, exist_ok=True)
+    return env
 
 
 def query_memories(
@@ -79,6 +151,7 @@ def query_memories(
         check=True,
         capture_output=True,
         text=True,
+        env=query_env(),
     )
     payload = json.loads(proc.stdout)
     if source_filters:
@@ -100,8 +173,13 @@ def render_text(payload: dict) -> str:
         lines.append(f'Room: {payload["room"]}')
     if payload.get("distance_metric"):
         lines.append(f'Distance metric: {payload["distance_metric"]}')
+    if payload.get("query_mode"):
+        lines.append(f'Query mode: {payload["query_mode"]}')
     if payload.get("source_filters"):
         lines.append(f'Source filters: {", ".join(payload["source_filters"])}')
+    lines.append(f'TMPDIR: {query_env()["TMPDIR"]}')
+    if payload.get("semantic_error"):
+        lines.append(f'Semantic fallback reason: {payload["semantic_error"]}')
     lines.append("")
     results = payload.get("results", [])
     if not results:
@@ -112,7 +190,7 @@ def render_text(payload: dict) -> str:
         lines.append(
             '  '
             f'wing={item["wing"]} room={item["room"]} '
-            f'distance={item["distance"]} relevance_score={item["relevance_score"]}'
+            f'distance={item.get("distance")} relevance_score={item["relevance_score"]}'
         )
         text = item["text"].strip().replace("\n", " ")
         lines.append(f'  text={text[:240]}')
