@@ -66,7 +66,7 @@ def test_evidence_structure(mock_gov_record, mock_apply_res, mock_conf_res):
     assert checks[1]["check_id"] == "CONST-002"
 
 def test_evidence_timestamp_strict_iso():
-    rec = {"gov_record_id": "rec-1"}
+    rec = {"gov_record_id": "rec-1", "timestamp": "2026-02-10T00:00:00Z"}
     ev = build_cluster_a_acceptance_evidence(
         governance_record=rec, apply_result={}, conformance_result={}
     )
@@ -74,6 +74,26 @@ def test_evidence_timestamp_strict_iso():
     # Should be valid ISO
     dt = datetime.datetime.fromisoformat(ts)
     assert dt.tzinfo is not None
+
+
+def test_evidence_uses_governance_record_timestamp_when_runtime_context_missing():
+    rec = {"gov_record_id": "rec-1", "timestamp": "2026-02-10T12:34:56Z"}
+    ev = build_cluster_a_acceptance_evidence(
+        governance_record=rec, apply_result={}, conformance_result={}
+    )
+    assert ev["generated_at"] == "2026-02-10T12:34:56Z"
+
+
+def test_evidence_uses_deterministic_zero_timestamp_without_context_or_record_timestamp():
+    rec = {"gov_record_id": "rec-1"}
+    ev1 = build_cluster_a_acceptance_evidence(
+        governance_record=rec, apply_result={}, conformance_result={}
+    )
+    ev2 = build_cluster_a_acceptance_evidence(
+        governance_record=rec, apply_result={}, conformance_result={}
+    )
+    assert ev1["generated_at"] == "1970-01-01T00:00:00Z"
+    assert ev1 == ev2
 
 def test_determinism_sorting():
     rec = {"gov_record_id": "rec-1", "signatures": []}
@@ -108,6 +128,13 @@ def test_build_strict_timestamp_validation(mock_gov_record, mock_apply_res, mock
             apply_result=mock_apply_res,
             conformance_result=mock_conf_res,
             runtime_context={"timestamp": "2026-02-10T12:00:00"}
+        )
+
+    with pytest.raises(ValueError, match="strict ISO-8601 UTC string"):
+        build_cluster_a_acceptance_evidence(
+            governance_record={**mock_gov_record, "timestamp": "2026-02-10T12:00:00"},
+            apply_result=mock_apply_res,
+            conformance_result=mock_conf_res,
         )
 
 def test_normalization_type_safety():

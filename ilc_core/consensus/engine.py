@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Dict, Optional, List, Protocol
+from typing import Callable, Dict, Optional, List, Protocol
 import math
-import time
 import logging
 
 from ..types import Node
@@ -124,7 +123,13 @@ class ConsensusEngine:
       reward engine.
     """
 
-    def __init__(self, graph: EpistemicGraph, governance_config: Optional[Dict] = None):
+    def __init__(
+        self,
+        graph: EpistemicGraph,
+        governance_config: Optional[Dict] = None,
+        *,
+        age_reference_clock: Optional[Callable[[], float]] = None,
+    ):
         self.graph = graph
 
         # Ledger: Node ID -> Staked Amount (float units, interpreted later as ECU/ILC)
@@ -143,6 +148,7 @@ class ConsensusEngine:
         # Simple epoch bookkeeping (optional, but useful for logging/debugging).
         self.epoch_index: int = 0
         self.last_epoch_finalized: int = 0
+        self._age_reference_clock = age_reference_clock
 
     # ------------------------------------------------------------------
     # Epoch-level hooks
@@ -267,16 +273,34 @@ class ConsensusEngine:
     # ------------------------------------------------------------------
     def get_node_age(self, node: Node) -> float:
         """
-        Return age in seconds for a node.
+        Return deterministic age in seconds for a node.
 
-        In simulations, this can be interpreted as "epochs" if timestamps are
-        mocked accordingly; in live systems, it's literal wall-clock time.
+        Age is computed relative to an explicit injected reference clock when
+        provided, otherwise relative to the newest aware timestamp already
+        present in the local graph. This avoids wall-clock divergence across
+        validators processing the same graph state.
         """
-        now = time.time()
         ts = node.timestamp
         if ts.tzinfo is None:
             raise ValueError("node_timestamp_naive_not_allowed")
-        return max(1.0, now - ts.timestamp())
+        reference_seconds = self._resolve_age_reference_seconds(node)
+        return max(1.0, reference_seconds - ts.timestamp())
+
+    def _resolve_age_reference_seconds(self, node: Node) -> float:
+        ts = node.timestamp
+        if ts.tzinfo is None:
+            raise ValueError("node_timestamp_naive_not_allowed")
+        if self._age_reference_clock is not None:
+            return max(ts.timestamp(), float(self._age_reference_clock()))
+
+        graph_timestamps = [
+            candidate.timestamp.timestamp()
+            for candidate in self.graph.nodes.values()
+            if candidate.timestamp.tzinfo is not None
+        ]
+        if not graph_timestamps:
+            return ts.timestamp()
+        return max(ts.timestamp(), max(graph_timestamps))
 
     def calculate_maintenance_tax(self, node: Node) -> float:
         """
