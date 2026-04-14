@@ -1,0 +1,204 @@
+from __future__ import annotations
+
+import subprocess
+from pathlib import Path
+
+import pytest
+from fastapi.testclient import TestClient
+
+from ilc_core.server import create_app
+
+DOC_PATH = Path("docs/specs/ilc_ecu_ilc_lifecycle_runtime_652_v0.1.md")
+TEST_PATH = Path("tests/test_phase_652_ecu_ilc_lifecycle_runtime.py")
+WALKTHROUGH_PATH = Path("docs/phases/phase_652_g8_ecu_ilc_lifecycle_runtime_walkthrough.md")
+STATUS_PATH = Path("docs/phases/STATUS.md")
+DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
+PHASE_652_SUBJECT_TOKEN = "phase 652 ecu/ilc lifecycle runtime"
+PHASE_652_BACKFILL_SUBJECT_TOKEN = "phase 652 walkthrough and status backfill"
+ALLOWED_MAIN_PREFIXES = {
+    str(DOC_PATH),
+    str(TEST_PATH),
+    "ilc_core/server.py",
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
+}
+REQUIRED_HEADINGS = (
+    "## 1. Runtime target and inherited lifecycle law",
+    "## 2. Visible ECU runtime surface",
+    "## 3. Delayed visible ILC settlement runtime surface",
+    "## 4. Coupling-invariants diagnostic surface",
+    "## 5. Exact-numeric, non-finite, and fail-closed discipline",
+    "## 6. Explicit exclusions and preserved boundaries",
+)
+REQUIRED_TOKENS = (
+    "ecu_ilc_lifecycle_runtime_652_live",
+    "ecu_visibility_read_only_runtime_live",
+    "delayed_ilc_visibility_post_epoch_commit_runtime_live",
+    "coupling_invariants_diagnostic_surface_present_in_652",
+    "coupling_diagnostic_is_read_only_and_not_governance_lock_claim",
+    "claimability_state_remains_deferred_in_652",
+    "no_spend_transfer_withdrawal_or_wallet_write_in_652",
+    "exact_numeric_and_non_finite_rules_apply_to_lifecycle_runtime",
+)
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def _changed_paths_for_commit(commit_ref: str) -> set[str]:
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
+def _find_commit_ref(*, subject_token: str) -> str | None:
+    result = subprocess.run(
+        ["git", "log", "--format=%H%x09%s"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        if subject_token in subject.lower():
+            return commit_hash
+    return None
+
+
+def _require_commit_or_skip(subject_token: str) -> None:
+    if _find_commit_ref(subject_token=subject_token) is None:
+        pytest.skip(f"commit_not_yet_present:{subject_token}")
+
+
+def test_runtime_doc_exists_and_contains_required_headings() -> None:
+    text = _read(DOC_PATH)
+    for heading in REQUIRED_HEADINGS:
+        assert heading in text
+
+
+def test_runtime_doc_contains_required_tokens() -> None:
+    text = _read(DOC_PATH)
+    for token in REQUIRED_TOKENS:
+        assert token in text
+
+
+def test_visible_ecu_surface_is_read_only() -> None:
+    app = create_app()
+    with TestClient(app) as client:
+        app.state.ecu_active_layer_runtime.set_accrued_ecu("agent-a", "10.5")
+        response = client.get("/v1/public/lifecycle/agent-a")
+        assert response.status_code == 200
+        payload = response.json()["data"]
+        assert payload["balance_ecu"] == "10.5"
+        assert payload["balance_ilc"] == "0"
+        for forbidden_field in (
+            "spend_authority",
+            "transfer_authority",
+            "withdrawal_authority",
+            "wallet_write_authority",
+        ):
+            assert forbidden_field not in payload
+
+
+def test_delayed_visible_ilc_appears_only_after_epoch_commit() -> None:
+    app = create_app()
+    with TestClient(app) as client:
+        app.state.ecu_active_layer_runtime.set_accrued_ecu("agent-a", "4")
+        before = client.get("/v1/public/lifecycle/agent-a")
+        before_payload = before.json()["data"]
+        assert before_payload["balance_ilc"] == "0"
+        assert before_payload["last_settled_epoch_id"] is None
+        assert before_payload["latest_balance_receipt"] is None
+
+        commit_result = app.state.public_lifecycle_runtime.commit_settled_epoch(
+            agent_id="agent-a",
+            epoch_id="epoch-001",
+            reward_delta_ilc="3.25",
+        )
+        assert commit_result["token"] == "lifecycle_epoch_commit_applied"
+
+        after = client.get("/v1/public/lifecycle/agent-a")
+        after_payload = after.json()["data"]
+        assert after_payload["balance_ilc"] == "3.25"
+        assert after_payload["last_settled_epoch_id"] == "epoch-001"
+        assert after_payload["latest_balance_receipt"]["settlement_status"] == "applied"
+
+
+def test_coupling_invariants_diagnostic_surface_is_present_and_read_only() -> None:
+    app = create_app()
+    with TestClient(app) as client:
+        response = client.get("/v1/public/lifecycle/coupling-invariants")
+        assert response.status_code == 200
+        payload = response.json()["data"]
+        assert payload["graph_truth_upstream"] is True
+        assert payload["delayed_ilc_requires_epoch_commit"] is True
+        assert payload["diagnostic_only"] is True
+        assert payload["governance_lock_closed"] is False
+
+
+def test_claimability_remains_deferred_and_non_finite_inputs_fail_closed() -> None:
+    app = create_app()
+    with TestClient(app):
+        status = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")
+        assert status["data"]["claimability_state"] == "deferred"
+        with pytest.raises(Exception) as exc_info:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="agent-a",
+                epoch_id="epoch-001",
+                reward_delta_ilc="Infinity",
+            )
+        assert getattr(exc_info.value, "token", None) == "lifecycle_reward_delta_invalid"
+
+
+def test_no_wallet_widening_or_governance_lock_claim_is_made() -> None:
+    text = _read(DOC_PATH)
+    assert "It is not a claim that the" in text
+    assert "coupling-invariants governance lock is already closed." in text
+    assert "no wallet write authority" in text
+    assert "no spend authority" in text
+    assert "no transfer authority" in text
+    assert "no withdrawal authority" in text
+
+
+def test_main_commit_touches_expected_runtime_scope_without_decision_log_mutation() -> None:
+    _require_commit_or_skip(PHASE_652_SUBJECT_TOKEN)
+    commit_ref = _find_commit_ref(subject_token=PHASE_652_SUBJECT_TOKEN)
+    assert commit_ref is not None
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert str(DOC_PATH) in changed_paths
+    assert str(TEST_PATH) in changed_paths
+    assert str(DECISION_LOG_PATH) not in changed_paths
+    assert not any(path.startswith("docs/adr/") for path in changed_paths)
+    unexpected = {path for path in changed_paths if path not in ALLOWED_MAIN_PREFIXES}
+    assert not unexpected
+
+
+def test_backfill_commit_touches_walkthrough_and_status_only() -> None:
+    _require_commit_or_skip(PHASE_652_BACKFILL_SUBJECT_TOKEN)
+    commit_ref = _find_commit_ref(subject_token=PHASE_652_BACKFILL_SUBJECT_TOKEN)
+    assert commit_ref is not None
+    changed_paths = _changed_paths_for_commit(commit_ref)
+    assert changed_paths == {str(WALKTHROUGH_PATH), str(STATUS_PATH)}
+
+
+def test_phase_652_phase_test_passes_post_commit() -> None:
+    _require_commit_or_skip(PHASE_652_SUBJECT_TOKEN)
+    result = subprocess.run(
+        [
+            "bash",
+            "-lc",
+            "PATH=.venv/bin:$PATH .venv/bin/pytest "
+            "tests/test_phase_652_ecu_ilc_lifecycle_runtime.py "
+            "-q -k 'not test_phase_652_phase_test_passes_post_commit'",
+        ],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    assert "passed" in result.stdout
