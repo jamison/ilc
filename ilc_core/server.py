@@ -32,7 +32,9 @@ from ilc_core.protocol.public_receipt_runtime import (
     issue_public_receipt,
     query_public_receipts,
 )
-from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore
+from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore, LmdbWalletStore
+from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
+from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
 from ilc_core.work.task_queue import TaskDescriptor
 
 configure_logging()
@@ -50,6 +52,12 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     peer_manager = PeerManager(local_port=8000)
     public_runtime_root = Path(tempfile.mkdtemp(prefix="ilc-public-runtime-"))
     public_admission_store = LmdbAdmissionStore(public_runtime_root / "admission")
+    public_wallet_store = LmdbWalletStore(public_runtime_root / "wallet")
+    ecu_active_layer_runtime = EcuActiveLayerRuntime()
+    public_lifecycle_runtime = EcuIlcLifecycleRuntime(
+        wallet_store=public_wallet_store,
+        ecu_runtime=ecu_active_layer_runtime,
+    )
     app_obj.state.graph = graph
     app_obj.state.consensus = consensus
     app_obj.state.agent = agent
@@ -57,6 +65,9 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.public_runtime_root = public_runtime_root
     app_obj.state.public_receipt_store = public_admission_store
     app_obj.state.public_admission_store = public_admission_store
+    app_obj.state.public_wallet_store = public_wallet_store
+    app_obj.state.ecu_active_layer_runtime = ecu_active_layer_runtime
+    app_obj.state.public_lifecycle_runtime = public_lifecycle_runtime
 
 
 @asynccontextmanager
@@ -303,6 +314,22 @@ def query_public_receipt_collection(
         )
     except PublicReceiptRuntimeError as exc:
         return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/lifecycle/coupling-invariants")
+def get_coupling_invariants_diagnostic(request: Request):
+    state = _state(request)
+    result = state.public_lifecycle_runtime.coupling_invariants_diagnostic(
+        graph_node_count=len(state.graph.nodes),
+    )
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/lifecycle/{agent_id}")
+def get_public_lifecycle_status(agent_id: str, request: Request):
+    state = _state(request)
+    result = state.public_lifecycle_runtime.lifecycle_status(agent_id=agent_id)
     return JSONResponse(result, status_code=200)
 
 @router.get("/v1/protocol/ep_task_schema")
