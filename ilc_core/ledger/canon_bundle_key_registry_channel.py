@@ -7,7 +7,6 @@ and the currently active channel.
 
 import json
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -27,11 +26,22 @@ ALLOWED_FIELDS = {
     "channel_order", "sources", "last_sync", "last_promotion",
     "published_at", "channel_seq", "prev_channel_hash",
 }
+def _resolve_channel_updated_at(
+    data: dict,
+    updated_at: str | None,
+) -> str:
+    if updated_at is not None:
+        if not STRICT_ISO8601_TZ_PATTERN.match(updated_at):
+            raise ValueError("invalid_updated_at")
+        return updated_at
 
+    existing_updated_at = data.get("updated_at")
+    if isinstance(existing_updated_at, str):
+        if not STRICT_ISO8601_TZ_PATTERN.match(existing_updated_at):
+            raise ValueError("invalid_updated_at")
+        return existing_updated_at
 
-def _now_iso8601() -> str:
-    """Return current UTC time as strict ISO-8601 string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return "1970-01-01T00:00:00Z"
 
 
 def _atomic_write(path: Path, content: str) -> None:
@@ -288,7 +298,12 @@ def validate_channel_file(path: Path) -> dict:
     }
 
 
-def set_current_channel(path: Path, channel: str, force: bool = False) -> dict:
+def set_current_channel(
+    path: Path,
+    channel: str,
+    force: bool = False,
+    updated_at: Optional[str] = None,
+) -> dict:
     """
     Set the current channel in a channel file.
     
@@ -325,11 +340,14 @@ def set_current_channel(path: Path, channel: str, force: bool = False) -> dict:
     
     # Update current channel and timestamp
     data["current_channel"] = channel
-    data["updated_at"] = _now_iso8601()
+    try:
+        data["updated_at"] = _resolve_channel_updated_at(data, updated_at)
+    except ValueError as exc:
+        return {"ok": False, "error": str(exc)}
     
     # Write atomically
     try:
-        content = json.dumps(data, indent=2, sort_keys=True)
+        content = json.dumps(data, indent=2, sort_keys=True, allow_nan=False)
         _atomic_write(path, content)
     except OSError as e:
         return {"ok": False, "error": f"file_write_error:{e}"}
@@ -360,6 +378,7 @@ def create_channel_file(
     path: Path,
     channel: str,
     force: bool = False,
+    updated_at: Optional[str] = None,
 ) -> dict:
     """
     Create a new channel file with initial channel.
@@ -380,14 +399,17 @@ def create_channel_file(
     
     data = {
         "channel_version": CHANNEL_VERSION,
-        "updated_at": _now_iso8601(),
         "current_channel": channel,
         "channels": [channel],
     }
+    try:
+        data["updated_at"] = _resolve_channel_updated_at({}, updated_at)
+    except ValueError as exc:
+        return {"ok": False, "error": str(exc)}
     
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        content = json.dumps(data, indent=2, sort_keys=True)
+        content = json.dumps(data, indent=2, sort_keys=True, allow_nan=False)
         _atomic_write(path, content)
     except OSError as e:
         return {"ok": False, "error": f"file_write_error:{e}"}

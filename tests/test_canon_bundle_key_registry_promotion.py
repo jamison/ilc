@@ -184,6 +184,25 @@ class TestPromoteBundle:
         assert "last_promotion" in data
         assert data["last_promotion"]["from"] == "test"
         assert data["last_promotion"]["to"] == "main"
+
+    def test_promotion_accepts_explicit_timestamp(self, tmp_path):
+        src_dir, channel_file, key = self._create_bundle_and_channel(tmp_path, "test")
+        dest_dir = tmp_path / "main_dest"
+
+        result = promote_bundle(
+            src_dir,
+            dest_dir,
+            channel_file,
+            "test",
+            "main",
+            key,
+            timestamp="2026-04-14T13:15:00Z",
+        )
+
+        assert result["ok"] is True
+        assert result["last_promotion"]["timestamp"] == "2026-04-14T13:15:00Z"
+        data = json.loads(channel_file.read_text(encoding="utf-8"))
+        assert data["updated_at"] == "2026-04-14T13:15:00Z"
     
     def test_promotion_fails_if_bundle_missing(self, tmp_path):
         """Promotion fails if bundle is missing."""

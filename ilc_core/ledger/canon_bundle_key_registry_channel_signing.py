@@ -9,7 +9,6 @@ import hashlib
 import hmac
 import json
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict
 
@@ -19,15 +18,35 @@ from ilc_core.ledger.canon_bundle_key_registry_channel import (
 )
 
 
-def _now_iso8601() -> str:
-    """Return current UTC time as strict ISO-8601 string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
 def _is_strict_iso8601_tz(ts: str) -> bool:
     """Check for strict YYYY-MM-DDTHH:MM:SSZ format."""
     pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
     return bool(re.match(pattern, ts))
+
+
+def _canonical_sidecar_json(sig_data: dict) -> str:
+    return json.dumps(
+        sig_data,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+
+
+def _resolve_channel_signed_at(channel_data: dict, signed_at: str | None) -> str:
+    if signed_at is not None:
+        if not _is_strict_iso8601_tz(signed_at):
+            raise ValueError("channel_signature_invalid_signed_at")
+        return signed_at
+
+    for field in ("published_at", "updated_at"):
+        value = channel_data.get(field)
+        if isinstance(value, str):
+            if not _is_strict_iso8601_tz(value):
+                raise ValueError(f"channel_signature_invalid_{field}")
+            return value
+
+    return "1970-01-01T00:00:00Z"
 
 
 def _derive_key_id(key: bytes) -> str:
@@ -48,13 +67,19 @@ def canonical_channel_bytes(channel_path: Path) -> bytes:
     Raises: OSError, json.JSONDecodeError
     """
     data = json.loads(channel_path.read_text(encoding="utf-8"))
-    return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(
+        data,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
 
 
 def sign_channel_file(
     channel_path: Path,
     key: bytes,
     sig_path: Optional[Path] = None,
+    signed_at: Optional[str] = None,
 ) -> dict:
     """
     Sign a channel file creating a detached .sig sidecar.
@@ -78,11 +103,16 @@ def sign_channel_file(
             "warnings": warnings,
         }
     warnings.extend(val_result.get("warnings", []))
+    channel_data = val_result["data"]
     
     try:
         canonical = canonical_channel_bytes(channel_path)
     except (OSError, json.JSONDecodeError):
         return {"ok": False, "errors": ["channel_read_error"], "warnings": warnings}
+    try:
+        resolved_signed_at = _resolve_channel_signed_at(channel_data, signed_at)
+    except ValueError as exc:
+        return {"ok": False, "errors": [str(exc)], "warnings": warnings}
     
     # Compute signature
     channel_hash = hashlib.sha256(canonical).hexdigest()
@@ -94,7 +124,7 @@ def sign_channel_file(
         "sig_alg": "hmac-sha256",
         "key_id": key_id,
         "key_fingerprint": key_fingerprint,
-        "signed_at": _now_iso8601(),
+        "signed_at": resolved_signed_at,
         "channel_hash": channel_hash,
         "signature_hex": signature_hex,
     }
@@ -108,7 +138,7 @@ def sign_channel_file(
     
     # Write sidecar
     try:
-        content = json.dumps(sig_data, indent=2, sort_keys=True)
+        content = _canonical_sidecar_json(sig_data)
         _atomic_write(resolved_sig, content)
     except OSError:
         return {"ok": False, "errors": ["channel_signature_write_error"], "warnings": warnings}

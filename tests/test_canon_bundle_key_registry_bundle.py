@@ -118,6 +118,54 @@ class TestBuildRegistryBundle:
         assert result["ok"] is False
         assert result["error"] == "registry_invalid"
 
+    def test_build_bundle_explicit_timestamp_is_reproducible(self, tmp_path):
+        registry_path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key = b"test-signing-key"
+        out_dir = tmp_path / "output"
+        created_at = "2026-04-14T12:00:00Z"
+
+        first = build_registry_bundle(registry_path, key, out_dir, created_at=created_at)
+        assert first["ok"] is True
+        bundle_dir = Path(first["bundle_dir"])
+        manifest_once = (bundle_dir / MANIFEST_FILENAME).read_text(encoding="utf-8")
+        sig_once = (bundle_dir / SIG_FILENAME).read_text(encoding="utf-8")
+
+        second = build_registry_bundle(
+            registry_path,
+            key,
+            out_dir,
+            force=True,
+            created_at=created_at,
+        )
+        assert second["ok"] is True
+        manifest_twice = (bundle_dir / MANIFEST_FILENAME).read_text(encoding="utf-8")
+        sig_twice = (bundle_dir / SIG_FILENAME).read_text(encoding="utf-8")
+
+        assert manifest_once == manifest_twice
+        assert sig_once == sig_twice
+
+    def test_build_bundle_uses_registry_updated_at_as_fallback(self, tmp_path):
+        registry_path = self._write_registry(tmp_path, {
+            "registry_version": "v0.1",
+            "updated_at": "2026-02-06T10:00:00Z",
+            "current_keys": ["a1b2c3d4e5f6a7b8"],
+            "previous_keys": [],
+            "deprecated_keys": [],
+        })
+        key = b"test-signing-key"
+        out_dir = tmp_path / "output"
+
+        result = build_registry_bundle(registry_path, key, out_dir)
+        assert result["ok"] is True
+        manifest = result["manifest"]
+        assert manifest["created_at"] == "2026-02-06T10:00:00Z"
+
 
 class TestVerifyRegistryBundle:
     """Tests for verify_registry_bundle helper."""
