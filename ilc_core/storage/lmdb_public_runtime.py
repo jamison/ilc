@@ -141,17 +141,70 @@ class LmdbWalletStore(_LmdbRuntimeBase):
         self._delete(b"wallet_history", agent_id)
 
 
-class LmdbAdmissionStore(_LmdbRuntimeBase):
+class LmdbPublicReceiptStore(_LmdbRuntimeBase):
     def __init__(self, root: Path | str, *, map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
         super().__init__(
             root,
-            db_names=(b"admission_receipts",),
+            db_names=(b"public_receipts", b"receipts_by_signer", b"receipts_by_kind_epoch"),
             map_size=map_size,
         )
 
+    def put_receipt(self, receipt_id: str, payload: dict[str, Any]) -> None:
+        self._put_json(b"public_receipts", receipt_id, payload)
+        signer_agent_id = payload.get("signer_agent_id")
+        if isinstance(signer_agent_id, str) and signer_agent_id:
+            self._append_index_id(
+                db_name=b"receipts_by_signer",
+                key=signer_agent_id,
+                receipt_id=receipt_id,
+            )
+        artifact_kind = payload.get("artifact_kind")
+        epoch_id = payload.get("epoch_id")
+        if isinstance(artifact_kind, str) and artifact_kind and isinstance(epoch_id, str) and epoch_id:
+            self._append_index_id(
+                db_name=b"receipts_by_kind_epoch",
+                key=f"{artifact_kind}::{epoch_id}",
+                receipt_id=receipt_id,
+            )
+
+    def get_receipt(self, receipt_id: str) -> dict[str, Any] | None:
+        payload = self._get_json(b"public_receipts", receipt_id)
+        return payload if isinstance(payload, dict) else None
+
+    def get_receipts_by_signer(self, signer_agent_id: str) -> list[dict[str, Any]]:
+        return self._resolve_index_rows(db_name=b"receipts_by_signer", key=signer_agent_id)
+
+    def get_receipts_by_artifact_epoch(self, artifact_kind: str, epoch_id: str) -> list[dict[str, Any]]:
+        return self._resolve_index_rows(
+            db_name=b"receipts_by_kind_epoch",
+            key=f"{artifact_kind}::{epoch_id}",
+        )
+
+    def _append_index_id(self, *, db_name: bytes, key: str, receipt_id: str) -> None:
+        existing = self._get_json(db_name, key)
+        if isinstance(existing, list):
+            receipt_ids = [item for item in existing if isinstance(item, str)]
+        else:
+            receipt_ids = []
+        if receipt_id not in receipt_ids:
+            receipt_ids.append(receipt_id)
+            self._put_json(db_name, key, sorted(receipt_ids))
+
+    def _resolve_index_rows(self, *, db_name: bytes, key: str) -> list[dict[str, Any]]:
+        receipt_ids = self._get_json(db_name, key)
+        if not isinstance(receipt_ids, list):
+            return []
+        rows: list[dict[str, Any]] = []
+        for receipt_id in sorted(item for item in receipt_ids if isinstance(item, str)):
+            payload = self.get_receipt(receipt_id)
+            if isinstance(payload, dict):
+                rows.append(payload)
+        return rows
+
+
+class LmdbAdmissionStore(LmdbPublicReceiptStore):
     def put_admission_receipt(self, receipt_id: str, payload: dict[str, Any]) -> None:
-        self._put_json(b"admission_receipts", receipt_id, payload)
+        self.put_receipt(receipt_id, payload)
 
     def get_admission_receipt(self, receipt_id: str) -> dict[str, Any] | None:
-        payload = self._get_json(b"admission_receipts", receipt_id)
-        return payload if isinstance(payload, dict) else None
+        return self.get_receipt(receipt_id)
