@@ -13,10 +13,18 @@ from typing import Iterable
 DEFAULT_MANIFEST = Path("docs/tools/mempalace/ilc_mempalace_corpus_manifest_v0.1.json")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 VALID_MODES = {"copy", "symlink"}
+DEFAULT_TMPDIR = REPO_ROOT / "out" / "mempalace_tmp"
 
 
 def load_manifest(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def ensure_tmpdir() -> Path:
+    tmpdir = Path(os.environ.get("ILC_MEMPALACE_TMPDIR", os.environ.get("TMPDIR", str(DEFAULT_TMPDIR))))
+    tmpdir.mkdir(parents=True, exist_ok=True)
+    os.environ["TMPDIR"] = str(tmpdir)
+    return tmpdir
 
 
 def normalize_include_entry(tier_name: str, entry: str | dict) -> tuple[str, bool]:
@@ -118,9 +126,9 @@ def build_mine_commands(mempalace_bin: str, palace_path: Path, staged_root: Path
     return commands
 
 
-def run_mine_commands(commands: list[list[str]]) -> None:
+def run_mine_commands(commands: list[list[str]], env: dict[str, str]) -> None:
     for cmd in commands:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, env=env)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -137,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     manifest = load_manifest(args.manifest)
+    tmpdir = ensure_tmpdir()
     tiers = args.tiers or list(manifest["tiers"].keys())
     for tier_name in tiers:
         if tier_name not in manifest["tiers"]:
@@ -155,12 +164,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     commands = build_mine_commands(args.mempalace, args.palace, args.staged_root, tiers)
     if not args.no_mine:
-        run_mine_commands(commands)
+        run_mine_commands(commands, os.environ.copy())
 
     payload = {
         "manifest": str(args.manifest),
         "staged_root": str(args.staged_root),
         "palace": str(args.palace),
+        "tmpdir": str(tmpdir),
         "mode": args.mode,
         "tiers": tiers,
         "summary": summary,

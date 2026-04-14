@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 VENV_PATH="${ROOT_DIR}/out/mempalace_runtime"
 REQS_PATH="${ROOT_DIR}/docs/tools/mempalace/requirements-mempalace.txt"
 PYTHON_OVERRIDE="${ILC_MEMPALACE_PYTHON:-}"
+TMPDIR_PATH="${ILC_MEMPALACE_TMPDIR:-$ROOT_DIR/out/mempalace_tmp}"
 
 usage() {
   cat <<USAGE
@@ -12,6 +13,7 @@ Usage: $0 [--venv PATH] [--python PATH] [--requirements PATH]
 
 Create or refresh a dedicated local MemPalace virtualenv.
 Supported Python versions: 3.9-3.12.
+Scratch files default to \$ROOT_DIR/out/mempalace_tmp unless ILC_MEMPALACE_TMPDIR is set.
 USAGE
 }
 
@@ -77,9 +79,11 @@ if [[ ! -f "$REQS_PATH" ]]; then
   exit 1
 fi
 mkdir -p "$(dirname "$VENV_PATH")"
+mkdir -p "$TMPDIR_PATH"
+export TMPDIR="$TMPDIR_PATH"
 rm -rf "$VENV_PATH"
 "$PYTHON_BIN" -m venv "$VENV_PATH"
 PATH="$VENV_PATH/bin:$PATH" python -m pip install --upgrade pip >/dev/null
 PATH="$VENV_PATH/bin:$PATH" python -m pip install -r "$REQS_PATH" >/dev/null
 "$VENV_PATH/bin/mempalace" --help >/dev/null
-printf 'mempalace_env_ready\npython=%s\nvenv=%s\nrequirements=%s\n' "$PYTHON_BIN" "$VENV_PATH" "$REQS_PATH"
+printf 'mempalace_env_ready\npython=%s\nvenv=%s\nrequirements=%s\ntmpdir=%s\n' "$PYTHON_BIN" "$VENV_PATH" "$REQS_PATH" "$TMPDIR_PATH"
