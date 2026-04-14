@@ -32,6 +32,10 @@ from ilc_core.protocol.public_receipt_runtime import (
     issue_public_receipt,
     query_public_receipts,
 )
+from ilc_core.protocol.public_wallet_runtime import (
+    PublicWalletRuntime,
+    PublicWalletRuntimeError,
+)
 from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore, LmdbWalletStore
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
@@ -58,6 +62,10 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
         wallet_store=public_wallet_store,
         ecu_runtime=ecu_active_layer_runtime,
     )
+    public_wallet_runtime = PublicWalletRuntime(
+        wallet_store=public_wallet_store,
+        lifecycle_runtime=public_lifecycle_runtime,
+    )
     app_obj.state.graph = graph
     app_obj.state.consensus = consensus
     app_obj.state.agent = agent
@@ -68,6 +76,7 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.public_wallet_store = public_wallet_store
     app_obj.state.ecu_active_layer_runtime = ecu_active_layer_runtime
     app_obj.state.public_lifecycle_runtime = public_lifecycle_runtime
+    app_obj.state.public_wallet_runtime = public_wallet_runtime
 
 
 @asynccontextmanager
@@ -330,6 +339,46 @@ def get_coupling_invariants_diagnostic(request: Request):
 def get_public_lifecycle_status(agent_id: str, request: Request):
     state = _state(request)
     result = state.public_lifecycle_runtime.lifecycle_status(agent_id=agent_id)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/wallet/{agent_id}/status")
+def get_public_wallet_status(agent_id: str, request: Request):
+    state = _state(request)
+    try:
+        result = state.public_wallet_runtime.wallet_status(agent_id=agent_id)
+    except PublicWalletRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/wallet/{agent_id}/history")
+def get_public_wallet_history(agent_id: str, request: Request):
+    state = _state(request)
+    try:
+        result = state.public_wallet_runtime.wallet_history(agent_id=agent_id)
+    except PublicWalletRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/wallet/{agent_id}/export")
+def get_public_wallet_export(agent_id: str, request: Request):
+    state = _state(request)
+    try:
+        result = state.public_wallet_runtime.wallet_export(agent_id=agent_id)
+    except PublicWalletRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
+    return JSONResponse(result, status_code=200)
+
+
+@router.get("/v1/public/wallet/{agent_id}/ledger-summary")
+def get_public_wallet_ledger_summary(agent_id: str, request: Request):
+    state = _state(request)
+    try:
+        result = state.public_wallet_runtime.ledger_summary(agent_id=agent_id)
+    except PublicWalletRuntimeError as exc:
+        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
     return JSONResponse(result, status_code=200)
 
 @router.get("/v1/protocol/ep_task_schema")
