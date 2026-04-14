@@ -110,3 +110,36 @@ class TestCanonExportBundleSign:
         with pytest.raises(Exception) as excinfo:
             sign_manifest(valid_bundle, test_key, overwrite=True)
         assert "invalid_manifest_non_finite" in str(excinfo.value)
+
+    def test_sign_manifest_explicit_signed_at_is_reproducible(self, valid_bundle, test_key):
+        signed_at = "2026-04-14T10:00:00Z"
+        sign_manifest(valid_bundle, test_key, overwrite=True, signed_at=signed_at)
+        manifest_once = (valid_bundle / "manifest.json").read_text(encoding="utf-8")
+        sig_once = (valid_bundle / "manifest.sig").read_bytes()
+
+        sign_manifest(valid_bundle, test_key, overwrite=True, signed_at=signed_at)
+        manifest_twice = (valid_bundle / "manifest.json").read_text(encoding="utf-8")
+        sig_twice = (valid_bundle / "manifest.sig").read_bytes()
+
+        assert manifest_once == manifest_twice
+        assert sig_once == sig_twice
+
+    def test_sign_manifest_uses_created_at_as_deterministic_fallback(self, valid_bundle, test_key):
+        manifest_path = valid_bundle / "manifest.json"
+        manifest_path.write_text(
+            json.dumps({"foo": "bar", "created_at": "2026-04-14T09:30:00Z"}),
+            encoding="utf-8",
+        )
+        sign_manifest(valid_bundle, test_key, overwrite=True)
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        assert manifest["signed_at"] == "2026-04-14T09:30:00Z"
+
+    def test_sign_manifest_rejects_invalid_explicit_signed_at(self, valid_bundle, test_key):
+        with pytest.raises(Exception) as excinfo:
+            sign_manifest(
+                valid_bundle,
+                test_key,
+                overwrite=True,
+                signed_at="2026-04-14 10:00:00",
+            )
+        assert "invalid_signed_at" in str(excinfo.value)

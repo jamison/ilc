@@ -163,3 +163,46 @@ class TestRegistrySigningVerification:
         # Must be valid ISO-8601
         from datetime import datetime
         datetime.fromisoformat(signed_at.replace("Z", "+00:00"))
+
+    def test_sign_registry_file_explicit_signed_at_is_reproducible(self, valid_registry, test_key):
+        signed_at = "2026-04-14T10:15:00Z"
+        first = sign_registry_file(valid_registry, test_key, signed_at=signed_at)
+        assert first["ok"]
+        sig_path = valid_registry.with_suffix(valid_registry.suffix + ".sig")
+        sidecar_once = sig_path.read_text(encoding="utf-8")
+
+        second = sign_registry_file(valid_registry, test_key, signed_at=signed_at)
+        assert second["ok"]
+        sidecar_twice = sig_path.read_text(encoding="utf-8")
+
+        assert sidecar_once == sidecar_twice
+
+    def test_sign_registry_file_uses_updated_at_as_deterministic_fallback(self, valid_registry, test_key):
+        result = sign_registry_file(valid_registry, test_key)
+        assert result["ok"]
+        sig_path = valid_registry.with_suffix(valid_registry.suffix + ".sig")
+        sig_data = json.loads(sig_path.read_text(encoding="utf-8"))
+        assert sig_data["signed_at"] == "2026-02-06T21:30:00Z"
+
+    def test_sign_registry_file_rejects_invalid_explicit_signed_at(self, valid_registry, test_key):
+        result = sign_registry_file(
+            valid_registry,
+            test_key,
+            signed_at="2026-04-14 10:15:00",
+        )
+        assert not result["ok"]
+        assert result["error"].startswith("failed_to_read_registry:invalid_signed_at")
+
+    def test_registry_signature_sidecar_is_canonical_json(self, valid_registry, test_key):
+        result = sign_registry_file(valid_registry, test_key)
+        assert result["ok"]
+        sig_path = valid_registry.with_suffix(valid_registry.suffix + ".sig")
+        text = sig_path.read_text(encoding="utf-8")
+        loaded = json.loads(text)
+        assert ": " not in text
+        assert text == json.dumps(
+            loaded,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )

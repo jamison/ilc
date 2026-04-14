@@ -244,7 +244,21 @@ def canonical_registry_bytes(registry_path: Path) -> bytes:
     Canonical form: sorted keys, compact separators, no trailing newline.
     """
     data = json.loads(registry_path.read_text(encoding="utf-8"))
-    return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(
+        data,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def _canonical_signature_sidecar_json(sig_data: dict) -> str:
+    return json.dumps(
+        sig_data,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
 
 
 def _derive_key_id(key: bytes) -> str:
@@ -257,10 +271,32 @@ def _derive_key_fingerprint(key: bytes) -> str:
     return hashlib.sha256(key).hexdigest()
 
 
+def _resolve_registry_signed_at(data: dict, signed_at: str | None) -> str:
+    if signed_at is not None:
+        if not _is_strict_iso8601_tz(signed_at):
+            raise ValueError("invalid_signed_at")
+        return signed_at
+
+    updated_at = data.get("updated_at")
+    if isinstance(updated_at, str):
+        if not _is_strict_iso8601_tz(updated_at):
+            raise ValueError("invalid_updated_at")
+        return updated_at
+
+    existing_signed_at = data.get("signed_at")
+    if isinstance(existing_signed_at, str):
+        if not _is_strict_iso8601_tz(existing_signed_at):
+            raise ValueError("invalid_signed_at")
+        return existing_signed_at
+
+    return "1970-01-01T00:00:00Z"
+
+
 def sign_registry_file(
     registry_path: Path,
     key: bytes,
-    sig_path: Optional[Path] = None
+    sig_path: Optional[Path] = None,
+    signed_at: Optional[str] = None,
 ) -> dict:
     """
     Sign a registry file and write detached signature.
@@ -279,28 +315,34 @@ def sign_registry_file(
         sig_path = registry_path.with_suffix(registry_path.suffix + ".sig")
     
     try:
-        canonical = canonical_registry_bytes(registry_path)
-    except (json.JSONDecodeError, OSError) as e:
+        registry_data = json.loads(registry_path.read_text(encoding="utf-8"))
+        canonical = json.dumps(
+            registry_data,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        resolved_signed_at = _resolve_registry_signed_at(registry_data, signed_at)
+    except (ValueError, json.JSONDecodeError, OSError) as e:
         return {"ok": False, "error": f"failed_to_read_registry:{e}"}
     
     # Compute hash and signature
     registry_hash = hashlib.sha256(canonical).hexdigest()
     signature = hmac.new(key, canonical, hashlib.sha256).hexdigest()
     key_id = _derive_key_id(key)
-    signed_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     key_fingerprint = _derive_key_fingerprint(key)
     
     sig_data = {
         "sig_alg": "hmac-sha256",
         "key_id": key_id,
         "key_fingerprint": key_fingerprint,
-        "signed_at": signed_at,
+        "signed_at": resolved_signed_at,
         "registry_hash": registry_hash,
         "signature_hex": signature,
     }
     
     try:
-        sig_path.write_text(json.dumps(sig_data, indent=2), encoding="utf-8")
+        sig_path.write_text(_canonical_signature_sidecar_json(sig_data), encoding="utf-8")
     except OSError as e:
         return {"ok": False, "error": f"failed_to_write_sig:{e}"}
     

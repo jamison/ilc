@@ -25,6 +25,35 @@ def _canonical_manifest_json(manifest: dict) -> str:
     )
 
 
+def _is_strict_iso8601_with_timezone(value: str) -> bool:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None
+
+
+def _resolve_manifest_signed_at(manifest: dict, signed_at: str | None) -> str:
+    if signed_at is not None:
+        if not _is_strict_iso8601_with_timezone(signed_at):
+            raise LedgerExportContractError("invalid_signed_at")
+        return signed_at
+
+    existing_signed_at = manifest.get("signed_at")
+    if isinstance(existing_signed_at, str):
+        if not _is_strict_iso8601_with_timezone(existing_signed_at):
+            raise LedgerExportContractError("invalid_signed_at")
+        return existing_signed_at
+
+    created_at = manifest.get("created_at")
+    if isinstance(created_at, str):
+        if not _is_strict_iso8601_with_timezone(created_at):
+            raise LedgerExportContractError("invalid_created_at")
+        return created_at
+
+    return "1970-01-01T00:00:00Z"
+
+
 def load_key_from_file(path: Path) -> bytes:
     """Load a base64-encoded key from a file."""
     raw = path.read_text(encoding="utf-8").strip()
@@ -36,7 +65,12 @@ def load_key_from_file(path: Path) -> bytes:
         raise LedgerExportContractError("invalid_key_file") from exc
 
 
-def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path:
+def sign_manifest(
+    bundle_dir: Path,
+    key: bytes,
+    overwrite: bool = False,
+    signed_at: str | None = None,
+) -> Path:
     """
     Sign the manifest.json file in a bundle using HMAC-SHA256.
     
@@ -72,7 +106,7 @@ def sign_manifest(bundle_dir: Path, key: bytes, overwrite: bool = False) -> Path
     manifest["key_id"] = derive_key_id(key)
     manifest["key_fingerprint"] = derive_key_fingerprint(key)
     manifest["sig_alg"] = "hmac-sha256"
-    manifest["signed_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    manifest["signed_at"] = _resolve_manifest_signed_at(manifest, signed_at)
     
     # Write updated manifest
     manifest_path.write_text(_canonical_manifest_json(manifest), encoding="utf-8")
