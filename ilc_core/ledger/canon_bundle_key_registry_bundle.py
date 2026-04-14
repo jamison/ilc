@@ -10,11 +10,11 @@ A registry bundle is a directory containing:
 import hashlib
 import json
 import shutil
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 from ilc_core.ledger.canon_bundle_key_registry import (
+    _is_strict_iso8601_tz,
     canonical_registry_bytes,
     sign_registry_file,
     verify_registry_file_signature,
@@ -33,14 +33,35 @@ MAX_BUNDLE_BYTES = 5 * 1024 * 1024  # 5 MB
 STRICT_ISO8601_TZ_PATTERN = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
 
 
-def _now_iso8601() -> str:
-    """Return current UTC time as strict ISO-8601 string."""
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
 def _compute_file_hash(path: Path) -> str:
     """Compute SHA-256 hash of file bytes."""
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _resolve_bundle_created_at(
+    *,
+    created_at: str | None,
+    sig_data: dict,
+    registry_data: dict,
+) -> str:
+    if created_at is not None:
+        if not _is_strict_iso8601_tz(created_at):
+            raise ValueError("invalid_created_at")
+        return created_at
+
+    signed_at = sig_data.get("signed_at")
+    if isinstance(signed_at, str):
+        if not _is_strict_iso8601_tz(signed_at):
+            raise ValueError("invalid_signed_at")
+        return signed_at
+
+    updated_at = registry_data.get("updated_at")
+    if isinstance(updated_at, str):
+        if not _is_strict_iso8601_tz(updated_at):
+            raise ValueError("invalid_updated_at")
+        return updated_at
+
+    return "1970-01-01T00:00:00Z"
 
 
 def build_registry_bundle(
@@ -49,6 +70,7 @@ def build_registry_bundle(
     out_dir: Path,
     force: bool = False,
     sig_path: Optional[Path] = None,
+    created_at: Optional[str] = None,
 ) -> dict:
     """
     Build a registry bundle.
@@ -102,7 +124,12 @@ def build_registry_bundle(
         sig_data = json.loads(sig_path.read_text(encoding="utf-8"))
     else:
         # Sign registry
-        sign_result = sign_registry_file(dest_registry, key, dest_sig)
+        sign_result = sign_registry_file(
+            dest_registry,
+            key,
+            dest_sig,
+            signed_at=created_at,
+        )
         if not sign_result.get("ok"):
             return {"ok": False, "error": f"sign_failed:{sign_result.get('error')}"}
         sig_data = json.loads(dest_sig.read_text(encoding="utf-8"))
@@ -117,9 +144,18 @@ def build_registry_bundle(
     registry_version = registry_data.get("registry_version", "unknown")
     
     # Build manifest
+    try:
+        manifest_created_at = _resolve_bundle_created_at(
+            created_at=created_at,
+            sig_data=sig_data,
+            registry_data=registry_data,
+        )
+    except ValueError as exc:
+        return {"ok": False, "error": str(exc)}
+
     manifest = {
         "bundle_version": BUNDLE_VERSION,
-        "created_at": _now_iso8601(),
+        "created_at": manifest_created_at,
         "registry_path": REGISTRY_FILENAME,
         "registry_hash": registry_hash,
         "registry_size_bytes": registry_size,
@@ -131,7 +167,12 @@ def build_registry_bundle(
     }
     
     # Write manifest atomically
-    manifest_json = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+    manifest_json = json.dumps(
+        manifest,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
     try:
         _atomic_write(bundle_dir / MANIFEST_FILENAME, manifest_json)
     except OSError as e:
