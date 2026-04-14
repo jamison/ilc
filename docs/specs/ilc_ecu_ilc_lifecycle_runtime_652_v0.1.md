@@ -59,6 +59,8 @@ After epoch commit:
 
 The epoch commit helper uses exact-numeric canonical-string balance handling and
 does not open public transferability, withdrawal, or claimability semantics.
+Same-epoch replay with the same reward delta is idempotent. Same-epoch replay
+with a conflicting reward delta fails closed.
 
 ## 4. Coupling-invariants diagnostic surface
 

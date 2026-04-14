@@ -184,7 +184,7 @@ def test_history_and_export_are_bound_to_same_settled_runtime_root_and_receipt_l
         settled_root = status["settled_runtime_root_ref"]
         receipt_ref = status["latest_balance_receipt_ref"]
 
-        assert settled_root.startswith("wallet_root_sha256:")
+        assert settled_root.startswith("wallet_state_sha256:")
         assert receipt_ref.startswith("balance_receipt_sha256:")
         assert history["settled_runtime_root_ref"] == settled_root
         assert export["settled_runtime_root_ref"] == settled_root
@@ -192,6 +192,40 @@ def test_history_and_export_are_bound_to_same_settled_runtime_root_and_receipt_l
         assert history["latest_balance_receipt_ref"] == receipt_ref
         assert export["latest_balance_receipt_ref"] == receipt_ref
         assert summary["latest_balance_receipt_ref"] == receipt_ref
+
+
+def test_settled_runtime_root_ref_changes_when_settled_state_changes() -> None:
+    with TestClient(create_app()) as client:
+        agent_id = _seed_wallet_runtime(client)["agent_id"]
+        first_status = client.get(f"/v1/public/wallet/{agent_id}/status").json()["data"]
+        first_ref = first_status["settled_runtime_root_ref"]
+
+        client.app.state.public_lifecycle_runtime.commit_settled_epoch(
+            agent_id=agent_id,
+            epoch_id="epoch-002",
+            reward_delta_ilc="2",
+        )
+        second_status = client.get(f"/v1/public/wallet/{agent_id}/status").json()["data"]
+        assert second_status["settled_runtime_root_ref"] != first_ref
+
+
+def test_ledger_summary_uses_one_lifecycle_snapshot_read(monkeypatch: pytest.MonkeyPatch) -> None:
+    with TestClient(create_app()) as client:
+        agent_id = _seed_wallet_runtime(client)["agent_id"]
+        runtime = client.app.state.public_wallet_runtime
+        lifecycle_runtime = client.app.state.public_lifecycle_runtime
+        original = lifecycle_runtime.lifecycle_snapshot
+        calls = 0
+
+        def counting_lifecycle_snapshot(*, agent_id: str) -> dict:
+            nonlocal calls
+            calls += 1
+            return original(agent_id=agent_id)
+
+        monkeypatch.setattr(lifecycle_runtime, "lifecycle_snapshot", counting_lifecycle_snapshot)
+        payload = runtime.ledger_summary(agent_id=agent_id)
+        assert payload["token"] == "ledger_summary_found"
+        assert calls == 1
 
 
 def test_post_is_not_allowed_and_no_prohibited_wallet_operations_are_introduced() -> None:

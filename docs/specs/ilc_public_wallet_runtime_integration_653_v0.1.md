@@ -79,7 +79,7 @@ to speculative operator state.
 
 The runtime therefore exposes:
 - `settled_runtime_root_ref` as a deterministic hash-derived reference to the
-  LMDB-backed wallet runtime root
+  settled LMDB-backed wallet state visible for the agent
 - `latest_balance_receipt_ref` as a deterministic hash-derived reference to the
   latest settled balance receipt payload when such a receipt exists
 - `history_digest` as the durable balance-history digest carried by the settled
@@ -88,7 +88,10 @@ The runtime therefore exposes:
 History and export payloads are derived from the same settled LMDB-backed
 wallet row and wallet history structures that Phase 652 updates at epoch
 commit. They do not read projection-only helper state and they do not infer
-wallet truth from operator-local process memory.
+wallet truth from operator-local process memory. `ledger_summary` and the other
+wallet operations derive their bounded output from one settled snapshot per
+request rather than from repeated re-reads that could drift within a single
+response assembly.
 
 ## 4. Failure-token and read-only enforcement discipline
 
