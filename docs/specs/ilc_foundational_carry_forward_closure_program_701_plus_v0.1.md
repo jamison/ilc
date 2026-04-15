@@ -111,6 +111,16 @@ Special requirement for the inverted-ECU item:
   conversion are being treated as operational implementation of the inverted
   circulation model.
 
+Mandatory evidence gate for the BAL-profile item:
+- `701-706` should not stop at “plan a calibration later”
+- it must publish a concrete calibration harness / replay contract for the ECU
+  kernel profile question, including:
+  - candidate profile set,
+  - deterministic replay inputs,
+  - sensitivity dimensions,
+  - and the evidence threshold required before any later `constitutional_lock`
+    move.
+
 This block should **not** constitutionalize economic metaphors just because they
 are historically resonant.
 
@@ -119,6 +129,7 @@ are historically resonant.
 | Item | Current status | Recommended completion mode | Earliest honest start | Suggested artifacts |
 |---|---|---|---|---|
 | “Governance as a bug” | real design principle, partially incorporated | `spec_or_contract_lock` for sunset taxonomy and human-lever classification; optional later ADR/CDL where necessary | start as soon as bootstrap/founder-era lever inventory is stable enough to classify honestly; do not wait for final sovereign-substrate choice | `docs/specs/ilc_governance_minimization_and_sunset_taxonomy_v0.1.md` |
+| ADR-0019 graph-native governance compilation boundary | foundational architectural boundary exists, but ADR remains proposed | `spec_or_contract_lock` via explicit ADR disposition before deeper graph-native governance claims are treated as authoritative | start before or at the beginning of the graph-native algorithm-governance lane | `docs/specs/ilc_graph_native_governance_boundary_disposition_note_v0.1.md` |
 | Scoring algorithms as first-class on-graph governance objects | scaffolded historically, not fully realized | `spec_or_contract_lock` first | after `693-700`; may overlap with post-`700` graph-native governance work | `docs/specs/ilc_algorithm_governance_and_namespace_contract_v0.1.md` |
 | Local-influence / scoring-family worked example | toy/proto implementation exists historically | `spec_or_contract_lock` | after the algorithm-governance contract exists | `docs/research/ilc_local_influence_algorithm_family_and_selection_note_v0.1.md` |
 
@@ -129,12 +140,17 @@ Early-start sublane inside this block:
 - The governance-minimization block should therefore allow a pre-`707`
   initiation path for `CDL-017` evidence hardening and opening work if the
   bootstrap/runbook material is mature enough.
+- `CDL-017` should not slip past the first lane that would authorize non-Genesis
+  validator deployment or equivalent permanent-substrate operator authority on a
+  chosen Option-B backend.
 
 #### Completion rule for this block
 
 This block closes when:
 - the repo has a durable inventory of human levers, override classes, and
   sunset expectations,
+- ADR-0019 has an explicit accepted/amended/rejected disposition rather than
+  remaining silently relied upon while still proposed,
 - algorithm-governance surfaces are no longer implicit or “sacred”
   implementation details,
 - and the project can say clearly which governance claims are philosophy and
@@ -156,6 +172,39 @@ This block closes when:
 - resilience claims are benchmarked rather than metaphorical,
 - and the Levin influence is either operationalized or explicitly retained only
   as background inspiration.
+
+### 4.4 Node-transfer economics, commons dedication, and leasehold items
+
+| Item | Current status | Recommended completion mode | Earliest honest start | Suggested artifacts |
+|---|---|---|---|---|
+| ADR-0015 node-transfer economics package (transfer tax, cooling period, public goods dedication) | proposed bundle; no CDL; no authoritative sim package | `constitutional_lock` after explicit simulation and ADR disposition | after `707-712`, or earlier if launch/post-launch economic claims begin to assume transferability rules | `docs/specs/ilc_node_transfer_economics_and_commons_dedication_package_v0.1.md` |
+| Leasehold model | proposed, explicitly simulation-dependent | `spec_or_contract_lock` first, with optional later `constitutional_lock` depending on activation timing | after transfer-economics package and dedicated lease-duration evidence work exist | `docs/specs/ilc_leasehold_duration_and_reversion_calibration_note_v0.1.md` |
+
+#### Completion rule for this block
+
+This block closes when:
+- ADR-0015 receives an explicit accepted/amended/rejected disposition,
+- the transfer-tax / cooling / dedication family is no longer treated as
+  hand-wavy future economics,
+- leasehold either has an evidence-backed activation path or an explicit
+  deferment record,
+- and the repo can say whether these mechanisms are launch-bound,
+  post-launch-bound, or deferred indefinitely.
+
+### 4.5 Sequestered financial-shard and gated-economy eligibility items
+
+| Item | Current status | Recommended completion mode | Earliest honest start | Suggested artifacts |
+|---|---|---|---|---|
+| Sequestered financial shard / dedicated `B_hft` lane | explicitly proposed and post-launch; not blocked on shard-lifecycle CDL anymore | `spec_or_contract_lock` for eligibility/prefilter first; later `constitutional_lock` only if a real activation case exists | after public launch, after at least one post-launch monitoring cycle, and only with a concrete demand signal plus contagion/firewall simulation readiness | `docs/specs/ilc_sequestered_financial_shard_eligibility_prefilter_v0.1.md` |
+
+#### Completion rule for this block
+
+This block closes when:
+- the repo has an explicit answer on when the sequestered-shard lane becomes
+  eligible to open,
+- the trigger conditions are published rather than assumed,
+- and the financial-shard question is no longer silently mixed together with
+  unrelated shard-lifecycle or private/gated-shard questions.
 
 ## 5. Suggested window routing
 
@@ -189,6 +238,7 @@ Primary closure targets:
 
 Recommended outputs:
 - governance taxonomy artifact
+- ADR-0019 disposition note
 - graph-native algorithm contract
 - worked example and non-goal boundary note
 
@@ -209,6 +259,33 @@ Recommended outputs:
 - transport resilience contract
 - benchmark pack
 - explicit law-vs-freedom decision memo
+
+### 5.4 `717-722` — Node Transfer Economics, Commons Dedication, and Leasehold Calibration
+
+Primary closure targets:
+- ADR-0015 disposition
+- transfer tax and cooling-period simulation package
+- public-goods dedication governance package
+- leasehold duration / reversion evidence note
+
+Recommended outputs:
+- node-transfer economics package artifact
+- explicit sim commissioning / replay contract for transfer-tax, cooling, and
+  lease-duration questions
+- CDL-opening recommendation or deferment memo for the transfer-economics lane
+
+### 5.5 `723-726` — Sequestered Financial-Shard Eligibility and Gated-Economy Prefilter
+
+Primary closure targets:
+- post-launch trigger conditions for the sequestered financial shard
+- contagion/firewall evidence prerequisites
+- explicit separation from ordinary shard-lifecycle law
+
+Recommended outputs:
+- eligibility prefilter artifact
+- activation trigger matrix
+- explicit defer / open recommendation tied to post-launch evidence rather than
+  folklore
 
 ## 6. Integration rules for current planning
 
