@@ -6,6 +6,8 @@ from typing import Any
 
 import lmdb
 
+from ilc_core.ledger.exact_numeric import normalize_json_scalars
+
 
 LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
@@ -17,7 +19,12 @@ def _encode_key(value: str) -> bytes:
 
 
 def _encode_json(payload: Any) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return json.dumps(
+        normalize_json_scalars(payload),
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
 
 
 def _decode_json(payload: bytes | None) -> Any:
