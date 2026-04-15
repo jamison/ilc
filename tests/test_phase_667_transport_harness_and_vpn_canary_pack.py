@@ -38,10 +38,57 @@ ALLOWED_PREFIXES = (
     "tools/testbed/",
     "tests/test_phase_667_transport_harness_and_vpn_canary_pack.py",
 )
+MAIN_COMMIT_SUBJECT_TOKENS = ("phase 667", "multi-machine harness and vpn canary pack")
+BACKFILL_COMMIT_SUBJECT_TOKENS = ("phase 667", "walkthrough", "backfill")
+MAIN_PATH_SET = {
+    "docs/specs/ilc_transport_harness_and_vpn_canary_pack_667_v0.1.md",
+    "tools/testbed/collect_transport_maturity_metrics.py",
+    "tools/testbed/render_transport_maturity_topologies.py",
+    "tools/testbed/run_transport_maturity_canary.py",
+    "tests/test_phase_667_transport_harness_and_vpn_canary_pack.py",
+}
+BACKFILL_PATH_SET = {
+    "docs/phases/phase_667_g8_multi_machine_harness_and_vpn_canary_pack_walkthrough.md",
+    "docs/phases/STATUS.md",
+}
 
 
 def _read_doc() -> str:
     return DOC_PATH.read_text(encoding="utf-8")
+
+
+def _paths_for_subject_tokens(subject_tokens: tuple[str, ...]) -> set[str]:
+    log = subprocess.run(
+        ["git", "log", "--format=%H%x00%s"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    for line in log.stdout.splitlines():
+        commit, subject = line.split("\x00", 1)
+        lowered = subject.lower()
+        if all(token in lowered for token in subject_tokens):
+            show = subprocess.run(
+                ["git", "show", "--name-only", "--format=", commit],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            return {entry.strip() for entry in show.stdout.splitlines() if entry.strip()}
+    raise AssertionError(f"commit_not_found:{subject_tokens}")
+
+
+def _current_changed_paths() -> set[str]:
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line[3:] for line in result.stdout.splitlines() if line.strip()}
 
 
 def test_harness_doc_exists_and_contains_required_headings() -> None:
@@ -155,14 +202,19 @@ def test_discovery_admission_boundary_remains_preserved() -> None:
 
 
 def test_mutations_stay_within_allowed_scoped_paths() -> None:
-    result = subprocess.run(
-        ["git", "status", "--porcelain"],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    changed_paths = [line[3:] for line in result.stdout.splitlines() if line.strip()]
-    assert changed_paths
-    for path in changed_paths:
-        assert path.startswith(ALLOWED_PREFIXES)
+    try:
+        changed_paths = _paths_for_subject_tokens(MAIN_COMMIT_SUBJECT_TOKENS)
+        assert changed_paths == MAIN_PATH_SET
+    except AssertionError as exc:
+        if not str(exc).startswith("commit_not_found:"):
+            raise
+        changed_paths = _current_changed_paths()
+        assert changed_paths
+        for path in changed_paths:
+            assert path.startswith(ALLOWED_PREFIXES)
+
+    try:
+        assert _paths_for_subject_tokens(BACKFILL_COMMIT_SUBJECT_TOKENS) == BACKFILL_PATH_SET
+    except AssertionError as exc:
+        if not str(exc).startswith("commit_not_found:"):
+            raise

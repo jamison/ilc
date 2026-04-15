@@ -65,6 +65,57 @@ def _hosts_payload() -> dict[str, object]:
     }
 
 
+def _five_node_hosts_payload() -> dict[str, object]:
+    payload = _hosts_payload()
+    payload['remote_hosts'] = [
+        {
+            'name': 'ilc-node-2-machine',
+            'tailscale_name': 'ilc-node-2',
+            'tailscale_ip': '100.109.27.59',
+            'ssh_host': 'ilc-node-2',
+            'ssh_user': 'ilcops',
+            'repo_path': '/opt/ilc/current',
+            'venv_path': '/opt/ilc/venv',
+            'systemd_unit': 'ilc-node-v1.service',
+            'node_instances': [
+                {
+                    'name': 'ilc-node-2',
+                    'config_path': '/etc/ilc',
+                    'launch_mode': 'systemd',
+                },
+                {
+                    'name': 'ilc-node-4',
+                    'config_path': '/tmp/ilc-node-4',
+                    'launch_mode': 'manual',
+                },
+            ],
+        },
+        {
+            'name': 'ilc-node-3-machine',
+            'tailscale_name': 'ilc-node-3',
+            'tailscale_ip': '100.108.3.57',
+            'ssh_host': 'ilc-node-3',
+            'ssh_user': 'ilcops',
+            'repo_path': '/opt/ilc/current',
+            'venv_path': '/opt/ilc/venv',
+            'systemd_unit': 'ilc-node-v1.service',
+            'node_instances': [
+                {
+                    'name': 'ilc-node-3',
+                    'config_path': '/etc/ilc',
+                    'launch_mode': 'systemd',
+                },
+                {
+                    'name': 'ilc-node-5',
+                    'config_path': '/tmp/ilc-node-5',
+                    'launch_mode': 'manual',
+                },
+            ],
+        },
+    ]
+    return payload
+
+
 def test_render_testbed_configs_writes_expected_topology(tmp_path: Path) -> None:
     hosts_path = tmp_path / 'hosts.json'
     hosts_path.write_text(json.dumps(_hosts_payload()), encoding='utf-8')
@@ -95,18 +146,28 @@ def test_render_testbed_configs_writes_expected_topology(tmp_path: Path) -> None
     assert 'ILC_GENESIS_REF_PATH=/etc/ilc/genesis_ref.json' in env_text
 
 
-def test_render_testbed_configs_requires_all_three_named_hosts(tmp_path: Path) -> None:
-    payload = _hosts_payload()
-    payload['remote_hosts'] = [payload['remote_hosts'][0]]
+def test_render_testbed_configs_supports_nested_five_node_inventory(tmp_path: Path) -> None:
+    payload = _five_node_hosts_payload()
     hosts_path = tmp_path / 'hosts.json'
     hosts_path.write_text(json.dumps(payload), encoding='utf-8')
+    output_root = tmp_path / 'configs'
 
-    with pytest.raises(SystemExit, match='missing_hosts:ilc-node-3'):
-        render_testbed_configs.render_configs(
-            hosts_path=hosts_path,
-            output_root=tmp_path / 'configs',
-            network_id='testnet-0',
-        )
+    render_testbed_configs.render_configs(
+        hosts_path=hosts_path,
+        output_root=output_root,
+        network_id='testnet-0',
+    )
+
+    node4 = json.loads((output_root / 'ilc-node-4' / 'node_config.json').read_text(encoding='utf-8'))
+    node5 = json.loads((output_root / 'ilc-node-5' / 'node_config.json').read_text(encoding='utf-8'))
+    node4_env = (output_root / 'ilc-node-4' / 'ilc-node-v1.env').read_text(encoding='utf-8')
+
+    assert node4['node_id'] == 'node-4'
+    assert node4['transport']['bind_port'] == 19574
+    assert len(node4['peers']) == 4
+    assert node5['node_id'] == 'node-5'
+    assert node5['transport']['bind_port'] == 19575
+    assert 'ILC_CONFIG_PATH=/tmp/ilc-node-4/node_config.json' in node4_env
 
 
 def test_render_and_verify_bootstrap_peers_match_local_configs(tmp_path: Path) -> None:
@@ -136,6 +197,7 @@ def test_render_and_verify_bootstrap_peers_match_local_configs(tmp_path: Path) -
     assert verify_bootstrap_peers.verify_bootstrap_peers(
         bootstrap_path=bootstrap_path,
         config_root=output_root,
+        hosts_path=hosts_path,
     ) == []
 
 
@@ -166,6 +228,7 @@ def test_verify_bootstrap_peers_rejects_tampered_fingerprint(tmp_path: Path) -> 
     assert verify_bootstrap_peers.verify_bootstrap_peers(
         bootstrap_path=bootstrap_path,
         config_root=output_root,
+        hosts_path=hosts_path,
     ) == ['bootstrap_tls_fingerprint_mismatch:ilc-node-1']
 
 
@@ -242,6 +305,7 @@ def test_verify_bootstrap_peers_rejects_stale_inventory(tmp_path: Path) -> None:
     assert verify_bootstrap_peers.verify_bootstrap_peers(
         bootstrap_path=bootstrap_path,
         config_root=output_root,
+        hosts_path=hosts_path,
         max_age_hours=24,
     ) == ['bootstrap_last_verified_stale:node-1']
 
@@ -322,6 +386,40 @@ def test_render_and_verify_bootstrap_distribution_match_curated_inventory(tmp_pa
         distribution_path=distribution_path,
         bootstrap_path=bootstrap_path,
     ) == []
+
+
+def test_home_node_launcher_uses_detached_background_start() -> None:
+    script = Path('tools/testbed/home_node_common.sh').read_text(encoding='utf-8')
+
+    assert 'nohup python3 "$TESTBED_DIR/tools/run_ilc_node_service_v1.py" start \\' in script
+    assert '>"$HOME_LOG" 2>&1 </dev/null &' in script
+    assert 'printf \'%s\\n\' "$!" > "$HOME_PID"' in script
+
+
+def test_negative_path_drills_use_repo_python_when_available() -> None:
+    common_script = Path('tools/testbed/common.sh').read_text(encoding='utf-8')
+    drill_script = Path('tools/testbed/run_negative_path_drills.sh').read_text(encoding='utf-8')
+
+    assert 'local_python_bin()' in common_script
+    assert 'PRIMARY_REMOTE_HOST="$(resolve_hosts | head -n 1)"' in drill_script
+    assert 'LOCAL_PYTHON="$(local_python_bin)"' in drill_script
+    assert '"$LOCAL_PYTHON" "$TESTBED_DIR/tools/testbed/verify_bootstrap_peers.py"' in drill_script
+
+
+def test_remote_control_surface_supports_manual_launch_mode() -> None:
+    common_script = Path('tools/testbed/common.sh').read_text(encoding='utf-8')
+    start_script = Path('tools/testbed/start_nodes.sh').read_text(encoding='utf-8')
+    stop_script = Path('tools/testbed/stop_nodes.sh').read_text(encoding='utf-8')
+    restart_script = Path('tools/testbed/restart_nodes.sh').read_text(encoding='utf-8')
+    remote_smoke_script = Path('tools/testbed/run_remote_smoke.sh').read_text(encoding='utf-8')
+
+    assert 'start_manual_remote_node()' in common_script
+    assert 'stop_manual_remote_node()' in common_script
+    assert 'wait_for_manual_remote_ready()' in common_script
+    assert 'start_manual_remote_node "$host"' in start_script
+    assert 'stop_manual_remote_node "$host"' in stop_script
+    assert 'stop_manual_remote_node "$host"' in restart_script
+    assert 'launch_mode="$(host_field "$host" launch_mode)"' in remote_smoke_script
 
 
 def test_verify_bootstrap_distribution_rejects_tampered_sha(tmp_path: Path) -> None:

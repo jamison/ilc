@@ -318,6 +318,16 @@ def test_default_scenario_spec_has_seven_agents_and_outsider() -> None:
     assert payload["outsider"]["cluster_id"] == "cluster-e"
 
 
+def test_local_python_prefers_repo_venv(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    repo_root = tmp_path / "repo"
+    venv_python = repo_root / ".venv" / "bin" / "python"
+    venv_python.parent.mkdir(parents=True)
+    venv_python.write_text("#!/bin/sh\n", encoding="utf-8")
+    monkeypatch.setattr(scenario_runner, "REPO_ROOT", repo_root)
+
+    assert scenario_runner._local_python() == str(venv_python)
+
+
 def test_run_scenario_emits_live_economic_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     hosts_path = tmp_path / "hosts.json"
     hosts_path.write_text(
@@ -464,7 +474,7 @@ def test_run_scenario_emits_live_economic_state(monkeypatch: pytest.MonkeyPatch,
     assert manifest["economic_manifest_path"] == str(economic_manifest_path)
     assert manifest["economic_distribution_check_ok"] is True
     assert manifest["economic_wallet_count"] == 8
-    assert manifest["economic_reward_total"] == claim_payload["ledger"]["rewards_paid"]
+    assert manifest["economic_reward_total"] == str(claim_payload["ledger"]["rewards_paid"])
     assert manifest["benchmark_metrics"]["panel_evaluation_ms"] >= 0.0
     assert manifest["benchmark_metrics"]["submission_to_panel_verdict_ms"] >= 0.0
     assert manifest["benchmark_metrics"]["submission_to_network_visibility_ms"] >= 0.0
