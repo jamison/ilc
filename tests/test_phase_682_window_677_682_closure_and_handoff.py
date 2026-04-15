@@ -18,6 +18,7 @@ CHECKLIST_PATH = Path("docs/specs/ilc_option_b_graduation_checklist_state_682_v0
 CAPSULE_PATH = Path("docs/specs/ilc_antigravity_context_capsule_v4.3.md")
 GUIDE_PATH = Path("docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md")
 STATUS_PATH = Path("docs/phases/STATUS.md")
+MEMPALACE_MANIFEST_PATH = Path("docs/tools/mempalace/ilc_mempalace_current_frontier_manifest_v0.1.json")
 GROUPING_PATH = Path("docs/specs/ilc_window_677_682_candidate_phase_grouping_v0.1.md")
 FRAME_PATH = Path(
     "docs/research/ilc_window_677_682_privacy_public_legitimacy_conversation_frame_2026_04_15_v0.1.md"
@@ -266,6 +267,23 @@ def test_status_log_records_677_through_682_completion() -> None:
     )
     for token in required:
         assert token in text
+    assert "current 677-682 closure bundle commit" not in text
+
+
+def test_mempalace_manifest_reflects_682_frontier() -> None:
+    data = _read_json(MEMPALACE_MANIFEST_PATH)
+    tier_a = set(data["tiers"]["tier_a_canonical"]["include"])
+    tier_b = set(data["tiers"]["tier_b_planning"]["include"])
+    assert "docs/specs/ilc_antigravity_context_capsule_v4.3.md" in tier_a
+    assert "docs/specs/ilc_window_677_682_handoff_682_v0.1.md" in tier_a
+    assert "docs/specs/ilc_option_b_graduation_checklist_state_682_v0.1.json" in tier_a
+    assert "docs/specs/ilc_row_5_prework_narrowing_decision_682_v0.1.md" in tier_a
+    assert "docs/specs/ilc_antigravity_context_capsule_v4.2.md" not in tier_a
+    assert "docs/specs/ilc_option_b_graduation_checklist_state_676_v0.1.json" not in tier_a
+    assert "docs/specs/ilc_phase_677_682_sequence_lock_v0.1.md" in tier_b
+    assert "docs/specs/ilc_window_677_682_candidate_phase_grouping_v0.1.md" in tier_b
+    assert "docs/research/ilc_row_5_canon_inventory_and_issue_register_677_v0.1.md" in tier_b
+    assert "docs/research/ilc_window_677_682_privacy_public_legitimacy_conversation_frame_2026_04_15_v0.1.md" in tier_b
 
 
 def test_phase_682_main_commit_path_set_obeys_phase_scope() -> None:
