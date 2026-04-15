@@ -26,7 +26,7 @@ FRAME_PATH = Path(
 INVENTORY_PATH = Path("docs/research/ilc_row_5_canon_inventory_and_issue_register_677_v0.1.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 TEST_PATH = Path("tests/test_phase_682_window_677_682_closure_and_handoff.py")
-PHASE_682_SUBJECT_TOKENS = ("advance row 5 to partial", "privacy window")
+PHASE_682_SUBJECT_TOKENS = ("row 5", "privacy window")
 EXACT_REQUIRED_MAIN_PATHS = {
     str(THREAT_MODEL_PATH),
     str(OBSERVABILITY_PATH),
@@ -150,6 +150,7 @@ def test_mechanism_matrix_and_simulation_packet_contain_required_tokens() -> Non
         "phase_681_scopes_to_phase_680_survivor_set",
         "ordinary_observer_recall_below_0_45_is_minimum_materially_harder_threshold",
         "operator_path_recall_below_0_60_is_stretch_target_not_closure_minimum",
+        "scenario_level_recall_bands_not_calibrated_outputs",
         "survivor_set_reduces_public_observer_correlation_materially_but_not_perfectly",
         "hosted_query_and_operator_path_surfaces_remain_primary_residual_leakage",
     )
@@ -248,7 +249,7 @@ def test_prelock_planning_artifacts_are_marked_historical_after_window_close() -
     assert "Historical note, 2026-04-15:" in grouping
     assert "superseded for current-frontier closure status" in grouping
     assert "Historical note, 2026-04-15:" in frame
-    assert "superseded for" in frame
+    assert "superseded for current-frontier closure status" in frame
     assert "Historical note, 2026-04-15:" in inventory
     assert "the lane is now closed as a row-5" in inventory
 
@@ -286,6 +287,11 @@ def test_mempalace_manifest_reflects_682_frontier() -> None:
     assert "docs/research/ilc_window_677_682_privacy_public_legitimacy_conversation_frame_2026_04_15_v0.1.md" in tier_b
 
 
+def test_live_decision_log_still_has_no_cdl_062_row() -> None:
+    text = _read(DECISION_LOG_PATH)
+    assert "| CDL-062 |" not in text
+
+
 def test_phase_682_main_commit_path_set_obeys_phase_scope() -> None:
     _require_commit_or_skip(PHASE_682_SUBJECT_TOKENS)
     commit_ref = _resolve_commit_ref(
@@ -294,5 +300,4 @@ def test_phase_682_main_commit_path_set_obeys_phase_scope() -> None:
     )
     changed_paths = _changed_paths_for_commit(commit_ref)
     assert changed_paths == EXACT_REQUIRED_MAIN_PATHS
-    assert str(DECISION_LOG_PATH) not in changed_paths
     assert not any(path.startswith("ilc_core/") for path in changed_paths)

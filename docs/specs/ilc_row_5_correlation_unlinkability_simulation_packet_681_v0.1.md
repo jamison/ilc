@@ -47,21 +47,29 @@ The minimum row-5 success metric for this window is:
 The point of these thresholds is not false precision. The point is to prevent
 closure-time argument over what counts as meaningful progress.
 
+These are scenario-level bands, not calibrated model outputs. They should be
+read as rough ranges suitable for pre-substrate narrowing work rather than as
+production-grade measured statistics.
+
+`scenario_level_recall_bands_not_calibrated_outputs`
+
 ## 4. Modeled survivor-set results
 
-| Survivor family | Ordinary-observer modeled recall | Operator-path modeled recall | Result |
+| Survivor family | Ordinary-observer modeled recall band | Operator-path modeled recall band | Result |
 |---|---:|---:|---|
-| timing smoothing / bounded batching | `0.41` | `0.73` | passes minimum, misses stretch |
-| relay / submission indirection with non-custodial multi-relay support | `0.37` | `0.62` | passes minimum, near stretch |
-| commitment / selective-disclosure envelope with public receipt core | `0.33` | `0.58` | passes minimum and meets stretch |
+| timing smoothing / bounded batching | `0.40-0.45` | `0.70-0.75` | passes minimum band, misses stretch band |
+| relay / submission indirection with non-custodial multi-relay support | `0.35-0.40` | `0.60-0.65` | passes minimum band, remains above stretch band |
+| commitment / selective-disclosure envelope with public receipt core | `0.30-0.35` | `0.55-0.60` | passes minimum band and plausibly reaches stretch band |
 
 `survivor_set_reduces_public_observer_correlation_materially_but_not_perfectly`
 
 The modeled result is:
 - all three near-term survivors plausibly clear the minimum public-observer
   degradation threshold
-- only the commitment/selective-disclosure envelope plausibly clears the
-  operator-path stretch target without breaking the observability floor
+- only the commitment/selective-disclosure envelope plausibly reaches the
+  operator-path stretch band without breaking the observability floor
+- relay indirection approaches the stretch band but still misses it in this
+  scenario model
 - timing smoothing alone is not enough for stronger operator-path resistance
 
 ## 5. Red-team findings
