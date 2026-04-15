@@ -2,6 +2,7 @@
 
 **Author:** Codex
 **Date:** 2026-04-15
+**Historical note, 2026-04-15:** This is a pre-lock planning artifact. It is superseded for current-frontier decision purposes by [the Phase 671 sequence lock](./ilc_phase_671_676_sequence_lock_v0.1.md) and [the 676 handoff](./ilc_window_671_676_handoff_676_v0.1.md).
 **Baseline:** Window 665-670 CLOSED. Capsule v4.1 is current. Rows 1-4 remain `runtime_closed`; row 5 remains `not_started`; row 6 remains `closed`; row 9 is now `closed`; rows 7-8 remain `partial`. The next planned target is rows 7 and 8 as criteria-first closure work, not substrate implementation.
 **Planning note:** This is a candidate grouping, not a locked sequence. The purpose of this packet is to define the likely phase shape, scope discipline, core conversation questions, and recommended posture for the censorship-resistance and independence lane before sequence lock.
 
