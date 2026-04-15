@@ -1,9 +1,16 @@
 # ILC Transport Open Questions and Historical Recovery 665 v0.1
 
-Status: planning recovery artifact
+Status: historical planning recovery artifact for the closed row-9 lane
 Date: 2026-04-15
 Owner lane: G8 transport maturity strike force
 Classification: authority-ordered recovery register
+
+Audit note, 2026-04-15:
+- Window `665-670` is closed
+- this artifact remains a durable record of how row-9 transport questions were
+  authority-classified during that lane
+- it should be cited as historical recovery for the closed row-9 window, not as
+  a live planning artifact for `687-692`
 
 ## 1. Purpose and authority order
 
@@ -91,3 +98,6 @@ Explicit carry-forward answers:
 - the two external VPNs are available, but their firewall/port posture is an early gating question
 - OpenClaw remains an overlay harness for internal RC testing rather than the
   base correctness layer
+- stronger adaptive-gossip / partition-repair doctrine is a later carry-forward
+  lane, not part of row-9 closure, and now routes through
+  `docs/specs/ilc_foundational_carry_forward_closure_program_701_plus_v0.1.md`
