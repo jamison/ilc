@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
+from typing import Any
+
+import pytest
 
 
 THREAT_MODEL_PATH = Path("docs/specs/ilc_censorship_resistance_threat_model_672_v0.1.md")
@@ -21,14 +25,93 @@ FRAME_PATH = Path(
     "docs/research/ilc_window_671_676_censorship_independence_conversation_frame_2026_04_15_v0.1.md"
 )
 INVENTORY_PATH = Path("docs/research/ilc_rows_7_8_canon_inventory_and_issue_register_671_v0.1.md")
+DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
+TEST_PATH = Path("tests/test_phase_676_window_671_676_closure_and_handoff.py")
+PHASE_676_MAIN_SUBJECT_TOKENS = ("close rows 7 and 8", "criteria window")
+PHASE_676_AUDIT_SUBJECT_TOKENS = ("audit", "671-676", "closure surfaces")
+EXACT_REQUIRED_MAIN_PATHS = {
+    str(CAPSULE_PATH),
+    str(THREAT_MODEL_PATH),
+    str(EXIT_THRESHOLD_PATH),
+    str(EXCLUSION_MATRIX_PATH),
+    str(CHECKLIST_PATH),
+    str(DECISION_PATH),
+    str(CRITERIA_LOCK_PATH),
+    str(HANDOFF_PATH),
+    str(TEST_PATH),
+}
+EXACT_REQUIRED_AUDIT_PATHS = {
+    str(STATUS_PATH),
+    str(GUIDE_PATH),
+    str(INVENTORY_PATH),
+    str(FRAME_PATH),
+    str(GROUPING_PATH),
+    str(TEST_PATH),
+}
 
 
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _read_json(path: Path) -> dict:
+def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(_read(path))
+
+
+def _changed_paths_for_commit(commit_ref: str) -> set[str]:
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
+def _subject_matches(subject: str, tokens: tuple[str, ...]) -> bool:
+    lowered = subject.lower()
+    return all(token in lowered for token in tokens)
+
+
+def _find_commit_ref(*, subject_tokens: tuple[str, ...]) -> str | None:
+    result = subprocess.run(
+        ["git", "log", "--format=%H%x09%s"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        if _subject_matches(subject, subject_tokens):
+            return commit_hash
+    return None
+
+
+def _resolve_commit_ref(*, subject_tokens: tuple[str, ...], expected_paths: set[str]) -> str:
+    result = subprocess.run(
+        ["git", "log", "--format=%H%x09%s"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    matches: list[str] = []
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        if _subject_matches(subject, subject_tokens):
+            matches.append(commit_hash)
+    for commit_ref in matches:
+        if _changed_paths_for_commit(commit_ref) == expected_paths:
+            return commit_ref
+    raise AssertionError(f"commit_not_present_in_local_history:{subject_tokens}")
+
+
+def _require_commit_or_skip(subject_tokens: tuple[str, ...]) -> None:
+    if _find_commit_ref(subject_tokens=subject_tokens) is None:
+        pytest.skip(f"commit_not_yet_present:{subject_tokens}")
 
 
 def test_threat_model_exists_and_contains_required_tokens() -> None:
@@ -112,10 +195,28 @@ def test_handoff_records_window_close_and_next_lane() -> None:
 def test_checklist_state_676_closes_rows_7_and_8_and_keeps_row_5_open() -> None:
     data = _read_json(CHECKLIST_PATH)
     rows = {entry["row"]: entry for entry in data["rows"]}
+    assert data["option_b_selected"] is False
+    assert data["option_d_active"] is True
     assert data["window"] == "671-676"
+    assert len(data["rows"]) == 9
+    assert rows[
+        "1. public init/admission flow tied to canonical receipts"
+    ]["status"] == "runtime_closed"
+    assert rows[
+        "2. machine-legible public receipt issuance and query/runtime contract"
+    ]["status"] == "runtime_closed"
+    assert rows[
+        "3. user and agent visible ECU to ILC lifecycle contract"
+    ]["status"] == "runtime_closed"
+    assert rows[
+        "4. public wallet surface contract sufficient for a first participant-touch economic loop"
+    ]["status"] == "runtime_closed"
     assert rows[
         "5. privacy-preserving public legitimacy mechanism at the settlement layer"
     ]["status"] == "not_started"
+    assert rows[
+        "6. coupling invariants that keep protocol truth and graph legitimacy upstream of settlement backend choice"
+    ]["status"] == "closed"
     assert rows[
         "7. censorship-resistance requirement for public legitimacy surfaces"
     ]["status"] == "closed"
@@ -180,3 +281,25 @@ def test_status_log_records_670_through_676_completion() -> None:
     )
     for token in required:
         assert token in text
+
+
+def test_phase_676_main_and_audit_commit_path_sets_obey_phase_scope() -> None:
+    _require_commit_or_skip(PHASE_676_MAIN_SUBJECT_TOKENS)
+    main_commit_ref = _resolve_commit_ref(
+        subject_tokens=PHASE_676_MAIN_SUBJECT_TOKENS,
+        expected_paths=EXACT_REQUIRED_MAIN_PATHS,
+    )
+    main_changed_paths = _changed_paths_for_commit(main_commit_ref)
+    assert main_changed_paths == EXACT_REQUIRED_MAIN_PATHS
+    assert str(DECISION_LOG_PATH) not in main_changed_paths
+    assert not any(path.startswith("ilc_core/") for path in main_changed_paths)
+
+    _require_commit_or_skip(PHASE_676_AUDIT_SUBJECT_TOKENS)
+    audit_commit_ref = _resolve_commit_ref(
+        subject_tokens=PHASE_676_AUDIT_SUBJECT_TOKENS,
+        expected_paths=EXACT_REQUIRED_AUDIT_PATHS,
+    )
+    audit_changed_paths = _changed_paths_for_commit(audit_commit_ref)
+    assert audit_changed_paths == EXACT_REQUIRED_AUDIT_PATHS
+    assert str(DECISION_LOG_PATH) not in audit_changed_paths
+    assert not any(path.startswith("ilc_core/") for path in audit_changed_paths)
