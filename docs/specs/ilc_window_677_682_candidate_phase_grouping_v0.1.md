@@ -5,6 +5,13 @@
 **Baseline:** Window 671-676 CLOSED. Capsule v4.2 is current. Rows 1-4 remain `runtime_closed`; row 5 remains `not_started`; row 6 remains `closed`; rows 7-8 remain `closed` as criteria-first governance locks; row 9 remains `closed`. The next planned target is row 5 as privacy-preserving public-legitimacy prework, not final mechanism closure.
 **Planning note:** This is a candidate grouping, not a locked sequence. The purpose of this packet is to define the likely phase shape, scope discipline, core conversation questions, and recommended posture for the row-5 privacy lane before sequence lock.
 
+Historical note, 2026-04-15:
+Window 677-682 has since closed.
+This candidate grouping is superseded for current-frontier closure status by
+`docs/specs/ilc_window_677_682_handoff_682_v0.1.md`,
+`docs/specs/ilc_option_b_graduation_checklist_state_682_v0.1.json`, and
+`docs/specs/ilc_antigravity_context_capsule_v4.3.md`.
+
 ## 1. Window identity and scope
 
 Window 677-682 is the first major post-rows-7-and-8 lane. Its purpose is to
