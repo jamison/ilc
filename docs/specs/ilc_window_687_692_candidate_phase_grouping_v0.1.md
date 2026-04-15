@@ -162,6 +162,9 @@ Required content:
 - state whether any benchmark or comparison work in this window uses BAL-profile
   ECU kernel weights as planning inputs, and if so label them explicitly as
   unratified planning assumptions pending later calibration work
+- state explicitly that if the settlement-state enumeration is not published in
+  Phase 687, Phase 690 and Phase 691 may publish only scoping or preliminary
+  methodology notes rather than authoritative benchmark or survivor analysis
 - lock non-goals:
   - no final winner
   - no row-5 closure by implication
@@ -187,6 +190,9 @@ Important note:
 - external-chain families are not the main line here
 - they may appear only as exclusion/control surfaces or, at most, as highly
   conditional edge cases that must clear the closed constitutional gates
+- if the settlement-state enumeration slipped from Phase 687, Phase 688 must
+  absorb that enumeration work before family comparison can claim to be testing
+  real ILC settlement behavior
 
 ### Phase 689 — sovereign BFT / finality-family research packet
 
