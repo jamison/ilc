@@ -14,6 +14,13 @@ DECISION_PATH = Path("docs/specs/ilc_rows_7_8_ratification_or_threshold_decision
 HANDOFF_PATH = Path("docs/specs/ilc_window_671_676_handoff_676_v0.1.md")
 CHECKLIST_PATH = Path("docs/specs/ilc_option_b_graduation_checklist_state_676_v0.1.json")
 CAPSULE_PATH = Path("docs/specs/ilc_antigravity_context_capsule_v4.2.md")
+GUIDE_PATH = Path("docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md")
+STATUS_PATH = Path("docs/phases/STATUS.md")
+GROUPING_PATH = Path("docs/specs/ilc_window_671_676_candidate_phase_grouping_v0.1.md")
+FRAME_PATH = Path(
+    "docs/research/ilc_window_671_676_censorship_independence_conversation_frame_2026_04_15_v0.1.md"
+)
+INVENTORY_PATH = Path("docs/research/ilc_rows_7_8_canon_inventory_and_issue_register_671_v0.1.md")
 
 
 def _read(path: Path) -> str:
@@ -128,6 +135,48 @@ def test_capsule_v4_2_reflects_closed_rows_7_and_8_and_next_lane() -> None:
         "- rows 7-8 are now `closed`",
         "The next planned lane is Window 677-682 for privacy-preserving public",
         "Window 671-676 closed rows 7 and 8, did not open `CDL-062`, did not close row",
+    )
+    for token in required:
+        assert token in text
+
+
+def test_transition_guide_no_longer_reports_671_676_as_future_open_lane() -> None:
+    text = _read(GUIDE_PATH)
+    required = (
+        "Audit note, 2026-04-15:",
+        "- row `6`: `closed`",
+        "- rows `7-9`: `closed`",
+        "Status, 2026-04-15:",
+        "- rows `7-8` closed as criteria-first governance locks",
+    )
+    for token in required:
+        assert token in text
+
+
+def test_prelock_planning_artifacts_are_marked_historical_after_window_close() -> None:
+    grouping = _read(GROUPING_PATH)
+    frame = _read(FRAME_PATH)
+    inventory = _read(INVENTORY_PATH)
+    assert "Historical note, 2026-04-15:" in grouping
+    assert "superseded for current-frontier decision purposes" in grouping
+    assert "Historical note, 2026-04-15:" in frame
+    assert "superseded for current-frontier closure status" in frame
+    assert "Historical note, 2026-04-15:" in inventory
+    assert "the lane is now closed" in inventory
+
+
+def test_status_log_records_670_through_676_completion() -> None:
+    text = _read(STATUS_PATH)
+    required = (
+        "## Phase 670",
+        "## Phase 671",
+        "## Phase 672",
+        "## Phase 673",
+        "## Phase 674",
+        "## Phase 675",
+        "## Phase 676",
+        "Window 671-676 closure and handoff",
+        "Window 677-682 — privacy-preserving public legitimacy prework.",
     )
     for token in required:
         assert token in text
