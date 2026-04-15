@@ -9,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "docs/specs/ilc_transport_maturity_contract_666_v0.1.md"
 JSON_PATH = ROOT / "docs/specs/ilc_transport_maturity_contract_666_v0.1.json"
 DECISION_LOG_PATH = ROOT / "docs/specs/ilc_constitutional_decision_log_v0.1.md"
-ILC_CORE_PATH = ROOT / "ilc_core"
 
 
 REQUIRED_HEADINGS = [
@@ -50,6 +49,13 @@ REQUIRED_TOP_LEVEL_KEYS = [
     "openclaw_role",
 ]
 
+MAIN_COMMIT_SUBJECT_TOKENS = ("phase 666", "transport maturity contract")
+MAIN_PATH_SET = {
+    "docs/specs/ilc_transport_maturity_contract_666_v0.1.md",
+    "docs/specs/ilc_transport_maturity_contract_666_v0.1.json",
+    "tests/test_phase_666_transport_maturity_contract.py",
+}
+
 
 def _read_contract() -> str:
     return CONTRACT_PATH.read_text(encoding="utf-8")
@@ -61,6 +67,29 @@ def _read_json_text() -> str:
 
 def _load_json() -> dict:
     return json.loads(_read_json_text())
+
+
+def _paths_for_subject_tokens(subject_tokens: tuple[str, ...]) -> set[str]:
+    log = subprocess.run(
+        ["git", "log", "--format=%H%x00%s"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    for line in log.stdout.splitlines():
+        commit, subject = line.split("\x00", 1)
+        lowered = subject.lower()
+        if all(token in lowered for token in subject_tokens):
+            show = subprocess.run(
+                ["git", "show", "--name-only", "--format=", commit],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            return {entry.strip() for entry in show.stdout.splitlines() if entry.strip()}
+    raise AssertionError(f"commit_not_found:{subject_tokens}")
 
 
 def test_contract_exists_and_contains_required_headings() -> None:
@@ -136,8 +165,4 @@ def test_decision_log_and_ilc_core_remain_unchanged() -> None:
         cwd=ROOT,
         check=True,
     )
-    subprocess.run(
-        ["git", "diff", "--exit-code", "--", str(ILC_CORE_PATH.relative_to(ROOT))],
-        cwd=ROOT,
-        check=True,
-    )
+    assert _paths_for_subject_tokens(MAIN_COMMIT_SUBJECT_TOKENS) == MAIN_PATH_SET

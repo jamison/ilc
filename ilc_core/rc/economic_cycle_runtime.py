@@ -54,7 +54,13 @@ def _sha256_bytes(payload: bytes) -> str:
 
 
 def _sha256_json(payload: Any) -> str:
-    return _sha256_bytes(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+    return _sha256_bytes(
+        json.dumps(
+            normalize_json_scalars(payload),
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
 
 
 def _dag_cbor_safe(value: Any) -> Any:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -58,6 +59,29 @@ def test_lmdb_wallet_store_persists_wallet_rows_and_history(tmp_path: Path) -> N
     wallet_store_reloaded = LmdbWalletStore(store_root)
     assert wallet_store_reloaded.get_wallet("agent-a")["balance_ilc"] == 3.0
     assert wallet_store_reloaded.get_wallet_history("agent-a")["claim_history"][0]["claim_id"] == "c1"
+
+
+def test_lmdb_graph_store_normalizes_decimal_payloads(tmp_path: Path) -> None:
+    store_root = tmp_path / "graph-store"
+    graph_store = LmdbGraphStore(store_root)
+
+    graph_store.put_node(
+        "node-a",
+        {
+            "id": "node-a",
+            "type": "claim",
+            "net_stake": Decimal("2.5"),
+            "nested": {"reward": Decimal("1.25")},
+        },
+    )
+
+    row = graph_store.get_node("node-a")
+    assert row == {
+        "id": "node-a",
+        "type": "claim",
+        "net_stake": "2.5",
+        "nested": {"reward": "1.25"},
+    }
 
 
 def test_lmdb_ledger_backend_survives_restart_and_factory_supports_it(tmp_path: Path) -> None:
