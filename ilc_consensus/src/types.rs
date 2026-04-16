@@ -90,9 +90,8 @@ pub struct EpochSettlementTx {
 pub struct AggSig(pub AggregateSignature);
 
 impl PartialEq for AggSig {
-    fn eq(&self, _other: &Self) -> bool {
-        // Validation stub mapping signature verification since blst enforces separate trait topologies (M-007)
-        true
+    fn eq(&self, other: &Self) -> bool {
+        self.0.to_signature().serialize() == other.0.to_signature().serialize()
     }
 }
 
