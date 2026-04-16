@@ -105,6 +105,7 @@ impl EpochSettlementProtocol {
 mod tests {
     use super::*;
     use tempfile::tempdir;
+    use lmdb_rkv::Environment;
     use crate::types::AggSig;
     use blst::min_pk::{AggregateSignature, SecretKey};
     use std::mem::size_of;
