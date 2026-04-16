@@ -1,5 +1,4 @@
 use lmdb_rkv::{Environment, Database, DatabaseFlags, Transaction, WriteFlags};
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use bincode;
 
@@ -175,12 +174,11 @@ impl BalanceStore {
 mod tests {
     use super::*;
     use tempfile::tempdir;
-    use lmdb_rkv::{EnvironmentBuilder};
     use crate::types::{ECUTransfer, ObjectRef};
 
     fn setup_env() -> (Arc<Environment>, tempfile::TempDir) {
         let dir = tempdir().unwrap();
-        let env = EnvironmentBuilder::new()
+        let env = Environment::new()
             .set_max_dbs(1)
             .open(dir.path())
             .unwrap();

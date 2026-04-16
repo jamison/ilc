@@ -64,11 +64,10 @@ impl FastPathProtocol {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{AgentID, ECUTransfer, ObjectRef, ValidatorID, ValidatorKey, ValidatorSig};
-    use crate::balance_store::{AttributionBatch, EpochSeq};
+    use crate::types::{AgentID, ECUTransfer, ObjectRef, ValidatorID, ValidatorKey, ValidatorSig, AttributionBatch, EpochSeq};
     use blst::min_pk::SecretKey;
     use tempfile::tempdir;
-    use lmdb_rkv::EnvironmentBuilder;
+    use lmdb_rkv::Environment;
 
     fn generate_keypair(seed: u8) -> (SecretKey, ValidatorKey) {
         let ikm = [seed; 32];
@@ -79,7 +78,7 @@ mod tests {
 
     fn setup_env() -> (Arc<lmdb_rkv::Environment>, tempfile::TempDir) {
         let dir = tempdir().unwrap();
-        let env = EnvironmentBuilder::new()
+        let env = Environment::new()
             .set_max_dbs(1)
             .open(dir.path())
             .unwrap();
