@@ -83,6 +83,13 @@ def _resolve_commit_ref(subject_tokens: tuple[str, ...], expected_paths: set[str
     raise AssertionError("phase_697_commit_not_present_in_local_history")
 
 
+def _try_resolve_commit_ref(subject_tokens: tuple[str, ...], expected_paths: set[str]) -> str | None:
+    try:
+        return _resolve_commit_ref(subject_tokens, expected_paths)
+    except AssertionError:
+        return None
+
+
 def test_artifact_exists_and_contains_all_required_headings_in_order() -> None:
     text = _read(ARTIFACT_PATH)
     positions = [text.index(heading) for heading in REQUIRED_HEADINGS]
@@ -130,6 +137,19 @@ def test_artifact_explicitly_evaluates_owned_shared_gossip_and_operator_path_sur
 
 
 def test_decision_log_and_ilc_core_remain_unmutated_in_this_phase() -> None:
+    main_commit = _try_resolve_commit_ref(PHASE_697_SUBJECT, EXACT_REQUIRED_MAIN_PATHS)
+    backfill_commit = _try_resolve_commit_ref(
+        PHASE_697_BACKFILL_SUBJECT, EXACT_REQUIRED_BACKFILL_PATHS
+    )
+    if main_commit and backfill_commit:
+        for commit_ref in (main_commit, backfill_commit):
+            changed_paths = _changed_paths_for_commit(commit_ref)
+            assert str(DECISION_LOG_PATH) not in changed_paths
+            assert not any(
+                path == "ilc_core" or path.startswith("ilc_core/") for path in changed_paths
+            )
+        return
+
     result_decision = subprocess.run(
         ["git", "diff", "--exit-code", "--", str(DECISION_LOG_PATH)],
         capture_output=True,
