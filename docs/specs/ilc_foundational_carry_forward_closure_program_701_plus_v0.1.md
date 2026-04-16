@@ -234,29 +234,30 @@ Full technical context is in §6 of the M-series planning doc:
 
 | Token | Gap | Completion mode | Routing | Must resolve before |
 |---|---|---|---|---|
-| `sec_001_agent_sender_auth_cdl_063_required_before_m009` | `ECUTransfer` carries no sender sig — any validator can forge a transfer | `constitutional_lock` via CDL-063 | CDL-063 opening; prelock requires CDL-042 interaction analysis | M-009 testnet |
+| `sec_001_agent_sender_auth_cdl_066_required_before_m009` | `ECUTransfer` carries no sender sig — any validator can forge a transfer | `constitutional_lock` via CDL-066 | CDL-066 opening; prelock requires CDL-042 interaction analysis | M-009 testnet |
 | `sec_002_chain_id_dst_required_before_m009_testnet` | DST `b"ILC_FAST_PATH_V1"` has no network discriminator — testnet sigs valid on mainnet | `spec_or_contract_lock` via M-008 + ADR-0011 amendment | M-008 scope; ADR-0011 amendment dated 2026-04-16 | M-009 testnet |
 | `sec_003_gossip_sync_recovery_owned_in_m008` | No offline validator cert recovery — returning validator gets locked out on stale ObjectRef | `spec_or_contract_lock` via M-008 | M-008 `MissingCertSync` message type | M-009 testnet |
 | `sec_004_epoch_validator_binding_owned_by_cdl_017_activation` | No historical ValidatorSet binding on TransferCertificate — ejected validator sigs may pass after ejection | `constitutional_lock` scope via CDL-017 activation | CDL-017 activation phase; M-019 handoff must name it explicitly | M-019 handoff |
 | `sec_005_lmdb_map_size_owned_by_m009_node_config` | LMDB environment opened with no `set_map_size()` — defaults to ~10 MB on macOS | `spec_or_contract_lock` via node runner config | M-009 node config parameter | M-009 testnet |
 
-**SEC-001 requires CDL-063.** This is the highest-severity item. Until CDL-063
+**SEC-001 requires CDL-066.** This is the highest-severity item. Until CDL-066
 is ratified and implemented, transfers on the ILC Mysticeti fast path can be
 forged by any party who can construct a structurally valid `ECUTransfer`. The
-Codex constitutional lane must open CDL-063 before M-009 is approved.
+Codex constitutional lane must open CDL-066 before M-009 is approved.
 
 Note: CDL-062 is already open as the sovereign substrate research CDL (opened
 in window 687-692, Mysticeti elevated to Tier 1 primary in Phase 693 addendum).
-Agent sender authorization is CDL-063 — the next CDL in sequence.
+Agent sender authorization is CDL-066. Earlier planning drafts named `CDL-063`,
+but `CDL-063`, `CDL-064`, and `CDL-065` are already occupied in the decision log.
 
-CDL-063 recommended opening stub: "Agent authorization envelope for ECU
-fast-path transfers: specification of the `AgentSig` field, signing algorithm,
-DST, and mandatory verification sequence in `FastPathProtocol::execute_certificate`
+CDL-066 recommended opening stub: "Agent authorization envelope for ECU
+fast-path transfers: authorization-surface opening, CDL-042 compatibility,
+and mandatory verification sequence in `FastPathProtocol::execute_certificate`
 before any quorum threshold check."
 
-CDL-063 should NOT be silently blocked by CDL-017 timeline. The two CDLs
+CDL-066 should NOT be silently blocked by CDL-017 timeline. The two CDLs
 address different things: CDL-017 governs who is *in the validator set*;
-CDL-063 governs who is *authorized to initiate a transfer*.
+CDL-066 governs who is *authorized to initiate a transfer*.
 
 #### Completion rule for this block
 
