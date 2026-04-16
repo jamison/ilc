@@ -1,0 +1,17 @@
+[package]
+name = "ilc_consensus"
+version = "0.1.0"
+edition = "2021"
+description = "ILC Sovereign Mysticeti consensus substrate"
+license = "MIT"
+
+[dependencies]
+blst = "0.3.11"
+lmdb-rkv = "0.14"      # Existing ILC LMDB pattern
+quinn = "0.10"         # QUIC transport
+tokio = { version = "1.36", features = ["full"] }
+prost = "0.12"
+tonic = "0.11"
+serde = { version = "1.0", features = ["derive"] }
+
+# mysticeti-core will be added via path once extraction payload is prepared
