@@ -7,6 +7,7 @@ Mysticeti selected as Tier 1 primary for Option B. CDL-062 open (sovereign
 substrate research CDL, Window 687+). Active window: 693-700. Two parallel
 tracks: Track A (Codex, this doc) + Track B (Gemini M-series).
 **Reference:** `docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md` §7
+**Document schema:** `docs/specs/README.md#sequence-locks-phase-window-guidance-and-phase-artifacts`
 
 ---
 
@@ -15,12 +16,12 @@ tracks: Track A (Codex, this doc) + Track B (Gemini M-series).
 Window 694-700 is the constitutional closure and governance-preparation
 half of the 693-700 window. Track A (Codex) is responsible for:
 
-1. **CDL-063 opening** — agent sender authorization envelope; hard gate for
+1. **CDL-066 opening** — agent sender authorization envelope; hard gate for
    Track B M-009 testnet approval (see §3 inter-lane dependency note).
 2. **CDL-017 opening** — validator governance framework; must open before any
    lane authorizing first non-Genesis validator deployment.
 3. **Settlement-state CDL** — Phase 687 settlement-state enumeration →
-   ratified constitutional law.
+   constitutional opening lane.
 4. **Row-5 mechanism proof** over Mysticeti concrete substrate model.
 5. **Row-7 TLC model check** — `ilc_dag_censorship_bounds.tla` must pass
    before row-7 can close.
@@ -31,7 +32,7 @@ half of the 693-700 window. Track A (Codex) is responsible for:
 Track A does NOT:
 - select the final Option-B production configuration,
 - ratify CDL-017 (opening only; ratification is a later window),
-- ratify CDL-063 (opening only; ratification gates on M-series progress),
+- ratify CDL-066 (opening only; ratification gates on M-series progress),
 - make any public-launch or token-issuance claim.
 
 ---
@@ -41,7 +42,7 @@ Track A does NOT:
 Track B (Gemini M-series) has one hard constitutional dependency on Track A
 within this window:
 
-**CDL-063 must be opened by Track A before M-009 testnet is approved.**
+**CDL-066 must be opened by Track A before M-009 testnet is approved.**
 
 SEC-001 audit finding (2026-04-16, `486b6896`): `ECUTransfer` carries no
 sender signature. Any party can forge a transfer against any AgentID's
@@ -49,13 +50,15 @@ balance; honest validators cannot detect the forgery. This is a critical
 pre-testnet security gap that requires a CDL vehicle to authorize the fix.
 
 - CDL-062 is already open (sovereign substrate research CDL, Window 687+).
-- CDL-063 is the next available number.
-- Tracking token: `sec_001_agent_sender_auth_cdl_063_required_before_m009`
+- Earlier planning text named `CDL-063`, but `CDL-063`, `CDL-064`, and
+  `CDL-065` are already occupied in the decision log. The SEC-001 lane is
+  therefore `CDL-066`.
+- Tracking token: `sec_001_agent_sender_auth_cdl_066_required_before_m009`
 - Full SEC-001 entry: `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md` §6
 - TODO.txt block: `[TODO – M-Series Security Deferred Items (HARD GATES before M-009 testnet)]`
 - Hard gate token: `m009_blocked_until_sec_001_sec_002_sec_003_resolved`
 
-**Sequencing implication:** CDL-063 opening should occur at Phase 694 or
+**Sequencing implication:** CDL-066 opening should occur at Phase 694 or
 695 — early in the window — so Track B is not blocked if M-series moves
 quickly through M-008 and approaches M-009 approval.
 
@@ -68,7 +71,7 @@ All other Track A/Track B hard blockers: none within window 693-700.
 
 ### 3.1 Obligated in this window (Track A)
 
-- CDL-063 opening stub (agent sender authorization envelope, SEC-001 vehicle)
+- CDL-066 opening stub (agent sender authorization envelope, SEC-001 vehicle)
 - CDL-017 opening stub (validator governance framework)
 - Settlement-state CDL opening (enumeration → law)
 - Row-5 mechanism proof over Mysticeti concrete model
@@ -79,7 +82,7 @@ All other Track A/Track B hard blockers: none within window 693-700.
 
 ### 3.2 Explicitly deferred
 
-- CDL-063 ratification (M-series implementation progress required first)
+- CDL-066 ratification (M-series implementation progress required first)
 - CDL-017 ratification (validator set dynamics; activation planning is 701+)
 - Settlement-state CDL ratification (may extend past this window)
 - Final Option-B substrate winner selection
@@ -108,7 +111,7 @@ Constitutional anchors that govern this window:
 
 | Order | Phase | Topic | Character | Sensitivity |
 |---|---:|---|---|---|
-| 1 | 694 | Sequence lock + CDL-063 opening stub (SEC-001 vehicle) | Gate / Planning | **SENSITIVE** |
+| 1 | 694 | Sequence lock + CDL-066 opening stub (SEC-001 vehicle) | Gate / Planning | **SENSITIVE** |
 | 2 | 695 | CDL-017 opening stub (validator governance framework) | Gate / Constitutional | **SENSITIVE** |
 | 3 | 696 | Settlement-state CDL opening (enumeration → law) | Constitutional | **SENSITIVE** |
 | 4 | 697 | Row-5 mechanism proof over Mysticeti substrate model | Research / Proof | **SENSITIVE** |
@@ -125,28 +128,28 @@ scheduled here. Track B scope is documented in
 
 ## 6. Scope notes for candidate phases
 
-### Phase 694 — sequence lock + CDL-063 opening stub
+### Phase 694 — sequence lock + CDL-066 opening stub
 
 Deliverables:
 - `docs/specs/ilc_phase_694_700_sequence_lock_v0.1.md`
-- `docs/specs/ilc_cdl_063_opening_stub_694_v0.1.md`
+- `docs/specs/ilc_cdl_066_agent_sender_authorization_opening_stub_694_v0.1.md`
 
-Required content for CDL-063 stub:
+Required content for CDL-066 stub:
 - Cite SEC-001 audit finding (`486b6896`, 2026-04-16) as the opening rationale
 - Scope: agent sender authorization envelope for ECU fast-path transfers
 - Note interaction with CDL-042 (globally flat namespace, key-derived agent_id)
   — sender verification must be consistent with CDL-042 key derivation model
-- Bounded scope: CDL-063 opens the authorization lane only; it does not
+- Bounded scope: CDL-066 opens the authorization lane only; it does not
   prescribe the specific signature scheme or wire format (those are Track B
-  M-series implementation decisions under CDL-063 ratification scope)
-- Non-goal: CDL-063 does not reopen CDL-039 transport invariants
-- State gate token: `sec_001_agent_sender_auth_cdl_063_required_before_m009`
-- State that M-009 testnet approval is blocked until CDL-063 opens and
+  M-series implementation decisions under CDL-066 ratification scope)
+- Non-goal: CDL-066 does not reopen CDL-039 transport invariants
+- State gate token: `sec_001_agent_sender_auth_cdl_066_required_before_m009`
+- State that M-009 testnet approval is blocked until CDL-066 opens and
   Track B wires sender verification into ECUTransfer
 
 Required content for sequence lock:
 - Inherit the 692 handoff and Phase 693 addendum as the baseline
-- Name the inter-lane dependency (CDL-063 → M-009 gate)
+- Name the inter-lane dependency (CDL-066 → M-009 gate)
 - Lock the Track A deliverable list for 694-700
 - State Track B and Track C continue in parallel under their own sequence locks
 
@@ -179,6 +182,8 @@ Required content:
 - Elevate Phase 687 settlement-state enumeration
   (`docs/specs/ilc_settlement_state_enumeration_and_submission_model_687_v0.1.md`)
   from planning artifact to constitutional CDL vehicle
+- Assign the settlement-state lane to `CDL-067` to avoid leaving the
+  constitutional vehicle unnumbered once the opening occurs
 - Define the settlement-state CDL scope: what counts as durable ILC protocol
   state for Option B substrate finalization purposes
 - Explicitly inherit the upstream/downstream legitimacy boundary from row 6
@@ -237,7 +242,7 @@ Deliverables:
 - Closure gate artifact: `docs/specs/ilc_window_693_700_closure_gate_700_v0.1.md`
 
 Required content (closure gate):
-- CDL-063 opened and gate token confirmed (`sec_001_agent_sender_auth_cdl_063_required_before_m009`)
+- CDL-066 opened and gate token confirmed (`sec_001_agent_sender_auth_cdl_066_required_before_m009`)
 - CDL-017 opened
 - Settlement-state CDL opened
 - Row-5 disposition (proof published; new status stated explicitly)
@@ -253,7 +258,7 @@ Required content (closure gate):
 
 The phase work is downstream of these human decisions:
 
-1. Should CDL-063 open at Phase 694 as Track A work, or should opening
+1. Should CDL-066 open at Phase 694 as Track A work, or should opening
    be delegated to Track B with Track A only registering the gate requirement?
 2. How tightly should CDL-017 scope bind to the M-series `unimplemented!`
    hooks vs. the broader validator governance constitutional design?
@@ -274,7 +279,7 @@ This artifact is a required input to the Phase 694 sequence lock. The Phase
 694 sequence lock must cite it and may not silently drop any of the obligated
 deliverables or inter-lane dependency requirements defined above.
 
-The inter-lane CDL-063 dependency (§2) is load-bearing and must appear
+The inter-lane CDL-066 dependency (§2) is load-bearing and must appear
 explicitly in the Phase 694 sequence lock even if the rest of this grouping
 is modified during the session.
 
@@ -283,7 +288,7 @@ is modified during the session.
 ## 9. What this candidate grouping does not claim
 
 This artifact does not claim:
-- CDL-063 is already open
+- CDL-066 is already open
 - CDL-017 is already open
 - row-5 can be skipped now that Mysticeti is selected
 - row-7 TLC evidence already exists
