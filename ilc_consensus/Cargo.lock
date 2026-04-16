@@ -445,6 +445,7 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "blst",
+ "getrandom 0.2.17",
  "lmdb-rkv",
  "prost",
  "quinn",
