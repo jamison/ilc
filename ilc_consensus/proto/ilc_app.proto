@@ -1,0 +1,26 @@
+syntax = "proto3";
+package ilc_app;
+
+// The Read-Only interface exposing DAG-Settled and Owned-Object state to Python. 
+// WRITES ARE EXPLICITLY BANNED. The python epistemic engine may NOT mutate ECU balances or consensus topologies.
+service ILCAppReadService {
+    rpc GetBalance (GetBalanceRequest) returns (GetBalanceResponse) {}
+    rpc GetEpoch (GetEpochRequest) returns (GetEpochResponse) {}
+}
+
+message GetBalanceRequest {
+    bytes agent_id = 1; // 32 bytes AgentID lookup target
+}
+
+message GetBalanceResponse {
+    uint64 amount_micro_ecu = 1;
+    uint64 version = 2; // Required explicitly for the Epistemic layer to construct transfer dependencies
+    uint64 epoch = 3;
+}
+
+message GetEpochRequest {
+}
+
+message GetEpochResponse {
+    uint64 current_epoch = 1;
+}
