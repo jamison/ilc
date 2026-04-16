@@ -194,7 +194,14 @@ impl BalanceStore {
 mod tests {
     use super::*;
     use tempfile::tempdir;
-    use crate::types::{ECUTransfer, ObjectRef};
+    use crate::types::{ECUTransfer, ObjectRef, AgentSig};
+    use blst::min_pk::SecretKey;
+
+    fn dummy_agent_sig() -> AgentSig {
+        let ikm = [42u8; 32];
+        let sk = SecretKey::key_gen(&ikm, &[]).unwrap();
+        AgentSig(sk.sign(b"dummy", crate::types::AGENT_TRANSFER_DST, &[]))
+    }
 
     fn setup_env() -> (Arc<Environment>, tempfile::TempDir) {
         let dir = tempdir().unwrap();
@@ -210,8 +217,8 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = BalanceStore::new(env).unwrap();
 
-        let agent1 = AgentID([1; 32]);
-        let agent2 = AgentID([2; 32]);
+        let agent1 = AgentID([1; 48]);
+        let agent2 = AgentID([2; 48]);
 
         // Inject initial attribution
         let batch = AttributionBatch {
@@ -226,6 +233,7 @@ mod tests {
                 object_ref: ObjectRef { agent: agent1, version: 0 },
                 to: agent2,
                 amount_micro_ecu: 400_000,
+                sender_sig: dummy_agent_sig(),
             },
             sigs: Vec::new(),
         };
@@ -246,6 +254,7 @@ mod tests {
                 object_ref: ObjectRef { agent: agent1, version: 0 }, // Using outdated version 0
                 to: agent2,
                 amount_micro_ecu: 100_000,
+                sender_sig: dummy_agent_sig(),
             },
             sigs: Vec::new(),
         };

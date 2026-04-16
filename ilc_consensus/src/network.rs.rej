@@ -1,0 +1,5 @@
+@@ -303,2 +303,3 @@
+             if let Some(incoming) = server_node.endpoint.accept().await {
+-                let _ = incoming.await;
++                let res = incoming.await;
++                println!("SERVER INCOMING RESULT: {:?}", res);

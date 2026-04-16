@@ -16,6 +16,20 @@ impl FastPathProtocol {
     /// Primary Byzantine Consistent Broadcast gateway. 
     /// Verifies quorum boundaries directly against BLS cryptographic parameters.
     pub fn execute_certificate(&self, cert: TransferCertificate) -> Result<BalanceChange, ILCConsensusError> {
+        // SEC-001: Verify sender authorization FIRST, before quorum check
+        let sender_msg = bincode::serialize(&(&cert.transfer.object_ref, &cert.transfer.to, &cert.transfer.amount_micro_ecu))
+            .map_err(|e| ILCConsensusError::Other(format!("Sender msg serialization failed: {}", e)))?;
+
+        let sender_pubkey = blst::min_pk::PublicKey::from_bytes(&cert.transfer.object_ref.agent.0)
+            .map_err(|_| ILCConsensusError::InvalidSignature)?;
+
+        let verify_result = cert.transfer.sender_sig.0.verify(
+            true, &sender_msg, crate::types::AGENT_TRANSFER_DST, &[], &sender_pubkey, true
+        );
+        if verify_result != blst::BLST_ERROR::BLST_SUCCESS {
+            return Err(ILCConsensusError::InvalidSignature);
+        }
+
         let required_votes = 2 * self.validator_set.f + 1;
         
         // 1. O(1) Quorum enforcement
@@ -63,8 +77,15 @@ impl FastPathProtocol {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{AgentID, ECUTransfer, ObjectRef, ValidatorID, ValidatorKey, ValidatorSig, AttributionBatch, EpochSeq};
+    use crate::types::{AgentID, ECUTransfer, ObjectRef, ValidatorID, ValidatorKey, ValidatorSig, AttributionBatch, EpochSeq, AgentSig};
     use blst::min_pk::SecretKey;
+
+    fn generate_agent_keypair(seed: u8) -> (SecretKey, AgentID) {
+        let ikm = [seed; 32];
+        let sk = SecretKey::key_gen(&ikm, &[]).unwrap();
+        let pk = sk.sk_to_pk();
+        (sk, AgentID(pk.to_bytes()))
+    }
     use tempfile::tempdir;
     use lmdb_rkv::Environment;
 
@@ -89,8 +110,8 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(BalanceStore::new(env).unwrap());
 
-        let agent1 = AgentID([1; 32]);
-        let agent2 = AgentID([2; 32]);
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
 
         store.apply_attribution(AttributionBatch {
             epoch: EpochSeq(1),
@@ -113,11 +134,14 @@ mod tests {
         let val_set = Arc::new(ValidatorSet::new(validators, 1).unwrap());
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
-        let transfer = ECUTransfer {
+        let mut transfer = ECUTransfer {
             object_ref: ObjectRef { agent: agent1, version: 0 },
             to: agent2,
             amount_micro_ecu: 100_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
+        let sender_msg = bincode::serialize(&(&transfer.object_ref, &transfer.to, &transfer.amount_micro_ecu)).unwrap();
+        transfer.sender_sig = AgentSig(sk_agent1.sign(&sender_msg, crate::types::AGENT_TRANSFER_DST, &[]));
 
         let msg = bincode::serialize(&transfer).unwrap();
         let dst = crate::validator::validator_dst("testnet");
@@ -174,9 +198,9 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(BalanceStore::new(env).unwrap());
 
-        let agent1 = AgentID([1; 32]);
-        let agent2 = AgentID([2; 32]);
-        let agent3 = AgentID([3; 32]);
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
+        let (_, agent3) = generate_agent_keypair(33);
 
         store.apply_attribution(AttributionBatch {
             epoch: EpochSeq(1),
@@ -200,17 +224,23 @@ mod tests {
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         // Two conflicting transfers originating from the same object version
-        let transfer_alpha = ECUTransfer {
+        let mut transfer_alpha = ECUTransfer {
             object_ref: ObjectRef { agent: agent1, version: 0 },
             to: agent2,
             amount_micro_ecu: 400_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
+        let alpha_sender_msg = bincode::serialize(&(&transfer_alpha.object_ref, &transfer_alpha.to, &transfer_alpha.amount_micro_ecu)).unwrap();
+        transfer_alpha.sender_sig = AgentSig(sk_agent1.sign(&alpha_sender_msg, crate::types::AGENT_TRANSFER_DST, &[]));
 
-        let transfer_beta = ECUTransfer {
+        let mut transfer_beta = ECUTransfer {
             object_ref: ObjectRef { agent: agent1, version: 0 },
             to: agent3,
             amount_micro_ecu: 400_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
+        let beta_sender_msg = bincode::serialize(&(&transfer_beta.object_ref, &transfer_beta.to, &transfer_beta.amount_micro_ecu)).unwrap();
+        transfer_beta.sender_sig = AgentSig(sk_agent1.sign(&beta_sender_msg, crate::types::AGENT_TRANSFER_DST, &[]));
 
         let msg_alpha = bincode::serialize(&transfer_alpha).unwrap();
         let msg_beta = bincode::serialize(&transfer_beta).unwrap();
@@ -258,5 +288,57 @@ mod tests {
             fast_path.execute_certificate(cert_beta).unwrap_err(), 
             ILCConsensusError::ConflictingTransfer
         );
+    }
+
+    #[test]
+    fn test_unsigned_transfer_rejected() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(BalanceStore::new(env).unwrap());
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
+
+        let (_, vk1) = generate_keypair(1);
+        let val_set = Arc::new(ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap());
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
+
+        let mut transfer = ECUTransfer {
+            object_ref: ObjectRef { agent: agent1, version: 0 },
+            to: agent2,
+            amount_micro_ecu: 100_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
+        };
+        let bad_msg = b"tampered";
+        transfer.sender_sig = AgentSig(sk_agent1.sign(bad_msg, crate::types::AGENT_TRANSFER_DST, &[]));
+
+        let cert = TransferCertificate { transfer, sigs: vec![] };
+        assert_eq!(fast_path.execute_certificate(cert).unwrap_err(), ILCConsensusError::InvalidSignature);
+    }
+
+    #[test]
+    fn test_sender_sig_verified_before_quorum() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(BalanceStore::new(env).unwrap());
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
+
+        let (sk_val1, vk1) = generate_keypair(1);
+        let val_set = Arc::new(ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap());
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
+
+        let mut transfer = ECUTransfer {
+            object_ref: ObjectRef { agent: agent1, version: 0 },
+            to: agent2,
+            amount_micro_ecu: 100_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
+        };
+        let bad_msg = b"tampered";
+        transfer.sender_sig = AgentSig(sk_agent1.sign(bad_msg, crate::types::AGENT_TRANSFER_DST, &[]));
+
+        let msg = bincode::serialize(&transfer).unwrap();
+        let dst = crate::validator::validator_dst("testnet");
+        let sig1 = ValidatorSig(sk_val1.sign(&msg, &dst, &[]));
+
+        let cert = TransferCertificate { transfer, sigs: vec![(ValidatorID(1), sig1)] };
+        assert_eq!(fast_path.execute_certificate(cert).unwrap_err(), ILCConsensusError::InvalidSignature);
     }
 }

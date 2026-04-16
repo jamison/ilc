@@ -3,8 +3,60 @@ use serde::{Deserialize, Serialize};
 
 /// AgentID represents a unique ILC Agent inside the system. 
 /// Derived securely via CDL-042 key mechanics.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-pub struct AgentID(pub [u8; 32]);
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct AgentID(pub [u8; 48]);
+
+impl serde::Serialize for AgentID {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_bytes(&self.0)
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for AgentID {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        if bytes.len() != 48 {
+            return Err(serde::de::Error::custom("AgentID must be exactly 48 bytes"));
+        }
+        let mut arr = [0u8; 48];
+        arr.copy_from_slice(&bytes);
+        Ok(AgentID(arr))
+    }
+}
+
+pub const AGENT_TRANSFER_DST: &[u8] = b"ILC_AGENT_TRANSFER_V1";
+
+pub struct AgentSecretKey(pub blst::min_pk::SecretKey);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AgentSig(pub Signature);
+
+impl serde::Serialize for AgentSig {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_bytes(&self.0.to_bytes())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for AgentSig {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        let sig = Signature::from_bytes(&bytes)
+            .map_err(|e| serde::de::Error::custom(format!("blst agent signature parse fail: {:?}", e)))?;
+        Ok(AgentSig(sig))
+    }
+}
 
 /// ObjectRef anchors an owned-object uniquely within the Mysticeti fast-path.
 /// This fulfills the Sui `ObjectID`/`ObjectRef` semantic replacement gap (M-001 finding).
@@ -39,14 +91,36 @@ pub struct ECUTransfer {
     pub object_ref: ObjectRef,   // owned object mapping directly to sender agent and monotonic version
     pub to: AgentID,
     pub amount_micro_ecu: u64,
+    pub sender_sig: AgentSig,
 }
 
 /// Validator Sig wrapping the direct `blst` primitive.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ValidatorSig(pub Signature);
 
+impl serde::Serialize for ValidatorSig {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_bytes(&self.0.to_bytes())
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for ValidatorSig {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        let sig = Signature::from_bytes(&bytes)
+            .map_err(|e| serde::de::Error::custom(format!("blst signature parse fail: {:?}", e)))?;
+        Ok(ValidatorSig(sig))
+    }
+}
+
 /// Fast-Path Certified transaction object containing Byzantine Consistent Broadcast acknowledgment signatures.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransferCertificate {
     pub transfer: ECUTransfer,
     pub sigs: Vec<(ValidatorID, ValidatorSig)>, // Pair Validator routing to signature for discrete threshold checking
