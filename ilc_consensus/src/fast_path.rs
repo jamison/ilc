@@ -1,17 +1,16 @@
 use crate::types::{TransferCertificate, ILCConsensusError, ValidatorSet};
 use crate::balance_store::{BalanceStore, BalanceChange};
-use crate::validator::VALIDATOR_DST;
 use std::sync::Arc;
 use std::collections::HashSet;
-
 pub struct FastPathProtocol {
     validator_set: Arc<ValidatorSet>,
     balance_store: Arc<BalanceStore>,
+    network_id: String,
 }
 
 impl FastPathProtocol {
-    pub fn new(validator_set: Arc<ValidatorSet>, balance_store: Arc<BalanceStore>) -> Self {
-        Self { validator_set, balance_store }
+    pub fn new(validator_set: Arc<ValidatorSet>, balance_store: Arc<BalanceStore>, network_id: String) -> Self {
+        Self { validator_set, balance_store, network_id }
     }
 
     /// Primary Byzantine Consistent Broadcast gateway. 
@@ -28,6 +27,8 @@ impl FastPathProtocol {
 
         let msg = bincode::serialize(&cert.transfer)
             .map_err(|e| ILCConsensusError::Other(format!("Transfer serialization failed: {}", e)))?;
+        // Domain separation tag dynamically parameterizing network authentication structures (SEC-002)
+        let dst = crate::validator::validator_dst(&self.network_id); 
             
         // 2. Cryptographic constraint loop
         for (val_id, sig) in &cert.sigs {
@@ -48,7 +49,7 @@ impl FastPathProtocol {
             // aug = augmentation (none here)
             // pk = PublicKey
             // true = pairing optimization flag
-            let err = sig.0.verify(true, &msg, VALIDATOR_DST, &[], &pub_key.0, true);
+            let err = sig.0.verify(true, &msg, &dst, &[], &pub_key.0, true);
             if err != blst::BLST_ERROR::BLST_SUCCESS {
                 return Err(ILCConsensusError::InvalidSignature);
             }
@@ -110,7 +111,7 @@ mod tests {
         ];
 
         let val_set = Arc::new(ValidatorSet::new(validators, 1).unwrap());
-        let fast_path = FastPathProtocol::new(val_set, store);
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let transfer = ECUTransfer {
             object_ref: ObjectRef { agent: agent1, version: 0 },
@@ -119,11 +120,11 @@ mod tests {
         };
 
         let msg = bincode::serialize(&transfer).unwrap();
-        let dst = crate::validator::VALIDATOR_DST;
+        let dst = crate::validator::validator_dst("testnet");
 
-        let sig1 = ValidatorSig(sk1.sign(&msg, dst, &[]));
-        let sig2 = ValidatorSig(sk2.sign(&msg, dst, &[]));
-        let sig3 = ValidatorSig(sk3.sign(&msg, dst, &[]));
+        let sig1 = ValidatorSig(sk1.sign(&msg, &dst, &[]));
+        let sig2 = ValidatorSig(sk2.sign(&msg, &dst, &[]));
+        let sig3 = ValidatorSig(sk3.sign(&msg, &dst, &[]));
 
         // b. cert with fewer than 2f+1 sigs
         let cert_insufficient = TransferCertificate {
@@ -145,7 +146,7 @@ mod tests {
 
         // d. cert with invalid signature
         let invalid_msg = b"tampered_payload";
-        let invalid_sig = ValidatorSig(sk3.sign(invalid_msg, dst, &[]));
+        let invalid_sig = ValidatorSig(sk3.sign(invalid_msg, &dst, &[]));
         let cert_invalid = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
@@ -196,7 +197,7 @@ mod tests {
         ];
 
         let val_set = Arc::new(ValidatorSet::new(validators, 1).unwrap());
-        let fast_path = FastPathProtocol::new(val_set, store);
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         // Two conflicting transfers originating from the same object version
         let transfer_alpha = ECUTransfer {
@@ -213,18 +214,18 @@ mod tests {
 
         let msg_alpha = bincode::serialize(&transfer_alpha).unwrap();
         let msg_beta = bincode::serialize(&transfer_beta).unwrap();
-        let dst = crate::validator::VALIDATOR_DST;
+        let dst = crate::validator::validator_dst("testnet");
 
         // Validator 1, 2 see Alpha
-        let sig1_alpha = ValidatorSig(sk1.sign(&msg_alpha, dst, &[]));
-        let sig2_alpha = ValidatorSig(sk2.sign(&msg_alpha, dst, &[]));
+        let sig1_alpha = ValidatorSig(sk1.sign(&msg_alpha, &dst, &[]));
+        let sig2_alpha = ValidatorSig(sk2.sign(&msg_alpha, &dst, &[]));
 
         // Validator 3 sees Beta
-        let sig3_beta = ValidatorSig(sk3.sign(&msg_beta, dst, &[]));
+        let sig3_beta = ValidatorSig(sk3.sign(&msg_beta, &dst, &[]));
 
         // Validator 4 (Byzantine) equivocates and signs both!
-        let sig4_alpha = ValidatorSig(sk4.sign(&msg_alpha, dst, &[]));
-        let sig4_beta = ValidatorSig(sk4.sign(&msg_beta, dst, &[]));
+        let sig4_alpha = ValidatorSig(sk4.sign(&msg_alpha, &dst, &[]));
+        let sig4_beta = ValidatorSig(sk4.sign(&msg_beta, &dst, &[]));
 
         // Alpha forms a valid cert (V1, V2, V4)
         let cert_alpha = TransferCertificate {
@@ -239,7 +240,7 @@ mod tests {
         // For Beta to form a cert across the threshold (which theoretically shouldn't happen 
         // due to honest-node locking), we simulate a worst-case where another node maliciously 
         // or accidentally signs the conflicting transfer to verify our safety bounds.
-        let sig2_beta = ValidatorSig(sk2.sign(&msg_beta, dst, &[]));
+        let sig2_beta = ValidatorSig(sk2.sign(&msg_beta, &dst, &[]));
         let cert_beta = TransferCertificate {
             transfer: transfer_beta.clone(),
             sigs: vec![

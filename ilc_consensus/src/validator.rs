@@ -1,8 +1,10 @@
 use crate::types::{ValidatorID, ValidatorKey, ValidatorSet, ValidatorSig, ILCConsensusError};
-use blst::min_pk::SecretKey;
+use blst::min_pk::{SecretKey, PublicKey, Signature};
 use getrandom::getrandom;
 
-pub const VALIDATOR_DST: &[u8] = b"ILC_FAST_PATH_V1";
+pub fn validator_dst(network_id: &str) -> Vec<u8> {
+    format!("ILC_FAST_PATH_V1:{}", network_id).into_bytes()
+}
 
 impl ValidatorSet {
     /// Applies strict centralization BFT detection limiting boundaries to guarantees of Safety under byzantine assumptions.
@@ -41,12 +43,14 @@ pub fn generate_validator_key() -> Result<(SecretKey, ValidatorKey), ILCConsensu
     Ok((sk, vk))
 }
 
-pub fn sign_message(sk: &SecretKey, msg: &[u8]) -> ValidatorSig {
-    ValidatorSig(sk.sign(msg, VALIDATOR_DST, &[]))
+pub fn sign_message(sk: &SecretKey, msg: &[u8], network_id: &str) -> ValidatorSig {
+    let dst = validator_dst(network_id);
+    ValidatorSig(sk.sign(msg, &dst, &[]))
 }
 
-pub fn verify_signature(vk: &ValidatorKey, msg: &[u8], sig: &ValidatorSig) -> Result<(), ILCConsensusError> {
-    let valid = sig.0.verify(true, msg, VALIDATOR_DST, &[], &vk.0, true);
+pub fn verify_signature(vk: &ValidatorKey, msg: &[u8], sig: &ValidatorSig, network_id: &str) -> Result<(), ILCConsensusError> {
+    let dst = validator_dst(network_id);
+    let valid = sig.0.verify(true, msg, &dst, &[], &vk.0, true);
     if valid == blst::BLST_ERROR::BLST_SUCCESS {
         Ok(())
     } else {
@@ -62,24 +66,35 @@ mod tests {
     fn test_keygen_produces_valid_keypair() {
         let (sk, vk) = generate_validator_key().unwrap();
         let msg = b"ilc_m007_test_message_bound";
-        let sig = sign_message(&sk, msg);
-        assert!(verify_signature(&vk, msg, &sig).is_ok());
+        let sig = sign_message(&sk, msg, "testnet_abc");
+        assert!(verify_signature(&vk, msg, &sig, "testnet_abc").is_ok());
+    }
+
+    #[test]
+    fn test_cross_network_sig_rejected() {
+        let (sk, vk) = generate_validator_key().unwrap();
+        let msg = b"ilc_m007_test_message_bound";
+        
+        let sig = sign_message(&sk, msg, "testnet_a");
+        // Verify via incorrect network identifier enforcing SEC-002 constraints dynamically
+        let result = verify_signature(&vk, msg, &sig, "testnet_b");
+        assert_eq!(result, Err(ILCConsensusError::InvalidSignature));
     }
 
     #[test]
     fn test_invalid_signature_rejected() {
         let (sk, vk) = generate_validator_key().unwrap();
         let msg = b"ilc_m007_test_message_bound";
-        let sig_valid = sign_message(&sk, msg);
+        let sig_valid = sign_message(&sk, msg, "testnet_abc");
 
         // Alter message payload maliciously asserting verify_signature actively tracks verification failures
         let tampered_msg = b"ilc_tampered_malicious_boundary";
-        let result = verify_signature(&vk, tampered_msg, &sig_valid);
+        let result = verify_signature(&vk, tampered_msg, &sig_valid, "testnet_abc");
         assert_eq!(result, Err(ILCConsensusError::InvalidSignature));
         
         // Assert spoofing a valid signature against a different honest key natively catches cross-key rejections
         let (_, vk_spoof) = generate_validator_key().unwrap();
-        assert_eq!(verify_signature(&vk_spoof, msg, &sig_valid), Err(ILCConsensusError::InvalidSignature));
+        assert_eq!(verify_signature(&vk_spoof, msg, &sig_valid, "testnet_abc"), Err(ILCConsensusError::InvalidSignature));
     }
 
     #[test]
