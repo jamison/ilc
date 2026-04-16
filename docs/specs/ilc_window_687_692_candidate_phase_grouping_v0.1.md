@@ -165,6 +165,9 @@ Required content:
 - state explicitly that if the settlement-state enumeration is not published in
   Phase 687, Phase 690 and Phase 691 may publish only scoping or preliminary
   methodology notes rather than authoritative benchmark or survivor analysis
+- define the bounded-spike scope for any implementation-shape research:
+  bounded means no production key generation, no live validator deployment,
+  and no runtime that persists state beyond local test environments
 - lock non-goals:
   - no final winner
   - no row-5 closure by implication
@@ -253,6 +256,9 @@ Required content:
 - narrowed candidate set or ranked survivor set
 - exact remaining gaps before any final substrate choice
 - exact carry-forward into the next implementation or deeper-selection lane
+- explicit statement of which items in the 701+ carry-forward program are
+  prerequisites or active dependencies for the next sovereign implementation
+  lane, not only for final Option-B selection
 - explicit statement that final Option-B selection remains later unless the
   evidence truly compels a stronger claim
 
@@ -291,7 +297,13 @@ My current recommendation for sequence lock is:
   into throughput theater
 - aim for a narrowed survivor set by Phase 692, not a final winner
 
-## 10. What this candidate grouping does not claim
+## 10. Sequence-lock input status
+
+This artifact is a required input to the Phase 687 sequence lock. The Phase 687
+sequence lock must cite it and may not silently drop any of the obligated
+deliverables, non-slip constraints, or spike-scope limits defined above.
+
+## 11. What this candidate grouping does not claim
 
 This artifact does not claim:
 - `CDL-062` is already open
