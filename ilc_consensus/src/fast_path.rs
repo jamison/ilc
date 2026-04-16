@@ -170,4 +170,95 @@ mod tests {
         };
         assert!(fast_path.execute_certificate(cert_valid).is_ok());
     }
+
+    #[test]
+    fn test_byzantine_equivocation_safety() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(BalanceStore::new(env).unwrap());
+
+        let agent1 = AgentID([1; 32]);
+        let agent2 = AgentID([2; 32]);
+        let agent3 = AgentID([3; 32]);
+
+        store.apply_attribution(AttributionBatch {
+            epoch: EpochSeq(1),
+            attributions: vec![(agent1, 1_000_000)],
+        }).unwrap();
+
+        // N=4, F=1. Required=2f+1=3
+        let (sk1, vk1) = generate_keypair(1); // Honest
+        let (sk2, vk2) = generate_keypair(2); // Honest 
+        let (sk3, vk3) = generate_keypair(3); // Honest
+        let (sk4, vk4) = generate_keypair(4); // Byzantine
+
+        let validators = vec![
+            (ValidatorID(1), vk1),
+            (ValidatorID(2), vk2),
+            (ValidatorID(3), vk3),
+            (ValidatorID(4), vk4),
+        ];
+
+        let val_set = Arc::new(ValidatorSet::new(validators, 1).unwrap());
+        let fast_path = FastPathProtocol::new(val_set, store);
+
+        // Two conflicting transfers originating from the same object version
+        let transfer_alpha = ECUTransfer {
+            object_ref: ObjectRef { agent: agent1, version: 0 },
+            to: agent2,
+            amount_micro_ecu: 400_000,
+        };
+
+        let transfer_beta = ECUTransfer {
+            object_ref: ObjectRef { agent: agent1, version: 0 },
+            to: agent3,
+            amount_micro_ecu: 400_000,
+        };
+
+        let msg_alpha = bincode::serialize(&transfer_alpha).unwrap();
+        let msg_beta = bincode::serialize(&transfer_beta).unwrap();
+        let dst = b"ILC_FAST_PATH_V1";
+
+        // Validator 1, 2 see Alpha
+        let sig1_alpha = ValidatorSig(sk1.sign(&msg_alpha, dst, &[]));
+        let sig2_alpha = ValidatorSig(sk2.sign(&msg_alpha, dst, &[]));
+
+        // Validator 3 sees Beta
+        let sig3_beta = ValidatorSig(sk3.sign(&msg_beta, dst, &[]));
+
+        // Validator 4 (Byzantine) equivocates and signs both!
+        let sig4_alpha = ValidatorSig(sk4.sign(&msg_alpha, dst, &[]));
+        let sig4_beta = ValidatorSig(sk4.sign(&msg_beta, dst, &[]));
+
+        // Alpha forms a valid cert (V1, V2, V4)
+        let cert_alpha = TransferCertificate {
+            transfer: transfer_alpha.clone(),
+            sigs: vec![
+                (ValidatorID(1), sig1_alpha),
+                (ValidatorID(2), sig2_alpha),
+                (ValidatorID(4), sig4_alpha), // Byzantine component
+            ],
+        };
+
+        // For Beta to form a cert across the threshold (which theoretically shouldn't happen 
+        // due to honest-node locking), we simulate a worst-case where another node maliciously 
+        // or accidentally signs the conflicting transfer to verify our safety bounds.
+        let sig2_beta = ValidatorSig(sk2.sign(&msg_beta, dst, &[]));
+        let cert_beta = TransferCertificate {
+            transfer: transfer_beta.clone(),
+            sigs: vec![
+                (ValidatorID(3), sig3_beta),
+                (ValidatorID(2), sig2_beta),
+                (ValidatorID(4), sig4_beta), // Byzantine component explicitly equivocating
+            ],
+        };
+
+        // Alpha commits to state safely
+        assert!(fast_path.execute_certificate(cert_alpha).is_ok());
+
+        // Beta crashes hard against the native Semantic firewall despite carrying 3 valid BLS signatures
+        assert_eq!(
+            fast_path.execute_certificate(cert_beta).unwrap_err(), 
+            ILCConsensusError::ConflictingTransfer
+        );
+    }
 }
