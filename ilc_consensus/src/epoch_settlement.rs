@@ -1,8 +1,13 @@
-use lmdb_rkv::{Cursor, Environment, Database, DatabaseFlags, Transaction, WriteFlags};
+use lmdb_rkv::{Environment, Database, DatabaseFlags, Transaction, WriteFlags};
 use std::sync::Arc;
 use bincode;
 
 use crate::types::{CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ILCConsensusError};
+
+/// Singleton key in the epoch_records DB storing the latest committed epoch number as a raw u64.
+/// Kept in-band but distinguishable from epoch record keys (which are 8-byte big-endian u64s
+/// for epoch numbers 0..u64::MAX-1) by using a dedicated 1-byte sentinel key.
+const CURRENT_EPOCH_SENTINEL: &[u8] = b"\xff";
 
 /// EpochStore securely harbors the definitive Epoch boundaries natively aligned to the DAG-consensus.
 /// Segregated cleanly from the ECU balance mutations.
@@ -41,22 +46,20 @@ impl EpochStore {
         }
     }
 
-    /// Fetches the latest canonical Epoch currently logged natively in LMDB by moving to the end of the sorted b-tree.
+    /// Fetches the latest canonical Epoch via O(1) singleton sentinel key lookup.
+    /// The sentinel is updated atomically alongside each epoch record commit.
     pub fn get_current_epoch(&self) -> Result<u64, ILCConsensusError> {
         let txn = self.env.begin_ro_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
-        
-        let mut cursor = txn.open_ro_cursor(self.db)
-            .map_err(|e| ILCConsensusError::Other(format!("Failed to open cursor: {}", e)))?;
 
-        match cursor.iter_start().last() {
-            Some(Ok((key_bytes, _))) => {
+        match txn.get(self.db, &CURRENT_EPOCH_SENTINEL) {
+            Ok(bytes) => {
                 let mut buf = [0u8; 8];
-                buf.copy_from_slice(key_bytes);
+                buf.copy_from_slice(bytes);
                 Ok(u64::from_be_bytes(buf))
             }
-            Some(Err(e)) => Err(ILCConsensusError::Other(format!("LMDB cursor error: {}", e))),
-            None => Ok(0), // If empty, we are precisely at Epoch 0 initialized stub
+            Err(lmdb_rkv::Error::NotFound) => Ok(0), // No epoch committed yet; genesis stub
+            Err(e) => Err(ILCConsensusError::Other(format!("LMDB get error: {}", e))),
         }
     }
 }
@@ -87,13 +90,17 @@ impl EpochSettlementProtocol {
             return Err(ILCConsensusError::InvalidEpoch); // Block re-committing identical Epoch
         }
 
-        // Store natively
+        // Store epoch record
         let val_bytes = bincode::serialize(&checkpoint.record)
             .map_err(|e| ILCConsensusError::Other(format!("Serialize error: {}", e)))?;
 
         txn.put(self.epoch_store.db, &current_key_bytes, &val_bytes, WriteFlags::empty())
             .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
-        
+
+        // Update sentinel atomically in the same transaction — O(1) current epoch lookup
+        txn.put(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL, &current_key_bytes, WriteFlags::empty())
+            .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
+
         txn.commit()
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
             

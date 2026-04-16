@@ -1,4 +1,5 @@
 use lmdb_rkv::{Environment, Database, DatabaseFlags, Transaction, WriteFlags};
+use std::collections::HashSet;
 use std::sync::Arc;
 use bincode;
 
@@ -57,6 +58,12 @@ impl BalanceStore {
             return Err(ILCConsensusError::SelfTransfer);
         }
 
+        // Zero-amount transfers are prohibited: they burn a version slot without moving value,
+        // enabling a targeted DoS that exhausts an agent's ObjectRef version space.
+        if cert.transfer.amount_micro_ecu == 0 {
+            return Err(ILCConsensusError::Other("zero-amount transfer prohibited".to_string()));
+        }
+
         let mut txn = self.env.begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
@@ -101,7 +108,9 @@ impl BalanceStore {
         sender_bal.amount_micro_ecu = sender_bal.amount_micro_ecu
             .checked_sub(amount)
             .ok_or(ILCConsensusError::BalanceInsufficient)?;
-        sender_bal.version += 1; // Explicit monotonic progression protecting against replay and dual-certs
+        sender_bal.version = sender_bal.version
+            .checked_add(1)
+            .ok_or(ILCConsensusError::Other("ObjectRef version overflow".to_string()))?;
 
         recipient_bal.amount_micro_ecu = recipient_bal.amount_micro_ecu
             .checked_add(amount)
@@ -132,6 +141,17 @@ impl BalanceStore {
 
     /// Epoch-boundary global reconciliation where identical attribution rules are universally applied.
     pub fn apply_attribution(&self, batch: AttributionBatch) -> Result<(), ILCConsensusError> {
+        // Reject batches with duplicate AgentIDs — a second entry would silently overwrite
+        // the first instead of summing, producing incorrect balances.
+        let mut seen = HashSet::new();
+        for (agent_id, _) in &batch.attributions {
+            if !seen.insert(agent_id.0) {
+                return Err(ILCConsensusError::Other(
+                    format!("duplicate AgentID in AttributionBatch: {:?}", agent_id)
+                ));
+            }
+        }
+
         let mut txn = self.env.begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
