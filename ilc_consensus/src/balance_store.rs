@@ -55,7 +55,7 @@ impl BalanceStore {
     pub fn apply_transfer(&self, cert: TransferCertificate) -> Result<BalanceChange, ILCConsensusError> {
         // Enforce anti-inflation logic preventing single-address overwrite bugs
         if cert.transfer.object_ref.agent == cert.transfer.to {
-            return Err(ILCConsensusError::Other("Self-transfer not permitted".to_string()));
+            return Err(ILCConsensusError::SelfTransfer);
         }
 
         let mut txn = self.env.begin_rw_txn()
@@ -209,7 +209,7 @@ mod tests {
                 to: agent2,
                 amount_micro_ecu: 400_000,
             },
-            sigs: vec![],
+            sigs: Vec::new(),
         };
 
         store.apply_transfer(cert1.clone()).unwrap();
@@ -229,7 +229,7 @@ mod tests {
                 to: agent2,
                 amount_micro_ecu: 100_000,
             },
-            sigs: vec![],
+            sigs: Vec::new(),
         };
         let res2 = store.apply_transfer(cert2);
         assert_eq!(res2.unwrap_err(), ILCConsensusError::ConflictingTransfer);
