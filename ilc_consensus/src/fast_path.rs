@@ -1,5 +1,6 @@
 use crate::types::{TransferCertificate, ILCConsensusError, ValidatorSet};
 use crate::balance_store::{BalanceStore, BalanceChange};
+use crate::validator::VALIDATOR_DST;
 use std::sync::Arc;
 use std::collections::HashSet;
 
@@ -28,9 +29,6 @@ impl FastPathProtocol {
         let msg = bincode::serialize(&cert.transfer)
             .map_err(|e| ILCConsensusError::Other(format!("Transfer serialization failed: {}", e)))?;
             
-        // Domain separation tag binding the signature directly to ILC's Fast Path mechanism
-        let dst = b"ILC_FAST_PATH_V1"; 
-
         // 2. Cryptographic constraint loop
         for (val_id, sig) in &cert.sigs {
             if !seen_validators.insert(val_id.0) {
@@ -50,7 +48,7 @@ impl FastPathProtocol {
             // aug = augmentation (none here)
             // pk = PublicKey
             // true = pairing optimization flag
-            let err = sig.0.verify(true, &msg, dst, &[], &pub_key.0, true);
+            let err = sig.0.verify(true, &msg, VALIDATOR_DST, &[], &pub_key.0, true);
             if err != blst::BLST_ERROR::BLST_SUCCESS {
                 return Err(ILCConsensusError::InvalidSignature);
             }
@@ -121,7 +119,7 @@ mod tests {
         };
 
         let msg = bincode::serialize(&transfer).unwrap();
-        let dst = b"ILC_FAST_PATH_V1";
+        let dst = crate::validator::VALIDATOR_DST;
 
         let sig1 = ValidatorSig(sk1.sign(&msg, dst, &[]));
         let sig2 = ValidatorSig(sk2.sign(&msg, dst, &[]));
@@ -215,7 +213,7 @@ mod tests {
 
         let msg_alpha = bincode::serialize(&transfer_alpha).unwrap();
         let msg_beta = bincode::serialize(&transfer_beta).unwrap();
-        let dst = b"ILC_FAST_PATH_V1";
+        let dst = crate::validator::VALIDATOR_DST;
 
         // Validator 1, 2 see Alpha
         let sig1_alpha = ValidatorSig(sk1.sign(&msg_alpha, dst, &[]));
