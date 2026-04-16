@@ -1,0 +1,163 @@
+from __future__ import annotations
+
+import json
+import subprocess
+from pathlib import Path
+
+
+ARTIFACT_PATH = Path("docs/research/ilc_mysticeti_testnet_M009_setup_v0.1.md")
+TEST_PATH = Path("tests/test_phase_M009_mysticeti_testnet_setup.py")
+HARNESS_PATH = Path("tools/run_mysticeti_testnet_M009.sh")
+CONFIG_DIR = Path("config/mysticeti_testnet_M009")
+WALKTHROUGH_PATH = Path("docs/phases/phase_M009_mysticeti_testnet_setup_walkthrough.md")
+STATUS_PATH = Path("docs/phases/STATUS.md")
+
+REQUIRED_HEADINGS = (
+    "## 1. Testnet purpose and scope",
+    "## 2. Infrastructure layout (3 machines, 4 validators)",
+    "## 3. Validator configuration",
+    "## 4. Build instructions",
+    "## 5. Deployment steps (operator guide)",
+    "## 6. Liveness verification (10 consecutive epoch records)",
+    "## 7. Silent validator test (validator-4 offline)",
+    "## 8. SEC-001 and SEC-005 verification",
+    "## 9. Audit checklist satisfaction",
+)
+REQUIRED_TOKENS = (
+    "m009_testnet_setup_artifact_complete",
+    "n4_f1_validator_set_configured",
+    "no_real_ecu_testnet_only",
+    "sec_001_sender_auth_integrated",
+    "sec_005_lmdb_map_sizes_configured",
+)
+VERDICT_LINES = {
+    "`run_m009_testnet_verdict=scaffold_complete`",
+    "`run_m009_testnet_verdict=pass`",
+}
+
+PHASE_M009_SUBJECT = ("m-009", "mysticeti testnet setup")
+PHASE_M009_BACKFILL_SUBJECT = ("m-009", "walkthrough", "backfill")
+
+EXACT_REQUIRED_MAIN_PATHS = {
+    str(ARTIFACT_PATH),
+    str(TEST_PATH),
+    str(HARNESS_PATH),
+    str(CONFIG_DIR / "genesis.json"),
+    str(CONFIG_DIR / "validator_1_config.json"),
+    str(CONFIG_DIR / "validator_2_config.json"),
+    str(CONFIG_DIR / "validator_3_config.json"),
+    str(CONFIG_DIR / "validator_4_config.json"),
+    str(CONFIG_DIR / "README.md"),
+}
+EXACT_REQUIRED_BACKFILL_PATHS = {
+    str(WALKTHROUGH_PATH),
+    str(STATUS_PATH),
+}
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def _changed_paths_for_commit(commit_ref: str) -> set[str]:
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+
+def _resolve_commit_ref(subject_tokens: tuple[str, ...], expected_paths: set[str]) -> str:
+    result = subprocess.run(
+        ["git", "log", "--format=%H%x09%s"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    matches: list[str] = []
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        lowered = subject.lower()
+        if all(token in lowered for token in subject_tokens):
+            matches.append(commit_hash)
+    for commit_ref in matches:
+        if _changed_paths_for_commit(commit_ref) == expected_paths:
+            return commit_ref
+    raise AssertionError("phase_m009_commit_not_present_in_local_history")
+
+
+def _try_resolve_commit_ref(subject_tokens: tuple[str, ...], expected_paths: set[str]) -> str | None:
+    try:
+        return _resolve_commit_ref(subject_tokens, expected_paths)
+    except AssertionError:
+        return None
+
+
+def test_artifact_exists_and_contains_all_required_headings_in_order() -> None:
+    text = _read(ARTIFACT_PATH)
+    positions = [text.index(heading) for heading in REQUIRED_HEADINGS]
+    assert positions == sorted(positions)
+
+
+def test_artifact_contains_all_required_tokens() -> None:
+    text = _read(ARTIFACT_PATH)
+    for token in REQUIRED_TOKENS:
+        assert token in text
+
+
+def test_config_directory_contains_required_files() -> None:
+    required = [
+        CONFIG_DIR / "genesis.json",
+        CONFIG_DIR / "validator_1_config.json",
+        CONFIG_DIR / "validator_2_config.json",
+        CONFIG_DIR / "validator_3_config.json",
+        CONFIG_DIR / "validator_4_config.json",
+        CONFIG_DIR / "README.md",
+    ]
+    for path in required:
+        assert path.exists(), f"missing config file: {path}"
+
+
+def test_genesis_config_declares_four_validators_with_no_real_ecu() -> None:
+    genesis = json.loads((CONFIG_DIR / "genesis.json").read_text(encoding="utf-8"))
+    assert genesis.get("real_ecu") is False, "real_ecu must be false"
+    assert genesis.get("is_testnet") is True, "is_testnet must be true"
+    validators = genesis.get("validators", [])
+    assert len(validators) == 4, f"expected 4 validators, got {len(validators)}"
+    for v in validators:
+        agent_id = v.get("agent_id", "")
+        assert len(agent_id) == 96, (
+            f"agent_id for validator {v.get('validator_id')} must be 96 hex chars "
+            f"(48 bytes), got {len(agent_id)}"
+        )
+
+
+def test_audit_checklist_all_items_addressed() -> None:
+    text = _read(ARTIFACT_PATH).lower()
+    assert "n=4" in text
+    assert "f=1" in text
+    assert "silent" in text
+    assert "10 consecutive" in text
+    assert "sec-001" in text
+    assert "sec-005" in text
+    assert "no real ecu" in text
+
+
+def test_verdict_token_is_exactly_one() -> None:
+    text = _read(ARTIFACT_PATH)
+    found = [line for line in VERDICT_LINES if line in text]
+    assert len(found) == 1, f"expected exactly one verdict token, found: {found}"
+
+
+def test_phase_M009_main_commit_touches_expected_paths_only() -> None:
+    commit_ref = _resolve_commit_ref(PHASE_M009_SUBJECT, EXACT_REQUIRED_MAIN_PATHS)
+    assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS
+
+
+def test_phase_M009_backfill_commit_touches_walkthrough_and_status_only() -> None:
+    commit_ref = _resolve_commit_ref(PHASE_M009_BACKFILL_SUBJECT, EXACT_REQUIRED_BACKFILL_PATHS)
+    assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_BACKFILL_PATHS
