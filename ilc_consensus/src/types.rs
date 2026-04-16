@@ -29,6 +29,7 @@ pub struct ECUBalance {
     pub agent: AgentID,
     pub amount_micro_ecu: u64,
     pub epoch: EpochSeq,
+    pub version: u64, // Tracks the monotonically increasing nonce required to enforce ObjectRef checks
 }
 
 /// ECUTransfer contains the fast-path deterministic instruction to alter Owned Objects.
@@ -91,12 +92,35 @@ pub struct ValidatorSet {
 }
 
 /// Core interface mapping error cases across the DAG interactions.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 pub enum ILCConsensusError {
+    #[error("Invalid validator signature")]
     InvalidSignature,
+    #[error("Insufficient signatures for quorum certificate")]
     InsufficientSignatures,
+    #[error("Conflicting transfer attempted on identical ObjectRef version")]
     ConflictingTransfer, // Triggers on dual-cert violations for the same ObjectRef
+    #[error("Invalid epoch reference")]
     InvalidEpoch,
+    #[error("Insufficient micro-ECU for transfer")]
     BalanceInsufficient,
+    #[error("Internal LMDB or system error: {0}")]
     Other(String),
+}
+
+/// Batch containing system-issued ECU allocations during Epoch settlement.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AttributionBatch {
+    pub epoch: EpochSeq,
+    pub attributions: Vec<(AgentID, u64)>, // Added micro-ecu additions
+}
+
+impl ValidatorSet {
+    pub fn new(validators: Vec<(ValidatorID, ValidatorKey)>, f: usize) -> Result<Self, ILCConsensusError> {
+        let n = validators.len();
+        if n <= 3 * f {
+            return Err(ILCConsensusError::Other(format!("Invalid ValidatorSet: N ({}) must be > 3F ({})", n, 3 * f)));
+        }
+        Ok(ValidatorSet { validators, f })
+    }
 }
