@@ -40,6 +40,13 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 # ── Java check ────────────────────────────────────────────────────────────────
 
 check_java() {
+    # Homebrew openjdk is not on PATH by default on macOS — add it first
+    if command -v brew &>/dev/null; then
+        BREW_JDK="$(brew --prefix openjdk 2>/dev/null)/bin"
+        if [[ -d "$BREW_JDK" ]]; then
+            export PATH="$BREW_JDK:$PATH"
+        fi
+    fi
     if java -version 2>/dev/null; then
         return 0
     fi
@@ -47,10 +54,8 @@ check_java() {
     if command -v brew &>/dev/null; then
         log "Installing Java via Homebrew (openjdk)..."
         brew install openjdk
-        # Homebrew openjdk requires symlinking on macOS
-        sudo ln -sfn "$(brew --prefix openjdk)/libexec/openjdk.jdk" \
-            /Library/Java/JavaVirtualMachines/openjdk.jdk 2>/dev/null || true
-        export PATH="$(brew --prefix openjdk)/bin:$PATH"
+        BREW_JDK="$(brew --prefix openjdk)/bin"
+        export PATH="$BREW_JDK:$PATH"
         if java -version 2>/dev/null; then
             pass "Java installed via Homebrew."
             return 0

@@ -32,7 +32,8 @@ CONSTANTS
     N,           \* Total number of validators
     F,           \* Maximum Byzantine validators
     Objects,     \* Set of ECU owned-object identifiers
-    ByzantineSet \* Concrete Byzantine validator set (assigned in TLC config)
+    ByzantineSet,\* Concrete Byzantine validator set (assigned in TLC config)
+    TransferID   \* Finite set of transfer IDs for TLC (e.g. 0..2 in model config)
 
 ASSUME
     /\ N \in Nat /\ N > 0
@@ -45,12 +46,8 @@ ASSUME
 Validators       == 1..N
 HonestValidators == Validators \ ByzantineSet
 
-\* A transfer request: which object is being transferred, and a unique ID
-\* (In practice this would include sender, receiver, and amount;
-\* here we abstract to object identity and transfer ID for the safety proof.)
-TransferID == Nat   \* Abstract transfer identifiers
-
 \* A transfer proposal: (object, transfer_id) pair
+\* TransferID is declared as a CONSTANT (finite set for TLC, e.g. 0..2)
 Transfer(obj, tid) == [object |-> obj, tid |-> tid]
 
 \* Two transfers on the same object with different IDs are "conflicting"
@@ -140,7 +137,7 @@ Certify(t) ==
 
 \* Complete next-state relation
 Next ==
-    \/ \E obj \in Objects, tid \in (0..10) : Propose(obj, tid)
+    \/ \E obj \in Objects, tid \in TransferID : Propose(obj, tid)
     \/ \E v \in HonestValidators, t \in proposed : HonestAck(v, t)
     \/ \E v \in ByzantineSet,     t \in proposed : ByzantineAck(v, t)
     \/ \E t \in proposed : Certify(t)
@@ -173,10 +170,16 @@ SafetyNoDualCert ==
 \* honest validators can ack it (i.e., none have committed to a conflict).
 \* This is a weaker liveness claim — in the contested case (two competing
 \* transfers on the same object), at most one can be certified.
+\*
+\* TLC NOTE: TLC cannot quantify over state variables in temporal formulas.
+\* We quantify over the constant domain (Objects x TransferID) instead.
+\* A transfer (obj, tid) that is uncontested (no conflicting proposal exists)
+\* and has been proposed will eventually be certified.
 LivenessCertification ==
-    \A t \in proposed :
-        (\A t2 \in proposed : ~Conflicts(t, t2) \/ t = t2)
-        => (t \in proposed ~> t \in certified)
+    \A obj \in Objects, tid \in TransferID :
+        LET t == Transfer(obj, tid)
+        IN  (t \in proposed /\ \A t2 \in proposed : ~Conflicts(t, t2) \/ t = t2)
+            ~> (t \in certified)
 
 \* Auxiliary invariants
 AcksSubsetValidators ==
