@@ -5,6 +5,25 @@ Date: 2026-04-15
 Classification: non-checklist closure program
 Primary program anchor: `docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md`
 
+## 0. Scope clarification — Codex lane only
+
+This program covers Codex's constitutional and foundational closure work in
+windows 701–726+. It does NOT include the Mysticeti implementation lane.
+
+The Mysticeti substrate implementation runs in a parallel Gemini lane using
+the M-series phase namespace (M-001 through M-NNN). That lane is governed by:
+`docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md`
+
+When the Gemini M-series lane completes (M-019 handoff, Claude-audited), its
+results feed back to the main Codex lane at a designated convergence window
+(see §5.6 below). CDL-017 ratification — opened by Codex at Phase 694 and
+implemented by Gemini in M-007 — converges at that window.
+
+The 701+ program's foundational items run independently of the Mysticeti lane.
+They do not wait for Gemini lane completion unless explicitly noted.
+
+---
+
 ## 1. Purpose and boundary
 
 This artifact exists to prevent historically important ILC ideas from falling
@@ -286,6 +305,31 @@ Recommended outputs:
 - activation trigger matrix
 - explicit defer / open recommendation tied to post-launch evidence rather than
   folklore
+
+### 5.6 Mysticeti Convergence Window (post-726, timing TBD)
+
+When the Gemini M-series lane completes M-019 (handoff package) and Claude
+has approved it, the main Codex lane opens a convergence window. This window
+is not assigned a fixed number here because its timing depends on Gemini lane
+progress. It is assigned when M-019 is approved.
+
+Primary closure targets in convergence window:
+- CDL-017 ratification (opened at Phase 694 by Codex; implemented by Gemini
+  in M-007; ratification requires M-series BLS validator governance work plus
+  the constitutional text from Codex's Phase 694 opening)
+- Settlement-state formal CDL ratification (opened at Phase 695 by Codex;
+  Mysticeti application interface from Gemini lane feeds into ratification
+  evidence)
+- First authorized validator deployment authorization (explicit human gate)
+- Integration of Mysticeti implementation into RC track (convergence with
+  Track A RC development)
+- Option B graduation checklist final closure (if all rows satisfied)
+
+This window is the only point where the Gemini and Codex lanes formally merge.
+Until M-019 is approved, the two lanes are independent.
+
+`mysticeti_convergence_window_opens_after_m019_approved`
+`cdl_017_ratification_requires_both_codex_constitutional_and_gemini_implementation`
 
 ## 6. Integration rules for current planning
 
