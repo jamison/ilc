@@ -132,10 +132,15 @@ Next ==
     \/ \E v \in Validators, r \in 1..(MaxRound - 2) : CommitVertex(v, r)
 
 \* Full temporal specification
-Spec == Init /\ [][Next]_vars /\ WF_vars(AdvanceRound)
+Spec == Init /\ [][Next]_vars 
+           /\ WF_vars(AdvanceRound)
+           /\ WF_vars(\E v \in HonestValidators : HonestBroadcast(v))
+           /\ WF_vars(\E v \in Validators, r \in 1..(MaxRound - 2) : CommitVertex(v, r))
 
-\* (Weak fairness on AdvanceRound ensures rounds keep advancing when possible,
-\* which is required to establish the liveness property under TLC.)
+\* (Weak fairness ensures that if an action is continuously enabled, it will
+\* eventually execute. Honest nodes must eventually broadcast, the system must 
+\* advance rounds, and valid commits must eventually be processed for TLC
+\* to verify liveness properties without arbitrary stuttering.)
 
 -----------------------------------------------------------------------------
 \* Properties
