@@ -225,6 +225,45 @@ This block closes when:
 - and the financial-shard question is no longer silently mixed together with
   unrelated shard-lifecycle or private/gated-shard questions.
 
+### 4.6 M-series security deferred items requiring CDL action
+
+These items were identified during the M-001 to M-007 security hardening pass
+(2026-04-16, commit `486b6896`) and formally deferred with routing decisions.
+Full technical context is in §6 of the M-series planning doc:
+`docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md`
+
+| Token | Gap | Completion mode | Routing | Must resolve before |
+|---|---|---|---|---|
+| `sec_001_agent_sender_auth_cdl_062_required_before_m009` | `ECUTransfer` carries no sender sig — any validator can forge a transfer | `constitutional_lock` via CDL-062 | CDL-062 opening; prelock requires CDL-042 interaction analysis | M-009 testnet |
+| `sec_002_chain_id_dst_required_before_m009_testnet` | DST `b"ILC_FAST_PATH_V1"` has no network discriminator — testnet sigs valid on mainnet | `spec_or_contract_lock` via M-008 + ADR-0011 amendment | M-008 scope; ADR-0011 amendment dated 2026-04-16 | M-009 testnet |
+| `sec_003_gossip_sync_recovery_owned_in_m008` | No offline validator cert recovery — returning validator gets locked out on stale ObjectRef | `spec_or_contract_lock` via M-008 | M-008 `MissingCertSync` message type | M-009 testnet |
+| `sec_004_epoch_validator_binding_owned_by_cdl_017_activation` | No historical ValidatorSet binding on TransferCertificate — ejected validator sigs may pass after ejection | `constitutional_lock` scope via CDL-017 activation | CDL-017 activation phase; M-019 handoff must name it explicitly | M-019 handoff |
+| `sec_005_lmdb_map_size_owned_by_m009_node_config` | LMDB environment opened with no `set_map_size()` — defaults to ~10 MB on macOS | `spec_or_contract_lock` via node runner config | M-009 node config parameter | M-009 testnet |
+
+**SEC-001 requires CDL-062.** This is the highest-severity item. Until CDL-062
+is ratified and implemented, transfers on the ILC Mysticeti fast path can be
+forged by any party who can construct a structurally valid `ECUTransfer`. The
+Codex constitutional lane must open CDL-062 before M-009 is approved.
+
+CDL-062 recommended opening stub: "Agent authorization envelope for ECU
+fast-path transfers: specification of the `AgentSig` field, signing algorithm,
+DST, and mandatory verification sequence in `FastPathProtocol::execute_certificate`
+before any quorum threshold check."
+
+CDL-062 should NOT be silently blocked by CDL-017 timeline. The two CDLs
+address different things: CDL-017 governs who is *in the validator set*;
+CDL-062 governs who is *authorized to initiate a transfer*.
+
+#### Completion rule for this block
+
+This block closes when:
+- SEC-001 (CDL-062) is ratified and the `AgentSig` field is present in
+  the committed `ECUTransfer` type with a passing test
+- SEC-002 is resolved in M-008 and ADR-0011 amendment is accepted
+- SEC-003 is resolved in M-008 with a passing integration test
+- SEC-004 disposition is documented in the M-019 handoff package
+- SEC-005 is resolved in M-009 node config with no LMDB soft-default remaining
+
 ## 5. Suggested window routing
 
 ### 5.1 `701-706` — Foundational Economic Doctrine and Kernel Calibration
