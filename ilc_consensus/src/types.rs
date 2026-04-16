@@ -49,7 +49,7 @@ pub struct ValidatorSig(pub Signature);
 #[derive(Debug, Clone)]
 pub struct TransferCertificate {
     pub transfer: ECUTransfer,
-    pub sigs: Vec<ValidatorSig>, // Individual validator acknowledgments collected directly
+    pub sigs: Vec<(ValidatorID, ValidatorSig)>, // Pair Validator routing to signature for discrete threshold checking
 }
 
 /// CIDv1Root encapsulates the strictly defined Phase 14 Canonical Commitment format.
@@ -100,6 +100,8 @@ pub enum ILCConsensusError {
     InsufficientSignatures,
     #[error("Conflicting transfer attempted on identical ObjectRef version")]
     ConflictingTransfer, // Triggers on dual-cert violations for the same ObjectRef
+    #[error("Self-transfer explicitly prohibited")]
+    SelfTransfer,
     #[error("Invalid epoch reference")]
     InvalidEpoch,
     #[error("Insufficient micro-ECU for transfer")]
