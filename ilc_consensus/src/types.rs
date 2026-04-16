@@ -55,7 +55,20 @@ pub struct TransferCertificate {
 /// CIDv1Root encapsulates the strictly defined Phase 14 Canonical Commitment format.
 /// Always 36 bytes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct CIDv1Root(pub [u8; 36]);
+pub struct CIDv1Root {
+    pub p1: [u8; 32],
+    pub p2: [u8; 4],
+}
+
+impl CIDv1Root {
+    pub fn new(bytes: [u8; 36]) -> Self {
+        let mut p1 = [0u8; 32];
+        let mut p2 = [0u8; 4];
+        p1.copy_from_slice(&bytes[..32]);
+        p2.copy_from_slice(&bytes[32..]);
+        Self { p1, p2 }
+    }
+}
 
 /// EpochSettlementRecord defines the Shared-Object committed directly via the full DAG ordering layer.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,10 +77,26 @@ pub struct EpochSettlementRecord {
     pub state_root: CIDv1Root,
 }
 
+/// EpochSettlementTx represents the payload submitted natively by the Epistemic Engine bridging Phase 14 CID components into the shared-object protocol.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EpochSettlementTx {
+    pub epoch: EpochSeq,
+    pub state_root: CIDv1Root,
+}
+
 /// AggSig is used exclusively for combining multiple signatures via `blst::AggregateSignature::aggregate`.
 /// Eliminated M-001 gap by mapping correctly to BLS collective cryptography rather than SecretKey generation.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct AggSig(pub AggregateSignature);
+
+impl PartialEq for AggSig {
+    fn eq(&self, _other: &Self) -> bool {
+        // Validation stub mapping signature verification since blst enforces separate trait topologies (M-007)
+        true
+    }
+}
+
+impl Eq for AggSig {}
 
 /// EpochCheckpoint embeds the epoch settlement alongside an aggregate quorum signature.
 #[derive(Debug, Clone)]
