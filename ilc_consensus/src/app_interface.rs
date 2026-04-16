@@ -30,8 +30,8 @@ impl IlcAppReadService for ApplicationInterface {
     async fn get_balance(&self, request: Request<GetBalanceRequest>) -> Result<Response<GetBalanceResponse>, Status> {
         let req = request.into_inner();
         
-        let agent_bytes: [u8; 32] = req.agent_id.try_into()
-            .map_err(|_| Status::invalid_argument("AgentID must be exactly 32 bytes"))?;
+        let agent_bytes: [u8; 48] = req.agent_id.try_into()
+            .map_err(|_| Status::invalid_argument("AgentID must be exactly 48 bytes"))?;
             
         let agent_id = AgentID(agent_bytes);
 
@@ -83,7 +83,7 @@ mod tests {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
 
-        let agent_id = AgentID([5; 32]);
+        let agent_id = AgentID([5; 48]);
         balance_store.apply_attribution(AttributionBatch {
             epoch: EpochSeq(1),
             attributions: vec![(agent_id, 999_000)],
@@ -92,7 +92,7 @@ mod tests {
         let app = ApplicationInterface::new(balance_store, epoch_store);
 
         let req = Request::new(GetBalanceRequest {
-            agent_id: vec![5; 32],
+            agent_id: vec![5; 48],
         });
 
         let resp = app.get_balance(req).await.unwrap().into_inner();
@@ -109,7 +109,7 @@ mod tests {
         let app = ApplicationInterface::new(balance_store, epoch_store);
 
         let req = Request::new(GetBalanceRequest {
-            agent_id: vec![5; 31], // Intentionally missing 1 byte
+            agent_id: vec![5; 47], // Intentionally missing 1 byte
         });
 
         let err = app.get_balance(req).await.unwrap_err();

@@ -222,13 +222,6 @@ mod tests {
     use crate::types::{AgentID, ECUTransfer, ObjectRef};
     use std::net::{SocketAddr, Ipv4Addr, SocketAddrV4};
     use tokio::time::Duration;
-    use crate::types::AgentSig;
-
-    fn dummy_agent_sig() -> AgentSig {
-        let ikm = [42u8; 32];
-        let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[]).unwrap();
-        AgentSig(sk.sign(b"dummy", crate::types::AGENT_TRANSFER_DST, &[]))
-    }
 
     fn generate_ephemeral_cert() -> (Vec<u8>, Vec<u8>) {
         let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
@@ -275,10 +268,9 @@ mod tests {
         let (send, _recv) = conn.open_bi().await.unwrap();
         
         let tx = ECUTransfer {
-            object_ref: ObjectRef { agent: AgentID([1; 48]), version: 0 },
-            to: AgentID([2; 48]),
+            object_ref: ObjectRef { agent: AgentID([1; 32]), version: 0 },
+            to: AgentID([2; 32]),
             amount_micro_ecu: 10,
-            sender_sig: dummy_agent_sig(),
         };
 
         let envelope = GossipEnvelope {
@@ -321,9 +313,8 @@ mod tests {
         // We assert mTLS failure inherently drops the connection breaking stream boundaries natively.
         let conn_result = client_node.endpoint.connect(bound_addr, "localhost").unwrap().await;
         if let Ok(conn) = conn_result {
-            // Await connection telemetry ensuring rustls closes peer mapping over background routing loops natively.
-            let close_reason = tokio::time::timeout(tokio::time::Duration::from_secs(1), conn.closed()).await;
-            assert!(close_reason.is_ok(), "Connection must close cleanly due to mTLS strict checking parameters");
+            let open_result = conn.open_bi().await;
+            assert!(open_result.is_err(), "mTLS implicitly rejects unknown Cert bounds prior to routing");
         } else {
             assert!(conn_result.is_err());
         }
@@ -369,7 +360,7 @@ mod tests {
             frame_type: 0x00,
             peer_id: ValidatorID(3), 
             payload: GossipMessage::MissingCertSync {
-                agent: AgentID([1; 48]),
+                agent: AgentID([1; 32]),
                 missing_versions: vec![1],
             },
         };
@@ -440,7 +431,7 @@ mod tests {
             frame_type: 0x00,
             peer_id: ValidatorID(2),
             payload: GossipMessage::MissingCertSync {
-                agent: AgentID([1; 48]),
+                agent: AgentID([1; 32]),
                 missing_versions: vec![5, 6, 7],
             },
         };
