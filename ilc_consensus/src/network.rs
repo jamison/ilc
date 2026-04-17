@@ -1,9 +1,11 @@
 use crate::types::{EpochSettlementTx, TransferCertificate, ILCConsensusError, ValidatorID};
 use quinn::{Endpoint, ServerConfig, ClientConfig, Connection, RecvStream, SendStream};
-use rustls::{Certificate, PrivateKey, ClientConfig as RustlsClientConfig};
+use rustls::pki_types::{CertificateDer, PrivateKeyDer, UnixTime};
+use rustls::pki_types::ServerName;
+use rustls::client::danger::ServerCertVerified;
+use rustls::server::danger::ClientCertVerified;
 use std::sync::Arc;
 use std::collections::HashMap;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub enum GossipMessage {
@@ -39,52 +41,105 @@ pub struct PeerNetwork {
     pub endpoint: Endpoint,
 }
 
+#[derive(Debug)]
 struct PinnedCertVerifier {
     allowed_cert_ders: Vec<Vec<u8>>,
 }
 
-impl rustls::client::ServerCertVerifier for PinnedCertVerifier {
+impl rustls::client::danger::ServerCertVerifier for PinnedCertVerifier {
     fn verify_server_cert(
         &self,
-        end_entity: &Certificate,
-        _intermediates: &[Certificate],
-        _server_name: &rustls::client::ServerName,
-        _scts: &mut dyn Iterator<Item = &[u8]>,
+        end_entity: &CertificateDer<'_>,
+        _intermediates: &[CertificateDer<'_>],
+        _server_name: &ServerName<'_>,
         _ocsp_response: &[u8],
-        _now: std::time::SystemTime,
-    ) -> Result<rustls::client::ServerCertVerified, rustls::Error> {
-        if self.allowed_cert_ders.iter().any(|d| d == &end_entity.0) {
-            Ok(rustls::client::ServerCertVerified::assertion())
+        _now: UnixTime,
+    ) -> Result<ServerCertVerified, rustls::Error> {
+        if self.allowed_cert_ders.iter().any(|d| d.as_slice() == end_entity.as_ref()) {
+            Ok(ServerCertVerified::assertion())
         } else {
             Err(rustls::Error::General("unknown peer certificate".into()))
         }
     }
+
+    fn verify_tls12_signature(
+        &self,
+        _message: &[u8],
+        _cert: &CertificateDer<'_>,
+        _dss: &rustls::DigitallySignedStruct,
+    ) -> Result<rustls::client::danger::HandshakeSignatureValid, rustls::Error> {
+        Err(rustls::Error::General("TLS 1.2 not supported".into()))
+    }
+
+    fn verify_tls13_signature(
+        &self,
+        message: &[u8],
+        cert: &CertificateDer<'_>,
+        dss: &rustls::DigitallySignedStruct,
+    ) -> Result<rustls::client::danger::HandshakeSignatureValid, rustls::Error> {
+        rustls::crypto::verify_tls13_signature(
+            message,
+            cert,
+            dss,
+            &rustls::crypto::ring::default_provider().signature_verification_algorithms,
+        )
+    }
+
+    fn supported_verify_schemes(&self) -> Vec<rustls::SignatureScheme> {
+        rustls::crypto::ring::default_provider()
+            .signature_verification_algorithms
+            .supported_schemes()
+    }
 }
 
-impl rustls::server::ClientCertVerifier for PinnedCertVerifier {
-    fn client_auth_root_subjects(&self) -> &[rustls::DistinguishedName] {
+impl rustls::server::danger::ClientCertVerifier for PinnedCertVerifier {
+    fn root_hint_subjects(&self) -> &[rustls::DistinguishedName] {
         &[]
     }
 
     fn verify_client_cert(
         &self,
-        end_entity: &Certificate,
-        _intermediates: &[Certificate],
-        _now: std::time::SystemTime,
-    ) -> Result<rustls::server::ClientCertVerified, rustls::Error> {
-        if self.allowed_cert_ders.iter().any(|d| d == &end_entity.0) {
-            Ok(rustls::server::ClientCertVerified::assertion())
+        end_entity: &CertificateDer<'_>,
+        _intermediates: &[CertificateDer<'_>],
+        _now: UnixTime,
+    ) -> Result<ClientCertVerified, rustls::Error> {
+        if self.allowed_cert_ders.iter().any(|d| d.as_slice() == end_entity.as_ref()) {
+            Ok(ClientCertVerified::assertion())
         } else {
             Err(rustls::Error::General("unknown client certificate".into()))
         }
     }
 
-    fn offer_client_auth(&self) -> bool {
-        true
+    fn offer_client_auth(&self) -> bool { true }
+    fn client_auth_mandatory(&self) -> bool { true }
+
+    fn verify_tls12_signature(
+        &self,
+        _message: &[u8],
+        _cert: &CertificateDer<'_>,
+        _dss: &rustls::DigitallySignedStruct,
+    ) -> Result<rustls::client::danger::HandshakeSignatureValid, rustls::Error> {
+        Err(rustls::Error::General("TLS 1.2 not supported".into()))
     }
 
-    fn client_auth_mandatory(&self) -> bool {
-        true
+    fn verify_tls13_signature(
+        &self,
+        message: &[u8],
+        cert: &CertificateDer<'_>,
+        dss: &rustls::DigitallySignedStruct,
+    ) -> Result<rustls::client::danger::HandshakeSignatureValid, rustls::Error> {
+        rustls::crypto::verify_tls13_signature(
+            message,
+            cert,
+            dss,
+            &rustls::crypto::ring::default_provider().signature_verification_algorithms,
+        )
+    }
+
+    fn supported_verify_schemes(&self) -> Vec<rustls::SignatureScheme> {
+        rustls::crypto::ring::default_provider()
+            .signature_verification_algorithms
+            .supported_schemes()
     }
 }
 
@@ -95,21 +150,26 @@ impl PeerNetwork {
         my_cert_der: Vec<u8>,
         my_key_der: Vec<u8>,
     ) -> Result<Self, ILCConsensusError> {
-        let cert = Certificate(my_cert_der);
-        let key = PrivateKey(my_key_der);
+        rustls::crypto::ring::default_provider().install_default().ok();
+        
+        let cert = CertificateDer::from(my_cert_der);
+        let key = PrivateKeyDer::Pkcs8(my_key_der.into());
 
         let allowed_ders: Vec<Vec<u8>> = peer_certs.values().cloned().collect();
         let verifier = Arc::new(PinnedCertVerifier { allowed_cert_ders: allowed_ders });
 
         let mut server_crypto = rustls::ServerConfig::builder()
-            .with_safe_defaults()
             .with_client_cert_verifier(verifier)
             .with_single_cert(vec![cert], key)
             .map_err(|e| ILCConsensusError::Other(format!("TLS error: {}", e)))?;
 
         server_crypto.alpn_protocols = vec![b"ilc-gossip".to_vec()];
 
-        let server_config = ServerConfig::with_crypto(Arc::new(server_crypto));
+        // `server_crypto` is a rustls 0.23 ServerConfig. quinn uses QuicServerConfig.
+        let quic_server_crypto = quinn::crypto::rustls::QuicServerConfig::try_from(server_crypto)
+            .map_err(|_| ILCConsensusError::Other("Quic crypto config failed".into()))?;
+
+        let server_config = ServerConfig::with_crypto(Arc::new(quic_server_crypto));
 
         let endpoint = Endpoint::server(server_config, bind_addr)
             .map_err(|e| ILCConsensusError::Other(format!("Bind error: {}", e)))?;
@@ -126,24 +186,29 @@ impl PeerNetwork {
         my_cert_der: Vec<u8>,
         my_key_der: Vec<u8>,
     ) -> Result<Self, ILCConsensusError> {
+        rustls::crypto::ring::default_provider().install_default().ok();
+
         let mut endpoint = Endpoint::client(bind_addr)
             .map_err(|e| ILCConsensusError::Other(format!("Bind error: {}", e)))?;
 
-        let cert = Certificate(my_cert_der);
-        let key = PrivateKey(my_key_der);
+        let cert = CertificateDer::from(my_cert_der);
+        let key = PrivateKeyDer::Pkcs8(my_key_der.into());
 
         let allowed_ders: Vec<Vec<u8>> = peer_certs.values().cloned().collect();
         let verifier = Arc::new(PinnedCertVerifier { allowed_cert_ders: allowed_ders });
 
-        let mut client_crypto = RustlsClientConfig::builder()
-            .with_safe_defaults()
+        let mut client_crypto = rustls::ClientConfig::builder()
+            .dangerous()
             .with_custom_certificate_verifier(verifier)
-            .with_single_cert(vec![cert], key)
+            .with_client_auth_cert(vec![cert], key)
             .map_err(|e| ILCConsensusError::Other(format!("TLS error: {}", e)))?;
             
         client_crypto.alpn_protocols = vec![b"ilc-gossip".to_vec()];
 
-        let client_config = ClientConfig::new(Arc::new(client_crypto));
+        let quic_client_crypto = quinn::crypto::rustls::QuicClientConfig::try_from(client_crypto)
+            .map_err(|_| ILCConsensusError::Other("Quic crypto config failed".into()))?;
+
+        let client_config = ClientConfig::new(Arc::new(quic_client_crypto));
         endpoint.set_default_client_config(client_config);
 
         Ok(Self {
@@ -157,10 +222,10 @@ impl PeerNetwork {
         let identities = connection.peer_identity()
             .ok_or_else(|| ILCConsensusError::Other("No TLS peer identity provided".into()))?;
             
-        let certs = identities.downcast_ref::<Vec<Certificate>>()
+        let certs = identities.downcast_ref::<Vec<CertificateDer<'static>>>()
             .ok_or_else(|| ILCConsensusError::Other("Invalid certificate hierarchy".into()))?;
             
-        let peer_cert_der = &certs[0].0;
+        let peer_cert_der = certs[0].as_ref();
 
         for (id, der) in self.peer_certs.iter() {
             if der == peer_cert_der {
@@ -181,7 +246,7 @@ impl PeerNetwork {
         send.write_all(&bytes).await
             .map_err(|_| ILCConsensusError::Other("Write payload fail".into()))?;
             
-        send.finish().await
+        send.finish()
             .map_err(|_| ILCConsensusError::Other("Send flush exception".into()))?;
             
         Ok(())
@@ -233,9 +298,10 @@ mod tests {
     }
 
     fn generate_ephemeral_cert() -> (Vec<u8>, Vec<u8>) {
-        let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
-        let cert_der = cert.serialize_der().unwrap();
-        let key_der = cert.serialize_private_key_der();
+        let rcgen::CertifiedKey { cert, key_pair } =
+            rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
+        let cert_der = cert.der().to_vec();
+        let key_der = key_pair.serialize_der();
         (cert_der, key_der)
     }
 
@@ -419,7 +485,7 @@ mod tests {
         let server_task = tokio::spawn(async move {
             let incoming = server_node.endpoint.accept().await.unwrap();
             let connection = incoming.await.unwrap();
-            let (mut send, recv) = connection.accept_bi().await.unwrap();
+            let (send, recv) = connection.accept_bi().await.unwrap();
             
             let envelope = server_node.receive(&connection, recv).await.unwrap();
             
@@ -430,6 +496,7 @@ mod tests {
                     payload: GossipMessage::MissingCertResponse { certs: vec![] }
                 };
                 server_node.transmit(send, response).await.unwrap();
+                tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
             } else {
                 panic!("Invalid payload");
             }
