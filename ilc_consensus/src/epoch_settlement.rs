@@ -46,6 +46,33 @@ impl EpochStore {
         }
     }
 
+    /// Write an epoch record directly (used by node control plane when processing EpochSettlementTx).
+    /// Enforces the same monotonicity constraint as EpochSettlementProtocol: returns InvalidEpoch
+    /// if the epoch has already been committed.
+    pub fn commit_epoch_record(&self, record: EpochSettlementRecord) -> Result<(), ILCConsensusError> {
+        let mut txn = self.env.begin_rw_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
+
+        let key_bytes = record.epoch.0.to_be_bytes();
+        if txn.get(self.db, &key_bytes).is_ok() {
+            return Err(ILCConsensusError::InvalidEpoch);
+        }
+
+        let val_bytes = bincode::serialize(&record)
+            .map_err(|e| ILCConsensusError::Other(format!("Serialize error: {}", e)))?;
+
+        txn.put(self.db, &key_bytes, &val_bytes, WriteFlags::empty())
+            .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
+
+        txn.put(self.db, &CURRENT_EPOCH_SENTINEL, &key_bytes, WriteFlags::empty())
+            .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
+
+        txn.commit()
+            .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
+
+        Ok(())
+    }
+
     /// Fetches the latest canonical Epoch via O(1) singleton sentinel key lookup.
     /// The sentinel is updated atomically alongside each epoch record commit.
     pub fn get_current_epoch(&self) -> Result<u64, ILCConsensusError> {
