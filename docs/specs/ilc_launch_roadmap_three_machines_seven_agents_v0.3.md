@@ -2,9 +2,9 @@
 
 **Version**: v0.3
 **Produced**: 2026-04-17
-**Session context**: Window 575-584 in progress; capsule v4.5 current; M-series M-011 complete
+**Session context**: Window 701-706 CLOSED (today); capsule v4.5 current; M-011 binary_complete
 **Supersedes**: `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md`
-**Purpose**: Updated launch path reference reflecting Windows 565-574 closure and 575-584 progress.
+**Purpose**: Updated launch path reference at the Window 707+ frontier.
 
 ---
 
@@ -13,179 +13,119 @@
 Same core question as v0.1/v0.2: what remains before ILC has a testable package running
 across three separate computers with seven active agents?
 
-The gap structure has materially compressed since v0.2:
-- **Window 565-574 CLOSED** — three-machine transport operationalized, `three_machine_testbed_primary_gate_passed`
-- **Window 575-584 IN PROGRESS** — agent behavioral loop v1, Phase 580 complete (7+1 panel + live submission integration)
-- **M-series parallel track: M-009/M-010/M-011 COMPLETE** — Rust/Mysticeti validator cluster
-  has keygen, testnet_client, and 4-validator harness tooling; real liveness run pending provisioning
+The implementation gap from v0.2 (transport operationalization, agent loop, integration
+harness) has been **substantially closed** across Windows 565-594. The remaining gaps at
+the Window 707+ frontier are primarily **constitutional/governance** and
+**runtime-form completion** — not infrastructure.
 
 ---
 
-## 1. Current State (2026-04-17)
+## 1. What Closed Since v0.2 (Windows 565-706)
 
-### 1.1 Subsystems added since v0.2
+### Implementation milestones (Codex Python track)
 
-| Subsystem | Path | Notes |
-|---|---|---|
-| HTTP gossip transport | `ilc_core/network/d2d/http_gossip_transport_runtime.py` | Real HTTP/3 client+server I/O, HTTP/2 fallback config (Phase 568-569) |
-| Static peer config loader | `ilc_core/node/node_startup_runtime.py` | JSON static peers, genesis import, CDL-046 startup sequencing (Phase 570) |
-| Node service packaging | `run_ilc_node_service_v1.py` + `deploy/systemd/ilc-node-v1.service` | venv + systemd unit (Phase 571) |
-| Agent behavioral loop v1 | `tools/agent_loop_v1.py` | Replaced `agent_loop_v0.sh` pseudocode; protocol-compliant loop (Phase 579) |
-| 7+1 panel + submission integration | _(panel wiring in submission pipeline)_ | Live submission path with diversity-floor and Popperian gate (Phase 580) |
-| Rust validator harness | `ilc_consensus/` | M-009: BFT core; M-010: `validator_harness` binary; M-011: `keygen` + `testnet_client` (Phase M-009/M-010/M-011) |
-
-### 1.2 Completed subsystems (unchanged from v0.2)
-
-| Subsystem | Path | Notes |
-|---|---|---|
-| Consensus engine | `ilc_core/consensus/` | Sponsor graph, governance, CDL-V3 diversity floor, CDL-V7 Popperian gate |
-| Genesis bootstrap | `ilc_core/genesis/` | `genesis_validator_bootstrap_runtime_480.v0.1` |
-| Ledger and settlement | `ilc_core/ledger/` | Canon bundle pipeline, settlement verification, persistent backend |
-| D2d transport invariants | `ilc_core/network/d2d/` | CDL-039, CDL-060 gossip, CDL-061 HTTP envelope, static peer registry |
-| Passive ECU attribution | `ilc_core/economics/passive_ecu_attribution_runtime.py` | `rate=0.20`, `floor=0.05`, `cap=0.15` |
-| Validator subsystems | `ilc_core/validator/` | Re-admission, staking liveness, trust tier runtimes |
-| CLI tooling | `ilc_core/cli/` | D2e CLI, agent CLI, lifecycle management |
-
-### 1.3 Window 565-574 closure summary
-
-Gap 1 (transport operationalization) and Gap 2 (multi-machine packaging) from v0.2 are **CLOSED**.
-
-Closure evidence:
-- Real HTTP gossip transport wrapper wraps `gossip_transport.py` with actual socket I/O
-- JSON static peer config loader wires `GossipPeerRegistry` at startup
-- `venv + systemd` packaging validated
-- Three-machine smoke harness `run_three_machine_smoke_phase_572.sh` passed all 8 criteria including CDL-061 envelope traffic over real HTTP, genesis import, and kind=http fallback proof
-- Gate token: `three_machine_testbed_primary_gate_passed`
-
-TLS posture: server TLS + `ILC-Signature` header. mTLS explicitly deferred to post-RC0 hardening.
-
----
-
-## 2. Remaining Gaps
-
-### Gap 3 — Agent behavioral loop completion (Window 575-584, IN PROGRESS)
-
-Agent loop v1 (`tools/agent_loop_v1.py`) is running. The 7+1 evaluation panel is wired into
-the live submission path (Phase 580). Remaining work in this window:
-
-**Still needed before 575-584 closes:**
-- ECU attribution into settlement path (Phase 581)
-- Wallet query integration — visibility-only, no write authority (Phase 581)
-- CDL-V7 reproducibility disposition (Phase 582)
-- Outbound HTTP machine-payment skill: defer-or-attach decision (Phase 582)
-- Coherence report + capsule v3.2 (Phase 583)
-- Closure gate (Phase 584)
-
-**Pass condition (7 criteria):**
-- Live agent loop on 3-machine substrate with 7 agents and bounded 7+1 panel
-- Durable persisted graph
-- ECU attribution into settlement path
-- Wallet visibility-only (no write authority)
-- Negative-path drills completed
-- Bounded CDL-V7 reproducibility disposition before Phase 584
-- No public genesis-governance or public minting claim
-
-### Gap 4 — Three-machine / seven-agent integration harness (Window 585-594)
-
-The deterministic full-system proof: three nodes on separate machines, seven agent
-processes, one end-to-end task cycle, gossip propagation verification, evaluation flow,
-and ECU attribution.
-
-**Estimated scope**: Window 585-594 (sequence lock exists: `docs/specs/ilc_phase_585_594_sequence_lock_v0.1.md`).
-**Required outcomes**:
-- deterministic integration scenario runner
-- verification tests for gossip propagation, panel evaluation, and attribution flow
-- ops playbook v2 with common-failure runbook
-- production-readiness delta analysis
-
-### M-series parallel track — Rust consensus real liveness run (M-012+)
-
-M-011 tooling (keygen + testnet_client + 4-validator harness) is committed with
-`run_m011_workload_a_verdict=binary_complete`. The real 4-validator run requires
-provisioning (running `--keygen`, `--gen-tls`, distributing binaries to VPS nodes).
-
-**M-012**: Full BFT ECUTransfer round-trip — client-side AckFor collection, certificate
-formation, broadcast. Completes owned-object fast path end-to-end across real machines.
-
-**M-013**: Workload A real liveness run (4-validator live, epochs 1-12, silent-validator test).
-
-### Deferred lane — Inbound HTTP machine-payment ingress (Window 595+)
-
-Treasury-governed. Requires stablecoin-to-ECU conversion rules under CDL-047. Not on the
-launch-critical path.
-
----
-
-## 3. Window Roadmap (updated)
-
-| Window | Focus | Status | Key gate |
-|---|---|---|---|
-| **555-564** | Transport governance (CDL-061, ADR-0025) | **CLOSED** | CDL-061 ratified; 8-probe canary |
-| **565-574** | Transport operationalization + multi-machine packaging | **CLOSED** | `three_machine_testbed_primary_gate_passed` |
-| **575-584** | Agent behavioral loop v1 + ECU attribution + settlement | **IN PROGRESS** (Phase 580 complete) | 7 agents live on 3-machine substrate, ECU attribution into settlement |
-| **585-594** | Three-machine / seven-agent integration test | Planned | Deterministic end-to-end task cycle across 3 machines, 7 agents |
-| **595+** | Inbound HTTP machine-payment ingress | Deferred | Treasury-governed conversion model |
-
-**First testable milestone: approximately Phase 594** — now roughly 14 phases from 2026-04-17,
-assuming Windows 575-584 and 585-594 close on primary path.
-
-### Window 575-584: remaining phases
-
-| Phase | Work item |
+| Window | What closed |
 |---|---|
-| 575-580 | COMPLETE (seq lock, RC0.1 constitutional locks, agent loop cutover, panel+submission integration) |
-| 581 | ECU attribution, settlement, wallet query integration |
-| 582 | CDL-V7 reproducibility disposition + outbound HTTP machine-payment skill decision |
-| 583 | Coherence report + capsule v3.2 |
-| 584 | Closure gate |
+| 565-574 | Three-machine transport operationalized; `three_machine_testbed_primary_gate_passed`; venv + systemd packaging |
+| 575-584 | Agent behavioral loop v1 live; 7+1 panel + live submission integration; ECU attribution into settlement; wallet query boundary locked |
+| 585-594 | Three-machine / seven-agent integration harness; `phase_594_verdict=pass`; RC0.1 Strike Force (Phase 595) absorbed 582-584 obligations |
+| 596-605 | Genesis carry-forward closure lane |
+| 607-612 | Settlement substrate closure; Option D confirmed active; Option B row checklist opened |
+| 613-619 | MVP gate spec lane — all five participant-touch surfaces closed in spec form; `mvp_gate_spec_verdict=pass` |
+| 620-622 | Agent Skills surface spec; bounded ECU exchange model spec |
+| 624-630 | CDL-063 ratified (directed-commission earmark + bounded debit); ECU active-layer runtime live |
+| 631-641 | CDL-064 ratified (Tier-0 exact numeric determinism); float cleanup |
+| 642-706 | Signing export hardening; privacy-preserving public legitimacy; sovereign substrate admissibility; foundational economic doctrine + kernel calibration |
 
-### Window 585-594: minimum work items
+### M-series milestones (Gemini Rust track)
 
-1. Integration test harness spec
-2. Deterministic three-node / seven-agent scenario runner
-3. Verification tests for gossip propagation, panel evaluation, and attribution flow
-4. Ops playbook v2 with common-failure runbook
-5. Production-readiness delta analysis
-6. Coherence report + handoff
-
-Public-release constitutional guidance: `docs/specs/ilc_window_585_594_candidate_phase_grouping_v0.1.md`
-
----
-
-## 4. Security Posture Progression
-
-| Window | Posture | Notes |
-|---|---|---|
-| 565-574 | Server TLS + `ILC-Signature` | Minimum acceptable for infrastructure proof; mTLS deferred |
-| 575-584 | Same as 565-574 | Behavioral integration window; no transport re-authentication |
-| 585-594 | Same (RC0 evaluation) | First public-readiness milestone assumes proven posture |
-| Post-RC0 | mTLS hardening tranche | Certificate issuance, trust-store distribution, peer identity binding, rotation, negative-path |
+| Phase | What closed |
+|---|---|
+| M-009 | BFT consensus core; all 6 SEC gates satisfied (`acfcfd2d`) |
+| M-010 | `validator_harness` binary; 4-validator config; `binary_complete` |
+| M-011 | `keygen` + `testnet_client` binaries; 4-validator harness tooling; `binary_complete` — real run pending provisioning |
 
 ---
 
-## 5. Risk Register (updated)
+## 2. Remaining Gaps at the Window 707+ Frontier
 
-| Risk | Severity | Window affected | Notes |
-|---|---|---|---|
-| CDL-V7 reproducibility rubric governance resolution | MODERATE | 575-584 | Must close before Phase 584; disposition due Phase 582 |
-| Outbound HTTP machine-payment skill scope | LOW | 575-584 | Defer-or-attach decision at Phase 582 |
-| M-series / Python-track convergence | LOW | 585-594 | Two separate transport stacks (Mysticeti QUIC vs Python HTTP); integration boundary TBD |
-| Inbound payment pressures bleed into launch planning | LOW | 595+ | Keep treasury-governed inbound payments separate |
+### Gap 1 — CDL-066 / CDL-017 / CDL-067 ratification (Window 707+, active)
+
+Three CDLs are open and unratified. These are the primary constitutional blockers
+for the Window 707-712 lane:
+
+- **CDL-066** (Phase 694) — agent sender authorization (SEC-001 Track A)
+- **CDL-017** (Phase 695) — bootstrap transition criteria
+- **CDL-067** (Phase 696) — related governance vehicle
+
+Window 707-712 carries governance-minimization and validator-agent identity design
+alongside these ratification items.
+
+### Gap 2 — MVP gate runtime-form completion (post-707, rows 5 and 7)
+
+The Phase 612 two-form MVP gate requires both spec form and runtime form. Spec form
+closed at Window 613-619 (`mvp_gate_spec_verdict=pass`). Runtime form is blocked until
+Window 623+ interface/runtime work completes:
+
+- **Row 5** — `spec_closed_runtime_pending` (leakage confirmation)
+- **Row 7** — `spec_closed_runtime_pending` (censorship and exitability confirmation)
+
+Broader public RC claims remain blocked until both forms complete.
+
+### Gap 3 — M-series real liveness run (M-012 / M-013)
+
+M-011 tooling is committed (`binary_complete`). The real 4-validator testnet run
+requires provisioning: `--keygen`, `--gen-tls`, binary distribution to VPS nodes,
+epoch injection 1-10, silent-validator test.
+
+- **M-012**: Full BFT ECUTransfer round-trip — client-side AckFor collection,
+  certificate formation, broadcast. Completes owned-object fast path.
+- **M-013**: Workload A real liveness run (verdict target: `pass`).
+
+### Gap 4 — Option B production selection (post-Window 623+ runtime confirmed)
+
+ADR-0028 holds Option D as the active posture. Option B becomes selectable only
+after rows 5 and 7 runtime confirmation. Rows 6, 8, 9 are already closed.
+
+### Gap 5 — Legal positioning memo (pre-RC prerequisite)
+
+A legal positioning memo on passive ECU accrual and validator staking rewards
+(CDL-054/055/056 Howey analysis) is listed in TODO.txt as `NOT YET WRITTEN`.
+Required before any broader public RC claim.
 
 ---
 
-## 6. Relationship to Existing Artifacts
+## 3. Current State Summary
 
-- `docs/specs/ilc_window_565_574_handoff_574_v0.1.md` — Window 565-574 canonical closure
-- `docs/specs/ilc_window_575_584_candidate_phase_grouping_v0.1.md` — current window grouping
-- `docs/specs/ilc_phase_575_584_sequence_lock_v0.1.md` — current window sequence lock
-- `docs/specs/ilc_antigravity_context_capsule_v4.5.md` — current context capsule
+| Surface | Status |
+|---|---|
+| 3-machine transport (CDL-061 / HTTP/3) | COMPLETE — Window 565-574 |
+| Agent behavioral loop v1 (7 agents) | COMPLETE — Window 575-584 |
+| 7+1 panel + ECU attribution | COMPLETE — Window 575-584 |
+| Genesis carry-forward | COMPLETE — Window 596-605 |
+| MVP gate spec form (5 touchpoints) | COMPLETE — Window 613-619 |
+| ECU active-layer runtime (CDL-063) | COMPLETE — Window 624-630 |
+| Tier-0 numeric determinism (CDL-064) | COMPLETE — Windows 631-641 |
+| Foundational economic doctrine | COMPLETE — Window 701-706 |
+| CDL-066/017/067 ratification | **OPEN** — Window 707+ |
+| MVP gate runtime form (rows 5 + 7) | **PENDING** — post-707 |
+| M-series real liveness run | **PENDING** — M-013 |
+| Option B selection | **DEFERRED** — post-runtime-form |
+| Legal positioning memo | **NOT WRITTEN** — pre-RC prerequisite |
+
+---
+
+## 4. Relationship to Existing Artifacts
+
+- `docs/specs/ilc_antigravity_context_capsule_v4.5.md` — canonical current state
+- `docs/specs/ilc_foundational_carry_forward_closure_program_701_plus_v0.1.md` — 701+ program
+- `docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md` — Option D→B transition
 - `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md` — M-series Rust track
-- `docs/adr/ADR_0025_D2d_HTTP_Gossip_Transport_Binding.md` — canonical transport decision
-- `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md` — prior planning snapshot
+- `docs/specs/ilc_window_701_706_closure_gate_706_v0.1.md` — Window 701-706 canonical closure
+- `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md` — prior planning snapshot (Windows 565-584 as future)
 
 ---
 
-*Updated 2026-04-17 to reflect Window 565-574 closure (`three_machine_testbed_primary_gate_passed`),
-Window 575-584 progress through Phase 580, and M-series M-009/M-010/M-011 completion.*
-*Next update recommended after Window 575-584 closes or when integration test harness scope is locked.*
+*Updated 2026-04-17 to reflect true current frontier: Window 701-706 closed, Window 707-712 next.
+Infrastructure gaps from v0.2 (transport, packaging, agent loop, integration harness) are closed.
+Remaining work is constitutional ratification, runtime-form MVP gate closure, M-series liveness, and legal positioning.*
