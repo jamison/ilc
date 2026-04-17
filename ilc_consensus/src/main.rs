@@ -73,6 +73,8 @@ mod args {
 
 #[tokio::main]
 async fn main() {
+    rustls::crypto::ring::default_provider().install_default().ok();
+
     let args = match args::parse() {
         Ok(a) => a,
         Err(e) => {

@@ -151,7 +151,6 @@ impl PeerNetwork {
         my_key_der: Vec<u8>,
     ) -> Result<Self, ILCConsensusError> {
         rustls::crypto::ring::default_provider().install_default().ok();
-        
         let cert = CertificateDer::from(my_cert_der);
         let key = PrivateKeyDer::Pkcs8(my_key_der.into());
 
@@ -187,7 +186,6 @@ impl PeerNetwork {
         my_key_der: Vec<u8>,
     ) -> Result<Self, ILCConsensusError> {
         rustls::crypto::ring::default_provider().install_default().ok();
-
         let mut endpoint = Endpoint::client(bind_addr)
             .map_err(|e| ILCConsensusError::Other(format!("Bind error: {}", e)))?;
 

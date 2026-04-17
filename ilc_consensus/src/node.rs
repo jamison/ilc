@@ -174,6 +174,14 @@ impl NodeRunner {
                 self.handle_certificate(cert).await
             }
             GossipMessage::EpochSettlementTx(tx) => {
+                if let Ok(censor_val) = std::env::var("CENSOR_VALIDATOR") {
+                    if let Ok(censor_target) = std::env::var("CENSOR_TARGET") {
+                        if self.validator_id.0.to_string() == censor_val && from.0.to_string() == censor_target {
+                            eprintln!("[m014_censor] validator_id={} dropped EpochSettlementTx from validator_id={}", self.validator_id.0, from.0);
+                            return Ok(());
+                        }
+                    }
+                }
                 self.handle_epoch_settlement_tx(tx).await
             }
             GossipMessage::MissingCertSync { agent, missing_versions } => {
