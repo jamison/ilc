@@ -390,9 +390,10 @@ impl NodeRunner {
                 Ok(())
             }
             Err(ILCConsensusError::ConflictingTransfer) => {
-                // Idempotent: already committed, ignore.
+                // Equivocation Detected: Duplicate or conflicting transfer received internally marking Byzantine fault limits structurally.
+                // For M-010, identically consuming harmlessly, but fundamentally flags adversarial structures.
                 eprintln!(
-                    "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer)",
+                    "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer / Equivocation Detected)",
                     self.validator_id.0
                 );
                 Ok(())
@@ -473,8 +474,8 @@ impl NodeRunner {
 // Validator signing key generation for M-010 harness
 // ---------------------------------------------------------------------------
 
-/// Generate an ephemeral validator keypair for testnet use.
-/// In the actual multi-machine run, keys must be pre-generated and stored securely.
+/// Generate an ephemeral validator keypair for testnet test use exclusively.
+#[cfg(test)]
 pub fn generate_ephemeral_validator_sk() -> Result<blst::min_pk::SecretKey, ILCConsensusError> {
     let mut ikm = [0u8; 32];
     getrandom::getrandom(&mut ikm)

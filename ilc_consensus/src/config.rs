@@ -68,6 +68,7 @@ struct RawNodeConfig {
     tls_key_path: String,
     peer_cert_dir: String,
     lmdb_path: String,
+    validator_consensus_key_path: String,
     grpc_listen_addr: Option<String>,
     #[allow(dead_code)]
     role: Option<String>,
@@ -102,6 +103,8 @@ pub struct NodeConfig {
     pub my_key_der: Vec<u8>,
     /// Peer certs keyed by validator_id, DER encoding.
     pub peer_certs: HashMap<u32, Vec<u8>>,
+    /// Persistent consensus secret key mapping cleanly over dynamic network quorum limits.
+    pub validator_sk: blst::min_pk::SecretKey,
     /// Optional gRPC listen address. None = gRPC not started.
     pub grpc_listen_addr: Option<std::net::SocketAddr>,
 }
@@ -195,6 +198,13 @@ pub fn load_node_config(
         grpc_listen_addr.map(|a: std::net::SocketAddr| a.to_string()).as_deref().unwrap_or("disabled"),
     );
 
+    let sk_hex = fs::read_to_string(&cfg.validator_consensus_key_path)
+        .map_err(|e| ILCConsensusError::Other(format!("Missing validator_consensus_key_path: {}", e)))?;
+    let sk_bytes = hex_decode_exact(sk_hex.trim(), 32)
+        .map_err(|e| ILCConsensusError::Other(format!("validator_consensus_key_path hex decode limit tracking fail: {}", e)))?;
+    let validator_sk = blst::min_pk::SecretKey::from_bytes(&sk_bytes)
+        .map_err(|_| ILCConsensusError::Other("Invalid BLS validator secret key mapped via local bounds natively.".into()))?;
+
     Ok(NodeConfig {
         validator_id: cfg.validator_id,
         network_id: cfg.network_id,
@@ -205,6 +215,7 @@ pub fn load_node_config(
         my_cert_der,
         my_key_der,
         peer_certs,
+        validator_sk,
         grpc_listen_addr,
     })
 }
@@ -438,6 +449,7 @@ mod tests {
             "lmdb_epoch_map_size_bytes": 67108864,
             "tls_cert_path": "/nonexistent/cert.pem",
             "tls_key_path": "/nonexistent/key.pem",
+            "validator_consensus_key_path": "/nonexistent/key.hex",
             "peer_cert_dir": "/nonexistent/certs",
             "lmdb_path": "/tmp/test_lmdb"
         }}"#).unwrap();
