@@ -111,7 +111,7 @@ def test_artifact_contains_all_required_tokens() -> None:
         assert token in text
 
 
-def test_config_directory_contains_required_files() -> None:
+def test_config_directory_contains_required_files_and_validator_configs_are_structurally_valid() -> None:
     required = [
         CONFIG_DIR / "genesis.json",
         CONFIG_DIR / "validator_1_config.json",
@@ -122,6 +122,54 @@ def test_config_directory_contains_required_files() -> None:
     ]
     for path in required:
         assert path.exists(), f"missing config file: {path}"
+
+    expected = {
+        1: {
+            "bind_host": "100.111.172.103",
+            "bind_port": 7101,
+            "tls_cert_path": "config/mysticeti_testnet_M009/certs/validator_1_cert.pem",
+            "tls_key_path": "config/mysticeti_testnet_M009/certs/validator_1_key.pem",
+        },
+        2: {
+            "bind_host": "100.109.27.59",
+            "bind_port": 7101,
+            "tls_cert_path": "/etc/ilc/mysticeti_m009/validator_2_cert.pem",
+            "tls_key_path": "/etc/ilc/mysticeti_m009/validator_2_key.pem",
+        },
+        3: {
+            "bind_host": "100.108.3.57",
+            "bind_port": 7101,
+            "tls_cert_path": "/etc/ilc/mysticeti_m009/validator_3_cert.pem",
+            "tls_key_path": "/etc/ilc/mysticeti_m009/validator_3_key.pem",
+        },
+        4: {
+            "bind_host": "100.109.27.59",
+            "bind_port": 7102,
+            "tls_cert_path": "/etc/ilc/mysticeti_m009/validator_4_cert.pem",
+            "tls_key_path": "/etc/ilc/mysticeti_m009/validator_4_key.pem",
+            "role": "silent_byzantine_withholding_test",
+        },
+    }
+    for validator_id, spec in expected.items():
+        cfg = json.loads(
+            (CONFIG_DIR / f"validator_{validator_id}_config.json").read_text(encoding="utf-8")
+        )
+        assert cfg.get("validator_id") == validator_id
+        assert cfg.get("network_id") == "ilc-mysticeti-testnet-m009"
+        assert cfg.get("is_testnet") is True
+        assert cfg.get("bind_host") == spec["bind_host"]
+        assert cfg.get("bind_host") != "0.0.0.0"
+        assert cfg.get("tailscale_advertise_ip") == spec["bind_host"]
+        assert cfg.get("bind_port") == spec["bind_port"]
+        assert cfg.get("lmdb_balance_map_size_bytes") == 67108864
+        assert cfg.get("lmdb_epoch_map_size_bytes") == 16777216
+        assert cfg.get("tls_cert_path") == spec["tls_cert_path"]
+        assert cfg.get("tls_key_path") == spec["tls_key_path"]
+        assert not str(cfg.get("tls_key_path", "")).startswith("/tmp/")
+        peer_ids = {peer.get("validator_id") for peer in cfg.get("peers", [])}
+        assert peer_ids == ({1, 2, 3, 4} - {validator_id})
+        if validator_id == 4:
+            assert cfg.get("role") == spec["role"]
 
 
 def test_genesis_config_declares_four_validators_with_no_real_ecu() -> None:
