@@ -218,6 +218,8 @@ fn parse_args() -> Result<Args, String> {
 
 #[tokio::main]
 async fn main() {
+    rustls::crypto::ring::default_provider().install_default().ok();
+
     let args = match parse_args() {
         Ok(a) => a,
         Err(e) => {
