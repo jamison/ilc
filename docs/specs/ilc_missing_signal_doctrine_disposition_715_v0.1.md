@@ -88,6 +88,16 @@ Deferred:
 - any `CDL-039` ratification or authorization expansion,
 - any runtime mutation in this docs-only phase.
 
+Carry-forward precision still required in a later runtime contract or evidence-bearing
+implementation lane:
+
+- what concrete detector starts a "missing expected signal" event,
+- how the grace window is measured or bounded,
+- what exact node behaviors constitute fail-soft degraded operation.
+
+This disposition intentionally selects the doctrine shape without fixing those
+runtime-level thresholds or behaviors numerically in the docs-only window.
+
 Non-goals:
 
 - no new CDL row,
