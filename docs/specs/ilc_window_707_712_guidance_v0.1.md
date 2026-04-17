@@ -102,6 +102,8 @@ Required reading before Phase 707 begins:
 3. `docs/phases/STATUS.md` (tail) — confirm Phase 706 is the last entry
 4. `docs/specs/ilc_foundational_carry_forward_closure_program_701_plus_v0.1.md` §4.7 and §5.1–5.2 — the six Qs and window 707-712 scope
 5. `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md` (M-series table) — Track B current state (M-011 complete, M-012 next)
+6. `docs/specs/ilc_window_707_712_candidate_phase_grouping_v0.1.md` — recommended phase map, blockers, and open questions
+7. `docs/antigravity_tasks/codex_brief__phases_707_712_g8_window_707_712_execution_guidance.md` — prompt-pack review brief
 
 ---
 
