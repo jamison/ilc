@@ -168,6 +168,13 @@ def test_decision_log_tla_specs_ilc_core_and_ilc_consensus_remain_unmutated_in_t
     )
     assert result_ilc_core.returncode == 0
 
+    result_ilc_consensus = subprocess.run(
+        ["git", "diff", "--exit-code", "--", "ilc_consensus/"],
+        capture_output=True,
+        text=True,
+    )
+    assert result_ilc_consensus.returncode == 0
+
 
 def test_phase_698_main_commit_touches_expected_paths_only() -> None:
     commit_ref = _resolve_commit_ref(PHASE_698_SUBJECT, EXACT_REQUIRED_MAIN_PATHS)

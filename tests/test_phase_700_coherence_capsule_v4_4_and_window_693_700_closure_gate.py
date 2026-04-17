@@ -196,6 +196,13 @@ def test_no_ilc_core_or_ilc_consensus_paths_are_mutated_in_this_phase() -> None:
     )
     assert result_ilc_core.returncode == 0
 
+    result_ilc_consensus = subprocess.run(
+        ["git", "diff", "--exit-code", "--", "ilc_consensus/"],
+        capture_output=True,
+        text=True,
+    )
+    assert result_ilc_consensus.returncode == 0
+
 
 def test_phase_700_main_commit_touches_expected_paths_only() -> None:
     commit_ref = _resolve_commit_ref(PHASE_700_SUBJECT, EXACT_REQUIRED_MAIN_PATHS)
