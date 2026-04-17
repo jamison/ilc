@@ -106,11 +106,12 @@ def test_artifact_maps_answers_into_concrete_cdl_017_prelock_requirements() -> N
 
 def test_artifact_records_explicit_diversity_metric_and_later_evidence_path() -> None:
     text = _read(ARTIFACT_PATH)
-    assert "`ecu_score_band` as epoch-boundary terciles" in text
-    assert "span all three bands" in text
-    assert "no more than `50%` of seats in a single band" in text
+    assert "`validator_cluster_id`" in text
+    assert "`distinct_cluster_floor = 2`" in text
+    assert "`max_cluster_share_ceiling <= 50%`" in text
     assert "`SIM-TOPOLOGY-01`" in text
     assert "prelock candidate metric, not ratified runtime law" in text
+    assert "supplemental simulation analysis" in text
 
 
 def test_artifact_preserves_deferrals_and_non_ratification_boundary() -> None:
