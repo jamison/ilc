@@ -57,7 +57,8 @@ Phase 710 and Phase 711 together established:
 - the rejected alternatives for each answer,
 - the concrete `CDL-017` prelock consequences,
 - the candidate validator-composition diversity metric using
-  epoch-boundary `ecu_score_band` terciles plus a per-band ceiling,
+  `validator_cluster_id`, `distinct_cluster_floor`, and
+  `max_cluster_share_ceiling` semantics aligned to `CDL-V3`,
 - `SIM-VALIDATOR-01` as the required evidence path before any numeric ECU stake
   floor becomes stronger law,
 - `SIM-TOPOLOGY-01` as the required evidence path before topology-seed and
