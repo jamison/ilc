@@ -112,7 +112,7 @@ Default elevation gates:
 | Item | Current status | Recommended completion mode | Earliest honest start | Suggested artifacts |
 |---|---|---|---|---|
 | `W_e = ΔH / E_cost` | real economic background, not ratified | `doctrine_lock` unless later evidence requires stronger law | after `693-700`, or in parallel with long-tail economics review | `docs/research/ilc_w_e_traceability_and_kernel_mapping_note_v0.1.md` |
-| BAL-profile weights for the four-component ECU kernel | components are canon; exact weights are not settled | `spec_or_contract_lock` first, with optional later `constitutional_lock` only if evidence justifies | after replay/live calibration evidence is available | `docs/specs/ilc_ecu_kernel_profile_calibration_note_v0.1.md` |
+| BAL-profile weights for the four-component ECU kernel | the kernel slots are canon (`reuse`, `contradiction_resilience`, `validation_integrity`, `path_uplift`); exact profile disposition is not settled | `spec_or_contract_lock` first, with optional later `constitutional_lock` only if evidence justifies | after replay/live calibration evidence is available | `docs/specs/ilc_ecu_kernel_profile_calibration_note_v0.1.md` |
 | “ILC is post-banking” framing | real explanatory frame, not governance text | `doctrine_lock` | any time after `693-700` | `docs/research/ilc_post_banking_economic_doctrine_note_v0.1.md` |
 | Inverted ECU model | historically important, partially echoed by decay and forced circulation | `spec_or_contract_lock` for explicit runtime traceability, plus doctrine preservation | after `693-700`, ideally beside economic monitoring review | `docs/research/ilc_inverted_ecu_model_runtime_traceability_note_v0.1.md` |
 
@@ -134,8 +134,23 @@ Mandatory evidence gate for the BAL-profile item:
 - `701-706` should not stop at “plan a calibration later”
 - it must publish a concrete calibration harness / replay contract for the ECU
   kernel profile question, including:
-  - candidate profile set,
-  - deterministic replay inputs,
+  - explicit confirmation that the calibration target is the four-component ECU
+    kernel (`reuse`, `contradiction_resilience`, `validation_integrity`,
+    `path_uplift`) and not a reframing into stake / temporal-decay /
+    diversity-floor / recency slots,
+  - candidate profile set including at minimum:
+    - `EVEN` (`0.25 / 0.25 / 0.25 / 0.25`),
+    - `BAL` (`0.35 / 0.25 / 0.20 / 0.20`, active default / unratified planning
+      assumption),
+    - `ROBUST` (`0.20 / 0.45 / 0.20 / 0.15`),
+    - `REFINE` (`0.45 / 0.15 / 0.20 / 0.20`),
+  - explicit statement that `ADAPT` is excluded from the fixed-vector sweep
+    unless a separate formal profile-spec artifact exists,
+  - deterministic replay tiers:
+    - `100-agent` preflight / harness sanity tier,
+    - `10,000-agent` evidence-bearing tier,
+    - multi-epoch sweep expectation aligned with the whitepaper simulation
+      posture,
   - sensitivity dimensions,
   - and the evidence threshold required before any later `constitutional_lock`
     move.
@@ -225,6 +240,59 @@ This block closes when:
 - and the financial-shard question is no longer silently mixed together with
   unrelated shard-lifecycle or private/gated-shard questions.
 
+### 4.7 Validator-Agent Identity System
+
+Full design reference: `docs/research/ilc_validator_agent_identity_system_v0.1.md`
+
+Accepted design position (2026-04-16): validators are agents that have taken on
+a validator role. `ValidatorID` must eventually map to `AgentID`. Validator
+stake (CDL-055) is backed by agent ECU. Validator reputation extends the
+CDL-V1 through CDL-V7 agent reputation chain. Topology assignment should use
+the same randomized assignment machinery as jury/quorum selection (7+1 panels).
+
+| Item | Current status | Recommended completion mode | Earliest honest start | Suggested artifacts |
+|---|---|---|---|---|
+| `ValidatorID` → `AgentID` linkage | Unresolved — M-series uses opaque `u32` | `constitutional_lock` via CDL-017 | Window 707-712 research sub-lane | `docs/research/ilc_validator_agent_design_evidence_v0.1.md` |
+| `ValidatorKey` derivation from `AgentID` | Design question open (same key vs sub-key) | `spec_or_contract_lock` first; incorporated into CDL-017 prelock | Window 707-712 | Fold into design evidence doc |
+| Validator selection via reputation-weighted random assignment | Design proposal; consistent with CDL-V1/V3 | `constitutional_lock` via CDL-017 | After SIM-VALIDATOR-01 and reputation calibration evidence | `docs/research/ilc_validator_selection_and_topology_assignment_v0.1.md` |
+| Topology shuffling authorization | Blocked by CDL-039 pending constitutional authorization | `constitutional_lock` via CDL-039 amendment or new CDL | After Q5 (VRF vs epoch-hash) resolved; Window 707-712+ | CDL-039 amendment opening stub |
+| Validation pools (stake delegation, slash propagation) | Architectural proposal only; no CDL | `constitutional_lock` via separate CDL (after CDL-017 core) | Post CDL-017 core ratification | `docs/research/ilc_validation_pool_and_stake_delegation_v0.1.md` |
+| CDL-V3 diversity floor extension to validator set | Open constitutional question | Resolve in CDL-017 prelock; may require CDL-V3 amendment | Window 707-712 conversation | Named in prelock evidence packet |
+
+#### Required simulations before CDL-017 prelock
+
+- **SIM-VALIDATOR-01**: minimum ECU stake threshold calibration. Inputs:
+  expected transfer volume per epoch, CDL-055 slash rates. Must show stake
+  floor renders equivocation always economically irrational.
+- **SIM-TOPOLOGY-01**: topology shuffle sizing and k-regular subgraph bounds.
+  Inputs: N validators, F Byzantine tolerance, shuffle frequency. Must confirm
+  gossip graph remains connected across shuffle transitions under worst-case F.
+
+#### Six constitutional questions that must be answered before CDL-017 prelock
+
+1. `ValidatorKey`: same BLS key as `AgentID`, or derived sub-key with provable linkage?
+2. Minimum ECU stake threshold (SIM-VALIDATOR-01 required)?
+3. Reputation-weighted selection: proportional to `ecu_score`, or threshold-based eligibility pool?
+4. Validation pools: CDL-017 scope, or separate subsequent CDL?
+5. Topology assignment seed: epoch-hash (public/predictable) or VRF (private/unpredictable)?
+6. Does CDL-V3 diversity floor extend to validator set composition? If yes, what is the diversity metric?
+
+These questions must be resolved in conversation with Sonnet before any Codex
+prelock phase begins. They are not resolvable from code alone.
+
+#### Completion rule for this block
+
+This block closes when:
+- Q1 through Q6 are answered and recorded in a research artifact,
+- SIM-VALIDATOR-01 and SIM-TOPOLOGY-01 evidence exists,
+- CDL-017 prelock incorporates the validator-agent design explicitly,
+- validation pools are either included in CDL-017 or formally deferred to a
+  named subsequent CDL, and
+- CDL-039 topology-shuffling amendment lane is either opened or explicitly
+  deferred with a trigger condition.
+
+---
+
 ### 4.6 M-series security deferred items requiring CDL action
 
 These items were identified during the M-001 to M-007 security hardening pass
@@ -262,7 +330,7 @@ CDL-066 governs who is *authorized to initiate a transfer*.
 #### Completion rule for this block
 
 This block closes when:
-- SEC-001 (CDL-062) is ratified and the `AgentSig` field is present in
+- SEC-001 (CDL-066) is ratified and the `AgentSig` field is present in
   the committed `ECUTransfer` type with a passing test
 - SEC-002 is resolved in M-008 and ADR-0011 amendment is accepted
 - SEC-003 is resolved in M-008 with a passing integration test
@@ -282,7 +350,13 @@ Primary closure targets:
 Recommended outputs:
 - doctrine/law classification table
 - kernel traceability note
-- calibration/replay plan for any profile candidate
+- calibration/replay contract for the four-component ECU kernel, explicitly
+  using `reuse`, `contradiction_resilience`, `validation_integrity`, and
+  `path_uplift` as the scored slots
+- candidate profile set fixed at `EVEN`, `BAL`, `ROBUST`, `REFINE` for the
+  fixed-vector sweep; `ADAPT` handled separately as a later formal-spec item
+- replay tiers fixed at `100-agent` preflight and `10,000-agent`
+  evidence-bearing deterministic replay
 - whitepaper/economic-architecture amendment packet
 
 Nearer-term non-blocking requirement for `687-692`:
@@ -311,7 +385,43 @@ Allowed early-start carry-forward before `707`:
 - explicit split between founder-rent sunset and steward/infrastructure
   incentive continuity where required
 
+#### 5.2.1 Validator-Agent Identity System sub-lane (within 707-712)
+
+This sub-lane runs inside 707-712. It is NOT a separate window; it is an
+explicit research and conversation deliverable within the governance-minimization
+window. Classification: **Research: HIGH, Sim/replay: HIGH, Conversation: VERY HIGH**.
+
+The six constitutional questions (§4.7) must be answered in pre-window
+conversation with Sonnet before Codex begins any phase in this sub-lane.
+
+Background reference for gossip topology and topology-shuffling design:
+`docs/research/ilc_gossip_hybrid_push_pull_architecture_context_v0.1.md`
+— establishes the original push-pull threat model and inv/getdata rationale
+that governs how validator peer connections and shuffle frequency interact with
+gossip architecture. Read this before drafting the CDL-039 amendment scope note.
+
+Required outputs within 707-712:
+- Conversation record: Q1 through Q6 answered and agreed
+- `docs/research/ilc_validator_agent_design_evidence_v0.1.md` — maps Q1-Q6
+  answers to CDL-017 prelock checklist requirements
+- SIM-VALIDATOR-01 commissioned and results available
+- SIM-TOPOLOGY-01 commissioned (may complete in later window)
+- CDL-039 amendment scope note: topology shuffling authorization path
+
+Note: CDL-017 **ratification** does not happen in 707-712. Ratification
+happens in the Mysticeti convergence window (§5.6) because it requires both
+Codex constitutional text and Gemini M-series implementation evidence.
+Window 707-712 produces the prelock evidence and design resolution.
+
 ### 5.3 `713-716` — Adaptive Gossip and Resilience Operationalization
+
+Background reference:
+`docs/research/ilc_gossip_hybrid_push_pull_architecture_context_v0.1.md`
+— establishes the original push-pull (inv/getdata) threat model and CDL-036
+compatibility rationale. Read before drafting the adaptive-gossip contract.
+Current implementation (CDL-060, CDL-061, `gossip_transport.py`,
+`ilc_consensus/src/network.rs`) has moved beyond this doc; use it for design
+rationale and threat-model baseline, not as a description of current behavior.
 
 Primary closure targets:
 - adaptive-gossip contract
@@ -393,6 +503,19 @@ This program does **not** do the following:
 - silently block `CDL-062`,
 - force every historical idea into a CDL,
 - or treat metaphysical language as sufficient for runtime/governance law.
+
+### 7.1 Deferred programs not in scope for 701-726
+
+The following planning artifacts exist and are canon-adjacent but belong to
+programs that start **after** the convergence window closes:
+
+- **L3 app development program** (post-convergence):
+  `docs/specs/ilc_l3_app_sidecar_and_homoiconic_object_model_note_v0.1.md`
+  Covers the sidecar model, homoiconic representation for L3 apps, schema
+  governance, and the market-app object-model example. Content is sound and
+  non-stale. Scheduled for a dedicated L3 app development program that opens
+  after the sovereign substrate is stable. Does not require a CDL yet. Not in
+  scope for any window in 701-726.
 
 ## 8. Bottom line
 
