@@ -77,7 +77,9 @@ pub struct NodeRunner {
     /// In-flight transfers keyed by ObjectRef (owned-object fast path).
     in_flight: Arc<Mutex<HashMap<ObjectRef, InFlight>>>,
     /// Outbound connection pool: one QUIC connection per peer, reused across messages.
-    outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
+    pub outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
+    pub censor_validator: Option<u32>,
+    pub censor_target: Option<u32>,
 }
 
 impl NodeRunner {
@@ -104,6 +106,8 @@ impl NodeRunner {
             peer_addrs,
             in_flight: Arc::new(Mutex::new(HashMap::new())),
             outbound_pool: Arc::new(Mutex::new(HashMap::new())),
+            censor_validator: std::env::var("CENSOR_VALIDATOR").ok().and_then(|v| v.parse().ok()),
+            censor_target: std::env::var("CENSOR_TARGET").ok().and_then(|v| v.parse().ok()),
         }
     }
 
@@ -174,9 +178,10 @@ impl NodeRunner {
                 self.handle_certificate(cert).await
             }
             GossipMessage::EpochSettlementTx(tx) => {
-                if let Ok(censor_val) = std::env::var("CENSOR_VALIDATOR") {
-                    if let Ok(censor_target) = std::env::var("CENSOR_TARGET") {
-                        if self.validator_id.0.to_string() == censor_val && from.0.to_string() == censor_target {
+                // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+                if let Some(censor_val) = self.censor_validator {
+                    if let Some(censor_tgt) = self.censor_target {
+                        if self.validator_id.0 == censor_val && from.0 == censor_tgt {
                             eprintln!("[m014_censor] validator_id={} dropped EpochSettlementTx from validator_id={}", self.validator_id.0, from.0);
                             return Ok(());
                         }
