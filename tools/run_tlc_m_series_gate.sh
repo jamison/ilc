@@ -140,7 +140,7 @@ run_spec() {
 
 main() {
     log "ILC M-Series TLA+ Gate — tla_tlc_clean_m_series_implementation_gate"
-    log "Specs: ilc_dag_censorship_bounds (Spec A) + ilc_ecu_fast_path_bcast (Spec B)"
+    log "Specs: ilc_dag_censorship_bounds (Spec A) + ilc_ecu_fast_path_bcast (Spec B) + ilc_partition_heal (Spec C)"
     echo ""
 
     check_java
@@ -153,11 +153,16 @@ main() {
     echo ""
     run_spec "ilc_ecu_fast_path_bcast"   || failures=$((failures + 1))
     echo ""
+    run_spec "ilc_partition_heal"         || failures=$((failures + 1))
+    echo ""
 
     if [[ "$failures" -eq 0 ]]; then
         pass "═══════════════════════════════════════════════════════"
         pass "GATE SATISFIED: tla_tlc_clean_m_series_implementation_gate"
-        pass "Both specs clean. M-003 implementation gate is open."
+        pass "All 3 specs clean. M-series implementation gate is open."
+        pass "  Spec A: DAG censorship bounds (Row-7 liveness)"
+        pass "  Spec B: ECU fast-path broadcast safety"
+        pass "  Spec C: Partition/heal/recovery (M-015 pre-condition)"
         pass "═══════════════════════════════════════════════════════"
         exit 0
     else
