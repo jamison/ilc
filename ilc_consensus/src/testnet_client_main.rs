@@ -36,7 +36,7 @@ use std::path::PathBuf;
 
 use ilc_consensus::{
     network::{GossipEnvelope, GossipMessage, PeerNetwork},
-    types::{AgentID, AgentSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementTx, ObjectRef, ValidatorID, AGENT_TRANSFER_DST},
+    types::{AgentID, AgentSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementTx, ObjectRef, ValidatorID, ValidatorSig, TransferCertificate, AGENT_TRANSFER_DST},
 };
 
 // ---------------------------------------------------------------------------
@@ -47,6 +47,7 @@ use ilc_consensus::{
 enum MsgType {
     Broadcast,
     EpochSettlement,
+    FullTransfer,
 }
 
 #[derive(Debug)]
@@ -66,6 +67,11 @@ struct Args {
     // epoch_settlement params
     start_epoch: u64,
     count: u64,
+    // full_transfer params
+    listen_addr: Option<SocketAddr>,
+    validators: Vec<(u32, SocketAddr)>,
+    validator_certs: Vec<PathBuf>,
+    f: usize,
 }
 
 fn parse_args() -> Result<Args, String> {
@@ -82,6 +88,10 @@ fn parse_args() -> Result<Args, String> {
     let mut version: u64 = 0;
     let mut start_epoch: u64 = 0;
     let mut count: u64 = 1;
+    let mut listen_addr: Option<SocketAddr> = None;
+    let mut validators: Vec<(u32, SocketAddr)> = Vec::new();
+    let mut validator_certs: Vec<PathBuf> = Vec::new();
+    let mut f: usize = 1;
 
     let mut i = 1;
     while i < raw.len() {
@@ -113,7 +123,8 @@ fn parse_args() -> Result<Args, String> {
                 msg_type = Some(match raw.get(i).ok_or("--msg requires a type")?.as_str() {
                     "broadcast" => MsgType::Broadcast,
                     "epoch_settlement" => MsgType::EpochSettlement,
-                    other => return Err(format!("unknown --msg type '{}' (broadcast|epoch_settlement)", other)),
+                    "full_transfer" => MsgType::FullTransfer,
+                    other => return Err(format!("unknown --msg type '{}' (broadcast|epoch_settlement|full_transfer)", other)),
                 });
             }
             "--sender-key" => {
@@ -144,8 +155,36 @@ fn parse_args() -> Result<Args, String> {
                 count = raw.get(i).ok_or("--count requires a number")?
                     .parse().map_err(|e| format!("--count: {}", e))?;
             }
+            "--listen-addr" => {
+                i += 1;
+                let s = raw.get(i).ok_or("--listen-addr requires an addr argument")?;
+                listen_addr = Some(s.parse().map_err(|e| format!("--listen-addr: {}", e))?);
+            }
+            "--f" => {
+                i += 1;
+                f = raw.get(i).ok_or("--f requires a number")?
+                    .parse().map_err(|e| format!("--f: {}", e))?;
+            }
+            "--validators" => {
+                i += 1;
+                let list = raw.get(i).ok_or("--validators requires a comma-separated list")?;
+                for (idx, addr_str) in list.split(',').enumerate() {
+                    let id = (idx + 1) as u32; // Assuming 1-indexed validator IDs dynamically mapping 1,2,3,4
+                    let addr = addr_str.parse().map_err(|e| format!("--validators parse '{}': {}", addr_str, e))?;
+                    validators.push((id, addr));
+                }
+            }
+            "--validator-certs" => {
+                i += 1;
+                let list = raw.get(i).ok_or("--validator-certs requires a comma-separated list")?;
+                for p in list.split(',') {
+                    validator_certs.push(PathBuf::from(p));
+                }
+            }
             "--help" | "-h" => {
-                eprintln!("Usage: testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement> [...]");
+                eprintln!("Usage:");
+                eprintln!("  testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement>");
+                eprintln!("  testnet_client --msg full_transfer --listen-addr <addr> --f <N> --validators <addr,addr..> --validator-certs <der,der..> --sender-key <file> --to <hex> --amount <u64> --version <u64> --cert <pem> --key <pem>");
                 std::process::exit(0);
             }
             other => return Err(format!("Unknown argument: {}", other)),
@@ -154,18 +193,22 @@ fn parse_args() -> Result<Args, String> {
     }
 
     Ok(Args {
-        validator_addr: validator_addr.ok_or("--validator is required")?,
+        validator_addr: validator_addr.unwrap_or_else(|| "0.0.0.0:0".parse().unwrap()), // optional for FullTransfer
         cert_pem: cert_pem.ok_or("--cert is required")?,
         key_pem: key_pem.ok_or("--key is required")?,
-        peer_cert_der: peer_cert_der.ok_or("--peer-cert is required")?,
+        peer_cert_der: peer_cert_der.unwrap_or_else(|| PathBuf::from("")), // optional for FullTransfer
         peer_id,
-        msg_type: msg_type.ok_or("--msg is required (broadcast|epoch_settlement)")?,
+        msg_type: msg_type.ok_or("--msg is required")?,
         sender_key_file,
         to_hex,
         amount_micro_ecu,
         version,
         start_epoch,
         count,
+        listen_addr,
+        validators,
+        validator_certs,
+        f,
     })
 }
 
@@ -195,6 +238,11 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     // -----------------------------------------------------------------------
     let my_cert_der = load_pem_as_der(&args.cert_pem)?;
     let my_key_der = load_pem_as_der(&args.key_pem)?;
+
+    if matches!(args.msg_type, MsgType::FullTransfer) {
+        return run_full_transfer(args, my_cert_der, my_key_der).await;
+    }
+
     let peer_cert_der_bytes = fs::read(&args.peer_cert_der)?;
 
     // Peer cert map: validator_id → DER bytes.
@@ -299,9 +347,116 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 );
             }
         }
+        MsgType::FullTransfer => unreachable!(),
     }
 
     eprintln!("[testnet_client] done — {} message(s) sent", args.count);
+    Ok(())
+}
+
+async fn run_full_transfer(args: Args, my_cert_der: Vec<u8>, my_key_der: Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
+    let listen_addr = args.listen_addr.ok_or("--listen-addr is required for full_transfer")?;
+    let mut all_validator_cert_map = HashMap::new();
+    for (i, p) in args.validator_certs.iter().enumerate() {
+        let der = fs::read(p).map_err(|e| format!("read cert {}: {}", p.display(), e))?;
+        all_validator_cert_map.insert((i + 1) as u32, der);
+    }
+
+    let sk_file = args.sender_key_file.as_ref().ok_or("--sender-key is required for full_transfer")?;
+    let to_hex = args.to_hex.as_ref().ok_or("--to is required for full_transfer")?;
+    let sender_sk = load_bls_secret_key(sk_file)?;
+    let sender_pk = sender_sk.sk_to_pk();
+    let sender_agent_id = AgentID(sender_pk.compress());
+
+    let to_bytes = hex_decode_exact(to_hex, 48)?;
+    let mut to_arr = [0u8; 48];
+    to_arr.copy_from_slice(&to_bytes);
+    let to_agent_id = AgentID(to_arr);
+
+    // 2. Bind a QUIC server endpoint at --listen-addr using client cert
+    let client_server = PeerNetwork::new_server(
+        listen_addr,
+        all_validator_cert_map.clone(),
+        my_cert_der.clone(),
+        my_key_der.clone(),
+    ).map_err(|e| format!("new_server: {}", e))?;
+
+    // 3. Build an outbound client endpoint
+    let outbound = PeerNetwork::new_client(
+        "0.0.0.0:0".parse()?,
+        all_validator_cert_map.clone(),
+        my_cert_der,
+        my_key_der,
+    ).map_err(|e| format!("new_client: {}", e))?;
+
+    let object_ref = ObjectRef {
+        agent: sender_agent_id,
+        version: args.version,
+    };
+
+    let sender_msg = bincode::serialize(&(&object_ref, &to_agent_id, &args.amount_micro_ecu))?;
+    let sig = sender_sk.sign(&sender_msg, AGENT_TRANSFER_DST, &[]);
+    let transfer = ECUTransfer {
+        object_ref,
+        to: to_agent_id,
+        amount_micro_ecu: args.amount_micro_ecu,
+        sender_sig: AgentSig(sig),
+    };
+
+    let envelope = GossipEnvelope {
+        frame_type: 0x00,
+        peer_id: ValidatorID(args.peer_id), // e.g. 5
+        payload: GossipMessage::BroadcastHonest(transfer.clone()),
+    };
+
+    // 4. Send BroadcastHonest to all validators
+    for (vid, addr) in &args.validators {
+        let conn = outbound.endpoint.connect(*addr, "localhost")?.await?;
+        let (send, _recv) = conn.open_bi().await?;
+        outbound.transmit(send, envelope.clone()).await?;
+        eprintln!("[m012_client] sent BroadcastHonest to validator {}", vid);
+    }
+
+    // 5. Accept AckFor responses
+    let quorum = 2 * args.f + 1;
+    let mut acks: Vec<(ValidatorID, ValidatorSig)> = Vec::new();
+
+    while acks.len() < quorum {
+        let incoming = client_server.endpoint.accept().await.ok_or("server endpoint closed")?;
+        let conn = incoming.await?;
+        let (_, recv) = conn.accept_bi().await?;
+        let envelope = client_server.receive(&conn, recv).await?;
+
+        if let GossipMessage::AckFor { object_ref: ack_ref, sig } = envelope.payload {
+            if ack_ref == object_ref {
+                let from = envelope.peer_id;
+                if !acks.iter().any(|(id, _)| *id == from) {
+                    acks.push((from, sig));
+                    eprintln!("[m012_client] received AckFor from validator {} ({}/{})", from.0, acks.len(), quorum);
+                }
+            }
+        }
+    }
+
+    // 6. Assemble TransferCertificate
+    let cert = TransferCertificate { transfer, sigs: acks };
+    eprintln!("[m012_client] certificate assembled — broadcasting to all validators");
+
+    // 7. Broadcast Certificate
+    let cert_envelope = GossipEnvelope {
+        frame_type: 0x00,
+        peer_id: ValidatorID(args.peer_id),
+        payload: GossipMessage::Certificate(cert),
+    };
+
+    for (vid, addr) in &args.validators {
+        let conn = outbound.endpoint.connect(*addr, "localhost")?.await?;
+        let (send, _recv) = conn.open_bi().await?;
+        outbound.transmit(send, cert_envelope.clone()).await?;
+        eprintln!("[m012_client] sent Certificate to validator {}", vid);
+    }
+
+    eprintln!("[m012_client] full_transfer_round_trip_complete");
     Ok(())
 }
 
