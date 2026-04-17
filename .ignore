@@ -1,0 +1,8 @@
+# ripgrep / fd ignore file
+# Prevents search tools from walking into Rust build artifacts (2+ GB)
+ilc_consensus/target/
+target/
+
+# Also skip large binary-heavy dirs that aren't source
+Z_Past_Chats/
+out/
