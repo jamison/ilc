@@ -35,7 +35,7 @@ struct RawGenesisValidator {
 
 #[derive(Debug, Deserialize)]
 struct RawGenesis {
-    network_id: String,
+    network_id: String,  // returned alongside ValidatorSet so main.rs avoids double-read
     #[allow(dead_code)]
     is_testnet: bool,
     #[allow(dead_code)]
@@ -87,6 +87,7 @@ pub struct PeerAddr {
 }
 
 /// Full resolved node configuration ready for harness use.
+#[derive(Debug)]
 pub struct NodeConfig {
     pub validator_id: u32,
     pub network_id: String,
@@ -109,9 +110,10 @@ pub struct NodeConfig {
 // Load functions
 // ---------------------------------------------------------------------------
 
-/// Load genesis.json → ValidatorSet.
+/// Load genesis.json → (ValidatorSet, network_id).
+/// Returns the network_id alongside ValidatorSet so callers don't need to re-read the file.
 /// Translates hex-encoded validator_key and agent_id into runtime types.
-pub fn load_genesis(genesis_path: &Path) -> Result<ValidatorSet, ILCConsensusError> {
+pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCConsensusError> {
     let raw = fs::read_to_string(genesis_path)
         .map_err(|e| ILCConsensusError::Other(format!("Cannot read genesis: {}", e)))?;
     let genesis: RawGenesis = serde_json::from_str(&raw)
@@ -132,10 +134,11 @@ pub fn load_genesis(genesis_path: &Path) -> Result<ValidatorSet, ILCConsensusErr
         validators.push((ValidatorID(v.validator_id), ValidatorKey(pubkey)));
     }
 
-    Ok(ValidatorSet {
+    let validator_set = ValidatorSet {
         validators,
         f: genesis.f,
-    })
+    };
+    Ok((validator_set, genesis.network_id))
 }
 
 /// Load validator config JSON and resolve all deployment paths into runtime types.
@@ -252,10 +255,8 @@ fn load_pem_as_der(path: &str) -> Result<Vec<u8>, String> {
         .ok_or_else(|| format!("malformed PEM in '{}'", path))?;
     let end = pem_str.find(end_marker)
         .ok_or_else(|| format!("no PEM END marker in '{}'", path))?;
-    let end_line_end = pem_str[end..].find('\n').unwrap_or(pem_str[end..].len());
 
     let b64_body = pem_str[start + header_end + 1..end].replace('\n', "").replace('\r', "");
-    let _ = &pem_str[end..end + end_line_end]; // validate end marker exists
 
     let der = base64_decode(&b64_body)
         .map_err(|e| format!("base64 decode error in '{}': {}", path, e))?;
@@ -405,7 +406,7 @@ mod tests {
         // load_genesis will return an error on the BLS deserialization step — that's expected.
         let result = load_genesis(genesis_path);
         match result {
-            Ok(_) => {} // real keys: pass
+            Ok((_validator_set, _network_id)) => {} // real keys: pass
             Err(ILCConsensusError::Other(ref msg)) => {
                 // Acceptable error: BLS point rejection on placeholder keys
                 assert!(
@@ -419,10 +420,35 @@ mod tests {
 
     #[test]
     fn test_network_id_mismatch_rejected() {
-        // Verify the network_id enforcement fires. We can't easily create a temp JSON
-        // without tempfile, so test the logic indirectly via the raw check.
-        let cfg_network_id = "ilc-mysticeti-testnet-m009";
-        let genesis_network_id = "ilc-different-network";
-        assert_ne!(cfg_network_id, genesis_network_id);
+        // Write a minimal validator config JSON with a network_id that differs from the
+        // genesis network_id. load_node_config must return an error before touching any
+        // file paths (the mismatch check is the first validation after parsing).
+        use std::io::Write;
+        use tempfile::NamedTempFile;
+
+        let mut cfg_file = NamedTempFile::new().unwrap();
+        write!(cfg_file, r#"{{
+            "validator_id": 1,
+            "network_id": "ilc-different-network",
+            "bind_host": "127.0.0.1",
+            "bind_port": 9001,
+            "tailscale_advertise_ip": "100.0.0.1",
+            "peers": [],
+            "lmdb_balance_map_size_bytes": 67108864,
+            "lmdb_epoch_map_size_bytes": 67108864,
+            "tls_cert_path": "/nonexistent/cert.pem",
+            "tls_key_path": "/nonexistent/key.pem",
+            "peer_cert_dir": "/nonexistent/certs",
+            "lmdb_path": "/tmp/test_lmdb"
+        }}"#).unwrap();
+
+        let result = load_node_config(cfg_file.path(), "ilc-mysticeti-testnet-m009");
+        assert!(result.is_err(), "expected network_id mismatch error");
+        let err_msg = format!("{:?}", result.unwrap_err());
+        assert!(
+            err_msg.contains("network_id mismatch"),
+            "expected 'network_id mismatch' in error, got: {}",
+            err_msg
+        );
     }
 }
