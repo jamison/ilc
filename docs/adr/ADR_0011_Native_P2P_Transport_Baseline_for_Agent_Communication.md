@@ -75,3 +75,11 @@ operations. The transport layer must not hardcode or assume a network identity.
 **Tracking token:** `sec_002_chain_id_dst_required_before_m009_testnet`
 **Full context:** §6, SEC-002 in
 `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md`
+
+**Gate closure (2026-04-16):** Satisfied in M-008. `VALIDATOR_DST` static constant
+removed from `validator.rs`; replaced with `pub fn validator_dst(network_id: &str) ->
+Vec<u8>` producing `b"ILC_FAST_PATH_V1:{network_id}"`. Both `sign_message` and
+`verify_signature` now accept `network_id: &str`. Enforcement implemented in
+`FastPathProtocol` and carried through all signing/verification call sites. Network ID
+is loaded from node configuration and logged at startup. Implementation commit:
+`acfcfd2d`. Token `sec_002_chain_id_dst_required_before_m009_testnet` — SATISFIED.
