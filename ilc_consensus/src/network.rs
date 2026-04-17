@@ -54,10 +54,8 @@ impl rustls::client::ServerCertVerifier for PinnedCertVerifier {
         _now: std::time::SystemTime,
     ) -> Result<rustls::client::ServerCertVerified, rustls::Error> {
         if self.allowed_cert_ders.iter().any(|d| d == &end_entity.0) {
-            println!("verify_server_cert: OK");
             Ok(rustls::client::ServerCertVerified::assertion())
         } else {
-            println!("verify_server_cert: ERR");
             Err(rustls::Error::General("unknown peer certificate".into()))
         }
     }
@@ -75,10 +73,8 @@ impl rustls::server::ClientCertVerifier for PinnedCertVerifier {
         _now: std::time::SystemTime,
     ) -> Result<rustls::server::ClientCertVerified, rustls::Error> {
         if self.allowed_cert_ders.iter().any(|d| d == &end_entity.0) {
-            println!("verify_client_cert: OK");
             Ok(rustls::server::ClientCertVerified::assertion())
         } else {
-            println!("verify_client_cert: ERR");
             Err(rustls::Error::General("unknown client certificate".into()))
         }
     }

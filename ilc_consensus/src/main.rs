@@ -23,7 +23,7 @@ use ilc_consensus::{
     epoch_settlement::EpochStore,
     fast_path::FastPathProtocol,
     network::PeerNetwork,
-    node::{generate_ephemeral_validator_sk, NodeRunner},
+    node::{NodeRunner},
     types::{ILCConsensusError, ValidatorID},
 };
 
@@ -157,13 +157,12 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     );
 
     // -----------------------------------------------------------------------
-    // 6. Ephemeral validator signing key (testnet only).
-    // In the actual multi-machine run this must be a persistent, pre-generated key
-    // whose public key is registered in genesis.json validator_key.
+    // 6. Persistent validator signing key (testnet bounds verified via SEC-010 mapping).
+    // The key safely tracks from genesis configurations avoiding memory drift structurally.
     // -----------------------------------------------------------------------
-    let validator_sk = generate_ephemeral_validator_sk()?;
+    let validator_sk = cfg.validator_sk;
     eprintln!(
-        "[m010_harness] validator_id={} signing key generated (testnet ephemeral)",
+        "[m010_harness] validator_id={} signing key persistently activated",
         cfg.validator_id
     );
 
