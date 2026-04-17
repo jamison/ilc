@@ -90,19 +90,9 @@ async fn main() {
 
 async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConsensusError> {
     // -----------------------------------------------------------------------
-    // 1. Load genesis → ValidatorSet
+    // 1. Load genesis → (ValidatorSet, network_id) in one read.
     // -----------------------------------------------------------------------
-    let validator_set = load_genesis(&genesis_path)?;
-    let genesis_network_id = {
-        let raw = std::fs::read_to_string(&genesis_path)
-            .map_err(|e| ILCConsensusError::Other(format!("Cannot re-read genesis: {}", e)))?;
-        let v: serde_json::Value = serde_json::from_str(&raw)
-            .map_err(|e| ILCConsensusError::Other(format!("Genesis json error: {}", e)))?;
-        v["network_id"]
-            .as_str()
-            .ok_or_else(|| ILCConsensusError::Other("genesis missing network_id".into()))?
-            .to_string()
-    };
+    let (validator_set, genesis_network_id) = load_genesis(&genesis_path)?;
 
     // -----------------------------------------------------------------------
     // 2. Load node config — enforces network_id == genesis_network_id
@@ -200,7 +190,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 9. Start node control plane
     // -----------------------------------------------------------------------
-    let runner = NodeRunner::new(
+    let runner = Arc::new(NodeRunner::new(
         ValidatorID(cfg.validator_id),
         genesis_network_id,
         validator_set_arc.f,
@@ -210,7 +200,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         balance_store,
         epoch_store,
         peer_addrs,
-    );
+    ));
 
     eprintln!("[m010_harness] m010_harness_startup_complete validator_id={}", cfg.validator_id);
 

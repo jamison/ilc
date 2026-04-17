@@ -134,7 +134,7 @@ def test_required_source_files_exist_and_contain_key_tokens() -> None:
     node_text = _read(CONSENSUS_DIR / "src" / "node.rs")
     assert "BroadcastHonest" in node_text
     assert "handle_broadcast_honest" in node_text
-    assert "handle_ack_unkeyed" in node_text
+    assert "handle_ack_for" in node_text
     assert "handle_certificate" in node_text
     assert "handle_epoch_settlement_tx" in node_text
     assert "NodeRunner" in node_text
