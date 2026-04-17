@@ -15,8 +15,17 @@ def test_m013_contains_literal_evidence():
     with open(ARTIFACT_PATH, "r") as f:
         content = f.read()
     
-    assert "epoch_record_committed:epoch=12" in content, "M-013 missing epoch 12 commit evidence"
-    assert "duplicate EpochSettlementTx epoch=" in content, "M-013 missing duplicate injection log"
+    # Phase A Evidence Requirements (Baseline commits 1..10)
+    assert "epoch_record_committed:epoch=1\n" in content, "Phase A: missing epoch 1 commit evidence"
+    assert "epoch_record_committed:epoch=10\n" in content, "Phase A: missing epoch 10 commit evidence"
+    
+    # Phase B Evidence Requirements (Silent-Validator bounds on 11..12)
+    assert "epoch_record_committed:epoch=11" in content, "Phase B: missing epoch 11 commit evidence"
+    assert "epoch_record_committed:epoch=12" in content, "Phase B: missing epoch 12 commit evidence"
+    
+    # Assert missing Validator 1 evidence for epochs 11-12.
+    assert "[m010_node] validator_id=1 received EpochSettlementTx epoch=11" not in content, "Phase B failure: Validator 1 should be silent for epoch 11"
+    assert "[m010_node] validator_id=1 received EpochSettlementTx epoch=12" not in content, "Phase B failure: Validator 1 should be silent for epoch 12"
 
 def test_m013_contains_no_filler():
     with open(ARTIFACT_PATH, "r") as f:
