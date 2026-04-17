@@ -35,6 +35,12 @@ dist/
 *.egg-info/
 
 # =========================
+# Rust build artifacts
+# =========================
+ilc_consensus/target/
+target/
+
+# =========================
 # Testing / coverage / tooling
 # =========================
 .pytest_cache/
