@@ -16,7 +16,7 @@ the M-series phase namespace (M-001 through M-NNN). That lane is governed by:
 
 When the Gemini M-series lane completes (M-019 handoff, Claude-audited), its
 results feed back to the main Codex lane at a designated convergence window
-(see §5.6 below). CDL-017 ratification — opened by Codex at Phase 694 and
+(see §5.6 below). CDL-017 ratification — opened by Codex at Phase 695 and
 implemented by Gemini in M-007 — converges at that window.
 
 The 701+ program's foundational items run independently of the Mysticeti lane.
@@ -302,16 +302,20 @@ Full technical context is in §6 of the M-series planning doc:
 
 | Token | Gap | Completion mode | Routing | Must resolve before |
 |---|---|---|---|---|
-| `sec_001_agent_sender_auth_cdl_066_required_before_m009` | `ECUTransfer` carries no sender sig — any validator can forge a transfer | `constitutional_lock` via CDL-066 | CDL-066 opening; prelock requires CDL-042 interaction analysis | M-009 testnet |
-| `sec_002_chain_id_dst_required_before_m009_testnet` | DST `b"ILC_FAST_PATH_V1"` has no network discriminator — testnet sigs valid on mainnet | `spec_or_contract_lock` via M-008 + ADR-0011 amendment | M-008 scope; ADR-0011 amendment dated 2026-04-16 | M-009 testnet |
-| `sec_003_gossip_sync_recovery_owned_in_m008` | No offline validator cert recovery — returning validator gets locked out on stale ObjectRef | `spec_or_contract_lock` via M-008 | M-008 `MissingCertSync` message type | M-009 testnet |
+| `sec_001_agent_sender_auth_cdl_066_required_before_m009` | `ECUTransfer` carries no sender sig — any validator can forge a transfer | `constitutional_lock` via CDL-066 | CDL-066 opened Phase 694; SEC-001 implementation **CLOSED** `acfcfd2d` | **SATISFIED** — M-009/M-010/M-011 complete |
+| `sec_002_chain_id_dst_required_before_m009_testnet` | DST `b"ILC_FAST_PATH_V1"` has no network discriminator — testnet sigs valid on mainnet | `spec_or_contract_lock` via M-008 + ADR-0011 amendment | M-008 scope; ADR-0011 amendment dated 2026-04-16 | **CLOSED** M-008 |
+| `sec_003_gossip_sync_recovery_owned_in_m008` | No offline validator cert recovery — returning validator gets locked out on stale ObjectRef | `spec_or_contract_lock` via M-008 | M-008 `MissingCertSync` message type | **CLOSED** M-008 |
 | `sec_004_epoch_validator_binding_owned_by_cdl_017_activation` | No historical ValidatorSet binding on TransferCertificate — ejected validator sigs may pass after ejection | `constitutional_lock` scope via CDL-017 activation | CDL-017 activation phase; M-019 handoff must name it explicitly | M-019 handoff |
-| `sec_005_lmdb_map_size_owned_by_m009_node_config` | LMDB environment opened with no `set_map_size()` — defaults to ~10 MB on macOS | `spec_or_contract_lock` via node runner config | M-009 node config parameter | M-009 testnet |
+| `sec_005_lmdb_map_size_owned_by_m009_node_config` | LMDB environment opened with no `set_map_size()` — defaults to ~10 MB on macOS | `spec_or_contract_lock` via node runner config | M-010 single LMDB env with `set_map_size()` (`83a1305d`) | **CLOSED** M-010 |
 
-**SEC-001 requires CDL-066.** This is the highest-severity item. Until CDL-066
-is ratified and implemented, transfers on the ILC Mysticeti fast path can be
-forged by any party who can construct a structurally valid `ECUTransfer`. The
-Codex constitutional lane must open CDL-066 before M-009 is approved.
+**SEC-001 and CDL-066 — historical note (updated 2026-04-17):** SEC-001
+implementation was CLOSED at commit `acfcfd2d` (2026-04-16): `ECUTransfer`
+carries `sender_sig: AgentSig` and it is verified before quorum. CDL-066 was
+opened by Codex at Phase 694. M-009, M-010, and M-011 are all complete;
+CDL-066 constitutional ratification is OPEN (Track A, Window 707+) and does
+NOT block any M-series phase. The previous text saying "Codex must open CDL-066
+before M-009 is approved" was correct at the time of writing but is now
+historical — M-009 was approved and M-010 and M-011 have since completed.
 
 Note: CDL-062 is already open as the sovereign substrate research CDL (opened
 in window 687-692, Mysticeti elevated to Tier 1 primary in Phase 693 addendum).
@@ -468,12 +472,12 @@ is not assigned a fixed number here because its timing depends on Gemini lane
 progress. It is assigned when M-019 is approved.
 
 Primary closure targets in convergence window:
-- CDL-017 ratification (opened at Phase 694 by Codex; implemented by Gemini
+- CDL-017 ratification (opened at Phase 695 by Codex; implemented by Gemini
   in M-007; ratification requires M-series BLS validator governance work plus
-  the constitutional text from Codex's Phase 694 opening)
-- Settlement-state formal CDL ratification (opened at Phase 695 by Codex;
-  Mysticeti application interface from Gemini lane feeds into ratification
-  evidence)
+  the constitutional text from Codex's Phase 695 opening)
+- Settlement-state formal CDL ratification (CDL-067, opened at Phase 696 by
+  Codex; Mysticeti application interface from Gemini lane feeds into
+  ratification evidence)
 - First authorized validator deployment authorization (explicit human gate)
 - Integration of Mysticeti implementation into RC track (convergence with
   Track A RC development)
