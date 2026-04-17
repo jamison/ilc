@@ -8,7 +8,13 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub enum GossipMessage {
     BroadcastHonest(crate::types::ECUTransfer), // DAG Vertex Proposal
-    Ack(crate::types::ValidatorSig),            // Fast path Ack
+    Ack(crate::types::ValidatorSig),            // Fast path Ack (unkeyed, legacy)
+    /// Keyed ack: carries the ObjectRef so the receiver can route to the correct in-flight entry.
+    /// Replaces Ack for M-010+ to fix concurrent-transfer ambiguity.
+    AckFor {
+        object_ref: crate::types::ObjectRef,
+        sig: crate::types::ValidatorSig,
+    },
     Certificate(TransferCertificate),           // Fast path Certificate
     EpochSettlementTx(EpochSettlementTx),       // Shared-object submission
     MissingCertSync {                           // SEC-003: Offline validator recovery

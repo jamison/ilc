@@ -1,6 +1,6 @@
 /// node.rs — M-010 validator node control plane.
 ///
-/// Implements the BroadcastHonest → Ack → Certificate → execute_certificate loop
+/// Implements the BroadcastHonest → AckFor → Certificate → execute_certificate loop
 /// that was missing from the library. This is the runtime glue between:
 ///   - PeerNetwork (mTLS QUIC transport)
 ///   - FastPathProtocol (owned-object fast path, quorum cert execution)
@@ -11,26 +11,32 @@
 ///   1. Receive BroadcastHonest(transfer) from any peer
 ///      → verify sender_sig (SEC-001 pre-check)
 ///      → sign transfer with own validator key
-///      → send Ack(ValidatorSig) back to broadcast originator
+///      → send AckFor { object_ref, sig } back to broadcast originator
+///        (NOTE: the originator does NOT count its own signature toward quorum;
+///         with F=1 the quorum is 3/4, so the originator needs exactly two external
+///         acks — fine for testnet but worth tracking if F increases)
 ///      → record transfer in in_flight table
 ///
-///   2. Receive Ack(sig) from any peer for a transfer we originated
-///      → accumulate sig in in_flight table
+///   2. Receive AckFor { object_ref, sig } from any peer
+///      → look up the in-flight entry by object_ref (keyed — no concurrent ambiguity)
+///      → accumulate sig
 ///      → when sigs ≥ 2F+1: assemble TransferCertificate
 ///        → broadcast Certificate to all peers
 ///        → call execute_certificate to commit to LMDB
 ///
 ///   3. Receive Certificate(cert) from any peer
 ///      → call execute_certificate to commit to LMDB
-///      (idempotent — duplicate execution is harmless if ObjectRef version tracks correctly)
+///      (idempotent — ConflictingTransfer is treated as already-committed)
 ///
 /// Epoch settlement path (shared-object):
 ///   4. Receive EpochSettlementTx from any peer
-///      → forward to EpochSettlementProtocol
+///      → commit_epoch_record → LMDB
+///      (idempotent — duplicate epoch record returns Ok without re-writing)
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use quinn::Connection;
 use tokio::sync::Mutex;
 
 use crate::balance_store::BalanceStore;
@@ -38,9 +44,9 @@ use crate::epoch_settlement::EpochStore;
 use crate::fast_path::FastPathProtocol;
 use crate::network::{GossipEnvelope, GossipMessage, PeerNetwork};
 use crate::types::{
-    ECUTransfer, ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID, ValidatorSet,
+    ECUTransfer, ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID,
 };
-use crate::validator::{sign_message, validator_dst};
+use crate::validator::sign_message;
 
 // ---------------------------------------------------------------------------
 // In-flight transfer state (quorum accumulation)
@@ -70,6 +76,8 @@ pub struct NodeRunner {
     pub peer_addrs: Vec<(ValidatorID, SocketAddr)>,
     /// In-flight transfers keyed by ObjectRef (owned-object fast path).
     in_flight: Arc<Mutex<HashMap<ObjectRef, InFlight>>>,
+    /// Outbound connection pool: one QUIC connection per peer, reused across messages.
+    outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
 }
 
 impl NodeRunner {
@@ -95,11 +103,13 @@ impl NodeRunner {
             epoch_store,
             peer_addrs,
             in_flight: Arc::new(Mutex::new(HashMap::new())),
+            outbound_pool: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
-    /// Main accept loop: accept inbound QUIC connections and dispatch messages.
-    pub async fn run(&self) -> Result<(), ILCConsensusError> {
+    /// Main accept loop: accept inbound QUIC connections and dispatch each in its own task.
+    /// Requires Arc<Self> so each spawned task can hold a reference independently.
+    pub async fn run(self: Arc<Self>) -> Result<(), ILCConsensusError> {
         eprintln!(
             "[m010_node] validator_id={} running on {}",
             self.validator_id.0,
@@ -111,14 +121,33 @@ impl NodeRunner {
             let incoming = self.network.endpoint.accept().await
                 .ok_or_else(|| ILCConsensusError::Other("Endpoint closed".into()))?;
 
-            let connection = incoming.await
-                .map_err(|e| ILCConsensusError::Other(format!("Connection accept error: {}", e)))?;
-
-            let (_, recv) = connection.accept_bi().await
-                .map_err(|e| ILCConsensusError::Other(format!("Stream accept error: {}", e)))?;
-
-            let envelope = self.network.receive(&connection, recv).await?;
-            self.dispatch(envelope).await?;
+            let node = Arc::clone(&self);
+            tokio::spawn(async move {
+                let connection = match incoming.await {
+                    Ok(c) => c,
+                    Err(e) => {
+                        eprintln!("[m010_node] connection accept error: {}", e);
+                        return;
+                    }
+                };
+                let (_, recv) = match connection.accept_bi().await {
+                    Ok(s) => s,
+                    Err(e) => {
+                        eprintln!("[m010_node] stream accept error: {}", e);
+                        return;
+                    }
+                };
+                let envelope = match node.network.receive(&connection, recv).await {
+                    Ok(e) => e,
+                    Err(e) => {
+                        eprintln!("[m010_node] receive error: {}", e);
+                        return;
+                    }
+                };
+                if let Err(e) = node.dispatch(envelope).await {
+                    eprintln!("[m010_node] dispatch error: {}", e);
+                }
+            });
         }
     }
 
@@ -129,15 +158,17 @@ impl NodeRunner {
             GossipMessage::BroadcastHonest(transfer) => {
                 self.handle_broadcast_honest(transfer, from).await
             }
+            GossipMessage::AckFor { object_ref, sig } => {
+                self.handle_ack_for(object_ref, sig, from).await
+            }
             GossipMessage::Ack(sig) => {
-                // Acks carry the ObjectRef inside the sig context via the in_flight table.
-                // We need to know which transfer this ack is for. The protocol encodes
-                // this by having the ack sender include the object_ref in the envelope
-                // via the payload. Since GossipMessage::Ack only carries ValidatorSig,
-                // we handle this by requiring the sender to use AckFor instead.
-                // For M-010 simplicity: accept acks for all in-flight transfers and try
-                // to match by the validator signature content.
-                self.handle_ack_unkeyed(sig, from).await
+                // Legacy unkeyed ack — log and ignore; senders should use AckFor.
+                eprintln!(
+                    "[m010_node] validator_id={} ignoring legacy Ack from peer={} (use AckFor)",
+                    self.validator_id.0, from.0
+                );
+                let _ = sig;
+                Ok(())
             }
             GossipMessage::Certificate(cert) => {
                 self.handle_certificate(cert).await
@@ -191,73 +222,76 @@ impl NodeRunner {
         }
 
         // Record in in_flight table if not already present.
+        let object_ref = transfer.object_ref;
         {
             let mut table = self.in_flight.lock().await;
-            table.entry(transfer.object_ref).or_insert_with(|| InFlight {
+            table.entry(object_ref).or_insert_with(|| InFlight {
                 transfer: transfer.clone(),
                 sigs: Vec::new(),
                 certified: false,
             });
         }
 
-        // Sign the transfer with our validator key and send Ack back to originator.
+        // Sign the transfer with our validator key and send AckFor back to originator.
+        // AckFor carries the object_ref so the recipient can key the ack unambiguously.
         let transfer_msg = bincode::serialize(&transfer)
             .map_err(|e| ILCConsensusError::Other(format!("Transfer serialize: {}", e)))?;
         let sig = sign_message(&self.validator_sk, &transfer_msg, &self.network_id);
 
         eprintln!(
             "[m010_node] validator_id={} acking transfer obj_ref={:?} to peer={}",
-            self.validator_id.0, transfer.object_ref, from.0
+            self.validator_id.0, object_ref, from.0
         );
 
         self.send_to_peer(
             from,
-            GossipMessage::Ack(sig),
+            GossipMessage::AckFor { object_ref, sig },
         ).await
     }
 
     // -----------------------------------------------------------------------
-    // Ack handler (unkeyed — M-010 simplification)
+    // AckFor handler — keyed by ObjectRef, no concurrent-transfer ambiguity
     // -----------------------------------------------------------------------
 
-    async fn handle_ack_unkeyed(
+    async fn handle_ack_for(
         &self,
+        object_ref: ObjectRef,
         sig: crate::types::ValidatorSig,
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
         let quorum = 2 * self.f + 1;
-        let mut to_certify: Option<(ObjectRef, ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> = None;
+        let mut to_certify: Option<(ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> = None;
 
         {
             let mut table = self.in_flight.lock().await;
-            // Find an in-flight entry that hasn't been certified yet.
-            // In M-010 with one transfer at a time this is unambiguous.
-            for (obj_ref, entry) in table.iter_mut() {
-                if entry.certified {
-                    continue;
+            if let Some(entry) = table.get_mut(&object_ref) {
+                if !entry.certified {
+                    // Deduplicate: only accept one sig per validator.
+                    if !entry.sigs.iter().any(|(id, _)| *id == from) {
+                        entry.sigs.push((from, sig));
+                        eprintln!(
+                            "[m010_node] validator_id={} ack from peer={} for obj_ref={:?} sigs={}/{}",
+                            self.validator_id.0, from.0, object_ref, entry.sigs.len(), quorum
+                        );
+                        if entry.sigs.len() >= quorum {
+                            entry.certified = true;
+                            to_certify = Some((entry.transfer.clone(), entry.sigs.clone()));
+                        }
+                    }
                 }
-                // Deduplicate: only accept one sig per validator.
-                if entry.sigs.iter().any(|(id, _)| *id == from) {
-                    continue;
-                }
-                entry.sigs.push((from, sig.clone()));
+            } else {
                 eprintln!(
-                    "[m010_node] validator_id={} ack from peer={} for obj_ref={:?} sigs={}/{}",
-                    self.validator_id.0, from.0, obj_ref, entry.sigs.len(), quorum
+                    "[m010_node] validator_id={} AckFor for unknown obj_ref={:?} from peer={}",
+                    self.validator_id.0, object_ref, from.0
                 );
-                if entry.sigs.len() >= quorum {
-                    entry.certified = true;
-                    to_certify = Some((*obj_ref, entry.transfer.clone(), entry.sigs.clone()));
-                }
-                break;
             }
         }
 
-        if let Some((obj_ref, transfer, sigs)) = to_certify {
+        if let Some((transfer, sigs)) = to_certify {
             let cert = TransferCertificate { transfer, sigs };
             eprintln!(
                 "[m010_node] validator_id={} assembled certificate for obj_ref={:?} — broadcasting",
-                self.validator_id.0, obj_ref
+                self.validator_id.0, object_ref
             );
             self.broadcast_certificate(cert.clone()).await?;
             self.execute_and_log(cert).await?;
@@ -290,13 +324,23 @@ impl NodeRunner {
             "[m010_node] validator_id={} received EpochSettlementTx epoch={}",
             self.validator_id.0, tx.epoch.0
         );
-        // Write the epoch record to LMDB epoch store.
         let record = crate::types::EpochSettlementRecord {
             epoch: tx.epoch,
             state_root: tx.state_root,
         };
-        self.epoch_store.commit_epoch_record(record)?;
-        eprintln!("epoch_record_committed:epoch={}", tx.epoch.0);
+        // Treat duplicate epoch records as idempotent (mirrors ConflictingTransfer handling).
+        match self.epoch_store.commit_epoch_record(record) {
+            Ok(()) => {
+                eprintln!("epoch_record_committed:epoch={}", tx.epoch.0);
+            }
+            Err(ILCConsensusError::InvalidEpoch) => {
+                eprintln!(
+                    "[m010_node] validator_id={} duplicate EpochSettlementTx epoch={} — already committed",
+                    self.validator_id.0, tx.epoch.0
+                );
+            }
+            Err(e) => return Err(e),
+        }
         Ok(())
     }
 
@@ -393,20 +437,34 @@ impl NodeRunner {
         self.send_envelope_to_addr(addr, env).await
     }
 
-    async fn send_envelope_to_addr(
-        &self,
-        addr: SocketAddr,
-        env: GossipEnvelope,
-    ) -> Result<(), ILCConsensusError> {
+    /// Get or create an outbound QUIC connection to addr.
+    /// Reuses an existing live connection; reconnects if the previous connection is closed.
+    async fn get_or_connect(&self, addr: SocketAddr) -> Result<Connection, ILCConsensusError> {
+        let mut pool = self.outbound_pool.lock().await;
+        if let Some(conn) = pool.get(&addr) {
+            if conn.close_reason().is_none() {
+                return Ok(conn.clone());
+            }
+            // Previous connection is dead — fall through to reconnect.
+            pool.remove(&addr);
+        }
         let conn = self.network.endpoint
             .connect(addr, "localhost")
             .map_err(|e| ILCConsensusError::Other(format!("Connect error: {}", e)))?
             .await
             .map_err(|e| ILCConsensusError::Other(format!("Connection error: {}", e)))?;
+        pool.insert(addr, conn.clone());
+        Ok(conn)
+    }
 
+    async fn send_envelope_to_addr(
+        &self,
+        addr: SocketAddr,
+        env: GossipEnvelope,
+    ) -> Result<(), ILCConsensusError> {
+        let conn = self.get_or_connect(addr).await?;
         let (send, _recv) = conn.open_bi().await
             .map_err(|e| ILCConsensusError::Other(format!("Open stream error: {}", e)))?;
-
         self.network.transmit(send, env).await
     }
 }
@@ -429,6 +487,7 @@ pub fn generate_ephemeral_validator_sk() -> Result<blst::min_pk::SecretKey, ILCC
 mod tests {
     use super::*;
     use crate::types::{AgentID, ECUTransfer, ObjectRef};
+    use crate::validator::validator_dst;
 
     fn dummy_transfer() -> ECUTransfer {
         let ikm = [1u8; 32];
