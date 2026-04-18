@@ -1,10 +1,10 @@
 # ILC Launch Roadmap: Three Computers, Seven Agents
 
 **Version**: v0.3
-**Produced**: 2026-04-17
-**Session context**: Window 713-716 CLOSED (today); capsule v4.7 current; M-013 complete; next planned phase TBD
+**Produced**: 2026-04-18
+**Session context**: Window 723-726 CLOSED (today); capsule v4.9 current; M-015 complete; next planned phase M-016
 **Supersedes**: `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md`
-**Purpose**: Updated launch path reference at the post-716 frontier.
+**Purpose**: Updated launch path reference at the post-726 frontier.
 
 ---
 
@@ -15,12 +15,12 @@ across three separate computers with seven active agents?
 
 The implementation gap from v0.2 (transport operationalization, agent loop, integration
 harness) has been **substantially closed** across Windows 565-594. The remaining gaps at
-the post-716 frontier are primarily **constitutional/governance**, **runtime-form
+the post-726 frontier are primarily **constitutional/governance**, **runtime-form
 completion**, and **distributed-validator operationalization** — not base infrastructure.
 
 ---
 
-## 1. What Closed Since v0.2 (Windows 565-716)
+## 1. What Closed Since v0.2 (Windows 565-726)
 
 ### Implementation milestones (Codex Python track)
 
@@ -38,6 +38,8 @@ completion**, and **distributed-validator operationalization** — not base infr
 | 642-706 | Signing export hardening; privacy-preserving public legitimacy; sovereign substrate admissibility; foundational economic doctrine + kernel calibration |
 | 707-712 | Governance minimization closure; ADR-0019 disposition; CDL-066 ratified; CDL-067 ratified; validator-agent prelock lane bounded without CDL-017 ratification |
 | 713-716 | Adaptive-gossip law-vs-freedom classification; partition-repair benchmark commissioning; missing-signal doctrine; capsule v4.7 frontier close |
+| 717-722 | ADR-0015 family closure; transfer tax and cooling period bounded to launch structure without numeric lock; commons dedication bounded under CDL-047; leasehold / reversion deferred; capsule v4.8 frontier close |
+| 723-726 | Sequestered financial-shard eligibility prefilter; post-launch trigger matrix; contagion firewall prerequisites; no activation and no ratification; capsule v4.9 frontier close |
 
 ### M-series milestones (Gemini Rust track)
 
@@ -48,12 +50,14 @@ completion**, and **distributed-validator operationalization** — not base infr
 | M-011 | `keygen` + `testnet_client` binaries; 4-validator harness tooling; `binary_complete` — real run pending provisioning |
 | M-012 | Full BFT ECUTransfer round-trip; client-side certificate assembly path complete |
 | M-013 | Workload A local multi-process liveness pass; epochs 1-10 finalized, silent-validator bounding on epochs 11-12 confirmed (`1d005208`) |
+| M-014 | Workload B censorship resistance drill complete; local f=1 loopback proof documented |
+| M-015 | Workload C partition / heal / recovery loopback proof complete; next planned phase M-016 replayability and state extraction |
 
 ---
 
-## 2. Remaining Gaps at the Post-716 Frontier
+## 2. Remaining Gaps at the Post-726 Frontier
 
-### Gap 1 — CDL-017 convergence and activation boundary (post-716)
+### Gap 1 — CDL-017 convergence and activation boundary (post-726)
 
 `CDL-066` and `CDL-067` are now ratified, but `CDL-017` remains open and unratified.
 This is the primary surviving constitutional blocker in the validator/bootstrap lane.
@@ -75,10 +79,10 @@ Window 623+ interface/runtime work completes:
 
 Broader public RC claims remain blocked until both forms complete.
 
-### Gap 3 — distributed validator provisioning beyond local M-013 pass
+### Gap 3 — distributed validator provisioning beyond local M-015 pass
 
-M-013 closed the local multi-process Workload A proof, but the three-computer
-/ real distributed validator objective still requires provisioning and deployment
+M-015 closed the local loopback partition/heal proof, but the three-computer /
+real distributed validator objective still requires provisioning and deployment
 work beyond the local loopback harness.
 
 Remaining distributed steps include:
@@ -115,12 +119,14 @@ Required before any broader public RC claim.
 | Foundational economic doctrine | COMPLETE — Window 701-706 |
 | Governance minimization + validator-agent prelock lane | COMPLETE — Window 707-712 |
 | Adaptive gossip + resilience operationalization | COMPLETE — Window 713-716 |
+| ADR-0015 family closure | COMPLETE — Window 717-722 |
+| Sequestered financial-shard eligibility prefilter | COMPLETE — Window 723-726 |
 | CDL-066 | **RATIFIED** — Phase 708 |
 | CDL-067 | **RATIFIED** — Phase 709 |
-| CDL-017 | **OPEN** — post-716 carry-forward |
+| CDL-017 | **OPEN** — post-726 carry-forward |
 | MVP gate runtime form (rows 5 + 7) | **PENDING** — post-707 |
-| M-series local liveness run | **COMPLETE** — M-013 local multi-process pass |
-| M-series true multi-machine validator proof | **PENDING** — post-M013 provisioning |
+| M-series loopback validator proof through partition/heal | **COMPLETE** — M-015 |
+| M-series true multi-machine validator proof | **PENDING** — post-M015 provisioning |
 | Option B selection | **DEFERRED** — post-runtime-form |
 | Legal positioning memo | **NOT WRITTEN** — pre-RC prerequisite |
 
@@ -128,16 +134,16 @@ Required before any broader public RC claim.
 
 ## 4. Relationship to Existing Artifacts
 
-- `docs/specs/ilc_antigravity_context_capsule_v4.7.md` — canonical current state
+- `docs/specs/ilc_antigravity_context_capsule_v4.9.md` — canonical current state
 - `docs/specs/ilc_foundational_carry_forward_closure_program_701_plus_v0.1.md` — 701+ program
 - `docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md` — Option D→B transition
 - `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md` — M-series Rust track
-- `docs/specs/ilc_window_713_716_closure_gate_716_v0.1.md` — Window 713-716 canonical closure
-- `docs/research/ilc_mysticeti_workload_a_results_M013_v0.1.md` — M-013 local multi-process results
+- `docs/specs/ilc_window_723_726_closure_gate_726_v0.1.md` — Window 723-726 canonical closure
+- `docs/research/ilc_mysticeti_workload_c_results_M015_v0.1.md` — M-015 partition / heal loopback results
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md` — prior planning snapshot (Windows 565-584 as future)
 
 ---
 
-*Updated 2026-04-17 to reflect the true current frontier: Window 713-716 closed, Window 717-722 next planned, and M-013 local multi-process liveness complete.
+*Updated 2026-04-18 to reflect the true current frontier: Window 723-726 closed, Window 727-732 next planned, and M-015 partition / heal loopback proof complete.
 Infrastructure gaps from v0.2 (transport, packaging, agent loop, integration harness) are closed.
 Remaining work is CDL-017 convergence, MVP gate runtime-form closure, true multi-machine validator provisioning, Option B selection gating, and legal positioning.*
