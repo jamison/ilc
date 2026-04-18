@@ -8,6 +8,88 @@
 
 ---
 
+## 0. Tool Usage Rules — Read Before Touching Any Tool
+
+**grep_search, search_files, semantic_search, and any other search tool WILL
+time out on this repository. Do not call them. Ever. Not once.**
+
+Use only direct file reads. Every file path you need is listed explicitly in
+this document. If a path is not listed here, ask Claude rather than searching.
+
+### Mandatory tool pattern
+
+| Task | Correct tool | Wrong tool |
+|---|---|---|
+| Read a source file | `view_file <absolute-path>` | grep_search, search_files |
+| Read a config file | `view_file <absolute-path>` | any search |
+| Check a log | `run_command tail -50 /tmp/ilc_m017_v1.log` | grep_search |
+| Find a token in a log | `run_command grep "epoch_record_committed" /tmp/ilc_m017_v1.log` | grep_search tool |
+| Count commits | `run_command grep -c "epoch_record_committed" /tmp/ilc_m017_v1.log` | search tools |
+| Build the binary | `run_command ~/.cargo/bin/cargo build --release ...` | anything else |
+| Run the runner | `run_command bash tools/testbed/ilc_loopback_m017_runner.sh` | anything else |
+
+`run_command` (bash execution) is safe. The search/grep *tools* are what freeze.
+Using `grep` as a shell command inside `run_command` is fine.
+
+### All file paths you need — pre-resolved, no searching required
+
+```
+# Binaries (build target)
+ilc_consensus/target/release/validator_harness
+ilc_consensus/target/release/testnet_client
+ilc_consensus/target/release/state_extractor
+
+# Config and genesis
+config/mysticeti_testnet_M009/genesis.json
+config/mysticeti_testnet_M009/validator_1_config.json
+config/mysticeti_testnet_M009/validator_2_config.json
+config/mysticeti_testnet_M009/validator_3_config.json
+config/mysticeti_testnet_M009/validator_4_config.json
+config/mysticeti_testnet_M009/certs/client_cert.pem
+config/mysticeti_testnet_M009/certs/client_key.pem
+config/mysticeti_testnet_M009/certs/validator_1_cert.der
+config/mysticeti_testnet_M009/certs/validator_2_cert.der
+config/mysticeti_testnet_M009/certs/validator_3_cert.der
+config/mysticeti_testnet_M009/certs/validator_4_cert.der
+
+# Source files (read these directly; do not search)
+ilc_consensus/src/node.rs          — NodeRunner, dispatch, sync task
+ilc_consensus/src/network.rs       — GossipMessage enum, receive(), 10MB cap
+ilc_consensus/src/epoch_settlement.rs — EpochStore, get_epochs_after
+ilc_consensus/src/main.rs          — validator_harness entry point
+ilc_consensus/Cargo.toml           — dependencies, [[bin]] entries
+ilc_consensus/src/config.rs        — NodeConfig fields
+
+# Reference runners (read these to understand the pattern; copy what you need)
+tools/testbed/ilc_loopback_m016_runner.sh   — most recent runner; copy structure
+tools/testbed/ilc_loopback_m015_runner_tier2.sh — sync recovery pattern
+
+# M-017 output files (you will create these)
+tools/testbed/ilc_loopback_m017_runner.sh
+docs/research/ilc_mysticeti_workload_e_results_M017_v0.1.md
+docs/research/ilc_m017_operability_report.json
+docs/phases/phase_M017_workload_e_walkthrough.md
+tests/test_phase_M017_workload_e_results.py
+
+# Runtime logs (created by runner)
+/tmp/ilc_m017_v1.log
+/tmp/ilc_m017_v2.log
+/tmp/ilc_m017_v3.log
+/tmp/ilc_m017_v4.log
+/tmp/ilc_m017_v1_sync.log
+/tmp/ilc_m017_state_report.json
+/tmp/ilc_m017_operability_report.json
+```
+
+### If you feel the urge to search — stop and do this instead
+
+1. The information you need is in this document or in one of the files listed above.
+2. Read that file directly with `view_file`.
+3. If you genuinely cannot find it by reading, send a message to Claude asking
+   for the specific path. Claude will answer. Do not search.
+
+---
+
 ## 0. Critical Operating Rules — Read First
 
 1. **No new code to the consensus protocol.** M-017 is a measurement phase.
