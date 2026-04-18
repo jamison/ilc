@@ -20,7 +20,21 @@ class TestCanonBundleReplayReport:
     def valid_bundle(self, tmp_path):
         from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
         bundle = tmp_path / "bundle"
-        export = {"canon_hash": "abc123", "canon_export_format": "v0.1"}
+        export = {
+            "canon_hash": "abc123",
+            "canon_export_format": "v0.1",
+            "exported_at": "2026-01-01T00:00:00+00:00",
+            "computed_hash": "abc123",
+            "kpis": {},
+            "meta": {
+                "canon_export_version": "v0.1",
+                "epoch_count": 1,
+                "snapshot_count": 0,
+                "balance_count": 0,
+            },
+            "epochs": [{"epoch_id": "epoch-0001"}],
+            "snapshots": [],
+        }
         validation = {"ok": True, "errors": [], "warnings": []}
         write_canon_export_bundle(export, validation, bundle)
         return bundle
