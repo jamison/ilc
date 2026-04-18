@@ -1,4 +1,4 @@
-use crate::types::{EpochSettlementTx, TransferCertificate, ILCConsensusError, ValidatorID};
+use crate::types::{EpochSettlementRecord, EpochSettlementTx, TransferCertificate, ILCConsensusError, ValidatorID};
 use quinn::{Endpoint, ServerConfig, ClientConfig, Connection, RecvStream, SendStream};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, UnixTime};
 use rustls::pki_types::ServerName;
@@ -25,7 +25,15 @@ pub enum GossipMessage {
     },
     MissingCertResponse {
         certs: Vec<TransferCertificate>,
-    }
+    },
+    /// M-015: epoch-settlement recovery sync.
+    /// Requester sends the epochs it already has; responder replies with any it is missing.
+    MissingEpochSync {
+        known_epochs: Vec<u64>,
+    },
+    MissingEpochResponse {
+        records: Vec<EpochSettlementRecord>,
+    },
 }
 
 /// CDL-061: HTTP/3 structured framing envelope
@@ -151,10 +159,17 @@ impl PeerNetwork {
         my_key_der: Vec<u8>,
     ) -> Result<Self, ILCConsensusError> {
         rustls::crypto::ring::default_provider().install_default().ok();
+
+        // Clone raw bytes before they are consumed by the server config; needed
+        // to also build the outbound (client) config on the same endpoint.
+        let my_cert_der_clone = my_cert_der.clone();
+        let my_key_der_clone = my_key_der.clone();
+
         let cert = CertificateDer::from(my_cert_der);
         let key = PrivateKeyDer::Pkcs8(my_key_der.into());
 
         let allowed_ders: Vec<Vec<u8>> = peer_certs.values().cloned().collect();
+        let allowed_ders_for_client = allowed_ders.clone();
         let verifier = Arc::new(PinnedCertVerifier { allowed_cert_ders: allowed_ders });
 
         let mut server_crypto = rustls::ServerConfig::builder()
@@ -170,8 +185,25 @@ impl PeerNetwork {
 
         let server_config = ServerConfig::with_crypto(Arc::new(quic_server_crypto));
 
-        let endpoint = Endpoint::server(server_config, bind_addr)
+        let mut endpoint = Endpoint::server(server_config, bind_addr)
             .map_err(|e| ILCConsensusError::Other(format!("Bind error: {}", e)))?;
+
+        // Set client config so this endpoint can also open outbound connections to peers
+        // (required for validator-to-validator gossip and epoch sync).
+        {
+            let cert = CertificateDer::from(my_cert_der_clone);
+            let key = PrivateKeyDer::Pkcs8(my_key_der_clone.into());
+            let client_verifier = Arc::new(PinnedCertVerifier { allowed_cert_ders: allowed_ders_for_client });
+            let mut client_crypto = rustls::ClientConfig::builder()
+                .dangerous()
+                .with_custom_certificate_verifier(client_verifier)
+                .with_client_auth_cert(vec![cert], key)
+                .map_err(|e| ILCConsensusError::Other(format!("TLS client error: {}", e)))?;
+            client_crypto.alpn_protocols = vec![b"ilc-gossip".to_vec()];
+            let quic_client_crypto = quinn::crypto::rustls::QuicClientConfig::try_from(client_crypto)
+                .map_err(|_| ILCConsensusError::Other("Quic client crypto config failed".into()))?;
+            endpoint.set_default_client_config(ClientConfig::new(Arc::new(quic_client_crypto)));
+        }
 
         Ok(Self {
             peer_certs: Arc::new(peer_certs),

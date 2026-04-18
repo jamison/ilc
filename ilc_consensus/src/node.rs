@@ -32,7 +32,7 @@
 ///   4. Receive EpochSettlementTx from any peer
 ///      → commit_epoch_record → LMDB
 ///      (idempotent — duplicate epoch record returns Ok without re-writing)
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::net::SocketAddr;
 use std::sync::Arc;
 
@@ -80,6 +80,8 @@ pub struct NodeRunner {
     pub outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
     pub censor_validator: Option<u32>,
     pub censor_target: Option<u32>,
+    // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+    pub partition_block_peers: HashSet<u32>,
 }
 
 impl NodeRunner {
@@ -108,6 +110,11 @@ impl NodeRunner {
             outbound_pool: Arc::new(Mutex::new(HashMap::new())),
             censor_validator: std::env::var("CENSOR_VALIDATOR").ok().and_then(|v| v.parse().ok()),
             censor_target: std::env::var("CENSOR_TARGET").ok().and_then(|v| v.parse().ok()),
+            partition_block_peers: std::env::var("PARTITION_BLOCK_PEERS")
+                .unwrap_or_default()
+                .split(',')
+                .filter_map(|s| s.trim().parse::<u32>().ok())
+                .collect(),
         }
     }
 
@@ -121,6 +128,45 @@ impl NodeRunner {
                 .map(|a| a.to_string())
                 .unwrap_or_else(|_| "unknown".to_string()),
         );
+
+        // Background epoch sync task: periodically broadcast MissingEpochSync so
+        // validators that rejoin after a partition receive missing epoch records
+        // from peers via protocol-driven delivery (Tier 2 recovery — M-015).
+        {
+            let node = Arc::clone(&self);
+            tokio::spawn(async move {
+                let interval_secs: u64 = std::env::var("EPOCH_SYNC_INTERVAL_SECS")
+                    .ok()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(5);
+                loop {
+                    tokio::time::sleep(tokio::time::Duration::from_secs(interval_secs)).await;
+                    let known = match node.epoch_store.list_committed_epochs() {
+                        Ok(v) => v,
+                        Err(e) => {
+                            eprintln!(
+                                "[m015_epoch_sync] validator_id={} list_committed_epochs error: {}",
+                                node.validator_id.0, e
+                            );
+                            continue;
+                        }
+                    };
+                    let msg = GossipMessage::MissingEpochSync { known_epochs: known };
+                    for (peer_id, _addr) in &node.peer_addrs {
+                        if node.partition_block_peers.contains(&peer_id.0) {
+                            continue;
+                        }
+                        if let Err(e) = node.send_to_peer(*peer_id, msg.clone()).await {
+                            eprintln!(
+                                "[m015_epoch_sync] validator_id={} epoch sync to peer={} failed: {}",
+                                node.validator_id.0, peer_id.0, e
+                            );
+                        }
+                    }
+                }
+            });
+        }
+
         loop {
             let incoming = self.network.endpoint.accept().await
                 .ok_or_else(|| ILCConsensusError::Other("Endpoint closed".into()))?;
@@ -158,6 +204,14 @@ impl NodeRunner {
     /// Dispatch a received GossipEnvelope to the appropriate handler.
     async fn dispatch(&self, envelope: GossipEnvelope) -> Result<(), ILCConsensusError> {
         let from = envelope.peer_id;
+        // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+        if self.partition_block_peers.contains(&from.0) {
+            eprintln!(
+                "[m015_partition_drop] validator_id={} target={} kind=inbound",
+                self.validator_id.0, from.0
+            );
+            return Ok(());
+        }
         match envelope.payload {
             GossipMessage::BroadcastHonest(transfer) => {
                 self.handle_broadcast_honest(transfer, from).await
@@ -194,6 +248,12 @@ impl NodeRunner {
             }
             GossipMessage::MissingCertResponse { certs } => {
                 self.handle_missing_cert_response(certs).await
+            }
+            GossipMessage::MissingEpochSync { known_epochs } => {
+                self.handle_missing_epoch_sync(known_epochs, from).await
+            }
+            GossipMessage::MissingEpochResponse { records } => {
+                self.handle_missing_epoch_response(records).await
             }
         }
     }
@@ -390,6 +450,51 @@ impl NodeRunner {
     }
 
     // -----------------------------------------------------------------------
+    // MissingEpochSync / MissingEpochResponse — M-015 epoch recovery protocol
+    // -----------------------------------------------------------------------
+
+    async fn handle_missing_epoch_sync(
+        &self,
+        known_epochs: Vec<u64>,
+        from: ValidatorID,
+    ) -> Result<(), ILCConsensusError> {
+        let known_set: HashSet<u64> = known_epochs.into_iter().collect();
+        let records = self.epoch_store.get_epochs_not_in(&known_set)?;
+        if records.is_empty() {
+            return Ok(());
+        }
+        eprintln!(
+            "[m015_epoch_sync] validator_id={} responding to peer={} with {} missing epoch(s)",
+            self.validator_id.0, from.0, records.len()
+        );
+        self.send_to_peer(from, GossipMessage::MissingEpochResponse { records }).await
+    }
+
+    async fn handle_missing_epoch_response(
+        &self,
+        records: Vec<crate::types::EpochSettlementRecord>,
+    ) -> Result<(), ILCConsensusError> {
+        for record in records {
+            let epoch = record.epoch.0;
+            match self.epoch_store.commit_epoch_record(record) {
+                Ok(()) => {
+                    eprintln!("epoch_record_committed:epoch={}", epoch);
+                    eprintln!("m015_epoch_recovery_path_protocol_driven epoch={}", epoch);
+                }
+                Err(ILCConsensusError::InvalidEpoch) => {
+                    // Already committed — idempotent; do not re-log as a new commit.
+                    eprintln!(
+                        "[m015_epoch_sync] validator_id={} MissingEpochResponse epoch={} already committed",
+                        self.validator_id.0, epoch
+                    );
+                }
+                Err(e) => return Err(e),
+            }
+        }
+        Ok(())
+    }
+
+    // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
 
@@ -417,6 +522,14 @@ impl NodeRunner {
 
     async fn broadcast_certificate(&self, cert: TransferCertificate) -> Result<(), ILCConsensusError> {
         for (peer_id, addr) in &self.peer_addrs {
+            // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+            if self.partition_block_peers.contains(&peer_id.0) {
+                eprintln!(
+                    "[m015_partition_drop] validator_id={} target={} kind=broadcast_certificate",
+                    self.validator_id.0, peer_id.0
+                );
+                continue;
+            }
             let env = GossipEnvelope {
                 frame_type: 0x00,
                 peer_id: self.validator_id,
@@ -438,6 +551,14 @@ impl NodeRunner {
         peer_id: ValidatorID,
         msg: GossipMessage,
     ) -> Result<(), ILCConsensusError> {
+        // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+        if self.partition_block_peers.contains(&peer_id.0) {
+            eprintln!(
+                "[m015_partition_drop] validator_id={} target={} kind=outbound",
+                self.validator_id.0, peer_id.0
+            );
+            return Ok(());
+        }
         let addr = self.peer_addrs.iter()
             .find(|(id, _)| *id == peer_id)
             .map(|(_, addr)| *addr)
@@ -462,11 +583,18 @@ impl NodeRunner {
             // Previous connection is dead — fall through to reconnect.
             pool.remove(&addr);
         }
-        let conn = self.network.endpoint
+        let conn_future = self.network.endpoint
             .connect(addr, "localhost")
-            .map_err(|e| ILCConsensusError::Other(format!("Connect error: {}", e)))?
-            .await
-            .map_err(|e| ILCConsensusError::Other(format!("Connection error: {}", e)))?;
+            .map_err(|e| ILCConsensusError::Other(format!("Connect error: {}", e)))?;
+        // 3-second connect timeout prevents the background sync loop from stalling
+        // on peers that are unreachable (e.g. testnet_client port that is not listening).
+        let conn = tokio::time::timeout(
+            tokio::time::Duration::from_secs(3),
+            conn_future,
+        )
+        .await
+        .map_err(|_| ILCConsensusError::Other(format!("Connection to {} timed out", addr)))?
+        .map_err(|e| ILCConsensusError::Other(format!("Connection error: {}", e)))?;
         pool.insert(addr, conn.clone());
         Ok(conn)
     }
