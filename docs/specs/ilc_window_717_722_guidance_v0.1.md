@@ -98,8 +98,8 @@ These are inherited settled law, not reopened here:
 - CDL-059: aesthetic panel
 - CDL-060: centrality-delta gossip with bounded fanout
 - CDL-061: gossip HTTP envelope contract
-- CDL-066: agent sender authorization (implementation closed; constitutional ratification open)
-- CDL-067: validator-agent prelock evidence
+- CDL-066: agent sender authorization ratified
+- CDL-067: settlement-state governance vehicle ratified
 - ADR-0028: Option D active posture
 
 ---
@@ -133,6 +133,6 @@ proceed after standard review.
 
 ## 9. Track B line at window open
 
-From `docs/phases/STATUS.md` tail (verified 2026-04-17):
+From `docs/phases/STATUS.md` tail (verified 2026-04-18):
 
-> M-013 complete; SEC-007 CLOSED `7f5a0cdb`; next: M-014 censorship resistance drill
+> M-014 complete `34e492a5`; next planned phase: TBD
