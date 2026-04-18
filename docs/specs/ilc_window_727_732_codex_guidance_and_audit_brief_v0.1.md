@@ -262,7 +262,8 @@ M-016 COMPLETE `d5283dca` (2026-04-18) — Workload D: Replayability and State E
   state_extractor binary, READ_ONLY|NO_LOCK offline LMDB scan
   epochs 1-5 chain reconstructed without live validator
   run_m016_workload_d_verdict=pass
-  row-7 replayability obligation satisfied for testnet scope
+  local offline LMDB extraction proof complete; stronger public-substrate
+  replayability claim remains open pending later evidence
 
 Next: M-017 — Workload E: Validator Operability
   Scope: commodity hardware measurement (≤8 core, ≤32 GB RAM, ≤1 TB SSD)
@@ -354,9 +355,9 @@ M-017 is Workload E: Validator Operability. Key points for Gemini:
 **M-016 test suite:** 12/12 tests PASS  
 `tests/test_phase_M016_workload_d_results.py`
 
-**Rust unit tests:** 0 lib tests (all tests in network.rs require real TLS
-infra; run with the integration test harness, not `cargo test --lib`).
-The state_extractor binary has no unit tests (acceptable for testnet scope).
+**Rust test suite:** `cargo test --manifest-path ilc_consensus/Cargo.toml -q`
+currently passes 30 tests. The `state_extractor` binary has no dedicated unit
+tests yet (acceptable for testnet scope, but still a pre-M-020 hardening item).
 
 **Full Python test suite:** Verification in progress at guidance authoring time.
 The M-016 tests above represent the current active test file.
