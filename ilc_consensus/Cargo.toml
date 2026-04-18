@@ -38,4 +38,8 @@ path = "src/keygen_main.rs"
 name = "testnet_client"
 path = "src/testnet_client_main.rs"
 
+[[bin]]
+name = "state_extractor"
+path = "src/state_extractor_main.rs"
+
 # mysticeti-core will be added via path once extraction payload is prepared
