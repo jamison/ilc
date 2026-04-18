@@ -26,10 +26,17 @@ pub enum GossipMessage {
     MissingCertResponse {
         certs: Vec<TransferCertificate>,
     },
-    /// M-015: epoch-settlement recovery sync.
-    /// Requester sends the epochs it already has; responder replies with any it is missing.
+    /// M-015: epoch-settlement recovery sync (cursor protocol, O(1) wire size).
+    ///
+    /// Requester sends its latest_contiguous_epoch — the highest epoch N such that
+    /// all epochs 1..=N are committed locally. Responder returns any records with
+    /// epoch > latest_contiguous_epoch, capped at 64 per response (OOM guard).
+    ///
+    /// Replaces the original known_epochs: Vec<u64> design (O(N) wire size that would
+    /// hit the 10MB frame ceiling at ~1.3M epochs, breaking sync liveness permanently).
+    /// SEC-008: cursor approach eliminates the O(N) growth path.
     MissingEpochSync {
-        known_epochs: Vec<u64>,
+        latest_contiguous_epoch: u64,
     },
     MissingEpochResponse {
         records: Vec<EpochSettlementRecord>,
