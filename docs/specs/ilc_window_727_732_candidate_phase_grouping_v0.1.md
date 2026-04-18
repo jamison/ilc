@@ -18,6 +18,7 @@ in `STATUS.md`.
 - `docs/adr/ADR_0022_Local_First_Private_Use_and_Publication_Bound_Economics.md`
 - `docs/specs/ilc_cdl_038_private_to_public_promotion_and_promotion_receipt_ratification_evidence_353_v0.1.md`
 - `docs/specs/ilc_cdl_041_shard_lifecycle_ratification_evidence_394_v0.1.md`
+- `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.3.md`
 - `docs/phases/STATUS.md`
 
 ---
@@ -203,6 +204,8 @@ Required content:
 - confirm that no CDL ratification occurred,
 - confirm that no financial-shard activation occurred,
 - confirm that `CDL-062` and ADR-0022 remain separate from this lane,
+- record which A-series audit items from the pre-window brief were addressed
+  in-window versus explicitly carried forward,
 - state what carries into the closure gate.
 
 ### Phase 732 — closure
@@ -216,7 +219,9 @@ Required content:
 - state explicit deferment boundaries,
 - publish capsule `v5.0`,
 - route carry-forward explicitly into the next main-lane window,
-- update `PLANNING_INDEX.md` to the true post-`732` frontier.
+- update `PLANNING_INDEX.md` to the true post-`732` frontier,
+- review and update the launch roadmap if the window changed any live completed
+  versus remaining gap description.
 
 ---
 
