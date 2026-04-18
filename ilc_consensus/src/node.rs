@@ -141,7 +141,10 @@ impl NodeRunner {
                     .unwrap_or(5);
                 loop {
                     tokio::time::sleep(tokio::time::Duration::from_secs(interval_secs)).await;
-                    let known = match node.epoch_store.list_committed_epochs() {
+                    // Compute latest_contiguous_epoch: the highest N where all of
+                    // 1..=N are committed. Send as a cursor (O(1) wire size) rather
+                    // than the full known-epoch list (SEC-008 fix).
+                    let epochs = match node.epoch_store.list_committed_epochs() {
                         Ok(v) => v,
                         Err(e) => {
                             eprintln!(
@@ -151,7 +154,14 @@ impl NodeRunner {
                             continue;
                         }
                     };
-                    let msg = GossipMessage::MissingEpochSync { known_epochs: known };
+                    let cursor = epochs
+                        .iter()
+                        .enumerate()
+                        .take_while(|(i, &e)| e == (*i + 1) as u64)
+                        .map(|(_, &e)| e)
+                        .last()
+                        .unwrap_or(0);
+                    let msg = GossipMessage::MissingEpochSync { latest_contiguous_epoch: cursor };
                     for (peer_id, _addr) in &node.peer_addrs {
                         if node.partition_block_peers.contains(&peer_id.0) {
                             continue;
@@ -249,8 +259,8 @@ impl NodeRunner {
             GossipMessage::MissingCertResponse { certs } => {
                 self.handle_missing_cert_response(certs).await
             }
-            GossipMessage::MissingEpochSync { known_epochs } => {
-                self.handle_missing_epoch_sync(known_epochs, from).await
+            GossipMessage::MissingEpochSync { latest_contiguous_epoch } => {
+                self.handle_missing_epoch_sync(latest_contiguous_epoch, from).await
             }
             GossipMessage::MissingEpochResponse { records } => {
                 self.handle_missing_epoch_response(records).await
@@ -455,17 +465,16 @@ impl NodeRunner {
 
     async fn handle_missing_epoch_sync(
         &self,
-        known_epochs: Vec<u64>,
+        latest_contiguous_epoch: u64,
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
-        let known_set: HashSet<u64> = known_epochs.into_iter().collect();
-        let records = self.epoch_store.get_epochs_not_in(&known_set)?;
+        let records = self.epoch_store.get_epochs_after(latest_contiguous_epoch)?;
         if records.is_empty() {
             return Ok(());
         }
         eprintln!(
-            "[m015_epoch_sync] validator_id={} responding to peer={} with {} missing epoch(s)",
-            self.validator_id.0, from.0, records.len()
+            "[m015_epoch_sync] validator_id={} responding to peer={} with {} epoch(s) after cursor={}",
+            self.validator_id.0, from.0, records.len(), latest_contiguous_epoch
         );
         self.send_to_peer(from, GossipMessage::MissingEpochResponse { records }).await
     }

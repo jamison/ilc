@@ -1,5 +1,4 @@
 use lmdb_rkv::{Cursor, Environment, Database, DatabaseFlags, Transaction, WriteFlags};
-use std::collections::HashSet;
 use std::sync::Arc;
 use bincode;
 
@@ -95,19 +94,25 @@ impl EpochStore {
         Ok(epochs)
     }
 
-    /// Returns records this node has that are NOT in `known`.
-    /// Used to answer a MissingEpochSync request from a peer that is behind.
-    /// Capped at 64 records per call as an OOM guard.
-    pub fn get_epochs_not_in(
+    /// Returns records with epoch > `cursor`, capped at 64 per call (OOM guard).
+    ///
+    /// Used to answer a MissingEpochSync request. The cursor is the peer's
+    /// `latest_contiguous_epoch` — the highest N such that epochs 1..=N are all
+    /// committed on the peer. Any epoch beyond that is a candidate to send back.
+    ///
+    /// This is the SEC-008 cursor approach: O(1) request wire size vs the prior
+    /// O(N) `get_epochs_not_in` which required sending all known epochs over the
+    /// wire and would have hit the 10 MB frame ceiling at ~1.3 M epochs.
+    pub fn get_epochs_after(
         &self,
-        known: &HashSet<u64>,
+        cursor: u64,
     ) -> Result<Vec<EpochSettlementRecord>, ILCConsensusError> {
         let txn = self.env.begin_ro_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
-        let mut cursor = txn.open_ro_cursor(self.db)
+        let mut db_cursor = txn.open_ro_cursor(self.db)
             .map_err(|e| ILCConsensusError::Other(format!("Cursor open error: {}", e)))?;
         let mut records = Vec::new();
-        for item in cursor.iter() {
+        for item in db_cursor.iter() {
             let (k, v) = item
                 .map_err(|e| ILCConsensusError::Other(format!("Cursor iter error: {}", e)))?;
             if k.len() != 8 {
@@ -116,8 +121,8 @@ impl EpochStore {
             let mut buf = [0u8; 8];
             buf.copy_from_slice(k);
             let epoch_num = u64::from_be_bytes(buf);
-            if known.contains(&epoch_num) {
-                continue;
+            if epoch_num <= cursor {
+                continue; // Peer already has this epoch.
             }
             let record: EpochSettlementRecord = bincode::deserialize(v)
                 .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?;
@@ -214,6 +219,90 @@ mod tests {
         let sig = sk.sign(b"dummy", b"DST", &[]);
         let agg = AggregateSignature::aggregate(&[&sig], false).unwrap();
         AggSig(agg)
+    }
+
+    // ── SEC-008: get_epochs_after cursor tests ────────────────────────────────
+
+    fn commit_epoch(protocol: &EpochSettlementProtocol, epoch: u64, fill: u8) {
+        let checkpoint = EpochCheckpoint {
+            record: EpochSettlementRecord {
+                epoch: EpochSeq(epoch),
+                state_root: CIDv1Root::new([fill; 36]),
+            },
+            sigs: generate_dummy_agg_sig(),
+        };
+        protocol.process_epoch_checkpoint(checkpoint).unwrap();
+    }
+
+    #[test]
+    fn test_get_epochs_after_cursor_zero_returns_all() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        commit_epoch(&protocol, 1, 0x01);
+        commit_epoch(&protocol, 2, 0x02);
+        commit_epoch(&protocol, 3, 0x03);
+
+        let records = store.get_epochs_after(0).unwrap();
+        assert_eq!(records.len(), 3);
+        assert_eq!(records[0].epoch, EpochSeq(1));
+        assert_eq!(records[2].epoch, EpochSeq(3));
+    }
+
+    #[test]
+    fn test_get_epochs_after_cursor_mid_returns_tail() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        commit_epoch(&protocol, 1, 0x01);
+        commit_epoch(&protocol, 2, 0x02);
+        commit_epoch(&protocol, 3, 0x03);
+        commit_epoch(&protocol, 4, 0x04);
+        commit_epoch(&protocol, 5, 0x05);
+
+        // Peer has epochs 1-3 contiguous; should receive 4 and 5.
+        let records = store.get_epochs_after(3).unwrap();
+        assert_eq!(records.len(), 2);
+        assert_eq!(records[0].epoch, EpochSeq(4));
+        assert_eq!(records[1].epoch, EpochSeq(5));
+    }
+
+    #[test]
+    fn test_get_epochs_after_cursor_at_max_returns_empty() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        commit_epoch(&protocol, 1, 0x01);
+        commit_epoch(&protocol, 2, 0x02);
+
+        // Peer is fully caught up — nothing to send.
+        let records = store.get_epochs_after(2).unwrap();
+        assert!(records.is_empty());
+    }
+
+    #[test]
+    fn test_get_epochs_after_empty_store_returns_empty() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+
+        let records = store.get_epochs_after(0).unwrap();
+        assert!(records.is_empty());
+    }
+
+    #[test]
+    fn test_get_epochs_after_cap_at_64() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        // Commit 70 epochs — response should be capped at 64.
+        for i in 1u64..=70 {
+            commit_epoch(&protocol, i, i as u8);
+        }
+
+        let records = store.get_epochs_after(0).unwrap();
+        assert_eq!(records.len(), 64, "OOM guard must cap response at 64 records");
+        assert_eq!(records[0].epoch, EpochSeq(1));
+        assert_eq!(records[63].epoch, EpochSeq(64));
     }
 
     #[test]
