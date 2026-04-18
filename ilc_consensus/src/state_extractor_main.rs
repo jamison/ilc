@@ -7,8 +7,12 @@
 /// Usage:
 ///   state_extractor --lmdb-path <dir> --genesis <genesis.json>
 ///
-/// The tool exits 0 if the chain is complete and the genesis anchor is
-/// verified; exits 1 on any structural gap or integrity failure.
+/// The tool exits 0 if the epoch chain is complete (gap-free) and the
+/// sentinel is consistent; exits 1 on any structural gap or integrity failure.
+/// The genesis anchor (network_id, genesis_epoch, validator_count) is read
+/// from genesis.json and included in the report for cross-reference; no
+/// cryptographic linkage proof between genesis.json and the LMDB data is
+/// performed — that requires a public query surface (M-018 gRPC scope).
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::Arc;
