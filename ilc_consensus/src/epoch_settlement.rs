@@ -1,4 +1,5 @@
-use lmdb_rkv::{Environment, Database, DatabaseFlags, Transaction, WriteFlags};
+use lmdb_rkv::{Cursor, Environment, Database, DatabaseFlags, Transaction, WriteFlags};
+use std::collections::HashSet;
 use std::sync::Arc;
 use bincode;
 
@@ -71,6 +72,61 @@ impl EpochStore {
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
 
         Ok(())
+    }
+
+    /// Returns every epoch number stored in this node's epoch_records DB.
+    /// Used by the M-015 epoch sync protocol to compute what a peer is missing.
+    pub fn list_committed_epochs(&self) -> Result<Vec<u64>, ILCConsensusError> {
+        let txn = self.env.begin_ro_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
+        let mut cursor = txn.open_ro_cursor(self.db)
+            .map_err(|e| ILCConsensusError::Other(format!("Cursor open error: {}", e)))?;
+        let mut epochs = Vec::new();
+        for item in cursor.iter() {
+            let (k, _v) = item
+                .map_err(|e| ILCConsensusError::Other(format!("Cursor iter error: {}", e)))?;
+            if k.len() == 8 {
+                // 8-byte big-endian u64 = epoch key; 1-byte sentinel (\xff) is skipped.
+                let mut buf = [0u8; 8];
+                buf.copy_from_slice(k);
+                epochs.push(u64::from_be_bytes(buf));
+            }
+        }
+        Ok(epochs)
+    }
+
+    /// Returns records this node has that are NOT in `known`.
+    /// Used to answer a MissingEpochSync request from a peer that is behind.
+    /// Capped at 64 records per call as an OOM guard.
+    pub fn get_epochs_not_in(
+        &self,
+        known: &HashSet<u64>,
+    ) -> Result<Vec<EpochSettlementRecord>, ILCConsensusError> {
+        let txn = self.env.begin_ro_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
+        let mut cursor = txn.open_ro_cursor(self.db)
+            .map_err(|e| ILCConsensusError::Other(format!("Cursor open error: {}", e)))?;
+        let mut records = Vec::new();
+        for item in cursor.iter() {
+            let (k, v) = item
+                .map_err(|e| ILCConsensusError::Other(format!("Cursor iter error: {}", e)))?;
+            if k.len() != 8 {
+                continue; // Skip the 1-byte sentinel key.
+            }
+            let mut buf = [0u8; 8];
+            buf.copy_from_slice(k);
+            let epoch_num = u64::from_be_bytes(buf);
+            if known.contains(&epoch_num) {
+                continue;
+            }
+            let record: EpochSettlementRecord = bincode::deserialize(v)
+                .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?;
+            records.push(record);
+            if records.len() >= 64 {
+                break; // OOM guard: cap per-response at 64 records.
+            }
+        }
+        Ok(records)
     }
 
     /// Fetches the latest canonical Epoch via O(1) singleton sentinel key lookup.
