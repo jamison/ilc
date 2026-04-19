@@ -100,11 +100,15 @@ Remaining distributed steps include:
 ADR-0028 holds Option D as the active posture. Option B becomes selectable only
 after rows 5 and 7 runtime confirmation. Rows 6, 8, 9 are already closed.
 
-### Gap 5 — Legal positioning memo (pre-RC prerequisite)
+### Gap 5 — Legal positioning memo (carry-forward, not a gate)
 
 A legal positioning memo on passive ECU accrual and validator staking rewards
 (CDL-054/055/056 Howey analysis) is listed in TODO.txt as `NOT YET WRITTEN`.
-Required before any broader public RC claim.
+This is carry-forward, not a formal opening gate. The Phase 687-692 sequence
+lock explicitly resolved this: "The legal memo is not a formal opening gate"
+(`docs/specs/ilc_phase_687_692_sequence_lock_v0.1.md`). Expected to be written
+before broader public RC claims but does not block Window 733+ or M-series
+advancement.
 
 ### Gap 6 — stronger public-substrate replayability proof
 
@@ -133,14 +137,14 @@ public substrate data without operator cooperation.
 | Adjacent gated-economy hardening closure | COMPLETE — Window 727-732 |
 | CDL-066 | **RATIFIED** — Phase 708 |
 | CDL-067 | **RATIFIED** — Phase 709 |
-| CDL-017 | **OPEN** — post-726 carry-forward |
+| CDL-017 | **OPEN** — post-732 carry-forward |
 | MVP gate runtime form (rows 5 + 7) | **PENDING** — post-707 |
 | M-series loopback validator proof through partition/heal | **COMPLETE** — M-015 |
 | M-series local offline state extraction | **COMPLETE** — M-016 |
 | M-series stronger public-substrate replayability proof | **PENDING** — post-M016 |
 | M-series true multi-machine validator proof | **PENDING** — post-M016 provisioning |
 | Option B selection | **DEFERRED** — post-runtime-form |
-| Legal positioning memo | **NOT WRITTEN** — pre-RC prerequisite |
+| Legal positioning memo | **NOT WRITTEN** — carry-forward, not a gate (Phase 687-692 seq lock) |
 
 ---
 
@@ -155,8 +159,18 @@ public substrate data without operator cooperation.
 - `docs/research/ilc_mysticeti_workload_d_results_M016_v0.1.md` — M-016 local offline state extraction results
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md` — prior planning snapshot (Windows 565-584 as future)
 
+### Morphogenetic Hypergraph Research Lane (post-mainnet, with one pre-M-018 gate)
+
+A post-mainnet architectural research cluster was established 2026-04-19. One item is time-critical before M-018:
+
+- **ADR-0031** (`docs/adr/ADR_0031_Subgraph_Homomorphism_Query_Contract.md`) — `EdgeRecord` and `HyperEdgeRecord` proto message types must be added to `ilc_app.proto` before M-018 finalizes its gRPC query response schema. Adding after that point is a breaking wire-format change.
+
+Remaining items are post-mainnet research: ADR-0029 (hypergraph substrate), ADR-0030 (embedding substrate), SIM-HYPEREDGE-01/SPECTRAL-01/EMBED-01/BEACON-01/ROUTING-01, Merkle-Laplacian dual commitment paper, sealed spectral beacon / spectral routing.
+
+Master index for this cluster: `docs/PLANNING_INDEX.md` §9.
+
 ---
 
-*Updated 2026-04-18 to reflect the true current frontier: Window 727-732 closed, Window 733+ next main-lane continuation to be defined, and M-016 local offline state extraction complete.
+*Updated 2026-04-19 to reflect the true current frontier: Window 727-732 closed, Window 733+ next main-lane continuation to be defined, and M-016 local offline state extraction complete.
 Infrastructure gaps from v0.2 (transport, packaging, agent loop, integration harness) are closed.
 Remaining work is CDL-017 convergence, MVP gate runtime-form closure, stronger public-substrate replayability proof, true multi-machine validator provisioning, Option B selection gating, and legal positioning.*
