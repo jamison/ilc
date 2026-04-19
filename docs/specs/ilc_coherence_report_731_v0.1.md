@@ -81,8 +81,12 @@ Verified line:
 
 The Sonnet pre-window A-series audit items route as follows:
 
-- `A1` PLANNING_INDEX stale Track B line: addressed in Phase `727`.
-- `A2` M-series lane completion table stale: addressed in Phase `727`.
+- `A1` PLANNING_INDEX stale Track B line: addressed in the pre-window
+  administrative refresh inherited by Window `727-732`, then cited correctly by
+  Phase `727`.
+- `A2` M-series lane completion table stale: addressed in the same pre-window
+  administrative refresh inherited by Window `727-732`, not originated by
+  Phase `727`.
 - `A3` `testnet_fault_sim` feature isolation: carried forward as a pre-`M-019`
   production-hardening gate, not a `727-732` blocker.
 - `A4` gRPC runtime stub: explicitly remains `M-018` scope.
