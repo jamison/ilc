@@ -91,6 +91,11 @@ tools/testbed/runner_output.txt
 tools/testbed/final_runner_output*.txt
 tools/testbed/ilc_app_pb2.py
 tools/testbed/ilc_app_pb2_grpc.py
+# M-019 ephemeral artifacts
+tools/testbed/temp_m019_db_*/
+tools/testbed/temp_m019_config_*.json
+tools/testbed/v*_m019_*.log
+tools/testbed/m019_run.log
 config/mysticeti_testnet_M009/certs/
 config/mysticeti_testnet_M009/validator_*_config.json.bak
 config/mysticeti_testnet_M009/validator_*_lmdb_path.txt

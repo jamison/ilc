@@ -78,10 +78,14 @@ pub struct NodeRunner {
     in_flight: Arc<Mutex<HashMap<ObjectRef, InFlight>>>,
     /// Outbound connection pool: one QUIC connection per peer, reused across messages.
     pub outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
+    #[cfg(feature = "testnet_fault_sim")]
     pub censor_validator: Option<u32>,
+    #[cfg(feature = "testnet_fault_sim")]
     pub censor_target: Option<u32>,
-    // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+    #[cfg(feature = "testnet_fault_sim")]
     pub partition_block_peers: HashSet<u32>,
+    #[cfg(feature = "testnet_fault_sim")]
+    pub delay_ms: Option<u64>,
 }
 
 impl NodeRunner {
@@ -108,13 +112,18 @@ impl NodeRunner {
             peer_addrs,
             in_flight: Arc::new(Mutex::new(HashMap::new())),
             outbound_pool: Arc::new(Mutex::new(HashMap::new())),
+            #[cfg(feature = "testnet_fault_sim")]
             censor_validator: std::env::var("CENSOR_VALIDATOR").ok().and_then(|v| v.parse().ok()),
+            #[cfg(feature = "testnet_fault_sim")]
             censor_target: std::env::var("CENSOR_TARGET").ok().and_then(|v| v.parse().ok()),
+            #[cfg(feature = "testnet_fault_sim")]
             partition_block_peers: std::env::var("PARTITION_BLOCK_PEERS")
                 .unwrap_or_default()
                 .split(',')
                 .filter_map(|s| s.trim().parse::<u32>().ok())
                 .collect(),
+            #[cfg(feature = "testnet_fault_sim")]
+            delay_ms: std::env::var("DELAY_MS").ok().and_then(|v| v.parse().ok()),
         }
     }
 
@@ -163,6 +172,7 @@ impl NodeRunner {
                         .unwrap_or(0);
                     let msg = GossipMessage::MissingEpochSync { latest_contiguous_epoch: cursor };
                     for (peer_id, _addr) in &node.peer_addrs {
+                        #[cfg(feature = "testnet_fault_sim")]
                         if node.partition_block_peers.contains(&peer_id.0) {
                             continue;
                         }
@@ -214,13 +224,18 @@ impl NodeRunner {
     /// Dispatch a received GossipEnvelope to the appropriate handler.
     async fn dispatch(&self, envelope: GossipEnvelope) -> Result<(), ILCConsensusError> {
         let from = envelope.peer_id;
-        // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+        #[cfg(feature = "testnet_fault_sim")]
         if self.partition_block_peers.contains(&from.0) {
             eprintln!(
                 "[m015_partition_drop] validator_id={} target={} kind=inbound",
                 self.validator_id.0, from.0
             );
             return Ok(());
+        }
+        
+        #[cfg(feature = "testnet_fault_sim")]
+        if let Some(ms) = self.delay_ms {
+            tokio::time::sleep(tokio::time::Duration::from_millis(ms)).await;
         }
         match envelope.payload {
             GossipMessage::BroadcastHonest(transfer) => {
@@ -242,7 +257,7 @@ impl NodeRunner {
                 self.handle_certificate(cert).await
             }
             GossipMessage::EpochSettlementTx(tx) => {
-                // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+                #[cfg(feature = "testnet_fault_sim")]
                 if let Some(censor_val) = self.censor_validator {
                     if let Some(censor_tgt) = self.censor_target {
                         if self.validator_id.0 == censor_val && from.0 == censor_tgt {
@@ -254,6 +269,15 @@ impl NodeRunner {
                 self.handle_epoch_settlement_tx(tx).await
             }
             GossipMessage::EpochCheckpointMsg(checkpoint) => {
+                #[cfg(feature = "testnet_fault_sim")]
+                if let Some(censor_val) = self.censor_validator {
+                    if let Some(censor_tgt) = self.censor_target {
+                        if self.validator_id.0 == censor_val && from.0 == censor_tgt {
+                            eprintln!("[m014_censor] validator_id={} dropped EpochCheckpointMsg from validator_id={}", self.validator_id.0, from.0);
+                            return Ok(());
+                        }
+                    }
+                }
                 self.handle_epoch_checkpoint_msg(checkpoint).await
             }
             GossipMessage::MissingCertSync { agent, missing_versions } => {
@@ -311,11 +335,22 @@ impl NodeRunner {
         let object_ref = transfer.object_ref;
         {
             let mut table = self.in_flight.lock().await;
-            table.entry(object_ref).or_insert_with(|| InFlight {
-                transfer: transfer.clone(),
-                sigs: Vec::new(),
-                certified: false,
-            });
+            if let Some(existing) = table.get(&object_ref) {
+                // If it already exists, verify the payload matches. If not, it's equivocation!
+                if existing.transfer.to != transfer.to || existing.transfer.amount_micro_ecu != transfer.amount_micro_ecu {
+                    eprintln!(
+                        "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer / Equivocation Detected)",
+                        self.validator_id.0
+                    );
+                    return Ok(());
+                }
+            } else {
+                table.insert(object_ref, InFlight {
+                    transfer: transfer.clone(),
+                    sigs: Vec::new(),
+                    certified: false,
+                });
+            }
         }
 
         // Sign the transfer with our validator key and send AckFor back to originator.
@@ -575,7 +610,7 @@ impl NodeRunner {
 
     async fn broadcast_certificate(&self, cert: TransferCertificate) -> Result<(), ILCConsensusError> {
         for (peer_id, addr) in &self.peer_addrs {
-            // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+            #[cfg(feature = "testnet_fault_sim")]
             if self.partition_block_peers.contains(&peer_id.0) {
                 eprintln!(
                     "[m015_partition_drop] validator_id={} target={} kind=broadcast_certificate",
@@ -604,7 +639,7 @@ impl NodeRunner {
         peer_id: ValidatorID,
         msg: GossipMessage,
     ) -> Result<(), ILCConsensusError> {
-        // TODO(pre-production): isolate under #[cfg(feature = "testnet_fault_sim")]
+        #[cfg(feature = "testnet_fault_sim")]
         if self.partition_block_peers.contains(&peer_id.0) {
             eprintln!(
                 "[m015_partition_drop] validator_id={} target={} kind=outbound",
