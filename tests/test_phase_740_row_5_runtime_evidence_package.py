@@ -146,6 +146,19 @@ def test_phase_682_narrowing_is_honored_and_blanket_secrecy_is_rejected() -> Non
     assert "blanket secrecy for all private work" in combined
 
 
+def test_hosted_query_variant_allows_surface_absence_record_when_no_query_surface_exists() -> None:
+    combined = _normalized(_read(EVIDENCE_PATH) + "\n" + _read(SIM_SPEC_PATH))
+    assert "hosted-query surface-absence record" in combined
+    assert "absent-at-runtime rather than omitted" in combined
+    assert "or an explicit absent-at-runtime disposition with supporting surface audit" in combined
+
+
+def test_operator_path_threshold_is_kept_as_inherited_stretch_target_language() -> None:
+    combined = _normalized(_read(EVIDENCE_PATH) + "\n" + _read(SIM_SPEC_PATH))
+    assert "the operator-path band remains the named stretch target from the same packet rather than a historically locked closure minimum" in combined
+    assert "inherited `0.60` stretch target from Phase `681`" in combined
+
+
 def test_commissioning_posture_for_future_run_is_explicit() -> None:
     text = _normalized(_read(SIM_SPEC_PATH))
     assert "This document commissions a future measurement run. It does not claim that the run has already occurred." in text

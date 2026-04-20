@@ -82,10 +82,13 @@ already carried forward from Phase `681`:
 - operator-path same-contributor linkage recall must remain at or below `0.60`.
 
 These numbers are not invented here. The ordinary-observer band is the Phase
-`681` minimum materially-harder threshold, and the operator-path band is the
-named stretch target from the same packet. Phase `740` makes the operator-path
-band load-bearing for closure sufficiency because operator-path leakage is the
-specific residual named by Phase `697`.
+`681` minimum materially-harder threshold, and the operator-path band remains
+the named stretch target from the same packet rather than a historically locked
+closure minimum. Phase `740` does not rewrite that history. It uses the
+inherited `0.60` stretch target as the comparison band for the specific
+operator-path residual named by Phase `697`: a measured result above `0.60`
+leaves row `5` pending, while a measured result at or below `0.60` removes that
+named residual.
 
 If the run completes but either linkage band is exceeded, the honest result is:
 
@@ -107,6 +110,19 @@ The runtime package requires the following measurement surfaces.
   or query surface,
 - repeated-contributor public-receipt and lineage traces across epochs.
 
+Surface classification for the named Phase `681` variants is:
+
+- **required on every run**:
+  validator-host timing, validator-host message-size buckets, repeated-
+  contributor receipt and lineage corpus,
+- **conditionally required**:
+  hosted-query traces if the selected runtime exposes a public or hosted query
+  surface beyond the internal exact-identifier boundary,
+- **required when the surface is absent**:
+  an explicit hosted-query surface-absence record stating what was checked,
+  what query surfaces were or were not exposed, and why the hosted-query
+  attacker is classified as absent-at-runtime rather than omitted.
+
 ### 4.2 Required attacker-variant mapping
 
 **Operator-path attacker**
@@ -123,7 +139,9 @@ The runtime package requires the following measurement surfaces.
 - vantage: a provider or hosted interface aggregating repeated balance or epoch
   queries over time,
 - required evidence: query logs or equivalent trace outputs showing request
-  timing, repeated identifiers, and aggregation potential,
+  timing, repeated identifiers, and aggregation potential, or an explicit
+  hosted-query surface-absence record when the selected testbed exposes no such
+  surface,
 - required question: does the hosted-query surface reconstruct contributor
   linkage that the public receipt surface alone would not?
 
