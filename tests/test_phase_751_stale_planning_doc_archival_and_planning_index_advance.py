@@ -99,10 +99,16 @@ def test_archival_headers_are_present_at_top_of_three_stale_docs() -> None:
 
 def test_planning_index_current_frontier_and_startup_guidance_are_advanced() -> None:
     text = _normalized(_read(PLANNING_INDEX_PATH))
-    assert "Window 749-752 ACTIVE through Phase 750 master-roadmap and M-series-lane update" in text
+    assert (
+        "Window 749-752 ACTIVE through Phase 750 master-roadmap and M-series-lane update" in text
+        or "Window 749-752 CLOSED via Phase 752 closure gate" in text
+    )
     assert "**Master Completion Roadmap v0.1** ⬅ CURRENT" in text
     assert "**What's next** → master roadmap + current window sequence lock" in text
-    assert "Window 749-752 is now active through Phase 750." in text
+    assert (
+        "Window 749-752 is now active through Phase 750." in text
+        or "Window 749-752 is now closed via Phase 752." in text
+    )
 
 
 def test_planning_index_points_archived_docs_to_master_roadmap_successor() -> None:
