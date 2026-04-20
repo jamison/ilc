@@ -521,6 +521,16 @@ programs that start **after** the convergence window closes:
   after the sovereign substrate is stable. Does not require a CDL yet. Not in
   scope for any window in 701-726.
 
+- **Morphogenetic hypergraph research lane** (post-mainnet, with one pre-M-018 gate):
+  Established 2026-04-19. ADR-0029/0030/0031 proposed; SIM programs SIM-HYPEREDGE-01,
+  SIM-SPECTRAL-01, SIM-EMBED-01, SIM-BEACON-01, SIM-ROUTING-01 registered but not yet
+  commissioned. Merkle-Laplacian dual commitment and sealed spectral beacon are candidate
+  novel research contributions (patent assessment required before publication).
+  **One item is in-scope for the current M-series window:** ADR-0031 proto gate must land
+  before M-018 finalizes its gRPC query surface. All other items are post-mainnet.
+  Master index: `docs/PLANNING_INDEX.md` §9.
+  Substrate additions guide (what to add now): `docs/research/ilc_morphogenetic_substrate_additions_now_v0.1.md`.
+
 ## 8. Bottom line
 
 The project now has enough historical recovery to know which ideas matter.
