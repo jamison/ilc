@@ -5,6 +5,9 @@ edition = "2021"
 description = "ILC Sovereign Mysticeti consensus substrate"
 license = "MIT"
 
+[features]
+testnet_fault_sim = []
+
 [dependencies]
 blst = "0.3.11"
 lmdb_rkv = { package = "lmdb-rkv", version = "0.14" }  # Existing ILC LMDB pattern

@@ -423,6 +423,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     eprintln!("[testnet_client] done — {} message(s) sent", args.count);
+    tokio::time::sleep(tokio::time::Duration::from_millis(1500)).await;
     Ok(())
 }
 
