@@ -26,6 +26,8 @@ use ilc_consensus::{
     node::{NodeRunner},
     types::{ILCConsensusError, ValidatorID},
 };
+use ilc_consensus::app_interface::ilc_app::ilc_app_read_service_server;
+use ilc_consensus::app_interface::ApplicationInterface;
 
 mod args {
     pub struct Args {
@@ -180,12 +182,19 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // 8. Optional: gRPC AppReadService
     // -----------------------------------------------------------------------
     if let Some(grpc_addr) = cfg.grpc_listen_addr {
-        eprintln!(
-            "[m010_harness] grpc_listen_addr={} — gRPC start is a stub in M-010; skipping",
-            grpc_addr
+        let app_iface = ApplicationInterface::new(
+            Arc::clone(&balance_store),
+            Arc::clone(&epoch_store),
         );
-        // gRPC server wiring is a follow-on M-series workload.
-        // app_interface.rs provides the service impl; tonic transport wiring is M-011+.
+        let svc = ilc_app_read_service_server::IlcAppReadServiceServer::new(app_iface);
+        tokio::spawn(async move {
+            eprintln!("[m018] gRPC server listening on {}", grpc_addr);
+            tonic::transport::Server::builder()
+                .add_service(svc)
+                .serve(grpc_addr)
+                .await
+                .expect("[m018] gRPC server failed");
+        });
     }
 
     // -----------------------------------------------------------------------

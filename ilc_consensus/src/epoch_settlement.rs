@@ -2,7 +2,16 @@ use lmdb_rkv::{Cursor, Environment, Database, DatabaseFlags, Transaction, WriteF
 use std::sync::Arc;
 use bincode;
 
-use crate::types::{CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ILCConsensusError};
+use crate::types::{
+    CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ILCConsensusError,
+    ValidatorSet, ILC_EPOCH_SIG_DST,
+};
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct StoredCheckpoint {
+    pub record: EpochSettlementRecord,
+    pub agg_sig_bytes: Vec<u8>,
+}
 
 /// Singleton key in the epoch_records DB storing the latest committed epoch number as a raw u64.
 /// Kept in-band but distinguishable from epoch record keys (which are 8-byte big-endian u64s
@@ -24,31 +33,9 @@ impl EpochStore {
         Ok(Self { env, db })
     }
 
-    /// Fetches the securely locked canonical EpochSettlementRecord given an EpochSeq mapping natively from Python tracking
-    pub fn get_epoch_record(&self, epoch: EpochSeq) -> Result<EpochSettlementRecord, ILCConsensusError> {
-        let txn = self.env.begin_ro_txn()
-            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
-        
-        // Use epoch index natively
-        let key_bytes = epoch.0.to_be_bytes();
-        match txn.get(self.db, &key_bytes) {
-            Ok(bytes) => {
-                let record: EpochSettlementRecord = bincode::deserialize(bytes)
-                    .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?;
-                Ok(record)
-            }
-            // M-series specifications expect 0 mapping naturally on genesis stubs
-            Err(lmdb_rkv::Error::NotFound) => Ok(EpochSettlementRecord {
-                epoch: EpochSeq(0),
-                state_root: CIDv1Root::new([0u8; 36]),
-            }),
-            Err(e) => Err(ILCConsensusError::Other(format!("LMDB get error: {}", e))),
-        }
-    }
-
     /// Write an epoch record directly (used by node control plane when processing EpochSettlementTx).
     /// Enforces the same monotonicity constraint as EpochSettlementProtocol: returns InvalidEpoch
-    /// if the epoch has already been committed.
+    /// if the epoch has already been committed. Schema mapped consistently natively as StoredCheckpoint.
     pub fn commit_epoch_record(&self, record: EpochSettlementRecord) -> Result<(), ILCConsensusError> {
         let mut txn = self.env.begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
@@ -58,14 +45,30 @@ impl EpochStore {
             return Err(ILCConsensusError::InvalidEpoch);
         }
 
-        let val_bytes = bincode::serialize(&record)
+        let stored = StoredCheckpoint {
+            record,
+            agg_sig_bytes: vec![],
+        };
+
+        let val_bytes = bincode::serialize(&stored)
             .map_err(|e| ILCConsensusError::Other(format!("Serialize error: {}", e)))?;
 
         txn.put(self.db, &key_bytes, &val_bytes, WriteFlags::empty())
             .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
 
-        txn.put(self.db, &CURRENT_EPOCH_SENTINEL, &key_bytes, WriteFlags::empty())
-            .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
+        let mut update_sentinel = true;
+        if let Ok(bytes) = txn.get(self.db, &CURRENT_EPOCH_SENTINEL) {
+            let mut buf = [0u8; 8];
+            buf.copy_from_slice(bytes);
+            let current = u64::from_be_bytes(buf);
+            if stored.record.epoch.0 <= current {
+                update_sentinel = false;
+            }
+        }
+        if update_sentinel {
+            txn.put(self.db, &CURRENT_EPOCH_SENTINEL, &key_bytes, WriteFlags::empty())
+                .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
+        }
 
         txn.commit()
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
@@ -106,7 +109,7 @@ impl EpochStore {
     pub fn get_epochs_after(
         &self,
         cursor: u64,
-    ) -> Result<Vec<EpochSettlementRecord>, ILCConsensusError> {
+    ) -> Result<Vec<StoredCheckpoint>, ILCConsensusError> {
         let txn = self.env.begin_ro_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
         let mut db_cursor = txn.open_ro_cursor(self.db)
@@ -124,7 +127,7 @@ impl EpochStore {
             if epoch_num <= cursor {
                 continue; // Peer already has this epoch.
             }
-            let record: EpochSettlementRecord = bincode::deserialize(v)
+            let record: StoredCheckpoint = bincode::deserialize(v)
                 .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?;
             records.push(record);
             if records.len() >= 64 {
@@ -132,6 +135,21 @@ impl EpochStore {
             }
         }
         Ok(records)
+    }
+
+    pub fn get_checkpoint(&self, epoch: u64) -> Result<Option<StoredCheckpoint>, ILCConsensusError> {
+        let txn = self.env.begin_ro_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
+        let key_bytes = epoch.to_be_bytes();
+        match txn.get(self.db, &key_bytes) {
+            Ok(bytes) => {
+                let record: StoredCheckpoint = bincode::deserialize(bytes)
+                    .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?;
+                Ok(Some(record))
+            }
+            Err(lmdb_rkv::Error::NotFound) => Ok(None),
+            Err(e) => Err(ILCConsensusError::Other(format!("LMDB get error: {}", e))),
+        }
     }
 
     /// Fetches the latest canonical Epoch via O(1) singleton sentinel key lookup.
@@ -164,30 +182,68 @@ impl EpochSettlementProtocol {
 
     /// Executed via the ApplicationInterface trait boundary upon DAG commitment.
     /// Strictly protects Monotonicity property.
-    pub fn process_epoch_checkpoint(&self, checkpoint: EpochCheckpoint) -> Result<CIDv1Root, ILCConsensusError> {
-        // Validation check over Sig components bounds -> (Skipped for M-006, validated manually via M-007 implementation)
+    pub fn process_epoch_checkpoint(
+        &self,
+        checkpoint: EpochCheckpoint,
+        validator_set: &ValidatorSet,
+    ) -> Result<CIDv1Root, ILCConsensusError> {
+        // SEC-009: BLS AggSig verification
+        let msg = bincode::serialize(&checkpoint.record)
+            .map_err(|e| ILCConsensusError::Other(format!("BLS msg serialize error: {}", e)))?;
+        let sig = checkpoint.sigs.0.to_signature();
+        let pub_keys: Vec<blst::min_pk::PublicKey> = validator_set.validators
+            .iter()
+            .map(|(_, vk)| vk.0.clone())
+            .collect();
+        let pk_refs: Vec<&blst::min_pk::PublicKey> = pub_keys.iter().collect();
         
+        let blst_result = sig.fast_aggregate_verify(
+            true,
+            msg.as_slice(),
+            ILC_EPOCH_SIG_DST,
+            &pk_refs,
+        );
+        if blst_result != blst::BLST_ERROR::BLST_SUCCESS {
+            return Err(ILCConsensusError::BLSVerificationFailed);
+        }
+
         let mut txn = self.epoch_store.env.begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
         // Monotonicity Check
-        // Given we are committing epoch N, we explicitly enforce validation logic that this prevents re-committing identical Epochs
         let current_key_bytes = checkpoint.record.epoch.0.to_be_bytes();
         
-        if let Ok(_) = txn.get(self.epoch_store.db, &current_key_bytes) {
-            return Err(ILCConsensusError::InvalidEpoch); // Block re-committing identical Epoch
+        if txn.get(self.epoch_store.db, &current_key_bytes).is_ok() {
+            return Err(ILCConsensusError::InvalidEpoch); 
         }
 
-        // Store epoch record
-        let val_bytes = bincode::serialize(&checkpoint.record)
+        let sig_bytes = checkpoint.sigs.0.to_signature().compress().to_vec();
+        let stored = StoredCheckpoint {
+            record: checkpoint.record.clone(),
+            agg_sig_bytes: sig_bytes,
+        };
+
+        // Store epoch record natively carrying aggregated signature bounds
+        let val_bytes = bincode::serialize(&stored)
             .map_err(|e| ILCConsensusError::Other(format!("Serialize error: {}", e)))?;
 
         txn.put(self.epoch_store.db, &current_key_bytes, &val_bytes, WriteFlags::empty())
             .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
 
-        // Update sentinel atomically in the same transaction — O(1) current epoch lookup
-        txn.put(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL, &current_key_bytes, WriteFlags::empty())
-            .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
+        // Update sentinel atomically in the same transaction
+        let mut update_sentinel = true;
+        if let Ok(bytes) = txn.get(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL) {
+            let mut buf = [0u8; 8];
+            buf.copy_from_slice(bytes);
+            let current = u64::from_be_bytes(buf);
+            if checkpoint.record.epoch.0 <= current {
+                update_sentinel = false;
+            }
+        }
+        if update_sentinel {
+            txn.put(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL, &current_key_bytes, WriteFlags::empty())
+                .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
+        }
 
         txn.commit()
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
@@ -221,17 +277,38 @@ mod tests {
         AggSig(agg)
     }
 
-    // ── SEC-008: get_epochs_after cursor tests ────────────────────────────────
+    fn setup_validators() -> (ValidatorSet, Vec<SecretKey>) {
+        let mut keys = Vec::new();
+        let mut validators = Vec::new();
+        for i in 1..=2u32 {
+            let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
+            let pk = sk.sk_to_pk();
+            keys.push(sk);
+            validators.push((crate::types::ValidatorID(i), crate::types::ValidatorKey(pk)));
+        }
+        (ValidatorSet::new(validators, 0).unwrap(), keys)
+    }
 
-    fn commit_epoch(protocol: &EpochSettlementProtocol, epoch: u64, fill: u8) {
-        let checkpoint = EpochCheckpoint {
-            record: EpochSettlementRecord {
-                epoch: EpochSeq(epoch),
-                state_root: CIDv1Root::new([fill; 36]),
-            },
-            sigs: generate_dummy_agg_sig(),
+    fn generate_valid_agg_sig(record: &EpochSettlementRecord, keys: &[SecretKey]) -> AggSig {
+        let msg = bincode::serialize(record).unwrap();
+        let sigs: Vec<_> = keys.iter()
+            .map(|sk| sk.sign(&msg, crate::types::ILC_EPOCH_SIG_DST, &[]))
+            .collect();
+        let sig_refs: Vec<_> = sigs.iter().collect();
+        let agg = AggregateSignature::aggregate(&sig_refs, false).unwrap();
+        AggSig(agg)
+    }
+
+    fn commit_epoch(protocol: &EpochSettlementProtocol, epoch: u64, fill: u8, vset: &ValidatorSet, keys: &[SecretKey]) {
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(epoch),
+            state_root: CIDv1Root::new([fill; 36]),
         };
-        protocol.process_epoch_checkpoint(checkpoint).unwrap();
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, keys),
+        };
+        protocol.process_epoch_checkpoint(checkpoint, vset).unwrap();
     }
 
     #[test]
@@ -239,14 +316,15 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        commit_epoch(&protocol, 1, 0x01);
-        commit_epoch(&protocol, 2, 0x02);
-        commit_epoch(&protocol, 3, 0x03);
+        let (vset, keys) = setup_validators();
+        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
+        commit_epoch(&protocol, 3, 0x03, &vset, &keys);
 
         let records = store.get_epochs_after(0).unwrap();
         assert_eq!(records.len(), 3);
-        assert_eq!(records[0].epoch, EpochSeq(1));
-        assert_eq!(records[2].epoch, EpochSeq(3));
+        assert_eq!(records[0].record.epoch, EpochSeq(1));
+        assert_eq!(records[2].record.epoch, EpochSeq(3));
     }
 
     #[test]
@@ -254,17 +332,18 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        commit_epoch(&protocol, 1, 0x01);
-        commit_epoch(&protocol, 2, 0x02);
-        commit_epoch(&protocol, 3, 0x03);
-        commit_epoch(&protocol, 4, 0x04);
-        commit_epoch(&protocol, 5, 0x05);
+        let (vset, keys) = setup_validators();
+        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
+        commit_epoch(&protocol, 3, 0x03, &vset, &keys);
+        commit_epoch(&protocol, 4, 0x04, &vset, &keys);
+        commit_epoch(&protocol, 5, 0x05, &vset, &keys);
 
         // Peer has epochs 1-3 contiguous; should receive 4 and 5.
         let records = store.get_epochs_after(3).unwrap();
         assert_eq!(records.len(), 2);
-        assert_eq!(records[0].epoch, EpochSeq(4));
-        assert_eq!(records[1].epoch, EpochSeq(5));
+        assert_eq!(records[0].record.epoch, EpochSeq(4));
+        assert_eq!(records[1].record.epoch, EpochSeq(5));
     }
 
     #[test]
@@ -272,8 +351,9 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        commit_epoch(&protocol, 1, 0x01);
-        commit_epoch(&protocol, 2, 0x02);
+        let (vset, keys) = setup_validators();
+        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
 
         // Peer is fully caught up — nothing to send.
         let records = store.get_epochs_after(2).unwrap();
@@ -294,15 +374,16 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
         // Commit 70 epochs — response should be capped at 64.
         for i in 1u64..=70 {
-            commit_epoch(&protocol, i, i as u8);
+            commit_epoch(&protocol, i, i as u8, &vset, &keys);
         }
 
         let records = store.get_epochs_after(0).unwrap();
         assert_eq!(records.len(), 64, "OOM guard must cap response at 64 records");
-        assert_eq!(records[0].epoch, EpochSeq(1));
-        assert_eq!(records[63].epoch, EpochSeq(64));
+        assert_eq!(records[0].record.epoch, EpochSeq(1));
+        assert_eq!(records[63].record.epoch, EpochSeq(64));
     }
 
     #[test]
@@ -317,6 +398,7 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
 
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(1),
@@ -324,16 +406,16 @@ mod tests {
         };
 
         let checkpoint = EpochCheckpoint {
-            record: epoch_record,
-            sigs: generate_dummy_agg_sig(),
+            record: epoch_record.clone(),
+            sigs: generate_valid_agg_sig(&epoch_record, &keys),
         };
 
-        let result = protocol.process_epoch_checkpoint(checkpoint).unwrap();
+        let result = protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
         assert_eq!(result.p1, [1u8; 32]);
         assert_eq!(result.p2, [1u8; 4]);
 
         // Verify via Retrievable route
-        let stored = store.get_epoch_record(EpochSeq(1)).unwrap();
+        let stored = store.get_checkpoint(1).unwrap().unwrap().record;
         assert_eq!(stored.state_root.p1, [1u8; 32]);
         assert_eq!(stored.state_root.p2, [1u8; 4]);
         assert_eq!(stored.epoch, EpochSeq(1));
@@ -344,6 +426,7 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
 
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(2),
@@ -352,20 +435,121 @@ mod tests {
 
         let checkpoint = EpochCheckpoint {
             record: epoch_record.clone(),
-            sigs: generate_dummy_agg_sig(),
+            sigs: generate_valid_agg_sig(&epoch_record, &keys),
         };
 
         // Standard successfully commit Sequence 2
-        assert!(protocol.process_epoch_checkpoint(checkpoint.clone()).is_ok());
+        assert!(protocol.process_epoch_checkpoint(checkpoint.clone(), &vset).is_ok());
 
         // Identical submission violates epoch structure
         let checkpoint_old = EpochCheckpoint {
-            record: epoch_record,
-            sigs: generate_dummy_agg_sig(),
+            record: epoch_record.clone(),
+            sigs: generate_valid_agg_sig(&epoch_record, &keys),
         };
         assert_eq!(
-            protocol.process_epoch_checkpoint(checkpoint_old).unwrap_err(),
+            protocol.process_epoch_checkpoint(checkpoint_old, &vset).unwrap_err(),
             ILCConsensusError::InvalidEpoch
         );
+    }
+
+    #[test]
+    fn test_forged_epoch_record_rejected() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+        
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+
+        // Sign with ONLY the first key instead of all N keys
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys[0..1]),
+        };
+
+        let err = protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::BLSVerificationFailed);
+    }
+
+    #[test]
+    fn test_valid_checkpoint_accepted() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+        
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(42),
+            state_root: CIDv1Root::new([42u8; 36]),
+        };
+
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
+        };
+
+        let res = protocol.process_epoch_checkpoint(checkpoint, &vset);
+        assert!(res.is_ok());
+    }
+
+    #[test]
+    fn test_epoch_checkpoint_agg_sig_stored_in_lmdb() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+        
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(7),
+            state_root: CIDv1Root::new([7u8; 36]),
+        };
+
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
+        };
+
+        protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
+
+        let stored = store.get_checkpoint(7).unwrap().unwrap();
+        assert_eq!(stored.agg_sig_bytes.len(), 96);
+    }
+
+    #[test]
+    fn test_recovery_path_verifies_signature() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+        
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(9),
+            state_root: CIDv1Root::new([9u8; 36]),
+        };
+
+        let mut sig_bytes = generate_valid_agg_sig(&record, &keys).0.to_signature().compress().to_vec();
+        // Corrupt signature
+        sig_bytes[5] ^= 0xFF;
+
+        let corrupted_stored = StoredCheckpoint {
+            record: record.clone(),
+            agg_sig_bytes: sig_bytes,
+        };
+
+        // Construct recovering checkpoint from stored
+        let parsed_sig = blst::min_pk::Signature::from_bytes(&corrupted_stored.agg_sig_bytes);
+        assert!(parsed_sig.is_ok());
+        let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig.unwrap());
+        
+        let recovery_checkpoint = EpochCheckpoint {
+            record: corrupted_stored.record,
+            sigs: crate::types::AggSig(agg_sig),
+        };
+
+        let err = protocol.process_epoch_checkpoint(recovery_checkpoint, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::BLSVerificationFailed);
     }
 }
