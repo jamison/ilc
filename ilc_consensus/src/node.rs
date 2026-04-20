@@ -233,6 +233,13 @@ impl NodeRunner {
             return Ok(());
         }
         
+        // M-019 slow-validator simulation: delay_ms is applied uniformly to ALL
+        // inbound messages after the partition gate, not just to specific message
+        // types. This is intentional — a "slow" validator is slow on everything,
+        // which faithfully models a saturated or degraded node. A selective per-type
+        // delay would require a different attacker model and a separate field.
+        // Note: this runs only under --features testnet_fault_sim; production
+        // binaries do not compile this branch.
         #[cfg(feature = "testnet_fault_sim")]
         if let Some(ms) = self.delay_ms {
             tokio::time::sleep(tokio::time::Duration::from_millis(ms)).await;
