@@ -33,9 +33,12 @@ impl EpochStore {
         Ok(Self { env, db })
     }
 
-    /// Write an epoch record directly (used by node control plane when processing EpochSettlementTx).
+    /// Write an epoch record directly — called only by `handle_epoch_settlement_tx` which is
+    /// gated to `testnet_fault_sim` builds (CRIT-001). Records committed via this path carry
+    /// `agg_sig_bytes: vec![]` (no BLS verification). Production epoch commits go through
+    /// `process_epoch_checkpoint` which performs full BLS AggSig verification before writing.
     /// Enforces the same monotonicity constraint as EpochSettlementProtocol: returns InvalidEpoch
-    /// if the epoch has already been committed. Schema mapped consistently natively as StoredCheckpoint.
+    /// if the epoch has already been committed.
     pub fn commit_epoch_record(&self, record: EpochSettlementRecord) -> Result<(), ILCConsensusError> {
         let mut txn = self.env.begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
@@ -187,7 +190,16 @@ impl EpochSettlementProtocol {
         checkpoint: EpochCheckpoint,
         validator_set: &ValidatorSet,
     ) -> Result<CIDv1Root, ILCConsensusError> {
-        // SEC-009: BLS AggSig verification
+        // SEC-009: BLS AggSig verification.
+        //
+        // HIGH-002 (known liveness limitation): `fast_aggregate_verify` verifies that
+        // the aggregate signature is the product of ALL keys in `pk_refs`. This means
+        // epoch finalization requires all N validators to sign — not just a 2F+1 quorum.
+        // In the N=4/F=1 testnet a single offline honest validator blocks epoch settlement.
+        // Fixing this requires tracking per-validator signatures and selecting exactly the
+        // signing subset (2F+1 keys) before calling fast_aggregate_verify. This is a
+        // planned upgrade for the production validator set. Documented as a known testnet
+        // liveness limitation; does not affect safety (a forged sig still fails).
         let msg = bincode::serialize(&checkpoint.record)
             .map_err(|e| ILCConsensusError::Other(format!("BLS msg serialize error: {}", e)))?;
         let sig = checkpoint.sigs.0.to_signature();
@@ -196,7 +208,7 @@ impl EpochSettlementProtocol {
             .map(|(_, vk)| vk.0.clone())
             .collect();
         let pk_refs: Vec<&blst::min_pk::PublicKey> = pub_keys.iter().collect();
-        
+
         let blst_result = sig.fast_aggregate_verify(
             true,
             msg.as_slice(),
