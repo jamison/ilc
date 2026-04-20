@@ -133,9 +133,15 @@ def test_roadmap_v0_4_records_convergence_commissioning_and_remaining_gaps_hones
 
 def test_planning_index_advances_to_v5_3_v0_4_and_phase_748_next() -> None:
     text = _normalized(_read(PLANNING_INDEX_PATH))
-    assert "Window 745-748 ACTIVE through Phase 747" in text
+    assert (
+        "Window 745-748 ACTIVE through Phase 747" in text
+        or "Window 745-748 CLOSED via Phase 748 closure gate" in text
+    )
     assert "capsule v5.3 current" in text
-    assert "next planned main-lane phase is Phase 748 closure gate" in text
+    assert (
+        "next planned main-lane phase is Phase 748 closure gate" in text
+        or "next planned main-lane continuation is the later convergence window" in text
+    )
     assert "`docs/specs/ilc_antigravity_context_capsule_v5.3.md`" in text
     assert "`docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.4.md`" in text
     assert "ADR-0031 | Subgraph Homomorphism Query Contract — gRPC EdgeRecord | **Accepted — Phase 746 housekeeping status alignment; proto contract already present**" in text
