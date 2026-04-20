@@ -1,11 +1,13 @@
 syntax = "proto3";
 package ilc_app;
 
-// The Read-Only interface exposing DAG-Settled and Owned-Object state to Python. 
+// The Read-Only interface exposing DAG-Settled and Owned-Object state to Python.
 // WRITES ARE EXPLICITLY BANNED. The python epistemic engine may NOT mutate ECU balances or consensus topologies.
 service ILCAppReadService {
     rpc GetBalance (GetBalanceRequest) returns (GetBalanceResponse) {}
     rpc GetEpoch (GetEpochRequest) returns (GetEpochResponse) {}
+    rpc GetEpochRecord (GetEpochRecordRequest) returns (GetEpochRecordResponse) {}
+    rpc GetEpochChain (GetEpochChainRequest) returns (GetEpochChainResponse) {}
 }
 
 message GetBalanceRequest {
@@ -23,4 +25,69 @@ message GetEpochRequest {
 
 message GetEpochResponse {
     uint64 current_epoch = 1;
+}
+
+message GetEpochRecordRequest {
+    uint64 epoch = 1;
+}
+
+message GetEpochRecordResponse {
+    uint64 epoch      = 1;
+    bytes  state_root = 2;
+    bytes  agg_sig    = 3;
+    bool   found      = 4;
+}
+
+message GetEpochChainRequest {
+    uint64 from_epoch    = 1;
+    uint64 to_epoch      = 2;
+    bool   include_edges = 3;
+}
+
+message GetEpochChainResponse {
+    repeated GetEpochRecordResponse records  = 1;
+    repeated EdgeRecord             edges    = 2;
+    repeated HyperEdgeRecord        hyperedges = 3;
+    bool                            chain_complete = 4;
+}
+
+// ---------------------------------------------------------------------------
+// Subgraph query support — ADR-0031 forward reservation
+//
+// EdgeRecord and HyperEdgeRecord are reserved here so that future query
+// response messages (added in M-018+) can include them without a breaking
+// wire-format change.
+//
+// Subgraph Homomorphism Invariant (ADR-0031): when include_edges=true on any
+// future query request, if both source_id and target_id of an edge are present
+// in the returned node set, that edge MUST appear in the edges[] field.
+// Omitting edges between returned nodes is a protocol violation.
+//
+// All future multi-node query REQUEST messages must include:
+//   bool include_edges = N;   // default false
+// All future multi-node query RESPONSE messages must include:
+//   repeated EdgeRecord      edges      = N;   // empty when include_edges=false
+//   repeated HyperEdgeRecord hyperedges = N;   // empty until ADR-0029 activated
+// ---------------------------------------------------------------------------
+
+// EdgeRecord: a single binary edge in a subgraph query response.
+message EdgeRecord {
+    string source_id = 1;
+    string target_id = 2;
+    string link_type = 3; // "supports" | "refutes" | "depends_on" | "derives_from"
+    float  weight    = 4; // 0.0 = unweighted
+}
+
+// HyperEdgeRecord: an n-ary relationship in a subgraph query response.
+// Reserved now (ADR-0031). Populated after ADR-0029 hypergraph substrate is
+// implemented. Fields will not be populated by M-018 query handlers — the
+// message type exists only to reserve field numbers.
+message HyperEdgeRecord {
+    string          id             = 1;
+    string          hyperedge_type = 2; // "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary"
+    repeated string member_ids     = 3;
+    repeated string head_ids       = 4; // directed source set; empty if undirected
+    repeated string tail_ids       = 5; // directed target set; empty if undirected
+    float           weight         = 6;
+    uint64          epoch          = 7;
 }

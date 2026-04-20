@@ -31,6 +31,7 @@ impl<'de> serde::Deserialize<'de> for AgentID {
 }
 
 pub const AGENT_TRANSFER_DST: &[u8] = b"ILC_AGENT_TRANSFER_V1";
+pub const ILC_EPOCH_SIG_DST: &[u8] = b"ILC_EPOCH_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_";
 
 pub struct AgentSecretKey(pub blst::min_pk::SecretKey);
 
@@ -145,14 +146,14 @@ impl CIDv1Root {
 }
 
 /// EpochSettlementRecord defines the Shared-Object committed directly via the full DAG ordering layer.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EpochSettlementRecord {
     pub epoch: EpochSeq,
     pub state_root: CIDv1Root,
 }
 
 /// EpochSettlementTx represents the payload submitted natively by the Epistemic Engine bridging Phase 14 CID components into the shared-object protocol.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EpochSettlementTx {
     pub epoch: EpochSeq,
     pub state_root: CIDv1Root,
@@ -163,6 +164,28 @@ pub struct EpochSettlementTx {
 #[derive(Debug, Clone)]
 pub struct AggSig(pub AggregateSignature);
 
+impl serde::Serialize for AggSig {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let bytes = self.0.to_signature().serialize().to_vec();
+        serializer.serialize_bytes(&bytes)
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for AggSig {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        let sig = blst::min_pk::Signature::from_bytes(&bytes)
+            .map_err(|e| serde::de::Error::custom(format!("Invalid blst signature: {:?}", e)))?;
+        Ok(AggSig(blst::min_pk::AggregateSignature::from_signature(&sig)))
+    }
+}
+
 impl PartialEq for AggSig {
     fn eq(&self, other: &Self) -> bool {
         self.0.to_signature().serialize() == other.0.to_signature().serialize()
@@ -172,7 +195,7 @@ impl PartialEq for AggSig {
 impl Eq for AggSig {}
 
 /// EpochCheckpoint embeds the epoch settlement alongside an aggregate quorum signature.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EpochCheckpoint {
     pub record: EpochSettlementRecord,
     pub sigs: AggSig,
@@ -208,6 +231,8 @@ pub enum ILCConsensusError {
     InvalidEpoch,
     #[error("Insufficient micro-ECU for transfer")]
     BalanceInsufficient,
+    #[error("BLS signature verification failed")]
+    BLSVerificationFailed,
     #[error("Internal LMDB or system error: {0}")]
     Other(String),
 }
