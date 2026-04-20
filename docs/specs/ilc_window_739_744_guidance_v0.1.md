@@ -229,12 +229,15 @@ and ratify `CDL-068` honestly.
 
 ---
 
-## 9. No pre-window conversation required
+## 9. GO Phase 739 required
 
-Window `739-744` has no pre-window conversation gate. That does not waive
-ordinary external review or per-phase GO for sensitive execution. It only means
-there is no separate Q1-Q6-style prerequisite conversation before drafting or
-standard packet review.
+Window 739-744 includes CDL-068 ratification (Phase 743), which mutates the
+constitutional decision log. An explicit GO Phase 739 from the architectural
+reviewer is required before packet drafting begins.
+
+This guidance doc is the basis for that review. The GO gate is satisfied when
+the reviewer confirms the window scope, hard constraints, and Q1-Q5
+resolutions above are acceptable.
 
 ---
 
