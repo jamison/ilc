@@ -2,7 +2,7 @@
 
 **Version**: v0.3
 **Produced**: 2026-04-18
-**Session context**: Window 727-732 CLOSED (today); capsule v5.0 current; M-016 complete; next planned phase M-017
+**Session context**: Window 733-738 CLOSED (today); capsule v5.1 current; M-017 complete; next planned phase M-018
 **Supersedes**: `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md`
 **Purpose**: Updated launch path reference at the post-732 frontier.
 
@@ -41,6 +41,7 @@ completion**, and **distributed-validator operationalization** — not base infr
 | 717-722 | ADR-0015 family closure; transfer tax and cooling period bounded to launch structure without numeric lock; commons dedication bounded under CDL-047; leasehold / reversion deferred; capsule v4.8 frontier close |
 | 723-726 | Sequestered financial-shard eligibility prefilter; post-launch trigger matrix; contagion firewall prerequisites; no activation and no ratification; capsule v4.9 frontier close |
 | 727-732 | Adjacent gated-economy hardening closure; rights/licensing disposition; private/gated contract hardening bounded; no activation and no ratification; capsule v5.0 frontier close |
+| 733-738 | CDL-017 prelock evidence window; Q1-Q6 imported; `SIM-VALIDATOR-01` and `SIM-TOPOLOGY-01` full pass; `CDL-068` opened; ADR-0019 accepted with scope amendment; no CDL ratification; capsule v5.1 frontier close |
 
 ### M-series milestones (Gemini Rust track)
 
@@ -54,12 +55,13 @@ completion**, and **distributed-validator operationalization** — not base infr
 | M-014 | Workload B censorship resistance drill complete; local f=1 loopback proof documented |
 | M-015 | Workload C partition / heal / recovery loopback proof complete |
 | M-016 | Local offline state-extraction proof complete; stronger public-substrate replayability claim remains open pending a later lane |
+| M-017 | Workload E validator operability complete; native validator envelope, sync proxy, and hardware budget captured |
 
 ---
 
 ## 2. Remaining Gaps at the Post-732 Frontier
 
-### Gap 1 — CDL-017 convergence and activation boundary (post-732)
+### Gap 1 — CDL-017 convergence and activation boundary (post-738)
 
 `CDL-066` and `CDL-067` are now ratified, but `CDL-017` remains open and unratified.
 This is the primary surviving constitutional blocker in the validator/bootstrap lane.
@@ -67,8 +69,15 @@ This is the primary surviving constitutional blocker in the validator/bootstrap 
 - **CDL-017** (Phase 695) — bootstrap transition criteria
 
 Window 707-712 resolved governance-minimization and validator-agent prelock
-questions, but later work still needs to converge constitutional text, runtime-form
-evidence, and activation criteria honestly.
+questions, and Window 733-738 completed the Codex-side prelock evidence block.
+The remaining work is the Gemini `M-022` handoff plus the later convergence
+window that turns both lanes into honest ratification text and activation
+criteria.
+
+Current Gap 1 posture:
+
+- `PRELOCK_EVIDENCE_COMPLETE_CODEX_SIDE`
+- pending Gemini `M-022` before any later `CDL-017` ratification claim
 
 ### Gap 2 — MVP gate runtime-form completion (rows 5 and 7)
 
@@ -131,16 +140,19 @@ public substrate data without operator cooperation.
 | Tier-0 numeric determinism (CDL-064) | COMPLETE — Windows 631-641 |
 | Foundational economic doctrine | COMPLETE — Window 701-706 |
 | Governance minimization + validator-agent prelock lane | COMPLETE — Window 707-712 |
+| CDL-017 prelock evidence window | COMPLETE — Window 733-738 (Codex side) |
 | Adaptive gossip + resilience operationalization | COMPLETE — Window 713-716 |
 | ADR-0015 family closure | COMPLETE — Window 717-722 |
 | Sequestered financial-shard eligibility prefilter | COMPLETE — Window 723-726 |
 | Adjacent gated-economy hardening closure | COMPLETE — Window 727-732 |
 | CDL-066 | **RATIFIED** — Phase 708 |
 | CDL-067 | **RATIFIED** — Phase 709 |
-| CDL-017 | **OPEN** — post-732 carry-forward |
+| CDL-017 | **PRELOCK_EVIDENCE_COMPLETE_CODEX_SIDE** — Window 733-738; pending Gemini M-022 |
+| CDL-068 | **OPEN** — Phase 736, not ratified |
 | MVP gate runtime form (rows 5 + 7) | **PENDING** — post-707 |
 | M-series loopback validator proof through partition/heal | **COMPLETE** — M-015 |
 | M-series local offline state extraction | **COMPLETE** — M-016 |
+| M-series validator operability evidence | **COMPLETE** — M-017 |
 | M-series stronger public-substrate replayability proof | **PENDING** — post-M016 |
 | M-series true multi-machine validator proof | **PENDING** — post-M016 provisioning |
 | Option B selection | **DEFERRED** — post-runtime-form |
@@ -150,13 +162,16 @@ public substrate data without operator cooperation.
 
 ## 4. Relationship to Existing Artifacts
 
-- `docs/specs/ilc_antigravity_context_capsule_v5.0.md` — canonical current state
+- `docs/specs/ilc_antigravity_context_capsule_v5.1.md` — canonical current state
 - `docs/specs/ilc_foundational_carry_forward_closure_program_701_plus_v0.1.md` — 701+ program
 - `docs/research/ilc_option_d_to_option_b_transition_program_guide_2026_04_14_v0.1.md` — Option D→B transition
 - `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md` — M-series Rust track
-- `docs/specs/ilc_window_727_732_closure_gate_732_v0.1.md` — Window 727-732 canonical closure
+- `docs/specs/ilc_window_733_738_closure_gate_738_v0.1.md` — Window 733-738 canonical closure
+- `docs/specs/ilc_cdl_068_topology_shuffle_authorization_opening_v0.1.md` — `CDL-068` opening
 - `docs/research/ilc_mysticeti_workload_c_results_M015_v0.1.md` — M-015 partition / heal loopback results
 - `docs/research/ilc_mysticeti_workload_d_results_M016_v0.1.md` — M-016 local offline state extraction results
+- `docs/research/ilc_sim_validator_01_results_v0.1.md` — Phase 734 stake-floor and VRF-threshold evidence
+- `docs/research/ilc_sim_topology_01_results_v0.1.md` — Phase 735 topology and diversity evidence
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.2.md` — prior planning snapshot (Windows 565-584 as future)
 
 ### Morphogenetic Hypergraph Research Lane (post-mainnet, with one pre-M-018 gate)
@@ -171,6 +186,6 @@ Master index for this cluster: `docs/PLANNING_INDEX.md` §9.
 
 ---
 
-*Updated 2026-04-19 to reflect the true current frontier: Window 727-732 closed, Window 733+ next main-lane continuation to be defined, and M-016 local offline state extraction complete.
+*Updated 2026-04-20 to reflect the true current frontier: Window 733-738 closed, capsule v5.1 current, Gap 1 advanced to `PRELOCK_EVIDENCE_COMPLETE_CODEX_SIDE`, and M-017 validator operability complete.
 Infrastructure gaps from v0.2 (transport, packaging, agent loop, integration harness) are closed.
 Remaining work is CDL-017 convergence, MVP gate runtime-form closure, stronger public-substrate replayability proof, true multi-machine validator provisioning, Option B selection gating, and legal positioning.*
