@@ -82,6 +82,29 @@ output/
 .ilc_d2e03_graph.json
 
 # =========================
+# Testbed ephemeral runtime artifacts
+# =========================
+tools/testbed/temp_db_*/
+tools/testbed/temp_config_*.json
+tools/testbed/v*.log
+tools/testbed/runner_output.txt
+tools/testbed/final_runner_output*.txt
+tools/testbed/ilc_app_pb2.py
+tools/testbed/ilc_app_pb2_grpc.py
+config/mysticeti_testnet_M009/certs/
+config/mysticeti_testnet_M009/validator_*_config.json.bak
+config/mysticeti_testnet_M009/validator_*_lmdb_path.txt
+config/mysticeti_testnet_M009/validator_*_peers/
+
+# =========================
+# TLA+ traces and state dumps
+# =========================
+docs/specs/tla/*.bin
+docs/specs/tla/*.tla
+docs/specs/tla/states/
+tools/tla/
+
+# =========================
 # Local historical corpus
 # =========================
 Z_Past_Chats/
