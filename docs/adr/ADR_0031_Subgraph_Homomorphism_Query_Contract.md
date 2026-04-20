@@ -1,6 +1,6 @@
 # ADR-0031: Subgraph Homomorphism Query Contract
 
-**Status:** Proposed  
+**Status:** Accepted  
 **Date:** 2026-04-19  
 **Urgency:** Pre-M-018 gate — the gRPC surface added in M-018 Workload F must not be locked before this contract is in the proto schema.
 
