@@ -61,12 +61,15 @@ Required evidence channels:
 - query timing traces,
 - repeated identifier or handle access patterns,
 - aggregation view across epochs,
+- or an explicit hosted-query surface-absence record when the selected testbed
+  exposes no hosted-query surface,
 - linkage estimate using hosted-query metadata alone and with receipt-lineage
   context.
 
 Required output:
 
-- measured same-contributor linkage estimate for the hosted-query attacker,
+- measured same-contributor linkage estimate for the hosted-query attacker, or
+  an explicit absent-at-runtime disposition with supporting surface audit,
 - explanation of whether the result stays within or exceeds the `0.45`
   ordinary-observer closure band.
 
@@ -93,7 +96,9 @@ The commissioned run requires:
 2. at least one repeated-contributor script spanning multiple epochs,
 3. timestamped traffic capture or equivalent event logs from validator-host
    vantage points,
-4. query-trace capture for any hosted-query surface under test,
+4. query-trace capture for any hosted-query surface under test, or an explicit
+   surface-absence record if no hosted-query surface exists on the selected
+   runtime,
 5. retained public receipt and lineage artifacts for the same workload window,
 6. a manifest tying captures, query traces, and public receipts to the same run.
 
@@ -138,19 +143,24 @@ its linkage numbers.
 1. all three attacker variants were exercised,
 2. required artifacts for traffic capture, query traces where applicable,
    receipts, and lineage were published,
-3. ordinary-observer and hosted-query same-contributor linkage estimates are at
-   or below `0.45`,
-4. operator-path same-contributor linkage estimate is at or below `0.60`,
-5. no observability-floor violation occurred,
-6. the analysis does not rely on blanket secrecy, hidden receipts, broken
+3. ordinary-observer same-contributor linkage estimate is at or below `0.45`,
+4. hosted-query same-contributor linkage estimate is at or below `0.45` when a
+   hosted-query surface exists, or a hosted-query surface-absence record is
+   published when it does not,
+5. operator-path same-contributor linkage estimate is published and is not
+   worse than the inherited `0.60` stretch target from Phase `681`,
+6. no observability-floor violation occurred,
+7. the analysis does not rely on blanket secrecy, hidden receipts, broken
    lineage, or one privileged verification portal.
 
 `sim_leakage_01_verdict=fail` if any of the following occurs:
 
 - one or more attacker variants are unmeasured,
 - one or more required artifacts are missing,
-- ordinary-observer or hosted-query linkage exceeds `0.45`,
-- operator-path linkage exceeds `0.60`,
+- ordinary-observer linkage exceeds `0.45`,
+- hosted-query linkage exceeds `0.45` where a hosted-query surface exists, or
+  the hosted-query surface-absence record is missing where it does not,
+- operator-path linkage exceeds the inherited `0.60` stretch target,
 - the observability floor is violated,
 - the report attempts to substitute an `M-019` default verdict for the
   dedicated leakage-measurement artifact.
