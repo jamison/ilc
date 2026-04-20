@@ -1,6 +1,6 @@
 # ADR-0019: Graph-Native Governance Compilation Boundary
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-03-18
 **Author:** GPT-5 Codex, in collaboration with Genesis operator (project lead)
 **Source:** Window 441+ planning discussion, 2026-03-18
