@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -11,6 +12,8 @@ from pathlib import Path
 DEFAULT_MANIFEST = Path("docs/tools/mempalace/ilc_mempalace_corpus_manifest_v0.1.json")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TMPDIR = REPO_ROOT / "out" / "mempalace_tmp"
+BM25_INDEX_NAME = ".ilc_bm25_index.pkl"
+
 QUERY_CODE = r'''
 import json
 import re
@@ -127,6 +130,113 @@ def load_manifest(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# ---------------------------------------------------------------------------
+# BM25 query (runs in-process — rank_bm25 is lightweight)
+# ---------------------------------------------------------------------------
+
+def _bm25_tokenize(text: str) -> list[str]:
+    # Same pattern as build_tiered_corpus.py — preserves CDL-044, ADR-0029, v5.0
+    return re.findall(r"[a-z0-9][a-z0-9\-_.]*", text.lower())
+
+
+def _query_bm25(
+    palace_path: Path,
+    query: str,
+    tier: str | None,
+    n_results: int,
+) -> list[dict]:
+    """Return BM25-ranked results from the palace's .ilc_bm25_index.pkl.
+
+    Returns [] if the index doesn't exist or rank_bm25 is not installed.
+    Each result: {text, source_file, wing, room, distance, relevance_score, _bm25_score}
+    """
+    index_path = palace_path / BM25_INDEX_NAME
+    if not index_path.exists():
+        return []
+    try:
+        import pickle  # noqa: PLC0415
+        from rank_bm25 import BM25Okapi  # type: ignore  # noqa: PLC0415
+    except ImportError:
+        return []
+
+    try:
+        with index_path.open("rb") as fh:
+            data = pickle.load(fh)  # noqa: S301
+    except Exception:
+        return []
+
+    bm25: BM25Okapi = data["bm25"]
+    meta: list[dict] = data["meta"]
+
+    tokens = _bm25_tokenize(query)
+    if not tokens:
+        return []
+
+    scores = bm25.get_scores(tokens)
+    max_score = float(max(scores)) if scores.any() else 0.0
+    if max_score <= 0.0:
+        return []
+
+    ranked = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)
+    results = []
+    for idx, raw_score in ranked:
+        if len(results) >= n_results:
+            break
+        m = meta[idx]
+        if tier and m.get("wing") != tier:
+            continue
+        norm_score = round(float(raw_score) / max_score, 6)
+        results.append({
+            "text": m["snippet"],
+            "source_file": m["source_file"],
+            "wing": m.get("wing", "unknown"),
+            "room": "general",
+            "distance": None,
+            "relevance_score": norm_score,
+            "_bm25_score": norm_score,
+        })
+    return results
+
+
+def _merge_results(
+    semantic: list[dict],
+    bm25: list[dict],
+    n_results: int,
+) -> tuple[list[dict], str]:
+    """Merge semantic + BM25 results. Deduplicate by source_file.
+
+    Files appearing in both get a 25% relevance boost. BM25-only results are
+    appended. Returns (merged_list, query_mode_label).
+    """
+    if not bm25:
+        return semantic[:n_results], "semantic"
+    if not semantic:
+        return bm25[:n_results], "bm25"
+
+    bm25_by_source = {r["source_file"]: r for r in bm25}
+    seen: set[str] = set()
+    merged: list[dict] = []
+
+    for r in semantic:
+        sf = r["source_file"]
+        seen.add(sf)
+        if sf in bm25_by_source:
+            boosted = dict(r)
+            boosted["relevance_score"] = round(min(1.0, r["relevance_score"] * 1.25), 6)
+            boosted["_bm25_score"] = bm25_by_source[sf]["_bm25_score"]
+            merged.append(boosted)
+        else:
+            merged.append(r)
+
+    for r in bm25:
+        if r["source_file"] not in seen:
+            seen.add(r["source_file"])
+            merged.append(r)
+
+    merged.sort(key=lambda x: x["relevance_score"], reverse=True)
+    return merged[:n_results], "hybrid"
+
+
 def query_env() -> dict[str, str]:
     env = os.environ.copy()
     env["TMPDIR"] = env.get("ILC_MEMPALACE_TMPDIR", env.get("TMPDIR", str(DEFAULT_TMPDIR)))
@@ -186,11 +296,13 @@ def render_text(payload: dict) -> str:
         lines.append("No results.")
         return "\n".join(lines)
     for idx, item in enumerate(results, start=1):
+        bm25_tag = f' bm25={item["_bm25_score"]}' if item.get("_bm25_score") else ""
         lines.append(f'[{idx}] {item["source_file"]}')
         lines.append(
             '  '
             f'wing={item["wing"]} room={item["room"]} '
             f'distance={item.get("distance")} relevance_score={item["relevance_score"]}'
+            f'{bm25_tag}'
         )
         text = item["text"].strip().replace("\n", " ")
         lines.append(f'  text={text[:240]}')
@@ -208,6 +320,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--python", dest="python_bin", default="python")
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--source-contains", action="append", dest="source_filters")
+    parser.add_argument("--no-bm25", action="store_true",
+                        help="Disable BM25 hybrid retrieval even if index exists.")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
@@ -215,15 +329,30 @@ def main(argv: list[str] | None = None) -> int:
     if args.tier and args.tier not in manifest["tiers"]:
         raise SystemExit(f"unknown_tier:{args.tier}")
 
+    # Run semantic (ChromaDB) and BM25 in parallel conceptually; merge results.
+    # Fetch extra semantic results to allow for source_filter pruning + merging headroom.
+    fetch_n = args.results * 3
+
     payload = query_memories(
         args.python_bin,
         palace_path=args.palace,
         query=args.query,
         tier=args.tier,
         room=args.room,
-        results=args.results,
+        results=fetch_n,
         source_filters=args.source_filters,
     )
+    semantic_results = payload.get("results", [])[:fetch_n]
+
+    bm25_results: list[dict] = []
+    if not args.no_bm25:
+        bm25_results = _query_bm25(args.palace, args.query, args.tier, fetch_n)
+
+    merged, query_mode = _merge_results(semantic_results, bm25_results, args.results)
+    payload["results"] = merged
+    payload["query_mode"] = query_mode
+    payload["bm25_hits"] = len(bm25_results)
+
     if args.json:
         print(json.dumps(payload, indent=2))
     else:
