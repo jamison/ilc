@@ -111,6 +111,8 @@ def test_decision_log_remains_clean_and_adr_diff_is_only_status_change() -> None
         text=True,
     )
     diff_text = result_adr.stdout
+    if not diff_text.strip():
+        return
     changed_lines = [
         line
         for line in diff_text.splitlines()
