@@ -253,6 +253,9 @@ impl NodeRunner {
                 }
                 self.handle_epoch_settlement_tx(tx).await
             }
+            GossipMessage::EpochCheckpointMsg(checkpoint) => {
+                self.handle_epoch_checkpoint_msg(checkpoint).await
+            }
             GossipMessage::MissingCertSync { agent, missing_versions } => {
                 self.handle_missing_cert_sync(agent, missing_versions, from).await
             }
@@ -479,14 +482,55 @@ impl NodeRunner {
         self.send_to_peer(from, GossipMessage::MissingEpochResponse { records }).await
     }
 
+    async fn handle_epoch_checkpoint_msg(
+        &self,
+        checkpoint: crate::types::EpochCheckpoint,
+    ) -> Result<(), ILCConsensusError> {
+        let validator_set = &self.fast_path.validator_set;
+        let protocol = crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
+        let epoch = checkpoint.record.epoch.0;
+
+        match protocol.process_epoch_checkpoint(checkpoint, validator_set) {
+            Ok(_) => {
+                eprintln!("epoch_record_committed:epoch={}", epoch);
+                Ok(())
+            }
+            Err(ILCConsensusError::InvalidEpoch) => {
+                eprintln!(
+                    "[m018_node] validator_id={} EpochCheckpointMsg epoch={} already committed",
+                    self.validator_id.0, epoch
+                );
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("[m018_node] validator_id={} checkpoint validation failed: {:?}", self.validator_id.0, e);
+                Err(e)
+            }
+        }
+    }
+
     async fn handle_missing_epoch_response(
         &self,
-        records: Vec<crate::types::EpochSettlementRecord>,
+        records: Vec<crate::epoch_settlement::StoredCheckpoint>,
     ) -> Result<(), ILCConsensusError> {
-        for record in records {
-            let epoch = record.epoch.0;
-            match self.epoch_store.commit_epoch_record(record) {
-                Ok(()) => {
+        let protocol = crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
+        let validator_set = &self.fast_path.validator_set;
+        
+        for stored in records {
+            let epoch = stored.record.epoch.0;
+            
+            // Reconstruct EpochCheckpoint natively
+            let parsed_sig = blst::min_pk::Signature::from_bytes(&stored.agg_sig_bytes)
+                .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
+            let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig);
+            
+            let checkpoint = crate::types::EpochCheckpoint {
+                record: stored.record,
+                sigs: crate::types::AggSig(agg_sig),
+            };
+
+            match protocol.process_epoch_checkpoint(checkpoint, validator_set) {
+                Ok(_) => {
                     eprintln!("epoch_record_committed:epoch={}", epoch);
                     eprintln!("m015_epoch_recovery_path_protocol_driven epoch={}", epoch);
                 }

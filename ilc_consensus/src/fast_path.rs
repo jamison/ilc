@@ -3,7 +3,7 @@ use crate::balance_store::{BalanceStore, BalanceChange};
 use std::sync::Arc;
 use std::collections::HashSet;
 pub struct FastPathProtocol {
-    validator_set: Arc<ValidatorSet>,
+    pub validator_set: Arc<ValidatorSet>,
     balance_store: Arc<BalanceStore>,
     network_id: String,
 }

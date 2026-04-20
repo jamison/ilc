@@ -1,4 +1,5 @@
-use crate::types::{EpochSettlementRecord, EpochSettlementTx, TransferCertificate, ILCConsensusError, ValidatorID};
+use crate::types::{EpochSettlementRecord, EpochSettlementTx, TransferCertificate, ILCConsensusError, ValidatorID, EpochCheckpoint};
+use crate::epoch_settlement::StoredCheckpoint;
 use quinn::{Endpoint, ServerConfig, ClientConfig, Connection, RecvStream, SendStream};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, UnixTime};
 use rustls::pki_types::ServerName;
@@ -39,8 +40,9 @@ pub enum GossipMessage {
         latest_contiguous_epoch: u64,
     },
     MissingEpochResponse {
-        records: Vec<EpochSettlementRecord>,
+        records: Vec<StoredCheckpoint>,
     },
+    EpochCheckpointMsg(EpochCheckpoint),
 }
 
 /// CDL-061: HTTP/3 structured framing envelope

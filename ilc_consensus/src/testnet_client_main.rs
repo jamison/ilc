@@ -36,7 +36,7 @@ use std::path::PathBuf;
 
 use ilc_consensus::{
     network::{GossipEnvelope, GossipMessage, PeerNetwork},
-    types::{AgentID, AgentSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementTx, ObjectRef, ValidatorID, ValidatorSig, TransferCertificate, AGENT_TRANSFER_DST},
+    types::{AgentID, AgentSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementTx, ObjectRef, ValidatorID, ValidatorSig, TransferCertificate, AGENT_TRANSFER_DST, EpochCheckpoint, EpochSettlementRecord, AggSig, ILC_EPOCH_SIG_DST},
 };
 
 // ---------------------------------------------------------------------------
@@ -47,6 +47,7 @@ use ilc_consensus::{
 enum MsgType {
     Broadcast,
     EpochSettlement,
+    EpochCheckpoint,
     FullTransfer,
 }
 
@@ -71,6 +72,7 @@ struct Args {
     listen_addr: Option<SocketAddr>,
     validators: Vec<(u32, SocketAddr)>,
     validator_certs: Vec<PathBuf>,
+    quorum_keys: Vec<PathBuf>,
     f: usize,
 }
 
@@ -91,6 +93,7 @@ fn parse_args() -> Result<Args, String> {
     let mut listen_addr: Option<SocketAddr> = None;
     let mut validators: Vec<(u32, SocketAddr)> = Vec::new();
     let mut validator_certs: Vec<PathBuf> = Vec::new();
+    let mut quorum_keys: Vec<PathBuf> = Vec::new();
     let mut f: usize = 1;
 
     let mut i = 1;
@@ -123,8 +126,9 @@ fn parse_args() -> Result<Args, String> {
                 msg_type = Some(match raw.get(i).ok_or("--msg requires a type")?.as_str() {
                     "broadcast" => MsgType::Broadcast,
                     "epoch_settlement" => MsgType::EpochSettlement,
+                    "epoch_checkpoint" => MsgType::EpochCheckpoint,
                     "full_transfer" => MsgType::FullTransfer,
-                    other => return Err(format!("unknown --msg type '{}' (broadcast|epoch_settlement|full_transfer)", other)),
+                    other => return Err(format!("unknown --msg type '{}' (broadcast|epoch_settlement|epoch_checkpoint|full_transfer)", other)),
                 });
             }
             "--sender-key" => {
@@ -181,6 +185,13 @@ fn parse_args() -> Result<Args, String> {
                     validator_certs.push(PathBuf::from(p));
                 }
             }
+            "--quorum-keys" => {
+                i += 1;
+                let list = raw.get(i).ok_or("--quorum-keys requires a comma-separated list")?;
+                for p in list.split(',') {
+                    quorum_keys.push(PathBuf::from(p));
+                }
+            }
             "--help" | "-h" => {
                 eprintln!("Usage:");
                 eprintln!("  testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement>");
@@ -208,6 +219,7 @@ fn parse_args() -> Result<Args, String> {
         listen_addr,
         validators,
         validator_certs,
+        quorum_keys,
         f,
     })
 }
@@ -294,6 +306,64 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 network.transmit(send, envelope).await
                     .map_err(|e| format!("transmit epoch {}: {}", epoch, e))?;
                 eprintln!("[testnet_client] sent EpochSettlementTx epoch={}", epoch);
+            }
+        }
+        MsgType::EpochCheckpoint => {
+            let mut bls_keys = Vec::new();
+            if args.quorum_keys.is_empty() {
+                return Err("--quorum-keys is required for epoch_checkpoint".into());
+            }
+            for key_path in &args.quorum_keys {
+                let sk = load_bls_secret_key(key_path)
+                    .map_err(|e| format!("EpochCheckpoint failed to load {}: {:?}", key_path.display(), e))?;
+                bls_keys.push(sk);
+            }
+
+            let targets = if !args.validators.is_empty() {
+                args.validators.iter().map(|(_, addr)| *addr).collect::<Vec<_>>()
+            } else {
+                vec![args.validator_addr]
+            };
+
+            for i in 0..args.count {
+                let epoch = args.start_epoch + i;
+                let record = EpochSettlementRecord {
+                    epoch: EpochSeq(epoch),
+                    state_root: CIDv1Root::new([0u8; 36]),
+                };
+
+                let msg_bytes = bincode::serialize(&record).unwrap();
+                let mut sigs = Vec::new();
+                for sk in &bls_keys {
+                    sigs.push(sk.sign(&msg_bytes, ILC_EPOCH_SIG_DST, &[]));
+                }
+                let sig_refs: Vec<&blst::min_pk::Signature> = sigs.iter().collect();
+                let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
+
+                let checkpoint = EpochCheckpoint {
+                    record,
+                    sigs: AggSig(agg),
+                };
+
+                let envelope = GossipEnvelope {
+                    frame_type: 0x00,
+                    peer_id: ValidatorID(args.peer_id),
+                    payload: GossipMessage::EpochCheckpointMsg(checkpoint),
+                };
+
+                for addr in &targets {
+                    let c = if *addr == args.validator_addr {
+                        conn.clone()
+                    } else {
+                        network.endpoint.connect(*addr, "localhost")?.await.map_err(|e| format!("connect: {}", e))?
+                    };
+
+                    let (send, _recv) = c.open_bi().await
+                        .map_err(|e| format!("open_bi: {}", e))?;
+                    network.transmit(send, envelope.clone()).await
+                        .map_err(|e| format!("transmit epoch {}: {}", epoch, e))?;
+                }
+                eprintln!("[testnet_client] sent EpochCheckpointMsg epoch={} to {} targets", epoch, targets.len());
             }
         }
         MsgType::Broadcast => {

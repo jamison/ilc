@@ -6,7 +6,7 @@ pub mod ilc_app {
 }
 
 use ilc_app::ilc_app_read_service_server::IlcAppReadService;
-use ilc_app::{GetBalanceRequest, GetBalanceResponse, GetEpochRequest, GetEpochResponse};
+use ilc_app::{GetBalanceRequest, GetBalanceResponse, GetEpochRequest, GetEpochResponse, GetEpochRecordRequest, GetEpochRecordResponse, GetEpochChainRequest, GetEpochChainResponse, EdgeRecord, HyperEdgeRecord};
 use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
 use crate::types::AgentID;
@@ -55,6 +55,68 @@ impl IlcAppReadService for ApplicationInterface {
             Err(e) => Err(Status::internal(format!("Epoch lookup failed: {:?}", e))),
         }
     }
+
+    async fn get_epoch_record(
+        &self,
+        request: Request<GetEpochRecordRequest>,
+    ) -> Result<Response<GetEpochRecordResponse>, Status> {
+        let epoch = request.into_inner().epoch;
+        match self.epoch_store.get_checkpoint(epoch) {
+            Ok(Some(stored)) => {
+                let mut state_root = [0u8; 36];
+                state_root[..32].copy_from_slice(&stored.record.state_root.p1);
+                state_root[32..].copy_from_slice(&stored.record.state_root.p2);
+                Ok(Response::new(GetEpochRecordResponse {
+                    epoch: stored.record.epoch.0,
+                    state_root: state_root.to_vec(),
+                    agg_sig: stored.agg_sig_bytes,
+                    found: true,
+                }))
+            },
+            Ok(None) => Ok(Response::new(GetEpochRecordResponse {
+                epoch, state_root: vec![], agg_sig: vec![], found: false,
+            })),
+            Err(e) => Err(Status::internal(format!("LMDB read error: {:?}", e))),
+        }
+    }
+
+    async fn get_epoch_chain(
+        &self,
+        request: Request<GetEpochChainRequest>,
+    ) -> Result<Response<GetEpochChainResponse>, Status> {
+        let req = request.into_inner();
+        let from = if req.from_epoch == 0 { 1 } else { req.from_epoch };
+        let current = self.epoch_store.get_current_epoch()
+            .map_err(|e| Status::internal(format!("Epoch read error: {:?}", e)))?;
+        let to = if req.to_epoch == 0 || req.to_epoch > current { current } else { req.to_epoch };
+
+        let mut records = Vec::new();
+        for ep in from..=to {
+            match self.epoch_store.get_checkpoint(ep) {
+                Ok(Some(stored)) => {
+                    let mut state_root = [0u8; 36];
+                    state_root[..32].copy_from_slice(&stored.record.state_root.p1);
+                    state_root[32..].copy_from_slice(&stored.record.state_root.p2);
+                    records.push(GetEpochRecordResponse {
+                        epoch: stored.record.epoch.0,
+                        state_root: state_root.to_vec(),
+                        agg_sig: stored.agg_sig_bytes,
+                        found: true,
+                    });
+                },
+                Ok(None) => break,  
+                Err(e) => return Err(Status::internal(format!("{:?}", e))),
+            }
+        }
+
+        let chain_complete = records.len() as u64 == (to - from + 1);
+        Ok(Response::new(GetEpochChainResponse {
+            chain_complete,
+            records,
+            edges: vec![],
+            hyperedges: vec![],
+        }))
+    }
 }
 
 #[cfg(test)]
@@ -62,7 +124,7 @@ mod tests {
     use super::*;
     use tempfile::tempdir;
     use lmdb_rkv::Environment;
-    use crate::types::{AttributionBatch, EpochSeq, CIDv1Root, EpochSettlementRecord, EpochCheckpoint, AggSig};
+    use crate::types::{AttributionBatch, EpochSeq, CIDv1Root, EpochSettlementRecord, EpochCheckpoint, AggSig, ValidatorSet};
     use crate::epoch_settlement::EpochSettlementProtocol;
     use blst::min_pk::{AggregateSignature, SecretKey};
 
@@ -75,6 +137,28 @@ mod tests {
                 .unwrap()
         );
         (env, dir)
+    }
+
+    fn setup_validators() -> (ValidatorSet, Vec<SecretKey>) {
+        let mut keys = Vec::new();
+        let mut validators = Vec::new();
+        for i in 1..=2u32 {
+            let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
+            let pk = sk.sk_to_pk();
+            keys.push(sk);
+            validators.push((crate::types::ValidatorID(i), crate::types::ValidatorKey(pk)));
+        }
+        (ValidatorSet::new(validators, 0).unwrap(), keys)
+    }
+
+    fn generate_valid_agg_sig(record: &EpochSettlementRecord, keys: &[SecretKey]) -> AggSig {
+        let msg = bincode::serialize(record).unwrap();
+        let sigs: Vec<_> = keys.iter()
+            .map(|sk| sk.sign(&msg, crate::types::ILC_EPOCH_SIG_DST, &[]))
+            .collect();
+        let sig_refs: Vec<_> = sigs.iter().collect();
+        let agg = AggregateSignature::aggregate(&sig_refs, false).unwrap();
+        AggSig(agg)
     }
 
     #[tokio::test]
@@ -131,23 +215,86 @@ mod tests {
         // 2. We inject a valid EpochSettlement sequence via the M-006 domain logic mapped over LMDB 
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         
-        let sk = SecretKey::key_gen(&[1; 32], &[]).unwrap();
-        let sig = sk.sign(b"dummy", b"DST", &[]);
-        let agg = AggregateSignature::aggregate(&[&sig], false).unwrap();
-
+        let (vset, keys) = setup_validators();
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(5),
+            state_root: CIDv1Root::new([5u8; 36]),
+        };
         let checkpoint = EpochCheckpoint {
-            record: EpochSettlementRecord {
-                epoch: EpochSeq(5),
-                state_root: CIDv1Root::new([5u8; 36]),
-            },
-            sigs: AggSig(agg),
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
         };
 
-        protocol.process_epoch_checkpoint(checkpoint).unwrap();
+        protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
 
         // Validate retrieving actual global epoch representation dynamically from LMDB
         let req2 = Request::new(GetEpochRequest {});
         let resp2 = app.get_epoch(req2).await.unwrap().into_inner();
         assert_eq!(resp2.current_epoch, 5); // Successfully returns 5, validating the M-006 integration
+    }
+
+    #[tokio::test]
+    async fn test_get_epoch_record_returns_stored_agg_sig() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let app = ApplicationInterface::new(balance_store, epoch_store.clone());
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
+        let (vset, keys) = setup_validators();
+        
+        let record = EpochSettlementRecord { epoch: EpochSeq(10), state_root: CIDv1Root::new([10u8; 36]) };
+        let checkpoint = EpochCheckpoint { record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys) };
+        protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
+
+        let req = Request::new(GetEpochRecordRequest { epoch: 10 });
+        let resp = app.get_epoch_record(req).await.unwrap().into_inner();
+        assert!(resp.found);
+        assert_eq!(resp.agg_sig.len(), 96);
+        assert_eq!(resp.state_root, [10u8; 36].to_vec());
+    }
+
+    #[tokio::test]
+    async fn test_get_epoch_chain_chain_complete() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let app = ApplicationInterface::new(balance_store, epoch_store.clone());
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
+        let (vset, keys) = setup_validators();
+        
+        for i in 1..=5 {
+            let record = EpochSettlementRecord { epoch: EpochSeq(i), state_root: CIDv1Root::new([i as u8; 36]) };
+            protocol.process_epoch_checkpoint(EpochCheckpoint {
+                record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys)
+            }, &vset).unwrap();
+        }
+
+        let req = Request::new(GetEpochChainRequest { from_epoch: 1, to_epoch: 5, include_edges: false });
+        let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
+        assert!(resp.chain_complete);
+        assert_eq!(resp.records.len(), 5);
+    }
+
+    #[tokio::test]
+    async fn test_get_epoch_chain_gap_returns_partial() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let app = ApplicationInterface::new(balance_store, epoch_store.clone());
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
+        let (vset, keys) = setup_validators();
+        
+        for i in vec![1, 2, 3, 5] { // Skip 4
+            let record = EpochSettlementRecord { epoch: EpochSeq(i), state_root: CIDv1Root::new([i as u8; 36]) };
+            protocol.process_epoch_checkpoint(EpochCheckpoint {
+                record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys)
+            }, &vset).unwrap();
+        }
+
+        let req = Request::new(GetEpochChainRequest { from_epoch: 1, to_epoch: 5, include_edges: false });
+        let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
+        assert!(!resp.chain_complete); // Because it stopped at 3 missing 4
+        assert_eq!(resp.records.len(), 3);
+        assert_eq!(resp.records[2].epoch, 3);
     }
 }
