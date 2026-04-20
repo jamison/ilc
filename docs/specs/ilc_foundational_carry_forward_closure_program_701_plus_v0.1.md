@@ -1,5 +1,11 @@
 # ILC Foundational Carry-Forward Closure Program 701+ v0.1
 
+> **ARCHIVED 2026-04-20.** This document covered Windows 701-726. Its
+> forward-looking content (convergence window definition, integration rules,
+> L3 and hypergraph deferred programs) is now carried in
+> `docs/specs/ilc_master_completion_roadmap_v0.1.md`. The window-by-window
+> narrative (§1-5.5) is complete history. Do not consult for current planning.
+
 Status: planning carry-forward artifact
 Date: 2026-04-15
 Classification: non-checklist closure program

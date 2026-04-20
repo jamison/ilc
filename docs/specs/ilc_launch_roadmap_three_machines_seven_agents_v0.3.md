@@ -1,5 +1,9 @@
 # ILC Launch Roadmap: Three Computers, Seven Agents
 
+> **SUPERSEDED.** Replaced by v0.4 (`docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.4.md`).
+> The morphogenetic hypergraph note at §4.3 (lines 189-199) is now covered in
+> `docs/specs/ilc_master_completion_roadmap_v0.1.md` §6.
+
 **Version**: v0.3
 **Produced**: 2026-04-20
 **Session context**: Window 739-744 CLOSED (today); capsule v5.2 current; M-018 complete; next planned phase M-019
