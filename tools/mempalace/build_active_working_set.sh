@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-MANIFEST_PATH="${ILC_MEMPALACE_ACTIVE_MANIFEST:-$ROOT_DIR/docs/tools/mempalace/ilc_mempalace_current_frontier_manifest_v0.1.json}"
+MANIFEST_PATH="${ILC_MEMPALACE_ACTIVE_MANIFEST:-$ROOT_DIR/docs/tools/mempalace/ilc_mempalace_current_frontier_manifest_v0.2.json}"
 RUNTIME_PATH="${ILC_MEMPALACE_ACTIVE_RUNTIME:-$ROOT_DIR/out/mempalace_runtime_active}"
 STAGED_ROOT="${ILC_MEMPALACE_ACTIVE_STAGE:-$ROOT_DIR/out/mempalace_active_stage}"
 PALACE_PATH="${ILC_MEMPALACE_ACTIVE_PALACE:-$ROOT_DIR/out/mempalace_active_palace}"
