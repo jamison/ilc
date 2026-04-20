@@ -77,7 +77,7 @@ Option B deferred.
 
 Two phases:
 
-M-021 — SIM-LEAKAGE-01 + security fix verification:
+M-021 — SIM-LEAKAGE-01 + security fix verification (+ conditional audit remediation):
 - Primary obligation: SIM-LEAKAGE-01 execution per Phase 740 commissioning
   spec. Three attacker variants required: operator-path, hosted-query,
   repeated-contributor. Pass criteria: ordinary-observer / hosted-query
@@ -90,6 +90,13 @@ M-021 — SIM-LEAKAGE-01 + security fix verification:
   brief §5: in-memory equivocation detection is not LMDB-persisted, but
   `balance_store` LMDB version locking is the durable double-spend barrier.
   This two-layer defence is the correct architecture; document it explicitly.
+- Conditional obligation: external audit remediation. If an external security
+  audit has been engaged and findings exist at M-021 execution time, all
+  Critical and High findings must be addressed with explicit dispositions and
+  the Phase 690 workloads re-run on any remediated code. If no external audit
+  findings exist, this obligation remains pending and is noted as such in the
+  M-021 results. The master roadmap must preserve this conditional path, not
+  erase it.
 - Note: testbed uses `--features testnet_fault_sim` build as before. CRIT-001
   does not change the measurement surface.
 - Deliverable: `docs/research/ilc_sim_leakage_01_results_M021_v0.1.md`
@@ -202,13 +209,20 @@ in place. No new file. Changes required:
    `"Estimated elapsed time with LLM-augmented development: 4-6 months..."`.
    Remove the entire sentence. It is not realistic and not informative.
 
-2. **Update M-021 scope** to reflect Q1 adoption:
+2. **Update M-021 scope** to reflect Q1 adoption while preserving the
+   conditional external-audit remediation branch:
    - Primary: SIM-LEAKAGE-01 execution (Phase 740 commissioning spec governs).
      Raw numbers and methodology required, not just verdict.
    - Secondary: verify three committed security fixes (CRIT-001/HIGH-002/TEST-002
      at `16147c2b`); add HIGH-001 explicit note to audit brief §5.
+   - Conditional: external audit remediation remains a parallel M-021 obligation
+     if an external audit has been engaged and findings exist. Do not erase this
+     branch from the M-series doc — update it to note that no external findings
+     exist yet at M-021 open, so the obligation is pending-if-activated.
    - Update Claude audit checklist: add item for HIGH-001 two-layer defence
-     documentation; add item requiring methodology + raw numbers in results doc.
+     documentation; add item requiring methodology + raw numbers in results doc;
+     preserve the existing external-audit remediation checklist item as
+     conditional (applicable only if external findings exist).
    - Update "Owner: Gemini" to "Owner: Gemini (execution) / Claude (audit)".
 
 3. **Update M-022 scope** to reflect Q2 adoption:

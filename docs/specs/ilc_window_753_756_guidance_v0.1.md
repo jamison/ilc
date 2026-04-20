@@ -22,8 +22,13 @@ open it:
 
 2. **CDL-017 ratification text pre-work** — the ratification readiness
    dossier assembling the constitutional text, Codex-side prelock evidence
-   summary, what M-022 must confirm on the implementation side, and the
-   exact SEC-004 activation scope. This is preparation, not ratification.
+   summary, what M-022 must confirm on the implementation side, what the
+   convergence window must close as additional inputs, and the exact
+   SEC-004 activation scope. This is preparation, not ratification.
+   CDL-017 ratification requires both M-022 implementation confirmation
+   AND convergence row evidence. The dossier pre-stages both input classes
+   so the CDL-017 ratification window can execute immediately after the
+   convergence window closes — not immediately after M-022 approval alone.
 
 Both are clearly labeled as pre-drafts. Neither opens the convergence window.
 Neither ratifies CDL-017. Both are planning and documentation work only.
@@ -47,6 +52,18 @@ Primary source anchors:
   window original scoping intent)
 - `docs/research/ilc_mysticeti_implementation_lane_m_series_v0.1.md` §4
   (Convergence with main Codex lane)
+
+CDL-017 dossier direct constitutional sources (required for §3.2):
+
+- `docs/specs/ilc_constitutional_decision_log_v0.1.md` — CDL register;
+  re-read CDL-017 entry for authoritative status and text
+- `docs/specs/ilc_cdl_017_opening_stub_695_v0.1.md` — Phase 695 constitutional
+  opening stub; the source of the CDL-017 ratification text draft
+- `docs/research/ilc_validator_agent_design_evidence_v0.1.md` — validator-agent
+  design evidence supporting the Codex-side prelock
+- `docs/research/ilc_validator_agent_q1_q6_prewindow_resolution_v0.1.md` —
+  Q1-Q6 prewindow resolution; six open questions resolved before CDL-017
+  prelock was finalized in Window 733-738
 
 ---
 
@@ -296,7 +313,11 @@ Create `docs/specs/ilc_cdl_017_ratification_readiness_dossier_v0.1.md`.
 ```
 Status: PRE-WORK — CDL-017 is not ratified and will not be ratified in
 this window. This dossier assembles the ratification inputs so the
-CDL-017 ratification window can execute immediately when M-022 is approved.
+CDL-017 ratification window can execute immediately after the convergence
+window closes. CDL-017 ratification requires both M-022 implementation
+confirmation AND convergence row evidence (rows 5 and 7 closed, row 8
+dispositioned). M-022 approval alone is not sufficient to open the
+CDL-017 ratification window.
 ```
 
 **Required sections:**
@@ -337,16 +358,32 @@ as a checklist against which M-022 will be evaluated:
 4. First validator deployment prerequisites: what the Rust implementation
    requires before a real (non-testnet) validator can be deployed.
 
-**§4 — CDL-017 ratification window scope**
+**§4 — CDL-017 ratification window scope and sequencing**
 
-What the CDL-017 ratification window (a separate bounded Codex window,
-separate from the convergence window) will execute:
+The CDL-017 ratification window is a separate bounded Codex window that
+opens **after the convergence window closes** — not immediately after M-022
+approval. The correct sequence is:
+
+```
+M-022 approval → convergence window (CW-1 through CW-6) → CDL-017 ratification window
+```
+
+The convergence window must close rows 5 and 7, disposition row 8, and
+synthesize the Option B graduation gate (CW-5) before CDL-017 ratification
+can proceed. CDL-017 ratification requires both the M-022 implementation
+confirmation AND the convergence row evidence as inputs. The dossier
+assembled in this phase pre-stages those inputs but cannot substitute for
+the convergence window outputs.
+
+What the CDL-017 ratification window will execute:
 
 1. CDL-017 ratification — Codex executes the ratification using:
    - The constitutional text from Phase 695 (opening stub)
    - The M-007 key ceremony protocol as implementation evidence
    - The M-009+ testnet results as operational evidence
    - M-022 handoff package as the implementation completeness confirmation
+   - Convergence window row evidence (rows 5 and 7 closure verdicts, row 8
+     disposition) as the runtime completeness confirmation
 2. Explicit human gate: first authorized validator deployment. This gate
    is not satisfied by CDL-017 ratification alone. It requires explicit
    operator sign-off and is separate from the ratification act.
