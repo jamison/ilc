@@ -264,16 +264,29 @@ impl NodeRunner {
                 self.handle_certificate(cert).await
             }
             GossipMessage::EpochSettlementTx(tx) => {
+                // CRIT-001: EpochSettlementTx carries no sigs field. Epoch records
+                // committed via this path have no BLS aggregate signature — any
+                // authenticated peer could fabricate epoch records. This message
+                // type is permitted only in testnet_fault_sim builds for loopback
+                // testing. Production builds reject it unconditionally.
                 #[cfg(feature = "testnet_fault_sim")]
-                if let Some(censor_val) = self.censor_validator {
-                    if let Some(censor_tgt) = self.censor_target {
-                        if self.validator_id.0 == censor_val && from.0 == censor_tgt {
-                            eprintln!("[m014_censor] validator_id={} dropped EpochSettlementTx from validator_id={}", self.validator_id.0, from.0);
-                            return Ok(());
+                {
+                    if let Some(censor_val) = self.censor_validator {
+                        if let Some(censor_tgt) = self.censor_target {
+                            if self.validator_id.0 == censor_val && from.0 == censor_tgt {
+                                eprintln!("[m014_censor] validator_id={} dropped EpochSettlementTx from validator_id={}", self.validator_id.0, from.0);
+                                return Ok(());
+                            }
                         }
                     }
+                    return self.handle_epoch_settlement_tx(tx).await;
                 }
-                self.handle_epoch_settlement_tx(tx).await
+                #[cfg(not(feature = "testnet_fault_sim"))]
+                {
+                    let _ = tx;
+                    eprintln!("[node] SECURITY: EpochSettlementTx rejected — no BLS aggregate sig field; use EpochCheckpointMsg");
+                    Err(ILCConsensusError::InvalidSignature)
+                }
             }
             GossipMessage::EpochCheckpointMsg(checkpoint) => {
                 #[cfg(feature = "testnet_fault_sim")]
@@ -441,9 +454,10 @@ impl NodeRunner {
     }
 
     // -----------------------------------------------------------------------
-    // EpochSettlementTx handler
+    // EpochSettlementTx handler — testnet_fault_sim only (CRIT-001)
     // -----------------------------------------------------------------------
 
+    #[cfg(feature = "testnet_fault_sim")]
     async fn handle_epoch_settlement_tx(
         &self,
         tx: crate::types::EpochSettlementTx,
