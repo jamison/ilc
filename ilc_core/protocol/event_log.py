@@ -38,6 +38,13 @@ def _validate_event_envelope(kind: Any, payload: Any) -> None:
         raise EventLogValidationError("event_envelope_invalid_payload_type")
 
 
+def _str_to_decimal(value: str, token: str) -> Decimal:
+    try:
+        return Decimal(value)
+    except InvalidOperation as exc:
+        raise ValueError(token) from exc
+
+
 def _to_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
     if isinstance(value, bool):
         raise ValueError(token)
@@ -48,10 +55,7 @@ def _to_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
     elif isinstance(value, float):
         number = Decimal(str(value))
     elif isinstance(value, str):
-        try:
-            number = Decimal(value)
-        except InvalidOperation as exc:
-            raise ValueError(token) from exc
+        number = _str_to_decimal(value, token)
     else:
         raise ValueError(token)
     if not number.is_finite():
