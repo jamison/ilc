@@ -145,7 +145,7 @@ def test_artifact_records_phase_table_and_single_row_mutation_discipline() -> No
     assert "| 4 | 766 | coherence report + capsule v5.5 + closure gate | gate / handoff |" in text
     assert "Phase `765` must follow the two-commit ratification discipline" in text
     assert "commit 2 mutates exactly the `CDL-017` row" in text
-    assert "The Phase `765` second commit may touch only the `CDL-017` row and no other file." in text
+    assert "The Phase `765` second commit may touch only the `CDL-017` row and no other file" in text
 
 
 def test_decision_log_and_runtime_surfaces_are_untouched_in_phase_763() -> None:
@@ -188,6 +188,6 @@ def test_backfill_surfaces_record_active_window_state() -> None:
     assert "## Phase 763" in status_text
     assert "CDL-017 ratification window sequence lock" in status_text
     assert "**Next planned phase:** Phase 764" in status_text
-    assert "CDL-017 ratification window ACTIVE through Phase 763" in planning_text
+    assert "`CDL-017` ratification window ACTIVE through Phase `763`" in planning_text
     assert "Active CDL-017 Ratification Sequence Lock" in planning_text
     assert "reviewer-approved transition from the closed convergence frontier into the later CDL-017 ratification window" in walkthrough_text
