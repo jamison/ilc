@@ -334,6 +334,9 @@ impl NodeRunner {
 
         let sender_pubkey = blst::min_pk::PublicKey::from_bytes(&transfer.object_ref.agent.0)
             .map_err(|_| ILCConsensusError::InvalidSignature)?;
+        // SEC-FIX-01: G1 subgroup check.
+        sender_pubkey.validate()
+            .map_err(|_| ILCConsensusError::InvalidSignature)?;
 
         let result = transfer.sender_sig.0.verify(
             true,
@@ -584,6 +587,9 @@ impl NodeRunner {
             
             // Reconstruct EpochCheckpoint natively
             let parsed_sig = blst::min_pk::Signature::from_bytes(&stored.agg_sig_bytes)
+                .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
+            // SEC-FIX-01: G2 subgroup check on peer-supplied agg_sig_bytes.
+            parsed_sig.validate(false)
                 .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
             let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig);
             
