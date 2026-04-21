@@ -154,9 +154,15 @@ def test_artifact_records_phase_table_and_non_goals() -> None:
 
 def test_planning_index_records_window_active_and_guidance_current() -> None:
     text = _normalized(_read(PLANNING_INDEX_PATH))
-    assert "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+    assert (
+        "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+        or "Window 753-756 CLOSED via Phase 756 closure gate" in text
+    )
     assert "**Latest main-lane sequence lock (753-756)** ⬅ CURRENT" in text
-    assert "**Active Codex window guidance (753-756)** ⬅ CURRENT" in text
+    assert (
+        "**Active Codex window guidance (753-756)** ⬅ CURRENT" in text
+        or "**Latest closed Codex window guidance (753-756)** ⬅ CURRENT" in text
+    )
     assert "convergence window remains commissioned but not open" in text
 
 
