@@ -68,3 +68,25 @@ def compute_local_lambda2(
         results[content_type] = float(lambda2)
 
     return results
+
+
+def fiedler_centrality_delta(
+    centrality_t: Dict[str, float],
+    centrality_prev: Dict[str, float],
+) -> Dict[str, float]:
+    """Return per-node delta Fiedler centrality (t minus t-1).
+
+    Missing nodes are treated as ``0.0``. The result includes every node that
+    appears in either snapshot.
+
+    Non-redundancy note (H-005 R5 / SIM-SPECTRAL-01): Fiedler centrality
+    ``|v2[i]|`` has Pearson ``rho ~= 0.40-0.52`` versus stake-weighted degree on
+    T2-class topologies. The delta therefore carries structure that is not
+    recoverable from stake changes alone and is a valid reputation input signal.
+    """
+
+    all_nodes = sorted(set(centrality_t) | set(centrality_prev))
+    return {
+        node_id: centrality_t.get(node_id, 0.0) - centrality_prev.get(node_id, 0.0)
+        for node_id in all_nodes
+    }
