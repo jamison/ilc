@@ -1,5 +1,6 @@
+from dataclasses import dataclass, field as dc_field
 from decimal import Decimal
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Union
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -17,7 +18,8 @@ NodeType = Literal[
     "star_map",         # Navigational Geometry (Vectors, Clusters)
     "proposal",         # Governance (Parameter changes)
     "genesis.schema",   # Meta: Defines new data structures
-    "genesis.blob"      # Meta: Raw data adhering to a schema
+    "genesis.blob",     # Meta: Raw data adhering to a schema
+    "hyperedge_entity", # Star-expanded hyperedge (ADR-0029 §2.3)
 ]
 
 LinkType = Literal[
@@ -54,6 +56,16 @@ class Node(BaseModel):
     target_id: Optional[str] = None
     # Optional parent lineage for claim/refutation nodes.
     parent_ids: List[str] = Field(default_factory=list)
+
+    # ADR-0030: content-type tag enabling type-aware embedding selection.
+    # Set at node creation time; retrofitting after the node store has volume is expensive.
+    # Values: "text/plain", "text/markdown", "application/json", "image/*", etc.
+    content_type: Optional[str] = None
+    # ADR-0030: embedding vector, model name, and epoch stamp.
+    # Populated asynchronously by the analytics embedding pipeline; None until then.
+    embedding: Optional[List[float]] = None
+    embedding_model: Optional[str] = None
+    embedding_epoch: Optional[int] = None
 
     @field_validator("net_stake", mode="before")
     @classmethod
@@ -191,3 +203,33 @@ class LinkRecord(BaseModel):
     # Optional: timestamp, creator_agent_id, meta
     timestamp: Optional[str] = None
     agent_id: Optional[str] = None
+
+
+# ADR-0029: Hypergraph substrate — n-ary relationships.
+#
+# HyperEdge connects any subset of graph nodes (|members| >= 2).
+# Directed hyperedges use head_ids (source set) and tail_ids (target set).
+# Undirected hyperedges populate member_ids only; head_ids and tail_ids are empty.
+#
+# weight is dynamic — callers must apply temporal decay (CDL-V1) before use.
+# epoch stamps when this hyperedge was declared, enabling temporal analysis.
+#
+# star_expansion: to promote this hyperedge to a first-class epistemiological entity,
+# create a Node(type="hyperedge_entity", id=self.id) and wire binary edges from each
+# member_id to it. See ADR-0029 §2.3 and graph.py expand_hyperedge_to_star_node().
+# Do not call star expansion before CDL: Hyperedge ECU Attribution is ratified.
+#
+# spectral_fingerprint: cached local top-k eigenvalue vector used for spectral beacon
+# emission (SIM-BEACON-01 gate). None until analytics pipeline populates it.
+@dataclass(frozen=True)
+class HyperEdge:
+    id: str                                       # content-addressed ID
+    hyperedge_type: str                           # "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary"
+    member_ids: List[str]                         # all members (undirected) or union of head+tail (directed)
+    head_ids: List[str]                           # directed source set; empty list if undirected
+    tail_ids: List[str]                           # directed target set; empty list if undirected
+    weight: Decimal                               # W(e) — caller responsible for CDL-V1 decay
+    epoch: int                                    # temporal stamp
+    agent_id: str                                 # declaring agent
+    signature: str                                # attribution
+    spectral_fingerprint: Optional[List[float]] = dc_field(default=None)  # analytics-populated; gate: SIM-BEACON-01
