@@ -43,6 +43,8 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0025](ADR_0025_D2d_HTTP_Gossip_Transport_Binding.md) | D2d HTTP/3 Gossip Transport Binding | Accepted |
 | [ADR-0026](ADR_0026_Protocol_vs_Harness_Product_Boundary.md) | Protocol vs Harness/Product Boundary | Accepted |
 | [ADR-0027](ADR_0027_Canonical_Self_Describing_Bootstrap_and_Receipt_Boundary.md) | Canonical Self-Describing Bootstrap and Receipt Boundary | Accepted |
-| [ADR-0029](ADR_0029_Hypergraph_Substrate.md) | Hypergraph Substrate — HyperEdge Type, Sparse Incidence, Star Expansion | Proposed |
-| [ADR-0030](ADR_0030_Node_Embedding_Substrate_and_Content_Typing.md) | Node Embedding Substrate and Content Typing | Proposed |
-| [ADR-0031](ADR_0031_Subgraph_Homomorphism_Query_Contract.md) | Subgraph Homomorphism Query Contract (gRPC EdgeRecord — pre-M-018 gate) | Proposed |
+| [ADR-0029](ADR_0029_Hypergraph_Substrate.md) | Hypergraph Substrate — HyperEdge Type, Sparse Incidence, Star Expansion | Accepted |
+| [ADR-0030](ADR_0030_Node_Embedding_Substrate_and_Content_Typing.md) | Node Embedding Substrate and Content Typing | Accepted |
+| [ADR-0031](ADR_0031_Subgraph_Homomorphism_Query_Contract.md) | Subgraph Homomorphism Query Contract (gRPC EdgeRecord — pre-M-018 gate) | Accepted |
+| [ADR-0032](ADR_0032_Temporal_Hypergraph_Epoch_Stamped_Incidence.md) | Temporal Hypergraph Epoch-Stamped Incidence | Accepted |
+| [ADR-0033](ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md) | Star Map Homoiconic Epistemiological Entity | Accepted |
