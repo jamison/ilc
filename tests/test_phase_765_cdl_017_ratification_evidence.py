@@ -172,6 +172,7 @@ def test_ratification_opens_lane_only_and_preserves_human_gate_and_disabled_hook
 
 def test_all_seven_non_conflation_obligations_are_locked() -> None:
     text = _read(ARTIFACT_PATH)
+    normalized = _normalized(text)
     for idx in range(1, 8):
         assert f"{idx}. " in text
     assert "`CDL-017` ratification is not runtime hook activation." in text
@@ -180,7 +181,7 @@ def test_all_seven_non_conflation_obligations_are_locked() -> None:
     assert "`CDL-017` activation law is not silent supersession of `CDL-055`." in text
     assert "`CDL-017` activation law is not silent supersession of `CDL-056`." in text
     assert "row `7` runtime closure is inherited evidence, not a new ratification" in text
-    assert "row `5` honest fail record remains true and is not erased by validator-law ratification." in text
+    assert "row `5` honest fail record remains true and is not erased by validator-law ratification." in normalized
 
 
 def test_status_and_planning_index_record_phase_765_artifact_and_phase_766_next() -> None:
@@ -253,4 +254,3 @@ def test_commit_2_ratifies_only_cdl_017_row_and_keeps_cdl_068_unchanged() -> Non
     current_rows.pop("CDL-017")
     parent_rows.pop("CDL-017")
     assert current_rows == parent_rows
-
