@@ -216,21 +216,20 @@ mod tests {
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         
         let (vset, keys) = setup_validators();
-        let record = EpochSettlementRecord {
-            epoch: EpochSeq(5),
-            state_root: CIDv1Root::new([5u8; 36]),
-        };
-        let checkpoint = EpochCheckpoint {
-            record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys),
-        };
-
-        protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
+        // SEC-FIX-02: commit epochs sequentially from 1.
+        for ep in 1u64..=3 {
+            let r = EpochSettlementRecord {
+                epoch: EpochSeq(ep),
+                state_root: CIDv1Root::new([ep as u8; 36]),
+            };
+            let cp = EpochCheckpoint { record: r.clone(), sigs: generate_valid_agg_sig(&r, &keys) };
+            protocol.process_epoch_checkpoint(cp, &vset).unwrap();
+        }
 
         // Validate retrieving actual global epoch representation dynamically from LMDB
         let req2 = Request::new(GetEpochRequest {});
         let resp2 = app.get_epoch(req2).await.unwrap().into_inner();
-        assert_eq!(resp2.current_epoch, 5); // Successfully returns 5, validating the M-006 integration
+        assert_eq!(resp2.current_epoch, 3);
     }
 
     #[tokio::test]
@@ -242,15 +241,16 @@ mod tests {
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, keys) = setup_validators();
         
-        let record = EpochSettlementRecord { epoch: EpochSeq(10), state_root: CIDv1Root::new([10u8; 36]) };
+        // SEC-FIX-02: commit sequentially.
+        let record = EpochSettlementRecord { epoch: EpochSeq(1), state_root: CIDv1Root::new([1u8; 36]) };
         let checkpoint = EpochCheckpoint { record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys) };
         protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
 
-        let req = Request::new(GetEpochRecordRequest { epoch: 10 });
+        let req = Request::new(GetEpochRecordRequest { epoch: 1 });
         let resp = app.get_epoch_record(req).await.unwrap().into_inner();
         assert!(resp.found);
         assert_eq!(resp.agg_sig.len(), 96);
-        assert_eq!(resp.state_root, [10u8; 36].to_vec());
+        assert_eq!(resp.state_root, [1u8; 36].to_vec());
     }
 
     #[tokio::test]
@@ -284,12 +284,20 @@ mod tests {
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, keys) = setup_validators();
         
-        for i in vec![1, 2, 3, 5] { // Skip 4
+        // Commit 1-3 via the sequential protocol path, then inject epoch 5 directly
+        // via commit_epoch_record (testnet write, no +1 guard) to simulate a gap
+        // as might exist after partial recovery. Epoch 4 is intentionally absent.
+        use crate::epoch_settlement::EpochStore;
+        for i in 1u64..=3 {
             let record = EpochSettlementRecord { epoch: EpochSeq(i), state_root: CIDv1Root::new([i as u8; 36]) };
             protocol.process_epoch_checkpoint(EpochCheckpoint {
                 record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys)
             }, &vset).unwrap();
         }
+        // Direct write of epoch 5 (skip 4) to simulate a gap in the store.
+        epoch_store.commit_epoch_record(EpochSettlementRecord {
+            epoch: EpochSeq(5), state_root: CIDv1Root::new([5u8; 36])
+        }).unwrap();
 
         let req = Request::new(GetEpochChainRequest { from_epoch: 1, to_epoch: 5, include_edges: false });
         let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
