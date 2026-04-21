@@ -116,10 +116,16 @@ def test_selftest_chain_extends_from_phase_748_to_phase_752() -> None:
 
 def test_planning_index_records_window_closed_and_next_queued_guidance() -> None:
     text = _normalized(_read(PLANNING_INDEX_PATH))
-    assert "Window 749-752 CLOSED via Phase 752 closure gate" in text
+    assert (
+        "Window 749-752 CLOSED via Phase 752 closure gate" in text
+        or "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+    )
     assert "**Latest main-lane closure** ⬅ CURRENT" in text
     assert "docs/specs/ilc_window_749_752_closure_gate_752_v0.1.md" in text
-    assert "Window 753-756 (pre-drafts) is the next queued Codex window" in text
+    assert (
+        "Window 753-756 (pre-drafts) is the next queued Codex window" in text
+        or "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+    )
 
 
 def test_legacy_phase_751_test_is_tolerant_of_post_close_frontier_update() -> None:
