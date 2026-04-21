@@ -150,23 +150,23 @@ def test_rayleigh_approx_raises_when_gap_below_threshold():
 
 
 def test_rayleigh_approx_succeeds_when_gap_above_threshold():
-    # Build a well-connected graph with large spectral gap
-    # Complete graph K4 as a single 4-way hyperedge has large gap
-    nodes = ["A", "B", "C", "D"]
-    hyperedges = [["A", "B", "C", "D"]]
-    stakes = {n: 1.0 for n in nodes}
+    # P₃ path graph (A-B-C, two binary hyperedges) has spectral gap = 0.5,
+    # well above RAYLEIGH_SPECTRAL_GAP_MIN=0.05. K4 as a single 4-way hyperedge
+    # was the previous topology but produces a degenerate spectrum (gap=0) that
+    # always caused pytest.skip — the Rayleigh success branch was never exercised.
+    nodes, hyperedges, stakes = _build_path_graph()
     L, _ = build_hypergraph_laplacian(nodes, hyperedges, stakes)
     gap = spectral_gap(L)
 
-    if gap > RAYLEIGH_SPECTRAL_GAP_MIN:
-        _, v2 = compute_fiedler(L)
-        # Should not raise
-        est = rayleigh_approx_lambda2(L, v2, gap=gap)
-        # Rayleigh quotient with the exact eigenvector should return λ₂ exactly
-        lambda2_exact, _ = compute_fiedler(L)
-        assert abs(est - lambda2_exact) < 1e-6
-    else:
-        pytest.skip("graph spectral gap too small for Rayleigh test on this topology")
+    # Verify the topology actually has a gap above threshold (regression guard).
+    assert gap > RAYLEIGH_SPECTRAL_GAP_MIN, (
+        f"P3 spectral gap {gap:.4f} must exceed RAYLEIGH_SPECTRAL_GAP_MIN={RAYLEIGH_SPECTRAL_GAP_MIN}"
+    )
+
+    lambda2_exact, v2 = compute_fiedler(L)
+    # Rayleigh quotient at the exact eigenvector must return λ₂ to floating-point precision.
+    est = rayleigh_approx_lambda2(L, v2, gap=gap)
+    assert abs(est - lambda2_exact) < 1e-6
 
 
 # ---------------------------------------------------------------------------
