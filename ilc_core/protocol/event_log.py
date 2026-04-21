@@ -42,12 +42,12 @@ def _str_to_decimal(value: str, token: str) -> Decimal:
     try:
         return Decimal(value)
     except InvalidOperation as exc:
-        raise ValueError(token) from exc
+        raise EventLogValidationError(token) from exc
 
 
 def _to_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
     if isinstance(value, bool):
-        raise ValueError(token)
+        raise EventLogValidationError(token)
     if isinstance(value, Decimal):
         number = value
     elif isinstance(value, int):
@@ -57,16 +57,16 @@ def _to_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
     elif isinstance(value, str):
         number = _str_to_decimal(value, token)
     else:
-        raise ValueError(token)
+        raise EventLogValidationError(token)
     if not number.is_finite():
-        raise ValueError(token)
+        raise EventLogValidationError(token)
     return number
 
 
 def _parse_non_negative_decimal(value: int | float | str | Decimal, *, token: str) -> Decimal:
     number = _to_decimal(value, token=token)
     if number < ZERO:
-        raise ValueError(token)
+        raise EventLogValidationError(token)
     return number
 
 
