@@ -21,7 +21,8 @@ use lmdb_rkv::{Cursor, Environment, EnvironmentFlags, Transaction};
 use serde::Serialize;
 use serde_json::Value;
 
-use ilc_consensus::types::{CIDv1Root, EpochSettlementRecord};
+use ilc_consensus::epoch_settlement::StoredCheckpoint;
+use ilc_consensus::types::CIDv1Root;
 
 // ---------------------------------------------------------------------------
 // Output structures
@@ -31,6 +32,11 @@ use ilc_consensus::types::{CIDv1Root, EpochSettlementRecord};
 struct EpochEntry {
     epoch: u64,
     state_root_hex: String,
+    /// Hex-encoded 96-byte BLS12-381 G2 aggregate signature.
+    /// Empty string when committed via testnet_fault_sim EpochSettlementTx path (no BLS).
+    agg_sig_hex: String,
+    /// True iff a non-empty agg_sig is present in this record.
+    bls_verified_commit: bool,
 }
 
 #[derive(Serialize)]
@@ -139,8 +145,8 @@ fn main() {
         std::process::exit(1);
     });
 
-    // Collect: epoch_num → EpochSettlementRecord (skipping sentinel \xff key)
-    let mut records: BTreeMap<u64, EpochSettlementRecord> = BTreeMap::new();
+    // Collect: epoch_num → StoredCheckpoint (skipping sentinel \xff key)
+    let mut records: BTreeMap<u64, StoredCheckpoint> = BTreeMap::new();
     let mut sentinel_epoch: u64 = 0;
     const SENTINEL: &[u8] = b"\xff";
 
@@ -173,7 +179,7 @@ fn main() {
         buf.copy_from_slice(k);
         let epoch_num = u64::from_be_bytes(buf);
 
-        let record: EpochSettlementRecord = match bincode::deserialize(v) {
+        let stored: StoredCheckpoint = match bincode::deserialize(v) {
             Ok(r) => r,
             Err(e) => {
                 eprintln!("[m016] Deserialize error at epoch {}: {}", epoch_num, e);
@@ -181,22 +187,26 @@ fn main() {
             }
         };
 
-        eprintln!("[m016] epoch={} state_root={}", epoch_num, cid_hex(&record.state_root));
-        records.insert(epoch_num, record);
+        eprintln!("[m016] epoch={} state_root={} agg_sig_len={}",
+            epoch_num, cid_hex(&stored.record.state_root), stored.agg_sig_bytes.len());
+        records.insert(epoch_num, stored);
     }
 
     // ── 4. Build ordered chain ──────────────────────────────────────────────
     let epoch_chain: Vec<EpochEntry> = records
         .values()
-        .map(|r| EpochEntry {
-            epoch: r.epoch.0,
-            state_root_hex: cid_hex(&r.state_root),
+        .map(|sc| EpochEntry {
+            epoch: sc.record.epoch.0,
+            state_root_hex: cid_hex(&sc.record.state_root),
+            agg_sig_hex: bytes_to_hex(&sc.agg_sig_bytes),
+            bls_verified_commit: !sc.agg_sig_bytes.is_empty(),
         })
         .collect();
 
     // ── 5. Verify completeness ──────────────────────────────────────────────
-    // Gap-free check: epochs must be consecutive starting from 1 (genesis is epoch 0).
     let max_committed = records.keys().copied().max().unwrap_or(0);
+    let bls_count = records.values().filter(|sc| !sc.agg_sig_bytes.is_empty()).count();
+    eprintln!("[m016] bls_verified_commits={}/{}", bls_count, records.len());
     let chain_complete = if records.is_empty() {
         false
     } else {
