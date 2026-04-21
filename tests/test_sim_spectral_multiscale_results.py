@@ -1,9 +1,4 @@
-"""
-Gate test for H-006b Part 1 spectral embedding results.
-
-This test file locks only the Part 1 checkpoint. It intentionally forbids later
-Part 2 / Part 3 / Part 4 verdict tokens from appearing in the Part 1 document.
-"""
+"""Gate test for H-006b Parts 1-2 simulation checkpoints."""
 
 from __future__ import annotations
 
@@ -15,6 +10,7 @@ SELFTEST_ENV = "ILC_SIM_SPECTRAL_MULTISCALE_SELFTEST"
 SCRIPT_PATH = "tools/sim/sim_spectral_multiscale_01.py"
 RESULTS_PATH = "docs/research/ilc_sim_spectral_multiscale_results_v0.1.md"
 PART1_TOKEN = "sim_spectral_embedding_01_clusters_viable=true"
+PART2_TOKEN = "sim_local_lambda2_viable=true"
 
 
 def _read_results() -> str:
@@ -44,6 +40,13 @@ def test_part1_token_present() -> None:
         return
     text = _read_results()
     assert PART1_TOKEN in text, f"expected Part 1 viability token {PART1_TOKEN!r}"
+
+
+def test_part2_token_present() -> None:
+    if os.environ.get(SELFTEST_ENV) == "1":
+        return
+    text = _read_results()
+    assert PART2_TOKEN in text, f"expected Part 2 viability token {PART2_TOKEN!r}"
 
 
 def test_shape_contract_markers_present() -> None:
@@ -99,6 +102,56 @@ def test_cross_domain_metric_present() -> None:
     assert float(match.group(1)) >= 1.10
 
 
+def test_part2_induced_subgraph_contract_present() -> None:
+    if os.environ.get(SELFTEST_ENV) == "1":
+        return
+    text = _read_results()
+    for marker in [
+        "partial-membership hyperedges are excluded",
+        "delta_generation_contract = +20 intra-cluster binary edges per epoch step",
+        "5` new intra-cluster edges per `content_type` at epoch 2",
+    ]:
+        assert marker in text, f"missing Part 2 contract marker {marker!r}"
+
+
+def test_part2_local_lambda2_table_and_classifications_present() -> None:
+    if os.environ.get(SELFTEST_ENV) == "1":
+        return
+    text = _read_results()
+    for marker in [
+        "`mature_domain`",
+        "`emerging_domain`",
+        "`sparse_but_healthy`",
+        "theta_floor_ratio",
+        "application/math-panel",
+        "application/biology-panel",
+        "application/governance-panel",
+        "application/systems-panel",
+    ]:
+        assert marker in text, f"missing Part 2 baseline marker {marker!r}"
+
+
+def test_part2_distinguishable_spread_and_monotonic_markers_present() -> None:
+    if os.environ.get(SELFTEST_ENV) == "1":
+        return
+    text = _read_results()
+    spread_match = re.search(r"distinguishable_local_lambda2_spread = ([0-9.]+)", text)
+    monotonic_match = re.search(r"monotonic_local_lambda2_clusters = ([^\n]+)", text)
+    assert spread_match is not None, "missing distinguishable spread marker"
+    assert monotonic_match is not None, "missing monotonic cluster marker"
+    assert float(spread_match.group(1)) >= 0.02
+    monotonic_clusters = [item.strip() for item in monotonic_match.group(1).split(",")]
+    assert len(monotonic_clusters) >= 1
+
+
+def test_part2_sparse_but_healthy_note_present() -> None:
+    if os.environ.get(SELFTEST_ENV) == "1":
+        return
+    text = _read_results()
+    assert "emerging_domain / sparse_but_healthy" in text
+    assert "none of the induced subgraphs are near-partition" in text
+
+
 def test_raw_eigenvalue_markers_present() -> None:
     if os.environ.get(SELFTEST_ENV) == "1":
         return
@@ -120,7 +173,6 @@ def test_part1_does_not_claim_later_phase_tokens() -> None:
     if os.environ.get(SELFTEST_ENV) == "1":
         return
     text = _read_results()
-    assert "sim_local_lambda2_viable=" not in text
     assert "run_h006b_multiscale_spectral_verdict=" not in text
 
 
