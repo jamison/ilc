@@ -121,6 +121,7 @@ def test_planning_index_records_window_closed_and_next_queued_guidance() -> None
         or "Window 753-756 CLOSED via Phase 756 closure gate" in text
         or "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
         or "Convergence window ACTIVE through Phase 760" in text
+        or "Convergence window CLOSED through Phase 762" in text
     )
     assert (
         "**Latest main-lane closure** ⬅ CURRENT" in text
@@ -135,6 +136,7 @@ def test_planning_index_records_window_closed_and_next_queued_guidance() -> None
         or "Window 753-756 CLOSED via Phase 756 closure gate" in text
         or "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
         or "CW-5 / CW-6 are separately commissioned and the convergence window closes" in text
+        or "Convergence window CLOSED through Phase 762" in text
     )
 
 
