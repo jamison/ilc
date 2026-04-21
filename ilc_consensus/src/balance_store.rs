@@ -156,19 +156,24 @@ impl BalanceStore {
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
         for (agent_id, amount) in batch.attributions {
-            let mut agent_bal = match txn.get(self.db, &agent_id.0) {
-                Ok(bytes) => bincode::deserialize::<ECUBalance>(bytes)
+            let (mut agent_bal, is_new) = match txn.get(self.db, &agent_id.0) {
+                Ok(bytes) => (bincode::deserialize::<ECUBalance>(bytes)
                     .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?,
-                Err(lmdb_rkv::Error::NotFound) => ECUBalance {
+                    false),
+                Err(lmdb_rkv::Error::NotFound) => (ECUBalance {
                     agent: agent_id,
                     amount_micro_ecu: 0,
                     epoch: batch.epoch,
                     version: 0,
-                },
+                }, true),
                 Err(e) => return Err(ILCConsensusError::Other(format!("DB Error: {}", e))),
             };
 
-            if batch.epoch.0 < agent_bal.epoch.0 {
+            // Replay guard: reject same-epoch or older-epoch attribution for existing agents.
+            // `<=` (not `<`) prevents a replay of the exact same batch from double-minting.
+            // New agents are exempt: they have no prior epoch record and their initial
+            // epoch field is set to batch.epoch as part of construction above.
+            if !is_new && batch.epoch.0 <= agent_bal.epoch.0 {
                 return Err(ILCConsensusError::InvalidEpoch);
             }
             
@@ -260,5 +265,68 @@ mod tests {
         };
         let res2 = store.apply_transfer(cert2);
         assert_eq!(res2.unwrap_err(), ILCConsensusError::ConflictingTransfer);
+    }
+
+    // SEC-FIX-02: apply_attribution same-epoch replay must not double-mint
+    #[test]
+    fn test_apply_attribution_same_epoch_replay_rejected() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+        let agent = AgentID([7; 48]);
+
+        let batch = AttributionBatch {
+            epoch: EpochSeq(5),
+            attributions: vec![(agent, 500_000)],
+        };
+        // First application: succeeds and sets epoch=5 for this agent.
+        store.apply_attribution(batch.clone()).unwrap();
+        let bal = store.get_balance(&agent).unwrap();
+        assert_eq!(bal.amount_micro_ecu, 500_000);
+
+        // Replay of same epoch: must be rejected (would double-mint without <=).
+        let err = store.apply_attribution(batch).unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidEpoch,
+            "same-epoch replay must return InvalidEpoch to prevent double-minting");
+
+        // Balance unchanged after rejected replay.
+        let bal_after = store.get_balance(&agent).unwrap();
+        assert_eq!(bal_after.amount_micro_ecu, 500_000, "balance must not change after replay");
+    }
+
+    // SEC-FIX-02: new agents in epoch 0 must be attributable on first call
+    #[test]
+    fn test_apply_attribution_new_agent_first_call_succeeds() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+        let agent = AgentID([8; 48]);
+
+        // New agent, epoch 0 — must succeed even though initialization sets epoch=0.
+        let batch = AttributionBatch {
+            epoch: EpochSeq(0),
+            attributions: vec![(agent, 100_000)],
+        };
+        store.apply_attribution(batch).unwrap();
+        let bal = store.get_balance(&agent).unwrap();
+        assert_eq!(bal.amount_micro_ecu, 100_000);
+    }
+
+    // SEC-FIX-02: old-epoch batch must still be rejected
+    #[test]
+    fn test_apply_attribution_old_epoch_rejected() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+        let agent = AgentID([9; 48]);
+
+        store.apply_attribution(AttributionBatch {
+            epoch: EpochSeq(10),
+            attributions: vec![(agent, 200_000)],
+        }).unwrap();
+
+        let err = store.apply_attribution(AttributionBatch {
+            epoch: EpochSeq(9),
+            attributions: vec![(agent, 999_000)],
+        }).unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidEpoch,
+            "older-epoch batch must be rejected");
     }
 }

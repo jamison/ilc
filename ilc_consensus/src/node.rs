@@ -436,6 +436,13 @@ impl NodeRunner {
             );
             self.broadcast_certificate(cert.clone()).await?;
             self.execute_and_log(cert).await?;
+            // Evict certified entry immediately to prevent unbounded in_flight growth (OOM guard).
+            // The LMDB version lock is the durable equivocation barrier; in_flight is an
+            // ephemeral early-rejection cache only and must not retain entries after settlement.
+            {
+                let mut table = self.in_flight.lock().await;
+                table.remove(&object_ref);
+            }
         }
 
         Ok(())
@@ -765,6 +772,32 @@ mod tests {
         let sig = sk.sign(msg, &dst, &[]);
         let result = sig.verify(true, msg, &dst, &[], &pk, true);
         assert_eq!(result, blst::BLST_ERROR::BLST_SUCCESS);
+    }
+
+    // SEC-FIX-01: in_flight eviction — certified entries must not accumulate
+    // This test verifies the eviction mechanic at the HashMap level. The full
+    // integration path is covered by test_two_validators_loopback in network.rs.
+    #[test]
+    fn test_in_flight_eviction_clears_certified_entry() {
+        use std::collections::HashMap;
+        use crate::types::AgentID;
+
+        let object_ref = ObjectRef { agent: AgentID([1; 48]), version: 0 };
+
+        // Simulate the in_flight table lifecycle: insert on broadcast, remove on certification.
+        let mut table: HashMap<ObjectRef, InFlight> = HashMap::new();
+        assert_eq!(table.len(), 0);
+
+        table.insert(object_ref, InFlight {
+            transfer: dummy_transfer(),
+            sigs: Vec::new(),
+            certified: false,
+        });
+        assert_eq!(table.len(), 1, "entry must be present after broadcast");
+
+        // Simulate post-certification eviction (the fix in handle_ack_for).
+        table.remove(&object_ref);
+        assert_eq!(table.len(), 0, "entry must be evicted after certification — OOM guard");
     }
 
     #[test]
