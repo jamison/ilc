@@ -1,4 +1,4 @@
-"""Gate test for H-006b Parts 1-2 simulation checkpoints."""
+"""Gate test for H-006b results and final verdict."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ SCRIPT_PATH = "tools/sim/sim_spectral_multiscale_01.py"
 RESULTS_PATH = "docs/research/ilc_sim_spectral_multiscale_results_v0.1.md"
 PART1_TOKEN = "sim_spectral_embedding_01_clusters_viable=true"
 PART2_TOKEN = "sim_local_lambda2_viable=true"
+FINAL_TOKEN = "run_h006b_multiscale_spectral_verdict=pass"
 
 
 def _read_results() -> str:
@@ -47,6 +48,13 @@ def test_part2_token_present() -> None:
         return
     text = _read_results()
     assert PART2_TOKEN in text, f"expected Part 2 viability token {PART2_TOKEN!r}"
+
+
+def test_final_verdict_token_present() -> None:
+    if os.environ.get(SELFTEST_ENV) == "1":
+        return
+    text = _read_results()
+    assert FINAL_TOKEN in text, f"expected final verdict token {FINAL_TOKEN!r}"
 
 
 def test_shape_contract_markers_present() -> None:
@@ -169,11 +177,12 @@ def test_raw_eigenvalue_markers_present() -> None:
     assert 0.0 < lambda2 < lambda3 < lambda4
 
 
-def test_part1_does_not_claim_later_phase_tokens() -> None:
+def test_final_results_do_not_claim_failure_or_stale_pending_part2_work() -> None:
     if os.environ.get(SELFTEST_ENV) == "1":
         return
     text = _read_results()
-    assert "run_h006b_multiscale_spectral_verdict=" not in text
+    assert "run_h006b_multiscale_spectral_verdict=fail" not in text
+    assert "Part 2 implementation: `ilc_core/analysis/local_spectral_analytics.py`" not in text
 
 
 def test_manual_bridge_node_count_present() -> None:
