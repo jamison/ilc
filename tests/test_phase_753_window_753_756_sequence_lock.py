@@ -159,11 +159,13 @@ def test_planning_index_records_window_active_and_guidance_current() -> None:
         or "Window 753-756 CLOSED via Phase 756 closure gate" in text
         or "Convergence window ACTIVE through Phase 760" in text
         or "Convergence window CLOSED through Phase 762" in text
+        or "Window `763-766` CLOSED via Phase `766` closure gate" in text
     )
     assert (
         "**Latest main-lane sequence lock (753-756)** ⬅ CURRENT" in text
         or "**Active convergence sequence lock (CW-1 / Phase 757)** ⬅ CURRENT" in text
         or "**Convergence closure gate (CW-6 / Phase 762)** ⬅ CURRENT" in text
+        or "**Latest closed main-lane closure (763-766)** ⬅ CURRENT" in text
     )
     assert (
         "**Active Codex window guidance (753-756)** ⬅ CURRENT" in text
@@ -175,6 +177,7 @@ def test_planning_index_records_window_active_and_guidance_current() -> None:
         "convergence window remains commissioned but not open" in text
         or "convergence window opened via the Phase 757 CW-1 sequence lock" in text
         or "Convergence window CLOSED through Phase 762" in text
+        or "Window `763-766` CLOSED via Phase `766` closure gate" in text
     )
 
 
@@ -182,6 +185,7 @@ def test_legacy_phase_752_test_is_tolerant_of_post_open_frontier_update() -> Non
     text = _read(LEGACY_TEST_PATH)
     assert "Window 753-756 (pre-drafts) is the next queued Codex window" in text
     assert "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+    assert "Window `763-766` CLOSED via Phase `766` closure gate" in text
 
 
 def test_decision_log_and_runtime_code_surfaces_are_untouched_in_phase_753() -> None:

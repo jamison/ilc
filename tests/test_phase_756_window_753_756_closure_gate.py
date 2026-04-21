@@ -126,13 +126,18 @@ def test_planning_index_records_window_closed_and_pre_open_artifacts_current() -
         "Window 753-756 CLOSED via Phase 756 closure gate" in text
         or "Convergence window ACTIVE through Phase 760" in text
         or "Convergence window CLOSED through Phase 762" in text
+        or "Window `763-766` CLOSED via Phase `766` closure gate" in text
     )
     assert (
         "**Latest main-lane closure** ⬅ CURRENT" in text
         or "**Latest closed main-lane closure (753-756)**" in text
         or "**Convergence closure gate (CW-6 / Phase 762)** ⬅ CURRENT" in text
+        or "**Latest closed main-lane closure (763-766)** ⬅ CURRENT" in text
     )
-    assert "docs/specs/ilc_window_753_756_closure_gate_756_v0.1.md" in text
+    assert (
+        "docs/specs/ilc_window_753_756_closure_gate_756_v0.1.md" in text
+        or "docs/specs/ilc_window_763_766_closure_gate_766_v0.1.md" in text
+    )
     assert (
         "Convergence Window Guidance PRE-DRAFT" in text
         or "Convergence Window Guidance (activated by CW-1)" in text
@@ -143,6 +148,7 @@ def test_planning_index_records_window_closed_and_pre_open_artifacts_current() -
         "convergence window remains commissioned but not open" in text
         or "the convergence window opened via the Phase 757 CW-1 sequence lock" in text
         or "Convergence window CLOSED through Phase 762" in text
+        or "Window `763-766` CLOSED via Phase `766` closure gate" in text
     )
 
 
