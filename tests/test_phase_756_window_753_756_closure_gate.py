@@ -122,12 +122,24 @@ def test_selftest_chain_extends_from_phase_752_to_phase_756() -> None:
 
 def test_planning_index_records_window_closed_and_pre_open_artifacts_current() -> None:
     text = _normalized(_read(PLANNING_INDEX_PATH))
-    assert "Window 753-756 CLOSED via Phase 756 closure gate" in text
-    assert "**Latest main-lane closure** ⬅ CURRENT" in text
+    assert (
+        "Window 753-756 CLOSED via Phase 756 closure gate" in text
+        or "Convergence window ACTIVE through Phase 760" in text
+    )
+    assert (
+        "**Latest main-lane closure** ⬅ CURRENT" in text
+        or "**Latest closed main-lane closure (753-756)**" in text
+    )
     assert "docs/specs/ilc_window_753_756_closure_gate_756_v0.1.md" in text
-    assert "Convergence Window Guidance PRE-DRAFT" in text
+    assert (
+        "Convergence Window Guidance PRE-DRAFT" in text
+        or "Convergence Window Guidance (activated by CW-1)" in text
+    )
     assert "CDL-017 Ratification Dossier PRE-WORK" in text
-    assert "convergence window remains commissioned but not open" in text
+    assert (
+        "convergence window remains commissioned but not open" in text
+        or "the convergence window opened via the Phase 757 CW-1 sequence lock" in text
+    )
 
 
 def test_legacy_phase_tests_are_tolerant_of_post_close_frontier_update() -> None:

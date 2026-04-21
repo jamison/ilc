@@ -120,8 +120,12 @@ def test_planning_index_records_window_closed_and_next_queued_guidance() -> None
         "Window 749-752 CLOSED via Phase 752 closure gate" in text
         or "Window 753-756 CLOSED via Phase 756 closure gate" in text
         or "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+        or "Convergence window ACTIVE through Phase 760" in text
     )
-    assert "**Latest main-lane closure** ⬅ CURRENT" in text
+    assert (
+        "**Latest main-lane closure** ⬅ CURRENT" in text
+        or "**Latest closed main-lane closure (753-756)**" in text
+    )
     assert (
         "docs/specs/ilc_window_749_752_closure_gate_752_v0.1.md" in text
         or "docs/specs/ilc_window_753_756_closure_gate_756_v0.1.md" in text
@@ -130,6 +134,7 @@ def test_planning_index_records_window_closed_and_next_queued_guidance() -> None
         "Window 753-756 (pre-drafts) is the next queued Codex window" in text
         or "Window 753-756 CLOSED via Phase 756 closure gate" in text
         or "Window 753-756 ACTIVE through Phase 753 sequence lock" in text
+        or "CW-5 / CW-6 are separately commissioned and the convergence window closes" in text
     )
 
 
