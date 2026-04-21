@@ -194,6 +194,7 @@ def test_planning_index_and_status_advance_to_post_convergence_frontier() -> Non
     assert (
         "Current frontier:** Convergence window CLOSED through Phase 762" in planning
         or "`CDL-017` ratification window ACTIVE through Phase `763`" in planning
+        or "`CDL-017` ratification window ACTIVE through Phase `764`" in planning
     )
     assert (
         "pending reviewer approval" in planning
