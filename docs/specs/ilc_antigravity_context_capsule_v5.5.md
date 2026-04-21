@@ -97,7 +97,10 @@ The surviving blockers and obligations now include:
   `ilc_core/analysis/laplacian_analytics.py` with coverage in
   `tests/test_laplacian_analytics.py` (commit `6b954ff5`,
   `feat(h-006a): implement hypergraph Laplacian analytics module`);
-  `H-006b` and `SIM-EMBED-01` remain pending
+  `H-006b` is complete; `SIM-EMBED-01` is complete with MiniLM selected for the
+  text-side modality families and CLIP selected for `image/*`; `ADR-0033`
+  (star-map homoiconic entity) is accepted; and `SIM-BEACON-01` is complete
+  with `sigma=0.005`, `theta=0.010`, and `4`-epoch beacon cadence
 
 Hypergraph posture at close:
 
@@ -105,8 +108,12 @@ Hypergraph posture at close:
 - `SIM-HYPEREDGE-01` is complete
 - `SIM-SPECTRAL-01` is complete
 - `H-006a` Laplacian analytics implementation is complete
-- `SIM-EMBED-01` remains pending
-- `H-006b` remains pending
+- `H-006b` is complete
+- `SIM-EMBED-01` is complete
+- `ADR-0033` is accepted
+- `SIM-BEACON-01` is complete
+- `H-010` and `H-014` are now unblocked
+- `H-013` still requires the separate D2d sealed-sender ADR
 - Tier `3` remains deferred pending SIM results plus CDL / patent decisions
 
 ## 5. Window 763-766 Closure Summary

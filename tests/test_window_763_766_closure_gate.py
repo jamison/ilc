@@ -183,7 +183,7 @@ def test_coherence_and_gate_record_what_changed_and_what_did_not() -> None:
     assert "no `ilc_core/` or `ilc_consensus/` mutation occurred in Phase `766`" in combined
 
 
-def test_capsule_v55_supersedes_v54_and_records_h006a() -> None:
+def test_capsule_v55_supersedes_v54_and_records_hypergraph_corrections() -> None:
     if _selftest():
         return
     text = _normalized(_read(CAPSULE_PATH))
@@ -193,7 +193,9 @@ def test_capsule_v55_supersedes_v54_and_records_h006a() -> None:
     assert "tests/test_laplacian_analytics.py" in text
     assert "commit `6b954ff5`" in text
     assert "`H-006a` is now implemented" in text
-    assert "`H-006b` and `SIM-EMBED-01` remain pending" in text
+    assert "`H-006b` is complete" in text
+    assert "`SIM-EMBED-01` is complete" in text
+    assert "`SIM-BEACON-01` is complete" in text
 
 
 def test_selftest_chain_is_declared_in_gate_and_test_file() -> None:
