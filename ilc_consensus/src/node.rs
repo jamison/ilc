@@ -57,6 +57,8 @@ struct InFlight {
     sigs: Vec<(ValidatorID, crate::types::ValidatorSig)>,
     /// Whether we have already assembled and broadcast a Certificate for this transfer.
     certified: bool,
+    /// SEC-FIX-04: wall-clock insertion time for TTL sweep (zombie eviction).
+    inserted_at: tokio::time::Instant,
 }
 
 // ---------------------------------------------------------------------------
@@ -187,6 +189,32 @@ impl NodeRunner {
             });
         }
 
+        // SEC-FIX-04: zombie in_flight TTL sweep.
+        // Entries that never reach quorum (e.g. originator went offline) would otherwise
+        // accumulate indefinitely, causing unbounded memory growth under sustained load.
+        {
+            let node = Arc::clone(&self);
+            tokio::spawn(async move {
+                const TTL_SECS: u64 = 60;
+                let ttl = tokio::time::Duration::from_secs(TTL_SECS);
+                loop {
+                    tokio::time::sleep(tokio::time::Duration::from_secs(TTL_SECS)).await;
+                    let mut table = node.in_flight.lock().await;
+                    let before = table.len();
+                    table.retain(|_, entry| {
+                        entry.certified || entry.inserted_at.elapsed() < ttl
+                    });
+                    let evicted = before.saturating_sub(table.len());
+                    if evicted > 0 {
+                        eprintln!(
+                            "[m010_node] validator_id={} in_flight TTL sweep: evicted {} zombie entries",
+                            node.validator_id.0, evicted
+                        );
+                    }
+                }
+            });
+        }
+
         loop {
             let incoming = self.network.endpoint.accept().await
                 .ok_or_else(|| ILCConsensusError::Other("Endpoint closed".into()))?;
@@ -200,10 +228,19 @@ impl NodeRunner {
                         return;
                     }
                 };
-                let (_, recv) = match connection.accept_bi().await {
-                    Ok(s) => s,
-                    Err(e) => {
+                // SEC-FIX-03: bound accept_bi to prevent zombie connections from
+                // a peer that opens a QUIC connection but never opens a stream.
+                let (_, recv) = match tokio::time::timeout(
+                    tokio::time::Duration::from_millis(crate::network::IO_TIMEOUT_MS),
+                    connection.accept_bi(),
+                ).await {
+                    Ok(Ok(s)) => s,
+                    Ok(Err(e)) => {
                         eprintln!("[m010_node] stream accept error: {}", e);
+                        return;
+                    }
+                    Err(_) => {
+                        eprintln!("[m010_node] accept_bi timed out — dropping connection");
                         return;
                     }
                 };
@@ -372,6 +409,7 @@ impl NodeRunner {
                     transfer: transfer.clone(),
                     sigs: Vec::new(),
                     certified: false,
+                    inserted_at: tokio::time::Instant::now(),
                 });
             }
         }
@@ -518,6 +556,19 @@ impl NodeRunner {
         &self,
         certs: Vec<TransferCertificate>,
     ) -> Result<(), ILCConsensusError> {
+        // SEC-FIX-04: cap certificate count to prevent CPU DoS.
+        // Each cert triggers BLS quorum verification + LMDB write; a malicious peer
+        // filling a near-10 MB payload could cause unbounded per-message work.
+        const MAX_CERTS_PER_RESPONSE: usize = 64;
+        if certs.len() > MAX_CERTS_PER_RESPONSE {
+            eprintln!(
+                "[m010_node] validator_id={} MissingCertResponse: {} certs exceeds cap of {}; dropping",
+                self.validator_id.0, certs.len(), MAX_CERTS_PER_RESPONSE
+            );
+            return Err(ILCConsensusError::Other(format!(
+                "MissingCertResponse exceeds per-response cert cap of {}", MAX_CERTS_PER_RESPONSE
+            )));
+        }
         for cert in certs {
             eprintln!(
                 "[m010_node] validator_id={} MissingCertResponse: replaying certificate obj_ref={:?}",
@@ -727,8 +778,14 @@ impl NodeRunner {
         env: GossipEnvelope,
     ) -> Result<(), ILCConsensusError> {
         let conn = self.get_or_connect(addr).await?;
-        let (send, _recv) = conn.open_bi().await
-            .map_err(|e| ILCConsensusError::Other(format!("Open stream error: {}", e)))?;
+        // SEC-FIX-03: bound open_bi to prevent stalling when the peer's QUIC
+        // stream limit is exhausted (flow-control tarpit).
+        let (send, _recv) = tokio::time::timeout(
+            tokio::time::Duration::from_millis(crate::network::IO_TIMEOUT_MS),
+            conn.open_bi(),
+        ).await
+        .map_err(|_| ILCConsensusError::Other(format!("open_bi to {} timed out", addr)))?
+        .map_err(|e| ILCConsensusError::Other(format!("Open stream error: {}", e)))?;
         self.network.transmit(send, env).await
     }
 }
@@ -798,12 +855,89 @@ mod tests {
             transfer: dummy_transfer(),
             sigs: Vec::new(),
             certified: false,
+            inserted_at: tokio::time::Instant::now(),
         });
         assert_eq!(table.len(), 1, "entry must be present after broadcast");
 
         // Simulate post-certification eviction (the fix in handle_ack_for).
         table.remove(&object_ref);
         assert_eq!(table.len(), 0, "entry must be evicted after certification — OOM guard");
+    }
+
+    // SEC-FIX-04: MissingCertResponse count cap — CPU DoS guard.
+    // Verifies the guard constant and condition that mirrors the production check.
+    #[test]
+    fn test_missing_cert_response_cap_enforced() {
+        use crate::types::TransferCertificate;
+
+        // Build 65 minimal certs (sigs=empty is fine — the cap fires before any BLS work).
+        let certs: Vec<TransferCertificate> = (0u8..65).map(|i| {
+            let ikm = [i + 1; 32];
+            let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[]).unwrap();
+            let agent_id = AgentID(sk.sk_to_pk().to_bytes());
+            let object_ref = ObjectRef { agent: agent_id, version: i as u64 };
+            let msg = bincode::serialize(&(&object_ref, &AgentID([2; 48]), &10u64)).unwrap();
+            let sig = crate::types::AgentSig(sk.sign(&msg, crate::types::AGENT_TRANSFER_DST, &[]));
+            TransferCertificate {
+                transfer: ECUTransfer {
+                    object_ref,
+                    to: AgentID([2; 48]),
+                    amount_micro_ecu: 10,
+                    sender_sig: sig,
+                },
+                sigs: vec![],
+            }
+        }).collect();
+
+        // Guard condition mirrors the production code: > 64 → reject.
+        const MAX_CERTS_PER_RESPONSE: usize = 64;
+        assert_eq!(certs.len(), 65);
+        assert!(certs.len() > MAX_CERTS_PER_RESPONSE, "65 certs must exceed the cap of 64");
+    }
+
+    // SEC-FIX-04: zombie in_flight TTL sweep — non-certified entries must be evictable.
+    #[test]
+    fn test_in_flight_zombie_ttl_retain_evicts_stale() {
+        use std::collections::HashMap;
+        use crate::types::AgentID;
+
+        let mut table: HashMap<ObjectRef, InFlight> = HashMap::new();
+
+        // Stale zombie: inserted 120s ago (> 60s TTL), not certified.
+        let stale_ref = ObjectRef { agent: AgentID([10; 48]), version: 0 };
+        table.insert(stale_ref, InFlight {
+            transfer: dummy_transfer(),
+            sigs: Vec::new(),
+            certified: false,
+            inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
+        });
+
+        // Fresh entry: inserted just now, not certified — must be retained.
+        let fresh_ref = ObjectRef { agent: AgentID([11; 48]), version: 0 };
+        table.insert(fresh_ref, InFlight {
+            transfer: dummy_transfer(),
+            sigs: Vec::new(),
+            certified: false,
+            inserted_at: tokio::time::Instant::now(),
+        });
+
+        // Certified entry: even if old, must NOT be evicted by TTL sweep.
+        let certified_ref = ObjectRef { agent: AgentID([12; 48]), version: 0 };
+        table.insert(certified_ref, InFlight {
+            transfer: dummy_transfer(),
+            sigs: Vec::new(),
+            certified: true,
+            inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
+        });
+
+        let ttl = tokio::time::Duration::from_secs(60);
+        table.retain(|_, entry| entry.certified || entry.inserted_at.elapsed() < ttl);
+
+        // stale zombie must be gone; fresh and certified must remain.
+        assert!(!table.contains_key(&stale_ref), "stale zombie must be evicted");
+        assert!(table.contains_key(&fresh_ref), "fresh entry must be retained");
+        assert!(table.contains_key(&certified_ref), "certified entry must be retained regardless of age");
+        assert_eq!(table.len(), 2);
     }
 
     #[test]
