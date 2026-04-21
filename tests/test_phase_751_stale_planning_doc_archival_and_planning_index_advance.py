@@ -103,6 +103,7 @@ def test_planning_index_current_frontier_and_startup_guidance_are_advanced() -> 
         "Window 749-752 ACTIVE through Phase 750 master-roadmap and M-series-lane update" in text
         or "Window 749-752 CLOSED via Phase 752 closure gate" in text
         or "Window 753-756 CLOSED via Phase 756 closure gate" in text
+        or "Convergence window ACTIVE through Phase 760" in text
     )
     assert "**Master Completion Roadmap v0.1** ⬅ CURRENT" in text
     assert (
@@ -113,6 +114,7 @@ def test_planning_index_current_frontier_and_startup_guidance_are_advanced() -> 
         "Window 749-752 is now active through Phase 750." in text
         or "Window 749-752 is now closed via Phase 752." in text
         or "Window 753-756 is now closed via Phase 756." in text
+        or "the convergence window opened via the Phase 757 CW-1 sequence lock." in text
     )
 
 
