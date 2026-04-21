@@ -1,19 +1,36 @@
 use crate::types::{TransferCertificate, ILCConsensusError, ValidatorSet};
 use crate::balance_store::{BalanceStore, BalanceChange};
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 use std::collections::HashSet;
+
 pub struct FastPathProtocol {
-    pub validator_set: Arc<ValidatorSet>,
+    /// SEC-004: ValidatorSet is the authoritative membership list.
+    /// Ejection = governance rotates this to a new set that excludes the ejected validator.
+    /// The existing pubkey-lookup check already rejects sigs from unknown validators,
+    /// so no separate ejection map is needed.
+    pub validator_set: Arc<RwLock<ValidatorSet>>,
     balance_store: Arc<BalanceStore>,
     network_id: String,
 }
 
 impl FastPathProtocol {
-    pub fn new(validator_set: Arc<ValidatorSet>, balance_store: Arc<BalanceStore>, network_id: String) -> Self {
-        Self { validator_set, balance_store, network_id }
+    pub fn new(validator_set: ValidatorSet, balance_store: Arc<BalanceStore>, network_id: String) -> Self {
+        Self {
+            validator_set: Arc::new(RwLock::new(validator_set)),
+            balance_store,
+            network_id,
+        }
     }
 
-    /// Primary Byzantine Consistent Broadcast gateway. 
+    /// SEC-004: Atomically replace the validator set.
+    /// Called by governance at an epoch boundary to eject a validator.
+    /// Any subsequent cert containing the ejected validator's sig will fail
+    /// at the pubkey-lookup step with InvalidSignature.
+    pub fn rotate_validator_set(&self, new_set: ValidatorSet) {
+        *self.validator_set.write().unwrap() = new_set;
+    }
+
+    /// Primary Byzantine Consistent Broadcast gateway.
     /// Verifies quorum boundaries directly against BLS cryptographic parameters.
     pub fn execute_certificate(&self, cert: TransferCertificate) -> Result<BalanceChange, ILCConsensusError> {
         // SEC-001: Verify sender authorization FIRST, before quorum check
@@ -33,8 +50,12 @@ impl FastPathProtocol {
             return Err(ILCConsensusError::InvalidSignature);
         }
 
-        let required_votes = 2 * self.validator_set.f + 1;
-        
+        // Hold the read lock for the duration of quorum + sig verification.
+        // rotate_validator_set() cannot interleave once we hold this guard.
+        let vs = self.validator_set.read().unwrap();
+
+        let required_votes = 2 * vs.f + 1;
+
         // 1. O(1) Quorum enforcement
         if cert.sigs.len() < required_votes {
             return Err(ILCConsensusError::InsufficientSignatures);
@@ -45,16 +66,18 @@ impl FastPathProtocol {
         let msg = bincode::serialize(&cert.transfer)
             .map_err(|e| ILCConsensusError::Other(format!("Transfer serialization failed: {}", e)))?;
         // Domain separation tag dynamically parameterizing network authentication structures (SEC-002)
-        let dst = crate::validator::validator_dst(&self.network_id); 
-            
+        let dst = crate::validator::validator_dst(&self.network_id);
+
         // 2. Cryptographic constraint loop
         for (val_id, sig) in &cert.sigs {
             if !seen_validators.insert(val_id.0) {
                 return Err(ILCConsensusError::InvalidSignature); // Stops Sybil duplication of signatures within the set
             }
 
-            // O(N) internal router mapping ID -> PublicKey. (Could be optimized with HashMap)
-            let pub_key = self.validator_set.validators.iter()
+            // SEC-004: validator not in current set → InvalidSignature.
+            // Ejected validators are removed from the set by rotate_validator_set(),
+            // so this lookup is the sole ejection enforcement point.
+            let pub_key = vs.validators.iter()
                 .find(|(id, _)| id == val_id)
                 .map(|(_, key)| key)
                 .ok_or(ILCConsensusError::InvalidSignature)?;
@@ -134,7 +157,7 @@ mod tests {
             (ValidatorID(4), vk4),
         ];
 
-        let val_set = Arc::new(ValidatorSet::new(validators, 1).unwrap());
+        let val_set = ValidatorSet::new(validators, 1).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let mut transfer = ECUTransfer {
@@ -164,8 +187,8 @@ mod tests {
         let cert_duplicate = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()), 
-                (ValidatorID(2), sig2.clone()), 
+                (ValidatorID(1), sig1.clone()),
+                (ValidatorID(2), sig2.clone()),
                 (ValidatorID(1), sig1.clone()) // Duplicate!
             ],
         };
@@ -177,8 +200,8 @@ mod tests {
         let cert_invalid = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()), 
-                (ValidatorID(2), sig2.clone()), 
+                (ValidatorID(1), sig1.clone()),
+                (ValidatorID(2), sig2.clone()),
                 (ValidatorID(3), invalid_sig)
             ],
         };
@@ -188,8 +211,8 @@ mod tests {
         let cert_valid = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()), 
-                (ValidatorID(2), sig2.clone()), 
+                (ValidatorID(1), sig1.clone()),
+                (ValidatorID(2), sig2.clone()),
                 (ValidatorID(3), sig3.clone())
             ],
         };
@@ -212,7 +235,7 @@ mod tests {
 
         // N=4, F=1. Required=2f+1=3
         let (sk1, vk1) = generate_keypair(1); // Honest
-        let (sk2, vk2) = generate_keypair(2); // Honest 
+        let (sk2, vk2) = generate_keypair(2); // Honest
         let (sk3, vk3) = generate_keypair(3); // Honest
         let (sk4, vk4) = generate_keypair(4); // Byzantine
 
@@ -223,7 +246,7 @@ mod tests {
             (ValidatorID(4), vk4),
         ];
 
-        let val_set = Arc::new(ValidatorSet::new(validators, 1).unwrap());
+        let val_set = ValidatorSet::new(validators, 1).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         // Two conflicting transfers originating from the same object version
@@ -270,8 +293,8 @@ mod tests {
             ],
         };
 
-        // For Beta to form a cert across the threshold (which theoretically shouldn't happen 
-        // due to honest-node locking), we simulate a worst-case where another node maliciously 
+        // For Beta to form a cert across the threshold (which theoretically shouldn't happen
+        // due to honest-node locking), we simulate a worst-case where another node maliciously
         // or accidentally signs the conflicting transfer to verify our safety bounds.
         let sig2_beta = ValidatorSig(sk2.sign(&msg_beta, &dst, &[]));
         let cert_beta = TransferCertificate {
@@ -288,7 +311,7 @@ mod tests {
 
         // Beta crashes hard against the native Semantic firewall despite carrying 3 valid BLS signatures
         assert_eq!(
-            fast_path.execute_certificate(cert_beta).unwrap_err(), 
+            fast_path.execute_certificate(cert_beta).unwrap_err(),
             ILCConsensusError::ConflictingTransfer
         );
     }
@@ -301,7 +324,7 @@ mod tests {
         let (_, agent2) = generate_agent_keypair(22);
 
         let (_, vk1) = generate_keypair(1);
-        let val_set = Arc::new(ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap());
+        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let mut transfer = ECUTransfer {
@@ -325,7 +348,7 @@ mod tests {
         let (_, agent2) = generate_agent_keypair(22);
 
         let (sk_val1, vk1) = generate_keypair(1);
-        let val_set = Arc::new(ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap());
+        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let mut transfer = ECUTransfer {
@@ -343,5 +366,104 @@ mod tests {
 
         let cert = TransferCertificate { transfer, sigs: vec![(ValidatorID(1), sig1)] };
         assert_eq!(fast_path.execute_certificate(cert).unwrap_err(), ILCConsensusError::InvalidSignature);
+    }
+
+    #[test]
+    fn test_ejected_validator_sig_rejected_after_rotation() {
+        // SEC-004: After rotate_validator_set() removes V3, any cert bearing V3's sig
+        // must be rejected at the pubkey-lookup step (InvalidSignature).
+        // Before rotation the same cert is accepted — proving the gate is the set membership.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(BalanceStore::new(env).unwrap());
+
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
+
+        store.apply_attribution(AttributionBatch {
+            epoch: EpochSeq(1),
+            attributions: vec![(agent1, 1_000_000)],
+        }).unwrap();
+
+        // N=5, F=1. Required=2f+1=3. Validator 3 will be ejected.
+        // After ejection: N=4, F=1 (4 > 3*1 ✓). Quorum remains 3.
+        let (sk1, vk1) = generate_keypair(1);
+        let (sk2, vk2) = generate_keypair(2);
+        let (sk3, vk3) = generate_keypair(3); // will be ejected
+        let (_sk4, vk4) = generate_keypair(4);
+        let (_sk5, vk5) = generate_keypair(5);
+
+        let validators_full = vec![
+            (ValidatorID(1), vk1.clone()),
+            (ValidatorID(2), vk2.clone()),
+            (ValidatorID(3), vk3),
+            (ValidatorID(4), vk4.clone()),
+            (ValidatorID(5), vk5),
+        ];
+        let val_set = ValidatorSet::new(validators_full, 1).unwrap();
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
+
+        let mut transfer = ECUTransfer {
+            object_ref: ObjectRef { agent: agent1, version: 0 },
+            to: agent2,
+            amount_micro_ecu: 100_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
+        };
+        let sender_msg = bincode::serialize(&(&transfer.object_ref, &transfer.to, &transfer.amount_micro_ecu)).unwrap();
+        transfer.sender_sig = AgentSig(sk_agent1.sign(&sender_msg, crate::types::AGENT_TRANSFER_DST, &[]));
+
+        let msg = bincode::serialize(&transfer).unwrap();
+        let dst = crate::validator::validator_dst("testnet");
+
+        let sig1 = ValidatorSig(sk1.sign(&msg, &dst, &[]));
+        let sig2 = ValidatorSig(sk2.sign(&msg, &dst, &[]));
+        let sig3 = ValidatorSig(sk3.sign(&msg, &dst, &[]));
+
+        // Before rotation: cert with V3 sig is accepted.
+        let cert_pre = TransferCertificate {
+            transfer: transfer.clone(),
+            sigs: vec![
+                (ValidatorID(1), sig1.clone()),
+                (ValidatorID(2), sig2.clone()),
+                (ValidatorID(3), sig3.clone()),
+            ],
+        };
+        assert!(fast_path.execute_certificate(cert_pre).is_ok(),
+            "cert with V3 sig must be accepted before ejection");
+
+        // Governance rotates out V3 — new set is V1, V2, V4 (N=3, F=0, quorum=1).
+        // With only 3 remaining validators, F must drop to 0.
+        let validators_post = vec![
+            (ValidatorID(1), vk1),
+            (ValidatorID(2), vk2),
+            (ValidatorID(4), vk4),
+        ];
+        fast_path.rotate_validator_set(ValidatorSet::new(validators_post, 0).unwrap());
+
+        // After rotation: cert bearing V3's sig is rejected (V3 not in set → InvalidSignature).
+        let mut transfer2 = ECUTransfer {
+            object_ref: ObjectRef { agent: agent1, version: 1 },
+            to: agent2,
+            amount_micro_ecu: 50_000,
+            sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
+        };
+        let sender_msg2 = bincode::serialize(&(&transfer2.object_ref, &transfer2.to, &transfer2.amount_micro_ecu)).unwrap();
+        transfer2.sender_sig = AgentSig(sk_agent1.sign(&sender_msg2, crate::types::AGENT_TRANSFER_DST, &[]));
+        let msg2 = bincode::serialize(&transfer2).unwrap();
+        let sig1b = ValidatorSig(sk1.sign(&msg2, &dst, &[]));
+        let sig2b = ValidatorSig(sk2.sign(&msg2, &dst, &[]));
+        let sig3b = ValidatorSig(sk3.sign(&msg2, &dst, &[])); // ejected — not in new set
+        let cert_post = TransferCertificate {
+            transfer: transfer2,
+            sigs: vec![
+                (ValidatorID(1), sig1b),
+                (ValidatorID(2), sig2b),
+                (ValidatorID(3), sig3b),
+            ],
+        };
+        assert_eq!(
+            fast_path.execute_certificate(cert_post).unwrap_err(),
+            ILCConsensusError::InvalidSignature,
+            "cert with ejected validator sig must be rejected after rotation"
+        );
     }
 }

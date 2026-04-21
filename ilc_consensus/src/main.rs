@@ -136,9 +136,8 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     let balance_store = Arc::new(BalanceStore::new(Arc::clone(&lmdb_env))?);
     let epoch_store = Arc::new(EpochStore::new(Arc::clone(&lmdb_env))?);
 
-    let validator_set_arc = Arc::new(validator_set);
     let fast_path = Arc::new(FastPathProtocol::new(
-        Arc::clone(&validator_set_arc),
+        validator_set,
         Arc::clone(&balance_store),
         genesis_network_id.clone(),
     ));
