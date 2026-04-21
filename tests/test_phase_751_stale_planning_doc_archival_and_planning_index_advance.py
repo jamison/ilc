@@ -102,12 +102,17 @@ def test_planning_index_current_frontier_and_startup_guidance_are_advanced() -> 
     assert (
         "Window 749-752 ACTIVE through Phase 750 master-roadmap and M-series-lane update" in text
         or "Window 749-752 CLOSED via Phase 752 closure gate" in text
+        or "Window 753-756 CLOSED via Phase 756 closure gate" in text
     )
     assert "**Master Completion Roadmap v0.1** ⬅ CURRENT" in text
-    assert "**What's next** → master roadmap + current window sequence lock" in text
+    assert (
+        "**What's next** → master roadmap + current window sequence lock" in text
+        or "**What's next** → master roadmap + latest main-lane sequence lock" in text
+    )
     assert (
         "Window 749-752 is now active through Phase 750." in text
         or "Window 749-752 is now closed via Phase 752." in text
+        or "Window 753-756 is now closed via Phase 756." in text
     )
 
 
