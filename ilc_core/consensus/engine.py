@@ -103,6 +103,26 @@ def _engine_apply_slash(
     # Post-MVP: bounty transfer moved to project deferred items file (Consensus section).
 
 
+def _engine_resolve_age_reference_seconds(
+    node: "Node",
+    graph: "EpistemicGraph",
+    age_reference_clock: "Optional[Callable[[], float]]",
+) -> float:
+    ts = node.timestamp
+    if ts.tzinfo is None:
+        raise ValueError("node_timestamp_naive_not_allowed")
+    if age_reference_clock is not None:
+        return max(ts.timestamp(), float(age_reference_clock()))
+    graph_timestamps = [
+        candidate.timestamp.timestamp()
+        for candidate in graph.nodes.values()
+        if candidate.timestamp.tzinfo is not None
+    ]
+    if not graph_timestamps:
+        return ts.timestamp()
+    return max(ts.timestamp(), max(graph_timestamps))
+
+
 class ConsensusEngine:
     """
     ConsensusEngine
@@ -245,9 +265,7 @@ class ConsensusEngine:
     # Sponsorship and independence
     # ------------------------------------------------------------------
     def register_sponsorship(self, sponsor_id: str, agent_id: str) -> None:
-        """
-        Records that a Sponsor funds an Agent, for independence checks.
-        """
+        """Records that a Sponsor funds an Agent, for independence checks."""
         self.sponsor_graph.union(sponsor_id, agent_id)
 
     def validate_independence(self, validators: list[str]) -> bool:
@@ -283,24 +301,10 @@ class ConsensusEngine:
         ts = node.timestamp
         if ts.tzinfo is None:
             raise ValueError("node_timestamp_naive_not_allowed")
-        reference_seconds = self._resolve_age_reference_seconds(node)
+        reference_seconds = _engine_resolve_age_reference_seconds(
+            node, self.graph, self._age_reference_clock
+        )
         return max(1.0, reference_seconds - ts.timestamp())
-
-    def _resolve_age_reference_seconds(self, node: Node) -> float:
-        ts = node.timestamp
-        if ts.tzinfo is None:
-            raise ValueError("node_timestamp_naive_not_allowed")
-        if self._age_reference_clock is not None:
-            return max(ts.timestamp(), float(self._age_reference_clock()))
-
-        graph_timestamps = [
-            candidate.timestamp.timestamp()
-            for candidate in self.graph.nodes.values()
-            if candidate.timestamp.tzinfo is not None
-        ]
-        if not graph_timestamps:
-            return ts.timestamp()
-        return max(ts.timestamp(), max(graph_timestamps))
 
     def calculate_maintenance_tax(self, node: Node) -> float:
         """
@@ -336,9 +340,7 @@ class ConsensusEngine:
         return _engine_compute_bounty_amount(base_stake, age, node.id)
 
     def process_edge(self, edge: EdgeEventLike, stake_amount: float = 0.0) -> None:
-        """
-        Dispatch edge processing based on type.
-        """
+        """Dispatch edge processing based on type."""
         if edge.type == "refutes":
             self.process_contradiction(edge.target_id, stake_amount)
         elif edge.type == "supersedes":
