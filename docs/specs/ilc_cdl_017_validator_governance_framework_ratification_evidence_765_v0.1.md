@@ -153,6 +153,9 @@ binding at ratification time:
 7. row `5` honest fail record remains true and is not erased by validator-law
    ratification.
 
+The row `5` honest fail record remains true and is not erased by
+validator-law ratification.
+
 ## 6. Two-commit mutation discipline and decision-log consequence
 
 This phase uses the dedicated two-commit constitutional mutation pattern

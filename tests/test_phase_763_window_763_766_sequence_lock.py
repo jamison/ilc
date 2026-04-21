@@ -195,6 +195,7 @@ def test_backfill_surfaces_record_active_window_state() -> None:
     assert (
         "`CDL-017` ratification window ACTIVE through Phase `763`" in planning_text
         or "`CDL-017` ratification window ACTIVE through Phase `764`" in planning_text
+        or "`CDL-017` ratification window ACTIVE through Phase `765`" in planning_text
     )
     assert "Active CDL-017 Ratification Sequence Lock" in planning_text
     assert "reviewer-approved transition from the closed convergence frontier into the later `CDL-017` ratification window" in walkthrough_text
