@@ -179,7 +179,7 @@ Sequencing rules:
   commit 1 publishes the ratification artifact, tests, and ratification
   backfill; commit 2 mutates exactly the `CDL-017` row in
   `docs/specs/ilc_constitutional_decision_log_v0.1.md`,
-- the Phase `765` second commit may touch only the `CDL-017` row and no other
+- The Phase `765` second commit may touch only the `CDL-017` row and no other
   file,
 - Phase `766` is the closure gate for the window and must summarize only what
   Phases `763-765` actually established.
