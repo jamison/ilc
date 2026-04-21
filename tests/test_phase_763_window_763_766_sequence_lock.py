@@ -149,12 +149,16 @@ def test_artifact_records_phase_table_and_single_row_mutation_discipline() -> No
 
 
 def test_decision_log_and_runtime_surfaces_are_untouched_in_phase_763() -> None:
-    result_decision = subprocess.run(
-        ["git", "diff", "--exit-code", "--", str(DECISION_LOG_PATH)],
-        capture_output=True,
-        text=True,
-    )
-    assert result_decision.returncode == 0
+    main_commit = _resolve_commit_ref(PHASE_MAIN_SUBJECT, EXACT_REQUIRED_MAIN_PATHS)
+    backfill_commit = _resolve_commit_ref(PHASE_BACKFILL_SUBJECT, EXACT_REQUIRED_BACKFILL_PATHS)
+    for commit_ref in (main_commit, backfill_commit):
+        changed_paths = _changed_paths_for_commit(commit_ref)
+        assert str(DECISION_LOG_PATH) not in changed_paths
+        assert not any(path == "ilc_core" or path.startswith("ilc_core/") for path in changed_paths)
+        assert not any(
+            path == "ilc_consensus" or path.startswith("ilc_consensus/")
+            for path in changed_paths
+        )
 
 
 def test_phase_763_main_commit_touches_expected_paths_only() -> None:
