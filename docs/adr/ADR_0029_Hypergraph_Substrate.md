@@ -1,7 +1,8 @@
 # ADR-0029: Hypergraph Substrate
 
-**Status:** Proposed  
-**Date:** 2026-04-19
+**Status:** Accepted  
+**Date:** 2026-04-19  
+**Accepted:** 2026-04-21 — substrate implementation complete (commit `1c027054`)
 
 ---
 

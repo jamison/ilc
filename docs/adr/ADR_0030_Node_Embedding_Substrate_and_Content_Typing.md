@@ -1,7 +1,8 @@
 # ADR-0030: Node Embedding Substrate and Content Typing
 
-**Status:** Proposed  
-**Date:** 2026-04-19
+**Status:** Accepted  
+**Date:** 2026-04-19  
+**Accepted:** 2026-04-21 — Node embedding fields live (commit `1c027054`)
 
 ---
 
