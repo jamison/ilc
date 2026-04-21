@@ -531,6 +531,105 @@ def _aggregate_claim_totals(claims: list[Any]) -> dict[str, dict[str, Any]]:
     return claim_totals
 
 
+def _persist_agent_wallet_history(
+    *,
+    agent_id: str,
+    row: dict,
+    wallet_store: LmdbWalletStore,
+    claims: list,
+    epoch_history: list,
+    epoch_id: Any,
+    settlement_manifest: dict,
+    generated_at: str,
+) -> None:
+    existing_history = wallet_store.get_wallet_history(agent_id) or {}
+    existing_claims = existing_history.get("claim_history", [])
+    existing_epochs = existing_history.get("epoch_history", [])
+    existing_balance_history = existing_history.get("balance_history", [])
+    if not isinstance(existing_claims, list):
+        existing_claims = []
+    if not isinstance(existing_epochs, list):
+        existing_epochs = []
+    if not isinstance(existing_balance_history, list):
+        existing_balance_history = []
+    claim_history = [
+        claim
+        for claim in claims
+        if isinstance(claim, dict) and claim.get("agent_id") == agent_id
+    ]
+    claim_ids = sorted(
+        str(claim.get("claim_id"))
+        for claim in claim_history
+        if isinstance(claim.get("claim_id"), str) and claim.get("claim_id")
+    )
+    claim_digest = _sha256_json(claim_history)
+    balance_receipt = {
+        "epoch_id": epoch_id,
+        "epoch_index": settlement_manifest.get("epoch_index"),
+        "claim_count": len(claim_history),
+        "claim_ids": claim_ids,
+        "claim_digest": claim_digest,
+        "reward_delta_ilc": row["ecu_claim_total"],
+        "balance_after_ilc": row["balance_ilc"],
+        "reward_status": row["reward_status"],
+        "distribution_check_ok": settlement_manifest.get("distribution_check_ok"),
+        "settlement_status": settlement_manifest.get("settlement_status"),
+        "claim_batch_sha256": settlement_manifest.get("claim_batch_sha256"),
+    }
+    merged_claim_map = {
+        str(item.get("claim_id")): item
+        for item in existing_claims
+        if isinstance(item, dict) and isinstance(item.get("claim_id"), str) and item.get("claim_id")
+    }
+    for claim in claim_history:
+        claim_id = claim.get("claim_id")
+        if isinstance(claim_id, str) and claim_id:
+            merged_claim_map[claim_id] = claim
+    merged_epoch_map = {
+        str(item.get("epoch_id")): item
+        for item in existing_epochs
+        if isinstance(item, dict) and isinstance(item.get("epoch_id"), str) and item.get("epoch_id")
+    }
+    for epoch_row in epoch_history:
+        if isinstance(epoch_row, dict):
+            epoch_row_id = epoch_row.get("epoch_id")
+            if isinstance(epoch_row_id, str) and epoch_row_id:
+                merged_epoch_map[epoch_row_id] = epoch_row
+    merged_balance_map = {
+        str(item.get("epoch_id")): item
+        for item in existing_balance_history
+        if isinstance(item, dict) and isinstance(item.get("epoch_id"), str) and item.get("epoch_id")
+    }
+    if isinstance(epoch_id, str) and epoch_id:
+        merged_balance_map[epoch_id] = balance_receipt
+    merged_claim_history = [merged_claim_map[key] for key in sorted(merged_claim_map)]
+    merged_epoch_history = [merged_epoch_map[key] for key in sorted(merged_epoch_map)]
+    merged_balance_history = [merged_balance_map[key] for key in sorted(merged_balance_map)]
+    row["lifetime_claim_count"] = len(merged_claim_history)
+    row["settled_epoch_count"] = len(merged_balance_history)
+    wallet_store.put_wallet(agent_id, row)
+    wallet_store.put_wallet_history(
+        agent_id,
+        {
+            "version": RUNTIME_VERSION,
+            "agent_id": agent_id,
+            "generated_at": generated_at,
+            "latest_epoch_id": epoch_id,
+            "latest_claim_digest": claim_digest,
+            "claim_history": merged_claim_history,
+            "epoch_history": merged_epoch_history,
+            "balance_history": merged_balance_history,
+            "history_digest": _sha256_json(
+                {
+                    "claim_history": merged_claim_history,
+                    "epoch_history": merged_epoch_history,
+                    "balance_history": merged_balance_history,
+                }
+            ),
+        },
+    )
+
+
 def export_wallet_state(
     *,
     scenario_root: Path,
@@ -549,9 +648,6 @@ def export_wallet_state(
     wallet_store_root = output_root / "wallet-store"
     wallet_store = LmdbWalletStore(wallet_store_root)
     epoch_id = settlement_manifest.get("epoch_id")
-    epoch_index = settlement_manifest.get("epoch_index")
-    settlement_status = settlement_manifest.get("settlement_status")
-    distribution_check_ok = settlement_manifest.get("distribution_check_ok")
     claim_batch_sha256 = settlement_manifest.get("claim_batch_sha256")
 
     wallet_payload = {
@@ -593,91 +689,15 @@ def export_wallet_state(
         if isinstance(epoch_records, dict):
             epoch_history = list(epoch_records.values())
     for agent_id, row in wallet_payload["wallets"].items():
-        existing_history = wallet_store.get_wallet_history(agent_id) or {}
-        existing_claims = existing_history.get("claim_history", [])
-        existing_epochs = existing_history.get("epoch_history", [])
-        existing_balance_history = existing_history.get("balance_history", [])
-        if not isinstance(existing_claims, list):
-            existing_claims = []
-        if not isinstance(existing_epochs, list):
-            existing_epochs = []
-        if not isinstance(existing_balance_history, list):
-            existing_balance_history = []
-        claim_history = [
-            claim
-            for claim in claims
-            if isinstance(claim, dict) and claim.get("agent_id") == agent_id
-        ]
-        claim_ids = sorted(
-            str(claim.get("claim_id"))
-            for claim in claim_history
-            if isinstance(claim.get("claim_id"), str) and claim.get("claim_id")
-        )
-        claim_digest = _sha256_json(claim_history)
-        balance_receipt = {
-            "epoch_id": epoch_id,
-            "epoch_index": epoch_index,
-            "claim_count": len(claim_history),
-            "claim_ids": claim_ids,
-            "claim_digest": claim_digest,
-            "reward_delta_ilc": row["ecu_claim_total"],
-            "balance_after_ilc": row["balance_ilc"],
-            "reward_status": row["reward_status"],
-            "distribution_check_ok": distribution_check_ok,
-            "settlement_status": settlement_status,
-            "claim_batch_sha256": claim_batch_sha256,
-        }
-        merged_claim_map = {
-            str(item.get("claim_id")): item
-            for item in existing_claims
-            if isinstance(item, dict) and isinstance(item.get("claim_id"), str) and item.get("claim_id")
-        }
-        for claim in claim_history:
-            claim_id = claim.get("claim_id")
-            if isinstance(claim_id, str) and claim_id:
-                merged_claim_map[claim_id] = claim
-        merged_epoch_map = {
-            str(item.get("epoch_id")): item
-            for item in existing_epochs
-            if isinstance(item, dict) and isinstance(item.get("epoch_id"), str) and item.get("epoch_id")
-        }
-        for epoch_row in epoch_history:
-            if isinstance(epoch_row, dict):
-                epoch_row_id = epoch_row.get("epoch_id")
-                if isinstance(epoch_row_id, str) and epoch_row_id:
-                    merged_epoch_map[epoch_row_id] = epoch_row
-        merged_balance_map = {
-            str(item.get("epoch_id")): item
-            for item in existing_balance_history
-            if isinstance(item, dict) and isinstance(item.get("epoch_id"), str) and item.get("epoch_id")
-        }
-        if isinstance(epoch_id, str) and epoch_id:
-            merged_balance_map[epoch_id] = balance_receipt
-        merged_claim_history = [merged_claim_map[key] for key in sorted(merged_claim_map)]
-        merged_epoch_history = [merged_epoch_map[key] for key in sorted(merged_epoch_map)]
-        merged_balance_history = [merged_balance_map[key] for key in sorted(merged_balance_map)]
-        row["lifetime_claim_count"] = len(merged_claim_history)
-        row["settled_epoch_count"] = len(merged_balance_history)
-        wallet_store.put_wallet(agent_id, row)
-        wallet_store.put_wallet_history(
-            agent_id,
-            {
-                "version": RUNTIME_VERSION,
-                "agent_id": agent_id,
-                "generated_at": wallet_payload["generated_at"],
-                "latest_epoch_id": epoch_id,
-                "latest_claim_digest": claim_digest,
-                "claim_history": merged_claim_history,
-                "epoch_history": merged_epoch_history,
-                "balance_history": merged_balance_history,
-                "history_digest": _sha256_json(
-                    {
-                        "claim_history": merged_claim_history,
-                        "epoch_history": merged_epoch_history,
-                        "balance_history": merged_balance_history,
-                    }
-                ),
-            },
+        _persist_agent_wallet_history(
+            agent_id=agent_id,
+            row=row,
+            wallet_store=wallet_store,
+            claims=claims,
+            epoch_history=epoch_history,
+            epoch_id=epoch_id,
+            settlement_manifest=settlement_manifest,
+            generated_at=wallet_payload["generated_at"],
         )
     wallet_path = output_root / "wallets.json"
     _write_json(wallet_path, wallet_payload)

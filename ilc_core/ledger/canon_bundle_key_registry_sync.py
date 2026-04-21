@@ -777,6 +777,26 @@ def _prepare_sync_channel(
     return None, channel_data, warnings, channel_version, audit_channel
 
 
+def _dry_run_result(
+    ctx: SyncContext,
+    channel: str,
+    channel_version: str | None,
+    window: list,
+    warnings: list,
+) -> SyncResult:
+    return {
+        "ok": True,
+        "dry_run": True,
+        "channel": channel,
+        "sources_to_attempt": window,
+        "dest": str(ctx.dest_dir),
+        "channel_version": channel_version,
+        "failover_enabled": ctx.failover,
+        "actions": ["fetch", "verify", "install", "update_last_sync"],
+        "errors": [],
+        "warnings": warnings,
+    }
+
 
 def sync_channel_registry(ctx: SyncContext) -> SyncResult:
     """
@@ -910,19 +930,8 @@ def sync_channel_registry(ctx: SyncContext) -> SyncResult:
         )
         
     if ctx.dry_run:
-        return {
-            "ok": True,
-            "dry_run": True,
-            "channel": channel,
-            "sources_to_attempt": window,
-            "dest": str(ctx.dest_dir),
-            "channel_version": channel_version,
-            "failover_enabled": ctx.failover,
-            "actions": ["fetch", "verify", "install", "update_last_sync"],
-            "errors": [],
-            "warnings": warnings,
-        }
-        
+        return _dry_run_result(ctx, channel, channel_version, window, warnings)
+
     # Attempt sync from window
     success_result, attempts = _attempt_sync_from_window(window, ctx.source_index, ctx)
             
