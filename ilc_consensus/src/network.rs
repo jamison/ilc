@@ -160,6 +160,11 @@ impl rustls::server::danger::ClientCertVerifier for PinnedCertVerifier {
     }
 }
 
+/// SEC-FIX-03: per-operation I/O timeout on all blocking network awaits.
+/// A slow or malicious peer that trickles bytes or fills the QUIC flow control
+/// window can hold async tasks indefinitely without these guards.
+pub const IO_TIMEOUT_MS: u64 = 1500;
+
 impl PeerNetwork {
     pub fn new_server(
         bind_addr: std::net::SocketAddr,
@@ -278,33 +283,42 @@ impl PeerNetwork {
     pub async fn transmit(&self, mut send: SendStream, env: GossipEnvelope) -> Result<(), ILCConsensusError> {
         let bytes = bincode::serialize(&env)
             .map_err(|_| ILCConsensusError::Other("Envelope map error".into()))?;
-            
-        send.write_all(&(bytes.len() as u32).to_be_bytes()).await
+
+        let timeout = tokio::time::Duration::from_millis(IO_TIMEOUT_MS);
+
+        tokio::time::timeout(timeout, send.write_all(&(bytes.len() as u32).to_be_bytes())).await
+            .map_err(|_| ILCConsensusError::Other("Transmit: length write timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Write length fail".into()))?;
-            
-        send.write_all(&bytes).await
+
+        tokio::time::timeout(timeout, send.write_all(&bytes)).await
+            .map_err(|_| ILCConsensusError::Other("Transmit: payload write timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Write payload fail".into()))?;
-            
+
+        // finish() is synchronous — marks the stream end without blocking.
         send.finish()
             .map_err(|_| ILCConsensusError::Other("Send flush exception".into()))?;
-            
+
         Ok(())
     }
 
     pub async fn receive(&self, connection: &Connection, mut recv: RecvStream) -> Result<GossipEnvelope, ILCConsensusError> {
         let authenticated_id = self.authenticate_peer_tls(connection)?;
 
+        let timeout = tokio::time::Duration::from_millis(IO_TIMEOUT_MS);
+
         let mut len_buf = [0u8; 4];
-        recv.read_exact(&mut len_buf).await
+        tokio::time::timeout(timeout, recv.read_exact(&mut len_buf)).await
+            .map_err(|_| ILCConsensusError::Other("Receive: length read timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Read fail length".into()))?;
-            
+
         let target_len = u32::from_be_bytes(len_buf) as usize;
         if target_len > 10 * 1024 * 1024 {
             return Err(ILCConsensusError::Other("Payload excessive length bound".into()));
         }
 
         let mut buf = vec![0u8; target_len];
-        recv.read_exact(&mut buf).await
+        tokio::time::timeout(timeout, recv.read_exact(&mut buf)).await
+            .map_err(|_| ILCConsensusError::Other("Receive: payload read timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Read fail payload".into()))?;
 
         let envelope: GossipEnvelope = bincode::deserialize(&buf)
