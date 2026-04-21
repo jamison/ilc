@@ -2,8 +2,8 @@ import json
 import os
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Iterable, Protocol, runtime_checkable
-from .types import Node, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord
+from typing import Dict, List, Optional, Iterable, Protocol, Set, runtime_checkable
+from .types import Node, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord, HyperEdge
 from .exceptions import DuplicateNodeError, GraphIntegrityError, NodeNotFoundError
 from .links import validate_link_type, is_symmetric
 
@@ -39,6 +39,15 @@ class EpistemicGraph:
         self.outgoing_links: Dict[str, List[str]] = {}
         self.incoming_links: Dict[str, List[str]] = {}
         self.genesis_hash: str = ""
+
+        # ADR-0029: sparse hypergraph incidence index.
+        # The explicit incidence matrix H (|V| x |E|) is NEVER stored; it is computed
+        # on demand by analytics layers from these two dicts.
+        # vertex_membership: node_id  -> set of hyperedge_ids (sparse H^T row)
+        # hyperedge_members: hyperedge_id -> set of node_ids  (sparse H column)
+        self.hyperedges: Dict[str, HyperEdge] = {}
+        self.vertex_membership: Dict[str, Set[str]] = {}
+        self.hyperedge_members: Dict[str, Set[str]] = {}
 
     def load_genesis(self, config_path="config/genesis.json"):
         """Hydrates the graph with the Axiomatic Core."""
@@ -172,3 +181,23 @@ class EpistemicGraph:
         for link in self.iter_links_from(source_id):
             if link.target_id == target_id:
                 yield link
+
+    # ADR-0029: hyperedge operations.
+
+    def add_hyperedge(self, hyperedge: HyperEdge) -> None:
+        """Add a hyperedge and update the sparse incidence index."""
+        if hyperedge.id in self.hyperedges:
+            raise GraphIntegrityError(f"HyperEdge with id={hyperedge.id} already exists")
+        self.hyperedges[hyperedge.id] = hyperedge
+        self.hyperedge_members[hyperedge.id] = set(hyperedge.member_ids)
+        for node_id in hyperedge.member_ids:
+            self.vertex_membership.setdefault(node_id, set()).add(hyperedge.id)
+
+    def hyperedge_degree(self, node_id: str) -> int:
+        """Number of hyperedges containing this node — O(1)."""
+        return len(self.vertex_membership.get(node_id, set()))
+
+    def hyperedges_containing(self, node_id: str) -> Iterable[HyperEdge]:
+        """All hyperedges that include node_id."""
+        for hid in self.vertex_membership.get(node_id, set()):
+            yield self.hyperedges[hid]
