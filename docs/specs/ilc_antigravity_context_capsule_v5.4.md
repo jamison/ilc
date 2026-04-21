@@ -86,9 +86,14 @@ The surviving blockers and obligations now include:
   requires reviewer approval to open,
 - hypergraph Tier `2` carry-forward:
   `SIM-HYPEREDGE-01` is complete (`H-001`, commit `2f0d192e`,
-  `sim_hyperedge_01_recommended_w_e=stake_harmonic_mean`); `SIM-EMBED-01` and
-  `SIM-SPECTRAL-01` remain pending as result surfaces; `SIM-SPECTRAL-01` is now
-  commissioned via `docs/specs/ilc_sim_spectral_01_commissioning_spec_v0.1.md`,
+  `sim_hyperedge_01_recommended_w_e=stake_harmonic_mean`);
+  `SIM-SPECTRAL-01` is complete (`H-005`, commit `fa91fd7d`,
+  `sim_spectral_01_lambda2_signal_viable=true`, `N_batch=1`,
+  `ε_trigger=0.3391`, `N_bootstrap=44`, `θ_floor=0.001`);
+  Fiedler centrality is non-redundant with degree and recommended for the
+  reputation layer; lazy Rayleigh recomputation is unreliable for T2-class
+  topologies, so the production posture is full recompute every epoch;
+  `SIM-EMBED-01` remains pending,
 - hypergraph Tier `3` carry-forward:
   CDL, SIM, and patent-gated lanes remain deferred.
 
@@ -96,8 +101,8 @@ Hypergraph posture at close:
 
 - Tier `1` substrate additions are complete (commit `1c027054`)
 - ADR-0029, ADR-0030, and ADR-0031 are accepted
-- Tier `2` posture: `SIM-HYPEREDGE-01` complete; `SIM-SPECTRAL-01`
-  commissioned; `SIM-EMBED-01` still pending
+- Tier `2` posture: `SIM-HYPEREDGE-01` complete; `SIM-SPECTRAL-01` complete;
+  `SIM-EMBED-01` still pending
 - Tier `3` remains deferred pending SIM results plus CDL / patent decisions
 
 ## 5. Convergence Window Closure Summary
