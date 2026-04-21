@@ -23,4 +23,4 @@ def test_claim_lifecycle_playground_runs_and_shapes():
     
     assert outcome["task_type"] == "claim.submit"
     assert isinstance(epoch["total_tasks"], int)
-    assert isinstance(epoch["total_ecu_spent"], float)
+    assert isinstance(epoch["total_ecu_spent"], (str, float))  # protocol path returns canonical string
