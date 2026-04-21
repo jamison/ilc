@@ -196,9 +196,15 @@ def test_status_and_planning_index_record_phase_765_artifact_and_phase_766_next(
     assert "Phase 766 — coherence report, capsule v5.5, and closure gate" in status_text
 
     assert "Current frontier:" in planning_text
-    assert "ACTIVE through Phase `765`" in planning_text
+    assert (
+        "ACTIVE through Phase `765`" in planning_text
+        or "Window `763-766` CLOSED via Phase `766` closure gate" in planning_text
+    )
     assert str(ARTIFACT_PATH) in planning_text
-    assert "commit-2 single-row `CDL-017` mutation reserved by the phase contract" in planning_text
+    assert (
+        "commit-2 single-row `CDL-017` mutation reserved by the phase contract" in planning_text
+        or "`CDL-017` is ratified" in planning_text
+    )
 
 
 def test_commit_1_touches_exact_expected_paths_and_no_runtime_paths() -> None:

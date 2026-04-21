@@ -192,6 +192,7 @@ def test_backfill_surfaces_advance_active_window_state() -> None:
     assert (
         "`CDL-017` ratification window ACTIVE through Phase `764`" in planning_text
         or "`CDL-017` ratification window ACTIVE through Phase `765`" in planning_text
+        or "Window `763-766` CLOSED via Phase `766` closure gate" in planning_text
     )
     assert "CDL-017 Interaction Synthesis" in planning_text
     assert "explicit carry-forward matrix for `CDL-055` and `CDL-056`" in walkthrough_text
