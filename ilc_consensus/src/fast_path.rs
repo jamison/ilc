@@ -22,6 +22,9 @@ impl FastPathProtocol {
 
         let sender_pubkey = blst::min_pk::PublicKey::from_bytes(&cert.transfer.object_ref.agent.0)
             .map_err(|_| ILCConsensusError::InvalidSignature)?;
+        // SEC-FIX-01: G1 subgroup check — from_bytes skips cofactor membership; validate enforces it.
+        sender_pubkey.validate()
+            .map_err(|_| ILCConsensusError::InvalidSignature)?;
 
         let verify_result = cert.transfer.sender_sig.0.verify(
             true, &sender_msg, crate::types::AGENT_TRANSFER_DST, &[], &sender_pubkey, true

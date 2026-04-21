@@ -133,6 +133,11 @@ pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCCo
             .map_err(|_| ILCConsensusError::Other(
                 format!("validator_id={}: validator_key is not a valid BLS12-381 G1 point", v.validator_id)
             ))?;
+        // SEC-FIX-01: G1 subgroup check — defense-in-depth for genesis config loading.
+        pubkey.validate()
+            .map_err(|_| ILCConsensusError::Other(
+                format!("validator_id={}: validator_key failed G1 subgroup check", v.validator_id)
+            ))?;
         let _agent_id = hex_decode_agent_id(&v.agent_id, v.validator_id)?;
         validators.push((ValidatorID(v.validator_id), ValidatorKey(pubkey)));
     }
