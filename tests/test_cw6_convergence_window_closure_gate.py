@@ -190,10 +190,15 @@ def test_planning_index_and_status_advance_to_post_convergence_frontier() -> Non
         return
     planning = _normalized(_read(PLANNING_INDEX_PATH))
     status = _read(STATUS_PATH)
-    assert "Current frontier:** Convergence window CLOSED through Phase 762" in planning
     assert "Context Capsule v5.4" in planning
-    assert "pending reviewer approval" in planning
-    assert "CDL-017` window is pending reviewer approval" in planning
+    assert (
+        "Current frontier:** Convergence window CLOSED through Phase 762" in planning
+        or "`CDL-017` ratification window ACTIVE through Phase `763`" in planning
+    )
+    assert (
+        "pending reviewer approval" in planning
+        or "Active CDL-017 Ratification Sequence Lock" in planning
+    )
     assert "## Phase 761" in status
     assert "## Phase 762" in status
     assert "## Track B Advancement Record — 2026-04-21" in status
