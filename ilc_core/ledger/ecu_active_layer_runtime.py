@@ -314,6 +314,13 @@ def item_involves_agent(*, record: EarmarkRecord, agent_id: str) -> bool:
     )
 
 
+def _str_to_decimal(value: str) -> Decimal:
+    try:
+        return Decimal(value)
+    except InvalidOperation as exc:
+        raise ValueError("invalid_decimal_string") from exc
+
+
 def _to_decimal(value: int | float | str | Decimal) -> Decimal:
     if isinstance(value, bool):
         raise ValueError("boolean_not_valid_amount")
@@ -324,10 +331,7 @@ def _to_decimal(value: int | float | str | Decimal) -> Decimal:
     elif isinstance(value, float):
         number = Decimal(str(value))
     elif isinstance(value, str):
-        try:
-            number = Decimal(value)
-        except InvalidOperation as exc:
-            raise ValueError("invalid_decimal_string") from exc
+        number = _str_to_decimal(value)
     else:
         raise ValueError("unsupported_amount_type")
 

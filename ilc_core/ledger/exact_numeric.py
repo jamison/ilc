@@ -8,6 +8,13 @@ ExactNumberish: TypeAlias = Decimal | int | float | str
 ZERO = Decimal("0")
 
 
+def _str_to_decimal(value: str, token: str) -> Decimal:
+    try:
+        return Decimal(value)
+    except InvalidOperation as exc:
+        raise ValueError(token) from exc
+
+
 def to_decimal(value: ExactNumberish, *, token: str = "invalid_exact_numeric_value") -> Decimal:
     if isinstance(value, bool):
         raise ValueError(token)
@@ -18,10 +25,7 @@ def to_decimal(value: ExactNumberish, *, token: str = "invalid_exact_numeric_val
     elif isinstance(value, float):
         number = Decimal(str(value))
     elif isinstance(value, str):
-        try:
-            number = Decimal(value)
-        except InvalidOperation as exc:
-            raise ValueError(token) from exc
+        number = _str_to_decimal(value, token)
     else:
         raise ValueError(token)
 
