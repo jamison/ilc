@@ -241,7 +241,9 @@ impl EpochSettlementProtocol {
             Err(lmdb_rkv::Error::NotFound) => 0, // No epoch committed yet; genesis stub.
             Err(e) => return Err(ILCConsensusError::Other(format!("Sentinel read error: {}", e))),
         };
-        if checkpoint.record.epoch.0 != current_epoch + 1 {
+        let next_epoch = current_epoch.checked_add(1)
+            .ok_or(ILCConsensusError::InvalidEpoch)?; // u64::MAX sentinel — unreachable in practice
+        if checkpoint.record.epoch.0 != next_epoch {
             return Err(ILCConsensusError::InvalidEpoch);
         }
 
