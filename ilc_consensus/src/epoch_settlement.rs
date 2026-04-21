@@ -222,11 +222,33 @@ impl EpochSettlementProtocol {
         let mut txn = self.epoch_store.env.begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
-        // Monotonicity Check
+        // SEC-FIX-02: Strict sequential monotonicity — read sentinel inside the write
+        // transaction (TOCTOU-safe) and enforce epoch == current_epoch + 1.
+        //
+        // The prior guard only checked for duplicates (is_ok()), which allowed an
+        // attacker with a valid BLS-signed checkpoint for epoch N+K (K>1) to jump the
+        // sentinel forward, permanently fragmenting the epoch chain and breaking
+        // get_epoch_chain() at the first gap.
+        //
+        // Note: commit_epoch_record (testnet_fault_sim path) intentionally does NOT
+        // enforce +1 — it is used for direct test injection without ordering constraints.
+        let current_epoch = match txn.get(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL) {
+            Ok(bytes) => {
+                let mut buf = [0u8; 8];
+                buf.copy_from_slice(bytes);
+                u64::from_be_bytes(buf)
+            }
+            Err(lmdb_rkv::Error::NotFound) => 0, // No epoch committed yet; genesis stub.
+            Err(e) => return Err(ILCConsensusError::Other(format!("Sentinel read error: {}", e))),
+        };
+        if checkpoint.record.epoch.0 != current_epoch + 1 {
+            return Err(ILCConsensusError::InvalidEpoch);
+        }
+
+        // Duplicate check (kept for defence-in-depth; should never fire after the +1 guard).
         let current_key_bytes = checkpoint.record.epoch.0.to_be_bytes();
-        
         if txn.get(self.epoch_store.db, &current_key_bytes).is_ok() {
-            return Err(ILCConsensusError::InvalidEpoch); 
+            return Err(ILCConsensusError::InvalidEpoch);
         }
 
         let sig_bytes = checkpoint.sigs.0.to_signature().compress().to_vec();
@@ -450,6 +472,9 @@ mod tests {
             sigs: generate_valid_agg_sig(&epoch_record, &keys),
         };
 
+        // Must commit epoch 1 first (strict +1 sequential enforcement, SEC-FIX-02).
+        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+
         // Standard successfully commit Sequence 2
         assert!(protocol.process_epoch_checkpoint(checkpoint.clone(), &vset).is_ok());
 
@@ -493,9 +518,10 @@ mod tests {
         let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         
+        // SEC-FIX-02: must start from epoch 1.
         let record = EpochSettlementRecord {
-            epoch: EpochSeq(42),
-            state_root: CIDv1Root::new([42u8; 36]),
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
         };
 
         let checkpoint = EpochCheckpoint {
@@ -514,9 +540,10 @@ mod tests {
         let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         
+        // SEC-FIX-02: must start from epoch 1.
         let record = EpochSettlementRecord {
-            epoch: EpochSeq(7),
-            state_root: CIDv1Root::new([7u8; 36]),
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
         };
 
         let checkpoint = EpochCheckpoint {
@@ -526,7 +553,7 @@ mod tests {
 
         protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
 
-        let stored = store.get_checkpoint(7).unwrap().unwrap();
+        let stored = store.get_checkpoint(1).unwrap().unwrap();
         assert_eq!(stored.agg_sig_bytes.len(), 96);
     }
 
@@ -537,23 +564,31 @@ mod tests {
         let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         
+        // SEC-FIX-02: must use epoch 1 so the monotonicity gate passes and the
+        // corrupt signature reaches fast_aggregate_verify (BLSVerificationFailed path).
         let record = EpochSettlementRecord {
-            epoch: EpochSeq(9),
-            state_root: CIDv1Root::new([9u8; 36]),
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
         };
 
-        let mut sig_bytes = generate_valid_agg_sig(&record, &keys).0.to_signature().compress().to_vec();
-        // Corrupt signature
-        sig_bytes[5] ^= 0xFF;
+        // Build a valid-format signature, but signed over a DIFFERENT record (epoch 99).
+        // This ensures from_bytes succeeds (valid G2 point) but fast_aggregate_verify
+        // fails (wrong message). Avoids fragile byte-corruption that may reject at
+        // from_bytes depending on the specific compressed point bytes produced.
+        let wrong_record = EpochSettlementRecord {
+            epoch: EpochSeq(99),
+            state_root: CIDv1Root::new([99u8; 36]),
+        };
+        let wrong_sig_bytes = generate_valid_agg_sig(&wrong_record, &keys).0.to_signature().compress().to_vec();
 
         let corrupted_stored = StoredCheckpoint {
             record: record.clone(),
-            agg_sig_bytes: sig_bytes,
+            agg_sig_bytes: wrong_sig_bytes,
         };
 
-        // Construct recovering checkpoint from stored
+        // Construct recovering checkpoint from stored (sig is valid-format but wrong message).
         let parsed_sig = blst::min_pk::Signature::from_bytes(&corrupted_stored.agg_sig_bytes);
-        assert!(parsed_sig.is_ok());
+        assert!(parsed_sig.is_ok(), "wrong-message sig must parse as a valid G2 point");
         let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig.unwrap());
         
         let recovery_checkpoint = EpochCheckpoint {
@@ -563,5 +598,107 @@ mod tests {
 
         let err = protocol.process_epoch_checkpoint(recovery_checkpoint, &vset).unwrap_err();
         assert_eq!(err, ILCConsensusError::BLSVerificationFailed);
+    }
+
+    // ---------------------------------------------------------------------------
+    // SEC-FIX-02: epoch monotonicity — strict sequential enforcement tests
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn test_process_checkpoint_skip_epoch_rejected() {
+        // A valid BLS checkpoint for epoch 5 when current=0 must be rejected.
+        // Prior guard only checked for duplicates; +1 enforcement blocks this.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(5),
+            state_root: CIDv1Root::new([5u8; 36]),
+        };
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
+        };
+
+        let err = protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidEpoch,
+            "epoch skip from 0 to 5 must be rejected");
+    }
+
+    #[test]
+    fn test_process_checkpoint_sequential_epochs_accepted() {
+        // Epochs 1→2→3 committed in order must all succeed.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+
+        for epoch in 1u64..=3 {
+            let record = EpochSettlementRecord {
+                epoch: EpochSeq(epoch),
+                state_root: CIDv1Root::new([epoch as u8; 36]),
+            };
+            let checkpoint = EpochCheckpoint {
+                record: record.clone(),
+                sigs: generate_valid_agg_sig(&record, &keys),
+            };
+            protocol.process_epoch_checkpoint(checkpoint, &vset)
+                .unwrap_or_else(|e| panic!("epoch {} should be accepted: {:?}", epoch, e));
+        }
+
+        assert_eq!(store.get_current_epoch().unwrap(), 3);
+    }
+
+    #[test]
+    fn test_process_checkpoint_past_epoch_rejected() {
+        // After committing epoch 3, submitting epoch 2 again must return InvalidEpoch.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+
+        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
+        commit_epoch(&protocol, 3, 0x03, &vset, &keys);
+
+        // Now submit epoch 2 again (past epoch).
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(2),
+            state_root: CIDv1Root::new([2u8; 36]),
+        };
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
+        };
+        let err = protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidEpoch,
+            "past epoch must be rejected after current sentinel has advanced");
+    }
+
+    #[test]
+    fn test_process_checkpoint_future_skip_rejected_after_established_chain() {
+        // After committing 1→2→3, submitting epoch 10 must be rejected.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+
+        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
+        commit_epoch(&protocol, 3, 0x03, &vset, &keys);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(10),
+            state_root: CIDv1Root::new([10u8; 36]),
+        };
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
+        };
+        let err = protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidEpoch,
+            "epoch jump from 3 to 10 must be rejected by +1 monotonicity guard");
     }
 }
