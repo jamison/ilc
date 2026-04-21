@@ -60,8 +60,8 @@ authoritative scope additions to this SIM. All eight must be addressed in the re
 | R3 | **Founding hyperedge weight anchor** | Validate that a genesis-design in which all founding validators are members of every genesis hyperedge produces a non-zero λ₂ floor at epoch 1. This is a design test — parameterize genesis.json accordingly. |
 | R4 | **New-node exclusion guard** | Calibrate detection threshold θ such that a legitimately formed cluster of newly joined, low-stake nodes is not falsely excluded by the PoSK gate. Test on a bootstrap topology with N_new ∈ {10, 50, 200} new nodes joining simultaneously. |
 | R5 | **Fiedler vector per-node centrality as reputation input** | Compute v₂[i] per node and compare rank-order with stake-weighted degree. Measure rank correlation (Spearman ρ) across topology classes. Determine whether Fiedler centrality is non-redundant vs. degree centrality (ρ < 0.9 = non-redundant; ρ ≥ 0.9 = redundant). |
-| R6 | **Rayleigh quotient lazy recomputation validation** | Measure the approximation error of `λ₂(t) ≈ v₂(t−1)ᵀ · L(t) · v₂(t−1)` across 50 sequential epoch updates per topology class. Verify error stays below ε for normal epoch drift. Report max and mean error. |
-| R7 | **N_batch and ε calibration** | Determine optimal batch recompute interval N_batch (epochs) and perturbation trigger threshold ε (‖ΔL‖_F) such that: (a) Rayleigh approximation error remains < δ_max throughout the batch, and (b) full recomputation is triggered when error would exceed δ_max. Test across all four topology classes. |
+| R6 | **Rayleigh quotient lazy recomputation validation** | Measure the approximation error of `λ₂(t) ≈ v₂(t−1)ᵀ · L(t) · v₂(t−1)` across 50 sequential epoch updates per topology class. Verify relative error stays below δ_max_rel for normal epoch drift. Report max and mean relative error. |
+| R7 | **N_batch and ε_trigger calibration** | Determine optimal batch recompute interval N_batch (epochs) and perturbation trigger threshold ε_trigger (‖ΔL‖_F) such that: (a) Rayleigh approximation relative error remains < δ_max_rel throughout the batch, and (b) full recomputation is triggered when ε_trigger is exceeded before the batch interval. Test across all four topology classes. |
 | R8 | **spectral_gap reporting** | Validate that `spectral_gap = λ₃ − λ₂` is reliably positive and meaningful under normal ILC graph dynamics. Report mean and std(spectral_gap) per topology class. A small spectral_gap means Rayleigh approximation is unreliable — flag if spectral_gap < 1e-4. |
 
 ---
@@ -92,10 +92,10 @@ T5 is used for R1, R2, R3. T6 (with N_new ∈ {10, 50, 200}) is used for R4.
 | Detection threshold θ | λ₂ value below which partition-risk alert fires | Must not exclude T6 new-node clusters |
 | False-positive rate | Fraction of healthy instances with λ₂ < θ | < 5% target |
 | Full decomp time (ms) | Wall-clock for full L eigendecomposition (not just λ₂) | < 5000ms for N=500 |
-| Rayleigh approx error | |λ₂_approx − λ₂_full| per epoch update | < δ_max = 1e-4 |
+| Rayleigh approx error | |λ₂_approx − λ₂_full| / λ₂_full per epoch update (relative) | < δ_max_rel = 0.01 (1% relative error) |
 | spectral_gap | λ₃ − λ₂ per instance | > 1e-4 for Rayleigh to be reliable |
 | Fiedler centrality ρ | Spearman rank correlation(v₂[i], stake_weighted_degree) | Report; flag if ρ ≥ 0.9 |
-| Fiedler concentration | std(v₂[i] for i in genesis_nodes) / std(v₂ global) at T5 | High at bootstrap, low at maturity |
+| Fiedler concentration | mean(|v₂[i]| for i ∈ genesis) / mean(|v₂| global) at T5 | High at bootstrap, low at maturity |
 | Sybil spoofability | Δλ₂ when coalition of validators suppresses honest hyperedges | Hard to fake high λ₂ without real connectivity |
 
 ### 3.3 Signal viability test
@@ -148,9 +148,9 @@ Using T2_panel_heavy (most realistic ILC topology):
    - `λ₂_approx(t) = v₂(t−1)ᵀ · L(t) · v₂(t−1)` (Rayleigh quotient)
    - Error: `|λ₂_approx(t) − λ₂_full(t)|`
    - `spectral_gap(t) = λ₃(t) − λ₂(t)`
-4. Identify the epoch N_batch_empirical at which error first exceeds δ_max = 1e-4
+4. Identify the epoch N_batch_empirical at which relative error first exceeds δ_max_rel = 0.01
 5. Report: recommended N_batch = N_batch_empirical × 0.8 (safety margin)
-6. Report: recommended ε = ‖ΔL‖_F at the epoch where error first exceeds δ_max
+6. Report: recommended ε_trigger = ‖ΔL‖_F at the epoch where relative error first exceeds δ_max_rel
 
 Repeat for T1, T3, T4. Report the minimum N_batch across all topology classes as the
 conservative recommendation.
@@ -228,7 +228,7 @@ Must contain:
 - Recommended N_batch and ε values (R7)
 - spectral_gap statistics per topology; flag any topology where gap < 1e-4 (R8)
 - Explicit spoofability verdict: can high λ₂ be faked by a coalition?
-- Carry-forward: N_batch, ε, δ_max, θ, N_bootstrap are the inputs to H-006a and H-CON-03
+- Carry-forward: N_batch, ε_trigger, δ_max_rel, θ, N_bootstrap are the inputs to H-006a and H-CON-03
 
 Token required: `sim_spectral_01_lambda2_signal_viable=true|false`
 
@@ -247,7 +247,7 @@ Verifies:
 - The viability token is present
 - All six topology classes are mentioned
 - All eight requirements (R1–R8) are addressed
-- Rayleigh calibration outputs (N_batch, ε) are present as quoted values
+- Rayleigh calibration outputs (N_batch, ε_trigger) are present as quoted values
 - At least one raw numeric result from the simulation is present (anti-fabrication)
 - The bootstrap N_bootstrap value is present
 
