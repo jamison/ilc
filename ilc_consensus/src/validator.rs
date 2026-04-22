@@ -1,5 +1,5 @@
 use crate::types::{ValidatorID, ValidatorKey, ValidatorSet, ValidatorSig, ILCConsensusError};
-use blst::min_pk::{SecretKey, PublicKey, Signature};
+use blst::min_pk::SecretKey;
 use getrandom::getrandom;
 
 pub fn validator_dst(network_id: &str) -> Vec<u8> {
@@ -7,6 +7,11 @@ pub fn validator_dst(network_id: &str) -> Vec<u8> {
 }
 
 impl ValidatorSet {
+    fn rebuild_with(validators: Vec<(ValidatorID, ValidatorKey)>) -> Result<Self, ILCConsensusError> {
+        let f = validators.len().saturating_sub(1) / 3;
+        ValidatorSet::new(validators, f)
+    }
+
     /// Applies strict centralization BFT detection limiting boundaries to guarantees of Safety under byzantine assumptions.
     /// Rejects if any single node controls >= 1/3 of the total system stake exactly as required by the Phase 694 model.
     pub fn check_concentration_limit(stakes: &[(ValidatorID, u64)]) -> Result<(), ILCConsensusError> {
@@ -24,13 +29,40 @@ impl ValidatorSet {
     }
 
     /// CDL-017 hook: validator admission
-    pub fn admit_validator(&mut self, _id: ValidatorID, _key: ValidatorKey) -> Result<(), ILCConsensusError> {
-        unimplemented!("CDL-017: validator admission requires ratification before activation")
+    pub fn admit_validator(&mut self, id: ValidatorID, key: ValidatorKey) -> Result<(), ILCConsensusError> {
+        if self.validators.iter().any(|(existing_id, _)| *existing_id == id) {
+            return Err(ILCConsensusError::Other(format!(
+                "validator {} already present",
+                id.0
+            )));
+        }
+
+        let mut validators = self.validators.clone();
+        validators.push((id, key));
+        let rebuilt = ValidatorSet::rebuild_with(validators)?;
+        *self = rebuilt;
+        Ok(())
     }
 
     /// CDL-017 hook: validator ejection
-    pub fn eject_validator(&mut self, _id: ValidatorID) -> Result<(), ILCConsensusError> {
-        unimplemented!("CDL-017: validator ejection requires ratification before activation")
+    pub fn eject_validator(&mut self, id: ValidatorID) -> Result<(), ILCConsensusError> {
+        let original_len = self.validators.len();
+        let validators: Vec<(ValidatorID, ValidatorKey)> = self.validators
+            .iter()
+            .filter(|(existing_id, _)| *existing_id != id)
+            .cloned()
+            .collect();
+
+        if validators.len() == original_len {
+            return Err(ILCConsensusError::Other(format!(
+                "validator {} not present",
+                id.0
+            )));
+        }
+
+        let rebuilt = ValidatorSet::rebuild_with(validators)?;
+        *self = rebuilt;
+        Ok(())
     }
 }
 
@@ -61,6 +93,15 @@ pub fn verify_signature(vk: &ValidatorKey, msg: &[u8], sig: &ValidatorSig, netwo
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn make_validator_set(count: u32) -> ValidatorSet {
+        let mut validators = Vec::new();
+        for id in 1..=count {
+            let (_, key) = generate_validator_key().unwrap();
+            validators.push((ValidatorID(id), key));
+        }
+        ValidatorSet::new(validators, count.saturating_sub(1) as usize / 3).unwrap()
+    }
 
     #[test]
     fn test_keygen_produces_valid_keypair() {
@@ -120,17 +161,59 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "CDL-017: validator admission requires ratification before activation")]
-    fn test_admit_validator_is_unimplemented() {
-        let mut set = ValidatorSet { validators: vec![], f: 0 };
+    fn test_admit_validator_adds_validator_and_recomputes_f() {
+        let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
-        let _ = set.admit_validator(ValidatorID(1), key);
+
+        set.admit_validator(ValidatorID(4), key).unwrap();
+
+        assert_eq!(set.validators.len(), 4);
+        assert_eq!(set.f, 1);
+        assert!(set.validators.iter().any(|(id, _)| *id == ValidatorID(4)));
     }
 
     #[test]
-    #[should_panic(expected = "CDL-017: validator ejection requires ratification before activation")]
-    fn test_eject_validator_is_unimplemented() {
-        let mut set = ValidatorSet { validators: vec![], f: 0 };
-        let _ = set.eject_validator(ValidatorID(1));
+    fn test_admit_validator_rejects_duplicate_id() {
+        let mut set = make_validator_set(3);
+        let (_, key) = generate_validator_key().unwrap();
+
+        let err = set.admit_validator(ValidatorID(1), key).unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::Other("validator 1 already present".to_string())
+        );
+    }
+
+    #[test]
+    fn test_eject_validator_removes_validator_and_recomputes_f() {
+        let mut set = make_validator_set(4);
+
+        set.eject_validator(ValidatorID(4)).unwrap();
+
+        assert_eq!(set.validators.len(), 3);
+        assert_eq!(set.f, 0);
+        assert!(!set.validators.iter().any(|(id, _)| *id == ValidatorID(4)));
+    }
+
+    #[test]
+    fn test_eject_validator_rejects_missing_id() {
+        let mut set = make_validator_set(4);
+
+        let err = set.eject_validator(ValidatorID(99)).unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::Other("validator 99 not present".to_string())
+        );
+    }
+
+    #[test]
+    fn test_eject_validator_rejects_invalid_collapse() {
+        let mut set = make_validator_set(1);
+
+        let err = set.eject_validator(ValidatorID(1)).unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::Other("Invalid ValidatorSet: N (0) must be > 3F (0)".to_string())
+        );
     }
 }
