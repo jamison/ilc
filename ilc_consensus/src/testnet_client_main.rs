@@ -512,7 +512,17 @@ async fn run_full_transfer(args: Args, my_cert_der: Vec<u8>, my_key_der: Vec<u8>
     }
 
     // 6. Assemble TransferCertificate
-    let cert = TransferCertificate { transfer, sigs: acks };
+    // Phase 768 / Audit Finding D (M-015): stamp the certificate from the
+    // client's known epoch context instead of hardcoding epoch 1. For
+    // full_transfer, the existing --epoch CLI input carries that context; if
+    // the caller omits it, floor to epoch 1 to preserve the pre-existing
+    // genesis-era testnet behavior.
+    let cert_epoch = EpochSeq(args.start_epoch.max(1));
+    let cert = TransferCertificate {
+        transfer,
+        sigs: acks,
+        epoch: cert_epoch,
+    };
     eprintln!("[m012_client] certificate assembled — broadcasting to all validators");
 
     // 7. Broadcast Certificate
