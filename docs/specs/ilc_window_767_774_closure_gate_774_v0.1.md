@@ -52,10 +52,10 @@ The closure gate confirms all required pass conditions:
 6. The Phase `772` integration gate still passes all three checks:
    Rust regression, Python subset regression, and decision-log cleanliness.
 7. Capsule `v5.6` exists and contains `capsule_v5_6_supersedes_v5_5`.
-8. No decision-log mutation occurred in the window commit range
-   `25e21b5c^..HEAD`; this was verified by window-local commit-range inspection,
-   which is more precise than a rolling `HEAD~20` diff once pre-window
-   ratification history enters the horizon.
+8. No decision-log mutation occurred in the exact closed-window commit range
+   `25e21b5c^..7143a1ae`; this was verified by fixed window-local commit-range
+   inspection, which remains stable after future legitimate decision-log
+   mutations land outside the window.
 9. The handoff note below names the human gate for first non-Genesis validator
    deployment explicitly.
 
