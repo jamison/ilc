@@ -132,6 +132,7 @@ impl<'de> serde::Deserialize<'de> for ValidatorSig {
 pub struct TransferCertificate {
     pub transfer: ECUTransfer,
     pub sigs: Vec<(ValidatorID, ValidatorSig)>, // Pair Validator routing to signature for discrete threshold checking
+    pub epoch: EpochSeq,
 }
 
 /// CIDv1Root encapsulates the strictly defined Phase 14 Canonical Commitment format.
@@ -395,6 +396,21 @@ impl ValidatorSet {
         let n = validators.len();
         if n <= 3 * f {
             return Err(ILCConsensusError::Other(format!("Invalid ValidatorSet: N ({}) must be > 3F ({})", n, 3 * f)));
+        }
+        for i in 0..validators.len() {
+            for j in (i + 1)..validators.len() {
+                if validators[i].0 == validators[j].0 {
+                    return Err(ILCConsensusError::Other(format!(
+                        "Duplicate ValidatorID in ValidatorSet: {}",
+                        validators[i].0 .0
+                    )));
+                }
+                if validators[i].1 == validators[j].1 {
+                    return Err(ILCConsensusError::Other(
+                        "Duplicate ValidatorKey in ValidatorSet".to_string(),
+                    ));
+                }
+            }
         }
         Ok(ValidatorSet { validators, f })
     }

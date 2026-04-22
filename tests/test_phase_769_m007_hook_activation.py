@@ -34,16 +34,20 @@ class TestPhase769M007HookActivation(unittest.TestCase):
     def test_hooks_cover_duplicate_and_missing_validator_errors(self) -> None:
         text = _read(VALIDATOR_RS)
         self.assertIn('\"validator {} already present\"', text)
+        self.assertIn('\"validator key already present\"', text)
         self.assertIn('\"validator {} not present\"', text)
+        self.assertIn('\"Duplicate ValidatorKey in ValidatorSet\"', text)
 
     def test_validator_unit_tests_cover_edge_cases(self) -> None:
         text = _read(VALIDATOR_RS)
         required_tests = (
             "fn test_admit_validator_adds_validator_and_recomputes_f()",
             "fn test_admit_validator_rejects_duplicate_id()",
+            "fn test_admit_validator_rejects_duplicate_key()",
             "fn test_eject_validator_removes_validator_and_recomputes_f()",
             "fn test_eject_validator_rejects_missing_id()",
             "fn test_eject_validator_rejects_invalid_collapse()",
+            "fn test_validator_set_new_rejects_duplicate_keys()",
         )
         for marker in required_tests:
             self.assertIn(marker, text)
