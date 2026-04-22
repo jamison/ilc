@@ -34,12 +34,16 @@ class TestPhase768Sec004Acceptance(unittest.TestCase):
     def test_full_transfer_client_no_longer_hardcodes_cert_epoch(self) -> None:
         text = _read(CLIENT)
         self.assertNotIn("epoch: EpochSeq(1)", text)
-        self.assertIn("let cert_epoch = EpochSeq(args.start_epoch.max(1));", text)
+        self.assertIn('ok_or("--epoch is required for full_transfer")?', text)
         self.assertIn("epoch: cert_epoch", text)
+        self.assertNotIn(".max(1)", text)
 
     def test_client_fix_is_anchored_to_phase_768_audit_finding(self) -> None:
         text = _read(CLIENT)
         self.assertIn("Phase 768 / Audit Finding D (M-015)", text)
+        self.assertIn("--epoch is required for full_transfer", text)
+        self.assertIn("--msg full_transfer", text)
+        self.assertIn("--epoch <N>", text)
 
 
 if __name__ == "__main__":

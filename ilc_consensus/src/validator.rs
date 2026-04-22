@@ -36,6 +36,11 @@ impl ValidatorSet {
                 id.0
             )));
         }
+        if self.validators.iter().any(|(_, existing_key)| *existing_key == key) {
+            return Err(ILCConsensusError::Other(
+                "validator key already present".to_string(),
+            ));
+        }
 
         let mut validators = self.validators.clone();
         validators.push((id, key));
@@ -185,6 +190,20 @@ mod tests {
     }
 
     #[test]
+    fn test_admit_validator_rejects_duplicate_key() {
+        let mut set = make_validator_set(3);
+        let duplicate_key = set.validators[0].1.clone();
+
+        let err = set
+            .admit_validator(ValidatorID(4), duplicate_key)
+            .unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::Other("validator key already present".to_string())
+        );
+    }
+
+    #[test]
     fn test_eject_validator_removes_validator_and_recomputes_f() {
         let mut set = make_validator_set(4);
 
@@ -214,6 +233,25 @@ mod tests {
         assert_eq!(
             err,
             ILCConsensusError::Other("Invalid ValidatorSet: N (0) must be > 3F (0)".to_string())
+        );
+    }
+
+    #[test]
+    fn test_validator_set_new_rejects_duplicate_keys() {
+        let (_, key) = generate_validator_key().unwrap();
+        let err = ValidatorSet::new(
+            vec![
+                (ValidatorID(1), key.clone()),
+                (ValidatorID(2), key),
+                (ValidatorID(3), generate_validator_key().unwrap().1),
+                (ValidatorID(4), generate_validator_key().unwrap().1),
+            ],
+            1,
+        )
+        .unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::Other("Duplicate ValidatorKey in ValidatorSet".to_string())
         );
     }
 }

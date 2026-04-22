@@ -66,7 +66,7 @@ struct Args {
     amount_micro_ecu: u64,
     version: u64,
     // epoch_settlement params
-    start_epoch: u64,
+    start_epoch: Option<u64>,
     count: u64,
     // full_transfer params
     listen_addr: Option<SocketAddr>,
@@ -88,7 +88,7 @@ fn parse_args() -> Result<Args, String> {
     let mut to_hex: Option<String> = None;
     let mut amount_micro_ecu: u64 = 1000;
     let mut version: u64 = 0;
-    let mut start_epoch: u64 = 0;
+    let mut start_epoch: Option<u64> = None;
     let mut count: u64 = 1;
     let mut listen_addr: Option<SocketAddr> = None;
     let mut validators: Vec<(u32, SocketAddr)> = Vec::new();
@@ -151,8 +151,12 @@ fn parse_args() -> Result<Args, String> {
             }
             "--epoch" => {
                 i += 1;
-                start_epoch = raw.get(i).ok_or("--epoch requires a number")?
-                    .parse().map_err(|e| format!("--epoch: {}", e))?;
+                start_epoch = Some(
+                    raw.get(i)
+                        .ok_or("--epoch requires a number")?
+                        .parse()
+                        .map_err(|e| format!("--epoch: {}", e))?,
+                );
             }
             "--count" => {
                 i += 1;
@@ -195,7 +199,7 @@ fn parse_args() -> Result<Args, String> {
             "--help" | "-h" => {
                 eprintln!("Usage:");
                 eprintln!("  testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement>");
-                eprintln!("  testnet_client --msg full_transfer --listen-addr <addr> --f <N> --validators <addr,addr..> --validator-certs <der,der..> --sender-key <file> --to <hex> --amount <u64> --version <u64> --cert <pem> --key <pem>");
+                eprintln!("  testnet_client --msg full_transfer --listen-addr <addr> --f <N> --validators <addr,addr..> --validator-certs <der,der..> --sender-key <file> --to <hex> --amount <u64> --version <u64> --epoch <N> --cert <pem> --key <pem>");
                 std::process::exit(0);
             }
             other => return Err(format!("Unknown argument: {}", other)),
@@ -290,8 +294,11 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     // -----------------------------------------------------------------------
     match args.msg_type {
         MsgType::EpochSettlement => {
+            let start_epoch = args
+                .start_epoch
+                .ok_or("--epoch is required for --msg epoch_settlement")?;
             for i in 0..args.count {
-                let epoch = args.start_epoch + i;
+                let epoch = start_epoch + i;
                 let tx = EpochSettlementTx {
                     epoch: EpochSeq(epoch),
                     state_root: CIDv1Root::new([0u8; 36]), // testnet placeholder
@@ -309,6 +316,9 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         MsgType::EpochCheckpoint => {
+            let start_epoch = args
+                .start_epoch
+                .ok_or("--epoch is required for --msg epoch_checkpoint")?;
             let mut bls_keys = Vec::new();
             if args.quorum_keys.is_empty() {
                 return Err("--quorum-keys is required for epoch_checkpoint".into());
@@ -326,7 +336,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
             };
 
             for i in 0..args.count {
-                let epoch = args.start_epoch + i;
+                let epoch = start_epoch + i;
                 let record = EpochSettlementRecord {
                     epoch: EpochSeq(epoch),
                     state_root: CIDv1Root::new([0u8; 36]),
@@ -513,11 +523,13 @@ async fn run_full_transfer(args: Args, my_cert_der: Vec<u8>, my_key_der: Vec<u8>
 
     // 6. Assemble TransferCertificate
     // Phase 768 / Audit Finding D (M-015): stamp the certificate from the
-    // client's known epoch context instead of hardcoding epoch 1. For
-    // full_transfer, the existing --epoch CLI input carries that context; if
-    // the caller omits it, floor to epoch 1 to preserve the pre-existing
-    // genesis-era testnet behavior.
-    let cert_epoch = EpochSeq(args.start_epoch.max(1));
+    // client's explicit epoch context instead of silently falling back to epoch
+    // 1. full_transfer therefore requires --epoch so later-epoch testnets do
+    // not mis-stamp certificates under a hidden default.
+    let cert_epoch = EpochSeq(
+        args.start_epoch
+            .ok_or("--epoch is required for full_transfer")?,
+    );
     let cert = TransferCertificate {
         transfer,
         sigs: acks,

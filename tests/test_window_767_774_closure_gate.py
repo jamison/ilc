@@ -18,6 +18,7 @@ INTEGRATION_GATE_TEST = REPO_ROOT / "tests" / "test_window_767_774_integration_g
 DECISION_LOG = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 VENV_PYTHON = REPO_ROOT / ".venv" / "bin" / "python"
 WINDOW_START_COMMIT = "25e21b5c"
+WINDOW_END_COMMIT = "7143a1ae"
 
 
 def _read(path: Path) -> str:
@@ -40,7 +41,7 @@ def _run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
 
 def _window_commits() -> list[tuple[str, str]]:
     result = _run(
-        ["git", "log", "--format=%H%x09%s", f"{WINDOW_START_COMMIT}^..HEAD"],
+        ["git", "log", "--format=%H%x09%s", f"{WINDOW_START_COMMIT}^..{WINDOW_END_COMMIT}"],
         REPO_ROOT,
     )
     if result.returncode != 0:
@@ -106,6 +107,7 @@ class TestWindow767774ClosureGate(unittest.TestCase):
         self.assertIn("that gate was not crossed in Window `767-774`", text)
         self.assertIn("row `5`, row `8`, and Option B are unaffected by this window", text)
         self.assertIn("live settlement wiring explicitly deferred", text)
+        self.assertIn("`25e21b5c^..7143a1ae`", text)
 
     def test_integration_gate_file_passes(self) -> None:
         result = _run(
@@ -128,6 +130,7 @@ class TestWindow767774ClosureGate(unittest.TestCase):
         self.assertIn("phase 771", subjects)
         self.assertIn("phase 772", subjects)
         self.assertIn("phase 773", subjects)
+        self.assertIn("phase 774", subjects)
         for commit_hash, _subject in commits:
             self.assertNotIn(DECISION_LOG, _changed_paths(commit_hash))
 
