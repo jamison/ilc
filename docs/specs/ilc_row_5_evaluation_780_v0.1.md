@@ -28,6 +28,11 @@ Run 2 also recorded a delivery shortfall at both calibration points:
 - client-side submission successes: `20 / 20`
 - validator-1 final-destination ack lines: `18 / 20`
 
+Run 2 also records `variant_a_scoring_posture=conservative_upper_bound_from_order_and_version_alignment`.
+Because the post-redaction validator log no longer carries ground-truth sender
+identity, the Variant A value is conservative for closure: even the upper-bound
+order/version score fails the commissioned band.
+
 ## 2. Band assessment (pass / fail per variant)
 
 | Variant | Evaluated value | Threshold | Pass / Fail |
@@ -66,8 +71,10 @@ Residual mechanism gaps by variant:
 - **Variant A**: the current Layer-2 transport is fixed-path relay forwarding
   plus a per-submission delay. It is not a true mixing or shared-batch
   mechanism, so deterministic order correlation survives at validator-1. The
-  same run also showed `18 / 20` final-destination acknowledgements, so the
-  measured transport point is not clean enough to recommend as a default.
+  measured Variant A value is a conservative upper bound after redaction, and
+  that upper bound still fails. The same run also showed `18 / 20`
+  final-destination acknowledgements, so the measured transport point is not
+  clean enough to recommend as a default.
 - **Variant B**: the gRPC balance surface still exposes structural recall `1.0`.
   Row 5 cannot close while hosted balance polling remains directly linking.
 - **Variant C**: public epoch-lineage remains structurally linking at `1.0`.

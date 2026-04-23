@@ -35,6 +35,9 @@ class TestPhase780Row5Evaluation(unittest.TestCase):
         self.assertIn("Variant B residual structural recall: `1.0`", text)
         self.assertIn("Variant C residual structural recall: `1.0`", text)
         self.assertIn("`0 / 3` bands met", text)
+        self.assertIn("variant_a_scoring_posture=conservative_upper_bound_from_order_and_version_alignment", text)
+        self.assertIn("even the upper-bound", text)
+        self.assertIn("order/version score fails the commissioned band", text)
 
     def test_row5_remains_pending_and_zk_path_is_named(self) -> None:
         text = _read(ARTIFACT)

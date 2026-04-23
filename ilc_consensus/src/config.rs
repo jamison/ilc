@@ -22,6 +22,7 @@ struct RawGenesisValidator {
     validator_id: u32,
     agent_id: String,      // 96-char hex = 48 bytes
     validator_key: String, // 96-char hex = 48 bytes (BLS12-381 G1 compressed pubkey, blst::min_pk)
+    #[allow(dead_code)]
     stake_micro_ecu: u64,
     #[allow(dead_code)]
     tailscale_ip: String,

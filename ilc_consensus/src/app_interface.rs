@@ -10,9 +10,8 @@ use crate::epoch_settlement::EpochStore;
 use crate::types::AgentID;
 use ilc_app::ilc_app_read_service_server::IlcAppReadService;
 use ilc_app::{
-    EdgeRecord, GetBalanceRequest, GetBalanceResponse, GetEpochChainRequest, GetEpochChainResponse,
+    GetBalanceRequest, GetBalanceResponse, GetEpochChainRequest, GetEpochChainResponse,
     GetEpochRecordRequest, GetEpochRecordResponse, GetEpochRequest, GetEpochResponse,
-    HyperEdgeRecord,
 };
 
 /// The singular external interface allowed for the Python Epistemic layer.
