@@ -7,6 +7,8 @@ license = "MIT"
 
 [features]
 testnet_fault_sim = []
+# CAUTION: enables plaintext agent ID logging. Never enable in production or CI
+# release builds. src/lib.rs rejects release builds with this feature enabled.
 debug_agent_ids = []
 
 [dependencies]

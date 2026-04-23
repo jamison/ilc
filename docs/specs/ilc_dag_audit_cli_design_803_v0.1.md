@@ -69,8 +69,13 @@ verification steps to be emitted to stderr (mirroring state_extractor's
 
 Same format as `state_extractor`. The `epoch_records` named database must
 exist and be readable. The tool opens in read-only mode with `NO_LOCK`
-(same flags as state_extractor) so it is safe to run against a live
-validator's LMDB if the OS permits.
+(same flags as state_extractor).
+
+Safety boundary: this mode is safe for offline use against an exported LMDB.
+Against a live validator, it is safe for LMDB MVCC snapshot reads on Linux with
+a sufficiently large map size; do not rely on live-validator reads in scripts
+without first confirming the validator's map utilization is below its
+configured ceiling.
 
 ### 3.2 genesis.json
 
@@ -161,14 +166,15 @@ from genesis (HIGH-002: all-N, not 2F+1 subset).
 
 If `agg_sig_bytes` is empty, record `bls_verified: false` with
 `bls_error: "empty_sig_testnet_fault_sim_path"` (this is the testnet
-fault-sim path noted in epoch_settlement.rs:40-41; not a cryptographic
-failure for testnet runs, but must be explicitly reported).
+fault-sim path noted in epoch_settlement.rs:40-41 and must be explicitly
+reported). Empty aggregate signatures are never accepted by `ilc_dag_audit`;
+operators who need structural-only testbed inspection should use
+`state_extractor`, not this verifier.
 
 ### Step 5: Emit JSON and exit
 
-If chain complete AND sentinel consistent AND all sigs verified (or the
-only failed sigs are testnet fault-sim empty-sig records AND `--testnet`
-flag is set): exit 0 with `verdict: dag_audit_tier1_pass`.
+If chain complete AND sentinel consistent AND all sigs verified: exit 0 with
+`verdict: dag_audit_tier1_pass`.
 
 Otherwise: exit 1 with the appropriate failure verdict.
 
@@ -220,7 +226,7 @@ The implementation window must deliver the following tests in
    to garbage → assert exit 1, `dag_audit_fail_bls_invalid`.
 4. **test_dag_audit_empty_sig_reports_honestly**: Run against a testnet-fault-sim
    LMDB where some sigs are empty → assert the `bls_error` field is populated
-   per affected epoch (not a silent pass).
+   per affected epoch and exit code is 1 (not a silent pass).
 5. **test_dag_audit_output_schema**: Assert `schema_version`,
    `genesis_anchor`, `epoch_results`, `verdict`, and `high_002_note` are
    all present in the JSON output.

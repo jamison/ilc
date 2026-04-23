@@ -295,7 +295,7 @@ impl NodeRunner {
                     tokio::time::sleep(tokio::time::Duration::from_secs(TTL_SECS)).await;
                     let mut table = node.in_flight.lock().await;
                     let before = table.len();
-                    table.retain(|_, entry| entry.certified || entry.inserted_at.elapsed() < ttl);
+                    table.retain(|_, entry| !entry.certified && entry.inserted_at.elapsed() < ttl);
                     let evicted = before.saturating_sub(table.len());
                     if evicted > 0 {
                         eprintln!(
@@ -977,7 +977,7 @@ fn apply_missing_epoch_record(
     let parsed_sig = blst::min_pk::Signature::from_bytes(&stored.agg_sig_bytes)
         .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
     parsed_sig
-        .validate(false)
+        .validate(true)
         .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
     let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig);
 
@@ -1197,7 +1197,9 @@ mod tests {
             },
         );
 
-        // Certified entry: even if old, must NOT be evicted by TTL sweep.
+        // Certified entry: even if fresh, must be evicted by TTL sweep.  Certified
+        // entries are only an early-rejection cache and must not survive a failed
+        // broadcast path indefinitely.
         let certified_ref = ObjectRef {
             agent: AgentID([12; 48]),
             version: 0,
@@ -1208,14 +1210,14 @@ mod tests {
                 transfer: dummy_transfer(),
                 sigs: Vec::new(),
                 certified: true,
-                inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
+                inserted_at: tokio::time::Instant::now(),
             },
         );
 
         let ttl = tokio::time::Duration::from_secs(60);
-        table.retain(|_, entry| entry.certified || entry.inserted_at.elapsed() < ttl);
+        table.retain(|_, entry| !entry.certified && entry.inserted_at.elapsed() < ttl);
 
-        // stale zombie must be gone; fresh and certified must remain.
+        // stale zombie and certified entries must be gone; fresh non-certified remains.
         assert!(
             !table.contains_key(&stale_ref),
             "stale zombie must be evicted"
@@ -1225,10 +1227,10 @@ mod tests {
             "fresh entry must be retained"
         );
         assert!(
-            table.contains_key(&certified_ref),
-            "certified entry must be retained regardless of age"
+            !table.contains_key(&certified_ref),
+            "certified entry must be evicted to avoid post-certification leaks"
         );
-        assert_eq!(table.len(), 2);
+        assert_eq!(table.len(), 1);
     }
 
     #[test]

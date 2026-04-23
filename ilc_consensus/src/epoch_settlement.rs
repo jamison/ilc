@@ -302,25 +302,15 @@ impl EpochSettlementProtocol {
         )
         .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
 
-        // Update sentinel atomically in the same transaction
-        let mut update_sentinel = true;
-        if let Ok(bytes) = txn.get(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL) {
-            let mut buf = [0u8; 8];
-            buf.copy_from_slice(bytes);
-            let current = u64::from_be_bytes(buf);
-            if checkpoint.record.epoch.0 <= current {
-                update_sentinel = false;
-            }
-        }
-        if update_sentinel {
-            txn.put(
-                self.epoch_store.db,
-                &CURRENT_EPOCH_SENTINEL,
-                &current_key_bytes,
-                WriteFlags::empty(),
-            )
-            .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
-        }
+        // Sentinel always updated: monotonicity guard above guarantees
+        // checkpoint.record.epoch == current_epoch + 1.
+        txn.put(
+            self.epoch_store.db,
+            &CURRENT_EPOCH_SENTINEL,
+            &current_key_bytes,
+            WriteFlags::empty(),
+        )
+        .map_err(|e| ILCConsensusError::Other(format!("LMDB sentinel Put error: {}", e)))?;
 
         txn.commit()
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
@@ -332,8 +322,8 @@ impl EpochSettlementProtocol {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::EpochSeq;
     use crate::types::AggSig;
+    use crate::types::EpochSeq;
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
     use std::mem::size_of;
