@@ -16,12 +16,22 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Iterable
 
 import numpy as np
 
 
 CLUSTER_CENTERS = np.array([0.123813, 0.153647, 0.163024, 0.172453], dtype=float)
+
+# Per-regime local-cluster jitter (std-dev of samples around each center).
+# These are engineering estimates grounded in H-006b multiscale results:
+#   - cluster centers span a total range of ~0.049 across 4 clusters
+#   - average inter-cluster spacing is ~0.016
+#   - N=500 testnet: validator neighborhoods are less stable; jitter ~0.0025
+#     (≈15% of average inter-cluster spacing)
+#   - N=10000 production floor: larger networks produce tighter spectral profiles;
+#     jitter ~0.0015 (≈9% of average inter-cluster spacing)
+# These values are not derived from a fresh graph generator (see module docstring).
+# If H-006b or H-005 produce revised per-regime variance estimates, update here.
 SCALES = {
     "N500": 0.0025,
     "N10000": 0.0015,
@@ -131,6 +141,14 @@ def main() -> None:
         if chosen is None and record["passes"]:
             chosen = record
 
+    # frequency_epochs is a design judgment, NOT derived from the simulation above.
+    # The simulation calibrates sigma and theta only.  The cadence of 4 epochs is
+    # grounded in H-006b local-lambda2 drift observations: per-epoch delta values
+    # fall in the 0.0005–0.0051 band, which is the same order of magnitude as the
+    # selected sigma=0.005.  Emitting every epoch would therefore add noise-dominated,
+    # easily-correlatable structure; a 4-epoch cadence lets real signal accumulate
+    # while reducing tracking surface.  This is a routing/privacy engineering trade-off,
+    # not a constitutional constant; it can be revisited by a future SIM-ROUTING-01 pass.
     output["recommended"] = {
         "sigma": chosen["sigma"],
         "theta": chosen["theta"],
