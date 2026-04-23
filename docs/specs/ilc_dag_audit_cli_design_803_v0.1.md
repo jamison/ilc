@@ -79,9 +79,11 @@ configured ceiling.
 
 ### 3.2 genesis.json
 
-The genesis file must contain a `validators` array. Each entry must have
+The genesis file must contain a `validators` array. Each entry should have
 a `consensus_key_hex` field carrying the hex-encoded BLS12-381 G1
-(min_pk) public key for that validator.
+(min_pk) public key for that validator. The implementation must also accept
+the existing live testnet field name `validator_key` as a compatibility alias,
+because the M009 and Phase779 genesis files use that name today.
 
 The number of validators declared in genesis determines the expected
 aggregate verification set (all-N, per HIGH-002 known limitation —
@@ -136,8 +138,9 @@ with `schema_version` for forward compatibility.
 
 ### Step 1: Parse genesis
 
-Load `consensus_key_hex` for each validator → deserialize as `blst::min_pk::PublicKey`.
-Reject genesis if any key fails to parse.
+Load `consensus_key_hex` for each validator, falling back to `validator_key`
+when needed for current testnet genesis compatibility → deserialize as
+`blst::min_pk::PublicKey`. Reject genesis if any key fails to parse.
 
 ### Step 2: Open LMDB
 
@@ -157,7 +160,8 @@ For each `StoredCheckpoint` in epoch order:
 msg    = bincode::serialize(&checkpoint.record)
            where record = EpochSettlementRecord { epoch: EpochSeq(n), state_root: CIDv1Root }
 DST    = b"ILC_EPOCH_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_"
-sig    = blst::min_pk::Signature::uncompress(&agg_sig_bytes[..96])
+sig    = blst::min_pk::Signature::from_bytes(&agg_sig_bytes)
+sig.validate(true)
 result = sig.fast_aggregate_verify(true, &msg, DST, &pk_refs)
 ```
 
@@ -186,7 +190,7 @@ All required crates are already present in `ilc_consensus/Cargo.toml`:
 
 | Crate | Use |
 |---|---|
-| `blst` | `min_pk::PublicKey::deserialize`, `Signature::uncompress`, `fast_aggregate_verify` |
+| `blst` | `min_pk::PublicKey::from_bytes`, `Signature::from_bytes`, `Signature::validate(true)`, `fast_aggregate_verify` |
 | `bincode` | `serialize(&EpochSettlementRecord)` for signed message reconstruction |
 | `lmdb-rkv` | LMDB read-only access (same as state_extractor) |
 | `serde_json` | Genesis parsing and JSON output |
