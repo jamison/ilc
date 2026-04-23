@@ -48,4 +48,8 @@ path = "src/testnet_client_main.rs"
 name = "state_extractor"
 path = "src/state_extractor_main.rs"
 
+[[bin]]
+name = "ilc_dag_audit"
+path = "src/dag_audit_main.rs"
+
 # mysticeti-core will be added via path once extraction payload is prepared
