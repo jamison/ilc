@@ -8,6 +8,7 @@ an injected fake encoder so that no ML dependencies are required.
 
 from __future__ import annotations
 
+import asyncio
 import json
 
 import numpy as np
@@ -15,6 +16,7 @@ import pytest
 
 from ilc_core.analysis.embedding_pipeline import (
     EMBEDDING_PIPELINE_VERSION,
+    EmbeddingSidecarStore,
     FAMILY_APPLICATION_JSON,
     FAMILY_IMAGE,
     FAMILY_TEXT_MARKDOWN,
@@ -23,7 +25,10 @@ from ilc_core.analysis.embedding_pipeline import (
     MODEL_MINILM,
     STALENESS_EPOCHS,
     EmbeddingPipelineError,
+    embed_and_store_node,
+    embed_and_store_node_async,
     embed_node,
+    embed_node_async,
     is_embedding_stale,
     prepare_text_payload,
     select_model,
@@ -110,6 +115,11 @@ def test_select_payload_family_mime_passthrough() -> None:
     assert select_payload_family("text/markdown") == FAMILY_TEXT_MARKDOWN
     assert select_payload_family("application/json") == FAMILY_APPLICATION_JSON
     assert select_payload_family("image/*") == FAMILY_IMAGE
+
+
+def test_select_payload_family_specific_image_mime_maps_to_image_family() -> None:
+    assert select_payload_family("image/png") == FAMILY_IMAGE
+    assert select_payload_family("image/jpeg") == FAMILY_IMAGE
 
 
 def test_select_payload_family_unknown_falls_back_to_text_plain() -> None:
@@ -304,10 +314,18 @@ def test_embed_node_re_embeds_when_model_would_change() -> None:
     assert result.embedding_model == MODEL_MINILM
 
 
-def test_embed_node_image_raises_not_implemented() -> None:
+def test_embed_node_image_uses_clip_when_encoder_is_injected() -> None:
     node = _make_node(content_type="image/*", content="dummy image bytes")
-    with pytest.raises(EmbeddingPipelineError, match="image"):
-        embed_node(node, epoch=1, encoder=_fake_encoder)
+    result = embed_node(node, epoch=1, encoder=_fake_encoder)
+    assert result.embedding_model == MODEL_CLIP
+    assert result.embedding_epoch == 1
+    assert result.embedding is not None
+
+
+def test_embed_node_image_without_encoder_has_explicit_gate() -> None:
+    node = _make_node(content_type="image/*", content="dummy image bytes")
+    with pytest.raises(EmbeddingPipelineError, match="image_encoder_requires_explicit_encoder"):
+        embed_node(node, epoch=1)
 
 
 def test_embed_node_result_is_unit_vector() -> None:
@@ -385,3 +403,50 @@ def test_embed_node_content_type_none_uses_minilm() -> None:
     assert result.embedding_model == MODEL_MINILM
     assert result.embedding_epoch == 3
     assert result.embedding is not None and len(result.embedding) > 0
+
+
+def test_embed_node_unknown_content_type_falls_back_without_crash() -> None:
+    node = _make_node(content_type="unknown/custom")
+    result = embed_node(node, epoch=4, encoder=_fake_encoder)
+    assert result.embedding_model == MODEL_MINILM
+    assert result.embedding_epoch == 4
+    assert result.embedding is not None
+
+
+def test_embed_node_async_stamps_epoch_off_hot_path() -> None:
+    node = _make_node(content_type="claim")
+    result = asyncio.run(embed_node_async(node, epoch=12, encoder=_fake_encoder))
+    assert result.embedding_epoch == 12
+    assert result.embedding_model == MODEL_MINILM
+    assert result.embedding is not None
+
+
+def test_embedding_sidecar_store_round_trip(tmp_path) -> None:
+    node = _make_node(content_type="claim")
+    with EmbeddingSidecarStore(tmp_path / "embeddings") as store:
+        embedded = embed_and_store_node(node, epoch=7, store=store, encoder=_fake_encoder)
+        record = store.get_node_embedding(node.id)
+    assert record is not None
+    assert record["node_id"] == node.id
+    assert record["embedding_model"] == MODEL_MINILM
+    assert record["embedding_epoch"] == 7
+    assert record["embedding"] == embedded.embedding
+
+
+def test_embedding_sidecar_rejects_unembedded_node(tmp_path) -> None:
+    node = _make_node(content_type="claim")
+    with EmbeddingSidecarStore(tmp_path / "embeddings") as store:
+        with pytest.raises(EmbeddingPipelineError, match="node_embedding_missing"):
+            store.put_node_embedding(node)
+
+
+def test_embed_and_store_node_async_round_trip(tmp_path) -> None:
+    node = _make_node(content_type="claim")
+    with EmbeddingSidecarStore(tmp_path / "embeddings") as store:
+        embedded = asyncio.run(
+            embed_and_store_node_async(node, epoch=8, store=store, encoder=_fake_encoder)
+        )
+        record = store.get_node_embedding(node.id)
+    assert embedded.embedding_epoch == 8
+    assert record is not None
+    assert record["embedding_epoch"] == 8
