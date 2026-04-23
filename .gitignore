@@ -96,6 +96,26 @@ tools/testbed/temp_m019_db_*/
 tools/testbed/temp_m019_config_*.json
 tools/testbed/v*_m019_*.log
 tools/testbed/m019_run.log
+# M-022 ephemeral artifacts
+tools/testbed/temp_m022_db_*/
+tools/testbed/temp_m022_migrate_db/
+tools/testbed/m022_*.log
+# SIM-LEAKAGE-01 ephemeral artifacts
+tools/testbed/temp_sl01_config_*.json
+tools/testbed/runner_sl01_stderr.log
+tools/testbed/phase779_run2_*.json
+tools/testbed/phase779_run2_*.stderr
+tools/testbed/phase779_*.log
+tools/testbed/temp_phase779_db_*/
+# Phase779 multimachine bundle runtime state
+tools/testbed/phase779_assets/*.log
+tools/testbed/phase779_assets/*.pid
+# Rust patch and scratch artifacts
+ilc_consensus/*.patch
+ilc_consensus/err.json
+ilc_consensus/test_auth.rs
+# TLA+ / model checker state
+states/
 config/mysticeti_testnet_M009/certs/
 config/mysticeti_testnet_M009/validator_*_config.json.bak
 config/mysticeti_testnet_M009/validator_*_lmdb_path.txt
