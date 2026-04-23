@@ -101,9 +101,15 @@ fn main() {
         eprintln!("[m016] Invalid genesis JSON: {}", e);
         std::process::exit(1);
     });
-    let network_id = genesis["network_id"].as_str().unwrap_or("unknown").to_string();
+    let network_id = genesis["network_id"]
+        .as_str()
+        .unwrap_or("unknown")
+        .to_string();
     let genesis_epoch = genesis["epoch"].as_u64().unwrap_or(0);
-    let validator_count = genesis["validators"].as_array().map(|v| v.len()).unwrap_or(0);
+    let validator_count = genesis["validators"]
+        .as_array()
+        .map(|v| v.len())
+        .unwrap_or(0);
     let genesis_note = genesis["note"].as_str().unwrap_or("").to_string();
 
     let genesis_anchor = GenesisAnchor {
@@ -113,8 +119,10 @@ fn main() {
         genesis_network_note: genesis_note,
     };
 
-    eprintln!("[m016] Genesis anchor: network_id={} epoch={} validators={}",
-        network_id, genesis_epoch, validator_count);
+    eprintln!(
+        "[m016] Genesis anchor: network_id={} epoch={} validators={}",
+        network_id, genesis_epoch, validator_count
+    );
 
     // ── 2. Open LMDB read-only ─────────────────────────────────────────────
     let env = Environment::new()
@@ -127,12 +135,10 @@ fn main() {
         });
     let env = Arc::new(env);
 
-    let db = env
-        .open_db(Some("epoch_records"))
-        .unwrap_or_else(|e| {
-            eprintln!("[m016] Cannot open epoch_records DB: {}", e);
-            std::process::exit(1);
-        });
+    let db = env.open_db(Some("epoch_records")).unwrap_or_else(|e| {
+        eprintln!("[m016] Cannot open epoch_records DB: {}", e);
+        std::process::exit(1);
+    });
 
     let txn = env.begin_ro_txn().unwrap_or_else(|e| {
         eprintln!("[m016] Cannot begin read txn: {}", e);
@@ -187,8 +193,12 @@ fn main() {
             }
         };
 
-        eprintln!("[m016] epoch={} state_root={} agg_sig_len={}",
-            epoch_num, cid_hex(&stored.record.state_root), stored.agg_sig_bytes.len());
+        eprintln!(
+            "[m016] epoch={} state_root={} agg_sig_len={}",
+            epoch_num,
+            cid_hex(&stored.record.state_root),
+            stored.agg_sig_bytes.len()
+        );
         records.insert(epoch_num, stored);
     }
 
@@ -205,8 +215,15 @@ fn main() {
 
     // ── 5. Verify completeness ──────────────────────────────────────────────
     let max_committed = records.keys().copied().max().unwrap_or(0);
-    let bls_count = records.values().filter(|sc| !sc.agg_sig_bytes.is_empty()).count();
-    eprintln!("[m016] bls_verified_commits={}/{}", bls_count, records.len());
+    let bls_count = records
+        .values()
+        .filter(|sc| !sc.agg_sig_bytes.is_empty())
+        .count();
+    eprintln!(
+        "[m016] bls_verified_commits={}/{}",
+        bls_count,
+        records.len()
+    );
     let chain_complete = if records.is_empty() {
         false
     } else {
@@ -258,7 +275,5 @@ fn main() {
 // ---------------------------------------------------------------------------
 
 fn parse_arg(args: &[String], key: &str) -> Option<String> {
-    args.windows(2)
-        .find(|w| w[0] == key)
-        .map(|w| w[1].clone())
+    args.windows(2).find(|w| w[0] == key).map(|w| w[1].clone())
 }

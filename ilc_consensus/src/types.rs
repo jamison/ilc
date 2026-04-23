@@ -1,7 +1,7 @@
-use blst::min_pk::{PublicKey, Signature, AggregateSignature};
+use blst::min_pk::{AggregateSignature, PublicKey, Signature};
 use serde::{Deserialize, Serialize};
 
-/// AgentID represents a unique ILC Agent inside the system. 
+/// AgentID represents a unique ILC Agent inside the system.
 /// Derived securely via CDL-042 key mechanics.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AgentID(pub [u8; 48]);
@@ -53,8 +53,9 @@ impl<'de> serde::Deserialize<'de> for AgentSig {
         D: serde::Deserializer<'de>,
     {
         let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
-        let sig = Signature::from_bytes(&bytes)
-            .map_err(|e| serde::de::Error::custom(format!("blst agent signature parse fail: {:?}", e)))?;
+        let sig = Signature::from_bytes(&bytes).map_err(|e| {
+            serde::de::Error::custom(format!("blst agent signature parse fail: {:?}", e))
+        })?;
         // SEC-FIX-01: G2 subgroup check — from_bytes decompresses but does not enforce
         // r-order subgroup membership. An off-subgroup point can forge verify() results.
         sig.validate(false)
@@ -77,7 +78,7 @@ pub struct ObjectRef {
 pub struct EpochSeq(pub u64);
 
 /// ECUBalance represents the total active owned-object value inside the LMDB store.
-/// 
+///
 /// Note: Enforces strict M-Series specification prohibiting floating-point arithmetic.
 /// Value is stored strictly as `u64` representing micro-ECU (µECU).
 /// 1 ECU = 1_000_000 µECU.
@@ -93,7 +94,7 @@ pub struct ECUBalance {
 /// Uniquely locks on `object_ref` to enforce SafetyNoDualCert property.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ECUTransfer {
-    pub object_ref: ObjectRef,   // owned object mapping directly to sender agent and monotonic version
+    pub object_ref: ObjectRef, // owned object mapping directly to sender agent and monotonic version
     pub to: AgentID,
     pub amount_micro_ecu: u64,
     pub sender_sig: AgentSig,
@@ -193,7 +194,9 @@ impl<'de> serde::Deserialize<'de> for AggSig {
         // SEC-FIX-01: G2 subgroup check — guards against forged EpochCheckpoint acceptance.
         sig.validate(false)
             .map_err(|_| serde::de::Error::custom("AggSig G2 subgroup check failed"))?;
-        Ok(AggSig(blst::min_pk::AggregateSignature::from_signature(&sig)))
+        Ok(AggSig(blst::min_pk::AggregateSignature::from_signature(
+            &sig,
+        )))
     }
 }
 
@@ -258,8 +261,8 @@ pub struct AttributionBatch {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use blst::min_pk::SecretKey;
     use bincode;
+    use blst::min_pk::SecretKey;
 
     // ---------------------------------------------------------------------------
     // Helpers
@@ -305,7 +308,10 @@ mod tests {
         let bytes = valid_agent_sig_bytes();
         let encoded = bincode::serialize(&bytes).unwrap();
         let result: Result<AgentSig, _> = bincode::deserialize(&encoded);
-        assert!(result.is_ok(), "valid AgentSig must deserialize successfully");
+        assert!(
+            result.is_ok(),
+            "valid AgentSig must deserialize successfully"
+        );
     }
 
     #[test]
@@ -315,7 +321,10 @@ mod tests {
         let bytes = g2_invalid_bytes();
         let encoded = bincode::serialize(&bytes).unwrap();
         let result: Result<AgentSig, _> = bincode::deserialize(&encoded);
-        assert!(result.is_err(), "malformed G2 bytes must be rejected by AgentSig deserialization");
+        assert!(
+            result.is_err(),
+            "malformed G2 bytes must be rejected by AgentSig deserialization"
+        );
     }
 
     #[test]
@@ -326,7 +335,10 @@ mod tests {
         // this regression confirming the valid path still works.
         let sk = SecretKey::key_gen(&[77u8; 32], &[]).unwrap();
         let sig = sk.sign(b"validate_test", AGENT_TRANSFER_DST, &[]);
-        assert!(sig.validate(false).is_ok(), "valid sig must pass validate()");
+        assert!(
+            sig.validate(false).is_ok(),
+            "valid sig must pass validate()"
+        );
     }
 
     // ---------------------------------------------------------------------------
@@ -338,7 +350,10 @@ mod tests {
         let bytes = valid_validator_sig_bytes();
         let encoded = bincode::serialize(&bytes).unwrap();
         let result: Result<ValidatorSig, _> = bincode::deserialize(&encoded);
-        assert!(result.is_ok(), "valid ValidatorSig must deserialize successfully");
+        assert!(
+            result.is_ok(),
+            "valid ValidatorSig must deserialize successfully"
+        );
     }
 
     #[test]
@@ -346,7 +361,10 @@ mod tests {
         let bytes = g2_invalid_bytes();
         let encoded = bincode::serialize(&bytes).unwrap();
         let result: Result<ValidatorSig, _> = bincode::deserialize(&encoded);
-        assert!(result.is_err(), "malformed G2 bytes must be rejected by ValidatorSig deserialization");
+        assert!(
+            result.is_err(),
+            "malformed G2 bytes must be rejected by ValidatorSig deserialization"
+        );
     }
 
     // ---------------------------------------------------------------------------
@@ -366,7 +384,10 @@ mod tests {
         let bytes = g2_invalid_bytes();
         let encoded = bincode::serialize(&bytes).unwrap();
         let result: Result<AggSig, _> = bincode::deserialize(&encoded);
-        assert!(result.is_err(), "malformed G2 bytes must be rejected by AggSig deserialization");
+        assert!(
+            result.is_err(),
+            "malformed G2 bytes must be rejected by AggSig deserialization"
+        );
     }
 
     // ---------------------------------------------------------------------------
@@ -387,15 +408,25 @@ mod tests {
     fn test_valid_g1_pubkey_passes_validate() {
         let sk = SecretKey::key_gen(&[4u8; 32], &[]).unwrap();
         let pk = sk.sk_to_pk();
-        assert!(pk.validate().is_ok(), "valid G1 public key must pass validate()");
+        assert!(
+            pk.validate().is_ok(),
+            "valid G1 public key must pass validate()"
+        );
     }
 }
 
 impl ValidatorSet {
-    pub fn new(validators: Vec<(ValidatorID, ValidatorKey)>, f: usize) -> Result<Self, ILCConsensusError> {
+    pub fn new(
+        validators: Vec<(ValidatorID, ValidatorKey)>,
+        f: usize,
+    ) -> Result<Self, ILCConsensusError> {
         let n = validators.len();
         if n <= 3 * f {
-            return Err(ILCConsensusError::Other(format!("Invalid ValidatorSet: N ({}) must be > 3F ({})", n, 3 * f)));
+            return Err(ILCConsensusError::Other(format!(
+                "Invalid ValidatorSet: N ({}) must be > 3F ({})",
+                n,
+                3 * f
+            )));
         }
         for i in 0..validators.len() {
             for j in (i + 1)..validators.len() {
