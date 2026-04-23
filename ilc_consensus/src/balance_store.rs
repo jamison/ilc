@@ -1,9 +1,11 @@
-use lmdb_rkv::{Environment, Database, DatabaseFlags, Transaction, WriteFlags};
+use bincode;
+use lmdb_rkv::{Database, DatabaseFlags, Environment, Transaction, WriteFlags};
 use std::collections::HashSet;
 use std::sync::Arc;
-use bincode;
 
-use crate::types::{AgentID, ECUBalance, TransferCertificate, ILCConsensusError, AttributionBatch, EpochSeq};
+use crate::types::{
+    AgentID, AttributionBatch, ECUBalance, EpochSeq, ILCConsensusError, TransferCertificate,
+};
 
 pub struct BalanceStore {
     env: Arc<Environment>,
@@ -26,9 +28,11 @@ impl BalanceStore {
     }
 
     pub fn get_balance(&self, agent_id: &AgentID) -> Result<ECUBalance, ILCConsensusError> {
-        let txn = self.env.begin_ro_txn()
+        let txn = self
+            .env
+            .begin_ro_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
-        
+
         match txn.get(self.db, &agent_id.0) {
             Ok(bytes) => {
                 let balance: ECUBalance = bincode::deserialize(bytes)
@@ -52,7 +56,10 @@ impl BalanceStore {
     /// Locks on `cert.transfer.object_ref` to enforce SafetyNoDualCert.
     /// Note: Assumes `cert` signatures have already been aggregated and checked
     /// by the fast-path network logic (handled in M-004).
-    pub fn apply_transfer(&self, cert: TransferCertificate) -> Result<BalanceChange, ILCConsensusError> {
+    pub fn apply_transfer(
+        &self,
+        cert: TransferCertificate,
+    ) -> Result<BalanceChange, ILCConsensusError> {
         // Enforce anti-inflation logic preventing single-address overwrite bugs
         if cert.transfer.object_ref.agent == cert.transfer.to {
             return Err(ILCConsensusError::SelfTransfer);
@@ -61,10 +68,14 @@ impl BalanceStore {
         // Zero-amount transfers are prohibited: they burn a version slot without moving value,
         // enabling a targeted DoS that exhausts an agent's ObjectRef version space.
         if cert.transfer.amount_micro_ecu == 0 {
-            return Err(ILCConsensusError::Other("zero-amount transfer prohibited".to_string()));
+            return Err(ILCConsensusError::Other(
+                "zero-amount transfer prohibited".to_string(),
+            ));
         }
 
-        let mut txn = self.env.begin_rw_txn()
+        let mut txn = self
+            .env
+            .begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
         let sender_id = &cert.transfer.object_ref.agent;
@@ -98,21 +109,26 @@ impl BalanceStore {
             Err(lmdb_rkv::Error::NotFound) => ECUBalance {
                 agent: *recipient_id,
                 amount_micro_ecu: 0,
-                epoch: sender_bal.epoch, 
+                epoch: sender_bal.epoch,
                 version: 0,
             },
             Err(e) => return Err(ILCConsensusError::Other(format!("DB Error: {}", e))),
         };
 
         // 5. Apply transitions
-        sender_bal.amount_micro_ecu = sender_bal.amount_micro_ecu
+        sender_bal.amount_micro_ecu = sender_bal
+            .amount_micro_ecu
             .checked_sub(amount)
             .ok_or(ILCConsensusError::BalanceInsufficient)?;
-        sender_bal.version = sender_bal.version
+        sender_bal.version = sender_bal
+            .version
             .checked_add(1)
-            .ok_or(ILCConsensusError::Other("ObjectRef version overflow".to_string()))?;
+            .ok_or(ILCConsensusError::Other(
+                "ObjectRef version overflow".to_string(),
+            ))?;
 
-        recipient_bal.amount_micro_ecu = recipient_bal.amount_micro_ecu
+        recipient_bal.amount_micro_ecu = recipient_bal
+            .amount_micro_ecu
             .checked_add(amount)
             .ok_or(ILCConsensusError::Other("ECU amount overflow".to_string()))?;
         // Notice: Recipient version does not increment here because the transfer lock is purely on the sender's owned-object.
@@ -146,26 +162,35 @@ impl BalanceStore {
         let mut seen = HashSet::new();
         for (agent_id, _) in &batch.attributions {
             if !seen.insert(agent_id.0) {
-                return Err(ILCConsensusError::Other(
-                    format!("duplicate AgentID in AttributionBatch: {:?}", agent_id)
-                ));
+                return Err(ILCConsensusError::Other(format!(
+                    "duplicate AgentID in AttributionBatch: {:?}",
+                    agent_id
+                )));
             }
         }
 
-        let mut txn = self.env.begin_rw_txn()
+        let mut txn = self
+            .env
+            .begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
         for (agent_id, amount) in batch.attributions {
             let (mut agent_bal, is_new) = match txn.get(self.db, &agent_id.0) {
-                Ok(bytes) => (bincode::deserialize::<ECUBalance>(bytes)
-                    .map_err(|e| ILCConsensusError::Other(format!("Deserialize error: {}", e)))?,
-                    false),
-                Err(lmdb_rkv::Error::NotFound) => (ECUBalance {
-                    agent: agent_id,
-                    amount_micro_ecu: 0,
-                    epoch: batch.epoch,
-                    version: 0,
-                }, true),
+                Ok(bytes) => (
+                    bincode::deserialize::<ECUBalance>(bytes).map_err(|e| {
+                        ILCConsensusError::Other(format!("Deserialize error: {}", e))
+                    })?,
+                    false,
+                ),
+                Err(lmdb_rkv::Error::NotFound) => (
+                    ECUBalance {
+                        agent: agent_id,
+                        amount_micro_ecu: 0,
+                        epoch: batch.epoch,
+                        version: 0,
+                    },
+                    true,
+                ),
                 Err(e) => return Err(ILCConsensusError::Other(format!("DB Error: {}", e))),
             };
 
@@ -176,8 +201,9 @@ impl BalanceStore {
             if !is_new && batch.epoch.0 <= agent_bal.epoch.0 {
                 return Err(ILCConsensusError::InvalidEpoch);
             }
-            
-            agent_bal.amount_micro_ecu = agent_bal.amount_micro_ecu
+
+            agent_bal.amount_micro_ecu = agent_bal
+                .amount_micro_ecu
                 .checked_add(amount)
                 .ok_or(ILCConsensusError::Other("ECU amount overflow".to_string()))?;
             agent_bal.epoch = batch.epoch;
@@ -198,9 +224,9 @@ impl BalanceStore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;
-    use crate::types::{ECUTransfer, ObjectRef, AgentSig};
+    use crate::types::{AgentSig, ECUTransfer, ObjectRef};
     use blst::min_pk::SecretKey;
+    use tempfile::tempdir;
 
     fn dummy_agent_sig() -> AgentSig {
         let ikm = [42u8; 32];
@@ -210,10 +236,7 @@ mod tests {
 
     fn setup_env() -> (Arc<Environment>, tempfile::TempDir) {
         let dir = tempdir().unwrap();
-        let env = Environment::new()
-            .set_max_dbs(1)
-            .open(dir.path())
-            .unwrap();
+        let env = Environment::new().set_max_dbs(1).open(dir.path()).unwrap();
         (Arc::new(env), dir)
     }
 
@@ -235,12 +258,16 @@ mod tests {
         // Valid transfer
         let cert1 = TransferCertificate {
             transfer: ECUTransfer {
-                object_ref: ObjectRef { agent: agent1, version: 0 },
+                object_ref: ObjectRef {
+                    agent: agent1,
+                    version: 0,
+                },
                 to: agent2,
                 amount_micro_ecu: 400_000,
                 sender_sig: dummy_agent_sig(),
             },
             sigs: Vec::new(),
+            epoch: EpochSeq(1),
         };
 
         store.apply_transfer(cert1.clone()).unwrap();
@@ -256,12 +283,16 @@ mod tests {
         // Try conflicting transfer with identical valid struct but wrong nonce
         let cert2 = TransferCertificate {
             transfer: ECUTransfer {
-                object_ref: ObjectRef { agent: agent1, version: 0 }, // Using outdated version 0
+                object_ref: ObjectRef {
+                    agent: agent1,
+                    version: 0,
+                }, // Using outdated version 0
                 to: agent2,
                 amount_micro_ecu: 100_000,
                 sender_sig: dummy_agent_sig(),
             },
             sigs: Vec::new(),
+            epoch: EpochSeq(1),
         };
         let res2 = store.apply_transfer(cert2);
         assert_eq!(res2.unwrap_err(), ILCConsensusError::ConflictingTransfer);
@@ -285,12 +316,18 @@ mod tests {
 
         // Replay of same epoch: must be rejected (would double-mint without <=).
         let err = store.apply_attribution(batch).unwrap_err();
-        assert_eq!(err, ILCConsensusError::InvalidEpoch,
-            "same-epoch replay must return InvalidEpoch to prevent double-minting");
+        assert_eq!(
+            err,
+            ILCConsensusError::InvalidEpoch,
+            "same-epoch replay must return InvalidEpoch to prevent double-minting"
+        );
 
         // Balance unchanged after rejected replay.
         let bal_after = store.get_balance(&agent).unwrap();
-        assert_eq!(bal_after.amount_micro_ecu, 500_000, "balance must not change after replay");
+        assert_eq!(
+            bal_after.amount_micro_ecu, 500_000,
+            "balance must not change after replay"
+        );
     }
 
     // SEC-FIX-02: new agents in epoch 0 must be attributable on first call
@@ -317,16 +354,23 @@ mod tests {
         let store = BalanceStore::new(env).unwrap();
         let agent = AgentID([9; 48]);
 
-        store.apply_attribution(AttributionBatch {
-            epoch: EpochSeq(10),
-            attributions: vec![(agent, 200_000)],
-        }).unwrap();
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(10),
+                attributions: vec![(agent, 200_000)],
+            })
+            .unwrap();
 
-        let err = store.apply_attribution(AttributionBatch {
-            epoch: EpochSeq(9),
-            attributions: vec![(agent, 999_000)],
-        }).unwrap_err();
-        assert_eq!(err, ILCConsensusError::InvalidEpoch,
-            "older-epoch batch must be rejected");
+        let err = store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(9),
+                attributions: vec![(agent, 999_000)],
+            })
+            .unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::InvalidEpoch,
+            "older-epoch batch must be rejected"
+        );
     }
 }

@@ -1,4 +1,4 @@
-use crate::types::{ValidatorID, ValidatorKey, ValidatorSet, ValidatorSig, ILCConsensusError};
+use crate::types::{ILCConsensusError, ValidatorID, ValidatorKey, ValidatorSet, ValidatorSig};
 use blst::min_pk::SecretKey;
 use getrandom::getrandom;
 
@@ -7,36 +7,75 @@ pub fn validator_dst(network_id: &str) -> Vec<u8> {
 }
 
 impl ValidatorSet {
-    fn rebuild_with(validators: Vec<(ValidatorID, ValidatorKey)>) -> Result<Self, ILCConsensusError> {
+    fn rebuild_with(
+        validators: Vec<(ValidatorID, ValidatorKey)>,
+    ) -> Result<Self, ILCConsensusError> {
         let f = validators.len().saturating_sub(1) / 3;
+        // BUG-001: f=0 on N>1 means a single validator can commit transfers.
+        // This is mathematically valid under N>3F but operationally dangerous.
+        // Emit a visible warning so operators are not silently exposed to the cliff.
+        if f == 0 && validators.len() > 1 {
+            eprintln!(
+                "[sec_warn] rebuild_with: N={} produces f=0 — fault tolerance is zero; \
+                 a single validator can finalize transfers. \
+                 Token: sec_warn_bft_fault_tolerance_zero",
+                validators.len()
+            );
+        }
         ValidatorSet::new(validators, f)
     }
 
     /// Applies strict centralization BFT detection limiting boundaries to guarantees of Safety under byzantine assumptions.
     /// Rejects if any single node controls >= 1/3 of the total system stake exactly as required by the Phase 694 model.
-    pub fn check_concentration_limit(stakes: &[(ValidatorID, u64)]) -> Result<(), ILCConsensusError> {
-        let total_stake: u128 = stakes.iter()
+    pub fn check_concentration_limit(
+        stakes: &[(ValidatorID, u64)],
+    ) -> Result<(), ILCConsensusError> {
+        let total_stake: u128 = stakes
+            .iter()
             .map(|(_, s)| *s as u128)
             .fold(0u128, |acc, s| acc.saturating_add(s));
-        let ceiling = total_stake / 3;
 
+        // BUG-006: detect pathological saturation before division.
+        if total_stake == u128::MAX {
+            return Err(ILCConsensusError::Other(
+                "stake overflow: total_stake saturated at u128::MAX".to_string(),
+            ));
+        }
+
+        // BUG-002: use multiplication instead of floor division to avoid the
+        // off-by-one where stake == total_stake/3 (exactly 1/3) incorrectly passes.
+        // Reject if stake * 3 >= total_stake (i.e., stake >= 1/3 of total).
         for &(_, stake) in stakes {
-            if stake as u128 > ceiling {
-                return Err(ILCConsensusError::Other("concentration limit exceeded".to_string()));
+            if (stake as u128).saturating_mul(3) >= total_stake {
+                return Err(ILCConsensusError::Other(
+                    "concentration limit exceeded".to_string(),
+                ));
             }
         }
         Ok(())
     }
 
     /// CDL-017 hook: validator admission
-    pub fn admit_validator(&mut self, id: ValidatorID, key: ValidatorKey) -> Result<(), ILCConsensusError> {
-        if self.validators.iter().any(|(existing_id, _)| *existing_id == id) {
+    pub fn admit_validator(
+        &mut self,
+        id: ValidatorID,
+        key: ValidatorKey,
+    ) -> Result<(), ILCConsensusError> {
+        if self
+            .validators
+            .iter()
+            .any(|(existing_id, _)| *existing_id == id)
+        {
             return Err(ILCConsensusError::Other(format!(
                 "validator {} already present",
                 id.0
             )));
         }
-        if self.validators.iter().any(|(_, existing_key)| *existing_key == key) {
+        if self
+            .validators
+            .iter()
+            .any(|(_, existing_key)| *existing_key == key)
+        {
             return Err(ILCConsensusError::Other(
                 "validator key already present".to_string(),
             ));
@@ -52,7 +91,8 @@ impl ValidatorSet {
     /// CDL-017 hook: validator ejection
     pub fn eject_validator(&mut self, id: ValidatorID) -> Result<(), ILCConsensusError> {
         let original_len = self.validators.len();
-        let validators: Vec<(ValidatorID, ValidatorKey)> = self.validators
+        let validators: Vec<(ValidatorID, ValidatorKey)> = self
+            .validators
             .iter()
             .filter(|(existing_id, _)| *existing_id != id)
             .cloned()
@@ -73,9 +113,11 @@ impl ValidatorSet {
 
 pub fn generate_validator_key() -> Result<(SecretKey, ValidatorKey), ILCConsensusError> {
     let mut ikm = [0u8; 32];
-    getrandom(&mut ikm).map_err(|e| ILCConsensusError::Other(format!("OS entropy failure: {}", e)))?;
-    
-    let sk = SecretKey::key_gen(&ikm, &[]).map_err(|_| ILCConsensusError::Other("BLS KeyGen failed".to_string()))?;
+    getrandom(&mut ikm)
+        .map_err(|e| ILCConsensusError::Other(format!("OS entropy failure: {}", e)))?;
+
+    let sk = SecretKey::key_gen(&ikm, &[])
+        .map_err(|_| ILCConsensusError::Other("BLS KeyGen failed".to_string()))?;
     let vk = ValidatorKey(sk.sk_to_pk());
     Ok((sk, vk))
 }
@@ -85,7 +127,12 @@ pub fn sign_message(sk: &SecretKey, msg: &[u8], network_id: &str) -> ValidatorSi
     ValidatorSig(sk.sign(msg, &dst, &[]))
 }
 
-pub fn verify_signature(vk: &ValidatorKey, msg: &[u8], sig: &ValidatorSig, network_id: &str) -> Result<(), ILCConsensusError> {
+pub fn verify_signature(
+    vk: &ValidatorKey,
+    msg: &[u8],
+    sig: &ValidatorSig,
+    network_id: &str,
+) -> Result<(), ILCConsensusError> {
     let dst = validator_dst(network_id);
     let valid = sig.0.verify(true, msg, &dst, &[], &vk.0, true);
     if valid == blst::BLST_ERROR::BLST_SUCCESS {
@@ -120,7 +167,7 @@ mod tests {
     fn test_cross_network_sig_rejected() {
         let (sk, vk) = generate_validator_key().unwrap();
         let msg = b"ilc_m007_test_message_bound";
-        
+
         let sig = sign_message(&sk, msg, "testnet_a");
         // Verify via incorrect network identifier enforcing SEC-002 constraints dynamically
         let result = verify_signature(&vk, msg, &sig, "testnet_b");
@@ -137,10 +184,13 @@ mod tests {
         let tampered_msg = b"ilc_tampered_malicious_boundary";
         let result = verify_signature(&vk, tampered_msg, &sig_valid, "testnet_abc");
         assert_eq!(result, Err(ILCConsensusError::InvalidSignature));
-        
+
         // Assert spoofing a valid signature against a different honest key natively catches cross-key rejections
         let (_, vk_spoof) = generate_validator_key().unwrap();
-        assert_eq!(verify_signature(&vk_spoof, msg, &sig_valid, "testnet_abc"), Err(ILCConsensusError::InvalidSignature));
+        assert_eq!(
+            verify_signature(&vk_spoof, msg, &sig_valid, "testnet_abc"),
+            Err(ILCConsensusError::InvalidSignature)
+        );
     }
 
     #[test]
@@ -149,20 +199,99 @@ mod tests {
             (ValidatorID(1), 20),
             (ValidatorID(2), 20),
             (ValidatorID(3), 20),
-            (ValidatorID(4), 40), // Exceeds floor(100 / 3) = 33 boundary limit
+            (ValidatorID(4), 40), // 40*3=120 >= 100 → rejected
         ];
         assert_eq!(
             ValidatorSet::check_concentration_limit(&stakes),
-            Err(ILCConsensusError::Other("concentration limit exceeded".to_string()))
+            Err(ILCConsensusError::Other(
+                "concentration limit exceeded".to_string()
+            ))
         );
 
         let valid_stakes = vec![
             (ValidatorID(1), 25),
             (ValidatorID(2), 25),
             (ValidatorID(3), 25),
-            (ValidatorID(4), 25), // Smooth equilibrium mapping 
+            (ValidatorID(4), 25), // 25*3=75 < 100 → accepted
         ];
         assert!(ValidatorSet::check_concentration_limit(&valid_stakes).is_ok());
+    }
+
+    #[test]
+    fn test_concentration_limit_exact_one_third_rejected() {
+        // BUG-002: with floor division, stake=33 on total=99 would pass (33 > 33 is false).
+        // The multiplication approach correctly catches stake * 3 >= total (33*3=99 >= 99).
+        let stakes_exact_third = vec![
+            (ValidatorID(1), 33),
+            (ValidatorID(2), 33),
+            (ValidatorID(3), 33),
+        ]; // total=99, each stake is exactly 1/3
+        assert_eq!(
+            ValidatorSet::check_concentration_limit(&stakes_exact_third),
+            Err(ILCConsensusError::Other(
+                "concentration limit exceeded".to_string()
+            )),
+            "stake exactly equal to 1/3 of total must be rejected"
+        );
+
+        // One unit below 1/3 of total=99 (stake=32) must pass.
+        let stakes_below_third = vec![
+            (ValidatorID(1), 32),
+            (ValidatorID(2), 32),
+            (ValidatorID(3), 35),
+        ]; // total=99; 32*3=96 < 99, 35*3=105 >= 99
+           // Validator 3 holds 35/99 > 1/3, so should be rejected.
+        assert_eq!(
+            ValidatorSet::check_concentration_limit(&stakes_below_third),
+            Err(ILCConsensusError::Other(
+                "concentration limit exceeded".to_string()
+            )),
+        );
+
+        // Validator with stake 32 of total 99: 32*3=96 < 99, strictly under 1/3.
+        let stakes_all_under = vec![
+            (ValidatorID(1), 32),
+            (ValidatorID(2), 32),
+            (ValidatorID(3), 32),
+            (ValidatorID(4), 3),
+        ]; // total=99; max stake 32, 32*3=96 < 99
+        assert!(ValidatorSet::check_concentration_limit(&stakes_all_under).is_ok());
+    }
+
+    #[test]
+    fn test_concentration_limit_large_stakes_rejected() {
+        // BUG-006: verify the check behaves correctly at u64::MAX stake values.
+        // Three validators each at u64::MAX: total = 3 * u64::MAX, which does NOT
+        // saturate u128 (saturation requires ~2^64 validators — impossible in practice).
+        // Each holds exactly 1/3 of total, so all three trigger "concentration limit
+        // exceeded" via the multiplication path (stake*3 == total_stake >= total_stake).
+        // The u128::MAX saturation guard is a defensive check for pathological input
+        // that cannot be reached with u64 stake values.
+        let stakes = vec![
+            (ValidatorID(1), u64::MAX),
+            (ValidatorID(2), u64::MAX),
+            (ValidatorID(3), u64::MAX),
+        ];
+        assert_eq!(
+            ValidatorSet::check_concentration_limit(&stakes),
+            Err(ILCConsensusError::Other(
+                "concentration limit exceeded".to_string()
+            )),
+            "each validator holding exactly 1/3 of total must be rejected"
+        );
+    }
+
+    #[test]
+    fn test_eject_to_f_zero_warns_but_succeeds() {
+        // BUG-001: ejecting from N=4 (f=1) to N=3 (f=0) silently drops fault tolerance.
+        // The fix emits a visible warning token but does not fail — f=0 is still
+        // mathematically valid under N>3F.  This test confirms the mutation succeeds
+        // and f is correctly set to 0.
+        let mut set = make_validator_set(4);
+        assert_eq!(set.f, 1);
+        set.eject_validator(ValidatorID(4)).unwrap();
+        assert_eq!(set.validators.len(), 3);
+        assert_eq!(set.f, 0, "f must be 0 after ejecting from N=4 to N=3");
     }
 
     #[test]

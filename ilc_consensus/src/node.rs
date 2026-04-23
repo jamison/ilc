@@ -43,9 +43,7 @@ use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
 use crate::fast_path::FastPathProtocol;
 use crate::network::{GossipEnvelope, GossipMessage, PeerNetwork};
-use crate::types::{
-    ECUTransfer, ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID,
-};
+use crate::types::{ECUTransfer, ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID};
 use crate::validator::sign_message;
 
 // ---------------------------------------------------------------------------
@@ -59,6 +57,94 @@ struct InFlight {
     certified: bool,
     /// SEC-FIX-04: wall-clock insertion time for TTL sweep (zombie eviction).
     inserted_at: tokio::time::Instant,
+}
+
+// layer1_agentid_log_hygiene_applied
+#[cfg(feature = "debug_agent_ids")]
+fn fmt_agent_id(id: &crate::types::AgentID) -> String {
+    format!("{:?}", id)
+}
+
+#[cfg(not(feature = "debug_agent_ids"))]
+fn fmt_agent_id(id: &crate::types::AgentID) -> String {
+    let _ = id;
+    "[redacted:agent_id]".to_string()
+}
+
+fn fmt_object_ref(object_ref: &ObjectRef) -> String {
+    format!(
+        "ObjectRef {{ agent: {}, version: {} }}",
+        fmt_agent_id(&object_ref.agent),
+        object_ref.version
+    )
+}
+
+const MAX_TESTNET_RELAY_HOPS: usize = 4;
+
+fn verify_transfer_sender_sig(transfer: &ECUTransfer) -> Result<(), ILCConsensusError> {
+    let sender_msg = bincode::serialize(&(
+        &transfer.object_ref,
+        &transfer.to,
+        &transfer.amount_micro_ecu,
+    ))
+    .map_err(|e| ILCConsensusError::Other(format!("Sender msg serialize: {}", e)))?;
+
+    let sender_pubkey = blst::min_pk::PublicKey::from_bytes(&transfer.object_ref.agent.0)
+        .map_err(|_| ILCConsensusError::InvalidSignature)?;
+    // SEC-FIX-01: G1 subgroup check.
+    sender_pubkey
+        .validate()
+        .map_err(|_| ILCConsensusError::InvalidSignature)?;
+
+    let result = transfer.sender_sig.0.verify(
+        true,
+        &sender_msg,
+        crate::types::AGENT_TRANSFER_DST,
+        &[],
+        &sender_pubkey,
+        true,
+    );
+    if result != blst::BLST_ERROR::BLST_SUCCESS {
+        return Err(ILCConsensusError::InvalidSignature);
+    }
+
+    Ok(())
+}
+
+fn next_relay_hop(
+    current_validator: ValidatorID,
+    remaining_route: &[ValidatorID],
+) -> Result<Option<(ValidatorID, Vec<ValidatorID>)>, ILCConsensusError> {
+    if remaining_route.is_empty() {
+        return Ok(None);
+    }
+    if remaining_route.len() > MAX_TESTNET_RELAY_HOPS {
+        return Err(ILCConsensusError::Other(format!(
+            "relay route exceeds max hop cap of {}",
+            MAX_TESTNET_RELAY_HOPS
+        )));
+    }
+
+    let mut seen = HashSet::new();
+    for hop in remaining_route {
+        if *hop == current_validator {
+            return Err(ILCConsensusError::Other(format!(
+                "relay route loops back through validator {}",
+                current_validator.0
+            )));
+        }
+        if !seen.insert(*hop) {
+            return Err(ILCConsensusError::Other(format!(
+                "relay route contains duplicate validator {}",
+                hop.0
+            )));
+        }
+    }
+
+    let (next_hop, tail) = remaining_route
+        .split_first()
+        .ok_or_else(|| ILCConsensusError::Other("relay route unexpectedly empty".into()))?;
+    Ok(Some((*next_hop, tail.to_vec())))
 }
 
 // ---------------------------------------------------------------------------
@@ -115,9 +201,13 @@ impl NodeRunner {
             in_flight: Arc::new(Mutex::new(HashMap::new())),
             outbound_pool: Arc::new(Mutex::new(HashMap::new())),
             #[cfg(feature = "testnet_fault_sim")]
-            censor_validator: std::env::var("CENSOR_VALIDATOR").ok().and_then(|v| v.parse().ok()),
+            censor_validator: std::env::var("CENSOR_VALIDATOR")
+                .ok()
+                .and_then(|v| v.parse().ok()),
             #[cfg(feature = "testnet_fault_sim")]
-            censor_target: std::env::var("CENSOR_TARGET").ok().and_then(|v| v.parse().ok()),
+            censor_target: std::env::var("CENSOR_TARGET")
+                .ok()
+                .and_then(|v| v.parse().ok()),
             #[cfg(feature = "testnet_fault_sim")]
             partition_block_peers: std::env::var("PARTITION_BLOCK_PEERS")
                 .unwrap_or_default()
@@ -135,7 +225,9 @@ impl NodeRunner {
         eprintln!(
             "[m010_node] validator_id={} running on {}",
             self.validator_id.0,
-            self.network.endpoint.local_addr()
+            self.network
+                .endpoint
+                .local_addr()
                 .map(|a| a.to_string())
                 .unwrap_or_else(|_| "unknown".to_string()),
         );
@@ -172,7 +264,9 @@ impl NodeRunner {
                         .map(|(_, &e)| e)
                         .last()
                         .unwrap_or(0);
-                    let msg = GossipMessage::MissingEpochSync { latest_contiguous_epoch: cursor };
+                    let msg = GossipMessage::MissingEpochSync {
+                        latest_contiguous_epoch: cursor,
+                    };
                     for (peer_id, _addr) in &node.peer_addrs {
                         #[cfg(feature = "testnet_fault_sim")]
                         if node.partition_block_peers.contains(&peer_id.0) {
@@ -201,9 +295,7 @@ impl NodeRunner {
                     tokio::time::sleep(tokio::time::Duration::from_secs(TTL_SECS)).await;
                     let mut table = node.in_flight.lock().await;
                     let before = table.len();
-                    table.retain(|_, entry| {
-                        entry.certified || entry.inserted_at.elapsed() < ttl
-                    });
+                    table.retain(|_, entry| entry.certified || entry.inserted_at.elapsed() < ttl);
                     let evicted = before.saturating_sub(table.len());
                     if evicted > 0 {
                         eprintln!(
@@ -216,7 +308,11 @@ impl NodeRunner {
         }
 
         loop {
-            let incoming = self.network.endpoint.accept().await
+            let incoming = self
+                .network
+                .endpoint
+                .accept()
+                .await
                 .ok_or_else(|| ILCConsensusError::Other("Endpoint closed".into()))?;
 
             let node = Arc::clone(&self);
@@ -233,7 +329,9 @@ impl NodeRunner {
                 let (_, recv) = match tokio::time::timeout(
                     tokio::time::Duration::from_millis(crate::network::IO_TIMEOUT_MS),
                     connection.accept_bi(),
-                ).await {
+                )
+                .await
+                {
                     Ok(Ok(s)) => s,
                     Ok(Err(e)) => {
                         eprintln!("[m010_node] stream accept error: {}", e);
@@ -269,7 +367,7 @@ impl NodeRunner {
             );
             return Ok(());
         }
-        
+
         // M-019 slow-validator simulation: delay_ms is applied uniformly to ALL
         // inbound messages after the partition gate, not just to specific message
         // types. This is intentional — a "slow" validator is slow on everything,
@@ -285,6 +383,27 @@ impl NodeRunner {
             GossipMessage::BroadcastHonest(transfer) => {
                 self.handle_broadcast_honest(transfer, from).await
             }
+            GossipMessage::RelaySubmit {
+                transfer,
+                remaining_route,
+            } => {
+                #[cfg(feature = "testnet_fault_sim")]
+                {
+                    self.handle_relay_submit(transfer, remaining_route, from)
+                        .await
+                }
+                #[cfg(not(feature = "testnet_fault_sim"))]
+                {
+                    let _ = (transfer, remaining_route, from);
+                    eprintln!(
+                        "[m021_layer2] validator_id={} RelaySubmit rejected in non-testnet build",
+                        self.validator_id.0
+                    );
+                    Err(ILCConsensusError::Other(
+                        "RelaySubmit is testnet_only".into(),
+                    ))
+                }
+            }
             GossipMessage::AckFor { object_ref, sig } => {
                 self.handle_ack_for(object_ref, sig, from).await
             }
@@ -297,9 +416,7 @@ impl NodeRunner {
                 let _ = sig;
                 Ok(())
             }
-            GossipMessage::Certificate(cert) => {
-                self.handle_certificate(cert).await
-            }
+            GossipMessage::Certificate(cert) => self.handle_certificate(cert).await,
             GossipMessage::EpochSettlementTx(tx) => {
                 // CRIT-001: EpochSettlementTx carries no sigs field. Epoch records
                 // committed via this path have no BLS aggregate signature — any
@@ -337,14 +454,21 @@ impl NodeRunner {
                 }
                 self.handle_epoch_checkpoint_msg(checkpoint).await
             }
-            GossipMessage::MissingCertSync { agent, missing_versions } => {
-                self.handle_missing_cert_sync(agent, missing_versions, from).await
+            GossipMessage::MissingCertSync {
+                agent,
+                missing_versions,
+            } => {
+                self.handle_missing_cert_sync(agent, missing_versions, from)
+                    .await
             }
             GossipMessage::MissingCertResponse { certs } => {
                 self.handle_missing_cert_response(certs).await
             }
-            GossipMessage::MissingEpochSync { latest_contiguous_epoch } => {
-                self.handle_missing_epoch_sync(latest_contiguous_epoch, from).await
+            GossipMessage::MissingEpochSync {
+                latest_contiguous_epoch,
+            } => {
+                self.handle_missing_epoch_sync(latest_contiguous_epoch, from)
+                    .await
             }
             GossipMessage::MissingEpochResponse { records } => {
                 self.handle_missing_epoch_response(records).await
@@ -362,28 +486,7 @@ impl NodeRunner {
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
         // SEC-001: verify sender_sig before doing anything else.
-        let sender_msg = bincode::serialize(&(
-            &transfer.object_ref,
-            &transfer.to,
-            &transfer.amount_micro_ecu,
-        ))
-        .map_err(|e| ILCConsensusError::Other(format!("Sender msg serialize: {}", e)))?;
-
-        let sender_pubkey = blst::min_pk::PublicKey::from_bytes(&transfer.object_ref.agent.0)
-            .map_err(|_| ILCConsensusError::InvalidSignature)?;
-        // SEC-FIX-01: G1 subgroup check.
-        sender_pubkey.validate()
-            .map_err(|_| ILCConsensusError::InvalidSignature)?;
-
-        let result = transfer.sender_sig.0.verify(
-            true,
-            &sender_msg,
-            crate::types::AGENT_TRANSFER_DST,
-            &[],
-            &sender_pubkey,
-            true,
-        );
-        if result != blst::BLST_ERROR::BLST_SUCCESS {
+        if verify_transfer_sender_sig(&transfer).is_err() {
             eprintln!(
                 "[m010_node] validator_id={} rejected transfer from peer={}: invalid sender_sig",
                 self.validator_id.0, from.0
@@ -397,7 +500,9 @@ impl NodeRunner {
             let mut table = self.in_flight.lock().await;
             if let Some(existing) = table.get(&object_ref) {
                 // If it already exists, verify the payload matches. If not, it's equivocation!
-                if existing.transfer.to != transfer.to || existing.transfer.amount_micro_ecu != transfer.amount_micro_ecu {
+                if existing.transfer.to != transfer.to
+                    || existing.transfer.amount_micro_ecu != transfer.amount_micro_ecu
+                {
                     eprintln!(
                         "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer / Equivocation Detected)",
                         self.validator_id.0
@@ -405,12 +510,15 @@ impl NodeRunner {
                     return Ok(());
                 }
             } else {
-                table.insert(object_ref, InFlight {
-                    transfer: transfer.clone(),
-                    sigs: Vec::new(),
-                    certified: false,
-                    inserted_at: tokio::time::Instant::now(),
-                });
+                table.insert(
+                    object_ref,
+                    InFlight {
+                        transfer: transfer.clone(),
+                        sigs: Vec::new(),
+                        certified: false,
+                        inserted_at: tokio::time::Instant::now(),
+                    },
+                );
             }
         }
 
@@ -421,14 +529,61 @@ impl NodeRunner {
         let sig = sign_message(&self.validator_sk, &transfer_msg, &self.network_id);
 
         eprintln!(
-            "[m010_node] validator_id={} acking transfer obj_ref={:?} to peer={}",
-            self.validator_id.0, object_ref, from.0
+            "[m010_node] validator_id={} acking transfer obj_ref={} to peer={}",
+            self.validator_id.0,
+            fmt_object_ref(&object_ref),
+            from.0
         );
 
-        self.send_to_peer(
-            from,
-            GossipMessage::AckFor { object_ref, sig },
-        ).await
+        self.send_to_peer(from, GossipMessage::AckFor { object_ref, sig })
+            .await
+    }
+
+    #[cfg(feature = "testnet_fault_sim")]
+    async fn handle_relay_submit(
+        &self,
+        transfer: ECUTransfer,
+        remaining_route: Vec<ValidatorID>,
+        from: ValidatorID,
+    ) -> Result<(), ILCConsensusError> {
+        // testnet_only: relay metadata stays outside TransferCertificate.
+        match next_relay_hop(self.validator_id, &remaining_route)? {
+            Some((next_hop, tail)) => {
+                if verify_transfer_sender_sig(&transfer).is_err() {
+                    eprintln!(
+                        "[m021_layer2] validator_id={} rejected relay_submit from peer={}: invalid sender_sig",
+                        self.validator_id.0, from.0
+                    );
+                    return Ok(());
+                }
+
+                eprintln!(
+                    "[m021_layer2] validator_id={} forwarding relay_submit obj_ref={} next_peer={} remaining_hops={}",
+                    self.validator_id.0,
+                    fmt_object_ref(&transfer.object_ref),
+                    next_hop.0,
+                    tail.len()
+                );
+
+                self.send_to_peer(
+                    next_hop,
+                    GossipMessage::RelaySubmit {
+                        transfer,
+                        remaining_route: tail,
+                    },
+                )
+                .await
+            }
+            None => {
+                eprintln!(
+                    "[m021_layer2] validator_id={} final relay destination for obj_ref={} from peer={}",
+                    self.validator_id.0,
+                    fmt_object_ref(&transfer.object_ref),
+                    from.0
+                );
+                self.handle_broadcast_honest(transfer, from).await
+            }
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -442,7 +597,8 @@ impl NodeRunner {
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
         let quorum = 2 * self.f + 1;
-        let mut to_certify: Option<(ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> = None;
+        let mut to_certify: Option<(ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> =
+            None;
 
         {
             let mut table = self.in_flight.lock().await;
@@ -452,8 +608,12 @@ impl NodeRunner {
                     if !entry.sigs.iter().any(|(id, _)| *id == from) {
                         entry.sigs.push((from, sig));
                         eprintln!(
-                            "[m010_node] validator_id={} ack from peer={} for obj_ref={:?} sigs={}/{}",
-                            self.validator_id.0, from.0, object_ref, entry.sigs.len(), quorum
+                            "[m010_node] validator_id={} ack from peer={} for obj_ref={} sigs={}/{}",
+                            self.validator_id.0,
+                            from.0,
+                            fmt_object_ref(&object_ref),
+                            entry.sigs.len(),
+                            quorum
                         );
                         if entry.sigs.len() >= quorum {
                             entry.certified = true;
@@ -463,17 +623,25 @@ impl NodeRunner {
                 }
             } else {
                 eprintln!(
-                    "[m010_node] validator_id={} AckFor for unknown obj_ref={:?} from peer={}",
-                    self.validator_id.0, object_ref, from.0
+                    "[m010_node] validator_id={} AckFor for unknown obj_ref={} from peer={}",
+                    self.validator_id.0,
+                    fmt_object_ref(&object_ref),
+                    from.0
                 );
             }
         }
 
         if let Some((transfer, sigs)) = to_certify {
-            let cert = TransferCertificate { transfer, sigs };
+            let cert_epoch = crate::types::EpochSeq(self.epoch_store.get_current_epoch()?.max(1));
+            let cert = TransferCertificate {
+                transfer,
+                sigs,
+                epoch: cert_epoch,
+            };
             eprintln!(
-                "[m010_node] validator_id={} assembled certificate for obj_ref={:?} — broadcasting",
-                self.validator_id.0, object_ref
+                "[m010_node] validator_id={} assembled certificate for obj_ref={} — broadcasting",
+                self.validator_id.0,
+                fmt_object_ref(&object_ref)
             );
             self.broadcast_certificate(cert.clone()).await?;
             self.execute_and_log(cert).await?;
@@ -495,8 +663,9 @@ impl NodeRunner {
 
     async fn handle_certificate(&self, cert: TransferCertificate) -> Result<(), ILCConsensusError> {
         eprintln!(
-            "[m010_node] validator_id={} received Certificate for obj_ref={:?}",
-            self.validator_id.0, cert.transfer.object_ref
+            "[m010_node] validator_id={} received Certificate for obj_ref={}",
+            self.validator_id.0,
+            fmt_object_ref(&cert.transfer.object_ref)
         );
         self.execute_and_log(cert).await
     }
@@ -566,13 +735,15 @@ impl NodeRunner {
                 self.validator_id.0, certs.len(), MAX_CERTS_PER_RESPONSE
             );
             return Err(ILCConsensusError::Other(format!(
-                "MissingCertResponse exceeds per-response cert cap of {}", MAX_CERTS_PER_RESPONSE
+                "MissingCertResponse exceeds per-response cert cap of {}",
+                MAX_CERTS_PER_RESPONSE
             )));
         }
         for cert in certs {
             eprintln!(
-                "[m010_node] validator_id={} MissingCertResponse: replaying certificate obj_ref={:?}",
-                self.validator_id.0, cert.transfer.object_ref
+                "[m010_node] validator_id={} MissingCertResponse: replaying certificate obj_ref={}",
+                self.validator_id.0,
+                fmt_object_ref(&cert.transfer.object_ref)
             );
             self.execute_and_log(cert).await?;
         }
@@ -596,7 +767,8 @@ impl NodeRunner {
             "[m015_epoch_sync] validator_id={} responding to peer={} with {} epoch(s) after cursor={}",
             self.validator_id.0, from.0, records.len(), latest_contiguous_epoch
         );
-        self.send_to_peer(from, GossipMessage::MissingEpochResponse { records }).await
+        self.send_to_peer(from, GossipMessage::MissingEpochResponse { records })
+            .await
     }
 
     async fn handle_epoch_checkpoint_msg(
@@ -604,7 +776,8 @@ impl NodeRunner {
         checkpoint: crate::types::EpochCheckpoint,
     ) -> Result<(), ILCConsensusError> {
         let vs_guard = self.fast_path.validator_set.read().unwrap();
-        let protocol = crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
+        let protocol =
+            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
         let epoch = checkpoint.record.epoch.0;
 
         match protocol.process_epoch_checkpoint(checkpoint, &*vs_guard) {
@@ -620,7 +793,10 @@ impl NodeRunner {
                 Ok(())
             }
             Err(e) => {
-                eprintln!("[m018_node] validator_id={} checkpoint validation failed: {:?}", self.validator_id.0, e);
+                eprintln!(
+                    "[m018_node] validator_id={} checkpoint validation failed: {:?}",
+                    self.validator_id.0, e
+                );
                 Err(e)
             }
         }
@@ -630,26 +806,13 @@ impl NodeRunner {
         &self,
         records: Vec<crate::epoch_settlement::StoredCheckpoint>,
     ) -> Result<(), ILCConsensusError> {
-        let protocol = crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
+        let protocol =
+            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
         let vs_guard = self.fast_path.validator_set.read().unwrap();
 
         for stored in records {
             let epoch = stored.record.epoch.0;
-            
-            // Reconstruct EpochCheckpoint natively
-            let parsed_sig = blst::min_pk::Signature::from_bytes(&stored.agg_sig_bytes)
-                .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
-            // SEC-FIX-01: G2 subgroup check on peer-supplied agg_sig_bytes.
-            parsed_sig.validate(false)
-                .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
-            let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig);
-            
-            let checkpoint = crate::types::EpochCheckpoint {
-                record: stored.record,
-                sigs: crate::types::AggSig(agg_sig),
-            };
-
-            match protocol.process_epoch_checkpoint(checkpoint, &*vs_guard) {
+            match apply_missing_epoch_record(&self.epoch_store, stored, &protocol, &*vs_guard) {
                 Ok(_) => {
                     eprintln!("epoch_record_committed:epoch={}", epoch);
                     eprintln!("m015_epoch_recovery_path_protocol_driven epoch={}", epoch);
@@ -693,7 +856,10 @@ impl NodeRunner {
         }
     }
 
-    async fn broadcast_certificate(&self, cert: TransferCertificate) -> Result<(), ILCConsensusError> {
+    async fn broadcast_certificate(
+        &self,
+        cert: TransferCertificate,
+    ) -> Result<(), ILCConsensusError> {
         for (peer_id, addr) in &self.peer_addrs {
             #[cfg(feature = "testnet_fault_sim")]
             if self.partition_block_peers.contains(&peer_id.0) {
@@ -732,7 +898,9 @@ impl NodeRunner {
             );
             return Ok(());
         }
-        let addr = self.peer_addrs.iter()
+        let addr = self
+            .peer_addrs
+            .iter()
             .find(|(id, _)| *id == peer_id)
             .map(|(_, addr)| *addr)
             .ok_or_else(|| ILCConsensusError::Other(format!("Unknown peer {}", peer_id.0)))?;
@@ -756,18 +924,17 @@ impl NodeRunner {
             // Previous connection is dead — fall through to reconnect.
             pool.remove(&addr);
         }
-        let conn_future = self.network.endpoint
+        let conn_future = self
+            .network
+            .endpoint
             .connect(addr, "localhost")
             .map_err(|e| ILCConsensusError::Other(format!("Connect error: {}", e)))?;
         // 3-second connect timeout prevents the background sync loop from stalling
         // on peers that are unreachable (e.g. testnet_client port that is not listening).
-        let conn = tokio::time::timeout(
-            tokio::time::Duration::from_secs(3),
-            conn_future,
-        )
-        .await
-        .map_err(|_| ILCConsensusError::Other(format!("Connection to {} timed out", addr)))?
-        .map_err(|e| ILCConsensusError::Other(format!("Connection error: {}", e)))?;
+        let conn = tokio::time::timeout(tokio::time::Duration::from_secs(3), conn_future)
+            .await
+            .map_err(|_| ILCConsensusError::Other(format!("Connection to {} timed out", addr)))?
+            .map_err(|e| ILCConsensusError::Other(format!("Connection error: {}", e)))?;
         pool.insert(addr, conn.clone());
         Ok(conn)
     }
@@ -783,11 +950,45 @@ impl NodeRunner {
         let (send, _recv) = tokio::time::timeout(
             tokio::time::Duration::from_millis(crate::network::IO_TIMEOUT_MS),
             conn.open_bi(),
-        ).await
+        )
+        .await
         .map_err(|_| ILCConsensusError::Other(format!("open_bi to {} timed out", addr)))?
         .map_err(|e| ILCConsensusError::Other(format!("Open stream error: {}", e)))?;
         self.network.transmit(send, env).await
     }
+}
+
+fn apply_missing_epoch_record(
+    epoch_store: &crate::epoch_settlement::EpochStore,
+    stored: crate::epoch_settlement::StoredCheckpoint,
+    protocol: &crate::epoch_settlement::EpochSettlementProtocol,
+    validator_set: &crate::types::ValidatorSet,
+) -> Result<(), ILCConsensusError> {
+    // testnet_fault_sim: epoch records injected by the testnet client via
+    // EpochSettlementTx are committed through commit_epoch_record(), which stores
+    // agg_sig_bytes=[] (no BLS signature generated at submission time). Fall back
+    // to direct commit only in those testnet builds. Production builds must treat
+    // an empty signature as invalid and continue through the BLS-verified path.
+    #[cfg(feature = "testnet_fault_sim")]
+    if stored.agg_sig_bytes.is_empty() {
+        return epoch_store.commit_epoch_record(stored.record);
+    }
+
+    let parsed_sig = blst::min_pk::Signature::from_bytes(&stored.agg_sig_bytes)
+        .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
+    parsed_sig
+        .validate(false)
+        .map_err(|_| ILCConsensusError::BLSVerificationFailed)?;
+    let agg_sig = blst::min_pk::AggregateSignature::from_signature(&parsed_sig);
+
+    let checkpoint = crate::types::EpochCheckpoint {
+        record: stored.record,
+        sigs: crate::types::AggSig(agg_sig),
+    };
+
+    protocol
+        .process_epoch_checkpoint(checkpoint, validator_set)
+        .map(|_| ())
 }
 
 // ---------------------------------------------------------------------------
@@ -807,16 +1008,59 @@ pub fn generate_ephemeral_validator_sk() -> Result<blst::min_pk::SecretKey, ILCC
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{AgentID, ECUTransfer, ObjectRef};
+    use crate::epoch_settlement::{EpochSettlementProtocol, EpochStore, StoredCheckpoint};
+    use crate::types::{
+        AgentID, AggSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementRecord, ObjectRef,
+        ValidatorSet,
+    };
     use crate::validator::validator_dst;
+    use blst::min_pk::{AggregateSignature, SecretKey};
+    use lmdb_rkv::Environment;
+    use tempfile::tempdir;
+
+    fn setup_env() -> (Arc<Environment>, tempfile::TempDir) {
+        let dir = tempdir().unwrap();
+        let env = Environment::new().set_max_dbs(2).open(dir.path()).unwrap();
+        (Arc::new(env), dir)
+    }
+
+    fn setup_validators() -> (ValidatorSet, Vec<SecretKey>) {
+        let mut keys = Vec::new();
+        let mut validators = Vec::new();
+        for i in 1..=2u32 {
+            let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
+            let pk = sk.sk_to_pk();
+            keys.push(sk);
+            validators.push((crate::types::ValidatorID(i), crate::types::ValidatorKey(pk)));
+        }
+        (ValidatorSet::new(validators, 0).unwrap(), keys)
+    }
+
+    fn generate_valid_agg_sig(record: &EpochSettlementRecord, keys: &[SecretKey]) -> AggSig {
+        let msg = bincode::serialize(record).unwrap();
+        let sigs: Vec<_> = keys
+            .iter()
+            .map(|sk| sk.sign(&msg, crate::types::ILC_EPOCH_SIG_DST, &[]))
+            .collect();
+        let sig_refs: Vec<_> = sigs.iter().collect();
+        let agg = AggregateSignature::aggregate(&sig_refs, false).unwrap();
+        AggSig(agg)
+    }
 
     fn dummy_transfer() -> ECUTransfer {
         let ikm = [1u8; 32];
         let agent_sk = blst::min_pk::SecretKey::key_gen(&ikm, &[]).unwrap();
         let agent_id = AgentID(agent_sk.sk_to_pk().to_bytes());
-        let object_ref = ObjectRef { agent: agent_id, version: 0 };
+        let object_ref = ObjectRef {
+            agent: agent_id,
+            version: 0,
+        };
         let sender_msg = bincode::serialize(&(&object_ref, &AgentID([2; 48]), &100u64)).unwrap();
-        let sig = crate::types::AgentSig(agent_sk.sign(&sender_msg, crate::types::AGENT_TRANSFER_DST, &[]));
+        let sig = crate::types::AgentSig(agent_sk.sign(
+            &sender_msg,
+            crate::types::AGENT_TRANSFER_DST,
+            &[],
+        ));
         ECUTransfer {
             object_ref,
             to: AgentID([2; 48]),
@@ -842,26 +1086,36 @@ mod tests {
     // integration path is covered by test_two_validators_loopback in network.rs.
     #[test]
     fn test_in_flight_eviction_clears_certified_entry() {
-        use std::collections::HashMap;
         use crate::types::AgentID;
+        use std::collections::HashMap;
 
-        let object_ref = ObjectRef { agent: AgentID([1; 48]), version: 0 };
+        let object_ref = ObjectRef {
+            agent: AgentID([1; 48]),
+            version: 0,
+        };
 
         // Simulate the in_flight table lifecycle: insert on broadcast, remove on certification.
         let mut table: HashMap<ObjectRef, InFlight> = HashMap::new();
         assert_eq!(table.len(), 0);
 
-        table.insert(object_ref, InFlight {
-            transfer: dummy_transfer(),
-            sigs: Vec::new(),
-            certified: false,
-            inserted_at: tokio::time::Instant::now(),
-        });
+        table.insert(
+            object_ref,
+            InFlight {
+                transfer: dummy_transfer(),
+                sigs: Vec::new(),
+                certified: false,
+                inserted_at: tokio::time::Instant::now(),
+            },
+        );
         assert_eq!(table.len(), 1, "entry must be present after broadcast");
 
         // Simulate post-certification eviction (the fix in handle_ack_for).
         table.remove(&object_ref);
-        assert_eq!(table.len(), 0, "entry must be evicted after certification — OOM guard");
+        assert_eq!(
+            table.len(),
+            0,
+            "entry must be evicted after certification — OOM guard"
+        );
     }
 
     // SEC-FIX-04: MissingCertResponse count cap — CPU DoS guard.
@@ -871,73 +1125,246 @@ mod tests {
         use crate::types::TransferCertificate;
 
         // Build 65 minimal certs (sigs=empty is fine — the cap fires before any BLS work).
-        let certs: Vec<TransferCertificate> = (0u8..65).map(|i| {
-            let ikm = [i + 1; 32];
-            let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[]).unwrap();
-            let agent_id = AgentID(sk.sk_to_pk().to_bytes());
-            let object_ref = ObjectRef { agent: agent_id, version: i as u64 };
-            let msg = bincode::serialize(&(&object_ref, &AgentID([2; 48]), &10u64)).unwrap();
-            let sig = crate::types::AgentSig(sk.sign(&msg, crate::types::AGENT_TRANSFER_DST, &[]));
-            TransferCertificate {
-                transfer: ECUTransfer {
-                    object_ref,
-                    to: AgentID([2; 48]),
-                    amount_micro_ecu: 10,
-                    sender_sig: sig,
-                },
-                sigs: vec![],
-            }
-        }).collect();
+        let certs: Vec<TransferCertificate> = (0u8..65)
+            .map(|i| {
+                let ikm = [i + 1; 32];
+                let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[]).unwrap();
+                let agent_id = AgentID(sk.sk_to_pk().to_bytes());
+                let object_ref = ObjectRef {
+                    agent: agent_id,
+                    version: i as u64,
+                };
+                let msg = bincode::serialize(&(&object_ref, &AgentID([2; 48]), &10u64)).unwrap();
+                let sig =
+                    crate::types::AgentSig(sk.sign(&msg, crate::types::AGENT_TRANSFER_DST, &[]));
+                TransferCertificate {
+                    transfer: ECUTransfer {
+                        object_ref,
+                        to: AgentID([2; 48]),
+                        amount_micro_ecu: 10,
+                        sender_sig: sig,
+                    },
+                    sigs: vec![],
+                    epoch: EpochSeq(1),
+                }
+            })
+            .collect();
 
         // Guard condition mirrors the production code: > 64 → reject.
         const MAX_CERTS_PER_RESPONSE: usize = 64;
         assert_eq!(certs.len(), 65);
-        assert!(certs.len() > MAX_CERTS_PER_RESPONSE, "65 certs must exceed the cap of 64");
+        assert!(
+            certs.len() > MAX_CERTS_PER_RESPONSE,
+            "65 certs must exceed the cap of 64"
+        );
     }
 
     // SEC-FIX-04: zombie in_flight TTL sweep — non-certified entries must be evictable.
     #[test]
     fn test_in_flight_zombie_ttl_retain_evicts_stale() {
-        use std::collections::HashMap;
         use crate::types::AgentID;
+        use std::collections::HashMap;
 
         let mut table: HashMap<ObjectRef, InFlight> = HashMap::new();
 
         // Stale zombie: inserted 120s ago (> 60s TTL), not certified.
-        let stale_ref = ObjectRef { agent: AgentID([10; 48]), version: 0 };
-        table.insert(stale_ref, InFlight {
-            transfer: dummy_transfer(),
-            sigs: Vec::new(),
-            certified: false,
-            inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
-        });
+        let stale_ref = ObjectRef {
+            agent: AgentID([10; 48]),
+            version: 0,
+        };
+        table.insert(
+            stale_ref,
+            InFlight {
+                transfer: dummy_transfer(),
+                sigs: Vec::new(),
+                certified: false,
+                inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
+            },
+        );
 
         // Fresh entry: inserted just now, not certified — must be retained.
-        let fresh_ref = ObjectRef { agent: AgentID([11; 48]), version: 0 };
-        table.insert(fresh_ref, InFlight {
-            transfer: dummy_transfer(),
-            sigs: Vec::new(),
-            certified: false,
-            inserted_at: tokio::time::Instant::now(),
-        });
+        let fresh_ref = ObjectRef {
+            agent: AgentID([11; 48]),
+            version: 0,
+        };
+        table.insert(
+            fresh_ref,
+            InFlight {
+                transfer: dummy_transfer(),
+                sigs: Vec::new(),
+                certified: false,
+                inserted_at: tokio::time::Instant::now(),
+            },
+        );
 
         // Certified entry: even if old, must NOT be evicted by TTL sweep.
-        let certified_ref = ObjectRef { agent: AgentID([12; 48]), version: 0 };
-        table.insert(certified_ref, InFlight {
-            transfer: dummy_transfer(),
-            sigs: Vec::new(),
-            certified: true,
-            inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
-        });
+        let certified_ref = ObjectRef {
+            agent: AgentID([12; 48]),
+            version: 0,
+        };
+        table.insert(
+            certified_ref,
+            InFlight {
+                transfer: dummy_transfer(),
+                sigs: Vec::new(),
+                certified: true,
+                inserted_at: tokio::time::Instant::now() - tokio::time::Duration::from_secs(120),
+            },
+        );
 
         let ttl = tokio::time::Duration::from_secs(60);
         table.retain(|_, entry| entry.certified || entry.inserted_at.elapsed() < ttl);
 
         // stale zombie must be gone; fresh and certified must remain.
-        assert!(!table.contains_key(&stale_ref), "stale zombie must be evicted");
-        assert!(table.contains_key(&fresh_ref), "fresh entry must be retained");
-        assert!(table.contains_key(&certified_ref), "certified entry must be retained regardless of age");
+        assert!(
+            !table.contains_key(&stale_ref),
+            "stale zombie must be evicted"
+        );
+        assert!(
+            table.contains_key(&fresh_ref),
+            "fresh entry must be retained"
+        );
+        assert!(
+            table.contains_key(&certified_ref),
+            "certified entry must be retained regardless of age"
+        );
         assert_eq!(table.len(), 2);
+    }
+
+    #[test]
+    fn test_apply_missing_epoch_record_malformed_non_empty_sig_rejected() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, keys) = setup_validators();
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let wrong_record = EpochSettlementRecord {
+            epoch: EpochSeq(99),
+            state_root: CIDv1Root::new([99u8; 36]),
+        };
+        let wrong_sig_bytes = generate_valid_agg_sig(&wrong_record, &keys)
+            .0
+            .to_signature()
+            .compress()
+            .to_vec();
+
+        let stored = StoredCheckpoint {
+            record,
+            agg_sig_bytes: wrong_sig_bytes,
+        };
+
+        let err = apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::BLSVerificationFailed);
+        assert!(store.get_checkpoint(1).unwrap().is_none());
+    }
+
+    #[cfg(not(feature = "testnet_fault_sim"))]
+    #[test]
+    fn test_apply_missing_epoch_record_empty_sig_rejected_without_testnet_feature() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, _keys) = setup_validators();
+
+        let stored = StoredCheckpoint {
+            record: EpochSettlementRecord {
+                epoch: EpochSeq(1),
+                state_root: CIDv1Root::new([1u8; 36]),
+            },
+            agg_sig_bytes: vec![],
+        };
+
+        let err = apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap_err();
+        assert_eq!(err, ILCConsensusError::BLSVerificationFailed);
+        assert!(store.get_checkpoint(1).unwrap().is_none());
+    }
+
+    #[cfg(feature = "testnet_fault_sim")]
+    #[test]
+    fn test_apply_missing_epoch_record_empty_sig_falls_back_in_testnet_build() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, _keys) = setup_validators();
+
+        let stored = StoredCheckpoint {
+            record: EpochSettlementRecord {
+                epoch: EpochSeq(1),
+                state_root: CIDv1Root::new([1u8; 36]),
+            },
+            agg_sig_bytes: vec![],
+        };
+
+        apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap();
+
+        let recovered = store.get_checkpoint(1).unwrap().unwrap();
+        assert_eq!(recovered.record.epoch, EpochSeq(1));
+        assert!(recovered.agg_sig_bytes.is_empty());
+    }
+
+    // M-015: multi-record iteration and idempotency in apply_missing_epoch_record.
+    // handle_missing_epoch_response iterates over Vec<StoredCheckpoint>; each record
+    // that returns InvalidEpoch is treated as already-committed (idempotent).
+    // This test exercises that path: commit epoch 1 once, then re-apply it as part
+    // of a batch alongside a new epoch 2 — epoch 1 is skipped, epoch 2 committed.
+    #[cfg(feature = "testnet_fault_sim")]
+    #[test]
+    fn test_apply_missing_epoch_records_multi_record_with_idempotency() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, _keys) = setup_validators();
+
+        // Pre-commit epoch 1 via testnet path (empty sig).
+        let record_e1 = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        store.commit_epoch_record(record_e1.clone()).unwrap();
+        assert!(
+            store.get_checkpoint(1).unwrap().is_some(),
+            "epoch 1 must be pre-committed"
+        );
+
+        // Build a batch of two records: epoch 1 (already committed) and epoch 2 (new).
+        let stored_e1 = StoredCheckpoint {
+            record: record_e1,
+            agg_sig_bytes: vec![],
+        };
+        let stored_e2 = StoredCheckpoint {
+            record: EpochSettlementRecord {
+                epoch: EpochSeq(2),
+                state_root: CIDv1Root::new([2u8; 36]),
+            },
+            agg_sig_bytes: vec![],
+        };
+
+        // Simulate the handle_missing_epoch_response loop.
+        for stored in [stored_e1, stored_e2] {
+            let epoch = stored.record.epoch.0;
+            match apply_missing_epoch_record(&store, stored, &protocol, &vset) {
+                Ok(()) => eprintln!("epoch {} committed", epoch),
+                Err(ILCConsensusError::InvalidEpoch) => {
+                    // Already committed — idempotent; correct behavior.
+                    eprintln!("epoch {} already committed (idempotent)", epoch);
+                }
+                Err(e) => panic!("unexpected error for epoch {}: {:?}", epoch, e),
+            }
+        }
+
+        // Both epochs must be present after the loop.
+        assert!(
+            store.get_checkpoint(1).unwrap().is_some(),
+            "epoch 1 must still be present"
+        );
+        assert!(
+            store.get_checkpoint(2).unwrap().is_some(),
+            "epoch 2 must be committed by the loop"
+        );
     }
 
     #[test]
@@ -947,11 +1374,41 @@ mod tests {
             &transfer.object_ref,
             &transfer.to,
             &transfer.amount_micro_ecu,
-        )).unwrap();
+        ))
+        .unwrap();
         let pubkey = blst::min_pk::PublicKey::from_bytes(&transfer.object_ref.agent.0).unwrap();
         let result = transfer.sender_sig.0.verify(
-            true, &sender_msg, crate::types::AGENT_TRANSFER_DST, &[], &pubkey, true,
+            true,
+            &sender_msg,
+            crate::types::AGENT_TRANSFER_DST,
+            &[],
+            &pubkey,
+            true,
         );
         assert_eq!(result, blst::BLST_ERROR::BLST_SUCCESS);
+    }
+
+    #[test]
+    fn test_next_relay_hop_returns_next_peer_and_tail() {
+        let hop = next_relay_hop(ValidatorID(2), &[ValidatorID(3), ValidatorID(1)])
+            .unwrap()
+            .unwrap();
+
+        assert_eq!(hop.0, ValidatorID(3));
+        assert_eq!(hop.1, vec![ValidatorID(1)]);
+    }
+
+    #[test]
+    fn test_next_relay_hop_rejects_duplicate_validator() {
+        let err = next_relay_hop(ValidatorID(2), &[ValidatorID(3), ValidatorID(3)]).unwrap_err();
+
+        assert!(format!("{:?}", err).contains("duplicate validator 3"));
+    }
+
+    #[test]
+    fn test_next_relay_hop_rejects_loop_back_through_current_validator() {
+        let err = next_relay_hop(ValidatorID(2), &[ValidatorID(3), ValidatorID(2)]).unwrap_err();
+
+        assert!(format!("{:?}", err).contains("loops back through validator 2"));
     }
 }
