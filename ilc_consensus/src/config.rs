@@ -1,3 +1,4 @@
+use serde::Deserialize;
 /// config.rs — M-010 deployment config loader and runtime type translation.
 ///
 /// Responsibilities:
@@ -9,7 +10,6 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use serde::Deserialize;
 
 use crate::types::{AgentID, ILCConsensusError, ValidatorID, ValidatorKey, ValidatorSet};
 
@@ -20,8 +20,8 @@ use crate::types::{AgentID, ILCConsensusError, ValidatorID, ValidatorKey, Valida
 #[derive(Debug, Deserialize)]
 struct RawGenesisValidator {
     validator_id: u32,
-    agent_id: String,       // 96-char hex = 48 bytes
-    validator_key: String,  // 96-char hex = 48 bytes (BLS12-381 G1 compressed pubkey, blst::min_pk)
+    agent_id: String,      // 96-char hex = 48 bytes
+    validator_key: String, // 96-char hex = 48 bytes (BLS12-381 G1 compressed pubkey, blst::min_pk)
     stake_micro_ecu: u64,
     #[allow(dead_code)]
     tailscale_ip: String,
@@ -35,7 +35,7 @@ struct RawGenesisValidator {
 
 #[derive(Debug, Deserialize)]
 struct RawGenesis {
-    network_id: String,  // returned alongside ValidatorSet so main.rs avoids double-read
+    network_id: String, // returned alongside ValidatorSet so main.rs avoids double-read
     #[allow(dead_code)]
     is_testnet: bool,
     #[allow(dead_code)]
@@ -125,19 +125,25 @@ pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCCo
     let mut validators = Vec::with_capacity(genesis.validators.len());
     for v in &genesis.validators {
         // blst::min_pk::PublicKey (G1 compressed) is 48 bytes = 96 hex chars.
-        let key_bytes = hex_decode_exact(&v.validator_key, 48)
-            .map_err(|e| ILCConsensusError::Other(
-                format!("validator_id={}: validator_key {}", v.validator_id, e)
-            ))?;
-        let pubkey = blst::min_pk::PublicKey::from_bytes(&key_bytes)
-            .map_err(|_| ILCConsensusError::Other(
-                format!("validator_id={}: validator_key is not a valid BLS12-381 G1 point", v.validator_id)
-            ))?;
+        let key_bytes = hex_decode_exact(&v.validator_key, 48).map_err(|e| {
+            ILCConsensusError::Other(format!(
+                "validator_id={}: validator_key {}",
+                v.validator_id, e
+            ))
+        })?;
+        let pubkey = blst::min_pk::PublicKey::from_bytes(&key_bytes).map_err(|_| {
+            ILCConsensusError::Other(format!(
+                "validator_id={}: validator_key is not a valid BLS12-381 G1 point",
+                v.validator_id
+            ))
+        })?;
         // SEC-FIX-01: G1 subgroup check — defense-in-depth for genesis config loading.
-        pubkey.validate()
-            .map_err(|_| ILCConsensusError::Other(
-                format!("validator_id={}: validator_key failed G1 subgroup check", v.validator_id)
-            ))?;
+        pubkey.validate().map_err(|_| {
+            ILCConsensusError::Other(format!(
+                "validator_id={}: validator_key failed G1 subgroup check",
+                v.validator_id
+            ))
+        })?;
         let _agent_id = hex_decode_agent_id(&v.agent_id, v.validator_id)?;
         validators.push((ValidatorID(v.validator_id), ValidatorKey(pubkey)));
     }
@@ -173,9 +179,13 @@ pub fn load_node_config(
 
     let mut peers = Vec::with_capacity(cfg.peers.len());
     for p in &cfg.peers {
-        let addr = p.addr.parse()
-            .map_err(|e| ILCConsensusError::Other(format!("Invalid peer addr {}: {}", p.addr, e)))?;
-        peers.push(PeerAddr { validator_id: p.validator_id, addr });
+        let addr = p.addr.parse().map_err(|e| {
+            ILCConsensusError::Other(format!("Invalid peer addr {}: {}", p.addr, e))
+        })?;
+        peers.push(PeerAddr {
+            validator_id: p.validator_id,
+            addr,
+        });
     }
 
     let my_cert_der = load_pem_as_der(&cfg.tls_cert_path)
@@ -186,9 +196,13 @@ pub fn load_node_config(
     let peer_certs = load_peer_cert_dir(&cfg.peer_cert_dir, cfg.validator_id)
         .map_err(|e| ILCConsensusError::Other(format!("peer_cert_dir: {}", e)))?;
 
-    let grpc_listen_addr = cfg.grpc_listen_addr
+    let grpc_listen_addr = cfg
+        .grpc_listen_addr
         .as_deref()
-        .map(|s| s.parse().map_err(|e| ILCConsensusError::Other(format!("grpc_listen_addr: {}", e))))
+        .map(|s| {
+            s.parse()
+                .map_err(|e| ILCConsensusError::Other(format!("grpc_listen_addr: {}", e)))
+        })
         .transpose()?;
 
     eprintln!(
@@ -203,12 +217,20 @@ pub fn load_node_config(
         grpc_listen_addr.map(|a: std::net::SocketAddr| a.to_string()).as_deref().unwrap_or("disabled"),
     );
 
-    let sk_hex = fs::read_to_string(&cfg.validator_consensus_key_path)
-        .map_err(|e| ILCConsensusError::Other(format!("Missing validator_consensus_key_path: {}", e)))?;
-    let sk_bytes = hex_decode_exact(sk_hex.trim(), 32)
-        .map_err(|e| ILCConsensusError::Other(format!("validator_consensus_key_path hex decode limit tracking fail: {}", e)))?;
-    let validator_sk = blst::min_pk::SecretKey::from_bytes(&sk_bytes)
-        .map_err(|_| ILCConsensusError::Other("Invalid BLS validator secret key mapped via local bounds natively.".into()))?;
+    let sk_hex = fs::read_to_string(&cfg.validator_consensus_key_path).map_err(|e| {
+        ILCConsensusError::Other(format!("Missing validator_consensus_key_path: {}", e))
+    })?;
+    let sk_bytes = hex_decode_exact(sk_hex.trim(), 32).map_err(|e| {
+        ILCConsensusError::Other(format!(
+            "validator_consensus_key_path hex decode limit tracking fail: {}",
+            e
+        ))
+    })?;
+    let validator_sk = blst::min_pk::SecretKey::from_bytes(&sk_bytes).map_err(|_| {
+        ILCConsensusError::Other(
+            "Invalid BLS validator secret key mapped via local bounds natively.".into(),
+        )
+    })?;
 
     Ok(NodeConfig {
         validator_id: cfg.validator_id,
@@ -241,16 +263,18 @@ fn hex_decode_exact(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {
     }
     (0..hex.len())
         .step_by(2)
-        .map(|i| u8::from_str_radix(&hex[i..i + 2], 16).map_err(|_| format!("invalid hex at offset {}", i)))
+        .map(|i| {
+            u8::from_str_radix(&hex[i..i + 2], 16)
+                .map_err(|_| format!("invalid hex at offset {}", i))
+        })
         .collect::<Result<Vec<u8>, _>>()
 }
 
 /// Decode a 96-char hex agent_id into an AgentID (48 bytes).
 fn hex_decode_agent_id(hex: &str, validator_id: u32) -> Result<AgentID, ILCConsensusError> {
-    let bytes = hex_decode_exact(hex, 48)
-        .map_err(|e| ILCConsensusError::Other(
-            format!("validator_id={}: agent_id {}", validator_id, e)
-        ))?;
+    let bytes = hex_decode_exact(hex, 48).map_err(|e| {
+        ILCConsensusError::Other(format!("validator_id={}: agent_id {}", validator_id, e))
+    })?;
     let mut arr = [0u8; 48];
     arr.copy_from_slice(&bytes);
     Ok(AgentID(arr))
@@ -259,20 +283,24 @@ fn hex_decode_agent_id(hex: &str, validator_id: u32) -> Result<AgentID, ILCConse
 /// Read a PEM file and extract the DER bytes of the first entry.
 /// Handles both CERTIFICATE and PRIVATE KEY PEM blocks.
 fn load_pem_as_der(path: &str) -> Result<Vec<u8>, String> {
-    let pem_str = fs::read_to_string(path)
-        .map_err(|e| format!("cannot read '{}': {}", path, e))?;
+    let pem_str = fs::read_to_string(path).map_err(|e| format!("cannot read '{}': {}", path, e))?;
 
     // Find the first PEM block
     let start_marker = "-----BEGIN ";
     let end_marker = "-----END ";
-    let start = pem_str.find(start_marker)
+    let start = pem_str
+        .find(start_marker)
         .ok_or_else(|| format!("no PEM BEGIN marker in '{}'", path))?;
-    let header_end = pem_str[start..].find('\n')
+    let header_end = pem_str[start..]
+        .find('\n')
         .ok_or_else(|| format!("malformed PEM in '{}'", path))?;
-    let end = pem_str.find(end_marker)
+    let end = pem_str
+        .find(end_marker)
         .ok_or_else(|| format!("no PEM END marker in '{}'", path))?;
 
-    let b64_body = pem_str[start + header_end + 1..end].replace('\n', "").replace('\r', "");
+    let b64_body = pem_str[start + header_end + 1..end]
+        .replace('\n', "")
+        .replace('\r', "");
 
     let der = base64_decode(&b64_body)
         .map_err(|e| format!("base64 decode error in '{}': {}", path, e))?;
@@ -289,8 +317,8 @@ fn load_peer_cert_dir(dir: &str, my_validator_id: u32) -> Result<HashMap<u32, Ve
     }
 
     let mut map = HashMap::new();
-    let entries = fs::read_dir(path)
-        .map_err(|e| format!("cannot read peer_cert_dir '{}': {}", dir, e))?;
+    let entries =
+        fs::read_dir(path).map_err(|e| format!("cannot read peer_cert_dir '{}': {}", dir, e))?;
 
     for entry in entries {
         let entry = entry.map_err(|e| format!("dir entry error: {}", e))?;
@@ -400,8 +428,14 @@ mod tests {
 
     #[test]
     fn test_parse_validator_cert_filename_valid() {
-        assert_eq!(parse_validator_cert_filename("validator_2_cert.der"), Some(2));
-        assert_eq!(parse_validator_cert_filename("validator_42_cert.der"), Some(42));
+        assert_eq!(
+            parse_validator_cert_filename("validator_2_cert.der"),
+            Some(2)
+        );
+        assert_eq!(
+            parse_validator_cert_filename("validator_42_cert.der"),
+            Some(42)
+        );
     }
 
     #[test]
@@ -430,7 +464,8 @@ mod tests {
                 // Acceptable error: BLS point rejection on placeholder keys
                 assert!(
                     msg.contains("not a valid BLS12-381") || msg.contains("validator_key"),
-                    "unexpected error: {}", msg
+                    "unexpected error: {}",
+                    msg
                 );
             }
             Err(e) => panic!("unexpected error type: {:?}", e),
@@ -446,7 +481,9 @@ mod tests {
         use tempfile::NamedTempFile;
 
         let mut cfg_file = NamedTempFile::new().unwrap();
-        write!(cfg_file, r#"{{
+        write!(
+            cfg_file,
+            r#"{{
             "validator_id": 1,
             "network_id": "ilc-different-network",
             "bind_host": "127.0.0.1",
@@ -460,7 +497,9 @@ mod tests {
             "validator_consensus_key_path": "/nonexistent/key.hex",
             "peer_cert_dir": "/nonexistent/certs",
             "lmdb_path": "/tmp/test_lmdb"
-        }}"#).unwrap();
+        }}"#
+        )
+        .unwrap();
 
         let result = load_node_config(cfg_file.path(), "ilc-mysticeti-testnet-m009");
         assert!(result.is_err(), "expected network_id mismatch error");

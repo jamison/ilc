@@ -35,13 +35,20 @@ fn main() {
             // Write secret key to file (64 hex chars, no newline issues — write with newline
             // so the file is easily cat-able; load_node_config trims whitespace).
             if let Err(e) = fs::write(&path, format!("{}\n", sk_hex)) {
-                eprintln!("Error: cannot write secret key to '{}': {}", path.display(), e);
+                eprintln!(
+                    "Error: cannot write secret key to '{}': {}",
+                    path.display(),
+                    e
+                );
                 std::process::exit(1);
             }
             // Public key goes to stdout for the operator to copy into genesis.json.
             println!("{}", pk_hex);
             eprintln!("[keygen] secret key written to '{}'", path.display());
-            eprintln!("[keygen] public key (96 hex chars, BLS12-381 G1 compressed): {}", pk_hex);
+            eprintln!(
+                "[keygen] public key (96 hex chars, BLS12-381 G1 compressed): {}",
+                pk_hex
+            );
         }
         Mode::Print => {
             println!("sk={}", sk_hex);
@@ -69,7 +76,7 @@ fn generate_keypair() -> (String, String) {
     let pk = sk.sk_to_pk();
 
     let sk_bytes = sk.to_bytes(); // 32 bytes
-    let pk_bytes = pk.compress();  // 48 bytes, G1 compressed
+    let pk_bytes = pk.compress(); // 48 bytes, G1 compressed
 
     let sk_hex = hex_encode(&sk_bytes);
     let pk_hex = hex_encode(&pk_bytes);

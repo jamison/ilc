@@ -17,17 +17,17 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use ilc_consensus::app_interface::ilc_app::ilc_app_read_service_server;
+use ilc_consensus::app_interface::ApplicationInterface;
 use ilc_consensus::{
     balance_store::BalanceStore,
     config::{load_genesis, load_node_config},
     epoch_settlement::EpochStore,
     fast_path::FastPathProtocol,
     network::PeerNetwork,
-    node::{NodeRunner},
+    node::NodeRunner,
     types::{ILCConsensusError, ValidatorID},
 };
-use ilc_consensus::app_interface::ilc_app::ilc_app_read_service_server;
-use ilc_consensus::app_interface::ApplicationInterface;
 
 mod args {
     pub struct Args {
@@ -75,7 +75,9 @@ mod args {
 
 #[tokio::main]
 async fn main() {
-    rustls::crypto::ring::default_provider().install_default().ok();
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .ok();
 
     let args = match args::parse() {
         Ok(a) => a,
@@ -154,9 +156,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
 
     eprintln!(
         "[m010_harness] validator_id={} network_id={} listening on {}",
-        cfg.validator_id,
-        genesis_network_id,
-        cfg.bind_addr,
+        cfg.validator_id, genesis_network_id, cfg.bind_addr,
     );
 
     // -----------------------------------------------------------------------
@@ -172,7 +172,8 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 7. Build peer address list for outbound connections
     // -----------------------------------------------------------------------
-    let peer_addrs: Vec<(ValidatorID, std::net::SocketAddr)> = cfg.peers
+    let peer_addrs: Vec<(ValidatorID, std::net::SocketAddr)> = cfg
+        .peers
         .iter()
         .map(|p| (ValidatorID(p.validator_id), p.addr))
         .collect();
@@ -181,10 +182,8 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // 8. Optional: gRPC AppReadService
     // -----------------------------------------------------------------------
     if let Some(grpc_addr) = cfg.grpc_listen_addr {
-        let app_iface = ApplicationInterface::new(
-            Arc::clone(&balance_store),
-            Arc::clone(&epoch_store),
-        );
+        let app_iface =
+            ApplicationInterface::new(Arc::clone(&balance_store), Arc::clone(&epoch_store));
         let svc = ilc_app_read_service_server::IlcAppReadServiceServer::new(app_iface);
         tokio::spawn(async move {
             eprintln!("[m018] gRPC server listening on {}", grpc_addr);
@@ -199,10 +198,11 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 9. Start node control plane
     // -----------------------------------------------------------------------
+    let f_value = fast_path.validator_set.read().unwrap().f;
     let runner = Arc::new(NodeRunner::new(
         ValidatorID(cfg.validator_id),
         genesis_network_id,
-        validator_set_arc.f,
+        f_value,
         validator_sk,
         network,
         fast_path,
@@ -211,7 +211,10 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         peer_addrs,
     ));
 
-    eprintln!("[m010_harness] m010_harness_startup_complete validator_id={}", cfg.validator_id);
+    eprintln!(
+        "[m010_harness] m010_harness_startup_complete validator_id={}",
+        cfg.validator_id
+    );
 
     runner.run().await
 }

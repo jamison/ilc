@@ -1,15 +1,19 @@
-use tonic::{Request, Response, Status};
 use std::sync::Arc;
+use tonic::{Request, Response, Status};
 
 pub mod ilc_app {
     tonic::include_proto!("ilc_app");
 }
 
-use ilc_app::ilc_app_read_service_server::IlcAppReadService;
-use ilc_app::{GetBalanceRequest, GetBalanceResponse, GetEpochRequest, GetEpochResponse, GetEpochRecordRequest, GetEpochRecordResponse, GetEpochChainRequest, GetEpochChainResponse, EdgeRecord, HyperEdgeRecord};
 use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
 use crate::types::AgentID;
+use ilc_app::ilc_app_read_service_server::IlcAppReadService;
+use ilc_app::{
+    EdgeRecord, GetBalanceRequest, GetBalanceResponse, GetEpochChainRequest, GetEpochChainResponse,
+    GetEpochRecordRequest, GetEpochRecordResponse, GetEpochRequest, GetEpochResponse,
+    HyperEdgeRecord,
+};
 
 /// The singular external interface allowed for the Python Epistemic layer.
 /// Inherently bans writes by omitting any mutation capabilities, strictly decoupling
@@ -21,23 +25,31 @@ pub struct ApplicationInterface {
 
 impl ApplicationInterface {
     pub fn new(balance_store: Arc<BalanceStore>, epoch_store: Arc<EpochStore>) -> Self {
-        Self { balance_store, epoch_store }
+        Self {
+            balance_store,
+            epoch_store,
+        }
     }
 }
 
 #[tonic::async_trait]
 impl IlcAppReadService for ApplicationInterface {
-    async fn get_balance(&self, request: Request<GetBalanceRequest>) -> Result<Response<GetBalanceResponse>, Status> {
+    async fn get_balance(
+        &self,
+        request: Request<GetBalanceRequest>,
+    ) -> Result<Response<GetBalanceResponse>, Status> {
         let req = request.into_inner();
-        
-        let agent_bytes: [u8; 48] = req.agent_id.try_into()
+
+        let agent_bytes: [u8; 48] = req
+            .agent_id
+            .try_into()
             .map_err(|_| Status::invalid_argument("AgentID must be exactly 48 bytes"))?;
-            
+
         let agent_id = AgentID(agent_bytes);
 
         match self.balance_store.get_balance(&agent_id) {
             Ok(balance) => {
-                // Provides full deterministic mapping allowing Python to reconstruct Owned-Object 
+                // Provides full deterministic mapping allowing Python to reconstruct Owned-Object
                 // prerequisites automatically over gRPC.
                 Ok(Response::new(GetBalanceResponse {
                     amount_micro_ecu: balance.amount_micro_ecu,
@@ -49,9 +61,14 @@ impl IlcAppReadService for ApplicationInterface {
         }
     }
 
-    async fn get_epoch(&self, _request: Request<GetEpochRequest>) -> Result<Response<GetEpochResponse>, Status> {
+    async fn get_epoch(
+        &self,
+        _request: Request<GetEpochRequest>,
+    ) -> Result<Response<GetEpochResponse>, Status> {
         match self.epoch_store.get_current_epoch() {
-            Ok(epoch) => Ok(Response::new(GetEpochResponse { current_epoch: epoch })),
+            Ok(epoch) => Ok(Response::new(GetEpochResponse {
+                current_epoch: epoch,
+            })),
             Err(e) => Err(Status::internal(format!("Epoch lookup failed: {:?}", e))),
         }
     }
@@ -72,9 +89,12 @@ impl IlcAppReadService for ApplicationInterface {
                     agg_sig: stored.agg_sig_bytes,
                     found: true,
                 }))
-            },
+            }
             Ok(None) => Ok(Response::new(GetEpochRecordResponse {
-                epoch, state_root: vec![], agg_sig: vec![], found: false,
+                epoch,
+                state_root: vec![],
+                agg_sig: vec![],
+                found: false,
             })),
             Err(e) => Err(Status::internal(format!("LMDB read error: {:?}", e))),
         }
@@ -85,10 +105,20 @@ impl IlcAppReadService for ApplicationInterface {
         request: Request<GetEpochChainRequest>,
     ) -> Result<Response<GetEpochChainResponse>, Status> {
         let req = request.into_inner();
-        let from = if req.from_epoch == 0 { 1 } else { req.from_epoch };
-        let current = self.epoch_store.get_current_epoch()
+        let from = if req.from_epoch == 0 {
+            1
+        } else {
+            req.from_epoch
+        };
+        let current = self
+            .epoch_store
+            .get_current_epoch()
             .map_err(|e| Status::internal(format!("Epoch read error: {:?}", e)))?;
-        let to = if req.to_epoch == 0 || req.to_epoch > current { current } else { req.to_epoch };
+        let to = if req.to_epoch == 0 || req.to_epoch > current {
+            current
+        } else {
+            req.to_epoch
+        };
 
         let mut records = Vec::new();
         for ep in from..=to {
@@ -103,8 +133,8 @@ impl IlcAppReadService for ApplicationInterface {
                         agg_sig: stored.agg_sig_bytes,
                         found: true,
                     });
-                },
-                Ok(None) => break,  
+                }
+                Ok(None) => break,
                 Err(e) => return Err(Status::internal(format!("{:?}", e))),
             }
         }
@@ -122,20 +152,18 @@ impl IlcAppReadService for ApplicationInterface {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;
-    use lmdb_rkv::Environment;
-    use crate::types::{AttributionBatch, EpochSeq, CIDv1Root, EpochSettlementRecord, EpochCheckpoint, AggSig, ValidatorSet};
     use crate::epoch_settlement::EpochSettlementProtocol;
+    use crate::types::{
+        AggSig, AttributionBatch, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
+        ValidatorSet,
+    };
     use blst::min_pk::{AggregateSignature, SecretKey};
+    use lmdb_rkv::Environment;
+    use tempfile::tempdir;
 
     fn setup_env() -> (Arc<Environment>, tempfile::TempDir) {
         let dir = tempdir().unwrap();
-        let env = Arc::new(
-            Environment::new()
-                .set_max_dbs(2)
-                .open(dir.path())
-                .unwrap()
-        );
+        let env = Arc::new(Environment::new().set_max_dbs(2).open(dir.path()).unwrap());
         (env, dir)
     }
 
@@ -153,7 +181,8 @@ mod tests {
 
     fn generate_valid_agg_sig(record: &EpochSettlementRecord, keys: &[SecretKey]) -> AggSig {
         let msg = bincode::serialize(record).unwrap();
-        let sigs: Vec<_> = keys.iter()
+        let sigs: Vec<_> = keys
+            .iter()
             .map(|sk| sk.sign(&msg, crate::types::ILC_EPOCH_SIG_DST, &[]))
             .collect();
         let sig_refs: Vec<_> = sigs.iter().collect();
@@ -168,10 +197,12 @@ mod tests {
         let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
 
         let agent_id = AgentID([5; 48]);
-        balance_store.apply_attribution(AttributionBatch {
-            epoch: EpochSeq(1),
-            attributions: vec![(agent_id, 999_000)],
-        }).unwrap();
+        balance_store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(1),
+                attributions: vec![(agent_id, 999_000)],
+            })
+            .unwrap();
 
         let app = ApplicationInterface::new(balance_store, epoch_store);
 
@@ -212,9 +243,9 @@ mod tests {
         let resp = app.get_epoch(req).await.unwrap().into_inner();
         assert_eq!(resp.current_epoch, 0);
 
-        // 2. We inject a valid EpochSettlement sequence via the M-006 domain logic mapped over LMDB 
+        // 2. We inject a valid EpochSettlement sequence via the M-006 domain logic mapped over LMDB
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
-        
+
         let (vset, keys) = setup_validators();
         // SEC-FIX-02: commit epochs sequentially from 1.
         for ep in 1u64..=3 {
@@ -222,7 +253,10 @@ mod tests {
                 epoch: EpochSeq(ep),
                 state_root: CIDv1Root::new([ep as u8; 36]),
             };
-            let cp = EpochCheckpoint { record: r.clone(), sigs: generate_valid_agg_sig(&r, &keys) };
+            let cp = EpochCheckpoint {
+                record: r.clone(),
+                sigs: generate_valid_agg_sig(&r, &keys),
+            };
             protocol.process_epoch_checkpoint(cp, &vset).unwrap();
         }
 
@@ -240,11 +274,19 @@ mod tests {
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, keys) = setup_validators();
-        
+
         // SEC-FIX-02: commit sequentially.
-        let record = EpochSettlementRecord { epoch: EpochSeq(1), state_root: CIDv1Root::new([1u8; 36]) };
-        let checkpoint = EpochCheckpoint { record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys) };
-        protocol.process_epoch_checkpoint(checkpoint, &vset).unwrap();
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs: generate_valid_agg_sig(&record, &keys),
+        };
+        protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap();
 
         let req = Request::new(GetEpochRecordRequest { epoch: 1 });
         let resp = app.get_epoch_record(req).await.unwrap().into_inner();
@@ -261,15 +303,28 @@ mod tests {
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, keys) = setup_validators();
-        
+
         for i in 1..=5 {
-            let record = EpochSettlementRecord { epoch: EpochSeq(i), state_root: CIDv1Root::new([i as u8; 36]) };
-            protocol.process_epoch_checkpoint(EpochCheckpoint {
-                record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys)
-            }, &vset).unwrap();
+            let record = EpochSettlementRecord {
+                epoch: EpochSeq(i),
+                state_root: CIDv1Root::new([i as u8; 36]),
+            };
+            protocol
+                .process_epoch_checkpoint(
+                    EpochCheckpoint {
+                        record: record.clone(),
+                        sigs: generate_valid_agg_sig(&record, &keys),
+                    },
+                    &vset,
+                )
+                .unwrap();
         }
 
-        let req = Request::new(GetEpochChainRequest { from_epoch: 1, to_epoch: 5, include_edges: false });
+        let req = Request::new(GetEpochChainRequest {
+            from_epoch: 1,
+            to_epoch: 5,
+            include_edges: false,
+        });
         let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
         assert!(resp.chain_complete);
         assert_eq!(resp.records.len(), 5);
@@ -283,23 +338,39 @@ mod tests {
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
         let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, keys) = setup_validators();
-        
+
         // Commit 1-3 via the sequential protocol path, then inject epoch 5 directly
         // via commit_epoch_record (testnet write, no +1 guard) to simulate a gap
         // as might exist after partial recovery. Epoch 4 is intentionally absent.
         use crate::epoch_settlement::EpochStore;
         for i in 1u64..=3 {
-            let record = EpochSettlementRecord { epoch: EpochSeq(i), state_root: CIDv1Root::new([i as u8; 36]) };
-            protocol.process_epoch_checkpoint(EpochCheckpoint {
-                record: record.clone(), sigs: generate_valid_agg_sig(&record, &keys)
-            }, &vset).unwrap();
+            let record = EpochSettlementRecord {
+                epoch: EpochSeq(i),
+                state_root: CIDv1Root::new([i as u8; 36]),
+            };
+            protocol
+                .process_epoch_checkpoint(
+                    EpochCheckpoint {
+                        record: record.clone(),
+                        sigs: generate_valid_agg_sig(&record, &keys),
+                    },
+                    &vset,
+                )
+                .unwrap();
         }
         // Direct write of epoch 5 (skip 4) to simulate a gap in the store.
-        epoch_store.commit_epoch_record(EpochSettlementRecord {
-            epoch: EpochSeq(5), state_root: CIDv1Root::new([5u8; 36])
-        }).unwrap();
+        epoch_store
+            .commit_epoch_record(EpochSettlementRecord {
+                epoch: EpochSeq(5),
+                state_root: CIDv1Root::new([5u8; 36]),
+            })
+            .unwrap();
 
-        let req = Request::new(GetEpochChainRequest { from_epoch: 1, to_epoch: 5, include_edges: false });
+        let req = Request::new(GetEpochChainRequest {
+            from_epoch: 1,
+            to_epoch: 5,
+            include_edges: false,
+        });
         let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
         assert!(!resp.chain_complete); // Because it stopped at 3 missing 4
         assert_eq!(resp.records.len(), 3);
