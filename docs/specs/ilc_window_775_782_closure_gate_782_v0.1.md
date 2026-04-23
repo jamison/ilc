@@ -57,7 +57,8 @@ Window `775-782` closes honestly as a row-5 remediation **non-closure** window.
 
 The decisive result is:
 
-- Variant A best-case Run 2 recall: `0.7777777777777778`
+- Variant A best-case Run 2 conservative upper-bound recall:
+  `0.7777777777777778`
 - Variant B structural recall: `1.0`
 - Variant C structural recall: `1.0`
 - bands met: `0 / 3`

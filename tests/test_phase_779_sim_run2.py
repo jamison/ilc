@@ -35,6 +35,7 @@ class TestPhase779SimRun2(unittest.TestCase):
             "variant_b_structural_recall_exceeds_threshold=1.0",
             "variant_c_structural_recall_exceeds_threshold=1.0",
             "run2_recommended_batch_window=none_liveness_not_met",
+            "variant_a_scoring_posture=conservative_upper_bound_from_order_and_version_alignment",
         ):
             self.assertIn(marker, text)
 
@@ -50,6 +51,7 @@ class TestPhase779SimRun2(unittest.TestCase):
         self.assertIn("`1000ms`", text)
         self.assertIn("validator-1 only logged `18` final-destination acknowledgements out of `20`", text)
         self.assertIn("no recommended default is justified from this window", text)
+        self.assertIn("conservative for closure because the upper-bound score still fails", text)
 
     def test_variant_b_and_c_are_honestly_recorded_as_structural_failures(self) -> None:
         text = _read(ARTIFACT)

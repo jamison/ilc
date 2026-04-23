@@ -3,7 +3,7 @@ use lmdb_rkv::{Cursor, Database, DatabaseFlags, Environment, Transaction, WriteF
 use std::sync::Arc;
 
 use crate::types::{
-    CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ILCConsensusError, ValidatorSet,
+    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorSet,
     ILC_EPOCH_SIG_DST,
 };
 
@@ -332,6 +332,7 @@ impl EpochSettlementProtocol {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::EpochSeq;
     use crate::types::AggSig;
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
@@ -342,13 +343,6 @@ mod tests {
         let dir = tempdir().unwrap();
         let env = Environment::new().set_max_dbs(2).open(dir.path()).unwrap();
         (Arc::new(env), dir)
-    }
-
-    fn generate_dummy_agg_sig() -> AggSig {
-        let sk = SecretKey::key_gen(&[1; 32], &[]).unwrap();
-        let sig = sk.sign(b"dummy", b"DST", &[]);
-        let agg = AggregateSignature::aggregate(&[&sig], false).unwrap();
-        AggSig(agg)
     }
 
     fn setup_validators() -> (ValidatorSet, Vec<SecretKey>) {

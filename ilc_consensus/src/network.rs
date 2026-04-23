@@ -1,7 +1,6 @@
 use crate::epoch_settlement::StoredCheckpoint;
 use crate::types::{
-    EpochCheckpoint, EpochSettlementRecord, EpochSettlementTx, ILCConsensusError,
-    TransferCertificate, ValidatorID,
+    EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate, ValidatorID,
 };
 use quinn::{ClientConfig, Connection, Endpoint, RecvStream, SendStream, ServerConfig};
 use rustls::client::danger::ServerCertVerified;
@@ -582,7 +581,7 @@ mod tests {
         };
 
         client_node.transmit(send, envelope).await.unwrap();
-        tokio::time::timeout(Duration::from_secs(2), server_task)
+        let _ = tokio::time::timeout(Duration::from_secs(2), server_task)
             .await
             .unwrap();
     }
