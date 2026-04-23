@@ -56,10 +56,10 @@ impl<'de> serde::Deserialize<'de> for AgentSig {
         let sig = Signature::from_bytes(&bytes).map_err(|e| {
             serde::de::Error::custom(format!("blst agent signature parse fail: {:?}", e))
         })?;
-        // SEC-FIX-01: G2 subgroup check — from_bytes decompresses but does not enforce
-        // r-order subgroup membership. An off-subgroup point can forge verify() results.
-        sig.validate(false)
-            .map_err(|_| serde::de::Error::custom("AgentSig G2 subgroup check failed"))?;
+        // SEC-FIX-01/SEC-AUDIT: G2 subgroup + infinity check. from_bytes
+        // decompresses but does not enforce all cryptographic validity checks.
+        sig.validate(true)
+            .map_err(|_| serde::de::Error::custom("AgentSig G2 validity check failed"))?;
         Ok(AgentSig(sig))
     }
 }
@@ -121,9 +121,9 @@ impl<'de> serde::Deserialize<'de> for ValidatorSig {
         let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
         let sig = Signature::from_bytes(&bytes)
             .map_err(|e| serde::de::Error::custom(format!("blst signature parse fail: {:?}", e)))?;
-        // SEC-FIX-01: G2 subgroup check.
-        sig.validate(false)
-            .map_err(|_| serde::de::Error::custom("ValidatorSig G2 subgroup check failed"))?;
+        // SEC-FIX-01/SEC-AUDIT: G2 subgroup + infinity check.
+        sig.validate(true)
+            .map_err(|_| serde::de::Error::custom("ValidatorSig G2 validity check failed"))?;
         Ok(ValidatorSig(sig))
     }
 }
@@ -191,9 +191,10 @@ impl<'de> serde::Deserialize<'de> for AggSig {
         let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
         let sig = blst::min_pk::Signature::from_bytes(&bytes)
             .map_err(|e| serde::de::Error::custom(format!("Invalid blst signature: {:?}", e)))?;
-        // SEC-FIX-01: G2 subgroup check — guards against forged EpochCheckpoint acceptance.
-        sig.validate(false)
-            .map_err(|_| serde::de::Error::custom("AggSig G2 subgroup check failed"))?;
+        // SEC-FIX-01/SEC-AUDIT: G2 subgroup + infinity check — guards against
+        // forged EpochCheckpoint acceptance and rejects identity points early.
+        sig.validate(true)
+            .map_err(|_| serde::de::Error::custom("AggSig G2 validity check failed"))?;
         Ok(AggSig(blst::min_pk::AggregateSignature::from_signature(
             &sig,
         )))
@@ -300,7 +301,7 @@ mod tests {
     }
 
     // ---------------------------------------------------------------------------
-    // SEC-FIX-01: AgentSig G2 subgroup check
+    // SEC-FIX-01/SEC-AUDIT: AgentSig G2 validity check
     // ---------------------------------------------------------------------------
 
     #[test]
@@ -328,21 +329,21 @@ mod tests {
     }
 
     #[test]
-    fn test_agentsig_validate_is_called_on_valid_path() {
-        // Confirm that validate() passes for legitimately generated signatures.
+    fn test_agentsig_validate_true_is_called_on_valid_path() {
+        // Confirm that validate(true) passes for legitimately generated signatures.
         // Off-subgroup G2 vectors require BLS12-381-specific test data outside
         // this crate; subgroup check presence is verified by code review +
         // this regression confirming the valid path still works.
         let sk = SecretKey::key_gen(&[77u8; 32], &[]).unwrap();
         let sig = sk.sign(b"validate_test", AGENT_TRANSFER_DST, &[]);
         assert!(
-            sig.validate(false).is_ok(),
-            "valid sig must pass validate()"
+            sig.validate(true).is_ok(),
+            "valid sig must pass validate(true)"
         );
     }
 
     // ---------------------------------------------------------------------------
-    // SEC-FIX-01: ValidatorSig G2 subgroup check
+    // SEC-FIX-01/SEC-AUDIT: ValidatorSig G2 validity check
     // ---------------------------------------------------------------------------
 
     #[test]
@@ -368,7 +369,7 @@ mod tests {
     }
 
     // ---------------------------------------------------------------------------
-    // SEC-FIX-01: AggSig G2 subgroup check
+    // SEC-FIX-01/SEC-AUDIT: AggSig G2 validity check
     // ---------------------------------------------------------------------------
 
     #[test]
