@@ -22,68 +22,65 @@ def test_required_verdict_token_present() -> None:
     assert "`run_h014_sim_routing_01_verdict=pass`" in _read()
 
 
-def test_hop_efficiency_finding_is_explicit() -> None:
+def test_thresholds_are_declared_before_results() -> None:
     text = _read()
-    # The primary advantage of spectral routing over random walk.
-    assert "58" in text  # ~58-60% hop reduction
-    assert "median" in text
-    assert "1 hop" in text
+    assert text.index("## 2. Up-Front Pass Criteria") < text.index("## 5. Results by Topology")
+    assert "Healthy greedy convergence floor" in text
+    assert "`0.85`" in text
+    assert "Partition-near greedy convergence floor" in text
+    assert "`0.60`" in text
+    assert "Two-phase convergence floor" in text
+    assert "`0.80`" in text
 
 
-def test_cycle_failure_mode_is_documented() -> None:
+def test_four_h005_topology_classes_are_present() -> None:
     text = _read()
-    assert "cycle" in text.lower()
-    assert "0.019" in text   # cluster center spacing that causes overlap
-    assert "adjacent clusters" in text
+    for token in (
+        "`T1_random`",
+        "`T2_panel_heavy`",
+        "`T3_coalition_sparse`",
+        "`T4_partition_near`",
+    ):
+        assert token in text
+    assert "partition-risk floor" in text
+    assert "`theta_floor = 0.001`" in text
 
 
-def test_noise_penalty_values_are_present() -> None:
+def test_hop_distribution_percentiles_present() -> None:
     text = _read()
-    # N=500 noise penalty: -2.05%
-    assert "2.05" in text
-    # N=10000 noise penalty: -0.45%
-    assert "0.45" in text
+    assert "P5" in text
+    assert "P50" in text
+    assert "P95" in text
+    assert "`1.54`" in text
+    assert "`4.49`" in text
 
 
-def test_key_convergence_rates_are_present() -> None:
+def test_comparison_algorithms_present() -> None:
     text = _read()
-    assert "0.9775" in text   # spectral noisy N=500
-    assert "0.9955" in text   # spectral noisy N=10000
-    assert "0.9985" in text   # random walk N=500
-    assert "0.9195" in text   # DHT naive N=500
+    for token in ("`spectral_greedy`", "`spectral_two_phase`", "`random_walk`", "`dht_naive`"):
+        assert token in text
 
 
-def test_key_hop_counts_are_present() -> None:
+def test_failure_mode_taxonomy_present() -> None:
     text = _read()
-    assert "1.55" in text    # spectral noisy mean hops N=500
-    assert "1.69" in text    # spectral noisy mean hops N=10000
-    assert "3.93" in text    # random walk mean hops N=500
+    assert "## 6. Failure Mode Taxonomy" in text
+    assert "`cycle`" in text
+    assert "`max_hops`" in text
+    assert "`no_peers`" in text
+    assert "eliminated by the two-phase fallback" in text
 
 
-def test_h015_implementation_pattern_is_explicit() -> None:
+def test_h015_unblock_assessment_is_bounded() -> None:
     text = _read()
-    assert "fallback" in text.lower()
-    assert "random walk" in text.lower()
-    assert "cycle" in text.lower()
+    assert "H-015 is unblocked" in text
+    assert "immediate random-walk fallback" in text
+    assert "may not activate spectral beacon gossip" in text
+    assert "may not mutate any CDL row" in text
 
 
-def test_dht_finding_is_documented() -> None:
-    text = _read()
-    assert "DHT" in text
-    assert "161" in text   # DHT cycles at N=500
-
-
-def test_operational_boundaries_present() -> None:
-    text = _read()
-    assert "H-015" in text
-    assert "H-013" in text   # sealed-sender ADR still required
-
-
-def test_1d_fingerprint_scope_is_documented() -> None:
-    # The simulation uses 1D fingerprints (λ₂ scalar only), not the full k-dimensional
-    # spectral embedding from H-006b.  This is a conservative lower bound on performance
-    # and must be documented so H-015 implementers know to use the full fingerprint.
-    text = _read()
-    assert "1-dimensional" in text or "1D" in text
-    assert "lower bound" in text
-    assert "k-dimensional" in text or "k=4" in text
+def test_script_locks_topology_count_and_seed() -> None:
+    script = SCRIPT_PATH.read_text(encoding="utf-8")
+    assert "TOPOLOGIES" in script
+    assert "T4_partition_near" in script
+    assert "SEED: int = 42" in script
+    assert "json.dumps(output, indent=2, sort_keys=True)" in script

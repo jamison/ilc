@@ -1,4 +1,7 @@
 # H-010: Type-aware, epoch-stamped node embedding pipeline.
+# Embedding is analytics-layer only. Inclusion in epoch commitment records
+# requires a separate CDL (H-007). Do not use embedding vectors as commitment
+# primitives without constitutional authorization.
 #
 # Gate history:
 #   H-002 positive → SIM-EMBED-01 verdict=pass; model recommendations locked:
@@ -24,8 +27,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
-from typing import Callable, List, Optional, Sequence
+import math
+from pathlib import Path
+from typing import Any, Callable, List, Optional, Sequence
 
 import numpy as np
 
@@ -127,6 +133,8 @@ def select_payload_family(content_type: Optional[str]) -> str:
     """
     if content_type is None:
         return FAMILY_TEXT_PLAIN
+    if content_type.startswith("image/"):
+        return FAMILY_IMAGE
     if content_type in _ALL_FAMILIES:
         # Already a modality family — pass through directly.
         return content_type
@@ -152,16 +160,16 @@ def prepare_text_payload(node: Node, family: str) -> str:
     """
     if family == FAMILY_APPLICATION_JSON:
         if isinstance(node.content, dict):
-            return json.dumps(node.content, sort_keys=True)
+            return json.dumps(node.content, sort_keys=True, allow_nan=False)
         try:
             parsed = json.loads(str(node.content))
-            return json.dumps(parsed, sort_keys=True)
+            return json.dumps(parsed, sort_keys=True, allow_nan=False)
         except (json.JSONDecodeError, TypeError, ValueError):
             # Content is not valid JSON — fall back to string representation.
             return str(node.content)
     else:
         if isinstance(node.content, dict):
-            return json.dumps(node.content, sort_keys=True)
+            return json.dumps(node.content, sort_keys=True, allow_nan=False)
         return str(node.content)
 
 
@@ -236,10 +244,26 @@ def _build_text_encoder(model_id: str) -> Encoder:
     return encode
 
 
+def _build_encoder(model_id: str) -> Encoder:
+    """Build the encoder for a model id.
+
+    Text-family models load lazily through transformers.  The CLIP image model is
+    selected and stamped for `image/*` nodes, but default image encoding is not
+    activated in H-010 because the testnet path has no image corpus or image
+    loader contract.  Callers can still pass an explicit encoder for image tests
+    and future H-series activation work.
+    """
+    if model_id == MODEL_CLIP:
+        raise EmbeddingPipelineError(
+            "image_encoder_requires_explicit_encoder_in_h010"
+        )
+    return _build_text_encoder(model_id)
+
+
 def _get_encoder(model_id: str) -> Encoder:
     """Return a cached encoder for model_id, loading it on the first call."""
     if model_id not in _encoder_cache:
-        _encoder_cache[model_id] = _build_text_encoder(model_id)
+        _encoder_cache[model_id] = _build_encoder(model_id)
     return _encoder_cache[model_id]
 
 
@@ -264,8 +288,9 @@ def embed_node(
 
     Otherwise the original node is returned unchanged (no copy, no allocation).
 
-    image/* content_type raises EmbeddingPipelineError — CLIP image embedding is
-    not implemented in this phase; there is no image corpus at testnet scale.
+    image/* content_type selects the CLIP model.  H-010 does not activate a
+    default image-loader contract, so image nodes require an explicit encoder
+    callable in this phase.
 
     Args:
         node:    The node to embed.
@@ -281,17 +306,10 @@ def embed_node(
         or the original node if the embedding is still fresh and force=False.
 
     Raises:
-        EmbeddingPipelineError: for image/* content_type or if encoding fails.
+        EmbeddingPipelineError: if the selected default encoder is unavailable
+        or if encoding fails.
     """
     family = select_payload_family(node.content_type)
-
-    if family == FAMILY_IMAGE:
-        raise EmbeddingPipelineError(
-            f"image/* embedding is not implemented in H-010; "
-            f"node id={node.id!r} has content_type='image/*'. "
-            "Implement a CLIP image encoder in a future H-series phase."
-        )
-
     current_model = select_model(family)
 
     # Re-embed if stale, if the model changed (content_type was updated since last
@@ -319,3 +337,128 @@ def embed_node(
         "embedding_model": current_model,
         "embedding_epoch": epoch,
     })
+
+
+async def embed_node_async(
+    node: Node,
+    epoch: int,
+    *,
+    encoder: Optional[Encoder] = None,
+    force: bool = False,
+) -> Node:
+    """Async wrapper for H-010 off-hot-path embedding generation.
+
+    Node ingestion can schedule this coroutine without doing ML inference in the
+    ingestion call stack.  The synchronous encoder call is moved to a worker
+    thread via asyncio.to_thread().
+    """
+    return await asyncio.to_thread(
+        embed_node,
+        node,
+        epoch,
+        encoder=encoder,
+        force=force,
+    )
+
+
+class EmbeddingSidecarStore:
+    """LMDB sidecar for testnet-scale embedding persistence.
+
+    The canonical graph node remains the source of truth.  This sidecar stores a
+    compact analytics record keyed by node id so testnet query paths can recover
+    vectors without rewriting the node store.  Mainnet indexing remains a future
+    FAISS-style concern and is not claimed here.
+    """
+
+    def __init__(self, path: str | Path, *, map_size: int = 16 * 1024 * 1024) -> None:
+        try:
+            import lmdb
+        except ModuleNotFoundError as exc:
+            raise EmbeddingPipelineError("lmdb_dependency_missing") from exc
+
+        self.path = Path(path)
+        self.path.mkdir(parents=True, exist_ok=True)
+        self._env = lmdb.open(
+            str(self.path),
+            map_size=map_size,
+            subdir=True,
+            max_dbs=1,
+            lock=True,
+        )
+
+    def close(self) -> None:
+        self._env.close()
+
+    def __enter__(self) -> "EmbeddingSidecarStore":
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+        self.close()
+
+    def put_node_embedding(self, node: Node) -> None:
+        """Persist a node's embedding metadata.
+
+        Raises if the node has not yet been embedded or if any vector component
+        is non-finite.  Non-finite JSON floats are forbidden on machine surfaces.
+        """
+        if node.embedding is None or node.embedding_model is None or node.embedding_epoch is None:
+            raise EmbeddingPipelineError("node_embedding_missing")
+        for value in node.embedding:
+            if not math.isfinite(float(value)):
+                raise EmbeddingPipelineError("node_embedding_non_finite")
+
+        record: dict[str, Any] = {
+            "embedding": [float(v) for v in node.embedding],
+            "embedding_epoch": int(node.embedding_epoch),
+            "embedding_model": node.embedding_model,
+            "node_id": node.id,
+        }
+        payload = json.dumps(
+            record,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        with self._env.begin(write=True) as txn:
+            txn.put(node.id.encode("utf-8"), payload)
+
+    def get_node_embedding(self, node_id: str) -> Optional[dict[str, Any]]:
+        """Return the persisted embedding record for node_id, if present."""
+        with self._env.begin(write=False) as txn:
+            payload = txn.get(node_id.encode("utf-8"))
+        if payload is None:
+            return None
+        return json.loads(payload.decode("utf-8"))
+
+
+def embed_and_store_node(
+    node: Node,
+    epoch: int,
+    store: EmbeddingSidecarStore,
+    *,
+    encoder: Optional[Encoder] = None,
+    force: bool = False,
+) -> Node:
+    """Embed a node and persist the resulting vector in the LMDB sidecar."""
+    embedded = embed_node(node, epoch, encoder=encoder, force=force)
+    store.put_node_embedding(embedded)
+    return embedded
+
+
+async def embed_and_store_node_async(
+    node: Node,
+    epoch: int,
+    store: EmbeddingSidecarStore,
+    *,
+    encoder: Optional[Encoder] = None,
+    force: bool = False,
+) -> Node:
+    """Async embed-and-store helper for ingestion workers."""
+    return await asyncio.to_thread(
+        embed_and_store_node,
+        node,
+        epoch,
+        store,
+        encoder=encoder,
+        force=force,
+    )
