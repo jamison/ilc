@@ -118,3 +118,172 @@ def test_update_spectral_trajectory_spectral_gap_is_non_negative() -> None:
     )
 
     assert record.spectral_gap >= 0.0
+
+
+# ---------------------------------------------------------------------------
+# Detection table — all four quadrants
+# ---------------------------------------------------------------------------
+
+# Path A-B-C has lambda2 = 0.5 (analytical: path P3 with equal unit stakes).
+# Triangle A-B-C has lambda2 = 0.75 (complete graph K3 with equal unit stakes).
+# These two graphs provide the rising/falling control points for the four cells.
+
+
+def test_update_spectral_trajectory_accelerating_growth_cell() -> None:
+    # Δλ > 0, ΔΔλ > 0 → "Accelerating growth / Topology strengthening"
+    # history: lambda2 grew by 0.1 last epoch; new lambda2 = 0.5 → delta 0.2 → accel +0.1
+    history = [
+        SpectralEpochRecord(
+            epoch=1,
+            lambda2=0.2,
+            lambda2_delta=0.0,
+            lambda2_accel=0.0,
+            spectral_gap=0.5,
+            fiedler_vector_epoch=1,
+        ),
+        SpectralEpochRecord(
+            epoch=2,
+            lambda2=0.3,
+            lambda2_delta=0.1,
+            lambda2_accel=0.1,
+            spectral_gap=0.5,
+            fiedler_vector_epoch=2,
+        ),
+    ]
+
+    record = update_spectral_trajectory(
+        history=history,
+        L_new=_laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"]]),
+        epoch=3,
+    )
+
+    assert record.lambda2 == pytest.approx(0.5)
+    assert record.lambda2_delta == pytest.approx(0.2)   # 0.5 - 0.3
+    assert record.lambda2_accel == pytest.approx(0.1)   # 0.2 - 0.1
+    assert record.lambda2_delta > 0.0
+    assert record.lambda2_accel > 0.0
+
+
+def test_update_spectral_trajectory_partition_healing_cell() -> None:
+    # Δλ < 0, ΔΔλ > 0 → "Decelerating decline / Partition healing"
+    # history: lambda2 fell steeply last epoch; new value declines less steeply
+    history = [
+        SpectralEpochRecord(
+            epoch=1,
+            lambda2=0.8,
+            lambda2_delta=0.0,
+            lambda2_accel=0.0,
+            spectral_gap=0.5,
+            fiedler_vector_epoch=1,
+        ),
+        SpectralEpochRecord(
+            epoch=2,
+            lambda2=0.6,
+            lambda2_delta=-0.2,
+            lambda2_accel=0.0,
+            spectral_gap=0.5,
+            fiedler_vector_epoch=2,
+        ),
+    ]
+
+    record = update_spectral_trajectory(
+        history=history,
+        L_new=_laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"]]),
+        epoch=3,
+    )
+
+    assert record.lambda2 == pytest.approx(0.5)
+    assert record.lambda2_delta == pytest.approx(-0.1)   # 0.5 - 0.6
+    assert record.lambda2_accel == pytest.approx(0.1)    # -0.1 - (-0.2)
+    assert record.lambda2_delta < 0.0
+    assert record.lambda2_accel > 0.0
+
+
+def test_update_spectral_trajectory_partition_risk_escalating_cell() -> None:
+    # Δλ < 0, ΔΔλ < 0 → "Accelerating decline / Partition risk escalating"
+    # This is the highest-priority alarm pattern in the detection table.
+    # history: lambda2 was declining slowly; new value drops sharply
+    history = [
+        SpectralEpochRecord(
+            epoch=1,
+            lambda2=0.8,
+            lambda2_delta=0.0,
+            lambda2_accel=0.0,
+            spectral_gap=0.5,
+            fiedler_vector_epoch=1,
+        ),
+        SpectralEpochRecord(
+            epoch=2,
+            lambda2=0.75,
+            lambda2_delta=-0.05,
+            lambda2_accel=0.0,
+            spectral_gap=0.5,
+            fiedler_vector_epoch=2,
+        ),
+    ]
+
+    record = update_spectral_trajectory(
+        history=history,
+        L_new=_laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"]]),
+        epoch=3,
+    )
+
+    assert record.lambda2 == pytest.approx(0.5)
+    assert record.lambda2_delta == pytest.approx(-0.25)   # 0.5 - 0.75
+    assert record.lambda2_accel == pytest.approx(-0.20)   # -0.25 - (-0.05)
+    assert record.lambda2_delta < 0.0
+    assert record.lambda2_accel < 0.0
+
+
+# ---------------------------------------------------------------------------
+# Sequential pipeline test
+# ---------------------------------------------------------------------------
+
+
+def test_update_spectral_trajectory_sequential_call_chain_is_consistent() -> None:
+    # Run three calls where each output feeds the next, verify that delta and
+    # accel fields are consistent end-to-end (no off-by-one in history indexing).
+    #
+    # L1: single binary edge A-B → lambda2 = 1.0
+    # L2: path A-B-C → lambda2 = 0.5
+    # L3: triangle A-B-C → lambda2 = 0.75
+    L1 = _laplacian(["A", "B"], [["A", "B"]])
+    L2 = _laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"]])
+    L3 = _laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"], ["A", "C"]])
+
+    r1 = update_spectral_trajectory([], L1, 1)
+    r2 = update_spectral_trajectory([r1], L2, 2)
+    r3 = update_spectral_trajectory([r1, r2], L3, 3)
+
+    # r1: no history
+    assert r1.lambda2_delta == 0.0
+    assert r1.lambda2_accel == 0.0
+
+    # r2: one prior — delta correct, accel still 0.0
+    assert r2.lambda2_delta == pytest.approx(r2.lambda2 - r1.lambda2)
+    assert r2.lambda2_accel == 0.0
+
+    # r3: two priors — delta and accel both derived from live records
+    assert r3.lambda2_delta == pytest.approx(r3.lambda2 - r2.lambda2)
+    assert r3.lambda2_accel == pytest.approx(r3.lambda2_delta - r2.lambda2_delta)
+
+
+# ---------------------------------------------------------------------------
+# Epoch monotonicity guard
+# ---------------------------------------------------------------------------
+
+
+def test_update_spectral_trajectory_raises_on_same_epoch_as_last_history() -> None:
+    L = _laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"]])
+    r1 = update_spectral_trajectory([], L, 5)
+
+    with pytest.raises(ValueError, match="not strictly greater"):
+        update_spectral_trajectory([r1], L, 5)
+
+
+def test_update_spectral_trajectory_raises_on_epoch_before_last_history() -> None:
+    L = _laplacian(["A", "B", "C"], [["A", "B"], ["B", "C"]])
+    r1 = update_spectral_trajectory([], L, 5)
+
+    with pytest.raises(ValueError, match="not strictly greater"):
+        update_spectral_trajectory([r1], L, 4)

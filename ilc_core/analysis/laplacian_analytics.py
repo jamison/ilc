@@ -160,7 +160,8 @@ def build_hypergraph_laplacian(
                 theta[i, j] += w / deg
 
     # Normalize: L = I - D^{-1/2} Θ D^{-1/2}
-    # For isolated nodes (d[i] == 0) set L[i,i] = 0 (no connectivity).
+    # For isolated nodes (d[i] == 0): d_inv_sqrt[i] = 0 and theta[i,:] = 0,
+    # so L[i,j] = I[i,j].  L[i,i] = 1 (eigenvalue 1), NOT 0.
     d_sqrt = np.sqrt(np.maximum(d, 0.0))
     with np.errstate(divide="ignore", invalid="ignore"):
         d_inv_sqrt = np.where(d_sqrt > 0.0, 1.0 / d_sqrt, 0.0)

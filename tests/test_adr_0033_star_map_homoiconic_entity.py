@@ -4,6 +4,8 @@ ADR-0033 verification.
 
 from pathlib import Path
 
+TYPES_PATH = Path("ilc_core/types.py")
+
 
 ADR_PATH = Path("docs/adr/ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md")
 README_PATH = Path("docs/adr/README.md")
@@ -53,3 +55,25 @@ def test_adr_readme_index_mentions_adr_0033() -> None:
     text = README_PATH.read_text(encoding="utf-8")
     assert "ADR-0033" in text
     assert "Star Map Homoiconic Epistemiological Entity" in text
+
+
+def test_adr_authorizes_exactly_the_three_entity_kinds() -> None:
+    # ADR §2.3 authorizes route_cluster, panel_result, and navigation_overlay as
+    # node-addressable entity kinds.  Anything not on that list is implicitly
+    # unauthorized until a future ADR extends it.  This test pins all three so
+    # that a silent rename or removal is caught immediately.
+    text = _read()
+    for kind in ("route_cluster", "panel_result", "navigation_overlay"):
+        assert kind in text, f"entity kind '{kind}' missing from ADR-0033 §2.3"
+
+
+def test_star_map_node_type_exists_in_runtime_types() -> None:
+    # ADR §2.2 asserts "uses the already-existing runtime node type Node.type='star_map'".
+    # This test cross-checks ilc_core/types.py directly so that removing or renaming
+    # the token in the runtime would fail here rather than silently diverging from
+    # the ADR's claim.
+    types_text = TYPES_PATH.read_text(encoding="utf-8")
+    assert '"star_map"' in types_text, (
+        "Node.type='star_map' not found in ilc_core/types.py — "
+        "ADR-0033 §2.2 claims this is an already-existing runtime node type"
+    )
