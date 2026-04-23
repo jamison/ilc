@@ -187,6 +187,9 @@ def build_corpora() -> dict[str, list[CorpusItem]]:
 
 @torch.no_grad()
 def _build_text_encoder(model_id: str) -> Callable[[Sequence[object]], np.ndarray]:
+    # trust_remote_code is required for nomic-embed-text: it uses custom mean-pooling
+    # layers defined in the model repo that are not part of the standard transformers
+    # AutoModel dispatch path.  MiniLM does not need this and the flag has no effect for it.
     tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code="nomic" in model_id)
     model = AutoModel.from_pretrained(model_id, trust_remote_code="nomic" in model_id)
 
@@ -215,6 +218,11 @@ def _build_image_encoder() -> Callable[[Sequence[object]], np.ndarray]:
 
 
 def _staleness_scores_text(encoder: Callable[[Sequence[object]], np.ndarray], base_text: str) -> list[float]:
+    # Variants are whitespace-normalized and case-only mutations of the same sentence.
+    # MiniLM produces cosine ≈ 1.0000 for all eight — the simulation shows zero drift under
+    # trivial reformatting but gives no signal about real content evolution (added/changed
+    # sentences).  The recommended TTL=32 in the results doc is therefore a conservative
+    # conventional choice, not a value derived from this curve.
     base = encoder([base_text])[0]
     variants: list[str] = []
     for epoch in range(1, 9):
@@ -237,6 +245,20 @@ def _staleness_scores_markdown(encoder: Callable[[Sequence[object]], np.ndarray]
 
 
 def _staleness_scores_json(encoder: Callable[[Sequence[object]], np.ndarray], base_text: str) -> list[float]:
+    # What this curve actually measures: semantic drift caused by the "epoch" metadata field
+    # incrementing from 1 to 8 across the eight variants.
+    #
+    # The variants also alternate key ordering (sort_keys=True/False), but the subsequent
+    # json.loads + json.dumps(sort_keys=True) canonicalization erases all key-order
+    # differences before embedding.  The resulting drift sequence is driven entirely by
+    # the epoch-field value change, not by formatting noise.
+    #
+    # The conclusion — "regenerate immediately on canonical payload hash change" — is still
+    # correct: if the epoch field changes, the canonical hash changes, which triggers
+    # regeneration.  But the TTL=48 recommendation reflects how slowly the embedding drifts
+    # as epoch metadata increments, not how robust it is to structural JSON reformatting.
+    # H-010 must treat any canonical payload change (including epoch-field updates) as a
+    # cache-invalidation event rather than relying on the TTL alone.
     base_payload = {
         "topic": "validator",
         "summary": base_text,

@@ -85,6 +85,16 @@ def test_compute_local_lambda2_raises_when_content_type_assignment_is_missing() 
         compute_local_lambda2(nodes, hyperedges, stakes, content_type_map)
 
 
+def test_compute_local_lambda2_raises_when_stake_is_missing() -> None:
+    nodes = ["A", "B"]
+    hyperedges = [["A", "B"]]
+    stakes = {"A": 1.0}  # B is absent — previously silently treated as zero-stake
+    content_type_map = {"A": "alpha", "B": "alpha"}
+
+    with pytest.raises(LaplacianError):
+        compute_local_lambda2(nodes, hyperedges, stakes, content_type_map)
+
+
 def test_fiedler_centrality_delta_subtracts_same_node_set() -> None:
     observed = fiedler_centrality_delta(
         {"A": 0.7, "B": 0.2},

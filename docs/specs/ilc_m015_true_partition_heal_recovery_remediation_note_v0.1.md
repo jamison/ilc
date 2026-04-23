@@ -188,7 +188,7 @@ Required runner tokens:
 - `m015_no_post_heal_client_resubmission`
 - `m015_bside_epoch2_commit_after_heal`
 - `m015_epoch1_persisted_all_four`
-- `run_m015_workload_c_verdict=pass`
+- `run_m015_workload_c_tier2_verdict=pass`
 
 ### 4.3 Failure discipline
 
