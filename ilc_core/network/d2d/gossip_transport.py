@@ -44,9 +44,23 @@ HTTP_STATUS_EPOCH_CONFLICT = 409
 HTTP_STATUS_FANOUT_EXCEEDED = 429
 HTTP_STATUS_CRASH_RECOVERY = 503
 
-assert _CDL_060_GOSSIP_RUNTIME_CHECK == CDL_060_GOSSIP_RUNTIME_DEPENDENCY, (
-    f"dep chain mismatch: {_CDL_060_GOSSIP_RUNTIME_CHECK}"
-)
+if _CDL_060_GOSSIP_RUNTIME_CHECK != CDL_060_GOSSIP_RUNTIME_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "gossip_transport_dep_chain_mismatch",
+                "dependency": "cdl_060_gossip_runtime",
+                "expected": CDL_060_GOSSIP_RUNTIME_DEPENDENCY,
+                "got": _CDL_060_GOSSIP_RUNTIME_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("gossip_transport_cdl_060_gossip_runtime_dependency_mismatch")
 
 
 def _require_non_empty_string(value: Any, error_token: str) -> str:

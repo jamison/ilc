@@ -37,12 +37,41 @@ PAYLOAD_READ_TIMEOUT_TOKEN = "gossip_payload_read_timeout"
 PAYLOAD_INCOMPLETE_TOKEN = "gossip_payload_incomplete"
 CONTENT_LENGTH_INVALID_TOKEN = "gossip_content_length_invalid"
 
-assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == GOSSIP_TRANSPORT_DEPENDENCY, (
-    f"dep chain mismatch: {gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION}"
-)
-assert _GOSSIP_PEER_REGISTRY_CHECK == GOSSIP_PEER_REGISTRY_DEPENDENCY, (
-    f"dep chain mismatch: {_GOSSIP_PEER_REGISTRY_CHECK}"
-)
+if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != GOSSIP_TRANSPORT_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "http_gossip_transport_dep_chain_mismatch",
+                "dependency": "gossip_transport_runtime",
+                "expected": GOSSIP_TRANSPORT_DEPENDENCY,
+                "got": gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("http_gossip_transport_gossip_transport_dependency_mismatch")
+
+if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "http_gossip_transport_dep_chain_mismatch",
+                "dependency": "gossip_peer_registry",
+                "expected": GOSSIP_PEER_REGISTRY_DEPENDENCY,
+                "got": _GOSSIP_PEER_REGISTRY_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("http_gossip_transport_gossip_peer_registry_dependency_mismatch")
 
 
 class TransportRuntimeError(RuntimeError):
