@@ -71,6 +71,7 @@ impl FastPathProtocol {
             &cert.transfer.object_ref,
             &cert.transfer.to,
             &cert.transfer.amount_micro_ecu,
+            &cert.transfer.transfer_class,
         ))
         .map_err(|e| ILCConsensusError::Other(format!("Sender msg serialization failed: {}", e)))?;
 
@@ -153,8 +154,8 @@ impl FastPathProtocol {
 mod tests {
     use super::*;
     use crate::types::{
-        AgentID, AgentSig, AttributionBatch, ECUTransfer, EpochSeq, ObjectRef, ValidatorID,
-        ValidatorKey, ValidatorSig,
+        AgentID, AgentSig, AttributionBatch, ECUTransfer, EpochSeq, ObjectRef, TransferClass,
+        ValidatorID, ValidatorKey, ValidatorSig,
     };
     use blst::min_pk::SecretKey;
 
@@ -218,12 +219,14 @@ mod tests {
             },
             to: agent2,
             amount_micro_ecu: 100_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
         let sender_msg = bincode::serialize(&(
             &transfer.object_ref,
             &transfer.to,
             &transfer.amount_micro_ecu,
+            &transfer.transfer_class,
         ))
         .unwrap();
         transfer.sender_sig =
@@ -337,12 +340,14 @@ mod tests {
             },
             to: agent2,
             amount_micro_ecu: 400_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
         let alpha_sender_msg = bincode::serialize(&(
             &transfer_alpha.object_ref,
             &transfer_alpha.to,
             &transfer_alpha.amount_micro_ecu,
+            &transfer_alpha.transfer_class,
         ))
         .unwrap();
         transfer_alpha.sender_sig =
@@ -355,12 +360,14 @@ mod tests {
             },
             to: agent3,
             amount_micro_ecu: 400_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
         let beta_sender_msg = bincode::serialize(&(
             &transfer_beta.object_ref,
             &transfer_beta.to,
             &transfer_beta.amount_micro_ecu,
+            &transfer_beta.transfer_class,
         ))
         .unwrap();
         transfer_beta.sender_sig =
@@ -434,6 +441,7 @@ mod tests {
             },
             to: agent2,
             amount_micro_ecu: 100_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
         let bad_msg = b"tampered";
@@ -469,6 +477,7 @@ mod tests {
             },
             to: agent2,
             amount_micro_ecu: 100_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
         let bad_msg = b"tampered";
@@ -535,12 +544,14 @@ mod tests {
                 },
                 to: agent2,
                 amount_micro_ecu: 100_000,
+                transfer_class: TransferClass::Contribution,
                 sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
             };
             let sender_msg = bincode::serialize(&(
                 &transfer.object_ref,
                 &transfer.to,
                 &transfer.amount_micro_ecu,
+                &transfer.transfer_class,
             ))
             .unwrap();
             transfer.sender_sig =
@@ -684,12 +695,14 @@ mod tests {
             },
             to: agent2,
             amount_micro_ecu: 100_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(sk_agent1.sign(b"dummy", &[], &[])),
         };
         let sender_msg = bincode::serialize(&(
             &transfer.object_ref,
             &transfer.to,
             &transfer.amount_micro_ecu,
+            &transfer.transfer_class,
         ))
         .unwrap();
         transfer.sender_sig =
@@ -754,12 +767,14 @@ mod tests {
             object_ref: ObjectRef { agent, version: 0 },
             to: agent2,
             amount_micro_ecu: 100_000,
+            transfer_class: TransferClass::Contribution,
             sender_sig: AgentSig(keypairs[0].0.sign(b"dummy", &[], &[])),
         };
         let sender_msg = bincode::serialize(&(
             &transfer.object_ref,
             &transfer.to,
             &transfer.amount_micro_ecu,
+            &transfer.transfer_class,
         ))
         .unwrap();
         transfer.sender_sig =

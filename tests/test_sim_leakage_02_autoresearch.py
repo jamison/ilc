@@ -171,5 +171,53 @@ class TestSimLeakage02Autoresearch(unittest.TestCase):
             self.assertLessEqual(result["complexity_score"], 1.0)
 
 
+    def test_calibration_mixing_weak_pool_not_too_private(self) -> None:
+        # pool=2 provides very limited anonymity; recall_a must stay above 0.30
+        result = run_simulation(
+            "mixing",
+            {
+                "mix_pool_size": 2,
+                "num_rounds": 1,
+                "delay_epochs": 0,
+                "forward_fraction": 1.0,
+                "shuffle_strategy": "uniform",
+                "amount_distribution": "uniform",
+            },
+            seed=42,
+        )
+        self.assertGreater(result["recall_a"], 0.30)
+
+    def test_calibration_mixing_strong_fixed_amounts_low_recall(self) -> None:
+        # pool=32, rounds=5, fixed amounts: attacker has minimal signal
+        result = run_simulation(
+            "mixing",
+            {
+                "mix_pool_size": 32,
+                "num_rounds": 5,
+                "delay_epochs": 4,
+                "forward_fraction": 1.0,
+                "shuffle_strategy": "uniform",
+                "amount_distribution": "fixed",
+            },
+            seed=42,
+        )
+        self.assertLess(result["recall_a"], 0.40)
+
+    def test_calibration_sealed_sender_unprotected_keeps_variant_b_very_high(self) -> None:
+        # sealed-sender without balance protection: recall_b must be > 0.80
+        result = run_simulation(
+            "sealed_sender",
+            {
+                "relay_hop_count": 3,
+                "routing_entropy": 1.0,
+                "relay_selection_strategy": "random",
+                "balance_surface_protected": False,
+                "amount_distribution": "uniform",
+            },
+            seed=42,
+        )
+        self.assertGreater(result["recall_b"], 0.80)
+
+
 if __name__ == "__main__":
     unittest.main()

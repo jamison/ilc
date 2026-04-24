@@ -86,6 +86,7 @@ fn verify_transfer_sender_sig(transfer: &ECUTransfer) -> Result<(), ILCConsensus
         &transfer.object_ref,
         &transfer.to,
         &transfer.amount_micro_ecu,
+        &transfer.transfer_class,
     ))
     .map_err(|e| ILCConsensusError::Other(format!("Sender msg serialize: {}", e)))?;
 
@@ -1055,7 +1056,14 @@ mod tests {
             agent: agent_id,
             version: 0,
         };
-        let sender_msg = bincode::serialize(&(&object_ref, &AgentID([2; 48]), &100u64)).unwrap();
+        let transfer_class = crate::types::TransferClass::Contribution;
+        let sender_msg = bincode::serialize(&(
+            &object_ref,
+            &AgentID([2; 48]),
+            &100u64,
+            &transfer_class,
+        ))
+        .unwrap();
         let sig = crate::types::AgentSig(agent_sk.sign(
             &sender_msg,
             crate::types::AGENT_TRANSFER_DST,
@@ -1065,6 +1073,7 @@ mod tests {
             object_ref,
             to: AgentID([2; 48]),
             amount_micro_ecu: 100,
+            transfer_class,
             sender_sig: sig,
         }
     }
@@ -1134,7 +1143,14 @@ mod tests {
                     agent: agent_id,
                     version: i as u64,
                 };
-                let msg = bincode::serialize(&(&object_ref, &AgentID([2; 48]), &10u64)).unwrap();
+                let transfer_class = crate::types::TransferClass::Contribution;
+                let msg = bincode::serialize(&(
+                    &object_ref,
+                    &AgentID([2; 48]),
+                    &10u64,
+                    &transfer_class,
+                ))
+                .unwrap();
                 let sig =
                     crate::types::AgentSig(sk.sign(&msg, crate::types::AGENT_TRANSFER_DST, &[]));
                 TransferCertificate {
@@ -1142,6 +1158,7 @@ mod tests {
                         object_ref,
                         to: AgentID([2; 48]),
                         amount_micro_ecu: 10,
+                        transfer_class,
                         sender_sig: sig,
                     },
                     sigs: vec![],
@@ -1376,6 +1393,7 @@ mod tests {
             &transfer.object_ref,
             &transfer.to,
             &transfer.amount_micro_ecu,
+            &transfer.transfer_class,
         ))
         .unwrap();
         let pubkey = blst::min_pk::PublicKey::from_bytes(&transfer.object_ref.agent.0).unwrap();

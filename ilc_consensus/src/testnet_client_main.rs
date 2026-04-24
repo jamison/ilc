@@ -39,8 +39,8 @@ use ilc_consensus::{
     network::{GossipEnvelope, GossipMessage, PeerNetwork},
     types::{
         AgentID, AgentSig, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq,
-        EpochSettlementRecord, EpochSettlementTx, ObjectRef, TransferCertificate, ValidatorID,
-        ValidatorSig, AGENT_TRANSFER_DST, ILC_EPOCH_SIG_DST,
+        EpochSettlementRecord, EpochSettlementTx, ObjectRef, TransferClass, TransferCertificate,
+        ValidatorID, ValidatorSig, AGENT_TRANSFER_DST, ILC_EPOCH_SIG_DST,
     },
 };
 
@@ -662,15 +662,21 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 // Sign per AGENT_TRANSFER_DST (matches handle_broadcast_honest verification)
-                let sender_msg =
-                    bincode::serialize(&(&object_ref, &to_agent_id, &args.amount_micro_ecu))
-                        .map_err(|e| format!("serialize sender_msg: {}", e))?;
+                let transfer_class = TransferClass::Contribution;
+                let sender_msg = bincode::serialize(&(
+                    &object_ref,
+                    &to_agent_id,
+                    &args.amount_micro_ecu,
+                    &transfer_class,
+                ))
+                .map_err(|e| format!("serialize sender_msg: {}", e))?;
                 let sig = sender_sk.sign(&sender_msg, AGENT_TRANSFER_DST, &[]);
 
                 let transfer = ECUTransfer {
                     object_ref,
                     to: to_agent_id,
                     amount_micro_ecu: args.amount_micro_ecu,
+                    transfer_class,
                     sender_sig: AgentSig(sig),
                 };
 
@@ -784,12 +790,19 @@ async fn run_full_transfer(
         version: args.version,
     };
 
-    let sender_msg = bincode::serialize(&(&object_ref, &to_agent_id, &args.amount_micro_ecu))?;
+    let transfer_class = TransferClass::Contribution;
+    let sender_msg = bincode::serialize(&(
+        &object_ref,
+        &to_agent_id,
+        &args.amount_micro_ecu,
+        &transfer_class,
+    ))?;
     let sig = sender_sk.sign(&sender_msg, AGENT_TRANSFER_DST, &[]);
     let transfer = ECUTransfer {
         object_ref,
         to: to_agent_id,
         amount_micro_ecu: args.amount_micro_ecu,
+        transfer_class,
         sender_sig: AgentSig(sig),
     };
 
