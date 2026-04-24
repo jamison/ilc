@@ -33,8 +33,41 @@ CENTRALITY_SCORE_CAP = 1.0
 EPOCH_BUFFER_ZEROED_EVENT = "epoch_buffer_zeroed"
 EPOCH_BUFFER_ZEROED_REASON = "crash_recovery_graceful_zero"
 
-assert _CDL_052_CHECK == CDL_052_DEPENDENCY, f"dep chain mismatch: {_CDL_052_CHECK}"
-assert _D2D_GOSSIP_CHECK == D2D_GOSSIP_DEPENDENCY, f"dep chain mismatch: {_D2D_GOSSIP_CHECK}"
+if _CDL_052_CHECK != CDL_052_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "centrality_delta_gossip_dep_chain_mismatch",
+                "dependency": "cdl_052",
+                "expected": CDL_052_DEPENDENCY,
+                "got": _CDL_052_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("centrality_delta_gossip_cdl_052_dependency_mismatch")
+
+if _D2D_GOSSIP_CHECK != D2D_GOSSIP_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "centrality_delta_gossip_dep_chain_mismatch",
+                "dependency": "d2d_gossip",
+                "expected": D2D_GOSSIP_DEPENDENCY,
+                "got": _D2D_GOSSIP_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("centrality_delta_gossip_d2d_gossip_dependency_mismatch")
 
 
 def _require_mapping(name: str, value: Any) -> dict[str, Any]:
