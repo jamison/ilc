@@ -33,6 +33,7 @@ def test_closure_artifacts_and_tokens_exist() -> None:
         "settlement_path_rotation_wiring_design_825_published",
         "first_validator_entry_conditions_record_826_published",
         "h013_sealed_sender_spectral_beacon_implemented_827",
+        "h013_post_audit_hardening_applied",
         "capsule_v5_14_supersedes_v5_13",
         "window_823_829_mysticeti_activation_sequencing_closed",
         "phase_829_window_823_829_verdict=pass",
