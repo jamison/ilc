@@ -22,6 +22,21 @@ D2D_GOSSIP_DEPENDENCY = "d2d_gossip_382.v0.1"
 
 _EXPECTED_PEERING_DEPENDENCY = "d2d_peering_381.v0.1"
 if D2D_PEERING_DEPENDENCY != _EXPECTED_PEERING_DEPENDENCY:
+    import json as _json
+    import sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "d2d_version_mismatch",
+                "expected": _EXPECTED_PEERING_DEPENDENCY,
+                "got": D2D_PEERING_DEPENDENCY,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
     raise RuntimeError("d2d_gossip_peering_dependency_mismatch")
 
 

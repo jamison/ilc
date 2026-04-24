@@ -21,12 +21,32 @@ GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
 PEER_DISCOVERY_MODE = "static_v1"
 MAX_PEERS = 16
 
-assert _GOSSIP_TRANSPORT_CHECK == GOSSIP_TRANSPORT_DEPENDENCY, (
-    f"dep chain mismatch: {_GOSSIP_TRANSPORT_CHECK}"
-)
-assert PEER_DISCOVERY_MODE == "static_v1", (
-    "cdl_039_topology_privacy: dynamic peer discovery requires explicit CDL authorization"
-)
+if _GOSSIP_TRANSPORT_CHECK != GOSSIP_TRANSPORT_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "gossip_peer_registry_dep_chain_mismatch",
+                "dependency": "gossip_transport_runtime",
+                "expected": GOSSIP_TRANSPORT_DEPENDENCY,
+                "got": _GOSSIP_TRANSPORT_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("gossip_peer_registry_gossip_transport_dependency_mismatch")
+
+# PEER_DISCOVERY_MODE is a constitutional invariant: CDL-039 prohibits dynamic
+# discovery without explicit authorization. Checked at runtime, not as an assert,
+# so that python -O does not silently bypass the guard.
+if PEER_DISCOVERY_MODE != "static_v1":
+    raise RuntimeError(
+        f"cdl_039_topology_privacy: dynamic peer discovery requires explicit CDL authorization, "
+        f"got: {PEER_DISCOVERY_MODE}"
+    )
 
 
 def validate_peer_endpoint(endpoint: str) -> str:

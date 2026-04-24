@@ -212,7 +212,7 @@ def main() -> int:
     if args.channel_sig_file:
         channel_sig_path = Path(args.channel_sig_file)
     elif os.environ.get("ILC_CHANNEL_SIG_PATH"):
-        channel_sig_path = Path(os.environ["ILC_CHANNEL_SIG_PATH"])
+        channel_sig_path = Path(os.environ.get("ILC_CHANNEL_SIG_PATH"))
     
     ctx = SyncContext(
         channel_file=Path(args.channel_file).resolve(),
