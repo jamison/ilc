@@ -4,9 +4,9 @@
 **Produced**: 2026-04-24
 **Session context**: Window 823-829 closed; Option B selected; CDL-017
 ratified; Row-5 B-Scope closed; B-Impl commissioned to the local reviewer;
-H-013 sealed spectral beacon implemented locally; HIGH-002 disposition,
-settlement-path rotation wiring design, and first-validator entry conditions
-published.
+H-013 sealed spectral beacon implemented locally and post-audit hardened;
+HIGH-002 disposition, settlement-path rotation wiring design, and
+first-validator entry conditions published.
 **Supersedes**:
 `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.6.md`
 **Purpose**: Updated launch-path reference at the post-823-829 frontier.
@@ -24,7 +24,9 @@ Completed:
 - HIGH-002 production disposition,
 - settlement-path rotation wiring design,
 - first-validator deployment entry conditions,
-- H-013 local sealed-beacon implementation.
+- H-013 local sealed-beacon implementation with post-audit hardening for
+  relay-origin opacity, authenticated beacon identity, replay detection, and
+  SIM-BEACON bounds.
 
 Remaining:
 
@@ -91,7 +93,7 @@ technical frontier.
 | Row 5 | **`spec_closed_runtime_pending`** |
 | Row 7 | **`runtime_closed`** |
 | Row 8 | **`pass`** |
-| H-013 | **IMPLEMENTED LOCALLY** — no production gossip activation |
+| H-013 | **IMPLEMENTED LOCALLY** — post-audit hardened; no production gossip activation |
 | H-015 | **PRIMITIVE COMPLETE** — can consume H-013 later |
 | HIGH-002 | **DISPOSITIONED** — production-hardening item |
 | Settlement-path rotation | **DESIGNED ONLY** — Rust implementation gated |

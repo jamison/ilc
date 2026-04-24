@@ -16,6 +16,7 @@ Owner lane: Window 823-829 Mysticeti activation sequencing
 `settlement_path_rotation_wiring_design_825_published`
 `first_validator_entry_conditions_record_826_published`
 `h013_sealed_sender_spectral_beacon_implemented_827`
+`h013_post_audit_hardening_applied`
 `first_validator_deployment_human_gated_no_trigger_this_window`
 `b_impl_local_reviewer_no_row5_work_this_window`
 `no_cdl_mutation_in_window_823_829`
@@ -32,7 +33,8 @@ Completed in this window:
 - HIGH-002 production disposition published,
 - settlement-path rotation wiring design published,
 - first-validator deployment entry conditions published,
-- H-013 sealed spectral beacon primitive implemented and tested.
+- H-013 sealed spectral beacon primitive implemented, tested, and post-audit
+  hardened.
 
 ## 2. Preserved Boundaries
 
@@ -57,7 +59,15 @@ This capsule does not claim:
 
 H-013 is now complete as a local sealed-beacon primitive. The implementation
 supports one relay layer, fixed-size payloads, X25519 + ChaCha20-Poly1305
-sealing, terminal-only beacon opening, and a CDL-060/061 envelope wrapper.
+sealing, Ed25519-authenticated terminal-visible beacon identity, bounded
+per-emission replay protection, SIM-BEACON noise/spectral bounds,
+terminal-only beacon opening, and a CDL-060/061 envelope wrapper.
+
+The post-audit hardening boundary is explicit: transport `sender_peer_id` is the
+relay/current hop, not a caller-supplied origin; origin identifiers, source
+agent IDs, route history, cluster membership, raw spectral coordinates, and
+noise values are forbidden from H-013 transport headers; and low-order X25519
+key-exchange failures are converted into stable validation tokens.
 
 H-013 does not activate production gossip. The activation window remains
 separate.
