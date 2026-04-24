@@ -42,6 +42,7 @@ OPERATIONAL_COMMANDS = (
     "config",
     "agent",
     "node",
+    "version",
 )
 
 ALL_COMMANDS = PRIMITIVE_COMMANDS + OPERATIONAL_COMMANDS
@@ -72,6 +73,18 @@ class BundleCommandError(Exception):
         super().__init__(message)
         self.code = code
         self.message = message
+
+
+def _version_data() -> dict[str, Any]:
+    return {
+        "schema_versions": {
+            "primary": SCHEMA_VERSION,
+            "query": QUERY_SCHEMA_VERSION,
+            "verify": VERIFY_SCHEMA_VERSION,
+            "bundle": BUNDLE_SCHEMA_VERSION,
+        },
+        "supported_commands": sorted(ALL_COMMANDS),
+    }
 
 
 def _now_rfc3339_utc() -> str:
@@ -869,8 +882,12 @@ def _run_bundle_subcommand(args: argparse.Namespace, _graph_state_path: Path) ->
         raise BundleCommandError("bundle_invalid_input", "bundle_subcommand_missing")
     except BundleCommandError:
         raise
+    except (OSError, PermissionError) as exc:
+        raise BundleCommandError("bundle_io_error", type(exc).__name__) from exc
+    except json.JSONDecodeError as exc:
+        raise BundleCommandError("bundle_json_invalid", f"byte_offset:{exc.pos}") from exc
     except Exception as exc:  # pragma: no cover - defensive mapping to contract token
-        raise BundleCommandError("bundle_internal_error", str(exc)) from exc
+        raise BundleCommandError("bundle_internal_error", type(exc).__name__) from exc
 
 
 def _build_parser() -> JsonArgumentParser:
@@ -1038,6 +1055,8 @@ def _run_top_level_command(
     if command not in {"query", "verify", "bundle", "agent", "node"}:
         _ensure_local_graph_state(graph_state_path, command)
 
+    if command == "version":
+        return _success_payload(command, _version_data())
     if command == "query":
         query_command, data = _run_query_subcommand(args, graph_state_path)
         return _query_success_payload(query_command, data)

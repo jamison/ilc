@@ -149,10 +149,7 @@ pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCCo
         validators.push((ValidatorID(v.validator_id), ValidatorKey(pubkey)));
     }
 
-    let validator_set = ValidatorSet {
-        validators,
-        f: genesis.f,
-    };
+    let validator_set = ValidatorSet::new(validators, genesis.f)?;
     Ok((validator_set, genesis.network_id))
 }
 

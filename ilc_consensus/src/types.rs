@@ -1,5 +1,6 @@
 use blst::min_pk::{AggregateSignature, PublicKey, Signature};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// AgentID represents a unique ILC Agent inside the system.
 /// Derived securely via CDL-042 key mechanics.
@@ -262,7 +263,7 @@ pub struct ValidatorKey(pub PublicKey);
 /// ValidatorSet tracking the current functional topology and Fault conditions.
 #[derive(Debug, Clone)]
 pub struct ValidatorSet {
-    pub validators: Vec<(ValidatorID, ValidatorKey)>,
+    pub validators: HashMap<ValidatorID, ValidatorKey>,
     pub f: usize,
 }
 
@@ -464,21 +465,22 @@ impl ValidatorSet {
                 3 * f
             )));
         }
-        for i in 0..validators.len() {
-            for j in (i + 1)..validators.len() {
-                if validators[i].0 == validators[j].0 {
-                    return Err(ILCConsensusError::Other(format!(
-                        "Duplicate ValidatorID in ValidatorSet: {}",
-                        validators[i].0 .0
-                    )));
-                }
-                if validators[i].1 == validators[j].1 {
-                    return Err(ILCConsensusError::Other(
-                        "Duplicate ValidatorKey in ValidatorSet".to_string(),
-                    ));
-                }
+        let mut map: HashMap<ValidatorID, ValidatorKey> = HashMap::with_capacity(n);
+        for (id, key) in validators {
+            if map.contains_key(&id) {
+                return Err(ILCConsensusError::Other(format!(
+                    "Duplicate ValidatorID in ValidatorSet: {}",
+                    id.0
+                )));
             }
+            // Duplicate key check: compare against all already-inserted values.
+            if map.values().any(|v| v == &key) {
+                return Err(ILCConsensusError::Other(
+                    "Duplicate ValidatorKey in ValidatorSet".to_string(),
+                ));
+            }
+            map.insert(id, key);
         }
-        Ok(ValidatorSet { validators, f })
+        Ok(ValidatorSet { validators: map, f })
     }
 }

@@ -230,8 +230,8 @@ impl EpochSettlementProtocol {
         let sig = checkpoint.sigs.0.to_signature();
         let pub_keys: Vec<blst::min_pk::PublicKey> = validator_set
             .validators
-            .iter()
-            .map(|(_, vk)| vk.0.clone())
+            .values()
+            .map(|vk| vk.0.clone())
             .collect();
         let pk_refs: Vec<&blst::min_pk::PublicKey> = pub_keys.iter().collect();
 

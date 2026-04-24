@@ -61,29 +61,25 @@ impl ValidatorSet {
         id: ValidatorID,
         key: ValidatorKey,
     ) -> Result<(), ILCConsensusError> {
-        if self
-            .validators
-            .iter()
-            .any(|(existing_id, _)| *existing_id == id)
-        {
+        if self.validators.contains_key(&id) {
             return Err(ILCConsensusError::Other(format!(
                 "validator {} already present",
                 id.0
             )));
         }
-        if self
-            .validators
-            .iter()
-            .any(|(_, existing_key)| *existing_key == key)
-        {
+        if self.validators.values().any(|existing_key| *existing_key == key) {
             return Err(ILCConsensusError::Other(
                 "validator key already present".to_string(),
             ));
         }
 
-        let mut validators = self.validators.clone();
-        validators.push((id, key));
-        let rebuilt = ValidatorSet::rebuild_with(validators)?;
+        let mut entries: Vec<(ValidatorID, ValidatorKey)> = self
+            .validators
+            .iter()
+            .map(|(&eid, k)| (eid, k.clone()))
+            .collect();
+        entries.push((id, key));
+        let rebuilt = ValidatorSet::rebuild_with(entries)?;
         *self = rebuilt;
         Ok(())
     }
@@ -94,8 +90,8 @@ impl ValidatorSet {
         let validators: Vec<(ValidatorID, ValidatorKey)> = self
             .validators
             .iter()
-            .filter(|(existing_id, _)| *existing_id != id)
-            .cloned()
+            .filter(|(&existing_id, _)| existing_id != id)
+            .map(|(&eid, k)| (eid, k.clone()))
             .collect();
 
         if validators.len() == original_len {
@@ -303,7 +299,7 @@ mod tests {
 
         assert_eq!(set.validators.len(), 4);
         assert_eq!(set.f, 1);
-        assert!(set.validators.iter().any(|(id, _)| *id == ValidatorID(4)));
+        assert!(set.validators.contains_key(&ValidatorID(4)));
     }
 
     #[test]
@@ -321,7 +317,7 @@ mod tests {
     #[test]
     fn test_admit_validator_rejects_duplicate_key() {
         let mut set = make_validator_set(3);
-        let duplicate_key = set.validators[0].1.clone();
+        let duplicate_key = set.validators.values().next().unwrap().clone();
 
         let err = set
             .admit_validator(ValidatorID(4), duplicate_key)
@@ -340,7 +336,7 @@ mod tests {
 
         assert_eq!(set.validators.len(), 3);
         assert_eq!(set.f, 0);
-        assert!(!set.validators.iter().any(|(id, _)| *id == ValidatorID(4)));
+        assert!(!set.validators.contains_key(&ValidatorID(4)));
     }
 
     #[test]
