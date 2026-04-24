@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.network.d2d import spectral_beacon as spectral_beacon_module
 from ilc_core.network.d2d.spectral_beacon import (
     ADR_0034_DEPENDENCY,
     H013_SEALED_SPECTRAL_BEACON_VERSION,
@@ -150,6 +151,33 @@ def test_validation_rejects_non_finite_lambda_values() -> None:
             channel_id="rand:abcdef0123456789abcdef0123456789",
         )
     assert exc.value.token == "h013_lambda_local_non_finite"
+
+
+def test_malformed_fixed_json_uses_tokenized_validation_error() -> None:
+    empty_json_payload = (0).to_bytes(4, "big") + b"\x00" * 12
+
+    with pytest.raises(SpectralBeaconValidationError) as exc:
+        spectral_beacon_module._unpack_fixed_json(empty_json_payload, "h013_inner_payload_invalid")
+
+    assert exc.value.token == "h013_inner_payload_invalid"
+    assert exc.value.message == "fixed_payload_json_invalid"
+
+
+def test_malformed_decrypted_beacon_mapping_uses_tokenized_validation_error() -> None:
+    with pytest.raises(SpectralBeaconValidationError) as missing_exc:
+        spectral_beacon_module._beacon_from_mapping({"epoch": 1})
+    assert missing_exc.value.token == "h013_beacon_payload_invalid"
+
+    with pytest.raises(SpectralBeaconValidationError) as finite_exc:
+        spectral_beacon_module._beacon_from_mapping(
+            {
+                "epoch": 1,
+                "lambda_local": ["nan"],
+                "noise_sigma": 0.01,
+                "agent_id": "agent-alpha",
+            }
+        )
+    assert finite_exc.value.token == "h013_lambda_local_non_finite"
 
 
 def test_gossip_envelope_integration_preserves_cdl_060_061_boundaries() -> None:

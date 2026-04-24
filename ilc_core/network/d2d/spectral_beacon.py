@@ -9,6 +9,7 @@ gossip envelope surface.
 from __future__ import annotations
 
 import base64
+import binascii
 from dataclasses import dataclass
 import json
 import math
@@ -115,7 +116,13 @@ def public_key_from_bytes(public_key: bytes) -> x25519.X25519PublicKey:
             "h013_public_key_invalid",
             "x25519_public_key_must_be_32_bytes",
         )
-    return x25519.X25519PublicKey.from_public_bytes(public_key)
+    try:
+        return x25519.X25519PublicKey.from_public_bytes(public_key)
+    except ValueError as exc:
+        raise SpectralBeaconValidationError(
+            "h013_public_key_invalid",
+            "x25519_public_key_invalid",
+        ) from exc
 
 
 def build_sealed_spectral_beacon(
@@ -197,7 +204,16 @@ def peel_relay_layer(
     )
     decoded = _unpack_fixed_json(plaintext, "h013_outer_payload_invalid")
     next_hop = validate_d2d_peer_id(decoded.get("next_hop_peer_id"))
-    sealed_inner = base64.b64decode(_require_str(decoded.get("sealed_inner_b64"), "h013_inner_missing"))
+    try:
+        sealed_inner = base64.b64decode(
+            _require_str(decoded.get("sealed_inner_b64"), "h013_inner_missing"),
+            validate=True,
+        )
+    except (binascii.Error, ValueError) as exc:
+        raise SpectralBeaconValidationError(
+            "h013_inner_base64_invalid",
+            "inner_base64_invalid",
+        ) from exc
     if len(sealed_inner) != INNER_ENVELOPE_SIZE:
         raise SpectralBeaconValidationError(
             "h013_inner_envelope_size_invalid",
@@ -350,7 +366,10 @@ def _unpack_fixed_json(value: bytes, token: str) -> dict[str, Any]:
     padding = value[4 + payload_len:]
     if any(padding):
         raise SpectralBeaconValidationError(token, "fixed_payload_padding_invalid")
-    decoded = json.loads(value[4:4 + payload_len].decode("utf-8"))
+    try:
+        decoded = json.loads(value[4:4 + payload_len].decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SpectralBeaconValidationError(token, "fixed_payload_json_invalid") from exc
     if not isinstance(decoded, dict):
         raise SpectralBeaconValidationError(token, "fixed_payload_not_object")
     return decoded
@@ -384,11 +403,24 @@ def _normalize_beacon(beacon: SpectralBeacon) -> dict[str, Any]:
 def _beacon_from_mapping(value: Any) -> SpectralBeacon:
     if not isinstance(value, dict):
         raise SpectralBeaconValidationError("h013_beacon_payload_invalid", "beacon_payload_invalid")
+    try:
+        candidate = SpectralBeacon(
+            epoch=value["epoch"],
+            lambda_local=value["lambda_local"],
+            noise_sigma=value["noise_sigma"],
+            agent_id=value["agent_id"],
+        )
+    except KeyError as exc:
+        raise SpectralBeaconValidationError(
+            "h013_beacon_payload_invalid",
+            f"beacon_payload_missing:{exc.args[0]}",
+        ) from exc
+    normalized = _normalize_beacon(candidate)
     return SpectralBeacon(
-        epoch=value["epoch"],
-        lambda_local=[float(v) for v in value["lambda_local"]],
-        noise_sigma=float(value["noise_sigma"]),
-        agent_id=_require_str(value["agent_id"], "h013_agent_id_invalid"),
+        epoch=normalized["epoch"],
+        lambda_local=normalized["lambda_local"],
+        noise_sigma=normalized["noise_sigma"],
+        agent_id=normalized["agent_id"],
     )
 
 

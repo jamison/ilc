@@ -34,6 +34,7 @@ def test_closure_artifacts_and_tokens_exist() -> None:
         "first_validator_entry_conditions_record_826_published",
         "h013_sealed_sender_spectral_beacon_implemented_827",
         "capsule_v5_14_supersedes_v5_13",
+        "window_823_829_mysticeti_activation_sequencing_closed",
         "phase_829_window_823_829_verdict=pass",
     ):
         assert token in text
