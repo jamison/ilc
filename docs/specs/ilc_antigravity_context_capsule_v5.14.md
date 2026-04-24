@@ -10,6 +10,8 @@ Owner lane: Window 823-829 Mysticeti activation sequencing
 `cdl_017_remains_ratified`
 `row5_still_spec_closed_runtime_pending`
 `window_823_829_mysticeti_activation_sequencing_open`
+`window_823_829_mysticeti_activation_sequencing_closed`
+`phase_829_window_823_829_verdict=pass`
 `high_002_disposition_record_published_824`
 `settlement_path_rotation_wiring_design_825_published`
 `first_validator_entry_conditions_record_826_published`
