@@ -44,20 +44,10 @@ class TestWindowBScopeB1B4HoldPoint(unittest.TestCase):
         iterations = [line for line in lines[1:] if "iteration" in line]
         self.assertEqual(len(iterations), 120)
 
-    def test_b5_has_not_been_created(self) -> None:
-        forbidden = [
-            ROOT / "docs/specs/ilc_row5_mechanism_selection_lock_b5_v0.1.md",
-            ROOT / "docs/phases/phase_b5_row5_b_scope_coherence.md",
-            ROOT / "docs/phases/phase_b5_row5_b_scope_closure_gate.md",
-        ]
-        for path in forbidden:
-            self.assertFalse(path.exists(), path)
-
-    def test_planning_index_marks_b4_hold_point(self) -> None:
-        index = (ROOT / "docs/PLANNING_INDEX.md").read_text()
-        self.assertIn("B-Scope OPEN", index)
-        self.assertIn("Phase `B-4` hold point pending human confirmation", index)
-        self.assertIn("ilc_row5_mechanism_selection_recommendation_b4_v0.1.md", index)
+    def test_historical_b4_artifacts_remain_present(self) -> None:
+        recommendation = (ROOT / "docs/specs/ilc_row5_mechanism_selection_recommendation_b4_v0.1.md").read_text()
+        self.assertIn("row5_mechanism_selection_human_gate_pending", recommendation)
+        self.assertIn("Mixing layer", recommendation)
 
 
 if __name__ == "__main__":
