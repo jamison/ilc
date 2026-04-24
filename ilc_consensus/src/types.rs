@@ -90,6 +90,39 @@ pub struct ECUBalance {
     pub version: u64, // Tracks the monotonically increasing nonce required to enforce ObjectRef checks
 }
 
+/// TransferClass distinguishes contribution transfers (work submitted to the epistemic graph)
+/// from payment transfers (agent-to-agent bounty payouts, escrow releases).
+///
+/// Privacy routing rules:
+/// - `Contribution`: mandatory privacy lane (k=30, jitter=3). No opt-out.
+///   The anonymity set is collective — one opt-out shrinks the batch for all members.
+/// - `Payment`: defaults to the same privacy lane. Agent may opt out to the express lane
+///   (no jitter, immediate settlement) by supplying an explicit `ExpressConsent`.
+///
+/// `transfer_class` is covered by the agent's BLS sender signature to prevent
+/// an adversary from stripping or modifying the class after signing.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TransferClass {
+    /// Contribution to the epistemic graph — privacy lane mandatory, no opt-out.
+    Contribution,
+    /// Peer-to-peer payment (bounty payout, escrow release, agent-to-agent).
+    /// Defaults to privacy lane; agent may opt out to express lane with explicit consent.
+    Payment {
+        express: Option<ExpressConsent>,
+    },
+}
+
+/// ExpressConsent allows an agent to opt a `Payment` transfer out of the privacy lane
+/// (jitter window) into the express lane (immediate settlement). Must be supplied
+/// per-transfer and is epoch-scoped — it does not persist across epochs.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ExpressConsent {
+    /// Must be `true` — agent explicitly acknowledges timing-disclosure risk.
+    pub agent_acknowledged_timing_disclosure: bool,
+    /// Epoch in which consent was given. Scoped per-epoch to prevent replay.
+    pub consent_epoch: EpochSeq,
+}
+
 /// ECUTransfer contains the fast-path deterministic instruction to alter Owned Objects.
 /// Uniquely locks on `object_ref` to enforce SafetyNoDualCert property.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -97,6 +130,8 @@ pub struct ECUTransfer {
     pub object_ref: ObjectRef, // owned object mapping directly to sender agent and monotonic version
     pub to: AgentID,
     pub amount_micro_ecu: u64,
+    /// Routing class — covered by `sender_sig` to prevent post-signing modification.
+    pub transfer_class: TransferClass,
     pub sender_sig: AgentSig,
 }
 

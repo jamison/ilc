@@ -462,6 +462,7 @@ mod tests {
             },
             to: AgentID([2; 48]),
             amount_micro_ecu: 10,
+            transfer_class: crate::types::TransferClass::Contribution,
             sender_sig: dummy_agent_sig(),
         };
 
