@@ -125,11 +125,10 @@ impl FastPathProtocol {
             }
 
             // SEC-004: validator not in the cert's historical set → InvalidSignature.
+            // O(1) HashMap lookup replaces the prior O(n) linear scan.
             let pub_key = vs
                 .validators
-                .iter()
-                .find(|(id, _)| id == val_id)
-                .map(|(_, key)| key)
+                .get(val_id)
                 .ok_or(ILCConsensusError::InvalidSignature)?;
 
             // Direct BLS point verification

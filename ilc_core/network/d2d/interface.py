@@ -96,10 +96,13 @@ def _validate_non_empty_string(value: Any, token: str, message: str) -> str:
     return normalized
 
 
+_CANONICAL_ALIAS_RE = re.compile(r"[-.]")
+
+
 def _canonical_header_alias(value: str) -> str:
     """Canonicalize header aliases for invariant checks only."""
 
-    return re.sub(r"[-.]", "_", value.lower())
+    return _CANONICAL_ALIAS_RE.sub("_", value.lower())
 
 
 def validate_d2d_channel(value: Any) -> D2dChannel:

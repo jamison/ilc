@@ -28,12 +28,41 @@ NODE_STARTUP_RUNTIME_VERSION = "node_startup_runtime_570.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
 HTTP_GOSSIP_TRANSPORT_DEPENDENCY = "http_gossip_transport_runtime_568.v0.1"
 
-assert _GOSSIP_PEER_REGISTRY_CHECK == GOSSIP_PEER_REGISTRY_DEPENDENCY, (
-    f"dep chain mismatch: {_GOSSIP_PEER_REGISTRY_CHECK}"
-)
-assert _HTTP_GOSSIP_TRANSPORT_CHECK == HTTP_GOSSIP_TRANSPORT_DEPENDENCY, (
-    f"dep chain mismatch: {_HTTP_GOSSIP_TRANSPORT_CHECK}"
-)
+if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "node_startup_dep_chain_mismatch",
+                "dependency": "gossip_peer_registry",
+                "expected": GOSSIP_PEER_REGISTRY_DEPENDENCY,
+                "got": _GOSSIP_PEER_REGISTRY_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("node_startup_gossip_peer_registry_dependency_mismatch")
+
+if _HTTP_GOSSIP_TRANSPORT_CHECK != HTTP_GOSSIP_TRANSPORT_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "node_startup_dep_chain_mismatch",
+                "dependency": "http_gossip_transport_runtime",
+                "expected": HTTP_GOSSIP_TRANSPORT_DEPENDENCY,
+                "got": _HTTP_GOSSIP_TRANSPORT_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("node_startup_http_gossip_transport_dependency_mismatch")
 
 
 @dataclass(frozen=True)

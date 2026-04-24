@@ -187,8 +187,8 @@ def _load_task_spec(
     elif task_json is not None:
         raw = json.loads(task_json)
     else:
-        assert task_json_base64 is not None
-        raw = json.loads(base64.b64decode(task_json_base64).decode("utf-8"))
+        # task_json_base64 is the only remaining option (enforced by the mutex check above)
+        raw = json.loads(base64.b64decode(task_json_base64).decode("utf-8"))  # type: ignore[arg-type]
     task = _require_dict("task_spec", raw)
     task.setdefault("channel", DEFAULT_CHANNEL)
     task.setdefault("claim_form", "falsifiable_positive")
