@@ -264,6 +264,7 @@ mod tests {
                 },
                 to: agent2,
                 amount_micro_ecu: 400_000,
+                transfer_class: crate::types::TransferClass::Contribution,
                 sender_sig: dummy_agent_sig(),
             },
             sigs: Vec::new(),
@@ -289,6 +290,7 @@ mod tests {
                 }, // Using outdated version 0
                 to: agent2,
                 amount_micro_ecu: 100_000,
+                transfer_class: crate::types::TransferClass::Contribution,
                 sender_sig: dummy_agent_sig(),
             },
             sigs: Vec::new(),
