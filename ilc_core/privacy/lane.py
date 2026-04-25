@@ -30,7 +30,10 @@ from __future__ import annotations
 
 import secrets
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ilc_core.privacy.monitor import FillMonitor
 
 PRIVACY_LANE_RUNTIME_VERSION = "privacy_lane_831.v0.1"
 
@@ -121,13 +124,19 @@ class PrivacyLane:
     Token: row5_b_impl_privacy_lane_api
     """
 
-    def __init__(self, config: PrivacyLaneConfig, current_epoch: int = 0) -> None:
+    def __init__(
+        self,
+        config: PrivacyLaneConfig,
+        current_epoch: int = 0,
+        monitor: FillMonitor | None = None,
+    ) -> None:
         self._config = config
+        self._monitor = monitor
         self._accumulator: list[Any] = []          # pending transfers not yet grouped
         self._accumulator_agent_ids: list[Any] = []
         self._accumulator_entry_epoch: int = current_epoch  # epoch when first transfer entered
         self._release_queue: list[ReleaseGroup] = []
-        # Per-epoch stats for obligation 6 (SIM-LEAKAGE-03 instrumentation, Phase 832)
+        # Per-epoch stats for obligation 6 (SIM-LEAKAGE-03 instrumentation, Phase 833)
         self._stats: dict[str, Any] = {
             "groups_completed": 0,
             "groups_force_released": 0,
@@ -219,6 +228,8 @@ class PrivacyLane:
         self._accumulator.clear()
         self._accumulator_agent_ids.clear()
         self._stats["groups_force_released"] += 1
+        if self._monitor is not None:
+            self._monitor.record_force_release(current_epoch)
         return [group]
 
     # ------------------------------------------------------------------
@@ -266,6 +277,8 @@ class PrivacyLane:
         self._accumulator.clear()
         self._accumulator_agent_ids.clear()
         self._stats["groups_completed"] += 1
+        if self._monitor is not None:
+            self._monitor.record_fill_success(current_epoch)
 
 
 # ------------------------------------------------------------------
