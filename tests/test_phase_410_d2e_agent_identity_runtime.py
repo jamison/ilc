@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 
 from ilc_core.identity.agent_id_runtime import (
-    AGENT_ID_RUNTIME_VERSION,
     CDL_042_DEPENDENCY,
     NODE_SCHEMA_DEPENDENCY,
     AgentIdentityError,
@@ -99,7 +98,14 @@ def _assert_runtime_mutation_scope(commit_ref: str) -> None:
 def test_runtime_paths_and_version_constant() -> None:
     assert RUNTIME_PATH.exists()
     assert INIT_PATH.exists()
-    assert AGENT_ID_RUNTIME_VERSION == "agent_id_runtime_410.v0.1"
+    # Version was "agent_id_runtime_410.v0.1" at Phase 410 (commit 4d6429df).
+    # Bumped to v0.2 at Phase 838d (CDL-069 amendment: identity_seed + SHA-384 path).
+    # Historical assertion: read the Phase 410 snapshot to confirm original value.
+    result = subprocess.run(
+        ["git", "show", "4d6429df:ilc_core/identity/agent_id_runtime.py"],
+        capture_output=True, text=True,
+    )
+    assert 'AGENT_ID_RUNTIME_VERSION = "agent_id_runtime_410.v0.1"' in result.stdout
 
 
 def test_cdl_042_dependency_token_correct() -> None:
