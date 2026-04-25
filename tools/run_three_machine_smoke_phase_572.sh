@@ -87,6 +87,7 @@ runtime = HttpGossipTransportRuntime(context.transport_config)
 print(runtime.send_gossip('https://127.0.0.1:19572', 'centrality_delta', 'cid:1234567890abcdef', 572, 'sig-572'))
 PY
 Expected markers:
+  smoke_settlement_gate_preflight_ok
   smoke_node_1_ready
   smoke_node_2_ready
   smoke_node_3_ready
@@ -98,6 +99,13 @@ Expected markers:
 EOF
   exit 0
 fi
+
+# Settlement-gate preflight (Phase 835) — run before starting any nodes.
+if ! python3 "$REPO_ROOT/tools/settlement_gate_preflight.py" --config-dir "$CONFIG_DIR"; then
+  print_marker "smoke_settlement_gate_preflight_fail"
+  exit 1
+fi
+print_marker "smoke_settlement_gate_preflight_ok"
 
 TMP_DIR="$(mktemp -d)"
 pids=()
