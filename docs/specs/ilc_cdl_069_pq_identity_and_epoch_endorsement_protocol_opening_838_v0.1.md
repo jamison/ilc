@@ -20,6 +20,9 @@ Document schema: `docs/specs/README.md#sequence-locks-phase-window-guidance-and-
 `cdl_070_forward_dependency_monetary_operations`
 `cdl_071_forward_dependency_temporal_tier_reconciliation`
 `sim_monetary_01_forward_obligation`
+`valid_epochs_configurable_window_endorsement_packet`
+`max_endorsement_window_epochs_governed_constant`
+`ml_dsa_cold_key_operational_vs_physical_cold_storage_clarified`
 
 ---
 
@@ -267,6 +270,38 @@ Required fields:
   CID of the agent's last fully-acknowledged epoch-close attestation from
   the prior epoch (O(1) computation regardless of history length)
 - `liveness_assertion` — machine-readable token asserting agent is active
+- `valid_epochs` — number of consecutive epochs this endorsement covers
+  (minimum 1, maximum `MAX_ENDORSEMENT_WINDOW_EPOCHS`; default 1).
+  An agent may sign once and remain endorsed for the declared window without
+  re-presenting the ML-DSA cold key per epoch. This is an operational
+  convenience field: the ML-DSA operational key (held in process memory or
+  encrypted store, not physical cold storage) signs at the window boundary,
+  not once per minute. Validators reject packets where
+  `current_epoch > endorsement_epoch_id + valid_epochs`.
+
+**Governed constant: `MAX_ENDORSEMENT_WINDOW_EPOCHS`**
+Opening candidate: 1440 (24 hours of 1-minute validation epochs). This is
+a ratification decision. The ceiling prevents agents from setting
+`valid_epochs` to an unbounded value, which would eliminate forward secrecy.
+Within the window the ephemeral BLS key provides hot-path forward secrecy;
+the ML-DSA layer provides identity continuity. Compromise of the ephemeral
+key within the window is the bounded risk — validators can validate all
+within-window transactions against the cached endorsement.
+
+**Emergency override rule:**
+An agent may publish a new endorsement packet at any time, signed by the
+same ML-DSA key, with a higher `epoch_id`. Validators always accept the
+latest valid packet from an agent and invalidate any prior cached packet for
+that agent. This provides an immediate rotation path if the ephemeral key is
+suspected compromised before the window expires.
+
+**Terminology note:**
+"ML-DSA cold key" throughout this document refers to the ML-DSA operational
+key — derived from Plate 2 (mldsa_seed) and held in encrypted operational
+storage (e.g. encrypted USB, HSM, or in-process encrypted keystore). This is
+distinct from the physical cold storage plate itself, which is touched only
+for initial setup, key rotation, or recovery. Normal agent operation requires
+only the operational key in memory; no human intervention per epoch.
 
 Optional fields (ratification decisions):
 - `capability_declaration` — what the agent is offering this epoch
@@ -696,9 +731,13 @@ The candidate prelock criteria opened here are:
    epoch endorsement packet at each validation epoch boundary, signed by the
    ML-DSA identity root key.
 
-6. The epoch endorsement packet endorses an ephemeral hot signing key for that
-   epoch. Compromising the ephemeral key does not compromise the identity root.
-   Epoch rotation provides forward secrecy bounded to one validation epoch.
+6. The epoch endorsement packet endorses an ephemeral hot signing key for a
+   declared window of 1–`MAX_ENDORSEMENT_WINDOW_EPOCHS` epochs. Compromising
+   the ephemeral key does not compromise the identity root. Forward secrecy is
+   bounded to the declared window. The ML-DSA operational key signs once per
+   window; it resides in encrypted operational storage, not physical cold
+   storage. Emergency override (re-signing with a later epoch_id) is available
+   at any time and immediately supersedes the prior cached endorsement.
 
 7. ECU fast-path transfers are authorized by the ephemeral hot signing key.
    ILC coin slow-path transfers are authorized by the ML-DSA identity root key
