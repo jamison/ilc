@@ -28,6 +28,7 @@ fips204 = { version = "0.4", features = ["ml-dsa-65"] }
 fips205 = { version = "0.4", features = ["slh_dsa_sha2_128s"] }
 bip39 = "2"
 rand_core = "0.6"
+sharks = "0.5"
 
 [dev-dependencies]
 tempfile = "3.10.1"
@@ -60,5 +61,13 @@ path = "src/dag_audit_main.rs"
 [[bin]]
 name = "pq_keygen"
 path = "src/pq_keygen_main.rs"
+
+[[bin]]
+name = "shamir_split"
+path = "src/shamir_split_main.rs"
+
+[[bin]]
+name = "shamir_recover"
+path = "src/shamir_recover_main.rs"
 
 # mysticeti-core will be added via path once extraction payload is prepared
