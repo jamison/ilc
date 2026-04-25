@@ -199,8 +199,8 @@ def test_module_imports_and_exposes_exact_constants() -> None:
 
 def test_dep_chain_assertions_are_present() -> None:
     text = RUNTIME_PATH.read_text(encoding='utf-8')
-    assert 'gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == GOSSIP_TRANSPORT_DEPENDENCY' in text
-    assert '_GOSSIP_PEER_REGISTRY_CHECK == GOSSIP_PEER_REGISTRY_DEPENDENCY' in text
+    assert 'gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != GOSSIP_TRANSPORT_DEPENDENCY' in text
+    assert '_GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY' in text
 
 
 def test_transport_runtime_config_requires_explicit_transport_kind_and_tls_fields() -> None:
