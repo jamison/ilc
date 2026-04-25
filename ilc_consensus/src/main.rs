@@ -21,7 +21,7 @@ use ilc_consensus::app_interface::ilc_app::ilc_app_read_service_server;
 use ilc_consensus::app_interface::ApplicationInterface;
 use ilc_consensus::{
     balance_store::BalanceStore,
-    config::{load_genesis, load_node_config},
+    config::{load_genesis, load_node_config, SettlementPath},
     epoch_settlement::EpochStore,
     fast_path::FastPathProtocol,
     network::PeerNetwork,
@@ -70,6 +70,69 @@ mod args {
             config: config.ok_or("--config is required")?,
             genesis: genesis.ok_or("--genesis is required")?,
         })
+    }
+}
+
+/// Validate the settlement path configuration and emit an operator-visible log.
+///
+/// Enforces pre-deployment invariants (Phase 825 / Phase 830):
+/// - `MysticetiFastPath` requires a non-empty network_id.
+/// - `MysticetiFastPath` with f == 0 emits a BFT-safety warning and returns an
+///   error: a single-validator set cannot provide Byzantine fault tolerance and
+///   must not be used for live ECU settlement without explicit hardening (HIGH-002).
+/// - `None` always succeeds (non-activation posture preserved).
+///
+/// Rollback instruction is included in the `MysticetiFastPath` log so operators
+/// always have the recovery path visible at activation time.
+///
+/// Token: `settlement_path_gate_check_830`
+fn check_settlement_path_gate(
+    path: &SettlementPath,
+    network_id: &str,
+    f: usize,
+) -> Result<(), ILCConsensusError> {
+    match path {
+        SettlementPath::None => {
+            eprintln!(
+                "[settlement_gate] settlement_path=none \
+                 — non-activation posture preserved; \
+                 no live ECU settlement routing active. \
+                 Token: settlement_path_none_posture_preserved"
+            );
+            Ok(())
+        }
+        SettlementPath::MysticetiFastPath => {
+            if network_id.is_empty() {
+                return Err(ILCConsensusError::Other(
+                    "settlement_path=mysticeti_fast_path requires a non-empty network_id".into(),
+                ));
+            }
+            if f == 0 {
+                eprintln!(
+                    "[settlement_gate][sec_warn] settlement_path=mysticeti_fast_path \
+                     with f=0 — BFT fault tolerance is zero; \
+                     a single validator can finalize transfers. \
+                     HIGH-002 hardening is required before independently operated \
+                     production validator sets. \
+                     Token: sec_warn_settlement_gate_f_zero"
+                );
+                return Err(ILCConsensusError::Other(
+                    "settlement_path=mysticeti_fast_path with f=0 is not permitted; \
+                     HIGH-002 hardening required before single-validator live settlement. \
+                     Set settlement_path=none or provision a validator set with N >= 4, f >= 1."
+                        .into(),
+                ));
+            }
+            eprintln!(
+                "[settlement_gate] settlement_path=mysticeti_fast_path ACTIVATED \
+                 network_id={} validator_set_f={} \
+                 — live ECU submission routing through Mysticeti fast path. \
+                 Rollback: set settlement_path=none (or omit field) in node config and restart. \
+                 Token: settlement_path_mysticeti_fast_path_activated",
+                network_id, f
+            );
+            Ok(())
+        }
     }
 }
 
@@ -143,6 +206,24 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         Arc::clone(&balance_store),
         genesis_network_id.clone(),
     ));
+    let f_for_gate = fast_path.validator_set.read().unwrap().f;
+
+    // -----------------------------------------------------------------------
+    // 4b. Settlement path gate — validate and emit operator-visible activation log.
+    //
+    // Design-only pre-deployment work (Phase 825 / Phase 830).
+    // Live ECU submission routing is NOT wired here; that requires:
+    //   (a) separate human authorization,
+    //   (b) first-validator human gate (CDL-017),
+    //   (c) a live non-Genesis validator set (f >= 1 before production).
+    //
+    // This gate enforces the config posture at startup and emits an unambiguous
+    // operator log so the activation state is always visible in node output.
+    // Rollback: remove or set settlement_path=none in the node config and restart.
+    //
+    // Token: `settlement_path_gate_check_830`
+    // -----------------------------------------------------------------------
+    check_settlement_path_gate(&cfg.settlement_path, &genesis_network_id, f_for_gate)?;
 
     // -----------------------------------------------------------------------
     // 5. Construct PeerNetwork (mTLS QUIC, SEC-006)
@@ -198,11 +279,10 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 9. Start node control plane
     // -----------------------------------------------------------------------
-    let f_value = fast_path.validator_set.read().unwrap().f;
     let runner = Arc::new(NodeRunner::new(
         ValidatorID(cfg.validator_id),
         genesis_network_id,
-        f_value,
+        f_for_gate,
         validator_sk,
         network,
         fast_path,
@@ -217,4 +297,49 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     );
 
     runner.run().await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ilc_consensus::config::SettlementPath;
+
+    #[test]
+    fn test_settlement_gate_none_always_passes() {
+        assert!(check_settlement_path_gate(&SettlementPath::None, "ilc-testnet", 0).is_ok());
+        assert!(check_settlement_path_gate(&SettlementPath::None, "ilc-testnet", 1).is_ok());
+        assert!(check_settlement_path_gate(&SettlementPath::None, "", 0).is_ok());
+    }
+
+    #[test]
+    fn test_settlement_gate_fast_path_requires_non_empty_network_id() {
+        let result = check_settlement_path_gate(&SettlementPath::MysticetiFastPath, "", 1);
+        assert!(result.is_err());
+        let msg = format!("{:?}", result.unwrap_err());
+        assert!(msg.contains("non-empty network_id"), "got: {}", msg);
+    }
+
+    #[test]
+    fn test_settlement_gate_fast_path_requires_f_ge_1() {
+        let result =
+            check_settlement_path_gate(&SettlementPath::MysticetiFastPath, "ilc-testnet", 0);
+        assert!(result.is_err());
+        let msg = format!("{:?}", result.unwrap_err());
+        assert!(msg.contains("f=0"), "got: {}", msg);
+        assert!(msg.contains("HIGH-002"), "got: {}", msg);
+    }
+
+    #[test]
+    fn test_settlement_gate_fast_path_passes_with_valid_f() {
+        let result =
+            check_settlement_path_gate(&SettlementPath::MysticetiFastPath, "ilc-testnet", 1);
+        assert!(result.is_ok(), "f=1 should pass: {:?}", result.unwrap_err());
+    }
+
+    #[test]
+    fn test_settlement_gate_fast_path_passes_with_larger_f() {
+        let result =
+            check_settlement_path_gate(&SettlementPath::MysticetiFastPath, "ilc-mainnet", 2);
+        assert!(result.is_ok());
+    }
 }
