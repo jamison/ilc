@@ -71,6 +71,11 @@ struct RawNodeConfig {
     lmdb_path: String,
     validator_consensus_key_path: String,
     grpc_listen_addr: Option<String>,
+    /// settlement_path — controls live ECU settlement routing.
+    /// Omitting or setting "none" preserves the current non-activation posture.
+    /// Set to "mysticeti_fast_path" only after separate human authorization
+    /// and with a live validator set (CDL-017 / first-validator human gate).
+    settlement_path: Option<String>,
     #[allow(dead_code)]
     role: Option<String>,
     #[allow(dead_code)]
@@ -80,6 +85,22 @@ struct RawNodeConfig {
 // ---------------------------------------------------------------------------
 // Runtime types produced by this loader
 // ---------------------------------------------------------------------------
+
+/// Settlement path posture for the live ECU path.
+///
+/// Defaults to `None` (non-activation posture preserved).
+/// `MysticetiFastPath` requires separate human authorization; see CDL-017 and
+/// the first-validator human gate in `ilc_first_validator_deployment_entry_conditions_826_v0.1.md`.
+///
+/// Token: `settlement_path_gate_type_825`
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SettlementPath {
+    /// No live settlement routing. Default posture. Safe to run without human gate.
+    None,
+    /// Route live ECU submissions through the Mysticeti fast path.
+    /// Requires CDL-017, first-validator human gate, and a valid validator set (f >= 1).
+    MysticetiFastPath,
+}
 
 /// Typed peer entry produced after config loading.
 #[derive(Debug, Clone)]
@@ -108,6 +129,8 @@ pub struct NodeConfig {
     pub validator_sk: blst::min_pk::SecretKey,
     /// Optional gRPC listen address. None = gRPC not started.
     pub grpc_listen_addr: Option<std::net::SocketAddr>,
+    /// Settlement path posture. Default = `SettlementPath::None` (non-activation).
+    pub settlement_path: SettlementPath,
 }
 
 // ---------------------------------------------------------------------------
@@ -170,6 +193,19 @@ pub fn load_node_config(
             cfg.network_id, genesis_network_id
         )));
     }
+
+    // Validate settlement_path early — before any file I/O — so config errors
+    // are reported in a deterministic order regardless of file system state.
+    let settlement_path = match cfg.settlement_path.as_deref().unwrap_or("none").trim() {
+        "mysticeti_fast_path" => SettlementPath::MysticetiFastPath,
+        "none" | "" => SettlementPath::None,
+        other => {
+            return Err(ILCConsensusError::Other(format!(
+                "settlement_path: unknown value '{}'; valid values are 'none' or 'mysticeti_fast_path'",
+                other
+            )));
+        }
+    };
 
     let bind_addr = format!("{}:{}", cfg.bind_host, cfg.bind_port)
         .parse()
@@ -242,6 +278,7 @@ pub fn load_node_config(
         peer_certs,
         validator_sk,
         grpc_listen_addr,
+        settlement_path,
     })
 }
 
@@ -506,6 +543,132 @@ mod tests {
             err_msg.contains("network_id mismatch"),
             "expected 'network_id mismatch' in error, got: {}",
             err_msg
+        );
+    }
+
+    #[test]
+    fn test_settlement_path_defaults_to_none_when_omitted() {
+        use std::io::Write;
+        use tempfile::NamedTempFile;
+
+        let mut cfg_file = NamedTempFile::new().unwrap();
+        write!(
+            cfg_file,
+            r#"{{
+            "validator_id": 1,
+            "network_id": "ilc-mysticeti-testnet-m009",
+            "bind_host": "127.0.0.1",
+            "bind_port": 9001,
+            "tailscale_advertise_ip": "100.0.0.1",
+            "peers": [],
+            "lmdb_balance_map_size_bytes": 67108864,
+            "lmdb_epoch_map_size_bytes": 67108864,
+            "tls_cert_path": "/nonexistent/cert.pem",
+            "tls_key_path": "/nonexistent/key.pem",
+            "validator_consensus_key_path": "/nonexistent/key.hex",
+            "peer_cert_dir": "/nonexistent/certs",
+            "lmdb_path": "/tmp/test_lmdb"
+        }}"#
+        )
+        .unwrap();
+
+        // settlement_path omitted → parse succeeds up to file-load step
+        // We can't fully load (no real cert files), but we can verify the parse error
+        // is NOT about settlement_path — it will fail on tls_cert_path instead.
+        let result = load_node_config(cfg_file.path(), "ilc-mysticeti-testnet-m009");
+        match result {
+            Err(ILCConsensusError::Other(ref msg)) => {
+                assert!(
+                    !msg.contains("settlement_path"),
+                    "omitted settlement_path should not produce error, got: {}",
+                    msg
+                );
+            }
+            Ok(_) => {}   // if somehow certs exist, also fine
+            Err(_) => {}  // other error variants (cert load, etc.) are acceptable here
+        }
+    }
+
+    #[test]
+    fn test_settlement_path_none_string_accepted() {
+        use std::io::Write;
+        use tempfile::NamedTempFile;
+
+        let mut cfg_file = NamedTempFile::new().unwrap();
+        write!(
+            cfg_file,
+            r#"{{
+            "validator_id": 1,
+            "network_id": "ilc-mysticeti-testnet-m009",
+            "bind_host": "127.0.0.1",
+            "bind_port": 9001,
+            "tailscale_advertise_ip": "100.0.0.1",
+            "peers": [],
+            "lmdb_balance_map_size_bytes": 67108864,
+            "lmdb_epoch_map_size_bytes": 67108864,
+            "tls_cert_path": "/nonexistent/cert.pem",
+            "tls_key_path": "/nonexistent/key.pem",
+            "validator_consensus_key_path": "/nonexistent/key.hex",
+            "peer_cert_dir": "/nonexistent/certs",
+            "lmdb_path": "/tmp/test_lmdb",
+            "settlement_path": "none"
+        }}"#
+        )
+        .unwrap();
+
+        let result = load_node_config(cfg_file.path(), "ilc-mysticeti-testnet-m009");
+        match result {
+            Err(ILCConsensusError::Other(ref msg)) => {
+                assert!(
+                    !msg.contains("settlement_path"),
+                    "settlement_path=none should not produce error, got: {}",
+                    msg
+                );
+            }
+            Ok(_) => {}
+            Err(_) => {} // other error variants (cert load, etc.) are acceptable here
+        }
+    }
+
+    #[test]
+    fn test_settlement_path_unknown_value_rejected() {
+        use std::io::Write;
+        use tempfile::NamedTempFile;
+
+        let mut cfg_file = NamedTempFile::new().unwrap();
+        write!(
+            cfg_file,
+            r#"{{
+            "validator_id": 1,
+            "network_id": "ilc-mysticeti-testnet-m009",
+            "bind_host": "127.0.0.1",
+            "bind_port": 9001,
+            "tailscale_advertise_ip": "100.0.0.1",
+            "peers": [],
+            "lmdb_balance_map_size_bytes": 67108864,
+            "lmdb_epoch_map_size_bytes": 67108864,
+            "tls_cert_path": "/nonexistent/cert.pem",
+            "tls_key_path": "/nonexistent/key.pem",
+            "validator_consensus_key_path": "/nonexistent/key.hex",
+            "peer_cert_dir": "/nonexistent/certs",
+            "lmdb_path": "/tmp/test_lmdb",
+            "settlement_path": "legacy_substrate"
+        }}"#
+        )
+        .unwrap();
+
+        let result = load_node_config(cfg_file.path(), "ilc-mysticeti-testnet-m009");
+        assert!(result.is_err(), "unknown settlement_path value must error");
+        let msg = format!("{:?}", result.unwrap_err());
+        assert!(
+            msg.contains("settlement_path"),
+            "error must name settlement_path, got: {}",
+            msg
+        );
+        assert!(
+            msg.contains("legacy_substrate"),
+            "error must name the rejected value, got: {}",
+            msg
         );
     }
 }
