@@ -23,6 +23,14 @@ Document schema: `docs/specs/README.md#sequence-locks-phase-window-guidance-and-
 `valid_epochs_configurable_window_endorsement_packet`
 `max_endorsement_window_epochs_governed_constant`
 `ml_dsa_cold_key_operational_vs_physical_cold_storage_clarified`
+`endorsement_packet_agent_id_required_field`
+`sequence_number_total_ordering_endorsements`
+`supersedes_epoch_id_distributed_atomicity_override`
+`ecu_commitment_nonce_brute_force_protected`
+`liveness_assertion_deterministic_epoch_bound`
+`freeze_from_epoch_clamped_no_retroactive_invalidation`
+`process_restart_supersedes_epoch_id_nominal_procedure`
+`endorsement_bandwidth_burst_ratification_decision`
 
 ---
 
@@ -176,7 +184,12 @@ A recovery transaction contains:
 - `freeze_from_epoch` — optional; validators immediately stop accepting ECU
   transfers and ILC authorizations from old_canonical_root_pk from this epoch
   forward, before full recovery confirmation. Closes the gap window between
-  compromise discovery and recovery completion.
+  compromise discovery and recovery completion. Validators enforce
+  `effective_freeze_epoch = max(current_epoch, freeze_from_epoch)` — no
+  confirmed transaction from any epoch before `effective_freeze_epoch` is
+  ever retroactively invalidated. A past epoch value in this field is silently
+  clamped forward; it cannot be used to invalidate historical confirmed state.
+  (Fix I4)
 
 Validators verify: `sha384(recovery_spec || blinding_factor) ==
 recovery_commitment` from genesis record; authorization satisfies recovery_spec;
@@ -239,6 +252,22 @@ card model: the account holder authorizes an employee to act within bounds
 without per-transaction approval. Delegation format and revocation protocol
 are ratification decisions.
 
+Warm key revocation uses the same `supersedes_epoch_id` propagation pattern
+as the endorsement override rule (§2b): a revocation published by the cold
+key includes a `supersedes_epoch_id`; validators reject delegate_pk
+transactions for epochs ≥ that value even before the revocation has fully
+propagated. Delegation limits bound the damage during the propagation window.
+(Fix M1)
+
+**Process restart procedure:**
+When an agent process restarts — planned or unplanned — it must issue a new
+endorsement packet with a new ephemeral key and a higher `sequence_number`.
+The new packet sets `supersedes_epoch_id` to the `epoch_id` of the packet
+containing the prior ephemeral key. This is the nominal restart path, not
+an emergency procedure. Agents should persist `sequence_number` durably
+(e.g. in LMDB) so that a crash-restart cannot produce a lower sequence
+number than a previously issued packet. (Fix M2)
+
 **Quantum attack surface summary by component:**
 
 | Component | Algorithm | Quantum resilient? | Mitigation |
@@ -264,20 +293,38 @@ these are needed at epoch boundary anyway — bundling them into one ML-DSA-sign
 packet means validators obtain all information in a single fetch and verify.
 
 Required fields:
-- `epoch_id` — the epoch being endorsed
+- `protocol_version` — u32, currently 1. Validators reject packets with
+  unknown versions after a governed migration window. Enables forward-
+  compatible schema evolution without silent parse failures. (Fix M2/I5)
+- `agent_id` — the 96-char SHA-384 agent identifier. Makes the packet
+  self-describing; validators do not need a reverse lookup from
+  canonical_root_pk. Required for correctness during key rotation: the
+  canonical_root_pk in the packet is the key being used for this window;
+  the agent_id is stable across any rotation. (Fix C1)
+- `epoch_id` — the epoch at which this endorsement begins
+- `sequence_number` — u64, monotonically increasing per agent across all
+  packets ever issued. Persisted in the agent's local state. When two
+  packets from the same agent have the same `epoch_id`, validators accept
+  the one with the higher `sequence_number`. Ties (identical sequence
+  number) are rejected. This provides a total ordering of all endorsements
+  from a given agent independent of wall-clock time. (Fix I3)
 - `ephemeral_signing_pk` — the BLS public key authorized for hot signing
-- `agent_state_root` — CID of agent's current graph state. Opening candidate:
-  CID of the agent's last fully-acknowledged epoch-close attestation from
-  the prior epoch (O(1) computation regardless of history length)
-- `liveness_assertion` — machine-readable token asserting agent is active
+  during this window
 - `valid_epochs` — number of consecutive epochs this endorsement covers
   (minimum 1, maximum `MAX_ENDORSEMENT_WINDOW_EPOCHS`; default 1).
-  An agent may sign once and remain endorsed for the declared window without
-  re-presenting the ML-DSA cold key per epoch. This is an operational
-  convenience field: the ML-DSA operational key (held in process memory or
-  encrypted store, not physical cold storage) signs at the window boundary,
-  not once per minute. Validators reject packets where
-  `current_epoch > endorsement_epoch_id + valid_epochs`.
+  Governs ML-DSA signing frequency only — epoch-close attestation
+  obligation is independent and remains mandatory every epoch regardless
+  of window size (see below). Validators reject packets where
+  `current_epoch > epoch_id + valid_epochs`. (Fix I1)
+- `liveness_assertion` — `sha256(agent_id || epoch_id)` encoded as hex.
+  Deterministic and epoch-bound; any validator can verify it without
+  additional state. Proves the packet was freshly generated for this
+  specific epoch, not replayed from a prior endorsement. (Fix I2)
+- `agent_state_root` — CID of the agent's most recent epoch-close
+  attestation from the prior epoch (O(1) computation). Note: this field
+  reflects state at the time of signing and goes stale over long windows.
+  Validators use the most recent epoch-close attestation for current state,
+  not this field. This field is a signing-time snapshot only. (Fix I1)
 
 **Governed constant: `MAX_ENDORSEMENT_WINDOW_EPOCHS`**
 Opening candidate: 1440 (24 hours of 1-minute validation epochs). This is
@@ -288,12 +335,33 @@ the ML-DSA layer provides identity continuity. Compromise of the ephemeral
 key within the window is the bounded risk — validators can validate all
 within-window transactions against the cached endorsement.
 
-**Emergency override rule:**
-An agent may publish a new endorsement packet at any time, signed by the
-same ML-DSA key, with a higher `epoch_id`. Validators always accept the
-latest valid packet from an agent and invalidate any prior cached packet for
-that agent. This provides an immediate rotation path if the ephemeral key is
-suspected compromised before the window expires.
+**Epoch-close attestation independence from valid_epochs:**
+`valid_epochs` governs how often the ML-DSA operational key must sign an
+endorsement packet. It does not reduce the epoch-close attestation
+obligation. Every active agent at or above the participation threshold must
+publish an epoch-close attestation at the end of every validation epoch,
+signed by the current ephemeral key, regardless of how large `valid_epochs`
+is. The current state of the agent is always derivable from the sequence of
+close attestations, not from the (potentially stale) endorsement packet.
+
+**Emergency override rule:** (Fix C3)
+An agent may publish a new endorsement packet at any time with a higher
+`sequence_number`. The new packet must include a `supersedes_epoch_id`
+field (u64) set to the `epoch_id` of the packet being superseded. Validator
+behavior:
+- Accept the new packet and cache it, replacing the prior cached packet.
+- Immediately reject any transaction signed by the old ephemeral key for
+  epoch ≥ `supersedes_epoch_id`, even if the new packet has not yet
+  propagated to all validators. The validator's local rule: if a
+  transaction arrives from ephemeral key K and any local record shows K
+  was superseded at epoch E, reject it for all epochs ≥ E.
+- `supersedes_epoch_id` is a required field in any packet that overrides
+  a prior one; it is absent (or zero) in the initial packet of a new agent
+  or after a process restart from a clean state.
+This closes the distributed atomicity gap: even validators that have not
+yet received the new packet will reject transactions from the old key once
+they learn of the supersession, preventing split endorsement state from
+being exploited during gossip propagation latency.
 
 **Terminology note:**
 "ML-DSA cold key" throughout this document refers to the ML-DSA operational
@@ -327,6 +395,15 @@ experience one cold-start fetch on their first transaction per validator.
 This eliminates cold-start latency for established agents. Pre-fetch mechanism
 is a ratification decision; opening candidate: gossip broadcast at epoch start.
 
+**Bandwidth note (M3):** Each endorsement packet is approximately 5KB
+(~3.3KB ML-DSA-65 signature + ~1.95KB canonical_root_pk + fields). With
+10,000 active agents all broadcasting at a window boundary, a synchronous
+pre-fetch burst approaches 50MB. The pre-fetch design must account for this:
+options include staggered broadcast with jitter, fetch-on-demand with a
+bounded grace window, or pre-fetch only for agents with recent activity.
+This is a ratification decision; the bandwidth ceiling must be evaluated
+before the pre-fetch mechanism is locked.
+
 **Epoch close attestation:**
 At epoch close, each active agent at or above the participation threshold
 publishes an epoch close attestation signed by the ephemeral hot signing key.
@@ -335,9 +412,18 @@ The attestation contains:
 Required fields:
 - `epoch_id` — the epoch being closed
 - `actions_root` — CID of all claims/actions taken this epoch
-- `ecu_sent_commitment` — sha256 hash of ECU sent total with deferred reveal
-  (protects Row 5 anonymity; revealed at next epoch start)
-- `ecu_received_commitment` — sha256 hash of ECU received total, same policy
+- `ecu_sent_commitment` — `sha256(ecu_sent_total || epoch_nonce)` where
+  `epoch_nonce = sha256(identity_seed_commitment || epoch_id)`. The nonce
+  is derived deterministically per agent per epoch from public data already
+  known to the agent; it does not require additional storage. Without the
+  nonce, low-entropy ECU amounts (e.g. 50 ECU sent) are trivially brute-
+  forced within the one-epoch reveal window, defeating the privacy
+  guarantee entirely. The nonce adds full SHA-256 preimage resistance to
+  any ECU amount regardless of magnitude. At deferred reveal, the agent
+  publishes `ecu_sent_total` and `epoch_nonce`; validators verify the
+  commitment. (Fix C2)
+- `ecu_received_commitment` — `sha256(ecu_received_total || epoch_nonce)`,
+  same construction and same reveal policy as `ecu_sent_commitment`
 - `reputation_delta` — signed integer change in reputation score
 
 Optional fields:
@@ -731,13 +817,19 @@ The candidate prelock criteria opened here are:
    epoch endorsement packet at each validation epoch boundary, signed by the
    ML-DSA identity root key.
 
-6. The epoch endorsement packet endorses an ephemeral hot signing key for a
-   declared window of 1–`MAX_ENDORSEMENT_WINDOW_EPOCHS` epochs. Compromising
-   the ephemeral key does not compromise the identity root. Forward secrecy is
-   bounded to the declared window. The ML-DSA operational key signs once per
-   window; it resides in encrypted operational storage, not physical cold
-   storage. Emergency override (re-signing with a later epoch_id) is available
-   at any time and immediately supersedes the prior cached endorsement.
+6. The epoch endorsement packet required fields are: `protocol_version`,
+   `agent_id`, `epoch_id`, `sequence_number`, `ephemeral_signing_pk`,
+   `valid_epochs`, `liveness_assertion`, and `agent_state_root`. The packet
+   endorses an ephemeral hot signing key for a declared window of
+   1–`MAX_ENDORSEMENT_WINDOW_EPOCHS` epochs. Compromising the ephemeral key
+   does not compromise the identity root. Forward secrecy is bounded to the
+   declared window. The ML-DSA operational key signs once per window; it
+   resides in encrypted operational storage, not physical cold storage.
+   Emergency override uses `supersedes_epoch_id` to close the distributed
+   atomicity gap: validators reject old ephemeral key transactions for epochs
+   ≥ `supersedes_epoch_id` even before the new packet fully propagates.
+   Epoch-close attestation obligation is independent of `valid_epochs` and
+   remains mandatory every epoch.
 
 7. ECU fast-path transfers are authorized by the ephemeral hot signing key.
    ILC coin slow-path transfers are authorized by the ML-DSA identity root key
@@ -745,7 +837,9 @@ The candidate prelock criteria opened here are:
 
 8. The epoch-close attestation is signed by the ephemeral key, closes the loop
    started by the epoch endorsement packet, and feeds the minting proof chain.
-   ECU totals are committed with deferred reveal to protect Row 5 anonymity.
+   ECU totals are committed as `sha256(total || epoch_nonce)` where
+   `epoch_nonce = sha256(identity_seed_commitment || epoch_id)`, protecting
+   Row 5 anonymity against brute-force enumeration of low-entropy amounts.
 
 9. SHA-384 is used uniformly for all Tier 3 (permanent) data. SHA-256 is used
    for Tier 1 and Tier 2 data. The tier boundary is the temporal persistence
