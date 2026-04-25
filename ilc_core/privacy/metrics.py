@@ -1,0 +1,269 @@
+"""Phase 833 Row-5 B-Impl — LeakageMetrics: obligation 6 (SIM-LEAKAGE-03).
+
+Obligation 6 — Live instrumentation for SIM-LEAKAGE-03:
+  Expose the minimum metrics required by the live evaluation lane so that
+  SIM-LEAKAGE-03 can consume them against the M-009 testbed when the
+  runtime-closure window opens.
+
+Minimum metrics (per commissioning spec §3.6):
+  - per-epoch group fill rate
+  - observed jitter distribution
+  - force-release count
+  - anonymity-set size histogram per settled batch
+
+Design notes:
+  - LeakageMetricsCollector is stateful and epoch-scoped. Call
+    record_group_settled() after every flush() or enforce_max_wait() delivery.
+  - epoch_snapshot() returns the stats for the requested epoch without
+    mutating state; call it after all activity in an epoch is done.
+  - global_snapshot() aggregates across all epochs.
+
+Token: row5_b_impl_obligation_6_sim_leakage_03_instrumentation
+"""
+from __future__ import annotations
+
+from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import Any
+
+from ilc_core.privacy.lane import ReleaseGroup
+
+LEAKAGE_METRICS_VERSION = "leakage_metrics_833.v0.1"
+
+# The bounds SIM-LEAKAGE-03 must satisfy (informational — checked in Phase 834).
+SIM_LEAKAGE_03_BOUND_A: float = 0.15   # max fill-failure rate
+SIM_LEAKAGE_03_BOUND_B: float = 0.15   # max jitter spread (relative)
+SIM_LEAKAGE_03_BOUND_C: float = 0.05   # max degraded-anonymity fraction of settled transfers
+
+
+@dataclass
+class EpochMetrics:
+    """Statistics for a single epoch.
+
+    Token: row5_b_impl_epoch_metrics_shape
+    """
+    epoch: int
+    groups_completed: int = 0
+    groups_force_released: int = 0
+    # jitter_distribution: {jitter_delta: count}
+    jitter_distribution: dict[int, int] = field(default_factory=dict)
+    # anonymity_set_histogram: {set_size: count_of_groups_with_that_size}
+    anonymity_set_histogram: dict[int, int] = field(default_factory=dict)
+    transfers_settled: int = 0
+    transfers_degraded: int = 0
+
+    @property
+    def fill_rate(self) -> float:
+        """Fraction of groups that sealed normally (not force-released)."""
+        total = self.groups_completed + self.groups_force_released
+        if total == 0:
+            return 1.0   # vacuously full if no activity
+        return self.groups_completed / total
+
+    @property
+    def degraded_fraction(self) -> float:
+        """Fraction of settled transfers that carried degraded_anonymity."""
+        if self.transfers_settled == 0:
+            return 0.0
+        return self.transfers_degraded / self.transfers_settled
+
+
+@dataclass
+class GlobalMetrics:
+    """Aggregated statistics across all epochs.
+
+    Token: row5_b_impl_global_metrics_shape
+    """
+    total_epochs_observed: int
+    total_groups_completed: int
+    total_groups_force_released: int
+    total_transfers_settled: int
+    total_transfers_degraded: int
+    # Merged jitter distribution across all epochs
+    jitter_distribution: dict[int, int]
+    # Merged anonymity-set histogram across all epochs
+    anonymity_set_histogram: dict[int, int]
+
+    @property
+    def global_fill_rate(self) -> float:
+        total = self.total_groups_completed + self.total_groups_force_released
+        if total == 0:
+            return 1.0
+        return self.total_groups_completed / total
+
+    @property
+    def global_degraded_fraction(self) -> float:
+        if self.total_transfers_settled == 0:
+            return 0.0
+        return self.total_transfers_degraded / self.total_transfers_settled
+
+
+class LeakageMetricsCollector:
+    """Accumulates per-epoch and global metrics for SIM-LEAKAGE-03.
+
+    Usage::
+
+        collector = LeakageMetricsCollector()
+
+        # After each flush() or enforce_max_wait() delivery:
+        for group in ready_groups:
+            sealed_epoch = group.release_epoch   # epoch the group was created
+            collector.record_group_settled(
+                sealed_epoch=sealed_epoch,
+                group=group,
+            )
+
+        # After epoch completes:
+        snap = collector.epoch_snapshot(epoch=current_epoch)
+        global_snap = collector.global_snapshot()
+
+    Token: row5_b_impl_leakage_metrics_collector
+    """
+
+    def __init__(self) -> None:
+        # epoch → EpochMetrics (created on first access)
+        self._epochs: dict[int, EpochMetrics] = {}
+
+    def record_group_settled(
+        self,
+        sealed_epoch: int,
+        group: ReleaseGroup,
+    ) -> None:
+        """Record a settled group (normal or force-released).
+
+        Parameters
+        ----------
+        sealed_epoch:
+            The epoch at which the group was formed (= group.release_epoch
+            for jitter-scheduled groups; the current_epoch at force-release
+            for degraded groups). Used for per-epoch bucketing.
+        group:
+            The ReleaseGroup returned by flush() or enforce_max_wait().
+        """
+        em = self._get_or_create(sealed_epoch)
+
+        if group.degraded_anonymity:
+            em.groups_force_released += 1
+        else:
+            em.groups_completed += 1
+
+        # Jitter delta: for normal groups, release_epoch - sealed_epoch.
+        # For force-released groups the jitter concept doesn't apply cleanly;
+        # we skip them from the jitter distribution (degraded_anonymity guard).
+        if not group.degraded_anonymity:
+            jitter = group.release_epoch - sealed_epoch
+            em.jitter_distribution[jitter] = em.jitter_distribution.get(jitter, 0) + 1
+
+        # Anonymity-set histogram: keyed by actual set size.
+        sz = group.anonymity_set_size
+        em.anonymity_set_histogram[sz] = em.anonymity_set_histogram.get(sz, 0) + 1
+
+        # Transfer-level counts.
+        em.transfers_settled += len(group.transfers)
+        if group.degraded_anonymity:
+            em.transfers_degraded += len(group.transfers)
+
+    def epoch_snapshot(self, epoch: int) -> EpochMetrics:
+        """Return a copy of the metrics for the given epoch (empty if unseen)."""
+        if epoch not in self._epochs:
+            return EpochMetrics(epoch=epoch)
+        em = self._epochs[epoch]
+        return EpochMetrics(
+            epoch=em.epoch,
+            groups_completed=em.groups_completed,
+            groups_force_released=em.groups_force_released,
+            jitter_distribution=dict(em.jitter_distribution),
+            anonymity_set_histogram=dict(em.anonymity_set_histogram),
+            transfers_settled=em.transfers_settled,
+            transfers_degraded=em.transfers_degraded,
+        )
+
+    def global_snapshot(self) -> GlobalMetrics:
+        """Return aggregated metrics across all epochs."""
+        total_completed = 0
+        total_forced = 0
+        total_settled = 0
+        total_degraded = 0
+        merged_jitter: dict[int, int] = {}
+        merged_histogram: dict[int, int] = {}
+
+        for em in self._epochs.values():
+            total_completed += em.groups_completed
+            total_forced += em.groups_force_released
+            total_settled += em.transfers_settled
+            total_degraded += em.transfers_degraded
+            for k, v in em.jitter_distribution.items():
+                merged_jitter[k] = merged_jitter.get(k, 0) + v
+            for k, v in em.anonymity_set_histogram.items():
+                merged_histogram[k] = merged_histogram.get(k, 0) + v
+
+        return GlobalMetrics(
+            total_epochs_observed=len(self._epochs),
+            total_groups_completed=total_completed,
+            total_groups_force_released=total_forced,
+            total_transfers_settled=total_settled,
+            total_transfers_degraded=total_degraded,
+            jitter_distribution=merged_jitter,
+            anonymity_set_histogram=merged_histogram,
+        )
+
+    def check_bounds(self, global_metrics: GlobalMetrics | None = None) -> dict[str, bool]:
+        """Check whether current metrics satisfy the three SIM-LEAKAGE-03 bounds.
+
+        Returns a dict with keys 'A', 'B', 'C' mapping to True (bound satisfied)
+        or False (bound violated).
+
+        Bound A: global_fill_rate >= (1 - SIM_LEAKAGE_03_BOUND_A)
+                 i.e. force-release fraction <= 0.15
+        Bound B: jitter spread relative to max observed jitter <= BOUND_B
+                 (defined as: std(jitter_deltas) / max_jitter <= BOUND_B when
+                  at least one normal group exists; True vacuously otherwise)
+        Bound C: global_degraded_fraction <= SIM_LEAKAGE_03_BOUND_C
+
+        Token: row5_b_impl_bound_check
+        """
+        gm = global_metrics if global_metrics is not None else self.global_snapshot()
+
+        # Bound A: fill-failure rate <= 15%
+        fill_failure_rate = 1.0 - gm.global_fill_rate
+        bound_a_ok = fill_failure_rate <= SIM_LEAKAGE_03_BOUND_A
+
+        # Bound B: jitter spread check
+        bound_b_ok = self._check_jitter_spread(gm)
+
+        # Bound C: degraded-anonymity fraction <= 5%
+        bound_c_ok = gm.global_degraded_fraction <= SIM_LEAKAGE_03_BOUND_C
+
+        return {"A": bound_a_ok, "B": bound_b_ok, "C": bound_c_ok}
+
+    # ------------------------------------------------------------------
+    # Internal
+    # ------------------------------------------------------------------
+
+    def _get_or_create(self, epoch: int) -> EpochMetrics:
+        if epoch not in self._epochs:
+            self._epochs[epoch] = EpochMetrics(epoch=epoch)
+        return self._epochs[epoch]
+
+    def _check_jitter_spread(self, gm: GlobalMetrics) -> bool:
+        """Bound B: jitter spread relative to max <= 0.15.
+
+        If no normal groups exist, vacuously True.
+        """
+        jd = gm.jitter_distribution
+        if not jd:
+            return True
+        values: list[int] = []
+        for delta, count in jd.items():
+            values.extend([delta] * count)
+        n = len(values)
+        if n == 0:
+            return True
+        mean = sum(values) / n
+        variance = sum((v - mean) ** 2 for v in values) / n
+        std = variance ** 0.5
+        max_jitter = max(values)
+        if max_jitter == 0:
+            return True
+        relative_spread = std / max_jitter
+        return relative_spread <= SIM_LEAKAGE_03_BOUND_B
