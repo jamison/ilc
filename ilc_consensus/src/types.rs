@@ -246,10 +246,20 @@ impl PartialEq for AggSig {
 impl Eq for AggSig {}
 
 /// EpochCheckpoint embeds the epoch settlement alongside an aggregate quorum signature.
+///
+/// HIGH-002 fix: `signers` names the subset of validators whose individual signatures
+/// were aggregated into `sigs`. `process_epoch_checkpoint` verifies that:
+///   - `signers.len() >= quorum_threshold(N)`
+///   - all signers are in the active validator set (no unknown signers)
+///   - no duplicate signer IDs are present
+///   - the aggregate in `sigs` verifies against exactly the named signing subset
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EpochCheckpoint {
     pub record: EpochSettlementRecord,
+    /// Aggregate BLS signature over `record`, contributed by the validators in `signers`.
     pub sigs: AggSig,
+    /// The subset of validators whose individual signatures were aggregated into `sigs`.
+    pub signers: Vec<ValidatorID>,
 }
 
 /// Validator identity
