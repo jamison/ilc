@@ -985,6 +985,7 @@ fn apply_missing_epoch_record(
     let checkpoint = crate::types::EpochCheckpoint {
         record: stored.record,
         sigs: crate::types::AggSig(agg_sig),
+        signers: stored.signers,
     };
 
     protocol
@@ -1271,9 +1272,11 @@ mod tests {
             .compress()
             .to_vec();
 
+        // Claim both validators signed (IDs 1, 2) — but the aggregate is for the wrong record.
         let stored = StoredCheckpoint {
             record,
             agg_sig_bytes: wrong_sig_bytes,
+            signers: vec![crate::types::ValidatorID(1), crate::types::ValidatorID(2)],
         };
 
         let err = apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap_err();
@@ -1295,6 +1298,7 @@ mod tests {
                 state_root: CIDv1Root::new([1u8; 36]),
             },
             agg_sig_bytes: vec![],
+            signers: vec![],
         };
 
         let err = apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap_err();
@@ -1316,6 +1320,7 @@ mod tests {
                 state_root: CIDv1Root::new([1u8; 36]),
             },
             agg_sig_bytes: vec![],
+            signers: vec![],
         };
 
         apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap();
