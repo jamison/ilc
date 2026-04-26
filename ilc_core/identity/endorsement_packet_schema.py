@@ -83,7 +83,7 @@ def derive_liveness_assertion(agent_id: str, epoch_id: int) -> str:
             "cdl_069_endorsement_invalid_agent_id_for_liveness",
             f"agent_id must be {_AGENT_ID_HEX_LENGTH}-char hex string",
         )
-    if not isinstance(epoch_id, int) or epoch_id < 0:
+    if not isinstance(epoch_id, int) or isinstance(epoch_id, bool) or epoch_id < 0:
         raise EndorsementPacketSchemaError(
             "cdl_069_endorsement_invalid_epoch_id_for_liveness",
             "epoch_id must be a non-negative integer",
@@ -320,8 +320,9 @@ def check_endorsement_window(
 ) -> bool:
     """Return True if packet is within its valid endorsement window.
 
-    Validators reject packets where current_epoch ≥ epoch_id + valid_epochs.
-    CDL-069 §2b: 'Validators reject packets where current_epoch > epoch_id + valid_epochs.'
+    Active window: epoch_id ≤ current_epoch < epoch_id + valid_epochs.
+    Validators reject packets where current_epoch ≥ epoch_id + valid_epochs
+    (i.e., the boundary epoch epoch_id + valid_epochs is already expired).
     """
     return packet.is_active_at(current_epoch)
 

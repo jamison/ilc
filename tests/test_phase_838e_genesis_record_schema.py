@@ -525,3 +525,74 @@ def test_blinding_factor_domain_separates_from_identity_commitment() -> None:
     recovery_commit = compute_recovery_commitment(spec, bf)
     # Commitments derived from the same seed must be distinct due to domain separation
     assert plain_commit != recovery_commit
+
+
+# ---------------------------------------------------------------------------
+# F7: old_canonical_root_pk must match genesis record in validate_against_record
+# ---------------------------------------------------------------------------
+
+def test_recovery_transaction_old_pk_mismatch_rejected() -> None:
+    """validate_against_record must reject if old_canonical_root_pk ≠ genesis canonical_root_pk."""
+    spec_bytes = encode_recovery_spec(RecoverySpecType.SINGLE_KEY_SPHINCS, pk_hex="aa" * 32)
+    rec = GenesisRecord.from_identity_seed(_SEED_32, _FAKE_MLDSA_PK, spec_bytes)
+    tx = RecoveryTransaction(
+        old_canonical_root_pk="ef" * 1664,  # wrong — not the key in the genesis record
+        new_canonical_root_pk="cd" * 1664,
+        identity_seed_commitment=rec.identity_seed_commitment,
+        recovery_spec=spec_bytes,
+        authorization=b"mock",
+    )
+    with pytest.raises(GenesisRecordError) as exc:
+        tx.validate_against_record(rec, _SEED_32, current_epoch=100)
+    assert "cdl_069_recovery_old_pk_mismatch" in exc.value.token
+
+
+def test_recovery_transaction_old_pk_matches_passes() -> None:
+    """validate_against_record passes when old_canonical_root_pk matches genesis record."""
+    spec_bytes = encode_recovery_spec(RecoverySpecType.SINGLE_KEY_SPHINCS, pk_hex="aa" * 32)
+    rec = GenesisRecord.from_identity_seed(_SEED_32, _FAKE_MLDSA_PK, spec_bytes)
+    tx = RecoveryTransaction(
+        old_canonical_root_pk=_FAKE_MLDSA_PK,  # correct match
+        new_canonical_root_pk="cd" * 1664,
+        identity_seed_commitment=rec.identity_seed_commitment,
+        recovery_spec=spec_bytes,
+        authorization=b"mock",
+    )
+    epoch = tx.validate_against_record(rec, _SEED_32, current_epoch=100)
+    assert epoch == 100
+
+
+# ---------------------------------------------------------------------------
+# F8: compute_recovery_commitment / compute_personhood_commitment type checks
+# ---------------------------------------------------------------------------
+
+def test_recovery_commitment_rejects_non_bytes_spec() -> None:
+    bf = derive_blinding_factor(_SEED_32)
+    with pytest.raises(GenesisRecordError) as exc:
+        compute_recovery_commitment("not bytes", bf)  # type: ignore[arg-type]
+    assert "cdl_069_genesis_invalid_recovery_spec" in exc.value.token
+
+
+def test_recovery_commitment_rejects_non_bytes_blinding_factor() -> None:
+    with pytest.raises(GenesisRecordError) as exc:
+        compute_recovery_commitment(b"spec", "not bytes")  # type: ignore[arg-type]
+    assert "cdl_069_genesis_invalid_blinding_factor" in exc.value.token
+
+
+def test_recovery_commitment_rejects_wrong_length_blinding_factor() -> None:
+    with pytest.raises(GenesisRecordError) as exc:
+        compute_recovery_commitment(b"spec", b"\x00" * 32)  # 32 bytes, not 48
+    assert "cdl_069_genesis_invalid_blinding_factor" in exc.value.token
+
+
+def test_personhood_commitment_rejects_non_bytes_proof() -> None:
+    bf = derive_blinding_factor(_SEED_32)
+    with pytest.raises(GenesisRecordError) as exc:
+        compute_personhood_commitment("not bytes", bf)  # type: ignore[arg-type]
+    assert "cdl_069_genesis_invalid_personhood_proof" in exc.value.token
+
+
+def test_personhood_commitment_rejects_wrong_length_blinding_factor() -> None:
+    with pytest.raises(GenesisRecordError) as exc:
+        compute_personhood_commitment(b"proof", b"\x00" * 16)  # wrong length
+    assert "cdl_069_genesis_invalid_blinding_factor" in exc.value.token

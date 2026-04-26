@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
@@ -78,11 +78,31 @@ def compute_identity_seed_commitment(identity_seed: bytes) -> str:
 
 def compute_recovery_commitment(recovery_spec_bytes: bytes, blinding_factor: bytes) -> str:
     """sha384(recovery_spec_bytes || blinding_factor) → 96-char hex."""
+    if not isinstance(recovery_spec_bytes, bytes):
+        raise GenesisRecordError(
+            "cdl_069_genesis_invalid_recovery_spec",
+            "recovery_spec_bytes must be bytes",
+        )
+    if not isinstance(blinding_factor, bytes) or len(blinding_factor) != 48:
+        raise GenesisRecordError(
+            "cdl_069_genesis_invalid_blinding_factor",
+            "blinding_factor must be 48 bytes (SHA-384 output)",
+        )
     return hashlib.sha384(recovery_spec_bytes + blinding_factor).hexdigest()
 
 
 def compute_personhood_commitment(personhood_proof_bytes: bytes, blinding_factor: bytes) -> str:
     """sha384(personhood_proof_bytes || blinding_factor) → 96-char hex."""
+    if not isinstance(personhood_proof_bytes, bytes):
+        raise GenesisRecordError(
+            "cdl_069_genesis_invalid_personhood_proof",
+            "personhood_proof_bytes must be bytes",
+        )
+    if not isinstance(blinding_factor, bytes) or len(blinding_factor) != 48:
+        raise GenesisRecordError(
+            "cdl_069_genesis_invalid_blinding_factor",
+            "blinding_factor must be 48 bytes (SHA-384 output)",
+        )
     return hashlib.sha384(personhood_proof_bytes + blinding_factor).hexdigest()
 
 
@@ -225,13 +245,19 @@ class RecoveryTransaction:
         Returns the effective_freeze_epoch (clamped per finding I4).
         Raises GenesisRecordError on any validation failure.
         """
-        # 1. identity_seed_commitment must match genesis record
+        # 1. old_canonical_root_pk must match the genesis record's current key
+        if self.old_canonical_root_pk != genesis_record.canonical_root_pk:
+            raise GenesisRecordError(
+                "cdl_069_recovery_old_pk_mismatch",
+                "old_canonical_root_pk does not match genesis record canonical_root_pk",
+            )
+        # 2. identity_seed_commitment must match genesis record
         if self.identity_seed_commitment != genesis_record.identity_seed_commitment:
             raise GenesisRecordError(
                 "cdl_069_recovery_identity_seed_commitment_mismatch",
                 "identity_seed_commitment does not match genesis record",
             )
-        # 2. Recompute recovery_commitment from presented recovery_spec
+        # 3. Recompute recovery_commitment from presented recovery_spec
         blinding_factor = derive_blinding_factor(identity_seed)
         expected_rec_commit = compute_recovery_commitment(
             self.recovery_spec, blinding_factor,
@@ -241,13 +267,13 @@ class RecoveryTransaction:
                 "cdl_069_recovery_commitment_mismatch",
                 "recovery_spec does not match recovery_commitment in genesis record",
             )
-        # 3. new key must be well-formed
+        # 4. new key must be well-formed
         _require_hex(
             "new_canonical_root_pk", self.new_canonical_root_pk,
             _MLDSA_PK_HEX_LENGTH,
             "cdl_069_recovery_invalid_new_pk",
         )
-        # 4. Clamp freeze_from_epoch (finding I4: no retroactive invalidation)
+        # 5. Clamp freeze_from_epoch (finding I4: no retroactive invalidation)
         if self.freeze_from_epoch is not None:
             return max(current_epoch, self.freeze_from_epoch)
         return current_epoch
