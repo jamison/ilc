@@ -33,6 +33,10 @@ CDL_069_DEPENDENCY = "cdl_069_opens_phase_838"
 PROTOCOL_VERSION: int = 1
 MAX_ENDORSEMENT_WINDOW_EPOCHS_DEFAULT: int = 1440  # 24 h of 1-min epochs; ratification decision
 
+# Field length constants
+_AGENT_ID_HEX_LENGTH: int = 96       # SHA-384 = 48 bytes = 96 hex chars
+_BLS_PK_HEX_LENGTH: int = 96         # BLS12-381 G1 pk = 48 bytes = 96 hex chars
+
 # Domain separators
 _LIVENESS_DOMAIN: bytes = b"ilc-liveness-v1:"
 _EPOCH_NONCE_DOMAIN: bytes = b"ilc-epoch-nonce-v1:"
@@ -58,7 +62,12 @@ def derive_liveness_assertion(agent_id: str, epoch_id: int) -> str:
     Proves the packet was freshly generated for this epoch, not replayed.
     CDL-069 §2b finding I2.
     """
-    if epoch_id < 0:
+    if not isinstance(agent_id, str) or len(agent_id) != _AGENT_ID_HEX_LENGTH:
+        raise EndorsementError(
+            "cdl_069_endorsement_invalid_agent_id_for_liveness",
+            f"agent_id must be a {_AGENT_ID_HEX_LENGTH}-char string",
+        )
+    if not isinstance(epoch_id, int) or isinstance(epoch_id, bool) or epoch_id < 0:
         raise EndorsementError(
             "cdl_069_endorsement_invalid_epoch_id",
             "epoch_id must be a non-negative integer",
@@ -126,8 +135,15 @@ def verify_ecu_commitment(
     identity_seed_commitment: str,
     epoch_id: int,
 ) -> bool:
-    """Verify a deferred-reveal ECU commitment."""
-    expected = compute_ecu_commitment(ecu_total_str, identity_seed_commitment, epoch_id)
+    """Verify a deferred-reveal ECU commitment.
+
+    Returns False (not raises) on any invalid input — this is a predicate.
+    Callers that need error tokens should use compute_ecu_commitment directly.
+    """
+    try:
+        expected = compute_ecu_commitment(ecu_total_str, identity_seed_commitment, epoch_id)
+    except EndorsementError:
+        return False
     return commitment == expected
 
 
@@ -212,6 +228,16 @@ class EpochEndorsementPacket:
                 "cdl_069_endorsement_invalid_sequence_number",
                 "sequence_number must be a non-negative integer",
             )
+        if not isinstance(self.ephemeral_signing_pk, str) or len(self.ephemeral_signing_pk) != _BLS_PK_HEX_LENGTH:
+            raise EndorsementError(
+                "cdl_069_endorsement_invalid_ephemeral_signing_pk",
+                f"ephemeral_signing_pk must be {_BLS_PK_HEX_LENGTH}-char BLS G1 hex string",
+            )
+        if not all(c in "0123456789abcdef" for c in self.ephemeral_signing_pk):
+            raise EndorsementError(
+                "cdl_069_endorsement_ephemeral_signing_pk_not_hex",
+                "ephemeral_signing_pk must be lowercase hex",
+            )
         if isinstance(self.valid_epochs, bool) or not isinstance(self.valid_epochs, int) or not (1 <= self.valid_epochs <= max_window):
             raise EndorsementError(
                 "cdl_069_endorsement_invalid_valid_epochs",
@@ -292,7 +318,8 @@ class EpochCloseAttestation:
     bls_signature: Optional[bytes] = field(default=None, repr=False)
 
     def validate(self) -> None:
-        if not isinstance(self.epoch_id, int) or self.epoch_id < 0:
+        # bool is a subclass of int — reject explicitly (serializes as JSON true/false)
+        if isinstance(self.epoch_id, bool) or not isinstance(self.epoch_id, int) or self.epoch_id < 0:
             raise EndorsementError(
                 "cdl_069_attest_invalid_epoch_id",
                 "epoch_id must be a non-negative integer",
@@ -301,6 +328,11 @@ class EpochCloseAttestation:
             raise EndorsementError(
                 "cdl_069_attest_invalid_agent_id",
                 "agent_id must be 96-char hex string",
+            )
+        if not all(c in "0123456789abcdef" for c in self.agent_id):
+            raise EndorsementError(
+                "cdl_069_attest_agent_id_not_hex",
+                "agent_id must be lowercase hex",
             )
         if not isinstance(self.actions_root, str) or not self.actions_root:
             raise EndorsementError(
@@ -327,7 +359,7 @@ class EpochCloseAttestation:
                 "cdl_069_attest_ecu_received_commitment_not_hex",
                 "ecu_received_commitment must be lowercase hex",
             )
-        if not isinstance(self.reputation_delta, int):
+        if isinstance(self.reputation_delta, bool) or not isinstance(self.reputation_delta, int):
             raise EndorsementError(
                 "cdl_069_attest_invalid_reputation_delta",
                 "reputation_delta must be an integer",
