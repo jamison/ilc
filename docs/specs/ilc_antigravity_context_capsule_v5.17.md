@@ -106,8 +106,9 @@ The live run requires: (1) Rust privacy lane integration gate (human decision);
 
 ## 7. Preserved Boundaries
 
-- Option B selected, not graduated,
-- CDL-017 ratified; first non-Genesis validator deployment human-gated,
+- Option B not yet graduated (Row 8 candidate evaluation pending),
+- CDL-017 ratified (Phase 765); first non-Genesis validator deployment human-gated,
+- Row 7 `runtime_closed` (Phases 759–760, Mysticeti convergence window),
 - Row 5 `spec_closed_runtime_pending`,
 - privacy lane not wired into live settlement,
 - SIM-LEAKAGE-03 live run not yet executed,
@@ -115,17 +116,17 @@ The live run requires: (1) Rust privacy lane integration gate (human decision);
 
 ## 8. Immediate Carry-Forward
 
-**Code-side (convergence window):**
-1. Open Codex convergence window — all three entry conditions satisfied
-   (SIM-LEAKAGE-01 committed, M-019 bundle committed, M-022 exitability drill
-   committed).
-2. Row 5 runtime-closure evaluation against SIM-LEAKAGE-01 results.
-3. Row 7 censorship-resistance closure against M-019 + Phase 698 TLC.
-4. Row 7 strong-exitability closure against M-022 evidence.
-5. Row 8 disposition + Option B graduation-gate synthesis (ADR-0028).
-6. CDL-017 convergence-window work (SEC-004 hard pre-ratification requirement
-   must be addressed).
-7. Convergence window coherence report + closure gate.
+Note: The Mysticeti convergence window (Phases 757–762) is already closed.
+CDL-017 is ratified (Phase 765). The items below reflect the true
+post-convergence, post-CDL-017 frontier.
+
+**Code-side (next window — Row 8 substrate candidate evaluation):**
+1. Name a specific substrate candidate and evaluate it against the Phase 673
+   exclusion matrix and Phase 675 independence lock.
+2. Re-synthesize the Option B gate under ADR-0028 — CDL-017 blocker is now
+   cleared; Row 8 candidate evaluation is the only remaining blocker.
+3. HIGH-002 production hardening planning brief.
+4. Coherence report + capsule advance + closure gate.
 
 **Operator-gated:**
 1. First-validator human gate (Phase 826 §6 checklist).
