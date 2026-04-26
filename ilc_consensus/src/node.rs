@@ -495,6 +495,33 @@ impl NodeRunner {
             return Ok(()); // drop silently; do not propagate invalid transfers
         }
 
+        // Row-5 privacy lane routing decision (Phase 844).
+        // Emit a log token per transfer_class so SIM-LEAKAGE-03 can account
+        // for every routed transfer.  The decision is read from the
+        // sender-signed `transfer_class` field — no adversary can strip or
+        // modify it post-signing (covered by sender_sig per types.rs §TransferClass).
+        {
+            use crate::types::{ExpressConsent, TransferClass};
+            let routing_token = match &transfer.transfer_class {
+                TransferClass::Contribution => "privacy_lane_routing:class=contribution",
+                TransferClass::Payment {
+                    express: Some(ExpressConsent { agent_acknowledged_timing_disclosure: true, .. }),
+                } => "privacy_lane_routing:class=payment_express",
+                TransferClass::Payment {
+                    express: Some(ExpressConsent { agent_acknowledged_timing_disclosure: false, .. }),
+                } => "privacy_lane_routing:class=payment_express_rejected",
+                TransferClass::Payment { express: None } => {
+                    "privacy_lane_routing:class=payment_default"
+                }
+            };
+            eprintln!(
+                "[row5_privacy_lane] validator_id={} obj_ref={} {}",
+                self.validator_id.0,
+                fmt_object_ref(&transfer.object_ref),
+                routing_token,
+            );
+        }
+
         // Record in in_flight table if not already present.
         let object_ref = transfer.object_ref;
         {
@@ -1355,9 +1382,12 @@ mod tests {
         );
 
         // Build a batch of two records: epoch 1 (already committed) and epoch 2 (new).
+        // `signers` is empty in this recovery-path test — the field exists for the gossip
+        // path; apply_missing_epoch_record doesn't re-verify the aggregate.
         let stored_e1 = StoredCheckpoint {
             record: record_e1,
             agg_sig_bytes: vec![],
+            signers: vec![],
         };
         let stored_e2 = StoredCheckpoint {
             record: EpochSettlementRecord {
@@ -1365,6 +1395,7 @@ mod tests {
                 state_root: CIDv1Root::new([2u8; 36]),
             },
             agg_sig_bytes: vec![],
+            signers: vec![],
         };
 
         // Simulate the handle_missing_epoch_response loop.
