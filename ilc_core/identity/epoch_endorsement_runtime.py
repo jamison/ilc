@@ -73,6 +73,16 @@ def derive_epoch_nonce(identity_seed_commitment: str, epoch_id: int) -> str:
     Derived from public data already known to the agent.  No additional
     storage required.  CDL-069 §2b finding C2.
     """
+    if not isinstance(identity_seed_commitment, str) or len(identity_seed_commitment) != 96:
+        raise EndorsementError(
+            "cdl_069_epoch_nonce_invalid_commitment",
+            "identity_seed_commitment must be a 96-char SHA-384 hex string",
+        )
+    if not isinstance(epoch_id, int) or isinstance(epoch_id, bool) or epoch_id < 0:
+        raise EndorsementError(
+            "cdl_069_epoch_nonce_invalid_epoch_id",
+            "epoch_id must be a non-negative integer",
+        )
     payload = (
         _EPOCH_NONCE_DOMAIN
         + identity_seed_commitment.encode()
@@ -96,6 +106,11 @@ def compute_ecu_commitment(
     ecu_total_str: canonical string representation of the ECU amount
         (e.g. decimal integer string; encoding is a ratification decision).
     """
+    if not isinstance(ecu_total_str, str) or not ecu_total_str:
+        raise EndorsementError(
+            "cdl_069_ecu_commit_invalid_total",
+            "ecu_total_str must be a non-empty string",
+        )
     epoch_nonce = derive_epoch_nonce(identity_seed_commitment, epoch_id)
     payload = (
         _ECU_COMMIT_DOMAIN
@@ -160,11 +175,18 @@ class EpochEndorsementPacket:
         Does NOT verify the ML-DSA signature — that requires the canonical_root_pk
         and must be done by the caller with the Rust crypto layer.
         """
-        if self.protocol_version != PROTOCOL_VERSION:
+        # bool is a subclass of int in Python (True==1, False==0). Reject bools
+        # explicitly so callers cannot smuggle boolean values into numeric fields,
+        # which would serialize as JSON "true"/"false" instead of integers.
+        if (
+            isinstance(self.protocol_version, bool)
+            or not isinstance(self.protocol_version, int)
+            or self.protocol_version != PROTOCOL_VERSION
+        ):
             raise EndorsementError(
                 "cdl_069_endorsement_unknown_protocol_version",
                 f"Expected protocol_version={PROTOCOL_VERSION}, "
-                f"got {self.protocol_version}",
+                f"got {self.protocol_version!r}",
             )
         if not isinstance(self.agent_id, str) or len(self.agent_id) != 96:
             raise EndorsementError(
@@ -176,17 +198,21 @@ class EpochEndorsementPacket:
                 "cdl_069_endorsement_agent_id_not_hex",
                 "agent_id must be lowercase hex",
             )
-        if not isinstance(self.epoch_id, int) or self.epoch_id < 0:
+        if isinstance(self.epoch_id, bool) or not isinstance(self.epoch_id, int) or self.epoch_id < 0:
             raise EndorsementError(
                 "cdl_069_endorsement_invalid_epoch_id",
                 "epoch_id must be a non-negative integer",
             )
-        if not isinstance(self.sequence_number, int) or self.sequence_number < 0:
+        if (
+            isinstance(self.sequence_number, bool)
+            or not isinstance(self.sequence_number, int)
+            or self.sequence_number < 0
+        ):
             raise EndorsementError(
                 "cdl_069_endorsement_invalid_sequence_number",
                 "sequence_number must be a non-negative integer",
             )
-        if not isinstance(self.valid_epochs, int) or not (1 <= self.valid_epochs <= max_window):
+        if isinstance(self.valid_epochs, bool) or not isinstance(self.valid_epochs, int) or not (1 <= self.valid_epochs <= max_window):
             raise EndorsementError(
                 "cdl_069_endorsement_invalid_valid_epochs",
                 f"valid_epochs must be in [1, {max_window}], got {self.valid_epochs}",
@@ -286,10 +312,20 @@ class EpochCloseAttestation:
                 "cdl_069_attest_invalid_ecu_sent_commitment",
                 "ecu_sent_commitment must be 64-char sha256 hex",
             )
+        if not all(c in "0123456789abcdef" for c in self.ecu_sent_commitment):
+            raise EndorsementError(
+                "cdl_069_attest_ecu_sent_commitment_not_hex",
+                "ecu_sent_commitment must be lowercase hex",
+            )
         if not isinstance(self.ecu_received_commitment, str) or len(self.ecu_received_commitment) != 64:
             raise EndorsementError(
                 "cdl_069_attest_invalid_ecu_received_commitment",
                 "ecu_received_commitment must be 64-char sha256 hex",
+            )
+        if not all(c in "0123456789abcdef" for c in self.ecu_received_commitment):
+            raise EndorsementError(
+                "cdl_069_attest_ecu_received_commitment_not_hex",
+                "ecu_received_commitment must be lowercase hex",
             )
         if not isinstance(self.reputation_delta, int):
             raise EndorsementError(
@@ -423,10 +459,13 @@ class EndorsementCache:
 
         # Check the key in the current packet matches
         if packet.ephemeral_signing_pk != ephemeral_pk:
-            # Could be a superseded key — check supersession records
+            # Could be a superseded key — check supersession records.
+            # Per CDL-069 §2b: reject for all epochs >= supersedes_epoch_id.
+            # Epochs BEFORE supersedes_epoch_id remain valid (no retroactive rejection).
             supersede_epoch = entry.superseded_keys.get(ephemeral_pk)
-            if supersede_epoch is not None and current_epoch >= supersede_epoch:
-                return False
+            if supersede_epoch is not None:
+                # Key was superseded: valid only for epochs strictly before supersede_epoch
+                return current_epoch < supersede_epoch
             # Key is neither current nor a known superseded key
             return False
 
@@ -440,7 +479,7 @@ class EndorsementCache:
     def apply_recovery_freeze(
         self,
         agent_id: str,
-        old_canonical_root_pk: str,  # noqa: ARG002 — reserved for future pk-keyed freeze lookup
+        old_canonical_root_pk: str,  # noqa: ARG002 — reserved for future pk-keyed freeze
         freeze_from_epoch: int,
         current_epoch: int,
     ) -> int:
@@ -465,7 +504,8 @@ class EndorsementCache:
     def evict_expired(self, current_epoch: int) -> int:
         """Remove cache entries whose valid_epochs window has expired.
 
-        Returns count of evicted entries.
+        Also removes corresponding _frozen entries to avoid unbounded memory
+        growth on long-running validators. Returns count of evicted entries.
         """
         expired = [
             aid for aid, entry in self._cache.items()
@@ -473,6 +513,7 @@ class EndorsementCache:
         ]
         for aid in expired:
             del self._cache[aid]
+            self._frozen.pop(aid, None)
         return len(expired)
 
     def _cached_entry_for(self, agent_id: str) -> Optional[_CachedEndorsement]:

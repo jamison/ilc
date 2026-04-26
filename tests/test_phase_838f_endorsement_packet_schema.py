@@ -491,3 +491,39 @@ def test_sequence_number_above_u64_rejected() -> None:
 def test_epoch_id_zero_is_valid() -> None:
     pkt = _make_packet(epoch_id=0)
     pkt.validate()
+
+
+# ---------------------------------------------------------------------------
+# Regression: bool subclass of int must be rejected
+# ---------------------------------------------------------------------------
+
+def test_bool_rejected_as_protocol_version() -> None:
+    """True==1 but is bool — must not slip through protocol_version check."""
+    pkt = _make_packet()
+    pkt.protocol_version = True  # type: ignore[assignment]
+    with pytest.raises(EndorsementPacketSchemaError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_protocol_version" in exc.value.token
+
+
+def test_bool_rejected_as_valid_epochs() -> None:
+    pkt = _make_packet(valid_epochs=1)
+    pkt.valid_epochs = True  # type: ignore[assignment]  True==1, is bool
+    with pytest.raises(EndorsementPacketSchemaError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_valid_epochs" in exc.value.token
+
+
+# ---------------------------------------------------------------------------
+# Regression: verify_liveness_assertion returns False, never raises
+# ---------------------------------------------------------------------------
+
+def test_verify_liveness_assertion_returns_false_for_bad_agent_id() -> None:
+    """verify_liveness_assertion is a predicate — must return False, not raise."""
+    result = verify_liveness_assertion("a" * 64, "tooshort", 100)
+    assert result is False
+
+
+def test_verify_liveness_assertion_returns_false_for_negative_epoch() -> None:
+    result = verify_liveness_assertion("a" * 64, _AGENT_ID, -1)
+    assert result is False
