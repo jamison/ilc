@@ -28,8 +28,8 @@ _AGENT_ID = "a" * 96          # 96-char hex
 _AGENT_ID_2 = "b" * 96
 _EPOCH = 1000
 _SEQ = 1
-_EPH_PK = "c" * 64
-_EPH_PK_2 = "d" * 64
+_EPH_PK = "c" * 96            # 96-char BLS12-381 G1 pk (48 bytes = 96 hex chars)
+_EPH_PK_2 = "d" * 96          # 96-char BLS12-381 G1 pk
 _STATE_ROOT = "bafybeiabc123"
 _ID_SEED_COMMIT = "e" * 96    # 96-char identity_seed_commitment
 
@@ -179,7 +179,17 @@ def test_wrong_protocol_version_rejected() -> None:
 
 
 def test_short_agent_id_rejected() -> None:
-    p = _make_packet(agent_id="a" * 64)
+    # Construct directly — _make_packet calls derive_liveness_assertion which also validates agent_id
+    p = EpochEndorsementPacket(
+        protocol_version=PROTOCOL_VERSION,
+        agent_id="a" * 64,  # too short
+        epoch_id=_EPOCH,
+        sequence_number=_SEQ,
+        ephemeral_signing_pk=_EPH_PK,
+        valid_epochs=1,
+        liveness_assertion="0" * 64,  # placeholder — validate() fails before liveness check
+        agent_state_root=_STATE_ROOT,
+    )
     with pytest.raises(EndorsementError) as exc:
         p.validate()
     assert "cdl_069_endorsement_invalid_agent_id" in exc.value.token
@@ -632,3 +642,116 @@ def test_compute_ecu_commitment_rejects_empty_total() -> None:
     with pytest.raises(EndorsementError) as exc:
         compute_ecu_commitment("", _ID_SEED_COMMIT, 100)
     assert "cdl_069_ecu_commit_invalid_total" in exc.value.token
+
+
+# ---------------------------------------------------------------------------
+# F1: ephemeral_signing_pk validation (was entirely missing)
+# ---------------------------------------------------------------------------
+
+def test_ephemeral_signing_pk_wrong_length_rejected() -> None:
+    """ephemeral_signing_pk must be exactly 96 hex chars (BLS12-381 G1, 48 bytes)."""
+    pkt = _make_packet()
+    pkt.ephemeral_signing_pk = "c" * 64  # 64 chars — correct old fixture, wrong for BLS G1
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_ephemeral_signing_pk" in exc.value.token
+
+
+def test_ephemeral_signing_pk_empty_rejected() -> None:
+    pkt = _make_packet()
+    pkt.ephemeral_signing_pk = ""
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_ephemeral_signing_pk" in exc.value.token
+
+
+def test_ephemeral_signing_pk_non_hex_rejected() -> None:
+    pkt = _make_packet()
+    pkt.ephemeral_signing_pk = "G" * 96  # uppercase non-hex
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_ephemeral_signing_pk_not_hex" in exc.value.token
+
+
+def test_ephemeral_signing_pk_non_string_rejected() -> None:
+    pkt = _make_packet()
+    pkt.ephemeral_signing_pk = 12345  # type: ignore[assignment]
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_ephemeral_signing_pk" in exc.value.token
+
+
+# ---------------------------------------------------------------------------
+# F2: EpochCloseAttestation.agent_id hex chars check (was length-only)
+# ---------------------------------------------------------------------------
+
+def test_attestation_agent_id_non_hex_rejected() -> None:
+    """agent_id with correct length but non-hex characters must be rejected."""
+    attest = _make_attest(agent_id="g" * 96)
+    with pytest.raises(EndorsementError) as exc:
+        attest.validate()
+    assert "cdl_069_attest_agent_id_not_hex" in exc.value.token
+
+
+# ---------------------------------------------------------------------------
+# F3: EpochCloseAttestation bool guards on epoch_id and reputation_delta
+# ---------------------------------------------------------------------------
+
+def test_attestation_bool_rejected_as_epoch_id() -> None:
+    """bool is a subclass of int — must not pass epoch_id validation."""
+    attest = EpochCloseAttestation(
+        epoch_id=True,  # type: ignore[arg-type]
+        agent_id=_AGENT_ID, actions_root="bafy123",
+        ecu_sent_commitment="a" * 64, ecu_received_commitment="b" * 64,
+        reputation_delta=0,
+    )
+    with pytest.raises(EndorsementError) as exc:
+        attest.validate()
+    assert "cdl_069_attest_invalid_epoch_id" in exc.value.token
+
+
+def test_attestation_bool_rejected_as_reputation_delta() -> None:
+    """bool True/False must not be accepted as reputation_delta (serializes as JSON true/false)."""
+    attest = _make_attest()
+    attest.reputation_delta = True  # type: ignore[assignment]
+    with pytest.raises(EndorsementError) as exc:
+        attest.validate()
+    assert "cdl_069_attest_invalid_reputation_delta" in exc.value.token
+
+
+# ---------------------------------------------------------------------------
+# F4: derive_liveness_assertion agent_id validation + bool epoch_id guard
+# ---------------------------------------------------------------------------
+
+def test_derive_liveness_assertion_rejects_short_agent_id() -> None:
+    with pytest.raises(EndorsementError) as exc:
+        derive_liveness_assertion("a" * 64, 100)  # 64 chars, not 96
+    assert "cdl_069_endorsement_invalid_agent_id_for_liveness" in exc.value.token
+
+
+def test_derive_liveness_assertion_rejects_non_string_agent_id() -> None:
+    with pytest.raises(EndorsementError) as exc:
+        derive_liveness_assertion(12345, 100)  # type: ignore[arg-type]
+    assert "cdl_069_endorsement_invalid_agent_id_for_liveness" in exc.value.token
+
+
+def test_derive_liveness_assertion_rejects_bool_epoch_id() -> None:
+    """bool True == 1 but must not be accepted as epoch_id."""
+    with pytest.raises(EndorsementError) as exc:
+        derive_liveness_assertion(_AGENT_ID, True)  # type: ignore[arg-type]
+    assert "cdl_069_endorsement_invalid_epoch_id" in exc.value.token
+
+
+# ---------------------------------------------------------------------------
+# F6: verify_ecu_commitment returns False on bad input, never raises
+# ---------------------------------------------------------------------------
+
+def test_verify_ecu_commitment_returns_false_on_empty_total() -> None:
+    """verify_ecu_commitment is a predicate — must return False, not raise."""
+    result = verify_ecu_commitment("a" * 64, "", _ID_SEED_COMMIT, 100)
+    assert result is False
+
+
+def test_verify_ecu_commitment_returns_false_on_invalid_commitment_input() -> None:
+    result = verify_ecu_commitment("a" * 64, "50", "tooshort", 100)
+    assert result is False

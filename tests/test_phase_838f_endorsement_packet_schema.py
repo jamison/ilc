@@ -527,3 +527,21 @@ def test_verify_liveness_assertion_returns_false_for_bad_agent_id() -> None:
 def test_verify_liveness_assertion_returns_false_for_negative_epoch() -> None:
     result = verify_liveness_assertion("a" * 64, _AGENT_ID, -1)
     assert result is False
+
+
+# ---------------------------------------------------------------------------
+# F5: derive_liveness_assertion must reject bool epoch_id
+# ---------------------------------------------------------------------------
+
+def test_derive_liveness_assertion_rejects_bool_epoch_id() -> None:
+    """bool True == 1 but is bool — must not be accepted as epoch_id."""
+    with pytest.raises(EndorsementPacketSchemaError) as exc:
+        derive_liveness_assertion(_AGENT_ID, True)  # type: ignore[arg-type]
+    assert "cdl_069_endorsement_invalid_epoch_id_for_liveness" in exc.value.token
+
+
+def test_derive_liveness_assertion_rejects_false_as_epoch_id() -> None:
+    """bool False == 0 but is bool — must not be accepted as epoch_id."""
+    with pytest.raises(EndorsementPacketSchemaError) as exc:
+        derive_liveness_assertion(_AGENT_ID, False)  # type: ignore[arg-type]
+    assert "cdl_069_endorsement_invalid_epoch_id_for_liveness" in exc.value.token
