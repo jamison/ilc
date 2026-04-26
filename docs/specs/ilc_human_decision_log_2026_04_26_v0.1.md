@@ -117,13 +117,50 @@ or bundle into next window coherence phase?
 
 ---
 
+## D7 — Homoiconic Bootstrap Forward Obligations (HB-001, HB-002, HB-003)
+
+**Question posed:** During Phase 826 gate-pull planning, three specific
+prerequisites for full homoiconic bootstrap were identified as not yet existing
+in the project. Human instruction: explicitly mark these in planning canon so
+the context is not lost.
+
+**Human decision:** Record all three as named carry-forward obligations in the
+master roadmap and a dedicated spec document. Revisit at each window closure.
+
+Obligations recorded:
+- **HB-001** — Genesis-authority assertion schema (RC1, CDL required)
+- **HB-002** — Peer-to-peer bootstrap distribution protocol (RC2+)
+- **HB-003** — Layer 0 bundle truth-primitive schema (RC1, bundle with HB-001)
+
+**Scope clarification confirmed by human:** RC1 homoiconicity targets the
+*governance and identity state* — who is authorized, what genesis established,
+what CDLs decided. This is fully achievable. The compiled binary cannot be
+homoiconically self-derived in any near-term sense; that remains a long-horizon
+aspiration. The network ID change (`ilc-mysticeti-testnet-m009` →
+`ilc-genesis-v1`) marks the public launch boundary at which HB-001 and HB-003
+become active obligations.
+
+**Additional question from human:** Could the entire ILC system self-compile at
+RC1, not just the genesis artifact? Answer recorded: no — RC1 self-compilation
+applies to the governance/identity state layer, not the binary. The binary is
+the execution substrate; the graph expresses authorization, not implementation.
+Full binary self-derivation from graph-expressed specs is a long-horizon goal.
+
+Full spec: `docs/specs/ilc_homoiconic_bootstrap_forward_obligations_v0.1.md`
+
+`homoiconic_bootstrap_forward_obligations_recorded_2026_04_26`
+`hb_001_hb_002_hb_003_carry_forward_human_authorized`
+
+---
+
 ## Summary
 
 | Decision | Outcome | Next action |
 |----------|---------|-------------|
 | D1 — Option B posture | Phase 814 operative; `adr_0028_posture=option_b` restored | Capsule v5.19 published |
-| D2 — First-validator gate | Authorized; requires provisioning session | Schedule joint key-gen session |
+| D2 — First-validator gate | Authorized; requires provisioning session | Joint key-gen session (this session) |
 | D3 — B-Impl / SIM-LEAKAGE-03 | Authorized after D2 gate pull | Wait for D2 |
 | D4 — CDL-070 | Deferred | Revisit each window closure |
 | D5 — CDL-071 | Deferred (higher priority than CDL-070) | Revisit each window closure |
 | D6 — Capsule patch | Done — v5.19 published | — |
+| D7 — HB-001/002/003 homoiconic bootstrap | Recorded in roadmap §6.5 + spec | Revisit at RC1 planning |
