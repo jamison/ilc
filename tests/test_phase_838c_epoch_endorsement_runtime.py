@@ -514,3 +514,121 @@ def test_evict_expired_removes_stale_entries() -> None:
     assert evicted == 1
     assert len(cache) == 1
     assert cache.get_packet(_AGENT_ID_2, 106) is not None
+
+
+def test_evict_expired_also_cleans_frozen_entries() -> None:
+    """evict_expired must clean _frozen to prevent unbounded memory growth."""
+    cache = EndorsementCache()
+    cache.accept_packet(_make_packet(epoch_id=100, valid_epochs=5, seq=1))
+    cache.apply_recovery_freeze(_AGENT_ID, "old_pk", freeze_from_epoch=110, current_epoch=100)
+    assert _AGENT_ID in cache._frozen
+    # Evict at epoch 106 (window epoch_id=100, valid_epochs=5 → expires at 105)
+    cache.evict_expired(current_epoch=106)
+    assert len(cache) == 0
+    assert _AGENT_ID not in cache._frozen  # regression: was leaking before fix
+
+
+def test_bool_rejected_as_protocol_version() -> None:
+    """bool is a subclass of int in Python — must not pass protocol_version checks."""
+    pkt = _make_packet()
+    pkt.protocol_version = True  # True == 1, but is bool
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_unknown_protocol_version" in exc.value.token
+
+
+def test_bool_rejected_as_epoch_id() -> None:
+    """bool True would serialize as JSON true, not 1."""
+    pkt = EpochEndorsementPacket(
+        protocol_version=PROTOCOL_VERSION,
+        agent_id=_AGENT_ID,
+        epoch_id=True,  # bool
+        sequence_number=_SEQ,
+        ephemeral_signing_pk=_EPH_PK,
+        valid_epochs=1,
+        liveness_assertion=_liveness(),
+        agent_state_root=_STATE_ROOT,
+    )
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_epoch_id" in exc.value.token
+
+
+def test_bool_rejected_as_valid_epochs() -> None:
+    pkt = _make_packet()
+    pkt.valid_epochs = True  # True == 1, is bool
+    with pytest.raises(EndorsementError) as exc:
+        pkt.validate()
+    assert "cdl_069_endorsement_invalid_valid_epochs" in exc.value.token
+
+
+def test_ecu_commitment_non_hex_rejected() -> None:
+    """EpochCloseAttestation must reject commitments with non-hex characters."""
+    attest = EpochCloseAttestation(
+        epoch_id=100,
+        agent_id=_AGENT_ID,
+        actions_root="bafy123",
+        ecu_sent_commitment="Z" * 64,  # correct length but not hex
+        ecu_received_commitment="a" * 64,
+        reputation_delta=0,
+    )
+    with pytest.raises(EndorsementError) as exc:
+        attest.validate()
+    assert "cdl_069_attest_ecu_sent_commitment_not_hex" in exc.value.token
+
+
+def test_ecu_received_commitment_non_hex_rejected() -> None:
+    attest = EpochCloseAttestation(
+        epoch_id=100,
+        agent_id=_AGENT_ID,
+        actions_root="bafy123",
+        ecu_sent_commitment="a" * 64,
+        ecu_received_commitment="Q" * 64,  # correct length but not hex
+        reputation_delta=0,
+    )
+    with pytest.raises(EndorsementError) as exc:
+        attest.validate()
+    assert "cdl_069_attest_ecu_received_commitment_not_hex" in exc.value.token
+
+
+def test_superseded_key_valid_before_supersedes_epoch() -> None:
+    """Old ephemeral key must remain valid for epochs strictly before supersedes_epoch_id."""
+    cache = EndorsementCache()
+    pkt1 = _make_packet(epoch_id=100, valid_epochs=20, seq=1, eph_pk=_EPH_PK)
+    cache.accept_packet(pkt1)
+    pkt2 = _make_packet(epoch_id=102, valid_epochs=20, seq=2, eph_pk=_EPH_PK_2,
+                        supersedes_epoch_id=105)
+    cache.accept_packet(pkt2)
+    # Old key should still be valid at epoch 103 (< 105)
+    assert cache.is_ephemeral_key_valid(_AGENT_ID, _EPH_PK, 103) is True
+
+
+def test_superseded_key_invalid_at_supersedes_epoch() -> None:
+    """Old ephemeral key must be rejected at and after supersedes_epoch_id."""
+    cache = EndorsementCache()
+    pkt1 = _make_packet(epoch_id=100, valid_epochs=20, seq=1, eph_pk=_EPH_PK)
+    cache.accept_packet(pkt1)
+    pkt2 = _make_packet(epoch_id=102, valid_epochs=20, seq=2, eph_pk=_EPH_PK_2,
+                        supersedes_epoch_id=105)
+    cache.accept_packet(pkt2)
+    # Old key must be rejected at epoch 105 (>= supersedes_epoch_id)
+    assert cache.is_ephemeral_key_valid(_AGENT_ID, _EPH_PK, 105) is False
+
+
+def test_derive_epoch_nonce_rejects_negative_epoch() -> None:
+    """derive_epoch_nonce must raise, not OverflowError, on negative epoch_id."""
+    with pytest.raises(EndorsementError) as exc:
+        derive_epoch_nonce(_ID_SEED_COMMIT, -1)
+    assert "cdl_069_epoch_nonce_invalid_epoch_id" in exc.value.token
+
+
+def test_derive_epoch_nonce_rejects_invalid_commitment() -> None:
+    with pytest.raises(EndorsementError) as exc:
+        derive_epoch_nonce("tooshort", 100)
+    assert "cdl_069_epoch_nonce_invalid_commitment" in exc.value.token
+
+
+def test_compute_ecu_commitment_rejects_empty_total() -> None:
+    with pytest.raises(EndorsementError) as exc:
+        compute_ecu_commitment("", _ID_SEED_COMMIT, 100)
+    assert "cdl_069_ecu_commit_invalid_total" in exc.value.token

@@ -37,7 +37,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 ENDORSEMENT_PACKET_SCHEMA_VERSION = "endorsement_packet_schema_838f.v0.1"
@@ -94,10 +94,18 @@ def derive_liveness_assertion(agent_id: str, epoch_id: int) -> str:
 
 
 def verify_liveness_assertion(liveness_assertion: str, agent_id: str, epoch_id: int) -> bool:
-    """Verify liveness_assertion against agent_id and epoch_id."""
+    """Verify liveness_assertion against agent_id and epoch_id.
+
+    Returns False (not raises) on any invalid input — this is a predicate,
+    not a validator. Callers that need error tokens should use derive_liveness_assertion
+    directly and compare.
+    """
     if not isinstance(liveness_assertion, str) or len(liveness_assertion) != _SHA256_HEX_LENGTH:
         return False
-    expected = derive_liveness_assertion(agent_id, epoch_id)
+    try:
+        expected = derive_liveness_assertion(agent_id, epoch_id)
+    except EndorsementPacketSchemaError:
+        return False
     return liveness_assertion == expected
 
 
@@ -132,8 +140,13 @@ class EndorsementPacket:
 
     def validate(self) -> None:
         """Validate all field constraints. Raises EndorsementPacketSchemaError on failure."""
-        # protocol_version
-        if not isinstance(self.protocol_version, int) or self.protocol_version != CURRENT_PROTOCOL_VERSION:
+        # protocol_version — bool is a subclass of int (True==1, False==0); reject explicitly
+        # so callers cannot smuggle booleans which serialize as JSON true/false.
+        if (
+            isinstance(self.protocol_version, bool)
+            or not isinstance(self.protocol_version, int)
+            or self.protocol_version != CURRENT_PROTOCOL_VERSION
+        ):
             raise EndorsementPacketSchemaError(
                 "cdl_069_endorsement_invalid_protocol_version",
                 f"protocol_version must be {CURRENT_PROTOCOL_VERSION}, "
@@ -156,9 +169,10 @@ class EndorsementPacket:
             "ephemeral_signing_pk", self.ephemeral_signing_pk, _BLS_PK_HEX_LENGTH,
             "cdl_069_endorsement_invalid_ephemeral_signing_pk",
         )
-        # valid_epochs
+        # valid_epochs — also reject bool
         if (
-            not isinstance(self.valid_epochs, int)
+            isinstance(self.valid_epochs, bool)
+            or not isinstance(self.valid_epochs, int)
             or self.valid_epochs < 1
             or self.valid_epochs > MAX_ENDORSEMENT_WINDOW_EPOCHS
         ):
