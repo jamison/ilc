@@ -308,6 +308,30 @@ Hypergraph Tier 3 activation remains blocked on its own prerequisites from
 capsule v5.10. ADR-0031 accepted; ADR-0029/0030 proposed; H-013/H-015 carry-
 forward as above. The lane is outside the critical path.
 
+### 6.5 Homoiconic bootstrap obligations (HB-001, HB-002, HB-003)
+
+Three forward obligations recorded 2026-04-26 by human instruction. Full spec:
+`docs/specs/ilc_homoiconic_bootstrap_forward_obligations_v0.1.md`
+
+These must be revisited at each window closure and are sequenced as follows:
+
+| Obligation | Description | Target lane |
+|---|---|---|
+| HB-001 | Genesis-authority assertion schema — genesis expressed as signed truth-primitive assertions, not just JSON | RC1 (pre-public-launch CDL window) |
+| HB-003 | Layer 0 bundle truth-primitive schema — schema self-contained in ADM-001 Layer 0 bundle | RC1 (bundle with HB-001) |
+| HB-002 | Peer-to-peer bootstrap distribution — new nodes bootstrap from peers via signed graph assertions, not GitHub | RC2+ (post-launch) |
+
+**Scope boundary (important):** RC1 homoiconicity applies to the *governance
+and identity state* (who is authorized, what genesis established, what CDLs
+decided) — not the compiled binary. The binary is the execution substrate; the
+graph expresses what it is authorized to do on behalf of whom. Full
+self-compilation of the binary from graph-expressed specs is a long-horizon
+aspirational goal, not a near-term target.
+
+`hb_001_genesis_authority_assertion_schema_carry_forward`
+`hb_002_peer_to_peer_bootstrap_distribution_protocol_carry_forward`
+`hb_003_layer_0_bundle_truth_primitive_schema_carry_forward`
+
 ---
 
 ## 7. Human conversation gates — live inventory
