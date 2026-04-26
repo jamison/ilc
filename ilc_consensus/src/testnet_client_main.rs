@@ -565,9 +565,14 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let sig_refs: Vec<&blst::min_pk::Signature> = sigs.iter().collect();
                 let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
 
+                // Testnet client: assume quorum keys are validators 1..=N in order.
+                let signers: Vec<ValidatorID> = (1..=bls_keys.len() as u32)
+                    .map(ValidatorID)
+                    .collect();
                 let checkpoint = EpochCheckpoint {
                     record,
                     sigs: AggSig(agg),
+                    signers,
                 };
 
                 let envelope = GossipEnvelope {

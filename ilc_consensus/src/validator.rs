@@ -6,6 +6,21 @@ pub fn validator_dst(network_id: &str) -> Vec<u8> {
     format!("ILC_FAST_PATH_V1:{}", network_id).into_bytes()
 }
 
+/// Returns the BFT quorum threshold: the minimum number of validator signatures
+/// required to commit an epoch checkpoint.
+///
+/// Derived from the Mysticeti safety threshold f = floor((N-1)/3):
+///   quorum_threshold(N) = 2f + 1 = 2 * floor((N-1)/3) + 1
+///
+/// Verified values:
+///   N=1 → 1, N=2 → 1, N=3 → 1, N=4 → 3, N=7 → 5, N=10 → 7
+///
+/// HIGH-002 fix: `process_epoch_checkpoint` uses this threshold instead of
+/// requiring all N validators to sign.
+pub fn quorum_threshold(n: usize) -> usize {
+    2 * (n.saturating_sub(1) / 3) + 1
+}
+
 impl ValidatorSet {
     fn rebuild_with(
         validators: Vec<(ValidatorID, ValidatorKey)>,

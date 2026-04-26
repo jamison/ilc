@@ -7,7 +7,7 @@
 /// epoch chain whose aggregate BLS signatures verify against the validator keys
 /// declared in genesis. It intentionally has no testnet/structural-only pass
 /// mode: empty or invalid aggregate signatures always fail.
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -17,11 +17,11 @@ use serde::Serialize;
 use serde_json::Value;
 
 use ilc_consensus::epoch_settlement::StoredCheckpoint;
-use ilc_consensus::types::{CIDv1Root, ILC_EPOCH_SIG_DST};
+use ilc_consensus::types::{CIDv1Root, ValidatorID, ILC_EPOCH_SIG_DST};
 
 const SCHEMA_VERSION: &str = "ilc_dag_audit_v1";
 const SENTINEL: &[u8] = b"\xff";
-const HIGH_002_NOTE: &str = "BLS verification uses all-N aggregate (fast_aggregate_verify). A valid epoch chain requires signatures from all N validators as currently implemented. Production fix: track per-validator sigs, select 2F+1 subset before aggregation. See HIGH-002 in ilc_m_series_vulnerabilities_and_fixes.";
+const HIGH_002_NOTE: &str = "HIGH-002 FIXED (Phase 842): EpochCheckpoint carries a signers subset. process_epoch_checkpoint accepts quorum_threshold(N) = 2*floor((N-1)/3)+1 signatures. At N=4: threshold=3. One offline validator no longer stalls epoch-close.";
 
 #[derive(Debug)]
 enum AuditError {
@@ -171,10 +171,17 @@ fn verify_epoch_chain(args: &Args) -> Result<AuditReport, AuditError> {
     };
     let sentinel_consistent = sentinel_epoch == Some(max_committed);
 
-    let pk_refs: Vec<&PublicKey> = genesis.public_keys.iter().collect();
+    // Build a ValidatorID → PublicKey map. Genesis validators are 0-indexed in the array;
+    // ValidatorIDs are 1-indexed (ValidatorID(1) = genesis.validators[0]).
+    let pk_by_id: HashMap<ValidatorID, &PublicKey> = genesis
+        .public_keys
+        .iter()
+        .enumerate()
+        .map(|(idx, pk)| (ValidatorID((idx + 1) as u32), pk))
+        .collect();
     let mut epoch_results = Vec::with_capacity(records.len());
     for (epoch_num, stored) in &records {
-        let result = verify_stored_checkpoint(*epoch_num, stored, &pk_refs);
+        let result = verify_stored_checkpoint(*epoch_num, stored, &pk_by_id);
         if args.verbose {
             eprintln!(
                 "[dag_audit] epoch={} bls_verified={} error={}",
@@ -348,7 +355,7 @@ fn read_epoch_records(
 fn verify_stored_checkpoint(
     epoch_num: u64,
     stored: &StoredCheckpoint,
-    pk_refs: &[&PublicKey],
+    pk_by_id: &HashMap<ValidatorID, &PublicKey>,
 ) -> EpochResult {
     let mut result = EpochResult {
         epoch: stored.record.epoch.0,
@@ -366,6 +373,26 @@ fn verify_stored_checkpoint(
         result.bls_error = Some("empty_sig_testnet_fault_sim_path".to_string());
         return result;
     }
+    if stored.signers.is_empty() {
+        result.bls_error = Some("signers_empty_cannot_verify_subset".to_string());
+        return result;
+    }
+
+    // Resolve the signing subset's public keys in signer order.
+    let mut subset_keys: Vec<&PublicKey> = Vec::with_capacity(stored.signers.len());
+    for &signer_id in &stored.signers {
+        match pk_by_id.get(&signer_id) {
+            Some(pk) => subset_keys.push(pk),
+            None => {
+                result.bls_error = Some(format!(
+                    "signer_validator_{}_not_in_genesis",
+                    signer_id.0
+                ));
+                return result;
+            }
+        }
+    }
+
     let msg = match bincode::serialize(&stored.record) {
         Ok(msg) => msg,
         Err(e) => {
@@ -385,7 +412,8 @@ fn verify_stored_checkpoint(
         return result;
     }
 
-    let verify_result = sig.fast_aggregate_verify(true, &msg, ILC_EPOCH_SIG_DST, pk_refs);
+    let verify_result =
+        sig.fast_aggregate_verify(true, &msg, ILC_EPOCH_SIG_DST, &subset_keys);
     if verify_result == blst::BLST_ERROR::BLST_SUCCESS {
         result.bls_verified = true;
     } else {
@@ -465,6 +493,11 @@ mod tests {
             .collect::<Vec<_>>();
         let validator_set = ValidatorSet::new(validators, 0)?;
 
+        let all_ids: Vec<ValidatorID> = keys
+            .iter()
+            .enumerate()
+            .map(|(idx, _)| ValidatorID((idx + 1) as u32))
+            .collect();
         for epoch in 1..=3u64 {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
@@ -473,6 +506,7 @@ mod tests {
             let checkpoint = EpochCheckpoint {
                 record: record.clone(),
                 sigs: aggregate_sig(&record, &keys)?,
+                signers: all_ids.clone(),
             };
             protocol.process_epoch_checkpoint(checkpoint, &validator_set)?;
         }

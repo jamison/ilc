@@ -1,16 +1,21 @@
 use bincode;
 use lmdb_rkv::{Cursor, Database, DatabaseFlags, Environment, Transaction, WriteFlags};
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::types::{
-    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorSet,
+    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorID, ValidatorSet,
     ILC_EPOCH_SIG_DST,
 };
+use crate::validator::quorum_threshold;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct StoredCheckpoint {
     pub record: EpochSettlementRecord,
     pub agg_sig_bytes: Vec<u8>,
+    /// Signing subset stored alongside the aggregate so the recovery path can
+    /// reconstruct a valid EpochCheckpoint without re-gossiping the signers.
+    pub signers: Vec<ValidatorID>,
 }
 
 /// Singleton key in the epoch_records DB storing the latest committed epoch number as a raw u64.
@@ -58,6 +63,7 @@ impl EpochStore {
         let stored = StoredCheckpoint {
             record,
             agg_sig_bytes: vec![],
+            signers: vec![], // testnet_fault_sim path: no BLS sig, no signers
         };
 
         let val_bytes = bincode::serialize(&stored)
@@ -215,26 +221,55 @@ impl EpochSettlementProtocol {
         checkpoint: EpochCheckpoint,
         validator_set: &ValidatorSet,
     ) -> Result<CIDv1Root, ILCConsensusError> {
-        // SEC-009: BLS AggSig verification.
+        // SEC-009: BLS AggSig verification — HIGH-002 fix.
         //
-        // HIGH-002 (known liveness limitation): `fast_aggregate_verify` verifies that
-        // the aggregate signature is the product of ALL keys in `pk_refs`. This means
-        // epoch finalization requires all N validators to sign — not just a 2F+1 quorum.
-        // In the N=4/F=1 testnet a single offline honest validator blocks epoch settlement.
-        // Fixing this requires tracking per-validator signatures and selecting exactly the
-        // signing subset (2F+1 keys) before calling fast_aggregate_verify. This is a
-        // planned upgrade for the production validator set. Documented as a known testnet
-        // liveness limitation; does not affect safety (a forged sig still fails).
+        // Accept any signing subset of size >= quorum_threshold(N). The checkpoint
+        // names exactly which validators signed (`checkpoint.signers`). We verify:
+        //   1. The signing subset is large enough (>= quorum_threshold).
+        //   2. No duplicate signer IDs (prevents inflation of the apparent quorum size).
+        //   3. All signers are members of the active validator set.
+        //   4. The aggregate sig verifies against exactly the signing subset's public keys.
+        //
+        // Safety is preserved: `fast_aggregate_verify` checks the aggregate equals the
+        // product of the individual signatures for the named keys — a forged sig still
+        // fails. Claiming more signers than actually signed also fails: a subset aggregate
+        // cannot verify against a larger superset of public keys.
+        let n = validator_set.validators.len();
+        let threshold = quorum_threshold(n);
+
+        if checkpoint.signers.len() < threshold {
+            return Err(ILCConsensusError::InsufficientSignatures);
+        }
+
+        // Duplicate signer check.
+        let mut seen: HashSet<ValidatorID> = HashSet::with_capacity(checkpoint.signers.len());
+        for &signer_id in &checkpoint.signers {
+            if !seen.insert(signer_id) {
+                return Err(ILCConsensusError::Other(format!(
+                    "duplicate signer in checkpoint: validator {}",
+                    signer_id.0
+                )));
+            }
+        }
+
+        // Resolve public keys for the signing subset only.
         let msg = bincode::serialize(&checkpoint.record)
             .map_err(|e| ILCConsensusError::Other(format!("BLS msg serialize error: {}", e)))?;
-        let sig = checkpoint.sigs.0.to_signature();
-        let pub_keys: Vec<blst::min_pk::PublicKey> = validator_set
-            .validators
-            .values()
-            .map(|vk| vk.0.clone())
-            .collect();
+        let mut pub_keys: Vec<blst::min_pk::PublicKey> =
+            Vec::with_capacity(checkpoint.signers.len());
+        for &signer_id in &checkpoint.signers {
+            let vk = validator_set
+                .validators
+                .get(&signer_id)
+                .ok_or_else(|| ILCConsensusError::Other(format!(
+                    "signer validator {} not in active validator set",
+                    signer_id.0
+                )))?;
+            pub_keys.push(vk.0.clone());
+        }
         let pk_refs: Vec<&blst::min_pk::PublicKey> = pub_keys.iter().collect();
 
+        let sig = checkpoint.sigs.0.to_signature();
         let blst_result =
             sig.fast_aggregate_verify(true, msg.as_slice(), ILC_EPOCH_SIG_DST, &pk_refs);
         if blst_result != blst::BLST_ERROR::BLST_SUCCESS {
@@ -288,6 +323,7 @@ impl EpochSettlementProtocol {
         let stored = StoredCheckpoint {
             record: checkpoint.record.clone(),
             agg_sig_bytes: sig_bytes,
+            signers: checkpoint.signers.clone(),
         };
 
         // Store epoch record natively carrying aggregated signature bounds
@@ -324,6 +360,7 @@ mod tests {
     use super::*;
     use crate::types::AggSig;
     use crate::types::EpochSeq;
+    use crate::validator::quorum_threshold;
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
     use std::mem::size_of;
@@ -335,27 +372,60 @@ mod tests {
         (Arc::new(env), dir)
     }
 
-    fn setup_validators() -> (ValidatorSet, Vec<SecretKey>) {
-        let mut keys = Vec::new();
+    /// Returns a 2-validator set (f=0). IDs are ValidatorID(1) and ValidatorID(2).
+    fn setup_validators() -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+        let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=2u32 {
             let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
             let pk = sk.sk_to_pk();
-            keys.push(sk);
-            validators.push((crate::types::ValidatorID(i), crate::types::ValidatorKey(pk)));
+            let id = ValidatorID(i);
+            entries.push((id, sk));
+            validators.push((id, crate::types::ValidatorKey(pk)));
         }
-        (ValidatorSet::new(validators, 0).unwrap(), keys)
+        (ValidatorSet::new(validators, 0).unwrap(), entries)
     }
 
-    fn generate_valid_agg_sig(record: &EpochSettlementRecord, keys: &[SecretKey]) -> AggSig {
+    /// Returns an N-validator set. IDs are ValidatorID(1)..ValidatorID(n).
+    fn setup_n_validators(n: u32) -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+        let f = (n as usize).saturating_sub(1) / 3;
+        let mut entries = Vec::new();
+        let mut validators = Vec::new();
+        for i in 1..=n {
+            let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
+            let pk = sk.sk_to_pk();
+            let id = ValidatorID(i);
+            entries.push((id, sk));
+            validators.push((id, crate::types::ValidatorKey(pk)));
+        }
+        (ValidatorSet::new(validators, f).unwrap(), entries)
+    }
+
+    /// Aggregate signatures for the given subset of (ValidatorID, SecretKey) pairs.
+    /// Returns the aggregate sig and the signer ID list.
+    fn agg_sig_for_subset(
+        record: &EpochSettlementRecord,
+        subset: &[(ValidatorID, SecretKey)],
+    ) -> (AggSig, Vec<ValidatorID>) {
         let msg = bincode::serialize(record).unwrap();
-        let sigs: Vec<_> = keys
+        let sigs: Vec<_> = subset
             .iter()
-            .map(|sk| sk.sign(&msg, crate::types::ILC_EPOCH_SIG_DST, &[]))
+            .map(|(_, sk)| sk.sign(&msg, crate::types::ILC_EPOCH_SIG_DST, &[]))
             .collect();
         let sig_refs: Vec<_> = sigs.iter().collect();
         let agg = AggregateSignature::aggregate(&sig_refs, false).unwrap();
-        AggSig(agg)
+        let signers: Vec<ValidatorID> = subset.iter().map(|(id, _)| *id).collect();
+        (AggSig(agg), signers)
+    }
+
+    /// Convenience: aggregate all validators in the set (sorted by ID).
+    fn agg_sig_all(
+        record: &EpochSettlementRecord,
+        entries: &[(ValidatorID, SecretKey)],
+    ) -> (AggSig, Vec<ValidatorID>) {
+        let mut sorted = entries.to_vec();
+        sorted.sort_by_key(|(id, _)| id.0);
+        agg_sig_for_subset(record, &sorted)
     }
 
     fn commit_epoch(
@@ -363,15 +433,17 @@ mod tests {
         epoch: u64,
         fill: u8,
         vset: &ValidatorSet,
-        keys: &[SecretKey],
+        entries: &[(ValidatorID, SecretKey)],
     ) {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(epoch),
             state_root: CIDv1Root::new([fill; 36]),
         };
+        let (sigs, signers) = agg_sig_all(&record, entries);
         let checkpoint = EpochCheckpoint {
-            record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, keys),
+            record,
+            sigs,
+            signers,
         };
         protocol.process_epoch_checkpoint(checkpoint, vset).unwrap();
     }
@@ -467,16 +539,17 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
         };
-
+        let (sigs, signers) = agg_sig_all(&epoch_record, &entries);
         let checkpoint = EpochCheckpoint {
             record: epoch_record.clone(),
-            sigs: generate_valid_agg_sig(&epoch_record, &keys),
+            sigs,
+            signers,
         };
 
         let result = protocol
@@ -497,20 +570,21 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
         };
-
+        let (sigs, signers) = agg_sig_all(&epoch_record, &entries);
         let checkpoint = EpochCheckpoint {
             record: epoch_record.clone(),
-            sigs: generate_valid_agg_sig(&epoch_record, &keys),
+            sigs,
+            signers,
         };
 
         // Must commit epoch 1 first (strict +1 sequential enforcement, SEC-FIX-02).
-        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
+        commit_epoch(&protocol, 1, 0x01, &vset, &entries);
 
         // Standard successfully commit Sequence 2
         assert!(protocol
@@ -518,9 +592,11 @@ mod tests {
             .is_ok());
 
         // Identical submission violates epoch structure
+        let (sigs2, signers2) = agg_sig_all(&epoch_record, &entries);
         let checkpoint_old = EpochCheckpoint {
             record: epoch_record.clone(),
-            sigs: generate_valid_agg_sig(&epoch_record, &keys),
+            sigs: sigs2,
+            signers: signers2,
         };
         assert_eq!(
             protocol
@@ -532,20 +608,26 @@ mod tests {
 
     #[test]
     fn test_forged_epoch_record_rejected() {
+        // A checkpoint that claims all validators signed but whose aggregate is
+        // actually from only one key must fail fast_aggregate_verify.
+        // (N=2, quorum_threshold=1, but we claim 2 signers → aggregate mismatch.)
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
         };
 
-        // Sign with ONLY the first key instead of all N keys
+        // Aggregate only the first signer's key, but claim both validators signed.
+        let (forged_sigs, _) = agg_sig_for_subset(&record, &entries[0..1]);
+        let all_signers: Vec<ValidatorID> = entries.iter().map(|(id, _)| *id).collect();
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys[0..1]),
+            sigs: forged_sigs,
+            signers: all_signers, // claims 2 signers, aggregate only covers 1
         };
 
         let err = protocol
@@ -559,17 +641,18 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: must start from epoch 1.
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
         };
-
+        let (sigs, signers) = agg_sig_all(&record, &entries);
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys),
+            sigs,
+            signers,
         };
 
         let res = protocol.process_epoch_checkpoint(checkpoint, &vset);
@@ -581,17 +664,18 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: must start from epoch 1.
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
         };
-
+        let (sigs, signers) = agg_sig_all(&record, &entries);
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys),
+            sigs,
+            signers: signers.clone(),
         };
 
         protocol
@@ -600,6 +684,7 @@ mod tests {
 
         let stored = store.get_checkpoint(1).unwrap().unwrap();
         assert_eq!(stored.agg_sig_bytes.len(), 96);
+        assert_eq!(stored.signers, signers);
     }
 
     #[test]
@@ -607,7 +692,7 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: must use epoch 1 so the monotonicity gate passes and the
         // corrupt signature reaches fast_aggregate_verify (BLSVerificationFailed path).
@@ -624,15 +709,14 @@ mod tests {
             epoch: EpochSeq(99),
             state_root: CIDv1Root::new([99u8; 36]),
         };
-        let wrong_sig_bytes = generate_valid_agg_sig(&wrong_record, &keys)
-            .0
-            .to_signature()
-            .compress()
-            .to_vec();
+        let (wrong_agg, _) = agg_sig_all(&wrong_record, &entries);
+        let wrong_sig_bytes = wrong_agg.0.to_signature().compress().to_vec();
 
+        let all_signers: Vec<ValidatorID> = entries.iter().map(|(id, _)| *id).collect();
         let corrupted_stored = StoredCheckpoint {
             record: record.clone(),
             agg_sig_bytes: wrong_sig_bytes,
+            signers: all_signers.clone(),
         };
 
         // Construct recovering checkpoint from stored (sig is valid-format but wrong message).
@@ -646,6 +730,7 @@ mod tests {
         let recovery_checkpoint = EpochCheckpoint {
             record: corrupted_stored.record,
             sigs: crate::types::AggSig(agg_sig),
+            signers: all_signers,
         };
 
         let err = protocol
@@ -665,15 +750,17 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         let record = EpochSettlementRecord {
             epoch: EpochSeq(5),
             state_root: CIDv1Root::new([5u8; 36]),
         };
+        let (sigs, signers) = agg_sig_all(&record, &entries);
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys),
+            sigs,
+            signers,
         };
 
         let err = protocol
@@ -692,16 +779,18 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
         for epoch in 1u64..=3 {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
             };
+            let (sigs, signers) = agg_sig_all(&record, &entries);
             let checkpoint = EpochCheckpoint {
                 record: record.clone(),
-                sigs: generate_valid_agg_sig(&record, &keys),
+                sigs,
+                signers,
             };
             protocol
                 .process_epoch_checkpoint(checkpoint, &vset)
@@ -717,20 +806,22 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
-        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
-        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
-        commit_epoch(&protocol, 3, 0x03, &vset, &keys);
+        commit_epoch(&protocol, 1, 0x01, &vset, &entries);
+        commit_epoch(&protocol, 2, 0x02, &vset, &entries);
+        commit_epoch(&protocol, 3, 0x03, &vset, &entries);
 
         // Now submit epoch 2 again (past epoch).
         let record = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
         };
+        let (sigs, signers) = agg_sig_all(&record, &entries);
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys),
+            sigs,
+            signers,
         };
         let err = protocol
             .process_epoch_checkpoint(checkpoint, &vset)
@@ -748,19 +839,21 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
 
-        commit_epoch(&protocol, 1, 0x01, &vset, &keys);
-        commit_epoch(&protocol, 2, 0x02, &vset, &keys);
-        commit_epoch(&protocol, 3, 0x03, &vset, &keys);
+        commit_epoch(&protocol, 1, 0x01, &vset, &entries);
+        commit_epoch(&protocol, 2, 0x02, &vset, &entries);
+        commit_epoch(&protocol, 3, 0x03, &vset, &entries);
 
         let record = EpochSettlementRecord {
             epoch: EpochSeq(10),
             state_root: CIDv1Root::new([10u8; 36]),
         };
+        let (sigs, signers) = agg_sig_all(&record, &entries);
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
-            sigs: generate_valid_agg_sig(&record, &keys),
+            sigs,
+            signers,
         };
         let err = protocol
             .process_epoch_checkpoint(checkpoint, &vset)
@@ -770,5 +863,151 @@ mod tests {
             ILCConsensusError::InvalidEpoch,
             "epoch jump from 3 to 10 must be rejected by +1 monotonicity guard"
         );
+    }
+
+    // ---------------------------------------------------------------------------
+    // HIGH-002 fix: quorum threshold tests
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn test_quorum_threshold_correctness() {
+        // quorum_threshold(N) = 2 * floor((N-1)/3) + 1
+        assert_eq!(quorum_threshold(1), 1, "N=1: f=0, threshold=1");
+        assert_eq!(quorum_threshold(2), 1, "N=2: f=0, threshold=1");
+        assert_eq!(quorum_threshold(3), 1, "N=3: f=0, threshold=1");
+        assert_eq!(quorum_threshold(4), 3, "N=4: f=1, threshold=3");
+        assert_eq!(quorum_threshold(5), 3, "N=5: f=1, threshold=3");
+        assert_eq!(quorum_threshold(6), 3, "N=6: f=1, threshold=3");
+        assert_eq!(quorum_threshold(7), 5, "N=7: f=2, threshold=5");
+        assert_eq!(quorum_threshold(10), 7, "N=10: f=3, threshold=7");
+    }
+
+    #[test]
+    fn test_three_of_four_signers_commits_epoch() {
+        // N=4, f=1: quorum_threshold=3. Three validators signing must be sufficient.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_n_validators(4);
+        assert_eq!(vset.f, 1);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        // Use only the first 3 validators (IDs 1, 2, 3) — validator 4 is "offline".
+        let (sigs, signers) = agg_sig_for_subset(&record, &entries[0..3]);
+        assert_eq!(signers.len(), 3);
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs,
+            signers,
+        };
+
+        let result = protocol.process_epoch_checkpoint(checkpoint, &vset);
+        assert!(
+            result.is_ok(),
+            "3-of-4 quorum must commit epoch: {:?}",
+            result
+        );
+    }
+
+    #[test]
+    fn test_two_of_four_signers_rejected() {
+        // N=4, f=1: quorum_threshold=3. Two validators signing is insufficient.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_n_validators(4);
+        assert_eq!(vset.f, 1);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let (sigs, signers) = agg_sig_for_subset(&record, &entries[0..2]);
+        assert_eq!(signers.len(), 2);
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs,
+            signers,
+        };
+
+        let err = protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap_err();
+        assert_eq!(
+            err,
+            ILCConsensusError::InsufficientSignatures,
+            "2-of-4 must be rejected (threshold=3)"
+        );
+    }
+
+    #[test]
+    fn test_duplicate_signer_rejected() {
+        // Listing the same validator twice in signers must be rejected.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_n_validators(4);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let (sigs, _) = agg_sig_for_subset(&record, &entries[0..3]);
+        // Claim 3 signers but with a duplicate — validators 1, 1, 2 instead of 1, 2, 3.
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs,
+            signers: vec![ValidatorID(1), ValidatorID(1), ValidatorID(2)],
+        };
+
+        let err = protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap_err();
+        match err {
+            ILCConsensusError::Other(msg) => {
+                assert!(
+                    msg.contains("duplicate signer"),
+                    "error must mention duplicate signer: {msg}"
+                );
+            }
+            other => panic!("expected Other(duplicate signer), got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_unknown_signer_rejected() {
+        // A signer not in the active validator set must be rejected.
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_n_validators(4);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let (sigs, _) = agg_sig_for_subset(&record, &entries[0..3]);
+        // Claim signers include validator 99 which is not in the active set.
+        let checkpoint = EpochCheckpoint {
+            record: record.clone(),
+            sigs,
+            signers: vec![ValidatorID(1), ValidatorID(2), ValidatorID(99)],
+        };
+
+        let err = protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap_err();
+        match err {
+            ILCConsensusError::Other(msg) => {
+                assert!(
+                    msg.contains("not in active validator set"),
+                    "error must mention active validator set: {msg}"
+                );
+            }
+            other => panic!("expected Other(not in active validator set), got {:?}", other),
+        }
     }
 }
