@@ -42,6 +42,7 @@ OPERATIONAL_COMMANDS = (
     "config",
     "agent",
     "node",
+    "submit",
     "version",
 )
 
@@ -1013,6 +1014,46 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "submit":
+            submit_parser = subparsers.add_parser(
+                "submit",
+                help="Validate a CDL-073 truth primitive submission and return graph-output contract",
+            )
+            submit_parser.add_argument(
+                "--primitive",
+                required=True,
+                help="Truth primitive name (assert.truth, validate.claim, etc.)",
+            )
+            submit_group = submit_parser.add_mutually_exclusive_group(required=True)
+            submit_group.add_argument(
+                "--payload-json",
+                dest="payload_json",
+                help="Payload as a JSON string",
+            )
+            submit_group.add_argument(
+                "--payload-file",
+                dest="payload_file",
+                help="Path to a JSON file containing the payload",
+            )
+            submit_parser.add_argument(
+                "--agent-id",
+                dest="agent_id",
+                required=True,
+                help="Submitting agent's canonical agent_id",
+            )
+            submit_parser.add_argument(
+                "--epoch",
+                type=int,
+                required=True,
+                help="Current epoch at submission time (non-negative integer)",
+            )
+            submit_parser.add_argument(
+                "--sig",
+                default="UNSIGNED",
+                help="COSE Sign1 signature (hex or placeholder). Default: UNSIGNED",
+            )
+            continue
+
         if command != "identity":
             subparsers.add_parser(command, help=f"Prototype `{command}` command")
             continue
@@ -1078,6 +1119,14 @@ def _run_top_level_command(
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
 
         data = run_node_command(args)
+        return _success_payload(command, data)
+    if command == "submit":
+        from ilc_core.cli.d2e_submit_cli import handle_submit, SubmitCommandError
+
+        try:
+            data = handle_submit(args)
+        except SubmitCommandError as exc:
+            raise ValueError(exc.message) from exc
         return _success_payload(command, data)
 
     data = _prototype_data_for_command(command)
