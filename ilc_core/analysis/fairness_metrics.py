@@ -11,6 +11,7 @@ consensus or runtime behavior.
 
 from typing import Sequence, Mapping, Dict, Tuple
 import math
+import numpy as np
 
 def compute_gini(values: Sequence[float]) -> float:
     """
@@ -319,8 +320,6 @@ def apply_pb_farming_and_gating(
     _pb_renormalize_payouts(gated, total_base)
             
     return gated
-
-import numpy as np
 
 def compute_group_roi_ratio(
     payouts: Dict[str, float], 

@@ -173,6 +173,11 @@ class PrivacyLane:
 
         # Contribution or Payment without express consent — privacy lane.
         agent_id = _get_agent_id(transfer)
+        if agent_id is None:
+            raise ValueError(
+                "privacy_lane_submit_missing_agent_id: "
+                "transfer must have a resolvable object_ref.agent field"
+            )
         if len(self._accumulator) == 0:
             self._accumulator_entry_epoch = current_epoch
 
@@ -293,16 +298,31 @@ def _get_transfer_class(transfer: Any) -> Any:
 
 
 def _get_agent_id(transfer: Any) -> Any:
-    """Extract sender agent_id from a transfer dict or object."""
+    """Extract sender agent_id from a transfer dict or object.
+
+    Supports two formats:
+    - Typed/Rust format: ``transfer.object_ref.agent`` (nested path).
+    - Simulation/flat format: ``transfer["agent_id"]`` or ``transfer.agent_id``
+      used in test and Python-layer simulation contexts.
+
+    Returns None only if neither path resolves an agent identifier.
+    """
     if isinstance(transfer, dict):
-        obj_ref = transfer.get("object_ref", {})
-        if isinstance(obj_ref, dict):
-            return obj_ref.get("agent")
-        return getattr(obj_ref, "agent", None)
+        obj_ref = transfer.get("object_ref")
+        if obj_ref is not None:
+            if isinstance(obj_ref, dict):
+                agent = obj_ref.get("agent")
+            else:
+                agent = getattr(obj_ref, "agent", None)
+            if agent is not None:
+                return agent
+        # Fallback: flat dict format (simulation/test contexts).
+        return transfer.get("agent_id")
     obj_ref = getattr(transfer, "object_ref", None)
     if obj_ref is not None:
         return getattr(obj_ref, "agent", None)
-    return None
+    # Fallback: flat attribute (simulation/test objects).
+    return getattr(transfer, "agent_id", None)
 
 
 def _is_express_bypass(transfer_class: Any) -> bool:
