@@ -22,9 +22,7 @@ Token: row5_b_impl_obligation_6_sim_leakage_03_instrumentation
 """
 from __future__ import annotations
 
-from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any
 
 from ilc_core.privacy.lane import ReleaseGroup
 
@@ -154,6 +152,13 @@ class LeakageMetricsCollector:
         # we skip them from the jitter distribution (degraded_anonymity guard).
         if not group.degraded_anonymity:
             jitter = group.release_epoch - sealed_epoch
+            if jitter < 0:
+                raise ValueError(
+                    f"privacy_lane_metrics_negative_jitter: "
+                    f"release_epoch={group.release_epoch} < sealed_epoch={sealed_epoch}; "
+                    f"caller must pass the epoch at which the group was sealed, "
+                    f"not the current flush epoch"
+                )
             em.jitter_distribution[jitter] = em.jitter_distribution.get(jitter, 0) + 1
 
         # Anonymity-set histogram: keyed by actual set size.
@@ -217,9 +222,8 @@ class LeakageMetricsCollector:
 
         Bound A: global_fill_rate >= (1 - SIM_LEAKAGE_03_BOUND_A)
                  i.e. force-release fraction <= 0.15
-        Bound B: jitter spread relative to max observed jitter <= BOUND_B
-                 (defined as: std(jitter_deltas) / max_jitter <= BOUND_B when
-                  at least one normal group exists; True vacuously otherwise)
+        Bound B (CDL-072): max observed jitter <= release_jitter_epochs (=3).
+                 True vacuously when no normal groups have settled.
         Bound C: global_degraded_fraction <= SIM_LEAKAGE_03_BOUND_C
 
         Token: row5_b_impl_bound_check

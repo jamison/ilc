@@ -78,6 +78,10 @@ def parse_non_negative_decimal(
     number = to_decimal(value, token=token)
     if number < ZERO:
         raise ValueError(token)
+    # Normalize negative zero (Decimal("-0") == Decimal("0") but is_signed())
+    # so callers always receive a canonical non-negative zero, not a signed zero.
+    if number.is_signed():
+        return ZERO
     return number
 
 

@@ -9,6 +9,10 @@ from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 DEFAULT_FIXED_EXPIRY_VALIDATION_EPOCHS = 2880
 DEFAULT_ACTIVE_EARMARK_CAP_PER_AGENT = 8
 
+# "delivered" is intentionally included: an earmark remains reserved until the
+# debit occurs in the epoch AFTER delivery (see process_epoch_boundary).
+# This prevents a race where the commissioning agent spends funds that are
+# already committed to a pending debit.
 RESERVED_STATES = frozenset({"proposed", "accepted", "delivered"})
 TERMINAL_STATES = frozenset({"debited", "expired"})
 ZERO = Decimal("0")
@@ -225,11 +229,22 @@ class EcuActiveLayerRuntime:
             if record.state in TERMINAL_STATES:
                 continue
             if record.state == "delivered":
+                # Debit fires the epoch AFTER delivery (strict > check).
+                # This gives the delivery epoch time to settle before funds move.
                 if record.delivery_epoch is not None and int(commit_epoch) > record.delivery_epoch:
                     commissioning_balance = self._accrued_ecu.get(
                         record.commissioning_agent_id,
                         ZERO,
                     )
+                    if commissioning_balance < record.earmark_amount:
+                        raise ValueError(
+                            f"earmark_debit_would_underflow_balance: "
+                            f"earmark_id={record.earmark_id} "
+                            f"balance={commissioning_balance} "
+                            f"earmark_amount={record.earmark_amount}; "
+                            f"invariant violated — accrued balance must cover all "
+                            f"reserved earmarks at all times"
+                        )
                     self._accrued_ecu[record.commissioning_agent_id] = (
                         commissioning_balance - record.earmark_amount
                     )

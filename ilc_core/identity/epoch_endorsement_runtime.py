@@ -265,6 +265,18 @@ class EpochEndorsementPacket:
                     "cdl_069_endorsement_invalid_supersedes_epoch_id",
                     "supersedes_epoch_id must be a non-negative integer when present",
                 )
+            # supersedes_epoch_id may exceed epoch_id: it is the future epoch at
+            # which the old key becomes invalid, allowing in-flight transactions
+            # to complete during a transition window.  Require it to fall within
+            # the new packet's active window so the invalidation is guaranteed to
+            # take effect before the new packet expires.
+            if self.supersedes_epoch_id > self.epoch_id + self.valid_epochs:
+                raise EndorsementError(
+                    "cdl_069_endorsement_supersedes_epoch_id_beyond_window",
+                    f"supersedes_epoch_id ({self.supersedes_epoch_id}) must not exceed "
+                    f"epoch_id + valid_epochs ({self.epoch_id + self.valid_epochs}); "
+                    f"the old key must be invalidated within the new packet's active window",
+                )
 
     def is_active_at(self, current_epoch: int) -> bool:
         """True if this endorsement is valid at current_epoch."""
