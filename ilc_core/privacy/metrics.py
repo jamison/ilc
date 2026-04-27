@@ -29,10 +29,12 @@ from typing import Any
 from ilc_core.privacy.lane import ReleaseGroup
 
 LEAKAGE_METRICS_VERSION = "leakage_metrics_833.v0.1"
+CDL_072_DEPENDENCY = "cdl_072_bound_b_formula_amendment_ratified_846.v0.1"
 
 # The bounds SIM-LEAKAGE-03 must satisfy (informational — checked in Phase 834).
 SIM_LEAKAGE_03_BOUND_A: float = 0.15   # max fill-failure rate
-SIM_LEAKAGE_03_BOUND_B: float = 0.15   # max jitter spread (relative)
+SIM_LEAKAGE_03_BOUND_B: float = 0.15   # retained for historical reference (Phase 845 structural finding)
+SIM_LEAKAGE_03_BOUND_B_MAX_JITTER: int = 3  # CDL-072: max observed jitter ≤ release_jitter_epochs
 SIM_LEAKAGE_03_BOUND_C: float = 0.05   # max degraded-anonymity fraction of settled transfers
 
 
@@ -246,24 +248,19 @@ class LeakageMetricsCollector:
         return self._epochs[epoch]
 
     def _check_jitter_spread(self, gm: GlobalMetrics) -> bool:
-        """Bound B: jitter spread relative to max <= 0.15.
+        """Bound B (revised CDL-072): max observed jitter ≤ release_jitter_epochs.
 
-        If no normal groups exist, vacuously True.
+        Tests that no group settled later than the locked jitter window permits.
+        Replaces the structurally-incompatible std/max relative formula (Phase 845
+        honest non-closure finding `sim_leakage_03_bound_b_fail_structural`).
+
+        A correct `secrets.randbelow(J+1)` implementation always passes; a PRNG
+        overflow or off-by-one epoch error would produce jitter > J and fail.
+
+        Token: cdl_072_bound_b_max_jitter_check
         """
         jd = gm.jitter_distribution
         if not jd:
             return True
-        values: list[int] = []
-        for delta, count in jd.items():
-            values.extend([delta] * count)
-        n = len(values)
-        if n == 0:
-            return True
-        mean = sum(values) / n
-        variance = sum((v - mean) ** 2 for v in values) / n
-        std = variance ** 0.5
-        max_jitter = max(values)
-        if max_jitter == 0:
-            return True
-        relative_spread = std / max_jitter
-        return relative_spread <= SIM_LEAKAGE_03_BOUND_B
+        max_observed_jitter = max(jd.keys())
+        return max_observed_jitter <= SIM_LEAKAGE_03_BOUND_B_MAX_JITTER
