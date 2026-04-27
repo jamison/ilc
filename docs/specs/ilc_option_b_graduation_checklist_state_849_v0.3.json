@@ -1,0 +1,83 @@
+{
+  "artifact": "ilc_option_b_graduation_checklist_state_849_v0.3",
+  "supersedes": "ilc_option_b_graduation_checklist_state_682_v0.1",
+  "updated_phase": 849,
+  "updated_date": "2026-04-27",
+  "option_b_selected": true,
+  "option_b_selection_phase": 814,
+  "option_b_selection_date": "2026-04-23",
+  "option_b_selection_authorization": "human_authorized",
+  "option_b_gate_verdict": "option_b_gate_synthesis_verdict_go",
+  "option_b_gate_phase": 841,
+  "option_d_active": false,
+  "rows": [
+    {
+      "row": "1. public init/admission flow tied to canonical receipts",
+      "status": "runtime_closed",
+      "evidence_basis": "Phase 650 runtime and Phase 654 closure gate",
+      "source_ref": "docs/specs/ilc_public_init_admission_runtime_650_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "2. machine-legible public receipt issuance and query/runtime contract",
+      "status": "runtime_closed",
+      "evidence_basis": "Phase 651 runtime and Phase 654 closure gate",
+      "source_ref": "docs/specs/ilc_public_receipt_runtime_651_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "3. user and agent visible ECU to ILC lifecycle contract",
+      "status": "runtime_closed",
+      "evidence_basis": "Phase 652 runtime and Phase 654 closure gate",
+      "source_ref": "docs/specs/ilc_ecu_ilc_lifecycle_runtime_652_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "4. public wallet surface contract sufficient for a first participant-touch economic loop",
+      "status": "runtime_closed",
+      "evidence_basis": "Phase 653 runtime and Phase 654 closure gate",
+      "source_ref": "docs/specs/ilc_public_wallet_runtime_integration_653_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "5. privacy-preserving public legitimacy mechanism at the settlement layer",
+      "status": "runtime_closed",
+      "evidence_basis": "B-Scope mechanism lock (k=30, jitter=3, bounded_hold); B-Impl obligations 1-6 (Phases 831-833); SIM-LEAKAGE-03 definitive pass (Phase 846 — all three bounds satisfied under CDL-072 revised formula); Row 5 runtime_closed recorded capsule v5.20",
+      "source_ref": "docs/research/ilc_sim_leakage_03_rerun_846_v0.1.md",
+      "prior_status_v0_1": "partial",
+      "updated_v0_3": true,
+      "update_basis": "Phase 846 — CDL-072 ratified, check_bounds() all pass, runtime_closed"
+    },
+    {
+      "row": "6. coupling invariants that keep protocol truth and graph legitimacy upstream of settlement backend choice",
+      "status": "closed",
+      "evidence_basis": "CDL-065 was ratified in Phase 663 and remained unaffected by Window 677-682",
+      "source_ref": "docs/specs/ilc_coupling_invariants_governance_lock_663_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "7. censorship-resistance requirement for public legitimacy surfaces",
+      "status": "closed",
+      "evidence_basis": "Phases 672-675 fixed the broad censorship model, anti-bottleneck interpretation, and strong exitability/replayability proof obligations as hard gates for later substrate compliance claims",
+      "source_ref": "docs/specs/ilc_rows_7_8_selection_criteria_lock_675_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "8. independence from external constitutional centers as a future-substrate selection criterion",
+      "status": "closed",
+      "evidence_basis": "Phases 673-675 fixed the external constitutional center definition, outside-veto exclusion rules, and substrate-family admissibility matrix",
+      "source_ref": "docs/specs/ilc_rows_7_8_selection_criteria_lock_675_v0.1.md",
+      "updated_v0_3": false
+    },
+    {
+      "row": "9. transport and discovery operational maturity threshold for public participant use",
+      "status": "closed",
+      "evidence_basis": "Phases 665-669 fixed the threshold, harness, blocked-result capture, and then produced passing five-node closure-tier evidence with selected VPN-backed TCP 443 proof on the two DigitalOcean VPS hosts",
+      "source_ref": "docs/specs/ilc_transport_hardening_and_maturity_decision_669_v0.1.md",
+      "updated_v0_3": false
+    }
+  ],
+  "window": "848-852",
+  "all_rows_satisfied": true,
+  "notes": "Row 5 advanced from partial to runtime_closed at Phase 846 (CDL-072 ratified, SIM-LEAKAGE-03 definitive pass). Option B was selected at Phase 814 (human-authorized 2026-04-23); the v0.1 artifact predates that selection and incorrectly showed option_b_selected=false and option_d_active=true. This v0.3 update corrects both and records the current authoritative state. The graduation checklist is now fully satisfied."
+}
