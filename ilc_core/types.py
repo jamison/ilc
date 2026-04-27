@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field as dc_field
 from decimal import Decimal
+from enum import Enum
 from typing import Any, Dict, List, Literal, Optional, Set, Union
 from datetime import datetime, timezone
 import hashlib
@@ -8,6 +9,56 @@ import json
 from pydantic import BaseModel, Field, field_serializer, field_validator
 
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, to_decimal
+
+# ---------------------------------------------------------------------------
+# Hyperedge edge type system — pre-M-018 substrate additions
+#
+# EdgeType: typed classification for all HyperEdge relationships.
+# Values are CDL-ratified edge type coefficients (α per type) pending SIM-REUSE-01.
+# New types require a CDL amendment; unknown types from wire are rejected.
+#
+# WeightParams: replaces raw weight float — stores committed parameters so that
+# w(e, t) can be deterministically recomputed from first principles at any epoch.
+# Storing parameters (not the derived float) means historical Laplacians are
+# auditable. Raw float weights cannot be validated post-hoc.
+#
+# PROVISIONAL: edge_type_coefficient values and reuse_count functional form
+# are unratified placeholders. SIM-REUSE-01 validates; CDL locks them.
+# ---------------------------------------------------------------------------
+
+class EdgeType(str, Enum):
+    """Typed classification for hyperedge relationships.
+
+    Each type carries a provisional CDL weight coefficient (α).
+    Constitutional values locked after SIM-REUSE-01 + CDL ratification.
+    """
+    ATTESTATION    = "attestation"      # Explicit vouching: agent A vouches for node B
+    REUSE          = "reuse"            # Content consumption: agent traverses B's content
+    REFUTATION     = "refutation"       # Counter-claim: agent disputes node B
+    CO_AUTHORSHIP  = "co_authorship"    # Joint production: n-ary group output
+    PROVENANCE     = "provenance"       # Derivation chain: B derives from A
+    EPOCH_BOUNDARY = "epoch_boundary"   # Structural: cross-epoch continuity marker
+
+
+@dataclass(frozen=True)
+class WeightParams:
+    """Committed parameters for deterministic edge weight computation.
+
+    w(e, t) = α(edge_type) × f(reuse_count) × decay(stake, epoch_created, t)
+
+    Where:
+      α(edge_type)      = edge_type_coefficient  (CDL-ratified per type; provisional)
+      f(reuse_count)    = log(reuse_count + 1)   (functional form: SIM-REUSE-01 pending)
+      decay(stake, t)   = CDL-V1 temporal decay applied by caller
+
+    Parameters are the committed record; the derived float is never stored.
+    All fields included in JSON hash serialization (sort_keys=True).
+    """
+    stake: Decimal               # ECU stake at edge creation — basis for decay
+    reuse_count: int             # Traversal counter; incremented on each access
+    decay_rate: float            # CDL-V1 decay rate (0.0 = no decay; 1.0 = full decay per epoch)
+    edge_type_coefficient: float # α — per-type weight multiplier; provisional until CDL
+
 
 # THE KERNEL TAXONOMY
 NodeType = Literal[
@@ -228,8 +279,11 @@ class HyperEdge:
     member_ids: List[str]                         # all members (undirected) or union of head+tail (directed)
     head_ids: List[str]                           # directed source set; empty list if undirected
     tail_ids: List[str]                           # directed target set; empty list if undirected
-    weight: Decimal                               # W(e) — caller responsible for CDL-V1 decay
+    weight_params: WeightParams                   # committed weight parameters — derive w(e,t) via compute_weight()
     epoch: int                                    # temporal stamp
     agent_id: str                                 # declaring agent
     signature: str                                # attribution
+    # --- Optional fields: always included in hash (as null if absent) ---
+    edge_type: Optional[EdgeType] = dc_field(default=None)          # structured type; None = legacy/unknown
+    edge_payload: Optional[bytes] = dc_field(default=None)          # reserved future logic slot; null interpretation is default/no-op
     spectral_fingerprint: Optional[List[float]] = dc_field(default=None)  # analytics-populated; gate: SIM-BEACON-01
