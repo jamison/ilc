@@ -3,11 +3,18 @@
 This module turns operator-managed JSON config and a test-grade genesis import
 reference into the minimum startup context required for the three-machine
 transport testbed.
+
+Phase 916 (CDL-079) extension: bootstrap mode via ILC_BOOTSTRAP_SEED_PEER +
+ILC_BOOTSTRAP_BUNDLE_CID. When both env vars are set, bootstrap_node_startup()
+fetches and verifies a bootstrap bundle via CDL-077 WANT-BLOCK rather than
+loading a static peer config. Static mode (existing behavior) is preserved
+when neither env var is set.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,6 +34,7 @@ from ilc_core.network.d2d.http_gossip_transport_runtime import (
 NODE_STARTUP_RUNTIME_VERSION = "node_startup_runtime_570.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
 HTTP_GOSSIP_TRANSPORT_DEPENDENCY = "http_gossip_transport_runtime_568.v0.1"
+CDL_079_DEPENDENCY = "cdl_079_hb_002_bootstrap_distribution.v0.1"
 
 if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
     import json as _json, sys as _sys
@@ -198,3 +206,92 @@ def build_node_startup_context(
         config_path=config['config_path'],
         genesis_reference_path=genesis_reference['genesis_reference_path'],
     )
+
+
+# ---------------------------------------------------------------------------
+# CDL-079 bootstrap mode (Phase 916)
+# ---------------------------------------------------------------------------
+
+
+class BootstrapError(Exception):
+    """Bootstrap startup failure — bundle not found, invalid, or unverifiable."""
+
+    def __init__(self, token: str, detail: str = "") -> None:
+        super().__init__(detail or token)
+        self.token = token
+
+
+def bootstrap_node_startup(
+    bootstrap_seed_peer: str,
+    bootstrap_bundle_cid: str,
+    genesis_authority_pubkey_hex: str,
+) -> list[str]:
+    """Fetch, verify, and extract peer endpoints from a bootstrap bundle.
+
+    Fetches the bootstrap bundle (CDL-079 bootstrap_bundle_v1) from the seed
+    peer via CDL-077 WANT-BLOCK, verifies the ML-DSA-65 signature against the
+    genesis authority key (CDL-073), and returns the verified peer endpoint list.
+
+    The caller is responsible for building a GossipPeerRegistry from the
+    returned endpoints (explicit-promotion model preserved).
+
+    Args:
+        bootstrap_seed_peer:          HTTPS endpoint of the seed peer.
+        bootstrap_bundle_cid:         CIDv1 of the bootstrap bundle.
+        genesis_authority_pubkey_hex: ML-DSA-65 genesis authority pubkey (hex).
+
+    Returns:
+        List of normalized peer HTTPS endpoints from the verified bundle.
+
+    Raises:
+        BootstrapError: If bundle not found, signature invalid, or no peers extracted.
+    """
+    from ilc_core.network.d2d.bootstrap_fetch_runtime import (
+        extract_peer_endpoints,
+        fetch_bootstrap_bundle,
+        verify_bootstrap_bundle_signature,
+    )
+
+    bundle = fetch_bootstrap_bundle(bootstrap_seed_peer, bootstrap_bundle_cid)
+    if bundle is None:
+        raise BootstrapError(
+            "bootstrap_bundle_not_found",
+            f"bundle_cid={bootstrap_bundle_cid} not found at seed peer {bootstrap_seed_peer}",
+        )
+
+    if not verify_bootstrap_bundle_signature(bundle, genesis_authority_pubkey_hex):
+        raise BootstrapError(
+            "bootstrap_bundle_signature_invalid",
+            f"bundle_cid={bootstrap_bundle_cid}: signature verification failed",
+        )
+
+    endpoints = extract_peer_endpoints(bundle)
+    if not endpoints:
+        raise BootstrapError(
+            "bootstrap_bundle_no_peers",
+            f"bundle_cid={bootstrap_bundle_cid}: no valid peer endpoints after verification",
+        )
+
+    return endpoints
+
+
+def detect_bootstrap_mode() -> tuple[str, str] | None:
+    """Read ILC_BOOTSTRAP_SEED_PEER and ILC_BOOTSTRAP_BUNDLE_CID from env.
+
+    Returns:
+        (seed_peer, bundle_cid) tuple if both are set.
+        None if neither is set (static mode).
+
+    Raises:
+        ValueError: With token 'bootstrap_mode_requires_both_seed_peer_and_bundle_cid'
+                    if exactly one is set.
+    """
+    seed_peer = os.environ.get("ILC_BOOTSTRAP_SEED_PEER", "").strip()
+    bundle_cid = os.environ.get("ILC_BOOTSTRAP_BUNDLE_CID", "").strip()
+
+    if bool(seed_peer) != bool(bundle_cid):
+        raise ValueError("bootstrap_mode_requires_both_seed_peer_and_bundle_cid")
+
+    if seed_peer and bundle_cid:
+        return seed_peer, bundle_cid
+    return None
