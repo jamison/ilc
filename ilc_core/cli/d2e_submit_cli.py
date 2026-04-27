@@ -32,6 +32,7 @@ from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 D2E_SUBMIT_CLI_VERSION = "d2e_submit_cli_874.v0.1"
 CDL_074_DEPENDENCY = RUNTIME_CDL_074_DEPENDENCY
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
+CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -139,6 +140,7 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     # CDL-075: persist to LMDB graph store when ILC_TRUTH_GRAPH_STORE_PATH is set.
     node_id: str | None = None
     graph_persistence: str = "deferred — CDL-075 graph store path not configured"
+    write_receipt: dict[str, Any] = {}
     store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
     if store_path:
         from ilc_core.epistemic.truth_primitive_graph_store import (
@@ -153,6 +155,15 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         finally:
             store.close()
 
+    # CDL-076: announce to gossip peers after confirmed CDL-075 persist.
+    gossip_delivery: str = "deferred — gossip peers not configured"
+    if node_id:
+        from ilc_core.network.d2d.truth_primitive_gossip_runtime import (
+            announce_truth_primitive,
+        )
+        gossip_receipt = announce_truth_primitive(write_receipt, envelope)
+        gossip_delivery = gossip_receipt["gossip_delivery"]
+
     return {
         "subcommand": "submit",
         "primitive": result.primitive,
@@ -161,5 +172,6 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         "node_id": node_id,
         "edges": edges_out,
         "graph_persistence": graph_persistence,
+        "gossip_delivery": gossip_delivery,
         "version": D2E_SUBMIT_CLI_VERSION,
     }
