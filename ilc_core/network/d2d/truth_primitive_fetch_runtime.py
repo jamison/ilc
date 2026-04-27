@@ -43,6 +43,7 @@ TRUTH_PRIMITIVE_FETCH_RUNTIME_VERSION = "truth_primitive_fetch_runtime_901.v0.1"
 CDL_077_DEPENDENCY = "cdl_077_want_have_want_block_fetch.v0.1"
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 CDL_042_DEPENDENCY = "cdl_042_ratified_407.v0.1"
+CDL_078_DEPENDENCY = "cdl_078_relay_incentive_constitutional_lock.v0.1"
 
 WANT_HAVE_PATH = "/fetch/want-have"
 WANT_BLOCK_PATH = "/fetch/want-block"
@@ -359,5 +360,15 @@ def handle_want_block_request(
     except (TypeError, ValueError):
         resp = json.dumps({"token": "fetch_record_serialization_error"}, sort_keys=True).encode()
         return 500, resp
+
+    # CDL-078: record successful serve event for routing reputation (best-effort).
+    try:
+        from ilc_core.network.d2d.routing_reputation_runtime import (
+            record_serve_event,
+            _global_reputation_state,
+        )
+        record_serve_event(node_id, int(time.time() // 60), _global_reputation_state)
+    except Exception:  # noqa: BLE001
+        pass  # best-effort; WANT-BLOCK response is not affected
 
     return 200, record_bytes
