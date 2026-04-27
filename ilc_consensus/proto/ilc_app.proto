@@ -72,22 +72,38 @@ message GetEpochChainResponse {
 
 // EdgeRecord: a single binary edge in a subgraph query response.
 message EdgeRecord {
-    string source_id = 1;
-    string target_id = 2;
-    string link_type = 3; // "supports" | "refutes" | "depends_on" | "derives_from"
-    float  weight    = 4; // 0.0 = unweighted
+    string source_id   = 1;
+    string target_id   = 2;
+    string link_type   = 3; // "supports" | "refutes" | "depends_on" | "derives_from"
+    float  weight      = 4; // 0.0 = unweighted (legacy — use weight_params when available)
+    bytes  edge_payload = 5; // reserved future logic slot; null/empty = no-op per CDL
+}
+
+// WeightParams: committed parameters for deterministic edge weight computation.
+// w(e,t) = α(edge_type) × f(reuse_count) × decay(stake, t)
+// PROVISIONAL: reuse_count functional form and edge_type_coefficient values are
+// unratified. SIM-REUSE-01 + CDL required before use in consensus-critical paths.
+message WeightParams {
+    string stake_micro_ecu        = 1; // Decimal ECU stake as canonical string (never float)
+    uint64 reuse_count            = 2; // traversal counter; incremented on each edge access
+    float  decay_rate             = 3; // CDL-V1 decay rate (0.0 = no decay)
+    float  edge_type_coefficient  = 4; // α per edge type; provisional until CDL ratified
 }
 
 // HyperEdgeRecord: an n-ary relationship in a subgraph query response.
 // Reserved now (ADR-0031). Populated after ADR-0029 hypergraph substrate is
 // implemented. Fields will not be populated by M-018 query handlers — the
-// message type exists only to reserve field numbers.
+// message type exists only to reserve field numbers and prevent future
+// wire-format breaking changes.
 message HyperEdgeRecord {
     string          id             = 1;
     string          hyperedge_type = 2; // "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary"
     repeated string member_ids     = 3;
     repeated string head_ids       = 4; // directed source set; empty if undirected
     repeated string tail_ids       = 5; // directed target set; empty if undirected
-    float           weight         = 6;
+    float           weight         = 6; // legacy raw weight; use weight_params for new records
     uint64          epoch          = 7;
+    WeightParams    weight_params  = 8; // committed parameters; supersedes field 6 for new records
+    bytes           edge_payload   = 9; // reserved future logic slot; null/empty = no-op per CDL
+    string          edge_type      = 10; // EdgeType enum value as string; "" = legacy/unknown
 }
