@@ -530,6 +530,7 @@ impl NodeRunner {
                 // If it already exists, verify the payload matches. If not, it's equivocation!
                 if existing.transfer.to != transfer.to
                     || existing.transfer.amount_micro_ecu != transfer.amount_micro_ecu
+                    || existing.transfer.transfer_class != transfer.transfer_class
                 {
                     eprintln!(
                         "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer / Equivocation Detected)",
@@ -624,6 +625,11 @@ impl NodeRunner {
         sig: crate::types::ValidatorSig,
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
+        // FIXME(M-5): self.f is captured at NodeRunner::new() and is NOT updated
+        // when validators are admitted or ejected at runtime. For the current
+        // genesis network (static 4-validator set) this is safe, but dynamic
+        // membership requires reading f from self.fast_path.validator_set at
+        // quorum-check time instead.
         let quorum = 2 * self.f + 1;
         let mut to_certify: Option<(ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> =
             None;
