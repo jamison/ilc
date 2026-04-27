@@ -1,9 +1,11 @@
-"""Phase 874 — CDL-074 truth primitive submit CLI helper.
+"""Phase 874/882 — CDL-074/075 truth primitive submit CLI helper.
 
 Wires validate_truth_primitive_submission into the ILC CLI `submit` command.
-Validates a CDL-073 wire-format submission envelope and returns the
-graph-output contract.  Does NOT write to the graph or deliver to the network
-(graph persistence is Phase 873+ with a separate CDL).
+Validates a CDL-073 wire-format submission envelope, optionally persists to
+an LMDB graph store (CDL-075), and returns the graph-output contract.
+
+Graph persistence is activated when ILC_TRUTH_GRAPH_STORE_PATH is set in the
+environment.  Without that env var, behaviour is identical to Phase 874.
 
 Command surface:
     ilc submit --primitive <name> --payload-json <json-string>
@@ -16,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +31,7 @@ from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 
 D2E_SUBMIT_CLI_VERSION = "d2e_submit_cli_874.v0.1"
 CDL_074_DEPENDENCY = RUNTIME_CDL_074_DEPENDENCY
+CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -132,12 +136,30 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         for e in result.edges
     ]
 
+    # CDL-075: persist to LMDB graph store when ILC_TRUTH_GRAPH_STORE_PATH is set.
+    node_id: str | None = None
+    graph_persistence: str = "deferred — CDL-075 graph store path not configured"
+    store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
+    if store_path:
+        from ilc_core.epistemic.truth_primitive_graph_store import (
+            TruthPrimitiveGraphStore,
+            write_truth_primitive_result,
+        )
+        store = TruthPrimitiveGraphStore(store_path)
+        try:
+            write_receipt = write_truth_primitive_result(store, envelope, result)
+            node_id = write_receipt["node_id"]
+            graph_persistence = "persisted"
+        finally:
+            store.close()
+
     return {
         "subcommand": "submit",
         "primitive": result.primitive,
         "creates_node": result.creates_node,
         "node_primitive_type": result.node_primitive_type,
+        "node_id": node_id,
         "edges": edges_out,
-        "graph_persistence": "deferred — Phase 873+ CDL required",
+        "graph_persistence": graph_persistence,
         "version": D2E_SUBMIT_CLI_VERSION,
     }
