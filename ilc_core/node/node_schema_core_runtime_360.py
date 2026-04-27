@@ -11,6 +11,7 @@ from typing import Any
 NODE_SCHEMA_CORE_RUNTIME_VERSION = "node_schema_core_runtime_360.v0.1"
 CDL_034_DEPENDENCY = "cdl_034_ratified_349.v0.1"
 SCHEMA_BASELINE_DEPENDENCY = "d2_schema_baseline_310.v0.1"
+CDL_073_DEPENDENCY = "cdl_073_homoiconic_bootstrap_schema_ratified.v0.1"
 
 ALLOWED_PRIMITIVE_TYPES = (
     "citation",
@@ -19,6 +20,14 @@ ALLOWED_PRIMITIVE_TYPES = (
     "knowledge_claim",
     "observation",
 )
+
+# System-scope primitive types (consensus/genesis layer only; not agent-issuable).
+# CDL-073 authorizes genesis_authority_assertion; epoch_record is commit.epoch output.
+# These bypass ALLOWED_PRIMITIVE_TYPES validation for system-issued nodes only.
+SYSTEM_PRIMITIVE_TYPES = frozenset({
+    "genesis_authority_assertion",
+    "epoch_record",
+})
 ALLOWED_EPISTEMIC_TYPES = (
     "creative_speculative",
     "normative",
