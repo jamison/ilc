@@ -1,0 +1,335 @@
+{
+  "_meta": {
+    "kind": "ilc_layer_0_bundle_schema_section",
+    "schema_section_version": 1,
+    "cdl_dependency": "cdl_073_homoiconic_bootstrap_schema_ratified.v0.1",
+    "produced_by_phase": 859,
+    "description": "Machine-legible schema definitions for the seven ILC truth primitives (assert.truth, validate.claim, contradict.assert, refute.claim, revise.assert, link.claim, commit.epoch). A new participant can parse this artifact without a compiled binary to understand the submission wire format, required fields, and edge generation behavior for each primitive.",
+    "token": "hb_003_layer_0_bundle_schema_section"
+  },
+  "submission_envelope": {
+    "description": "Common outer envelope shared by all seven truth primitive submissions.",
+    "canonical_encoding": "JSON (sort_keys=True, no whitespace); DAG-CBOR for production bundles",
+    "required_fields": {
+      "v": {
+        "type": "uint",
+        "constraint": "must equal 1 (protocol version 1)",
+        "description": "Protocol version — locked at 1 for this spec."
+      },
+      "primitive": {
+        "type": "string",
+        "allowed_values": [
+          "assert.truth",
+          "validate.claim",
+          "contradict.assert",
+          "refute.claim",
+          "revise.assert",
+          "link.claim",
+          "commit.epoch"
+        ],
+        "description": "The truth primitive identifier."
+      },
+      "agent_id": {
+        "type": "string",
+        "description": "Submitting agent's canonical agent_id."
+      },
+      "epoch": {
+        "type": "uint",
+        "description": "Current epoch at submission time."
+      },
+      "payload": {
+        "type": "map",
+        "description": "Primitive-specific fields. See per-primitive schemas below."
+      },
+      "sig": {
+        "type": "bstr",
+        "description": "COSE Sign1 over protected envelope. Ed25519 (-8) for agent-issued primitives. ML-DSA-65 (-65, CDL-069) for genesis authority and validator-issued primitives."
+      }
+    },
+    "optional_fields": {
+      "shard_id": {
+        "type": "CIDv1 string",
+        "description": "Target shard CIDv1. Omitted for system-scope primitives (commit.epoch, genesis authority assert.truth)."
+      }
+    }
+  },
+  "primitives": {
+    "assert.truth": {
+      "semantic": "An agent asserts a new truth claim into the graph. Creates a new node and provenance edges.",
+      "required_payload_fields": {
+        "content": {
+          "type": "map",
+          "description": "Assertion content including primitive_type, text or structured body, epistemic_type."
+        },
+        "primitive_type": {
+          "type": "string",
+          "constraint": "Must be from ALLOWED_PRIMITIVE_TYPES (CDL-034) or an extension ratified by CDL.",
+          "known_values": [
+            "citation",
+            "execution_descriptor",
+            "governance_proposal",
+            "knowledge_claim",
+            "observation",
+            "genesis_authority_assertion"
+          ]
+        },
+        "epistemic_type": {
+          "type": "string",
+          "allowed_values": ["objective", "subjective", "normative", "creative_speculative"]
+        },
+        "parent_node_ids": {
+          "type": "array[CIDv1]",
+          "description": "Zero or more CIDv1 node identifiers this assertion builds upon."
+        }
+      },
+      "optional_payload_fields": {
+        "refutation_criterion": {
+          "type": "map or null",
+          "description": "CDL-052 refutation criterion. Required for knowledge_claim; optional for others; null for system primitives."
+        },
+        "version": {"type": "uint"},
+        "language": {"type": "string"},
+        "shard_tags": {"type": "array[string]"},
+        "expiry_epoch": {"type": "uint"}
+      },
+      "graph_output": {
+        "creates_node": true,
+        "node_primitive_type": "matches payload.primitive_type",
+        "edges_produced": [
+          {
+            "edge_type": "asserted_by",
+            "source": "new_node_id",
+            "target": "agent_id"
+          },
+          {
+            "edge_type": "extends",
+            "source": "new_node_id",
+            "target": "each parent_node_id",
+            "cardinality": "one per parent"
+          }
+        ]
+      }
+    },
+    "validate.claim": {
+      "semantic": "An agent validates (endorses as coherent and admissible) an existing node. Creates a validation edge, not a new node.",
+      "required_payload_fields": {
+        "target_node_id": {"type": "CIDv1", "description": "The node being validated."},
+        "confidence": {"type": "string", "constraint": "Canonical decimal string, 0 < confidence <= 1.0"},
+        "evidence_summary": {"type": "string", "constraint": "Max 1024 bytes UTF-8"}
+      },
+      "optional_payload_fields": {
+        "validation_epoch": {"type": "uint"},
+        "panel_seat": {"type": "string", "description": "Outsider seat marker if applicable"}
+      },
+      "constraint": "A single agent may not issue more than one validate.claim per node per epoch. Duplicates are rejected.",
+      "graph_output": {
+        "creates_node": false,
+        "edges_produced": [
+          {
+            "edge_type": "validated_by",
+            "source": "target_node_id",
+            "target": "agent_id",
+            "weight": "confidence"
+          }
+        ]
+      }
+    },
+    "contradict.assert": {
+      "semantic": "An agent signals that two nodes make mutually contradictory claims. Does not resolve the contradiction.",
+      "required_payload_fields": {
+        "node_a_id": {"type": "CIDv1", "description": "First contradicting node."},
+        "node_b_id": {"type": "CIDv1", "description": "Second contradicting node. Must differ from node_a_id."},
+        "contradiction_scope": {
+          "type": "string",
+          "allowed_values": ["logical", "empirical", "definitional"]
+        },
+        "rationale": {"type": "string", "constraint": "Max 2048 bytes UTF-8"}
+      },
+      "optional_payload_fields": {
+        "resolution_proposal_id": {"type": "CIDv1", "description": "Links to a revise.assert proposal"}
+      },
+      "graph_output": {
+        "creates_node": false,
+        "edges_produced": [
+          {
+            "edge_type": "contradicts",
+            "source": "node_a_id",
+            "target": "node_b_id",
+            "note": "Symmetric reverse edge (node_b -> node_a) is NOT created."
+          }
+        ]
+      }
+    },
+    "refute.claim": {
+      "semantic": "An agent formally refutes an existing claim with a CDL-052-compliant refutation criterion.",
+      "required_payload_fields": {
+        "target_node_id": {"type": "CIDv1", "description": "The node being refuted."},
+        "refutation_criterion": {
+          "type": "map",
+          "description": "CDL-052 criterion: {claim, evidence_type, scope_boundary, claim_form, has_falsifiable_test}",
+          "constraint": "has_falsifiable_test must be true; submissions with false are rejected."
+        },
+        "evidence_node_ids": {"type": "array[CIDv1]", "description": "Supporting evidence nodes. May be empty."}
+      },
+      "optional_payload_fields": {
+        "confidence": {"type": "string", "description": "Refutation confidence, decimal string 0-1"}
+      },
+      "graph_output": {
+        "creates_node": false,
+        "edges_produced": [
+          {
+            "edge_type": "refuted_by",
+            "source": "target_node_id",
+            "target": "agent_id"
+          },
+          {
+            "edge_type": "supported_by",
+            "source": "refutation_context",
+            "target": "each evidence_node_id",
+            "cardinality": "one per evidence node"
+          }
+        ]
+      }
+    },
+    "revise.assert": {
+      "semantic": "An agent proposes a revision of an existing node. The original node is not deleted; both coexist.",
+      "required_payload_fields": {
+        "source_node_id": {"type": "CIDv1", "description": "The node being revised."},
+        "revised_content": {"type": "map", "description": "Full replacement content (same structure as assert.truth payload content)."},
+        "revision_rationale": {"type": "string", "constraint": "Max 2048 bytes UTF-8"}
+      },
+      "optional_payload_fields": {
+        "preserves_fields": {"type": "array[string]", "description": "Field names unchanged from source."}
+      },
+      "graph_output": {
+        "creates_node": true,
+        "node_primitive_type": "inherits from revised_content.primitive_type",
+        "edges_produced": [
+          {
+            "edge_type": "asserted_by",
+            "source": "new_node_id",
+            "target": "agent_id"
+          },
+          {
+            "edge_type": "revision_of",
+            "source": "new_node_id",
+            "target": "source_node_id"
+          },
+          {
+            "edge_type": "revised_by",
+            "source": "source_node_id",
+            "target": "new_node_id"
+          }
+        ]
+      }
+    },
+    "link.claim": {
+      "semantic": "An agent asserts a typed semantic relationship between two existing nodes.",
+      "required_payload_fields": {
+        "source_node_id": {"type": "CIDv1"},
+        "target_node_id": {"type": "CIDv1", "constraint": "Must differ from source_node_id."},
+        "link_type": {
+          "type": "string",
+          "allowed_values": ["cites", "elaborates", "contrasts", "instantiates", "generalizes"]
+        },
+        "link_rationale": {"type": "string", "constraint": "Max 1024 bytes UTF-8"}
+      },
+      "optional_payload_fields": {
+        "weight": {"type": "string", "description": "Canonical decimal string 0-1. Defaults to 0.5."}
+      },
+      "graph_output": {
+        "creates_node": false,
+        "edges_produced": [
+          {
+            "edge_type": "matches link_type value",
+            "source": "source_node_id",
+            "target": "target_node_id",
+            "weight": "from weight field or 0.5"
+          }
+        ]
+      }
+    },
+    "commit.epoch": {
+      "semantic": "System-level primitive that finalizes an epoch. Issued ONLY by the consensus layer. Agent-submitted commit.epoch is rejected.",
+      "authorization": "consensus_layer_only",
+      "required_payload_fields": {
+        "epoch_id": {"type": "uint", "description": "The epoch being committed."},
+        "previous_epoch_hash": {"type": "bstr", "description": "Hash of previous commit.epoch node CID."},
+        "participating_agents": {"type": "array[string]", "description": "Agent IDs active in this epoch."},
+        "scoring_results": {"type": "map", "description": "Per-agent scoring outcomes."},
+        "reward_distribution": {"type": "map", "description": "Per-agent reward amounts as canonical decimal strings."},
+        "finalization_hash": {"type": "bstr", "description": "Consensus-agreed hash of epoch state."}
+      },
+      "optional_payload_fields": {
+        "quorum_record_ids": {"type": "array[CIDv1]", "description": "Quorum record CIDv1 array for this epoch."}
+      },
+      "signing": "ML-DSA-65 (-65, CDL-069) by validator key, not Ed25519.",
+      "graph_output": {
+        "creates_node": true,
+        "node_primitive_type": "epoch_record",
+        "edges_produced": [
+          {
+            "edge_type": "finalizes",
+            "source": "epoch_record_node_id",
+            "target": "previous_epoch_hash"
+          }
+        ]
+      }
+    }
+  },
+  "cose_sign1": {
+    "description": "COSE Sign1 requirements for all truth primitive submissions.",
+    "default_algorithm": {
+      "label": -8,
+      "name": "EdDSA (Ed25519)",
+      "signature_length_bytes": 64,
+      "applies_to": "all agent-issued primitives"
+    },
+    "genesis_and_consensus_algorithm": {
+      "label": -65,
+      "name": "ML-DSA-65",
+      "cdl_reference": "CDL-069",
+      "applies_to": "commit.epoch and genesis_authority assert.truth"
+    },
+    "protected_header": {
+      "1": "algorithm label (see above)",
+      "4": "kid: agent_id as UTF-8 bytes"
+    },
+    "sig_structure": [
+      "Signature1",
+      "protected_bstr (DAG-CBOR encoded protected header)",
+      "h'' (zero-length external_aad)",
+      "payload_bstr (DAG-CBOR encoded payload map)"
+    ],
+    "signed_scope": "protected_bstr || payload_bstr via Sig_structure. Outer envelope fields (v, primitive, shard_id) are NOT separately signed."
+  },
+  "dag_cbor_canonical_rules": {
+    "description": "DAG-CBOR canonical encoding rules for all truth primitive submissions.",
+    "map_key_ordering": "Sort by (encoded_key_byte_length, encoded_key_bytes) lexicographically.",
+    "string_encoding": "CBOR text string (major type 3) for all string keys and values.",
+    "decimal_amounts": "Canonical decimal string via decimal_to_canonical_string() — never float.",
+    "cidv1_references": "Encoded as CBOR byte string (CIDv1 bytes).",
+    "omit_optional": "Omit optional fields rather than encoding null.",
+    "no_float": "Floating-point encoding is forbidden for any amount field.",
+    "uint_for_counters": "Integer counters (epoch, version, validator_id) use CBOR uint."
+  },
+  "edge_type_registry": {
+    "description": "Complete set of edge types produced by the seven truth primitives.",
+    "edges": [
+      {"type": "asserted_by", "produced_by": ["assert.truth", "revise.assert"], "source": "node_id", "target": "agent_id"},
+      {"type": "extends", "produced_by": ["assert.truth"], "source": "new_node_id", "target": "parent_node_id"},
+      {"type": "validated_by", "produced_by": ["validate.claim"], "source": "target_node_id", "target": "agent_id"},
+      {"type": "contradicts", "produced_by": ["contradict.assert"], "source": "node_a_id", "target": "node_b_id"},
+      {"type": "refuted_by", "produced_by": ["refute.claim"], "source": "target_node_id", "target": "agent_id"},
+      {"type": "supported_by", "produced_by": ["refute.claim"], "source": "refutation_context", "target": "evidence_node_id"},
+      {"type": "revision_of", "produced_by": ["revise.assert"], "source": "new_node_id", "target": "source_node_id"},
+      {"type": "revised_by", "produced_by": ["revise.assert"], "source": "source_node_id", "target": "new_node_id"},
+      {"type": "cites", "produced_by": ["link.claim"], "source": "source_node_id", "target": "target_node_id"},
+      {"type": "elaborates", "produced_by": ["link.claim"], "source": "source_node_id", "target": "target_node_id"},
+      {"type": "contrasts", "produced_by": ["link.claim"], "source": "source_node_id", "target": "target_node_id"},
+      {"type": "instantiates", "produced_by": ["link.claim"], "source": "source_node_id", "target": "target_node_id"},
+      {"type": "generalizes", "produced_by": ["link.claim"], "source": "source_node_id", "target": "target_node_id"},
+      {"type": "finalizes", "produced_by": ["commit.epoch"], "source": "epoch_record_node_id", "target": "previous_epoch_hash"}
+    ]
+  }
+}
