@@ -28,7 +28,7 @@ fips204 = { version = "0.4", features = ["ml-dsa-65"] }
 fips205 = { version = "0.4", features = ["slh_dsa_sha2_128s"] }
 bip39 = "2"
 rand_core = "0.6"
-sharks = "0.5"
+blahaj = "0.6.0"
 
 [dev-dependencies]
 tempfile = "3.10.1"
