@@ -30,6 +30,9 @@ COSE_HDR_ALG = 1
 COSE_HDR_KID = 4
 COSE_ALG_EDDSA = -8
 
+# Ed25519 signatures are always exactly 64 bytes (RFC 8032 §5.1.6).
+_EDDSA_SIG_LENGTH = 64
+
 
 def cose_sign1_sign(
     payload: bytes,
@@ -197,7 +200,16 @@ def cose_sign1_verify(
         raise ValueError(
             f"Expected EdDSA algorithm (-8), got {decoded['alg']}"
         )
-    
+
+    # Validate signature length before handing to cryptography library.
+    # A malformed length produces an opaque InvalidSignature from the library;
+    # surfacing a clear ValueError here keeps the error contract consistent.
+    if len(decoded["signature"]) != _EDDSA_SIG_LENGTH:
+        raise ValueError(
+            f"EdDSA signature must be {_EDDSA_SIG_LENGTH} bytes, "
+            f"got {len(decoded['signature'])}"
+        )
+
     # Validate payload is canonical ILC DAG-CBOR (strict profile)
     validate_canonical_ilc_dag_cbor(decoded["payload"])
     
