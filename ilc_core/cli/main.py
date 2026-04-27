@@ -579,9 +579,25 @@ def _query_command_token(args: argparse.Namespace) -> str:
 
 
 def _run_query_subcommand(args: argparse.Namespace, graph_state_path: Path) -> tuple[str, dict[str, Any]]:
-    state = _load_graph_state_for_query(graph_state_path)
     subcommand = getattr(args, "query_subcommand", None)
 
+    # CDL-075 truth primitive read path — does not load JSON graph state.
+    if subcommand in {"truth-node", "truth-edges"}:
+        from ilc_core.cli.d2e_query_truth_cli import (
+            handle_query_truth_node,
+            handle_query_truth_edges,
+            QueryTruthCommandError,
+        )
+        try:
+            if subcommand == "truth-node":
+                data = handle_query_truth_node(str(args.node_id))
+            else:
+                data = handle_query_truth_edges(str(args.node_id))
+        except QueryTruthCommandError as exc:
+            raise QueryCommandError(exc.token, exc.message) from exc
+        return _query_command_token(args), data
+
+    state = _load_graph_state_for_query(graph_state_path)
     if subcommand == "node":
         return _query_command_token(args), _query_node(state, str(args.node_id))
     if subcommand == "epoch":
@@ -921,6 +937,22 @@ def _build_parser() -> JsonArgumentParser:
 
             p_claim = query_subparsers.add_parser("claim", help="Query by claim identifier")
             p_claim.add_argument("--claim-id", required=True, help="Claim identifier")
+
+            p_truth_node = query_subparsers.add_parser(
+                "truth-node",
+                help="Query a persisted CDL-075 truth primitive node by CIDv1",
+            )
+            p_truth_node.add_argument(
+                "--node-id", required=True, help="CIDv1 node identifier"
+            )
+
+            p_truth_edges = query_subparsers.add_parser(
+                "truth-edges",
+                help="List CDL-075 edges whose source or target matches the given identifier",
+            )
+            p_truth_edges.add_argument(
+                "--node-id", required=True, help="CIDv1 node identifier or agent_id"
+            )
             continue
 
         if command == "verify":
