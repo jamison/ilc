@@ -58,7 +58,7 @@ H013_SEQUENCE_LOCK_DEPENDENCY = "h013_gossip_beacon_activation_sequence_lock_930
 # H-013 Q4: change threshold — emit only if spectral_distance(prev, curr) > this value.
 # Both are provisional; SIM-BEACON-01 calibrates the production figures.
 H013_TESTNET_EMISSION_SIGMA: float = 0.05
-H013_CHANGE_THRESHOLD: float = 0.1
+H013_CHANGE_THRESHOLD: float = 0.15  # CDL-082 ratified Phase 950; SIM-BEACON-01 evidence Phase 939
 
 if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
     import json as _json, sys as _sys
@@ -388,7 +388,7 @@ def maybe_emit_spectral_beacon(
         opened in this window.
     H-013 Q2: sigma = H013_TESTNET_EMISSION_SIGMA (0.05); SIM-BEACON-01 calibrates.
     H-013 Q4 (Option D): emit once per epoch only if
-        spectral_distance(prev, curr) > H013_CHANGE_THRESHOLD (0.1, provisional).
+        spectral_distance(prev, curr) > H013_CHANGE_THRESHOLD (0.15, CDL-082 ratified Phase 950).
         Stable nodes emit infrequently, reducing bandwidth and structural leakage.
     H-013 Q5 (Option A): sealed sender applied to beacon messages only.
 
