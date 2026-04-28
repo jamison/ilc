@@ -65,8 +65,8 @@ class WeightParams:
 # implementation have a single authoritative location to update. Do not
 # hard-code these values elsewhere in the codebase.
 #
-# REUSE_ATTRIBUTION_RATE: per-traversal ECU rate — None until SIM-REUSE-01
-#   calibrates and a CDL locks the value.
+# REUSE_ATTRIBUTION_RATE: per-traversal ECU rate — locked at Decimal("0.20")
+#   by CDL-081 ratification (Phase 943). SIM-REUSE-01 evidence (Phase 941).
 # EDGE_MINT_PHI_BOUND: Werner φ-bound — edge minting ≤ φ × node minting per
 #   epoch. None until the Werner edge-minting CDL is opened and ratified.
 # PROVENANCE_MAX_DEPTH: max hops for provenance chain attribution traversal.
@@ -77,7 +77,7 @@ class WeightParams:
 # STAR_NODE_MIN_STAKE_ECU: minimum member stake floor for CO_AUTHORSHIP star
 #   nodes (H-CON-01 Q2 = Option A, 1 ECU). CDL-ratified when H-CON-01 opens.
 # ---------------------------------------------------------------------------
-REUSE_ATTRIBUTION_RATE: Optional[float] = None          # pending SIM-REUSE-01 + CDL
+REUSE_ATTRIBUTION_RATE: Decimal = Decimal("0.20")       # CDL-081 ratified Phase 943
 EDGE_MINT_PHI_BOUND: Optional[float] = None             # pending Werner edge-minting CDL
 PROVENANCE_MAX_DEPTH: int = 3                            # provisional; CDL required to change
 PROVENANCE_DECAY_ALPHA: float = 0.5                      # provisional; α < 1 stability criterion
