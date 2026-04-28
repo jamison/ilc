@@ -137,26 +137,50 @@ class TerminalOpenResult:
 
 @dataclass
 class SpectralBeaconReplayCache:
-    """Terminal-side replay guard for H-013 emission IDs."""
+    """Terminal-side replay guard for H-013 emission IDs.
 
-    seen_emission_ids: dict[str, None] = field(default_factory=dict)
+    Keys are (normalized_emission_id, epoch) tuples. This makes beacons from
+    prior epochs trivially invalid without needing cross-epoch coordination:
+    a replayed beacon is rejected not only because its emission_id was seen,
+    but because its (emission_id, epoch) pair is bound to a specific epoch and
+    cannot be re-used in a different epoch even if the LRU evicts the entry.
+
+    Eviction policy: LRU by insertion order (dict iteration is insertion-ordered
+    in Python 3.7+). Oldest (emission_id, epoch) pair is dropped when the cache
+    is full. An attacker replaying an evicted beacon from a prior epoch will be
+    caught by epoch staleness validation at the application layer, not the cache.
+    """
+
+    seen_keys: dict[tuple[str, int], None] = field(default_factory=dict)
     max_entries: int = MAX_REPLAY_CACHE_ENTRIES
 
-    def check_and_store(self, emission_id: str) -> None:
+    def check_and_store(self, emission_id: str, epoch: int) -> None:
+        """Check for replay and store the (emission_id, epoch) key.
+
+        Raises SpectralBeaconValidationError if:
+        - max_entries is not positive (misconfigured cache)
+        - (emission_id, epoch) pair was already seen (replay detected)
+        """
         normalized = _normalize_emission_id(emission_id)
+        if not isinstance(epoch, int) or isinstance(epoch, bool) or epoch < 0:
+            raise SpectralBeaconValidationError(
+                "h013_replay_cache_epoch_invalid",
+                "replay_cache_epoch_must_be_non_negative_int",
+            )
+        cache_key = (normalized, epoch)
         if self.max_entries <= 0:
             raise SpectralBeaconValidationError(
                 "h013_replay_cache_size_invalid",
                 "replay_cache_size_invalid",
             )
-        if normalized in self.seen_emission_ids:
+        if cache_key in self.seen_keys:
             raise SpectralBeaconValidationError(
                 "h013_replay_detected",
-                "emission_id_replayed",
+                "emission_id_epoch_pair_replayed",
             )
-        if len(self.seen_emission_ids) >= self.max_entries:
-            self.seen_emission_ids.pop(next(iter(self.seen_emission_ids)))
-        self.seen_emission_ids[normalized] = None
+        if len(self.seen_keys) >= self.max_entries:
+            self.seen_keys.pop(next(iter(self.seen_keys)))
+        self.seen_keys[cache_key] = None
 
 
 def generate_sealed_sender_keypair() -> SealedSenderKeypair:
@@ -375,7 +399,9 @@ def open_terminal_layer(
             "terminal_peer_mismatch",
         )
     beacon = _beacon_from_mapping(decoded.get("beacon"))
-    replay_cache.check_and_store(relay_result.emission_id)
+    # Key replay cache by (emission_id, beacon.epoch): a beacon from a prior
+    # epoch cannot replay in the current epoch even if the LRU entry was evicted.
+    replay_cache.check_and_store(relay_result.emission_id, beacon.epoch)
     return TerminalOpenResult(
         terminal_peer_id=terminal_peer_id,
         channel_id=relay_result.channel_id,
