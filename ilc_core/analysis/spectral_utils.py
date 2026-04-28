@@ -15,7 +15,10 @@
 # Gate for weight parameterization: SIM-REUSE-01 + CDL (EdgeType coefficients).
 from __future__ import annotations
 
+import hashlib
 import math
+import os
+import struct
 from typing import TYPE_CHECKING, Callable, List, Optional
 
 if TYPE_CHECKING:
@@ -71,3 +74,51 @@ def compute_weight(
     # Provisional reuse signal: log(n+1) so zero reuse → 0 additive, not multiplicative zero
     reuse_signal = math.log(params.reuse_count + 1)
     return params.edge_type_coefficient * decayed_stake * (1.0 + reuse_signal)
+
+
+def spectral_hash(eigenvalues: List[float]) -> str:
+    """SHA-256 of the sorted top-k eigenvalue vector — structural fingerprint S(t).
+
+    Eigenvalues are quantized to 8-byte IEEE 754 big-endian doubles before
+    hashing. Sorting ensures determinism regardless of eigendecomposition order.
+    Returns a 64-character hex string.
+
+    Used for: Merkle-Laplacian dual commitment (spectral half), epoch KPI store.
+    Gate: CDL required before spectral_hash enters the epoch commitment record
+    in Rust (EpochSettlementRecord). Safe to compute and store locally now.
+    """
+    sorted_vals = sorted(eigenvalues)
+    packed = b"".join(struct.pack(">d", v) for v in sorted_vals)
+    return hashlib.sha256(packed).hexdigest()
+
+
+def _csprng_gauss() -> float:
+    """One standard-normal sample via Box-Muller transform over os.urandom.
+
+    Uses os.urandom (CSPRNG) instead of random.gauss (PRNG). This is required
+    by ILC coding security standards: no PRNG for cryptographic or noise
+    generation in spectral beacon emission.
+
+    Box-Muller: if U1, U2 ~ Uniform(0,1) then
+        Z = sqrt(-2 ln U1) * cos(2π U2) ~ Normal(0,1)
+    """
+    # Draw two 64-bit uniform samples from os.urandom
+    u1_raw = int.from_bytes(os.urandom(8), "big") / (2 ** 64)
+    u2_raw = int.from_bytes(os.urandom(8), "big") / (2 ** 64)
+    # Clamp away from 0 to avoid log(0); upper bound is fine (cos handles 2π)
+    u1 = max(u1_raw, 1e-15)
+    return math.sqrt(-2.0 * math.log(u1)) * math.cos(2.0 * math.pi * u2_raw)
+
+
+def add_noise(eigenvalues: List[float], sigma: float) -> List[float]:
+    """Add calibrated Gaussian noise to a spectral fingerprint before beacon emission.
+
+    sigma is the noise standard deviation (differential privacy budget parameter).
+    Calibrate sigma via SIM-BEACON-01 before production use.
+    The H-013 spectral_beacon.py enforces MIN_NOISE_SIGMA=0.005 at the
+    construction boundary — this function does not re-check the floor.
+
+    Uses CSPRNG (os.urandom via Box-Muller), never random.gauss. This is a
+    security requirement: noise for beacon privacy must not be predictable.
+    """
+    return [v + sigma * _csprng_gauss() for v in eigenvalues]
