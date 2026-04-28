@@ -1,8 +1,8 @@
 # CDL-082: H-013 Gossip Beacon Emission Threshold Amendment
 
-**Status:** OPEN
+**Status:** RATIFIED
 **Opened:** Phase 948 (2026-04-28)
-**Ratified:** [Phase 950 — pending]
+**Ratified:** Phase 950 (2026-04-28)
 **Authority:** CDL-079 (H-013 activation); SIM-BEACON-01 evidence (Phase 939)
 **Amends:** H-013 gossip beacon emission parameters (`ilc_core/node/node_startup_runtime.py`)
 
@@ -91,8 +91,8 @@ Pre-ratification checklist (to be verified at Phase 950):
 ```
 [x] SIM-BEACON-01 evidence cited — Phase 939 — done
 [x] Prelock hardening complete — Phase 949 — done
-[ ] Runtime mutation committed — H013_CHANGE_THRESHOLD = 0.15 in node_startup_runtime.py (Phase 950 Commit 1)
-[ ] Human ratification authorization — Phase 950
+[x] Runtime mutation committed — H013_CHANGE_THRESHOLD = 0.15 in node_startup_runtime.py — done (Commit 1, Phase 950)
+[x] Human ratification authorization — granted Phase 950
 ```
 
 ---
@@ -134,3 +134,5 @@ Expected output: `**Status:** OPEN`
 `cdl_082_open_phase_948`
 `h013_change_threshold_amendment_constitutional_basis_established`
 `cdl_082_prelock_hardening_complete_phase_949`
+`cdl_082_ratified_phase_950`
+`h013_change_threshold_0_15_constitutional_lock`
