@@ -97,7 +97,7 @@ message WeightParams {
 // wire-format breaking changes.
 message HyperEdgeRecord {
     string          id             = 1;
-    string          hyperedge_type = 2; // "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary"
+    string          hyperedge_type = 2; // "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary" | "content_package"
     repeated string member_ids     = 3;
     repeated string head_ids       = 4; // directed source set; empty if undirected
     repeated string tail_ids       = 5; // directed target set; empty if undirected
@@ -106,4 +106,28 @@ message HyperEdgeRecord {
     WeightParams    weight_params  = 8; // committed parameters; supersedes field 6 for new records
     bytes           edge_payload   = 9; // reserved future logic slot; null/empty = no-op per CDL
     string          edge_type      = 10; // EdgeType enum value as string; "" = legacy/unknown
+}
+
+// ---------------------------------------------------------------------------
+// ClearanceRecord: signed traversal commitment generated at WANT-BLOCK
+// delivery time (Wire Protocol layer, sub-30ms over QUIC/CDL-061).
+//
+// This is NOT settlement. ClearanceRecord commits that a traversal occurred;
+// ECU attribution is discharged at epoch-close (Epoch State settlement).
+// epoch_tag is set by the serving node at signing time — late-arriving
+// records with epoch_tag=N that arrive after epoch-N settlement become
+// epoch-N+1 obligations. Settlement never retroactively reopens a closed epoch.
+//
+// Gate: H-CON-01 CDL required before clearance records trigger ECU transfers.
+// Message reserved now to prevent future wire-format breaking changes.
+// All fields are empty/zero until the H-012 attribution runtime is wired.
+// ---------------------------------------------------------------------------
+message ClearanceRecord {
+    string traversal_id        = 1; // unique ID for this traversal event
+    string edge_id             = 2; // which edge was traversed
+    uint64 epoch_tag           = 3; // epoch at signing time — canonical epoch assignment
+    bytes  requesting_agent_id = 4; // 32-byte AgentID of the consuming agent
+    bytes  serving_agent_id    = 5; // 32-byte AgentID of the serving node
+    uint64 timestamp_ms        = 6; // Unix epoch milliseconds at clearance time
+    bytes  signature           = 7; // Ed25519 signature by serving node over fields 1-6
 }

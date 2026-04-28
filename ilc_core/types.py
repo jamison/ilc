@@ -60,6 +60,85 @@ class WeightParams:
     edge_type_coefficient: float # α — per-type weight multiplier; provisional until CDL
 
 
+# ---------------------------------------------------------------------------
+# Provisional attribution constants — named so that SIM-REUSE-01 and H-CON-01
+# implementation have a single authoritative location to update. Do not
+# hard-code these values elsewhere in the codebase.
+#
+# REUSE_ATTRIBUTION_RATE: per-traversal ECU rate — None until SIM-REUSE-01
+#   calibrates and a CDL locks the value.
+# EDGE_MINT_PHI_BOUND: Werner φ-bound — edge minting ≤ φ × node minting per
+#   epoch. None until the Werner edge-minting CDL is opened and ratified.
+# PROVENANCE_MAX_DEPTH: max hops for provenance chain attribution traversal.
+#   N=3 is the provisional cap; CDL may adjust after SIM-REUSE-01.
+# PROVENANCE_DECAY_ALPHA: geometric decay per provenance hop (α < 1 ensures
+#   convergence). 0.5 is provisional; predictive-coding stability criterion
+#   requires α < 1. CDL locks the final value.
+# STAR_NODE_MIN_STAKE_ECU: minimum member stake floor for CO_AUTHORSHIP star
+#   nodes (H-CON-01 Q2 = Option A, 1 ECU). CDL-ratified when H-CON-01 opens.
+# ---------------------------------------------------------------------------
+REUSE_ATTRIBUTION_RATE: Optional[float] = None          # pending SIM-REUSE-01 + CDL
+EDGE_MINT_PHI_BOUND: Optional[float] = None             # pending Werner edge-minting CDL
+PROVENANCE_MAX_DEPTH: int = 3                            # provisional; CDL required to change
+PROVENANCE_DECAY_ALPHA: float = 0.5                      # provisional; α < 1 stability criterion
+STAR_NODE_MIN_STAKE_ECU: Decimal = Decimal("1")          # H-CON-01 Q2 Option A; CDL-ratified on open
+
+
+# ---------------------------------------------------------------------------
+# EpochAttributionBatch — design stub for temporal batching of REUSE and
+# CO_AUTHORSHIP attribution events.
+#
+# CDL-078 precedent: serve-event buffer collected during epoch, processed at
+# epoch close. Same pattern applied here to attribution events.
+#
+# Invariants (enforced by implementation):
+#   - Each event in the batch is processed with a fresh visited_set.
+#     No cross-event state contamination: provenance traversal must not bleed
+#     between events in the same epoch.
+#   - Batch is sealed at epoch close; no events may be added after settle()
+#     is called. Late-arriving clearance records become epoch+1 obligations.
+#   - settle() is idempotent: calling it twice on the same batch is safe.
+#
+# Gate: H-CON-01 CDL must be ratified before settle() can execute ECU
+# transfers. Until then this class is a design stub only.
+# ---------------------------------------------------------------------------
+EPOCH_ATTRIBUTION_BATCH_VERSION = "epoch_attribution_batch.v0.1_stub"
+CDL_HCON_01_DEPENDENCY = "h_con_01_cdl_required_before_settle_executes"
+
+
+@dataclass
+class EpochAttributionBatch:
+    """Temporal batch for REUSE and CO_AUTHORSHIP attribution events.
+
+    Collect traversal clearance records during an epoch; process at epoch
+    close with a fresh visited_set per event. CDL-078 precedent pattern.
+
+    Not yet wired: settle() raises NotImplementedError until H-CON-01 CDL
+    is ratified and the H-012 attribution runtime is implemented.
+    """
+    epoch: int
+    events: List[Any] = dc_field(default_factory=list)
+    sealed: bool = dc_field(default=False, init=False)
+
+    def add_event(self, event: Any) -> None:
+        """Record a traversal clearance event for this epoch."""
+        if self.sealed:
+            raise ValueError("epoch_attribution_batch_sealed_no_new_events")
+        self.events.append(event)
+
+    def seal(self) -> None:
+        """Seal the batch at epoch close. No further events may be added."""
+        self.sealed = True
+
+    def settle(self) -> None:
+        """Process all events and execute ECU attribution transfers.
+
+        Gate: H-CON-01 CDL required. Raises NotImplementedError until
+        H-012 attribution runtime is implemented.
+        """
+        raise NotImplementedError(CDL_HCON_01_DEPENDENCY)
+
+
 # THE KERNEL TAXONOMY
 NodeType = Literal[
     "genesis",          # Axioms (Immutable)
@@ -275,7 +354,7 @@ class LinkRecord(BaseModel):
 @dataclass(frozen=True)
 class HyperEdge:
     id: str                                       # content-addressed ID
-    hyperedge_type: str                           # "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary"
+    hyperedge_type: str                           # "panel" | "co_authorship" | "refutation_coalition" | "epoch_boundary" | "content_package"
     member_ids: List[str]                         # all members (undirected) or union of head+tail (directed)
     head_ids: List[str]                           # directed source set; empty list if undirected
     tail_ids: List[str]                           # directed target set; empty list if undirected

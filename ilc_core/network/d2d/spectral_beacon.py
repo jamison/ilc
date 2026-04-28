@@ -35,6 +35,11 @@ MAX_LAMBDA_VALUES = 32
 MAX_AGENT_ID_BYTES = 128
 MAX_EMISSION_ID_BYTES = 128
 MIN_NOISE_SIGMA = 0.005
+# H-013 Q1 Option C: beacon emission gated by mode flag.
+# TESTNET: emit with placeholder epsilon (sigma=0.05); no mainnet risk.
+# MAINNET: gate lifted only after SIM-BEACON-01 calibration completes.
+BEACON_EMISSION_MODE_TESTNET = "testnet"
+BEACON_EMISSION_MODE_MAINNET = "mainnet"
 MAX_NORMALIZED_LAPLACIAN_EIGENVALUE = 2.0
 MAX_REPLAY_CACHE_ENTRIES = 4096
 INNER_PLAINTEXT_SIZE = 2048
