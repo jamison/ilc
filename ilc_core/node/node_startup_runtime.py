@@ -29,12 +29,19 @@ from ilc_core.network.d2d.http_gossip_transport_runtime import (
     HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION as _HTTP_GOSSIP_TRANSPORT_CHECK,
     TransportRuntimeConfig,
 )
+from ilc_core.network.d2d.peer_fingerprint_cache import (
+    PEER_FINGERPRINT_CACHE_VERSION as _PEER_FINGERPRINT_CACHE_CHECK,
+    PeerFingerprintCache,
+)
+from ilc_core.network.d2d.spectral_beacon import TerminalOpenResult
 
 
 NODE_STARTUP_RUNTIME_VERSION = "node_startup_runtime_570.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
 HTTP_GOSSIP_TRANSPORT_DEPENDENCY = "http_gossip_transport_runtime_568.v0.1"
 CDL_079_DEPENDENCY = "cdl_079_hb_002_bootstrap_distribution.v0.1"
+H013_PEER_FINGERPRINT_CACHE_DEPENDENCY = "peer_fingerprint_cache_931.v0.1"
+H013_SEQUENCE_LOCK_DEPENDENCY = "h013_gossip_beacon_activation_sequence_lock_930.v0.1"
 
 if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
     import json as _json, sys as _sys
@@ -72,6 +79,24 @@ if _HTTP_GOSSIP_TRANSPORT_CHECK != HTTP_GOSSIP_TRANSPORT_DEPENDENCY:
     _sys.stdout.flush()
     raise RuntimeError("node_startup_http_gossip_transport_dependency_mismatch")
 
+if _PEER_FINGERPRINT_CACHE_CHECK != H013_PEER_FINGERPRINT_CACHE_DEPENDENCY:
+    import json as _json, sys as _sys
+    _sys.stdout.write(
+        _json.dumps(
+            {
+                "ok": False,
+                "error": "node_startup_dep_chain_mismatch",
+                "dependency": "peer_fingerprint_cache",
+                "expected": H013_PEER_FINGERPRINT_CACHE_DEPENDENCY,
+                "got": _PEER_FINGERPRINT_CACHE_CHECK,
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    _sys.stdout.flush()
+    raise RuntimeError("node_startup_h013_peer_fingerprint_cache_dependency_mismatch")
+
 
 @dataclass(frozen=True)
 class NodeStartupContext:
@@ -81,6 +106,9 @@ class NodeStartupContext:
     genesis_import_reference: dict[str, str]
     config_path: str
     genesis_reference_path: str
+    # H-013 Phase 934: rolling peer fingerprint cache (mutable; frozen only prevents
+    # replacing the reference, not updating the cache in place).
+    peer_fingerprint_cache: PeerFingerprintCache
 
 
 def _load_json_object(path: Path, missing_token: str, invalid_token: str) -> dict[str, Any]:
@@ -205,6 +233,35 @@ def build_node_startup_context(
         },
         config_path=config['config_path'],
         genesis_reference_path=genesis_reference['genesis_reference_path'],
+        peer_fingerprint_cache=PeerFingerprintCache(),
+    )
+
+
+# ---------------------------------------------------------------------------
+# H-013 Phase 934: peer fingerprint cache population
+# ---------------------------------------------------------------------------
+
+
+def populate_fingerprint_from_beacon(
+    ctx: NodeStartupContext,
+    terminal_result: TerminalOpenResult,
+) -> None:
+    """Record a peer's spectral fingerprint from an opened beacon.
+
+    Called by the gossip receive path after peel_relay_layer + open_terminal_layer
+    have verified and decrypted the sealed beacon. Overwrites any prior entry for
+    the same peer (H-013 Q3 = Option D: overwrite-only, no epoch-based eviction).
+
+    Args:
+        ctx: node startup context carrying the peer fingerprint cache.
+        terminal_result: decrypted terminal result from open_terminal_layer().
+    """
+    ctx.peer_fingerprint_cache.update(
+        peer_endpoint=terminal_result.terminal_peer_id,
+        lambda_local=terminal_result.beacon.lambda_local,
+        noise_sigma=terminal_result.beacon.noise_sigma,
+        epoch=terminal_result.beacon.epoch,
+        agent_id=terminal_result.beacon.agent_id,
     )
 
 
