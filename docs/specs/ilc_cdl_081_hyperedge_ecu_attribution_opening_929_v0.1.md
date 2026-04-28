@@ -107,20 +107,34 @@ independent — creator is agnostic to who serves and at what price.
 
 ---
 
-### Q6 — Per-traversal ECU rate (RESOLVED)
+### Q6 — Per-traversal ECU rate (RESOLVED — SIM-REUSE-01)
 
-**Deferred to SIM-REUSE-01.** No floor or ceiling pre-committed.
+**`REUSE_ATTRIBUTION_RATE = 0.20`** — resolved by SIM-REUSE-01 (Phase 940-941).
 
-`REUSE_ATTRIBUTION_RATE = None` is the named provisional constant in
-`ilc_core/types.py`. SIM-REUSE-01 must model:
-- All three bootstrap phases simultaneously
-- Clearance vs settlement timing interaction
-- Werner φ-bound interaction (edge minting ≤ φ × node minting per epoch;
-  `EDGE_MINT_PHI_BOUND = None` pending Werner CDL)
-- Reputation-implicit signal (reuse_count routing preference) vs direct ECU
-  transfer per traversal — whether both are needed or reuse_count alone suffices
+SIM-REUSE-01 evidence document:
+`docs/specs/ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0.1.md`
 
-`q6_deferred_to_sim_reuse_01_reuse_attribution_rate_none_pending`
+Key findings establishing this decision:
+- **Floor at 0.10**: rate=0.05 fails creation-rate target (8.43% vs >=25%) and
+  produces severe inequality (Gini=0.874). Rate=0.10 is the minimum that passes all
+  three calibration targets simultaneously.
+- **0.20 preferred over 0.10**: 82.3% creation rate + Gini=0.197 vs 59.1% at 0.10.
+  The marginal attribution cost of the 0.10 to 0.20 step is small.
+- **0.20 preferred over 0.25+**: Gini at 0.25+ (<=0.11) risks erasing the epistemic
+  quality gradient. CDL-081 §4.1 should be conservative at ratification.
+- **Gaming non-attractive by construction**: gaming_roi_ratio < 0.02 at all tested
+  rates. Rate parameter choice does not determine gaming resistance.
+
+`REUSE_ATTRIBUTION_RATE = 0.20` applies to CO_AUTHORSHIP and REUSE edge types (Q1).
+ATTESTATION excluded (Q1). REFUTATION conditional (CDL-V7). PROVENANCE deferred (H-CON-02).
+
+Constitutional note: `ilc_core/types.py` must be updated from `None` to
+`Decimal("0.20")` only after CDL-081 ratification (ILC_CDL_MUTATION_AUTHORIZED=1 required).
+
+`q6_resolved_reuse_attribution_rate_0_20_sim_reuse_01_evidence`
+`sim_reuse_01_complete_phase_941`
+`gaming_structurally_non_attractive_validated`
+`reuse_attribution_floor_confirmed_at_0_10`
 
 ---
 
@@ -132,7 +146,7 @@ When a `REUSE` edge is traversed in epoch `t`, the creating agent of the target
 node receives:
 
 ```
-attribution_ECU = REUSE_ATTRIBUTION_RATE  (rate from SIM-REUSE-01; currently None)
+attribution_ECU = REUSE_ATTRIBUTION_RATE  (= 0.20 per SIM-REUSE-01; locked post-ratification)
 ```
 
 Attribution is batched per epoch via `EpochAttributionBatch` (CDL-078 temporal
@@ -200,14 +214,14 @@ time-expiry leasehold reversion. Both route through CDL-047 treasury governance.
 
 ## 4. What This CDL Does NOT Constitute
 
-- Per-traversal ECU rate (SIM-REUSE-01 pending)
+- Per-traversal ECU rate — RESOLVED: 0.20 (SIM-REUSE-01 Phase 941); types.py update pending ratification
 - PROVENANCE chain attribution rules (H-CON-02)
 - Panel hyperedge quorum rules (H-CON-02)
 - Werner φ-bound on edge minting (separate CDL, `EDGE_MINT_PHI_BOUND = None`)
 - Ensemble/ContentPackage governance (future CDL; "content_package" hyperedge
   type is reserved in proto and types.py as a forward reservation)
 - Operator serving fee structure (Wire Protocol layer; not Protocol Bundle)
-- Sigmoid traversal fee parameters (SIM-REUSE-01 pending)
+- Sigmoid traversal fee parameters (deferred; SIM-REUSE-01 calibrated flat rate only)
 
 ---
 
@@ -228,8 +242,8 @@ time-expiry leasehold reversion. Both route through CDL-047 treasury governance.
 
 Before CDL-081 can be ratified, the following must be complete:
 
-- [ ] SIM-REUSE-01 calibration complete — per-traversal ECU rate determined
-- [ ] `REUSE_ATTRIBUTION_RATE` constant updated from None to calibrated value
+- [x] SIM-REUSE-01 calibration complete — `REUSE_ATTRIBUTION_RATE = 0.20` (Phase 941)
+- [ ] `REUSE_ATTRIBUTION_RATE` constant updated from None to calibrated value (post-ratification)
 - [ ] Ratification evidence document (≥20 tests across attribution rules)
 - [ ] H-012 attribution runtime implemented and tested
 - [ ] H-CON-02 opened (or explicitly deferred with forward obligation recorded)
