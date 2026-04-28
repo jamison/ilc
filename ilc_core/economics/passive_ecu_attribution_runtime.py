@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from decimal import Decimal
 
 from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
     CDL_060_GOSSIP_RUNTIME_VERSION as _CDL_060_GOSSIP_RUNTIME_CHECK,
@@ -11,10 +12,12 @@ from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
 PASSIVE_ECU_ATTRIBUTION_RUNTIME_VERSION = "passive_ecu_attribution_runtime_550.v0.1"
 CDL_060_DEPENDENCY = "cdl_060_ratified_541.v0.1"
 CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "cdl_060_gossip_runtime_548.v0.1"
-PASSIVE_ATTRIBUTION_RATE = 0.20
-DECAY_FLOOR = 0.05
-ATTRIBUTION_CAP = 0.15
-GAMMA = 0.15
+# M1 audit fix (Phase 946): all ECU rate constants converted to Decimal.
+# Decimal * float raises TypeError — all four must be Decimal together.
+PASSIVE_ATTRIBUTION_RATE = Decimal("0.20")
+DECAY_FLOOR = Decimal("0.05")
+ATTRIBUTION_CAP = Decimal("0.15")
+GAMMA = Decimal("0.15")
 
 
 class PassiveECUAttributionContractError(RuntimeError):
@@ -26,11 +29,11 @@ def _validate_runtime_contract() -> None:
         raise PassiveECUAttributionContractError(
             "passive_ecu_dependency_mismatch"
         )
-    if PASSIVE_ATTRIBUTION_RATE * (1.0 + GAMMA) >= 1.0:
+    if PASSIVE_ATTRIBUTION_RATE * (Decimal("1") + GAMMA) >= Decimal("1"):
         raise PassiveECUAttributionContractError(
             "authorship_primacy_invariant_violated: passive rate exceeds direct reward"
         )
-    if ATTRIBUTION_CAP >= 1.0:
+    if ATTRIBUTION_CAP >= Decimal("1"):
         raise PassiveECUAttributionContractError(
             "authorship_primacy_invariant_violated: attribution cap exceeds direct reward"
         )
@@ -47,7 +50,7 @@ def quality_factor(q_i: float) -> float:
     normalized = float(q_i)
     if not math.isfinite(normalized) or normalized < 0.0 or normalized > 1.0:
         raise ValueError("q_i_must_be_float_in_unit_interval")
-    return round(1.0 + GAMMA * (2.0 * normalized - 1.0), 12)
+    return round(1.0 + float(GAMMA) * (2.0 * normalized - 1.0), 12)
 
 
 def compute_passive_ecu(base_reward: float, centrality_score: float, q_i: float) -> float:
@@ -70,13 +73,14 @@ def compute_passive_ecu(base_reward: float, centrality_score: float, q_i: float)
         or normalized_centrality > 1.0
     ):
         raise ValueError("centrality_score_must_be_non_negative_float")
-    if normalized_centrality < DECAY_FLOOR:
+    if normalized_centrality < float(DECAY_FLOOR):
         return 0.0
 
     raw = (
-        normalized_base_reward
+        Decimal(str(normalized_base_reward))
         * PASSIVE_ATTRIBUTION_RATE
-        * normalized_centrality
-        * quality_factor(q_i)
+        * Decimal(str(normalized_centrality))
+        * Decimal(str(quality_factor(q_i)))
     )
-    return round(min(raw, normalized_base_reward * ATTRIBUTION_CAP), 12)
+    cap = Decimal(str(normalized_base_reward)) * ATTRIBUTION_CAP
+    return float(round(min(raw, cap), 12))
