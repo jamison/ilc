@@ -34,6 +34,10 @@ from ilc_core.network.d2d.peer_fingerprint_cache import (
     PeerFingerprintCache,
 )
 from ilc_core.network.d2d.spectral_beacon import TerminalOpenResult
+from ilc_core.network.star_map.star_map_route_index_runtime import (
+    RouteIndex,
+    query_route_index_spectral,
+)
 
 
 NODE_STARTUP_RUNTIME_VERSION = "node_startup_runtime_570.v0.1"
@@ -262,6 +266,67 @@ def populate_fingerprint_from_beacon(
         noise_sigma=terminal_result.beacon.noise_sigma,
         epoch=terminal_result.beacon.epoch,
         agent_id=terminal_result.beacon.agent_id,
+    )
+
+
+# ---------------------------------------------------------------------------
+# H-013 Phase 935: L3 spectral routing wired to live peer fingerprint cache
+# ---------------------------------------------------------------------------
+
+
+def get_live_peer_fingerprints(
+    ctx: NodeStartupContext,
+    current_epoch: int,
+) -> dict[str, list[float]]:
+    """Return live peer fingerprints for L3 spectral routing.
+
+    Excludes peers silent for > DEFAULT_DEAD_PEER_SILENCE_EPOCHS epochs.
+    Snapshot is consistent with the cache state at call time.
+
+    Args:
+        ctx: node startup context carrying the peer fingerprint cache.
+        current_epoch: the current validation epoch (local node clock).
+
+    Returns:
+        {peer_endpoint: lambda_local} dict for query_route_index_spectral().
+    """
+    return ctx.peer_fingerprint_cache.live_fingerprint_dict(current_epoch)
+
+
+def query_spectral_route(
+    ctx: NodeStartupContext,
+    route_index: RouteIndex,
+    query: str,
+    local_fingerprint: list[float],
+    current_epoch: int,
+    top_k: int = 16,
+) -> list:
+    """Query the L3 spectral route index using live peer fingerprints.
+
+    Thin convenience wrapper: fetches live fingerprints from the peer cache
+    and passes them to query_route_index_spectral(). This closes the gap
+    identified in the H-013 sequence lock — without live fingerprints from
+    the cache, spectral routing fell back to manually-configured test data.
+
+    CDL-080 §4.5: returned hints are advisory; L2 fetch is authoritative.
+
+    Args:
+        ctx: node startup context (supplies live peer fingerprint cache).
+        route_index: the populated star-map route index to query.
+        query: semantic query string.
+        local_fingerprint: this node's spectral fingerprint (top-k eigenvalues).
+        current_epoch: used to exclude dead peers from the fingerprint snapshot.
+        top_k: maximum route hints to return.
+
+    Returns:
+        List of RouteHint ordered by combined N-gram + spectral proximity.
+    """
+    return query_route_index_spectral(
+        route_index,
+        query,
+        local_fingerprint,
+        peer_fingerprints=get_live_peer_fingerprints(ctx, current_epoch),
+        top_k=top_k,
     )
 
 
