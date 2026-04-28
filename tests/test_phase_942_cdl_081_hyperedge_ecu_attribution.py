@@ -110,15 +110,17 @@ def test_06_q1_epoch_boundary_no_attribution():
 # ===========================================================================
 # TEST 07 — Q6: REUSE_ATTRIBUTION_RATE is None pre-ratification
 # ===========================================================================
-def test_07_q6_reuse_attribution_rate_none_pending_ratification():
-    """CDL-081 Q6: REUSE_ATTRIBUTION_RATE stays None until ratification commit.
+def test_07_q6_reuse_attribution_rate_ratified():
+    """CDL-081 Q6: REUSE_ATTRIBUTION_RATE locked at Decimal("0.20") — CDL-081 ratified Phase 943.
 
-    SIM-REUSE-01 has determined the evidence candidate (0.20), but
-    ilc_core/types.py must not be updated before ILC_CDL_MUTATION_AUTHORIZED=1.
+    SIM-REUSE-01 (Phase 941) determined the evidence candidate. CDL-081
+    ratification (Phase 943, ILC_CDL_MUTATION_AUTHORIZED=1) locked the value.
     """
-    assert REUSE_ATTRIBUTION_RATE is None, (
-        "REUSE_ATTRIBUTION_RATE must remain None until CDL-081 is ratified. "
-        "Update requires ILC_CDL_MUTATION_AUTHORIZED=1 in environment."
+    assert REUSE_ATTRIBUTION_RATE == Decimal("0.20"), (
+        f"REUSE_ATTRIBUTION_RATE must be Decimal('0.20') post-CDL-081 ratification; got {REUSE_ATTRIBUTION_RATE!r}"
+    )
+    assert isinstance(REUSE_ATTRIBUTION_RATE, Decimal), (
+        "REUSE_ATTRIBUTION_RATE must be Decimal type (not float) — ECU precision required"
     )
 
 
