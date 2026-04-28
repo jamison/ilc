@@ -89,8 +89,8 @@ applies to the sealed-sender adversary model revision — a separate future SIM.
 Pre-ratification checklist (to be verified at Phase 950):
 
 ```
-[x] SIM-BEACON-01 evidence cited — Phase 939 — DONE (present at opening)
-[ ] Prelock hardening complete — Phase 949
+[x] SIM-BEACON-01 evidence cited — Phase 939 — done
+[x] Prelock hardening complete — Phase 949 — done
 [ ] Runtime mutation committed — H013_CHANGE_THRESHOLD = 0.15 in node_startup_runtime.py (Phase 950 Commit 1)
 [ ] Human ratification authorization — Phase 950
 ```
@@ -111,5 +111,26 @@ Pre-commit hook enforces that CDL-authorized commits must NOT touch `ilc_core/`.
 
 ---
 
+---
+
+## 7. Prelock Record
+
+**Prelock phase:** 949 (2026-04-28)
+**Opening commit:** `192e58ea` (`feat(cdl): open CDL-082 h013 emission threshold amendment (Phase 948)`)
+
+Historical assertion: at commit `192e58ea`, CDL-082 status was `open`.
+
+Verification command:
+```bash
+git show 192e58ea:docs/specs/ilc_cdl_082_h013_emission_threshold_amendment_opening_948_v0.1.md \
+  | grep "^\*\*Status:"
+```
+Expected output: `**Status:** OPEN`
+
+`cdl_082_prelock_hardening_complete_phase_949`
+
+---
+
 `cdl_082_open_phase_948`
 `h013_change_threshold_amendment_constitutional_basis_established`
+`cdl_082_prelock_hardening_complete_phase_949`
