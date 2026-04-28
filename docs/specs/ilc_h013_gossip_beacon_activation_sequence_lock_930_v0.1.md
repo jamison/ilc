@@ -2,7 +2,7 @@
 
 **Window:** 930–938
 **Sequence lock phase:** 930 (2026-04-28)
-**Status:** OPEN — human authorization received Phase 929
+**Status:** CLOSED — Phase 938 verdict PASS (2026-04-28)
 **Supersedes authorization queue:** `docs/specs/ilc_h013_gossip_beacon_activation_authorization_queue_v0.1.md`
 **ADR basis:** ADR-0034 (sealed sender, accepted)
 **CDL basis:** CDL-080 (star.map L3 routing, ratified Phase 927)
@@ -91,14 +91,14 @@ Window size: 9 phases (930–938).
 
 ## 4. Hard Pass Conditions
 
-- [ ] ≥20 tests for spectral_beacon.py passing (Phase 932–933)
-- [ ] PeerFingerprintCache dataclass implemented and tested (Phase 931)
-- [ ] node_startup_runtime.py wired to peer fingerprint cache (Phase 934)
-- [ ] `query_route_index_spectral()` receiving live fingerprints (Phase 935)
-- [ ] Testnet emission wiring with BEACON_EMISSION_MODE_TESTNET guard (Phase 936)
-- [ ] SIM-BEACON-01 commissioning prepared (Phase 936–937)
-- [ ] No mainnet emission path opened (BEACON_EMISSION_MODE_MAINNET unreachable)
-- [ ] Coherence report confirms no gossip_transport.py behavioral change for non-beacon messages
+- [x] ≥20 tests for spectral_beacon.py passing (Phase 932–933) — 35 passing
+- [x] PeerFingerprintCache dataclass implemented and tested (Phase 931)
+- [x] node_startup_runtime.py wired to peer fingerprint cache (Phase 934)
+- [x] `query_route_index_spectral()` receiving live fingerprints (Phase 935)
+- [x] Testnet emission wiring with BEACON_EMISSION_MODE_TESTNET guard (Phase 936)
+- [x] SIM-BEACON-01 commissioning prepared (Phase 937 coherence report §7)
+- [x] No mainnet emission path opened (BEACON_EMISSION_MODE_MAINNET unreachable)
+- [x] Coherence report confirms no gossip_transport.py behavioral change for non-beacon messages
 
 ---
 
