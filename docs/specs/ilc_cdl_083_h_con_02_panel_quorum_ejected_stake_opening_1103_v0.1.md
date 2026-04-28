@@ -240,10 +240,30 @@ consistent with §5.1–5.3 regardless of module structure.
 
 ---
 
-## 7. Ratification Gate (Pre-Ratification)
+## 7. Prelock Record (Phase 1104)
 
-- [ ] Prelock hardening complete — Phase 1104
-- [ ] Ratification evidence document (≥10 tests) — Phase 1104
+**Introducing commit:** `da10991f`
+**Introducing commit message:** `feat(cdl): open CDL-083 H-CON-02 panel quorum ejected stake (Phase 1103)`
+
+**Prelock assertion:** CDL-083 confirmed OPEN at introducing commit `da10991f`.
+
+```bash
+git show da10991f:docs/specs/ilc_cdl_083_h_con_02_panel_quorum_ejected_stake_opening_1103_v0.1.md \
+  | grep "^\*\*Status:"
+# Result: **Status:** OPEN ✓
+```
+
+**Evidence document:** `docs/specs/ilc_cdl_083_h_con_02_ratification_evidence_1104_v0.1.md`
+
+`cdl_083_prelock_asserts_open_at_phase_1103_commit_da10991f`
+`cdl_083_prelock_hardening_complete_phase_1104`
+
+---
+
+## 8. Ratification Gate (Pre-Ratification)
+
+- [x] Prelock hardening complete — Phase 1104 — §7 above
+- [x] Ratification evidence document (≥10 tests) — Phase 1104
 - [ ] Phase 1105 Commit 1: runtime constants + REFUTATION path implemented
 - [ ] Phase 1105 Commit 2: CDL-083 OPEN → RATIFIED; log row updated
 - [ ] Human ratification authorization — Phase 1105
