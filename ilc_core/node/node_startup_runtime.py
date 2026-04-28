@@ -33,7 +33,15 @@ from ilc_core.network.d2d.peer_fingerprint_cache import (
     PEER_FINGERPRINT_CACHE_VERSION as _PEER_FINGERPRINT_CACHE_CHECK,
     PeerFingerprintCache,
 )
-from ilc_core.network.d2d.spectral_beacon import TerminalOpenResult
+from ilc_core.network.d2d.spectral_beacon import (
+    BEACON_EMISSION_MODE_TESTNET,
+    BeaconSigningKeypair,
+    SealedSpectralBeaconEnvelope,
+    TerminalOpenResult,
+    build_sealed_spectral_beacon,
+    sign_spectral_beacon,
+)
+from ilc_core.analysis.spectral_utils import spectral_distance
 from ilc_core.network.star_map.star_map_route_index_runtime import (
     RouteIndex,
     query_route_index_spectral,
@@ -46,6 +54,11 @@ HTTP_GOSSIP_TRANSPORT_DEPENDENCY = "http_gossip_transport_runtime_568.v0.1"
 CDL_079_DEPENDENCY = "cdl_079_hb_002_bootstrap_distribution.v0.1"
 H013_PEER_FINGERPRINT_CACHE_DEPENDENCY = "peer_fingerprint_cache_931.v0.1"
 H013_SEQUENCE_LOCK_DEPENDENCY = "h013_gossip_beacon_activation_sequence_lock_930.v0.1"
+# H-013 Q2: testnet sigma (10× conservative vs CDL-080 planning figure of 0.005).
+# H-013 Q4: change threshold — emit only if spectral_distance(prev, curr) > this value.
+# Both are provisional; SIM-BEACON-01 calibrates the production figures.
+H013_TESTNET_EMISSION_SIGMA: float = 0.05
+H013_CHANGE_THRESHOLD: float = 0.1
 
 if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
     import json as _json, sys as _sys
@@ -328,6 +341,100 @@ def query_spectral_route(
         peer_fingerprints=get_live_peer_fingerprints(ctx, current_epoch),
         top_k=top_k,
     )
+
+
+# ---------------------------------------------------------------------------
+# H-013 Phase 936: testnet beacon emission wiring
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class SpectralEmissionState:
+    """Mutable per-node state for epoch-cadenced beacon emission.
+
+    Tracks the previously emitted fingerprint and the epoch of last emission
+    so that maybe_emit_spectral_beacon() can apply the H-013 Q4 change-threshold
+    gate without re-computing history.
+
+    Attributes:
+        prev_lambda: fingerprint emitted in the last beacon, or None if this
+            node has never emitted. None forces emission on the first call
+            (no prior baseline to compare against).
+        last_emit_epoch: epoch of the last emission, or None if never emitted.
+    """
+
+    prev_lambda: list[float] | None = None
+    last_emit_epoch: int | None = None
+
+
+def maybe_emit_spectral_beacon(
+    emission_state: SpectralEmissionState,
+    signing_keypair: BeaconSigningKeypair,
+    *,
+    relay_peer_id: str,
+    relay_public_key: bytes,
+    terminal_peer_id: str,
+    terminal_public_key: bytes,
+    channel_id: str,
+    current_epoch: int,
+    lambda_local: list[float],
+    mode: str = BEACON_EMISSION_MODE_TESTNET,
+) -> SealedSpectralBeaconEnvelope | None:
+    """Emit a sealed spectral beacon if the mode and change-threshold gate allows.
+
+    H-013 Q1 (Option C): guarded by mode flag. Only BEACON_EMISSION_MODE_TESTNET
+        is reachable here. BEACON_EMISSION_MODE_MAINNET requires SIM-BEACON-01
+        completion and a separate mainnet activation path — that path is not
+        opened in this window.
+    H-013 Q2: sigma = H013_TESTNET_EMISSION_SIGMA (0.05); SIM-BEACON-01 calibrates.
+    H-013 Q4 (Option D): emit once per epoch only if
+        spectral_distance(prev, curr) > H013_CHANGE_THRESHOLD (0.1, provisional).
+        Stable nodes emit infrequently, reducing bandwidth and structural leakage.
+    H-013 Q5 (Option A): sealed sender applied to beacon messages only.
+
+    Args:
+        emission_state: mutable state; updated in place on successful emission.
+        signing_keypair: Ed25519 keypair for beacon authentication.
+        relay_peer_id: the relay peer's peer ID string.
+        relay_public_key: the relay peer's X25519 public key (32 bytes).
+        terminal_peer_id: the terminal peer's peer ID string.
+        terminal_public_key: the terminal peer's X25519 public key (32 bytes).
+        channel_id: gossip channel ID for this emission.
+        current_epoch: current validation epoch from the local node clock.
+        lambda_local: this node's current spectral fingerprint (noise added here).
+        mode: emission mode guard. Must equal BEACON_EMISSION_MODE_TESTNET.
+
+    Returns:
+        SealedSpectralBeaconEnvelope if the gate allowed emission; None otherwise.
+    """
+    if mode != BEACON_EMISSION_MODE_TESTNET:
+        # Mainnet emission path is not open. BEACON_EMISSION_MODE_MAINNET
+        # becomes reachable only after SIM-BEACON-01 completes.
+        return None
+
+    if emission_state.prev_lambda is not None:
+        delta = spectral_distance(emission_state.prev_lambda, lambda_local)
+        if delta <= H013_CHANGE_THRESHOLD:
+            # Fingerprint has not changed enough — stable node, suppress emission.
+            return None
+
+    beacon = sign_spectral_beacon(
+        epoch=current_epoch,
+        lambda_local=lambda_local,
+        noise_sigma=H013_TESTNET_EMISSION_SIGMA,
+        signing_keypair=signing_keypair,
+    )
+    envelope = build_sealed_spectral_beacon(
+        beacon=beacon,
+        relay_peer_id=relay_peer_id,
+        relay_public_key=relay_public_key,
+        terminal_peer_id=terminal_peer_id,
+        terminal_public_key=terminal_public_key,
+        channel_id=channel_id,
+    )
+    emission_state.prev_lambda = list(lambda_local)
+    emission_state.last_emit_epoch = current_epoch
+    return envelope
 
 
 # ---------------------------------------------------------------------------
