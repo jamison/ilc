@@ -10,10 +10,10 @@ WINDOW_ARTIFACTS = (
     Path("docs/specs/ilc_high_002_production_disposition_824_v0.1.md"),
     Path("docs/specs/ilc_settlement_path_rotation_wiring_design_825_v0.1.md"),
     Path("docs/specs/ilc_first_validator_deployment_entry_conditions_826_v0.1.md"),
-    Path("docs/phases/phase_827_h013_implementation.md"),
-    Path("docs/phases/phase_828_coherence_report.md"),
+    Path("docs/phases/phase_0827_h013_implementation.md"),
+    Path("docs/phases/phase_0828_coherence_report.md"),
     Path("docs/specs/ilc_antigravity_context_capsule_v5.14.md"),
-    Path("docs/phases/phase_829_window_823_829_closure_gate.md"),
+    Path("docs/phases/phase_0829_window_823_829_closure_gate.md"),
 )
 
 

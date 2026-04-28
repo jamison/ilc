@@ -32,7 +32,6 @@ from ilc_core.types import (
     HyperEdge,
     EpochAttributionBatch,
     EPOCH_ATTRIBUTION_BATCH_VERSION,
-    CDL_HCON_01_DEPENDENCY,
     REUSE_ATTRIBUTION_RATE,
     EDGE_MINT_PHI_BOUND,
     PROVENANCE_MAX_DEPTH,
@@ -167,9 +166,19 @@ def test_11_epoch_attribution_batch_version_token():
 # TEST 12 — EpochAttributionBatch: CDL gate dependency token present
 # ===========================================================================
 def test_12_cdl_hcon_01_dependency_token():
-    """EpochAttributionBatch.settle() is gated on H-CON-01 CDL ratification."""
-    assert "h_con_01" in CDL_HCON_01_DEPENDENCY
-    assert "cdl_required" in CDL_HCON_01_DEPENDENCY
+    """CDL_HCON_01_DEPENDENCY stub removed by Phase 946 H-012 implementation.
+    H-012 settle() now delegates to epoch_attribution_settle_runtime.py;
+    the pre-ratification gate is gone. Assert absence as historical boundary.
+    """
+    import subprocess
+    result = subprocess.run(
+        ["grep", "-n", "CDL_HCON_01_DEPENDENCY", "ilc_core/types.py"],
+        capture_output=True, text=True,
+    )
+    assert result.stdout.strip() == "", (
+        f"CDL_HCON_01_DEPENDENCY still present in types.py (should have been "
+        f"removed by Phase 946):\n{result.stdout}"
+    )
 
 
 # ===========================================================================
@@ -212,11 +221,15 @@ def test_15_epoch_attribution_batch_seal_rejects_new_events():
 # TEST 16 — EpochAttributionBatch: settle raises NotImplementedError (CDL gate)
 # ===========================================================================
 def test_16_epoch_attribution_batch_settle_raises_not_implemented():
-    """CDL-081 §4.1: settle() must raise NotImplementedError until H-012 runtime implemented."""
+    """Phase 946 implemented H-012 settle() runtime (CDL-081 §§4.1-4.6).
+    settle() now requires stake_map; empty batch returns [].
+    CDL_HCON_01_DEPENDENCY gate is gone; CDL_HCON_02_DEPENDENCY guards REFUTATION.
+    """
+    from decimal import Decimal
     batch = EpochAttributionBatch(epoch=103)
     batch.seal()
-    with pytest.raises(NotImplementedError):
-        batch.settle()
+    result = batch.settle(stake_map={})
+    assert result == []
 
 
 # ===========================================================================
