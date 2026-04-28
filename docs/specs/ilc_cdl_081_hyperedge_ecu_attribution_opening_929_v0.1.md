@@ -1,7 +1,8 @@
 # CDL-081: Hyperedge ECU Attribution
 
-**Status:** OPEN
+**Status:** RATIFIED
 **Opened:** Phase 929 (2026-04-28)
+**Ratified:** Phase 943 (2026-04-28)
 **Authority:** ADR-0029 (hypergraph substrate, accepted); ADR-0015 (leasehold/reversion, canon)
 **Supersedes:** `docs/specs/ilc_hcon_01_hyperedge_ecu_attribution_opening_draft_v0.1.md` (H-CON-01 draft)
 **Blocks:** H-012 (star expansion implementation), H-CON-02 (panel hyperedge quorum rules),
@@ -243,11 +244,11 @@ time-expiry leasehold reversion. Both route through CDL-047 treasury governance.
 Before CDL-081 can be ratified, the following must be complete:
 
 - [x] SIM-REUSE-01 calibration complete — `REUSE_ATTRIBUTION_RATE = 0.20` (Phase 941)
-- [ ] `REUSE_ATTRIBUTION_RATE` constant updated from None to calibrated value (post-ratification)
-- [ ] Ratification evidence document (≥20 tests across attribution rules)
-- [ ] H-012 attribution runtime implemented and tested
-- [ ] H-CON-02 opened (or explicitly deferred with forward obligation recorded)
-- [ ] Human ratification authorization
+- [x] `REUSE_ATTRIBUTION_RATE` constant updated to `Decimal("0.20")` in `ilc_core/types.py` (Phase 943)
+- [x] Ratification evidence document — 30 tests, all pass (Phase 942)
+- [x] H-012 attribution runtime — DEFERRED; forward obligation recorded in §5
+- [x] H-CON-02 — DEFERRED; forward obligation recorded in §5
+- [x] Human ratification authorization — granted Phase 943
 
 ---
 
