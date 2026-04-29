@@ -180,14 +180,19 @@ provenance_chain: Optional[tuple[tuple[str, str], ...]] = None
 The chain is `((node_id, creator_id), ...)`, ordered nearest-ancestor-first. `None` remains
 valid for non-PROVENANCE events.
 
-### 3.3 New constants (Phase 1113 Commit 1)
+### 3.3 Dependency token and version posture (Phase 1113 Commit 1 / Phase 1114)
 
 In `epoch_attribution_settle_runtime.py`:
 
 ```python
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1114.v0.3"
 CDL_084_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
 ```
+
+`EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION` remains
+`"epoch_attribution_settle_runtime_1106.v0.2"` through Phase 1113 because Phase 1113 does
+not activate the PROVENANCE settlement path. The version bump to
+`"epoch_attribution_settle_runtime_1114.v0.3"` is Phase 1114 scope, when the active
+PROVENANCE path replaces the silent-ignore stub.
 
 ### 3.4 PROVENANCE settlement path (Phase 1114)
 
@@ -247,7 +252,9 @@ Ratification is eligible when:
 
 1. Phase 1112 prelock hardening is committed and all §4 items are confirmed.
 2. Phase 1113 Commit 1 changes runtime/types only: Decimal alpha, `provenance_chain`, and
-   dependency/version constants. No `ILC_CDL_MUTATION_AUTHORIZED` env var is used.
+   the CDL-084 dependency token. Runtime version remains
+   `"epoch_attribution_settle_runtime_1106.v0.2"` until Phase 1114 activates PROVENANCE
+   settlement. No `ILC_CDL_MUTATION_AUTHORIZED` env var is used.
 3. Phase 1113 Commit 2 changes CDL docs only: this spec moves OPEN → RATIFIED and the CDL
    log row is updated. `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1113` is
    required.
@@ -266,7 +273,30 @@ Ratification is eligible when:
 
 ---
 
-## 7. Audit Note
+## 7. Prelock Hardening Record (Phase 1112)
+
+**Prelock commit:** Phase 1112 commit (reported by executor)
+**Prelock date:** 2026-04-29
+
+All §4 checklist items confirmed:
+
+- CDL-084 spec shows `**Status:** OPEN` at Phase 1111 introducing commit (`2066f75d`).
+- CDL log CDL-084 row: `opened_phase: 1111`, status `open`.
+- `PROVENANCE_DECAY_ALPHA: float = 0.5` confirmed present in `ilc_core/types.py`
+  (float kill pending Phase 1113 Commit 1).
+- `AttributionEvent.provenance_chain` field absent (addition pending Phase 1113 Commit 1).
+- `settle_attribution_batch()` PROVENANCE silent-ignore stub confirmed present (replacement
+  pending Phase 1114).
+- `PROVENANCE_MAX_DEPTH: int = 3` confirmed present and correct type.
+- `EdgeType.PROVENANCE == "provenance"` confirmed.
+- Runtime version remains `epoch_attribution_settle_runtime_1106.v0.2` through Phase 1113;
+  v0.3 is deferred to Phase 1114 when the active PROVENANCE path lands.
+
+`cdl_084_prelock_hardened_phase_1112`
+
+---
+
+## 8. Audit Note
 
 `cdl_mutation_audit`: Phase 1111 CDL log mutation must be committed with
 `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1111`; the repository hook records
