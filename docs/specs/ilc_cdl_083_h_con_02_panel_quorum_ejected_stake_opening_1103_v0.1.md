@@ -1,7 +1,8 @@
 # CDL-083: H-CON-02 Panel Quorum Rules for Ejected Stake Treasury Distribution and REFUTATION Attribution
 
-**Status:** OPEN
+**Status:** RATIFIED
 **Opened:** Phase 1103 (2026-04-28)
+**Ratified:** Phase 1105 (2026-04-29)
 **Authority:** CDL-081 §4.5 (ejected stake → treasury, quorum required) / CDL-081 Q1
              (REFUTATION conditional, flow deferred) / CDL-046 (ejection mechanism) /
              CDL-V7 (Popperian gate upholds/rejects refutations) / epoch_state_runtime.py
@@ -285,13 +286,13 @@ git show da10991f:docs/specs/ilc_cdl_083_h_con_02_panel_quorum_ejected_stake_ope
 
 ---
 
-## 8. Ratification Gate (Pre-Ratification)
+## 8. Ratification Gate
 
 - [x] Prelock hardening complete — Phase 1104 — §7 above
 - [x] Ratification evidence document (≥10 tests) — Phase 1104
-- [ ] Phase 1105 Commit 1: runtime constants + REFUTATION path implemented
-- [ ] Phase 1105 Commit 2: CDL-083 OPEN → RATIFIED; log row updated
-- [ ] Human ratification authorization — Phase 1105
+- [x] Phase 1105 Commit 1: runtime constants + REFUTATION path implemented
+- [x] Phase 1105 Commit 2: CDL-083 OPEN → RATIFIED; log row updated
+- [x] Human ratification authorization — Phase 1105
 
 ---
 
@@ -299,3 +300,7 @@ git show da10991f:docs/specs/ilc_cdl_083_h_con_02_panel_quorum_ejected_stake_ope
 `h_con_02_ejected_stake_and_refutation_attribution_constitutional_basis_opening`
 `q1_q2_q3_q4_q5_all_resolved_at_opening`
 `cdl_hcon_02_dependency_stub_target_identified`
+`cdl_083_ratified_phase_1105`
+`cdl_083_hcon02_quorum_floor_0_50_ratified`
+`cdl_083_hcon02_vote_threshold_exact_two_thirds_integer_arithmetic_ratified`
+`cdl_083_refutation_path_live_refuting_agent_id_field_ratified`
