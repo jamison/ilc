@@ -70,7 +70,7 @@ and ready for the Phase 1117 closure gate.
 | SIM-SPECTRAL-02: Popperian durability / Epistemic Reach correlation | Deferred — non-canonical research direction pending SIM-PROVENANCE-01 data | Sequence after SIM-PROVENANCE-01; test PROVENANCE reach against falsification-resistance, reuse, and validation durability |
 | Werner phi-bound CDL | Deferred — SIM evidence required before this CDL can open | Carry forward from Window 1109 handoff |
 | ADR-0035 implementation CDL | Deferred — direction accepted at Phase 1100; planning/authorization gate remains | Carry forward from Window 1109 handoff |
-| Star expansion implementation | Deferred — constitutional prerequisites appear satisfied, but implementation remains blocked on patent/planning review and explicit human authorization | Planning review before implementation CDL |
+| Star expansion implementation | Deferred — CDL prerequisites satisfied (CDL-081, CDL-083) and SIM-REUSE-01 complete; implementation remains blocked on H-011 patent assessment, planning review, and explicit human authorization | Planning review before implementation CDL |
 | Phase 1117 closure gate | Next — SENSITIVE | Requires human GO token |
 
 ---
@@ -88,4 +88,3 @@ and ready for the Phase 1117 closure gate.
 | 1116 | Coherence report, capsule v5.35, hypergraph planning alignment, forward pointers |
 
 `coherence_report_1116_verdict=pass`
-
