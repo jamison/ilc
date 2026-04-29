@@ -1,9 +1,11 @@
-"""Phase 947 — H-012 ratification evidence tests (30 tests).
+"""Phase 947 — H-012 ratification evidence tests (31 tests).
 
 Tests CDL-081 §§4.1–4.6 attribution settlement runtime implemented in
 Phase 946. All 30 tests must pass for H-012 ratification evidence.
 
 CDL-081 ratified Phase 943. Runtime: Phase 946.
+CDL-083 ratified Phase 1105 and replaced the REFUTATION stub with the
+upheld-refutation payout path.
 """
 
 import subprocess
@@ -277,27 +279,36 @@ def test_g5_stake_map_with_high_precision_decimals():
 
 
 # ---------------------------------------------------------------------------
-# Group 6: Ejected stake treasury guard (2 tests)
+# Group 6: REFUTATION attribution after CDL-083 (2 tests)
 # ---------------------------------------------------------------------------
 
 
-def test_g6_refutation_raises_not_implemented():
-    """§4.5 Ejected stake: REFUTATION event raises NotImplementedError."""
+def test_g6_refutation_pays_refuting_agent():
+    """CDL-083 §5.4: upheld REFUTATION pays the explicit refuting agent."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REFUTATION, "", None, 1))
+    batch.add_event(
+        AttributionEvent(
+            EdgeType.REFUTATION,
+            "refuted_creator",
+            None,
+            1,
+            refuting_agent_id="refuting_agent",
+        )
+    )
     batch.seal()
-    with pytest.raises(NotImplementedError):
-        batch.settle({})
+    payouts = batch.settle({})
+    assert payouts == [("refuting_agent", REUSE_ATTRIBUTION_RATE)]
+    assert all(agent_id != "refuted_creator" for agent_id, _ in payouts)
 
 
-def test_g6_refutation_raises_hcon02_dependency_message():
-    """§4.5 Ejected stake: NotImplementedError carries CDL_HCON_02_DEPENDENCY token."""
+def test_g6_refutation_requires_explicit_refuting_agent_id():
+    """CDL-083 §5.4: REFUTATION cannot fall back to target_creator_id."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REFUTATION, "", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REFUTATION, "refuted_creator", None, 1))
     batch.seal()
-    with pytest.raises(NotImplementedError) as exc_info:
+    with pytest.raises(ValueError) as exc_info:
         batch.settle({})
-    assert CDL_HCON_02_DEPENDENCY in str(exc_info.value)
+    assert str(exc_info.value) == "refutation_event_missing_refuting_agent_id"
 
 
 # ---------------------------------------------------------------------------
@@ -393,7 +404,7 @@ def test_g8_ignored_edge_types_produce_no_payouts():
 
 def test_g9_version_token():
     """Runtime version token is correct and present."""
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_946.v0.1"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1106.v0.2"
     assert EPOCH_ATTRIBUTION_BATCH_VERSION == "epoch_attribution_batch.v0.2"
     assert "stub" not in EPOCH_ATTRIBUTION_BATCH_VERSION
 
