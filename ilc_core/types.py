@@ -80,7 +80,8 @@ class WeightParams:
 REUSE_ATTRIBUTION_RATE: Decimal = Decimal("0.20")       # CDL-081 ratified Phase 943
 EDGE_MINT_PHI_BOUND: Optional[float] = None             # pending Werner edge-minting CDL
 PROVENANCE_MAX_DEPTH: int = 3                            # provisional; CDL required to change
-PROVENANCE_DECAY_ALPHA: float = 0.5                      # provisional; α < 1 stability criterion
+PROVENANCE_DECAY_ALPHA: Decimal = Decimal("0.5")         # Q9: CDL-084 locks mechanism; SIM-PROVENANCE-01 refines value
+CDL_084_TYPES_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
 STAR_NODE_MIN_STAKE_ECU: Decimal = Decimal("1")          # H-CON-01 Q2 Option A; CDL-ratified on open
 
 
