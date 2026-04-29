@@ -99,7 +99,7 @@ This is the active forward-pointer register. Preserve these rows into v5.36+ unt
 | **SIM-SPECTRAL-02** | **Deferred** — non-canonical research direction | Sequence: CDL-084 done -> SIM-PROVENANCE-01 -> SIM-SPECTRAL-02. Tests whether PROVENANCE reach correlates with Popperian durability (falsification-resistance, not objective truth). Plan: `docs/research/ilc_relative_directional_energy_meter_and_epistemic_efficiency_plan_v0.1.md`. |
 | Werner phi-bound CDL (CDL-085 candidate) | Deferred — SIM evidence required before CDL can open | Carried from Window 1109 handoff |
 | ADR-0035 implementation CDL | Deferred — direction accepted Phase 1100; no CDL vehicle yet | Planning/authorization gate remains |
-| star expansion implementation | Deferred — constitutional prerequisites appear satisfied; implementation blocked on patent/planning review and explicit human authorization | Planning review before implementation CDL |
+| star expansion implementation | Deferred — CDL prerequisites satisfied (CDL-081, CDL-083) and SIM-REUSE-01 complete; implementation blocked on H-011 patent assessment, planning review, and explicit human authorization | Planning review before implementation CDL |
 | SIM-HYPEREDGE-01 gate | CDL-083 ratified; SIM can now be planned | Next planning window |
 | Phase 1117 closure gate | Next | SENSITIVE — requires human GO token |
 | Capsule v5.36 | Next coherence | Window 1118+ |
