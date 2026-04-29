@@ -53,7 +53,7 @@ All five human-gate questions were resolved at opening (pre-authorized 2026-04-2
 | Q | Decision | Token |
 |---|----------|-------|
 | Q1 | ≥0.50 participation floor; hard minimum 2 voters | `q1_quorum_floor_geq_050_hard_minimum_2_voters` |
-| Q2 | ≥0.67 (2/3 supermajority of participants) | `q2_vote_threshold_geq_067_two_thirds_supermajority` |
+| Q2 | Exact 2/3 supermajority of participants, evaluated by integer arithmetic | `q2_vote_threshold_exact_two_thirds_supermajority` |
 | Q3 | Proportional to all remaining members' stake at distribution epoch | `q3_distribution_proportional_all_remaining_members_stake_at_distribution_epoch` |
 | Q4 | Upheld REFUTATION → REUSE_ATTRIBUTION_RATE (0.20) to refuting agent, epoch mint source; caller-filters | `q4_refutation_ecu_reuse_attribution_rate_epoch_mint_source_caller_filters_upheld` |
 | Q5 | Ejected stake irrevocable; readmission starts fresh | `q5_ejected_stake_irrevocable_readmission_starts_fresh` |
@@ -90,15 +90,16 @@ Minimum 10 tests required.
 
 | Test group | Coverage |
 |-----------|---------|
-| G1 — Runtime constants | `HCON02_QUORUM_FLOOR == Decimal("0.50")`; `HCON02_QUORUM_MINIMUM_VOTERS == 2`; `HCON02_VOTE_THRESHOLD == Decimal("0.67")`; all are Decimal where applicable |
+| G1 — Runtime constants | `HCON02_QUORUM_FLOOR == Decimal("0.50")`; `HCON02_QUORUM_MINIMUM_VOTERS == 2`; `HCON02_VOTE_THRESHOLD_NUMERATOR == 2`; `HCON02_VOTE_THRESHOLD_DENOMINATOR == 3`; no float/rounded decimal threshold |
 | G2 — Dependency tokens | `CDL_083_DEPENDENCY` token present; `CDL_HCON_02_DEPENDENCY` still present as historical marker (raise removed, token retained) |
-| G3 — REFUTATION attribution | Upheld REFUTATION event produces `(target_creator_id, REUSE_ATTRIBUTION_RATE)` payout; amount is Decimal("0.20"); no NotImplementedError raised |
+| G3 — REFUTATION attribution | Upheld REFUTATION event produces `(refuting_agent_id, REUSE_ATTRIBUTION_RATE)` payout; amount is Decimal("0.20"); no NotImplementedError raised; refuted target creator is not paid |
 | G4 — REFUTATION caller-filter contract | REFUTATION events in batch are by construction upheld; no `upheld` field on AttributionEvent (structural assertion) |
+| G4b — REFUTATION recipient shape | Runtime event shape carries explicit `refuting_agent_id` or equivalent recipient field; tests prove `target_creator_id` is not treated as the payout recipient for REFUTATION |
 | G5 — Version token | `EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION` updated to `"epoch_attribution_settle_runtime_1106.v0.2"` |
 | G6 — CDL-083 spec state | CDL-083 spec exists; `**Status:** RATIFIED` present; `cdl_083_ratified_phase_1105` token present |
 | G7 — CDL log state | CDL-083 row in constitutional log has `ratified` status |
-| G8 — Q1/Q2 quorum floor constants | `HCON02_QUORUM_FLOOR` and `HCON02_QUORUM_MINIMUM_VOTERS` are positive; `HCON02_VOTE_THRESHOLD > HCON02_QUORUM_FLOOR` (threshold exceeds floor) |
-| G9 — No float leakage | All CDL-083 constants that represent fractions are Decimal, not float |
+| G8 — Q1/Q2 quorum floor constants | `HCON02_QUORUM_FLOOR` and `HCON02_QUORUM_MINIMUM_VOTERS` are positive; exact 2/3 vote threshold passes 2-of-3, 4-of-6, and 6-of-9 |
+| G9 — No float leakage | CDL-083 fractional values use Decimal or integer numerator/denominator pairs; no float threshold constants |
 | G10 — Prelock historical assertion | CDL-083 was OPEN at commit `da10991f` (git show assertion, same pattern as CDL-082 evidence) |
 
 Minimum test count: 10 groups, at least 1 test per group = ≥10 tests. Additional tests

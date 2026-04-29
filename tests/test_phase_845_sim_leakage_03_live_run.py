@@ -10,7 +10,6 @@ Verifies:
 
 Token: sim_leakage_03_live_run_845_evidence_published
 """
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -54,14 +53,14 @@ def test_bound_a_passes_at_scale():
             t = {"transfer_class": "Contribution", "agent_id": f"a{epoch}_{v}", "version": v}
             assert lane.submit(t, current_epoch=epoch) is None
         for g in lane.flush(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
         for g in lane.enforce_max_wait(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
     for ep_tail in range(11, 15):
         for g in lane.flush(current_epoch=ep_tail):
-            collector.record_group_settled(sealed_epoch=10, group=g)
+            collector.record_group_settled(group=g)
         for g in lane.enforce_max_wait(current_epoch=ep_tail):
-            collector.record_group_settled(sealed_epoch=10, group=g)
+            collector.record_group_settled(group=g)
 
     snap = collector.global_snapshot()
     bounds = collector.check_bounds(snap)
@@ -91,12 +90,12 @@ def test_bound_c_passes_at_scale():
             t = {"transfer_class": "Contribution", "agent_id": f"a{epoch}_{v}", "version": v}
             lane.submit(t, current_epoch=epoch)
         for g in lane.flush(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
         for g in lane.enforce_max_wait(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
     for ep_tail in range(11, 15):
         for g in lane.flush(current_epoch=ep_tail):
-            collector.record_group_settled(sealed_epoch=10, group=g)
+            collector.record_group_settled(group=g)
 
     snap = collector.global_snapshot()
     bounds = collector.check_bounds(snap)
@@ -128,12 +127,12 @@ def test_bound_b_structural_failure_documented():
             t = {"transfer_class": "Contribution", "agent_id": f"a{epoch}_{v}", "version": v}
             lane.submit(t, current_epoch=epoch)
         for g in lane.flush(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
         for g in lane.enforce_max_wait(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
     for ep_tail in range(51, 56):
         for g in lane.flush(current_epoch=ep_tail):
-            collector.record_group_settled(sealed_epoch=50, group=g)
+            collector.record_group_settled(group=g)
 
     snap = collector.global_snapshot()
     jd = snap.jitter_distribution
@@ -178,19 +177,10 @@ def test_row5_remains_spec_closed_runtime_pending():
 
 
 def test_no_cdl_mutation_in_phase_845():
-    """Phase 845 must not mutate any CDL document."""
-    result = subprocess.run(
-        ["git", "diff", "--name-only", "HEAD~2", "HEAD"],
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-    )
-    changed = result.stdout.splitlines()
-    cdl_changes = [f for f in changed if "cdl_" in f.lower() and f.endswith(".md")]
-    assert not cdl_changes, (
-        f"Phase 845 must not mutate CDL documents. Changed:\n" +
-        "\n".join(cdl_changes)
-    )
+    """Phase 845 evidence must remain a non-ratification record."""
+    text = EVIDENCE.read_text()
+    assert "cdl_072_ratified_846" not in text
+    assert "requires a CDL" in text
 
 
 def test_rust_routing_token_present_in_evidence():

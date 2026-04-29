@@ -33,7 +33,7 @@
 2. Phase 1103 (CDL open) must precede Phase 1104 (prelock asserts open state).
 3. Phase 1104 must precede Phase 1105 (ratification cites evidence doc and prelock commit).
 4. Phase 1105 Commit 1 (runtime mutation, no CDL env var) must precede Phase 1105 Commit 2 (CDL mutation).
-5. Phase 1105 must precede Phase 1106 (runtime builds on ratified constants).
+5. Phase 1105 must precede Phase 1106 (ratification-enabling runtime mutation lands first; Phase 1106 hardens and tests the ratified runtime surface without re-opening CDL-083 semantics).
 6. Phase 1106 must precede Phase 1107 (tests import the runtime).
 7. Phases 1102–1107 must all precede Phase 1108 (coherence cites all window work).
 8. Phase 1108 must precede Phase 1109 (closure gate cites coherence report).
@@ -70,7 +70,7 @@ locked for CDL-083 opening at Phase 1103:
 | Q | Decision | Value |
 |---|----------|-------|
 | Q1 | Quorum participation floor | ≥0.50 of remaining members; hard minimum 2 voters |
-| Q2 | Vote threshold | ≥0.67 (2/3 supermajority of participating voters) |
+| Q2 | Vote threshold | Exact 2/3 supermajority of participating voters, evaluated by integer arithmetic (`approve_votes * 3 >= participating_voters * 2`) |
 | Q3 | Distribution formula | Proportional to current stake of all remaining members at distribution epoch |
 | Q4 | REFUTATION ECU flow | Upheld REFUTATION → `REUSE_ATTRIBUTION_RATE` (0.20) to refuting agent, epoch mint source; caller-filters upheld events before batch entry |
 | Q5 | Ejected stake recovery | Irrevocable — readmission starts with zero stake; no retroactive recovery |
