@@ -107,7 +107,7 @@ class LeakageMetricsCollector:
 
         # After each flush() or enforce_max_wait() delivery:
         for group in ready_groups:
-            sealed_epoch = group.release_epoch   # epoch the group was created
+            sealed_epoch = group.sealed_epoch    # epoch the group was sealed
             collector.record_group_settled(
                 sealed_epoch=sealed_epoch,
                 group=group,
@@ -126,21 +126,50 @@ class LeakageMetricsCollector:
 
     def record_group_settled(
         self,
-        sealed_epoch: int,
-        group: ReleaseGroup,
+        sealed_epoch: int | ReleaseGroup | None = None,
+        group: ReleaseGroup | None = None,
     ) -> None:
         """Record a settled group (normal or force-released).
 
         Parameters
         ----------
         sealed_epoch:
-            The epoch at which the group was formed (= group.release_epoch
-            for jitter-scheduled groups; the current_epoch at force-release
-            for degraded groups). Used for per-epoch bucketing.
+            Deprecated override retained for older evidence helpers that build
+            ReleaseGroup manually. Runtime-created groups carry sealed_epoch;
+            for those groups, this argument must be omitted or match the group.
         group:
             The ReleaseGroup returned by flush() or enforce_max_wait().
         """
-        em = self._get_or_create(sealed_epoch)
+        if isinstance(sealed_epoch, ReleaseGroup) and group is None:
+            group = sealed_epoch
+            sealed_epoch = None
+
+        if group is None:
+            raise ValueError(
+                "privacy_lane_metrics_missing_group: "
+                "record_group_settled requires a ReleaseGroup"
+            )
+        if sealed_epoch is not None and not isinstance(sealed_epoch, int):
+            raise ValueError("privacy_lane_metrics_invalid_sealed_epoch")
+
+        if group.sealed_epoch is None:
+            if sealed_epoch is None:
+                raise ValueError(
+                    "privacy_lane_metrics_missing_sealed_epoch: "
+                    "ReleaseGroup.sealed_epoch is required for runtime metrics"
+                )
+            effective_sealed_epoch = sealed_epoch
+        else:
+            effective_sealed_epoch = group.sealed_epoch
+
+        if sealed_epoch is not None and sealed_epoch != effective_sealed_epoch:
+            raise ValueError(
+                f"privacy_lane_metrics_sealed_epoch_mismatch: "
+                f"argument={sealed_epoch} group={group.sealed_epoch}; "
+                f"metrics must use the epoch carried by ReleaseGroup"
+            )
+
+        em = self._get_or_create(effective_sealed_epoch)
 
         if group.degraded_anonymity:
             em.groups_force_released += 1
@@ -151,13 +180,11 @@ class LeakageMetricsCollector:
         # For force-released groups the jitter concept doesn't apply cleanly;
         # we skip them from the jitter distribution (degraded_anonymity guard).
         if not group.degraded_anonymity:
-            jitter = group.release_epoch - sealed_epoch
+            jitter = group.release_epoch - effective_sealed_epoch
             if jitter < 0:
                 raise ValueError(
                     f"privacy_lane_metrics_negative_jitter: "
-                    f"release_epoch={group.release_epoch} < sealed_epoch={sealed_epoch}; "
-                    f"caller must pass the epoch at which the group was sealed, "
-                    f"not the current flush epoch"
+                    f"release_epoch={group.release_epoch} < sealed_epoch={effective_sealed_epoch}"
                 )
             em.jitter_distribution[jitter] = em.jitter_distribution.get(jitter, 0) + 1
 

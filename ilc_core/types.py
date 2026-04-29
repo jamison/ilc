@@ -97,7 +97,8 @@ STAR_NODE_MIN_STAKE_ECU: Decimal = Decimal("1")          # H-CON-01 Q2 Option A;
 #     between events in the same epoch.
 #   - Batch is sealed at epoch close; no events may be added after settle()
 #     is called. Late-arriving clearance records become epoch+1 obligations.
-#   - settle() is idempotent: calling it twice on the same batch is safe.
+#   - settle() is a pure payout quote: calling it twice returns the same payout
+#     list, but callers must apply returned transfers at most once.
 #
 # CDL-081 ratified (Phase 943). H-012 attribution runtime implemented in
 # ilc_core/economics/epoch_attribution_settle_runtime.py (Phase 946).
@@ -135,7 +136,7 @@ class EpochAttributionBatch:
         stake_map: dict[str, dict[str, "Decimal"]],
         emitted_tokens: Optional[list[str]] = None,
     ) -> list[tuple[str, "Decimal"]]:
-        """Process all events and execute ECU attribution transfers.
+        """Process all events and return ECU attribution payout quotes.
 
         CDL-081 §§4.1–4.6. Delegates to epoch_attribution_settle_runtime.
         Partial: ejected stake treasury path raises NotImplementedError(CDL_HCON_02_DEPENDENCY).
@@ -145,7 +146,9 @@ class EpochAttributionBatch:
                 For REUSE events, stake_map is not accessed.
             emitted_tokens: Optional mutable list for protocol event tokens.
         Returns:
-            List of (agent_id, ecu_amount) Decimal payouts.
+            List of (agent_id, ecu_amount) Decimal payouts. This method does not
+            mutate balances; callers are responsible for applying the returned
+            payouts at most once.
         """
         from ilc_core.economics.epoch_attribution_settle_runtime import settle_attribution_batch
         return settle_attribution_batch(self, stake_map, emitted_tokens)

@@ -10,7 +10,7 @@ Obligation 1 — Rolling group construction in submission path:
 Obligation 2 — Deferred release queue with jitter scheduling:
   - When a k-group completes, compute release_epoch = current_epoch + rng(0, J)
     with J = release_jitter_epochs (locked at 3).
-  - Queue shape: list of ReleaseGroup(release_epoch, transfers, agent_ids).
+  - Queue shape: list of ReleaseGroup(release_epoch, transfers, agent_ids, sealed_epoch).
   - flush(current_epoch) returns all groups whose release_epoch <= current_epoch.
 
 Obligation 3 — bounded_hold carry-over with max-wait enforcement:
@@ -79,9 +79,11 @@ class ReleaseGroup:
         release_epoch:      The epoch at which this group may be flushed.
         transfers:          The ECUTransfer-like dicts in this group.
         agent_ids:          Ordered list of contributing agent identifiers.
-        anonymity_set_size: Actual group size at release time.
+        anonymity_set_size: Actual distinct-contributor set size at release time.
         degraded_anonymity: True when released before reaching k (bounded_hold
                             force-release). Downstream must notify contributors.
+        sealed_epoch:       Epoch when this group was sealed. Metrics derive
+                            jitter from this value rather than trusting callers.
 
     Token: row5_b_impl_release_group_shape
     """
@@ -90,6 +92,7 @@ class ReleaseGroup:
     agent_ids: list[Any]
     anonymity_set_size: int
     degraded_anonymity: bool = False
+    sealed_epoch: int | None = None
 
 
 class PrivacyLane:
@@ -184,7 +187,7 @@ class PrivacyLane:
         self._accumulator.append(transfer)
         self._accumulator_agent_ids.append(agent_id)
 
-        if len(self._accumulator) >= self._config.k:
+        if _distinct_agent_count(self._accumulator_agent_ids) >= self._config.k:
             self._seal_group(current_epoch)
 
         return None
@@ -227,8 +230,9 @@ class PrivacyLane:
             release_epoch=current_epoch,
             transfers=list(self._accumulator),
             agent_ids=list(self._accumulator_agent_ids),
-            anonymity_set_size=len(self._accumulator),
+            anonymity_set_size=_distinct_agent_count(self._accumulator_agent_ids),
             degraded_anonymity=True,
+            sealed_epoch=current_epoch,
         )
         self._accumulator.clear()
         self._accumulator_agent_ids.clear()
@@ -275,8 +279,9 @@ class PrivacyLane:
             release_epoch=release_epoch,
             transfers=list(self._accumulator),
             agent_ids=list(self._accumulator_agent_ids),
-            anonymity_set_size=len(self._accumulator),
+            anonymity_set_size=_distinct_agent_count(self._accumulator_agent_ids),
             degraded_anonymity=False,
+            sealed_epoch=current_epoch,
         )
         self._release_queue.append(group)
         self._accumulator.clear()
@@ -295,6 +300,15 @@ def _get_transfer_class(transfer: Any) -> Any:
     if isinstance(transfer, dict):
         return transfer.get("transfer_class")
     return getattr(transfer, "transfer_class", None)
+
+
+def _distinct_agent_count(agent_ids: list[Any]) -> int:
+    """Count distinct contributors without assuming agent IDs are hashable."""
+    distinct: list[Any] = []
+    for agent_id in agent_ids:
+        if not any(agent_id == existing for existing in distinct):
+            distinct.append(agent_id)
+    return len(distinct)
 
 
 def _get_agent_id(transfer: Any) -> Any:

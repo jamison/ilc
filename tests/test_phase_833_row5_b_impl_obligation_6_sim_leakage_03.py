@@ -38,7 +38,7 @@ def _contribution(agent: str = "agent_a") -> dict:
 
 def _normal_group(
     release_epoch: int = 5,
-    sealed_epoch: int = 3,
+    sealed_epoch: int | None = None,
     size: int = K_PRIMARY,
 ) -> ReleaseGroup:
     return ReleaseGroup(
@@ -47,11 +47,13 @@ def _normal_group(
         agent_ids=[f"a_{i}" for i in range(size)],
         anonymity_set_size=size,
         degraded_anonymity=False,
+        sealed_epoch=sealed_epoch,
     )
 
 
 def _degraded_group(
     release_epoch: int = 10,
+    sealed_epoch: int | None = None,
     size: int = 5,
 ) -> ReleaseGroup:
     return ReleaseGroup(
@@ -60,6 +62,7 @@ def _degraded_group(
         agent_ids=[f"b_{i}" for i in range(size)],
         anonymity_set_size=size,
         degraded_anonymity=True,
+        sealed_epoch=sealed_epoch,
     )
 
 
@@ -158,6 +161,42 @@ class TestObligation6JitterDistribution:
         c.record_group_settled(sealed_epoch=5, group=_degraded_group(release_epoch=5))
         snap = c.epoch_snapshot(epoch=5)
         assert snap.jitter_distribution == {}
+
+    def test_runtime_group_sealed_epoch_is_authoritative(self) -> None:
+        c = LeakageMetricsCollector()
+        group = _normal_group(sealed_epoch=4, release_epoch=7)
+        c.record_group_settled(group=group)
+        assert c.epoch_snapshot(epoch=4).jitter_distribution == {3: 1}
+
+    def test_legacy_positional_arguments_still_work(self) -> None:
+        c = LeakageMetricsCollector()
+        group = _normal_group(release_epoch=2)
+        c.record_group_settled(0, group)
+        assert c.epoch_snapshot(epoch=0).jitter_distribution == {2: 1}
+
+    def test_single_group_positional_argument_uses_group_epoch(self) -> None:
+        c = LeakageMetricsCollector()
+        group = _normal_group(sealed_epoch=4, release_epoch=7)
+        c.record_group_settled(group)
+        assert c.epoch_snapshot(epoch=4).jitter_distribution == {3: 1}
+
+    def test_mismatched_sealed_epoch_argument_rejected(self) -> None:
+        c = LeakageMetricsCollector()
+        group = _normal_group(sealed_epoch=4, release_epoch=7)
+        with pytest.raises(ValueError, match="sealed_epoch_mismatch"):
+            c.record_group_settled(sealed_epoch=7, group=group)
+
+    def test_missing_sealed_epoch_rejected_without_legacy_override(self) -> None:
+        c = LeakageMetricsCollector()
+        group = ReleaseGroup(
+            release_epoch=3,
+            transfers=[_contribution(agent="a")],
+            agent_ids=["a"],
+            anonymity_set_size=1,
+            degraded_anonymity=False,
+        )
+        with pytest.raises(ValueError, match="missing_sealed_epoch"):
+            c.record_group_settled(group=group)
 
 
 # ---------------------------------------------------------------------------
@@ -305,8 +344,9 @@ class TestObligation6BoundChecks:
     def test_bound_c_satisfied_low_degraded_fraction(self) -> None:
         c = LeakageMetricsCollector()
         # 600 normal (30 each) + 1 degraded (5 transfers) = 5/605 ≈ 0.83% <= 5%
+        # release_epoch=i ensures jitter >= 0 (sealed_epoch == release_epoch, jitter=0).
         for i in range(20):
-            c.record_group_settled(sealed_epoch=i, group=_normal_group(size=30))
+            c.record_group_settled(sealed_epoch=i, group=_normal_group(size=30, release_epoch=i))
         c.record_group_settled(sealed_epoch=20, group=_degraded_group(size=5))
         bounds = c.check_bounds()
         assert bounds["C"] is True
