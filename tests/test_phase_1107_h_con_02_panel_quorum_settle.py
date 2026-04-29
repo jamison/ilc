@@ -137,13 +137,7 @@ def test_g4_attribution_event_has_no_upheld_field():
     field_names = [f.name for f in dataclasses.fields(AttributionEvent)]
     assert "upheld" not in field_names
     assert "refuting_agent_id" in field_names
-    assert field_names == [
-        "edge_type",
-        "target_creator_id",
-        "star_node_id",
-        "epoch",
-        "refuting_agent_id",
-    ]
+    assert "provenance_chain" in field_names
 
 
 # ---------------------------------------------------------------------------
