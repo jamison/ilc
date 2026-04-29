@@ -5,6 +5,8 @@ EpochAttributionBatch.settle() in ilc_core.types.
 
 CDL-083 ratified Phase 1105: ejected stake treasury quorum rules and REFUTATION
 attribution implemented. Phase 1106 adds the ejected-stake vote evaluation helper.
+CDL-084 ratified Phase 1113: PROVENANCE chain attribution; float kill for
+PROVENANCE_DECAY_ALPHA; AttributionEvent.provenance_chain field added.
 """
 
 from __future__ import annotations
@@ -13,7 +15,12 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
-from ilc_core.types import EdgeType, REUSE_ATTRIBUTION_RATE
+from ilc_core.types import (
+    EdgeType,
+    PROVENANCE_DECAY_ALPHA,
+    PROVENANCE_MAX_DEPTH,
+    REUSE_ATTRIBUTION_RATE,
+)
 
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
@@ -22,6 +29,7 @@ EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_110
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
+CDL_084_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
 
 HCON02_QUORUM_FLOOR = Decimal("0.50")       # Q1: >=50% of remaining members must vote
 HCON02_QUORUM_MINIMUM_VOTERS = 2            # Q1: hard minimum regardless of group size
@@ -118,6 +126,9 @@ class AttributionEvent:
     star_node_id: Optional[str]
     epoch: int
     refuting_agent_id: Optional[str] = None  # REFUTATION only — explicit payout recipient
+    provenance_chain: Optional[tuple[tuple[str, str], ...]] = None
+    # Q6: ((node_id, creator_id), ...) ordered nearest-ancestor-first.
+    # None is valid for non-PROVENANCE events; Phase 1114 validates PROVENANCE events.
 
 
 def settle_attribution_batch(
