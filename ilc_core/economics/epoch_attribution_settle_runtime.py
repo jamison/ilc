@@ -3,8 +3,8 @@
 Implements CDL-081 §§4.1–4.6 attribution settlement logic. Delegates from
 EpochAttributionBatch.settle() in ilc_core.types.
 
-CDL-081 ratified Phase 943. Partial: ejected stake treasury sub-path
-(CDL-081 §4.5) is stubbed pending H-CON-02 ratification.
+CDL-083 ratified Phase 1105: ejected stake treasury quorum rules and REFUTATION
+attribution implemented.
 """
 
 from __future__ import annotations
@@ -18,9 +18,15 @@ from ilc_core.types import EdgeType, REUSE_ATTRIBUTION_RATE
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_946.v0.1"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1106.v0.2"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
+CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
+
+HCON02_QUORUM_FLOOR = Decimal("0.50")       # Q1: >=50% of remaining members must vote
+HCON02_QUORUM_MINIMUM_VOTERS = 2            # Q1: hard minimum regardless of group size
+HCON02_VOTE_THRESHOLD_NUMERATOR = 2         # Q2: exact 2/3 — integer arithmetic only
+HCON02_VOTE_THRESHOLD_DENOMINATOR = 3       # Q2: exact 2/3 — integer arithmetic only
 
 _ZERO = Decimal("0")
 
@@ -50,10 +56,11 @@ class AttributionEvent:
 
     CDL-081 §4.1: each event is processed with a fresh visited_set.
     """
-    edge_type: EdgeType          # REUSE or CO_AUTHORSHIP (others silently ignored — §4.3)
-    target_creator_id: str       # REUSE: creator of target node receives REUSE_ATTRIBUTION_RATE
-    star_node_id: Optional[str]  # CO_AUTHORSHIP: star node identifier for stake_map lookup
-    epoch: int                   # Epoch at which traversal was cleared
+    edge_type: EdgeType
+    target_creator_id: str        # REUSE / CO_AUTHORSHIP recipient; do not use for REFUTATION
+    star_node_id: Optional[str]
+    epoch: int
+    refuting_agent_id: Optional[str] = None  # REFUTATION only — explicit payout recipient
 
 
 def settle_attribution_batch(
@@ -78,8 +85,7 @@ def settle_attribution_batch(
         entries for the same agent_id — callers aggregate and apply at most once.
 
     Raises:
-        NotImplementedError: For EdgeType.REFUTATION (ejected stake treasury
-            path requires H-CON-02 — CDL_HCON_02_DEPENDENCY).
+        ValueError: If a REFUTATION event lacks an explicit refuting_agent_id.
     """
     payouts: list[tuple[str, Decimal]] = []
 
@@ -116,8 +122,16 @@ def settle_attribution_batch(
                 payouts.append((member_id, payout))
 
         elif attr_event.edge_type == EdgeType.REFUTATION:
-            # §4.5 Ejected stake / refutation treasury path — H-CON-02 required.
-            raise NotImplementedError(CDL_HCON_02_DEPENDENCY)
+            # §5.4 CDL-083: caller-filter guarantees only upheld REFUTATION
+            # events enter the batch. Pay the refuting agent, not the refuted
+            # target creator.
+            recipient_id = attr_event.refuting_agent_id
+            if recipient_id is None:
+                raise ValueError("refutation_event_missing_refuting_agent_id")
+            if recipient_id in visited_set:
+                continue
+            visited_set.add(recipient_id)
+            payouts.append((recipient_id, REUSE_ATTRIBUTION_RATE))
 
         else:
             # §4.3 ATTESTATION, PROVENANCE, EPOCH_BOUNDARY — silently ignored.
