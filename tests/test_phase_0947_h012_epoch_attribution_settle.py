@@ -387,10 +387,9 @@ def test_g8_mixed_event_types_no_state_bleed():
 
 
 def test_g8_ignored_edge_types_produce_no_payouts():
-    """§4.3 ATTESTATION, PROVENANCE, EPOCH_BOUNDARY are silently ignored."""
+    """§4.3 ATTESTATION and EPOCH_BOUNDARY are silently ignored."""
     batch = EpochAttributionBatch(epoch=1)
     batch.add_event(AttributionEvent(EdgeType.ATTESTATION, "agent_x", None, 1))
-    batch.add_event(AttributionEvent(EdgeType.PROVENANCE, "agent_y", None, 1))
     batch.add_event(AttributionEvent(EdgeType.EPOCH_BOUNDARY, "agent_z", None, 1))
     batch.seal()
     payouts = batch.settle({})
@@ -404,7 +403,7 @@ def test_g8_ignored_edge_types_produce_no_payouts():
 
 def test_g9_version_token():
     """Runtime version token is correct and present."""
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1106.v0.2"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1114.v0.3"
     assert EPOCH_ATTRIBUTION_BATCH_VERSION == "epoch_attribution_batch.v0.2"
     assert "stub" not in EPOCH_ATTRIBUTION_BATCH_VERSION
 

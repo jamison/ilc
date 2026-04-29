@@ -7,6 +7,8 @@ CDL-083 ratified Phase 1105: ejected stake treasury quorum rules and REFUTATION
 attribution implemented. Phase 1106 adds the ejected-stake vote evaluation helper.
 CDL-084 ratified Phase 1113: PROVENANCE chain attribution; float kill for
 PROVENANCE_DECAY_ALPHA; AttributionEvent.provenance_chain field added.
+CDL-084 PROVENANCE settlement path activated Phase 1114: silent-ignore stub replaced
+with geometric decay ECU payout.
 """
 
 from __future__ import annotations
@@ -25,7 +27,7 @@ from ilc_core.types import (
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1106.v0.2"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1114.v0.3"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
@@ -201,8 +203,37 @@ def settle_attribution_batch(
             visited_set.add(recipient_id)
             payouts.append((recipient_id, REUSE_ATTRIBUTION_RATE))
 
+        elif attr_event.edge_type == EdgeType.PROVENANCE:
+            # CDL-084 §3.4: PROVENANCE chain attribution.
+            # Q10: None/empty chain is malformed — PROVENANCE always has ancestors.
+            chain = attr_event.provenance_chain
+            if chain is None:
+                raise ValueError("provenance_event_missing_chain")
+            if len(chain) == 0:
+                raise ValueError("provenance_event_empty_chain")
+
+            # Q7: reject duplicate node_ids — indicates cyclic or malformed lineage.
+            seen_node_ids: set[str] = set()
+            for node_id, _ in chain:
+                if node_id in seen_node_ids:
+                    raise ValueError("provenance_chain_contains_duplicate_node_id")
+                seen_node_ids.add(node_id)
+
+            # Q5/Q7: pay each creator at most once per event; nearest hop wins.
+            visited_creators: set[str] = set()
+            for hop_index, (node_id, creator_id) in enumerate(chain):
+                if hop_index >= PROVENANCE_MAX_DEPTH:
+                    break  # Q3: max depth enforced — hops beyond depth 3 are ignored.
+                if creator_id in visited_creators:
+                    continue  # Q7: nearest hop wins; skip duplicate creators.
+                visited_creators.add(creator_id)
+                # Q2: geometric decay — alpha^(hop+1), where hop_index 0 = hop 1.
+                decay = PROVENANCE_DECAY_ALPHA ** (hop_index + 1)
+                payout = REUSE_ATTRIBUTION_RATE * decay
+                payouts.append((creator_id, payout))
+
         else:
-            # §4.3 ATTESTATION, PROVENANCE, EPOCH_BOUNDARY — silently ignored.
+            # §4.3 ATTESTATION, EPOCH_BOUNDARY — silently ignored.
             continue
 
     return payouts
