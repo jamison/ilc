@@ -1,8 +1,8 @@
 # CDL-084: PROVENANCE Chain Attribution
 
-**Status:** OPEN
+**Status:** RATIFIED
 **Opened:** Phase 1111 (2026-04-29)
-**Ratified:** pending (Phase 1113)
+**Ratified:** Phase 1113 (2026-04-29)
 **Authority:** CDL-081 §4.3 (PROVENANCE deferred pending H-CON-02) /
              CDL-083 §5.4 (PROVENANCE silence CDL-licensed pending CDL-084) /
              CDL-081 Q1 (PROVENANCE=defer) / ilc_core/types.py
@@ -296,7 +296,30 @@ All §4 checklist items confirmed:
 
 ---
 
-## 8. Audit Note
+## 8. Ratification Record (Phase 1113)
+
+**Ratification commit (Commit 2):** Phase 1113 Commit 2 (reported by executor)
+**Runtime commit (Commit 1):** 3d943f32
+**Ratification date:** 2026-04-29
+
+Phase 1113 ratified CDL-084 in the required two-commit structure:
+
+- **Commit 1** (`ilc_core/` plus stale evidence-test assertion only, no CDL env var):
+  float kill (`PROVENANCE_DECAY_ALPHA: float -> Decimal("0.5")`),
+  `CDL_084_TYPES_DEPENDENCY` in `ilc_core/types.py`; `AttributionEvent.provenance_chain`
+  field, `CDL_084_DEPENDENCY` token, and PROVENANCE imports in
+  `epoch_attribution_settle_runtime.py`. Version stays at
+  `epoch_attribution_settle_runtime_1106.v0.2` (bump deferred to Phase 1114).
+- **Commit 2** (CDL docs only, CDL env var): this spec OPEN -> RATIFIED; CDL log row updated.
+
+Pre-commit hook audit: `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1113` used.
+No `ilc_core/` changes in Commit 2.
+
+`cdl_084_ratified_phase_1113`
+
+---
+
+## 9. Audit Note
 
 `cdl_mutation_audit`: Phase 1111 CDL log mutation must be committed with
 `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1111`; the repository hook records
@@ -305,6 +328,7 @@ the mutation in `.git/ilc_cdl_mutation_audit.log`.
 ---
 
 `cdl_084_open_phase_1111`
+`cdl_084_ratified_phase_1113`
 `cdl_084_q1_q10_all_resolved_at_opening_human_authorized_2026_04_29`
 `provenance_decimal_float_kill_forward_obligation_phase_1113_commit_1`
 `provenance_explicit_chain_payload_pure_settle_no_graph_queries`
