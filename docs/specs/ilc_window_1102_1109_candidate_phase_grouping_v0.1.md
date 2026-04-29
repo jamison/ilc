@@ -127,7 +127,7 @@ refutations. H-CON-02 must define this flow.
 | Question | Scope | Default position to investigate |
 |----------|-------|--------------------------------|
 | Q1 — Panel quorum floor | What fraction of remaining star node members must participate in a treasury distribution vote? | Majority (> 0.50) of active members |
-| Q2 — Vote threshold | What fraction of participating members must agree to release ejected stake? | Supermajority (≥ 0.67) |
+| Q2 — Vote threshold | What fraction of participating members must agree to release ejected stake? | Exact 2/3 supermajority, evaluated by integer arithmetic (`approve_votes * 3 >= participating_voters * 2`) |
 | Q3 — Distribution formula | How is released ejected stake divided among claimants? | Proportional to current stake of voting members |
 | Q4 — REFUTATION ECU flow | When CDL-V7 upholds a refutation, where does ECU flow, from what source, and how much? | Refuting agent receives `REUSE_ATTRIBUTION_RATE` × refuted content's epoch ECU; sourced from emitter's epoch budget |
 | Q5 — Ejected agent recovery | May an ejected agent reclaim treasury stake if later readmitted? | No — ejected stake is irrevocable; readmission starts fresh stake |
@@ -246,18 +246,20 @@ Token: `cdl_083_prelock_hardening_complete_phase_1104`
 ### Phase 1105 — CDL-083 ratification (SENSITIVE — two commits)
 
 - **Commit 1 (runtime mutation — non-CDL commit):** `ilc_core/economics/epoch_attribution_settle_runtime.py`
-  — add CDL-083 dependency token; replace `NotImplementedError` for REFUTATION with ratified
-  logic. No `ILC_CDL_MUTATION_AUTHORIZED` env var.
+  — add CDL-083 dependency token, exact-threshold constants, and the minimum ratified
+  REFUTATION recipient contract needed for ratification evidence. No
+  `ILC_CDL_MUTATION_AUTHORIZED` env var.
 - **Commit 2 (CDL mutation commit):** CDL-083 spec OPEN → RATIFIED; CDL log row updated.
   Requires `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1105`. Must NOT touch `ilc_core/`.
 
 Token: `cdl_083_ratified_phase_1105`
 
-### Phase 1106 — H-CON-02 runtime implementation (NON-SENSITIVE)
+### Phase 1106 — H-CON-02 runtime hardening and panel quorum implementation (NON-SENSITIVE)
 
-Full REFUTATION attribution logic in `epoch_attribution_settle_runtime.py`. If panel quorum
-logic is complex, extract to `ilc_core/economics/panel_quorum_runtime.py`. Update runtime
-version token.
+Complete the non-constitutional runtime surface around the ratified Phase 1105 mutation:
+panel quorum helpers, exact-threshold edge cases, integration tests, and any extraction to
+`ilc_core/economics/panel_quorum_runtime.py`. Phase 1106 must not re-open the Q1-Q5
+semantics or duplicate the REFUTATION payout decision already consumed by Phase 1105.
 
 Token: `h_con_02_refutation_runtime_implemented_phase_1106`
 
@@ -313,7 +315,7 @@ Token: `window_1102_1109_closure_gate_verdict=pass`
 2. Phase 1103 (CDL open) must precede Phase 1104 (prelock) — prelock asserts the open state.
 3. Phase 1104 must precede Phase 1105 (ratification cites evidence doc).
 4. Phase 1105 Commit 1 (runtime mutation) must precede Phase 1105 Commit 2 (CDL mutation).
-5. Phase 1105 must precede Phase 1106 (runtime implementation builds on ratified constants).
+5. Phase 1105 must precede Phase 1106 (ratification-enabling runtime mutation lands first; Phase 1106 hardens and tests the ratified runtime surface without re-opening CDL-083 semantics).
 6. Phase 1106 must precede Phase 1107 (tests import the runtime).
 7. Phases 1102–1107 must precede Phase 1108 (coherence cites all window work).
 8. Phase 1108 must precede Phase 1109 (closure gate cites coherence report).
@@ -344,9 +346,10 @@ Token: `window_1102_1109_closure_gate_verdict=pass`
 ### Novel patterns this window
 
 - **REFUTATION attribution logic** — first time REFUTATION edge produces an ECU payout (all prior
-  settle() calls either process REUSE/CO_AUTHORSHIP or skip). The implementation must handle the
-  CDL-V7 gate signal — how does settle() know if CDL-V7 upheld the refutation? This likely
-  requires an attribute on `AttributionEvent` or a separate `upheld: bool` field.
+  settle() calls either process REUSE/CO_AUTHORSHIP or skip). CDL-083 chooses caller-filtering:
+  only CDL-V7-upheld refutations enter the batch. The runtime must still carry an explicit
+  refuting-agent recipient field and must not overload `target_creator_id` in a way that pays the
+  creator of the refuted target.
 
 - **Two-commit ratification** — same pattern as CDL-081 (Phase 942–943) and CDL-082 (Phase 950).
   Phase 1105 Commit 1 is a runtime mutation (no CDL env var); Commit 2 is a CDL mutation (CDL env
@@ -384,16 +387,11 @@ class AttributionEvent:
     epoch: int
 ```
 
-For REFUTATION events, the settle runtime needs to know whether CDL-V7 upheld the refutation.
-CDL-083 Q4 must specify whether:
-- Option A: `upheld: bool` field is added to `AttributionEvent` (dataclass change)
-- Option B: Caller is responsible for filtering — only upheld refutations are added to the batch
-- Option C: A separate `RefutationEvent` type is introduced
-
-The default proposal is **Option B** (caller-filters): if a refutation is not upheld by CDL-V7,
-it is simply not added to the `EpochAttributionBatch`. The settle runtime then processes all
-REFUTATION events in the batch as upheld by definition. This avoids a dataclass change and
-keeps the attribution logic simple. **This option must be ratified by CDL-083 Q4.**
+For REFUTATION events, CDL-083 Q4 selects caller-filtering: if a refutation is not upheld by
+CDL-V7, it is not added to the `EpochAttributionBatch`. The settle runtime processes all
+REFUTATION events in the batch as upheld by definition. The event shape still needs an explicit
+refuting-agent recipient, because `target_creator_id` names the refuted target creator in the
+REUSE-oriented path and is ambiguous for REFUTATION.
 
 ---
 

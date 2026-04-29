@@ -59,14 +59,19 @@ lower bar, agreement threshold is the higher bar.
 
 ### Q2 — Vote threshold (RESOLVED)
 
-**≥0.67 (2/3 supermajority of participating voters) must agree to release ejected stake.**
+**At least exact 2/3 of participating voters must agree to release ejected stake.**
 
 Rationale: Canonical ILC consensus threshold. `epoch_state_runtime.py` encodes
 `quorum_threshold: {"numerator": 2, "denominator": 3}` as the standard. The 7+1 knowledge-claim
 panel uses 5/7 ≈ 71%, also ≥2/3. Supermajority protects against a bare majority of remaining
 members gaming the treasury after a targeted ejection.
 
-`q2_vote_threshold_geq_067_two_thirds_supermajority`
+Implementation note: this threshold must be evaluated with integer arithmetic
+(`approve_votes * 3 >= participating_voters * 2`), not by comparing against
+`Decimal("0.67")`. The decimal approximation would incorrectly reject exact
+2-of-3, 4-of-6, and 6-of-9 approvals.
+
+`q2_vote_threshold_exact_two_thirds_supermajority`
 
 ---
 
@@ -102,6 +107,13 @@ contribution of comparable magnitude to REUSE. No new constant needed. Source is
 (same as REUSE attribution) — not extracted from the refuted agent's stake, which is a
 separate reputational channel governed by CDL-V7.
 
+Implementation note: the settlement event must identify the refuting agent as
+the payout recipient. The existing `target_creator_id` field is REUSE-oriented
+terminology; the REFUTATION path must not accidentally pay the creator of the
+refuted target. The runtime event shape must therefore add an explicit
+`refuting_agent_id` field or an equivalent explicit recipient field before the
+REFUTATION path is activated.
+
 `q4_refutation_ecu_reuse_attribution_rate_epoch_mint_source_caller_filters_upheld`
 
 ---
@@ -133,8 +145,15 @@ may be called in a subsequent epoch.
 
 ### §5.2 Vote threshold
 
-A distribution decision is approved only if at least `HCON02_VOTE_THRESHOLD` (= 0.67) of the
-participating voters vote to approve. Abstentions do not count toward the threshold denominator.
+A distribution decision is approved only if exact integer comparison shows at least 2/3 of the
+participating voters voted to approve:
+
+```
+approve_votes * HCON02_VOTE_THRESHOLD_DENOMINATOR
+    >= participating_voters * HCON02_VOTE_THRESHOLD_NUMERATOR
+```
+
+Abstentions do not count toward the threshold denominator.
 
 ### §5.3 Distribution formula
 
@@ -178,7 +197,8 @@ In `ilc_core/economics/epoch_attribution_settle_runtime.py`:
 ```python
 HCON02_QUORUM_FLOOR = Decimal("0.50")          # Q1: ≥50% of remaining members must vote
 HCON02_QUORUM_MINIMUM_VOTERS = 2               # Q1: hard minimum regardless of group size
-HCON02_VOTE_THRESHOLD = Decimal("0.67")        # Q2: 2/3 supermajority of participants
+HCON02_VOTE_THRESHOLD_NUMERATOR = 2             # Q2: exact 2/3 supermajority
+HCON02_VOTE_THRESHOLD_DENOMINATOR = 3           # Q2: exact 2/3 supermajority
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
 ```
 
@@ -194,14 +214,19 @@ With:
 ```python
 elif attr_event.edge_type == EdgeType.REFUTATION:
     # §5.4 Upheld REFUTATION attribution — caller-filter guarantees this is upheld.
-    if attr_event.target_creator_id in visited_set:
+    recipient_id = attr_event.refuting_agent_id  # explicit recipient; do not pay refuted creator
+    if recipient_id in visited_set:
         continue
-    visited_set.add(attr_event.target_creator_id)
-    payouts.append((attr_event.target_creator_id, REUSE_ATTRIBUTION_RATE))
+    visited_set.add(recipient_id)
+    payouts.append((recipient_id, REUSE_ATTRIBUTION_RATE))
 ```
 
 Note: The `CDL_HCON_02_DEPENDENCY` constant is retained as a historical marker token —
 only the `raise NotImplementedError` call is removed.
+
+Event-shape guard: Phase 1105/1106 must not overload `target_creator_id` as the
+REFUTATION payout recipient. Add `refuting_agent_id` (or an equivalent explicit
+recipient field) and test that the refuted target creator is not paid.
 
 ### 4.3 Runtime version token update
 

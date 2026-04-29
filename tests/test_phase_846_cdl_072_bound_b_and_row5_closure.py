@@ -145,14 +145,14 @@ def test_check_bounds_all_pass_at_scale():
             t = {"transfer_class": "Contribution", "agent_id": f"a{epoch}_{v}", "version": v}
             lane.submit(t, current_epoch=epoch)
         for g in lane.flush(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
         for g in lane.enforce_max_wait(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
     for ep_tail in range(11, 15):
         for g in lane.flush(current_epoch=ep_tail):
-            collector.record_group_settled(sealed_epoch=10, group=g)
+            collector.record_group_settled(group=g)
         for g in lane.enforce_max_wait(current_epoch=ep_tail):
-            collector.record_group_settled(sealed_epoch=10, group=g)
+            collector.record_group_settled(group=g)
 
     snap = collector.global_snapshot()
     bounds = collector.check_bounds(snap)
@@ -178,7 +178,7 @@ def test_no_jitter_exceeds_release_window():
             t = {"transfer_class": "Contribution", "agent_id": f"a{epoch}_{v}", "version": v}
             lane.submit(t, current_epoch=epoch)
         for g in lane.flush(current_epoch=epoch):
-            collector.record_group_settled(sealed_epoch=epoch, group=g)
+            collector.record_group_settled(group=g)
 
     snap = collector.global_snapshot()
     if snap.jitter_distribution:

@@ -138,6 +138,26 @@ class TestObligation1RollingGroupConstruction:
         assert lane.accumulator_size == 0
         assert lane.release_queue_depth == 1
 
+    def test_k_requires_distinct_contributors_not_transfer_count(self) -> None:
+        cfg = PrivacyLaneConfig()
+        lane = PrivacyLane(cfg, current_epoch=1)
+        for _ in range(cfg.k):
+            lane.submit(_contribution(agent="same_agent"), current_epoch=1)
+        assert lane.accumulator_size == cfg.k
+        assert lane.release_queue_depth == 0
+
+    def test_group_anonymity_set_size_counts_distinct_contributors(self) -> None:
+        cfg = PrivacyLaneConfig()
+        lane = PrivacyLane(cfg, current_epoch=1)
+        for _ in range(cfg.k):
+            lane.submit(_contribution(agent="same_agent"), current_epoch=1)
+        for i in range(1, cfg.k):
+            lane.submit(_contribution(agent=f"agent_{i}"), current_epoch=1)
+        groups = lane.flush(current_epoch=10)
+        assert len(groups) == 1
+        assert groups[0].anonymity_set_size == cfg.k
+        assert len(groups[0].transfers) == cfg.k + cfg.k - 1
+
     def test_k_plus_one_transfers_one_in_accumulator(self) -> None:
         cfg = PrivacyLaneConfig()
         lane = PrivacyLane(cfg, current_epoch=1)
@@ -222,6 +242,7 @@ class TestObligation2DeferredReleaseQueue:
         # Peek at the queued group's release_epoch
         group = lane._release_queue[0]
         assert current_epoch <= group.release_epoch <= current_epoch + RELEASE_JITTER_EPOCHS
+        assert group.sealed_epoch == current_epoch
 
     def test_flush_only_returns_ready_groups(self) -> None:
         """Two sealed groups — only the early one is ready at epoch 1."""
@@ -321,6 +342,7 @@ class TestObligation3BoundedHold:
         lane.submit(_contribution(), current_epoch=5)
         forced = lane.enforce_max_wait(current_epoch=7)
         assert forced[0].release_epoch == 7
+        assert forced[0].sealed_epoch == 7
 
 
 # ---------------------------------------------------------------------------
@@ -362,7 +384,9 @@ def test_release_group_shape() -> None:
         agent_ids=["a"],
         anonymity_set_size=1,
         degraded_anonymity=True,
+        sealed_epoch=4,
     )
     assert g.release_epoch == 5
+    assert g.sealed_epoch == 4
     assert g.anonymity_set_size == 1
     assert g.degraded_anonymity is True

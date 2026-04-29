@@ -25,6 +25,22 @@ CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_ex
 _ZERO = Decimal("0")
 
 
+def _normalize_member_stakes(members: object) -> dict[str, Decimal]:
+    """Validate stake_map member stakes before proportional settlement."""
+    if not isinstance(members, dict):
+        raise ValueError("stake_map_members_must_be_dict")
+    normalized: dict[str, Decimal] = {}
+    for member_id, stake in members.items():
+        if not isinstance(member_id, str):
+            raise ValueError("stake_map_member_id_must_be_string")
+        if not isinstance(stake, Decimal):
+            raise ValueError("stake_map_member_stake_must_be_decimal")
+        if not stake.is_finite() or stake < _ZERO:
+            raise ValueError("stake_map_member_stake_must_be_non_negative_finite_decimal")
+        normalized[member_id] = stake
+    return normalized
+
+
 @dataclass(frozen=True)
 class AttributionEvent:
     """A single traversal clearance record for attribution settlement.
@@ -45,7 +61,7 @@ def settle_attribution_batch(
     stake_map: dict[str, dict[str, Decimal]],
     emitted_tokens: Optional[list[str]] = None,
 ) -> list[tuple[str, Decimal]]:
-    """Process a batch of attribution events and return ECU payouts.
+    """Process a batch of attribution events and return ECU payout quotes.
 
     CDL-081 §§4.1–4.6. All amounts returned are Decimal. No float arithmetic.
 
@@ -58,8 +74,8 @@ def settle_attribution_batch(
             (e.g. cdl_081_zero_member_commons_transition) are appended here.
 
     Returns:
-        List of (agent_id, ecu_amount) Decimal payouts. May contain multiple
-        entries for the same agent_id — callers aggregate.
+        List of (agent_id, ecu_amount) Decimal payout quotes. May contain multiple
+        entries for the same agent_id — callers aggregate and apply at most once.
 
     Raises:
         NotImplementedError: For EdgeType.REFUTATION (ejected stake treasury
@@ -84,7 +100,7 @@ def settle_attribution_batch(
 
         elif attr_event.edge_type == EdgeType.CO_AUTHORSHIP:
             # §4.2 CO_AUTHORSHIP proportional split among star node members.
-            members = stake_map.get(attr_event.star_node_id or "", {})
+            members = _normalize_member_stakes(stake_map.get(attr_event.star_node_id or "", {}))
             if not members:
                 # §4.6 Zero-member commons: attribution suspended.
                 if emitted_tokens is not None:
