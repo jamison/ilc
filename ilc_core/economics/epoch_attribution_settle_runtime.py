@@ -4,7 +4,7 @@ Implements CDL-081 §§4.1–4.6 attribution settlement logic. Delegates from
 EpochAttributionBatch.settle() in ilc_core.types.
 
 CDL-083 ratified Phase 1105: ejected stake treasury quorum rules and REFUTATION
-attribution implemented.
+attribution implemented. Phase 1106 adds the ejected-stake vote evaluation helper.
 """
 
 from __future__ import annotations
@@ -45,6 +45,63 @@ def _normalize_member_stakes(members: object) -> dict[str, Decimal]:
             raise ValueError("stake_map_member_stake_must_be_non_negative_finite_decimal")
         normalized[member_id] = stake
     return normalized
+
+
+def evaluate_ejected_stake_vote(
+    ejected_stake: Decimal,
+    remaining_member_stakes: dict[str, Decimal],
+    approve_votes: int,
+    participating_voters: int,
+) -> tuple[bool, list[tuple[str, Decimal]]]:
+    """Evaluate CDL-083 H-CON-02 ejected stake treasury distribution.
+
+    Implements CDL-083 §§5.1-5.3 only: quorum floor, exact 2/3 approval
+    threshold, and stake-proportional distribution among all remaining
+    members. CDL-083 §5.5 irrevocability is enforced by the caller.
+    """
+    if (
+        not isinstance(ejected_stake, Decimal)
+        or not ejected_stake.is_finite()
+        or ejected_stake <= _ZERO
+    ):
+        raise ValueError("ejected_stake_must_be_positive_finite_decimal")
+
+    members = _normalize_member_stakes(remaining_member_stakes)
+
+    if type(approve_votes) is not int or approve_votes < 0:
+        raise ValueError("approve_votes_must_be_non_negative_integer")
+    if type(participating_voters) is not int or participating_voters < 0:
+        raise ValueError("participating_voters_must_be_non_negative_integer")
+    if approve_votes > participating_voters:
+        raise ValueError("approve_votes_must_not_exceed_participating_voters")
+
+    total_members = len(members)
+    quorum_met = (
+        participating_voters >= HCON02_QUORUM_MINIMUM_VOTERS
+        and (
+            total_members == 0
+            or Decimal(participating_voters) / Decimal(total_members) >= HCON02_QUORUM_FLOOR
+        )
+    )
+    if not quorum_met:
+        return (False, [])
+
+    threshold_met = (
+        approve_votes * HCON02_VOTE_THRESHOLD_DENOMINATOR
+        >= participating_voters * HCON02_VOTE_THRESHOLD_NUMERATOR
+    )
+    if not threshold_met:
+        return (False, [])
+
+    total_stake = sum(members.values(), _ZERO)
+    if total_stake == _ZERO:
+        return (True, [])
+
+    payouts: list[tuple[str, Decimal]] = []
+    for agent_id, stake in members.items():
+        share = ejected_stake * (stake / total_stake)
+        payouts.append((agent_id, share))
+    return (True, payouts)
 
 
 @dataclass(frozen=True)
