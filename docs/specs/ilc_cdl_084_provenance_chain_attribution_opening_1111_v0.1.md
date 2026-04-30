@@ -12,6 +12,10 @@
 
 `cdl_084_open_phase_1111`
 
+**Amendment — Phase 1126 (2026-04-30):** Q2 alpha value locked at
+`Decimal("0.45")` following SIM-PROVENANCE-01 (Phases 1120-1121). Token updated
+to `q2_geometric_decay_alpha_decimal_0_45_locked`. All other Q decisions unchanged.
+
 ---
 
 ## 1. Problem Statement
@@ -50,14 +54,23 @@ events before batch entry.
 
 ### Q2 — Geometric decay
 
-**PROVENANCE payouts use geometric decay with `PROVENANCE_DECAY_ALPHA = Decimal("0.5")`.
-The mechanism is locked by CDL-084; the alpha value remains provisional pending
-SIM-PROVENANCE-01.**
+**PROVENANCE payouts use geometric decay with `PROVENANCE_DECAY_ALPHA = Decimal("0.45")`.
+Both the mechanism and the alpha value are now locked.**
+
+SIM-PROVENANCE-01 evidence (CDL-084 Q8):
+- Run 01 (Phase 1120): alpha `0.45` passes concentration and mint-surface metrics
+  (seed 42). Alpha `0.50` fails mint-surface (drift `0.2065` > `0.20` threshold).
+- Run 02 (Phase 1121): alpha `0.45` keep rate `3/3` (seeds 42, 1337, 2026).
+  Alpha `0.50` keep rate `2/3` (seed-marginal). SIM recommendation: alpha `0.45`.
+- Disposition: `docs/sims/sim_provenance_01/alpha_disposition_phase_1121.md`
 
 Rationale: Geometric decay gives immediate ancestors stronger credit while keeping deeper
-lineage bounded. `Decimal("0.5")` is exact and avoids float leakage into economic runtime.
+lineage bounded. `Decimal("0.45")` is exact, avoids float leakage into economic runtime,
+and follows the completed SIM-PROVENANCE-01 recommendation.
 
-`q2_geometric_decay_alpha_decimal_0_5_provisional`
+`q2_geometric_decay_alpha_decimal_0_45_locked`
+
+*(Supersedes: `q2_geometric_decay_alpha_decimal_0_5_provisional`)*
 
 ### Q3 — Maximum depth and hop numbering
 
