@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 from ilc_core.consensus.governance import Governance, BacklogMetrics
 
 def test_hardware_scale_faster_network_cheaper_ecu():
@@ -81,18 +82,18 @@ def test_get_task_fee_ecu_combines_hardware_and_congestion():
     # hardware_scale = 1.0 (default 0.1 / 0.1)
     # congestion = 1.0
     # fee = 0.05 * 1.0 * 1.0 = 0.05
-    assert gov.get_task_fee_ecu("claim.submit") == 0.05
+    assert gov.get_task_fee_ecu("claim.submit") == Decimal("0.05000000")
     
     # 2. Fast Hardware (4x genesis -> 0.25 scale)
     gov.update_hardware_potential([0.4]) # median 0.4 = 4x 0.1
     # scale = 0.25
     # fee = 0.05 * 0.25 = 0.0125
-    assert gov.get_task_fee_ecu("claim.submit") == 0.0125
+    assert gov.get_task_fee_ecu("claim.submit") == Decimal("0.01250000")
     
     # 3. Add Congestion
     # backlog=20 -> score=10 -> mult=1.5
     gov.update_congestion(BacklogMetrics(backlog_len=20, finalized_last_epoch=0))
     
     # fee = 0.05 * 0.25 * 1.5 = 0.0125 * 1.5 = 0.01875
-    expected = 0.01875
-    assert abs(gov.get_task_fee_ecu("claim.submit") - expected) < 1e-8
+    expected = Decimal("0.01875000")
+    assert abs(gov.get_task_fee_ecu("claim.submit") - expected) < Decimal("0.00000001")

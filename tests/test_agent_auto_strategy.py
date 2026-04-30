@@ -1,5 +1,6 @@
 import sys
 import os
+from decimal import Decimal
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
@@ -17,7 +18,7 @@ def _make_agent():
 
 def test_auto_mine_respects_ecu_and_wallet():
     graph, consensus, agent = _make_agent()
-    agent.wallet_balance = 5.0
+    agent.wallet_balance = Decimal("5.0")
 
     # Force a high potential so we lean aggressive.
     agent.trust_vector["potential"] = 1.0
@@ -28,16 +29,16 @@ def test_auto_mine_respects_ecu_and_wallet():
     assert node is not None
     assert node.signature == DRAFT_SIGNATURE
     assert node.id in graph.nodes
-    assert consensus.node_stakes.get(node.id, 0.0) > 0.0
-    assert agent.wallet_balance < 5.0  # some stake was spent
+    assert consensus.node_stakes.get(node.id, Decimal("0")) > Decimal("0")
+    assert agent.wallet_balance < Decimal("5.0")  # some stake was spent
 
 
 def test_high_potential_stakes_more_than_low():
     graph, consensus, agent_low = _make_agent()
     _, _, agent_high = _make_agent()
 
-    agent_low.wallet_balance = 10.0
-    agent_high.wallet_balance = 10.0
+    agent_low.wallet_balance = Decimal("10.0")
+    agent_high.wallet_balance = Decimal("10.0")
 
     # Low vs high potential.
     agent_low.trust_vector["potential"] = 0.0
@@ -54,8 +55,8 @@ def test_high_potential_stakes_more_than_low():
     assert node_low.signature == DRAFT_SIGNATURE
     assert node_high.signature == DRAFT_SIGNATURE
 
-    spent_low = 10.0 - agent_low.wallet_balance
-    spent_high = 10.0 - agent_high.wallet_balance
+    spent_low = Decimal("10.0") - agent_low.wallet_balance
+    spent_high = Decimal("10.0") - agent_high.wallet_balance
 
     # High-potential agent should be more aggressive.
     assert spent_high >= spent_low

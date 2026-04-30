@@ -1,5 +1,6 @@
 from typing import Optional
 import logging
+from decimal import Decimal, InvalidOperation
 from .types import Node
 from .graph import EpistemicGraph
 from .exceptions import InsufficientStakeError
@@ -19,8 +20,8 @@ class EveAgent:
         self.consensus = consensus
         self.vault = vault
         
-        self.wallet_balance = 0.0
-        self.credit_balance = 0.0
+        self.wallet_balance = Decimal("0")
+        self.credit_balance = Decimal("0")
         
         # Onboarding: Request Credit if Vault exists
         if self.vault:
@@ -36,7 +37,7 @@ class EveAgent:
             "tier": "unknown"
         }
 
-    def decide_stake_for_claim(self, requested_stake: float) -> float:
+    def decide_stake_for_claim(self, requested_stake: Decimal) -> Decimal:
         """
         Decide how much to stake for a claim.submit task.
 
@@ -50,37 +51,39 @@ class EveAgent:
           to exactly required_fee.
         - If wallet_balance < required_fee, return 0.0 to signal "cannot stake".
         """
-        if requested_stake < 0:
+        self._normalize_balances()
+        stake_amount = _agent_coerce_decimal(requested_stake, "agent_requested_stake_invalid")
+        if stake_amount < Decimal("0"):
             raise InsufficientStakeError(
                 self.id,
-                stake=requested_stake,
-                required=0.0,
+                stake=stake_amount,
+                required=Decimal("0"),
                 message="requested_stake cannot be negative",
             )
 
         # Ask consensus governance for current ECU fee.
         required_fee = self.consensus.governance.get_task_fee_ecu("claim.submit")
-        min_required = float(required_fee)
+        min_required = required_fee
 
         # Wallet cannot afford even the minimum fee → no staking.
         if self.wallet_balance < min_required:
-            return 0.0
+            return Decimal("0")
 
         # Preserve explicit stakes from callers if they are sane.
-        if requested_stake >= min_required and requested_stake <= self.wallet_balance:
-            return requested_stake
+        if stake_amount >= min_required and stake_amount <= self.wallet_balance:
+            return stake_amount
 
         # If requested stake is below the required fee, bump up to exactly the fee
         # as long as the wallet can pay.
-        if requested_stake < min_required and self.wallet_balance >= min_required:
+        if stake_amount < min_required and self.wallet_balance >= min_required:
             return min_required
 
         # If requested stake is more than wallet_balance, cap at wallet_balance.
-        if requested_stake > self.wallet_balance:
+        if stake_amount > self.wallet_balance:
             return self.wallet_balance
 
         # Fallback: refuse to stake in any weird edge case.
-        return 0.0
+        return Decimal("0")
 
     def perform_pow_benchmark(self) -> float:
         """
@@ -103,7 +106,7 @@ class EveAgent:
         )
         return result["score"]
 
-    def mine_thought(self, content: str, parent_id: str, stake: float) -> Optional[Node]:
+    def mine_thought(self, content: str, parent_id: str, stake: Decimal) -> Optional[Node]:
         """
         Mine a new claim node linked to parent_id, staking some amount of
         the agent's wallet balance.
@@ -116,9 +119,9 @@ class EveAgent:
         chosen_stake = self.decide_stake_for_claim(stake)
 
         # If we cannot stake anything meaningful, abort with the existing message.
-        if chosen_stake <= 0 or self.wallet_balance < chosen_stake:
+        if chosen_stake <= Decimal("0") or self.wallet_balance < chosen_stake:
             logger.warning(
-                "agent_stake_insufficient_funds agent=%s wallet=%.4f chosen=%.4f",
+                "agent_stake_insufficient_funds agent=%s wallet=%s chosen=%s",
                 self.id,
                 self.wallet_balance,
                 chosen_stake,
@@ -145,7 +148,7 @@ class EveAgent:
             # revert the wallet deduction and abort.
             self.wallet_balance += chosen_stake
             logger.warning(
-                "agent_stake_rejected_by_consensus agent=%s chosen=%.4f",
+                "agent_stake_rejected_by_consensus agent=%s chosen=%s",
                 self.id,
                 chosen_stake,
             )
@@ -178,6 +181,7 @@ class EveAgent:
           chosen stake.
         """
         # Ensure we have a potential measurement.
+        self._normalize_balances()
         if self.trust_vector.get("potential", 0.0) <= 0.0:
             self.perform_pow_benchmark()
 
@@ -190,14 +194,14 @@ class EveAgent:
         frac = f_min + (f_max - f_min) * potential
 
         # Derive a candidate stake from current wallet.
-        candidate_stake = frac * self.wallet_balance
+        candidate_stake = Decimal(str(frac)) * self.wallet_balance
 
         # Let the ECU-aware helper adjust or reject.
         chosen = self.decide_stake_for_claim(candidate_stake)
 
-        if chosen <= 0 or self.wallet_balance < chosen:
+        if chosen <= Decimal("0") or self.wallet_balance < chosen:
             logger.warning(
-                "agent_auto_mine_aborted agent=%s wallet=%.4f chosen=%.4f",
+                "agent_auto_mine_aborted agent=%s wallet=%s chosen=%s",
                 self.id,
                 self.wallet_balance,
                 chosen,
@@ -207,32 +211,58 @@ class EveAgent:
         # Delegate actual minting to the existing mine_thought path.
         return self.mine_thought(content, parent_id, chosen)
 
-    def receive_reward(self, amount: float):
+    def receive_reward(self, amount: Decimal):
         """Handle earnings and auto-repayment."""
+        self._normalize_balances()
+        reward_amount = _agent_coerce_decimal(amount, "agent_reward_invalid")
         if self.vault:
-            repayment, net = self.vault.process_repayment(self.id, amount)
+            repayment, net = self.vault.process_repayment(self.id, reward_amount)
             self.wallet_balance += net
             # Credit balance is technically liability, but simplistic tracking here:
-            if repayment > 0:
+            if repayment > Decimal("0"):
                 logger.info(
-                    "agent_reward_repayment agent=%s repaid=%.4f net=%.4f",
+                    "agent_reward_repayment agent=%s repaid=%s net=%s",
                     self.id,
                     repayment,
                     net,
                 )
         else:
-            self.wallet_balance += amount
+            self.wallet_balance += reward_amount
 
-    def refute_node(self, target_id: str, stake: float):
-        if self.wallet_balance < stake:
+    def refute_node(self, target_id: str, stake: Decimal):
+        self._normalize_balances()
+        stake_amount = _agent_coerce_decimal(stake, "agent_refutation_stake_invalid")
+        if self.wallet_balance < stake_amount:
             logger.warning(
-                "agent_refute_insufficient_balance agent=%s target=%s wallet=%.4f stake=%.4f",
+                "agent_refute_insufficient_balance agent=%s target=%s wallet=%s stake=%s",
                 self.id,
                 target_id,
                 self.wallet_balance,
-                stake,
+                stake_amount,
             )
             return False
-        self.wallet_balance -= stake
-        self.consensus.process_contradiction(target_id, stake)
+        self.wallet_balance -= stake_amount
+        self.consensus.process_contradiction(target_id, stake_amount)
         return True
+
+    def _normalize_balances(self) -> None:
+        self.wallet_balance = _agent_coerce_decimal(
+            self.wallet_balance, "agent_wallet_balance_invalid"
+        )
+        self.credit_balance = _agent_coerce_decimal(
+            self.credit_balance, "agent_credit_balance_invalid"
+        )
+
+
+def _agent_coerce_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if not isinstance(value, (Decimal, int, float, str)):
+        raise ValueError(token)
+    try:
+        amount = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(token) from exc
+    if not amount.is_finite():
+        raise ValueError(f"{token}_non_finite")
+    return amount

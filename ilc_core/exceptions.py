@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+
 
 class IlcError(Exception):
     """Base exception for all ILC domain errors."""
@@ -13,8 +15,8 @@ class InsufficientStakeError(IlcError, ValueError):
     def __init__(
         self,
         agent_id: str,
-        stake: float,
-        required: float,
+        stake: Decimal,
+        required: Decimal,
         message: str = "",
     ) -> None:
         self.agent_id = agent_id

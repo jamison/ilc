@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 from ilc_core.genesis.work_task import (
     EpistemicWorkTask,
     ep_task_to_json,
@@ -20,12 +21,12 @@ def test_epistemic_work_task_construction_and_alias():
     )
 
     assert task.task_id == "task:123"
-    assert task.ecu_estimate == 5.5
+    assert task.ecu_estimate == Decimal("5.5")
 
     # Check alias export
-    data = task.model_dump(by_alias=True)
+    data = task.model_dump(by_alias=True, mode="json")
     assert "ecu.estimate" in data
-    assert data["ecu.estimate"] == 5.5
+    assert data["ecu.estimate"] == "5.5"
     assert "ecu_estimate" not in data
 
 def test_epistemic_work_task_json_roundtrip():
@@ -45,12 +46,12 @@ def test_epistemic_work_task_json_roundtrip():
     # Parse
     task = ep_task_from_json(data)
     assert task.task_id == "task:roundtrip"
-    assert task.ecu_estimate == 10.0
+    assert task.ecu_estimate == Decimal("10.0")
     assert task.difficulty_factor == 1.2
 
     # Serialize back
     data_out = ep_task_to_json(task)
-    assert data_out["ecu.estimate"] == 10.0
+    assert data_out["ecu.estimate"] == "10.0"
     assert data_out["task_id"] == "task:roundtrip"
 
 def test_task_queue_bridge_helper():
