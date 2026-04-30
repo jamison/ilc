@@ -532,3 +532,5 @@ For Phase 1129 (closure gate): all Phase 1124–1128 test files and artifacts.
    Q2 obligation will be fully discharged. The next window enters with a clean slate and
    can be scoped to SIM-SPECTRAL-02, SIM-ECU-STABILITY-01 authorization, or the next
    constitutional priority, whichever the human lead designates.
+
+**Status:** CLOSED — Phase 1129 closure gate passed. `window_1124_1129_closed_phase_1129`
