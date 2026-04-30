@@ -146,7 +146,7 @@ def test_cat4_runtime_dependency_token_is_ratified_1113():
 
 
 def test_cat4_runtime_version_is_phase_1126_v0_4():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
 
 
 def test_cat4_attribution_event_has_provenance_chain_field():

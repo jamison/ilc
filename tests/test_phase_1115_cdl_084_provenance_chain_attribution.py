@@ -92,7 +92,7 @@ def test_g2_types_dependency_token():
 
 
 def test_g2_runtime_version_token():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
 
 
 # ---------------------------------------------------------------------------

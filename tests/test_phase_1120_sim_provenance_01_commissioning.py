@@ -128,7 +128,7 @@ def test_g4_production_provenance_alpha_locked_decimal_0_45() -> None:
 def test_g5_settle_runtime_version_is_phase_1126_v0_4() -> None:
     assert (
         EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
-        == "epoch_attribution_settle_runtime_1126.v0.4"
+        == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
     )
 
 

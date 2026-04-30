@@ -27,11 +27,12 @@ from ilc_core.types import (
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1126.v0.4"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1129_fix1.v0.5"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
 CDL_084_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
+MAX_PROVENANCE_CHAIN_INPUT_LENGTH = 64
 
 HCON02_QUORUM_FLOOR = Decimal("0.50")       # Q1: >=50% of remaining members must vote
 HCON02_QUORUM_MINIMUM_VOTERS = 2            # Q1: hard minimum regardless of group size
@@ -39,6 +40,43 @@ HCON02_VOTE_THRESHOLD_NUMERATOR = 2         # Q2: exact 2/3 — integer arithmet
 HCON02_VOTE_THRESHOLD_DENOMINATOR = 3       # Q2: exact 2/3 — integer arithmetic only
 
 _ZERO = Decimal("0")
+
+
+def _require_non_empty_string(value: object, error_token: str) -> str:
+    if not isinstance(value, str) or value == "":
+        raise ValueError(error_token)
+    return value
+
+
+def _validate_provenance_chain(chain: object) -> tuple[tuple[str, str], ...]:
+    """Validate caller-supplied PROVENANCE payload before payout arithmetic."""
+    if chain is None:
+        raise ValueError("provenance_event_missing_chain")
+    if not isinstance(chain, tuple):
+        raise ValueError("provenance_chain_must_be_tuple")
+    if len(chain) == 0:
+        raise ValueError("provenance_event_empty_chain")
+    if len(chain) > MAX_PROVENANCE_CHAIN_INPUT_LENGTH:
+        raise ValueError("provenance_chain_exceeds_input_bound")
+
+    seen_node_ids: set[str] = set()
+    normalized: list[tuple[str, str]] = []
+    for entry in chain:
+        if not isinstance(entry, tuple) or len(entry) != 2:
+            raise ValueError("provenance_chain_entry_must_be_node_creator_pair")
+        node_id = _require_non_empty_string(
+            entry[0],
+            "provenance_chain_node_id_must_be_non_empty_string",
+        )
+        creator_id = _require_non_empty_string(
+            entry[1],
+            "provenance_chain_creator_id_must_be_non_empty_string",
+        )
+        if node_id in seen_node_ids:
+            raise ValueError("provenance_chain_contains_duplicate_node_id")
+        seen_node_ids.add(node_id)
+        normalized.append((node_id, creator_id))
+    return tuple(normalized)
 
 
 def _normalize_member_stakes(members: object) -> dict[str, Decimal]:
@@ -205,19 +243,8 @@ def settle_attribution_batch(
 
         elif attr_event.edge_type == EdgeType.PROVENANCE:
             # CDL-084 §3.4: PROVENANCE chain attribution.
-            # Q10: None/empty chain is malformed — PROVENANCE always has ancestors.
-            chain = attr_event.provenance_chain
-            if chain is None:
-                raise ValueError("provenance_event_missing_chain")
-            if len(chain) == 0:
-                raise ValueError("provenance_event_empty_chain")
-
-            # Q7: reject duplicate node_ids — indicates cyclic or malformed lineage.
-            seen_node_ids: set[str] = set()
-            for node_id, _ in chain:
-                if node_id in seen_node_ids:
-                    raise ValueError("provenance_chain_contains_duplicate_node_id")
-                seen_node_ids.add(node_id)
+            # Q10: malformed chains fail closed with stable error tokens before payout.
+            chain = _validate_provenance_chain(attr_event.provenance_chain)
 
             # Q5/Q7: pay each creator at most once per event; nearest hop wins.
             visited_creators: set[str] = set()
