@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from decimal import Decimal
 
 from ilc_core.economics import passive_ecu_attribution_runtime as passive_runtime
 from ilc_core.network.d2d import centrality_delta_gossip_runtime as gossip_runtime
@@ -31,7 +32,7 @@ def test_passive_runtime_rejects_non_finite_quality_scores() -> None:
 def test_passive_runtime_rejects_non_finite_base_reward() -> None:
     for invalid in (math.inf, -math.inf, math.nan):
         try:
-            passive_runtime.compute_passive_ecu(invalid, 0.5, 0.5)
+            passive_runtime.compute_passive_ecu(invalid, Decimal("0.5"), Decimal("0.5"))
         except ValueError as exc:
             assert str(exc) == 'base_reward_must_be_non_negative_float'
         else:
@@ -41,7 +42,7 @@ def test_passive_runtime_rejects_non_finite_base_reward() -> None:
 def test_passive_runtime_rejects_non_finite_or_out_of_range_centrality_scores() -> None:
     for invalid in (math.inf, -math.inf, math.nan, 1.01):
         try:
-            passive_runtime.compute_passive_ecu(1.0, invalid, 0.5)
+            passive_runtime.compute_passive_ecu(Decimal("1"), invalid, Decimal("0.5"))
         except ValueError as exc:
             assert str(exc) == 'centrality_score_must_be_non_negative_float'
         else:
@@ -69,4 +70,6 @@ def test_gossip_accumulator_caps_centrality_before_passive_ecu_runtime() -> None
         gossip_runtime.commit_epoch_buffer(1, state)
         committed_score = state['node-cap']
     assert committed_score == gossip_runtime.CENTRALITY_SCORE_CAP
-    assert passive_runtime.compute_passive_ecu(1.0, committed_score, 0.5) == 0.15
+    assert passive_runtime.compute_passive_ecu(
+        Decimal("1"), Decimal(str(committed_score)), Decimal("0.5")
+    ) == Decimal("0.150000000000")

@@ -9,6 +9,7 @@ import sys
 import time
 from collections import Counter
 from dataclasses import asdict, dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -28,6 +29,7 @@ from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_e
 from ilc_core.economics.reward import simple_claim_reward
 from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
 from ilc_core.identity.agent_id_runtime import derive_agent_id
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.network.d2d.http_gossip_transport_runtime import (
     HttpGossipTransportRuntime,
     TransportRuntimeConfig,
@@ -107,8 +109,19 @@ class EcuClaim:
     epoch: int
     agent_id: str
     claim_kind: str
-    amount: float
+    amount: Decimal
     basis: dict[str, Any]
+
+
+def _claim_to_payload(claim: EcuClaim) -> dict[str, Any]:
+    payload = asdict(claim)
+    payload["amount"] = decimal_to_canonical_string(claim.amount)
+    basis = dict(claim.basis)
+    for key, value in tuple(basis.items()):
+        if isinstance(value, Decimal):
+            basis[key] = decimal_to_canonical_string(value)
+    payload["basis"] = basis
+    return payload
 
 
 class AgentLoopRuntimeError(ValueError):
@@ -578,13 +591,17 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
     confidence_score = _require_float("confidence_score", panel.get("confidence_score"))
     agreement_score = _require_float("agreement_score", panel.get("agreement_score"))
     ecu_estimate = _require_float("ecu_estimate", task.get("ecu_estimate"))
-    base_reward = round(
-        simple_claim_reward(
-            stake_spent=ecu_estimate,
-            potential=confidence_score,
-            success_rate=agreement_score,
-        ),
-        12,
+    base_reward = Decimal(
+        str(
+            round(
+                simple_claim_reward(
+                    stake_spent=ecu_estimate,
+                    potential=confidence_score,
+                    success_rate=agreement_score,
+                ),
+                12,
+            )
+        )
     )
     passive_amount = compute_passive_ecu(
         base_reward,
@@ -637,7 +654,7 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
         )
 
     ledger = SimpleEpochLedger()
-    total_reward = round(sum(claim.amount for claim in claims), 12)
+    total_reward = round(sum((claim.amount for claim in claims), Decimal("0")), 12)
     ledger.record_task(int(task["epoch"]), ecu_estimate, total_reward)
 
     outcomes = OutcomeLogger()
@@ -651,17 +668,26 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
         )
     )
 
+    outcome_summary = outcomes.summary()
     return {
         "marker": "agent_loop_claims_ok",
         "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
-        "claims": [asdict(claim) for claim in claims],
+        "claims": [_claim_to_payload(claim) for claim in claims],
         "ledger": {
             "tasks": ledger.get_epoch_stats(int(task["epoch"])).tasks,
-            "ecu_spent": ledger.get_epoch_stats(int(task["epoch"])).ecu_spent,
-            "rewards_paid": ledger.get_epoch_stats(int(task["epoch"])).rewards_paid,
+            "ecu_spent": decimal_to_canonical_string(
+                ledger.get_epoch_stats(int(task["epoch"])).ecu_spent
+            ),
+            "rewards_paid": decimal_to_canonical_string(
+                ledger.get_epoch_stats(int(task["epoch"])).rewards_paid
+            ),
             "clearing_price": ledger.clearing_price(int(task["epoch"])),
         },
-        "outcome_summary": outcomes.summary(),
+        "outcome_summary": {
+            "count": outcome_summary["count"],
+            "total_stake": decimal_to_canonical_string(outcome_summary["total_stake"]),
+            "total_reward": decimal_to_canonical_string(outcome_summary["total_reward"]),
+        },
     }
 
 

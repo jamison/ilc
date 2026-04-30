@@ -168,7 +168,7 @@ def _node_from_submission(submission: dict[str, Any]) -> Node:
         content=content,
         agent_id=agent_id,
         signature=f"agent-loop-submission:{output_hash[:24]}",
-        net_stake=float(ecu_estimate_decimal),
+        net_stake=ecu_estimate_decimal,
     )
     node.id = node.compute_id()
     return node
