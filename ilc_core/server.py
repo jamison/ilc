@@ -1,6 +1,7 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 import logging
 from contextlib import asynccontextmanager
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 import shutil
 import tempfile
@@ -121,6 +122,22 @@ def _state(request: Request):
     return state
 
 
+def _parse_decimal_amount(raw: object, error_token: str) -> Decimal:
+    if isinstance(raw, bool):
+        raise ValueError(error_token)
+    if not isinstance(raw, (Decimal, int, str)):
+        raise ValueError(error_token)
+    try:
+        amount = raw if isinstance(raw, Decimal) else Decimal(str(raw))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(error_token) from exc
+    if not amount.is_finite():
+        raise ValueError(f"{error_token}_non_finite")
+    if amount < Decimal("0"):
+        raise ValueError(f"{error_token}_negative")
+    return amount
+
+
 # Request Models
 class ClaimRequest(BaseModel):
     content: str
@@ -131,21 +148,21 @@ class ProtocolClaimRequest(BaseModel):
     agent_id: str
     content: str
     parent_ids: Optional[List[str]] = None
-    net_stake: Optional[float] = None
+    net_stake: Optional[str] = None
 
 class ProtocolRefuteRequest(BaseModel):
     agent_id: str
     content: str
     target_claim_id: str
-    net_stake: Optional[float] = None
+    net_stake: Optional[str] = None
 
 class ProtocolTaskOutcomeRequest(BaseModel):
     task_type: str
     domain: str
     agent_id: str
     epoch: Optional[int] = None
-    stake_spent: float
-    reward_paid: float
+    stake_spent: str
+    reward_paid: str
     success: bool
 
 @router.get("/")
@@ -239,13 +256,22 @@ def get_protocol_schema():
 @router.post("/v1/protocol/claim")
 def submit_protocol_claim(req: ProtocolClaimRequest):
     # Build a Node; keep it simple and deterministic
+    try:
+        net_stake = (
+            _parse_decimal_amount(req.net_stake, "protocol_claim_net_stake_invalid")
+            if req.net_stake is not None
+            else Decimal("0")
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     node = Node(
         id="", # Will be computed
         type="claim",
         content=req.content,
         agent_id=req.agent_id,
         signature="api_signed",
-        net_stake=req.net_stake or 0.0,
+        net_stake=net_stake,
     )
     node.id = node.compute_id()
 
@@ -258,13 +284,22 @@ def submit_protocol_claim(req: ProtocolClaimRequest):
 
 @router.post("/v1/protocol/refute")
 def submit_protocol_refute(req: ProtocolRefuteRequest):
+    try:
+        net_stake = (
+            _parse_decimal_amount(req.net_stake, "protocol_refute_net_stake_invalid")
+            if req.net_stake is not None
+            else Decimal("0")
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     node = Node(
         id="",
         type="refutation",
         content=req.content,
         agent_id=req.agent_id,
         signature="api_signed",
-        net_stake=req.net_stake or 0.0,
+        net_stake=net_stake,
         target_id=req.target_claim_id
     )
     node.id = node.compute_id()
@@ -274,11 +309,21 @@ def submit_protocol_refute(req: ProtocolRefuteRequest):
 
 @router.post("/v1/protocol/task_outcome")
 def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
+    try:
+        stake_spent = _parse_decimal_amount(
+            req.stake_spent, "protocol_task_outcome_stake_spent_invalid"
+        )
+        reward_paid = _parse_decimal_amount(
+            req.reward_paid, "protocol_task_outcome_reward_paid_invalid"
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     outcome = TaskOutcome(
         task_type=req.task_type,
         domain=req.domain,
-        stake_spent=req.stake_spent,
-        reward_paid=req.reward_paid,
+        stake_spent=stake_spent,
+        reward_paid=reward_paid,
         success=req.success,
     )
     proto = outcome_to_protocol_task_outcome(

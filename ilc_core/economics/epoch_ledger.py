@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from typing import Dict
 
 
 @dataclass
 class EpochStats:
     tasks: int = 0
-    ecu_spent: float = 0.0
-    rewards_paid: float = 0.0
+    ecu_spent: Decimal = Decimal("0")
+    rewards_paid: Decimal = Decimal("0")
 
 
 class SimpleEpochLedger:
@@ -23,11 +24,11 @@ class SimpleEpochLedger:
     def __init__(self) -> None:
         self.epochs: Dict[int, EpochStats] = {}
 
-    def record_task(self, epoch: int, ecu_spent: float, reward: float) -> None:
+    def record_task(self, epoch: int, ecu_spent: Decimal, reward: Decimal) -> None:
         stats = self.epochs.setdefault(epoch, EpochStats())
         stats.tasks += 1
-        stats.ecu_spent += float(ecu_spent)
-        stats.rewards_paid += float(reward)
+        stats.ecu_spent += _coerce_decimal(ecu_spent, "epoch_ledger_ecu_spent_invalid")
+        stats.rewards_paid += _coerce_decimal(reward, "epoch_ledger_reward_invalid")
 
     def get_epoch_stats(self, epoch: int) -> EpochStats:
         return self.epochs.get(epoch, EpochStats())
@@ -43,7 +44,7 @@ class SimpleEpochLedger:
             agg.rewards_paid += stats.rewards_paid
         return agg
 
-    def clearing_price(self, epoch: int | None = None, eps: float = 1e-9) -> float:
+    def clearing_price(self, epoch: int | None = None, eps: Decimal = Decimal("1e-9")) -> float:
         """
         If epoch is None -> use aggregate across all epochs.
         Otherwise -> use that epoch's stats.
@@ -55,6 +56,24 @@ class SimpleEpochLedger:
         else:
             stats = self.get_epoch_stats(epoch)
 
-        if stats.ecu_spent <= 0.0:
+        if stats.ecu_spent <= Decimal("0"):
             return 0.0
-        return stats.rewards_paid / max(eps, stats.ecu_spent)
+        # Price signal only: balances remain Decimal, but the sandbox exposes
+        # this derived ratio as float for existing plotting/telemetry callers.
+        return float(stats.rewards_paid / max(eps, stats.ecu_spent))
+
+
+def _coerce_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if not isinstance(value, (Decimal, int, float, str)):
+        raise ValueError(token)
+    try:
+        amount = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(token) from exc
+    if not amount.is_finite():
+        raise ValueError(f"{token}_non_finite")
+    if amount < Decimal("0"):
+        raise ValueError(f"{token}_negative")
+    return amount

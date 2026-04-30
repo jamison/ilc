@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -95,7 +96,7 @@ def test_panel_pass_and_ecu_claim_flow_are_deterministic() -> None:
     assert len(claims) == 6
     direct = next(claim for claim in claims if claim["claim_kind"] == "direct")
     passive = next(claim for claim in claims if claim["claim_kind"] == "passive")
-    assert direct["amount"] > passive["amount"]
+    assert Decimal(direct["amount"]) > Decimal(passive["amount"])
     assert claim_payload["ledger"]["rewards_paid"] == claim_payload["outcome_summary"]["total_reward"]
 
 
