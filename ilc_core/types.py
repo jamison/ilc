@@ -72,15 +72,14 @@ class WeightParams:
 # PROVENANCE_MAX_DEPTH: max hops for provenance chain attribution traversal.
 #   N=3 is the provisional cap; CDL may adjust after SIM-REUSE-01.
 # PROVENANCE_DECAY_ALPHA: geometric decay per provenance hop (α < 1 ensures
-#   convergence). 0.5 is provisional; predictive-coding stability criterion
-#   requires α < 1. CDL locks the final value.
+#   convergence). Locked Phase 1126 from SIM-PROVENANCE-01 Run 02 evidence.
 # STAR_NODE_MIN_STAKE_ECU: minimum member stake floor for CO_AUTHORSHIP star
 #   nodes (H-CON-01 Q2 = Option A, 1 ECU). CDL-ratified when H-CON-01 opens.
 # ---------------------------------------------------------------------------
 REUSE_ATTRIBUTION_RATE: Decimal = Decimal("0.20")       # CDL-081 ratified Phase 943
 EDGE_MINT_PHI_BOUND: Optional[float] = None             # pending Werner edge-minting CDL
 PROVENANCE_MAX_DEPTH: int = 3                            # provisional; CDL required to change
-PROVENANCE_DECAY_ALPHA: Decimal = Decimal("0.5")         # Q9: CDL-084 locks mechanism; SIM-PROVENANCE-01 refines value
+PROVENANCE_DECAY_ALPHA: Decimal = Decimal("0.45")        # Q2: q2_geometric_decay_alpha_decimal_0_45_locked
 CDL_084_TYPES_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
 STAR_NODE_MIN_STAKE_ECU: Decimal = Decimal("1")          # H-CON-01 Q2 Option A; CDL-ratified on open
 

@@ -117,18 +117,18 @@ def test_g4_harness_alpha_candidates_are_decimal() -> None:
     ]
 
 
-def test_g4_production_provenance_alpha_remains_decimal_0_5() -> None:
+def test_g4_production_provenance_alpha_locked_decimal_0_45() -> None:
     assert isinstance(PROVENANCE_DECAY_ALPHA, Decimal)
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
 
 
 # G5 — Production settlement path unchanged
 
 
-def test_g5_settle_runtime_version_remains_phase_1114_v0_3() -> None:
+def test_g5_settle_runtime_version_is_phase_1126_v0_4() -> None:
     assert (
         EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
-        == "epoch_attribution_settle_runtime_1114.v0.3"
+        == "epoch_attribution_settle_runtime_1126.v0.4"
     )
 
 
@@ -165,9 +165,9 @@ def test_g5_three_hop_provenance_decay_mapping_unchanged() -> None:
     )
     batch.seal()
     assert settle_attribution_batch(batch, stake_map={}) == [
-        ("creator_1", Decimal("0.100")),
-        ("creator_2", Decimal("0.0500")),
-        ("creator_3", Decimal("0.02500")),
+        ("creator_1", Decimal("0.0900")),
+        ("creator_2", Decimal("0.040500")),
+        ("creator_3", Decimal("0.01822500")),
     ]
 
 

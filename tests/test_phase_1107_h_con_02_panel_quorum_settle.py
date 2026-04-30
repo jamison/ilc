@@ -163,8 +163,8 @@ def test_g4b_refuting_agent_id_is_payout_recipient():
 # ---------------------------------------------------------------------------
 
 
-def test_g5_version_token_phase_1106():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1114.v0.3"
+def test_g5_version_token_phase_1126():
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
 
 
 # ---------------------------------------------------------------------------

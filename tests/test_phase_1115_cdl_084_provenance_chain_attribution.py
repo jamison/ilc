@@ -61,8 +61,8 @@ def test_g1_provenance_max_depth_is_three_int():
     assert isinstance(PROVENANCE_MAX_DEPTH, int)
 
 
-def test_g1_provenance_decay_alpha_is_decimal_half():
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+def test_g1_provenance_decay_alpha_is_decimal_0_45():
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
     assert isinstance(PROVENANCE_DECAY_ALPHA, Decimal)
 
 
@@ -92,7 +92,7 @@ def test_g2_types_dependency_token():
 
 
 def test_g2_runtime_version_token():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1114.v0.3"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
 
 
 # ---------------------------------------------------------------------------
@@ -356,4 +356,3 @@ def test_g14_max_depth_batch_returns_str_decimal_tuples():
     assert len(payouts) == 3
     assert all(isinstance(agent_id, str) for agent_id, _ in payouts)
     assert all(isinstance(amount, Decimal) for _, amount in payouts)
-

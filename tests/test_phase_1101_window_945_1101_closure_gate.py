@@ -74,7 +74,7 @@ def test_cat2_settle_runtime_version():
     from ilc_core.economics.epoch_attribution_settle_runtime import (
         EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
     )
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1114.v0.3"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
 
 
 @pytest.mark.skipif(SELFTEST_MODE, reason="selftest mode")
