@@ -54,7 +54,7 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     cfg = load_governance_config()
     consensus = ConsensusEngine(graph, governance_config=cfg)
     agent = EveAgent("agent:local_node", graph, consensus)
-    agent.wallet_balance = 1000.0
+    agent.wallet_balance = Decimal("1000")
     peer_manager = PeerManager(local_port=8000)
     public_runtime_root = Path(tempfile.mkdtemp(prefix="ilc-public-runtime-"))
     public_admission_store = LmdbAdmissionStore(public_runtime_root / "admission")
@@ -142,7 +142,7 @@ def _parse_decimal_amount(raw: object, error_token: str) -> Decimal:
 class ClaimRequest(BaseModel):
     content: str
     parent_id: str
-    stake: float
+    stake: str
 
 class ProtocolClaimRequest(BaseModel):
     agent_id: str
@@ -182,7 +182,11 @@ def mine_claim(req: ClaimRequest, request: Request):
     Public Endpoint: Ask the internal agent to perform labor.
     """
     state = _state(request)
-    node = state.agent.mine_thought(req.content, req.parent_id, req.stake)
+    try:
+        stake = _parse_decimal_amount(req.stake, "mine_claim_stake_invalid")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    node = state.agent.mine_thought(req.content, req.parent_id, stake)
     if not node:
         raise HTTPException(status_code=400, detail="Mining failed (insufficient funds?)")
     
@@ -193,7 +197,7 @@ def mine_claim(req: ClaimRequest, request: Request):
         "status": "success",
         "node_id": node.id,
         "content": node.content,
-        "net_stake": state.consensus.node_stakes.get(node.id, 0.0)
+        "net_stake": str(state.consensus.node_stakes.get(node.id, Decimal("0")))
     }
 
 @router.get("/node/{node_id}")

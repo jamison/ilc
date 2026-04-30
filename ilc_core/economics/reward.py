@@ -11,15 +11,16 @@ genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
 from typing import Optional
 from .entropy import entropy_weight
 
 
 def simple_claim_reward(
-    stake_spent: float,
-    potential: float = 0.0,
+    stake_spent: Decimal,
+    potential: Decimal = Decimal("0"),
     success_rate: float | None = None,
-) -> float:
+) -> Decimal:
     """
     Compute an entropy-weighted reward for a single claim in the economics sandbox.
 
@@ -32,27 +33,44 @@ def simple_claim_reward(
             ilc_core.economics.entropy.
 
     Returns:
-        A single float reward_paid in ILC units for this one task. The economics
+            A single Decimal reward_paid in ILC units for this one task. The economics
         sandbox uses this as a scalar signal; it does not yet model full protocol
         distribution or multi-recipient payouts.
     """
-    # 1. Base recovery of stake
-    if stake_spent < 0.0:
-        raise ValueError(f"stake_spent cannot be negative: {stake_spent}")
-    if stake_spent == 0.0:
-        return 0.0
+    stake_spent_amount = _reward_decimal(stake_spent, "reward_stake_spent_invalid")
+    potential_amount = _reward_decimal(potential, "reward_potential_invalid")
 
-    base = stake_spent
+    # 1. Base recovery of stake
+    if stake_spent_amount < Decimal("0"):
+        raise ValueError(f"stake_spent cannot be negative: {stake_spent_amount}")
+    if stake_spent_amount == Decimal("0"):
+        return Decimal("0")
+
+    base = stake_spent_amount
     
     # 2. Profit margin based on potential
     # e.g. if potential is 1.0, margin is 50%. If 0.0, margin is 0%.
-    margin = 0.5 * potential * stake_spent
+    margin = Decimal("0.5") * potential_amount * stake_spent_amount
     
     total = base + margin
 
     # 3. Optional Entropy Weighting (Phase 10)
     if success_rate is not None:
         w = entropy_weight(success_rate)
-        total *= w
+        total *= Decimal(str(w))
         
     return total
+
+
+def _reward_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if not isinstance(value, (Decimal, int, float, str)):
+        raise ValueError(token)
+    try:
+        amount = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(token) from exc
+    if not amount.is_finite():
+        raise ValueError(f"{token}_non_finite")
+    return amount

@@ -1,5 +1,6 @@
+from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, List, Optional, Literal
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_serializer, field_validator
 
 class EpistemicWorkTask(BaseModel):
     task_id: str
@@ -24,7 +25,7 @@ class EpistemicWorkTask(BaseModel):
     ]
     bounty_id: Optional[str] = None
     staking_beneficiary: Optional[str] = None
-    ecu_estimate: Optional[float] = Field(default=None, alias="ecu.estimate")
+    ecu_estimate: Optional[Decimal] = Field(default=None, alias="ecu.estimate")
     task_state: Literal[
         "proposed",
         "claimed",
@@ -42,12 +43,35 @@ class EpistemicWorkTask(BaseModel):
         protected_namespaces=(),
     )
 
+    @field_validator("ecu_estimate", mode="before")
+    @classmethod
+    def _validate_ecu_estimate(cls, value: object) -> Optional[Decimal]:
+        if value is None:
+            return None
+        if isinstance(value, bool):
+            raise ValueError("epistemic_work_task_ecu_estimate_invalid")
+        if not isinstance(value, (Decimal, int, float, str)):
+            raise ValueError("epistemic_work_task_ecu_estimate_invalid")
+        try:
+            amount = value if isinstance(value, Decimal) else Decimal(str(value))
+        except (InvalidOperation, ValueError) as exc:
+            raise ValueError("epistemic_work_task_ecu_estimate_invalid") from exc
+        if not amount.is_finite():
+            raise ValueError("epistemic_work_task_ecu_estimate_invalid_non_finite")
+        if amount < Decimal("0"):
+            raise ValueError("epistemic_work_task_ecu_estimate_invalid_negative")
+        return amount
+
+    @field_serializer("ecu_estimate")
+    def _serialize_ecu_estimate(self, value: Optional[Decimal]) -> Optional[str]:
+        return None if value is None else str(value)
+
 def ep_task_to_json(task: EpistemicWorkTask) -> Dict[str, Any]:
     """
     Serialize an EpistemicWorkTask to a JSON-serializable dict
     matching the genesis.epistemic.work.task schema (aliases included).
     """
-    return task.model_dump(by_alias=True)
+    return task.model_dump(by_alias=True, mode="json")
 
 def ep_task_from_json(data: Dict[str, Any]) -> EpistemicWorkTask:
     """

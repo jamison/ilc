@@ -34,7 +34,7 @@ def test_api_lifecycle():
     payload = {
         "content": "Hello World via API",
         "parent_id": "axiom:math:01",
-        "stake": 1.0
+        "stake": "1.0"
     }
     res = client.post("/mine", json=payload)
     assert res.status_code == 200

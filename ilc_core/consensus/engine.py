@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Callable, Dict, Optional, List, Protocol
 import math
 import logging
@@ -51,7 +51,7 @@ def _engine_update_epoch_metrics(
 
 def _engine_compute_tax_rate(
     age: float,
-    net_stake: float | Decimal
+    net_stake: Decimal
 ) -> float:
     """Helper to compute maintenance tax rate based on age and reuse."""
     # Reuse count simulated by net_stake for now.
@@ -64,14 +64,14 @@ def _engine_compute_tax_rate(
     return tax_rate
 
 def _engine_compute_bounty_amount(
-    base_stake: float,
+    base_stake: Decimal,
     age: float,
     node_id: str
-) -> float:
+) -> Decimal:
     """Helper to compute refutation bounty with paradigm shift bonus."""
     # Tuned exponent to ensure EV < 0 for looting attacks at a 1% error rate
     # (as per earlier design discussions).
-    paradigm_bonus = 0.001 * math.pow(age, 1.4)
+    paradigm_bonus = Decimal(str(0.001 * math.pow(age, 1.4)))
 
     total_bounty = base_stake + paradigm_bonus
     logger.info(
@@ -84,14 +84,17 @@ def _engine_compute_bounty_amount(
     return total_bounty
 
 def _engine_apply_slash(
-    node_stakes: Dict[str, float],
+    node_stakes: Dict[str, Decimal],
     target_id: str,
-    stake_amount: float,
-    bounty: float
+    stake_amount: Decimal,
+    bounty: Decimal
 ) -> None:
     """Helper to apply slashing and log jackpot."""
     # The Slash (very simple MVP form).
-    current = node_stakes.get(target_id, 0.0)
+    current = _engine_coerce_decimal(
+        node_stakes.get(target_id, Decimal("0")),
+        "consensus_stake_balance_invalid",
+    )
     new_balance = current - stake_amount
     node_stakes[target_id] = new_balance
 
@@ -152,8 +155,8 @@ class ConsensusEngine:
     ):
         self.graph = graph
 
-        # Ledger: Node ID -> Staked Amount (float units, interpreted later as ECU/ILC)
-        self.node_stakes: Dict[str, float] = {}
+        # Ledger: Node ID -> Staked Amount (Decimal units, interpreted later as ECU/ILC)
+        self.node_stakes: Dict[str, Decimal] = {}
 
         # Capital / sponsorship relationships (for independence checks).
         self.sponsor_graph = SponsorGraph()
@@ -215,7 +218,7 @@ class ConsensusEngine:
     # ------------------------------------------------------------------
     # Staking and fee enforcement
     # ------------------------------------------------------------------
-    def register_stake(self, node_id: str, amount: float) -> bool:
+    def register_stake(self, node_id: str, amount: Decimal) -> bool:
         """
         Called when an agent supports a node by staking on it.
 
@@ -225,37 +228,41 @@ class ConsensusEngine:
         - Treat 'amount' as denomination-compatible with the ECU fee,
           leaving the monetary layer to convert ECU <-> ILC externally.
         """
-        if amount < 0:
+        stake_amount = _engine_coerce_decimal(amount, "consensus_stake_invalid")
+        if stake_amount < Decimal("0"):
             raise InsufficientStakeError(
                 node_id,
-                stake=amount,
-                required=0.0,
+                stake=stake_amount,
+                required=Decimal("0"),
                 message="Cannot stake negative amount",
             )
 
         # Minimum ECU-based fee for submitting/supporting a claim.
         required_fee = self.governance.get_task_fee_ecu("claim.submit")
 
-        if amount < required_fee:
+        if stake_amount < required_fee:
             logger.warning(
-                "consensus_stake_rejected node=%s stake=%.4f min_fee=%.4f",
+                "consensus_stake_rejected node=%s stake=%s min_fee=%s",
                 node_id[:8],
-                amount,
+                stake_amount,
                 required_fee,
             )
             return False
 
-        current = self.node_stakes.get(node_id, 0.0)
-        self.node_stakes[node_id] = current + amount
+        current = _engine_coerce_decimal(
+            self.node_stakes.get(node_id, Decimal("0")),
+            "consensus_stake_balance_invalid",
+        )
+        self.node_stakes[node_id] = current + stake_amount
 
         logger.info(
-            "consensus_stake_accepted node=%s stake=%.4f min_fee=%.4f",
+            "consensus_stake_accepted node=%s stake=%s min_fee=%s",
             node_id[:8],
-            amount,
+            stake_amount,
             required_fee,
         )
         logger.info(
-            "consensus_stake_total node=%s net=%.4f",
+            "consensus_stake_total node=%s net=%s",
             node_id[:8],
             self.node_stakes[node_id],
         )
@@ -335,18 +342,21 @@ class ConsensusEngine:
             Total bounty amount in generic units (to be interpreted by the
             monetary layer as ILC denominated reward later).
         """
-        base_stake = self.node_stakes.get(node.id, 0.0)
+        base_stake = _engine_coerce_decimal(
+            self.node_stakes.get(node.id, Decimal("0")),
+            "consensus_stake_balance_invalid",
+        )
         age = self.get_node_age(node)
         return _engine_compute_bounty_amount(base_stake, age, node.id)
 
-    def process_edge(self, edge: EdgeEventLike, stake_amount: float = 0.0) -> None:
+    def process_edge(self, edge: EdgeEventLike, stake_amount: Decimal = Decimal("0")) -> None:
         """Dispatch edge processing based on type."""
         if edge.type == "refutes":
             self.process_contradiction(edge.target_id, stake_amount)
         elif edge.type == "supersedes":
             self.process_update(edge)
 
-    def process_contradiction(self, target_id: str, stake_amount: float) -> None:
+    def process_contradiction(self, target_id: str, stake_amount: Decimal) -> None:
         """
         Handle a contradiction/refutation attempt against a target node.
 
@@ -363,7 +373,12 @@ class ConsensusEngine:
 
         bounty = self.calculate_refutation_bounty(node)
         
-        _engine_apply_slash(self.node_stakes, target_id, stake_amount, bounty)
+        _engine_apply_slash(
+            self.node_stakes,
+            target_id,
+            _engine_coerce_decimal(stake_amount, "consensus_refutation_stake_invalid"),
+            bounty,
+        )
 
     # ------------------------------------------------------------------
     # Supersedes / evolution handling
@@ -388,7 +403,7 @@ class ConsensusEngine:
                 old_id[:8],
             )
             logger.info(
-                "consensus_supersedes_preserved old=%s stake=%.4f",
+                "consensus_supersedes_preserved old=%s stake=%s",
                 old_id[:8],
                 self.node_stakes[old_id],
             )
@@ -421,4 +436,18 @@ class ConsensusEngine:
         if node.type == "genesis":
             return True
 
-        return self.node_stakes.get(node_id, 0.0) > 0.0
+        return self.node_stakes.get(node_id, Decimal("0")) > Decimal("0")
+
+
+def _engine_coerce_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if not isinstance(value, (Decimal, int, float, str)):
+        raise ValueError(token)
+    try:
+        amount = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(token) from exc
+    if not amount.is_finite():
+        raise ValueError(f"{token}_non_finite")
+    return amount

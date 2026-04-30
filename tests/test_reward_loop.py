@@ -1,5 +1,6 @@
 import sys
 import os
+from decimal import Decimal
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
@@ -9,7 +10,7 @@ from ilc_core.config import load_governance_config
 from ilc_core.economics.reward import simple_claim_reward
 
 
-def _make_agent(starting_balance: float = 5.0):
+def _make_agent(starting_balance: Decimal = Decimal("5.0")):
     graph = EpistemicGraph()
     graph.load_genesis()
     cfg = load_governance_config()
@@ -31,7 +32,7 @@ def test_simple_claim_reward_monotonic():
 
 
 def test_agent_can_recover_balance_with_rewards():
-    graph, engine, agent = _make_agent(starting_balance=5.0)
+    graph, engine, agent = _make_agent(starting_balance=Decimal("5.0"))
     parent = "axiom:math:01"
 
     # Mine a few claims with rewards
@@ -40,10 +41,10 @@ def test_agent_can_recover_balance_with_rewards():
         node = agent.auto_mine_claim(f"reward-test-{i}", parent)
         if node is None:
             break
-        spent = max(0.0, pre - agent.wallet_balance)
+        spent = max(Decimal("0"), pre - agent.wallet_balance)
         reward = simple_claim_reward(spent, agent.trust_vector.get("potential", 0.0))
         agent.receive_reward(reward)
 
     # Agent should not be completely bankrupt; balance should be > 0
     # In fact, with current toy reward logic (base + boost), they should profit.
-    assert agent.wallet_balance > 0.0
+    assert agent.wallet_balance > Decimal("0")
