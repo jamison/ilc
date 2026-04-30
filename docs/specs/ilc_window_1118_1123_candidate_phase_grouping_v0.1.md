@@ -407,6 +407,10 @@ as the format reference.
 2. Phase 1119 Commit 1 (PRNG kill) must precede Commit 2 (ECU path); Commit 2 must precede Commit 3.
 3. FLOAT-KILL-01 Commits 1+2 must complete before SIM-PROVENANCE-01 commissioning begins.
    (Commit 3 / FLOAT-KILL-02 need not be complete — SIM imports only Decimal-clean paths.)
+   Exception: if Phase 1119 Commit 1 or Commit 2 discovers direct float/PRNG contamination
+   of the PROVENANCE simulation path (`epoch_attribution_settle_runtime.py`, `ilc_core/types.py`,
+   or their SIM-PROVENANCE-01 imports), stop and escalate; SIM-PROVENANCE-01 may not
+   commission until the contamination is resolved.
 4. SIM-PROVENANCE-01 commissioning must precede SIM-PROVENANCE-01 execution.
 5. All phases 1118–1122 must precede Phase 1123 (coherence cites all window work; gate
    cites coherence).
