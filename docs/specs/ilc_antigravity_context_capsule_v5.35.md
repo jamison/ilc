@@ -95,8 +95,9 @@ This is the active forward-pointer register. Preserve these rows into v5.36+ unt
 
 | Item | Status | Gate / sequencing |
 |------|--------|-------------------|
-| **SIM-PROVENANCE-01** | **Obligated** — alpha provisional; must execute before alpha locks | CDL-084 Q2 + Q8. Commissioning spec must require per-node PROVENANCE descendant count logging as a time series, not epoch snapshots, for SIM-SPECTRAL-02 correlation testing. |
+| **SIM-PROVENANCE-01** | **Obligated** — alpha provisional; must execute before alpha locks | CDL-084 Q2 + Q8. Commissioning spec must require per-node PROVENANCE descendant count logging as a time series, not epoch snapshots, for SIM-SPECTRAL-02 correlation testing. AutoResearch-pattern harness spec: `program.md` objective/metric file, mutable `sim_provenance_01.py`, and evaluator returning Gini/concentration, mint surface, alpha sensitivity, and descendant-count time series. |
 | **SIM-SPECTRAL-02** | **Deferred** — non-canonical research direction | Sequence: CDL-084 done -> SIM-PROVENANCE-01 -> SIM-SPECTRAL-02. Tests whether PROVENANCE reach correlates with Popperian durability (falsification-resistance, not objective truth). Plan: `docs/research/ilc_relative_directional_energy_meter_and_epistemic_efficiency_plan_v0.1.md`. |
+| **SIM-ECU-STABILITY-01** | **Candidate — not authorized** | Next-window planning item only. Multi-source ECU mint/flow/spend stress simulation using an AutoResearch fixed-evaluator pattern. Candidate metrics: `mint_per_verified_work` bounded, payout concentration threshold, treasury stress drawdown bounded, no self-reward loop, productive-vs-churn ratio, and no positive-feedback inflation disconnected from verified work. |
 | Werner phi-bound CDL (CDL-085 candidate) | Deferred — SIM evidence required before CDL can open | Carried from Window 1109 handoff |
 | ADR-0035 implementation CDL | Deferred — direction accepted Phase 1100; no CDL vehicle yet | Planning/authorization gate remains |
 | star expansion implementation | Deferred — CDL prerequisites satisfied (CDL-081, CDL-083) and SIM-REUSE-01 complete; implementation blocked on H-011 patent assessment, planning review, and explicit human authorization | Planning review before implementation CDL |
@@ -147,3 +148,4 @@ Combined scoped regression: 142 tests.
 `provenance_settlement_active_phase_1114`
 `sim_provenance_01_required_before_alpha_locked`
 `sim_spectral_02_sequenced_after_sim_provenance_01`
+`sim_ecu_stability_01_candidate_not_authorized`
