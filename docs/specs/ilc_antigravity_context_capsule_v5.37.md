@@ -60,7 +60,7 @@ Next fresh CDL number remains **CDL-085**.
 
 | Constant | Value | Phase |
 |----------|-------|-------|
-| `EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION` | `"epoch_attribution_settle_runtime_1126.v0.4"` | 1126 |
+| `EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION` | `"epoch_attribution_settle_runtime_1129_fix1.v0.5"` | 1129 Fix1 |
 | `CDL_084_DEPENDENCY` | `"cdl_084_provenance_chain_attribution_ratified_1113.v0.1"` | 1113 (unchanged) |
 | `CDL_084_TYPES_DEPENDENCY` | `"cdl_084_provenance_chain_attribution_ratified_1113.v0.1"` | 1113 (unchanged) |
 | `PROVENANCE_DECAY_ALPHA` | `Decimal("0.45")` — **locked Phase 1126** | 1126 |

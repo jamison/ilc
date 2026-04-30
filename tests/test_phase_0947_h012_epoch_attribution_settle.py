@@ -403,7 +403,7 @@ def test_g8_ignored_edge_types_produce_no_payouts():
 
 def test_g9_version_token():
     """Runtime version token is correct and present."""
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
     assert EPOCH_ATTRIBUTION_BATCH_VERSION == "epoch_attribution_batch.v0.2"
     assert "stub" not in EPOCH_ATTRIBUTION_BATCH_VERSION
 

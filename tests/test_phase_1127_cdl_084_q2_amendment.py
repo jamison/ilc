@@ -58,7 +58,7 @@ def test_e5_historical_phase_1113_commit_shows_old_alpha():
 
 
 def test_e6_runtime_version_v0_4():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
 
 
 def test_e7_three_hop_provenance_payout_alpha_0_45():
