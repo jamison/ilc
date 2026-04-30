@@ -40,9 +40,9 @@ def test_c5_capsule_records_q2_active_alpha_amendment_pending() -> None:
     assert "SIM recommendation `α=0.45`" in text or "SIM recommendation: `α=0.45`" in text
 
 
-def test_c6_production_alpha_remains_decimal_0_5() -> None:
+def test_c6_production_alpha_locked_decimal_0_45() -> None:
     assert isinstance(PROVENANCE_DECAY_ALPHA, Decimal)
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
 
 
 def test_c7_coherence_report_exists_with_pass_verdict() -> None:

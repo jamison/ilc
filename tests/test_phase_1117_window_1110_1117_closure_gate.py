@@ -124,7 +124,7 @@ def test_cat3_historical_phase_1111_commit_was_open():
 
 
 def test_cat4_provenance_alpha_is_decimal_not_float():
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
     assert isinstance(PROVENANCE_DECAY_ALPHA, Decimal)
     assert not isinstance(PROVENANCE_DECAY_ALPHA, float)
 
@@ -145,8 +145,8 @@ def test_cat4_runtime_dependency_token_is_ratified_1113():
     assert CDL_083_DEPENDENCY == "cdl_083_h_con_02_ratified_1105.v0.1"
 
 
-def test_cat4_runtime_version_is_phase_1114_v0_3():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1114.v0.3"
+def test_cat4_runtime_version_is_phase_1126_v0_4():
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
 
 
 def test_cat4_attribution_event_has_provenance_chain_field():
@@ -154,9 +154,9 @@ def test_cat4_attribution_event_has_provenance_chain_field():
 
 
 def test_cat4_decimal_exponent_arithmetic_is_exact():
-    assert PROVENANCE_DECAY_ALPHA**1 == Decimal("0.5")
-    assert PROVENANCE_DECAY_ALPHA**2 == Decimal("0.25")
-    assert PROVENANCE_DECAY_ALPHA**3 == Decimal("0.125")
+    assert PROVENANCE_DECAY_ALPHA**1 == Decimal("0.45")
+    assert PROVENANCE_DECAY_ALPHA**2 == Decimal("0.2025")
+    assert PROVENANCE_DECAY_ALPHA**3 == Decimal("0.091125")
 
 
 def test_cat5_three_hop_provenance_payouts_are_geometric():
@@ -181,9 +181,9 @@ def test_cat5_four_hop_chain_truncates_to_max_depth():
         _provenance_event((("n1", "c1"), ("n2", "c2"), ("n3", "c3"), ("n4", "c4")))
     )
     assert payouts == [
-        ("c1", Decimal("0.100")),
-        ("c2", Decimal("0.0500")),
-        ("c3", Decimal("0.02500")),
+        ("c1", Decimal("0.0900")),
+        ("c2", Decimal("0.040500")),
+        ("c3", Decimal("0.01822500")),
     ]
 
 
@@ -225,7 +225,7 @@ def test_cat5_duplicate_creator_uses_nearest_hop_wins():
     payouts = _settle_event(
         _provenance_event((("n1", "c1"), ("n2", "c2"), ("n3", "c1")))
     )
-    assert payouts == [("c1", Decimal("0.100")), ("c2", Decimal("0.0500"))]
+    assert payouts == [("c1", Decimal("0.0900")), ("c2", Decimal("0.040500"))]
 
 
 def test_cat6_phase_1115_evidence_test_file_exists_and_has_31_tests():

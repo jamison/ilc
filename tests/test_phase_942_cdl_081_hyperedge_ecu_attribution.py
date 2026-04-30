@@ -137,7 +137,9 @@ def test_08_edge_mint_phi_bound_none_pending_werner_cdl():
 def test_09_provenance_constants_provisional():
     """CDL-081 §4.3: PROVENANCE constants are provisional; CDL required to change."""
     assert PROVENANCE_MAX_DEPTH == 3, "PROVENANCE_MAX_DEPTH must be 3 (provisional)"
-    assert PROVENANCE_DECAY_ALPHA == 0.5, "PROVENANCE_DECAY_ALPHA must be 0.5 (provisional)"
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45"), (
+        "PROVENANCE_DECAY_ALPHA must be Decimal('0.45') (locked Phase 1126)"
+    )
     # Stability criterion: alpha < 1 ensures geometric series converges
     assert PROVENANCE_DECAY_ALPHA < 1.0, "PROVENANCE_DECAY_ALPHA must be < 1 for convergence"
 
