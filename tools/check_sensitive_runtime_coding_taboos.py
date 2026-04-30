@@ -21,6 +21,10 @@ EXPLICIT_SCAN_FILES = {
     "ilc_core/network/d2d/http_gossip_transport_runtime.py",
 }
 
+PRNG_FORBIDDEN_FILES = {
+    "ilc_core/network/d2d/spectral_routing_runtime.py",
+}
+
 # Repo-local rule from AGENTS.md Section 7 still allows diagnostic/operator
 # timestamps. Keep that allowance explicit rather than pretending these are
 # protocol-time violations.
@@ -58,7 +62,7 @@ def _iter_python_files() -> list[Path]:
         if not root.exists():
             continue
         files.update(root.rglob("*.py"))
-    for rel_file in EXPLICIT_SCAN_FILES:
+    for rel_file in EXPLICIT_SCAN_FILES | PRNG_FORBIDDEN_FILES:
         path = REPO_ROOT / rel_file
         if path.exists():
             files.add(path)
@@ -130,11 +134,21 @@ def _is_date_today(call: ast.Call) -> bool:
     )
 
 
-def _is_random_random(call: ast.Call) -> bool:
+def _is_random_random(
+    call: ast.Call,
+    *,
+    random_module_aliases: set[str],
+    random_constructor_names: set[str],
+) -> bool:
     func = call.func
     if isinstance(func, ast.Name):
-        return func.id == "Random"
-    return isinstance(func, ast.Attribute) and func.attr == "Random" and _is_name(func.value, "random")
+        return func.id in random_constructor_names
+    return (
+        isinstance(func, ast.Attribute)
+        and func.attr == "Random"
+        and isinstance(func.value, ast.Name)
+        and func.value.id in random_module_aliases
+    )
 
 
 def _is_json_dumps(call: ast.Call) -> bool:
@@ -178,6 +192,9 @@ def find_violations() -> list[str]:
         rel = _rel(path)
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=rel)
         in_sensitive_roots = any(rel.startswith(f"{root}/") for root in SENSITIVE_SCAN_ROOTS)
+        prng_forbidden = in_sensitive_roots or rel in PRNG_FORBIDDEN_FILES
+        random_module_aliases: set[str] = set()
+        random_constructor_names: set[str] = set()
 
         if rel in NETWORK_TIMEOUT_FILES:
             network_call_seen = False
@@ -187,6 +204,17 @@ def find_violations() -> list[str]:
         for node in ast.walk(tree):
             if in_sensitive_roots and isinstance(node, ast.Assert):
                 violations.append(f"{rel}:{node.lineno}:assert_forbidden_in_sensitive_runtime")
+
+            if prng_forbidden and isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == "random":
+                        random_module_aliases.add(alias.asname or alias.name)
+                        violations.append(f"{rel}:{node.lineno}:predictable_prng_import_forbidden")
+
+            if prng_forbidden and isinstance(node, ast.ImportFrom) and node.module == "random":
+                for alias in node.names:
+                    random_constructor_names.add(alias.asname or alias.name)
+                violations.append(f"{rel}:{node.lineno}:predictable_prng_import_forbidden")
 
             if not isinstance(node, ast.Call):
                 continue
@@ -199,7 +227,11 @@ def find_violations() -> list[str]:
                 if _is_date_today(node):
                     violations.append(f"{rel}:{node.lineno}:date_today_forbidden")
 
-            if in_sensitive_roots and _is_random_random(node):
+            if prng_forbidden and _is_random_random(
+                node,
+                random_module_aliases=random_module_aliases,
+                random_constructor_names=random_constructor_names,
+            ):
                 violations.append(f"{rel}:{node.lineno}:predictable_prng_forbidden")
 
             if rel in STRICT_MACHINE_JSON_FILES and _is_json_dumps(node):

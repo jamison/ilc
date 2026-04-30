@@ -5,7 +5,7 @@ This module defines simple agents that implement the RLHook interface to
 consume economic telemetry and adapt their behavior (e.g. domain selection).
 """
 from __future__ import annotations
-import random
+import secrets
 from typing import Dict, List
 
 from .telemetry import RLHook
@@ -24,6 +24,7 @@ class SimpleBanditHook(RLHook):
     def __init__(self, domains: List[str], epsilon: float = 0.1):
         self.domains = domains
         self.epsilon = epsilon
+        self._rng = secrets.SystemRandom()
         self.counts: Dict[str, int] = {d: 0 for d in domains}
         self.values: Dict[str, float] = {d: 0.0 for d in domains}
 
@@ -33,8 +34,8 @@ class SimpleBanditHook(RLHook):
         - With probability epsilon: pick a random domain (explore).
         - Otherwise: pick the domain with highest estimated value (exploit).
         """
-        if random.random() < self.epsilon:
-            return random.choice(self.domains)
+        if self._rng.random() < self.epsilon:
+            return self._rng.choice(self.domains)
         
         # Exploit: find max value. Break ties arbitrarily (e.g. first found).
         # We can use max with key.

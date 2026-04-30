@@ -29,10 +29,9 @@
 # `run_h015_spectral_routing_runtime_verdict=pass`
 from __future__ import annotations
 
-import random as _random
 import secrets
 from dataclasses import dataclass
-from typing import Callable, List, Mapping, Optional, Tuple
+from typing import Callable, List, Mapping, Optional, Protocol, Sequence, Tuple, TypeVar
 
 from ilc_core.analysis.spectral_utils import spectral_distance
 
@@ -43,6 +42,15 @@ H014_DEPENDENCY = "run_h014_sim_routing_01_verdict=pass"
 # Default hop budget: 3 × ⌈log₂(N)⌉ at N=500 testnet = 27.
 # Callers should supply a budget matched to their network size.
 DEFAULT_MAX_HOPS: int = 27
+
+_T = TypeVar("_T")
+
+
+class _ChoiceRng(Protocol):
+    """Minimal RNG interface required by the random-walk fallback."""
+
+    def choice(self, seq: Sequence[_T]) -> _T:
+        ...
 
 
 # ---------------------------------------------------------------------------
@@ -87,7 +95,7 @@ def route(
     convergence_predicate: Callable[[str], bool],
     *,
     max_hops: int = DEFAULT_MAX_HOPS,
-    rng: Optional[_random.Random] = None,
+    rng: Optional[_ChoiceRng] = None,
 ) -> RoutingResult:
     """Route from source toward the target epistemic cluster.
 
@@ -116,11 +124,11 @@ def route(
             Maximum number of hops before declaring failure.  Defaults to
             DEFAULT_MAX_HOPS (27, calibrated for N=500 testnet per SIM-ROUTING-01).
         rng:
-            Optional random.Random or secrets.SystemRandom instance for the
-            random-walk fallback.  If None, a secrets.SystemRandom() instance
-            is used — the correct default for production routing (PRNG ban,
-            ILC Coding Security Standards §2).  Pass a seeded random.Random
-            instance in tests to get reproducible results.
+            Optional object implementing ``choice(seq)`` for the random-walk
+            fallback.  If None, a secrets.SystemRandom() instance is used — the
+            correct default for production routing (PRNG ban, ILC Coding
+            Security Standards §2).  Tests may pass a deterministic fake that
+            implements the same minimal interface.
 
     Returns:
         RoutingResult with the outcome, path (immutable tuple), and diagnostics.
@@ -253,7 +261,7 @@ def _random_walk_fallback(
     peer_adjacency: Mapping[str, List[str]],
     convergence_predicate: Callable[[str], bool],
     remaining_hops: int,
-    rng: _random.Random,
+    rng: _ChoiceRng,
 ) -> RoutingResult:
     """Random walk from `current` using the remaining hop budget.
 
@@ -263,8 +271,8 @@ def _random_walk_fallback(
     walk with a generous budget achieves 99.85–100% convergence.
 
     The rng argument must be a secrets.SystemRandom() instance for production use
-    (ILC Coding Security Standards §2).  Seeded random.Random instances are
-    accepted for deterministic testing only.
+    (ILC Coding Security Standards §2).  Deterministic test fakes are accepted
+    only when they implement the same minimal ``choice(seq)`` interface.
     """
     for _ in range(remaining_hops):
         neighbors = list(peer_adjacency.get(current, []))

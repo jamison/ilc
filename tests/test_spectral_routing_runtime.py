@@ -16,7 +16,6 @@ Tests cover:
 
 from __future__ import annotations
 
-import random
 from typing import Dict, List
 
 import pytest
@@ -37,6 +36,19 @@ from ilc_core.network.d2d.spectral_routing_runtime import (
 def _fp(v: float) -> List[float]:
     """1D fingerprint helper."""
     return [v]
+
+
+class _DeterministicChoiceRng:
+    """Minimal deterministic choice source for routing tests."""
+
+    def __init__(self, seed: int = 0):
+        self._state = seed
+
+    def choice(self, seq):
+        if not seq:
+            raise IndexError("Cannot choose from an empty sequence")
+        self._state = (self._state * 1103515245 + 12345) & 0x7FFFFFFF
+        return seq[self._state % len(seq)]
 
 
 def _make_cluster_graph() -> tuple[
@@ -223,7 +235,7 @@ def test_cycle_triggers_fallback_and_converges() -> None:
         "X": ["S", "C"],
         "C": [],
     }
-    rng = random.Random(42)
+    rng = _DeterministicChoiceRng(42)
     result = route(
         source_id="S",
         target_fingerprint=_fp(0.9),
@@ -248,7 +260,7 @@ def test_cycle_detection_does_not_revisit_before_fallback() -> None:
         "X": ["S"],   # only back-edge → cycle immediately
         "T": [],
     }
-    rng = random.Random(0)
+    rng = _DeterministicChoiceRng(0)
     result = route(
         source_id="S",
         target_fingerprint=_fp(0.9),
@@ -291,7 +303,7 @@ def test_max_hops_exhausted_during_fallback() -> None:
     # Force fallback then let budget run out.
     fps = {"S": [0.1], "X": [0.5]}
     adj: Dict[str, List[str]] = {"S": ["X"], "X": ["S"]}
-    rng = random.Random(7)
+    rng = _DeterministicChoiceRng(7)
     result = route(
         source_id="S",
         target_fingerprint=_fp(0.9),
@@ -349,7 +361,7 @@ def test_dead_end_in_fallback_phase() -> None:
         "X": ["S", "D"],
         "D": [],
     }
-    rng = random.Random(0)
+    rng = _DeterministicChoiceRng(0)
     result = route(
         source_id="S",
         target_fingerprint=_fp(0.9),
@@ -427,7 +439,7 @@ def test_seeded_rng_produces_reproducible_paths() -> None:
     # Graph with genuine randomness in the fallback phase.
     # S→X, then cycle (greedy from X picks S=visited), then fallback wanders
     # among [S, X_alt, A, B] for several hops before budget exhaustion.
-    # The key property: two independent Random(seed) instances with the same
+    # The key property: two independent fake RNG instances with the same
     # seed must produce identical paths (reproducibility is determined by seed,
     # not shared mutable state).
     fps = {"S": [0.9], "X": [0.5], "A": [0.3], "B": [0.1], "C": [0.2]}
@@ -447,11 +459,11 @@ def test_seeded_rng_produces_reproducible_paths() -> None:
             peer_adjacency=adj,
             convergence_predicate=lambda nid: False,  # never converges; path determined by rng
             max_hops=10,
-            rng=random.Random(seed),
+            rng=_DeterministicChoiceRng(seed),
         )
 
     # Same seed must always produce the same path — the core reproducibility property.
-    # Each call uses a fresh Random(99) instance; equality proves seed-determinism.
+    # Each call uses a fresh fake RNG instance; equality proves seed-determinism.
     results = [_run(99) for _ in range(5)]
     assert all(r.path == results[0].path for r in results), \
         "same seed must always produce the same path"
@@ -560,7 +572,7 @@ def test_module_does_not_wire_gossip_channel() -> None:
 
 def test_default_rng_is_system_random() -> None:
     # When no rng is passed, the fallback must use secrets.SystemRandom, not
-    # random.Random (Mersenne Twister is banned in ilc_core/ per ILC Coding
+    # Mersenne Twister is banned in ilc_core/ per ILC Coding
     # Security Standards §2 — predictable PRNG compromises Sybil protections).
     import secrets
     fps = {"S": [0.1], "X": [0.5]}
@@ -617,7 +629,7 @@ def test_equal_distance_tie_prefers_unvisited_over_fallback() -> None:
         peer_adjacency=adj,
         convergence_predicate=lambda nid: nid == "T",
         max_hops=10,
-        rng=random.Random(0),
+        rng=_DeterministicChoiceRng(0),
     )
     assert result.converged
     assert result.path[-1] == "T"
