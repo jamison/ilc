@@ -9,6 +9,7 @@ For how this is used in the economics sandbox and how it might map to future
 genesis primitives, see docs/protocol_econ_surfaces_mvp.md.
 """
 from dataclasses import dataclass
+from decimal import Decimal
 
 @dataclass
 class TaskOutcome:
@@ -21,8 +22,8 @@ class TaskOutcome:
     """
     task_type: str           # e.g. "claim.submit"
     domain: str | None       # e.g. "easy", "medium", "hard", or None
-    stake_spent: float
-    reward_paid: float
+    stake_spent: Decimal
+    reward_paid: Decimal
     success: bool | None     # None if not applicable
 
 

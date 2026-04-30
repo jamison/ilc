@@ -30,7 +30,7 @@ def test_gossip_protocol():
     payload = {
         "content": "Global Broadcast Test",
         "parent_id": "axiom:math:01",
-        "stake": 1.0
+        "stake": "1.0"
     }
     client.post("/mine", json=payload)
     

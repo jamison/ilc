@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from statistics import median
 from typing import Dict, List, Optional
 
@@ -54,14 +55,18 @@ class Governance:
         # In the MVP config, ECU is currently defined as weights for reuse /
         # contra / refine. Here we allow explicit base ECU per task_type but
         # fall back to simple defaults if not provided.
-        self.ecu_base_costs: Dict[str, float] = ecu_cfg.get("base_costs", {}) or {
+        raw_base_costs = ecu_cfg.get("base_costs", {}) or {
             # Sensible MVP defaults; can be tuned via governance:
-            "claim.submit": 0.05,
-            "audit.panel": 0.02,
-            "refute.attempt": 0.03,
-            "contradiction.sweep": 0.10,
-            "graph.compression": 0.04,
-            "star.map.embedding": 0.02,
+            "claim.submit": Decimal("0.05"),
+            "audit.panel": Decimal("0.02"),
+            "refute.attempt": Decimal("0.03"),
+            "contradiction.sweep": Decimal("0.10"),
+            "graph.compression": Decimal("0.04"),
+            "star.map.embedding": Decimal("0.02"),
+        }
+        self.ecu_base_costs: Dict[str, Decimal] = {
+            str(task_type): _to_decimal(cost, token="governance_ecu_base_cost_invalid")
+            for task_type, cost in raw_base_costs.items()
         }
 
         # --- Backlog / hotspot pricing parameters -----------------------
@@ -189,7 +194,7 @@ class Governance:
     # ------------------------------------------------------------------
     # Fee computation
     # ------------------------------------------------------------------
-    def get_task_fee_ecu(self, task_type: str) -> float:
+    def get_task_fee_ecu(self, task_type: str) -> Decimal:
         """
         Return the current ECU fee for a given task type, including
         hardware scaling and congestion.
@@ -207,17 +212,33 @@ class Governance:
 
         Returns
         -------
-        float
+        Decimal
             Fee in ECU units.
         """
-        base = float(self.ecu_base_costs.get(task_type, 0.01))
+        base = self.ecu_base_costs.get(task_type, Decimal("0.01"))
 
         # Apply hardware scaling: faster hardware => smaller base.
-        scaled = base * self.hardware_scale
+        scaled = base * Decimal(str(self.hardware_scale))
 
         # Apply congestion multiplier if enabled.
         if self.backlog_enabled:
-            scaled *= self.congestion_multiplier
+            scaled *= Decimal(str(self.congestion_multiplier))
 
         # Round to a stable number of decimals for on-chain friendliness.
-        return round(scaled, 8)
+        return scaled.quantize(Decimal("0.00000001"))
+
+
+def _to_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if not isinstance(value, (Decimal, int, float, str)):
+        raise ValueError(token)
+    try:
+        amount = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(token) from exc
+    if not amount.is_finite():
+        raise ValueError(f"{token}_non_finite")
+    if amount < Decimal("0"):
+        raise ValueError(f"{token}_negative")
+    return amount
