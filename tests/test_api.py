@@ -86,7 +86,7 @@ def test_submit_protocol_claim():
     payload = {
         "agent_id": "agent:test",
         "content": "1 + 1 = 2",
-        "net_stake": 1.0
+        "net_stake": "1.0"
     }
     response = client.post("/v1/protocol/claim", json=payload)
     assert response.status_code == 200
@@ -105,7 +105,7 @@ def test_submit_protocol_refute():
         "agent_id": "agent:refuter",
         "content": "Counter-evidence",
         "target_claim_id": "claim:demo:1",
-        "net_stake": 0.5
+        "net_stake": "0.5"
     }
     response = client.post("/v1/protocol/refute", json=payload)
     assert response.status_code == 200
@@ -123,8 +123,8 @@ def test_submit_protocol_task_outcome():
         "domain": "MEDIUM",
         "agent_id": "agent:test",
         "epoch": 3,
-        "stake_spent": 0.1,
-        "reward_paid": 0.2,
+        "stake_spent": "0.1",
+        "reward_paid": "0.2",
         "success": True,
     }
     response = client.post("/v1/protocol/task_outcome", json=payload)
@@ -135,6 +135,33 @@ def test_submit_protocol_task_outcome():
     assert outcome["task_type"] == "claim.submit"
     assert outcome["domain"] == "MEDIUM"
     assert outcome["epoch"] == 3
+
+
+def test_protocol_decimal_boundaries_reject_non_finite_values():
+    claim_response = client.post(
+        "/v1/protocol/claim",
+        json={
+            "agent_id": "agent:test",
+            "content": "non-finite stake",
+            "net_stake": "NaN",
+        },
+    )
+    assert claim_response.status_code == 400
+    assert claim_response.json()["detail"] == "protocol_claim_net_stake_invalid_non_finite"
+
+    outcome_response = client.post(
+        "/v1/protocol/task_outcome",
+        json={
+            "task_type": "claim.submit",
+            "domain": "MEDIUM",
+            "agent_id": "agent:test",
+            "stake_spent": "0.1",
+            "reward_paid": "Infinity",
+            "success": True,
+        },
+    )
+    assert outcome_response.status_code == 400
+    assert outcome_response.json()["detail"] == "protocol_task_outcome_reward_paid_invalid_non_finite"
 
 def test_get_ep_task_schema():
     """

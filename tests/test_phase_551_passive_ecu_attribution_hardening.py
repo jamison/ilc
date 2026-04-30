@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 from ilc_core.economics import passive_ecu_attribution_runtime as runtime
@@ -59,28 +60,38 @@ def _assert_phase_551_runtime_mutation_scope(commit_ref: str) -> None:
 
 
 def test_cap_binding_proof_scales_with_base_reward() -> None:
-    assert runtime.compute_passive_ecu(10.0, 1.0, 1.0) == 1.5
+    assert runtime.compute_passive_ecu(
+        Decimal("10"), Decimal("1"), Decimal("1")
+    ) == Decimal("1.500000000000")
 
 
 def test_quality_factor_extremes_produce_expected_passive_ecu_values() -> None:
-    assert runtime.compute_passive_ecu(1.0, 0.5, 0.0) == 0.085
-    assert runtime.compute_passive_ecu(1.0, 0.5, 1.0) == 0.115
+    assert runtime.compute_passive_ecu(
+        Decimal("1"), Decimal("0.5"), Decimal("0")
+    ) == Decimal("0.085000000000")
+    assert runtime.compute_passive_ecu(
+        Decimal("1"), Decimal("0.5"), Decimal("1")
+    ) == Decimal("0.115000000000")
 
 
 def test_decay_floor_boundary_is_inclusive_for_quality_extremes() -> None:
-    assert runtime.compute_passive_ecu(1.0, runtime.DECAY_FLOOR, 0.0) > 0.0
-    assert runtime.compute_passive_ecu(1.0, runtime.DECAY_FLOOR, 1.0) > 0.0
+    assert runtime.compute_passive_ecu(
+        Decimal("1"), runtime.DECAY_FLOOR, Decimal("0")
+    ) > Decimal("0")
+    assert runtime.compute_passive_ecu(
+        Decimal("1"), runtime.DECAY_FLOOR, Decimal("1")
+    ) > Decimal("0")
 
 
 def test_authorship_primacy_holds_for_full_grid() -> None:
-    for centrality_score in (0.05, 0.5, 1.0):
-        for q_i in (0.0, 0.5, 1.0):
-            assert runtime.compute_passive_ecu(1.0, centrality_score, q_i) < 1.0
+    for centrality_score in (Decimal("0.05"), Decimal("0.5"), Decimal("1")):
+        for q_i in (Decimal("0"), Decimal("0.5"), Decimal("1")):
+            assert runtime.compute_passive_ecu(Decimal("1"), centrality_score, q_i) < Decimal("1")
 
 
 def test_negative_base_reward_raises_value_error() -> None:
     try:
-        runtime.compute_passive_ecu(-1.0, 0.5, 0.5)
+        runtime.compute_passive_ecu(Decimal("-1"), Decimal("0.5"), Decimal("0.5"))
     except ValueError as exc:
         assert str(exc) == "base_reward_must_be_non_negative_float"
     else:
