@@ -245,3 +245,5 @@ Note: `PROVENANCE_DECAY_ALPHA` must be `Decimal` before this path is activated (
 `window_1110_1117_guidance_doc_published`
 `cdl_084_q1_q10_all_human_authorized_2026_04_29`
 `provenance_decimal_float_kill_required_phase_1113_commit_1`
+
+**Status:** CLOSED — Phase 1117 closure gate passed. `window_1110_1117_closed_phase_1117`
