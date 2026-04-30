@@ -91,7 +91,7 @@ def test_cat2_cdl083_log_row_ratified():
 
 
 def test_cat3_runtime_version_and_dependency_tokens():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1114.v0.3"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1126.v0.4"
     assert CDL_083_DEPENDENCY == "cdl_083_h_con_02_ratified_1105.v0.1"
     assert CDL_HCON_02_DEPENDENCY == "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 

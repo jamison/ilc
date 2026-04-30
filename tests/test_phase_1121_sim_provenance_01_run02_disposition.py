@@ -69,9 +69,9 @@ def test_r6_disposition_recommended_alpha_in_sweep_range() -> None:
     assert Decimal("0.40") <= alpha <= Decimal("0.50")
 
 
-def test_r7_production_alpha_remains_decimal_0_5() -> None:
+def test_r7_production_alpha_locked_decimal_0_45() -> None:
     assert isinstance(PROVENANCE_DECAY_ALPHA, Decimal)
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
 
 
 def test_r8_disposition_states_alpha_remains_provisional_and_no_cdl_mutation() -> None:

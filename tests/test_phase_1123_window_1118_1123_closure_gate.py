@@ -88,10 +88,10 @@ def test_cat2_sensitive_runtime_taboos_test_passes() -> None:
     assert "1 passed" in result.stdout + result.stderr
 
 
-def test_cat2_provenance_decay_alpha_is_decimal_0_5() -> None:
+def test_cat2_provenance_decay_alpha_is_decimal_0_45() -> None:
     assert isinstance(PROVENANCE_DECAY_ALPHA, Decimal)
     assert not isinstance(PROVENANCE_DECAY_ALPHA, float)
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
 
 
 def test_cat2_float_kill_02_not_triggered() -> None:
@@ -160,7 +160,7 @@ def test_cat4_alpha_recommendation_is_in_0_40_to_0_50_range() -> None:
     assert match is not None
     alpha = Decimal(match.group("alpha"))
     assert Decimal("0.40") <= alpha <= Decimal("0.50")
-    assert PROVENANCE_DECAY_ALPHA == Decimal("0.5")
+    assert PROVENANCE_DECAY_ALPHA == Decimal("0.45")
 
 
 def test_cat5_coherence_report_exists_with_pass_verdict() -> None:

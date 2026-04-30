@@ -27,7 +27,7 @@ from ilc_core.types import (
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1114.v0.3"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1126.v0.4"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
