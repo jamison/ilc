@@ -530,4 +530,4 @@ For Phase 1123 (closure gate):
 - All Phase 1118–1122 test files and artifacts.
 - `tests/test_phase_1117_window_1110_1117_closure_gate.py` (selftest guard format reference)
 
-**Status:** PENDING — awaiting human review before Phase 1118 executes.
+**Status:** CLOSED — Phase 1123 closure gate passed. `window_1118_1123_closed_phase_1123`
