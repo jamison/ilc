@@ -69,6 +69,14 @@ def compute_structural_impedance(lambda2: float, theta_floor: float = THETA_FLOO
     return impedance
 
 
+def normalize_epoch_values(values: list[float]) -> list[float]:
+    """Per-epoch max normalization. Returns values in [0, 1]."""
+    max_value = max(values) if values else 0.0
+    if max_value == 0.0:
+        return [0.0] * len(values)
+    return [value / max_value for value in values]
+
+
 def load_time_series(path: Path = TIME_SERIES_PATH) -> dict[str, list[int]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict) or not data:
@@ -100,11 +108,49 @@ def _ring_laplacian(n_nodes: int, weak_link: float | None = None) -> np.ndarray:
     return degree - adjacency
 
 
-def _scenario_laplacian(scenario: str, n_nodes: int, epoch_index: int, epochs: int) -> np.ndarray:
+def _provenance_laplacian(series: dict[str, list[int]], epoch: int = 0) -> tuple[np.ndarray, str]:
+    """Build S1 topology from observed PROVENANCE descendant counts."""
+    node_ids = sorted(series)
+    n_nodes = len(node_ids)
+    counts = np.array([series[node_id][epoch] for node_id in node_ids], dtype=float)
+    active = np.where(counts > 0)[0]
+    if len(active) < 2:
+        return _ring_laplacian(n_nodes), "synthetic_fallback"
+
+    adjacency = np.zeros((n_nodes, n_nodes), dtype=float)
+    for source in active:
+        for target in active:
+            if source != target:
+                adjacency[source, target] = math.sqrt(counts[source] * counts[target])
+
+    max_weight = float(adjacency.max())
+    if max_weight > 0.0:
+        adjacency /= max_weight
+    # Preserve S1 as a healthy connected baseline: the observed provenance counts
+    # identify strong active-node edges, while this weak backbone prevents inactive
+    # nodes from becoming artificial singleton partitions.
+    backbone_weight = 0.30
+    for index in range(n_nodes):
+        target = (index + 1) % n_nodes
+        adjacency[index, target] = max(adjacency[index, target], backbone_weight)
+        adjacency[target, index] = max(adjacency[target, index], backbone_weight)
+    degree = np.diag(adjacency.sum(axis=1))
+    return degree - adjacency, "provenance_topology"
+
+
+def _scenario_laplacian(
+    scenario: str,
+    n_nodes: int,
+    epoch_index: int,
+    epochs: int,
+    series: dict[str, list[int]] | None = None,
+) -> tuple[np.ndarray, str]:
+    if scenario == "S1" and series is not None:
+        return _provenance_laplacian(series, epoch=0)
     if scenario == "S2":
         progress = epoch_index / max(1, epochs - 1)
         weak_link = max(0.00001, 1.0 - progress)
-        return _ring_laplacian(n_nodes, weak_link=weak_link)
+        return _ring_laplacian(n_nodes, weak_link=weak_link), "synthetic_partition"
     if scenario in {"S3", "G1", "G2"}:
         L = _ring_laplacian(n_nodes)
         cluster_size = max(4, n_nodes // 5)
@@ -114,8 +160,8 @@ def _scenario_laplacian(scenario: str, n_nodes: int, epoch_index: int, epochs: i
                 L[j, j] += 0.15
                 L[i, j] -= 0.15
                 L[j, i] -= 0.15
-        return L
-    return _ring_laplacian(n_nodes)
+        return L, "synthetic_sybil_cluster"
+    return _ring_laplacian(n_nodes), "synthetic_ring"
 
 
 def _lambda2(L: np.ndarray) -> float:
@@ -170,16 +216,15 @@ def _synthetic_components(
 
 
 def _durability(
-    observed_provenance: int,
+    provenance_descendant_count: float,
     components: dict[str, float],
     weights: dict[str, float],
 ) -> float:
-    provenance_value = observed_provenance + components.get("synthetic_provenance_bonus", 0.0)
     return max(
         0.0,
         weights["survived_refutations"] * components["survived_refutations"]
         + weights["reuse_count"] * components["reuse_count"]
-        + weights["provenance_descendant_count"] * provenance_value
+        + weights["provenance_descendant_count"] * provenance_descendant_count
         + weights["validation_integrity"] * components["validation_integrity"],
     )
 
@@ -199,6 +244,7 @@ def run_simulation(
     seed: int,
     epochs: int,
     time_series_path: Path = TIME_SERIES_PATH,
+    normalize_durability: bool = True,
 ) -> dict[str, Any]:
     if scenario not in SCENARIOS:
         raise ValueError("sim_spectral_02_unknown_scenario")
@@ -219,18 +265,53 @@ def run_simulation(
     structural_impedance_values: list[float] = []
     efficiency_values: list[float] = []
     vt_values: list[float] = []
+    laplacian_source = ""
 
     for epoch_index in range(epochs):
-        L = _scenario_laplacian(scenario, n_nodes, epoch_index, epochs)
+        L, laplacian_source = _scenario_laplacian(
+            scenario,
+            n_nodes,
+            epoch_index,
+            epochs,
+            series=series if scenario == "S1" else None,
+        )
         lambda2 = _lambda2(L)
         structural_impedance = compute_structural_impedance(lambda2, THETA_FLOOR)
-        durability_values: list[float] = []
+        raw_components_by_node: list[dict[str, float]] = []
+        provenance_values: list[float] = []
         contention_values: list[float] = []
         for node_index, node_id in enumerate(node_ids):
             observed = series[node_id][epoch_index % observed_epochs]
             components = _synthetic_components(scenario, epoch_index, node_index, rng)
-            durability_values.append(_durability(observed, components, weights))
+            raw_components_by_node.append(components)
+            provenance_values.append(observed + components.get("synthetic_provenance_bonus", 0.0))
             contention_values.append(components["contention"])
+
+        component_keys = ("survived_refutations", "reuse_count", "validation_integrity")
+        if normalize_durability:
+            normalized_provenance = normalize_epoch_values(provenance_values)
+            normalized_by_key = {
+                key: normalize_epoch_values([components[key] for components in raw_components_by_node])
+                for key in component_keys
+            }
+        else:
+            normalized_provenance = provenance_values
+            normalized_by_key = {
+                key: [components[key] for components in raw_components_by_node]
+                for key in component_keys
+            }
+        durability_values = [
+            _durability(
+                normalized_provenance[node_index],
+                {
+                    "survived_refutations": normalized_by_key["survived_refutations"][node_index],
+                    "reuse_count": normalized_by_key["reuse_count"][node_index],
+                    "validation_integrity": normalized_by_key["validation_integrity"][node_index],
+                },
+                weights,
+            )
+            for node_index in range(n_nodes)
+        ]
 
         x_values = np.array([compute_x(value, k) for value in durability_values], dtype=float)
         el_x = compute_el_x(L, x_values)
@@ -259,6 +340,8 @@ def run_simulation(
         "node_count": n_nodes,
         "n_bootstrap": N_BOOTSTRAP,
         "theta_floor": THETA_FLOOR,
+        "normalize_durability": normalize_durability,
+        "laplacian_source": laplacian_source,
         "data_classes": {
             "provenance_descendant_count": "OBSERVED",
             "survived_refutations": "SYNTHETIC",
@@ -284,6 +367,12 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", required=True, type=int)
     parser.add_argument("--epochs", required=True, type=int)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument(
+        "--normalize-durability",
+        default="true",
+        choices=("true", "false"),
+        help="Whether to max-normalize Durability_t components per epoch across nodes.",
+    )
     return parser
 
 
@@ -295,6 +384,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         weight_profile=args.weight_profile,
         seed=args.seed,
         epochs=args.epochs,
+        normalize_durability=args.normalize_durability == "true",
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
