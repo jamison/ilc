@@ -17,6 +17,9 @@ from ilc_core.analysis.laplacian_analytics import N_BOOTSTRAP, THETA_FLOOR
 
 TIME_SERIES_PATH = Path("out/sim_provenance_01_time_series.json")
 SCENARIOS = ("S1", "S2", "S3", "S4", "G1", "G2", "G3")
+PROVENANCE_DECAY_ALPHA_SIM = 0.45
+PROVENANCE_MAX_DEPTH_SIM = 3
+S1_TOPOLOGIES = ("synthetic", "coactivity", "ancestor-edge")
 WEIGHT_PROFILES: dict[str, dict[str, float]] = {
     "observed_provenance_only": {
         "survived_refutations": 0.0,
@@ -108,14 +111,14 @@ def _ring_laplacian(n_nodes: int, weak_link: float | None = None) -> np.ndarray:
     return degree - adjacency
 
 
-def _provenance_laplacian(series: dict[str, list[int]], epoch: int = 0) -> tuple[np.ndarray, str]:
-    """Build S1 topology from observed PROVENANCE descendant counts."""
+def _coactivity_laplacian(series: dict[str, list[int]], epoch: int = 0) -> tuple[np.ndarray, str, dict[str, Any]]:
+    """Build S1 topology from observed PROVENANCE descendant-count coactivity."""
     node_ids = sorted(series)
     n_nodes = len(node_ids)
     counts = np.array([series[node_id][epoch] for node_id in node_ids], dtype=float)
     active = np.where(counts > 0)[0]
     if len(active) < 2:
-        return _ring_laplacian(n_nodes), "synthetic_fallback"
+        return _ring_laplacian(n_nodes), "synthetic_fallback", {"edge_count": n_nodes}
 
     adjacency = np.zeros((n_nodes, n_nodes), dtype=float)
     for source in active:
@@ -135,7 +138,82 @@ def _provenance_laplacian(series: dict[str, list[int]], epoch: int = 0) -> tuple
         adjacency[index, target] = max(adjacency[index, target], backbone_weight)
         adjacency[target, index] = max(adjacency[target, index], backbone_weight)
     degree = np.diag(adjacency.sum(axis=1))
-    return degree - adjacency, "provenance_topology"
+    edge_count = int(np.count_nonzero(np.triu(adjacency, k=1)))
+    return degree - adjacency, "coactivity", {"edge_count": edge_count}
+
+
+def _ancestor_edge_laplacian(
+    series: dict[str, list[int]],
+    *,
+    epoch: int,
+    seed: int,
+) -> tuple[np.ndarray, str, dict[str, Any]]:
+    """Build a symmetrized S1 Laplacian from synthetic ancestor-edge records."""
+    node_ids = sorted(series)
+    n_nodes = len(node_ids)
+    observed_epoch = epoch % len(next(iter(series.values())))
+    counts = [series[node_id][observed_epoch] for node_id in node_ids]
+    rng = random.Random(seed)
+
+    depth_weights = [PROVENANCE_DECAY_ALPHA_SIM**depth for depth in range(1, PROVENANCE_MAX_DEPTH_SIM + 1)]
+    tiers = [
+        rng.choices(
+            list(range(1, PROVENANCE_MAX_DEPTH_SIM + 1)),
+            weights=depth_weights,
+            k=1,
+        )[0]
+        for _ in range(n_nodes)
+    ]
+    directed = np.zeros((n_nodes, n_nodes), dtype=float)
+    generated_marginals = [0] * n_nodes
+    depth_distribution = {str(depth): 0 for depth in range(1, PROVENANCE_MAX_DEPTH_SIM + 1)}
+
+    for source, count in enumerate(counts):
+        if count == 0:
+            continue
+        candidates = [
+            target
+            for target in range(n_nodes)
+            if target != source and tiers[target] > tiers[source]
+        ]
+        if not candidates:
+            continue
+        for target in rng.sample(candidates, min(count, len(candidates))):
+            hop = tiers[target] - tiers[source]
+            directed[source, target] += PROVENANCE_DECAY_ALPHA_SIM**hop
+            generated_marginals[source] += 1
+            depth_distribution[str(hop)] += 1
+
+    symmetrized = (directed + directed.T) / 2.0
+    degree = np.diag(symmetrized.sum(axis=1))
+    laplacian = degree - symmetrized
+    edge_count = int(np.count_nonzero(np.triu(symmetrized, k=1)))
+    marginal_errors = [
+        abs(observed - generated)
+        for observed, generated in zip(counts, generated_marginals)
+    ]
+    total_observed = sum(counts)
+    total_generated = sum(generated_marginals)
+    marginal_error_rate = (
+        abs(total_observed - total_generated) / total_observed
+        if total_observed > 0
+        else 0.0
+    )
+    diagnostics = {
+        "clique_guard_ok": edge_count < 5 * n_nodes,
+        "depth_distribution": depth_distribution,
+        "edge_count": edge_count,
+        "epoch": observed_epoch,
+        "marginal_error_mean": float(np.mean(np.array(marginal_errors, dtype=float))) if marginal_errors else 0.0,
+        "marginal_error_rate": marginal_error_rate,
+        "max_in_degree": float(symmetrized.sum(axis=0).max()) if n_nodes else 0.0,
+        "max_observed_count": max(counts) if counts else 0,
+        "max_out_degree": float(symmetrized.sum(axis=1).max()) if n_nodes else 0.0,
+        "self_loops": int(np.count_nonzero(np.diag(directed))),
+        "total_generated_edges": total_generated,
+        "total_observed_descendant_count": total_observed,
+    }
+    return laplacian, "ancestor_edge", diagnostics
 
 
 def _scenario_laplacian(
@@ -144,13 +222,20 @@ def _scenario_laplacian(
     epoch_index: int,
     epochs: int,
     series: dict[str, list[int]] | None = None,
-) -> tuple[np.ndarray, str]:
-    if scenario == "S1" and series is not None:
-        return _provenance_laplacian(series, epoch=0)
+    seed: int = 0,
+    s1_topology: str = "synthetic",
+    s1_topology_epoch: int = 100,
+) -> tuple[np.ndarray, str, dict[str, Any]]:
+    if scenario == "S1":
+        if s1_topology == "coactivity" and series is not None:
+            return _coactivity_laplacian(series, epoch=s1_topology_epoch)
+        if s1_topology == "ancestor-edge" and series is not None:
+            return _ancestor_edge_laplacian(series, epoch=s1_topology_epoch, seed=seed)
+        return _ring_laplacian(n_nodes), "synthetic_ring", {"edge_count": n_nodes}
     if scenario == "S2":
         progress = epoch_index / max(1, epochs - 1)
         weak_link = max(0.00001, 1.0 - progress)
-        return _ring_laplacian(n_nodes, weak_link=weak_link), "synthetic_partition"
+        return _ring_laplacian(n_nodes, weak_link=weak_link), "synthetic_partition", {}
     if scenario in {"S3", "G1", "G2"}:
         L = _ring_laplacian(n_nodes)
         cluster_size = max(4, n_nodes // 5)
@@ -160,8 +245,8 @@ def _scenario_laplacian(
                 L[j, j] += 0.15
                 L[i, j] -= 0.15
                 L[j, i] -= 0.15
-        return L, "synthetic_sybil_cluster"
-    return _ring_laplacian(n_nodes), "synthetic_ring"
+        return L, "synthetic_sybil_cluster", {}
+    return _ring_laplacian(n_nodes), "synthetic_ring", {}
 
 
 def _lambda2(L: np.ndarray) -> float:
@@ -245,6 +330,8 @@ def run_simulation(
     epochs: int,
     time_series_path: Path = TIME_SERIES_PATH,
     normalize_durability: bool = True,
+    s1_topology: str = "synthetic",
+    s1_topology_epoch: int = 100,
 ) -> dict[str, Any]:
     if scenario not in SCENARIOS:
         raise ValueError("sim_spectral_02_unknown_scenario")
@@ -252,6 +339,8 @@ def run_simulation(
         raise ValueError("sim_spectral_02_unknown_weight_profile")
     if k <= 0 or epochs <= 0:
         raise ValueError("sim_spectral_02_k_and_epochs_must_be_positive")
+    if s1_topology not in S1_TOPOLOGIES:
+        raise ValueError("sim_spectral_02_unknown_s1_topology")
 
     series = load_time_series(time_series_path)
     node_ids = sorted(series)
@@ -266,14 +355,18 @@ def run_simulation(
     efficiency_values: list[float] = []
     vt_values: list[float] = []
     laplacian_source = ""
+    topology_diagnostics: dict[str, Any] = {}
 
     for epoch_index in range(epochs):
-        L, laplacian_source = _scenario_laplacian(
+        L, laplacian_source, topology_diagnostics = _scenario_laplacian(
             scenario,
             n_nodes,
             epoch_index,
             epochs,
             series=series if scenario == "S1" else None,
+            seed=seed,
+            s1_topology=s1_topology,
+            s1_topology_epoch=s1_topology_epoch,
         )
         lambda2 = _lambda2(L)
         structural_impedance = compute_structural_impedance(lambda2, THETA_FLOOR)
@@ -342,6 +435,9 @@ def run_simulation(
         "theta_floor": THETA_FLOOR,
         "normalize_durability": normalize_durability,
         "laplacian_source": laplacian_source,
+        "s1_topology": s1_topology,
+        "s1_topology_epoch": s1_topology_epoch,
+        "topology_diagnostics": topology_diagnostics,
         "data_classes": {
             "provenance_descendant_count": "OBSERVED",
             "survived_refutations": "SYNTHETIC",
@@ -367,6 +463,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", required=True, type=int)
     parser.add_argument("--epochs", required=True, type=int)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--s1-topology", default="synthetic", choices=S1_TOPOLOGIES)
+    parser.add_argument("--s1-topology-epoch", default=100, type=int)
     parser.add_argument(
         "--normalize-durability",
         default="true",
@@ -385,6 +483,8 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         seed=args.seed,
         epochs=args.epochs,
         normalize_durability=args.normalize_durability == "true",
+        s1_topology=args.s1_topology,
+        s1_topology_epoch=args.s1_topology_epoch,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
