@@ -34,4 +34,13 @@ def test_r3_all_four_run01_scenarios_are_present() -> None:
 def test_r4_raw_notes_exist_with_completion_token() -> None:
     assert NOTES.exists()
     text = NOTES.read_text(encoding="utf-8")
-    assert "sim_spectral_02_run01_complete_phase_1133" in text
+    assert "sim_spectral_02_run01_fix1_complete_phase_1133" in text
+
+
+def test_r5_s1_uses_provenance_topology_for_at_least_one_run() -> None:
+    s1_sources = {
+        entry.get("laplacian_source")
+        for entry in _load_summary()
+        if entry.get("scenario") == "S1"
+    }
+    assert "provenance_topology" in s1_sources
