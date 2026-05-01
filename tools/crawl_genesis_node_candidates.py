@@ -16,6 +16,8 @@ from typing import Any, Iterable
 
 
 DEFAULT_JSON_OUT = Path("out/genesis_node_candidate_crawl.json")
+DEFAULT_RAW_LEDGER_OUT = Path("out/genesis_node_candidate_raw_match_ledger.ndjson")
+DEFAULT_REJECTED_LEDGER_OUT = Path("out/genesis_node_candidate_rejected_sources.ndjson")
 DEFAULT_INVENTORY_OUT = Path("docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md")
 DEFAULT_DECISION_LOG_OUT = Path("docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md")
 GENESIS_CONFIG = Path("config/genesis.json")
@@ -1005,8 +1007,8 @@ def _scan_candidate_files(candidates: dict[str, Candidate]) -> dict[str, Any]:
     return stats
 
 
-def _broad_review_sources(limit: int = 160) -> list[dict[str, Any]]:
-    review_patterns: list[tuple[str, re.Pattern[str]]] = [
+def _review_patterns() -> list[tuple[str, re.Pattern[str]]]:
+    return [
         ("genesis_homoiconicity", re.compile(r"genesis.*homoiconic|homoiconic.*genesis|Genesis.*graph", re.IGNORECASE)),
         ("genesis_authority", re.compile(r"Genesis authority|Genesis Agent|genesis root|Genesis-rooted", re.IGNORECASE)),
         ("genesis_policy", re.compile(r"genesis_exempt|freshness exemption|Genesis.*sunset|Genesis.*cap|theta_hard|theta_soft", re.IGNORECASE)),
@@ -1014,7 +1016,10 @@ def _broad_review_sources(limit: int = 160) -> list[dict[str, Any]]:
         ("morphogenic_edges", re.compile(r"morphogenetic|HyperEdge|PROVENANCE|REUSE|REFUTATION|CO_AUTHORSHIP|ATTESTATION|EPOCH_BOUNDARY", re.IGNORECASE)),
         ("external_modeling", re.compile(r"Lean|Terence Tao|Tao|magma|theorem|formal proof", re.IGNORECASE)),
     ]
-    source_priority = {
+
+
+def _source_priority(source_kind: str) -> int:
+    priority = {
         "config": 0,
         "genesis_artifact": 1,
         "adr": 2,
@@ -1024,6 +1029,10 @@ def _broad_review_sources(limit: int = 160) -> list[dict[str, Any]]:
         "test_evidence": 6,
         "other": 7,
     }
+    return priority.get(source_kind, 99)
+
+
+def _raw_match_records() -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     for path in _iter_files():
         text = _read_text(path)
@@ -1032,32 +1041,36 @@ def _broad_review_sources(limit: int = 160) -> list[dict[str, Any]]:
         authority_status, canonicality_tier = _status_from_text(path, text)
         source_kind = _source_kind(path)
         for line_number, line in enumerate(text.splitlines(), 1):
-            for category, pattern in review_patterns:
+            for category, pattern in _review_patterns():
                 if not pattern.search(line):
                     continue
                 evidence = _evidence(path, line_number, line)
                 records.append(
                     {
                         "authority_status": authority_status,
+                        "candidate_action": "raw_match_unclassified",
                         "canonicality_tier": canonicality_tier,
-                        "candidate_action": "review_required",
                         "category": category,
                         "evidence": evidence.to_dict(),
-            "inclusion_rule": "may_be_promoted_by_jury_or_future_SIM_after_refutation_review",
-            "graph_projection": "support_candidate_graph",
-            "promotion_path": "support_graph_to_core_requires_synthesis_artifact_and_jury_or_cdl_review",
-            "source_kind": source_kind,
-        }
+                        "graph_projection": "support_candidate_graph",
+                        "promotion_path": "support_graph_to_core_requires_synthesis_artifact_and_jury_or_cdl_review",
+                        "source_kind": source_kind,
+                    }
                 )
                 break
     records.sort(
         key=lambda item: (
-            source_priority.get(item["source_kind"], 99),
+            _source_priority(item["source_kind"]),
             item["category"],
             item["evidence"]["source_path"],
             item["evidence"]["source_line"],
+            item["evidence"]["evidence_hash"],
         )
     )
+    return records
+
+
+def _unique_review_records(records: list[dict[str, Any]], limit: int) -> list[dict[str, Any]]:
     seen: set[tuple[str, int, str]] = set()
     unique: list[dict[str, Any]] = []
     for item in records:
@@ -1069,10 +1082,98 @@ def _broad_review_sources(limit: int = 160) -> list[dict[str, Any]]:
         if key in seen:
             continue
         seen.add(key)
-        unique.append(item)
+        review_item = {
+            **item,
+            "candidate_action": "review_required",
+            "inclusion_rule": "may_be_promoted_by_jury_or_future_SIM_after_refutation_review",
+        }
+        unique.append(review_item)
         if len(unique) >= limit:
             break
     return unique
+
+
+def _exclusion_reason(item: dict[str, Any]) -> str:
+    source_kind = item["source_kind"]
+    category = item["category"]
+    if source_kind == "test_evidence":
+        return "test_evidence_not_promoted_to_genesis_node"
+    if source_kind == "research":
+        return "research_context_requires_synthesis_before_core_promotion"
+    if category == "external_modeling":
+        return "external_modeling_context_not_ilc_native_node"
+    if category == "morphogenic_edges":
+        return "edge_semantics_context_not_standalone_genesis_node"
+    if source_kind == "other":
+        return "low_authority_source_requires_manual_triage"
+    return "not_selected_for_bounded_review_queue"
+
+
+def _audit_ledgers(nodes: list[dict[str, Any]], review_limit: int = 160) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    raw_records = _raw_match_records()
+    promoted_hashes: dict[str, str] = {}
+    for node in nodes:
+        for evidence in node["evidence"]:
+            promoted_hashes[evidence["evidence_hash"]] = node["candidate_id"]
+    review_sources = _unique_review_records(raw_records, review_limit)
+    review_hashes = {item["evidence"]["evidence_hash"] for item in review_sources}
+
+    raw_match_ledger: list[dict[str, Any]] = []
+    rejected_sources: list[dict[str, Any]] = []
+    promotion_trace: list[dict[str, Any]] = []
+    for item in raw_records:
+        evidence_hash = item["evidence"]["evidence_hash"]
+        promoted_id = promoted_hashes.get(evidence_hash)
+        if promoted_id is not None:
+            action = "promoted_node_evidence"
+            reason = "evidence_attached_to_promoted_candidate_node"
+        elif evidence_hash in review_hashes:
+            action = "review_required"
+            reason = "retained_in_bounded_review_queue"
+        else:
+            action = "rejected_candidate_source"
+            reason = _exclusion_reason(item)
+        ledger_item = {
+            **item,
+            "candidate_action": action,
+            "exclusion_reason": None if action != "rejected_candidate_source" else reason,
+            "matched_promoted_candidate_id": promoted_id,
+            "selection_reason": reason,
+        }
+        raw_match_ledger.append(ledger_item)
+        if action == "rejected_candidate_source":
+            rejected_sources.append(ledger_item)
+    for node in nodes:
+        promotion_trace.append(
+            {
+                "candidate_id": node["candidate_id"],
+                "core_star_map_candidate": node["core_star_map_candidate"],
+                "decision_log_refs": node["decision_log_refs"],
+                "evidence_count": len(node["evidence"]),
+                "inclusion_status": node["inclusion_status"],
+                "promotion_path": node["promotion_path"],
+                "selection_reason": node["rationale"],
+            }
+        )
+    return raw_match_ledger, review_sources, rejected_sources, promotion_trace
+
+
+def _dredge_summary(raw_match_ledger: list[dict[str, Any]], rejected_sources: list[dict[str, Any]]) -> dict[str, Any]:
+    def counts(field: str, records: list[dict[str, Any]]) -> dict[str, int]:
+        result: dict[str, int] = {}
+        for record in records:
+            key = str(record.get(field))
+            result[key] = result.get(key, 0) + 1
+        return dict(sorted(result.items()))
+
+    return {
+        "raw_match_count": len(raw_match_ledger),
+        "rejected_candidate_source_count": len(rejected_sources),
+        "raw_matches_by_action": counts("candidate_action", raw_match_ledger),
+        "raw_matches_by_category": counts("category", raw_match_ledger),
+        "raw_matches_by_source_kind": counts("source_kind", raw_match_ledger),
+        "rejections_by_reason": counts("exclusion_reason", rejected_sources),
+    }
 
 
 def build_inventory() -> dict[str, Any]:
@@ -1084,9 +1185,17 @@ def build_inventory() -> dict[str, Any]:
     ordered = sorted(candidates.values(), key=lambda item: (item.layer, item.category, item.candidate_id))
     nodes = [candidate.to_dict() for candidate in ordered]
     edges = _candidate_edges({node["candidate_id"] for node in nodes})
-    review_sources = _broad_review_sources()
+    raw_match_ledger, review_sources, rejected_sources, promotion_trace = _audit_ledgers(nodes)
+    dredge_summary = _dredge_summary(raw_match_ledger, rejected_sources)
     return {
+        "_raw_match_ledger_full": raw_match_ledger,
+        "_rejected_candidate_sources_full": rejected_sources,
+        "audit_artifacts": {
+            "raw_match_ledger_ndjson": str(DEFAULT_RAW_LEDGER_OUT),
+            "rejected_candidate_sources_ndjson": str(DEFAULT_REJECTED_LEDGER_OUT),
+        },
         "decision_log": _decision_log(),
+        "dredge_summary": dredge_summary,
         "edges": edges,
         "metadata": {
             "description": "Deterministic candidate inventory for a proposed Genesis-level morphogenic hypergraph atlas.",
@@ -1096,6 +1205,9 @@ def build_inventory() -> dict[str, Any]:
             "stats": stats,
         },
         "nodes": nodes,
+        "promotion_trace": promotion_trace,
+        "raw_match_ledger_sample": raw_match_ledger[:20],
+        "rejected_candidate_sources_sample": rejected_sources[:20],
         "review_required_sources": review_sources,
     }
 
@@ -1618,19 +1730,53 @@ def _decision_log() -> list[dict[str, str]]:
             "decision": "Remove the coarse morphogenetic overlay hub from the core star-map candidate set.",
             "rationale": "The individual ADR/CDL substrate nodes now carry the usable semantics without a redundant single-layer hub.",
         },
+        {
+            "decision_id": "GND-0030",
+            "decision": "Retain raw-match, rejected-candidate, and promotion-trace ledgers for dredge auditability.",
+            "rationale": "The atlas crawl must show what was seen and not promoted, not only the final node set.",
+        },
     ]
     for entry in entries:
         entry["id"] = entry["decision_id"]
     return entries
 
 
-def write_inventory(payload: dict[str, Any], json_out: Path, inventory_out: Path, decision_log_out: Path) -> None:
+def _write_ndjson(path: Path, records: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        for record in records:
+            handle.write(json.dumps(record, allow_nan=False, sort_keys=True) + "\n")
+
+
+def _public_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: value
+        for key, value in payload.items()
+        if not key.startswith("_")
+    }
+
+
+def write_inventory(
+    payload: dict[str, Any],
+    json_out: Path,
+    inventory_out: Path,
+    decision_log_out: Path,
+    raw_ledger_out: Path,
+    rejected_ledger_out: Path,
+) -> None:
     json_out.parent.mkdir(parents=True, exist_ok=True)
     inventory_out.parent.mkdir(parents=True, exist_ok=True)
     decision_log_out.parent.mkdir(parents=True, exist_ok=True)
-    json_out.write_text(json.dumps(payload, allow_nan=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    inventory_out.write_text(_render_inventory_md(payload), encoding="utf-8")
-    decision_log_out.write_text(_render_decision_log_md(payload), encoding="utf-8")
+    _write_ndjson(raw_ledger_out, payload["_raw_match_ledger_full"])
+    _write_ndjson(rejected_ledger_out, payload["_rejected_candidate_sources_full"])
+    public_payload = _public_payload(payload)
+    public_payload["audit_artifacts"] = {
+        "raw_match_ledger_ndjson": str(raw_ledger_out),
+        "rejected_candidate_sources_ndjson": str(rejected_ledger_out),
+    }
+    json_out.write_text(json.dumps(public_payload, allow_nan=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    inventory_out.write_text(_render_inventory_md(public_payload), encoding="utf-8")
+    decision_log_out.write_text(_render_decision_log_md(public_payload), encoding="utf-8")
 
 
 def _render_inventory_md(payload: dict[str, Any]) -> str:
@@ -1644,8 +1790,13 @@ def _render_inventory_md(payload: dict[str, Any]) -> str:
         f"- Files scanned: `{payload['metadata']['stats']['files_scanned']}`",
         f"- Lines scanned: `{payload['metadata']['stats']['lines_scanned']}`",
         f"- Raw matches: `{payload['metadata']['stats']['raw_matches']}`",
+        f"- Raw match ledger entries: `{payload['dredge_summary']['raw_match_count']}`",
+        f"- Rejected candidate sources: `{payload['dredge_summary']['rejected_candidate_source_count']}`",
         f"- Candidate nodes: `{len(payload['nodes'])}`",
         f"- Review-required sources: `{len(payload['review_required_sources'])}`",
+        f"- Raw ledger artifact: `{payload['audit_artifacts']['raw_match_ledger_ndjson']}`",
+        f"- Rejected ledger artifact: `{payload['audit_artifacts']['rejected_candidate_sources_ndjson']}`",
+        f"- Rejections by reason: `{payload['dredge_summary']['rejections_by_reason']}`",
         "",
         "## Candidate Nodes",
         "",
@@ -1699,6 +1850,32 @@ def _render_inventory_md(payload: dict[str, Any]) -> str:
             )
             + " |"
         )
+    lines.extend(
+        [
+            "",
+            "## Rejected Candidate Source Ledger",
+            "",
+            "These matched sources were retained in the JSON audit trail but excluded from node promotion and the bounded review queue. Each record carries an `exclusion_reason` for future jury/refutation review.",
+            "",
+            "| Reason | Category | Source Kind | Evidence |",
+            "|---|---|---|---|",
+        ]
+    )
+    for item in payload["rejected_candidate_sources_sample"][:40]:
+        evidence = item["evidence"]
+        source = f"{evidence['source_path']}:{evidence['source_line']}"
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    item["exclusion_reason"],
+                    item["category"],
+                    item["source_kind"],
+                    f"`{source}`",
+                ]
+            )
+            + " |"
+        )
     lines.append("")
     return "\n".join(lines)
 
@@ -1722,6 +1899,8 @@ def _render_decision_log_md(payload: dict[str, Any]) -> str:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_OUT)
+    parser.add_argument("--raw-ledger-out", type=Path, default=DEFAULT_RAW_LEDGER_OUT)
+    parser.add_argument("--rejected-ledger-out", type=Path, default=DEFAULT_REJECTED_LEDGER_OUT)
     parser.add_argument("--inventory-out", type=Path, default=DEFAULT_INVENTORY_OUT)
     parser.add_argument("--decision-log-out", type=Path, default=DEFAULT_DECISION_LOG_OUT)
     return parser
@@ -1730,7 +1909,14 @@ def _build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = _build_parser().parse_args()
     payload = build_inventory()
-    write_inventory(payload, args.json_out, args.inventory_out, args.decision_log_out)
+    write_inventory(
+        payload,
+        args.json_out,
+        args.inventory_out,
+        args.decision_log_out,
+        args.raw_ledger_out,
+        args.rejected_ledger_out,
+    )
     print(json.dumps(payload["metadata"], allow_nan=False, sort_keys=True))
 
 

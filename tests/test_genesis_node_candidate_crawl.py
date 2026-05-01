@@ -8,6 +8,8 @@ import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CRAWL_JSON = ROOT / "out/genesis_node_candidate_crawl.json"
+RAW_LEDGER = ROOT / "out/genesis_node_candidate_raw_match_ledger.ndjson"
+REJECTED_LEDGER = ROOT / "out/genesis_node_candidate_rejected_sources.ndjson"
 INVENTORY = ROOT / "docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md"
 DECISION_LOG = ROOT / "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md"
 
@@ -20,13 +22,25 @@ def _payload() -> dict[str, object]:
 
 def test_genesis_node_candidate_crawl_outputs_exist() -> None:
     assert CRAWL_JSON.exists()
+    assert RAW_LEDGER.exists()
+    assert REJECTED_LEDGER.exists()
     assert INVENTORY.exists()
     assert DECISION_LOG.exists()
 
 
 def test_genesis_node_candidate_crawl_has_required_top_level_sections() -> None:
     payload = _payload()
-    assert {"decision_log", "edges", "metadata", "nodes", "review_required_sources"}.issubset(payload)
+    assert {
+        "decision_log",
+        "dredge_summary",
+        "edges",
+        "metadata",
+        "nodes",
+        "promotion_trace",
+        "raw_match_ledger_sample",
+        "rejected_candidate_sources_sample",
+        "review_required_sources",
+    }.issubset(payload)
 
 
 def test_genesis_node_candidate_crawl_includes_new_seven_and_axioms() -> None:
@@ -142,6 +156,29 @@ def test_genesis_node_candidate_crawl_keeps_review_required_sources() -> None:
     assert all("promotion_path" in item for item in review_sources)
 
 
+def test_genesis_node_candidate_crawl_keeps_rejected_candidate_ledger() -> None:
+    payload = _payload()
+    raw_count = sum(1 for _ in RAW_LEDGER.open(encoding="utf-8"))
+    rejected_count = sum(1 for _ in REJECTED_LEDGER.open(encoding="utf-8"))
+    assert raw_count >= rejected_count > 0
+    sample = [json.loads(line) for line in REJECTED_LEDGER.read_text(encoding="utf-8").splitlines()[:5]]
+    assert all(item["candidate_action"] == "rejected_candidate_source" for item in sample)
+    assert all(item["exclusion_reason"] for item in sample)
+    assert payload["dredge_summary"]["raw_match_count"] == raw_count
+    assert payload["dredge_summary"]["rejected_candidate_source_count"] == rejected_count
+    assert "rejections_by_reason" in payload["dredge_summary"]
+    assert payload["audit_artifacts"]["raw_match_ledger_ndjson"].endswith("genesis_node_candidate_raw_match_ledger.ndjson")
+
+
+def test_genesis_node_candidate_crawl_records_promotion_trace() -> None:
+    payload = _payload()
+    nodes = {node["candidate_id"] for node in payload["nodes"]}
+    trace = {item["candidate_id"]: item for item in payload["promotion_trace"]}
+    assert nodes == set(trace)
+    assert trace["truth_primitive:assert.truth"]["core_star_map_candidate"] is True
+    assert trace["policy:genesis_freshness_exemption"]["core_star_map_candidate"] == "review"
+
+
 def test_genesis_node_candidate_decision_log_records_review_queue_rule() -> None:
     payload = _payload()
     assert all(item["id"] == item["decision_id"] for item in payload["decision_log"])
@@ -149,4 +186,5 @@ def test_genesis_node_candidate_decision_log_records_review_queue_rule() -> None
     assert "GND-0021" in text
     assert "GND-0026" in text
     assert "GND-0029" in text
+    assert "GND-0030" in text
     assert "review queue" in text
