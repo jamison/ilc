@@ -16,7 +16,9 @@ from ilc_core.analysis.laplacian_analytics import N_BOOTSTRAP, THETA_FLOOR
 
 
 TIME_SERIES_PATH = Path("out/sim_provenance_01_time_series.json")
+GENESIS_PATH = Path("config/genesis.json")
 SCENARIOS = ("S1", "S2", "S3", "S4", "G1", "G2", "G3")
+KNOWLEDGE_WORK_MODELS = ("flat", "homoiconic")
 PROVENANCE_DECAY_ALPHA_SIM = 0.45
 PROVENANCE_MAX_DEPTH_SIM = 3
 S1_TOPOLOGIES = ("synthetic", "coactivity", "ancestor-edge")
@@ -46,6 +48,13 @@ WEIGHT_PROFILES: dict[str, dict[str, float]] = {
         "validation_integrity": 0.50,
     },
 }
+
+
+def _node_sort_key(node_id: str) -> tuple[str, int | str]:
+    prefix, separator, suffix = node_id.rpartition("_")
+    if separator and suffix.isdigit():
+        return prefix, int(suffix)
+    return node_id, node_id
 
 
 def compute_x(durability: float, k: float) -> float:
@@ -98,6 +107,17 @@ def load_time_series(path: Path = TIME_SERIES_PATH) -> dict[str, list[int]]:
     return normalized
 
 
+def load_genesis_nodes(path: Path = GENESIS_PATH) -> list[dict[str, Any]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    axioms = data.get("axiomatic_core")
+    if not isinstance(axioms, list) or not axioms:
+        raise ValueError("sim_spectral_02_genesis_axiomatic_core_missing")
+    for axiom in axioms:
+        if not isinstance(axiom, dict) or not isinstance(axiom.get("id"), str):
+            raise ValueError("sim_spectral_02_genesis_axiom_bad_shape")
+    return axioms
+
+
 def _ring_laplacian(n_nodes: int, weak_link: float | None = None) -> np.ndarray:
     adjacency = np.zeros((n_nodes, n_nodes), dtype=float)
     for index in range(n_nodes):
@@ -113,7 +133,7 @@ def _ring_laplacian(n_nodes: int, weak_link: float | None = None) -> np.ndarray:
 
 def _coactivity_laplacian(series: dict[str, list[int]], epoch: int = 0) -> tuple[np.ndarray, str, dict[str, Any]]:
     """Build S1 topology from observed PROVENANCE descendant-count coactivity."""
-    node_ids = sorted(series)
+    node_ids = sorted(series, key=_node_sort_key)
     n_nodes = len(node_ids)
     counts = np.array([series[node_id][epoch] for node_id in node_ids], dtype=float)
     active = np.where(counts > 0)[0]
@@ -149,7 +169,7 @@ def _ancestor_edge_laplacian(
     seed: int,
 ) -> tuple[np.ndarray, str, dict[str, Any]]:
     """Build a symmetrized S1 Laplacian from synthetic ancestor-edge records."""
-    node_ids = sorted(series)
+    node_ids = sorted(series, key=_node_sort_key)
     n_nodes = len(node_ids)
     observed_epoch = epoch % len(next(iter(series.values())))
     counts = [series[node_id][observed_epoch] for node_id in node_ids]
@@ -300,6 +320,184 @@ def _synthetic_components(
     raise ValueError(f"unknown scenario: {scenario}")
 
 
+def _homoiconic_metadata(n_nodes: int, n_genesis: int, seed: int) -> list[dict[str, Any]]:
+    rng = random.Random(seed)
+    domains = ("Arithmetic", "Thermodynamics", "Logic", "Cross-domain")
+    depth_weights = [PROVENANCE_DECAY_ALPHA_SIM**depth for depth in range(1, PROVENANCE_MAX_DEPTH_SIM + 1)]
+    metadata: list[dict[str, Any]] = []
+    for node_index in range(n_nodes):
+        if node_index < n_genesis:
+            metadata.append(
+                {
+                    "domain": domains[node_index % 3],
+                    "genesis_ancestor": node_index,
+                    "genesis_exempt": True,
+                    "tier": 0,
+                }
+            )
+            continue
+        domain = rng.choices(domains, weights=(0.30, 0.30, 0.30, 0.10), k=1)[0]
+        ancestor = rng.randrange(n_genesis) if domain == "Cross-domain" else domains.index(domain)
+        metadata.append(
+            {
+                "domain": domain,
+                "genesis_ancestor": ancestor,
+                "genesis_exempt": False,
+                "tier": rng.choices(
+                    list(range(1, PROVENANCE_MAX_DEPTH_SIM + 1)),
+                    weights=depth_weights,
+                    k=1,
+                )[0],
+            }
+        )
+    return metadata
+
+
+def _validation_probability(scenario: str, tier: int) -> float:
+    table = {
+        "S1": (0.90, 0.80, 0.70),
+        "S2": (0.60, 0.40, 0.30),
+        "S3": (0.60, 0.60, 0.60),
+        "S4": (0.50, 0.35, 0.20),
+        "G1": (0.65, 0.55, 0.45),
+        "G2": (0.70, 0.60, 0.50),
+        "G3": (0.60, 0.45, 0.30),
+    }
+    values = table.get(scenario, table["S1"])
+    return values[max(1, min(PROVENANCE_MAX_DEPTH_SIM, tier)) - 1]
+
+
+def _simulate_homoiconic_components(
+    *,
+    scenario: str,
+    seed: int,
+    epochs: int,
+    series: dict[str, list[int]],
+    node_ids: list[str],
+    n_genesis: int,
+) -> tuple[list[list[dict[str, float]]], dict[str, Any]]:
+    rng = random.Random(seed)
+    n_nodes = len(node_ids)
+    observed_epochs = len(next(iter(series.values())))
+    metadata = _homoiconic_metadata(n_nodes, n_genesis, seed)
+    validation_passes = [0.0] * n_nodes
+    reuse_counts = [0.0] * n_nodes
+    survived_refutations = [0.0] * n_nodes
+    failed_challenges = [0.0] * n_nodes
+    by_epoch: list[list[dict[str, float]]] = []
+
+    for epoch_index in range(epochs):
+        components_for_epoch: list[dict[str, float]] = []
+        progress = epoch_index + 1
+        cascade_penalty_by_ancestor = {idx: 0.0 for idx in range(n_genesis)}
+        if scenario in {"S4", "G3"} and progress % 7 == 0:
+            cascade_penalty_by_ancestor[rng.randrange(n_genesis)] = 0.25
+
+        observed_counts = [series[node_id][epoch_index % observed_epochs] for node_id in node_ids]
+        max_observed = max(observed_counts) if observed_counts else 0
+
+        for node_index, node_id in enumerate(node_ids):
+            observed = observed_counts[node_index]
+            node_meta = metadata[node_index]
+            if node_meta["genesis_exempt"]:
+                validation_passes[node_index] = progress
+                reuse_counts[node_index] += 1.0 + (max_observed / max(1, n_genesis))
+                components_for_epoch.append(
+                    {
+                        "contention": 0.01,
+                        "reuse_count": math.log1p(reuse_counts[node_index]),
+                        "survived_refutations": 0.0,
+                        "validation_integrity": 1.0,
+                    }
+                )
+                continue
+
+            tier = int(node_meta["tier"])
+            validation_prob = _validation_probability(scenario, tier)
+            if scenario == "S3" and node_index < max(n_genesis + 1, n_nodes // 5):
+                validation_prob = 0.35
+            validation_prob = max(
+                0.0,
+                validation_prob - cascade_penalty_by_ancestor[int(node_meta["genesis_ancestor"])],
+            )
+            if rng.random() < validation_prob:
+                validation_passes[node_index] += 1.0
+            validation_integrity = validation_passes[node_index] / progress
+
+            if scenario == "S3":
+                reuse_rate = 0.85 if node_index < max(n_genesis + 1, n_nodes // 5) else 0.30
+            elif scenario == "G1":
+                reuse_rate = 0.40
+            elif scenario == "G2":
+                reuse_rate = 0.18
+            elif scenario == "S1":
+                reuse_rate = 0.10 + 0.20 * validation_integrity
+            elif scenario == "S2":
+                reuse_rate = 0.05 + 0.08 * validation_integrity
+            else:
+                reuse_rate = 0.04 + 0.06 * validation_integrity
+            reuse_rate += min(0.12, 0.02 * observed)
+            if rng.random() < min(0.95, reuse_rate):
+                reuse_increment = (
+                    4.0
+                    if scenario == "S3" and node_index < max(n_genesis + 1, n_nodes // 5)
+                    else 1.0
+                )
+                reuse_counts[node_index] += reuse_increment
+                ancestor = int(node_meta["genesis_ancestor"])
+                reuse_counts[ancestor] += 0.25
+
+            challenge_rate = min(0.45, 0.03 + 0.28 * (1.0 - validation_integrity))
+            if scenario in {"S4", "G3"}:
+                challenge_rate += 0.12
+            if rng.random() < challenge_rate:
+                if rng.random() < validation_integrity:
+                    survived_refutations[node_index] += 1.0
+                else:
+                    failed_challenges[node_index] += 1.0
+
+            synthetic_provenance_bonus = 0.0
+            if scenario == "G2":
+                synthetic_provenance_bonus = 0.10 * progress if node_index < n_nodes // 5 else 0.0
+
+            contention = {
+                "S1": 0.05,
+                "S2": 0.20 + 0.01 * progress,
+                "S3": 0.45 if node_index < n_nodes // 5 else 0.15,
+                "S4": 0.60,
+                "G1": 0.45,
+                "G2": 0.35,
+                "G3": 0.60,
+            }.get(scenario, 0.05)
+            components_for_epoch.append(
+                {
+                    "contention": contention,
+                    "reuse_count": math.log1p(reuse_counts[node_index]),
+                    "survived_refutations": math.log1p(survived_refutations[node_index]),
+                    "synthetic_provenance_bonus": synthetic_provenance_bonus,
+                    "validation_integrity": max(
+                        0.0,
+                        validation_integrity - min(0.20, 0.05 * failed_challenges[node_index]),
+                    ),
+                }
+            )
+        by_epoch.append(components_for_epoch)
+
+    final_components = by_epoch[-1]
+    diagnostics = {
+        "genesis_exempt_count": n_genesis,
+        "genesis_nodes_count": n_genesis,
+        "mean_reuse_count": float(np.mean([component["reuse_count"] for component in final_components])),
+        "mean_survived_refutations": float(
+            np.mean([component["survived_refutations"] for component in final_components])
+        ),
+        "mean_validation_integrity": float(
+            np.mean([component["validation_integrity"] for component in final_components])
+        ),
+    }
+    return by_epoch, diagnostics
+
+
 def _durability(
     provenance_descendant_count: float,
     components: dict[str, float],
@@ -332,6 +530,7 @@ def run_simulation(
     normalize_durability: bool = True,
     s1_topology: str = "synthetic",
     s1_topology_epoch: int = 100,
+    knowledge_work_model: str = "homoiconic",
 ) -> dict[str, Any]:
     if scenario not in SCENARIOS:
         raise ValueError("sim_spectral_02_unknown_scenario")
@@ -341,11 +540,26 @@ def run_simulation(
         raise ValueError("sim_spectral_02_k_and_epochs_must_be_positive")
     if s1_topology not in S1_TOPOLOGIES:
         raise ValueError("sim_spectral_02_unknown_s1_topology")
+    if knowledge_work_model not in KNOWLEDGE_WORK_MODELS:
+        raise ValueError("sim_spectral_02_unknown_knowledge_work_model")
 
     series = load_time_series(time_series_path)
-    node_ids = sorted(series)
+    node_ids = sorted(series, key=_node_sort_key)
     n_nodes = len(node_ids)
     observed_epochs = len(next(iter(series.values())))
+    genesis_nodes = load_genesis_nodes()
+    n_genesis = min(len(genesis_nodes), n_nodes)
+    homoiconic_components: list[list[dict[str, float]]] | None = None
+    knowledge_work_diagnostics: dict[str, Any] = {}
+    if knowledge_work_model == "homoiconic":
+        homoiconic_components, knowledge_work_diagnostics = _simulate_homoiconic_components(
+            scenario=scenario,
+            seed=seed,
+            epochs=epochs,
+            series=series,
+            node_ids=node_ids,
+            n_genesis=n_genesis,
+        )
     rng = random.Random(seed)
     weights = WEIGHT_PROFILES[weight_profile]
 
@@ -375,7 +589,10 @@ def run_simulation(
         contention_values: list[float] = []
         for node_index, node_id in enumerate(node_ids):
             observed = series[node_id][epoch_index % observed_epochs]
-            components = _synthetic_components(scenario, epoch_index, node_index, rng)
+            if homoiconic_components is not None:
+                components = homoiconic_components[epoch_index][node_index]
+            else:
+                components = _synthetic_components(scenario, epoch_index, node_index, rng)
             raw_components_by_node.append(components)
             provenance_values.append(observed + components.get("synthetic_provenance_bonus", 0.0))
             contention_values.append(components["contention"])
@@ -434,15 +651,24 @@ def run_simulation(
         "n_bootstrap": N_BOOTSTRAP,
         "theta_floor": THETA_FLOOR,
         "normalize_durability": normalize_durability,
+        "knowledge_work_diagnostics": knowledge_work_diagnostics,
+        "knowledge_work_model": knowledge_work_model,
         "laplacian_source": laplacian_source,
         "s1_topology": s1_topology,
         "s1_topology_epoch": s1_topology_epoch,
         "topology_diagnostics": topology_diagnostics,
         "data_classes": {
+            "genesis_nodes_count": n_genesis if knowledge_work_model == "homoiconic" else 0,
             "provenance_descendant_count": "OBSERVED",
-            "survived_refutations": "SYNTHETIC",
-            "reuse_count": "SYNTHETIC",
-            "validation_integrity": "SYNTHETIC",
+            "survived_refutations": "SYNTHETIC_HOMOICONIC"
+            if knowledge_work_model == "homoiconic"
+            else "SYNTHETIC",
+            "reuse_count": "SYNTHETIC_HOMOICONIC"
+            if knowledge_work_model == "homoiconic"
+            else "SYNTHETIC",
+            "validation_integrity": "SYNTHETIC_HOMOICONIC"
+            if knowledge_work_model == "homoiconic"
+            else "SYNTHETIC",
             "path_uplift": "EXCLUDED",
         },
         "el_x_per_epoch": el_values,
@@ -465,6 +691,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--s1-topology", default="synthetic", choices=S1_TOPOLOGIES)
     parser.add_argument("--s1-topology-epoch", default=100, type=int)
+    parser.add_argument("--knowledge-work-model", default="homoiconic", choices=KNOWLEDGE_WORK_MODELS)
     parser.add_argument(
         "--normalize-durability",
         default="true",
@@ -485,6 +712,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         normalize_durability=args.normalize_durability == "true",
         s1_topology=args.s1_topology,
         s1_topology_epoch=args.s1_topology_epoch,
+        knowledge_work_model=args.knowledge_work_model,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
