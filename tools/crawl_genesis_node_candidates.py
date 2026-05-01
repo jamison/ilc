@@ -51,7 +51,13 @@ EDGE_TYPE_HINTS = (
     "CO_AUTHORSHIP",
     "ATTESTATION",
     "EPOCH_BOUNDARY",
+    "PRIMITIVE_INVOCATION",
+    "LINEAGE_GOVERNS",
+    "MORPHOGENIC_OVERLAY",
 )
+
+GENESIS_AGENT_ID = "genesis_agent:01"
+GENESIS_CAP_POLICY_ID = "policy:genesis_theta_hard_0_05"
 
 
 @dataclass(frozen=True)
@@ -88,6 +94,16 @@ class Candidate:
     sensitivity: str = "NON-SENSITIVE"
     economic_boundary: str = "none"
     genesis_exempt: bool = False
+    genesis_attested: bool = False
+    genesis_attested_by: str | None = None
+    reuse_economic_surface: str = "none"
+    economic_cap_policy: str | None = None
+    depth_index: int | None = None
+    graph_projection: str = "core_star_map"
+    promotion_path: str = "already_core_or_not_applicable"
+    version: str | None = None
+    valid_epoch_range: tuple[int | None, int | None] = (0, None)
+    superseded_by: str | None = None
     sunset_status: str = "not_applicable"
     decision_log_refs: list[str] = field(default_factory=list)
 
@@ -112,17 +128,27 @@ class Candidate:
             "confidence": self.confidence,
             "decision_log_refs": self.decision_log_refs,
             "economic_boundary": self.economic_boundary,
+            "economic_cap_policy": self.economic_cap_policy,
             "edge_hints": self.edge_hints,
             "evidence": [item.to_dict() for item in self.evidence],
+            "depth_index": self.depth_index,
+            "genesis_attested": self.genesis_attested,
+            "genesis_attested_by": self.genesis_attested_by,
             "genesis_exempt": self.genesis_exempt,
+            "graph_projection": self.graph_projection,
             "inclusion_status": self.inclusion_status,
             "label": self.label,
             "layer": self.layer,
             "node_kind": self.node_kind,
+            "promotion_path": self.promotion_path,
             "rationale": self.rationale,
+            "reuse_economic_surface": self.reuse_economic_surface,
             "sensitivity": self.sensitivity,
             "source_kind": self.source_kind,
+            "superseded_by": self.superseded_by,
             "sunset_status": self.sunset_status,
+            "valid_epoch_range": list(self.valid_epoch_range),
+            "version": self.version,
         }
 
 
@@ -268,6 +294,16 @@ def _first_matching_line(path: Path, pattern: re.Pattern[str]) -> Evidence | Non
     return None
 
 
+def _first_line_evidence(path: Path) -> Evidence | None:
+    text = _read_text(path)
+    if text is None:
+        return None
+    for line_number, line in enumerate(text.splitlines(), 1):
+        if line.strip():
+            return _evidence(path, line_number, line)
+    return None
+
+
 def _new_candidate(
     *,
     candidate_id: str,
@@ -285,6 +321,16 @@ def _new_candidate(
     sensitivity: str = "NON-SENSITIVE",
     economic_boundary: str = "none",
     genesis_exempt: bool = False,
+    genesis_attested: bool = False,
+    genesis_attested_by: str | None = None,
+    reuse_economic_surface: str = "none",
+    economic_cap_policy: str | None = None,
+    depth_index: int | None = None,
+    graph_projection: str = "core_star_map",
+    promotion_path: str = "already_core_or_not_applicable",
+    version: str | None = None,
+    valid_epoch_range: tuple[int | None, int | None] = (0, None),
+    superseded_by: str | None = None,
     sunset_status: str = "not_applicable",
     decision_log_refs: list[str] | None = None,
 ) -> Candidate:
@@ -296,16 +342,26 @@ def _new_candidate(
         confidence=confidence,
         decision_log_refs=decision_log_refs or [],
         economic_boundary=economic_boundary,
+        economic_cap_policy=economic_cap_policy,
         edge_hints=edge_hints or [],
+        depth_index=depth_index,
+        graph_projection=graph_projection,
+        genesis_attested=genesis_attested,
+        genesis_attested_by=genesis_attested_by,
         genesis_exempt=genesis_exempt,
         inclusion_status=inclusion_status,
         label=label,
         layer=layer,
         node_kind=node_kind,
+        promotion_path=promotion_path,
         rationale=rationale,
+        reuse_economic_surface=reuse_economic_surface,
         sensitivity=sensitivity,
         source_kind=source_kind,
+        superseded_by=superseded_by,
         sunset_status=sunset_status,
+        valid_epoch_range=valid_epoch_range,
+        version=version,
     )
 
 
@@ -324,8 +380,17 @@ def _add_static_truth_primitives(candidates: dict[str, Candidate]) -> None:
             confidence=1.0,
             rationale="ADR-0004 adopts the New Seven Genesis Truth Primitives.",
             source_kind="adr",
-            edge_hints=["EPOCH_BOUNDARY"] if primitive == "commit.epoch" else ["PROVENANCE"],
-            decision_log_refs=["GND-0001"],
+            edge_hints=["EPOCH_BOUNDARY", "ATTESTATION", "REUSE"]
+            if primitive == "commit.epoch"
+            else ["PRIMITIVE_INVOCATION", "ATTESTATION", "REUSE"],
+            economic_boundary="genesis_attested_provenance_flow",
+            genesis_attested=True,
+            genesis_attested_by=GENESIS_AGENT_ID,
+            reuse_economic_surface="high",
+            economic_cap_policy=GENESIS_CAP_POLICY_ID,
+            depth_index=0,
+            graph_projection="core_star_map",
+            decision_log_refs=["GND-0001", "GND-0022", "GND-0023"],
         )
         evidence = _first_matching_line(source, re.compile(re.escape(primitive)))
         if evidence is not None:
@@ -362,10 +427,335 @@ def _add_genesis_axioms(candidates: dict[str, Candidate]) -> None:
             source_kind="config",
             edge_hints=["PROVENANCE", "ATTESTATION"],
             genesis_exempt=True,
+            genesis_attested=True,
+            genesis_attested_by=GENESIS_AGENT_ID,
+            reuse_economic_surface="domain_foundational",
+            economic_cap_policy=GENESIS_CAP_POLICY_ID,
+            depth_index=1,
+            graph_projection="core_star_map",
             sunset_status="bootstrap_exempt_policy_review_required",
             decision_log_refs=["GND-0002"],
         )
         candidate.add_evidence(_evidence(GENESIS_CONFIG, line_number, text[line_number - 1]))
+        candidates[candidate.candidate_id] = candidate
+
+
+def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
+    """Promote high-confidence Genesis atlas nodes that should not remain review-only."""
+    specs: list[dict[str, Any]] = [
+        {
+            "candidate_id": "artifact:genesis_agent1_pubkey_record_838a",
+            "label": "Genesis Agent 1 public key record 838a",
+            "layer": "L2_genesis_authority",
+            "category": "genesis_authority_artifact",
+            "node_kind": "public_key_record",
+            "authority_status": "phase_838a_public_identity_record",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "must_include",
+            "confidence": 0.95,
+            "rationale": "The Genesis Agent identity node must retain its concrete public key artifact.",
+            "source_kind": "genesis_artifact",
+            "source_path": Path("docs/genesis/genesis_agent1_pubkey_record_838a.txt"),
+            "edge_hints": ["ATTESTATION"],
+            "sensitivity": "PUBLIC_RECORD_ONLY",
+            "genesis_exempt": True,
+            "depth_index": 2,
+            "sunset_status": "bounded_bootstrap_authority",
+            "decision_log_refs": ["GND-0003", "GND-0026"],
+        },
+        {
+            "candidate_id": "ceremony:genesis_agent1_keygen_838a",
+            "label": "Genesis Agent 1 PQ keygen ceremony 838a",
+            "layer": "L2_genesis_authority",
+            "category": "genesis_authority_ceremony",
+            "node_kind": "keygen_ceremony",
+            "authority_status": "phase_838a_closure_pass",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.88,
+            "rationale": "The key ceremony is a lineage event for Genesis Agent 1 authority.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_phase_838a_genesis_agent1_keygen_closure_v0.1.md"),
+            "edge_hints": ["ATTESTATION", "EPOCH_BOUNDARY"],
+            "sensitivity": "PUBLIC_RECORD_ONLY",
+            "genesis_exempt": True,
+            "depth_index": 2,
+            "sunset_status": "bounded_bootstrap_authority",
+            "decision_log_refs": ["GND-0003", "GND-0026"],
+        },
+        {
+            "candidate_id": "policy:genesis_governance_dilution",
+            "label": "Genesis governance dilution policy",
+            "layer": "L3_policy_economic",
+            "category": "economic_policy",
+            "node_kind": "policy_rule",
+            "authority_status": "proposed_ADR_0008",
+            "canonicality_tier": "supporting_context",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.82,
+            "rationale": "ADR-0008 separates epistemic usefulness from governance and Genesis dilution.",
+            "source_kind": "adr",
+            "source_path": Path("docs/adr/ADR_0008_Node_Usefulness_vs_Governance_Weight_and_Genesis_Dilution.md"),
+            "edge_hints": ["EPOCH_BOUNDARY"],
+            "economic_boundary": "governance_weight_not_epistemic_centrality",
+            "depth_index": 3,
+            "decision_log_refs": ["GND-0007", "GND-0026"],
+        },
+        {
+            "candidate_id": "policy:genesis_accrual_governor",
+            "label": "Genesis accrual governor policy",
+            "layer": "L3_policy_economic",
+            "category": "economic_policy",
+            "node_kind": "policy_contract",
+            "authority_status": "genesis_accrual_governor_contract",
+            "canonicality_tier": "supporting_context",
+            "inclusion_status": "must_include",
+            "confidence": 0.90,
+            "rationale": "The governor is the policy surface that enforces the Genesis economic cap.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md"),
+            "edge_hints": ["EPOCH_BOUNDARY"],
+            "economic_boundary": "caps_genesis_accrual_not_epistemic_centrality",
+            "depth_index": 3,
+            "decision_log_refs": ["GND-0007", "GND-0026"],
+        },
+        {
+            "candidate_id": "policy:genesis_theta_soft_exp_minus_3",
+            "label": "Genesis soft taper threshold exp(-3)",
+            "layer": "L3_policy_economic",
+            "category": "economic_policy",
+            "node_kind": "policy_constant",
+            "authority_status": "genesis_accrual_governor_modeling_target",
+            "canonicality_tier": "supporting_context",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.84,
+            "rationale": "The soft taper explains how Genesis dominance is compressed before the 5% hard cap.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.3.md"),
+            "edge_hints": ["EPOCH_BOUNDARY"],
+            "economic_boundary": "genesis_accrual_soft_taper",
+            "depth_index": 3,
+            "decision_log_refs": ["GND-0007", "GND-0026"],
+        },
+        {
+            "candidate_id": "artifact:genesis_release_artifact_contract",
+            "label": "Genesis release artifact contract",
+            "layer": "L2_bootstrap_lineage",
+            "category": "bootstrap_artifact",
+            "node_kind": "release_contract",
+            "authority_status": "phase_228_release_contract",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.88,
+            "rationale": "The release artifact contract participates in install/load Genesis lineage.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_genesis_release_artifact_contract_v0.1.md"),
+            "edge_hints": ["PROVENANCE", "ATTESTATION"],
+            "depth_index": 2,
+            "decision_log_refs": ["GND-0005", "GND-0026"],
+        },
+        {
+            "candidate_id": "artifact:genesis_release_provenance_phase_228",
+            "label": "Genesis release artifact provenance phase 228",
+            "layer": "L2_bootstrap_lineage",
+            "category": "bootstrap_artifact",
+            "node_kind": "release_provenance",
+            "authority_status": "phase_228_release_provenance",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.88,
+            "rationale": "The phase 228 provenance artifact records release lineage for Genesis packaging.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_genesis_release_artifact_provenance_phase_228_v0.1.md"),
+            "edge_hints": ["PROVENANCE", "ATTESTATION"],
+            "depth_index": 2,
+            "decision_log_refs": ["GND-0005", "GND-0026"],
+        },
+        {
+            "candidate_id": "policy:genesis_authority_sunset",
+            "label": "Genesis authority sunset and fork legitimacy policy",
+            "layer": "L3_policy_exemption",
+            "category": "exemption_policy",
+            "node_kind": "policy_rule",
+            "authority_status": "locked_phase_590",
+            "canonicality_tier": "locked_spec",
+            "inclusion_status": "must_include",
+            "confidence": 0.90,
+            "rationale": "Genesis bootstrap authority requires explicit sunset and fork-legitimacy boundaries.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_genesis_authority_sunset_and_fork_legitimacy_coherence_lock_590_v0.1.md"),
+            "edge_hints": ["ATTESTATION", "EPOCH_BOUNDARY"],
+            "economic_boundary": "exemption_is_not_uncapped_reward_authority",
+            "genesis_exempt": True,
+            "depth_index": 3,
+            "sunset_status": "sunset_or_reconciliation_required",
+            "decision_log_refs": ["GND-0008", "GND-0026"],
+        },
+        {
+            "candidate_id": "artifact:rc0_1_curated_genesis_lineage",
+            "label": "RC0.1 curated Genesis/bootstrap lineage lock",
+            "layer": "L2_bootstrap_lineage",
+            "category": "bootstrap_lineage",
+            "node_kind": "lineage_lock",
+            "authority_status": "locked_phase_578",
+            "canonicality_tier": "locked_spec",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.86,
+            "rationale": "The curated Genesis/bootstrap lineage lock is a launch-facing install/load artifact.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_rc0_1_curated_genesis_bootstrap_lineage_lock_578_v0.1.md"),
+            "edge_hints": ["PROVENANCE", "ATTESTATION"],
+            "depth_index": 2,
+            "decision_log_refs": ["GND-0005", "GND-0026"],
+        },
+        {
+            "candidate_id": "policy:genesis_intervention_cdl_v6",
+            "label": "CDL-V6 Genesis intervention protocol",
+            "layer": "L3_policy_exemption",
+            "category": "exemption_policy",
+            "node_kind": "constitutional_policy",
+            "authority_status": "ratified_phase_334",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "strong_candidate",
+            "confidence": 0.84,
+            "rationale": "The Genesis intervention protocol is a bounded authority surface relevant to exemption semantics.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_cdl_v6_genesis_intervention_protocol_ratification_evidence_334_v0.1.md"),
+            "edge_hints": ["ATTESTATION", "EPOCH_BOUNDARY"],
+            "economic_boundary": "exemption_is_not_uncapped_reward_authority",
+            "genesis_exempt": True,
+            "depth_index": 3,
+            "sunset_status": "sunset_or_reconciliation_required",
+            "decision_log_refs": ["GND-0008", "GND-0026"],
+        },
+        {
+            "candidate_id": "adr:0029_hypergraph_substrate",
+            "label": "ADR-0029 Hypergraph substrate",
+            "layer": "L4_morphogenic_overlay",
+            "category": "hypergraph_overlay",
+            "node_kind": "adr_artifact",
+            "authority_status": "accepted_ADR_0029",
+            "canonicality_tier": "accepted_adr",
+            "inclusion_status": "must_include",
+            "confidence": 0.92,
+            "rationale": "The hypergraph substrate is a distinct morphogenic atlas dependency.",
+            "source_kind": "adr",
+            "source_path": Path("docs/adr/ADR_0029_Hypergraph_Substrate.md"),
+            "edge_hints": list(EDGE_TYPE_HINTS),
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0026"],
+        },
+        {
+            "candidate_id": "adr:0030_node_embedding_substrate",
+            "label": "ADR-0030 Node embedding substrate and content typing",
+            "layer": "L4_morphogenic_overlay",
+            "category": "hypergraph_overlay",
+            "node_kind": "adr_artifact",
+            "authority_status": "accepted_ADR_0030",
+            "canonicality_tier": "accepted_adr",
+            "inclusion_status": "must_include",
+            "confidence": 0.90,
+            "rationale": "Node embedding/content typing should remain separate from the hypergraph edge substrate.",
+            "source_kind": "adr",
+            "source_path": Path("docs/adr/ADR_0030_Node_Embedding_Substrate_and_Content_Typing.md"),
+            "edge_hints": list(EDGE_TYPE_HINTS),
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0026"],
+        },
+        {
+            "candidate_id": "adr:0032_temporal_hypergraph",
+            "label": "ADR-0032 Temporal hypergraph epoch-stamped incidence",
+            "layer": "L4_morphogenic_overlay",
+            "category": "hypergraph_overlay",
+            "node_kind": "adr_artifact",
+            "authority_status": "accepted_ADR_0032",
+            "canonicality_tier": "accepted_adr",
+            "inclusion_status": "must_include",
+            "confidence": 0.90,
+            "rationale": "Temporal incidence is required for epoch-aware Genesis graph loading and simulation.",
+            "source_kind": "adr",
+            "source_path": Path("docs/adr/ADR_0032_Temporal_Hypergraph_Epoch_Stamped_Incidence.md"),
+            "edge_hints": ["EPOCH_BOUNDARY", "PROVENANCE"],
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0026"],
+        },
+        {
+            "candidate_id": "adr:0033_star_map_homoiconic_entity",
+            "label": "ADR-0033 Star map homoiconic epistemological entity",
+            "layer": "L4_morphogenic_overlay",
+            "category": "hypergraph_overlay",
+            "node_kind": "adr_artifact",
+            "authority_status": "accepted_ADR_0033",
+            "canonicality_tier": "accepted_adr",
+            "inclusion_status": "must_include",
+            "confidence": 0.90,
+            "rationale": "The star map is the install/load surface for a local base graph.",
+            "source_kind": "adr",
+            "source_path": Path("docs/adr/ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md"),
+            "edge_hints": ["PROVENANCE", "ATTESTATION"],
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0026"],
+        },
+        {
+            "candidate_id": "cdl:081_hyperedge_ecu_attribution",
+            "label": "CDL-081 Hyperedge ECU attribution",
+            "layer": "L4_morphogenic_overlay",
+            "category": "constitutional_artifact",
+            "node_kind": "cdl_artifact",
+            "authority_status": "ratified_phase_943",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "must_include",
+            "confidence": 0.94,
+            "rationale": "CDL-081 defines the attribution edge settlement surface.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0.1.md"),
+            "edge_hints": ["REUSE", "CO_AUTHORSHIP", "PROVENANCE"],
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0026"],
+        },
+        {
+            "candidate_id": "cdl:083_panel_quorum_refutation",
+            "label": "CDL-083 Panel quorum and REFUTATION attribution",
+            "layer": "L4_morphogenic_overlay",
+            "category": "constitutional_artifact",
+            "node_kind": "cdl_artifact",
+            "authority_status": "ratified_phase_1105",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "must_include",
+            "confidence": 0.94,
+            "rationale": "CDL-083 defines the H-CON-02 quorum and REFUTATION path.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_cdl_083_h_con_02_panel_quorum_ejected_stake_opening_1103_v0.1.md"),
+            "edge_hints": ["REFUTATION", "ATTESTATION"],
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0026"],
+        },
+        {
+            "candidate_id": "cdl:084_provenance_chain_attribution",
+            "label": "CDL-084 PROVENANCE chain attribution",
+            "layer": "L4_morphogenic_overlay",
+            "category": "constitutional_artifact",
+            "node_kind": "cdl_artifact",
+            "authority_status": "ratified_phase_1113",
+            "canonicality_tier": "ratified_or_evidence",
+            "inclusion_status": "must_include",
+            "confidence": 0.96,
+            "rationale": "CDL-084 defines PROVENANCE chain attribution and alpha 0.45 inheritance.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_cdl_084_provenance_chain_attribution_opening_1111_v0.1.md"),
+            "edge_hints": ["PROVENANCE"],
+            "depth_index": 4,
+            "decision_log_refs": ["GND-0010", "GND-0025", "GND-0026"],
+        },
+    ]
+    for spec in specs:
+        source_path = spec.pop("source_path")
+        if not source_path.exists():
+            continue
+        candidate = _new_candidate(**spec)
+        evidence = _first_line_evidence(source_path)
+        if evidence is not None:
+            candidate.add_evidence(evidence)
         candidates[candidate.candidate_id] = candidate
 
 
@@ -563,6 +953,16 @@ def _scan_candidate_files(candidates: dict[str, Candidate]) -> dict[str, Any]:
                         sensitivity=defaults.get("sensitivity", "NON-SENSITIVE"),
                         economic_boundary=defaults.get("economic_boundary", "none"),
                         genesis_exempt=defaults.get("genesis_exempt", False),
+                        genesis_attested=defaults.get("genesis_attested", False),
+                        genesis_attested_by=defaults.get("genesis_attested_by"),
+                        reuse_economic_surface=defaults.get("reuse_economic_surface", "none"),
+                        economic_cap_policy=defaults.get("economic_cap_policy"),
+                        depth_index=defaults.get("depth_index"),
+                        graph_projection=defaults.get("graph_projection", "core_star_map"),
+                        promotion_path=defaults.get("promotion_path", "already_core_or_not_applicable"),
+                        version=defaults.get("version"),
+                        valid_epoch_range=defaults.get("valid_epoch_range", (0, None)),
+                        superseded_by=defaults.get("superseded_by"),
                         sunset_status=defaults.get("sunset_status", "not_applicable"),
                         decision_log_refs=defaults.get("decision_log_refs", []),
                     )
@@ -610,9 +1010,11 @@ def _broad_review_sources(limit: int = 160) -> list[dict[str, Any]]:
                         "candidate_action": "review_required",
                         "category": category,
                         "evidence": evidence.to_dict(),
-                        "inclusion_rule": "may_be_promoted_by_jury_or_future_SIM_after_refutation_review",
-                        "source_kind": source_kind,
-                    }
+            "inclusion_rule": "may_be_promoted_by_jury_or_future_SIM_after_refutation_review",
+            "graph_projection": "support_candidate_graph",
+            "promotion_path": "support_graph_to_core_requires_synthesis_artifact_and_jury_or_cdl_review",
+            "source_kind": source_kind,
+        }
                 )
                 break
     records.sort(
@@ -644,6 +1046,7 @@ def build_inventory() -> dict[str, Any]:
     candidates: dict[str, Candidate] = {}
     _add_static_truth_primitives(candidates)
     _add_genesis_axioms(candidates)
+    _add_static_promoted_candidates(candidates)
     stats = _scan_candidate_files(candidates)
     ordered = sorted(candidates.values(), key=lambda item: (item.layer, item.category, item.candidate_id))
     nodes = [candidate.to_dict() for candidate in ordered]
@@ -691,24 +1094,48 @@ def _edge(
 
 def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
     proposed = []
+    for primitive in TRUTH_PRIMITIVES:
+        proposed.append(
+            _edge(
+                f"edge:genesis_agent_attests_{_slug(primitive)}",
+                GENESIS_AGENT_ID,
+                f"truth_primitive:{primitive}",
+                "ATTESTATION",
+                "genesis_signed_primitive",
+                confidence=0.91,
+                rationale="Genesis Agent 1 signs the primitive surface at bootstrap; reuse flow is economically capped by the Genesis hard limit.",
+                feature_hints={
+                    "authority_carrying": True,
+                    "directional": True,
+                    "economic_cap_policy": GENESIS_CAP_POLICY_ID,
+                    "economic_surface": "genesis_attested_provenance_flow",
+                    "genesis_bootstrap": True,
+                    "layer_span": "L2_to_L0",
+                    "reuse_economic_surface": "high",
+                    "sim_weight_seed": 0.95,
+                },
+                decision_log_refs=["GND-0012", "GND-0022", "GND-0023"],
+            )
+        )
     for axiom in ("axiom:math:01", "axiom:physics:01", "axiom:logic:01"):
         proposed.append(
             _edge(
                 f"edge:assert_truth_to_{_slug(axiom)}",
                 "truth_primitive:assert.truth",
                 axiom,
-                "ATTESTATION",
-                "creates_or_declares",
+                "PRIMITIVE_INVOCATION",
+                "operator_instantiates_assertion",
                 confidence=0.82,
-                rationale="Genesis axioms are declared through the assert.truth primitive surface.",
+                rationale="Genesis axioms are expressed through assert.truth; the primitive is an operator, not an attesting agent.",
                 feature_hints={
                     "directional": True,
                     "economic_surface": "none",
                     "genesis_bootstrap": True,
                     "layer_span": "L0_to_L1",
+                    "non_economic_edge": True,
                     "sim_weight_seed": 1.0,
                 },
-                decision_log_refs=["GND-0011"],
+                decision_log_refs=["GND-0011", "GND-0024"],
             )
         )
         proposed.append(
@@ -723,18 +1150,70 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 feature_hints={
                     "authority_carrying": True,
                     "directional": True,
+                    "economic_cap_policy": GENESIS_CAP_POLICY_ID,
+                    "economic_surface": "genesis_attested_provenance_flow",
                     "genesis_exempt": True,
                     "layer_span": "L2_to_L1",
                     "sim_weight_seed": 0.9,
                 },
-                decision_log_refs=["GND-0012"],
+                decision_log_refs=["GND-0012", "GND-0023"],
+            )
+        )
+        proposed.append(
+            _edge(
+                f"edge:{_slug(axiom)}_to_genesis_state_bundle",
+                axiom,
+                "artifact:genesis_state_bundle",
+                "PROVENANCE",
+                "included_in_seed_bundle",
+                confidence=0.76,
+                rationale="Genesis axioms are ancestors of the Genesis state bundle that carries seed state.",
+                feature_hints={
+                    "directional": True,
+                    "layer_span": "L1_to_L2",
+                    "sim_expansion_required": True,
+                    "sim_weight_seed": 0.7,
+                },
+                decision_log_refs=["GND-0015", "GND-0025"],
             )
         )
     proposed.extend(
         [
             _edge(
+                "edge:keygen_to_pubkey_record",
+                "ceremony:genesis_agent1_keygen_838a",
+                "artifact:genesis_agent1_pubkey_record_838a",
+                "ATTESTATION",
+                "produces_public_key_record",
+                confidence=0.86,
+                rationale="The keygen ceremony produces the public key record used by Genesis Agent 1.",
+                feature_hints={
+                    "authority_carrying": True,
+                    "directional": True,
+                    "layer_span": "L2_to_L2",
+                    "sim_weight_seed": 0.75,
+                },
+                decision_log_refs=["GND-0003", "GND-0026"],
+            ),
+            _edge(
+                "edge:pubkey_record_to_genesis_agent",
+                "artifact:genesis_agent1_pubkey_record_838a",
+                GENESIS_AGENT_ID,
+                "ATTESTATION",
+                "identifies_authority_key",
+                confidence=0.88,
+                rationale="The public key record identifies the committed Genesis Agent 1 authority key.",
+                feature_hints={
+                    "authority_carrying": True,
+                    "directional": True,
+                    "layer_span": "L2_to_L2",
+                    "sim_weight_seed": 0.78,
+                },
+                decision_log_refs=["GND-0003", "GND-0026"],
+            ),
+            _edge(
                 "edge:genesis_agent_to_assertion_schema",
-                "genesis_agent:01",
+                GENESIS_AGENT_ID,
                 "artifact:genesis_authority_assertion_schema",
                 "ATTESTATION",
                 "uses_schema",
@@ -751,45 +1230,28 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
             ),
             _edge(
                 "edge:assertion_schema_to_assert_truth",
-                "artifact:genesis_authority_assertion_schema",
                 "truth_primitive:assert.truth",
+                "artifact:genesis_authority_assertion_schema",
                 "PROVENANCE",
                 "specializes_primitive",
                 confidence=0.90,
-                rationale="The Genesis assertion schema is a genesis-authority specialization of assert.truth.",
+                rationale="assert.truth is the ancestor primitive; the Genesis assertion schema is its constrained authority specialization.",
                 feature_hints={
                     "directional": True,
-                    "layer_span": "L2_to_L0",
+                    "layer_span": "L0_to_L2",
                     "schema_edge": True,
                     "sim_weight_seed": 0.75,
                 },
-                decision_log_refs=["GND-0014"],
-            ),
-            _edge(
-                "edge:genesis_state_bundle_to_axioms",
-                "artifact:genesis_state_bundle",
-                "axiom:math:01",
-                "PROVENANCE",
-                "includes_seed_axioms_representative",
-                confidence=0.70,
-                rationale="The state bundle should carry Genesis seed state; this representative edge anchors the bundle to axiomatic core.",
-                feature_hints={
-                    "directional": True,
-                    "layer_span": "L2_to_L1",
-                    "representative_edge": True,
-                    "sim_expansion_required": True,
-                    "sim_weight_seed": 0.7,
-                },
-                decision_log_refs=["GND-0015"],
+                decision_log_refs=["GND-0014", "GND-0025"],
             ),
             _edge(
                 "edge:bootstrap_boundary_to_state_bundle",
                 "artifact:canonical_self_describing_bootstrap_boundary",
                 "artifact:genesis_state_bundle",
-                "PROVENANCE",
+                "LINEAGE_GOVERNS",
                 "governs_lineage",
                 confidence=0.86,
-                rationale="ADR-0027 governs the self-describing bootstrap lineage that state bundle artifacts participate in.",
+                rationale="ADR-0027 governs the self-describing bootstrap lineage; this is governance, not PROVENANCE ancestry.",
                 feature_hints={
                     "authority_carrying": True,
                     "directional": True,
@@ -797,7 +1259,39 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "lineage_edge": True,
                     "sim_weight_seed": 0.8,
                 },
-                decision_log_refs=["GND-0016"],
+                decision_log_refs=["GND-0016", "GND-0025"],
+            ),
+            _edge(
+                "edge:state_bundle_to_release_contract",
+                "artifact:genesis_state_bundle",
+                "artifact:genesis_release_artifact_contract",
+                "PROVENANCE",
+                "release_contract_descends_from_state_bundle",
+                confidence=0.78,
+                rationale="Genesis release artifacts are downstream of the state bundle lineage.",
+                feature_hints={
+                    "directional": True,
+                    "layer_span": "L2_to_L2",
+                    "lineage_edge": True,
+                    "sim_weight_seed": 0.68,
+                },
+                decision_log_refs=["GND-0005", "GND-0025"],
+            ),
+            _edge(
+                "edge:release_contract_to_release_provenance",
+                "artifact:genesis_release_artifact_contract",
+                "artifact:genesis_release_provenance_phase_228",
+                "PROVENANCE",
+                "records_release_provenance",
+                confidence=0.82,
+                rationale="The phase 228 provenance artifact records execution evidence for the release contract.",
+                feature_hints={
+                    "directional": True,
+                    "layer_span": "L2_to_L2",
+                    "lineage_edge": True,
+                    "sim_weight_seed": 0.68,
+                },
+                decision_log_refs=["GND-0005", "GND-0025"],
             ),
             _edge(
                 "edge:eve_capsule_to_bootstrap_boundary",
@@ -817,7 +1311,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
             ),
             _edge(
                 "edge:theta_hard_to_commit_epoch",
-                "policy:genesis_theta_hard_0_05",
+                GENESIS_CAP_POLICY_ID,
                 "truth_primitive:commit.epoch",
                 "EPOCH_BOUNDARY",
                 "caps_epoch_accrual",
@@ -833,9 +1327,41 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 decision_log_refs=["GND-0018"],
             ),
             _edge(
+                "edge:accrual_governor_to_theta_hard",
+                "policy:genesis_accrual_governor",
+                GENESIS_CAP_POLICY_ID,
+                "EPOCH_BOUNDARY",
+                "enforces_hard_cap",
+                confidence=0.88,
+                rationale="The Genesis accrual governor is the policy surface that enforces the 5% hard cap.",
+                feature_hints={
+                    "directional": True,
+                    "economic_surface": "genesis_accrual_cap",
+                    "layer_span": "L3_to_L3",
+                    "sim_weight_seed": 0.64,
+                },
+                decision_log_refs=["GND-0007", "GND-0018"],
+            ),
+            _edge(
+                "edge:theta_soft_to_accrual_governor",
+                "policy:genesis_theta_soft_exp_minus_3",
+                "policy:genesis_accrual_governor",
+                "EPOCH_BOUNDARY",
+                "parameterizes_soft_taper",
+                confidence=0.80,
+                rationale="theta_soft parameterizes taper compression before the hard cap is reached.",
+                feature_hints={
+                    "directional": True,
+                    "economic_surface": "genesis_accrual_soft_taper",
+                    "layer_span": "L3_to_L3",
+                    "sim_weight_seed": 0.58,
+                },
+                decision_log_refs=["GND-0007", "GND-0018"],
+            ),
+            _edge(
                 "edge:genesis_exemption_to_genesis_agent",
                 "policy:genesis_freshness_exemption",
-                "genesis_agent:01",
+                GENESIS_AGENT_ID,
                 "ATTESTATION",
                 "bootstrap_exemption_policy",
                 confidence=0.72,
@@ -850,13 +1376,30 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 decision_log_refs=["GND-0019"],
             ),
             _edge(
+                "edge:genesis_authority_sunset_to_exemption",
+                "policy:genesis_authority_sunset",
+                "policy:genesis_freshness_exemption",
+                "EPOCH_BOUNDARY",
+                "bounds_bootstrap_exemption",
+                confidence=0.82,
+                rationale="Genesis exemption must be bounded by sunset and reconciliation policy.",
+                feature_hints={
+                    "directional": True,
+                    "genesis_exempt": True,
+                    "layer_span": "L3_to_L3",
+                    "sunset_required": True,
+                    "sim_weight_seed": 0.56,
+                },
+                decision_log_refs=["GND-0008", "GND-0019"],
+            ),
+            _edge(
                 "edge:hypergraph_overlay_to_bootstrap_boundary",
                 "overlay:morphogenetic_hypergraph_substrate",
                 "artifact:canonical_self_describing_bootstrap_boundary",
-                "PROVENANCE",
+                "MORPHOGENIC_OVERLAY",
                 "paints_feature_rich_edges",
                 confidence=0.68,
-                rationale="The morphogenetic overlay supplies feature-rich edge semantics for the proposed Genesis atlas.",
+                rationale="The morphogenetic overlay supplies feature-rich edge semantics; it is not a provenance ancestor.",
                 feature_hints={
                     "available_edge_types": list(EDGE_TYPE_HINTS),
                     "directional": True,
@@ -864,10 +1407,37 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_expansion_required": True,
                     "sim_weight_seed": 0.5,
                 },
-                decision_log_refs=["GND-0020"],
+                decision_log_refs=["GND-0020", "GND-0025"],
             ),
         ]
     )
+    for target in (
+        "adr:0029_hypergraph_substrate",
+        "adr:0030_node_embedding_substrate",
+        "adr:0032_temporal_hypergraph",
+        "adr:0033_star_map_homoiconic_entity",
+        "cdl:081_hyperedge_ecu_attribution",
+        "cdl:083_panel_quorum_refutation",
+        "cdl:084_provenance_chain_attribution",
+    ):
+        proposed.append(
+            _edge(
+                f"edge:hypergraph_overlay_to_{_slug(target)}",
+                "overlay:morphogenetic_hypergraph_substrate",
+                target,
+                "MORPHOGENIC_OVERLAY",
+                "groups_morphogenic_substrate_artifact",
+                confidence=0.74,
+                rationale="The coarse morphogenetic overlay groups but does not replace distinct ADR/CDL substrate artifacts.",
+                feature_hints={
+                    "directional": True,
+                    "layer_span": "L4_to_L4",
+                    "sim_expansion_required": False,
+                    "sim_weight_seed": 0.52,
+                },
+                decision_log_refs=["GND-0010", "GND-0020", "GND-0026"],
+            )
+        )
     return [
         edge
         for edge in sorted(proposed, key=lambda item: item["edge_id"])
@@ -876,7 +1446,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
 
 
 def _decision_log() -> list[dict[str, str]]:
-    return [
+    entries = [
         {
             "decision_id": "GND-0001",
             "decision": "Include the New Seven as Layer 0 operator primitives, not axioms.",
@@ -982,7 +1552,35 @@ def _decision_log() -> list[dict[str, str]]:
             "decision": "Keep lower-authority and historical material in a review queue instead of excluding it.",
             "rationale": "The ILC process should be able to refute, improve, and promote candidate Genesis graph material over time.",
         },
+        {
+            "decision_id": "GND-0022",
+            "decision": "Keep truth primitive IDs universal while recording Genesis attestation as metadata and edges.",
+            "rationale": "primitive identity should not be renamed as Genesis-owned; Genesis authority enters through signed ATTESTATION relations.",
+        },
+        {
+            "decision_id": "GND-0023",
+            "decision": "Mark Genesis-to-truth-primitive attestation as an economically significant capped surface.",
+            "rationale": "Truth primitives are high-traffic reuse surfaces; Genesis accrual must remain visible and bounded by the 5% hard cap.",
+        },
+        {
+            "decision_id": "GND-0024",
+            "decision": "Use PRIMITIVE_INVOCATION for operator-to-content edges instead of ATTESTATION.",
+            "rationale": "assert.truth is an operator, not an authority identity that vouches for content.",
+        },
+        {
+            "decision_id": "GND-0025",
+            "decision": "Orient PROVENANCE edges ancestor-to-descendant and use non-provenance types for governance overlays.",
+            "rationale": "Wrong edge direction corrupts downstream Laplacian/SIM interpretation; governance and overlay relations need explicit types.",
+        },
+        {
+            "decision_id": "GND-0026",
+            "decision": "Represent core star-map and support-candidate graph projections in the same crawl artifact.",
+            "rationale": "Diffuse material can be retained and later promoted through synthesis without being treated as canonical core at ingestion time.",
+        },
     ]
+    for entry in entries:
+        entry["id"] = entry["decision_id"]
+    return entries
 
 
 def write_inventory(payload: dict[str, Any], json_out: Path, inventory_out: Path, decision_log_out: Path) -> None:
@@ -1035,7 +1633,7 @@ def _render_inventory_md(payload: dict[str, Any]) -> str:
             "",
             "## Schema Fields",
             "",
-            "Each JSON node records: `candidate_id`, `label`, `layer`, `category`, `node_kind`, `authority_status`, `canonicality_tier`, `inclusion_status`, `confidence`, `rationale`, `source_kind`, `evidence`, `edge_hints`, `sensitivity`, `economic_boundary`, `genesis_exempt`, `sunset_status`, and `decision_log_refs`.",
+            "Each JSON node records: `candidate_id`, `label`, `layer`, `depth_index`, `category`, `node_kind`, `authority_status`, `canonicality_tier`, `inclusion_status`, `graph_projection`, `promotion_path`, `confidence`, `rationale`, `source_kind`, `evidence`, `edge_hints`, `sensitivity`, `economic_boundary`, `economic_cap_policy`, `reuse_economic_surface`, `genesis_attested`, `genesis_attested_by`, `genesis_exempt`, `sunset_status`, `valid_epoch_range`, `version`, `superseded_by`, and `decision_log_refs`.",
             "",
             "## Review-Required Source Queue",
             "",
@@ -1074,7 +1672,8 @@ def _render_decision_log_md(payload: dict[str, Any]) -> str:
         "|---|---|---|",
     ]
     for decision in payload["decision_log"]:
-        lines.append(f"| `{decision['decision_id']}` | {decision['decision']} | {decision['rationale']} |")
+        decision_id = decision.get("id", decision["decision_id"])
+        lines.append(f"| `{decision_id}` | {decision['decision']} | {decision['rationale']} |")
     lines.append("")
     return "\n".join(lines)
 
