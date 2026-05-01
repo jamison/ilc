@@ -48,8 +48,11 @@ def test_genesis_node_candidate_crawl_includes_new_seven_and_axioms() -> None:
         assert node["economic_boundary"] == "genesis_attested_provenance_flow"
         assert node["economic_cap_policy"] == "policy:genesis_theta_hard_0_05"
         assert node["graph_projection"] == "core_star_map"
+        assert node["core_star_map_candidate"] is True
     for axiom in ("axiom:math:01", "axiom:physics:01", "axiom:logic:01"):
         assert nodes[axiom]["canonicality_tier"] == "binding_config"
+        assert nodes[axiom]["economic_boundary"] == "genesis_attested_provenance_flow"
+        assert nodes[axiom]["core_star_map_candidate"] is True
 
 
 def test_genesis_node_candidate_crawl_promotes_required_genesis_star_map_nodes() -> None:
@@ -59,6 +62,7 @@ def test_genesis_node_candidate_crawl_promotes_required_genesis_star_map_nodes()
         "artifact:genesis_agent1_pubkey_record_838a",
         "ceremony:genesis_agent1_keygen_838a",
         "policy:genesis_accrual_governor",
+        "policy:provenance_decay_alpha_0_45",
         "policy:genesis_theta_soft_exp_minus_3",
         "policy:genesis_authority_sunset",
         "adr:0029_hypergraph_substrate",
@@ -70,6 +74,8 @@ def test_genesis_node_candidate_crawl_promotes_required_genesis_star_map_nodes()
         "cdl:084_provenance_chain_attribution",
     ):
         assert nodes[candidate_id]["graph_projection"] == "core_star_map"
+    assert nodes["policy:provenance_decay_alpha_0_45"]["canonicality_tier"] == "ratified_cdl"
+    assert "overlay:morphogenetic_hypergraph_substrate" not in nodes
 
 
 def test_genesis_node_candidate_crawl_records_edge_features_for_sim_use() -> None:
@@ -77,8 +83,15 @@ def test_genesis_node_candidate_crawl_records_edge_features_for_sim_use() -> Non
     edges = payload["edges"]
     assert isinstance(edges, list)
     assert edges
-    assert any(edge["edge_type"] == "EPOCH_BOUNDARY" for edge in edges)
     assert any(edge["feature_hints"].get("sim_weight_seed") is not None for edge in edges)
+    proposed_edges = [
+        edge
+        for edge in edges
+        if edge["edge_type"] in {"PRIMITIVE_INVOCATION", "GOVERNS", "CONSTRAINS"}
+    ]
+    assert proposed_edges
+    assert all(edge["feature_hints"]["proposed_edge_type"] is True for edge in proposed_edges)
+    assert all(edge["feature_hints"]["edge_type_status"] == "atlas_proposal_pending_ADR" for edge in proposed_edges)
     primitive_attestation_edges = [
         edge
         for edge in edges
@@ -110,6 +123,13 @@ def test_genesis_node_candidate_crawl_uses_correct_operator_and_provenance_edge_
         and edge["edge_type"] == "PROVENANCE"
         for edge in edges
     )
+    assert any(
+        edge["source"] == "genesis_agent:01"
+        and edge["target"] == "policy:genesis_freshness_exemption"
+        and edge["edge_type"] == "CONSTRAINS"
+        for edge in edges
+    )
+    assert not any(edge["edge_id"] == "edge:genesis_exemption_to_genesis_agent" for edge in edges)
 
 
 def test_genesis_node_candidate_crawl_keeps_review_required_sources() -> None:
@@ -128,4 +148,5 @@ def test_genesis_node_candidate_decision_log_records_review_queue_rule() -> None
     text = DECISION_LOG.read_text(encoding="utf-8")
     assert "GND-0021" in text
     assert "GND-0026" in text
+    assert "GND-0029" in text
     assert "review queue" in text

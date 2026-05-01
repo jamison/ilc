@@ -51,10 +51,18 @@ EDGE_TYPE_HINTS = (
     "CO_AUTHORSHIP",
     "ATTESTATION",
     "EPOCH_BOUNDARY",
-    "PRIMITIVE_INVOCATION",
-    "LINEAGE_GOVERNS",
-    "MORPHOGENIC_OVERLAY",
 )
+
+RUNTIME_EDGE_TYPES = {
+    "PROVENANCE",
+    "REUSE",
+    "REFUTATION",
+    "MAINTENANCE",
+    "CO_AUTHORSHIP",
+    "ATTESTATION",
+    "EPOCH_BOUNDARY",
+}
+PROPOSED_ATLAS_EDGE_TYPES = {"PRIMITIVE_INVOCATION", "GOVERNS", "CONSTRAINS"}
 
 GENESIS_AGENT_ID = "genesis_agent:01"
 GENESIS_CAP_POLICY_ID = "policy:genesis_theta_hard_0_05"
@@ -120,12 +128,14 @@ class Candidate:
             )
 
     def to_dict(self) -> dict[str, Any]:
+        core_star_map_candidate = _core_star_map_candidate(self.inclusion_status, self.graph_projection)
         return {
             "authority_status": self.authority_status,
             "candidate_id": self.candidate_id,
             "canonicality_tier": self.canonicality_tier,
             "category": self.category,
             "confidence": self.confidence,
+            "core_star_map_candidate": core_star_map_candidate,
             "decision_log_refs": self.decision_log_refs,
             "economic_boundary": self.economic_boundary,
             "economic_cap_policy": self.economic_cap_policy,
@@ -140,7 +150,7 @@ class Candidate:
             "label": self.label,
             "layer": self.layer,
             "node_kind": self.node_kind,
-            "promotion_path": self.promotion_path,
+            "promotion_path": _promotion_path(self.promotion_path, core_star_map_candidate),
             "rationale": self.rationale,
             "reuse_economic_surface": self.reuse_economic_surface,
             "sensitivity": self.sensitivity,
@@ -155,6 +165,26 @@ class Candidate:
 def _slug(value: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
     return slug or "unnamed"
+
+
+def _core_star_map_candidate(inclusion_status: str, graph_projection: str) -> bool | str:
+    if graph_projection != "core_star_map":
+        return False
+    if inclusion_status == "must_include":
+        return True
+    if inclusion_status == "strong_candidate":
+        return "review"
+    return False
+
+
+def _promotion_path(configured_path: str, core_star_map_candidate: bool | str) -> str:
+    if configured_path != "already_core_or_not_applicable":
+        return configured_path
+    if core_star_map_candidate is True:
+        return "already_core_star_map"
+    if core_star_map_candidate == "review":
+        return "candidate_requires_jury_review_or_ADR_CDL_runtime_synthesis"
+    return "support_graph_to_core_requires_synthesis_artifact_and_jury_or_cdl_review"
 
 
 def _read_text(path: Path) -> str | None:
@@ -426,6 +456,7 @@ def _add_genesis_axioms(candidates: dict[str, Candidate]) -> None:
             rationale="Present in config/genesis.json axiomatic_core.",
             source_kind="config",
             edge_hints=["PROVENANCE", "ATTESTATION"],
+            economic_boundary="genesis_attested_provenance_flow",
             genesis_exempt=True,
             genesis_attested=True,
             genesis_attested_by=GENESIS_AGENT_ID,
@@ -443,6 +474,25 @@ def _add_genesis_axioms(candidates: dict[str, Candidate]) -> None:
 def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
     """Promote high-confidence Genesis atlas nodes that should not remain review-only."""
     specs: list[dict[str, Any]] = [
+        {
+            "candidate_id": "policy:provenance_decay_alpha_0_45",
+            "label": "CDL-084 PROVENANCE_DECAY_ALPHA Decimal(0.45)",
+            "layer": "L3_policy_economic",
+            "category": "economic_policy",
+            "node_kind": "policy_constant",
+            "authority_status": "cdl_084_q2_alpha_locked_phase_1126",
+            "canonicality_tier": "ratified_cdl",
+            "inclusion_status": "must_include",
+            "confidence": 0.96,
+            "rationale": "CDL-084 Q2 locks the geometric decay constant controlling PROVENANCE chain ECU flow.",
+            "source_kind": "spec",
+            "source_path": Path("docs/specs/ilc_cdl_084_provenance_chain_attribution_opening_1111_v0.1.md"),
+            "evidence_pattern": re.compile(r'PROVENANCE_DECAY_ALPHA = Decimal\("0\.45"\)'),
+            "edge_hints": ["PROVENANCE"],
+            "economic_boundary": "provenance_chain_decay",
+            "depth_index": 3,
+            "decision_log_refs": ["GND-0027"],
+        },
         {
             "candidate_id": "artifact:genesis_agent1_pubkey_record_838a",
             "label": "Genesis Agent 1 public key record 838a",
@@ -752,8 +802,9 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
         source_path = spec.pop("source_path")
         if not source_path.exists():
             continue
+        evidence_pattern = spec.pop("evidence_pattern", None)
         candidate = _new_candidate(**spec)
-        evidence = _first_line_evidence(source_path)
+        evidence = _first_matching_line(source_path, evidence_pattern) if evidence_pattern else _first_line_evidence(source_path)
         if evidence is not None:
             candidate.add_evidence(evidence)
         candidates[candidate.candidate_id] = candidate
@@ -894,24 +945,6 @@ def _scan_candidate_files(candidates: dict[str, Candidate]) -> dict[str, Any]:
                 "authority_status": "accepted_ADR_0027",
                 "canonicality_tier": "accepted_adr",
                 "source_kind": "adr",
-            },
-        ),
-        (
-            "overlay:morphogenetic_hypergraph_substrate",
-            re.compile(r"HyperEdge|EdgeType|PROVENANCE|REUSE|REFUTATION|CO_AUTHORSHIP|ATTESTATION|EPOCH_BOUNDARY|morphogenetic", re.IGNORECASE),
-            {
-                "label": "Morphogenetic hypergraph substrate overlay",
-                "layer": "L4_morphogenic_overlay",
-                "category": "hypergraph_overlay",
-                "node_kind": "substrate_overlay",
-                "inclusion_status": "strong_candidate",
-                "confidence": 0.80,
-                "rationale": "Defines the feature-rich edge system used to paint the Genesis morphogenic hypergraph.",
-                "edge_hints": list(EDGE_TYPE_HINTS),
-                "decision_log_refs": ["GND-0010"],
-                "authority_status": "morphogenetic_hypergraph_planning_surface",
-                "canonicality_tier": "research_planning",
-                "source_kind": "research",
             },
         ),
     ]
@@ -1079,6 +1112,12 @@ def _edge(
     feature_hints: dict[str, Any],
     decision_log_refs: list[str],
 ) -> dict[str, Any]:
+    if edge_type not in RUNTIME_EDGE_TYPES:
+        feature_hints = {
+            **feature_hints,
+            "edge_type_status": "atlas_proposal_pending_ADR",
+            "proposed_edge_type": True,
+        }
     return {
         "confidence": confidence,
         "decision_log_refs": decision_log_refs,
@@ -1248,7 +1287,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 "edge:bootstrap_boundary_to_state_bundle",
                 "artifact:canonical_self_describing_bootstrap_boundary",
                 "artifact:genesis_state_bundle",
-                "LINEAGE_GOVERNS",
+                "GOVERNS",
                 "governs_lineage",
                 confidence=0.86,
                 rationale="ADR-0027 governs the self-describing bootstrap lineage; this is governance, not PROVENANCE ancestry.",
@@ -1313,7 +1352,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 "edge:theta_hard_to_commit_epoch",
                 GENESIS_CAP_POLICY_ID,
                 "truth_primitive:commit.epoch",
-                "EPOCH_BOUNDARY",
+                "CONSTRAINS",
                 "caps_epoch_accrual",
                 confidence=0.83,
                 rationale="The 5% hard cap is enforced across cumulative issuance/accrual over epoch boundaries.",
@@ -1330,7 +1369,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 "edge:accrual_governor_to_theta_hard",
                 "policy:genesis_accrual_governor",
                 GENESIS_CAP_POLICY_ID,
-                "EPOCH_BOUNDARY",
+                "GOVERNS",
                 "enforces_hard_cap",
                 confidence=0.88,
                 rationale="The Genesis accrual governor is the policy surface that enforces the 5% hard cap.",
@@ -1346,7 +1385,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 "edge:theta_soft_to_accrual_governor",
                 "policy:genesis_theta_soft_exp_minus_3",
                 "policy:genesis_accrual_governor",
-                "EPOCH_BOUNDARY",
+                "CONSTRAINS",
                 "parameterizes_soft_taper",
                 confidence=0.80,
                 rationale="theta_soft parameterizes taper compression before the hard cap is reached.",
@@ -1359,27 +1398,27 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                 decision_log_refs=["GND-0007", "GND-0018"],
             ),
             _edge(
-                "edge:genesis_exemption_to_genesis_agent",
-                "policy:genesis_freshness_exemption",
+                "edge:genesis_agent_subject_to_freshness_exemption",
                 GENESIS_AGENT_ID,
-                "ATTESTATION",
-                "bootstrap_exemption_policy",
+                "policy:genesis_freshness_exemption",
+                "CONSTRAINS",
+                "subject_to_bootstrap_exemption_policy",
                 confidence=0.72,
-                rationale="Genesis exemption applies to Genesis bootstrap authority surfaces and must carry sunset/reconciliation metadata.",
+                rationale="Genesis Agent 1 is subject to the bootstrap exemption policy; the policy does not attest the agent.",
                 feature_hints={
                     "directional": True,
                     "genesis_exempt": True,
-                    "layer_span": "L3_to_L2",
+                    "layer_span": "L2_to_L3",
                     "sunset_required": True,
                     "sim_weight_seed": 0.55,
                 },
-                decision_log_refs=["GND-0019"],
+                decision_log_refs=["GND-0019", "GND-0028"],
             ),
             _edge(
                 "edge:genesis_authority_sunset_to_exemption",
                 "policy:genesis_authority_sunset",
                 "policy:genesis_freshness_exemption",
-                "EPOCH_BOUNDARY",
+                "CONSTRAINS",
                 "bounds_bootstrap_exemption",
                 confidence=0.82,
                 rationale="Genesis exemption must be bounded by sunset and reconciliation policy.",
@@ -1390,54 +1429,41 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sunset_required": True,
                     "sim_weight_seed": 0.56,
                 },
-                decision_log_refs=["GND-0008", "GND-0019"],
+                decision_log_refs=["GND-0008", "GND-0019", "GND-0028"],
             ),
             _edge(
-                "edge:hypergraph_overlay_to_bootstrap_boundary",
-                "overlay:morphogenetic_hypergraph_substrate",
-                "artifact:canonical_self_describing_bootstrap_boundary",
-                "MORPHOGENIC_OVERLAY",
-                "paints_feature_rich_edges",
-                confidence=0.68,
-                rationale="The morphogenetic overlay supplies feature-rich edge semantics; it is not a provenance ancestor.",
+                "edge:cdl_084_to_provenance_decay_alpha",
+                "cdl:084_provenance_chain_attribution",
+                "policy:provenance_decay_alpha_0_45",
+                "GOVERNS",
+                "locks_policy_constant",
+                confidence=0.92,
+                rationale="CDL-084 Q2 locks PROVENANCE_DECAY_ALPHA at Decimal(0.45), controlling PROVENANCE chain ECU flow.",
                 feature_hints={
-                    "available_edge_types": list(EDGE_TYPE_HINTS),
+                    "directional": True,
+                    "economic_surface": "provenance_chain_decay",
+                    "layer_span": "L4_to_L3",
+                    "sim_weight_seed": 0.72,
+                },
+                decision_log_refs=["GND-0027", "GND-0028"],
+            ),
+            _edge(
+                "edge:adr_0033_to_bootstrap_boundary",
+                "adr:0033_star_map_homoiconic_entity",
+                "artifact:canonical_self_describing_bootstrap_boundary",
+                "GOVERNS",
+                "defines_star_map_projection_boundary",
+                confidence=0.80,
+                rationale="ADR-0033 defines the star-map projection that consumes the canonical bootstrap boundary as a load surface.",
+                feature_hints={
                     "directional": True,
                     "layer_span": "L4_to_L2",
-                    "sim_expansion_required": True,
-                    "sim_weight_seed": 0.5,
+                    "sim_weight_seed": 0.62,
                 },
-                decision_log_refs=["GND-0020", "GND-0025"],
+                decision_log_refs=["GND-0010", "GND-0028"],
             ),
         ]
     )
-    for target in (
-        "adr:0029_hypergraph_substrate",
-        "adr:0030_node_embedding_substrate",
-        "adr:0032_temporal_hypergraph",
-        "adr:0033_star_map_homoiconic_entity",
-        "cdl:081_hyperedge_ecu_attribution",
-        "cdl:083_panel_quorum_refutation",
-        "cdl:084_provenance_chain_attribution",
-    ):
-        proposed.append(
-            _edge(
-                f"edge:hypergraph_overlay_to_{_slug(target)}",
-                "overlay:morphogenetic_hypergraph_substrate",
-                target,
-                "MORPHOGENIC_OVERLAY",
-                "groups_morphogenic_substrate_artifact",
-                confidence=0.74,
-                rationale="The coarse morphogenetic overlay groups but does not replace distinct ADR/CDL substrate artifacts.",
-                feature_hints={
-                    "directional": True,
-                    "layer_span": "L4_to_L4",
-                    "sim_expansion_required": False,
-                    "sim_weight_seed": 0.52,
-                },
-                decision_log_refs=["GND-0010", "GND-0020", "GND-0026"],
-            )
-        )
     return [
         edge
         for edge in sorted(proposed, key=lambda item: item["edge_id"])
@@ -1576,6 +1602,21 @@ def _decision_log() -> list[dict[str, str]]:
             "decision_id": "GND-0026",
             "decision": "Represent core star-map and support-candidate graph projections in the same crawl artifact.",
             "rationale": "Diffuse material can be retained and later promoted through synthesis without being treated as canonical core at ingestion time.",
+        },
+        {
+            "decision_id": "GND-0027",
+            "decision": "Promote CDL-084 PROVENANCE_DECAY_ALPHA Decimal(0.45) as a core economic policy node.",
+            "rationale": "The alpha constant directly governs PROVENANCE chain ECU flow, including chains passing through Genesis-attested primitives and axioms.",
+        },
+        {
+            "decision_id": "GND-0028",
+            "decision": "Flag PRIMITIVE_INVOCATION, GOVERNS, and CONSTRAINS as atlas-proposed edge types.",
+            "rationale": "These are useful for the Genesis star-map atlas but are not members of the current runtime EdgeType enum.",
+        },
+        {
+            "decision_id": "GND-0029",
+            "decision": "Remove the coarse morphogenetic overlay hub from the core star-map candidate set.",
+            "rationale": "The individual ADR/CDL substrate nodes now carry the usable semantics without a redundant single-layer hub.",
         },
     ]
     for entry in entries:
