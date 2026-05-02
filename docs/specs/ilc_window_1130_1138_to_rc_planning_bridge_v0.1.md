@@ -355,44 +355,81 @@ GO tokens. Windows with CDL mutations require `ILC_CDL_MUTATION_AUTHORIZED`.
 
 ---
 
-### Window 1139–1147: SIM-SPECTRAL-03 + Atlas Tier 1
+### Window 1139–1147: Run 02 Corrected Baseline + Atlas Tier 1 + SIM-SPECTRAL-03
 
-**Character:** Simulation research + atlas patch. No CDL. No `ilc_core/` mutations.
+**Character:** Simulation research + corrected baseline + atlas patch. No CDL. No
+`ilc_core/` mutations.
 
-**Primary lane:** SIM-SPECTRAL-03 — re-run SIM-SPECTRAL-02 Track A using the 31-node
-Genesis core star map as the S1 topology seed. Compare slope distribution and gaming probe
-results against the homoiconic 3-axiom baseline from Window 1130–1138. This is the
-prerequisite for CDL-085 authorization.
+**Corrected baseline requirement (ADDED — supersedes earlier framing):**
 
-**Secondary lane:** Atlas Tier-1 patch — add the ~10 missing authority-chain edges to the
-curated seed, regenerate star map, and re-run GENESIS-COMPILE-01.
+The Window 1130–1138 SIM-SPECTRAL-02 Run 02 data (`a93da4f9`, 2026-05-01 19:56) was
+produced before the critical normalized-λ₂ / Greek-weights fix (`58c4687f`,
+2026-05-02 07:47). The fix corrected two bugs that were silently active during all 333
+Run 02 matrix entries:
 
-**Sequencing note:** Atlas Tier-1 (Phases 1140–1141) must complete and pass
-GENESIS-COMPILE-01 checkpoint #1 **before** SIM-SPECTRAL-03 harness work begins. The
-SIM-SPECTRAL-03 seed topology depends on the patched star map. Running the SIM before
-the atlas is repaired would seed it with the incomplete graph.
+1. `structural_impedance` was always zero for any connected graph (combinatorial λ₂
+   was always > THETA_FLOOR). The V_t formula effectively ran as
+   `V_t = el_x + mean_x + 0 + contention`.
+2. α/β/γ/δ calibration parameters were not exposed in the CLI; all weights were
+   hardcoded to 1.0.
+
+The Phase 1136 disposition was written after the fix but interpreted pre-fix matrix data.
+The β calibration probe (the only post-fix run) used the fixed harness, but it varied β
+and α — it did not establish a corrected structural-impedance baseline.
+
+**Consequence:** The Run 02 slope values (S1=+0.557, S2=+0.214, S3=+0.358, S4=+0.246,
+G2=+0.481) are from a formula missing one of its four terms. The Scenario B advisory
+conclusion — "S3 Sybil discrimination is unresolved; a topology-sensitive
+Structural_Impedance term is needed" — was reached on data where that term was already
+present in the spec but contributing exactly zero. The conclusion is not falsified, but
+the baseline is not valid for comparison with SIM-SPECTRAL-03.
+
+**Corrected baseline phase (Phase 1140):** Rerun the same 333-entry homoiconic Run 02
+matrix using the fixed harness (`58c4687f`), same seed topology (3 Genesis axioms +
+97 synthetic artifacts), same parameters (N=100, seeds 42/1337/2026). Publish a
+corrected disposition addendum comparing old vs. corrected Run 02 slope values.
+
+This isolates the formula change from the Genesis seed change. SIM-SPECTRAL-03 then
+introduces only one new variable: the 31-node Genesis seed topology. The corrected Run
+02 baseline — not the broken Run 02 — becomes the comparison baseline for SIM-SPECTRAL-03.
+
+**Existing Scenario B advisory status:** Provisional and directionally useful. The
+directional finding (S1 dominates by slope magnitude across all three topology tracks)
+is likely to survive the corrected rerun. But the absolute slope values, the S3/S1
+ratio threshold, and the CDL-085 gate condition must all be re-evaluated against the
+corrected baseline before the advisory is treated as final.
+
+**Phase sequencing:** Corrected Run 02 (Phase 1140) → corrected disposition addendum
+(Phase 1141) → Atlas Tier-1 patch (Phase 1142) → GENESIS-COMPILE-01 checkpoint #1
+(Phase 1143) → SIM-SPECTRAL-03 harness + runs (Phases 1144–1146) → closure (Phase 1147).
 
 | Phase | Topic | Sensitivity |
 |-------|-------|-------------|
 | 1139 | Sequence lock | NON-SENSITIVE |
-| 1140 | Atlas Tier-1 curated seed patch + star map regeneration | NON-SENSITIVE |
-| 1141 | **GENESIS-COMPILE-01 checkpoint #1** — post-Tier-1 atlas | NON-SENSITIVE |
-| 1142 | SIM-SPECTRAL-03 harness update (31-node seed topology) | NON-SENSITIVE |
-| 1143 | SIM-SPECTRAL-03 Run 01 | NON-SENSITIVE |
-| 1144 | SIM-SPECTRAL-03 Run 01 disposition | NON-SENSITIVE |
-| 1145 | SIM-SPECTRAL-03 Run 02 (if Run 01 warranted) | NON-SENSITIVE |
+| 1140 | **SIM-SPECTRAL-02 Run 02 Fix2 corrected baseline** — rerun 333-entry matrix with fixed harness | NON-SENSITIVE |
+| 1141 | Corrected Run 02 disposition addendum — compare old vs. corrected slopes; update Scenario B/C verdict | NON-SENSITIVE |
+| 1142 | Atlas Tier-1 curated seed patch + star map regeneration | NON-SENSITIVE |
+| 1143 | **GENESIS-COMPILE-01 checkpoint #1** — post-Tier-1 atlas | NON-SENSITIVE |
+| 1144 | SIM-SPECTRAL-03 harness update (31-node Genesis seed topology) | NON-SENSITIVE |
+| 1145 | SIM-SPECTRAL-03 Run 01 | NON-SENSITIVE |
 | 1146 | SIM-SPECTRAL-03 disposition + CDL-085 authorization recommendation | NON-SENSITIVE |
 | 1147 | Coherence + capsule v5.39 + closure gate | **SENSITIVE** |
 
-**GENESIS-COMPILE-01 checkpoint #1** (Phase 1141) target: basis-reachable core nodes
+**Notes on phase count:** If SIM-SPECTRAL-03 Run 01 warrants a Run 02, the window will
+need to extend (1147 → 1148+) or Phase 1147 becomes the closure gate for a Run 01-only
+disposition. The Window 1139 guidance doc should scope this explicitly.
+
+**GENESIS-COMPILE-01 checkpoint #1** (Phase 1143) target: basis-reachable core nodes
 rises from 17/31 to ≥ 28/31 after Tier-1 edge additions. Interpret failures as missing
 explicit graph edges first — the semantics may already imply the authority chain, but the
 machine can only traverse what is explicitly encoded. Do not conclude from reachability
 failures that the primitive basis is wrong.
 
-**Expected CDL-085 outcome:** If SIM-SPECTRAL-03 shows materially improved S3 Sybil
-discrimination under the Genesis seed (S3/S1 ratio < 0.60 rather than 0.647), Phase 1146
-recommends CDL-085 authorization. Human GO token required before CDL-085 opens.
+**CDL-085 gate condition (updated):** If SIM-SPECTRAL-03 shows materially improved S3
+Sybil discrimination relative to the **corrected Run 02 baseline** (not the broken Run
+02), Phase 1146 recommends CDL-085 authorization. The S3/S1 ratio threshold must be
+re-established from the corrected Run 02 disposition addendum before it is used as a
+gate. Human GO token required before CDL-085 opens.
 
 ---
 
@@ -548,13 +585,18 @@ Do not use it as a substitute for functional tests or CDL evidence tests.
 ## 6. Key Sequencing Dependencies
 
 ```
-Window 1130-1138 (current)
-    ↓  Phase 1137 + 1138
-Window 1139-1147 (SIM-SPECTRAL-03 + Atlas Tier 1)
-    ↓  SIM-SPECTRAL-03 positive result needed
+Window 1130-1138 (CLOSED — Phase 1138, 961319bb)
+    ↓
+Window 1139-1147
+    Phase 1140: Run 02 Fix2 corrected baseline (same matrix, fixed harness)
+    Phase 1141: Corrected Run 02 disposition addendum
+    Phase 1142: Atlas Tier-1 curated seed patch
+    Phase 1143: GENESIS-COMPILE-01 checkpoint #1
+    Phases 1144-1146: SIM-SPECTRAL-03 (harness + run + disposition)
+    ↓  corrected Run 02 baseline established; SIM-SPECTRAL-03 positive result needed
 CDL-085 authorization (human GO token)
     ↓
-Window 1148-1156 (CDL-085 opening + SIM-HYPEREDGE-01)
+Window 1148-1156 (CDL-085 opening + SIM-HYPEREDGE-01 + Atlas Tier 2)
     ↓  CDL-085 prelock complete
 Window 1157-1165 (CDL-085 ratification + ADR-0035 CDL)
     ↓  H-011 patent gate + human authorization
@@ -578,12 +620,15 @@ Before committing to this arc, the following questions need human disposition:
 
 | Question | Why it matters |
 |----------|---------------|
+| **Corrected Run 02 scope** | Should Fix2 rerun use the exact same 333-entry matrix and seeds (42/1337/2026), or a reduced scope? Recommend same matrix to allow slope-by-slope comparison. Confirm in Window 1139 guidance doc. |
+| **Scenario B advisory status after corrected rerun** | If the corrected Run 02 shows materially different S3/S1 ratios, the existing advisory verdict must be revised before it is used as a CDL-085 gate input. Do not treat the Phase 1136 advisory as final until the corrected disposition addendum is complete. |
+| **CDL-085 S3/S1 gate threshold** | The 0.647 ratio (and the < 0.60 gate target) came from pre-fix data. This threshold must be re-established from the corrected Run 02 baseline. Do not carry the 0.647 figure forward as a gate number. |
 | **H-011 patent gate timeline** | Determines whether star expansion CDL can open in Window 1166–1174 or must slip |
 | **SIM-ECU-STABILITY-01 authorization** | Determines whether it runs alongside star expansion or separately |
 | **ADR-0035 CDL number** | CDL-085 is Werner φ-bound. ADR-0035 CDL would be CDL-086 or next. Confirm sequence. |
 | **Conley Index pre-RC1.0 deferral** | Is this a hard deferral or should a planning window be opened before RC? |
 | **GENESIS-COMPILE-01 #4 threshold** | Is 60% runtime coverage the right RC gate threshold, or should it be higher? |
-| **SIM-SPECTRAL-03 scope** | Should it re-run the full 333-entry matrix, or just Track A + gaming probes against Genesis seed? |
+| **SIM-SPECTRAL-03 scope** | Should it re-run the full 333-entry matrix, or just Track A + gaming probes against Genesis seed? Recommend at minimum Track A + all gaming probes (S3, G2) to give the CDL-085 gate condition a clean read. |
 
 ---
 
