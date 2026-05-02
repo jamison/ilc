@@ -239,7 +239,70 @@ aggregation.
    (node ID); runtime semantics change. Requires migration guide for existing data.
 4. **Jury procedure for type disputes** — the 7+1 empanelment process for type
    adjudication needs a procedure spec (separate ADR or CDL annex).
+5. **Decomposition recipe requirement (added 2026-05-02, Window 1130–1138)** — every
+   definition node must carry a `decomposition_recipe` field specifying which truth
+   primitives compose the type and in what order. Types with identical recipes must
+   either be unified into a single type (with a `scope` or `role_schema` parameter
+   distinguishing cases) or provide a formal written rationale for remaining distinct.
+   This requirement applies before CDL ratification of any proposed type. See
+   `docs/research/ilc_markov_trace_projection_and_transition_basis_v0.1.md` §3 and
+   GND-0034 in `docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md`.
+
+---
+
+## 9. Design Constraint Amendment — Compositional Primitive Basis
+
+*Added 2026-05-02, Window 1130–1138.*
+
+The 7 truth primitives established in ADR-0004 constitute the **semantic basis** for
+all edge type and hyperedge type definitions. This is a design constraint on definition
+nodes, complementary to the bootstrapping floor defined in §4.1.
+
+### Compositional basis rule
+
+Every proposed type definition must be expressible as a composition of truth primitives:
+
+```
+type_semantics = primitive₁ ∘ primitive₂ ∘ ... ∘ primitiveₙ
+```
+
+where `∘` denotes sequential application to the graph state (i.e., the first primitive
+is applied to the initial state, and subsequent primitives are applied to the resulting
+states). The composition need not be unique — a type may have multiple valid recipes —
+but at least one valid recipe must be stated.
+
+**Types that are irreducible** (not expressible as compositions of other primitives)
+must be flagged `"irreducible": true` in their definition node. `commit.epoch` (the
+EPOCH_BOUNDARY type) is the canonical example of an irreducible type: it is itself a
+truth primitive and does not decompose further.
+
+### Consequence: type proliferation governance
+
+Before any new type is ratified via CDL:
+
+1. State the `decomposition_recipe` (which primitives, in what order)
+2. If the recipe is identical to an existing ratified type, the new type must either
+   be rejected (it is the same type) or provide a `scope` / `role_schema` parameter
+   that formally distinguishes the cases
+3. Types that decompose as `TYPE_A + TYPE_B` where both already exist are not
+   standalone new types — they are compositions and should be represented as
+   sequential edge applications, not new enum values
+
+### Known applications (Window 1130–1138 atlas work)
+
+| Proposed type | Recipe | Status |
+|--------------|--------|--------|
+| `PRIMITIVE_INVOCATION` | `assert.truth ∘ link.claim` with `source_role=operator` | Review: may unify with ATTESTATION |
+| `GOVERNS` | `validate.claim ∘ link.claim` | Review: identical recipe to CONSTRAINS |
+| `CONSTRAINS` | `validate.claim ∘ link.claim` | Review: identical recipe to GOVERNS — unify with `scope` param |
+| `LINEAGE_GOVERNS` | `link.claim ∘ commit.epoch ∘ validate.claim` = PROVENANCE + GOVERNS | Likely remove; represent as composition |
+| `MORPHOGENIC_OVERLAY` | No clear primitive recipe | Reject as edge type; use node metadata |
+| `EPOCH_BOUNDARY` | `commit.epoch` alone | `irreducible: true` — confirmed |
+
+These are atlas-level determinations. Full CDL adjudication is required before any
+change to the runtime `EdgeType` enum.
 
 `adr_0035_homoiconic_type_definition_system_direction_accepted`
 `adr_0035_implementation_deferred_pending_cdl`
 `adr_0035_definition_node_drafts_informational_not_ratified`
+`adr_0035_compositional_primitive_basis_amendment_2026_05_02`
