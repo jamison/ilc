@@ -7,6 +7,7 @@ This is a research/atlas tool only. It does not mutate protocol runtime state.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import re
@@ -22,6 +23,7 @@ DEFAULT_STAR_MAP_OUT = Path("out/genesis_core_star_map_v0.1.json")
 DEFAULT_STAR_MAP_INDEX_OUT = Path("out/genesis_core_star_map_index_v0.1.json")
 DEFAULT_INVENTORY_OUT = Path("docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md")
 DEFAULT_DECISION_LOG_OUT = Path("docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md")
+DEFAULT_CURATED_SEED = Path("docs/sims/sim_spectral_02/genesis_core_star_map_curated_seed_v0.1.json")
 GENESIS_CONFIG = Path("config/genesis.json")
 
 SCAN_ROOTS = (Path("docs"), Path("config"), Path("ilc_core"), Path("tests"))
@@ -70,6 +72,7 @@ PROPOSED_ATLAS_EDGE_TYPES = {"PRIMITIVE_INVOCATION", "GOVERNS", "CONSTRAINS"}
 
 GENESIS_AGENT_ID = "genesis_agent:01"
 GENESIS_CAP_POLICY_ID = "policy:genesis_theta_hard_0_05"
+TRUTH_PRIMITIVE_NODE_IDS = tuple(f"truth_primitive:{primitive}" for primitive in TRUTH_PRIMITIVES)
 
 
 @dataclass(frozen=True)
@@ -342,6 +345,43 @@ def _first_line_evidence(path: Path) -> Evidence | None:
         if line.strip():
             return _evidence(path, line_number, line)
     return None
+
+
+def _load_curated_seed(path: Path = DEFAULT_CURATED_SEED) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("genesis_curated_seed_must_be_json_object")
+    return data
+
+
+def _seed_evidence(item: dict[str, Any]) -> Evidence | None:
+    source_path = Path(item["source_path"])
+    source_line = item.get("source_line")
+    if source_line is None:
+        return _first_line_evidence(source_path)
+    text = _read_text(source_path)
+    if text is None:
+        return None
+    lines = text.splitlines()
+    line_index = int(source_line) - 1
+    if line_index < 0 or line_index >= len(lines):
+        return None
+    return _evidence(source_path, int(source_line), lines[line_index])
+
+
+def _add_curated_seed_candidates(candidates: dict[str, Candidate], seed: dict[str, Any]) -> None:
+    for spec in seed.get("nodes", []):
+        candidate_spec = copy.deepcopy(spec)
+        evidence_specs = candidate_spec.pop("evidence", [])
+        candidate_spec.pop("core_star_map_candidate", None)
+        candidate = _new_candidate(**candidate_spec)
+        for evidence_spec in evidence_specs:
+            evidence = _seed_evidence(evidence_spec)
+            if evidence is not None:
+                candidate.add_evidence(evidence)
+        candidates[candidate.candidate_id] = candidate
 
 
 def _new_candidate(
@@ -1239,14 +1279,16 @@ def _dredge_summary(raw_match_ledger: list[dict[str, Any]], rejected_sources: li
 
 
 def build_inventory() -> dict[str, Any]:
+    seed = _load_curated_seed()
     candidates: dict[str, Candidate] = {}
     _add_static_truth_primitives(candidates)
     _add_genesis_axioms(candidates)
     _add_static_promoted_candidates(candidates)
+    _add_curated_seed_candidates(candidates, seed)
     stats = _scan_candidate_files(candidates)
     ordered = sorted(candidates.values(), key=lambda item: (item.layer, item.category, item.candidate_id))
     nodes = [candidate.to_dict() for candidate in ordered]
-    edges = _candidate_edges({node["candidate_id"] for node in nodes})
+    edges = _candidate_edges({node["candidate_id"] for node in nodes}, seed)
     raw_match_ledger, review_sources, rejected_sources, promotion_trace = _audit_ledgers(nodes)
     dredge_summary = _dredge_summary(raw_match_ledger, rejected_sources)
     return {
@@ -1262,9 +1304,13 @@ def build_inventory() -> dict[str, Any]:
         "metadata": {
             "description": "Deterministic candidate inventory for a proposed Genesis-level morphogenic hypergraph atlas.",
             "format_version": "genesis_node_candidate_crawl.v0.1",
+            "curated_seed": str(DEFAULT_CURATED_SEED),
+            "curated_seed_format_version": seed.get("format_version"),
             "scan_roots": [str(path) for path in SCAN_ROOTS],
             "skip_dirs": sorted(SKIP_DIRS),
+            "star_map_metadata_overrides": seed.get("star_map_metadata", {}),
             "stats": stats,
+            "type_decomposition_basis": seed.get("type_decomposition_basis", {}),
         },
         "nodes": nodes,
         "promotion_trace": promotion_trace,
@@ -1285,6 +1331,7 @@ def _edge(
     rationale: str,
     feature_hints: dict[str, Any],
     decision_log_refs: list[str],
+    decomposition_recipe: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if edge_type not in RUNTIME_EDGE_TYPES:
         feature_hints = {
@@ -1292,7 +1339,7 @@ def _edge(
             "edge_type_status": "atlas_proposal_pending_ADR",
             "proposed_edge_type": True,
         }
-    return {
+    edge = {
         "confidence": confidence,
         "decision_log_refs": decision_log_refs,
         "edge_id": edge_id,
@@ -1303,10 +1350,39 @@ def _edge(
         "source": source,
         "target": target,
     }
+    if decomposition_recipe is not None:
+        edge["decomposition_recipe"] = decomposition_recipe
+    return edge
 
 
-def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
-    proposed = []
+def _edge_recipe_from_seed(seed: dict[str, Any], edge_id: str) -> dict[str, Any] | None:
+    recipe = seed.get("edge_decomposition_recipes", {}).get(edge_id)
+    return copy.deepcopy(recipe) if recipe is not None else None
+
+
+def _curated_seed_edges(seed: dict[str, Any]) -> list[dict[str, Any]]:
+    edges: list[dict[str, Any]] = []
+    for spec in seed.get("edges", []):
+        edge_spec = copy.deepcopy(spec)
+        edges.append(
+            _edge(
+                edge_spec["edge_id"],
+                edge_spec["source"],
+                edge_spec["target"],
+                edge_spec["edge_type"],
+                edge_spec["relation"],
+                confidence=edge_spec["confidence"],
+                rationale=edge_spec["rationale"],
+                feature_hints=edge_spec.get("feature_hints", {}),
+                decision_log_refs=edge_spec.get("decision_log_refs", []),
+                decomposition_recipe=edge_spec.get("decomposition_recipe"),
+            )
+        )
+    return edges
+
+
+def _candidate_edges(node_ids: set[str], seed: dict[str, Any]) -> list[dict[str, Any]]:
+    proposed = _curated_seed_edges(seed)
     for primitive in TRUTH_PRIMITIVES:
         proposed.append(
             _edge(
@@ -1331,9 +1407,10 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
             )
         )
     for axiom in ("axiom:math:01", "axiom:physics:01", "axiom:logic:01"):
+        primitive_edge_id = f"edge:assert_truth_to_{_slug(axiom)}"
         proposed.append(
             _edge(
-                f"edge:assert_truth_to_{_slug(axiom)}",
+                primitive_edge_id,
                 "truth_primitive:assert.truth",
                 axiom,
                 "PRIMITIVE_INVOCATION",
@@ -1349,6 +1426,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 1.0,
                 },
                 decision_log_refs=["GND-0011", "GND-0024"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, primitive_edge_id),
             )
         )
         proposed.append(
@@ -1505,6 +1583,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.8,
                 },
                 decision_log_refs=["GND-0016", "GND-0025"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:bootstrap_boundary_to_state_bundle"),
             ),
             _edge(
                 "edge:state_bundle_to_release_contract",
@@ -1570,6 +1649,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.6,
                 },
                 decision_log_refs=["GND-0018"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:theta_hard_to_commit_epoch"),
             ),
             _edge(
                 "edge:accrual_governor_to_theta_hard",
@@ -1586,6 +1666,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.64,
                 },
                 decision_log_refs=["GND-0007", "GND-0018"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:accrual_governor_to_theta_hard"),
             ),
             _edge(
                 "edge:theta_soft_to_accrual_governor",
@@ -1602,6 +1683,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.58,
                 },
                 decision_log_refs=["GND-0007", "GND-0018"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:theta_soft_to_accrual_governor"),
             ),
             _edge(
                 "edge:genesis_agent_subject_to_freshness_exemption",
@@ -1619,6 +1701,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.55,
                 },
                 decision_log_refs=["GND-0019", "GND-0028"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:genesis_agent_subject_to_freshness_exemption"),
             ),
             _edge(
                 "edge:genesis_authority_sunset_to_exemption",
@@ -1636,6 +1719,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.56,
                 },
                 decision_log_refs=["GND-0008", "GND-0019", "GND-0028"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:genesis_authority_sunset_to_exemption"),
             ),
             _edge(
                 "edge:cdl_084_to_provenance_decay_alpha",
@@ -1652,6 +1736,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.72,
                 },
                 decision_log_refs=["GND-0027", "GND-0028"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:cdl_084_to_provenance_decay_alpha"),
             ),
             _edge(
                 "edge:adr_0033_to_bootstrap_boundary",
@@ -1667,6 +1752,7 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
                     "sim_weight_seed": 0.62,
                 },
                 decision_log_refs=["GND-0010", "GND-0028"],
+                decomposition_recipe=_edge_recipe_from_seed(seed, "edge:adr_0033_to_bootstrap_boundary"),
             ),
         ]
     )
@@ -1844,6 +1930,16 @@ def _decision_log() -> list[dict[str, str]]:
             "decision": "Promote theta-soft and the Genesis Agent 1 keygen ceremony into the core star-map projection.",
             "rationale": "The accrual governor needs both hard and soft theta constants, and the keygen ceremony is the provenance event that produces the Genesis authority key record.",
         },
+        {
+            "decision_id": "GND-0034",
+            "decision": "Require decomposition_recipe for proposed edge and hyperedge type definitions before ratification.",
+            "rationale": "Types should derive from truth primitives where possible; identical recipes must unify or justify distinct role/scope semantics.",
+        },
+        {
+            "decision_id": "GND-0035",
+            "decision": "Reserve Markov/trace terminology for a future formal kernel algebra ADR.",
+            "rationale": "Use derived_from, projection_rule, observer_scope, and transition_basis for atlas projections until trace logic is formally specified.",
+        },
     ]
     for entry in entries:
         entry["id"] = entry["decision_id"]
@@ -1869,13 +1965,17 @@ def _core_star_map_payload(payload: dict[str, Any]) -> dict[str, Any]:
     nodes = [node for node in payload["nodes"] if node["core_star_map_candidate"] is True]
     node_ids = {node["candidate_id"] for node in nodes}
     edges = [edge for edge in payload["edges"] if edge["source"] in node_ids and edge["target"] in node_ids]
+    metadata = {
+        "description": "Core Genesis star-map projection for high-authority install/load graph consumers.",
+        "format_version": "genesis_core_star_map.v0.1",
+        "source_crawl": str(DEFAULT_JSON_OUT),
+    }
+    metadata.update(payload["metadata"].get("star_map_metadata_overrides", {}))
+    if payload["metadata"].get("type_decomposition_basis"):
+        metadata["type_decomposition_basis"] = payload["metadata"]["type_decomposition_basis"]
     return {
         "edges": edges,
-        "metadata": {
-            "description": "Core Genesis star-map projection for high-authority install/load graph consumers.",
-            "format_version": "genesis_core_star_map.v0.1",
-            "source_crawl": str(DEFAULT_JSON_OUT),
-        },
+        "metadata": metadata,
         "nodes": nodes,
     }
 
