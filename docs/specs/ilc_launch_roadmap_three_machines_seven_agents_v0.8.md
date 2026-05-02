@@ -11,6 +11,29 @@ and CDL status from v0.7.
 
 ---
 
+## Postscript 2026-05-02 — Window 1130-1138 Closure
+
+This roadmap remains the launch architecture reference, but its date-stamped test count and
+immediate-next-window assumptions are superseded by the later Window 1130-1138 closure.
+
+Current frontier after Phase 1138:
+
+- SIM-SPECTRAL-02 is complete with Scenario B Advisory: useful directional bootstrap
+  signal, not deployment-ready.
+- CDL-085 remains SIM-gated and unopened; SIM-SPECTRAL-03 with the 31-node Genesis core
+  star-map seed is the recommended evidence route before any CDL-085 authorization.
+- GENESIS-COMPILE-01 baseline is `PARTIAL_WITH_STRUCTURAL_GAPS`; the gap is graph
+  construction, not protocol failure.
+- Genesis Atlas Tier-1 should precede SIM-SPECTRAL-03: add explicit authority-chain edges,
+  rerun GENESIS-COMPILE-01 checkpoint #1, then proceed to SIM harness work if authorized.
+- Runtime remains `epoch_attribution_settle_runtime_1129_fix1.v0.5`; no `ilc_core/`
+  files changed in Window 1130-1138.
+
+Authoritative closure reference:
+`docs/specs/ilc_window_1130_1138_handoff_1138_v0.1.md`.
+
+---
+
 ## 1. What Has Changed Since v0.7
 
 | Item | v0.7 claim | Actual state (v0.8) |

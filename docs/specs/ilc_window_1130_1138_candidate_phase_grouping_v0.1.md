@@ -631,3 +631,7 @@ Codex must reference these in every phase prompt:
 - Phase completion log: `STATUS.md`
 - ADM-003 reference agent architecture: carry-forward unchanged (see capsule v5.37 §3)
 - For closure gate (Phase 1138): all Phase 1130–1137 test files and artifact paths listed in §8.
+
+---
+
+**Status: CLOSED — Phase 1138 closure gate passed.** `window_1130_1138_closed_phase_1138`
