@@ -59,7 +59,9 @@ def _node_sort_key(node_id: str) -> tuple[str, int | str]:
 
 def compute_x(durability: float, k: float) -> float:
     """x_i = exp(-k * Durability_t). Result is in [0, 1]."""
-    x_value = math.exp(-k * durability)
+    safe_durability = max(0.0, float(durability))
+    x_value = math.exp(-k * safe_durability)
+    x_value = min(1.0, max(0.0, x_value))
     if not 0.0 <= x_value <= 1.0:
         raise ValueError("sim_spectral_02_x_out_of_bounds")
     return x_value
@@ -184,6 +186,10 @@ def _ancestor_edge_laplacian(
         )[0]
         for _ in range(n_nodes)
     ]
+    for i, count in enumerate(counts):
+        if count > 0 and tiers[i] == PROVENANCE_MAX_DEPTH_SIM:
+            tiers[i] = PROVENANCE_MAX_DEPTH_SIM - 1
+
     directed = np.zeros((n_nodes, n_nodes), dtype=float)
     generated_marginals = [0] * n_nodes
     depth_distribution = {str(depth): 0 for depth in range(1, PROVENANCE_MAX_DEPTH_SIM + 1)}
@@ -196,6 +202,10 @@ def _ancestor_edge_laplacian(
             for target in range(n_nodes)
             if target != source and tiers[target] > tiers[source]
         ]
+        if not candidates:
+            candidates = [target for target in range(n_nodes) if target > source]
+            if not candidates:
+                candidates = [target for target in range(n_nodes) if target < source]
         if not candidates:
             continue
         for target in rng.sample(candidates, min(count, len(candidates))):
@@ -269,8 +279,14 @@ def _scenario_laplacian(
     return _ring_laplacian(n_nodes), "synthetic_ring", {}
 
 
-def _lambda2(L: np.ndarray) -> float:
-    eigenvalues = np.linalg.eigvalsh(L)
+def _normalized_lambda2(L: np.ndarray) -> float:
+    """Compute normalized algebraic connectivity from combinatorial Laplacian."""
+    degrees = np.diag(L)
+    if not np.any(degrees > 0):
+        return 0.0
+    d_inv_sqrt = np.diag([1.0 / math.sqrt(d) if d > 0 else 0.0 for d in degrees])
+    L_norm = d_inv_sqrt @ L @ d_inv_sqrt
+    eigenvalues = np.linalg.eigvalsh(L_norm)
     if len(eigenvalues) < 2:
         return 0.0
     return max(0.0, float(eigenvalues[1]))
@@ -526,6 +542,10 @@ def run_simulation(
     weight_profile: str,
     seed: int,
     epochs: int,
+    alpha: float = 1.0,
+    beta: float = 1.0,
+    gamma: float = 1.0,
+    delta: float = 1.0,
     time_series_path: Path = TIME_SERIES_PATH,
     normalize_durability: bool = True,
     s1_topology: str = "synthetic",
@@ -582,7 +602,7 @@ def run_simulation(
             s1_topology=s1_topology,
             s1_topology_epoch=s1_topology_epoch,
         )
-        lambda2 = _lambda2(L)
+        lambda2 = _normalized_lambda2(L)
         structural_impedance = compute_structural_impedance(lambda2, THETA_FLOOR)
         raw_components_by_node: list[dict[str, float]] = []
         provenance_values: list[float] = []
@@ -630,7 +650,7 @@ def run_simulation(
         durable_work = float(sum(durability_values))
         relative_cost = 1.0 + el_x + structural_impedance + contention
         efficiency = durable_work / relative_cost if relative_cost > 0 else 0.0
-        vt = el_x + mean_x + structural_impedance + contention
+        vt = (alpha * el_x) + (beta * mean_x) + (gamma * structural_impedance) + (delta * contention)
 
         el_values.append(el_x)
         mean_x_values.append(mean_x)
@@ -688,6 +708,10 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--weight-profile", required=True, choices=tuple(WEIGHT_PROFILES))
     parser.add_argument("--seed", required=True, type=int)
     parser.add_argument("--epochs", required=True, type=int)
+    parser.add_argument("--alpha", default=1.0, type=float)
+    parser.add_argument("--beta", default=1.0, type=float)
+    parser.add_argument("--gamma", default=1.0, type=float)
+    parser.add_argument("--delta", default=1.0, type=float)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--s1-topology", default="synthetic", choices=S1_TOPOLOGIES)
     parser.add_argument("--s1-topology-epoch", default=100, type=int)
@@ -709,6 +733,10 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         weight_profile=args.weight_profile,
         seed=args.seed,
         epochs=args.epochs,
+        alpha=args.alpha,
+        beta=args.beta,
+        gamma=args.gamma,
+        delta=args.delta,
         normalize_durability=args.normalize_durability == "true",
         s1_topology=args.s1_topology,
         s1_topology_epoch=args.s1_topology_epoch,

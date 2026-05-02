@@ -74,3 +74,70 @@ def test_f5_fix2_notes_exist_with_completion_token() -> None:
     assert "sim_spectral_02_fix2_diagnostic_complete_phase_1133" in NOTES.read_text(
         encoding="utf-8"
     )
+
+
+def test_f6_compute_x_handles_negative_jitter_safely() -> None:
+    from tools.sim_spectral_02 import compute_x
+
+    # Normally this would raise ValueError if x > 1.0
+    x_val = compute_x(-1e-15, k=1.0)
+    assert 0.0 <= x_val <= 1.0
+    assert x_val == 1.0
+
+
+def test_f7_normalized_lambda2_yields_correct_bounds() -> None:
+    import numpy as np
+    from tools.sim_spectral_02 import _normalized_lambda2, compute_structural_impedance
+
+    # Combinatorial laplacian of a 3-node ring
+    L_comb = np.array(
+        [
+            [2.0, -1.0, -1.0],
+            [-1.0, 2.0, -1.0],
+            [-1.0, -1.0, 2.0],
+        ]
+    )
+
+    lambda2_norm = _normalized_lambda2(L_comb)
+
+    # Normalized laplacian lambda2 should be <= 2.0. For complete graph it's 1.5.
+    assert 0.0 < lambda2_norm <= 2.0
+
+    # Test impedance check
+    impedance = compute_structural_impedance(lambda2_norm, theta_floor=0.001)
+    # Since lambda2_norm is around 1.5, which is > 0.001, impedance should be 0.0
+    assert impedance == 0.0
+
+
+def test_f8_run_simulation_applies_greek_calibration_parameters(tmp_path: pathlib.Path) -> None:
+    output_1 = tmp_path / "sim_vt_1.json"
+    output_2 = tmp_path / "sim_vt_2.json"
+
+    base_args = [
+        sys.executable,
+        str(HARNESS),
+        "--scenario",
+        "S1",
+        "--k",
+        "0.7",
+        "--weight-profile",
+        "uniform_available",
+        "--seed",
+        "42",
+        "--epochs",
+        "2",
+        "--s1-topology",
+        "synthetic",
+    ]
+
+    # Run with default alpha=1
+    subprocess.run(base_args + ["--alpha", "1.0", "--output", str(output_1)], cwd=ROOT, check=True)
+    data_1 = json.loads(output_1.read_text(encoding="utf-8"))
+    vt_1 = data_1["v_t_per_epoch"][0]
+
+    # Run with alpha=10
+    subprocess.run(base_args + ["--alpha", "10.0", "--output", str(output_2)], cwd=ROOT, check=True)
+    data_2 = json.loads(output_2.read_text(encoding="utf-8"))
+    vt_2 = data_2["v_t_per_epoch"][0]
+
+    assert vt_2 > vt_1
