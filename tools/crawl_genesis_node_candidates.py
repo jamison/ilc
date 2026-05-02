@@ -18,6 +18,8 @@ from typing import Any, Iterable
 DEFAULT_JSON_OUT = Path("out/genesis_node_candidate_crawl.json")
 DEFAULT_RAW_LEDGER_OUT = Path("out/genesis_node_candidate_raw_match_ledger.ndjson")
 DEFAULT_REJECTED_LEDGER_OUT = Path("out/genesis_node_candidate_rejected_sources.ndjson")
+DEFAULT_STAR_MAP_OUT = Path("out/genesis_core_star_map_v0.1.json")
+DEFAULT_STAR_MAP_INDEX_OUT = Path("out/genesis_core_star_map_index_v0.1.json")
 DEFAULT_INVENTORY_OUT = Path("docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md")
 DEFAULT_DECISION_LOG_OUT = Path("docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md")
 GENESIS_CONFIG = Path("config/genesis.json")
@@ -111,6 +113,9 @@ class Candidate:
     depth_index: int | None = None
     graph_projection: str = "core_star_map"
     promotion_path: str = "already_core_or_not_applicable"
+    symbol: str | None = None
+    value: dict[str, Any] | None = None
+    applies_to: list[str] = field(default_factory=list)
     version: str | None = None
     valid_epoch_range: tuple[int | None, int | None] = (0, None)
     superseded_by: str | None = None
@@ -132,6 +137,7 @@ class Candidate:
     def to_dict(self) -> dict[str, Any]:
         core_star_map_candidate = _core_star_map_candidate(self.inclusion_status, self.graph_projection)
         return {
+            "applies_to": self.applies_to,
             "authority_status": self.authority_status,
             "candidate_id": self.candidate_id,
             "canonicality_tier": self.canonicality_tier,
@@ -157,9 +163,11 @@ class Candidate:
             "reuse_economic_surface": self.reuse_economic_surface,
             "sensitivity": self.sensitivity,
             "source_kind": self.source_kind,
+            "symbol": self.symbol,
             "superseded_by": self.superseded_by,
             "sunset_status": self.sunset_status,
             "valid_epoch_range": list(self.valid_epoch_range),
+            "value": self.value,
             "version": self.version,
         }
 
@@ -360,6 +368,9 @@ def _new_candidate(
     depth_index: int | None = None,
     graph_projection: str = "core_star_map",
     promotion_path: str = "already_core_or_not_applicable",
+    symbol: str | None = None,
+    value: dict[str, Any] | None = None,
+    applies_to: list[str] | None = None,
     version: str | None = None,
     valid_epoch_range: tuple[int | None, int | None] = (0, None),
     superseded_by: str | None = None,
@@ -390,9 +401,12 @@ def _new_candidate(
         reuse_economic_surface=reuse_economic_surface,
         sensitivity=sensitivity,
         source_kind=source_kind,
+        symbol=symbol,
         superseded_by=superseded_by,
         sunset_status=sunset_status,
         valid_epoch_range=valid_epoch_range,
+        value=value,
+        applies_to=applies_to or [],
         version=version,
     )
 
@@ -492,8 +506,16 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "evidence_pattern": re.compile(r'PROVENANCE_DECAY_ALPHA = Decimal\("0\.45"\)'),
             "edge_hints": ["PROVENANCE"],
             "economic_boundary": "provenance_chain_decay",
+            "symbol": "PROVENANCE_DECAY_ALPHA",
+            "value": {
+                "kind": "decimal",
+                "literal": "0.45",
+                "python_symbol": "PROVENANCE_DECAY_ALPHA",
+                "runtime_path": "ilc_core/types.py",
+            },
+            "applies_to": ["edge_type:PROVENANCE", "settlement:provenance_chain_attribution"],
             "depth_index": 3,
-            "decision_log_refs": ["GND-0027"],
+            "decision_log_refs": ["GND-0027", "GND-0031"],
         },
         {
             "candidate_id": "artifact:genesis_agent1_pubkey_record_838a",
@@ -586,8 +608,34 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "source_path": Path("docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.3.md"),
             "edge_hints": ["EPOCH_BOUNDARY"],
             "economic_boundary": "genesis_accrual_soft_taper",
+            "symbol": "GENESIS_THETA_SOFT",
+            "value": {
+                "decimal_approx": "0.049787068367863944",
+                "kind": "expression",
+                "literal": "exp(-3)",
+            },
+            "applies_to": ["policy:genesis_accrual_governor", "economic_surface:genesis_accrual_soft_taper"],
             "depth_index": 3,
-            "decision_log_refs": ["GND-0007", "GND-0026"],
+            "decision_log_refs": ["GND-0007", "GND-0026", "GND-0031"],
+        },
+        {
+            "candidate_id": "artifact:star_map_demoted_by_adr_0004",
+            "label": "star.map demoted from Genesis truth primitive by ADR-0004",
+            "layer": "L2_bootstrap_lineage",
+            "category": "governance_event",
+            "node_kind": "demotion_event",
+            "authority_status": "accepted_ADR_0004",
+            "canonicality_tier": "accepted_adr",
+            "inclusion_status": "must_include",
+            "confidence": 0.92,
+            "rationale": "ADR-0004 records star.map as explicitly not a Genesis truth primitive, preserving a real governance demotion event.",
+            "source_kind": "adr",
+            "source_path": Path("docs/adr/ADR_0004_Genesis_Primitive_Commit_Epoch.md"),
+            "evidence_pattern": re.compile(r"star\.map.*not.*Genesis truth primitive|demotes `star\.map`", re.IGNORECASE),
+            "edge_hints": ["REFUTATION", "PROVENANCE"],
+            "depth_index": 2,
+            "superseded_by": "adr:0033_star_map_homoiconic_entity",
+            "decision_log_refs": ["GND-0032"],
         },
         {
             "candidate_id": "artifact:genesis_release_artifact_contract",
@@ -904,7 +952,13 @@ def _scan_candidate_files(candidates: dict[str, Candidate]) -> dict[str, Any]:
                 "rationale": "Genesis topological dominance must be separated from economic accrual authority.",
                 "edge_hints": ["EPOCH_BOUNDARY"],
                 "economic_boundary": "caps_genesis_accrual_not_epistemic_centrality",
-                "decision_log_refs": ["GND-0007"],
+                "symbol": "GENESIS_THETA_HARD",
+                "value": {
+                    "kind": "decimal",
+                    "literal": "0.05",
+                },
+                "applies_to": ["policy:genesis_accrual_governor", "economic_surface:genesis_accrual_cap"],
+                "decision_log_refs": ["GND-0007", "GND-0031"],
                 "authority_status": "genesis_accrual_governor_policy",
                 "canonicality_tier": "supporting_context",
                 "source_kind": "spec",
@@ -995,6 +1049,9 @@ def _scan_candidate_files(candidates: dict[str, Candidate]) -> dict[str, Any]:
                         depth_index=defaults.get("depth_index"),
                         graph_projection=defaults.get("graph_projection", "core_star_map"),
                         promotion_path=defaults.get("promotion_path", "already_core_or_not_applicable"),
+                        symbol=defaults.get("symbol"),
+                        value=defaults.get("value"),
+                        applies_to=defaults.get("applies_to"),
                         version=defaults.get("version"),
                         valid_epoch_range=defaults.get("valid_epoch_range", (0, None)),
                         superseded_by=defaults.get("superseded_by"),
@@ -1330,6 +1387,38 @@ def _candidate_edges(node_ids: set[str]) -> list[dict[str, Any]]:
         )
     proposed.extend(
         [
+            _edge(
+                "edge:adr_0004_to_star_map_demotion",
+                "truth_primitive:commit.epoch",
+                "artifact:star_map_demoted_by_adr_0004",
+                "PROVENANCE",
+                "records_truth_primitive_replacement",
+                confidence=0.78,
+                rationale="ADR-0004 replaces the prior star.map primitive slot with commit.epoch and records the demotion as governance history.",
+                feature_hints={
+                    "directional": True,
+                    "layer_span": "L0_to_L2",
+                    "sim_weight_seed": 0.5,
+                    "supersession_event": True,
+                },
+                decision_log_refs=["GND-0032"],
+            ),
+            _edge(
+                "edge:star_map_demotion_to_adr_0033",
+                "artifact:star_map_demoted_by_adr_0004",
+                "adr:0033_star_map_homoiconic_entity",
+                "PROVENANCE",
+                "reclassified_as_star_map_artifact",
+                confidence=0.76,
+                rationale="The demoted star.map primitive slot is later represented by ADR-0033 as a homoiconic star-map entity.",
+                feature_hints={
+                    "directional": True,
+                    "layer_span": "L2_to_L4",
+                    "sim_weight_seed": 0.5,
+                    "superseded_by": "adr:0033_star_map_homoiconic_entity",
+                },
+                decision_log_refs=["GND-0032"],
+            ),
             _edge(
                 "edge:keygen_to_pubkey_record",
                 "ceremony:genesis_agent1_keygen_838a",
@@ -1735,6 +1824,16 @@ def _decision_log() -> list[dict[str, str]]:
             "decision": "Retain raw-match, rejected-candidate, and promotion-trace ledgers for dredge auditability.",
             "rationale": "The atlas crawl must show what was seen and not promoted, not only the final node set.",
         },
+        {
+            "decision_id": "GND-0031",
+            "decision": "Represent policy constants with typed value, symbol, and applies_to fields plus a symbol index.",
+            "rationale": "Agents need deterministic index lookup for executable constants; LLM semantic extraction from prose is not an operational value path.",
+        },
+        {
+            "decision_id": "GND-0032",
+            "decision": "Represent ADR-0004 star.map demotion as a governance event node.",
+            "rationale": "The demotion is a real ILC refutation/supersession event and should be visible in the Genesis morphogenic graph.",
+        },
     ]
     for entry in entries:
         entry["id"] = entry["decision_id"]
@@ -1756,6 +1855,56 @@ def _public_payload(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _core_star_map_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    nodes = [node for node in payload["nodes"] if node["core_star_map_candidate"] is True]
+    node_ids = {node["candidate_id"] for node in nodes}
+    edges = [edge for edge in payload["edges"] if edge["source"] in node_ids and edge["target"] in node_ids]
+    return {
+        "edges": edges,
+        "metadata": {
+            "description": "Core Genesis star-map projection for high-authority install/load graph consumers.",
+            "format_version": "genesis_core_star_map.v0.1",
+            "source_crawl": str(DEFAULT_JSON_OUT),
+        },
+        "nodes": nodes,
+    }
+
+
+def _core_star_map_index_payload(star_map: dict[str, Any]) -> dict[str, Any]:
+    symbols: dict[str, str] = {}
+    applies_to: dict[str, list[str]] = {}
+    nodes_by_id: dict[str, dict[str, Any]] = {}
+    edges_by_type: dict[str, list[str]] = {}
+    nodes_by_kind: dict[str, list[str]] = {}
+    for node in star_map["nodes"]:
+        node_id = node["candidate_id"]
+        nodes_by_id[node_id] = {
+            "canonicality_tier": node["canonicality_tier"],
+            "node_kind": node["node_kind"],
+            "symbol": node["symbol"],
+            "value": node["value"],
+        }
+        nodes_by_kind.setdefault(node["node_kind"], []).append(node_id)
+        if node["symbol"]:
+            symbols[node["symbol"]] = node_id
+        for target in node["applies_to"]:
+            applies_to.setdefault(target, []).append(node_id)
+    for edge in star_map["edges"]:
+        edges_by_type.setdefault(edge["edge_type"], []).append(edge["edge_id"])
+    return {
+        "applies_to": {key: sorted(value) for key, value in sorted(applies_to.items())},
+        "edges_by_type": {key: sorted(value) for key, value in sorted(edges_by_type.items())},
+        "metadata": {
+            "description": "Lookup index for the Genesis core star-map projection.",
+            "format_version": "genesis_core_star_map_index.v0.1",
+            "source_star_map": str(DEFAULT_STAR_MAP_OUT),
+        },
+        "nodes_by_id": dict(sorted(nodes_by_id.items())),
+        "nodes_by_kind": {key: sorted(value) for key, value in sorted(nodes_by_kind.items())},
+        "symbols": dict(sorted(symbols.items())),
+    }
+
+
 def write_inventory(
     payload: dict[str, Any],
     json_out: Path,
@@ -1763,6 +1912,8 @@ def write_inventory(
     decision_log_out: Path,
     raw_ledger_out: Path,
     rejected_ledger_out: Path,
+    star_map_out: Path,
+    star_map_index_out: Path,
 ) -> None:
     json_out.parent.mkdir(parents=True, exist_ok=True)
     inventory_out.parent.mkdir(parents=True, exist_ok=True)
@@ -1775,6 +1926,14 @@ def write_inventory(
         "rejected_candidate_sources_ndjson": str(rejected_ledger_out),
     }
     json_out.write_text(json.dumps(public_payload, allow_nan=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    star_map = _core_star_map_payload(public_payload)
+    star_map["metadata"]["source_crawl"] = str(json_out)
+    star_map_out.parent.mkdir(parents=True, exist_ok=True)
+    star_map_out.write_text(json.dumps(star_map, allow_nan=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    star_map_index = _core_star_map_index_payload(star_map)
+    star_map_index["metadata"]["source_star_map"] = str(star_map_out)
+    star_map_index_out.parent.mkdir(parents=True, exist_ok=True)
+    star_map_index_out.write_text(json.dumps(star_map_index, allow_nan=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     inventory_out.write_text(_render_inventory_md(public_payload), encoding="utf-8")
     decision_log_out.write_text(_render_decision_log_md(public_payload), encoding="utf-8")
 
@@ -1825,7 +1984,7 @@ def _render_inventory_md(payload: dict[str, Any]) -> str:
             "",
             "## Schema Fields",
             "",
-            "Each JSON node records: `candidate_id`, `label`, `layer`, `depth_index`, `category`, `node_kind`, `authority_status`, `canonicality_tier`, `inclusion_status`, `graph_projection`, `promotion_path`, `confidence`, `rationale`, `source_kind`, `evidence`, `edge_hints`, `sensitivity`, `economic_boundary`, `economic_cap_policy`, `reuse_economic_surface`, `genesis_attested`, `genesis_attested_by`, `genesis_exempt`, `sunset_status`, `valid_epoch_range`, `version`, `superseded_by`, and `decision_log_refs`.",
+            "Each JSON node records: `candidate_id`, `label`, `layer`, `depth_index`, `category`, `node_kind`, `authority_status`, `canonicality_tier`, `inclusion_status`, `graph_projection`, `promotion_path`, `confidence`, `rationale`, `source_kind`, `evidence`, `edge_hints`, `sensitivity`, `economic_boundary`, `economic_cap_policy`, `reuse_economic_surface`, `genesis_attested`, `genesis_attested_by`, `genesis_exempt`, `symbol`, `value`, `applies_to`, `sunset_status`, `valid_epoch_range`, `version`, `superseded_by`, and `decision_log_refs`.",
             "",
             "## Review-Required Source Queue",
             "",
@@ -1901,6 +2060,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_OUT)
     parser.add_argument("--raw-ledger-out", type=Path, default=DEFAULT_RAW_LEDGER_OUT)
     parser.add_argument("--rejected-ledger-out", type=Path, default=DEFAULT_REJECTED_LEDGER_OUT)
+    parser.add_argument("--star-map-out", type=Path, default=DEFAULT_STAR_MAP_OUT)
+    parser.add_argument("--star-map-index-out", type=Path, default=DEFAULT_STAR_MAP_INDEX_OUT)
     parser.add_argument("--inventory-out", type=Path, default=DEFAULT_INVENTORY_OUT)
     parser.add_argument("--decision-log-out", type=Path, default=DEFAULT_DECISION_LOG_OUT)
     return parser
@@ -1916,6 +2077,8 @@ def main() -> None:
         args.decision_log_out,
         args.raw_ledger_out,
         args.rejected_ledger_out,
+        args.star_map_out,
+        args.star_map_index_out,
     )
     print(json.dumps(payload["metadata"], allow_nan=False, sort_keys=True))
 
