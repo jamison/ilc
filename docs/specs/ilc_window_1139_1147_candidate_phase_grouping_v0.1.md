@@ -26,27 +26,32 @@ previous.
 (333 entries, `a93da4f9`) was produced before the normalized-λ₂ / Greek-weights fix
 (`58c4687f`). Run 02 used the **combinatorial** Laplacian λ₂ (unbounded) for the
 structural impedance term; the fixed harness uses the **normalized** Laplacian λ₂
-(bounded [0,2]). These are not the same metric — for any connected graph, combinatorial
-λ₂ >> THETA_FLOOR (0.001), so the structural impedance term was silently dropped in
-Run 02. The Phase 1136 Scenario B advisory is therefore provisional. A corrected Run 02
+(bounded [0,2]). These are not the same metric. For connected graphs, combinatorial
+λ₂ tends to exceed `THETA_FLOOR` (0.001) and suppress the structural-impedance term;
+disconnected and sparse Track-D cases can still produce nonzero impedance. The Phase
+1136 Scenario B advisory is therefore provisional. A corrected Run 02
 rerun using the fixed harness is required to establish a valid comparison baseline before
 SIM-SPECTRAL-03 changes the seed topology. Slopes from Run 02 and the corrected run are
 not directly comparable as quantitative values.
 
-**Lane 2 — Atlas Tier-1 (Phases 1142–1143):** Add the ~10 missing authority-chain edges
-to the curated seed to close the L2 basis-reachability gap (17/31 → ≥ 28/31). Run
-GENESIS-COMPILE-01 checkpoint #1 to verify improvement. This patched star map becomes the
-S1 topology seed for SIM-SPECTRAL-03.
+**Lane 2 — Atlas Tier-1 (Phases 1142–1143, with gated Phase 1142s):** Add the
+retrospective Genesis intent attestation node, mark all pre-launch core nodes as
+Genesis-attested, add the authority-map edges, and restructure GENESIS-COMPILE-01 to
+separate derivation reachability from authority traceability. Phase 1142s is a separate
+SENSITIVE signing ceremony and requires its own explicit human GO token. Phase 1143 gates
+on `authority_traceable_core_nodes ≥ 28/32`. The patched 32-node star map becomes the S1
+topology seed for SIM-SPECTRAL-03.
 
 **Lane 3 — SIM-SPECTRAL-03 (Phases 1144–1146):** Re-run SIM-SPECTRAL-02 with the patched
-31-node Genesis star map as the S1 seed topology. Compare results against the corrected
+32-node Genesis star map as the S1 seed topology. Compare results against the corrected
 Run 02 baseline (Phase 1140/1141) — not the broken Run 02. If the corrected SIM-SPECTRAL-03
 shows materially improved S3 Sybil discrimination, Phase 1146 recommends CDL-085
 authorization.
 
 **Tail-slot policy:** Phase 1147 (closure gate) is SENSITIVE and requires explicit human
-GO token. Phases 1139–1146 are all NON-SENSITIVE and may be Strike Forced in batches
-subject to sequencing constraints.
+GO token. Phase 1142s is also SENSITIVE and requires its own explicit human GO token.
+Other phases are NON-SENSITIVE and may be Strike Forced in batches subject to sequencing
+constraints.
 
 ---
 
@@ -81,8 +86,8 @@ is not triggered at any phase.
 - Window 1130-1138 sequence lock: `docs/specs/ilc_phase_1130_1138_sequence_lock_v0.1.md`
 - Planning bridge (§3 gap registry and §4 window sequence): `docs/specs/ilc_window_1130_1138_to_rc_planning_bridge_v0.1.md`
 - Run 02 corrected-baseline motivation: `out/sim_spectral_02_run02_summary.json`
-  (333 entries; produced with combinatorial λ₂ — structural impedance term was silently
-  zero throughout Run 02; see §4.1 for full explanation)
+  (333 entries; produced with combinatorial λ₂ — structural impedance was miscalibrated
+  and not directly comparable to normalized-λ₂ reruns; see §4.1 for full explanation)
 - Fixed harness commit: `58c4687f` — normalized-λ₂ + Greek-weights fix
 - SIM-SPECTRAL-02 program spec: `docs/sims/sim_spectral_02/program.md`
 - Run 02 disposition (provisional): `docs/sims/sim_spectral_02/run02_disposition_1136_v0.1.md`
@@ -133,11 +138,10 @@ silent bugs in the harness:
 
 1. **Laplacian type mismatch.** The harness computed a **combinatorial** Laplacian
    λ₂ and passed it to `compute_structural_impedance()`. The combinatorial λ₂ is
-   unbounded — for any connected graph it greatly exceeds `THETA_FLOOR` (0.001), so
-   `max(0.0, THETA_FLOOR - λ₂)` always returned 0.0. The structural impedance term was
-   silently dropped; the V_t formula that ran was effectively
-   `V_t = el_x + mean_x + 0 + contention`. The fixed harness computes the **normalized**
-   Laplacian λ₂ (bounded [0,2]), which is a different metric. Slopes from Run 02
+   unbounded and suppresses the structural-impedance term for ordinary connected
+   graphs, while disconnected and sparse Track-D cases can still activate the term.
+   The fixed harness computes the **normalized** Laplacian λ₂ (bounded [0,2]), which is
+   a different metric. Slopes from Run 02
    and the corrected run are **not directly comparable** as quantitative values.
 
 2. **Greek weights not exposed.** The CLI did not accept `--alpha`, `--beta`, `--gamma`,
@@ -447,12 +451,13 @@ gate. Codex must flag this to the human if Run 01 results are inconclusive.
 
 ### Conditional phases rule
 
-All phases 1139–1146 are NON-SENSITIVE. Phase 1147 is SENSITIVE. No CDL conditional
-branching applies because no CDL opens or ratifies in this window. However, Phases 1144
-and 1145 are **sequencing-conditional** on Phase 1143 result: Codex must not proceed
-past Phase 1143 until GENESIS-COMPILE-01 checkpoint #1 confirms ≥ 28/31
-basis-reachable core nodes. If the checkpoint fails, Phase 1142 iterates before 1144
-proceeds.
+Phases 1139–1146 are NON-SENSITIVE except Phase 1142s, which is SENSITIVE. Phase 1147 is
+also SENSITIVE. No CDL conditional branching applies because no CDL opens or ratifies in
+this window. However, Phases 1144 and 1145 are **sequencing-conditional** on Phase 1143
+result: Codex must not proceed past Phase 1143 until GENESIS-COMPILE-01 checkpoint #1
+confirms `authority_traceable_core_nodes ≥ 28/32`. If the checkpoint fails, Phase 1142
+iterates before 1144 proceeds. Phase 1142s must not execute without its own explicit
+human GO token.
 
 ### Pre-commit hook
 
@@ -523,9 +528,8 @@ No GO token required.
 - F1: `out/sim_spectral_02_run02_fix2_summary.json` exists and is valid JSON
 - F2: entry count == 333
 - F3: at least one entry has `v_t_per_epoch` values that differ from the corresponding
-  Run 02 entry (confirms the formula changed — delta may be small but must be non-zero
-  if structural impedance ever activated; if structural_impedance is still all-zeros,
-  test must assert this explicitly and the raw notes must explain why)
+  Run 02 entry, or the raw notes explicitly document why the normalized-λ₂ correction
+  produced no measurable `V_t` delta for the rerun matrix.
 - F4: `docs/sims/sim_spectral_02/run02_fix2_raw_notes_1140.md` exists and contains
   `run02_fix2_corrected_baseline_committed_phase_1140`
 
@@ -627,7 +631,8 @@ edges). C2 failing → diagnostic restructure not landed; do not proceed.
 
 ### Phase 1144 — SIM-SPECTRAL-03 Harness Update (NON-SENSITIVE)
 
-No GO token required. Prerequisite: Phase 1143 gate passed (≥ 28/31).
+No GO token required. Prerequisite: Phase 1143 gate passed
+(`authority_traceable_core_nodes ≥ 28/32`).
 
 **Deliverables:**
 - `docs/sims/sim_spectral_03/` directory (create if not exists)
@@ -635,7 +640,7 @@ No GO token required. Prerequisite: Phase 1143 gate passed (≥ 28/31).
 - Harness update: `tools/sim_spectral_02.py` updated to accept `--s1-topology-file`
   parameter pointing to a JSON star map, OR a new `tools/sim_spectral_03.py` harness
   that imports the patched star map as the S1 topology seed. The choice is Codex's, but
-  the SIM-SPECTRAL-03 run must use the patched 31-node star map as S1 seed.
+  the SIM-SPECTRAL-03 run must use the patched 32-node star map as S1 seed.
 
 **Program spec (program.md) must include:**
 1. The single research question: does Genesis-seed S1 topology improve S3/S1
@@ -671,7 +676,7 @@ No GO token required. Prerequisite: Phase 1144 complete.
 
 **Run scope:** Track A + all gaming probes minimum. Same k values and weight profiles as
 corrected Run 02 (Phase 1140). Seeds 42, 1337, 2026. α=β=γ=δ=1.0.
-S1 seed topology: patched 31-node Genesis core star map.
+S1 seed topology: patched 32-node Genesis core star map.
 
 **Raw notes must include:**
 1. Confirmation of S1 topology source file and node count
@@ -710,7 +715,7 @@ No GO token required. No CDL env var. Human reviews before Phase 1147 closure ga
      research step
 4. G2 (coordinated reuse) and S2 (partition) disposition alongside S3
 5. THETA_FLOOR calibration note (carry-forward from Phase 1141 findings)
-6. Genesis seed topology assessment: did the 31-node seed produce a more realistic S1
+6. Genesis seed topology assessment: did the 32-node seed produce a more realistic S1
    trajectory than the 3-axiom synthetic seed?
 7. Closing token: `sim_spectral_03_disposition_committed_phase_1146`
 
@@ -741,9 +746,9 @@ No GO token required. No CDL env var. Human reviews before Phase 1147 closure ga
 | Cat | Tests | Content |
 |-----|-------|---------|
 | 0 | 1 | Selftest guard: `ILC_PHASE_1147_GATE_SELFTEST=1` required |
-| 1 | 2 | Sequence lock doc exists; all 9 phases listed; sequence lock token present |
+| 1 | 2 | Sequence lock doc exists; all 10 scheduled phases/subphases listed; sequence lock token present |
 | 2 | 3 | Run 02 Fix2: corrected baseline JSON exists (333 entries); addendum doc exists with closing token; corrected S3/S1 ratio declared |
-| 3 | 3 | Atlas Tier-1: curated seed edge count ≥ 48; checkpoint #1 report exists with PASS verdict; `basis_reachable_core_nodes` ≥ 28 |
+| 3 | 3 | Atlas Tier-1: 32-node star map exists; checkpoint #1 report exists with PASS verdict; `authority_traceable_core_nodes` ≥ 28 |
 | 4 | 3 | SIM-SPECTRAL-03: run01 summary JSON exists; disposition doc exists with closing token; CDL-085 recommendation verdict present |
 | 5 | 2 | CDL-084 constants unchanged: `PROVENANCE_DECAY_ALPHA = Decimal("0.45")`; runtime version unchanged |
 | 6 | 2 | Capsule v5.39 exists, supersedes v5.38; coherence report exists with pass verdict |
@@ -752,7 +757,7 @@ No GO token required. No CDL env var. Human reviews before Phase 1147 closure ga
 **Handoff doc required sections:**
 1. Window identity and closure basis
 2. Run 02 Fix2 outcome: corrected slope table, updated S3/S1 ratio, Scenario B/C verdict
-3. Atlas Tier-1 outcome: checkpoint #1 verdict, basis-reachable node count, patched seed
+3. Atlas Tier-1 outcome: checkpoint #1 verdict, authority-traceable node count, patched seed
 4. SIM-SPECTRAL-03 outcome: Genesis-seed vs. corrected Run 02 comparison, CDL-085 recommendation
 5. CDL-085 authorization status (RECOMMEND / CONDITIONAL / DEFER) from Phase 1146
 6. Carry-forward items: CDL-085 (status from Phase 1146), Atlas Tier-2, SIM-HYPEREDGE-01, ADR-0035
@@ -788,7 +793,7 @@ sim_spectral_03_disposition_phase_1146
 | Dependency | Status |
 |------------|--------|
 | `tools/sim_spectral_02.py` at `58c4687f` (normalized-λ₂ fix) | Confirmed — all 8 fix2 tests pass |
-| `out/sim_spectral_02_run02_summary.json` exists (original Run 02) | Confirmed — 333 entries; combinatorial λ₂ harness (structural impedance term silently zero — see §4.1) |
+| `out/sim_spectral_02_run02_summary.json` exists (original Run 02) | Confirmed — 333 entries; combinatorial λ₂ harness (structural impedance miscalibrated — see §4.1) |
 | `out/genesis_core_star_map_v0.1.json` exists (31 nodes, 35 edges) | Confirmed — Phase 1136A `61e9b7f8` |
 | GENESIS-COMPILE-01 tool chain available | Confirmed — Phase 1136A `08facab6` |
 | CDL-084 fully resolved | Confirmed — Phase 1129 |
@@ -797,8 +802,9 @@ sim_spectral_03_disposition_phase_1146
 ### Sequencing constraints (hard)
 
 1. Phase 1140 (corrected rerun) must complete before Phase 1142 (Atlas Tier-1)
-2. Phase 1142 + 1143 (Atlas patch + checkpoint) must complete and gate ≥ 28/31 before
-   Phase 1144 (SIM-SPECTRAL-03 harness)
+2. Phase 1142 + 1142s + 1143 (Atlas patch + signing ceremony + checkpoint) must complete
+   and gate `authority_traceable_core_nodes ≥ 28/32` before Phase 1144
+   (SIM-SPECTRAL-03 harness)
 3. Phase 1144 must complete before Phase 1145 (SIM-SPECTRAL-03 Run)
 4. Phase 1146 (disposition) must complete and be reviewed by human before Phase 1147
 5. Phase 1147 requires explicit human GO token
@@ -809,8 +815,8 @@ sim_spectral_03_disposition_phase_1146
 |----------|-------------|
 | Does normalized λ₂ ever fall below THETA_FLOOR (0.001) in connected simulation graphs? If not, structural_impedance will still be near-zero even with the fix | Phase 1140/1141 |
 | What THETA_FLOOR would engage the structural impedance term for the simulation's graph density range? | Phase 1141 commentary |
-| Does the 31-node Genesis seed topology produce a materially different λ₂ profile than the 3-axiom synthetic seed? | Phase 1145 |
-| Will Phase 1142 iteration be needed (Atlas patch does not reach 28/31 in first attempt)? | Phase 1143 gate |
+| Does the 32-node Genesis seed topology produce a materially different λ₂ profile than the 3-axiom synthetic seed? | Phase 1145 |
+| Will Phase 1142 iteration be needed (Atlas patch does not reach `authority_traceable_core_nodes ≥ 28/32` in first attempt)? | Phase 1143 gate |
 
 ### Permanently deferred (not in scope this window)
 
