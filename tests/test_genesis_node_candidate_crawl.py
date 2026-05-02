@@ -10,6 +10,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 CRAWL_JSON = ROOT / "out/genesis_node_candidate_crawl.json"
 RAW_LEDGER = ROOT / "out/genesis_node_candidate_raw_match_ledger.ndjson"
 REJECTED_LEDGER = ROOT / "out/genesis_node_candidate_rejected_sources.ndjson"
+STAR_MAP = ROOT / "out/genesis_core_star_map_v0.1.json"
+STAR_MAP_INDEX = ROOT / "out/genesis_core_star_map_index_v0.1.json"
 INVENTORY = ROOT / "docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md"
 DECISION_LOG = ROOT / "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md"
 
@@ -24,6 +26,8 @@ def test_genesis_node_candidate_crawl_outputs_exist() -> None:
     assert CRAWL_JSON.exists()
     assert RAW_LEDGER.exists()
     assert REJECTED_LEDGER.exists()
+    assert STAR_MAP.exists()
+    assert STAR_MAP_INDEX.exists()
     assert INVENTORY.exists()
     assert DECISION_LOG.exists()
 
@@ -78,6 +82,7 @@ def test_genesis_node_candidate_crawl_promotes_required_genesis_star_map_nodes()
         "policy:genesis_accrual_governor",
         "policy:provenance_decay_alpha_0_45",
         "policy:genesis_theta_soft_exp_minus_3",
+        "artifact:star_map_demoted_by_adr_0004",
         "policy:genesis_authority_sunset",
         "adr:0029_hypergraph_substrate",
         "adr:0030_node_embedding_substrate",
@@ -89,6 +94,9 @@ def test_genesis_node_candidate_crawl_promotes_required_genesis_star_map_nodes()
     ):
         assert nodes[candidate_id]["graph_projection"] == "core_star_map"
     assert nodes["policy:provenance_decay_alpha_0_45"]["canonicality_tier"] == "ratified_cdl"
+    assert nodes["policy:provenance_decay_alpha_0_45"]["symbol"] == "PROVENANCE_DECAY_ALPHA"
+    assert nodes["policy:provenance_decay_alpha_0_45"]["value"]["literal"] == "0.45"
+    assert "edge_type:PROVENANCE" in nodes["policy:provenance_decay_alpha_0_45"]["applies_to"]
     assert "overlay:morphogenetic_hypergraph_substrate" not in nodes
 
 
@@ -187,4 +195,22 @@ def test_genesis_node_candidate_decision_log_records_review_queue_rule() -> None
     assert "GND-0026" in text
     assert "GND-0029" in text
     assert "GND-0030" in text
+    assert "GND-0032" in text
     assert "review queue" in text
+
+
+def test_genesis_core_star_map_projection_and_index_exist() -> None:
+    crawl = _payload()
+    star_map = json.loads(STAR_MAP.read_text(encoding="utf-8"))
+    index = json.loads(STAR_MAP_INDEX.read_text(encoding="utf-8"))
+    crawl_core_ids = {
+        node["candidate_id"]
+        for node in crawl["nodes"]
+        if node["core_star_map_candidate"] is True
+    }
+    star_map_ids = {node["candidate_id"] for node in star_map["nodes"]}
+    assert star_map_ids == crawl_core_ids
+    assert all(edge["source"] in star_map_ids and edge["target"] in star_map_ids for edge in star_map["edges"])
+    assert index["symbols"]["PROVENANCE_DECAY_ALPHA"] == "policy:provenance_decay_alpha_0_45"
+    assert index["symbols"]["GENESIS_THETA_HARD"] == "policy:genesis_theta_hard_0_05"
+    assert "policy:provenance_decay_alpha_0_45" in index["applies_to"]["edge_type:PROVENANCE"]
