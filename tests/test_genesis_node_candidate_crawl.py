@@ -97,6 +97,17 @@ def test_genesis_node_candidate_crawl_promotes_required_genesis_star_map_nodes()
     assert nodes["policy:provenance_decay_alpha_0_45"]["symbol"] == "PROVENANCE_DECAY_ALPHA"
     assert nodes["policy:provenance_decay_alpha_0_45"]["value"]["literal"] == "0.45"
     assert "edge_type:PROVENANCE" in nodes["policy:provenance_decay_alpha_0_45"]["applies_to"]
+    assert nodes["policy:genesis_theta_soft_exp_minus_3"]["core_star_map_candidate"] is True
+    assert nodes["policy:genesis_theta_soft_exp_minus_3"]["symbol"] == "GENESIS_THETA_SOFT"
+    assert nodes["policy:genesis_theta_soft_exp_minus_3"]["value"]["literal"] == "exp(-3)"
+    assert "decimal_approx" not in nodes["policy:genesis_theta_soft_exp_minus_3"]["value"]
+    assert "Decimal arithmetic" in nodes["policy:genesis_theta_soft_exp_minus_3"]["value"]["note"]
+    assert {
+        "genesis_agent:01",
+        "policy:genesis_theta_hard_0_05",
+        "policy:genesis_theta_soft_exp_minus_3",
+    }.issubset(nodes["policy:genesis_accrual_governor"]["applies_to"])
+    assert nodes["ceremony:genesis_agent1_keygen_838a"]["core_star_map_candidate"] is True
     assert "overlay:morphogenetic_hypergraph_substrate" not in nodes
 
 
@@ -196,6 +207,7 @@ def test_genesis_node_candidate_decision_log_records_review_queue_rule() -> None
     assert "GND-0029" in text
     assert "GND-0030" in text
     assert "GND-0032" in text
+    assert "GND-0033" in text
     assert "review queue" in text
 
 
@@ -213,4 +225,8 @@ def test_genesis_core_star_map_projection_and_index_exist() -> None:
     assert all(edge["source"] in star_map_ids and edge["target"] in star_map_ids for edge in star_map["edges"])
     assert index["symbols"]["PROVENANCE_DECAY_ALPHA"] == "policy:provenance_decay_alpha_0_45"
     assert index["symbols"]["GENESIS_THETA_HARD"] == "policy:genesis_theta_hard_0_05"
+    assert index["symbols"]["GENESIS_THETA_SOFT"] == "policy:genesis_theta_soft_exp_minus_3"
     assert "policy:provenance_decay_alpha_0_45" in index["applies_to"]["edge_type:PROVENANCE"]
+    assert "policy:genesis_accrual_governor" in index["applies_to"]["genesis_agent:01"]
+    assert "policy:genesis_accrual_governor" in index["applies_to"]["policy:genesis_theta_hard_0_05"]
+    assert "policy:genesis_accrual_governor" in index["applies_to"]["policy:genesis_theta_soft_exp_minus_3"]

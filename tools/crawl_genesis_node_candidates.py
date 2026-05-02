@@ -545,7 +545,7 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "node_kind": "keygen_ceremony",
             "authority_status": "phase_838a_closure_pass",
             "canonicality_tier": "ratified_or_evidence",
-            "inclusion_status": "strong_candidate",
+            "inclusion_status": "must_include",
             "confidence": 0.88,
             "rationale": "The key ceremony is a lineage event for Genesis Agent 1 authority.",
             "source_kind": "spec",
@@ -555,7 +555,7 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "genesis_exempt": True,
             "depth_index": 2,
             "sunset_status": "bounded_bootstrap_authority",
-            "decision_log_refs": ["GND-0003", "GND-0026"],
+            "decision_log_refs": ["GND-0003", "GND-0026", "GND-0033"],
         },
         {
             "candidate_id": "policy:genesis_governance_dilution",
@@ -590,8 +590,13 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "source_path": Path("docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md"),
             "edge_hints": ["EPOCH_BOUNDARY"],
             "economic_boundary": "caps_genesis_accrual_not_epistemic_centrality",
+            "applies_to": [
+                "genesis_agent:01",
+                "policy:genesis_theta_hard_0_05",
+                "policy:genesis_theta_soft_exp_minus_3",
+            ],
             "depth_index": 3,
-            "decision_log_refs": ["GND-0007", "GND-0026"],
+            "decision_log_refs": ["GND-0007", "GND-0026", "GND-0033"],
         },
         {
             "candidate_id": "policy:genesis_theta_soft_exp_minus_3",
@@ -601,7 +606,7 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "node_kind": "policy_constant",
             "authority_status": "genesis_accrual_governor_modeling_target",
             "canonicality_tier": "supporting_context",
-            "inclusion_status": "strong_candidate",
+            "inclusion_status": "must_include",
             "confidence": 0.84,
             "rationale": "The soft taper explains how Genesis dominance is compressed before the 5% hard cap.",
             "source_kind": "spec",
@@ -610,13 +615,13 @@ def _add_static_promoted_candidates(candidates: dict[str, Candidate]) -> None:
             "economic_boundary": "genesis_accrual_soft_taper",
             "symbol": "GENESIS_THETA_SOFT",
             "value": {
-                "decimal_approx": "0.049787068367863944",
                 "kind": "expression",
                 "literal": "exp(-3)",
+                "note": "evaluate with Decimal arithmetic; do not store as float",
             },
             "applies_to": ["policy:genesis_accrual_governor", "economic_surface:genesis_accrual_soft_taper"],
             "depth_index": 3,
-            "decision_log_refs": ["GND-0007", "GND-0026", "GND-0031"],
+            "decision_log_refs": ["GND-0007", "GND-0026", "GND-0031", "GND-0033"],
         },
         {
             "candidate_id": "artifact:star_map_demoted_by_adr_0004",
@@ -1833,6 +1838,11 @@ def _decision_log() -> list[dict[str, str]]:
             "decision_id": "GND-0032",
             "decision": "Represent ADR-0004 star.map demotion as a governance event node.",
             "rationale": "The demotion is a real ILC refutation/supersession event and should be visible in the Genesis morphogenic graph.",
+        },
+        {
+            "decision_id": "GND-0033",
+            "decision": "Promote theta-soft and the Genesis Agent 1 keygen ceremony into the core star-map projection.",
+            "rationale": "The accrual governor needs both hard and soft theta constants, and the keygen ceremony is the provenance event that produces the Genesis authority key record.",
         },
     ]
     for entry in entries:
