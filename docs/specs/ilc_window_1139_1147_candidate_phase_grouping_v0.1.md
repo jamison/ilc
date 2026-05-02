@@ -198,47 +198,67 @@ a new parameter sweep — that belongs in SIM-SPECTRAL-03 if warranted.
 
 ## §5. Genesis Atlas Tier-1 Scope
 
-### 5.1 What Tier-1 means (edges + diagnostic restructure)
+### 5.1 What Tier-1 means (Genesis attestation node + diagnostic restructure)
 
 The Genesis core star map (`out/genesis_core_star_map_v0.1.json`, 31 nodes, 35 edges) is
 a projection of the governance hypergraph onto a core authority set. GENESIS-COMPILE-01
 baseline reports 17/31 `basis_reachable_core_nodes` via single-class forward BFS.
 
-**Key finding (confirmed by Codex):** The 14 unreachable nodes are NOT proof that genesis
-authority is absent. They show that single-class forward BFS cannot distinguish three
-semantically distinct relationship classes:
-- **derivation_reachable** — forward generative paths from truth primitives/axioms
-- **authority_traceable** — PROVENANCE/ATTESTATION edges that may be traversed bidirectionally
-- **governance_linked** — ADR/CDL/policy nodes linked through governance documents
+**Key finding (confirmed by Codex):** The 14 unreachable nodes reflect a limitation of
+single-class BFS, not an absence of genesis authority. The clean fix is:
+1. A **retrospective Genesis attestation document** (`docs/specs/ilc_genesis_intent_attestation_and_init_authority_map_v0.1.md`) that formally records the pre-repo Genesis intent as the root of project authority
+2. A new star-map **node-promotion** (`artifact:genesis_intent_attestation_init_authority_map`) sourced from that document
+3. **GOVERNS/ATTESTATION edges** from the attestation node to all currently-unreachable governance artifacts
+4. **Restructured GENESIS-COMPILE-01** that reports `derivation_reachability` and `authority_traceability` as separate classes
 
-**The graph must not be shaped to satisfy the metric. The metric must be corrected to
-reflect the graph's actual semantics.**
+**The graph must model actual authority structure. Do not add edges to satisfy a traversal
+metric; add edges because the authority relationship genuinely exists.**
 
-Tier-1 has two tasks:
-1. Add **semantically defensible** edges to the curated seed (3–4 edges only)
-2. Restructure GENESIS-COMPILE-01 to report all three reachability classes
+**Genesis attestation document — required properties:**
+- `attested_by`: Genesis / Jamison
+- `status`: `RETROSPECTIVE_GENESIS_ATTESTATION`
+- Purpose: records the Genesis intent that preceded repo concretization; formalizes
+  the pre-existing authority relationships for atlas/RC compilation
+- `created_after_fact: true`; `intent_scope_start: pre-repo conception period`
+- Explicit `limits`: does not claim this file existed at repo initialization; does not
+  rewrite file timestamps or commit history
+- `applies_to`: all ADR, CDL, policy, keygen artifacts governed by Genesis intent
 
-**Defensible edge additions** (from `artifact:genesis_state_bundle`, which is already
-reachable via axiom → genesis_state_bundle chain):
-- `artifact:genesis_state_bundle → GOVERNS → policy:genesis_accrual_governor`
-- `artifact:genesis_state_bundle → GOVERNS → policy:genesis_authority_sunset`
-- `artifact:genesis_state_bundle → GOVERNS → policy:genesis_theta_soft_exp_minus_3`
-- `artifact:genesis_authority_assertion_schema → GOVERNS → ceremony:genesis_agent1_keygen_838a`
-  (low confidence, `confidence: 0.75`, pending human confirmation)
+**New curated seed node:**
+- `candidate_id: artifact:genesis_intent_attestation_init_authority_map`
+- `canonicality_tier: retrospective_genesis_attestation`
+- `source_kind: genesis_attestation`; `node_kind: authority_map`
+- `core_star_map_candidate: true`
+- Star map grows from 31 → 32 nodes
 
-**Do NOT add:** Genesis-to-CDL or Genesis-to-ADR direct provenance edges. They overstate
-the direct relationship. CDL/ADR reachability must come via the restructured
-`authority_traceability` diagnostic class, not from forced BFS-gaming edges.
+**Edges from the attestation node** (GOVERNS = authorizes/scope-binds; ATTESTATION =
+attests to existence/authenticity of identity artifacts; NOT PROVENANCE):
 
-**On Genesis Init (forward obligation for Tier-2):** Conceptually, a `genesis_init`
-document is the deeper authority root. No such node exists in the current 31-node star
-map — adding it changes the denominator and is a node-promotion scope change. Atlas
-Tier-2 must add a `genesis_init` node and re-source genesis_agent:01's governance edges
-through it.
+| Edge type | Target |
+|-----------|--------|
+| GOVERNS | `adr:0004_genesis_truth_primitives` |
+| GOVERNS | `adr:0029_hypergraph_substrate` |
+| GOVERNS | `adr:0030_node_embedding_substrate` |
+| GOVERNS | `adr:0032_temporal_hypergraph` |
+| GOVERNS | `adr:0035_homoiconic_type_definition_system` |
+| GOVERNS | `cdl:081_hyperedge_ecu_attribution` |
+| GOVERNS | `cdl:083_panel_quorum_refutation` |
+| GOVERNS | `cdl:084_provenance_chain_attribution` |
+| GOVERNS | `policy:genesis_accrual_governor` |
+| GOVERNS | `policy:genesis_authority_sunset` |
+| GOVERNS | `policy:genesis_theta_hard_0_05` |
+| GOVERNS | `policy:genesis_theta_soft_exp_minus_3` |
+| GOVERNS | `policy:provenance_decay_alpha_0_45` |
+| ATTESTATION | `ceremony:genesis_agent1_keygen_838a` |
+| ATTESTATION | `artifact:genesis_agent1_pubkey_record_838a` |
+| ATTESTATION | `genesis_agent:01` |
+
+Do NOT use PROVENANCE for any of these edges (PROVENANCE = historical derivation/lineage,
+not intent-authorization). Do NOT add fake intermediate nodes.
 
 ### 5.2 Regeneration chain (Phase 1142)
 
-After editing the curated seed, run star map regeneration first, then diagnostic:
+After creating the attestation document and editing the curated seed:
 ```bash
 python tools/crawl_genesis_node_candidates.py
 python tools/compare_genesis_star_map_to_repo_graph.py
@@ -247,21 +267,23 @@ python tools/genesis_compile_coverage_diagnostic.py
 ```
 
 Output paths:
-- `out/genesis_core_star_map_v0.1.json` (updated in-place)
-- `out/genesis_compile_coverage_diagnostic_v0.1.json` (updated in-place — new reachability_classes block)
+- `out/genesis_core_star_map_v0.1.json` (updated — 32 nodes after attestation node)
+- `out/genesis_compile_coverage_diagnostic_v0.1.json` (updated — new reachability classes)
 - `out/genesis_core_star_map_gap_analysis_v0.1.json` (updated in-place)
 
 ### 5.3 GENESIS-COMPILE-01 checkpoint #1 (Phase 1143)
 
-Phase 1143 gates on whether the **improved multi-class diagnostic** produces a valid
-report — NOT on forward-BFS count ≥ 28/31. The gate tests are:
-- `reachability_classes` block exists with all four sub-keys
-- `union_reachable.count > derivation_reachable.count` (multi-class covers more ground)
-- The Tier-1 edges landed (policies reachable via derivation or governance class)
-- Phase 1143 checkpoint report documents which class each previously-unreachable node falls into
+Phase 1143 gates on `authority_traceable_core_nodes ≥ 28/32`. The diagnostic reports:
+- `derivation_reachability`: forward BFS from truth primitives/axioms/genesis hard-coded
+  roots (the existing single-BFS class, kept for continuity)
+- `authority_traceability`: nodes reachable via GOVERNS/ATTESTATION from
+  `artifact:genesis_intent_attestation_init_authority_map`
 
-The patched star map + restructured diagnostic output together are the S1 topology seed
-and analysis baseline for SIM-SPECTRAL-03.
+Phase 1143 also explicitly asserts: `0 semantically unjustified Tier-1 edges` — confirming
+that the graph was not shaped to satisfy a traversal metric.
+
+The 32-node patched star map + restructured diagnostic become the S1 topology baseline
+for SIM-SPECTRAL-03.
 
 ---
 
@@ -269,10 +291,11 @@ and analysis baseline for SIM-SPECTRAL-03.
 
 ### 6.1 Research question
 
-Can the patched 31-node Genesis core star map — representing the actual ILC protocol
-governance topology — serve as a more realistic S1 (healthy growth) seed topology than
-3 Genesis axioms + 97 synthetic artifacts, and does this change materially improve S3
-Sybil discrimination relative to the corrected Run 02 baseline?
+Can the patched 32-node Genesis core star map — representing the actual ILC protocol
+governance topology including the retrospective genesis intent attestation — serve as a
+more realistic S1 (healthy growth) seed topology than 3 Genesis axioms + 97 synthetic
+artifacts, and does this change materially improve S3 Sybil discrimination relative to
+the corrected Run 02 baseline?
 
 This is the operative CDL-085 gate question. If S3/S1 ratio under Genesis-seed S1
 drops materially below the corrected Run 02 S3/S1 ratio, Phase 1146 recommends CDL-085
@@ -286,8 +309,8 @@ Track B/C (alternative topology tracks) and Track D (connectivity sweep) are opt
 if the window is time-constrained — Track A + gaming probes are the minimum.
 
 **What changes vs. Run 02:**
-- S1 topology seed: 31-node patched Genesis core star map (from Phase 1142/1143) instead
-  of 3 Genesis axioms + 97 synthetic artifacts
+- S1 topology seed: 32-node patched Genesis core star map (from Phase 1142/1143,
+  including genesis intent attestation node) instead of 3 Genesis axioms + 97 synthetic artifacts
 
 **What does NOT change:**
 - Harness version: same fixed harness (`58c4687f`)
@@ -540,69 +563,22 @@ No GO token required.
 
 ---
 
-### Phase 1142 — Atlas Tier-1 Curated Seed Patch (NON-SENSITIVE)
+### Phase 1142 — Atlas Tier-1: Genesis Attestation Node + Diagnostic Restructure (NON-SENSITIVE)
 
 No GO token required.
 
 **Deliverables:**
-- `docs/sims/sim_spectral_02/genesis_core_star_map_curated_seed_v0.1.json` (amended)
-- `out/genesis_core_star_map_v0.1.json` (regenerated)
+- `docs/specs/ilc_genesis_intent_attestation_and_init_authority_map_v0.1.md` (new)
+- `docs/sims/sim_spectral_02/genesis_core_star_map_curated_seed_v0.1.json` (amended — new node + 16 edges)
+- `out/genesis_core_star_map_v0.1.json` (regenerated — 32 nodes)
 - `out/genesis_core_star_map_gap_analysis_v0.1.json` (regenerated)
-- `out/genesis_observed_repo_hypergraph_v0.1.json` (regenerated if crawl re-runs)
+- `tools/genesis_compile_coverage_diagnostic.py` (updated — derivation + authority classes)
+- `out/genesis_compile_coverage_diagnostic_v0.1.json` (regenerated — new classes block)
+- `tests/test_phase_1142_atlas_tier1_genesis_attestation.py`
 
-**Patch specification:**
+**See Phase 1142 prompt in `docs/Antigravity_tasks/` for full specification.**
 
-Add the following authority-chain edges to the curated seed. For each, the JSON edge
-object must include: `source`, `target`, `edge_type`, and `authority_basis` fields.
-
-**BFS note:** The tool's `_basis_roots()` function hard-codes `genesis_agent:01`,
-`adr:0004_genesis_truth_primitives`, `axiom:logic:01`, `axiom:math:01`, and
-`axiom:physics:01` as unconditional roots — they are always in the reachable set
-regardless of edges. The 17/31 baseline already counts them. Tier-1 edges must
-make the remaining 14 unreachable nodes reachable by adding incoming edges FROM
-existing reachable nodes.
-
-All edges use only edge types already defined in the star map (GOVERNS, PROVENANCE,
-ATTESTATION, CONSTRAINS). Do NOT introduce new edge types in Tier-1.
-
-Target edge additions — all sourced from hard-coded basis roots or already-reachable nodes:
-
-| Source (reachable) | Target (unreachable) | Edge type | Authority basis |
-|--------------------|----------------------|-----------|-----------------|
-| `genesis_agent:01` | `ceremony:genesis_agent1_keygen_838a` | `ATTESTATION` | Genesis agent attests to the keygen ceremony that established its public key |
-| `ceremony:genesis_agent1_keygen_838a` | `artifact:genesis_agent1_pubkey_record_838a` | `ATTESTATION` | Already present as ATTESTATION in star map — confirms chain |
-| `genesis_agent:01` | `policy:genesis_accrual_governor` | `GOVERNS` | Genesis agent enacted genesis economic policies at bootstrap |
-| `genesis_agent:01` | `policy:genesis_authority_sunset` | `GOVERNS` | Genesis agent enacted genesis authority sunset policy |
-| `genesis_agent:01` | `policy:genesis_theta_soft_exp_minus_3` | `GOVERNS` | Genesis agent enacted genesis theta soft threshold |
-| `genesis_agent:01` | `cdl:081_hyperedge_ecu_attribution` | `PROVENANCE` | Genesis authority chain is the provenance root from which CDL-081 derives constitutional standing |
-| `genesis_agent:01` | `cdl:083_panel_quorum_refutation` | `PROVENANCE` | Same authority provenance for CDL-083 |
-| `genesis_agent:01` | `cdl:084_provenance_chain_attribution` | `PROVENANCE` | Same authority provenance for CDL-084 (its existing edge to provenance_decay_alpha then activates) |
-| `genesis_agent:01` | `adr:0029_hypergraph_substrate` | `PROVENANCE` | Genesis authority chain underlies ADR-0029 governance legitimacy |
-| `genesis_agent:01` | `adr:0030_node_embedding_substrate` | `PROVENANCE` | Same for ADR-0030 |
-| `genesis_agent:01` | `adr:0032_temporal_hypergraph` | `PROVENANCE` | Same for ADR-0032 |
-| `genesis_agent:01` | `adr:0035_homoiconic_type_definition_system` | `PROVENANCE` | Same for ADR-0035 |
-
-**Indirect reachability (via existing edges already in star map):**
-- `policy:genesis_accrual_governor` → (existing GOVERNS) → `policy:genesis_theta_hard_0_05` — makes theta_hard reachable once accrual_governor is reachable
-- `cdl:084_provenance_chain_attribution` → (existing CONSTRAINS) → `policy:provenance_decay_alpha_0_45` — makes provenance_decay_alpha reachable once CDL-084 is reachable
-
-**After editing the curated seed, regenerate the star map (NOT the diagnostic yet —
-diagnostic restructure is also part of Phase 1142):**
-```bash
-python tools/crawl_genesis_node_candidates.py
-python tools/compare_genesis_star_map_to_repo_graph.py
-# Then apply diagnostic restructure to tools/genesis_compile_coverage_diagnostic.py
-python tools/genesis_compile_coverage_diagnostic.py
-```
-
-**Test structure:** Minimum 5 tests:
-- T1: curated seed JSON is valid and parseable; edge count ≥ 10 (7 original + 3 new minimum)
-- T2: `out/genesis_core_star_map_v0.1.json` exists, is valid JSON, `len(nodes) == 31`
-- T3: `out/genesis_compile_coverage_diagnostic_v0.1.json` exists and contains `reachability_classes` key
-- T4: `reachability_classes` block contains all four sub-keys (derivation_reachable, authority_traceable, governance_linked, union_reachable)
-- T5: `union_reachable.count > derivation_reachable.count`
-
-**Commit subject:** `atlas(tier-1): curated seed patch + diagnostic reachability classes phase 1142`
+**Commit subject:** `atlas(tier-1): genesis attestation node + diagnostic restructure phase 1142`
 
 ---
 
@@ -616,30 +592,27 @@ No GO token required.
 - `tests/test_phase_1143_genesis_compile_checkpoint_1.py` — evidence tests
 
 **Checkpoint report required content:**
-1. Reachability class counts from `out/genesis_compile_coverage_diagnostic_v0.1.json`:
-   `derivation_reachable`, `authority_traceable`, `governance_linked`, `union_reachable`
+1. Reachability class summary: `derivation_reachability` count and `authority_traceability` count
 2. `core_explainable_sources_ratio_of_observed` (compare to 31% baseline)
-3. For each of the 14 previously-unreachable nodes: which reachability class now covers it (or remains uncovered, with reason)
-4. `basis_reachable_core_nodes` (the legacy single-BFS count, for continuity)
-5. Verdict token:
-   - `genesis_compile_checkpoint_1_pass` if `union_reachable.count ≥ 28` AND `reachability_classes` block is valid
-   - `genesis_compile_checkpoint_1_conditional` if union < 28 but the multi-class diagnostic is valid and Tier-1 edges landed
-   - `genesis_compile_checkpoint_1_fail_iteration_required` if diagnostic restructure is absent or broken
-6. Explicit statement that the patched star map + restructured diagnostic are approved as
-   the S1 topology baseline for SIM-SPECTRAL-03 (conditional on verdict token not being fail)
+3. For each of the 14 previously-unreachable nodes: which class now covers it (or why uncovered)
+4. `basis_reachable_core_nodes` (legacy single-BFS count, for continuity)
+5. Explicit assertion: `0 semantically unjustified Tier-1 edges added`
+6. Verdict token:
+   - `genesis_compile_checkpoint_1_pass` if `authority_traceable_core_nodes ≥ 28/32`
+   - `genesis_compile_checkpoint_1_conditional` if authority_traceable 22–27/32 and diagnostic is valid
+   - `genesis_compile_checkpoint_1_fail_iteration_required` if diagnostic restructure absent or broken
+7. Approval statement: patched 32-node star map + restructured diagnostic approved as S1
+   topology baseline for SIM-SPECTRAL-03 (if verdict not fail)
 
 **Test structure:** Minimum 5 tests:
 - C1: checkpoint report exists and contains a verdict token
-- C2: `out/genesis_compile_coverage_diagnostic_v0.1.json` contains `reachability_classes` block with valid data
-- C3: `union_reachable.count ≥ 22` (soft floor — confirms Tier-1 edges improved coverage; exact threshold may need adjustment after Phase 1142 runs)
-- C4: report accounts for all 14 previously-unreachable nodes (each listed with class or unresolved reason)
-- C5: checkpoint report contains `atlas_tier1_patch_phase_1142` reference
+- C2: `out/genesis_compile_coverage_diagnostic_v0.1.json` contains `authority_traceability` key
+- C3: `authority_traceable_core_nodes ≥ 28` (hard gate — test fails if < 28 out of 32)
+- C4: report accounts for all 14 previously-unreachable nodes
+- C5: report contains `atlas_tier1_patch_phase_1142` reference
 
-**Gate rule:** If the diagnostic restructure from Phase 1142 is absent (C2 fails), Phase
-1144 must NOT proceed. If C3 fails (fewer than 22 nodes covered by any class), Codex
-must add additional semantically defensible edges (Phase 1142 iteration) — but may NOT
-add governance-gaming edges. Gate is satisfied when the multi-class diagnostic is valid
-and coverage has materially improved.
+**Gate rule:** C3 failing → Phase 1142 iterates (add more attestation edges, not BFS-gaming
+edges). C2 failing → diagnostic restructure not landed; do not proceed.
 
 **Commit subject:** `atlas(checkpoint-1): GENESIS-COMPILE-01 checkpoint 1 phase 1143`
 
