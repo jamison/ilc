@@ -372,9 +372,10 @@ required for any phase.
 | 1 | 1139 | Window 1139–1147 sequence lock | Foundation | NON-SENSITIVE |
 | 2 | 1140 | SIM-SPECTRAL-02 Run 02 Fix2 corrected baseline (333-entry rerun, fixed harness) | Simulation | NON-SENSITIVE |
 | 3 | 1141 | Corrected Run 02 disposition addendum — old vs. corrected slopes; updated Scenario B/C verdict | Synthesis | NON-SENSITIVE |
-| 4 | 1142 | Atlas Tier-1 curated seed patch + star map regeneration | Simulation | NON-SENSITIVE |
-| 5 | 1143 | GENESIS-COMPILE-01 checkpoint #1 — post-Tier-1 atlas | Simulation | NON-SENSITIVE |
-| 6 | 1144 | SIM-SPECTRAL-03 harness update + program spec (31-node Genesis seed topology) | Simulation | NON-SENSITIVE |
+| 4 | 1142 | Atlas Tier-1: genesis intent attestation node + diagnostic restructure (32-node star map) | Atlas/Sim | NON-SENSITIVE |
+| 4S | 1142s | Genesis node attestation signing ceremony — ML-DSA-65 manifest signature by genesis_agent:01 | Signing | **SENSITIVE** |
+| 5 | 1143 | GENESIS-COMPILE-01 checkpoint #1 — authority_traceability class, 32-node post-Tier-1 | Simulation | NON-SENSITIVE |
+| 6 | 1144 | SIM-SPECTRAL-03 harness update + program spec (32-node Genesis seed topology) | Simulation | NON-SENSITIVE |
 | 7 | 1145 | SIM-SPECTRAL-03 Run 01 (Track A + gaming probes minimum) | Simulation | NON-SENSITIVE |
 | 8 | 1146 | SIM-SPECTRAL-03 disposition + CDL-085 authorization recommendation | Synthesis | NON-SENSITIVE |
 | 9 | 1147 | Coherence + capsule v5.39 + closure gate | Gate | **SENSITIVE** |
@@ -385,19 +386,21 @@ required for any phase.
 |-------|--------|-----------|
 | **Batch A** | 1139 + 1140 | Sequence lock + corrected rerun; no disposition decision needed between them |
 | **Batch B** | 1141 alone | Disposition addendum must be reviewed before Atlas work proceeds |
-| **Batch C** | 1142 + 1143 | Atlas patch + checkpoint are tightly coupled; run together |
-| **Batch D** | 1144 alone | Harness update depends on checkpoint #1 passing; must confirm before SIM runs |
-| **Batch E** | 1145 alone | Computational phase; results may require human review before disposition |
-| **Batch F** | 1146 alone | Disposition may trigger CDL-085 authorization decision; human review before closure |
-| **Batch G** | 1147 alone | SENSITIVE — human GO token required |
+| **Batch C** | 1142 alone | Genesis attestation node + diagnostic restructure — output reviewed before signing |
+| **Batch C-S** | 1142s alone | SENSITIVE signing ceremony — requires human GO token + human local key ceremony |
+| **Batch D** | 1143 alone | Checkpoint requires Phase 1142s signature artifact to be present |
+| **Batch E** | 1144 alone | Harness update depends on checkpoint #1 passing; must confirm before SIM runs |
+| **Batch F** | 1145 alone | Computational phase; results may require human review before disposition |
+| **Batch G** | 1146 alone | Disposition may trigger CDL-085 authorization decision; human review before closure |
+| **Batch H** | 1147 alone | SENSITIVE — human GO token required |
 
 ### Note on Phase 1143 gate
 
-Phase 1143 is a hard gate. If GENESIS-COMPILE-01 checkpoint #1 does not reach ≥ 28/31
-basis-reachable core nodes, additional edges must be added to the curated seed and
-Phase 1142 must be re-run before Phase 1144 proceeds. This is a loop, not a one-shot
-pass/fail. The window guidance doc may need to acknowledge a potential Phase 1142b (seed
-patch iteration) if the first attempt does not reach the target.
+Phase 1143 is a hard gate. `authority_traceable_core_nodes ≥ 28/32` is required. If the
+attestation node edges did not produce ≥ 28/32 authority-traceable nodes, add more
+GOVERNS/ATTESTATION edges to the curated seed (Phase 1142 iteration). Do NOT add
+BFS-gaming edges. Phase 1142s (signing) must have completed before Phase 1143 proceeds —
+the checkpoint report includes the signature manifest reference.
 
 ### Note on SIM-SPECTRAL-03 scope (Phases 1145–1146)
 
@@ -412,6 +415,10 @@ gate. Codex must flag this to the human if Run 01 results are inconclusive.
 
 ### SENSITIVE phases
 
+- **Phase 1142s — Genesis signing ceremony:** Cryptographic event. Requires explicit
+  human GO token before execution. Human (Jamison) must perform the local ML-DSA-65
+  signing ceremony to produce the signature artifact. Agents must not handle private
+  key material.
 - **Phase 1147 — Closure gate:** Structural window boundary. Requires explicit human GO
   token before execution. No CDL mutation, but classified SENSITIVE per standard
   closure-gate policy.
