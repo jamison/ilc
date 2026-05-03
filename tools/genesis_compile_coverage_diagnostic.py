@@ -18,6 +18,7 @@ DEFAULT_STAR_MAP = Path("out/genesis_core_star_map_v0.1.json")
 DEFAULT_OBSERVED = Path("out/genesis_observed_repo_hypergraph_v0.1.json")
 DEFAULT_JSON_OUT = Path("out/genesis_compile_coverage_diagnostic_v0.1.json")
 DEFAULT_REPORT_OUT = Path("docs/sims/sim_spectral_02/genesis_compile_coverage_diagnostic_v0.1.md")
+GENESIS_ATTESTATION_ROOT = "artifact:genesis_intent_attestation_init_authority_map"
 
 HIGH_AUTHORITY_SOURCE_KINDS = {
     "adr",
@@ -101,6 +102,24 @@ def _reachable_core_nodes(star_map: dict[str, Any], roots: set[str]) -> set[str]
     return reachable
 
 
+def _authority_traceable_nodes(star_map: dict[str, Any], attestation_node_id: str) -> set[str]:
+    adjacency: dict[str, set[str]] = defaultdict(set)
+    for edge in star_map["edges"]:
+        if edge["edge_type"] in {"GOVERNS", "ATTESTATION"}:
+            adjacency[edge["source"]].add(edge["target"])
+
+    reachable: set[str] = set()
+    queue: deque[str] = deque([attestation_node_id])
+    while queue:
+        current = queue.popleft()
+        for target in sorted(adjacency.get(current, ())):
+            if target in reachable:
+                continue
+            reachable.add(target)
+            queue.append(target)
+    return reachable
+
+
 def _source_vertices(observed: dict[str, Any]) -> list[dict[str, Any]]:
     return [vertex for vertex in observed["vertices"] if vertex["vertex_type"] == "source_file"]
 
@@ -159,6 +178,7 @@ def run(
     core_ids = {node["candidate_id"] for node in star_map["nodes"]}
     roots = _basis_roots(star_map)
     basis_reachable = _reachable_core_nodes(star_map, roots)
+    authority_traceable = _authority_traceable_nodes(star_map, GENESIS_ATTESTATION_ROOT) & core_ids
     source_links = _source_to_core_links(observed)
     sources = _source_vertices(observed)
 
@@ -224,6 +244,12 @@ def run(
             "support_only_sources_with_core_link": len(support_only_sources),
         },
         "edge_recipe_analysis": edge_analysis,
+        "authority_traceability": {
+            "attestation_root": GENESIS_ATTESTATION_ROOT,
+            "authority_traceable_core_nodes": len(authority_traceable),
+            "authority_traceable_core_nodes_ratio": _ratio(len(authority_traceable), len(core_ids)),
+            "authority_traceable_node_ids": sorted(authority_traceable),
+        },
         "gaps": {
             "basis_unreachable_core_nodes": [
                 {
@@ -299,6 +325,7 @@ def run(
 def _write_report(path: Path, payload: dict[str, Any]) -> None:
     coverage = payload["compile_coverage"]
     edge_analysis = payload["edge_recipe_analysis"]
+    authority = payload["authority_traceability"]
     lines = [
         "# GENESIS-COMPILE-01 Compile Coverage Diagnostic v0.1",
         "",
@@ -313,6 +340,7 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
         f"- Observed source files: `{coverage['observed_source_files_total']}`",
         f"- Core nodes: `{coverage['core_nodes_total']}`",
         f"- Basis-reachable core nodes: `{coverage['basis_reachable_core_nodes']}` (`{coverage['basis_reachable_core_nodes_ratio']}`)",
+        f"- Authority-traceable core nodes: `{authority['authority_traceable_core_nodes']}` (`{authority['authority_traceable_core_nodes_ratio']}`) from `{authority['attestation_root']}`",
         f"- Core-explainable source files: `{coverage['core_explainable_sources']}` (`{coverage['core_explainable_sources_ratio_of_observed']}` of observed)",
         f"- Basis-explainable source files: `{coverage['basis_explainable_sources']}` (`{coverage['basis_explainable_sources_ratio_of_observed']}` of observed)",
         f"- Authority-valid core-linked sources: `{coverage['authority_path_valid_sources']}` (`{coverage['authority_path_valid_sources_ratio_of_core_explainable']}` of core-explainable)",
@@ -355,6 +383,7 @@ def main() -> None:
         json.dumps(
             {
                 "basis_reachable_core_nodes": payload["compile_coverage"]["basis_reachable_core_nodes"],
+                "authority_traceable_core_nodes": payload["authority_traceability"]["authority_traceable_core_nodes"],
                 "core_explainable_sources": payload["compile_coverage"]["core_explainable_sources"],
                 "observed_source_files_total": payload["compile_coverage"]["observed_source_files_total"],
                 "verdict": payload["verdict"],
