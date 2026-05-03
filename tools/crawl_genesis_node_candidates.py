@@ -111,6 +111,10 @@ class Candidate:
     genesis_exempt: bool = False
     genesis_attested: bool = False
     genesis_attested_by: str | None = None
+    attestation_type: str | None = None
+    signature_scope: str | None = None
+    signature_status: str | None = None
+    signing_key_ref: str | None = None
     reuse_economic_surface: str = "none"
     economic_cap_policy: str | None = None
     depth_index: int | None = None
@@ -153,6 +157,7 @@ class Candidate:
             "edge_hints": self.edge_hints,
             "evidence": [item.to_dict() for item in self.evidence],
             "depth_index": self.depth_index,
+            "attestation_type": self.attestation_type,
             "genesis_attested": self.genesis_attested,
             "genesis_attested_by": self.genesis_attested_by,
             "genesis_exempt": self.genesis_exempt,
@@ -165,6 +170,9 @@ class Candidate:
             "rationale": self.rationale,
             "reuse_economic_surface": self.reuse_economic_surface,
             "sensitivity": self.sensitivity,
+            "signature_scope": self.signature_scope,
+            "signature_status": self.signature_status,
+            "signing_key_ref": self.signing_key_ref,
             "source_kind": self.source_kind,
             "symbol": self.symbol,
             "superseded_by": self.superseded_by,
@@ -383,6 +391,25 @@ def _add_curated_seed_candidates(candidates: dict[str, Candidate], seed: dict[st
                 candidate.add_evidence(evidence)
         candidates[candidate.candidate_id] = candidate
 
+def _apply_genesis_attested_overrides(candidates: dict[str, Candidate], seed: dict[str, Any]) -> None:
+    # The crawler is not the authority source for Genesis attestation.
+    # It compiles explicit curated-seed decisions and fails closed if the seed
+    # references a node that the complete deterministic crawl no longer emits.
+    for override in seed.get("genesis_attested_overrides", []):
+        candidate_id = override["candidate_id"]
+        if candidate_id not in candidates:
+            raise ValueError(f"genesis_attested_override_unknown_candidate:{candidate_id}")
+        candidate = candidates[candidate_id]
+        candidate.genesis_attested = True
+        candidate.genesis_attested_by = override.get("genesis_attested_by", GENESIS_AGENT_ID)
+        candidate.signing_key_ref = override["signing_key_ref"]
+        candidate.attestation_type = override.get("attestation_type", "ex_post_facto")
+        candidate.signature_status = override.get("signature_status", "pending_human_signature")
+        candidate.signature_scope = override.get(
+            "signature_scope",
+            "genesis_node_attestation_manifest_v0.1",
+        )
+
 
 def _new_candidate(
     *,
@@ -403,6 +430,10 @@ def _new_candidate(
     genesis_exempt: bool = False,
     genesis_attested: bool = False,
     genesis_attested_by: str | None = None,
+    attestation_type: str | None = None,
+    signature_scope: str | None = None,
+    signature_status: str | None = None,
+    signing_key_ref: str | None = None,
     reuse_economic_surface: str = "none",
     economic_cap_policy: str | None = None,
     depth_index: int | None = None,
@@ -428,6 +459,7 @@ def _new_candidate(
         economic_cap_policy=economic_cap_policy,
         edge_hints=edge_hints or [],
         depth_index=depth_index,
+        attestation_type=attestation_type,
         graph_projection=graph_projection,
         genesis_attested=genesis_attested,
         genesis_attested_by=genesis_attested_by,
@@ -440,6 +472,9 @@ def _new_candidate(
         rationale=rationale,
         reuse_economic_surface=reuse_economic_surface,
         sensitivity=sensitivity,
+        signature_scope=signature_scope,
+        signature_status=signature_status,
+        signing_key_ref=signing_key_ref,
         source_kind=source_kind,
         symbol=symbol,
         superseded_by=superseded_by,
@@ -1286,6 +1321,7 @@ def build_inventory() -> dict[str, Any]:
     _add_static_promoted_candidates(candidates)
     _add_curated_seed_candidates(candidates, seed)
     stats = _scan_candidate_files(candidates)
+    _apply_genesis_attested_overrides(candidates, seed)
     ordered = sorted(candidates.values(), key=lambda item: (item.layer, item.category, item.candidate_id))
     nodes = [candidate.to_dict() for candidate in ordered]
     edges = _candidate_edges({node["candidate_id"] for node in nodes}, seed)

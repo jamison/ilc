@@ -47,8 +47,9 @@ def test_genesis_compile_coverage_records_current_partial_result() -> None:
     coverage = payload["compile_coverage"]
     assert payload["verdict"] == "PARTIAL_WITH_STRUCTURAL_GAPS"
     assert coverage["observed_source_files_total"] >= 1600
-    assert coverage["core_nodes_total"] == 31
+    assert coverage["core_nodes_total"] == 32
     assert coverage["basis_reachable_core_nodes"] == 17
+    assert payload["authority_traceability"]["authority_traceable_core_nodes"] == 31
     assert coverage["core_explainable_sources"] >= 500
     assert coverage["basis_explainable_sources"] >= 250
 
@@ -56,11 +57,11 @@ def test_genesis_compile_coverage_records_current_partial_result() -> None:
 def test_genesis_compile_coverage_edge_recipes_are_complete() -> None:
     payload = _payload()
     edge_analysis = payload["edge_recipe_analysis"]
-    assert edge_analysis["proposed_edge_count"] == 9
+    assert edge_analysis["proposed_edge_count"] == 25
     assert edge_analysis["missing_decomposition_recipe_count"] == 0
     assert edge_analysis["proposed_edge_type_counts"] == {
         "CONSTRAINS": 2,
-        "GOVERNS": 4,
+        "GOVERNS": 20,
         "PRIMITIVE_INVOCATION": 3,
     }
 
