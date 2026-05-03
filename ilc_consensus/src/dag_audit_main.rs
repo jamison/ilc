@@ -384,10 +384,7 @@ fn verify_stored_checkpoint(
         match pk_by_id.get(&signer_id) {
             Some(pk) => subset_keys.push(pk),
             None => {
-                result.bls_error = Some(format!(
-                    "signer_validator_{}_not_in_genesis",
-                    signer_id.0
-                ));
+                result.bls_error = Some(format!("signer_validator_{}_not_in_genesis", signer_id.0));
                 return result;
             }
         }
@@ -412,8 +409,7 @@ fn verify_stored_checkpoint(
         return result;
     }
 
-    let verify_result =
-        sig.fast_aggregate_verify(true, &msg, ILC_EPOCH_SIG_DST, &subset_keys);
+    let verify_result = sig.fast_aggregate_verify(true, &msg, ILC_EPOCH_SIG_DST, &subset_keys);
     if verify_result == blst::BLST_ERROR::BLST_SUCCESS {
         result.bls_verified = true;
     } else {

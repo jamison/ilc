@@ -584,8 +584,8 @@ mod tests {
                     msg
                 );
             }
-            Ok(_) => {}   // if somehow certs exist, also fine
-            Err(_) => {}  // other error variants (cert load, etc.) are acceptable here
+            Ok(_) => {}  // if somehow certs exist, also fine
+            Err(_) => {} // other error variants (cert load, etc.) are acceptable here
         }
     }
 

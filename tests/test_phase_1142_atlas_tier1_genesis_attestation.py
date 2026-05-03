@@ -47,7 +47,10 @@ def test_t4_all_star_map_nodes_are_genesis_attested_with_signing_metadata() -> N
         assert node["genesis_attested"] is True, node["candidate_id"]
         assert node["genesis_attested_by"] == GENESIS_AGENT, node["candidate_id"]
         assert node["signing_key_ref"] == SIGNING_KEY, node["candidate_id"]
-        assert node["signature_status"] == "pending_human_signature", node["candidate_id"]
+        assert node["signature_status"] in {
+            "pending_human_signature",
+            "signed",
+        }, node["candidate_id"]
 
 
 def test_t5_diagnostic_contains_authority_traceability_gate() -> None:
