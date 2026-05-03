@@ -21,7 +21,7 @@ SCENARIOS = ("S1", "S2", "S3", "S4", "G1", "G2", "G3")
 KNOWLEDGE_WORK_MODELS = ("flat", "homoiconic")
 PROVENANCE_DECAY_ALPHA_SIM = 0.45
 PROVENANCE_MAX_DEPTH_SIM = 3
-S1_TOPOLOGIES = ("synthetic", "coactivity", "ancestor-edge")
+S1_TOPOLOGIES = ("synthetic", "coactivity", "ancestor-edge", "genesis-star-map")
 WEIGHT_PROFILES: dict[str, dict[str, float]] = {
     "observed_provenance_only": {
         "survived_refutations": 0.0,
@@ -246,6 +246,73 @@ def _ancestor_edge_laplacian(
     return laplacian, "ancestor_edge", diagnostics
 
 
+def load_s1_star_map_topology(path: Path) -> tuple[np.ndarray, dict[str, Any]]:
+    """Load a signed Genesis core star map as an undirected S1 seed topology."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    nodes = data.get("nodes")
+    edges = data.get("edges")
+    if not isinstance(nodes, list) or not nodes:
+        raise ValueError("sim_spectral_02_star_map_nodes_missing")
+    if not isinstance(edges, list) or not edges:
+        raise ValueError("sim_spectral_02_star_map_edges_missing")
+
+    node_ids: list[str] = []
+    for node in nodes:
+        if not isinstance(node, dict) or not isinstance(node.get("candidate_id"), str):
+            raise ValueError("sim_spectral_02_star_map_node_bad_shape")
+        node_ids.append(node["candidate_id"])
+    if len(node_ids) != len(set(node_ids)):
+        raise ValueError("sim_spectral_02_star_map_duplicate_node_id")
+
+    node_ids = sorted(node_ids)
+    node_index = {node_id: index for index, node_id in enumerate(node_ids)}
+    adjacency = np.zeros((len(node_ids), len(node_ids)), dtype=float)
+    skipped_self_loops = 0
+
+    for edge in edges:
+        if not isinstance(edge, dict):
+            raise ValueError("sim_spectral_02_star_map_edge_bad_shape")
+        source = edge.get("source")
+        target = edge.get("target")
+        if not isinstance(source, str) or not isinstance(target, str):
+            raise ValueError("sim_spectral_02_star_map_edge_bad_shape")
+        if source not in node_index or target not in node_index:
+            raise ValueError("sim_spectral_02_star_map_edge_references_unknown_node")
+        if source == target:
+            skipped_self_loops += 1
+            continue
+
+        feature_hints = edge.get("feature_hints")
+        sim_weight_seed = feature_hints.get("sim_weight_seed") if isinstance(feature_hints, dict) else None
+        confidence = edge.get("confidence")
+        if type(sim_weight_seed) in (int, float) and math.isfinite(sim_weight_seed) and sim_weight_seed > 0:
+            weight = float(sim_weight_seed)
+        elif type(confidence) in (int, float) and math.isfinite(confidence) and confidence > 0:
+            weight = float(confidence)
+        else:
+            weight = 1.0
+
+        source_index = node_index[source]
+        target_index = node_index[target]
+        adjacency[source_index, target_index] += weight
+        adjacency[target_index, source_index] += weight
+
+    edge_count = int(np.count_nonzero(np.triu(adjacency, k=1)))
+    if edge_count == 0:
+        raise ValueError("sim_spectral_02_star_map_has_no_usable_edges")
+    degree = np.diag(adjacency.sum(axis=1))
+    diagnostics = {
+        "edge_count": edge_count,
+        "node_count": len(node_ids),
+        "source_file": str(path),
+        "source_format": "genesis_core_star_map_v0.1",
+        "skipped_self_loops": skipped_self_loops,
+        "topology_node_ids": node_ids,
+        "weighted": True,
+    }
+    return degree - adjacency, diagnostics
+
+
 def _scenario_laplacian(
     scenario: str,
     n_nodes: int,
@@ -255,8 +322,14 @@ def _scenario_laplacian(
     seed: int = 0,
     s1_topology: str = "synthetic",
     s1_topology_epoch: int = 100,
+    s1_star_map_topology: tuple[np.ndarray, dict[str, Any]] | None = None,
 ) -> tuple[np.ndarray, str, dict[str, Any]]:
     if scenario == "S1":
+        if s1_topology == "genesis-star-map":
+            if s1_star_map_topology is None:
+                raise ValueError("sim_spectral_02_s1_star_map_topology_missing")
+            L, diagnostics = s1_star_map_topology
+            return L.copy(), "genesis_star_map", dict(diagnostics)
         if s1_topology == "coactivity" and series is not None:
             return _coactivity_laplacian(series, epoch=s1_topology_epoch)
         if s1_topology == "ancestor-edge" and series is not None:
@@ -550,6 +623,7 @@ def run_simulation(
     normalize_durability: bool = True,
     s1_topology: str = "synthetic",
     s1_topology_epoch: int = 100,
+    s1_topology_file: Path | None = None,
     knowledge_work_model: str = "homoiconic",
 ) -> dict[str, Any]:
     if scenario not in SCENARIOS:
@@ -562,10 +636,24 @@ def run_simulation(
         raise ValueError("sim_spectral_02_unknown_s1_topology")
     if knowledge_work_model not in KNOWLEDGE_WORK_MODELS:
         raise ValueError("sim_spectral_02_unknown_knowledge_work_model")
+    if s1_topology_file is not None and scenario != "S1":
+        raise ValueError("sim_spectral_02_s1_topology_file_only_valid_for_s1")
+    if s1_topology == "genesis-star-map" and s1_topology_file is None:
+        raise ValueError("sim_spectral_02_genesis_star_map_requires_topology_file")
+    if s1_topology_file is not None:
+        s1_topology = "genesis-star-map"
 
     series = load_time_series(time_series_path)
     node_ids = sorted(series, key=_node_sort_key)
     n_nodes = len(node_ids)
+    s1_star_map_topology: tuple[np.ndarray, dict[str, Any]] | None = None
+    if s1_topology_file is not None:
+        s1_star_map_topology = load_s1_star_map_topology(s1_topology_file)
+        star_map_node_count = int(s1_star_map_topology[1]["node_count"])
+        if len(node_ids) < star_map_node_count:
+            raise ValueError("sim_spectral_02_time_series_too_small_for_star_map_topology")
+        node_ids = node_ids[:star_map_node_count]
+        n_nodes = star_map_node_count
     observed_epochs = len(next(iter(series.values())))
     genesis_nodes = load_genesis_nodes()
     n_genesis = min(len(genesis_nodes), n_nodes)
@@ -601,6 +689,7 @@ def run_simulation(
             seed=seed,
             s1_topology=s1_topology,
             s1_topology_epoch=s1_topology_epoch,
+            s1_star_map_topology=s1_star_map_topology,
         )
         lambda2 = _normalized_lambda2(L)
         structural_impedance = compute_structural_impedance(lambda2, THETA_FLOOR)
@@ -676,6 +765,7 @@ def run_simulation(
         "laplacian_source": laplacian_source,
         "s1_topology": s1_topology,
         "s1_topology_epoch": s1_topology_epoch,
+        "s1_topology_file": str(s1_topology_file) if s1_topology_file is not None else None,
         "topology_diagnostics": topology_diagnostics,
         "data_classes": {
             "genesis_nodes_count": n_genesis if knowledge_work_model == "homoiconic" else 0,
@@ -714,6 +804,12 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--delta", default=1.0, type=float)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--s1-topology", default="synthetic", choices=S1_TOPOLOGIES)
+    parser.add_argument(
+        "--s1-topology-file",
+        default=None,
+        type=Path,
+        help="Genesis core star-map JSON to use as the S1 seed topology.",
+    )
     parser.add_argument("--s1-topology-epoch", default=100, type=int)
     parser.add_argument("--knowledge-work-model", default="homoiconic", choices=KNOWLEDGE_WORK_MODELS)
     parser.add_argument(
@@ -740,6 +836,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         normalize_durability=args.normalize_durability == "true",
         s1_topology=args.s1_topology,
         s1_topology_epoch=args.s1_topology_epoch,
+        s1_topology_file=args.s1_topology_file,
         knowledge_work_model=args.knowledge_work_model,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
