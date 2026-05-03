@@ -63,6 +63,10 @@ name = "pq_keygen"
 path = "src/pq_keygen_main.rs"
 
 [[bin]]
+name = "pq_sign"
+path = "src/pq_sign_main.rs"
+
+[[bin]]
 name = "shamir_split"
 path = "src/shamir_split_main.rs"
 

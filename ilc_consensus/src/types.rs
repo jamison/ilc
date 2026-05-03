@@ -108,9 +108,7 @@ pub enum TransferClass {
     Contribution,
     /// Peer-to-peer payment (bounty payout, escrow release, agent-to-agent).
     /// Defaults to privacy lane; agent may opt out to express lane with explicit consent.
-    Payment {
-        express: Option<ExpressConsent>,
-    },
+    Payment { express: Option<ExpressConsent> },
 }
 
 /// ExpressConsent allows an agent to opt a `Payment` transfer out of the privacy lane

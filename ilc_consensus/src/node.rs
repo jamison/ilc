@@ -505,10 +505,18 @@ impl NodeRunner {
             let routing_token = match &transfer.transfer_class {
                 TransferClass::Contribution => "privacy_lane_routing:class=contribution",
                 TransferClass::Payment {
-                    express: Some(ExpressConsent { agent_acknowledged_timing_disclosure: true, .. }),
+                    express:
+                        Some(ExpressConsent {
+                            agent_acknowledged_timing_disclosure: true,
+                            ..
+                        }),
                 } => "privacy_lane_routing:class=payment_express",
                 TransferClass::Payment {
-                    express: Some(ExpressConsent { agent_acknowledged_timing_disclosure: false, .. }),
+                    express:
+                        Some(ExpressConsent {
+                            agent_acknowledged_timing_disclosure: false,
+                            ..
+                        }),
                 } => "privacy_lane_routing:class=payment_express_rejected",
                 TransferClass::Payment { express: None } => {
                     "privacy_lane_routing:class=payment_default"
@@ -1091,13 +1099,9 @@ mod tests {
             version: 0,
         };
         let transfer_class = crate::types::TransferClass::Contribution;
-        let sender_msg = bincode::serialize(&(
-            &object_ref,
-            &AgentID([2; 48]),
-            &100u64,
-            &transfer_class,
-        ))
-        .unwrap();
+        let sender_msg =
+            bincode::serialize(&(&object_ref, &AgentID([2; 48]), &100u64, &transfer_class))
+                .unwrap();
         let sig = crate::types::AgentSig(agent_sk.sign(
             &sender_msg,
             crate::types::AGENT_TRANSFER_DST,
@@ -1178,13 +1182,9 @@ mod tests {
                     version: i as u64,
                 };
                 let transfer_class = crate::types::TransferClass::Contribution;
-                let msg = bincode::serialize(&(
-                    &object_ref,
-                    &AgentID([2; 48]),
-                    &10u64,
-                    &transfer_class,
-                ))
-                .unwrap();
+                let msg =
+                    bincode::serialize(&(&object_ref, &AgentID([2; 48]), &10u64, &transfer_class))
+                        .unwrap();
                 let sig =
                     crate::types::AgentSig(sk.sign(&msg, crate::types::AGENT_TRANSFER_DST, &[]));
                 TransferCertificate {

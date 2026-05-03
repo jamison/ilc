@@ -4,8 +4,8 @@ use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::types::{
-    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorID, ValidatorSet,
-    ILC_EPOCH_SIG_DST,
+    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorID,
+    ValidatorSet, ILC_EPOCH_SIG_DST,
 };
 use crate::validator::quorum_threshold;
 
@@ -258,13 +258,12 @@ impl EpochSettlementProtocol {
         let mut pub_keys: Vec<blst::min_pk::PublicKey> =
             Vec::with_capacity(checkpoint.signers.len());
         for &signer_id in &checkpoint.signers {
-            let vk = validator_set
-                .validators
-                .get(&signer_id)
-                .ok_or_else(|| ILCConsensusError::Other(format!(
+            let vk = validator_set.validators.get(&signer_id).ok_or_else(|| {
+                ILCConsensusError::Other(format!(
                     "signer validator {} not in active validator set",
                     signer_id.0
-                )))?;
+                ))
+            })?;
             pub_keys.push(vk.0.clone());
         }
         let pk_refs: Vec<&blst::min_pk::PublicKey> = pub_keys.iter().collect();
@@ -1007,7 +1006,10 @@ mod tests {
                     "error must mention active validator set: {msg}"
                 );
             }
-            other => panic!("expected Other(not in active validator set), got {:?}", other),
+            other => panic!(
+                "expected Other(not in active validator set), got {:?}",
+                other
+            ),
         }
     }
 }

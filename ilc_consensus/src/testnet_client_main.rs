@@ -39,7 +39,7 @@ use ilc_consensus::{
     network::{GossipEnvelope, GossipMessage, PeerNetwork},
     types::{
         AgentID, AgentSig, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq,
-        EpochSettlementRecord, EpochSettlementTx, ObjectRef, TransferClass, TransferCertificate,
+        EpochSettlementRecord, EpochSettlementTx, ObjectRef, TransferCertificate, TransferClass,
         ValidatorID, ValidatorSig, AGENT_TRANSFER_DST, ILC_EPOCH_SIG_DST,
     },
 };
@@ -368,7 +368,10 @@ fn compute_relay_plan(
     let mut seen_validator_addrs = HashSet::new();
     for (id, addr) in validators {
         if !seen_validator_ids.insert(*id) {
-            return Err(format!("--validators contains duplicate validator id {}", id));
+            return Err(format!(
+                "--validators contains duplicate validator id {}",
+                id
+            ));
         }
         if !seen_validator_addrs.insert(*addr) {
             return Err(format!(
@@ -566,9 +569,8 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
 
                 // Testnet client: assume quorum keys are validators 1..=N in order.
-                let signers: Vec<ValidatorID> = (1..=bls_keys.len() as u32)
-                    .map(ValidatorID)
-                    .collect();
+                let signers: Vec<ValidatorID> =
+                    (1..=bls_keys.len() as u32).map(ValidatorID).collect();
                 let checkpoint = EpochCheckpoint {
                     record,
                     sigs: AggSig(agg),

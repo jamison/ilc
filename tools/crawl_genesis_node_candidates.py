@@ -115,6 +115,9 @@ class Candidate:
     signature_scope: str | None = None
     signature_status: str | None = None
     signing_key_ref: str | None = None
+    signature_envelope_ref: str | None = None
+    signature_file_ref: str | None = None
+    star_map_version: str | None = None
     reuse_economic_surface: str = "none"
     economic_cap_policy: str | None = None
     depth_index: int | None = None
@@ -173,6 +176,9 @@ class Candidate:
             "signature_scope": self.signature_scope,
             "signature_status": self.signature_status,
             "signing_key_ref": self.signing_key_ref,
+            "signature_envelope_ref": self.signature_envelope_ref,
+            "signature_file_ref": self.signature_file_ref,
+            "star_map_version": self.star_map_version,
             "source_kind": self.source_kind,
             "symbol": self.symbol,
             "superseded_by": self.superseded_by,
@@ -409,6 +415,9 @@ def _apply_genesis_attested_overrides(candidates: dict[str, Candidate], seed: di
             "signature_scope",
             "genesis_node_attestation_manifest_v0.1",
         )
+        candidate.signature_envelope_ref = override.get("signature_envelope_ref")
+        candidate.signature_file_ref = override.get("signature_file_ref")
+        candidate.star_map_version = override.get("star_map_version")
 
 
 def _new_candidate(
@@ -434,6 +443,9 @@ def _new_candidate(
     signature_scope: str | None = None,
     signature_status: str | None = None,
     signing_key_ref: str | None = None,
+    signature_envelope_ref: str | None = None,
+    signature_file_ref: str | None = None,
+    star_map_version: str | None = None,
     reuse_economic_surface: str = "none",
     economic_cap_policy: str | None = None,
     depth_index: int | None = None,
@@ -475,6 +487,9 @@ def _new_candidate(
         signature_scope=signature_scope,
         signature_status=signature_status,
         signing_key_ref=signing_key_ref,
+        signature_envelope_ref=signature_envelope_ref,
+        signature_file_ref=signature_file_ref,
+        star_map_version=star_map_version,
         source_kind=source_kind,
         symbol=symbol,
         superseded_by=superseded_by,
