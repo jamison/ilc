@@ -82,7 +82,11 @@ impl ValidatorSet {
                 id.0
             )));
         }
-        if self.validators.values().any(|existing_key| *existing_key == key) {
+        if self
+            .validators
+            .values()
+            .any(|existing_key| *existing_key == key)
+        {
             return Err(ILCConsensusError::Other(
                 "validator key already present".to_string(),
             ));
