@@ -67,8 +67,8 @@ class WeightParams:
 #
 # REUSE_ATTRIBUTION_RATE: per-traversal ECU rate — locked at Decimal("0.20")
 #   by CDL-081 ratification (Phase 943). SIM-REUSE-01 evidence (Phase 941).
-# EDGE_MINT_PHI_BOUND: Werner φ-bound — edge minting ≤ φ × node minting per
-#   epoch. None until the Werner edge-minting CDL is opened and ratified.
+# EDGE_MINT_PHI_BOUND: Werner φ-bound over provenance-equivalent derivation
+#   paths. Locked by CDL-085 ratification (Phase 1185).
 # PROVENANCE_MAX_DEPTH: max hops for provenance chain attribution traversal.
 #   N=3 is the provisional cap; CDL may adjust after SIM-REUSE-01.
 # PROVENANCE_DECAY_ALPHA: geometric decay per provenance hop (α < 1 ensures
@@ -77,7 +77,7 @@ class WeightParams:
 #   nodes (H-CON-01 Q2 = Option A, 1 ECU). CDL-ratified when H-CON-01 opens.
 # ---------------------------------------------------------------------------
 REUSE_ATTRIBUTION_RATE: Decimal = Decimal("0.20")       # CDL-081 ratified Phase 943
-EDGE_MINT_PHI_BOUND: Optional[float] = None             # pending Werner edge-minting CDL
+EDGE_MINT_PHI_BOUND: Decimal = Decimal("0.60")          # CDL-085 Werner φ-bound; cdl_085_ratified_phase_1185
 PROVENANCE_MAX_DEPTH: int = 3                            # provisional; CDL required to change
 PROVENANCE_DECAY_ALPHA: Decimal = Decimal("0.45")        # Q2: q2_geometric_decay_alpha_decimal_0_45_locked
 CDL_084_TYPES_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
