@@ -2,6 +2,7 @@
 
 **Author:** Claude Sonnet 4.6 (local architectural reviewer)
 **Date:** 2026-05-02
+**Status:** CLOSED — Phase 1147 closure gate passed (2026-05-04).
 **Baseline:** Window 1130-1138 CLOSED (Phase 1138 `961319bb`). CDL-084 fully resolved;
 `PROVENANCE_DECAY_ALPHA = Decimal("0.45")` locked Phase 1126; runtime
 `epoch_attribution_settle_runtime_1129_fix1.v0.5`. 358 tests passing. Capsule v5.38.
