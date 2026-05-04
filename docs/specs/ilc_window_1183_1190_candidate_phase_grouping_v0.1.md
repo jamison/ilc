@@ -143,7 +143,8 @@ Files mutated:
 1. `docs/specs/ilc_constitutional_decision_log_v0.1.md` — CDL-085 row: `OPEN` → `RATIFIED`;
    add ratification phase, date, `EDGE_MINT_PHI_BOUND` value, dependency token
 2. `docs/specs/ilc_cdl_085_ratification_evidence_1185_v0.1.md` — ratification evidence doc
-3. `tests/test_phase_1185_cdl_085_ratification.py` — minimum 7 tests
+3. `tests/test_phase_1185_cdl_085_ratification.py` — CDL/documentation tests only;
+   runtime import/value tests are added in Commit 2 after `ilc_core/` activation
 
 Pre-commit hook required:
 ```
@@ -181,29 +182,40 @@ Must include:
 
 ### Tests (minimum 7)
 
+The Phase 1185 test file is intentionally built in two steps. Commit 1 must not import
+`EDGE_MINT_PHI_BOUND`, because the CDL mutation commit precedes the runtime activation
+commit. Commit 1 tests are CDL/documentation-only. Commit 2 adds runtime import/value
+assertions after `ilc_core/` has been mutated.
+
 ```python
-# Test 1: CDL-085 ratified in CDL register
+# Commit 1 / CDL-only test 1: CDL-085 ratified in CDL register
 def test_cdl_085_ratified_in_register():
     content = open("docs/specs/ilc_constitutional_decision_log_v0.1.md").read()
     assert "cdl_085_ratified_phase_1185" in content
 
-# Test 2: Ratification evidence doc exists
+# Commit 1 / CDL-only test 2: Ratification evidence doc exists
 def test_ratification_evidence_exists():
     assert os.path.exists("docs/specs/ilc_cdl_085_ratification_evidence_1185_v0.1.md")
 
-# Test 3: EDGE_MINT_PHI_BOUND is Decimal in types.py (not float/None)
+# Commit 1 / CDL-only test 3: Ratification evidence carries the token/value
+def test_ratification_evidence_token_and_value():
+    content = open("docs/specs/ilc_cdl_085_ratification_evidence_1185_v0.1.md").read()
+    assert "cdl_085_ratified_phase_1185" in content
+    assert 'EDGE_MINT_PHI_BOUND = Decimal("0.60")' in content
+
+# Commit 2 / runtime test 4: EDGE_MINT_PHI_BOUND is Decimal in types.py (not float/None)
 def test_phi_bound_is_decimal():
     from ilc_core.types import EDGE_MINT_PHI_BOUND
     from decimal import Decimal
     assert isinstance(EDGE_MINT_PHI_BOUND, Decimal)
     assert EDGE_MINT_PHI_BOUND == Decimal("0.60")
 
-# Test 4: CDL_085_DEPENDENCY token in runtime module
+# Commit 2 / runtime test 5: CDL_085_DEPENDENCY token in runtime module
 def test_cdl_085_dependency_token():
     import ilc_core.economics.epoch_attribution_settle_runtime as rt
     assert rt.CDL_085_DEPENDENCY == "cdl_085_werner_phi_bound_ratified_1185.v0.1"
 
-# Test 5: CDL-085 prelock shows correct state at Phase 1177 commit (historical hardening)
+# Commit 2 / historical test 6: CDL-085 prelock shows correct state at Phase 1177 commit
 def test_cdl_085_prelock_historical():
     result = subprocess.run(
         ["git", "show", "509b6c6f:docs/specs/ilc_cdl_085_prelock_spec_1177_v0.1.md"],
@@ -211,7 +223,7 @@ def test_cdl_085_prelock_historical():
     )
     assert "cdl_085_prelock_committed_phase_1177" in result.stdout
 
-# Test 6: CDL-085 opening doc shows OPEN at Phase 1172 commit (historical hardening)
+# Commit 2 / historical test 7: CDL-085 opening doc shows OPEN at Phase 1172 commit
 def test_cdl_085_opening_historical():
     result = subprocess.run(
         ["git", "show", "ee0f6b48:docs/specs/ilc_cdl_085_werner_phi_bound_opening_1172_v0.1.md"],
@@ -219,14 +231,15 @@ def test_cdl_085_opening_historical():
     )
     assert "cdl_085_open_phase_1172" in result.stdout
 
-# Test 7: Runtime version token updated
+# Commit 2 / runtime test 8: Runtime version token updated
 def test_runtime_version_updated():
     import ilc_core.economics.epoch_attribution_settle_runtime as rt
     assert "1185" in rt.EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
 ```
 
-**Pre-commit split:** 3+4 (CDL mutation commit: tests 1-3 pass under CDL-mutation env;
-runtime commit: tests 4-7 pass after runtime mutation applied).
+**Pre-commit split:** Commit 1 runs tests 1-3 under the CDL-mutation env. Commit 2 runs
+the full test file after runtime mutation is applied. Runtime tests must not be required
+to pass before Commit 2.
 
 ---
 
