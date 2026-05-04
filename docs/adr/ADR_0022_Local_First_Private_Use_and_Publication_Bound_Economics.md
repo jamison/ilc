@@ -1,12 +1,20 @@
 # ADR-0022: Local-First Private Use and Publication-Bound Economics
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-03-24
 **Author:** Jamison and GPT-5 Codex
 **Source:** Pressure-flow / long-tail review cycle and follow-on architecture discussion,
 2026-03-24
 **Dependencies:** ADR-0019, ADR-0020, node schema visibility model, OpenClaw / CLI-first
 integration model
+**Accepted:** Phase 1158, 2026-05-04
+**Acceptance token:** `adr_0022_accepted_phase_1158`
+
+**Scope of acceptance:** Accepted for the local-first/private-use invariant,
+explicit promotion boundary, public-anchor/private-interior model, and
+publication-bound economics principle. Acceptance does not constitutionalize
+all private/gated business logic, licensing, subscriptions, payment execution,
+or capability-token revocation mechanics.
 
 ---
 
