@@ -139,11 +139,27 @@ Phase 1159: `adr_0036_release_key_draft_committed_phase_1159`
 | `sim_spectral_05_structural_impedance_and_spectral_discriminant_calibration_required` | New — Phase 1164 |
 | v0.2 signing ceremony | Deferred — requires ADR-0036 acceptance |
 | ADR-0036 acceptance review | Deferred to Window 1166+ |
-| Genesis Canonical Lineage Contract ADR | Separate from ADR-0036; Window 1166+ |
+| Genesis Canonical Lineage Contract ADR | Separate from ADR-0036; Window 1166+; scope expanded (see below) |
 | Tier-3 runtime linkage | ADR-0020 now accepted at governance level; runtime lane separate |
 | Truth-primitive permanence community ratification | Carry-forward |
 | Contributor agreement, license, trademark | Counsel track |
 | Canon bundle signing repair | Tooling debt; carry-forward |
+
+**Post-Phase-1164 additions** — produced as Window 1156-1165 research supplements after
+Phase 1164 commit (`9275f887`). See referenced research docs for full derivation.
+
+| Obligation | Source | Research doc |
+|-----------|--------|-------------|
+| `sim_spectral_05_branchial_claim_state_projection_required` | Wolfram/branchial framing supplement v0.2 | `docs/research/sim_spectral_wolfram_branchial_framing_1164_supplement_v0.2.md` |
+| `sim_spectral_05_multi_slice_observer_convergence_framework_required` | Wolfram/branchial framing supplement v0.2 | same |
+| `genesis_multi_slice_encrustation_model_required_for_lineage_contract_adr` | Wolfram/branchial framing supplement v0.2 | same |
+| `genesis_equivalence_and_merge_policy_required_for_lineage_contract_adr` | Genesis equivalence/merge policy forward planning | `docs/research/genesis_equivalence_merge_policy_forward_planning_v0.1.md` |
+| `popperian_equivalence_criterion_required_as_merge_gate_in_lineage_contract_adr` | Genesis equivalence/merge policy forward planning | same |
+
+The Genesis Canonical Lineage Contract ADR scope is expanded: it must address lineage,
+equivalence, and merge policy across six domains (claim, provenance, version, governance,
+fork, economic) using the Popperian Equivalence Criterion (same refutation surface) as
+the operational merge test. This is a pre-RC requirement.
 
 ---
 
