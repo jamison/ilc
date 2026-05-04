@@ -1,4 +1,4 @@
-# CDL-001 Genesis Blocker Scoping 1188 v0.1
+# Public Launch Genesis Blocker Scoping 1188 v0.1
 
 **Phase:** 1188
 **Date:** 2026-05-04
@@ -19,16 +19,25 @@ register, authorize public repo publication, or select license terms.
 
 ---
 
-## 2. Identifier Collision Notice
+## 2. Roadmap Label Drift Correction
 
-The current CDL register already contains a historical ratified `CDL-001` for canonical
-signer lineage definition. Therefore, the roadmap phrase "CDL-001 genesis_blocker" must
-be reconciled before any future opening:
+The current CDL register already contains ratified `CDL-001` for canonical signer lineage
+definition. Phase 251 ratified CDL-001 with selected option `lineage+timelock`; it is not
+available for reuse as a packaging/public-launch CDL.
 
-- It may be a public-launch blocker lane anchored to the existing CDL-001 lineage trust
-  root.
-- It may require a new fresh CDL number rather than reusing `CDL-001`.
-- It may require a naming update in roadmap artifacts before opening.
+The roadmap phrase "CDL-001 genesis_blocker / packaging track" is therefore roadmap label
+drift:
+
+- Original CDL-001 scope: canonical signer lineage trust-root contract.
+- Original genesis-blocker meaning: signer-lineage gaps blocked Genesis packaging until
+  remediation and ratification.
+- Drifted roadmap meaning: broader public-launch packaging/release governance, including
+  release artifacts, distribution channels, public launch triggers, and counsel-track
+  conditions.
+
+The public-launch packaging blocker must be opened under a fresh CDL number, likely
+`CDL-086` if it remains the next fresh number at opening time. It should depend on
+ratified CDL-001, ADR-0036, and ADR-0037, not reopen or rename CDL-001.
 
 This scoping phase deliberately does not alter the existing CDL-001 row.
 
@@ -109,9 +118,9 @@ Counsel track surfaces:
 
 ---
 
-## 4. Proposed Blocker Scope
+## 4. Proposed Fresh-CDL Blocker Scope
 
-The public-launch blocker should cover:
+The future fresh-CDL public-launch blocker should cover:
 
 - public release artifact definition and governance;
 - human-authorized public launch gate conditions;
@@ -128,12 +137,13 @@ The public-launch blocker should cover:
 Recommended prerequisites before opening the blocker lane:
 
 - CDL-085 ratified (`cdl_085_ratified_phase_1185`);
+- ratified CDL-001 treated as a dependency, not as the target decision;
+- fresh CDL number confirmed (`CDL-086` if still next);
 - RC2 gate status reviewed;
 - v0.2 signing status reviewed;
 - Tier-3 runtime linkage status reviewed;
 - initial counsel engagement started or explicitly scheduled;
-- identifier collision resolved: reuse existing CDL-001 lineage anchor, open a fresh CDL
-  number, or rename the blocker lane before opening.
+- roadmap label drift corrected in active planning artifacts.
 
 ---
 
@@ -155,7 +165,7 @@ Ratification target:
 This scoping document does not:
 
 - open CDL-001 or any fresh CDL;
-- amend the existing ratified CDL-001 signer-lineage row;
+- amend, reopen, rename, or supersede the existing ratified CDL-001 signer-lineage row;
 - accept any ADR;
 - authorize public repository publication;
 - select license terms;
