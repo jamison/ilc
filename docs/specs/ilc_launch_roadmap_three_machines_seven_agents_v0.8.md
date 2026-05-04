@@ -309,3 +309,42 @@ principles in a later window.
 - Option B graduation (first-validator deployed to testbed; broader validator set not authorized)
 - L3 routing is operational (H-series designed; not wired)
 - CDL-070 PQ ceremony is scheduled (SIM-MONETARY-01 not run)
+
+---
+
+## Postscript 2026-05-04 — Window 1139-1147 Closure
+
+Window 1139-1147 is closed via Phase 1147. The corrected Run 02 Fix2 baseline is now the
+SIM-SPECTRAL comparison baseline, the signed 32-node Genesis star map v0.1 is the Atlas
+Tier-1 authority baseline, and SIM-SPECTRAL-03 produced a Phase 1146
+`CDL-085 recommendation: DEFER`.
+
+Signed Genesis anchor:
+
+- Star map: `out/genesis_core_star_map_v0.1.json`
+- Shape: 32 nodes, 55 edges
+- Root envelope hash:
+  `ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c`
+
+SIM-SPECTRAL-03 finding:
+
+- The signed authority graph is valid, but raw authority topology is not the right direct
+  spectral work graph.
+- The next route is a claim-composition projection and 32-node composability audit before
+  CDL-085 is reconsidered.
+- `CDL-085` remains SIM-gated and unopened.
+
+Runtime posture:
+
+- Runtime semantics unchanged.
+- Active runtime remains `epoch_attribution_settle_runtime_1129_fix1.v0.5`.
+- One comment-only audit annotation touched `ilc_core/analysis/embedding_pipeline.py`;
+  no settlement, QATPS, slashing, or CDL-084 constant changed.
+
+New pre-public-RC obligations:
+
+- Genesis Canonical Lineage Contract.
+- Public RC envelope-hash transition policy.
+- Truth-primitive permanence community ratification path before Genesis sunset.
+- Contributor agreement before public repo.
+- License/trademark/identity counsel track.
