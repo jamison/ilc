@@ -2,10 +2,11 @@
 
 **Date:** 2026-05-04
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.40.md`
-**Frontier:** Window 1156-1165, Phase 1164 complete (Phase 1165 closure gate pending)
+**Frontier:** Window 1156-1165 closed by Phase 1165; Window 1166+ guidance pending
 
 `capsule_v5_41_supersedes_v5_40`
 `window_1156_1165_phases_1156_1164_complete`
+`window_1156_1165_closed_phase_1165`
 `sim_spectral_04_gate_fail_phase_1162`
 `atlas_tier2_v0_2_candidate_41_nodes_unsigned`
 
@@ -13,11 +14,13 @@
 
 ## 1. Current State
 
-Window 1156-1165 phases 1156–1164 are complete. Phase 1165 (closure gate, SENSITIVE) is
-pending human GO. Phase 1163 (CDL-085 opening) did not execute — `sim_spectral_04_gate_fail`
-was produced at Phase 1162.
+Window 1156-1165 is closed by Phase 1165 after explicit human GO. Phase 1163
+(CDL-085 opening) did not execute — `sim_spectral_04_gate_fail` was produced at Phase 1162.
 
-Current closure handoff (from prior window):
+Current closure handoff:
+- `docs/specs/ilc_window_1156_1165_handoff_1165_v0.1.md`
+
+Prior closure handoff:
 - `docs/specs/ilc_window_1148_1156_handoff_1155_v0.1.md`
 
 Current coherence report:
@@ -207,6 +210,7 @@ Phases 1156–1162 committed at `d0a02596` (57 tests passed).
 Phase 1164 adds: coherence report, capsule v5.41, research doc, research tools.
 Signed v0.1 artifacts confirmed unchanged throughout window.
 Runtime semantics confirmed unchanged throughout window.
-Phase 1165 closure gate pending.
+Phase 1165 closure gate passed. Window 1166+ guidance remains pending.
 
 `capsule_v5_41_supersedes_v5_40`
+`window_1156_1165_closed_phase_1165`
