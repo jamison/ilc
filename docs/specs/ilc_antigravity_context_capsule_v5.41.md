@@ -147,17 +147,57 @@ not only random graphs.
 
 Window 1166+ entry criteria:
 
+### Constitutional / SIM
+
 - `cdl_085_sim_gated_pending_sybil_discrimination_resolution` — CDL-085 blocked until
   SIM-SPECTRAL-05 produces positive discrimination evidence
-- `sim_spectral_05_structural_impedance_and_spectral_discriminant_calibration_required`
+- `sim_spectral_05_structural_impedance_and_spectral_discriminant_calibration_required` —
+  fix THETA_FLOOR calibration; test λ_max/spectral_gap/degree_gini against actual
+  `synthetic_sybil_cluster` topology
+
+**Post-Phase-1164 SIM-SPECTRAL-05 scope additions** (from Window 1156-1165 research
+supplements; see §6 research docs):
+
+- `sim_spectral_05_branchial_claim_state_projection_required` — build a multiway/branchial
+  derivation projection (vertices = claim-history states, edges = composition/refutation/
+  amendment/succession ops); evaluate L3-observer path convergence for legitimate chains
+  vs. divergence for Sybil clusters
+- `sim_spectral_05_multi_slice_observer_convergence_framework_required` — declare the
+  observer slice being tested before each SIM-SPECTRAL-05 measurement; design separate
+  convergence/divergence tests for all six slices (authority, claim-composition,
+  runtime-binding, economic-flow, gossip, provenance)
+
+### Genesis Canonical Lineage Contract ADR (scope expanded by Window 1156-1165 research)
+
+- Genesis Canonical Lineage Contract ADR — Window 1166+, separate from ADR-0036. Must
+  address three things: **lineage** ("where did this come from?"), **equivalence** ("can
+  these two things be treated as the same?"), **merge policy** ("if equivalent, what
+  happens to attribution, authority, versioning, economic flow?")
+- `genesis_multi_slice_encrustation_model_required_for_lineage_contract_adr` — the ADR
+  must specify convergence criteria for all six observer slices, making Genesis a
+  multi-slice lineage invariant rather than a single hash-of-artifacts check
+- `genesis_equivalence_and_merge_policy_required_for_lineage_contract_adr` — the ADR
+  must define equivalence classes across six domains (claim, provenance, version,
+  governance, fork, economic) with merge-policy consequences for each
+- `popperian_equivalence_criterion_required_as_merge_gate_in_lineage_contract_adr` —
+  equivalence requires same refutation surface (PEC negative test); CDL-V7 is the
+  single-claim Popperian gate; PEC is the relational merge extension. Pre-RC requirement.
+
+### Atlas / ADR / Governance
+
 - v0.2 signing ceremony — blocked on ADR-0036 acceptance
 - ADR-0036 acceptance review — Window 1166+
-- Genesis Canonical Lineage Contract ADR — Window 1166+, separate from ADR-0036
 - Tier-3 runtime linkage — governance prerequisite met (ADR-0020 accepted); runtime
   implementation is a separate lane
 - Truth-primitive permanence community ratification — carry-forward
 - Contributor agreement, license, trademark — counsel track
 - Canon bundle signing repair — tooling debt carry-forward
+
+### Research References (Window 1156-1165 supplements)
+
+- `docs/research/sim_spectral_wolfram_branchial_framing_1164_supplement_v0.2.md`
+- `docs/research/genesis_equivalence_merge_policy_forward_planning_v0.1.md`
+- `docs/research/references/wolfram_physics_project_2021_update.md`
 
 ---
 
