@@ -305,10 +305,40 @@ begin CDL-001 evaluation; address any remaining observer slices.
 
 - Row 5 privacy lane deployed in production (testbed only)
 - CDL-076/077 gossip/fetch deployed in production (testbed only)
-- CDL-085 ratified or any φ-bound value locked
+- CDL-085 ratified or any active runtime φ-bound value introduced
 - v0.2 Atlas signing ceremony executed (prerequisites met; human authorization still required)
 - Any public launch claim (CDL-001 not yet progressed)
 - L4 routing operational (H-series designed; not wired)
 - CDL-070 PQ ceremony scheduled (SIM-MONETARY-01 not run)
 - Tier-3 runtime linkage implemented (governance met; runtime lane not started)
-- All SIM-SPECTRAL-05 observer slices tested (three deferred: runtime-binding, economic-flow, gossip)
+- All SIM-SPECTRAL-05 observer slices tested (gossip remains deferred)
+
+## Postscript 2026-05-04 — Window 1176-1182 Closure
+
+Window 1176-1182 is closed via Phase 1182.
+
+`window_1176_1182_closed_phase_1182`
+`window_1176_1182_closure_gate_verdict=pass`
+
+CDL-085 state:
+
+- CDL-085 is open and prelocked, not ratified.
+- Candidate value: `EDGE_MINT_PHI_BOUND = Decimal("0.60")`.
+- Runtime-binding observer slice passed.
+- Economic-flow observer slice passed.
+- No active runtime value was introduced.
+
+Atlas/signing state:
+
+- Signed v0.1 remains unchanged.
+- v0.2 candidate remains unsigned at 41 nodes / 73 edges.
+- v0.2 signing ceremony was deferred pending explicit signing authorization.
+
+Updated RC2 gates:
+
+- CDL-085 ratification is now unblocked for deliberation by prelock + runtime/economic
+  observer evidence, but still not executed.
+- v0.2 signing remains blocked only by explicit signing authorization.
+- Tier-3 runtime linkage, CDL-001 evaluation, persistent rate limiter, and truth-primitive
+  permanence community ratification remain open.
+- Gossip observer slice remains deferred to Window 1183+.
