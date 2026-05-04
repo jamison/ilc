@@ -1328,8 +1328,8 @@ def _dredge_summary(raw_match_ledger: list[dict[str, Any]], rejected_sources: li
     }
 
 
-def build_inventory() -> dict[str, Any]:
-    seed = _load_curated_seed()
+def build_inventory(curated_seed: Path = DEFAULT_CURATED_SEED) -> dict[str, Any]:
+    seed = _load_curated_seed(curated_seed)
     candidates: dict[str, Candidate] = {}
     _add_static_truth_primitives(candidates)
     _add_genesis_axioms(candidates)
@@ -1355,7 +1355,7 @@ def build_inventory() -> dict[str, Any]:
         "metadata": {
             "description": "Deterministic candidate inventory for a proposed Genesis-level morphogenic hypergraph atlas.",
             "format_version": "genesis_node_candidate_crawl.v0.1",
-            "curated_seed": str(DEFAULT_CURATED_SEED),
+            "curated_seed": str(curated_seed),
             "curated_seed_format_version": seed.get("format_version"),
             "scan_roots": [str(path) for path in SCAN_ROOTS],
             "skip_dirs": sorted(SKIP_DIRS),
@@ -2218,6 +2218,7 @@ def _render_decision_log_md(payload: dict[str, Any]) -> str:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--curated-seed", type=Path, default=DEFAULT_CURATED_SEED)
     parser.add_argument("--json-out", type=Path, default=DEFAULT_JSON_OUT)
     parser.add_argument("--raw-ledger-out", type=Path, default=DEFAULT_RAW_LEDGER_OUT)
     parser.add_argument("--rejected-ledger-out", type=Path, default=DEFAULT_REJECTED_LEDGER_OUT)
@@ -2230,7 +2231,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = _build_parser().parse_args()
-    payload = build_inventory()
+    payload = build_inventory(args.curated_seed)
     write_inventory(
         payload,
         args.json_out,
