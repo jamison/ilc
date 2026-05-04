@@ -460,11 +460,10 @@ a committed design document.
 
 ### Note on Phase 1173 — two ADR acceptance reviews
 
-Phase 1173 reviews both ADR-0036 (Operational Release Key) and ADR-0037 (Lineage Contract).
-ADR-0037 acceptance is sequenced after ADR-0036 acceptance because the release key binding
-semantics in ADR-0036 must be consistent with the versioning and fork criteria in ADR-0037.
-Review ADR-0037 first to establish the criteria, then confirm ADR-0036 is consistent before
-accepting both. Per-ADR outcomes are independent — one failing does not block the other.
+Phase 1173 reviews both ADR-0037 (Lineage Contract) and ADR-0036 (Operational Release Key).
+Review ADR-0037 first to establish the versioning, fork, and equivalence criteria. Then
+confirm ADR-0036's release-key binding semantics are consistent with ADR-0037 before
+accepting ADR-0036. Per-ADR outcomes are independent — one failing does not block the other.
 
 ADR-0037 acceptance criteria:
 1. The six equivalence domains are specified with criterion, boundary, and merge consequence.
