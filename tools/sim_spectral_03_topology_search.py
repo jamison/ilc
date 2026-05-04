@@ -334,6 +334,18 @@ def _mean(values: list[float]) -> float:
     return float(sum(values) / len(values))
 
 
+def _safe_ratio(numerator: float, denominator: float) -> float:
+    """Return numerator/denominator, or inf if denominator is zero or non-finite.
+
+    Using inf (not NaN) means gate comparisons (ratio < threshold) fail closed:
+    any degenerate ratio is treated as a gate failure, not silently dropped.
+    """
+    if not math.isfinite(denominator) or denominator == 0.0:
+        return math.inf
+    result = numerator / denominator
+    return result if math.isfinite(result) else math.inf
+
+
 def _slopes_by_seed(rows: list[dict[str, Any]]) -> dict[int, float]:
     by_seed: dict[int, list[float]] = {seed: [] for seed in SEEDS}
     for row in rows:
@@ -411,15 +423,15 @@ def _evaluate_variant(
     s3_32_mean = _mean(list(s3_32_by_seed.values()))
     g2_32_mean = _mean(list(g2_32_by_seed.values()))
 
-    s3_s1_100_per_seed = [s3_100_by_seed[seed] / s1_by_seed[seed] for seed in SEEDS]
-    g2_s1_100_per_seed = [g2_100_by_seed[seed] / s1_by_seed[seed] for seed in SEEDS]
-    s3_s1_32_per_seed = [s3_32_by_seed[seed] / s1_by_seed[seed] for seed in SEEDS]
-    g2_s1_32_per_seed = [g2_32_by_seed[seed] / s1_by_seed[seed] for seed in SEEDS]
+    s3_s1_100_per_seed = [_safe_ratio(s3_100_by_seed[seed], s1_by_seed[seed]) for seed in SEEDS]
+    g2_s1_100_per_seed = [_safe_ratio(g2_100_by_seed[seed], s1_by_seed[seed]) for seed in SEEDS]
+    s3_s1_32_per_seed = [_safe_ratio(s3_32_by_seed[seed], s1_by_seed[seed]) for seed in SEEDS]
+    g2_s1_32_per_seed = [_safe_ratio(g2_32_by_seed[seed], s1_by_seed[seed]) for seed in SEEDS]
 
-    s3_s1_100 = s3_100_mean / s1_mean
-    g2_s1_100 = g2_100_mean / s1_mean
-    s3_s1_32 = s3_32_mean / s1_mean
-    g2_s1_32 = g2_32_mean / s1_mean
+    s3_s1_100 = _safe_ratio(s3_100_mean, s1_mean)
+    g2_s1_100 = _safe_ratio(g2_100_mean, s1_mean)
+    s3_s1_32 = _safe_ratio(s3_32_mean, s1_mean)
+    g2_s1_32 = _safe_ratio(g2_32_mean, s1_mean)
     phase1145_gate_pass = (
         all(ratio < RUN02_FIX2_S3_S1_THRESHOLD for ratio in s3_s1_100_per_seed)
         and all(ratio < RUN02_FIX2_G2_S1_THRESHOLD for ratio in g2_s1_100_per_seed)
