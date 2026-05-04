@@ -2,11 +2,14 @@
 
 **Author:** Claude Sonnet 4.6 (local architectural reviewer)
 **Date:** 2026-05-04
-**Status:** DRAFT — pending human review and approval before any phase executes
+**Status:** CLOSED — consumed by Window 1166-1175, closed at Phase 1175
 **Baseline:** Window 1156-1165 CLOSED (Phase 1165 verdict: PASS, commit `265e4b58`).
 CDL-084 is the ratified attribution frontier. CDL-085 remains unopened and SIM-gated
 (`sim_spectral_04_gate_fail`, `cdl_085_sim_gated_pending_sybil_discrimination_resolution`).
 Capsule v5.41 current. Handoff: `docs/specs/ilc_window_1156_1165_handoff_1165_v0.1.md`.
+**Closure:** Closed by Phase 1175. Outcomes: SIM-SPECTRAL-05 passed; CDL-085 opened
+but was not ratified; ADR-0037 and ADR-0036 were accepted; v0.2 candidate remains
+41 nodes / 73 edges and unsigned; signed Genesis v0.1 remains unchanged.
 **Planning note:** This is a candidate grouping, not a locked sequence. Phases 1166–1171
 are the hard minimum lane (sequence lock + ADR-0037 draft + SIM-SPECTRAL-05 program spec
 + two SIM tracks + disposition). Phase 1172 is a conditional CDL-085 opening slot.
@@ -103,6 +106,8 @@ this window.
 
 - Capsule: `docs/specs/ilc_antigravity_context_capsule_v5.41.md`
 - Handoff: `docs/specs/ilc_window_1156_1165_handoff_1165_v0.1.md`
+- Closure capsule: `docs/specs/ilc_antigravity_context_capsule_v5.42.md`
+- Closure handoff: `docs/specs/ilc_window_1166_1175_handoff_1175_v0.1.md`
 
 ### Next fresh CDL number
 
