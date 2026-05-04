@@ -1,6 +1,6 @@
 # ADR-0036: Operational Release Key Genesis Binding
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-05-04
 **Phase:** 1159
 

@@ -1,6 +1,6 @@
 # ADR-0037: Genesis Canonical Lineage Contract
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-05-04
 **Phase:** 1167
 
