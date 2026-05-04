@@ -420,3 +420,44 @@ Window 1166+ routing:
   calibration, branchial claim-state projection, multi-slice observer convergence, and
   actual Sybil topology testing.
 - ADR-0036 acceptance should follow the Lineage Contract ADR, not precede it.
+
+## Postscript 2026-05-04 — Window 1166-1175 Closure
+
+Window 1166-1175 is closed via Phase 1175.
+
+`window_1166_1175_closed_phase_1175`
+`window_1166_1175_closure_gate_verdict=pass`
+
+The window converted the Lineage Contract and SIM-SPECTRAL-05 research obligations into
+accepted governance and positive simulation evidence.
+
+Governance state:
+
+- ADR-0037 Genesis Canonical Lineage Contract is accepted.
+- ADR-0036 Operational Release Key Genesis Binding is accepted.
+- CDL-085 is open after Phase 1172 but not ratified.
+- `EDGE_MINT_PHI_BOUND` remains unset pending CDL-085 prelock.
+
+SIM-SPECTRAL state:
+
+- SIM-SPECTRAL-05 passed with `sim_spectral_05_gate_pass`.
+- Track A passed against `synthetic_sybil_cluster`.
+- Track B passed with branchial convergence separation `0.60`.
+- Runtime-binding, economic-flow, and gossip observer slices remain deferred.
+
+Atlas/runtime state:
+
+- Signed v0.1 remains the canonical signed Atlas: 32 nodes, 55 edges.
+- Unsigned v0.2 candidate remains 41 nodes and 73 edges.
+- v0.2 signing prerequisites from ADR-0036 and ADR-0037 are now satisfied, but signing
+  still requires explicit human authorization.
+- Runtime remains `epoch_attribution_settle_runtime_1129_fix1.v0.5`; no settlement
+  semantics changed.
+
+Window 1176+ routing:
+
+- v0.2 signing ceremony if explicit signing authorization is issued.
+- CDL-085 prelock before any ratification or runtime/economic-flow activation.
+- Remaining observer slices: runtime-binding, economic-flow, gossip.
+- Tier-3 runtime linkage implementation.
+- Counsel track and canon bundle signing repair remain open.
