@@ -18,6 +18,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
 from ilc_core.types import (
+    EDGE_MINT_PHI_BOUND,
     EdgeType,
     PROVENANCE_DECAY_ALPHA,
     PROVENANCE_MAX_DEPTH,
@@ -27,11 +28,12 @@ from ilc_core.types import (
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1129_fix1.v0.5"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1185.v0.6"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
 CDL_084_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
+CDL_085_DEPENDENCY = "cdl_085_werner_phi_bound_ratified_1185.v0.1"
 MAX_PROVENANCE_CHAIN_INPUT_LENGTH = 64
 
 HCON02_QUORUM_FLOOR = Decimal("0.50")       # Q1: >=50% of remaining members must vote
