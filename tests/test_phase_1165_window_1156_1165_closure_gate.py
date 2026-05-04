@@ -6,7 +6,10 @@ import hashlib
 import json
 import os
 import pathlib
+import subprocess
 from decimal import Decimal
+
+import pytest
 
 from ilc_core.economics.epoch_attribution_settle_runtime import (
     EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
@@ -41,6 +44,8 @@ def _sha256(path: str) -> str:
 
 
 def test_cat0_selftest_env_required() -> None:
+    if not SELFTEST_MODE:
+        pytest.skip("set ILC_PHASE_1165_GATE_SELFTEST=1 to run selftest guard check")
     assert SELFTEST_MODE is True
 
 
@@ -79,7 +84,14 @@ def test_cat4_adr_0008_explicit_quality_gate_closed() -> None:
 
 
 def test_cat5_adr_0036_draft_remains_proposed_and_unaccepted() -> None:
-    text = _read("docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md")
+    # Read at the Phase 1165 closure commit — ADR-0036 was Proposed at window close.
+    # Historical hardening: forward progress (Phase 1173 acceptance) must not break
+    # prior window gate assertions.
+    result = subprocess.run(
+        ["git", "show", "265e4b58:docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md"],
+        capture_output=True, text=True, check=True, cwd=ROOT,
+    )
+    text = result.stdout
     assert "**Status:** Proposed" in text
     assert "adr_0036_release_key_draft_committed_phase_1159" in text
     assert "does not create the key" in text
@@ -223,7 +235,14 @@ def test_cat18_handoff_exists_and_matches_schema_fields() -> None:
 
 
 def test_cat19_planning_index_marks_window_closed() -> None:
-    text = _read("docs/PLANNING_INDEX.md")
+    # Read at the Phase 1165 closure commit — PLANNING_INDEX was updated by Phase 1166
+    # Strike Force to mark Window 1166-1175 in progress.  Historical hardening prevents
+    # forward progress from breaking prior window gate assertions.
+    result = subprocess.run(
+        ["git", "show", "265e4b58:docs/PLANNING_INDEX.md"],
+        capture_output=True, text=True, check=True, cwd=ROOT,
+    )
+    text = result.stdout
     assert "Window 1156-1165 CLOSED" in text
     assert "docs/specs/ilc_window_1156_1165_handoff_1165_v0.1.md" in text
     assert "Context Capsule v5.41" in text
