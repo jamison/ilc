@@ -8,7 +8,7 @@
 
 ---
 
-## 1. Context
+## Context
 
 Window 1156-1165 closed with CDL-085 still SIM-gated and with the unsigned Genesis
 v0.2 candidate at 41 nodes and 73 edges. The closure handoff routed the next work
@@ -23,7 +23,7 @@ This ADR is Proposed only. Acceptance review is Phase 1173.
 
 ---
 
-## 2. Decision
+## Decision
 
 Define the Genesis Canonical Lineage Contract as the governance contract that answers
 three questions for ILC objects:
@@ -39,7 +39,7 @@ anchor, not a mathematical identity claim.
 
 ---
 
-## 3. Lineage
+## 1. Lineage
 
 An ILC object has canonical Genesis lineage only if it can produce a deterministic,
 verifiable trace to the signed Genesis v0.1 root.
@@ -61,7 +61,7 @@ copy, or derivative work, but it does not carry canonical ILC lineage.
 
 ---
 
-## 4. Canonical Base Object
+## 2. Canonical Base Object
 
 Genesis signed v0.1 is the canonical base object against which equivalence and merge
 claims are evaluated.
@@ -73,12 +73,12 @@ under the observer slices declared in this ADR.
 
 ---
 
-## 5. Equivalence Policy
+## 3. Equivalence Policy
 
 Equivalence is domain-specific. Two objects can be equivalent in one domain and not
 equivalent in another. Each equivalence claim must state its domain.
 
-### 5.1 Claim Equivalence
+### 3.1 Claim Equivalence
 
 Two claims are claim-equivalent when:
 
@@ -97,7 +97,7 @@ Merge consequence: claim-equivalent objects may share canonical claim identity, 
 their provenance paths remain separately auditable unless provenance equivalence also
 holds.
 
-### 5.2 Provenance Equivalence
+### 3.2 Provenance Equivalence
 
 This subsection is the named SIM-SPECTRAL-05 input criterion.
 
@@ -127,7 +127,7 @@ legitimate S1 paths should converge at Genesis primitives or signed Genesis arti
 Sybil S3 paths should either fail to converge or converge first at a non-Genesis
 intermediary.
 
-### 5.3 Version Equivalence
+### 3.3 Version Equivalence
 
 Two versions are version-equivalent when the later version is a signed or explicitly
 authorized refinement of the earlier canonical object and preserves the earlier object's
@@ -140,7 +140,7 @@ Merge consequence: version-equivalent objects may be treated as the same continu
 canonical object for release and documentation purposes, with the later version recorded
 as a successor rather than a new universe.
 
-### 5.4 Governance Equivalence
+### 3.4 Governance Equivalence
 
 Two governance outcomes are governance-equivalent when they produce the same operative
 constitutional state under the same ratification authority and refutation surface.
@@ -152,7 +152,7 @@ scope of mutable objects is not governance-equivalent.
 Merge consequence: governance-equivalent outcomes may be indexed as the same operative
 governance state while preserving distinct historical records.
 
-### 5.5 Fork Equivalence
+### 3.5 Fork Equivalence
 
 A fork remains canonical-ILC-equivalent only if it converges to signed Genesis v0.1
 through all six observer slices in §8.
@@ -165,7 +165,7 @@ Merge consequence: non-equivalent forks may copy or derive from the code accordi
 the applicable license, but they do not carry canonical ILC meaning, identity, ECU/ILC
 lineage, or governance authority.
 
-### 5.6 Economic Equivalence
+### 3.6 Economic Equivalence
 
 Two contribution paths are economic-equivalent when they represent one canonical
 attribution event under the same provenance equivalence, same claim equivalence, and
@@ -181,7 +181,7 @@ paths are not independent allocation events.
 
 ---
 
-## 6. Popperian Equivalence Criterion
+## 4. Popperian Equivalence Criterion
 
 The Popperian Equivalence Criterion (PEC) is the merge gate for equivalence claims:
 
@@ -206,7 +206,7 @@ genuine independent derivations that converge separately to Genesis primitives.
 
 ---
 
-## 7. Merge Policy
+## 5. Merge Policy
 
 Merge consequences are domain-specific:
 
@@ -224,7 +224,7 @@ treatment, not historical observability.
 
 ---
 
-## 8. Multi-Slice Encrustation
+## 6. Multi-Slice Encrustation
 
 Genesis is a cross-slice lineage invariant. A canonical ILC observer should be able to
 trace the same object back to Genesis through each relevant slice.
@@ -242,7 +242,7 @@ A fork that cannot converge through all six slices has exited canonical ILC iden
 
 ---
 
-## 9. Fork Boundary
+## 7. Fork Boundary
 
 A fork remains within canonical ILC identity if and only if it can demonstrate all of:
 
@@ -260,19 +260,19 @@ exist as a derivative project, but it is not the same canonical ILC object.
 
 ---
 
-## 10. Relationship to ADR-0036
+## 8. Relationship to ADR-0036
 
 ADR-0036 may define an operational release key only as delegated Genesis-bound authority.
 ADR-0036 does not define what counts as Genesis-equivalent. This ADR does.
 
 Before ADR-0036 can be accepted, its release-key binding semantics must be checked
-against this ADR's version equivalence (§5.3) and fork boundary (§9). A release key can
+against this ADR's version equivalence (§3.3) and fork boundary (§7). A release key can
 sign canonical releases only if the target artifact remains version-equivalent and
 fork-equivalent under this contract.
 
 ---
 
-## 11. Consequences
+## 9. Consequences
 
 If accepted, this ADR provides:
 
@@ -284,7 +284,7 @@ If accepted, this ADR provides:
 
 Open risks before acceptance:
 
-- Phase 1168 must confirm that §5.2 is operational enough for SIM-SPECTRAL-05.
+- Phase 1168 must confirm that §3.2 is operational enough for SIM-SPECTRAL-05.
 - Phase 1173 must confirm consistency with ADR-0036.
 - Later windows must implement deferred observer-slice tests for runtime-binding,
   economic-flow, and gossip.
