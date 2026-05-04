@@ -147,9 +147,10 @@ Phase 1188 scoped the public-launch `genesis_blocker` lane:
 - Scoping artifact: `docs/specs/ilc_cdl_001_genesis_blocker_scoping_1188_v0.1.md`
 - Token: `cdl_001_genesis_blocker_scoping_committed_phase_1188`
 
-Important finding: the current CDL register already contains historical ratified
-`CDL-001` for canonical signer lineage definition. The public-launch blocker label must
-be reconciled before any future opening.
+Important finding: the roadmap phrase "CDL-001 genesis_blocker / packaging track" is
+label drift. CDL-001 is already ratified signer-lineage canon; the public-launch
+packaging blocker should use a fresh CDL number, likely CDL-086 if it remains next fresh,
+and depend on CDL-001 rather than reopen it.
 
 ---
 
@@ -157,7 +158,7 @@ be reconciled before any future opening.
 
 - Phase 1190 closure gate — requires explicit `GO Phase 1190`
 - v0.2 signing ceremony — deferred pending explicit signing authorization
-- Public-launch blocker opening — requires identifier/scope reconciliation and counsel-track routing
+- Public-launch blocker opening — requires fresh CDL number confirmation and counsel-track routing
 - Tier-3 runtime linkage — implementation lane remains
 - Truth-primitive permanence community ratification — carry-forward
 - Contributor agreement, license, trademark — counsel track

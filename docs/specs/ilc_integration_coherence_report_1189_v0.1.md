@@ -83,9 +83,10 @@ No release key was generated and no release envelope was produced.
 ## 5. CDL-001 Scoping Finding
 
 Phase 1188 produced planning-only scoping for the public-launch `genesis_blocker` lane.
-It also found that the CDL register already contains a historical ratified `CDL-001` for
-canonical signer lineage. Future opening work must reconcile the roadmap label before
-creating any fresh constitutional opening.
+It also found roadmap label drift: `CDL-001` is already ratified canonical signer-lineage
+canon, so the packaging/public-launch blocker must not reuse or reopen CDL-001. Future
+opening work should use a fresh CDL number, likely `CDL-086` if it remains next fresh at
+opening time, and treat ratified CDL-001 as a dependency.
 
 Token:
 
@@ -101,7 +102,7 @@ This report records the following non-events across Phases 1186-1189:
 - no release-key generation;
 - no signed Genesis v0.1 mutation;
 - no fresh CDL opening;
-- no CDL-001 register mutation;
+- no CDL-001 register mutation, reopening, renaming, or supersession;
 - no gossip transport runtime mutation;
 - no `PROVENANCE_DECAY_ALPHA` change.
 
