@@ -1,10 +1,19 @@
 # ADR-0023: Multi-Layer Quality Signal Architecture
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-03-29
 **Authors:** Jamison (ILC), Claude Sonnet 4.6 (architectural review)
-**Classification:** Pre-constitutional research decision — requires simulation evidence
-before CDL or whitepaper change
+**Classification:** Scoped accepted architecture; constitutional/runtime surfaces
+remain governed by their ratified CDL lanes
+**Accepted:** Phase 1158, 2026-05-04
+**Acceptance token:** `adr_0023_accepted_phase_1158_scoped_quality_signal_architecture`
+
+**Scope of acceptance:** Accepted for the evidence-backed quality-signal
+architecture: Layer 2 informational aesthetic panel governance, direct-use
+centrality as the long-run use signal, score/factor separation, bounded
+signal-floor discipline, and Proof-of-Use direction. Acceptance does not
+finalize multi-hop centrality, future aesthetic re-evaluation rules, or all
+long-horizon passive ECU tuning.
 
 ---
 
@@ -265,4 +274,3 @@ Forward note:
 - CDL-061 (Phase 557) does not alter `U_FLOOR`.
 - Phase 558 transport adapter implementation does not alter `U_FLOOR`.
 - The invariant remains stable through the end of Window 555-564.
-

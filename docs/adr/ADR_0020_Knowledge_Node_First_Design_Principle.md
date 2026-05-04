@@ -1,10 +1,18 @@
 # ADR-0020: Knowledge-Node-First Design Principle
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-03-20
 **Author:** Jamison and Sonnet 4.6
 **Source:** Window 441-449 session discussion, 2026-03-20
 **Dependencies:** ADR-0019, ADM-003 v0.2, CDL-V7
+**Accepted:** Phase 1157, 2026-05-04
+**Acceptance token:** `adr_0020_accepted_phase_1157`
+
+**Scope of acceptance:** ADR-0020 is accepted as the durable
+knowledge-node-first design principle and migration discipline for governable
+information surfaces. Acceptance does not immediately migrate all constants,
+working notes, or bootstrap artifacts into graph-native nodes; those migrations
+remain staged by later Atlas/runtime work.
 
 ---
 
