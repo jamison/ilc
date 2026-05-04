@@ -348,3 +348,39 @@ New pre-public-RC obligations:
 - Truth-primitive permanence community ratification path before Genesis sunset.
 - Contributor agreement before public repo.
 - License/trademark/identity counsel track.
+
+---
+
+## Postscript 2026-05-04 — Window 1148-1156 Closure
+
+Window 1148-1156 is closed via Phase 1155. The window advanced Atlas Tier-2 as an
+unsigned v0.2 candidate and closed the SIM-SPECTRAL-04 planning prerequisites without
+opening CDL-085 or changing runtime semantics.
+
+Atlas Tier-2 state:
+
+- Signed v0.1 remains the canonical signed Atlas: 32 nodes, 55 edges.
+- Unsigned v0.2 candidate: `out/genesis_core_star_map_v0.2_candidate.json`.
+- v0.2 candidate shape: 36 nodes, 63 edges.
+- Promoted accepted ADRs: ADR-0019, ADR-0026, ADR-0028, ADR-0031.
+- Phase 1156 signing is deferred/not authorized; the v0.2 candidate remains unsigned.
+
+GENESIS-COMPILE checkpoint #2:
+
+- v0.2 candidate is 36/36 authority-traceable from Node 0.
+- The legacy tool verdict remains `FAIL_CORE_INADEQUATE`, but that is expected because
+  basis-reachability/source-explainability are not the checkpoint #2 authority criterion.
+
+SIM-SPECTRAL and governance:
+
+- SIM-SPECTRAL-04 program spec is committed; no SIM-SPECTRAL-04 run occurred.
+- `CDL-085` remains SIM-gated and unopened.
+- Runtime remains `epoch_attribution_settle_runtime_1129_fix1.v0.5`.
+
+Window 1157+ routing:
+
+- ADR-0020 acceptance review priority before Tier-3 embedding linkage.
+- ADR acceptance review batch for ADR-0012, ADR-0022, ADR-0023, and ADR-0008.
+- Formal Genesis Canonical Lineage Contract ADR and operational release-key ADR.
+- Counsel track for contributor agreement, license strategy, and trademark/identity policy.
+- Canon bundle signing failure repair.
