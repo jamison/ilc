@@ -90,3 +90,46 @@ This synthesis does not:
 ---
 
 `pre_public_rc_obligations_synthesis_committed_phase_1154`
+
+---
+
+## Postscript — Obligation Status Update (Phase 1175, 2026-05-04)
+
+This postscript records obligation resolution and forward routing after Window 1166-1175
+closed. No obligation content is retroactively amended — this is a forward-only status
+supplement.
+
+| Obligation | Status at Phase 1154 | Status at Phase 1175 |
+|------------|----------------------|----------------------|
+| Canonical Lineage Contract | Planning spec only | **RESOLVED** — ADR-0037 accepted (`adr_0037_accepted_phase_1173`); covers 6 equivalence domains, PEC, merge policy, multi-slice encrustation, fork boundary |
+| Atlas Tier-2 signing ceremony | Blocked (release-key ADR not open) | **UNBLOCKED** — ADR-0036 accepted (`adr_0036_accepted_phase_1173`); v0.2 candidate 41 nodes / 73 edges; explicit human authorization still required to execute |
+| `CDL-085` (φ-bound) | SIM-gated, unopened | **OPEN** (Phase 1172) — SIM-SPECTRAL-05 passed; `EDGE_MINT_PHI_BOUND` unset pending CDL-085 prelock (Window 1176+) |
+| ADR-0020 acceptance | `adr_0020_acceptance_review_priority_before_tier3_embedding_linkage` | **RESOLVED** — ADR-0020 accepted (`adr_0020_accepted_phase_1157`); governance prerequisite for Tier-3 met; runtime lane separate |
+| ADR-0036 acceptance | Release-key ADR not yet open | **RESOLVED** — ADR-0036 accepted (`adr_0036_accepted_phase_1173`) |
+| Truth-primitive permanence | Carry-forward | Carry-forward (unchanged) — community ratification required before Genesis sunset |
+| Envelope transition policy | Planning level only | Carry-forward (unchanged) |
+| Canon bundle signing failures | Tooling debt | Carry-forward (unchanged) |
+| Contributor agreement | Counsel track | Carry-forward (unchanged) |
+| License strategy | Counsel track | Carry-forward (unchanged) |
+| Trademark / identity policy | Counsel track | Carry-forward (unchanged) |
+
+### Post-Phase-1175 sequencing for remaining obligations
+
+Recommended Window 1176+ routing for items remaining open:
+
+1. **CDL-085 prelock** — Window 1176; establishes `EDGE_MINT_PHI_BOUND` candidate from
+   SIM-SPECTRAL-05 Track B branchial separation (0.60).
+2. **v0.2 signing ceremony** — Window 1176 (if explicit signing authorization issued).
+3. **Remaining SIM-SPECTRAL-05 slices** — runtime-binding, economic-flow, gossip
+   deferred to Window 1176+.
+4. **Tier-3 runtime linkage** (`schema:*` / `runtime:*`) — ADR-0020 governance met;
+   runtime lane not yet implemented; Window 1178+.
+5. **CDL-001 (genesis_blocker / packaging track)** — required before any public launch
+   claim; evaluation Window 1178+.
+6. **Truth-primitive permanence community ratification** — pre-public-RC requirement.
+7. **Counsel track** — contributor agreement, license, trademark/identity — parallel lane.
+
+See launch roadmap v0.9 (`docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.9.md`)
+for the canonical forward-planning summary.
+
+`pre_public_rc_obligations_synthesis_postscript_phase_1175`
