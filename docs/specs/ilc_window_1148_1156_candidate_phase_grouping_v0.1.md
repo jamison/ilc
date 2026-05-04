@@ -1,5 +1,6 @@
 # ILC Window 1148-1156: Candidate Phase Grouping
 
+**Status:** CLOSED — Phase 1155 closure gate passed. Phase 1156 deferred/not authorized. `window_1148_1156_closed_phase_1155` `phase_1156_deferred_not_authorized`
 **Author:** Claude Sonnet 4.6 (local architectural reviewer)
 **Date:** 2026-05-04
 **Baseline:** Window 1139-1147 CLOSED (Phase 1147 verdict: PASS, commit `5c985349`).
