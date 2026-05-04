@@ -384,3 +384,39 @@ Window 1157+ routing:
 - Formal Genesis Canonical Lineage Contract ADR and operational release-key ADR.
 - Counsel track for contributor agreement, license strategy, and trademark/identity policy.
 - Canon bundle signing failure repair.
+
+## Postscript 2026-05-04 — Window 1156-1165 Closure
+
+Window 1156-1165 is closed via Phase 1165.
+
+`window_1156_1165_closed_phase_1165`
+
+The window converted the pending ADR review batch into accepted Atlas Tier-2 additions,
+drafted ADR-0036 as Proposed, executed SIM-SPECTRAL-04, and closed with CDL-085 still
+SIM-gated and unopened.
+
+Atlas and ADR state:
+
+- Signed v0.1 remains the canonical signed Atlas: 32 nodes, 55 edges.
+- Unsigned v0.2 candidate is 41 nodes and 73 edges.
+- Accepted this window: ADR-0020, ADR-0012, ADR-0022, scoped ADR-0023, and ADR-0008.
+- ADR-0036 remains Proposed; no release key was generated or authorized.
+- v0.2 signing remains blocked.
+
+SIM-SPECTRAL state:
+
+- SIM-SPECTRAL-04 used the claim-composition projection and matched-size S3/G2 controls.
+- Gate verdict: `sim_spectral_04_gate_fail`.
+- CDL-085 remains unopened under
+  `cdl_085_sim_gated_pending_sybil_discrimination_resolution`.
+
+Window 1166+ routing:
+
+- Genesis Canonical Lineage Contract ADR is the next prerequisite before CDL-085
+  reconsideration or v0.2 signing.
+- The Lineage Contract ADR must cover lineage, equivalence, merge policy, multi-slice
+  Genesis encrustation, and Popperian Equivalence Criterion.
+- SIM-SPECTRAL-05 should follow that ADR scope with structural impedance/discriminant
+  calibration, branchial claim-state projection, multi-slice observer convergence, and
+  actual Sybil topology testing.
+- ADR-0036 acceptance should follow the Lineage Contract ADR, not precede it.

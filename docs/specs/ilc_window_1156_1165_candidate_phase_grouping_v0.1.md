@@ -2,10 +2,12 @@
 
 **Author:** Claude Sonnet 4.6 (local architectural reviewer)
 **Date:** 2026-05-04
+**Status:** CLOSED
 **Baseline:** Window 1148-1156 CLOSED (Phase 1155 verdict: PASS, commit `610cf137`).
 CDL-084 is the ratified attribution frontier. CDL-085 remains unopened and SIM-gated.
 Capsule v5.40 current. Phase 1156 was deferred/not authorized in prior window; numbering
 resumes at 1156.
+**Closure:** Phase 1165 closure gate passed. `window_1156_1165_closed_phase_1165`.
 **Planning note:** This is a candidate grouping, not a locked sequence. Phases 1156–1162
 are the hard minimum lane. Phases 1163 and 1164 are conditional tail slots. Phase 1165
 is the closure gate. The window may run lean (close at Phase 1164 with 1163 deferred) if
