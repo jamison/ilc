@@ -57,7 +57,7 @@ Sections 2, 3, 5, 6 are substantially revised.
 | Genesis Atlas v0.2 candidate | **41 nodes, 73 edges, unsigned** — signing prerequisites met; explicit human authorization required |
 | Runtime | `epoch_attribution_settle_runtime_1129_fix1.v0.5` — **unchanged** |
 | SIM-SPECTRAL-05 deferred slices | runtime-binding, economic-flow, gossip — deferred Window 1176+ |
-| CDL-001 (genesis_blocker) | **OPEN** — required before any public launch claim |
+| Public-launch packaging blocker | **SCOPED** — fresh CDL required before any public launch claim; ratified CDL-001 is signer-lineage dependency, not target |
 | Tier-3 runtime linkage | Governance met (ADR-0020 accepted); runtime lane not yet implemented |
 
 ---
@@ -131,12 +131,15 @@ a Track A / Track B style execution.
 **Urgency:** MEDIUM. Needed for completeness of the multi-slice observer framework and
 full Genesis encrustation verification.
 
-### Gap 5 — CDL-001 (genesis_blocker / packaging track)
+### Gap 5 — Public-launch packaging blocker
 
-**Status: open genesis_blocker. Required before any public launch claim.**
+**Status: scoped in Phase 1188. Required before any public launch claim.**
 
-CDL-001 must be opened and ratified before any public launch claim. Scope covers the
-packaging/release track governance.
+Roadmap correction: earlier wording reused `CDL-001` for the packaging/genesis-blocker
+label.
+That was label drift. CDL-001 is already ratified signer-lineage canon and remains a
+dependency. The packaging/release governance blocker should open under a fresh CDL number,
+likely CDL-086 if still next fresh at opening time.
 
 **Urgency:** HIGH for any public RC or launch claim. Not blocking internal testbed work.
 
@@ -248,11 +251,13 @@ and/or economic-flow) as simulation work in parallel with CDL-085 ratification.
 ### Window 1178+ — Tier-3 Runtime + RC2 Preparation
 
 **Primary goal:** Implement Tier-3 runtime linkage (`schema:*` / `runtime:*` node class);
-begin CDL-001 evaluation; address any remaining observer slices.
+begin fresh-CDL public-launch packaging-blocker evaluation; address any remaining observer
+slices.
 
 **Hard pass conditions (preview):**
 - Tier-3 runtime: `schema_node_runtime_NNNN.v0.1` deployed and tested
-- CDL-001 evaluation: scope, urgency, and sequencing relative to public RC documented
+- Public-launch packaging-blocker evaluation: scope, urgency, and sequencing relative to
+  public RC documented
 
 ---
 
@@ -262,14 +267,14 @@ begin CDL-001 evaluation; address any remaining observer slices.
 |-----------|---------------|----------------|
 | RC0.1 | Three-node substrate; 7-agent scenario; reproducible substrate | **`satisfied_for_testbed`** |
 | RC1 | + CDL-073 bootstrap schema; truth primitive stack operational; CDL-078 relay incentives; HB-002 closed | **`satisfied`** — CDL-073 through CDL-084 all ratified; HB-002 closed |
-| RC2 | + CDL-085 ratified; v0.2 signed; Tier-3 linkage; CDL-001 evaluated; persistent rate limiter | **In progress** — CDL-085 open/not ratified; v0.2 unsigned; Tier-3 not implemented |
+| RC2 | + CDL-085 ratified; v0.2 signed; Tier-3 linkage; public-launch packaging blocker evaluated; persistent rate limiter | **In progress** — CDL-085 open/not ratified; v0.2 unsigned; Tier-3 not implemented |
 | RC3/Launch | + L4 privacy wired; CDL-070 PQ ceremony; compaction CDL; multi-hop attribution CDL; counsel track complete | Long-range |
 
 **RC2 remaining gates (internal definition):**
 1. CDL-085 ratified (`EDGE_MINT_PHI_BOUND` locked)
 2. v0.2 signing ceremony executed (explicit human authorization)
 3. Tier-3 runtime linkage (`schema:*` / `runtime:*` node class)
-4. CDL-001 (genesis_blocker / packaging track) evaluated and progressed
+4. Public-launch packaging blocker evaluated and progressed under a fresh CDL number
 5. Persistent rate limiter (deferred from prior windows)
 6. Truth-primitive permanence community ratification
 
@@ -307,7 +312,7 @@ begin CDL-001 evaluation; address any remaining observer slices.
 - CDL-076/077 gossip/fetch deployed in production (testbed only)
 - CDL-085 ratified or any active runtime φ-bound value introduced
 - v0.2 Atlas signing ceremony executed (prerequisites met; human authorization still required)
-- Any public launch claim (CDL-001 not yet progressed)
+- Any public launch claim (fresh-CDL packaging blocker not yet progressed)
 - L4 routing operational (H-series designed; not wired)
 - CDL-070 PQ ceremony scheduled (SIM-MONETARY-01 not run)
 - Tier-3 runtime linkage implemented (governance met; runtime lane not started)
@@ -339,6 +344,6 @@ Updated RC2 gates:
 - CDL-085 ratification is now unblocked for deliberation by prelock + runtime/economic
   observer evidence, but still not executed.
 - v0.2 signing remains blocked only by explicit signing authorization.
-- Tier-3 runtime linkage, CDL-001 evaluation, persistent rate limiter, and truth-primitive
-  permanence community ratification remain open.
+- Tier-3 runtime linkage, fresh-CDL packaging-blocker evaluation, persistent rate limiter,
+  and truth-primitive permanence community ratification remain open.
 - Gossip observer slice remains deferred to Window 1183+.
