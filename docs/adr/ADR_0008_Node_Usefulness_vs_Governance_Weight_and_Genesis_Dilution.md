@@ -1,10 +1,11 @@
 # ADR_0008_Node_Usefulness_vs_Governance_Weight_and_Genesis_Dilution
 
-Status: Proposed
+Status: Accepted
 Date: 2026-02-11
-Review posture: acceptance-ready for the architectural boundary claim after
-Phases 597-600 reconciliation; formal acceptance remains pending a later ADR
-acceptance phase.
+Accepted: Phase 1158, 2026-05-04
+Acceptance token: `adr_0008_accepted_phase_1158`
+Review posture: accepted for the architectural boundary claim after Phases
+597-600 reconciliation and Phase 1158 acceptance review.
 
 ## Context
 Historical ILC work mixes three different concepts that must be separated to avoid future refactors:

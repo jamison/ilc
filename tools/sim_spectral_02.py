@@ -21,7 +21,7 @@ SCENARIOS = ("S1", "S2", "S3", "S4", "G1", "G2", "G3")
 KNOWLEDGE_WORK_MODELS = ("flat", "homoiconic")
 PROVENANCE_DECAY_ALPHA_SIM = 0.45
 PROVENANCE_MAX_DEPTH_SIM = 3
-S1_TOPOLOGIES = ("synthetic", "coactivity", "ancestor-edge", "genesis-star-map")
+S1_TOPOLOGIES = ("synthetic", "coactivity", "ancestor-edge", "genesis-star-map", "claim-composition")
 WEIGHT_PROFILES: dict[str, dict[str, float]] = {
     "observed_provenance_only": {
         "survived_refutations": 0.0,
@@ -313,6 +313,72 @@ def load_s1_star_map_topology(path: Path) -> tuple[np.ndarray, dict[str, Any]]:
     return degree - adjacency, diagnostics
 
 
+def load_s1_claim_projection_topology(path: Path) -> tuple[np.ndarray, dict[str, Any]]:
+    """Load a SIM-SPECTRAL-04 claim-composition projection as an S1 topology."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    vertices = data.get("vertices")
+    edges = data.get("edges")
+    if not isinstance(vertices, list) or not vertices:
+        raise ValueError("sim_spectral_02_claim_projection_vertices_missing")
+    if not isinstance(edges, list) or not edges:
+        raise ValueError("sim_spectral_02_claim_projection_edges_missing")
+
+    vertex_ids: list[str] = []
+    authority_refs: set[str] = set()
+    for vertex in vertices:
+        if not isinstance(vertex, dict) or not isinstance(vertex.get("vertex_id"), str):
+            raise ValueError("sim_spectral_02_claim_projection_vertex_bad_shape")
+        authority_source_ref = vertex.get("authority_source_ref")
+        if not isinstance(authority_source_ref, str):
+            raise ValueError("sim_spectral_02_claim_projection_vertex_missing_authority")
+        vertex_ids.append(vertex["vertex_id"])
+        authority_refs.add(authority_source_ref)
+    if len(vertex_ids) != len(set(vertex_ids)):
+        raise ValueError("sim_spectral_02_claim_projection_duplicate_vertex_id")
+
+    vertex_ids = sorted(vertex_ids)
+    vertex_index = {vertex_id: index for index, vertex_id in enumerate(vertex_ids)}
+    adjacency = np.zeros((len(vertex_ids), len(vertex_ids)), dtype=float)
+    skipped_self_loops = 0
+
+    for edge in edges:
+        if not isinstance(edge, dict):
+            raise ValueError("sim_spectral_02_claim_projection_edge_bad_shape")
+        source = edge.get("source")
+        target = edge.get("target")
+        reason = edge.get("reason")
+        if not isinstance(source, str) or not isinstance(target, str) or not isinstance(reason, str):
+            raise ValueError("sim_spectral_02_claim_projection_edge_bad_shape")
+        if source not in vertex_index or target not in vertex_index:
+            raise ValueError("sim_spectral_02_claim_projection_edge_references_unknown_vertex")
+        if source == target:
+            skipped_self_loops += 1
+            continue
+        weight = edge.get("weight", 1.0)
+        if type(weight) not in (int, float) or not math.isfinite(weight) or weight <= 0:
+            raise ValueError("sim_spectral_02_claim_projection_bad_edge_weight")
+        source_index = vertex_index[source]
+        target_index = vertex_index[target]
+        adjacency[source_index, target_index] += float(weight)
+        adjacency[target_index, source_index] += float(weight)
+
+    edge_count = int(np.count_nonzero(np.triu(adjacency, k=1)))
+    if edge_count == 0:
+        raise ValueError("sim_spectral_02_claim_projection_has_no_usable_edges")
+    degree = np.diag(adjacency.sum(axis=1))
+    diagnostics = {
+        "authority_source_count": len(authority_refs),
+        "edge_count": edge_count,
+        "node_count": len(vertex_ids),
+        "source_file": str(path),
+        "source_format": "genesis_claim_composition_projection_v0.1",
+        "skipped_self_loops": skipped_self_loops,
+        "topology_node_ids": vertex_ids,
+        "weighted": True,
+    }
+    return degree - adjacency, diagnostics
+
+
 def _scenario_laplacian(
     scenario: str,
     n_nodes: int,
@@ -323,8 +389,14 @@ def _scenario_laplacian(
     s1_topology: str = "synthetic",
     s1_topology_epoch: int = 100,
     s1_star_map_topology: tuple[np.ndarray, dict[str, Any]] | None = None,
+    s1_claim_projection_topology: tuple[np.ndarray, dict[str, Any]] | None = None,
 ) -> tuple[np.ndarray, str, dict[str, Any]]:
     if scenario == "S1":
+        if s1_topology == "claim-composition":
+            if s1_claim_projection_topology is None:
+                raise ValueError("sim_spectral_02_s1_claim_projection_topology_missing")
+            L, diagnostics = s1_claim_projection_topology
+            return L.copy(), "genesis_claim_composition_projection", dict(diagnostics)
         if s1_topology == "genesis-star-map":
             if s1_star_map_topology is None:
                 raise ValueError("sim_spectral_02_s1_star_map_topology_missing")
@@ -630,6 +702,8 @@ def run_simulation(
     s1_topology: str = "synthetic",
     s1_topology_epoch: int = 100,
     s1_topology_file: Path | None = None,
+    s1_projection_file: Path | None = None,
+    node_count_override: int | None = None,
     knowledge_work_model: str = "homoiconic",
 ) -> dict[str, Any]:
     if scenario not in SCENARIOS:
@@ -644,15 +718,26 @@ def run_simulation(
         raise ValueError("sim_spectral_02_unknown_knowledge_work_model")
     if s1_topology_file is not None and scenario != "S1":
         raise ValueError("sim_spectral_02_s1_topology_file_only_valid_for_s1")
+    if s1_projection_file is not None and scenario != "S1":
+        raise ValueError("sim_spectral_02_s1_projection_file_only_valid_for_s1")
+    if s1_topology_file is not None and s1_projection_file is not None:
+        raise ValueError("sim_spectral_02_only_one_s1_topology_file_allowed")
     if s1_topology == "genesis-star-map" and s1_topology_file is None:
         raise ValueError("sim_spectral_02_genesis_star_map_requires_topology_file")
+    if s1_topology == "claim-composition" and s1_projection_file is None:
+        raise ValueError("sim_spectral_02_claim_composition_requires_projection_file")
     if s1_topology_file is not None:
         s1_topology = "genesis-star-map"
+    if s1_projection_file is not None:
+        s1_topology = "claim-composition"
+    if node_count_override is not None and node_count_override <= 0:
+        raise ValueError("sim_spectral_02_node_count_override_must_be_positive")
 
     series = load_time_series(time_series_path)
     node_ids = sorted(series, key=_node_sort_key)
     n_nodes = len(node_ids)
     s1_star_map_topology: tuple[np.ndarray, dict[str, Any]] | None = None
+    s1_claim_projection_topology: tuple[np.ndarray, dict[str, Any]] | None = None
     if s1_topology_file is not None:
         s1_star_map_topology = load_s1_star_map_topology(s1_topology_file)
         star_map_node_count = int(s1_star_map_topology[1]["node_count"])
@@ -665,6 +750,18 @@ def run_simulation(
         # positions by index. Excess time series nodes are discarded.
         node_ids = node_ids[:star_map_node_count]
         n_nodes = star_map_node_count
+    if s1_projection_file is not None:
+        s1_claim_projection_topology = load_s1_claim_projection_topology(s1_projection_file)
+        projection_node_count = int(s1_claim_projection_topology[1]["node_count"])
+        if len(node_ids) < projection_node_count:
+            raise ValueError("sim_spectral_02_time_series_too_small_for_claim_projection_topology")
+        node_ids = node_ids[:projection_node_count]
+        n_nodes = projection_node_count
+    if node_count_override is not None:
+        if len(node_ids) < node_count_override:
+            raise ValueError("sim_spectral_02_time_series_too_small_for_node_count_override")
+        node_ids = node_ids[:node_count_override]
+        n_nodes = node_count_override
     observed_epochs = len(next(iter(series.values())))
     genesis_nodes = load_genesis_nodes()
     n_genesis = min(len(genesis_nodes), n_nodes)
@@ -701,6 +798,7 @@ def run_simulation(
             s1_topology=s1_topology,
             s1_topology_epoch=s1_topology_epoch,
             s1_star_map_topology=s1_star_map_topology,
+            s1_claim_projection_topology=s1_claim_projection_topology,
         )
         lambda2 = _normalized_lambda2(L)
         structural_impedance = compute_structural_impedance(lambda2, THETA_FLOOR)
@@ -777,6 +875,8 @@ def run_simulation(
         "s1_topology": s1_topology,
         "s1_topology_epoch": s1_topology_epoch,
         "s1_topology_file": str(s1_topology_file) if s1_topology_file is not None else None,
+        "s1_projection_file": str(s1_projection_file) if s1_projection_file is not None else None,
+        "node_count_override": node_count_override,
         "topology_diagnostics": topology_diagnostics,
         "data_classes": {
             "genesis_nodes_count": n_genesis if knowledge_work_model == "homoiconic" else 0,
@@ -821,6 +921,18 @@ def _build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Genesis core star-map JSON to use as the S1 seed topology.",
     )
+    parser.add_argument(
+        "--s1-projection-file",
+        default=None,
+        type=Path,
+        help="Genesis claim-composition projection JSON to use as the S1 seed topology.",
+    )
+    parser.add_argument(
+        "--node-count-override",
+        default=None,
+        type=int,
+        help="Truncate the simulation to this many nodes for matched-size controls.",
+    )
     parser.add_argument("--s1-topology-epoch", default=100, type=int)
     parser.add_argument("--knowledge-work-model", default="homoiconic", choices=KNOWLEDGE_WORK_MODELS)
     parser.add_argument(
@@ -848,6 +960,8 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         s1_topology=args.s1_topology,
         s1_topology_epoch=args.s1_topology_epoch,
         s1_topology_file=args.s1_topology_file,
+        s1_projection_file=args.s1_projection_file,
+        node_count_override=args.node_count_override,
         knowledge_work_model=args.knowledge_work_model,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)

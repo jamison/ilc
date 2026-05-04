@@ -1,8 +1,15 @@
 # ADR-0012: ECU-ILC-Graph Coupling and Anti-Reflexivity Contract
 
-**Status:** Proposed  
+**Status:** Accepted
 **Date:** 2026-02-25  
 **Context:** Economic integrity and utility-first objective for agent ecosystems
+**Accepted:** Phase 1158, 2026-05-04
+**Acceptance token:** `adr_0012_accepted_phase_1158`
+
+**Scope of acceptance:** Accepted for the directional ECU/ILC/graph coupling and
+anti-reflexivity contract. Acceptance does not lock settlement-window length,
+new issuance constants, public minting semantics, or final settlement substrate
+selection.
 
 ## Context
 
