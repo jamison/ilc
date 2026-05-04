@@ -325,7 +325,7 @@ def embed_node(
 
     try:
         matrix = _encoder([text])
-    except Exception as exc:
+    except Exception as exc:  # broad: third-party encoder libraries raise varied types
         raise EmbeddingPipelineError(
             f"encoder failed for node id={node.id!r}: {exc}"
         ) from exc

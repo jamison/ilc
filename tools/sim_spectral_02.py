@@ -602,6 +602,12 @@ def _durability(
 
 
 def _rolling_slope(values: list[float]) -> float:
+    """Return the linear regression slope over epoch indices.
+
+    X-axis is uniform integer epoch indices [0, 1, ..., n-1].  This assumes
+    epochs are evenly spaced; any epoch-skipping in the input data would
+    compress or expand the apparent slope accordingly.
+    """
     if len(values) < 2:
         return 0.0
     x_axis = np.arange(len(values), dtype=float)
@@ -652,6 +658,11 @@ def run_simulation(
         star_map_node_count = int(s1_star_map_topology[1]["node_count"])
         if len(node_ids) < star_map_node_count:
             raise ValueError("sim_spectral_02_time_series_too_small_for_star_map_topology")
+        # The star map supplies graph topology (Laplacian); time series supplies
+        # node activity values. IDs are from different namespaces (semantic star
+        # map IDs vs generic time-series node IDs), so mapping is positional:
+        # time series nodes sorted by _node_sort_key are assigned to star map
+        # positions by index. Excess time series nodes are discarded.
         node_ids = node_ids[:star_map_node_count]
         n_nodes = star_map_node_count
     observed_epochs = len(next(iter(series.values())))
