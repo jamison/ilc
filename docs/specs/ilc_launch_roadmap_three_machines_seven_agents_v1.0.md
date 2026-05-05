@@ -2,7 +2,7 @@
 
 **Version:** v1.0
 **Produced:** 2026-05-05
-**Session context:** Window 1191-1199 is in progress through Phase 1192. Window
+**Session context:** Window 1191-1199 is in progress through Phase 1197. Window
 1183-1190 closed with CDL-085 ratified, `EDGE_MINT_PHI_BOUND = Decimal("0.60")`
 active in runtime, and all three SIM-SPECTRAL-05 observer slices complete. Capsule v5.44
 is current until Phase 1198 publishes v5.45.
@@ -56,6 +56,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | Public-launch packaging blocker | **OPEN** — CDL-086 opened in Phase 1194; not ratified |
 | Tier-3 runtime linkage | Scope committed in Phase 1195; runtime lane not yet implemented |
 | Persistent rate limiter | Scope committed in Phase 1196; implementation remains open |
+| Canon bundle signing repair | **SATISFIED** — `canon_bundle_signing_repair_pass_phase_1197` |
 
 ---
 
@@ -158,15 +159,18 @@ This remains a pre-public-RC governance requirement and is not assigned to Windo
 
 ### Gap 6 — Canon Bundle Signing Repair
 
-**Status:** Tooling debt; firm-if-reached in Window 1191-1199.
+**Status:** Satisfied in Phase 1197.
 
-The known failing fixtures remain:
+The known failing fixtures were repaired:
 
 - `test_canon_bundle_audit_artifact.py`
 - `test_canon_bundle_pipeline_report.py`
 
-Phase 1197 should run if the window reaches it. The repair remains non-sensitive and must
-not mutate signed Genesis v0.1 or regenerate immutable diagnostics.
+Phase 1197 added a deterministic valid v0.1 testing snapshot and an explicit test-only
+toggle in both fixture files so the bundle pipeline reaches the intended sign/verify/report
+/audit path without weakening production validation.
+
+`canon_bundle_signing_repair_pass_phase_1197`
 
 ### Gap 7 — Counsel Track
 
