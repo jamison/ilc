@@ -77,17 +77,20 @@ the later ratification event must include an explicit dissent field even if empt
 
 ## 4. Ratifier Class
 
-Truth-primitive permanence cannot be ratified by a single agent.
+Truth-primitive permanence is ratified by Genesis authority attestation.
 
-Eligible ratification requires both classes:
+The Genesis founding authority (or an authorized Genesis delegate) commits a
+ratification artifact anchored in the repository. Per ADR-0036, signing authority for
+ILC's initial project lineage traces to the Genesis root envelope — no multi-party
+committee is required for Genesis bootstrap ratification.
 
-1. At least three distinct Genesis founding/member signers.
-2. At least one external witness signer who is not counted as one of the three
-   Genesis founding/member signers for this event.
+Optional: additional witness attestations may be included in the ceremony artifact.
+Witnesses may include collaborators, reviewers, or external auditors. Their attestations
+supplement the Genesis authority attestation but are not required for validity.
 
-The external witness class may include an independent auditor, independent implementer, or
-community steward who can review the packet and signed evidence bundle. One person cannot
-satisfy both classes in the same ratification event.
+A multi-party signer roster (e.g., ≥3 founding members + external witnesses) is
+appropriate for public release / community ratification events but is not required for
+Genesis bootstrap governance.
 
 ---
 
@@ -99,9 +102,10 @@ Required order:
 
 1. Publish this Phase 1211 packet.
 2. Execute a later explicit human-authorized ratification ceremony in the target window.
-3. Produce a signed ceremony artifact that cites this packet, the primitive set, evidence
-   hashes, signer identities, signer classes, vote tally, threshold result, dissent field,
-   and non-bypass rule.
+3. Produce a commit-anchored ratification artifact by Genesis authority that cites this
+   packet, the primitive set, evidence hashes, the Genesis authority attestation, dissent
+   field (required even if empty), and non-bypass rule. Optional witness attestations may
+   be included. No multi-party vote tally is required for Genesis bootstrap ratification.
 4. Open or ratify a CDL only if the ceremony determines that constitutional register
    mutation is required; otherwise the signed ceremony artifact is the ratification event.
 
@@ -112,19 +116,16 @@ oral/social convention as the only evidence of permanence.
 
 ## 6. Threshold
 
-Ratification uses a vote and a class-composition quorum.
+Ratification is complete when Genesis authority commits a ratification attestation
+anchored in the repository that cites this packet and the evidence bundle.
 
-Quorum:
+Genesis authority attestation constitutes ratification for Genesis bootstrap governance.
+No vote quorum or multi-party roster is required.
 
-- At least three distinct Genesis founding/member signers participate.
-- At least one external witness signer participates.
-
-Approval:
-
-- Unanimous approval from all participating ratifiers is required.
-- Abstention does not count as approval.
-- Any objection must be recorded in the dissent field and blocks ratification unless the
-  objection is later resolved or explicitly superseded by a ratified CDL.
+If additional witnesses provide attestations, record them in the ceremony artifact.
+If any contributor raises an objection, it must be recorded in the dissent field and
+evaluated by Genesis authority before ratification is committed. Any unresolved objection
+blocks the attestation until resolved or explicitly superseded by a ratified CDL.
 
 ---
 
