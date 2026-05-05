@@ -55,7 +55,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | Genesis Atlas v0.2 candidate | **41 nodes, 73 edges, unsigned** — signing prerequisites met; explicit human authorization required |
 | Public-launch packaging blocker | **OPEN** — CDL-086 opened in Phase 1194; not ratified |
 | Tier-3 runtime linkage | Scope committed in Phase 1195; runtime lane not yet implemented |
-| Persistent rate limiter | Open RC2 gate |
+| Persistent rate limiter | Scope committed in Phase 1196; implementation remains open |
 
 ---
 
@@ -76,7 +76,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | 2 | v0.2 signing ceremony executed | **OPEN** — authorization absent |
 | 3 | Tier-3 runtime linkage | **SCOPED** — `tier3_runtime_linkage_scope_committed_phase_1195`; implementation remains open |
 | 4 | Public-launch packaging blocker evaluated/progressed | **IN PROGRESS** — CDL-086 is open, not ratified |
-| 5 | Persistent rate limiter | **OPEN** — Phase 1196 |
+| 5 | Persistent rate limiter | **SCOPED** — `persistent_rate_limiter_scope_committed_phase_1196`; implementation remains open |
 | 6 | Truth-primitive permanence community ratification | **OPEN** — governance carry-forward |
 
 ---
@@ -135,11 +135,17 @@ No Tier-3 runtime token was introduced.
 
 ### Gap 4 — Persistent Rate Limiter
 
-**Status:** Open RC2 gate.
+**Status:** Persistent rate limiter scope committed; implementation remains open.
 
 Phase 1196 should inspect the existing limiter surface and either implement a bounded,
 testable persistence hardening change or publish a concrete implementation plan. It must
 not introduce wall-clock protocol logic, predictable PRNG use, or unbounded input handling.
+
+Phase 1196 published:
+
+`persistent_rate_limiter_scope_committed_phase_1196`
+
+No runtime token was introduced.
 
 ### Gap 5 — Truth-Primitive Permanence Community Ratification
 
