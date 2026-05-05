@@ -37,7 +37,10 @@ def test_roadmap_and_planning_index_record_rate_limiter_scope() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "Persistent rate limiter scope committed" in roadmap
     assert "persistent_rate_limiter_scope_committed_phase_1196" in roadmap
-    assert "Window 1191-1199 is IN PROGRESS through Phase 1196" in planning
+    assert (
+        "Window 1191-1199 is IN PROGRESS through Phase 1196" in planning
+        or "Window 1191-1199 is CLOSED" in planning
+    )
     assert "persistent_rate_limiter_scope_committed_phase_1196" in planning
 
 

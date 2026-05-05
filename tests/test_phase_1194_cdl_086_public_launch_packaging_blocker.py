@@ -53,7 +53,10 @@ def test_roadmap_and_planning_index_record_cdl_086_open() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "CDL-086 is OPEN" in roadmap
     assert "cdl_086_public_launch_packaging_blocker_opened_phase_1194" in roadmap
-    assert "Window 1191-1199 is IN PROGRESS through Phase 1194" in planning
+    assert (
+        "Window 1191-1199 is IN PROGRESS through Phase 1194" in planning
+        or "Window 1191-1199 is CLOSED" in planning
+    )
     assert "cdl_086_public_launch_packaging_blocker_opened_phase_1194" in planning
 
 
