@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +12,9 @@ from ilc_core.network.d2d.truth_primitive_fetch_runtime import WANT_BLOCK_RATE_L
 
 PERSISTENT_RATE_LIMITER_VERSION = "persistent_fetch_rate_limiter_runtime_1202.v0.1"
 PERSISTENT_RATE_LIMITER_SCHEMA = "ilc.fetch_rate_limiter_state@v1"
+PERSISTENT_RATE_LIMITER_AUDIT_HARDENING_TOKEN = (
+    "persistent_rate_limiter_audit_hardened_phase_1217"
+)
 
 
 class PersistentFetchRateLimiter:
@@ -36,6 +40,7 @@ class PersistentFetchRateLimiter:
         self.fail_closed = fail_closed
         self._buckets: dict[str, dict[str, int]] = {}
         self._sequence = 0
+        self._lock = threading.RLock()
 
     @staticmethod
     def _hash_requester_id(requester_id: str) -> str:
@@ -51,25 +56,26 @@ class PersistentFetchRateLimiter:
         return window_id
 
     def check_and_consume(self, requester_id: str, window_id: int) -> bool:
-        if self.fail_closed:
-            return False
-        normalized_window_id = self._validate_window_id(window_id)
-        requester_hash = self._hash_requester_id(requester_id)
-        self._sequence += 1
+        with self._lock:
+            if self.fail_closed:
+                return False
+            normalized_window_id = self._validate_window_id(window_id)
+            requester_hash = self._hash_requester_id(requester_id)
+            self._sequence += 1
 
-        bucket = self._buckets.get(requester_hash)
-        if bucket is None or bucket["window_id"] != normalized_window_id:
-            bucket = {"count": 0, "window_id": normalized_window_id, "last_seen": self._sequence}
-        if bucket["count"] >= self.limit_per_window:
+            bucket = self._buckets.get(requester_hash)
+            if bucket is None or bucket["window_id"] != normalized_window_id:
+                bucket = {"count": 0, "window_id": normalized_window_id, "last_seen": self._sequence}
+            if bucket["count"] >= self.limit_per_window:
+                bucket["last_seen"] = self._sequence
+                self._buckets[requester_hash] = bucket
+                return False
+
+            bucket["count"] += 1
             bucket["last_seen"] = self._sequence
             self._buckets[requester_hash] = bucket
-            return False
-
-        bucket["count"] += 1
-        bucket["last_seen"] = self._sequence
-        self._buckets[requester_hash] = bucket
-        self._prune_if_needed()
-        return True
+            self._prune_if_needed()
+            return True
 
     def _prune_if_needed(self) -> None:
         while len(self._buckets) > self.max_buckets:
@@ -80,14 +86,18 @@ class PersistentFetchRateLimiter:
             del self._buckets[oldest_key]
 
     def _state(self) -> dict[str, Any]:
-        return {
-            "limit_per_window": self.limit_per_window,
-            "max_buckets": self.max_buckets,
-            "requester_buckets": self._buckets,
-            "runtime_version": PERSISTENT_RATE_LIMITER_VERSION,
-            "schema": PERSISTENT_RATE_LIMITER_SCHEMA,
-            "sequence": self._sequence,
-        }
+        with self._lock:
+            return {
+                "limit_per_window": self.limit_per_window,
+                "max_buckets": self.max_buckets,
+                "requester_buckets": {
+                    requester_hash: dict(bucket)
+                    for requester_hash, bucket in self._buckets.items()
+                },
+                "runtime_version": PERSISTENT_RATE_LIMITER_VERSION,
+                "schema": PERSISTENT_RATE_LIMITER_SCHEMA,
+                "sequence": self._sequence,
+            }
 
     @staticmethod
     def _dump_state(state: dict[str, Any]) -> str:
@@ -99,11 +109,12 @@ class PersistentFetchRateLimiter:
         )
 
     def save(self, path: Path) -> None:
-        target = Path(path)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        tmp_path = target.with_name(f".{target.name}.tmp")
-        tmp_path.write_text(self._dump_state(self._state()), encoding="utf-8")
-        os.replace(tmp_path, target)
+        with self._lock:
+            target = Path(path)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            tmp_path = target.with_name(f".{target.name}.tmp")
+            tmp_path.write_text(self._dump_state(self._state()), encoding="utf-8")
+            os.replace(tmp_path, target)
 
     @classmethod
     def fail_closed_limiter(
