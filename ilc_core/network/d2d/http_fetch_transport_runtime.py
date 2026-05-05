@@ -42,6 +42,9 @@ TRANSPORT_ABUSE_CIRCUIT_BREAKER_TOKEN = (
     "transport_abuse_circuit_breaker_not_final_scaling_policy"
 )
 RECIPROCAL_FETCH_ADMISSION_CARRY_FORWARD = "reciprocal_fetch_admission_model_required"
+PERSISTENT_RATE_LIMITER_STATE_SAVE_FAILED_TOKEN = (
+    "persistent_rate_limiter_state_save_failed"
+)
 
 _MAX_INBOUND_BYTES = 65_536  # 64 KiB — request body OOM guard
 _CONTENT_LENGTH_MISSING_TOKEN = "fetch_content_length_missing"
@@ -78,15 +81,24 @@ class _PersistentFetchRateLimiterAdapter:
         limiter: PersistentFetchRateLimiter,
         path: Path,
         window_id: int,
+        event_log: list[dict[str, Any]],
     ) -> None:
         self.limiter = limiter
         self.path = path
         self.window_id = window_id
+        self.event_log = event_log
 
     def check_and_consume(self, requester_id: str) -> bool:
         allowed = self.limiter.check_and_consume(requester_id, self.window_id)
         if allowed:
-            self.limiter.save(self.path)
+            try:
+                self.limiter.save(self.path)
+            except OSError:
+                self.event_log.append({
+                    "event": "fetch_rate_limiter_degraded",
+                    "token": PERSISTENT_RATE_LIMITER_STATE_SAVE_FAILED_TOKEN,
+                })
+                return False
         return allowed
 
 
@@ -151,6 +163,7 @@ class HttpFetchTransportRuntime:
             limiter,
             path,
             self.config.rate_limit_window_id,
+            self.config.event_log,
         )
 
     def _open_store(self) -> Any:
