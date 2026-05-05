@@ -43,12 +43,23 @@ def _is_safe_archive_path(path_str: str) -> bool:
 
 def _download_url(url: str, dest_path: Path, timeout: int) -> dict:
     """Download a URL to a file."""
-    import urllib.request
     import ssl
-    
+    import urllib.error
+    import urllib.request
+
+    class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, _req, _fp, code, _msg, _headers, newurl):
+            raise urllib.error.URLError(
+                f"fetch_redirect_not_permitted: {code} -> {newurl}"
+            )
+
     try:
         ctx = ssl.create_default_context()
-        with urllib.request.urlopen(url, timeout=timeout, context=ctx) as response:
+        opener = urllib.request.build_opener(
+            _NoRedirectHandler,
+            urllib.request.HTTPSHandler(context=ctx),
+        )
+        with opener.open(url, timeout=timeout) as response:
             with open(dest_path, "wb") as f:
                 shutil.copyfileobj(response, f)
         return {"ok": True}

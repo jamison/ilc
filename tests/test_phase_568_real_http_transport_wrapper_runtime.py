@@ -262,12 +262,13 @@ def test_send_gossip_uses_gossip_request_path(tmp_path: Path, monkeypatch: pytes
         calls['message_type'] = message_type
         return '/ilc/gossip/fake'
 
-    def fake_urlopen(request: urllib.request.Request, timeout: float, context) -> _FakeResponse:
-        calls['url'] = request.full_url
-        return _FakeResponse(202)
+    class _FakeOpener:
+        def open(self, request: urllib.request.Request, **_kw: object) -> _FakeResponse:
+            calls['url'] = request.full_url
+            return _FakeResponse(202)
 
     monkeypatch.setattr(runtime.gossip_transport, 'gossip_request_path', fake_path)
-    monkeypatch.setattr(urllib.request, 'urlopen', fake_urlopen)
+    monkeypatch.setattr(urllib.request, 'build_opener', lambda *_: _FakeOpener())
 
     status = transport.send_gossip(
         'https://127.0.0.1:9443',
@@ -304,12 +305,13 @@ def test_send_gossip_uses_build_gossip_headers(tmp_path: Path, monkeypatch: pyte
             'Content-Type': content_type,
         }
 
-    def fake_urlopen(request: urllib.request.Request, timeout: float, context) -> _FakeResponse:
-        calls['headers'] = dict(request.header_items())
-        return _FakeResponse(202)
+    class _FakeOpener:
+        def open(self, request: urllib.request.Request, **_kw: object) -> _FakeResponse:
+            calls['headers'] = dict(request.header_items())
+            return _FakeResponse(202)
 
     monkeypatch.setattr(runtime.gossip_transport, 'build_gossip_headers', fake_build)
-    monkeypatch.setattr(urllib.request, 'urlopen', fake_urlopen)
+    monkeypatch.setattr(urllib.request, 'build_opener', lambda *_: _FakeOpener())
 
     status = transport.send_gossip(
         'https://127.0.0.1:9444',

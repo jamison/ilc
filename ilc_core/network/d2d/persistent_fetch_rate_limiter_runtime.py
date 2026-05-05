@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import collections
 import hashlib
 import json
 import os
+import tempfile
 import threading
 from pathlib import Path
 from typing import Any
@@ -15,6 +17,7 @@ PERSISTENT_RATE_LIMITER_SCHEMA = "ilc.fetch_rate_limiter_state@v1"
 PERSISTENT_RATE_LIMITER_AUDIT_HARDENING_TOKEN = (
     "persistent_rate_limiter_audit_hardened_phase_1217"
 )
+TRANSPORT_SECURITY_HARDENING_TOKEN = "transport_security_hardening_1218b"
 
 
 class PersistentFetchRateLimiter:
@@ -38,7 +41,7 @@ class PersistentFetchRateLimiter:
         self.limit_per_window = limit_per_window
         self.max_buckets = max_buckets
         self.fail_closed = fail_closed
-        self._buckets: dict[str, dict[str, int]] = {}
+        self._buckets: collections.OrderedDict[str, dict[str, int]] = collections.OrderedDict()
         self._sequence = 0
         self._lock = threading.RLock()
 
@@ -74,16 +77,14 @@ class PersistentFetchRateLimiter:
             bucket["count"] += 1
             bucket["last_seen"] = self._sequence
             self._buckets[requester_hash] = bucket
+            self._buckets.move_to_end(requester_hash)
             self._prune_if_needed()
             return True
 
     def _prune_if_needed(self) -> None:
+        # OrderedDict maintains insertion/move_to_end order — oldest is first (last=False).
         while len(self._buckets) > self.max_buckets:
-            oldest_key = min(
-                self._buckets,
-                key=lambda key: (self._buckets[key]["last_seen"], key),
-            )
-            del self._buckets[oldest_key]
+            self._buckets.popitem(last=False)
 
     def _state(self) -> dict[str, Any]:
         with self._lock:
@@ -112,9 +113,22 @@ class PersistentFetchRateLimiter:
         with self._lock:
             target = Path(path)
             target.parent.mkdir(parents=True, exist_ok=True)
-            tmp_path = target.with_name(f".{target.name}.tmp")
-            tmp_path.write_text(self._dump_state(self._state()), encoding="utf-8")
-            os.replace(tmp_path, target)
+            data = self._dump_state(self._state())
+            fd, tmp_str = tempfile.mkstemp(
+                dir=str(target.parent),
+                prefix=f".{target.stem}.",
+                suffix=".tmp",
+            )
+            try:
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    f.write(data)
+                os.replace(tmp_str, target)
+            except Exception:
+                try:
+                    os.unlink(tmp_str)
+                except OSError:
+                    pass
+                raise
 
     @classmethod
     def fail_closed_limiter(
@@ -151,7 +165,7 @@ class PersistentFetchRateLimiter:
             if not isinstance(buckets, dict):
                 return cls.fail_closed_limiter()
             limiter._sequence = sequence
-            limiter._buckets = cls._load_buckets(buckets)
+            limiter._buckets = collections.OrderedDict(cls._load_buckets(buckets))
             limiter._prune_if_needed()
             return limiter
         except (OSError, json.JSONDecodeError, ValueError, TypeError):

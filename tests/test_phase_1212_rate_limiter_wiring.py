@@ -48,7 +48,7 @@ def test_default_config_uses_in_memory_limiter(tmp_path):
     assert runtime._persistent_rate_limiter is None
     status, _ = runtime.handle_want_block(_body())
     assert status == 200
-    assert config.event_log == []
+    assert len(config.event_log) == 0
 
 
 def test_persistent_config_loads_limiter(tmp_path):

@@ -6,7 +6,9 @@ and the currently active channel.
 """
 
 import json
+import os
 import re
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -46,9 +48,19 @@ def _resolve_channel_updated_at(
 
 def _atomic_write(path: Path, content: str) -> None:
     """Write content atomically using temp file + rename."""
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(content, encoding="utf-8")
-    tmp.replace(path)
+    fd, tmp_str = tempfile.mkstemp(
+        dir=str(path.parent), prefix=f".{path.stem}.", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(content)
+        os.replace(tmp_str, path)
+    except Exception:
+        try:
+            os.unlink(tmp_str)
+        except OSError:
+            pass
+        raise
 
 
 def load_channel_file(path: Path) -> dict:

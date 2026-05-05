@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from typing import cast
 
 from ilc_core.ledger.backend import EpochRecord, InMemoryLedgerBackend, JsonObject
@@ -109,18 +110,31 @@ class FileLedgerBackend(InMemoryLedgerBackend):
 
     def _atomic_write(self, path: str, data: object) -> None:
         """
-        Write data to a file atomically.
+        Write data to a file atomically using a unique temp file.
 
-        1. Write to .tmp
+        1. Write to a unique .tmp (tempfile.mkstemp in same directory)
         2. Flush/sync
         3. os.replace(tmp, target)
+
+        Using a unique temp name prevents concurrent-process corruption when
+        multiple nodes share the same filesystem path.
         """
-        tmp_path = path + ".tmp"
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp_path, path)
+        target = os.path.abspath(path)
+        parent = os.path.dirname(target)
+        stem = os.path.splitext(os.path.basename(target))[0]
+        fd, tmp_path = tempfile.mkstemp(dir=parent, prefix=f".{stem}.", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, target)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
 
     # --- Overrides for persistence ---
 
