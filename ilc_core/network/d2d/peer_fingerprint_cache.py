@@ -23,11 +23,17 @@ from typing import Dict, List, Optional
 PEER_FINGERPRINT_CACHE_VERSION = "peer_fingerprint_cache_931.v0.1"
 H013_SEQUENCE_LOCK_DEPENDENCY = "h013_gossip_beacon_activation_sequence_lock_930.v0.1"
 CDL_080_DEPENDENCY = "cdl_080_star_map_n_gram_route_index.v0.1"
+PEER_FINGERPRINT_CACHE_HARDENING = "peer_fingerprint_cache_max_size_1218b"
 
 # Provisional silence threshold for dead-peer detection.
 # A peer is considered dead if it has not sent a beacon for this many epochs.
 # SIM-BEACON-01 will calibrate the real figure; 10 epochs is a conservative default.
 DEFAULT_DEAD_PEER_SILENCE_EPOCHS: int = 10
+
+# Hard cap on cache size. Prevents OOM DoS from attackers flooding unique peer_endpoint
+# strings. Eviction is dead-peer-first (oldest last_seen_epoch), then live-peer LRU.
+# Preserves H-013 Q3 = Option D overwrite-only semantics within the bounded set.
+DEFAULT_MAX_CACHE_SIZE: int = 5_000
 
 
 @dataclass(frozen=True)
@@ -66,6 +72,12 @@ class PeerFingerprintCache:
     No epoch-based eviction — a silent peer keeps its last-known fingerprint
     as a routing hint. Use is_dead_peer() to detect silence separately.
 
+    Bounded by max_size (default DEFAULT_MAX_CACHE_SIZE). When at capacity, a
+    single entry is evicted before inserting a new peer: dead peers (by
+    last_seen_epoch) are evicted first; if all peers are live, the peer with the
+    oldest last_seen_epoch is evicted. This preserves Option D semantics while
+    preventing OOM DoS from attackers flooding unique peer_endpoint strings.
+
     Primary consumer: query_route_index_spectral() in star_map_route_index_runtime.py.
     Call as_fingerprint_dict() to produce the {endpoint: lambda_local} mapping
     that query_route_index_spectral() expects. Without live fingerprints from
@@ -81,6 +93,7 @@ class PeerFingerprintCache:
     """
 
     _entries: Dict[str, PeerFingerprint] = field(default_factory=dict)
+    max_size: int = field(default=DEFAULT_MAX_CACHE_SIZE)
 
     def update(
         self,
@@ -106,6 +119,8 @@ class PeerFingerprintCache:
             agent_id: peer's agent ID if this node was the terminal recipient;
                 None if received via relay (ADR-0034 sealed sender).
         """
+        if peer_endpoint not in self._entries and len(self._entries) >= self.max_size:
+            self._evict_one(epoch)
         self._entries[peer_endpoint] = PeerFingerprint(
             peer_endpoint=peer_endpoint,
             lambda_local=list(lambda_local),  # defensive copy
@@ -113,6 +128,22 @@ class PeerFingerprintCache:
             last_seen_epoch=epoch,
             agent_id=agent_id,
         )
+
+    def _evict_one(self, current_epoch: int) -> None:
+        """Evict one entry to make room. Dead peers evicted first (oldest epoch),
+        then live peers by oldest last_seen_epoch. No-op if cache is empty."""
+        if not self._entries:
+            return
+        # Partition into dead and live by default silence threshold.
+        dead = [
+            fp for fp in self._entries.values()
+            if self.is_dead_peer(fp.peer_endpoint, current_epoch)
+        ]
+        if dead:
+            victim = min(dead, key=lambda fp: fp.last_seen_epoch)
+        else:
+            victim = min(self._entries.values(), key=lambda fp: fp.last_seen_epoch)
+        del self._entries[victim.peer_endpoint]
 
     def get(self, peer_endpoint: str) -> Optional[PeerFingerprint]:
         """Retrieve the cached fingerprint for a peer. None if not cached."""

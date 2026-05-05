@@ -18,8 +18,10 @@ Configuration via environment:
 
 from __future__ import annotations
 
+import collections
 import json
 import socket
+import time
 import threading
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -41,6 +43,8 @@ PERSISTENT_RATE_LIMITER_TRANSPORT_WIRING_TOKEN = (
 TRANSPORT_ABUSE_CIRCUIT_BREAKER_TOKEN = (
     "transport_abuse_circuit_breaker_not_final_scaling_policy"
 )
+TRANSPORT_SECURITY_HARDENING_TOKEN = "transport_security_hardening_1218b"
+_EVENT_LOG_MAX = 10_000
 RECIPROCAL_FETCH_ADMISSION_CARRY_FORWARD = "reciprocal_fetch_admission_model_required"
 PERSISTENT_RATE_LIMITER_STATE_SAVE_FAILED_TOKEN = (
     "persistent_rate_limiter_state_save_failed"
@@ -70,7 +74,9 @@ class FetchTransportConfig:
     rate_limit_window_id: int = 0
     persistent_limiter_path: Path | None = None
     request_timeout_seconds: float = 5.0
-    event_log: list[dict[str, Any]] = field(default_factory=list)
+    event_log: collections.deque[dict[str, Any]] = field(
+        default_factory=lambda: collections.deque(maxlen=_EVENT_LOG_MAX)
+    )
 
 
 class _PersistentFetchRateLimiterAdapter:
@@ -207,13 +213,20 @@ class HttpFetchTransportRuntime:
                     self.end_headers()
                     return
 
+                _deadline = time.monotonic() + runtime.config.request_timeout_seconds
                 try:
                     body = self.rfile.read(content_length)
                 except Exception:
                     self.send_response(400)
                     self.end_headers()
                     return
+                if time.monotonic() > _deadline:
+                    runtime._record("fetch_request_rejected", token="fetch_request_deadline_exceeded")
+                    self.send_response(408)
+                    self.end_headers()
+                    return
 
+                client_ip = self.client_address[0]
                 path = self.path
                 if path == _fetch_rt.WANT_HAVE_PATH:
                     status, resp_body = _fetch_rt.handle_want_have_request(
@@ -221,7 +234,8 @@ class HttpFetchTransportRuntime:
                     )
                 elif path == _fetch_rt.WANT_BLOCK_PATH:
                     status, resp_body = _fetch_rt.handle_want_block_request(
-                        body, runtime._store, runtime._rate_limiter
+                        body, runtime._store, runtime._rate_limiter,
+                        rate_limit_key=client_ip,
                     )
                 else:
                     resp_body = json.dumps(
