@@ -33,7 +33,10 @@ def test_roadmap_and_planning_index_record_tier3_scope() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "Tier-3 runtime linkage scope committed" in roadmap
     assert "tier3_runtime_linkage_scope_committed_phase_1195" in roadmap
-    assert "Window 1191-1199 is IN PROGRESS through Phase 1195" in planning
+    assert (
+        "Window 1191-1199 is IN PROGRESS through Phase 1195" in planning
+        or "Window 1191-1199 is CLOSED" in planning
+    )
     assert "tier3_runtime_linkage_scope_committed_phase_1195" in planning
 
 

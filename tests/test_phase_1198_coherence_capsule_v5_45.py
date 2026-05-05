@@ -47,7 +47,10 @@ def test_capsule_records_immutable_diagnostic_sha() -> None:
 
 def test_planning_index_points_to_capsule_v5_45() -> None:
     content = PLANNING_INDEX.read_text(encoding="utf-8")
-    assert "Window 1191-1199 is IN PROGRESS through Phase 1198" in content
+    assert (
+        "Window 1191-1199 is IN PROGRESS through Phase 1198" in content
+        or "Window 1191-1199 is CLOSED" in content
+    )
     assert "Capsule v5.45" in content
     assert "ilc_antigravity_context_capsule_v5.45.md" in content
 
