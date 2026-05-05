@@ -102,7 +102,8 @@ Produce:
    - Signer roster template (fields: signer name, signer class, date, approval/objection,
      signature or acknowledgement token)
    - Dissent field (required even if empty; must be explicitly recorded)
-   - Threshold statement: unanimous, quorum 3+1
+   - Threshold statement: Genesis authority attestation constitutes ratification;
+     optional witness attestations may be included; dissent field required even if empty
 
 2. A proposed ratification summary in the same file:
    - Primitive set covered (7 ADR-0004 New Seven; `star.map` excluded)
@@ -112,13 +113,14 @@ Produce:
 
 **Stage B — Ratification commit (Human-authorized, after signatures collected):**
 
-Human reviews ceremony materials, collects signer approvals, then issues `GO Phase 1219
-ratification commit`. Codex then:
+Human reviews ceremony materials and, when ready, issues `GO Phase 1219 ratification
+commit`. Codex then:
 
 1. Commits `docs/specs/ilc_truth_primitive_permanence_ratification_event_1219_v0.1.md`
-   with the completed artifact — signed (or acknowledged) by each ratifier, vote tally,
-   dissent field, threshold result.
-2. Records token: `truth_primitive_permanence_ratified_phase_1219`
+   with the completed artifact — Genesis authority attestation (commit-anchored),
+   optional witness attestations (may be empty list), dissent field (explicit even if
+   empty), non-bypass rule verbatim.
+2. Records token: `truth_primitive_permanence_genesis_attested_phase_1219`
 3. Closes token: `truth_primitive_permanence_ratification_event_required_window_1218_1224`
 
 **If ratification cannot complete this window** (signers unavailable, objection raised):
@@ -137,11 +139,11 @@ Minimum tests (in `tests/test_phase_1219_permanence_ratification.py`, minimum 4)
 3. `test_ratification_event_file_exists_or_blocked_token_recorded` — either ratification
    event doc committed OR blocked token present (not neither)
 4. `test_ratification_token_or_blocked_token_mutually_exclusive` — exactly one of
-   `truth_primitive_permanence_ratified_phase_1219` or
+   `truth_primitive_permanence_genesis_attested_phase_1219` or
    `truth_primitive_permanence_ratification_blocked_phase_1219` is present
 
 Tokens:
-- `truth_primitive_permanence_ratified_phase_1219` (if complete)
+- `truth_primitive_permanence_genesis_attested_phase_1219` (if complete)
 - OR `truth_primitive_permanence_ratification_blocked_phase_1219` (if blocked)
 
 Commit subjects:
@@ -272,7 +274,7 @@ Standard synthesis phase. Record actual verdicts for Phases 1218-1222. Capsule d
 ```
 
 Capsule must record:
-- Truth-primitive permanence ratification status (ratified or blocked, with token)
+- Truth-primitive permanence ratification status (attested or blocked, with token)
 - CDL-086 status (ratified or deferred)
 - v0.2 signing status
 - `reciprocal_fetch_admission_model_spec_committed_phase_1222` status
@@ -288,11 +290,11 @@ Token: `capsule_v5_48_supersedes_v5_47`
 
 Before Phase 1218 sequence lock or at first execution:
 
-1. **Truth-primitive permanence ratifier roster** — Phase 1219 Stage B requires human
-   signers. Before `GO Phase 1219 ratification commit`, the human must confirm:
-   - Identity of at least 3 Genesis founding/member signers willing to participate
-   - Identity of at least 1 external witness signer
-   - Preferred approval format (signed document, commit-anchored acknowledgement, other)
+1. **Truth-primitive permanence attestation format** — Phase 1219 Stage B requires
+   Genesis authority attestation. Before `GO Phase 1219 ratification commit`, confirm:
+   - Preferred attestation form (committer identity on the ratification commit itself,
+     explicit acknowledgement statement in the doc, or equivalent commit-anchored form)
+   - Whether any additional witnesses will contribute optional attestations this window
 
 2. **CDL-086 counsel disposition** — before `GO Phase 1220`:
    - Counsel-approved disposition for each of the 5 items, OR
@@ -334,7 +336,7 @@ Consuming:
 
 Expected new tokens:
 - `window_1218_1224_sequence_lock_committed`
-- `truth_primitive_permanence_ratified_phase_1219` OR `truth_primitive_permanence_ratification_blocked_phase_1219`
+- `truth_primitive_permanence_genesis_attested_phase_1219` OR `truth_primitive_permanence_ratification_blocked_phase_1219`
 - `cdl_086_ratified_phase_1220` OR `cdl_086_ratification_deferred_pending_counsel_disposition`
 - `v0_2_signing_ceremony_deferred_pending_signing_authorization` OR signed-v0.2 token
 - `reciprocal_fetch_admission_model_spec_committed_phase_1222`
