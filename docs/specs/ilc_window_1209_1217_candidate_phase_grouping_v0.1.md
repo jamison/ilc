@@ -228,6 +228,25 @@ Commit subject: `docs(governance): phase 1211 truth-primitive permanence ratific
 **Mandatory implementation.** The backend (`PersistentFetchRateLimiter`) is complete and
 tested. This phase wires it into `HttpFetchTransportRuntime` behind an opt-in config flag.
 
+**Design boundary.** This phase is a transport abuse circuit breaker, not the final ILC
+scaling model for agent communication. Static caps are acceptable as node-local DoS
+protection for early/public nodes, but they must not become the long-term economic policy
+for a network intended to serve many fast digital agents. The long-term direction is
+reciprocal fetch admission: useful, reciprocal, reputable, staked, or otherwise
+work-contributing peers should earn more pull capacity; extractive peers should face
+rising cost, proof burden, or lower priority. Phase 1212 must therefore carry forward:
+
+`reciprocal_fetch_admission_model_required`
+
+Future model sketch:
+- baseline free `WANT-BLOCK` capacity
+- additional capacity from CDL-078 routing reputation / successful serves
+- additional capacity from ECU/stake escrow or paid priority fetch
+- optional symbolic Hashcash-style puzzle for unknown peers with no reputation
+- abuse debt / low-reciprocity penalty for peers whose inbound pull pressure greatly
+  exceeds useful outbound contribution
+- static limiter remains only an emergency brake while this model is not implemented
+
 Implementation target:
 
 - Add `persistent_limiter_path: Optional[Path] = None` to `FetchTransportConfig` or
@@ -243,6 +262,8 @@ Implementation target:
   save-interval if per-request save is too expensive)
 - In-memory `FetchRateLimiter` remains the default when `persistent_limiter_path` is None
 - No CDL-077 semantic changes — limit value, 429 token, WANT-HAVE behavior all unchanged
+- Documentation/status output for Phase 1212 must describe the limiter as
+  `transport_abuse_circuit_breaker_not_final_scaling_policy`.
 
 Minimum tests (in `tests/test_phase_1212_rate_limiter_wiring.py`, minimum 6):
 
@@ -339,6 +360,10 @@ Standard synthesis phase. Record actual verdicts for Phases 1209-1215. Capsule d
 - CDL-086 status (ratified or deferred)
 - Truth-primitive permanence ratification packet status
 - v0.2 signing status
+- Phase 1212 circuit-breaker boundary:
+  `transport_abuse_circuit_breaker_not_final_scaling_policy`
+- Carry-forward token:
+  `reciprocal_fetch_admission_model_required`
 - Signed Genesis v0.1 immutability + diagnostic SHA confirmed
 
 Token: `capsule_v5_47_supersedes_v5_46`
@@ -401,6 +426,8 @@ Expected new tokens:
 - `persistent_rate_limiter_transport_wiring_committed_phase_1212`
 - `release_artifact_manifest_schema_committed_phase_1213`
 - `distribution_channel_integrity_checklist_committed_phase_1213`
+- `transport_abuse_circuit_breaker_not_final_scaling_policy`
+- `reciprocal_fetch_admission_model_required`
 - `cdl_086_ratified_phase_1214` OR `cdl_086_ratification_deferred_pending_counsel_disposition`
 - `v0_2_signing_ceremony_deferred_pending_signing_authorization` OR signed-v0.2 token
 - `truth_primitive_permanence_ratification_packet_committed_phase_1211`
@@ -424,3 +451,5 @@ Expected new tokens:
   so Commit 2 may be empty or skipped.
 - No CDL-086 public-launch claim from ratification alone — counsel items are ratification
   conditions, not post-ratification conditions.
+- Do not frame static rate limiting as ILC's long-term communication policy. It is an
+  abuse circuit breaker until reciprocal fetch admission is designed and implemented.
