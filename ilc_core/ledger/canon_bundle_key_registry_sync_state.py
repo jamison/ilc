@@ -6,6 +6,8 @@ Persists the last seen channel sequence and hash to prevent rollback attacks.
 
 import json
 import fcntl
+import os
+import tempfile
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -66,9 +68,19 @@ def write_sync_state(path: Path, state: ChannelFreshnessState) -> None:
         "updated_at": state.updated_at,
     }
     
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
-    tmp.replace(path)
+    fd, tmp_str = tempfile.mkstemp(
+        dir=str(path.parent), prefix=f".{path.stem}.", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(json.dumps(data, indent=2, sort_keys=True))
+        os.replace(tmp_str, path)
+    except Exception:
+        try:
+            os.unlink(tmp_str)
+        except OSError:
+            pass
+        raise
 
 
 def evaluate_channel_freshness(

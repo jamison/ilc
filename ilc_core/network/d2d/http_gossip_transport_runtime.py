@@ -8,6 +8,7 @@ validation to `gossip_transport.py`.
 
 from __future__ import annotations
 
+import collections
 import socket
 import ssl
 import threading
@@ -25,6 +26,7 @@ from ilc_core.network.d2d.gossip_peer_registry import (
 
 
 HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v0.1"
+TRANSPORT_SECURITY_HARDENING_TOKEN = "transport_security_hardening_1218b"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_562.v0.1"
@@ -36,6 +38,7 @@ PAYLOAD_TOO_LARGE_TOKEN = "gossip_payload_too_large"
 PAYLOAD_READ_TIMEOUT_TOKEN = "gossip_payload_read_timeout"
 PAYLOAD_INCOMPLETE_TOKEN = "gossip_payload_incomplete"
 CONTENT_LENGTH_INVALID_TOKEN = "gossip_content_length_invalid"
+_EVENT_LOG_MAX = 10_000
 
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != GOSSIP_TRANSPORT_DEPENDENCY:
     import json as _json, sys as _sys
@@ -84,6 +87,25 @@ class TransportRuntimeError(RuntimeError):
         self.detail = detail
 
 
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Reject all HTTP redirects — prevents SSRF via malicious peer redirect responses."""
+
+    def redirect_request(
+        self,
+        _req: urllib.request.Request,
+        _fp: object,
+        code: int,
+        _msg: str,
+        _headers: object,
+        newurl: str,
+    ) -> None:
+        raise TransportRuntimeError(
+            "transport_redirect_not_permitted",
+            "http",
+            f"peer returned redirect {code} to {newurl}",
+        )
+
+
 @dataclass(frozen=True)
 class TransportRuntimeConfig:
     transport_kind: str
@@ -109,7 +131,7 @@ class HttpGossipTransportRuntime:
         self.config = config
         self.state: dict[str, Any] = {
             "transport_kind": config.transport_kind,
-            "event_log": [],
+            "event_log": collections.deque(maxlen=_EVENT_LOG_MAX),
             "last_error": None,
             "last_status_code": None,
             "bound_port": None,
@@ -273,7 +295,7 @@ class HttpGossipTransportRuntime:
                 self.send_response(status_code)
                 self.end_headers()
 
-            def log_message(self, format: str, *args: object) -> None:
+            def log_message(self, format: str, *args: object) -> None:  # noqa: A002
                 return
 
         server = _TimedThreadingHTTPServer((self.config.bind_host, self.config.bind_port), _Handler)
@@ -375,12 +397,12 @@ class HttpGossipTransportRuntime:
             method="POST",
         )
         ssl_context = self._client_ssl_context()
+        _opener = urllib.request.build_opener(
+            _NoRedirectHandler,
+            urllib.request.HTTPSHandler(context=ssl_context),
+        )
         try:
-            with urllib.request.urlopen(
-                request,
-                timeout=self.config.request_timeout_seconds,
-                context=ssl_context,
-            ) as response:
+            with _opener.open(request, timeout=self.config.request_timeout_seconds) as response:
                 status_code = int(response.getcode())
         except Exception as exc:  # pragma: no cover - exercised in transport hardening tests
             self._record_transport_error("transport_request_failed", exc.__class__.__name__)

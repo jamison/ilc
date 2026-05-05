@@ -40,6 +40,7 @@ from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
 
 TRUTH_PRIMITIVE_FETCH_RUNTIME_VERSION = "truth_primitive_fetch_runtime_901.v0.1"
+TRANSPORT_SECURITY_HARDENING_TOKEN = "transport_security_hardening_1218b"
 CDL_077_DEPENDENCY = "cdl_077_want_have_want_block_fetch.v0.1"
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 CDL_042_DEPENDENCY = "cdl_042_ratified_407.v0.1"
@@ -54,6 +55,29 @@ _MAX_RESPONSE_BYTES = 1_048_576  # 1 MiB — OOM guard on inbound
 # Dep-chain guard
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_558.v0.1":
     raise RuntimeError("truth_primitive_fetch_runtime_gossip_transport_dep_mismatch")
+
+
+# ---------------------------------------------------------------------------
+# SSRF redirect guard
+# ---------------------------------------------------------------------------
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Reject all HTTP redirects — prevents SSRF via malicious peer redirect responses."""
+
+    def redirect_request(
+        self,
+        _req: urllib.request.Request,
+        _fp: object,
+        code: int,
+        _msg: str,
+        _headers: object,
+        newurl: str,
+    ) -> None:
+        raise FetchTransportError(
+            "fetch_redirect_not_permitted",
+            f"peer returned redirect {code} to {newurl}",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -141,8 +165,9 @@ def want_have(node_id: str, peer_endpoint: str) -> dict[str, Any]:
         method="POST",
         headers={"Content-Type": "application/json"},
     )
+    _opener = urllib.request.build_opener(_NoRedirectHandler, urllib.request.HTTPSHandler(context=ssl_ctx))
     try:
-        with urllib.request.urlopen(req, context=ssl_ctx, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
+        with _opener.open(req, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
             raw = resp.read(_MAX_RESPONSE_BYTES)
             parsed = json.loads(raw)
             if not isinstance(parsed, dict) or "have" not in parsed:
@@ -192,8 +217,9 @@ def want_block(node_id: str, peer_endpoint: str) -> bytes | None:
         method="POST",
         headers={"Content-Type": "application/json"},
     )
+    _opener = urllib.request.build_opener(_NoRedirectHandler, urllib.request.HTTPSHandler(context=ssl_ctx))
     try:
-        with urllib.request.urlopen(req, context=ssl_ctx, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
+        with _opener.open(req, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
             raw = resp.read(_MAX_RESPONSE_BYTES)
             return raw
     except urllib.error.HTTPError as exc:
@@ -309,10 +335,16 @@ def handle_want_block_request(
     body: bytes,
     store: Any,
     rate_limiter: FetchRateLimiter,
+    rate_limit_key: str | None = None,
 ) -> tuple[int, bytes]:
     """Server-side WANT-BLOCK handler.
 
-    Rate-checks the requester_id, then reads and returns the full node record.
+    Rate-checks the requester using rate_limit_key (preferred: transport-layer IP
+    from client_address[0]) to prevent identity spoofing via unauthenticated body.
+    Falls back to requester_id from body when rate_limit_key is None (direct callers,
+    tests). The requester_id from the body is included in 429 responses for audit
+    logging only — it is not used as the rate-limit identity when rate_limit_key
+    is provided.
 
     Returns:
         (200, record_bytes) if found and not rate-limited
@@ -330,6 +362,8 @@ def handle_want_block_request(
 
     node_id = parsed["node_id"]
     requester_id = parsed["requester_id"]
+    # Use transport-supplied key (IP) when available; fall back to body for direct callers.
+    effective_key = rate_limit_key if rate_limit_key is not None else requester_id
 
     if store is None:
         resp = json.dumps(
@@ -337,7 +371,7 @@ def handle_want_block_request(
         ).encode()
         return 503, resp
 
-    if not rate_limiter.check_and_consume(requester_id):
+    if not rate_limiter.check_and_consume(effective_key):
         resp = json.dumps(
             {"token": "fetch_rate_limit_exceeded", "requester_id": requester_id},
             sort_keys=True,

@@ -8,6 +8,7 @@ import json
 import os
 import re
 import shutil
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -98,21 +99,25 @@ def _validate_promotion_inputs(
 
 def _perform_promotion(src_bundle: Path, dest_dir: Path) -> dict:
     """Perform atomic copy of bundle."""
+    tmp_bundle = None
     try:
         dest_bundle = dest_dir / BUNDLE_DIR_NAME
         dest_dir.mkdir(parents=True, exist_ok=True)
-        
-        tmp_bundle = dest_dir / (BUNDLE_DIR_NAME + ".tmp")
-        if tmp_bundle.exists():
-            shutil.rmtree(tmp_bundle)
+
+        # Use mkdtemp for unique name; remove so copytree can populate the path
+        tmp_bundle = Path(tempfile.mkdtemp(dir=str(dest_dir), prefix=f".{BUNDLE_DIR_NAME}."))
+        shutil.rmtree(tmp_bundle)
         shutil.copytree(src_bundle, tmp_bundle)
-        
+
         if dest_bundle.exists():
             shutil.rmtree(dest_bundle)
         tmp_bundle.rename(dest_bundle)
-        
+        tmp_bundle = None  # successfully renamed — do not clean up
+
         return {"ok": True, "dest_bundle": dest_bundle}
     except OSError as e:
+        if tmp_bundle is not None and tmp_bundle.exists():
+            shutil.rmtree(tmp_bundle, ignore_errors=True)
         return {"ok": False, "error": f"promotion_failed:{e}"}
 
 
