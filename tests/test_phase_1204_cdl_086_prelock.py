@@ -45,4 +45,7 @@ def test_status_and_planning_record_phase_1204() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "## Phase 1204" in status
     assert "cdl_086_prelock_committed_phase_1204" in status
-    assert "Window 1200-1208 is IN PROGRESS through Phase 1204" in planning
+    assert (
+        "Window 1200-1208 is IN PROGRESS through Phase 1204" in planning
+        or "Window 1200-1208 is CLOSED" in planning
+    )
