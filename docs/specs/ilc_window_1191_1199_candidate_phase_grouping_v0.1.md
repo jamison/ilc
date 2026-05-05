@@ -123,6 +123,18 @@ Before or during Phase 1191:
 - Decide whether Phase 1197 should run this window if Phase 1195 or 1196 expands. Recommendation:
   include if capacity remains; otherwise defer without blocking closure.
 
+### Phase 1192 default decisions
+
+Unless superseded by later explicit human instruction:
+
+- v0.2 signing authorization has not been issued. Phase 1193 should use the documented
+  skip path unless `v0_2_signing_ceremony_authorized_phase_1193` and `GO Phase 1193` are
+  both issued before execution.
+- Phase 1195 remains scope-first. A bounded first tranche is acceptable only if code
+  inspection finds a small, unambiguous, testable runtime change with no protocol ambiguity.
+- Phase 1197 should be treated as firm-if-reached, not merely optional capacity filler. The
+  canon bundle repair may still defer if Phase 1195 or 1196 expands unexpectedly.
+
 ---
 
 ## 6. Carry-Forward Tokens
