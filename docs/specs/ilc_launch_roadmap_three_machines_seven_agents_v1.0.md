@@ -27,7 +27,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | SIM-SPECTRAL-05 economic-flow slice | Deferred | **Passed** (`sim_spectral_05_economic_flow_slice_pass`) |
 | SIM-SPECTRAL-05 gossip slice | Deferred | **Passed** (`sim_spectral_05_gossip_slice_pass`) |
 | SIM-SPECTRAL-05 framework | Partial | **Complete:** `sim_spectral_05_three_slice_observer_framework_complete` |
-| Public-launch packaging blocker | Label drift around CDL-001 | **Fresh-CDL routing:** likely CDL-086; CDL-001 is a dependency |
+| Public-launch packaging blocker | Label drift around CDL-001 | **CDL-086 is OPEN** (`cdl_086_public_launch_packaging_blocker_opened_phase_1194`); CDL-001 is a dependency |
 | v0.2 signing | Prerequisites met, unsigned | Still unsigned; explicit signing authorization absent |
 | Window state | Pre-1183 planning | Window 1191-1199 active through Phase 1192 |
 
@@ -53,7 +53,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | ADR-0036 Operational Release Key | **ACCEPTED** |
 | Genesis Atlas v0.1 signed | **IMMUTABLE** — 32 nodes, 55 edges, hash `ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c` |
 | Genesis Atlas v0.2 candidate | **41 nodes, 73 edges, unsigned** — signing prerequisites met; explicit human authorization required |
-| Public-launch packaging blocker | **SCOPED** — should open under a fresh CDL number, likely CDL-086 |
+| Public-launch packaging blocker | **OPEN** — CDL-086 opened in Phase 1194; not ratified |
 | Tier-3 runtime linkage | Governance met; runtime lane not yet implemented |
 | Persistent rate limiter | Open RC2 gate |
 
@@ -75,7 +75,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | 1 | CDL-085 ratified and active | **SATISFIED** |
 | 2 | v0.2 signing ceremony executed | **OPEN** — authorization absent |
 | 3 | Tier-3 runtime linkage | **OPEN** — Phase 1195 scope-first |
-| 4 | Public-launch packaging blocker evaluated/progressed | **OPEN** — Phase 1194 CDL-086 opening if authorized |
+| 4 | Public-launch packaging blocker evaluated/progressed | **IN PROGRESS** — CDL-086 is open, not ratified |
 | 5 | Persistent rate limiter | **OPEN** — Phase 1196 |
 | 6 | Truth-primitive permanence community ratification | **OPEN** — governance carry-forward |
 
@@ -103,11 +103,13 @@ v0_2_signing_ceremony_deferred_pending_signing_authorization
 
 ### Gap 2 — Public-Launch Packaging Blocker
 
-**Status:** Scoped; fresh CDL opening is next.
+**Status:** CDL-086 is open; ratification remains future work.
 
 Phase 1188 corrected the roadmap label drift. CDL-001 is ratified signer-lineage canon and
 is a dependency, not the public-launch packaging blocker target. The packaging blocker
-should open under a fresh CDL number, likely CDL-086 if it remains next fresh at execution.
+opened under fresh number CDL-086 in Phase 1194.
+
+`cdl_086_public_launch_packaging_blocker_opened_phase_1194`
 
 Opening scope should cover:
 
@@ -223,7 +225,7 @@ Sensitive gates remain unchanged:
 
 - v0.2 Atlas signing ceremony executed.
 - Any release key generated or registered in Window 1191-1199 so far.
-- CDL-086 opened or ratified yet.
+- CDL-086 ratified.
 - Any public launch claim.
 - Any public repository publication.
 - Counsel track completion.
