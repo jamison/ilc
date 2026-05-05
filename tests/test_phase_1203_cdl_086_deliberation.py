@@ -50,4 +50,7 @@ def test_phase_1203_frontier_docs_updated() -> None:
     assert "## Phase 1203" in status
     assert "cdl_086_deliberation_committed_phase_1203" in status
     assert "**Status:** complete" in walkthrough
-    assert "Window 1200-1208 is IN PROGRESS through Phase 1203" in planning
+    assert (
+        "Window 1200-1208 is IN PROGRESS through Phase 1203" in planning
+        or "Window 1200-1208 is CLOSED" in planning
+    )

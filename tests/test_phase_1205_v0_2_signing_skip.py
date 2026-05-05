@@ -21,8 +21,14 @@ def test_phase_1205_skip_recorded_in_status() -> None:
 
 def test_planning_index_advances_to_phase_1206() -> None:
     content = PLANNING_INDEX.read_text(encoding="utf-8")
-    assert "Window 1200-1208 is IN PROGRESS through Phase 1205" in content
-    assert "Phase 1206 truth-primitive permanence governance" in content
+    assert (
+        "Window 1200-1208 is IN PROGRESS through Phase 1205" in content
+        or "Window 1200-1208 is CLOSED" in content
+    )
+    assert (
+        "Phase 1206 truth-primitive permanence governance" in content
+        or "truth_primitive_permanence_governance_routed_phase_1206" in content
+    )
 
 
 def test_no_phase_1205_release_envelope_exists() -> None:

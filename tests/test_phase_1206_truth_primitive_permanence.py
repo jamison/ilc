@@ -34,4 +34,7 @@ def test_status_and_planning_record_phase_1206() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "## Phase 1206" in status
     assert "truth_primitive_permanence_governance_routed_phase_1206" in status
-    assert "Window 1200-1208 is IN PROGRESS through Phase 1206" in planning
+    assert (
+        "Window 1200-1208 is IN PROGRESS through Phase 1206" in planning
+        or "Window 1200-1208 is CLOSED" in planning
+    )

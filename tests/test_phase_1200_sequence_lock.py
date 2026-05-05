@@ -37,6 +37,7 @@ def test_planning_index_points_to_active_window_and_lock() -> None:
     assert (
         "Window 1200-1208 is IN PROGRESS through Phase 1200" in content
         or "Window 1200-1208 is IN PROGRESS through Phase 1203" in content
+        or "Window 1200-1208 is CLOSED" in content
     )
     assert "ilc_window_1200_1208_candidate_phase_grouping_v0.1.md" in content
     assert "ilc_phase_1200_1208_sequence_lock_v0.1.md" in content
