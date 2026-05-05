@@ -50,6 +50,9 @@ def test_phase_1197_frontier_docs_updated():
 
     assert "## Phase 1197" in status
     assert "canon_bundle_signing_repair_pass_phase_1197" in status
-    assert "Window 1191-1199 is IN PROGRESS through Phase 1197" in planning
+    assert (
+        "Window 1191-1199 is IN PROGRESS through Phase 1197" in planning
+        or "Window 1191-1199 is CLOSED" in planning
+    )
     assert "**Status:** complete" in walkthrough
     assert "canon_bundle_signing_repair_pass_phase_1197" in walkthrough
