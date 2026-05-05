@@ -108,7 +108,7 @@ def test_fetch_runtime_version_token():
 
 
 def test_http_transport_version_token():
-    assert HTTP_FETCH_TRANSPORT_RUNTIME_VERSION == "http_fetch_transport_runtime_902.v0.1"
+    assert HTTP_FETCH_TRANSPORT_RUNTIME_VERSION == "http_fetch_transport_runtime_1212.v0.2"
 
 
 def test_cdl_077_dependency_token_in_fetch_runtime():
