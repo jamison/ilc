@@ -200,10 +200,17 @@ Skip token: `v0_2_signing_ceremony_deferred_pending_signing_authorization`
 
 ### Phase 1222 — Reciprocal Fetch Admission Model Spec
 
-**NON-SENSITIVE. Mandatory design artifact.** The static rate limiter committed in
-Phase 1212 is explicitly a transport abuse circuit breaker, not ILC's final agent
-communication scaling policy (`transport_abuse_circuit_breaker_not_final_scaling_policy`).
-This phase produces the design spec that will eventually govern its successor.
+**NON-SENSITIVE. Mandatory design spec phase — two documents, no runtime code.** This is
+the design-spec phase for Window 1218-1224, producing substrates for two future
+implementation tracks.
+
+**Two-layer separation (explicit):** The graph projection interface (Deliverable B) is
+Layer 1/2 prior art — the canonical read-only export substrate agents consume. The L3
+sidecar infrastructure — the protocol by which external apps (including human visualization
+tools) attach to ILC, their contracts, authorization model, and data-consumption guarantees
+— is a *separate* future spec. Both layers are required before a visualization tool can be
+properly built. Neither is implemented this phase. L3 sidecar infrastructure spec is
+deferred to Window 1225+.
 
 Deliverable: `docs/specs/ilc_reciprocal_fetch_admission_model_spec_1222_v0.1.md`
 
