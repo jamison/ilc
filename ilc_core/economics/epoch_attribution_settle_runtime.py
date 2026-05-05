@@ -126,10 +126,12 @@ def evaluate_ejected_stake_vote(
         raise ValueError("approve_votes_must_not_exceed_participating_voters")
 
     total_members = len(members)
+    # No remaining active members means there is no valid voting population for CDL-083 Q1.
+    if total_members == 0:
+        return (False, [])
     # CDL-083 Q1: participating_voters counts votes from remaining members — the same
-    # population as remaining_member_stakes. Voters cannot exceed that pool unless there
-    # are zero remaining members (quorum will fail anyway via HCON02_QUORUM_MINIMUM_VOTERS).
-    if total_members > 0 and participating_voters > total_members:
+    # population as remaining_member_stakes. Voters cannot exceed that pool.
+    if participating_voters > total_members:
         raise ValueError("participating_voters_must_not_exceed_total_members")
     quorum_met = (
         participating_voters >= HCON02_QUORUM_MINIMUM_VOTERS
