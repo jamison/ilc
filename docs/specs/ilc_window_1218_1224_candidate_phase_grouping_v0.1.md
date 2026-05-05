@@ -67,7 +67,7 @@ RC2 gate status entering this window:
 | Phase | Topic | Sensitivity | Character |
 |-------|-------|-------------|-----------|
 | 1218 | Window sequence lock | SENSITIVE | Firm; requires `GO Phase 1218` |
-| 1219 | Truth-primitive permanence ratification ceremony | SENSITIVE | Firm; requires `GO Phase 1219` + human signers |
+| 1219 | Truth-primitive permanence ratification ceremony | SENSITIVE | Firm; requires `GO Phase 1219`; ratification by Genesis authority attestation |
 | 1220 | CDL-086 counsel disposition + ratification | SENSITIVE / constitutional | Requires `GO Phase 1220` + counsel disposition; contingent |
 | 1221 | v0.2 signing ceremony | SENSITIVE if executed | Requires `v0_2_signing_ceremony_authorized_phase_1221` + `GO Phase 1221`; skip-default |
 | 1222 | Reciprocal fetch admission model spec | NON-SENSITIVE | Firm; mandatory design artifact |
@@ -80,13 +80,11 @@ RC2 gate status entering this window:
 
 ### Phase 1219 — Truth-Primitive Permanence Ratification Ceremony
 
-**SENSITIVE. Requires `GO Phase 1219`.** This is a multi-party governance event.
-Codex prepares all ceremony materials. The actual ratification artifact requires human
-signers per the Phase 1211 packet §4 ratifier class:
-
-- At least 3 distinct Genesis founding/member signers.
-- At least 1 external witness signer (not counted among the 3).
-- Unanimous approval from all participating ratifiers.
+**SENSITIVE. Requires `GO Phase 1219`.** This is a Genesis authority attestation event.
+Codex prepares all ceremony materials. The actual ratification artifact requires a
+commit-anchored Genesis authority attestation per the Phase 1211 packet §4 ratifier class.
+Optional witness attestations may be included, but no multi-party signer roster is required
+for Genesis bootstrap governance.
 
 **Two-stage execution:**
 
@@ -99,8 +97,7 @@ Produce:
    - Link to Phase 1211 packet
    - Evidence bundle per packet §3 (all CDL/ADR/runtime/Genesis/SHA references resolved
      to actual current values)
-   - Signer roster template (fields: signer name, signer class, date, approval/objection,
-     signature or acknowledgement token)
+   - Attestation template (Genesis authority fields plus optional witness list)
    - Dissent field (required even if empty; must be explicitly recorded)
    - Threshold statement: Genesis authority attestation constitutes ratification;
      optional witness attestations may be included; dissent field required even if empty
@@ -109,9 +106,9 @@ Produce:
    - Primitive set covered (7 ADR-0004 New Seven; `star.map` excluded)
    - `commit.epoch` consensus-only exception carried forward
    - Non-bypass rule verbatim from packet §8
-   - Pending signer signatures
+   - Pending Genesis authority attestation
 
-**Stage B — Ratification commit (Human-authorized, after signatures collected):**
+**Stage B — Ratification commit (Human-authorized, after Genesis authority review):**
 
 Human reviews ceremony materials and, when ready, issues `GO Phase 1219 ratification
 commit`. Codex then:
@@ -310,7 +307,8 @@ Before Phase 1218 sequence lock or at first execution:
 
 **SENSITIVE** (require explicit GO):
 - Phase 1218 (sequence lock)
-- Phase 1219 (permanence ratification ceremony — also requires human signers for Stage B)
+- Phase 1219 (permanence ratification ceremony — Stage B requires Genesis authority
+  attestation)
 - Phase 1220 (CDL-086 ratification, if counsel disposition satisfied)
 - Phase 1221 (v0.2 signing, if authorized)
 - Phase 1224 (closure gate)
