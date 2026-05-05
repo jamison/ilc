@@ -2,7 +2,7 @@
 
 **Version:** v1.0
 **Produced:** 2026-05-05
-**Session context:** Window 1191-1199 is in progress through Phase 1197. Window
+**Session context:** Window 1191-1199 is in progress through Phase 1198. Window
 1183-1190 closed with CDL-085 ratified, `EDGE_MINT_PHI_BOUND = Decimal("0.60")`
 active in runtime, and all three SIM-SPECTRAL-05 observer slices complete. Capsule v5.44
 is current until Phase 1198 publishes v5.45.
