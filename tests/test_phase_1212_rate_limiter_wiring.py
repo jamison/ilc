@@ -7,6 +7,7 @@ from ilc_core.network.d2d.http_fetch_transport_runtime import (
     FetchTransportConfig,
     HttpFetchTransportRuntime,
     PERSISTENT_RATE_LIMITER_TRANSPORT_WIRING_TOKEN,
+    PERSISTENT_RATE_LIMITER_STATE_SAVE_FAILED_TOKEN,
     RECIPROCAL_FETCH_ADMISSION_CARRY_FORWARD,
     TRANSPORT_ABUSE_CIRCUIT_BREAKER_TOKEN,
 )
@@ -147,3 +148,24 @@ def test_phase_1212_policy_boundary_tokens_present():
         == "transport_abuse_circuit_breaker_not_final_scaling_policy"
     )
     assert RECIPROCAL_FETCH_ADMISSION_CARRY_FORWARD == "reciprocal_fetch_admission_model_required"
+
+
+def test_persistent_limiter_save_failure_fails_closed(monkeypatch, tmp_path):
+    path = tmp_path / "fetch_limiter.json"
+    _valid_persistent_state(path, limit=2)
+    config = FetchTransportConfig(persistent_limiter_path=path, rate_limit_window_id=5)
+    runtime = HttpFetchTransportRuntime(config)
+    runtime._store = _Store()
+
+    def _raise_os_error(_path):
+        raise OSError("simulated write failure")
+
+    monkeypatch.setattr(runtime._persistent_rate_limiter, "save", _raise_os_error)
+    status, body = runtime.handle_want_block(_body(requester_id="agent-save-fail"))
+
+    assert status == 429
+    assert _decode(body)["token"] == "fetch_rate_limit_exceeded"
+    assert {
+        "event": "fetch_rate_limiter_degraded",
+        "token": PERSISTENT_RATE_LIMITER_STATE_SAVE_FAILED_TOKEN,
+    } in config.event_log
