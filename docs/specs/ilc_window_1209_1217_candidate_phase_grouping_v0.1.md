@@ -86,9 +86,15 @@ in any settlement logic. This phase must implement ECU stripping in `settle_attr
 If a genuine protocol ambiguity blocks implementation, stop and document the specific
 blocker — do not produce a scoping doc.
 
-**Contract change:**
+**Contract change — two callsites:**
 
-`settle_attribution_batch()` requires a new parameter:
+Both `settle_attribution_batch()` and `EpochAttributionBatch.settle()` (the public batch
+API at `ilc_core/types.py:134`) must be updated together. `types.py` currently calls
+`settle_attribution_batch(self, stake_map, emitted_tokens)` without passing
+`epoch_node_mint_count`, leaving the public batch path silently unenforced even after
+Phase 1210. Both must carry the new parameter.
+
+`settle_attribution_batch()` in `epoch_attribution_settle_runtime.py`:
 
 ```python
 def settle_attribution_batch(
@@ -99,6 +105,19 @@ def settle_attribution_batch(
 ) -> list[tuple[str, Decimal]]:
 ```
 
+`EpochAttributionBatch.settle()` in `ilc_core/types.py`:
+
+```python
+def settle(
+    self,
+    stake_map: dict[str, dict[str, "Decimal"]],
+    emitted_tokens: Optional[list[str]] = None,
+    epoch_node_mint_count: int = 0,          # NEW — forwarded to settle_attribution_batch
+) -> list[tuple[str, "Decimal"]]:
+    ...
+    return settle_attribution_batch(self, stake_map, emitted_tokens, epoch_node_mint_count)
+```
+
 **Enforcement logic (PROVENANCE path only):**
 
 The φ-bound governs the ratio of provenance-equivalent edge-mint events to node-mint events
@@ -106,15 +125,27 @@ per epoch. Enforcement belongs at the Python attribution layer (ECU stripping), 
 Rust graph layer (branchial convergence is a batch/epoch property, not per-edge).
 
 Within `settle_attribution_batch()`, for the PROVENANCE path:
-- Track `provenance_events_processed` (count of PROVENANCE events in this batch call).
+- Track `provenance_events_processed: int = 0` before the batch loop.
 - Before paying each PROVENANCE event: if `epoch_node_mint_count > 0` and
   `Decimal(provenance_events_processed) / Decimal(epoch_node_mint_count) >= EDGE_MINT_PHI_BOUND`,
-  append token `edge_mint_phi_bound_exceeded` to `emitted_tokens` (if provided) and skip
-  payout (yield `Decimal("0")` or continue — no ECU emitted).
-- If `epoch_node_mint_count == 0`, skip enforcement (no node mints in epoch → ratio
-  undefined → allow all PROVENANCE events; this is the safe default for genesis/bootstrap).
+  append token `"edge_mint_phi_bound_exceeded"` to `emitted_tokens` (if provided) and skip
+  payout (ECU emitted is `Decimal("0")`).
+- If `epoch_node_mint_count == 0`, skip enforcement AND append token
+  `"edge_mint_phi_bound_enforcement_skipped_no_node_mints"` to `emitted_tokens` (if provided).
+  This makes the skip observable at the call site; callers cannot bypass enforcement silently
+  by omission.
 - Increment `provenance_events_processed` after each PROVENANCE event regardless of
   whether payout was suppressed.
+
+**Threshold example** (concrete for test authoring):
+With `epoch_node_mint_count=5` and `EDGE_MINT_PHI_BOUND=0.60`:
+- Event 1: ratio = 0/5 = 0.00 → allow (paid)
+- Event 2: ratio = 1/5 = 0.20 → allow (paid)
+- Event 3: ratio = 2/5 = 0.40 → allow (paid)
+- Event 4: ratio = 3/5 = 0.60 → **STRIP** (≥ 0.60); `edge_mint_phi_bound_exceeded` emitted
+- Event 5+: ratio ≥ 0.60 → strip
+
+Exactly 3 PROVENANCE payouts are allowed; the 4th is stripped.
 
 **Runtime version bump:**
 
@@ -122,25 +153,34 @@ Within `settle_attribution_batch()`, for the PROVENANCE path:
 EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1210.v0.7"
 ```
 
-**Minimum tests (in `tests/test_phase_1210_phi_bound_enforcement.py`, minimum 8):**
+**Minimum tests (in `tests/test_phase_1210_phi_bound_enforcement.py`, minimum 10):**
 
-1. `test_phi_bound_not_enforced_when_node_mint_count_zero` — `epoch_node_mint_count=0`,
-   all PROVENANCE events pay out normally
+1. `test_phi_bound_skips_enforcement_when_node_mint_count_zero_emits_token` —
+   `epoch_node_mint_count=0`, all PROVENANCE events pay out normally AND token
+   `edge_mint_phi_bound_enforcement_skipped_no_node_mints` is appended to `emitted_tokens`
 2. `test_phi_bound_allows_events_below_threshold` — ratio < 0.60, all events pay
-3. `test_phi_bound_strips_ecu_at_threshold` — ratio reaches exactly 0.60, event at
-   threshold is stripped; token `edge_mint_phi_bound_exceeded` emitted
-4. `test_phi_bound_strips_ecu_above_threshold` — ratio > 0.60, excess events stripped
-5. `test_phi_bound_does_not_affect_reuse_events` — REUSE events unaffected by bound
-6. `test_phi_bound_does_not_affect_co_authorship_events` — CO_AUTHORSHIP unaffected
-7. `test_phi_bound_uses_decimal_not_float` — confirm `EDGE_MINT_PHI_BOUND` is `Decimal`
-   and arithmetic uses no float
+3. `test_phi_bound_strips_ecu_at_threshold` — `epoch_node_mint_count=5`; events 1-3 pay
+   (ratios 0/5, 1/5, 2/5 < 0.60); event 4 is stripped (ratio 3/5 = 0.60 ≥ bound);
+   token `edge_mint_phi_bound_exceeded` emitted
+4. `test_phi_bound_strips_ecu_above_threshold` — ratio > 0.60, subsequent events stripped;
+   ECU payout is `Decimal("0")` for stripped events
+5. `test_phi_bound_does_not_affect_reuse_events` — REUSE events unaffected regardless of ratio
+6. `test_phi_bound_does_not_affect_co_authorship_events` — CO_AUTHORSHIP events unaffected
+7. `test_phi_bound_uses_decimal_not_float` — `EDGE_MINT_PHI_BOUND` is `Decimal`; ratio
+   computation uses no `float`; verify `isinstance(EDGE_MINT_PHI_BOUND, Decimal)`
 8. `test_runtime_version_contains_1210` — version string contains `"1210"` and `"v0.7"`
+9. `test_batch_settle_method_forwards_epoch_node_mint_count` — `EpochAttributionBatch.settle()`
+   in `ilc_core/types.py` accepts `epoch_node_mint_count` and φ-bound is enforced through
+   that path (not just via the direct `settle_attribution_batch()` call)
+10. `test_negative_epoch_node_mint_count_raises` — negative `epoch_node_mint_count` raises
+    `ValueError("epoch_node_mint_count_must_be_non_negative")`
 
 Also add a regression test to `tests/test_phase_1185_cdl_085_ratification.py` asserting
 that submitting PROVENANCE events exceeding the φ-bound suppresses ECU output.
 
-Hard pass condition: all tests pass; `epoch_node_mint_count=0` is backward-compatible
-with all existing tests (callers that don't supply it get the genesis-safe default).
+Hard pass condition: all 10 tests pass; `epoch_node_mint_count=0` is backward-compatible
+with all existing tests (callers that don't supply it get the genesis-safe default and
+emit the skip token). The skip token must be emitted — the zero-count path is not silent.
 
 Commit subject: `feat(runtime): phase 1210 phi-bound enforcement in settle_attribution_batch`
 
@@ -192,20 +232,27 @@ Implementation target:
 
 - Add `persistent_limiter_path: Optional[Path] = None` to `FetchTransportConfig` or
   equivalent config struct in `ilc_core/network/d2d/http_fetch_transport_runtime.py`
-- When `persistent_limiter_path` is set, instantiate `PersistentFetchRateLimiter` and
-  use it for WANT-BLOCK handling instead of the in-memory `FetchRateLimiter`
+- When `persistent_limiter_path` is set, call `PersistentFetchRateLimiter.load(path)`.
+  The backend's `load()` is fail-closed: on corrupt/missing/version-mismatch state, it
+  returns a fresh fail-closed limiter internally. The wiring layer must preserve this
+  behavior AND make it observable: detect whether a reset occurred (e.g. by comparing
+  state before and after, or by inspecting load return metadata) and append token
+  `"persistent_rate_limiter_state_reset_on_load_failure"` to the transport's emitted
+  tokens list. Do not silently discard the reset.
 - Save limiter state on each successful WANT-BLOCK response (or on a configurable
   save-interval if per-request save is too expensive)
 - In-memory `FetchRateLimiter` remains the default when `persistent_limiter_path` is None
 - No CDL-077 semantic changes — limit value, 429 token, WANT-HAVE behavior all unchanged
 
-Minimum tests (in `tests/test_phase_1212_rate_limiter_wiring.py`, minimum 5):
+Minimum tests (in `tests/test_phase_1212_rate_limiter_wiring.py`, minimum 6):
 
 1. `test_default_config_uses_in_memory_limiter` — no path set → in-memory limiter active
 2. `test_persistent_config_loads_limiter` — path set → `PersistentFetchRateLimiter` used
 3. `test_persistent_limiter_survives_reload` — save + reload + rate limit respected
 4. `test_want_have_unaffected` — WANT-HAVE never rate-limited regardless of config
 5. `test_429_token_unchanged` — `fetch_rate_limit_exceeded` token still emitted on over-limit
+6. `test_persistent_limiter_load_failure_emits_degradation_token` — corrupt/missing state
+   → limiter starts fresh AND `persistent_rate_limiter_state_reset_on_load_failure` emitted
 
 Token: `persistent_rate_limiter_transport_wiring_committed_phase_1212`
 
@@ -298,22 +345,23 @@ Token: `capsule_v5_47_supersedes_v5_46`
 
 ---
 
-## 5. Open Human Decisions
+## 5. Human Decisions (RESOLVED 2026-05-05)
 
-Before or at Phase 1209 sequence lock:
+1. **v0.2 signing authorization** — DEFERRED. Do not sign before Phase 1210 φ-bound
+   enforcement and Phase 1212 transport wiring are implemented and closed. Target is the
+   next window after 1217, assuming no closure-gate findings. Phase 1215 is skip-default
+   this window; carry forward `v0_2_signing_ceremony_deferred_pending_signing_authorization`.
 
-1. **v0.2 signing authorization** — issue `v0_2_signing_ceremony_authorized_phase_1215`
-   or confirm carry-forward. Handoff recommends scheduling as an early sensitive phase if
-   no blocker found — but only after 1210-1213 land.
+2. **CDL-086 counsel disposition** — CONDITIONAL SKIP. Do not execute Phase 1214 unless
+   all five counsel items (license, contributor agreement, trademark, documentation license,
+   commit-history treatment) have explicit dispositions. If counsel is not ready, Phase 1214
+   records `cdl_086_ratification_deferred_pending_counsel_disposition` and skips.
 
-2. **CDL-086 counsel disposition** — before `GO Phase 1214`:
-   - Either initiate counsel engagement and record partial or full approval, or
-   - Issue an explicit human-authorized constitutional deferral for each counsel item.
-   Phase 1214 cannot execute without one of these two paths recorded.
-
-3. **Truth-primitive permanence sunset boundary** — Phase 1211 must name a concrete
-   phase/window bound. Human input needed: what is the latest acceptable window before
-   Genesis governance sunset is considered unsafe? Record before Phase 1211 executes.
+3. **Truth-primitive permanence sunset boundary** — RESOLVED. Target ratification window:
+   **Window 1218-1224**. Hard unsafe-after boundary: **Window 1225-1232 closure**. No
+   public RC claim or public launch claim may imply truth-primitive permanence after that
+   boundary unless ratification completes or is explicitly superseded by a ratified CDL.
+   Phase 1211 must record these bounds in the packet.
 
 ---
 
