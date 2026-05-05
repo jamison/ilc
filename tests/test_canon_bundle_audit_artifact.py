@@ -8,6 +8,18 @@ import hashlib
 from pathlib import Path
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_pipeline"]
+USE_TESTING_CANON_EXPORT_SNAPSHOT = True
+TESTING_CANON_EXPORT_SNAPSHOT = (
+    Path(__file__).resolve().parent
+    / "fixtures"
+    / "canon_bundle_valid_export_v0_1_snapshot.json"
+)
+
+
+def _testing_export_snapshot() -> dict:
+    if not USE_TESTING_CANON_EXPORT_SNAPSHOT:
+        raise AssertionError("canon_bundle_testing_snapshot_disabled")
+    return json.loads(TESTING_CANON_EXPORT_SNAPSHOT.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(autouse=True)
@@ -21,7 +33,7 @@ class TestCanonBundleAuditArtifact:
     def valid_bundle(self, tmp_path):
         from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
         bundle = tmp_path / "bundle"
-        export = {"canon_hash": "abc123", "canon_export_format": "v0.1"}
+        export = _testing_export_snapshot()
         validation = {"ok": True, "errors": [], "warnings": []}
         write_canon_export_bundle(export, validation, bundle)
         return bundle
