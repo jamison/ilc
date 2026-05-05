@@ -54,7 +54,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 | Genesis Atlas v0.1 signed | **IMMUTABLE** — 32 nodes, 55 edges, hash `ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c` |
 | Genesis Atlas v0.2 candidate | **41 nodes, 73 edges, unsigned** — signing prerequisites met; explicit human authorization required |
 | Public-launch packaging blocker | **OPEN** — CDL-086 opened in Phase 1194; not ratified |
-| Tier-3 runtime linkage | Governance met; runtime lane not yet implemented |
+| Tier-3 runtime linkage | Scope committed in Phase 1195; runtime lane not yet implemented |
 | Persistent rate limiter | Open RC2 gate |
 
 ---
@@ -74,7 +74,7 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 |---|------|--------|
 | 1 | CDL-085 ratified and active | **SATISFIED** |
 | 2 | v0.2 signing ceremony executed | **OPEN** — authorization absent |
-| 3 | Tier-3 runtime linkage | **OPEN** — Phase 1195 scope-first |
+| 3 | Tier-3 runtime linkage | **SCOPED** — `tier3_runtime_linkage_scope_committed_phase_1195`; implementation remains open |
 | 4 | Public-launch packaging blocker evaluated/progressed | **IN PROGRESS** — CDL-086 is open, not ratified |
 | 5 | Persistent rate limiter | **OPEN** — Phase 1196 |
 | 6 | Truth-primitive permanence community ratification | **OPEN** — governance carry-forward |
@@ -122,10 +122,16 @@ Opening scope should cover:
 
 ### Gap 3 — Tier-3 Runtime Linkage
 
-**Status:** Governance prerequisite met; runtime work open.
+**Status:** Tier-3 runtime linkage scope committed; runtime implementation remains open.
 
 ADR-0020 is accepted. Phase 1195 should remain scope-first, with bounded implementation
 only if inspection shows a small, unambiguous, testable first tranche.
+
+Phase 1195 published:
+
+`tier3_runtime_linkage_scope_committed_phase_1195`
+
+No Tier-3 runtime token was introduced.
 
 ### Gap 4 — Persistent Rate Limiter
 
