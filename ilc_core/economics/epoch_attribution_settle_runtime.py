@@ -28,7 +28,7 @@ from ilc_core.types import (
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1185.v0.6"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1210.v0.7"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
@@ -184,6 +184,7 @@ def settle_attribution_batch(
     batch: "EpochAttributionBatch",
     stake_map: dict[str, dict[str, Decimal]],
     emitted_tokens: Optional[list[str]] = None,
+    epoch_node_mint_count: int = 0,
 ) -> list[tuple[str, Decimal]]:
     """Process a batch of attribution events and return ECU payout quotes.
 
@@ -196,6 +197,8 @@ def settle_attribution_batch(
             Empty inner dict → zero-member commons path (CDL-081 §4.6).
         emitted_tokens: Optional mutable list. If provided, protocol event tokens
             (e.g. cdl_081_zero_member_commons_transition) are appended here.
+        epoch_node_mint_count: Count of node-mint events in the epoch. Used by
+            CDL-085 φ-bound enforcement for PROVENANCE payout suppression.
 
     Returns:
         List of (agent_id, ecu_amount) Decimal payout quotes. May contain multiple
@@ -204,7 +207,12 @@ def settle_attribution_batch(
     Raises:
         ValueError: If a REFUTATION event lacks an explicit refuting_agent_id.
     """
+    if type(epoch_node_mint_count) is not int or epoch_node_mint_count < 0:
+        raise ValueError("epoch_node_mint_count_must_be_non_negative")
+
     payouts: list[tuple[str, Decimal]] = []
+    provenance_events_processed = 0
+    zero_count_skip_token_emitted = False
 
     for event in batch.events:
         # CDL-081 §4.1: fresh visited_set per event — no cross-event contamination.
@@ -254,6 +262,18 @@ def settle_attribution_batch(
             # CDL-084 §3.4: PROVENANCE chain attribution.
             # Q10: malformed chains fail closed with stable error tokens before payout.
             chain = _validate_provenance_chain(attr_event.provenance_chain)
+            phi_bound_exceeded = False
+            if epoch_node_mint_count == 0:
+                if emitted_tokens is not None and not zero_count_skip_token_emitted:
+                    emitted_tokens.append("edge_mint_phi_bound_enforcement_skipped_no_node_mints")
+                    zero_count_skip_token_emitted = True
+            else:
+                provenance_ratio = (
+                    Decimal(provenance_events_processed) / Decimal(epoch_node_mint_count)
+                )
+                phi_bound_exceeded = provenance_ratio >= EDGE_MINT_PHI_BOUND
+                if phi_bound_exceeded and emitted_tokens is not None:
+                    emitted_tokens.append("edge_mint_phi_bound_exceeded")
 
             # Q5/Q7: pay each creator at most once per event; nearest hop wins.
             visited_creators: set[str] = set()
@@ -263,10 +283,14 @@ def settle_attribution_batch(
                 if creator_id in visited_creators:
                     continue  # Q7: nearest hop wins; skip duplicate creators.
                 visited_creators.add(creator_id)
+                if phi_bound_exceeded:
+                    payouts.append((creator_id, _ZERO))
+                    continue
                 # Q2: geometric decay — alpha^(hop+1), where hop_index 0 = hop 1.
                 decay = PROVENANCE_DECAY_ALPHA ** (hop_index + 1)
                 payout = REUSE_ATTRIBUTION_RATE * decay
                 payouts.append((creator_id, payout))
+            provenance_events_processed += 1
 
         else:
             # §4.3 ATTESTATION, EPOCH_BOUNDARY — silently ignored.

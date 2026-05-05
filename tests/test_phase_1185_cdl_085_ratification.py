@@ -42,7 +42,7 @@ def test_runtime_version_updated() -> None:
     import ilc_core.economics.epoch_attribution_settle_runtime as rt
 
     assert rt.EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == (
-        "epoch_attribution_settle_runtime_1185.v0.6"
+        "epoch_attribution_settle_runtime_1210.v0.7"
     )
 
 
@@ -50,6 +50,38 @@ def test_runtime_imports_phi_bound() -> None:
     import ilc_core.economics.epoch_attribution_settle_runtime as rt
 
     assert rt.EDGE_MINT_PHI_BOUND == Decimal("0.60")
+
+
+def test_phi_bound_runtime_suppresses_excess_provenance_ecu() -> None:
+    from ilc_core.economics.epoch_attribution_settle_runtime import (
+        AttributionEvent,
+        settle_attribution_batch,
+    )
+    from ilc_core.types import EdgeType, EpochAttributionBatch
+
+    batch = EpochAttributionBatch(epoch=1)
+    for index in range(1, 5):
+        batch.add_event(
+            AttributionEvent(
+                edge_type=EdgeType.PROVENANCE,
+                target_creator_id="unused_target_creator",
+                star_node_id=None,
+                epoch=1,
+                provenance_chain=((f"node_{index}", f"creator_{index}"),),
+            )
+        )
+    batch.seal()
+    emitted_tokens: list[str] = []
+
+    payouts = settle_attribution_batch(
+        batch,
+        stake_map={},
+        emitted_tokens=emitted_tokens,
+        epoch_node_mint_count=5,
+    )
+
+    assert payouts[-1] == ("creator_4", Decimal("0"))
+    assert "edge_mint_phi_bound_exceeded" in emitted_tokens
 
 
 def test_cdl_085_prelock_historical() -> None:
