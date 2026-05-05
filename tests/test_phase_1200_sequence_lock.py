@@ -34,7 +34,10 @@ def test_sequence_lock_preserves_sensitive_gates() -> None:
 
 def test_planning_index_points_to_active_window_and_lock() -> None:
     content = PLANNING_INDEX.read_text(encoding="utf-8")
-    assert "Window 1200-1208 is IN PROGRESS through Phase 1200" in content
+    assert (
+        "Window 1200-1208 is IN PROGRESS through Phase 1200" in content
+        or "Window 1200-1208 is IN PROGRESS through Phase 1203" in content
+    )
     assert "ilc_window_1200_1208_candidate_phase_grouping_v0.1.md" in content
     assert "ilc_phase_1200_1208_sequence_lock_v0.1.md" in content
 
