@@ -84,7 +84,7 @@ Public-launch blocker frontier:
 | 1194 | CDL-086 public-launch packaging blocker opening | SENSITIVE constitutional | Requires `GO Phase 1194` and CDL mutation env |
 | 1195 | Tier-3 runtime linkage scoping / first tranche | NON-SENSITIVE | Firm |
 | 1196 | Persistent rate limiter scoping / bounded implementation | NON-SENSITIVE | Firm |
-| 1197 | Canon bundle signing repair | NON-SENSITIVE | Conditional tail; run if capacity remains |
+| 1197 | Canon bundle signing repair | NON-SENSITIVE | Complete; `canon_bundle_signing_repair_pass_phase_1197` |
 | 1198 | Coherence report + capsule v5.45 | NON-SENSITIVE | Firm |
 | 1199 | Window closure gate | SENSITIVE | Firm; requires `GO Phase 1199` |
 
@@ -155,7 +155,7 @@ Expected new tokens:
 - `cdl_086_public_launch_packaging_blocker_opened_phase_1194`
 - `tier3_runtime_linkage_scope_committed_phase_1195`
 - `persistent_rate_limiter_scope_committed_phase_1196`
-- `canon_bundle_signing_repair_triaged_phase_1197`
+- `canon_bundle_signing_repair_pass_phase_1197`
 - `capsule_v5_45_supersedes_v5_44`
 - `window_1191_1199_closed_phase_1199`
 

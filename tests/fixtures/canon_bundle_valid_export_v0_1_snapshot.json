@@ -1,0 +1,30 @@
+{
+  "canon_export_format": "v0.1",
+  "canon_hash": "abc123",
+  "computed_hash": "abc123",
+  "epochs": [
+    {
+      "epoch_id": "phase-1197-test-epoch"
+    }
+  ],
+  "exported_at": "2026-05-05T00:00:00+00:00",
+  "kpis": {
+    "balance_count": 1,
+    "epoch_count": 1,
+    "snapshot_count": 1
+  },
+  "meta": {
+    "balance_count": 1,
+    "canon_export_version": "v0.1",
+    "epoch_count": 1,
+    "snapshot_count": 1
+  },
+  "snapshots": [
+    {
+      "balances": {
+        "agent:test": "1.00"
+      },
+      "epoch_id": "phase-1197-test-epoch"
+    }
+  ]
+}
