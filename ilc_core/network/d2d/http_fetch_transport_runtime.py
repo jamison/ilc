@@ -23,13 +23,25 @@ import socket
 import threading
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Any
 
 from ilc_core.network.d2d import truth_primitive_fetch_runtime as _fetch_rt
+from ilc_core.network.d2d.persistent_fetch_rate_limiter_runtime import (
+    PersistentFetchRateLimiter,
+)
 
-HTTP_FETCH_TRANSPORT_RUNTIME_VERSION = "http_fetch_transport_runtime_902.v0.1"
+HTTP_FETCH_TRANSPORT_RUNTIME_VERSION = "http_fetch_transport_runtime_1212.v0.2"
 CDL_077_DEPENDENCY = "cdl_077_want_have_want_block_fetch.v0.1"
 FETCH_RUNTIME_DEPENDENCY = "truth_primitive_fetch_runtime_901.v0.1"
+PERSISTENT_RATE_LIMITER_DEPENDENCY = "persistent_fetch_rate_limiter_runtime_1202.v0.1"
+PERSISTENT_RATE_LIMITER_TRANSPORT_WIRING_TOKEN = (
+    "persistent_rate_limiter_transport_wiring_committed_phase_1212"
+)
+TRANSPORT_ABUSE_CIRCUIT_BREAKER_TOKEN = (
+    "transport_abuse_circuit_breaker_not_final_scaling_policy"
+)
+RECIPROCAL_FETCH_ADMISSION_CARRY_FORWARD = "reciprocal_fetch_admission_model_required"
 
 _MAX_INBOUND_BYTES = 65_536  # 64 KiB — request body OOM guard
 _CONTENT_LENGTH_MISSING_TOKEN = "fetch_content_length_missing"
@@ -52,8 +64,30 @@ class FetchTransportConfig:
     bind_port: int = 0  # 0 → OS assigns free port
     store_path: str = ""
     rate_limit_per_minute: int = _fetch_rt.WANT_BLOCK_RATE_LIMIT_PER_MINUTE
+    rate_limit_window_id: int = 0
+    persistent_limiter_path: Path | None = None
     request_timeout_seconds: float = 5.0
     event_log: list[dict[str, Any]] = field(default_factory=list)
+
+
+class _PersistentFetchRateLimiterAdapter:
+    """Adapter matching the in-memory limiter API expected by the fetch handler."""
+
+    def __init__(
+        self,
+        limiter: PersistentFetchRateLimiter,
+        path: Path,
+        window_id: int,
+    ) -> None:
+        self.limiter = limiter
+        self.path = path
+        self.window_id = window_id
+
+    def check_and_consume(self, requester_id: str) -> bool:
+        allowed = self.limiter.check_and_consume(requester_id, self.window_id)
+        if allowed:
+            self.limiter.save(self.path)
+        return allowed
 
 
 # ---------------------------------------------------------------------------
@@ -85,12 +119,39 @@ class HttpFetchTransportRuntime:
         }
         self._server: ThreadingHTTPServer | None = None
         self._thread: threading.Thread | None = None
-        self._rate_limiter = _fetch_rt.FetchRateLimiter(config.rate_limit_per_minute)
+        self._persistent_limiter_path = config.persistent_limiter_path
+        self._persistent_rate_limiter: PersistentFetchRateLimiter | None = None
+        self._rate_limiter = self._build_rate_limiter()
         self._store: Any = None  # opened lazily on start() if store_path is set
 
     def _record(self, event: str, **kwargs: Any) -> None:
         entry = {"event": event, **kwargs}
         self.config.event_log.append(entry)
+
+    def _build_rate_limiter(self) -> Any:
+        if self._persistent_limiter_path is None:
+            return _fetch_rt.FetchRateLimiter(self.config.rate_limit_per_minute)
+        if (
+            not isinstance(self.config.rate_limit_window_id, int)
+            or isinstance(self.config.rate_limit_window_id, bool)
+            or self.config.rate_limit_window_id < 0
+        ):
+            raise ValueError("fetch_rate_limit_window_id_invalid")
+
+        path = Path(self._persistent_limiter_path)
+        state_file_existed = path.exists()
+        limiter = PersistentFetchRateLimiter.load(path)
+        self._persistent_rate_limiter = limiter
+        if not state_file_existed or limiter.fail_closed:
+            self._record(
+                "fetch_rate_limiter_degraded",
+                token="persistent_rate_limiter_state_reset_on_load_failure",
+            )
+        return _PersistentFetchRateLimiterAdapter(
+            limiter,
+            path,
+            self.config.rate_limit_window_id,
+        )
 
     def _open_store(self) -> Any:
         """Open LMDB store if store_path is configured, else return None."""
