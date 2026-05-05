@@ -164,7 +164,9 @@ def test_g4b_refuting_agent_id_is_payout_recipient():
 
 
 def test_g5_version_token_phase_1126():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
+    # Version advanced to v0.6 at Phase 1185 (CDL-085 runtime activation).
+    # Further advanced for quorum guard fix (Gemini audit finding, Phase 1200-1208).
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1185.v0.6"
 
 
 # ---------------------------------------------------------------------------
@@ -207,20 +209,22 @@ def test_g7_cdl_log_row_is_ratified():
 
 
 def test_g8a_exact_2_of_3_passes_threshold():
+    # 3 remaining members, 3 participate (100% quorum), 2 approve (2/3 >= threshold).
     ok, payouts = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {"a": Decimal("50"), "b": Decimal("50"), "c": Decimal("50")},
         approve_votes=2,
         participating_voters=3,
     )
     assert ok
-    assert len(payouts) == 2
+    assert len(payouts) == 3
 
 
 def test_g8b_exact_4_of_6_passes_threshold():
+    # 6 remaining members, 6 participate (100% quorum), 4 approve (4/6 = 2/3 >= threshold).
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {k: Decimal("50") for k in "abcdef"},
         approve_votes=4,
         participating_voters=6,
     )
@@ -228,9 +232,10 @@ def test_g8b_exact_4_of_6_passes_threshold():
 
 
 def test_g8c_exact_6_of_9_passes_threshold():
+    # 9 remaining members, 9 participate (100% quorum), 6 approve (6/9 = 2/3 >= threshold).
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {k: Decimal("50") for k in "abcdefghi"},
         approve_votes=6,
         participating_voters=9,
     )
@@ -258,9 +263,10 @@ def test_g8e_hard_minimum_two_voters_blocks_one_voter():
 
 
 def test_g8f_threshold_failure_one_of_three():
+    # 3 remaining members, 3 participate, only 1 approves (1/3 < 2/3 threshold).
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {"a": Decimal("50"), "b": Decimal("50"), "c": Decimal("50")},
         approve_votes=1,
         participating_voters=3,
     )
@@ -384,3 +390,27 @@ def test_g12_non_decimal_member_stake_rejected():
             approve_votes=1,
             participating_voters=1,
         )
+
+
+def test_g12_participating_voters_must_not_exceed_total_members():
+    # Gemini audit finding (Phase 1134-1195 pass): participating_voters > len(members)
+    # silently auto-clears quorum floor — e.g. 100 voters / 5 members = 2000% quorum.
+    # Fix: explicit guard before quorum calculation.
+    with pytest.raises(ValueError, match="participating_voters_must_not_exceed_total_members"):
+        evaluate_ejected_stake_vote(
+            Decimal("100"),
+            {"a": Decimal("50"), "b": Decimal("50"), "c": Decimal("50")},
+            approve_votes=2,
+            participating_voters=10,  # 10 voters, only 3 members — invalid
+        )
+
+
+def test_g12_participating_voters_equal_to_total_members_is_valid():
+    # Boundary: participating_voters == len(members) must be accepted.
+    ok, _ = evaluate_ejected_stake_vote(
+        Decimal("100"),
+        {"a": Decimal("50"), "b": Decimal("50")},
+        approve_votes=2,
+        participating_voters=2,  # all members voted — valid
+    )
+    assert ok is True
