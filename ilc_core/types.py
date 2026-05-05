@@ -135,6 +135,7 @@ class EpochAttributionBatch:
         self,
         stake_map: dict[str, dict[str, "Decimal"]],
         emitted_tokens: Optional[list[str]] = None,
+        epoch_node_mint_count: int = 0,
     ) -> list[tuple[str, "Decimal"]]:
         """Process all events and return ECU attribution payout quotes.
 
@@ -145,13 +146,15 @@ class EpochAttributionBatch:
             stake_map: {star_node_id: {member_agent_id: stake_amount}}
                 For REUSE events, stake_map is not accessed.
             emitted_tokens: Optional mutable list for protocol event tokens.
+            epoch_node_mint_count: Count of node-mint events in the epoch. Forwarded
+                to the attribution runtime for CDL-085 φ-bound enforcement.
         Returns:
             List of (agent_id, ecu_amount) Decimal payouts. This method does not
             mutate balances; callers are responsible for applying the returned
             payouts at most once.
         """
         from ilc_core.economics.epoch_attribution_settle_runtime import settle_attribution_batch
-        return settle_attribution_batch(self, stake_map, emitted_tokens)
+        return settle_attribution_batch(self, stake_map, emitted_tokens, epoch_node_mint_count)
 
 
 # THE KERNEL TAXONOMY

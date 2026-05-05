@@ -163,9 +163,9 @@ def test_g4b_refuting_agent_id_is_payout_recipient():
 # ---------------------------------------------------------------------------
 
 
-def test_g5_version_token_phase_1185():
-    # Version advanced to v0.6 at Phase 1185 (CDL-085 runtime activation).
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1185.v0.6"
+def test_g5_version_token_phase_1210():
+    # Version advanced to v0.7 at Phase 1210 (CDL-085 phi-bound enforcement).
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1210.v0.7"
 
 
 # ---------------------------------------------------------------------------
