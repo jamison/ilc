@@ -163,9 +163,8 @@ def test_g4b_refuting_agent_id_is_payout_recipient():
 # ---------------------------------------------------------------------------
 
 
-def test_g5_version_token_phase_1126():
+def test_g5_version_token_phase_1185():
     # Version advanced to v0.6 at Phase 1185 (CDL-085 runtime activation).
-    # Further advanced for quorum guard fix (Gemini audit finding, Phase 1200-1208).
     assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1185.v0.6"
 
 
@@ -346,14 +345,14 @@ def test_g11_distribution_25_75_exact():
     assert payout_map["b"] == Decimal("75")
 
 
-def test_g11_distribution_all_zero_stake_edge_case_returns_empty_payouts():
+def test_g11_distribution_no_remaining_members_is_invalid():
     ok, payouts = evaluate_ejected_stake_vote(
         Decimal("100"),
         {},
         approve_votes=2,
         participating_voters=2,
     )
-    assert ok
+    assert not ok
     assert payouts == []
 
 

@@ -68,6 +68,13 @@ Carry-forward tokens into this window:
 - `tier3_runtime_linkage_scope_committed_phase_1195`
 - `persistent_rate_limiter_scope_committed_phase_1196`
 
+Pre-1204 Gemini audit carry-forward discovered during this window:
+
+- `edge_mint_phi_bound_enforcement_not_yet_implemented` — `EDGE_MINT_PHI_BOUND`
+  is active as a ratified `Decimal("0.60")` constant, but settlement-time enforcement
+  still needs a dedicated Window 1209+ phase spec. Expected direction: Python
+  attribution-layer ECU stripping on the epoch/batch property, not Rust graph rejection.
+
 ---
 
 ## 3. Phase Table
