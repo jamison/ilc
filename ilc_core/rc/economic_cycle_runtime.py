@@ -22,7 +22,7 @@ from ilc_core.ledger.ledger_export import (
 )
 from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
-from ilc_core.protocol.event_log import ProtocolEventLog, make_commit_epoch_event, make_event
+from ilc_core.protocol.event_log import ProtocolEventLog, make_canonical_commit_epoch_event, make_event
 from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
 from ilc_core.types import LinkRecord, Node
 
@@ -451,11 +451,10 @@ def settle_economic_cycle(*, scenario_root: Path, output_root: Path) -> dict[str
         "epoch_events_cid": f"sha256:{claim_batch_sha256}",
         "epoch_state_cid": f"sha256:{_sha256_json(scenario_manifest)}",
     }
-    commit_event = make_commit_epoch_event(
+    commit_event = make_canonical_commit_epoch_event(
         epoch_index=epoch_index,
         epoch_id=epoch_id,
         namespace_id="rc0_1_three_node",
-        created_at=_utc_now(),
         finalization_state="committed",
         summary={
             "task_count": 1,

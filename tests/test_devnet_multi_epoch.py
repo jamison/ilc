@@ -147,7 +147,7 @@ def test_multi_epoch_with_ledger_backend(multi_epoch_setup):
     # But distribution logic runs regardless.
     # If total_reward > 0, someone should have balance.
     total_reward = record["summary"]["reward_total"]
-    if total_reward > 0:
+    if total_reward != "0":
         assert any(ledger.get_balance(a_id) > 0 for a_id in profiles.keys())
     
     # Also verify that a restart (if we were using FileBackend) would work, 

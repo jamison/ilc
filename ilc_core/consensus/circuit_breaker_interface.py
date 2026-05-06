@@ -61,10 +61,12 @@ def _normalize_votes(validator_votes: list[dict[str, Any]]) -> list[dict[str, An
                 'circuit_breaker_cluster_id_invalid',
                 'cluster_id must be a non-empty string',
             )
-        if isinstance(vote_weight, bool) or not isinstance(vote_weight, (int, float)) or vote_weight <= 0:
+        # Phase 1235: align validator-facing vote weights with Genesis bootstrap
+        # positive-int enforcement; fractional float weights are rejected.
+        if isinstance(vote_weight, bool) or not isinstance(vote_weight, int) or vote_weight <= 0:
             raise CircuitBreakerInterfaceError(
                 'circuit_breaker_vote_weight_invalid',
-                'vote_weight must be a positive numeric value',
+                'vote_weight must be a positive integer',
             )
         if not isinstance(requested, bool):
             raise CircuitBreakerInterfaceError(
@@ -75,7 +77,7 @@ def _normalize_votes(validator_votes: list[dict[str, Any]]) -> list[dict[str, An
             {
                 'validator_id': validator_id,
                 'cluster_id': cluster_id,
-                'vote_weight': float(vote_weight),
+                'vote_weight': vote_weight,
                 'circuit_breaker_requested': requested,
             }
         )
