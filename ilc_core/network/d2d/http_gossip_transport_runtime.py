@@ -114,6 +114,7 @@ class TransportRuntimeConfig:
     tls_cert_path: str
     tls_key_path: str
     request_timeout_seconds: float = 2.0
+    verify_peer_tls: bool = True
 
 
 def _encode_gossip_payload(payload: bytes | str) -> bytes:
@@ -231,8 +232,11 @@ class HttpGossipTransportRuntime:
             "tls_key_path_not_found",
         )
         context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+        if not self.config.verify_peer_tls:
+            # Explicit RC/testbed escape hatch for self-signed local peers. Production
+            # configs must leave verification enabled.
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
         return context
 
     def start(self) -> None:

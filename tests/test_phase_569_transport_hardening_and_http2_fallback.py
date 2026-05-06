@@ -30,6 +30,7 @@ def _config(tmp_path: Path, *, transport_kind: str = runtime.TRANSPORT_KIND_HTTP
         bind_port=0,
         tls_cert_path=cert_path,
         tls_key_path=key_path,
+        verify_peer_tls=False,
     )
 
 
