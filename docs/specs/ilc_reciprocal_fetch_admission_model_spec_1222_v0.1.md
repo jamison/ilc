@@ -3,9 +3,10 @@
 **Phase:** 1222
 **Window:** 1218-1224
 **Date:** 2026-05-06
-**Status:** DESIGN SPEC ONLY - no runtime implementation
+**Status:** DESIGN SPEC ONLY - no runtime implementation — SUPPLEMENTED post-commit: reciprocal scoring is a deferred research candidate, not the preferred direction. See §8.
 
 `reciprocal_fetch_admission_model_spec_committed_phase_1222`
+`fetch_distribution_architecture_reframed_phase_1222`
 
 Consumes:
 
@@ -42,7 +43,12 @@ implemented in Phase 1222 and does not supersede CDL-077 or Phase 1212 limiter w
 
 ---
 
-## 2. Model Parameters
+## 2. Model Parameters — Non-Selected Candidate
+
+> **Correction recorded post-commit (Phase 1222 supplement):** The formula below is a
+> research candidate only. It is not the recommended implementation direction. The
+> structural objections in §8 must be resolved before this model or any derivative is
+> opened as a CDL. Do not use this formula as a planning default for future windows.
 
 All arithmetic is Decimal or integer arithmetic. No float constants are permitted in a future
 runtime implementation.
@@ -277,6 +283,139 @@ These are evidence questions, not TBD placeholders:
 - whether escrow burn or escrow lock is preferable under attack;
 - whether puzzle fallback is needed at all once reciprocal reputation is live;
 - whether gossip admission should share the same formula or remain separate.
+
+---
+
+## 8. Reframing: Fetch Is Topological, Not Symmetric
+
+> **Post-commit supplement.** This section records the architectural correction made
+> following review by Codex and Genesis authority. It supersedes the framing implied by
+> §1–§6 as the preferred direction. §1–§6 remain as documentation of the research candidate
+> only.
+
+### 8.1 The Structural Error in the Original Framing
+
+The reciprocal fetch admission model assumes **symmetric peer pressure** — agents pulling
+roughly as much as they serve over time, with healthy nodes converging toward balanced
+reciprocity ratios.
+
+That assumption is wrong for ILC. ILC fetch traffic has a **topology**. The graph has a
+root (Genesis), high-centrality nodes (truth primitives, accepted CDLs, ADR chain,
+manifests, lineage receipts), and a long tail of lower-centrality content. Fetch pressure
+flows **down from root** toward the high-centrality center, not uniformly between peers.
+
+New agents, bootstrapping agents, archival readers, and visualization tools all legitimately
+generate asymmetric pull pressure toward high-centrality nodes. That is not abuse — it is
+the network behaving correctly. A new agent that pulls Genesis, the seven truth primitives,
+CDL-073 through CDL-086, and the ADR chain before it has served a single block is doing the
+right thing. A reciprocal scoring model penalizes exactly that behavior.
+
+**Reciprocity assumes mature peer symmetry. ILC bootstrap is asymmetric and
+forward-oriented. These are structurally incompatible.**
+
+### 8.2 The Read/Write Asymmetry Rule
+
+**Reads and writes are different surfaces and must be protected differently.**
+
+| Surface | Correct posture |
+|---------|----------------|
+| Reads — fetching truth primitives, provenance paths, Genesis lineage, CDL/ADR chain, manifests, lineage receipts | Public verifiable access wherever possible; treat as infrastructure |
+| Writes/mutations — submit.truth, validate.claim, publication, mutation of canonical state | Economically gated by stake, reputation, and constitutional authority |
+| Economic recognition — ECU attribution, validator rewards, canonical settlement | Gated by Genesis-lineage-valid participation and CDL-governed rules |
+| Non-cacheable expensive operations, adversarial fetches, write-dressed-as-read | Targeted abuse controls at the protocol boundary |
+
+"Admission" belongs to writes, mutations, publication, validator participation, and
+non-cacheable expensive operations. It does not belong to ordinary reads of canonical
+content. Making reads cheap and universally verifiable is a design goal, not a risk.
+
+### 8.3 Content-Addressed Public Caching and High-Centrality Replication
+
+The correct architecture for high-centrality read pressure is distribution and caching,
+not admission scoring.
+
+**Required infrastructure for high-centrality nodes:**
+
+- Genesis artifacts, truth primitives, accepted CDLs and ADRs, manifests, and lineage
+  receipts must be **cached, mirrored, and snapshotted** — treated as public verifiable
+  infrastructure, not scarce peer favors.
+- **Bulk snapshot distribution**: a new agent should be able to acquire a Genesis-rooted
+  verified snapshot and prove its lineage without pulling every artifact live from a peer.
+- **Incremental delta fetching**: after snapshot acquisition, only deltas since the snapshot
+  need to be pulled from live peers.
+- **Non-local compilation**: if content-addressed hashes plus lineage proofs are sufficient
+  to verify a locally-cached or non-locally-held copy is canonical — and they should be,
+  given the inward proof chain design — then an agent that compiles or reconstructs a local
+  view from a verified snapshot does not create live peer pressure at all.
+
+The fetch problem for legitimate agents is a **distribution and caching problem**, not an
+admission scoring problem.
+
+### 8.4 Additional Structural Objections to Reciprocal Scoring
+
+Beyond bootstrapping asymmetry, the following concerns apply to any future reciprocal
+scoring proposal and must be addressed by simulation evidence before any CDL is opened:
+
+**Centralization risk:** High-reputation and high-stake actors earn more capacity, which
+advantages incumbents and may make new and small agents structurally second-class.
+
+**Privacy and surveillance surface:** Measuring reciprocal ratios requires tracking who
+asks for what, who serves what, and how often. This creates a persistent behavioral record
+that may leak agent identity and intent patterns.
+
+**Gameability:** Reciprocal clusters, manufactured useful serves, escrow-backed spam, and
+circular traffic can all artificially inflate admission capacity without contributing
+legitimate value.
+
+**Layer conflation:** Transport abuse prevention, routing reputation, ECU/stake economics,
+and constitutional admission are separate concerns. Combining them in one formula before
+evidence of their interaction is available risks coupling failures that are hard to
+untangle constitutionally.
+
+**Prematurity:** Without real traffic data from operating ILC agents, any calibration
+(sigmoid midpoint, reputation scale, escrow unit, abuse debt threshold) is speculation.
+Premature constitutional locking of these parameters before real traffic evidence is
+available produces a brittle policy.
+
+### 8.5 The Real Abuse Surface
+
+Fetch abuse takes specific forms. Each has a targeted control that does not require
+reciprocal scoring:
+
+| Abuse form | Correct control |
+|------------|----------------|
+| Non-cacheable adversarial fetches at scale | Caching and mirroring of high-centrality content; non-cacheable requests require operator-local backpressure, not global scoring |
+| Malformed or invalid requests | Protocol boundary validation; reject early before expensive processing |
+| Write/mutation attempts dressed as reads | Explicit write surface enforcement; reads do not mutate state |
+| Flooding a single high-centrality node | Replication and mirroring of that node, not per-requester admission throttling |
+| Sybil spam at scale | Genesis-lineage identity requirement (already required); invalid identities receive no canonical admission guarantee |
+
+### 8.6 Preferred Near-Term Direction
+
+Until real traffic evidence exists:
+
+1. **Keep the static limiter as an emergency circuit breaker.** Do not deprecate it.
+2. **Add observability.** Measure request pressure per node tier, cache hit rates, failure
+   patterns, and actual agent fetch behavior before designing any admission model.
+3. **Build high-centrality replication infrastructure.** Genesis/root artifacts, truth
+   primitives, ADR/CDL chain, manifests, and lineage receipts should be cached, mirrored,
+   and snapshot-distributable before any admission model is designed.
+4. **Prefer operator-local backpressure and shard-local configuration** over constitutional
+   global formulas.
+5. **Use puzzles or escrow only as last-resort attack-mode tools**, not as normal fetch
+   infrastructure.
+6. **Do not tie normal fetch capacity to reputation or stake** until simulations and real
+   traffic show this is necessary and that the structural objections above are addressed.
+
+### 8.7 Carry-Forward
+
+```text
+fetch_distribution_architecture_reframed_phase_1222
+```
+
+Future windows should plan high-centrality replication infrastructure and observability
+before any reciprocal admission CDL is opened. The sigmoid/reciprocal formula in §2 is a
+research candidate requiring simulation calibration and structural objection resolution
+before it may be proposed for ratification.
 
 ---
 
