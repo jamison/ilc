@@ -3,9 +3,16 @@ import os
 import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Iterable, Protocol, Set, runtime_checkable
-from .types import Node, ClaimRecord, claim_record_to_node, node_to_claim_record, LinkRecord, HyperEdge
-from .exceptions import DuplicateNodeError, GraphIntegrityError, NodeNotFoundError
-from .links import validate_link_type, is_symmetric
+from ilc_core.types import (
+    ClaimRecord,
+    HyperEdge,
+    LinkRecord,
+    Node,
+    claim_record_to_node,
+    node_to_claim_record,
+)
+from ilc_core.exceptions import DuplicateNodeError, GraphIntegrityError, NodeNotFoundError
+from ilc_core.links import is_symmetric, validate_link_type
 
 logger = logging.getLogger(__name__)
 
