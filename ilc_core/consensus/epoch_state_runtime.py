@@ -22,7 +22,7 @@ _CANONICAL_VECTOR_SPECS: list[dict[str, Any]] = [
                 "epoch_index": 7,
                 "quorum_state_digest": "quorum-state-7",
                 "validator_id": "validator-a",
-                "vote_weight": 0.40,
+                "vote_weight": 40,
             },
             {
                 "attestation_ref": "attest:epoch-7:validator-b:block-alpha",
@@ -30,7 +30,7 @@ _CANONICAL_VECTOR_SPECS: list[dict[str, Any]] = [
                 "epoch_index": 7,
                 "quorum_state_digest": "quorum-state-7",
                 "validator_id": "validator-b",
-                "vote_weight": 0.35,
+                "vote_weight": 35,
             },
         ],
         "epoch_state": {
@@ -51,7 +51,7 @@ _CANONICAL_VECTOR_SPECS: list[dict[str, Any]] = [
                 "epoch_index": 8,
                 "quorum_state_digest": "quorum-state-8",
                 "validator_id": "validator-a",
-                "vote_weight": 0.34,
+                "vote_weight": 34,
             },
             {
                 "attestation_ref": "attest:epoch-8:validator-b:block-gamma",
@@ -59,7 +59,7 @@ _CANONICAL_VECTOR_SPECS: list[dict[str, Any]] = [
                 "epoch_index": 8,
                 "quorum_state_digest": "quorum-state-8",
                 "validator_id": "validator-b",
-                "vote_weight": 0.33,
+                "vote_weight": 33,
             },
         ],
         "epoch_state": {
@@ -113,13 +113,13 @@ def _require_epoch_index(raw: Any, token: str, message: str) -> int:
     return raw
 
 
-def _require_positive_number(raw: Any, token: str, message: str) -> float:
-    if isinstance(raw, bool) or not isinstance(raw, (int, float)):
+def _require_positive_number(raw: Any, token: str, message: str) -> int:
+    # Phase 1235: quorum-record vote_weight follows Genesis bootstrap positive-int intent.
+    if isinstance(raw, bool) or not isinstance(raw, int):
         raise ConsensusEpochStateValidationError(token, message)
-    value = float(raw)
-    if value <= 0.0:
+    if raw <= 0:
         raise ConsensusEpochStateValidationError(token, message)
-    return value
+    return raw
 
 
 def _normalize_quorum_threshold(raw: Any) -> dict[str, int]:

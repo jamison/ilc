@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from decimal import Decimal
 import subprocess
 from pathlib import Path
 
@@ -118,9 +119,9 @@ def test_evaluator_module_exports_exact_version_and_dependency() -> None:
 
 def test_finality_evaluation_finalized_case_is_deterministic() -> None:
     quorum_records = [
-        {"block_hash": "block-a", "epoch_index": 9, "vote_weight": 0.45},
-        {"block_hash": "block-a", "epoch_index": 9, "vote_weight": 0.30},
-        {"block_hash": "block-b", "epoch_index": 9, "vote_weight": 0.10},
+        {"block_hash": "block-a", "epoch_index": 9, "vote_weight": Decimal("0.45")},
+        {"block_hash": "block-a", "epoch_index": 9, "vote_weight": Decimal("0.30")},
+        {"block_hash": "block-b", "epoch_index": 9, "vote_weight": Decimal("0.10")},
     ]
     threshold = {"numerator": 2, "denominator": 3}
 
@@ -136,8 +137,8 @@ def test_finality_evaluation_finalized_case_is_deterministic() -> None:
 
 def test_finality_evaluation_provisional_case_when_threshold_not_met() -> None:
     quorum_records = [
-        {"block_hash": "block-a", "epoch_index": 10, "vote_weight": 0.20},
-        {"block_hash": "block-a", "epoch_index": 10, "vote_weight": 0.15},
+        {"block_hash": "block-a", "epoch_index": 10, "vote_weight": Decimal("0.20")},
+        {"block_hash": "block-a", "epoch_index": 10, "vote_weight": Decimal("0.15")},
     ]
     threshold = {"numerator": 2, "denominator": 3}
 
@@ -182,7 +183,7 @@ def test_fork_resolution_selects_lexicographic_minimum_state_digest() -> None:
 
 
 def test_missing_threshold_and_insufficient_candidates_fail_with_deterministic_tokens() -> None:
-    quorum_records = [{"block_hash": "block-a", "epoch_index": 15, "vote_weight": 0.25}]
+    quorum_records = [{"block_hash": "block-a", "epoch_index": 15, "vote_weight": Decimal("0.25")}]
     valid_threshold = {"numerator": 2, "denominator": 3}
 
     with pytest.raises(ConsensusFinalityEvaluatorError) as missing_threshold:
@@ -194,8 +195,8 @@ def test_missing_threshold_and_insufficient_candidates_fail_with_deterministic_t
     assert empty_records.value.token == "consensus_finality_evaluator_quorum_records_empty"
 
     mixed_epoch_records = [
-        {"block_hash": "block-a", "epoch_index": 15, "vote_weight": 0.25},
-        {"block_hash": "block-a", "epoch_index": 16, "vote_weight": 0.25},
+        {"block_hash": "block-a", "epoch_index": 15, "vote_weight": Decimal("0.25")},
+        {"block_hash": "block-a", "epoch_index": 16, "vote_weight": Decimal("0.25")},
     ]
     with pytest.raises(ConsensusFinalityEvaluatorError) as mixed_epochs:
         evaluate_epoch_finality(mixed_epoch_records, quorum_threshold=valid_threshold)

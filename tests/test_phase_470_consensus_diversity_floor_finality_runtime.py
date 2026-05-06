@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from decimal import Decimal
 import subprocess
 from pathlib import Path
 
@@ -76,9 +77,9 @@ def test_runtime_exports_and_handoff_artifact_exist() -> None:
 
 def test_legacy_two_argument_finality_evaluation_behavior_remains_unchanged() -> None:
     quorum_records = [
-        {'block_hash': 'block-a', 'epoch_index': 9, 'vote_weight': 0.45},
-        {'block_hash': 'block-a', 'epoch_index': 9, 'vote_weight': 0.30},
-        {'block_hash': 'block-b', 'epoch_index': 9, 'vote_weight': 0.10},
+        {'block_hash': 'block-a', 'epoch_index': 9, 'vote_weight': Decimal('0.45')},
+        {'block_hash': 'block-a', 'epoch_index': 9, 'vote_weight': Decimal('0.30')},
+        {'block_hash': 'block-b', 'epoch_index': 9, 'vote_weight': Decimal('0.10')},
     ]
     threshold = {'numerator': 2, 'denominator': 3}
     result = evaluate_epoch_finality(copy.deepcopy(quorum_records), threshold)

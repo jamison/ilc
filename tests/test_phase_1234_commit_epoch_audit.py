@@ -89,11 +89,18 @@ def test_no_ilc_core_files_modified():
     """
     Test 6: No ilc_core/ files were modified by Phase 1234.
 
-    Checks that make_canonical_commit_epoch_event does not yet exist in event_log.py
-    (Phase 1235 creates it). This confirms Phase 1234 is audit-only.
+    Checks the Phase 1234 backfill commit directly rather than HEAD. Phase 1235
+    is expected to add make_canonical_commit_epoch_event later, so a HEAD-based
+    assertion would become stale immediately after the authorized mutation.
     """
-    source = EVENT_LOG_PATH.read_text(encoding="utf-8")
+    result = subprocess.run(
+        ["git", "show", "1ffc94ed:ilc_core/protocol/event_log.py"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    source = result.stdout
     assert "make_canonical_commit_epoch_event" not in source, (
-        "make_canonical_commit_epoch_event already present in event_log.py — "
-        "Phase 1235 mutation appears to have already run; check phase ordering"
+        "make_canonical_commit_epoch_event present at Phase 1234 commit — "
+        "Phase 1234 was not audit-only"
     )
