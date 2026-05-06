@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Dict, List, Optional, Tuple, TypeAlias
 from os import PathLike
 from pathlib import Path
@@ -8,7 +9,7 @@ from ilc_core.network.topology import DevnetTopology
 from ilc_core.analysis.namespace_health import NamespaceHealthSnapshot
 from ilc_core.analysis.agent_profiles import AgentProfile
 from ilc_core.sim.devnet_epoch_orchestrator import DevnetEpochResult, run_devnet_epoch
-from ilc_core.protocol.event_log import EventLogger, write_events_to_file, make_commit_epoch_event
+from ilc_core.protocol.event_log import EventLogger, write_events_to_file, make_canonical_commit_epoch_event
 from ilc_core.protocol.params import ProtocolParams
 from ilc_core.ledger.backend import LedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
@@ -58,21 +59,24 @@ def _settle_epoch(
     epoch_id: str
 ) -> Optional[BalanceSnapshot]:
     # 1. Store Stake Snapshot
-    stakes = {agent_id: 1.0 for agent_id in profiles.keys()}
+    stakes = {agent_id: Decimal("1") for agent_id in profiles.keys()}
     
     stake_snapshot = StakeSnapshot(
         epoch_id=epoch_id,
         epoch_index=snapshot.epoch_index,
         namespace_id=snapshot.namespace_id,
         stakes=stakes,
-        total_stake=float(len(stakes)),
+        total_stake=Decimal(len(stakes)),
         created_at=datetime.now(timezone.utc).isoformat(),
     )
     ledger_backend.put_stake_snapshot(stake_snapshot)
 
     # 2. Compute Summary from Result
     total_tasks = int(sum(m.get("num_tasks", 0) for m in result.node_load_metrics.values()))
-    total_reward = float(sum(m.get("total_reward", 0.0) for m in result.node_load_metrics.values()))
+    total_reward = sum(
+        Decimal(str(m.get("total_reward", 0)))
+        for m in result.node_load_metrics.values()
+    )
 
     invariant_rows: list[UtilityFlowRewardAllocation] = []
     for index, task in enumerate(result.routed_task_rows):
@@ -104,17 +108,16 @@ def _settle_epoch(
     assert_refutation_profitability_invariant(invariant_rows)
     
     # 3. Create Commit Event
-    commit_evt = make_commit_epoch_event(
+    commit_evt = make_canonical_commit_epoch_event(
         epoch_index=snapshot.epoch_index,
         epoch_id=epoch_id,
         namespace_id=snapshot.namespace_id,
-        created_at=datetime.now(timezone.utc).isoformat(),
         finalization_state="committed",
         summary={
             "task_count": total_tasks,
             "agent_count": len(stakes),
             "reward_total": total_reward,
-            "stake_total": float(len(stakes)),
+            "stake_total": Decimal(len(stakes)),
         },
         checksums={
             "epoch_events_cid": "devnet:events",  # Placeholder

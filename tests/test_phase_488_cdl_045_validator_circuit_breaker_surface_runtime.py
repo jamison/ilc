@@ -28,10 +28,10 @@ EXACT_REQUIRED_MAIN_PATHS = {
 
 def _votes() -> list[dict[str, object]]:
     return [
-        {'validator_id': 'v1', 'cluster_id': 'a', 'vote_weight': 1.0, 'circuit_breaker_requested': True},
-        {'validator_id': 'v2', 'cluster_id': 'b', 'vote_weight': 1.0, 'circuit_breaker_requested': True},
-        {'validator_id': 'v3', 'cluster_id': 'b', 'vote_weight': 1.0, 'circuit_breaker_requested': True},
-        {'validator_id': 'v4', 'cluster_id': 'c', 'vote_weight': 1.0, 'circuit_breaker_requested': True},
+        {'validator_id': 'v1', 'cluster_id': 'a', 'vote_weight': 1, 'circuit_breaker_requested': True},
+        {'validator_id': 'v2', 'cluster_id': 'b', 'vote_weight': 1, 'circuit_breaker_requested': True},
+        {'validator_id': 'v3', 'cluster_id': 'b', 'vote_weight': 1, 'circuit_breaker_requested': True},
+        {'validator_id': 'v4', 'cluster_id': 'c', 'vote_weight': 1, 'circuit_breaker_requested': True},
     ]
 
 
@@ -105,7 +105,7 @@ def test_handoff_contains_required_tokens() -> None:
 
 def test_duplicate_validator_vote_is_rejected() -> None:
     invalid_votes = _votes() + [
-        {'validator_id': 'v1', 'cluster_id': 'c', 'vote_weight': 1.0, 'circuit_breaker_requested': True}
+        {'validator_id': 'v1', 'cluster_id': 'c', 'vote_weight': 1, 'circuit_breaker_requested': True}
     ]
     try:
         summarize_circuit_breaker_quorum_state(invalid_votes)

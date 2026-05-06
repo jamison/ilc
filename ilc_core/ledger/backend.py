@@ -9,14 +9,14 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from decimal import Decimal
-from typing import Literal, Optional, TypeAlias, TypedDict, cast
+from typing import Literal, NotRequired, Optional, TypeAlias, TypedDict, cast
 
 from ilc_core.ledger.exact_numeric import (
     ZERO,
     to_decimal,
 )
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
-from ilc_core.protocol.event_log import ProtocolEvent, validate_commit_epoch_payload
+from ilc_core.protocol.event_log import ProtocolEvent, validate_any_commit_epoch_payload
 
 
 JsonScalar: TypeAlias = str | int | bool | None
@@ -44,10 +44,11 @@ class CommitEpochPayload(TypedDict):
     epoch_index: int
     epoch_id: str
     namespace_id: str
-    created_at: str
     finalization_state: FinalizationState
     summary: EpochSummary
     checksums: EpochChecksums
+    created_at: NotRequired[str]
+    schema_version: NotRequired[str]
 
 
 class EpochRecord(TypedDict, total=False):
@@ -143,7 +144,7 @@ class InMemoryLedgerBackend(LedgerBackend):
             raise ValueError(f"Expected commit.epoch event, got {epoch_event.kind}")
 
         payload = cast(CommitEpochPayload, epoch_event.payload)
-        validate_commit_epoch_payload(payload)
+        validate_any_commit_epoch_payload(payload)
 
         epoch_id = payload["epoch_id"]
 
@@ -217,7 +218,7 @@ class InMemoryLedgerBackend(LedgerBackend):
             "epoch_id": payload["epoch_id"],
             "epoch_index": payload["epoch_index"],
             "namespace_id": payload["namespace_id"],
-            "created_at": payload["created_at"],
+            "created_at": payload.get("created_at", ""),
             "finalization_state": payload["finalization_state"],
             "summary": payload["summary"],
             "checksums": payload["checksums"],

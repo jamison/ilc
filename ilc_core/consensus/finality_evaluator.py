@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from .diversity_floor_runtime import (
@@ -42,6 +43,19 @@ def _require_positive_number(value: Any, token: str, message: str) -> float:
         raise ConsensusFinalityEvaluatorError(token, message)
     number = float(value)
     if number <= 0.0:
+        raise ConsensusFinalityEvaluatorError(token, message)
+    return number
+
+
+def _require_positive_exact_weight(value: Any, token: str, message: str) -> Decimal:
+    # Phase 1235: finality vote weights may be fractional, but not Python float.
+    if isinstance(value, bool) or isinstance(value, float) or not isinstance(value, (int, str, Decimal)):
+        raise ConsensusFinalityEvaluatorError(token, message)
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(value)
+    except (InvalidOperation, ValueError) as exc:
+        raise ConsensusFinalityEvaluatorError(token, message) from exc
+    if not number.is_finite() or number <= Decimal("0"):
         raise ConsensusFinalityEvaluatorError(token, message)
     return number
 
@@ -113,7 +127,7 @@ def _normalize_quorum_records(quorum_records: Any) -> list[dict[str, Any]]:
                     "block_hash is required",
                 ),
                 "epoch_index": record_epoch,
-                "vote_weight": _require_positive_number(
+                "vote_weight": _require_positive_exact_weight(
                     record.get("vote_weight"),
                     "consensus_finality_evaluator_quorum_record_invalid",
                     "vote_weight must be > 0",
@@ -192,21 +206,31 @@ def _normalize_diversity_policy(raw: Any) -> dict[str, float | int]:
     }
 
 
-def _aggregate_weights(normalized_records: list[dict[str, Any]]) -> dict[str, float]:
-    aggregate_weights: dict[str, float] = {}
+def _aggregate_weights(normalized_records: list[dict[str, Any]]) -> dict[str, Decimal]:
+    # Phase 1235: exact Decimal aggregation prevents float drift before this
+    # finality-surface code is wired into production.
+    aggregate_weights: dict[str, Decimal] = {}
     for record in normalized_records:
         block_hash = record["block_hash"]
-        aggregate_weights[block_hash] = aggregate_weights.get(block_hash, 0.0) + record["vote_weight"]
+        aggregate_weights[block_hash] = aggregate_weights.get(block_hash, Decimal("0")) + record["vote_weight"]
     return {key: aggregate_weights[key] for key in sorted(aggregate_weights)}
+
+
+def _decimal_ratio_to_float(value: Decimal) -> float:
+    return float(value)
+
+
+def _aggregate_weights_for_output(aggregate_weights: dict[str, Decimal]) -> dict[str, float]:
+    return {key: _decimal_ratio_to_float(aggregate_weights[key]) for key in sorted(aggregate_weights)}
 
 
 def evaluate_epoch_finality(
     quorum_records: list[dict[str, Any]],
     quorum_threshold: dict[str, int],
 ) -> dict[str, Any]:
-    normalized_records = _normalize_quorum_records(quorum_records)
     numerator, denominator = _normalize_quorum_threshold(quorum_threshold)
-    threshold_fraction = numerator / denominator
+    normalized_records = _normalize_quorum_records(quorum_records)
+    threshold_fraction = Decimal(numerator) / Decimal(denominator)
 
     aggregate_weights = _aggregate_weights(normalized_records)
     qualifying_hashes = [
@@ -225,8 +249,8 @@ def evaluate_epoch_finality(
     return {
         "finality_status": finality_status,
         "canonical_block_hash": canonical_block_hash,
-        "aggregate_weights": aggregate_weights,
-        "threshold_fraction": threshold_fraction,
+        "aggregate_weights": _aggregate_weights_for_output(aggregate_weights),
+        "threshold_fraction": _decimal_ratio_to_float(threshold_fraction),
         "fork_resolution_applied": False,
         "runtime_version": FINALITY_EVALUATOR_VERSION,
         "dependency": CDL_051_RATIFICATION_DEPENDENCY,
@@ -239,9 +263,9 @@ def evaluate_epoch_finality_with_diversity(
     validator_clusters: dict[str, str],
     diversity_policy: dict[str, int | float],
 ) -> dict[str, Any]:
-    normalized_records = _normalize_quorum_records_with_validator(quorum_records)
     numerator, denominator = _normalize_quorum_threshold(quorum_threshold)
-    threshold_fraction = numerator / denominator
+    normalized_records = _normalize_quorum_records_with_validator(quorum_records)
+    threshold_fraction = Decimal(numerator) / Decimal(denominator)
     clusters = _normalize_validator_clusters(validator_clusters)
     policy = _normalize_diversity_policy(diversity_policy)
 
@@ -307,8 +331,8 @@ def evaluate_epoch_finality_with_diversity(
     return {
         "finality_status": finality_status,
         "canonical_block_hash": canonical_block_hash,
-        "aggregate_weights": aggregate_weights,
-        "threshold_fraction": threshold_fraction,
+        "aggregate_weights": _aggregate_weights_for_output(aggregate_weights),
+        "threshold_fraction": _decimal_ratio_to_float(threshold_fraction),
         "diversity_status": diversity_status,
         "distinct_clusters": distinct_clusters,
         "max_cluster_share": max_cluster_share,

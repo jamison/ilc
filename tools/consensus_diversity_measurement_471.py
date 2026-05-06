@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import time
+from decimal import Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,19 +33,19 @@ def _scenario_payloads() -> list[dict[str, object]]:
         {
             'block_hash': 'block-alpha',
             'epoch_index': 7,
-            'vote_weight': 0.40,
+            'vote_weight': Decimal('0.40'),
             'validator_id': 'validator-1',
         },
         {
             'block_hash': 'block-alpha',
             'epoch_index': 7,
-            'vote_weight': 0.27,
+            'vote_weight': Decimal('0.27'),
             'validator_id': 'validator-2',
         },
         {
             'block_hash': 'block-beta',
             'epoch_index': 7,
-            'vote_weight': 0.15,
+            'vote_weight': Decimal('0.15'),
             'validator_id': 'validator-3',
         },
     ]
@@ -52,13 +53,13 @@ def _scenario_payloads() -> list[dict[str, object]]:
         {
             'block_hash': 'block-alpha',
             'epoch_index': 7,
-            'vote_weight': 0.40,
+            'vote_weight': Decimal('0.40'),
             'validator_id': 'validator-1',
         },
         {
             'block_hash': 'block-alpha',
             'epoch_index': 7,
-            'vote_weight': 0.35,
+            'vote_weight': Decimal('0.35'),
             'validator_id': 'validator-2',
         },
     ]
@@ -98,19 +99,19 @@ def _scenario_payloads() -> list[dict[str, object]]:
                 {
                     'block_hash': 'block-delta',
                     'epoch_index': 21,
-                    'vote_weight': 0.40,
+                    'vote_weight': Decimal('0.40'),
                     'validator_id': 'validator-1',
                 },
                 {
                     'block_hash': 'block-delta',
                     'epoch_index': 21,
-                    'vote_weight': 0.35,
+                    'vote_weight': Decimal('0.35'),
                     'validator_id': 'validator-2',
                 },
                 {
                     'block_hash': 'block-delta',
                     'epoch_index': 21,
-                    'vote_weight': 0.10,
+                    'vote_weight': Decimal('0.10'),
                     'validator_id': 'validator-3',
                 },
             ],

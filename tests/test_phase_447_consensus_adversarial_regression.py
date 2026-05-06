@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from decimal import Decimal
 import re
 import subprocess
 from pathlib import Path
@@ -172,9 +173,9 @@ def test_adversarial_zero_weight_and_negative_weight_vote_injection() -> None:
 
 def test_adversarial_duplicate_block_hash_vote_injection() -> None:
     quorum_records = [
-        {"block_hash": "block-dup", "epoch_index": 12, "vote_weight": 0.40},
-        {"block_hash": "block-dup", "epoch_index": 12, "vote_weight": 0.30},
-        {"block_hash": "block-other", "epoch_index": 12, "vote_weight": 0.10},
+        {"block_hash": "block-dup", "epoch_index": 12, "vote_weight": Decimal("0.40")},
+        {"block_hash": "block-dup", "epoch_index": 12, "vote_weight": Decimal("0.30")},
+        {"block_hash": "block-other", "epoch_index": 12, "vote_weight": Decimal("0.10")},
     ]
     result = evaluate_epoch_finality(quorum_records, {"numerator": 2, "denominator": 3})
 
