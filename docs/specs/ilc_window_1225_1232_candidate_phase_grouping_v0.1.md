@@ -389,9 +389,8 @@ Required sequence lock content:
 - RC2 gate status: 5 SATISFIED, 1 OPEN (v0.2 signing)
 - Window character statement: implementation-heavy; no standalone scoping phases
 - Next fresh CDL: CDL-087
-- Note: `ilc_core/ledger/canon_bundle_key_registry.py` has an in-progress hardening change
-  (Codex-held dirty file); resolve and commit this change before Phase 1226 or document
-  its carry-forward explicitly in the sequence lock
+- Note: `ilc_core/ledger/canon_bundle_key_registry.py` hardening was resolved before sequence
+  lock in commit `21a5ad86`; Phase 1225 must record that it is no longer a dirty carry-forward
 
 Test: `tests/test_phase_1225_sequence_lock.py` — minimum 3 tests (file exists, token present,
 immutable SHA recorded correctly).
@@ -508,7 +507,8 @@ construction.
 
 Deliverables:
 
-- `ilc_core/graph/agent_graph_projection_runtime.py` (new module; location TBD if `ilc_core/graph/` does not exist — use nearest appropriate subpackage)
+- `ilc_core/graph/__init__.py` and `ilc_core/graph/agent_graph_projection_runtime.py`
+  (new approved subpackage; read-only, deterministic, no I/O by default)
 - `tests/test_phase_1229_agent_graph_projection_runtime.py` — minimum 10 tests (hard pass condition; see §6.2)
 
 Phantom edit guard: Before committing, verify runtime version token in
@@ -578,8 +578,8 @@ Phase 1225:
 
 2. **`ilc_core/ledger/canon_bundle_key_registry.py` dirty change** — **RESOLVED: commit as
    standalone pre-Phase-1225 fix.** The diff is atomic-write hardening using unique temp
-   files (same F4 pattern as Phase 1218b). Must be committed and pushed before Phase 1225
-   sequence lock executes — not inside the sequence lock, not folded into Phase 1229.
+   files (same F4 pattern as Phase 1218b). Committed at `21a5ad86`; Phase 1225 should record
+   it as resolved, not as an active dirty-file carry-forward.
 
 3. **`ilc_core/graph/` subpackage** — **APPROVED.** Cleaner than `epistemic/`, `network/`,
    or `ledger/`. Constraints: module must be read-only, deterministic, no I/O by default,
