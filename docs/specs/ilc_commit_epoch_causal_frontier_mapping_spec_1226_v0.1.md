@@ -189,20 +189,45 @@ not production emission authority.
 
 ## 6. Causal Frontier Definition
 
-The causal frontier of epoch `N` is:
+The causal frontier of epoch `N` is the **canonical minimal cut of the finalized
+epoch-N consensus DAG/hypergraph**: the smallest set of quorum-proof references
+`Q` such that every protocol state element accepted into epoch `N` is causally
+covered by at least one `q ∈ Q` through validator block edges and
+quorum-certificate hyperedges.
 
-> the minimal set of consensus quorum-proof references required to show that
-> every protocol state element accepted into epoch `N` is transitively reachable
-> through the committed epoch chain.
+> **Fix1 note:** Earlier draft language said "transitively reachable through the
+> committed epoch chain." That phrasing underclaims the substrate: ILC consensus
+> is DAG/BFT-oriented (Mysticeti-inspired), not a simple linear chain.
+> "Causally covered by `q`" is the correct formulation under the finalized DAG
+> orientation; "transitively reachable from `q`" is avoided because it implies a
+> specific edge direction that is not universally defined at this layer.
 
-For Genesis epoch-zero, this set contains only the Genesis root envelope domain
-anchor. For post-Genesis epochs, this set contains the epoch's quorum-proof
-reference and any future explicitly ratified CDL-051 extension references needed
-to model multiple causally independent sub-frontiers.
+**Required properties of `Q`:**
 
-The causal frontier is a set of hashes. It is not a wall-clock interval.
+- **Minimality**: no proper subset of `Q` causally covers all protocol state elements
+  accepted into epoch `N`
+- **Completeness**: every accepted state element has a causal path to some `q ∈ Q`
+  under the finalized DAG orientation
+- **No wall-clock**: frontier membership is determined by the protocol DAG structure
+  and validator quorum certificates, not by any timestamp or wall-clock interval
+- **Hyperedge coverage**: each `q ∈ Q` is a `StoredCheckpoint` containing an
+  aggregate BLS signature (`agg_sig_bytes`) and signer bitset (`signers`) spanning a
+  Byzantine-threshold subset of the validator set — a hyperedge in the consensus DAG
 
-Hard prohibition:
+**Causal ordering preservation** (structure-preserving projection property):
+
+The `commit.epoch` projection must preserve causal order: if state element `A`
+causally precedes state element `B` in the finalized consensus DAG/hypergraph,
+then the canonical `commit.epoch` references for `A` and `B` must preserve that
+ordering through `causal_predecessor_ref` and the committed epoch sequence.
+
+**Genesis epoch-zero special case:**
+
+`Q` is a singleton containing only the Genesis root envelope domain anchor. No
+validator quorum certificate exists. No DAG edges exist prior to it. The causal
+frontier is the domain anchor alone; causal coverage is trivially satisfied.
+
+**Hard prohibition:**
 
 ```text
 No wall-clock time: no datetime.now(), no time.time(), no ISO-8601 created_at

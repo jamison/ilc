@@ -68,6 +68,18 @@ def test_phase_1226_constitutional_routing_recorded():
     assert "This is not a request for a new constitutional act by default" in text
 
 
+def test_phase_1226_fix1_uses_dag_hypergraph_frontier_cut():
+    text = _read(SPEC)
+
+    assert "canonical minimal cut of the finalized" in text
+    assert "epoch-N consensus DAG/hypergraph" in text
+    assert "causally" in text
+    assert "covered by at least one `q ∈ Q`" in text
+    assert "quorum-certificate hyperedges" in text
+    assert "Causal ordering preservation" in text
+    assert "structure-preserving projection property" in text
+
+
 def test_phase_1226_walkthrough_and_status_advanced():
     walkthrough = _read(WALKTHROUGH)
     status = _read(STATUS)
