@@ -1,7 +1,19 @@
+> **SUPERSEDED — HISTORICAL ARCHIVE ONLY.**
+> This G4-era draft (Phase 69a, 2026-02-01) pre-dates CDL-051, the ADR-0004
+> revision, and the no-wall-clock / no-float / consensus-only-issuer rules.
+> It contains `created_at` (ISO 8601 wall-clock timestamp) and other fields
+> that are **prohibited** under current protocol rules.
+> **It is not a governing source.** Canonical authority: ADR-0004, CDL-051,
+> `ilc_consensus/src/epoch_settlement.rs`, and CLAUDE.md §ILC Coding Security Standards.
+> The Phase 1226 spec (`docs/specs/ilc_commit_epoch_causal_frontier_mapping_spec_1226_v0.1.md`)
+> is the current authoritative mapping document.
+> Do not use field definitions, examples, or parameters from this file
+> without verifying they are consistent with the superseding authorities above.
+
 # Commit.Epoch Event Schema v0.1
 
 **Version:** 0.1  
-**Status:** DRAFT  
+**Status:** DRAFT (SUPERSEDED — see tombstone above)
 **Date:** 2026-02-01
 
 ## Purpose and Scope
