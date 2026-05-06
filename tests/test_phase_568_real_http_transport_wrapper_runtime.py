@@ -100,6 +100,7 @@ def _config(tmp_path: Path, *, transport_kind: str = runtime.TRANSPORT_KIND_HTTP
         bind_port=0,
         tls_cert_path=cert_path,
         tls_key_path=key_path,
+        verify_peer_tls=False,
     )
 
 
@@ -203,7 +204,7 @@ def test_dep_chain_assertions_are_present() -> None:
     assert '_GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY' in text
 
 
-def test_transport_runtime_config_requires_explicit_transport_kind_and_tls_fields() -> None:
+def test_transport_runtime_config_requires_explicit_transport_kind_and_tls_fields(tmp_path: Path) -> None:
     field_names = [field.name for field in fields(runtime.TransportRuntimeConfig)]
     assert field_names[:5] == [
         'transport_kind',
@@ -212,6 +213,16 @@ def test_transport_runtime_config_requires_explicit_transport_kind_and_tls_field
         'tls_cert_path',
         'tls_key_path',
     ]
+    assert 'verify_peer_tls' in field_names
+    cert_path, key_path = _write_tls_material(tmp_path)
+    config = runtime.TransportRuntimeConfig(
+        transport_kind='http',
+        bind_host='127.0.0.1',
+        bind_port=0,
+        tls_cert_path=cert_path,
+        tls_key_path=key_path,
+    )
+    assert config.verify_peer_tls is True
     with pytest.raises(TypeError):
         runtime.TransportRuntimeConfig(bind_host='127.0.0.1', bind_port=0, tls_cert_path='a', tls_key_path='b')
 

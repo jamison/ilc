@@ -236,6 +236,7 @@ class HttpFetchTransportRuntime:
                     status, resp_body = _fetch_rt.handle_want_block_request(
                         body, runtime._store, runtime._rate_limiter,
                         rate_limit_key=client_ip,
+                        serve_epoch=runtime.config.rate_limit_window_id,
                     )
                 else:
                     resp_body = json.dumps(
@@ -296,4 +297,9 @@ class HttpFetchTransportRuntime:
 
     def handle_want_block(self, body: bytes) -> tuple[int, bytes]:
         """Delegate to fetch runtime handler (for direct testing without HTTP)."""
-        return _fetch_rt.handle_want_block_request(body, self._store, self._rate_limiter)
+        return _fetch_rt.handle_want_block_request(
+            body,
+            self._store,
+            self._rate_limiter,
+            serve_epoch=self.config.rate_limit_window_id,
+        )
