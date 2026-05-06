@@ -266,7 +266,7 @@ field.
 
 | CDL | Title (candidate) | Decision digest anchor | Opening phase | Ratification phase |
 |-----|-------------------|----------------------|---------------|-------------------|
-| CDL-087 | Canonical fetch distribution policy | Q1-Q5 resolved at Phase 1227 | Phase 1227 | Window 1233+ after SIM-FETCH-01 |
+| CDL-087 | Canonical fetch distribution policy | Q1-Q5 opened at Phase 1227; prelock resolution at Phase 1228 | Phase 1227 | Window 1233+ after SIM-FETCH-01 |
 
 Note: CDL-087 opens and prelocks in this window. Ratification requires SIM-FETCH-01 evidence
 (not this window). No ratification phase is assigned in Window 1225-1232.
