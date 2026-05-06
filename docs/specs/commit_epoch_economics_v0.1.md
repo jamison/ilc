@@ -1,7 +1,19 @@
+> **SUPERSEDED — HISTORICAL ARCHIVE ONLY.**
+> This G4-era draft (Phase 69b, 2026-02-02) pre-dates CDL-051, the ADR-0004
+> revision, and the no-wall-clock / no-float / consensus-only-issuer rules.
+> It contains JSON number examples (float-unsafe) and pre-CDL-051 ledger
+> economics that do not reflect the current settled architecture.
+> **It is not a governing source.** Canonical authority: ADR-0004, CDL-051,
+> CDL-084 (provenance decay), CDL-085 (φ-bound), and CLAUDE.md §ILC Coding Security Standards.
+> The Phase 1226 spec (`docs/specs/ilc_commit_epoch_causal_frontier_mapping_spec_1226_v0.1.md`)
+> is the current authoritative mapping document.
+> Do not use field definitions, examples, or parameters from this file
+> without verifying they are consistent with the superseding authorities above.
+
 # Commit.Epoch Economics v0.1
 
 **Version:** 0.1  
-**Status:** DRAFT  
+**Status:** DRAFT (SUPERSEDED — see tombstone above)
 **Date:** 2026-02-02
 
 ---
