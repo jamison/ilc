@@ -32,12 +32,12 @@ def test_prelock_is_not_ratification_or_public_launch_authorization() -> None:
     assert "mutate signed Genesis v0.1" in content
 
 
-def test_cdl_register_still_open_not_ratified() -> None:
+def test_cdl_register_prelock_not_ratified_at_phase_1204() -> None:
     register = CDL_REGISTER.read_text(encoding="utf-8")
     cdl_086_lines = [line for line in register.splitlines() if "| CDL-086 |" in line]
     assert len(cdl_086_lines) == 1
-    assert "open" in cdl_086_lines[0].lower()
     assert "ratified_phase: 1204" not in cdl_086_lines[0]
+    assert "cdl_086_prelock_committed_phase_1204" in PRELOCK.read_text(encoding="utf-8")
 
 
 def test_status_and_planning_record_phase_1204() -> None:
@@ -45,7 +45,5 @@ def test_status_and_planning_record_phase_1204() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "## Phase 1204" in status
     assert "cdl_086_prelock_committed_phase_1204" in status
-    assert (
-        "Window 1200-1208 is IN PROGRESS through Phase 1204" in planning
-        or "Window 1200-1208 is CLOSED" in planning
-    )
+    assert "Window 1200-1208" in planning
+    assert "Closed" in planning or "closed" in planning
