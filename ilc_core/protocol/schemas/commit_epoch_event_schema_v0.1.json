@@ -1,8 +1,9 @@
 {
+    "_superseded": "SUPERSEDED — HISTORICAL ARCHIVE ONLY. G4-era draft (Phase 69a, 2026-02-01). Pre-dates CDL-051, ADR-0004 revision, and no-wall-clock/no-float rules. Contains 'created_at' (ISO 8601 wall-clock) which is PROHIBITED under current rules. The anyOf float/string pattern for reward_total/stake_total is also non-canonical — current rule mandates Decimal string only. Not a governing source. Canonical authority: ADR-0004, CDL-051, docs/specs/ilc_commit_epoch_causal_frontier_mapping_spec_1226_v0.1.md.",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://ilc-protocol.org/schemas/commit_epoch_event.v0.1.json",
-    "title": "ILC Commit Epoch Event",
-    "description": "Schema for the commit.epoch finalization event in the ILC protocol.",
+    "title": "ILC Commit Epoch Event (SUPERSEDED — see _superseded field)",
+    "description": "SUPERSEDED DRAFT. Schema for the commit.epoch finalization event in the ILC protocol. Pre-CDL-051. Do not use.",
     "type": "object",
     "required": [
         "event_kind",
