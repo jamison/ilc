@@ -126,9 +126,11 @@ def test_g4_production_provenance_alpha_locked_decimal_0_45() -> None:
 
 
 def test_g5_settle_runtime_version_is_phase_1126_v0_4() -> None:
+    # Originally pinned to v0.5 (epoch_attribution_settle_runtime_1129_fix1.v0.5)
+    # at commissioning time. Runtime was upgraded to v0.7 in Phase 1210.
     assert (
         EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
-        == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
+        == "epoch_attribution_settle_runtime_1210.v0.7"
     )
 
 
