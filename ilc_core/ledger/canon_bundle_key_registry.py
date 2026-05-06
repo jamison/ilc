@@ -7,6 +7,7 @@ Tracks current, previous, and deprecated keys to support key lifecycle managemen
 import json
 import os
 import re
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
@@ -491,10 +492,24 @@ def verify_registry_file_signature(
 
 
 def _atomic_write(path: Path, data: str) -> None:
-    """Write data to path atomically using temp file + rename."""
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(data, encoding="utf-8")
-    tmp.replace(path)
+    """Write data to path atomically using a unique temp file + rename.
+
+    Uses tempfile.mkstemp in the same directory to prevent concurrent-process
+    corruption when multiple nodes share the same filesystem path.
+    """
+    fd, tmp_str = tempfile.mkstemp(
+        dir=str(path.parent), prefix=f".{path.stem}.", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(data)
+        os.replace(tmp_str, path)
+    except Exception:
+        try:
+            os.unlink(tmp_str)
+        except OSError:
+            pass
+        raise
 
 
 def rotate_registry(
