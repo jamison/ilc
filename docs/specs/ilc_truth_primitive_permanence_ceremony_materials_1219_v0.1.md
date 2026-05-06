@@ -55,13 +55,23 @@ This ceremony package covers exactly the ADR-0004 New Seven Genesis truth primit
 | `refute.claim` | Covered, with CDL-052 criterion dependency | Yes |
 | `revise.assert` | Covered | Yes |
 | `link.claim` | Covered | Yes |
-| `commit.epoch` | Covered as a truth primitive with consensus-only exception | No |
+| `commit.epoch` | Covered for primitive identity and consensus-only / non-agent-issuable boundary; production emission runtime not ratified by this ceremony | No |
 
 `star.map` is explicitly excluded. It remains an L2 routing / development / experience
 artifact and is not a Genesis truth primitive under this ceremony.
 
 `commit.epoch` remains consensus-layer only. Agent submissions remain rejected under
 `commit_epoch_agent_submission_rejected`.
+
+This ceremony does not ratify a final production `commit.epoch` emission runtime. It
+ratifies `commit.epoch` as the ADR-0004 New Seven time/finality primitive and preserves
+the non-agent-issuable boundary. The production mapping from CDL-051 epoch-state/quorum
+records and Genesis epoch-zero bootstrap into the `commit.epoch` primitive remains a
+carry-forward specification obligation:
+
+```text
+commit_epoch_causal_frontier_mapping_spec_required
+```
 
 ---
 
@@ -76,7 +86,7 @@ attestations may be included, but they are not required for Genesis bootstrap va
 |-------|-------|
 | Genesis authority identifier | Pending Genesis authority review |
 | Date of attestation | Pending Stage B |
-| Attestation statement | "I, as Genesis authority for the initial ILC project lineage, attest that the Phase 1211 packet and this Phase 1219 evidence bundle correctly define truth-primitive permanence for the ADR-0004 New Seven, with `star.map` excluded and `commit.epoch` preserved as consensus-only." |
+| Attestation statement | "I, as Genesis authority for the initial ILC project lineage, attest that the Phase 1211 packet and this Phase 1219 evidence bundle correctly define truth-primitive permanence for the ADR-0004 New Seven. `star.map` is excluded. `commit.epoch` is permanently ratified as the New Seven time/finality primitive for primitive identity and non-agent-issuable boundary only; this attestation does not ratify a final production `commit.epoch` emission runtime, which remains governed by CDL-051 finality semantics and the carry-forward token `commit_epoch_causal_frontier_mapping_spec_required`." |
 | Evidence basis | This file, Phase 1211 packet, ADR-0004, CDL-073, CDL-074, CDL-075, CDL-052, runtime/store tokens, signed Genesis v0.1 hash, immutable diagnostic SHA |
 | Form | Commit-anchored attestation in `docs/specs/ilc_truth_primitive_permanence_ratification_event_1219_v0.1.md` after `GO Phase 1219 ratification commit` |
 
@@ -142,6 +152,16 @@ and record:
 
 `truth_primitive_permanence_genesis_attested_phase_1219`
 
+The Stage B event must also carry forward:
+
+```text
+commit_epoch_causal_frontier_mapping_spec_required
+```
+
+Scope: map CDL-051 epoch-state/quorum records plus Genesis epoch-zero bootstrap into the
+ADR-0004 `commit.epoch` primitive wire format, with no wall-clock protocol time and no
+float economics.
+
 ---
 
 ## 8. Explicit Non-Events
@@ -152,10 +172,10 @@ This Stage A package does not:
 - mutate the CDL register;
 - accept an ADR;
 - mutate runtime behavior;
+- ratify a final production `commit.epoch` emission runtime;
 - mutate signed Genesis v0.1;
 - sign Genesis Atlas v0.2;
 - generate or register a release key;
 - produce a release envelope;
 - authorize public repository publication;
 - authorize public RC or public launch claims.
-
