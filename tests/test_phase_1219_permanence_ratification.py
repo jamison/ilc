@@ -48,6 +48,9 @@ def test_ceremony_materials_contains_primitive_set_and_exclusions() -> None:
         assert primitive in content
     assert "`star.map` is explicitly excluded" in content
     assert "commit_epoch_agent_submission_rejected" in content
+    assert "production emission runtime not ratified by this ceremony" in content
+    assert "final production `commit.epoch` emission runtime" in content
+    assert "commit_epoch_causal_frontier_mapping_spec_required" in content
 
 
 def test_ceremony_materials_records_stage_b_boundary() -> None:
@@ -56,6 +59,8 @@ def test_ceremony_materials_records_stage_b_boundary() -> None:
     assert "truth_primitive_permanence_genesis_attestation_pending_phase_1219" in content
     assert "GO Phase 1219 ratification commit" in content
     assert "truth_primitive_permanence_genesis_attested_phase_1219" in content
+    assert "no wall-clock protocol time" in content
+    assert "no\nfloat economics" in content
 
 
 def test_ceremony_materials_has_attestation_and_dissent_fields() -> None:
