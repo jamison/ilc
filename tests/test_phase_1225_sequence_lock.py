@@ -62,7 +62,7 @@ def test_phase_1225_planning_index_and_status_advanced():
     status = _read(STATUS)
 
     assert "Window 1225-1232" in index
-    assert "in progress through Phase" in index
+    assert "in progress through Phase" in index or "CLOSED through Phase 1232" in index
     assert "docs/specs/ilc_phase_1225_1232_sequence_lock_v0.1.md" in index
     assert "## Phase 1225" in status
     assert "window_1225_1232_sequence_lock_committed" in status

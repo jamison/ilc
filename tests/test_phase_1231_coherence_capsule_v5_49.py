@@ -54,5 +54,8 @@ def test_phase_1231_status_and_planning_index_updated() -> None:
     planning = PLANNING_INDEX.read_text(encoding="utf-8")
     assert "## Phase 1231" in status
     assert "capsule_v5_49_supersedes_v5_48" in status
-    assert "Window 1225-1232 in progress through Phase 1231" in planning
+    assert (
+        "Window 1225-1232 in progress through Phase 1231" in planning
+        or "Window 1225-1232 CLOSED through Phase 1232" in planning
+    )
     assert "Capsule v5.49" in planning
