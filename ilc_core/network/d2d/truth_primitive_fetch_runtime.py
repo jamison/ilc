@@ -51,6 +51,8 @@ WANT_BLOCK_PATH = "/fetch/want-block"
 WANT_BLOCK_RATE_LIMIT_PER_MINUTE = 10
 _FETCH_TIMEOUT_SECONDS = 5.0
 _MAX_RESPONSE_BYTES = 1_048_576  # 1 MiB — OOM guard on inbound
+_FETCH_TLS_INSECURE_ENV = "ILC_D2D_INSECURE_SKIP_TLS_VERIFY"
+_FETCH_RESPONSE_TOO_LARGE_TOKEN = "fetch_response_too_large"
 
 # Dep-chain guard
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_558.v0.1":
@@ -78,6 +80,28 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
             "fetch_redirect_not_permitted",
             f"peer returned redirect {code} to {newurl}",
         )
+
+
+def _client_ssl_context() -> ssl.SSLContext:
+    """Return the default verified TLS context unless explicit testbed opt-out is set."""
+    context = ssl.create_default_context()
+    if os.environ.get(_FETCH_TLS_INSECURE_ENV) == "1":
+        # RC/testbed-only escape hatch for self-signed local nodes. Production
+        # callers must leave this unset so normal certificate verification applies.
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+def _read_bounded_response(response: object) -> bytes:
+    """Read at most the fetch response cap and fail closed if the peer exceeds it."""
+    raw = response.read(_MAX_RESPONSE_BYTES + 1)
+    if len(raw) > _MAX_RESPONSE_BYTES:
+        raise FetchTransportError(
+            _FETCH_RESPONSE_TOO_LARGE_TOKEN,
+            f"peer response exceeded {_MAX_RESPONSE_BYTES} bytes",
+        )
+    return raw
 
 
 # ---------------------------------------------------------------------------
@@ -155,20 +179,19 @@ def want_have(node_id: str, peer_endpoint: str) -> dict[str, Any]:
     url = f"{normalized}{WANT_HAVE_PATH}"
     body = json.dumps({"node_id": node_id, "requester_id": "local"}, sort_keys=True).encode()
 
-    ssl_ctx = ssl.create_default_context()
-    ssl_ctx.check_hostname = False
-    ssl_ctx.verify_mode = ssl.CERT_NONE
-
     req = urllib.request.Request(
         url,
         data=body,
         method="POST",
         headers={"Content-Type": "application/json"},
     )
-    _opener = urllib.request.build_opener(_NoRedirectHandler, urllib.request.HTTPSHandler(context=ssl_ctx))
+    _opener = urllib.request.build_opener(
+        _NoRedirectHandler,
+        urllib.request.HTTPSHandler(context=_client_ssl_context()),
+    )
     try:
         with _opener.open(req, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
-            raw = resp.read(_MAX_RESPONSE_BYTES)
+            raw = _read_bounded_response(resp)
             parsed = json.loads(raw)
             if not isinstance(parsed, dict) or "have" not in parsed:
                 raise FetchTransportError(
@@ -207,20 +230,19 @@ def want_block(node_id: str, peer_endpoint: str) -> bytes | None:
     url = f"{normalized}{WANT_BLOCK_PATH}"
     body = json.dumps({"node_id": node_id, "requester_id": "local"}, sort_keys=True).encode()
 
-    ssl_ctx = ssl.create_default_context()
-    ssl_ctx.check_hostname = False
-    ssl_ctx.verify_mode = ssl.CERT_NONE
-
     req = urllib.request.Request(
         url,
         data=body,
         method="POST",
         headers={"Content-Type": "application/json"},
     )
-    _opener = urllib.request.build_opener(_NoRedirectHandler, urllib.request.HTTPSHandler(context=ssl_ctx))
+    _opener = urllib.request.build_opener(
+        _NoRedirectHandler,
+        urllib.request.HTTPSHandler(context=_client_ssl_context()),
+    )
     try:
         with _opener.open(req, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
-            raw = resp.read(_MAX_RESPONSE_BYTES)
+            raw = _read_bounded_response(resp)
             return raw
     except urllib.error.HTTPError as exc:
         if exc.code == 404:
@@ -336,6 +358,7 @@ def handle_want_block_request(
     store: Any,
     rate_limiter: FetchRateLimiter,
     rate_limit_key: str | None = None,
+    serve_epoch: int | None = None,
 ) -> tuple[int, bytes]:
     """Server-side WANT-BLOCK handler.
 
@@ -396,13 +419,16 @@ def handle_want_block_request(
         return 500, resp
 
     # CDL-078: record successful serve event for routing reputation (best-effort).
-    try:
-        from ilc_core.network.d2d.routing_reputation_runtime import (
-            record_serve_event,
-            _global_reputation_state,
-        )
-        record_serve_event(node_id, int(time.time() // 60), _global_reputation_state)
-    except Exception:  # noqa: BLE001
-        pass  # best-effort; WANT-BLOCK response is not affected
+    # The epoch must be supplied by caller-owned protocol/window state; this handler
+    # deliberately does not derive protocol time from OS wall clock.
+    if serve_epoch is not None:
+        try:
+            from ilc_core.network.d2d.routing_reputation_runtime import (
+                record_serve_event,
+                _global_reputation_state,
+            )
+            record_serve_event(node_id, serve_epoch, _global_reputation_state)
+        except Exception:  # noqa: BLE001
+            pass  # best-effort; WANT-BLOCK response is not affected
 
     return 200, record_bytes

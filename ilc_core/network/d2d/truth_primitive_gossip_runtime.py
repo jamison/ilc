@@ -35,6 +35,7 @@ TRUTH_PRIMITIVE_GOSSIP_TYPE = "truth_primitive_announced"
 TRUTH_PRIMITIVE_GOSSIP_CHANNEL = "cdl076:truth_primitive_announced_v1"
 _GOSSIP_TIMEOUT_SECONDS = 2.0
 _UNSIGNED_SIGNATURE = "UNSIGNED"
+_GOSSIP_TLS_INSECURE_ENV = "ILC_D2D_INSECURE_SKIP_TLS_VERIFY"
 
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_558.v0.1":
     raise RuntimeError(
@@ -87,10 +88,11 @@ def _build_announcement_payload(write_receipt: dict[str, Any], envelope: dict[st
 
 
 def _client_ssl_context() -> ssl.SSLContext:
-    """Minimal outbound-only TLS context.  No cert verification (RC0.1 testbed posture)."""
+    """Outbound TLS context. Verification is disabled only by explicit testbed opt-out."""
     context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
+    if os.environ.get(_GOSSIP_TLS_INSECURE_ENV) == "1":
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
     return context
 
 

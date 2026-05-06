@@ -18,7 +18,10 @@ SENSITIVE_SCAN_ROOTS = (
 
 EXPLICIT_SCAN_FILES = {
     "ilc_core/network/peer.py",
+    "ilc_core/network/d2d/http_fetch_transport_runtime.py",
     "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+    "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
+    "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
 }
 
 PRNG_FORBIDDEN_FILES = {
@@ -51,6 +54,8 @@ STRICT_MACHINE_JSON_FILES = {
 NETWORK_TIMEOUT_FILES = {
     "ilc_core/network/peer.py",
     "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+    "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
+    "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
     "ilc_core/ledger/canon_bundle_key_registry_fetch.py",
 }
 
@@ -176,6 +181,14 @@ def _is_urllib_urlopen(call: ast.Call) -> bool:
     )
 
 
+def _is_url_opener_open(call: ast.Call) -> bool:
+    func = call.func
+    if not isinstance(func, ast.Attribute) or func.attr != "open":
+        return False
+    value = func.value
+    return isinstance(value, ast.Name) and "opener" in value.id
+
+
 def _is_socket_create_connection(call: ast.Call) -> bool:
     func = call.func
     return (
@@ -243,7 +256,12 @@ def find_violations() -> list[str]:
                     violations.append(f"{rel}:{node.lineno}:json_dumps_missing_allow_nan_false")
 
             if rel in NETWORK_TIMEOUT_FILES:
-                if _is_requests_call(node) or _is_urllib_urlopen(node) or _is_socket_create_connection(node):
+                if (
+                    _is_requests_call(node)
+                    or _is_urllib_urlopen(node)
+                    or _is_url_opener_open(node)
+                    or _is_socket_create_connection(node)
+                ):
                     network_call_seen = True
                     if not any(kw.arg == "timeout" for kw in node.keywords):
                         violations.append(f"{rel}:{node.lineno}:network_call_missing_timeout")

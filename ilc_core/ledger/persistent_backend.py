@@ -125,7 +125,7 @@ class FileLedgerBackend(InMemoryLedgerBackend):
         fd, tmp_path = tempfile.mkstemp(dir=parent, prefix=f".{stem}.", suffix=".tmp")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
+                json.dump(data, f, indent=2, sort_keys=True, allow_nan=False)
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(tmp_path, target)
