@@ -59,6 +59,48 @@ NETWORK_TIMEOUT_FILES = {
     "ilc_core/ledger/canon_bundle_key_registry_fetch.py",
 }
 
+TLS_VERIFY_FILES = {
+    "ilc_core/network/peer.py",
+    "ilc_core/network/d2d/http_fetch_transport_runtime.py",
+    "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+    "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
+    "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
+    "ilc_core/ledger/canon_bundle_key_registry_fetch.py",
+}
+
+ATOMIC_WRITE_CONTRACTS = {
+    "ilc_core/ledger/canon_bundle_key_registry.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+    "ilc_core/ledger/canon_bundle_key_registry_channel.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+    "ilc_core/ledger/canon_bundle_key_registry_sync_state.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+    "ilc_core/ledger/persistent_backend.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+    "ilc_core/network/d2d/persistent_fetch_rate_limiter_runtime.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+}
+
+OUTBOUND_FETCH_BOUND_CONTRACTS = {
+    "ilc_core/ledger/canon_bundle_key_registry_fetch.py": (
+        "MAX_REGISTRY_BUNDLE_DOWNLOAD_BYTES",
+        "MAX_REGISTRY_BUNDLE_EXTRACT_BYTES",
+        "MAX_REGISTRY_BUNDLE_ARCHIVE_MEMBERS",
+        "_is_safe_archive_path",
+        "_copy_response_bounded",
+    ),
+}
+
 
 def _iter_python_files() -> list[Path]:
     files: set[Path] = set()
@@ -198,6 +240,14 @@ def _is_socket_create_connection(call: ast.Call) -> bool:
     )
 
 
+def _is_insecure_ssl_context(call: ast.Call) -> bool:
+    name = _call_name(call)
+    return name in {
+        "ssl._create_unverified_context",
+        "ssl.create_unverified_context",
+    }
+
+
 def find_violations() -> list[str]:
     violations: list[str] = []
 
@@ -266,8 +316,27 @@ def find_violations() -> list[str]:
                     if not any(kw.arg == "timeout" for kw in node.keywords):
                         violations.append(f"{rel}:{node.lineno}:network_call_missing_timeout")
 
+            if rel in TLS_VERIFY_FILES:
+                if _is_requests_call(node) and _bool_keyword(node, "verify") is False:
+                    violations.append(f"{rel}:{node.lineno}:tls_verify_false_forbidden")
+                if _is_insecure_ssl_context(node):
+                    violations.append(f"{rel}:{node.lineno}:insecure_ssl_context_forbidden")
+
         if rel in NETWORK_TIMEOUT_FILES and not network_call_seen:
             violations.append(f"{rel}:network_timeout_check_target_has_no_detected_network_call")
+
+        if rel in ATOMIC_WRITE_CONTRACTS:
+            text = path.read_text(encoding="utf-8")
+            for required in ATOMIC_WRITE_CONTRACTS[rel]:
+                if required not in text:
+                    token = required.replace(".", "_")
+                    violations.append(f"{rel}:atomic_write_contract_missing_{token}")
+
+        if rel in OUTBOUND_FETCH_BOUND_CONTRACTS:
+            text = path.read_text(encoding="utf-8")
+            for required in OUTBOUND_FETCH_BOUND_CONTRACTS[rel]:
+                if required not in text:
+                    violations.append(f"{rel}:outbound_fetch_bound_contract_missing_{required}")
 
     return violations
 
