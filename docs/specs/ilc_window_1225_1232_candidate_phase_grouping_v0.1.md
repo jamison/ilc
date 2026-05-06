@@ -555,9 +555,13 @@ Capsule must record:
 - CDL-087 status (OPEN + PRELOCKED; ratification deferred pending SIM-FETCH-01)
 - Agent graph projection runtime token
 - v0.2 signing status (executed or deferred)
-- `fetch_distribution_architecture_reframed_phase_1222` direction confirmed
+- `fetch_distribution_architecture_reframed_phase_1222` direction confirmed; reciprocal
+  scoring formula in Phase 1222 §2 is explicitly a non-selected research candidate, not the
+  preferred direction
 - Signed Genesis v0.1 immutability confirmed
 - Immutable diagnostic SHA confirmed: `5a67a91974e2d89ac1e40616085bbaa347893d72c7b8ba38410f0eeec81dcb56`
+- MemPalace refresh disposition: local MemPalace active palace was stale as of Phase 1225;
+  record whether it has been refreshed or remains advisory-only for Window 1225-1232
 - Phase 1232 closure pending
 
 Token: `capsule_v5_49_supersedes_v5_48`
@@ -633,6 +637,20 @@ Phase 1232 closure gate must include `ILC_PHASE_1232_GATE_SELFTEST=1` in its cat
 environment variable list. Read each prior gate test file rather than reasoning by analogy.
 The selftest guard chain grows with each window — check the Phase 1224 closure gate as the
 most recent reference implementation.
+
+### PLANNING_INDEX stale-row cleanup (Phase 1232 pre-close task)
+
+Before or during Phase 1232, sweep `docs/PLANNING_INDEX.md` for any remaining `⬅ CURRENT`
+markers on superseded docs. Minimum checks:
+
+- §1 table: confirm "Reciprocal fetch admission spec 1222" no longer marked CURRENT without
+  its non-selected-candidate qualifier
+- §4 table: confirm Launch Roadmap v0.9 is marked "(superseded by v1.0)", not CURRENT
+- §1 footer note: confirm stale "Window 1176+ pending" note is updated to current frontier
+
+Document the stale-row cleanup disposition in the Phase 1232 closure gate commit or in the
+window handoff. This is a hygiene gate, not a blocking gate — it should not hold the closure
+verdict, but it must be recorded as done or explicitly deferred with a carry-forward token.
 
 ---
 
