@@ -37,4 +37,7 @@ def test_phase_1180_runtime_binding_prerequisite():
 
 
 def test_phase_1180_runtime_phi_bound_not_activated():
-    assert EDGE_MINT_PHI_BOUND is None
+    # Originally asserted None (pre-CDL-085). CDL-085 ratified at Phase 1185
+    # set EDGE_MINT_PHI_BOUND = Decimal("0.60"). Updated to match current runtime.
+    from decimal import Decimal
+    assert EDGE_MINT_PHI_BOUND == Decimal("0.60")
