@@ -45,13 +45,37 @@ class SidecarQueryBounds:
                 raise ValueError(f"{field_name}_must_be_positive_int")
 
 
+@dataclass(frozen=True)
+class SidecarQuery:
+    query_type: str
+    root_id: str | None = None
+    hops: int = 1
+    node_ids: tuple[str, ...] = ()
+    genesis_id: str = "genesis:root"
+    top_k: int | None = None
+    bounds: SidecarQueryBounds | None = None
+
+
 def execute_sidecar_query(
     *,
-    query_type: str,
+    query_type: str = "",
     projection: Mapping[str, Any],
     bounds: SidecarQueryBounds | None = None,
+    query: SidecarQuery | None = None,
     **kwargs: Any,
 ) -> dict[str, Any]:
+    if query is not None:
+        query_type = query.query_type
+        if query.bounds is not None:
+            bounds = query.bounds
+        kwargs = {
+            "genesis_id": query.genesis_id,
+            "hops": query.hops,
+            "node_ids": query.node_ids if query.node_ids else None,
+            "root_id": query.root_id,
+            "top_k": query.top_k,
+        }
+
     if query_type not in QUERY_TYPES:
         raise ValueError("sidecar_query_type_unsupported")
 
