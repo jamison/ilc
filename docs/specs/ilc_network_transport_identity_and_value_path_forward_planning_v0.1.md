@@ -195,17 +195,30 @@ The desired modularity is:
 | `ilc_cli` (Python) | `ilc ...` command surface, config loading, operator UX, subprocess-compatible harness entrypoint | Protocol truth, economic settlement authority |
 | `ilc_harness_adapters` (Python) | OpenClaw/NemoClaw skills, sidecar apps, local REST/CLI adapters, `TransportHarness` and `StorageHarness` protocol implementations | Canonical protocol law |
 
+The Rust/Python boundary must include an explicit binding plan. If Python imports Rust consensus
+logic directly, the implementing phase must choose and document the binding surface (likely PyO3 or
+an equivalent stable FFI wrapper), including which APIs are exposed to Python and which remain
+Rust-internal. This is separate from the public P2P substrate decision: a binding plan exposes local
+consensus primitives to Python; the P2P ADR chooses the hostile-network transport substrate.
+
 `commit.epoch` should be split, not moved wholesale:
 - canonical mapping/projection/adaptation remains in Python `ilc_logic.protocol`;
 - quorum/finality verification and settlement commitment remain Rust `ilc_consensus_core`;
 - the CLI or node runtime triggers epoch commit, but neither should define the canonical event
-  semantics.
+  semantics;
+- any trigger must use ratified epoch/sequence inputs, not OS wall clock time, for protocol
+  liveness or settlement semantics.
 
 Harness adapters can be sidecar apps, but the sidecar path must be local-first. If a local REST
 API is bound beyond loopback or exposed to untrusted clients, it must require TransportPrincipal
 authentication and the public P2P policy stack. OpenClaw/NemoClaw can call ILC through native Python
 imports, CLI subprocesses, or a localhost sidecar API, but none of those deployment choices may
-become protocol dependencies.
+become protocol dependencies. The adapter contract should be generic enough for OpenClaw/NemoClaw
+without becoming OpenClaw-specific: future harnesses (for example TypeScript, Go, C++, AutoGPT-style,
+LangChain-style, or other agent runners) should be able to consume the same CLI/local-sidecar/native
+import contract. Sidecar adapters also need dependency-isolation requirements: harness dependencies,
+tooling dependencies, and public-facing transport stacks must not force their dependency graph into
+the pure `ilc_logic` package or the Rust consensus core.
 
 LOC baseline, measured locally on 2026-05-07:
 - tracked repository files: approximately 852,159 lines;
@@ -224,10 +237,14 @@ ilc_package_modularity_split_required_before_openclaw_skill_launch
 ilc_logic_pure_protocol_interfaces_required
 ilc_logic_must_not_require_http_lmdb_or_harness_transport
 ilc_cli_package_boundary_required
+pyo3_binding_plan_required_for_ilc_consensus_core
 commit_epoch_boundary_split_python_projection_rust_finality_required
+commit_epoch_trigger_must_use_epoch_sequence_not_wall_clock
 openclaw_nemoclaw_adapter_must_be_sidecar_or_cli_not_protocol_substrate
 harness_adapter_transport_storage_protocols_required
+generic_agent_harness_adapter_contract_required
 localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth
+sidecar_dependency_isolation_required_for_harness_adapters
 line_count_baseline_must_be_measured_not_estimated_before_public_rc
 public_package_size_audit_required_before_openclaw_skill_launch
 ```
@@ -510,10 +527,14 @@ ilc_package_modularity_split_required_before_openclaw_skill_launch
 ilc_logic_pure_protocol_interfaces_required
 ilc_logic_must_not_require_http_lmdb_or_harness_transport
 ilc_cli_package_boundary_required
+pyo3_binding_plan_required_for_ilc_consensus_core
 commit_epoch_boundary_split_python_projection_rust_finality_required
+commit_epoch_trigger_must_use_epoch_sequence_not_wall_clock
 openclaw_nemoclaw_adapter_must_be_sidecar_or_cli_not_protocol_substrate
 harness_adapter_transport_storage_protocols_required
+generic_agent_harness_adapter_contract_required
 localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth
+sidecar_dependency_isolation_required_for_harness_adapters
 line_count_baseline_must_be_measured_not_estimated_before_public_rc
 public_package_size_audit_required_before_openclaw_skill_launch
 
