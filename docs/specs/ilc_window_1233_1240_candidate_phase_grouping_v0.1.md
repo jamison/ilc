@@ -354,6 +354,12 @@ This window does NOT:
 - Close `genesis_canonical_lineage_contract_required_before_public_rc` — ADR opening not assigned
 - Migrate float surfaces in `temporal_decay_runtime.py`, `centrality_delta_gossip_runtime.py`,
   `routing_reputation_runtime.py` to Decimal (deferred; no window assigned)
+- Execute TLA+ refinement notes phase (token `tla_refinement_notes_pre_rc`; deferred to
+  Window 1241+ tail slot; forward-planning spec at
+  `docs/specs/ilc_tla_plus_formal_verification_forward_planning_v0.1.md`;
+  token `tla_formal_verification_forward_planning_recorded_phase_1233_1240`)
+- Implement Spec D EpochSettlementTx formal model, TLAPS liveness proof, or economic
+  protocol TLA+ specs — all post-launch; see forward-planning doc above
 
 ---
 
