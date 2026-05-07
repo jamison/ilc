@@ -15,11 +15,14 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 
 **Post-Phase-1238 addendum:** Roadmap v1.0 remains the active gap inventory, but parts of
 its early RC2 status table are stale relative to later canon. A pre-sequence runway
-addendum now records the required Roadmap v1.1 refresh, public-RC blocker classes,
-and candidate Window 1241+ bands:
+addendum now records that Roadmap v1.1 must become the new controlling public-RC roadmap
+after Phase 1240, not merely a patch. v1.1 must reconcile current canon, public-RC
+blocker classes, the OpenClaw/NemoClaw skill-first default, and candidate Window 1241+
+bands:
 `docs/specs/ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0.1.md`.
 
 `launch_roadmap_v1_1_refresh_required_after_phase_1240`
+`roadmap_v1_1_must_become_controlling_public_rc_roadmap`
 `public_rc_runway_pre_sequence_plan_1241_plus_recorded_phase_1238`
 
 ---
@@ -423,7 +426,9 @@ harness package/skill.
 
 OpenClaw/NemoClaw is best treated as an onboarding/orchestration harness, not ILC's base protocol
 transport. If ILC Core ships as a skill/package inside such a harness, the monorepo must expose
-clean package boundaries:
+clean package boundaries. Under the OpenClaw-first public-RC path, Gap 14 is sequenced before
+Gap 10 because package modularity is the immediate shipping path, while TransportPrincipal is the
+public-P2P hardening path.
 
 - Rust consensus core: cryptography, quorum/finality verification, fixed-point ECU primitives,
   settlement math.
@@ -452,8 +457,21 @@ Measured LOC baseline as of 2026-05-07: tracked repository files are approximate
 tracked Python+Rust are approximately 276k lines. Public launch package size must be measured from
 the selected packaging profile, not inferred from monorepo LOC.
 
+Code-level profile contracts now distinguish the two OpenClaw/NemoClaw skill states:
+
+- `openclaw_skill_local` — local preview only; no public P2P claim and no public claimability claim.
+- `openclaw_skill_claimable` — final public-RC target profile; public ECU-to-ILC claimability
+  present, no ILC-owned public P2P claim.
+
+Declared non-excisable components are a packaging integrity guard, not fork prevention. Fork
+resistance remains anchored in Genesis lineage verification, ratified CDL authority, and license/IP
+policy.
+
 Carry-forward tokens (all open):
 - `ilc_package_modularity_split_required_before_openclaw_skill_launch`
+- `gap_14_package_modularity_first_slice_before_gap_10_transport_principal`
+- `openclaw_skill_local_profile_is_preview_only`
+- `openclaw_skill_claimable_profile_is_final_public_rc_target`
 - `ilc_logic_pure_protocol_interfaces_required`
 - `ilc_logic_must_not_require_http_lmdb_or_harness_transport`
 - `ilc_cli_package_boundary_required`
