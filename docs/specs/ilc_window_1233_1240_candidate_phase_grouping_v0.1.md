@@ -333,6 +333,9 @@ This window does NOT:
 - Mutate Genesis Atlas or signed Genesis v0.1
 - Authorize production commit.epoch emission (gated; requires separate authorization)
 - Implement lineage receipt / allowlist export tooling (deferred to Window 1241+)
+- Implement Dynamic Epistemic Traversal Engine (deferred to Window 1241+; forward-planning
+  spec at `docs/specs/ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0.1.md`;
+  token `dynamic_epistemic_traversal_engine_forward_planning_recorded_phase_1233_1240`)
 - Perform governance activation ceremony
 - Implement L4 privacy / onion / SURB
 - Begin cross-epoch compaction
