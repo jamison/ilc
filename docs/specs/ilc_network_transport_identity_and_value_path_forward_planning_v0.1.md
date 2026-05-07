@@ -6,8 +6,8 @@ Phase 1237 Fix1-Fix7 complete; audit hardening committed (9601ac79).
 **Status:** Non-normative forward planning. Does not override ratified CDL state.
 **Governing authorities:** CDL register, ADR register, ratified runtime chain.
 **Purpose:** Record architectural decisions and planning tokens from Gemini review synthesis
-(2026-05-07 Codex conversation) across four threads: transport identity, OpenClaw/deployment
-posture, Werner topological flow governor, and ECU/ILC value path.
+(2026-05-07 Codex conversation) across five threads: transport identity, OpenClaw/deployment
+posture, package modularity, Werner topological flow governor, and ECU/ILC value path.
 
 ```text
 network_transport_identity_and_value_path_forward_planning_recorded_phase_1238
@@ -59,6 +59,14 @@ behavior, and cannot be trivially rotated.
 
 This is the highest-priority network hardening item before public P2P exposure.
 
+Public P2P must also remove any fallback from authenticated transport identity to a JSON/body
+`requester_id`. A body field can remain a protocol payload field where already governed, but it
+must not be trusted as the public-path rate-limit or ban key.
+
+The same rule applies to the future sidecar projection endpoint. If projection serving is exposed
+beyond loopback/local-process use, it requires TransportPrincipal authentication and public-path
+rate limiting before launch.
+
 ### 2.3 The key ladder
 
 The repo already has layered identity types. The correct ladder, as confirmed by Codex synthesis and
@@ -92,6 +100,8 @@ existing code, is:
 - Optionally linkable to stake/reputation under governance authorization, but not automatically
   equal to AgentID or validator key
 - The key that `PersistentFetchRateLimiter` and admission controls bind to, replacing IP
+- Covered by an explicit lifecycle: issuance, epoch-scoped rotation, revocation, local-ban
+  persistence, replay prevention, and privacy-preserving admission/stake binding
 
 Design constraint: TransportPrincipal must not require revealing agent economic position at
 connection time. An agent with large stake should not be identifiable as such by a passive
@@ -103,7 +113,10 @@ network observer watching D2D connections.
 transport_principal_identity_required_before_public_p2p
 d2d_rate_limiter_key_must_be_authenticated_transport_principal
 agent_id_must_not_be_default_transport_rate_limit_key
+json_requester_id_rate_limit_fallback_forbidden_public_p2p
 transport_principal_cdl_required_before_runtime_implementation
+transport_principal_lifecycle_and_revocation_spec_required
+sidecar_projection_endpoint_public_path_requires_transport_principal_auth
 ```
 
 ### 2.5 Python HTTP transport downgrade path
@@ -118,18 +131,28 @@ They are NOT suitable as the public-internet-facing P2P substrate. They should b
 The Rust QUIC layer in `ilc_consensus/src/network.rs` provides the foundation. The gap is:
 making it the primary public P2P transport for D2D (not just consensus gossip).
 
+The public P2P substrate should not be chosen by slogan. A near-term ADR must decide whether to
+extend the existing Quinn/rustls transport, adopt libp2p, or define an adapter boundary that can
+support both. Gemini's libp2p recommendation is directionally relevant, but the repository already
+has Rust QUIC/TLS code and should evaluate reuse before introducing a new network stack.
+
 **Planning tokens:**
 
 ```text
 python_http_transport_formally_downgraded_to_devnet_test_only_required
 rust_public_p2p_transport_lane_required_before_public_p2p
 rust_quic_tls_transport_already_exists_in_ilc_consensus_src_network_rs
+rust_p2p_substrate_decision_adr_required_quinn_vs_libp2p
 ```
 
 ### 2.6 OpenClaw/NemoClaw posture
 
 NemoClaw (NVIDIA's OpenClaw reference stack) is a sandboxing, lifecycle, credential injection,
 and proxied network/API access framework for LLM agents. It is NOT a sovereign BFT P2P transport.
+External check, 2026-05-07: NVIDIA describes NemoClaw as an open-source reference stack for running
+OpenClaw assistants inside OpenShell containers with onboarding, lifecycle management, network
+policies, and sandboxed execution. This supports treating it as an orchestration/onboarding layer,
+not as ILC's protocol transport substrate.
 
 **The correct framing (confirmed by Phase 665-670 lock and SDK boundary contract):**
 
@@ -148,11 +171,65 @@ These are not mutually exclusive. Path B (OpenClaw packaging as onboarding lane)
 parallel without blocking Path A. The SDK boundary contract already establishes the correct
 separation.
 
-**Planning token:**
+**Planning tokens:**
 
 ```text
 openclaw_sdk_packaging_lane_not_base_transport_dependency
 openclaw_skill_packaging_phase_authorized_as_parallel_onboarding_lane
+```
+
+### 2.7 Package modularity for agentic harness integration
+
+If ILC launches first as an OpenClaw/NemoClaw-consumable package or skill, the repo must be split
+into package boundaries that let external harnesses provide transport, storage, lifecycle, and
+credential injection without importing the ILC devnet HTTP stack.
+
+The desired modularity is:
+
+| Package / crate | Responsibility | Must not own |
+|-----------------|----------------|--------------|
+| `ilc_consensus_core` (Rust) | BLS/validator cryptography, quorum proof verification, fixed-point ECU primitives, epoch-settlement math | Python orchestration, CLI, OpenClaw adapters |
+| `ilc_consensus_node` (Rust) | Public P2P transport, admission, mempool/buffer, rate limiting, settlement storage adapters | Agent cognition or LLM/tool orchestration |
+| `ilc_logic` (Python) | Epistemic rules, projection/query logic, attribution rules, `commit.epoch` projection/adaptation surfaces, spectral distances | `http.server`, public network transport, LMDB ownership, terminal CLI |
+| `ilc_node_runtime` (Python/Rust boundary) | Local node orchestration, storage wiring, daemon lifecycle, devnet/test server surfaces | Pure protocol math |
+| `ilc_cli` (Python) | `ilc ...` command surface, config loading, operator UX, subprocess-compatible harness entrypoint | Protocol truth, economic settlement authority |
+| `ilc_harness_adapters` (Python) | OpenClaw/NemoClaw skills, sidecar apps, local REST/CLI adapters, `TransportHarness` and `StorageHarness` protocol implementations | Canonical protocol law |
+
+`commit.epoch` should be split, not moved wholesale:
+- canonical mapping/projection/adaptation remains in Python `ilc_logic.protocol`;
+- quorum/finality verification and settlement commitment remain Rust `ilc_consensus_core`;
+- the CLI or node runtime triggers epoch commit, but neither should define the canonical event
+  semantics.
+
+Harness adapters can be sidecar apps, but the sidecar path must be local-first. If a local REST
+API is bound beyond loopback or exposed to untrusted clients, it must require TransportPrincipal
+authentication and the public P2P policy stack. OpenClaw/NemoClaw can call ILC through native Python
+imports, CLI subprocesses, or a localhost sidecar API, but none of those deployment choices may
+become protocol dependencies.
+
+LOC baseline, measured locally on 2026-05-07:
+- tracked repository files: approximately 852,159 lines;
+- tracked Python + Rust only: approximately 276,405 lines;
+- tracked Python/Rust/Markdown/JSON/TOML/YAML: approximately 577,728 lines.
+
+This is a repository-size baseline, not a package-size target. Public launch should include a
+package-size audit because docs, generated `out/` artifacts, test fixtures, patent-pending material,
+and devnet harnesses should not all ship in the same installable surface. A reasonable launch
+estimate must be measured from the selected packaging profile, not from monorepo LOC.
+
+**Planning tokens:**
+
+```text
+ilc_package_modularity_split_required_before_openclaw_skill_launch
+ilc_logic_pure_protocol_interfaces_required
+ilc_logic_must_not_require_http_lmdb_or_harness_transport
+ilc_cli_package_boundary_required
+commit_epoch_boundary_split_python_projection_rust_finality_required
+openclaw_nemoclaw_adapter_must_be_sidecar_or_cli_not_protocol_substrate
+harness_adapter_transport_storage_protocols_required
+localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth
+line_count_baseline_must_be_measured_not_estimated_before_public_rc
+public_package_size_audit_required_before_openclaw_skill_launch
 ```
 
 ---
@@ -249,6 +326,11 @@ topology smoother as a *simulation overlay*, not as runtime policy. The Phase 12
 This produces simulation evidence before any runtime deployment. A CDL is required before
 deploying as runtime policy.
 
+Before any heat/topology signal can become a policy input, it must pass the same spectral trust
+threshold discipline already established in the spectral SIM work: enough established nodes,
+connected-enough topology, nonzero reliable lambda2, and largest-component safeguards. Heat is a
+demand signal, not an ECU minting authority.
+
 **Planning tokens:**
 
 ```text
@@ -260,6 +342,8 @@ flow_governor_cdl_required_before_runtime_policy_deployment
 beta_decomposition_required_before_policy_use
 flow_governor_must_not_replace_quality_reputation_mechanism
 fetch_rate_limit_must_remain_circuit_breaker_until_authenticated_principal_credit_governor_cdl
+flow_governor_spectral_trust_threshold_required_before_policy_use
+heat_signal_must_not_directly_mint_ecu
 ```
 
 ---
@@ -329,6 +413,7 @@ Required missing pieces for conversion mechanism:
 | Production conversion runtime | Eligible ECU lots → ILC quantity at `P_e` per epoch settlement, canonical rules |
 | Decimal/fixed-point `P_e` runtime | `epoch_ledger.py` has float telemetry path only; production requires fixed-point monetary engine |
 | Mandatory conversion sweeper | Enforce CDL-048 4-epoch deadline; sweep expired ECU lots |
+| ECU lot accounting | Track issue epoch, origin, funding provenance, deadline, and conversion status; aggregate balances alone cannot enforce a 4-epoch sweeper |
 | ILC issuance budget accounting | Total ILC budget available, emitted per epoch, exhausted, taper/long-tail |
 | Claimability state machine | Internal settled → pending conversion → converted ILC → claimable ILC → transferred/withdrawn |
 | Machine-verifiable receipts | ECU origin, conversion epoch, `P_e`, ILC amount, claimability status; auditable |
@@ -355,6 +440,7 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 ecu_to_ilc_conversion_execution_runtime_required_pre_public_launch
 pe_governor_fixed_point_runtime_required_pre_public_launch
 mandatory_conversion_sweeper_required_for_cdl_048_runtime
+ecu_lot_accounting_required_for_cdl_048_conversion_sweeper
 ilc_public_claimability_substrate_required_pre_public_launch
 ilc_public_claimability_substrate_does_not_block_internal_conversion_runtime
 wallet_signing_spend_transfer_claimability_boundary_required
@@ -408,12 +494,28 @@ sim_fetch_01_warmup_epoch_separation_required
 transport_principal_identity_required_before_public_p2p
 d2d_rate_limiter_key_must_be_authenticated_transport_principal
 agent_id_must_not_be_default_transport_rate_limit_key
+json_requester_id_rate_limit_fallback_forbidden_public_p2p
 transport_principal_cdl_required_before_runtime_implementation
+transport_principal_lifecycle_and_revocation_spec_required
 python_http_transport_formally_downgraded_to_devnet_test_only_required
 rust_public_p2p_transport_lane_required_before_public_p2p
 rust_quic_tls_transport_already_exists_in_ilc_consensus_src_network_rs
+rust_p2p_substrate_decision_adr_required_quinn_vs_libp2p
 openclaw_sdk_packaging_lane_not_base_transport_dependency
 openclaw_skill_packaging_phase_authorized_as_parallel_onboarding_lane
+sidecar_projection_endpoint_public_path_requires_transport_principal_auth
+
+# OpenClaw/NemoClaw package modularity
+ilc_package_modularity_split_required_before_openclaw_skill_launch
+ilc_logic_pure_protocol_interfaces_required
+ilc_logic_must_not_require_http_lmdb_or_harness_transport
+ilc_cli_package_boundary_required
+commit_epoch_boundary_split_python_projection_rust_finality_required
+openclaw_nemoclaw_adapter_must_be_sidecar_or_cli_not_protocol_substrate
+harness_adapter_transport_storage_protocols_required
+localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth
+line_count_baseline_must_be_measured_not_estimated_before_public_rc
+public_package_size_audit_required_before_openclaw_skill_launch
 
 # Werner flow governor
 werner_topological_flow_governor_forward_planning_recorded_phase_1238
@@ -424,6 +526,8 @@ flow_governor_cdl_required_before_runtime_policy_deployment
 beta_decomposition_required_before_policy_use
 flow_governor_must_not_replace_quality_reputation_mechanism
 fetch_rate_limit_must_remain_circuit_breaker_until_authenticated_principal_credit_governor_cdl
+flow_governor_spectral_trust_threshold_required_before_policy_use
+heat_signal_must_not_directly_mint_ecu
 
 # ECU creation and ILC settlement
 agentic_wallet_ecu_credit_creation_runtime_required_pre_public_launch
@@ -432,6 +536,7 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 ecu_to_ilc_conversion_execution_runtime_required_pre_public_launch
 pe_governor_fixed_point_runtime_required_pre_public_launch
 mandatory_conversion_sweeper_required_for_cdl_048_runtime
+ecu_lot_accounting_required_for_cdl_048_conversion_sweeper
 ilc_public_claimability_substrate_required_pre_public_launch
 ilc_public_claimability_substrate_does_not_block_internal_conversion_runtime
 wallet_signing_spend_transfer_claimability_boundary_required
