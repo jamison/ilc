@@ -22,6 +22,7 @@ from ilc_core.graph.agent_graph_projection_runtime import (
 SIDECAR_QUERY_RUNTIME_VERSION = "sidecar_query_runtime_1237.v0.1"
 SIDECAR_PROJECTION_DEPENDENCY = AGENT_GRAPH_PROJECTION_RUNTIME_VERSION
 DEFAULT_SIDECAR_EXPORT_MAX_BYTES = 10_000_000
+DEFAULT_SIDECAR_EXPORT_MAX_RESULTS = 1_000
 
 QUERY_TYPES = frozenset(
     {
@@ -136,12 +137,24 @@ def export_sidecar_query_ndjson(
     results: Sequence[Mapping[str, Any]],
     *,
     max_bytes: int = DEFAULT_SIDECAR_EXPORT_MAX_BYTES,
+    max_results: int = DEFAULT_SIDECAR_EXPORT_MAX_RESULTS,
 ) -> str:
     _validate_export_max_bytes(max_bytes)
-    lines = [
-        export_sidecar_query_json(result, max_bytes=max_bytes)
-        for result in results
-    ]
+    _validate_export_max_results(max_results)
+    if not isinstance(results, Sequence):
+        raise ValueError("sidecar_export_results_must_be_sequence")
+    if len(results) > max_results:
+        raise ValueError("sidecar_export_ndjson_result_count_exceeded")
+
+    lines: list[str] = []
+    total_bytes = 0
+    for result in results:
+        line = export_sidecar_query_json(result, max_bytes=max_bytes)
+        line_bytes = len(line.encode("utf-8"))
+        total_bytes += line_bytes + (1 if lines else 0)
+        if total_bytes > max_bytes:
+            raise ValueError("sidecar_export_size_exceeded")
+        lines.append(line)
     payload = "\n".join(lines)
     if len(payload.encode("utf-8")) > max_bytes:
         raise ValueError("sidecar_export_size_exceeded")
@@ -152,10 +165,16 @@ def build_sidecar_query_bundle(
     *,
     projection: Mapping[str, Any],
     query_results: Sequence[Mapping[str, Any]],
+    max_results: int = DEFAULT_SIDECAR_EXPORT_MAX_RESULTS,
 ) -> dict[str, Any]:
+    _validate_export_max_results(max_results)
     metadata = projection.get("metadata", {})
     if not isinstance(metadata, Mapping):
         raise ValueError("sidecar_bundle_projection_metadata_must_be_mapping")
+    if not isinstance(query_results, Sequence):
+        raise ValueError("sidecar_export_results_must_be_sequence")
+    if len(query_results) > max_results:
+        raise ValueError("sidecar_export_bundle_result_count_exceeded")
 
     return {
         "bundle_version": SIDECAR_QUERY_RUNTIME_VERSION,
@@ -172,6 +191,13 @@ def _validate_export_max_bytes(max_bytes: int) -> None:
         raise ValueError("sidecar_export_max_bytes_must_be_int")
     if max_bytes < 0:
         raise ValueError("sidecar_export_max_bytes_must_be_non_negative")
+
+
+def _validate_export_max_results(max_results: int) -> None:
+    if type(max_results) is not int:
+        raise ValueError("sidecar_export_max_results_must_be_positive_int")
+    if max_results <= 0:
+        raise ValueError("sidecar_export_max_results_must_be_positive_int")
 
 
 def _prepare_for_export(value: Any) -> Any:
@@ -205,7 +231,10 @@ def compute_convergence_trace(
     active_bounds = bounds or SidecarQueryBounds()
     active_bounds.validate()
 
-    input_node_ids = _normalize_convergence_node_ids(node_ids)
+    input_node_ids = _normalize_convergence_node_ids(
+        node_ids,
+        max_results=active_bounds.max_results,
+    )
     all_node_ids = {
         str(node["canonical_id"])
         for node in projection.get("nodes", ())
@@ -245,7 +274,11 @@ def compute_convergence_trace(
     }
 
 
-def _normalize_convergence_node_ids(node_ids: Sequence[str] | None) -> list[str]:
+def _normalize_convergence_node_ids(
+    node_ids: Sequence[str] | None,
+    *,
+    max_results: int,
+) -> list[str]:
     if node_ids is None:
         raise ValueError("sidecar_convergence_trace_node_ids_empty")
     if isinstance(node_ids, (str, bytes)):
@@ -254,6 +287,8 @@ def _normalize_convergence_node_ids(node_ids: Sequence[str] | None) -> list[str]
         raise ValueError("sidecar_convergence_trace_node_ids_invalid")
     if len(node_ids) == 0:
         raise ValueError("sidecar_convergence_trace_node_ids_empty")
+    if len(node_ids) > max_results:
+        raise ValueError("sidecar_convergence_trace_node_ids_limit_exceeded")
     for node_id in node_ids:
         if type(node_id) is not str or not node_id:
             raise ValueError("sidecar_convergence_trace_node_ids_invalid")
@@ -303,6 +338,12 @@ def compute_centrality_metrics(
     top_k: int | None = None,
     bounds: SidecarQueryBounds | None = None,
 ) -> dict[str, Any]:
+    """Compute centrality metrics.
+
+    The result intentionally contains ``Decimal`` score objects for in-process
+    precision. Use ``export_sidecar_query_json`` for canonical JSON export.
+    """
+
     active_bounds = bounds or SidecarQueryBounds()
     active_bounds.validate()
 
@@ -446,7 +487,7 @@ def _ego_graph_query(
                     raise ValueError("sidecar_ego_graph_node_limit_exceeded")
                 visited.add(neighbor)
                 next_frontier.append(neighbor)
-        frontier = sorted(set(next_frontier))
+        frontier = sorted(next_frontier)
         if not frontier:
             break
 
