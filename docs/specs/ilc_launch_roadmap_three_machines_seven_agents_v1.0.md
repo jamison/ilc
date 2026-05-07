@@ -179,6 +179,13 @@ toggle in both fixture files so the bundle pipeline reaches the intended sign/ve
 Contributor agreement, license strategy, and trademark/identity policy remain required for
 public launch. Internal roadmap or CDL opening docs do not constitute legal conclusions.
 
+Open carry-forward tokens (close before public RC / public launch):
+- `counsel_license_instrument_selection_required_before_public_rc`
+- `counsel_cla_text_approved_required_before_external_contributors`
+- `counsel_trademark_policy_published_required_before_public_launch`
+- `genesis_canonical_lineage_contract_required_before_public_rc` — ADR opening and
+  acceptance route not yet assigned to a window (planning spec drafted Phase 1153)
+
 ### Gap 8 — Long-Range Economic and Scale Work
 
 **Status:** Deferred.
@@ -186,6 +193,10 @@ public launch. Internal roadmap or CDL opening docs do not constitute legal conc
 - Multi-hop centrality attribution CDL — research evidence exists; CDL not opened.
 - Cross-epoch compaction / snapshot export — required before network-scale operation.
 - CDL-070 PQ migration ceremony — SIM-MONETARY-01 prerequisite.
+- **Reputation/centrality float surface migration** — `temporal_decay_runtime.py`,
+  `centrality_delta_gossip_runtime.py`, and `routing_reputation_runtime.py` use `float`
+  internally for score arithmetic. Not on critical economic settlement path but should
+  migrate to `Decimal` before public RC. No window assigned.
 - **Dynamic Epistemic Traversal Engine** — versioned path-activation runtime composing
   decay, centrality, refutation, reputation, and projection context. Biologically-inspired
   nonlinear dynamics layer. Forward-planning spec recorded Phase 1233-1240; earliest
