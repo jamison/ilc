@@ -12,6 +12,7 @@ from ilc_core.graph.sidecar_query_runtime import (
     QUERY_TYPES,
     SIDECAR_PROJECTION_DEPENDENCY,
     SIDECAR_QUERY_RUNTIME_VERSION,
+    SidecarQuery,
     SidecarQueryBounds,
     execute_sidecar_query,
 )
@@ -34,6 +35,18 @@ def test_phase_1237_fix1_query_types_are_locked() -> None:
             "convergence_trace",
         }
     )
+
+
+def test_phase_1237_fix5_sidecar_query_dataclass_defaults_are_locked() -> None:
+    query = SidecarQuery(query_type="ego_graph")
+
+    assert query.query_type == "ego_graph"
+    assert query.root_id is None
+    assert query.hops == 1
+    assert query.node_ids == ()
+    assert query.genesis_id == "genesis:root"
+    assert query.top_k is None
+    assert query.bounds is None
 
 
 @pytest.mark.parametrize("field_name", ("max_hops", "max_nodes", "max_results"))
