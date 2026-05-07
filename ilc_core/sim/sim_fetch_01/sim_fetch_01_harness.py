@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238h — Window 1233-1240 (Fix8: Werner topology overlay)
+# Phase 1238i — Window 1233-1240 (Fix9: CDL-087 evidence matrix)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
@@ -13,12 +13,14 @@ from __future__ import annotations
 # Production code must use secrets.SystemRandom() for stochastic needs.
 
 import hashlib
+import itertools
+import json
 from bisect import bisect_left
 from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238h.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238i.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
@@ -27,6 +29,7 @@ SIM_FETCH_01_FIX5_VERSION = "sim_fetch_01_fix5_routed_multihop_retry_1238e.v0.1"
 SIM_FETCH_01_FIX6_VERSION = "sim_fetch_01_fix6_adaptive_heat_replication_1238f.v0.1"
 SIM_FETCH_01_FIX7_VERSION = "sim_fetch_01_fix7_cdl_078_credit_bridge_1238g.v0.1"
 SIM_FETCH_01_FIX8_VERSION = "sim_fetch_01_fix8_werner_topology_overlay_1238h.v0.1"
+SIM_FETCH_01_FIX9_VERSION = "sim_fetch_01_fix9_cdl_087_evidence_matrix_1238i.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
@@ -41,6 +44,8 @@ _PEER_ROLE_ARCHIVE_SHARD = "archive_shard"  # Elevated Tier C inventory fraction
 _PEER_ROLE_GENERAL = "general"       # Standard inventory fractions
 
 _DEFAULT_MAX_REQUESTS_PER_EPOCH = 500
+_DEFAULT_MAX_SWEEP_SCENARIOS = 64
+_DEFAULT_EVIDENCE_MATRIX_MAX_BYTES = 5_000_000
 
 # Synthetic byte units per served artifact, by tier (CDL-087 §5 / design spec §5)
 _BYTES_PER_TIER = {
@@ -346,6 +351,243 @@ def _compute_tier_service_verdict(
             if mean_p > 0 and max_p / mean_p <= Decimal("3.0"):
                 return "pass"
     return "inconclusive"
+
+
+def _reject_float_tree(value: Any, path: str) -> None:
+    """Reject float anywhere in a sweep config before scenario execution."""
+    if isinstance(value, float):
+        raise ValueError(f"sim_fetch_01_float_forbidden_in_sweep_field_{path}")
+    if isinstance(value, dict):
+        for k, v in value.items():
+            if not isinstance(k, str):
+                raise ValueError("sim_fetch_01_sweep_dict_keys_must_be_strings")
+            _reject_float_tree(v, f"{path}.{k}")
+    elif isinstance(value, (list, tuple)):
+        for idx, item in enumerate(value):
+            _reject_float_tree(item, f"{path}[{idx}]")
+
+
+def _cb_fraction_from_metrics(metrics: dict[str, Any]) -> Decimal:
+    fetch_by_tier = metrics["fetch_requests_by_tier"]
+    total = (
+        int(fetch_by_tier[_TIER_A])
+        + int(fetch_by_tier[_TIER_B])
+        + int(fetch_by_tier[_TIER_C])
+        + int(metrics["want_block_error_429"])
+    )
+    if total == 0:
+        return Decimal("0")
+    return Decimal(int(metrics["want_block_error_429"])) / Decimal(total)
+
+
+def _evaluate_cdl_087_candidate(result: dict[str, Any]) -> dict[str, Any]:
+    """
+    Fixed evaluator for Phase 1238 Fix9 AutoResearch sweeps.
+
+    This identifies candidate operating envelopes for later governance review.
+    It never authorizes CDL-087 ratification.
+    """
+    metrics = result["aggregate_over_epochs"]
+    cache_rate_a = Decimal(metrics["cache_hit_rate_tier_a"])
+    routed_tier_a_failure = Decimal(metrics["routed_failure_rate_by_tier"][_TIER_A])
+    routed_tier_ab_failure = Decimal(metrics["routed_effective_tier_ab_failure_rate"])
+    routed_holder_hit_rate = Decimal(metrics["routed_holder_hit_rate"])
+    cb_fraction = _cb_fraction_from_metrics(metrics)
+
+    fail_reasons: list[str] = []
+    review_reasons: list[str] = []
+
+    if cache_rate_a < Decimal("0.50"):
+        fail_reasons.append("tier_a_cache_hit_rate_below_block_floor")
+    elif cache_rate_a < Decimal("0.70"):
+        review_reasons.append("tier_a_cache_hit_rate_below_support_floor")
+    if routed_tier_a_failure > Decimal("0.02"):
+        fail_reasons.append("routed_tier_a_failure_above_block_floor")
+    if routed_tier_ab_failure > Decimal("0.20"):
+        fail_reasons.append("routed_tier_ab_failure_above_block_floor")
+    elif routed_tier_ab_failure > Decimal("0.10"):
+        review_reasons.append("routed_tier_ab_failure_above_support_floor")
+    if routed_holder_hit_rate < Decimal("0.80"):
+        review_reasons.append("routed_holder_hit_rate_below_support_floor")
+    if cb_fraction > Decimal("0.20"):
+        fail_reasons.append("circuit_breaker_fraction_above_block_floor")
+    elif cb_fraction > Decimal("0.05"):
+        review_reasons.append("circuit_breaker_fraction_above_support_floor")
+    if metrics["serve_credit_artifact_only_crediting_allowed"]:
+        fail_reasons.append("artifact_only_crediting_allowed")
+    if metrics["serve_credit_attribution_model"] != "serving_peer_operator_instance":
+        fail_reasons.append("serve_credit_attribution_model_not_operator_instance")
+    if metrics["werner_ecu_pressure_mint_authorized"]:
+        fail_reasons.append("werner_ecu_pressure_mint_authorized")
+    if metrics["werner_ilc_settlement_authorized"]:
+        fail_reasons.append("werner_ilc_settlement_authorized")
+
+    if fail_reasons:
+        verdict = "fail"
+    elif review_reasons:
+        verdict = "needs_review"
+    else:
+        verdict = "pass"
+
+    return {
+        "verdict": verdict,
+        "fail_reasons": fail_reasons,
+        "review_reasons": review_reasons,
+        "thresholds": {
+            "tier_a_cache_hit_rate_support_floor": "0.70",
+            "tier_a_cache_hit_rate_block_floor": "0.50",
+            "routed_tier_a_failure_block_ceiling": "0.02",
+            "routed_tier_ab_failure_support_ceiling": "0.10",
+            "routed_tier_ab_failure_block_ceiling": "0.20",
+            "routed_holder_hit_rate_support_floor": "0.80",
+            "circuit_breaker_fraction_support_ceiling": "0.05",
+            "circuit_breaker_fraction_block_ceiling": "0.20",
+        },
+    }
+
+
+def _evidence_key_metrics(result: dict[str, Any]) -> dict[str, Any]:
+    metrics = result["aggregate_over_epochs"]
+    return {
+        "cache_hit_rate_tier_a": metrics["cache_hit_rate_tier_a"],
+        "circuit_breaker_fraction": _quantized_decimal_str(_cb_fraction_from_metrics(metrics)),
+        "routed_avg_hops_per_successful_request": metrics["routed_avg_hops_per_successful_request"],
+        "routed_effective_tier_ab_failure_rate": metrics["routed_effective_tier_ab_failure_rate"],
+        "routed_failure_rate_by_tier": metrics["routed_failure_rate_by_tier"],
+        "routed_holder_hit_rate": metrics["routed_holder_hit_rate"],
+        "routed_rescue_count": metrics["routed_rescue_count"],
+        "routed_retry_exhausted_count": metrics["routed_retry_exhausted_count"],
+        "routed_serve_events_credited_cdl_078": metrics["routed_serve_events_credited_cdl_078"],
+        "routed_tier_service_verdict": metrics["routed_tier_service_verdict"],
+        "single_hop_random_tier_ab_failure_rate": metrics["single_hop_random_tier_ab_failure_rate"],
+        "tier_c_advisory_routed_failure_rate": metrics["routed_failure_rate_by_tier"][_TIER_C],
+        "adaptive_replication_total_events": metrics["adaptive_replication_total_events"],
+        "werner_topology_recommendation_by_tier": metrics["werner_topology_recommendation_by_tier"],
+        "werner_ecu_pressure_signal_by_tier": metrics["werner_ecu_pressure_signal_by_tier"],
+        "werner_ecu_pressure_mint_authorized": metrics["werner_ecu_pressure_mint_authorized"],
+        "werner_ilc_settlement_authorized": metrics["werner_ilc_settlement_authorized"],
+    }
+
+
+def _rank_evidence_row(row: dict[str, Any]) -> tuple[int, Decimal, Decimal, Decimal, str]:
+    verdict_rank = {"pass": 0, "needs_review": 1, "fail": 2}[row["evaluator"]["verdict"]]
+    metrics = row["key_metrics"]
+    return (
+        verdict_rank,
+        Decimal(metrics["routed_effective_tier_ab_failure_rate"]),
+        Decimal(metrics["tier_c_advisory_routed_failure_rate"]),
+        Decimal(metrics["routed_avg_hops_per_successful_request"]),
+        row["scenario_id"],
+    )
+
+
+def run_sim_fetch_01_cdl_087_evidence_sweep(sweep_config: dict) -> dict:
+    """
+    Run the Phase 1238 Fix9 AutoResearch evidence sweep for CDL-087.
+
+    The sweep mutates declared scenario parameters, applies a fixed evaluator,
+    and returns a bounded matrix. It does not embed full per-scenario traces.
+    CDL-087 ratification is NOT authorized by this sweep.
+    """
+    if not isinstance(sweep_config, dict):
+        raise ValueError("sim_fetch_01_sweep_config_must_be_dict")
+    _reject_float_tree(sweep_config, "sweep_config")
+
+    base_scenario = sweep_config.get("base_scenario")
+    if not isinstance(base_scenario, dict):
+        raise ValueError("sim_fetch_01_sweep_base_scenario_must_be_dict")
+
+    grid = sweep_config.get("grid")
+    if not isinstance(grid, dict) or not grid:
+        raise ValueError("sim_fetch_01_sweep_grid_must_be_non_empty_dict")
+
+    max_scenarios = sweep_config.get("max_sweep_scenarios", _DEFAULT_MAX_SWEEP_SCENARIOS)
+    if isinstance(max_scenarios, bool) or not isinstance(max_scenarios, int) or max_scenarios < 1:
+        raise ValueError("sim_fetch_01_invalid_max_sweep_scenarios")
+
+    keys = sorted(grid.keys())
+    values_by_key: list[list[Any]] = []
+    scenario_count = 1
+    for key in keys:
+        values = grid[key]
+        if not isinstance(key, str):
+            raise ValueError("sim_fetch_01_sweep_grid_keys_must_be_strings")
+        if not isinstance(values, (list, tuple)) or not values:
+            raise ValueError(f"sim_fetch_01_sweep_grid_values_invalid_{key}")
+        values_list = list(values)
+        values_by_key.append(values_list)
+        scenario_count *= len(values_list)
+        if scenario_count > max_scenarios:
+            raise ValueError("sim_fetch_01_sweep_scenario_count_exceeded")
+
+    rows: list[dict[str, Any]] = []
+    verdict_counts = {"pass": 0, "needs_review": 0, "fail": 0}
+
+    for idx, values in enumerate(itertools.product(*values_by_key)):
+        params = dict(zip(keys, values))
+        scenario = dict(base_scenario)
+        scenario.update(params)
+        result = run_sim_fetch_01(scenario)
+        evaluator = _evaluate_cdl_087_candidate(result)
+        verdict_counts[evaluator["verdict"]] += 1
+        rows.append({
+            "scenario_id": f"sweep_{idx:04d}",
+            "params": params,
+            "scenario": result["scenario"],
+            "evaluator": evaluator,
+            "key_metrics": _evidence_key_metrics(result),
+        })
+
+    recommended = [
+        {
+            "scenario_id": row["scenario_id"],
+            "params": row["params"],
+            "verdict": row["evaluator"]["verdict"],
+            "key_metrics": row["key_metrics"],
+        }
+        for row in sorted(rows, key=_rank_evidence_row)[:5]
+    ]
+
+    if verdict_counts["pass"] > 0:
+        recommendation = "candidate_envelope_identified_for_governance_review"
+    elif verdict_counts["needs_review"] > 0:
+        recommendation = "additional_review_required_before_cdl_087"
+    else:
+        recommendation = "no_candidate_envelope_identified"
+
+    return {
+        "sim": "SIM-FETCH-01",
+        "sweep_version": SIM_FETCH_01_FIX9_VERSION,
+        "harness_version": SIM_FETCH_01_HARNESS_VERSION,
+        "methodology": "karpathy_auto_research_fixed_evaluator_parameter_sweep",
+        "cdl_087_dependency": CDL_087_DEPENDENCY,
+        "cdl_087_ratification_authorized": False,
+        "cdl_087_ratification_recommendation": recommendation,
+        "non_authorization_note": (
+            "This evidence matrix identifies candidate operating envelopes only; "
+            "it does not ratify CDL-087, mint ECU, settle ILC, mutate production "
+            "runtime, or authorize public network exposure."
+        ),
+        "grid_keys": keys,
+        "scenario_count": scenario_count,
+        "verdict_counts": verdict_counts,
+        "recommended_scenarios": recommended,
+        "rows": rows,
+    }
+
+
+def export_sim_fetch_01_evidence_json(
+    payload: dict,
+    *,
+    max_bytes: int = _DEFAULT_EVIDENCE_MATRIX_MAX_BYTES,
+) -> str:
+    """Canonical JSON export for SIM-FETCH-01 evidence artifacts."""
+    if isinstance(max_bytes, bool) or not isinstance(max_bytes, int) or max_bytes < 1:
+        raise ValueError("sim_fetch_01_invalid_evidence_json_max_bytes")
+    body = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    if len(body.encode("utf-8")) > max_bytes:
+        raise ValueError("sim_fetch_01_evidence_json_max_bytes_exceeded")
+    return body
 
 
 def run_sim_fetch_01(scenario_config: dict) -> dict:
