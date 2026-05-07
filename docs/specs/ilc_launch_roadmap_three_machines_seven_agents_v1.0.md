@@ -13,6 +13,15 @@ public-launch packaging blocker to a fresh CDL number rather than CDL-001.
 
 `launch_roadmap_v1_0_published_phase_1192`
 
+**Post-Phase-1238 addendum:** Roadmap v1.0 remains the active gap inventory, but parts of
+its early RC2 status table are stale relative to later canon. A pre-sequence runway
+addendum now records the required Roadmap v1.1 refresh, public-RC blocker classes,
+and candidate Window 1241+ bands:
+`docs/specs/ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0.1.md`.
+
+`launch_roadmap_v1_1_refresh_required_after_phase_1240`
+`public_rc_runway_pre_sequence_plan_1241_plus_recorded_phase_1238`
+
 ---
 
 ## 1. What Has Changed Since v0.9
