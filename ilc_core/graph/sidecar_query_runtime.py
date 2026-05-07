@@ -1,11 +1,12 @@
-"""Read-only sidecar query runtime skeleton for graph projections.
+"""Read-only sidecar query runtime for graph projections.
 
-Phase 1237 Fix1 establishes the sidecar query contract without implementing
-query behavior. Later Fix phases fill the dispatcher arms.
+Phase 1237 implements deterministic sidecar queries and canonical exports over
+Phase 1229 graph projection dictionaries.
 """
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ from ilc_core.graph.agent_graph_projection_runtime import (
 
 SIDECAR_QUERY_RUNTIME_VERSION = "sidecar_query_runtime_1237.v0.1"
 SIDECAR_PROJECTION_DEPENDENCY = AGENT_GRAPH_PROJECTION_RUNTIME_VERSION
+DEFAULT_SIDECAR_EXPORT_MAX_BYTES = 10_000_000
 
 QUERY_TYPES = frozenset(
     {
@@ -110,6 +112,88 @@ def execute_sidecar_query(
         )
 
     raise NotImplementedError(f"sidecar_query_{query_type}_not_yet_implemented")
+
+
+def export_sidecar_query_json(
+    result: Mapping[str, Any],
+    *,
+    max_bytes: int = DEFAULT_SIDECAR_EXPORT_MAX_BYTES,
+) -> str:
+    _validate_export_max_bytes(max_bytes)
+    serializable = _prepare_for_export(result)
+    payload = json.dumps(
+        serializable,
+        allow_nan=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    if len(payload.encode("utf-8")) > max_bytes:
+        raise ValueError("sidecar_export_size_exceeded")
+    return payload
+
+
+def export_sidecar_query_ndjson(
+    results: Sequence[Mapping[str, Any]],
+    *,
+    max_bytes: int = DEFAULT_SIDECAR_EXPORT_MAX_BYTES,
+) -> str:
+    _validate_export_max_bytes(max_bytes)
+    lines = [
+        export_sidecar_query_json(result, max_bytes=max_bytes)
+        for result in results
+    ]
+    payload = "\n".join(lines)
+    if len(payload.encode("utf-8")) > max_bytes:
+        raise ValueError("sidecar_export_size_exceeded")
+    return payload
+
+
+def build_sidecar_query_bundle(
+    *,
+    projection: Mapping[str, Any],
+    query_results: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    metadata = projection.get("metadata", {})
+    if not isinstance(metadata, Mapping):
+        raise ValueError("sidecar_bundle_projection_metadata_must_be_mapping")
+
+    return {
+        "bundle_version": SIDECAR_QUERY_RUNTIME_VERSION,
+        "projection_dependency": SIDECAR_PROJECTION_DEPENDENCY,
+        "projection_metadata": dict(metadata),
+        "query_count": len(query_results),
+        "query_results": list(query_results),
+        "wall_clock_time_included": False,
+    }
+
+
+def _validate_export_max_bytes(max_bytes: int) -> None:
+    if type(max_bytes) is not int:
+        raise ValueError("sidecar_export_max_bytes_must_be_int")
+    if max_bytes < 0:
+        raise ValueError("sidecar_export_max_bytes_must_be_non_negative")
+
+
+def _prepare_for_export(value: Any) -> Any:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        raise ValueError("sidecar_export_float_values_forbidden")
+    if isinstance(value, Decimal):
+        if not value.is_finite():
+            raise ValueError("sidecar_export_decimal_must_be_finite")
+        return str(value)
+    if isinstance(value, Mapping):
+        return {
+            str(key): _prepare_for_export(item)
+            for key, item in sorted(
+                value.items(),
+                key=lambda entry: str(entry[0]),
+            )
+        }
+    if isinstance(value, (list, tuple)):
+        return [_prepare_for_export(item) for item in value]
+    return value
 
 
 def compute_convergence_trace(
