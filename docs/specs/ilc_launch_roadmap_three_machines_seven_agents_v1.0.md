@@ -428,7 +428,16 @@ clean package boundaries:
 
 `commit.epoch` remains split: canonical event/projection semantics live in Python logic, while
 quorum/finality verification and epoch settlement authority remain Rust. The CLI or node runtime
-may trigger commit execution, but may not redefine event semantics.
+may trigger commit execution, but may not redefine event semantics. Any trigger path must use
+ratified epoch/sequence inputs, not OS wall clock time, for protocol liveness or settlement
+semantics.
+
+The Rust/Python boundary requires an explicit binding plan before OpenClaw/NemoClaw skill launch.
+If Python imports Rust consensus primitives directly, the implementing phase must document the PyO3
+or equivalent FFI surface separately from the public P2P substrate decision. Harness adapters must
+also remain generic and dependency-isolated: OpenClaw/NemoClaw are first target harnesses, not the
+only acceptable harnesses, and their dependency graph must not leak into pure `ilc_logic` or Rust
+consensus core packages.
 
 Measured LOC baseline as of 2026-05-07: tracked repository files are approximately 852k lines;
 tracked Python+Rust are approximately 276k lines. Public launch package size must be measured from
@@ -439,10 +448,14 @@ Carry-forward tokens (all open):
 - `ilc_logic_pure_protocol_interfaces_required`
 - `ilc_logic_must_not_require_http_lmdb_or_harness_transport`
 - `ilc_cli_package_boundary_required`
+- `pyo3_binding_plan_required_for_ilc_consensus_core`
 - `commit_epoch_boundary_split_python_projection_rust_finality_required`
+- `commit_epoch_trigger_must_use_epoch_sequence_not_wall_clock`
 - `openclaw_nemoclaw_adapter_must_be_sidecar_or_cli_not_protocol_substrate`
 - `harness_adapter_transport_storage_protocols_required`
+- `generic_agent_harness_adapter_contract_required`
 - `localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth`
+- `sidecar_dependency_isolation_required_for_harness_adapters`
 - `line_count_baseline_must_be_measured_not_estimated_before_public_rc`
 - `public_package_size_audit_required_before_openclaw_skill_launch`
 
