@@ -300,9 +300,17 @@ remains gated — the connector must be present and tested but
 until production emission is explicitly authorized in a future phase.
 
 **Phase 1237 — L3 sidecar infrastructure spec** NON-SENSITIVE.
-Spec-only. Define: sidecar boundary (read-only, no mutation authority), graph
-projection consumption interface, privacy constraints, agent-vs-human visualisation
-posture. No runtime mutation.
+Base phase is spec/planning only. Define: sidecar boundary (read-only, no mutation
+authority), graph projection consumption interface, privacy constraints,
+agent-vs-human visualisation posture. Publish the code-traced sidecar query
+runtime expansion plan and Fix1-Fix7 prompts. Do not execute runtime mutation in
+the base phase.
+
+Phase 1237 Fix1-Fix7 may be executed only after explicit human authorization of
+the expanded strike-force lane. Those fixes are non-sensitive only while confined
+to read-only `ilc_core/graph/` query code, tests, and local dev/test harnesses
+with no protocol mutation, network service, CDL mutation, or production sidecar
+claim.
 
 **Phase 1238 — SIM-FETCH-01 harness and design** NON-SENSITIVE.
 Design the simulation harness for CDL-087 fetch calibration. Define: metric names,
@@ -345,6 +353,9 @@ This window does NOT:
 - Implement Dynamic Epistemic Traversal Engine (deferred to Window 1241+; forward-planning
   spec at `docs/specs/ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0.1.md`;
   token `dynamic_epistemic_traversal_engine_forward_planning_recorded_phase_1233_1240`)
+- Execute Phase 1237 sidecar query runtime Fix1-Fix7 without explicit human
+  authorization of the expanded strike-force lane. Base Phase 1237 publishes the
+  plan and prompts only.
 - Perform governance activation ceremony
 - Implement L4 privacy / onion / SURB
 - Begin cross-epoch compaction
