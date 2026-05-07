@@ -246,6 +246,8 @@ requires SIM-FETCH-01 evidence (Phase 1238) and is Window 1241+ at earliest.
 **Additional prerequisites before implementation:**
 - CDL-087 ratified
 - Authentication policy authorized (not yet)
+- TransportPrincipal public-path authentication defined; projection serving must not rely on raw IP
+  or JSON/body requester identifiers
 - Rate limiting plan confirmed (can reuse `persistent_fetch_rate_limiter_runtime`
   pattern)
 - Privacy filter for serving-peer identity aggregation (sidecar spec §3)
@@ -255,6 +257,9 @@ requires SIM-FETCH-01 evidence (Phase 1238) and is Window 1241+ at earliest.
 This is a **SENSITIVE** implementation phase when it executes — `server.py` is a
 protocol surface. Phase number to be assigned in the window guidance doc for the
 window in which CDL-087 ratification lands.
+
+Additional token:
+- `sidecar_projection_endpoint_public_path_requires_transport_principal_auth`
 
 ### Gap 10 — Transport Principal Identity Layer
 
@@ -277,19 +282,26 @@ transport layer missing. Consequences:
   stake)
 - Does not reveal agent economic position at connection time (sealed-sender/privacy requirement)
 - Not equal to AgentID — `agent_id_must_not_be_default_transport_rate_limit_key`
+- Has explicit issuance, epoch rotation, revocation, local-ban persistence, replay prevention, and
+  privacy-preserving admission/stake binding semantics
 - CDL required before runtime implementation
 
 The Rust QUIC layer (`ilc_consensus/src/network.rs`) already uses Quinn + rustls/TLS 1.3 with
 pinned cert verification. The Python `ThreadingHTTPServer` layers should be formally downgraded
 to devnet/test classification once the Rust P2P transport lane covers D2D.
+An ADR must decide whether the public P2P substrate extends Quinn/rustls, adopts libp2p, or
+defines an adapter boundary supporting both.
 
 Carry-forward tokens (all open):
 - `transport_principal_identity_required_before_public_p2p`
 - `d2d_rate_limiter_key_must_be_authenticated_transport_principal`
 - `agent_id_must_not_be_default_transport_rate_limit_key`
+- `json_requester_id_rate_limit_fallback_forbidden_public_p2p`
 - `transport_principal_cdl_required_before_runtime_implementation`
+- `transport_principal_lifecycle_and_revocation_spec_required`
 - `python_http_transport_formally_downgraded_to_devnet_test_only_required`
 - `rust_public_p2p_transport_lane_required_before_public_p2p`
+- `rust_p2p_substrate_decision_adr_required_quinn_vs_libp2p`
 
 Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §2.
 
@@ -322,6 +334,8 @@ Carry-forward tokens (all open):
 - `server_shard_credit_flow_governor_required_pre_public_p2p`
 - `flow_governor_cdl_required_before_runtime_policy_deployment`
 - `beta_decomposition_required_before_policy_use`
+- `flow_governor_spectral_trust_threshold_required_before_policy_use`
+- `heat_signal_must_not_directly_mint_ecu`
 
 Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §3.
 
@@ -378,6 +392,7 @@ runtime, P_e fixed-point governor, mandatory sweeper, or public claimability sta
 Required for conversion mechanism:
 - Production conversion runtime (Rust epoch-settled, Decimal/fixed-point `P_e`)
 - Mandatory conversion sweeper enforcing CDL-048 deadline
+- ECU lot accounting for issue epoch, origin, funding provenance, deadline, and conversion status
 - ILC issuance budget accounting (total budget, emitted per epoch, taper/long-tail)
 - Claimability state machine with machine-verifiable receipts
 
@@ -385,10 +400,53 @@ Carry-forward tokens (all open):
 - `ecu_to_ilc_conversion_execution_runtime_required_pre_public_launch`
 - `pe_governor_fixed_point_runtime_required_pre_public_launch`
 - `mandatory_conversion_sweeper_required_for_cdl_048_runtime`
+- `ecu_lot_accounting_required_for_cdl_048_conversion_sweeper`
 - `ilc_public_claimability_substrate_required_pre_public_launch`
 - `ilc_public_claimability_substrate_does_not_block_internal_conversion_runtime`
 
 Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §4.
+
+### Gap 14 — OpenClaw/NemoClaw Package Modularity and CLI/Sidecar Boundary
+
+**Status:** Forward planning recorded. Required if ILC Core launches first as an agentic
+harness package/skill.
+**Recorded:** Phase 1238 (2026-05-07 Codex synthesis + Gemini follow-up).
+
+OpenClaw/NemoClaw is best treated as an onboarding/orchestration harness, not ILC's base protocol
+transport. If ILC Core ships as a skill/package inside such a harness, the monorepo must expose
+clean package boundaries:
+
+- Rust consensus core: cryptography, quorum/finality verification, fixed-point ECU primitives,
+  settlement math.
+- Rust node transport lane: public P2P/admission/rate limiting where hostile-network exposure
+  exists.
+- Python `ilc_logic`: epistemic rules, projections, attribution logic, `commit.epoch`
+  projection/adaptation surfaces; no public transport/storage dependency.
+- Python `ilc_cli`: terminal UX and subprocess-compatible entrypoint; no protocol law.
+- Harness adapters: OpenClaw/NemoClaw skills and sidecar apps implementing explicit
+  `TransportHarness` and `StorageHarness` interfaces.
+
+`commit.epoch` remains split: canonical event/projection semantics live in Python logic, while
+quorum/finality verification and epoch settlement authority remain Rust. The CLI or node runtime
+may trigger commit execution, but may not redefine event semantics.
+
+Measured LOC baseline as of 2026-05-07: tracked repository files are approximately 852k lines;
+tracked Python+Rust are approximately 276k lines. Public launch package size must be measured from
+the selected packaging profile, not inferred from monorepo LOC.
+
+Carry-forward tokens (all open):
+- `ilc_package_modularity_split_required_before_openclaw_skill_launch`
+- `ilc_logic_pure_protocol_interfaces_required`
+- `ilc_logic_must_not_require_http_lmdb_or_harness_transport`
+- `ilc_cli_package_boundary_required`
+- `commit_epoch_boundary_split_python_projection_rust_finality_required`
+- `openclaw_nemoclaw_adapter_must_be_sidecar_or_cli_not_protocol_substrate`
+- `harness_adapter_transport_storage_protocols_required`
+- `localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth`
+- `line_count_baseline_must_be_measured_not_estimated_before_public_rc`
+- `public_package_size_audit_required_before_openclaw_skill_launch`
+
+Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §2.7.
 
 ---
 
