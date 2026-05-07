@@ -8,6 +8,8 @@ emission remain separately gated.
 
 from __future__ import annotations
 
+import hashlib
+import json
 from decimal import Decimal
 from typing import Any, Mapping, Sequence
 
@@ -19,11 +21,13 @@ from ilc_core.protocol.event_log import (
 )
 
 COMMIT_EPOCH_EMISSION_RUNTIME_VERSION = "commit_epoch_emission_runtime_1236.v0.1"
+COMMIT_EPOCH_QUORUM_PROJECTION_VERSION = "commit_epoch_quorum_projection_1236_fix2.v0.1"
 CDL_051_DEPENDENCY = "cdl_051_constitutional_consensus_and_epoch_finality_443.v0.1"
 COMMIT_EPOCH_CANONICAL_DEPENDENCY = COMMIT_EPOCH_CANONICAL_CONSTRUCTOR_VERSION
 
 _ALLOWED_FINALIZATION_STATES = {"committed", "rolled_back", "superseded"}
 _ZERO = Decimal("0")
+_LOWER_HEX = frozenset("0123456789abcdef")
 
 
 def _require_non_negative_int(value: object, token: str) -> int:
@@ -53,6 +57,93 @@ def _digest_to_sha256_cid(value: object, token: str) -> str:
         if suffix == "":
             raise ValueError(token)
         return digest
+    return f"sha256:{digest}"
+
+
+def _require_lower_hex(value: object, token: str) -> str:
+    text = _require_non_empty_string(value, token)
+    if any(char not in _LOWER_HEX for char in text):
+        raise ValueError(token)
+    return text
+
+
+def _require_optional_sha256_ref(value: object, token: str) -> str | None:
+    if value is None:
+        return None
+    text = _require_non_empty_string(value, token)
+    if not text.startswith("sha256:"):
+        raise ValueError(token)
+    suffix = text.removeprefix("sha256:")
+    if suffix == "" or any(char not in _LOWER_HEX for char in suffix):
+        raise ValueError(token)
+    return text
+
+
+def _normalize_signers(signers: object) -> tuple[int, ...]:
+    if not isinstance(signers, Sequence) or isinstance(signers, (str, bytes, bytearray)):
+        raise ValueError("quorum_projection_signers_must_be_sequence")
+    if len(signers) == 0:
+        raise ValueError("quorum_projection_signers_must_be_non_empty")
+    normalized: list[int] = []
+    seen: set[int] = set()
+    for signer in signers:
+        if type(signer) is not int or signer < 0:
+            raise ValueError("quorum_projection_signer_must_be_non_negative_int")
+        if signer in seen:
+            raise ValueError("quorum_projection_signers_must_be_unique")
+        seen.add(signer)
+        normalized.append(signer)
+    return tuple(sorted(normalized))
+
+
+def _canonical_json_bytes(payload: Mapping[str, object]) -> bytes:
+    return json.dumps(
+        payload,
+        sort_keys=True,
+        allow_nan=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+
+def build_quorum_proof_projection(
+    *,
+    epoch_sequence: int,
+    state_root_cidv1_hex: str,
+    signers: Sequence[int],
+    agg_sig_bytes_hex: str,
+    source_record_digest: str | None = None,
+) -> dict[str, object]:
+    """Build the canonical Layer-B quorum-proof projection.
+
+    The projection is pure fixture/proof material for later causal-frontier
+    mapping. It does not verify BLS signatures or write to consensus.
+    """
+
+    return {
+        "agg_sig_bytes_hex": _require_lower_hex(
+            agg_sig_bytes_hex,
+            "quorum_projection_agg_sig_bytes_hex_invalid",
+        ),
+        "epoch_sequence": _require_non_negative_int(
+            epoch_sequence,
+            "quorum_projection_epoch_sequence_must_be_non_negative_int",
+        ),
+        "signers": list(_normalize_signers(signers)),
+        "source_record_digest": _require_optional_sha256_ref(
+            source_record_digest,
+            "quorum_projection_source_record_digest_invalid",
+        ),
+        "state_root_cidv1_hex": _require_lower_hex(
+            state_root_cidv1_hex,
+            "quorum_projection_state_root_cidv1_hex_invalid",
+        ),
+    }
+
+
+def compute_quorum_proof_ref(projection: Mapping[str, object]) -> str:
+    """Return the canonical SHA-256 reference for a quorum-proof projection."""
+
+    digest = hashlib.sha256(_canonical_json_bytes(projection)).hexdigest()
     return f"sha256:{digest}"
 
 
@@ -144,4 +235,3 @@ def build_commit_epoch_event(
     )
     validate_canonical_commit_epoch_payload(event.payload)
     return event
-
