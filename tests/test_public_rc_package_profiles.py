@@ -10,6 +10,7 @@ from ilc_core.rc.package_profiles import (
     NON_EXCISABLE_COMPONENTS,
     PACKAGE_PROFILES,
     PROFILE_FULL_NODE_PUBLIC_P2P,
+    PROFILE_OPENCLAW_SKILL_CLAIMABLE,
     PROFILE_OPENCLAW_SKILL_LOCAL,
     PUBLIC_RC_PACKAGE_PROFILES_VERSION,
     PackageProfile,
@@ -25,12 +26,13 @@ MODULE_PATH = Path("ilc_core/rc/package_profiles.py")
 
 def test_all_committed_package_profiles_validate() -> None:
     validate_all_package_profiles()
-    assert PUBLIC_RC_PACKAGE_PROFILES_VERSION == "public_rc_package_profiles_1238.v0.1"
+    assert PUBLIC_RC_PACKAGE_PROFILES_VERSION == "public_rc_package_profiles_1238_post.v0.2"
 
 
-def test_openclaw_skill_profile_is_local_first_and_not_public_p2p() -> None:
+def test_openclaw_skill_local_profile_is_preview_only_and_not_public_p2p() -> None:
     profile = get_package_profile(PROFILE_OPENCLAW_SKILL_LOCAL)
-    assert profile.public_rc_eligible is True
+    assert profile.local_preview_eligible is True
+    assert profile.public_rc_eligible is False
     assert profile.public_p2p is False
     assert profile.public_claimability is False
     assert "harness_adapter_contracts" in profile.components
@@ -38,10 +40,22 @@ def test_openclaw_skill_profile_is_local_first_and_not_public_p2p() -> None:
     assert "rust_public_p2p_node" not in profile.components
 
 
+def test_openclaw_skill_claimable_profile_is_final_public_rc_target() -> None:
+    profile = get_package_profile(PROFILE_OPENCLAW_SKILL_CLAIMABLE)
+    assert profile.local_preview_eligible is True
+    assert profile.public_rc_eligible is True
+    assert profile.public_p2p is False
+    assert profile.public_claimability is True
+    assert "ecu_to_ilc_conversion_runtime" in profile.components
+    assert "public_claimability_runtime" in profile.components
+    assert "rust_public_p2p_node" not in profile.components
+
+
 def test_full_node_profile_definition_includes_public_p2p_and_claimability_gates() -> None:
     profile = get_package_profile(PROFILE_FULL_NODE_PUBLIC_P2P)
     assert profile.public_p2p is True
     assert profile.public_claimability is True
+    assert profile.local_preview_eligible is False
     assert profile.public_rc_eligible is False
     assert "rust_public_p2p_node" in profile.components
     assert "transport_principal_identity" in profile.components
@@ -57,6 +71,7 @@ def test_profiles_cannot_exclude_genesis_ilc_or_ecu_components() -> None:
         components=frozenset({"ilc_logic_import_surface"}),
         public_p2p=False,
         public_claimability=False,
+        local_preview_eligible=False,
         public_rc_eligible=True,
     )
     with pytest.raises(ValueError, match="missing_non_excisable_component"):
@@ -71,6 +86,7 @@ def test_public_p2p_profile_requires_transport_principal() -> None:
         components=frozenset({*NON_EXCISABLE_COMPONENTS, "rust_public_p2p_node"}),
         public_p2p=True,
         public_claimability=False,
+        local_preview_eligible=False,
         public_rc_eligible=False,
     )
     with pytest.raises(ValueError, match="requires_transport_principal"):
@@ -85,15 +101,35 @@ def test_public_claimability_profile_requires_conversion_and_claimability_runtim
         components=frozenset({*NON_EXCISABLE_COMPONENTS, "ilc_logic_import_surface"}),
         public_p2p=False,
         public_claimability=True,
+        local_preview_eligible=False,
         public_rc_eligible=False,
     )
     with pytest.raises(ValueError, match="requires_conversion_and_claimability"):
         validate_package_profile(profile)
 
 
+def test_public_rc_profile_requires_public_claimability() -> None:
+    profile = PackageProfile(
+        profile_id="bad_public_rc_without_claimability",
+        display_name="Bad public RC",
+        description="Invalid public RC profile",
+        components=frozenset({*NON_EXCISABLE_COMPONENTS, "ilc_logic_import_surface"}),
+        public_p2p=False,
+        public_claimability=False,
+        local_preview_eligible=True,
+        public_rc_eligible=True,
+    )
+    with pytest.raises(ValueError, match="requires_public_claimability"):
+        validate_package_profile(profile)
+
+
+def test_rust_consensus_binding_is_non_excisable() -> None:
+    assert "rust_consensus_core_binding" in NON_EXCISABLE_COMPONENTS
+
+
 def test_profile_manifest_json_is_canonical_and_round_trips() -> None:
-    payload_once = export_profile_manifest_json(PROFILE_OPENCLAW_SKILL_LOCAL)
-    payload_twice = export_profile_manifest_json(PROFILE_OPENCLAW_SKILL_LOCAL)
+    payload_once = export_profile_manifest_json(PROFILE_OPENCLAW_SKILL_CLAIMABLE)
+    payload_twice = export_profile_manifest_json(PROFILE_OPENCLAW_SKILL_CLAIMABLE)
     assert payload_once == payload_twice
     assert payload_once == json.dumps(
         json.loads(payload_once),
@@ -102,7 +138,10 @@ def test_profile_manifest_json_is_canonical_and_round_trips() -> None:
         sort_keys=True,
     )
     parsed = json.loads(payload_once)
-    assert parsed == profile_manifest(PROFILE_OPENCLAW_SKILL_LOCAL)
+    assert parsed == profile_manifest(PROFILE_OPENCLAW_SKILL_CLAIMABLE)
+    assert parsed["local_preview_eligible"] is True
+    assert parsed["public_claimability"] is True
+    assert parsed["public_rc_eligible"] is True
     assert parsed["non_excisable_components"] == sorted(NON_EXCISABLE_COMPONENTS)
 
 
@@ -135,5 +174,6 @@ def test_package_profile_registry_names_are_stable() -> None:
         "ilc_cli_local",
         "ilc_logic_library",
         "local_sidecar_daemon",
+        "openclaw_skill_claimable",
         "openclaw_skill_local",
     ]

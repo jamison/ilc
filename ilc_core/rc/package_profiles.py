@@ -4,6 +4,12 @@ This module defines code-level package profiles for OpenClaw/NemoClaw-first RC
 work without opening a public P2P claim. It is intentionally declarative: the
 profiles can be consumed by packaging, CI, or harness adapters without importing
 network servers, LMDB, or wall-clock runtime surfaces.
+
+``NON_EXCISABLE_COMPONENTS`` is a packaging integrity guard. It prevents declared
+ILC package profiles from accidentally omitting Genesis, ILC, ECU, protocol
+bundle, canonical JSON, or Rust consensus-core binding surfaces. It is not a
+fork-prevention mechanism; adversarial forks are addressed by Genesis lineage,
+ratified CDL authority, and license/IP policy.
 """
 
 from __future__ import annotations
@@ -12,9 +18,10 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-PUBLIC_RC_PACKAGE_PROFILES_VERSION = "public_rc_package_profiles_1238.v0.1"
+PUBLIC_RC_PACKAGE_PROFILES_VERSION = "public_rc_package_profiles_1238_post.v0.2"
 
 PROFILE_OPENCLAW_SKILL_LOCAL = "openclaw_skill_local"
+PROFILE_OPENCLAW_SKILL_CLAIMABLE = "openclaw_skill_claimable"
 PROFILE_ILC_LOGIC_LIBRARY = "ilc_logic_library"
 PROFILE_ILC_CLI_LOCAL = "ilc_cli_local"
 PROFILE_LOCAL_SIDECAR_DAEMON = "local_sidecar_daemon"
@@ -27,6 +34,7 @@ NON_EXCISABLE_COMPONENTS = frozenset(
         "genesis_lineage_verification",
         "ilc_identity_namespace",
         "protocol_bundle_verification",
+        "rust_consensus_core_binding",
     }
 )
 
@@ -57,6 +65,7 @@ class PackageProfile:
     components: frozenset[str]
     public_p2p: bool
     public_claimability: bool
+    local_preview_eligible: bool
     public_rc_eligible: bool
     notes: tuple[str, ...] = ()
 
@@ -84,10 +93,41 @@ PACKAGE_PROFILES = {
         ),
         public_p2p=False,
         public_claimability=False,
+        local_preview_eligible=True,
+        public_rc_eligible=False,
+        notes=(
+            "Local preview path: OpenClaw/NemoClaw skill-first with no public P2P claim and no public claimability claim.",
+            "Harnesses may route payloads over their own transport; ILC does not treat that transport as protocol law.",
+        ),
+    ),
+    PROFILE_OPENCLAW_SKILL_CLAIMABLE: PackageProfile(
+        profile_id=PROFILE_OPENCLAW_SKILL_CLAIMABLE,
+        display_name="OpenClaw/NemoClaw claimable skill",
+        description=(
+            "Public-RC target profile for an OpenClaw/NemoClaw-consumable ILC skill: local "
+            "harness integration, no ILC-owned public P2P claim, and public ECU-to-ILC "
+            "claimability surfaces included."
+        ),
+        components=frozenset(
+            {
+                *NON_EXCISABLE_COMPONENTS,
+                "cli_subprocess_surface",
+                "ecu_to_ilc_conversion_runtime",
+                "harness_adapter_contracts",
+                "ilc_logic_import_surface",
+                "local_sidecar_query_runtime",
+                "public_claimability_runtime",
+                "storage_adapter_contracts",
+                "transport_harness_contracts",
+            }
+        ),
+        public_p2p=False,
+        public_claimability=True,
+        local_preview_eligible=True,
         public_rc_eligible=True,
         notes=(
-            "Default public-RC path: OpenClaw/NemoClaw skill-first with no public P2P claim.",
-            "Harnesses may route payloads over their own transport; ILC does not treat that transport as protocol law.",
+            "Default final public-RC target: OpenClaw/NemoClaw skill-first, public claimability present, no ILC public P2P claim.",
+            "Requires Gap 13 conversion and public claimability gates before any public RC claim.",
         ),
     ),
     PROFILE_ILC_LOGIC_LIBRARY: PackageProfile(
@@ -103,7 +143,8 @@ PACKAGE_PROFILES = {
         ),
         public_p2p=False,
         public_claimability=False,
-        public_rc_eligible=True,
+        local_preview_eligible=True,
+        public_rc_eligible=False,
     ),
     PROFILE_ILC_CLI_LOCAL: PackageProfile(
         profile_id=PROFILE_ILC_CLI_LOCAL,
@@ -119,13 +160,15 @@ PACKAGE_PROFILES = {
         ),
         public_p2p=False,
         public_claimability=False,
-        public_rc_eligible=True,
+        local_preview_eligible=True,
+        public_rc_eligible=False,
     ),
     PROFILE_LOCAL_SIDECAR_DAEMON: PackageProfile(
         profile_id=PROFILE_LOCAL_SIDECAR_DAEMON,
         display_name="ILC local sidecar daemon",
         description=(
             "Loopback-only sidecar profile for local graph projection/query consumption. "
+            "Unlike openclaw_skill_local, this profile includes local node runtime wiring. "
             "Binding beyond loopback requires TransportPrincipal and public policy gates."
         ),
         components=frozenset(
@@ -143,7 +186,8 @@ PACKAGE_PROFILES = {
         ),
         public_p2p=False,
         public_claimability=False,
-        public_rc_eligible=True,
+        local_preview_eligible=True,
+        public_rc_eligible=False,
         notes=("Loopback/local only; no public sidecar endpoint claim.",),
     ),
     PROFILE_FULL_NODE_PUBLIC_P2P: PackageProfile(
@@ -172,6 +216,7 @@ PACKAGE_PROFILES = {
         ),
         public_p2p=True,
         public_claimability=True,
+        local_preview_eligible=False,
         public_rc_eligible=False,
         notes=(
             "Not eligible for public RC until TransportPrincipal, Rust P2P, ECU-to-ILC conversion, and public claimability gates close.",
@@ -192,6 +237,8 @@ def validate_package_profile(profile: PackageProfile) -> None:
         raise ValueError("public_rc_package_profile_public_p2p_must_be_bool")
     if type(profile.public_claimability) is not bool:
         raise ValueError("public_rc_package_profile_public_claimability_must_be_bool")
+    if type(profile.local_preview_eligible) is not bool:
+        raise ValueError("public_rc_package_profile_local_preview_eligible_must_be_bool")
     if type(profile.public_rc_eligible) is not bool:
         raise ValueError("public_rc_package_profile_public_rc_eligible_must_be_bool")
 
@@ -215,6 +262,8 @@ def validate_package_profile(profile: PackageProfile) -> None:
 
     if profile.public_rc_eligible and profile.public_p2p:
         raise ValueError("public_rc_skill_first_profile_must_not_claim_public_p2p")
+    if profile.public_rc_eligible and not profile.public_claimability:
+        raise ValueError("public_rc_profile_requires_public_claimability")
 
 
 def validate_all_package_profiles() -> None:
@@ -229,6 +278,7 @@ def profile_manifest(profile: PackageProfile | str) -> dict[str, Any]:
         "components": sorted(active.components),
         "description": active.description,
         "display_name": active.display_name,
+        "local_preview_eligible": active.local_preview_eligible,
         "non_excisable_components": sorted(NON_EXCISABLE_COMPONENTS),
         "notes": list(active.notes),
         "profile_id": active.profile_id,
@@ -255,6 +305,7 @@ __all__ = [
     "PROFILE_ILC_CLI_LOCAL",
     "PROFILE_ILC_LOGIC_LIBRARY",
     "PROFILE_LOCAL_SIDECAR_DAEMON",
+    "PROFILE_OPENCLAW_SKILL_CLAIMABLE",
     "PROFILE_OPENCLAW_SKILL_LOCAL",
     "PUBLIC_RC_PACKAGE_PROFILES_VERSION",
     "PackageProfile",
