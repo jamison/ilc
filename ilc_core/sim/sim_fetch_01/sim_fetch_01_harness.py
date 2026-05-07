@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238d — Window 1233-1240 (Fix4: routed holder model)
+# Phase 1238e — Window 1233-1240 (Fix5: routed multi-hop retry)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
@@ -18,11 +18,12 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238d.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238e.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
 SIM_FETCH_01_FIX4_VERSION = "sim_fetch_01_fix4_routed_holder_model_1238d.v0.1"
+SIM_FETCH_01_FIX5_VERSION = "sim_fetch_01_fix5_routed_multihop_retry_1238e.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
@@ -58,6 +59,7 @@ _DEFAULT_ZIPF_EXPONENT_TIER_B = Decimal("0.5")
 # do not alter the main RNG's counter sequence and thus do not change the
 # random-model outcomes when the two models are run in parallel.
 _RNG_ROUTED_SEED_XOR = 0x5A4D3B2C1E0F9871
+_RNG_RETRY_SEED_XOR = 0xC7D8E9F001234567
 
 
 class _DeterministicRNG:
@@ -340,11 +342,12 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         availability; shows what happens when the requester has no routing signal.
 
     routed_*: Holder-directory model — requests routed to known holders of each
-        artifact. Zero failures for replicated artifacts under zero directory staleness.
-        CDL-087 evaluation should use routed_ metrics, not random_ metrics.
+        artifact. Multi-hop retry can rescue a stale first hop by traversing to
+        a known holder. CDL-087 evaluation should use routed_ metrics, not
+        random_ metrics.
 
     Both models process the same tiers and artifacts per epoch; only peer selection
-    and circuit-breaker behavior differ (routed model has no CB in Fix4).
+    and circuit-breaker behavior differ (routed model has no CB in Fix5).
 
     CDL-087 ratification is NOT authorized by this harness.
     """
@@ -389,6 +392,16 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         "directory_staleness_rate",
     )
 
+    # --- Validate multi-hop retry bound (Fix5) ---
+    # Total WANT-HAVE probes per routed request. Default 1 preserves Fix4 results.
+    max_retry_hops_raw = scenario_config.get("max_retry_hops", 1)
+    if (
+        isinstance(max_retry_hops_raw, bool)
+        or not isinstance(max_retry_hops_raw, int)
+        or max_retry_hops_raw < 1
+    ):
+        raise ValueError("sim_fetch_01_invalid_max_retry_hops")
+
     # --- Validate OOM guard ---
     max_req = scenario_config.get("max_requests_per_epoch", _DEFAULT_MAX_REQUESTS_PER_EPOCH)
     if isinstance(max_req, bool) or not isinstance(max_req, int) or max_req < 1:
@@ -409,6 +422,10 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         _TIER_C: scenario_config["tier_c_artifact_count"],
     }
     cache_cap: int = scenario_config["cache_capacity_per_peer"]
+
+    if max_retry_hops_raw > n_peers:
+        raise ValueError("sim_fetch_01_max_retry_hops_exceeds_n_peers")
+    max_retry_hops: int = max_retry_hops_raw
 
     # --- Circuit breaker threshold ---
     cb_threshold_raw = scenario_config.get("circuit_breaker_threshold", max(max_req // n_peers, 1))
@@ -463,6 +480,8 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     rng = _DeterministicRNG(seed)
     # Routed RNG: staleness draws + routed holder selection (derived seed, independent sequence)
     rng_routed = _DeterministicRNG(seed ^ _RNG_ROUTED_SEED_XOR)
+    # Retry RNG: later-hop holder traversal, isolated from first-hop diagnostics.
+    rng_retry = _DeterministicRNG(seed ^ _RNG_RETRY_SEED_XOR)
 
     # --- Build Zipf CDFs ---
     cdf_a = _build_zipf_cdf(tier_counts[_TIER_A], zipf_exp_a)
@@ -535,13 +554,22 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     serve_pressure: dict[int, int] = {p: 0 for p in range(n_peers)}
     artifact_req_counts: dict[str, dict[int, int]] = {_TIER_A: {}, _TIER_B: {}, _TIER_C: {}}
 
-    # --- Aggregate counters: routed holder model (Fix4) ---
-    # No circuit breaker in routed model (Fix4 scope: availability only; CB behavior deferred to Fix5)
+    # --- Aggregate counters: routed holder model (Fix4/Fix5) ---
+    # No circuit breaker in routed model (Fix5 scope: availability + retry only).
     routed_total_fetch: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
+    routed_single_hop_error_404_by_tier: dict[str, int] = {
+        _TIER_A: 0,
+        _TIER_B: 0,
+        _TIER_C: 0,
+    }
     routed_error_404_by_tier: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
     routed_holder_lookups: int = 0      # Requests where directory lookup was attempted
-    routed_holder_found: int = 0        # Requests routed to a known holder (not stale, has holders)
+    routed_success_count: int = 0       # Requests that succeeded after <= max_retry_hops
     routed_stale_fallbacks: int = 0     # Lookups that fell back due to directory staleness
+    routed_rescue_count: int = 0        # Requests rescued by hop > 1
+    routed_retry_exhausted_count: int = 0
+    routed_total_probe_count: int = 0
+    routed_success_hop_total: int = 0
 
     # --- Simulation loop ---
     for _epoch in range(n_epochs):
@@ -575,36 +603,74 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
             artifact_req_counts[tier][art_id] = artifact_req_counts[tier].get(art_id, 0) + 1
 
-            # === ROUTED HOLDER MODEL (Fix4) ===
+            # === ROUTED HOLDER MODEL (Fix4/Fix5) ===
             # Processed before random-model peer selection so it is not affected by CB.
-            # Routed model: route to a known holder; fall back to random if directory is stale.
+            # Routed model: route to a known holder; if stale, first hop falls
+            # back to random, then multi-hop retry traverses to a known holder.
             routed_holder_lookups += 1
             holders = holder_directory[tier][art_id]
+            routed_total_fetch[tier] += 1
 
             if not holders:
                 # Artifact not replicated on any peer — genuine 404 regardless of routing
-                routed_total_fetch[tier] += 1
+                routed_total_probe_count += 1
+                routed_single_hop_error_404_by_tier[tier] += 1
                 routed_error_404_by_tier[tier] += 1
+                routed_retry_exhausted_count += 1
             else:
                 # Determine if this directory lookup is stale
                 is_stale = (
                     directory_staleness_rate > Decimal("0")
                     and rng_routed.fraction() < directory_staleness_rate
                 )
+
+                tried_peers: set[int] = set()
+                success = False
+                hops_used = 0
+
                 if is_stale:
                     # Stale: fall back to random peer (routed model degrades to random model)
                     routed_stale_fallbacks += 1
                     stale_peer = rng_routed.randint(0, n_peers - 1)
-                    routed_total_fetch[tier] += 1
-                    if art_id not in peer_inventories[stale_peer][tier]:
-                        routed_error_404_by_tier[tier] += 1
+                    tried_peers.add(stale_peer)
+                    hops_used = 1
+                    routed_total_probe_count += 1
+                    success = art_id in peer_inventories[stale_peer][tier]
                 else:
                     # Fresh directory + known holders → route to a holder (always succeeds)
-                    routed_holder_found += 1
                     holder_list = sorted(holders)  # Sorted for determinism
-                    routed_peer = holder_list[rng_routed.randint(0, len(holder_list) - 1)]
-                    routed_total_fetch[tier] += 1
-                    # Holder definitely has the artifact — no 404
+                    first_peer = holder_list[rng_routed.randint(0, len(holder_list) - 1)]
+                    tried_peers.add(first_peer)
+                    hops_used = 1
+                    routed_total_probe_count += 1
+                    success = True
+
+                if not success:
+                    routed_single_hop_error_404_by_tier[tier] += 1
+
+                    while hops_used < max_retry_hops:
+                        remaining_holders = sorted(holders.difference(tried_peers))
+                        if not remaining_holders:
+                            break
+
+                        retry_peer = remaining_holders[
+                            rng_retry.randint(0, len(remaining_holders) - 1)
+                        ]
+                        tried_peers.add(retry_peer)
+                        hops_used += 1
+                        routed_total_probe_count += 1
+
+                        if art_id in peer_inventories[retry_peer][tier]:
+                            success = True
+                            routed_rescue_count += 1
+                            break
+
+                if success:
+                    routed_success_count += 1
+                    routed_success_hop_total += hops_used
+                else:
+                    routed_error_404_by_tier[tier] += 1
+                    routed_retry_exhausted_count += 1
 
             # === RANDOM (SINGLE-HOP) MODEL ===
             # Uniform peer selection; circuit breaker applies.
@@ -691,14 +757,32 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         total_tier_ab_requests=total_tier_ab_rand,
     )
 
-    # --- Routed model metrics (Fix4) ---
-    total_routed = sum(routed_total_fetch.values())
+    # --- Routed model metrics (Fix4/Fix5) ---
+    routed_single_hop_failure_rate_by_tier = {
+        _TIER_A: _safe_ratio(
+            routed_single_hop_error_404_by_tier[_TIER_A],
+            max(routed_total_fetch[_TIER_A], 1),
+        ),
+        _TIER_B: _safe_ratio(
+            routed_single_hop_error_404_by_tier[_TIER_B],
+            max(routed_total_fetch[_TIER_B], 1),
+        ),
+        _TIER_C: _safe_ratio(
+            routed_single_hop_error_404_by_tier[_TIER_C],
+            max(routed_total_fetch[_TIER_C], 1),
+        ),
+    }
     routed_failure_rate_by_tier = {
         _TIER_A: _safe_ratio(routed_error_404_by_tier[_TIER_A], max(routed_total_fetch[_TIER_A], 1)),
         _TIER_B: _safe_ratio(routed_error_404_by_tier[_TIER_B], max(routed_total_fetch[_TIER_B], 1)),
         _TIER_C: _safe_ratio(routed_error_404_by_tier[_TIER_C], max(routed_total_fetch[_TIER_C], 1)),
     }
     total_tier_ab_routed = routed_total_fetch[_TIER_A] + routed_total_fetch[_TIER_B]
+    routed_single_hop_tier_ab_failure_rate = _safe_ratio(
+        routed_single_hop_error_404_by_tier[_TIER_A]
+        + routed_single_hop_error_404_by_tier[_TIER_B],
+        max(total_tier_ab_routed, 1),
+    )
     routed_tier_ab_failure_rate = _safe_ratio(
         routed_error_404_by_tier[_TIER_A] + routed_error_404_by_tier[_TIER_B],
         max(total_tier_ab_routed, 1),
@@ -715,8 +799,12 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         total_tier_ab_requests=total_tier_ab_routed,
     )
 
-    routed_holder_hit_rate = _safe_ratio(routed_holder_found, max(routed_holder_lookups, 1))
+    routed_holder_hit_rate = _safe_ratio(routed_success_count, max(routed_holder_lookups, 1))
     routed_staleness_rate_observed = _safe_ratio(routed_stale_fallbacks, max(routed_holder_lookups, 1))
+    routed_avg_hops_per_successful_request = _safe_ratio(
+        routed_success_hop_total,
+        max(routed_success_count, 1),
+    )
 
     # --- Holder count statistics (Fix4) ---
     holder_count_stats = {t: _holder_count_stats(holder_directory, t) for t in _TIERS}
@@ -761,6 +849,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "max_requests_per_epoch": max_req,
             "seed": seed,
             "directory_staleness_rate": str(directory_staleness_rate),
+            "max_retry_hops": max_retry_hops,
             "hot_mirror_peer_count": hot_mirror_count,
             "archive_shard_peer_count": archive_shard_count,
             "tier_b_exact_holder_count_per_artifact": tier_b_exact_holder_count,
@@ -799,11 +888,22 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "tier_c_advisory_failure_rate": rand_tier_c_advisory,
             # Fix4: routed holder model metrics
             # CDL-087 evaluation should use routed_ metrics, not single_hop_random_.
+            # Fix5: routed_failure_rate_by_tier is post-retry effective availability.
+            "routed_single_hop_failure_rate_by_tier": routed_single_hop_failure_rate_by_tier,
+            "routed_single_hop_tier_ab_failure_rate": routed_single_hop_tier_ab_failure_rate,
             "routed_failure_rate_by_tier": routed_failure_rate_by_tier,
+            "routed_effective_failure_rate_by_tier": routed_failure_rate_by_tier,
             "routed_tier_ab_failure_rate": routed_tier_ab_failure_rate,
+            "routed_effective_tier_ab_failure_rate": routed_tier_ab_failure_rate,
             "routed_tier_service_verdict": routed_tier_service_verdict,
             "routed_holder_hit_rate": routed_holder_hit_rate,
             "routed_staleness_rate_observed": routed_staleness_rate_observed,
+            # Fix5: multi-hop retry metrics
+            "routed_max_retry_hops": max_retry_hops,
+            "routed_total_probe_count": routed_total_probe_count,
+            "routed_avg_hops_per_successful_request": routed_avg_hops_per_successful_request,
+            "routed_rescue_count": routed_rescue_count,
+            "routed_retry_exhausted_count": routed_retry_exhausted_count,
             # Fix4: holder directory coverage statistics
             "known_holder_count_stats_by_tier": holder_count_stats,
         },
