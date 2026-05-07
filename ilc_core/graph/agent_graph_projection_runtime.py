@@ -175,7 +175,7 @@ def path_to_genesis(
 ) -> list[str]:
     """Return a deterministic predecessor path from ``start_id`` to Genesis."""
 
-    if not isinstance(max_depth, int):
+    if type(max_depth) is not int:
         raise ValueError("max_depth_must_be_int")
     if max_depth < 0:
         raise ValueError("max_depth_must_be_non_negative")
@@ -192,10 +192,10 @@ def path_to_genesis(
     visited = {start_id}
     while frontier:
         current, path = frontier.pop(0)
-        if current == genesis_id:
-            return path
         if len(path) > max_depth + 1:
             continue
+        if current == genesis_id:
+            return path
         for predecessor in predecessors.get(current, ()):
             if predecessor not in visited:
                 visited.add(predecessor)
