@@ -133,6 +133,8 @@ Primary scope:
 - Execute the first Gap 14 implementation slice before Gap 10 public-P2P work:
   package profile contracts, import boundary linting, adapter protocol stubs,
   and dependency-isolated tests for the OpenClaw/NemoClaw skill path.
+- Start ATLAS-G graph reachability discipline: graph-delta schema, compiler
+  hardening, and package-profile reachability manifests.
 - Consume Phase 1238 Fix evidence and decide whether CDL-087 can advance.
 - Publish Window 1241+ sequence lock.
 - Run lineage receipt / allowlist export tooling plan or implementation.
@@ -147,6 +149,9 @@ roadmap_v1_1_must_reconcile_cdl_086_tier3_persistent_limiter_current_state
 roadmap_v1_1_must_become_controlling_public_rc_roadmap
 gap_14_package_modularity_first_slice_before_gap_10_transport_principal
 openclaw_skill_claimable_profile_is_final_public_rc_target_no_public_p2p
+atlas_g_001_graph_delta_schema_required
+atlas_g_002_repo_hypergraph_compiler_hardening_required
+atlas_g_003_package_profile_reachability_manifest_required
 cdl_087_ratification_candidate_requires_sim_fetch_01_fix_evidence
 allowlist_export_procedure_window_1241_plus_candidate
 tla_refinement_notes_pre_rc_window_1241_plus_candidate
@@ -161,6 +166,8 @@ Primary scope:
 - Issuance, rotation, revocation, replay prevention, and local-ban semantics.
 - ADR deciding Quinn/rustls extension vs libp2p vs adapter boundary.
 - Formal Python HTTP transport downgrade to devnet/test only.
+- ATLAS-G high-authority gap closure and import/dependency graph bridge may run
+  in parallel if ATLAS-G-001 to ATLAS-G-003 have landed.
 
 Candidate tokens:
 
@@ -168,6 +175,8 @@ Candidate tokens:
 transport_principal_window_1249_1256_candidate
 rust_p2p_substrate_adr_window_1249_1256_candidate
 python_http_transport_devnet_test_downgrade_window_1249_1256_candidate
+atlas_g_004_high_authority_gap_closure_required
+atlas_g_005_import_dependency_graph_bridge_required
 ```
 
 ### Window 1257-1264 candidate - fetch distribution, sidecar serving, and flow control
@@ -195,6 +204,8 @@ Primary scope:
 - Continue the Gap 14 implementation after the first slice: package-boundary
   enforcement across the actual import graph, packaging CI gates, and real
   OpenClaw/NemoClaw adapter integration tests.
+- Run the ATLAS-G public-RC graph reachability gate for the selected package
+  profile before any public-RC claim.
 - Split package boundaries if not already complete: `ilc_consensus_core`,
   `ilc_consensus_node`, `ilc_logic`, `ilc_node_runtime`, `ilc_cli`,
   `ilc_harness_adapters`.
@@ -208,6 +219,7 @@ openclaw_skill_first_vs_ilc_p2p_first_decision_required
 package_boundary_import_lint_required_before_openclaw_skill_preview
 generic_harness_adapter_contract_window_candidate
 package_boundary_enforcement_ci_gate_window_candidate
+atlas_g_006_public_rc_graph_reachability_gate_required
 ```
 
 ### Window 1273-1280 candidate - ECU credit creation path
@@ -253,6 +265,8 @@ Primary scope:
 - US provisional patent application filed before public repository publication.
 - License instrument, CLA/DCO, trademark policy.
 - Genesis canonical lineage ADR route.
+- ATLAS-G unsigned Atlas candidate regeneration and non-excisability review packet.
+- Signing root envelope prep.
 - v0.2 signing if explicitly authorized.
 - Release artifact manifest and distribution checklist finalization.
 - Public package-size audit.
@@ -264,6 +278,10 @@ public_repo_publication_prerequisites_window_candidate
 license_cla_trademark_closure_window_candidate
 us_provisional_patent_gate_window_candidate
 v0_2_signing_authorization_tail_slot_candidate
+atlas_g_007_unsigned_v0_2_plus_candidate_regeneration_required
+atlas_g_008_non_excisability_review_packet_required
+atlas_g_009_signing_root_envelope_prep_required_no_signing
+atlas_g_010_v0_2_signing_only_if_explicitly_authorized
 ```
 
 ### Final public RC closure window candidate
