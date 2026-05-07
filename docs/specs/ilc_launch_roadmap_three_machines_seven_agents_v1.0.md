@@ -172,19 +172,225 @@ toggle in both fixture files so the bundle pipeline reaches the intended sign/ve
 
 `canon_bundle_signing_repair_pass_phase_1197`
 
-### Gap 7 — Counsel Track
+### Gap 7 — Counsel Track and IP Track
 
-**Status:** Parallel lane.
+**Status:** Parallel lane. Self-counsel model adopted 2026-05-07 (no budget for
+external legal counsel; tokens close via internal decision + committed artifact).
 
-Contributor agreement, license strategy, and trademark/identity policy remain required for
-public launch. Internal roadmap or CDL opening docs do not constitute legal conclusions.
+**Counsel track closure conditions (revised for self-counsel):**
+- `counsel_license_instrument_selection_required_before_public_rc` → closes when
+  AGPL-3.0 root LICENSE + LICENSING.md zone table committed as an internal decision.
+- `counsel_cla_text_approved_before_external_contributors` → closes when DCO or CLA
+  choice committed to repo.
+- `counsel_trademark_policy_published_required_before_public_launch` → closes when
+  a trademark policy stub committed.
+- `genesis_canonical_lineage_contract_required_before_public_rc` → closes through
+  normal CDL/ADR process (ADR opening and acceptance route not yet assigned to a
+  window; planning spec drafted Phase 1153).
 
-Open carry-forward tokens (close before public RC / public launch):
+These are internal decision points, not blocked on external legal review. Self-counsel
+basis must be recorded explicitly in the commit and walkthrough for future auditors.
+
+**IP track — US Provisional Patent Application:**
+
+A US Provisional Patent Application for the Merkle-Laplacian dual commitment
+construction must be filed before any public repository publication. This is a
+**hard prerequisite on the same gate as the license work**, running in parallel.
+
+Decision (2026-05-07): self-file the provisional (~$320 USPTO small entity fee).
+Follow within 12 months with PCT application to preserve all international rights.
+See `docs/research/ilc_genesis_lineage_fork_resistance_and_license_strategy_v0.1.md`
+§7b for full filing plan, jurisdiction list, cost table, and gate details.
+
+**Why this is time-critical:** once the repository is made public, EU, JP, and most
+international patent rights are permanently destroyed unless the provisional has
+already been filed (US has a 1-year grace period; international jurisdictions require
+absolute novelty pre-disclosure). The `docs/research/patent_pending/` folder must be
+excluded from the public repo until the patent is filed.
+
+Open carry-forward tokens (all must close before public RC / public launch):
+- `us_provisional_patent_application_filed` ← NEW hard gate
 - `counsel_license_instrument_selection_required_before_public_rc`
-- `counsel_cla_text_approved_required_before_external_contributors`
+- `counsel_cla_text_approved_before_external_contributors`
 - `counsel_trademark_policy_published_required_before_public_launch`
-- `genesis_canonical_lineage_contract_required_before_public_rc` — ADR opening and
-  acceptance route not yet assigned to a window (planning spec drafted Phase 1153)
+- `genesis_canonical_lineage_contract_required_before_public_rc`
+
+### Gap 9 — Sidecar Projection Endpoint
+
+**Status:** Carry-forward; gated on CDL-087 ratification.
+
+Carry-forward token: `sidecar_projection_endpoint_required_post_cdl_087_ratification`
+
+Phase 1237 Fix1–Fix7 delivered a complete, tested sidecar query library
+(`ilc_core/graph/sidecar_query_runtime.py`, 100+ tests). The library operates
+in-process over projection dicts. A running ILC node already has a FastAPI HTTP
+server (`ilc_core/server.py`, uvicorn on port 8000) and two ThreadingHTTPServer
+transport layers (gossip Phase 568, fetch Phase 1212). **None of these currently
+expose a projection endpoint.** No `/projection`, `/graph`, or `/sidecar` route
+exists in `server.py` as of Phase 1237.
+
+The missing piece is:
+
+```text
+GET /v1/graph/projection/{projection_type}
+```
+
+This endpoint calls `project_graph()` and returns canonical JSON. The sidecar
+query runtime then operates on that output client-side or in-process.
+
+**Why gated on CDL-087:** CDL-087 (Canonical Fetch Distribution Policy) governs
+how canonical graph content is distributed to consumers. Wiring a projection
+endpoint before ratification bypasses the governance process. CDL-087 ratification
+requires SIM-FETCH-01 evidence (Phase 1238) and is Window 1241+ at earliest.
+
+**Additional prerequisites before implementation:**
+- CDL-087 ratified
+- Authentication policy authorized (not yet)
+- Rate limiting plan confirmed (can reuse `persistent_fetch_rate_limiter_runtime`
+  pattern)
+- Privacy filter for serving-peer identity aggregation (sidecar spec §3)
+
+**Implementation prompt:** `docs/antigravity_tasks/antigravity_prompt__phase_1237_fix8_g8_sidecar_projection_endpoint_planning.md`
+
+This is a **SENSITIVE** implementation phase when it executes — `server.py` is a
+protocol surface. Phase number to be assigned in the window guidance doc for the
+window in which CDL-087 ratification lands.
+
+### Gap 10 — Transport Principal Identity Layer
+
+**Status:** Not yet started. Pre-public-P2P hard requirement.
+**Recorded:** Phase 1238 (2026-05-07 Codex synthesis + Gemini review).
+
+The repo currently lacks a dedicated `TransportPrincipal` identity layer. The four-level key
+ladder (`AgentID` / BLS validator / Ed25519 enrollment / `TransportPrincipal`) has the
+transport layer missing. Consequences:
+
+- `PersistentFetchRateLimiter` keys on `client_ip` (fetch) — IP addresses are shared, dynamic,
+  and cheap to rotate. Not sufficient for a public adversarial network.
+- Gossip envelope `peer_id` is `ValidatorID(u32)` — no cryptographic authentication at the
+  D2D message level.
+- There is no mechanism to locally ban a spamming/adversarial peer by cryptographic identity
+  costing reputation/stake.
+
+`TransportPrincipal` requirements:
+- Short-lived or rotating; cannot be freely rotated at zero cost (must be bounded by admission or
+  stake)
+- Does not reveal agent economic position at connection time (sealed-sender/privacy requirement)
+- Not equal to AgentID — `agent_id_must_not_be_default_transport_rate_limit_key`
+- CDL required before runtime implementation
+
+The Rust QUIC layer (`ilc_consensus/src/network.rs`) already uses Quinn + rustls/TLS 1.3 with
+pinned cert verification. The Python `ThreadingHTTPServer` layers should be formally downgraded
+to devnet/test classification once the Rust P2P transport lane covers D2D.
+
+Carry-forward tokens (all open):
+- `transport_principal_identity_required_before_public_p2p`
+- `d2d_rate_limiter_key_must_be_authenticated_transport_principal`
+- `agent_id_must_not_be_default_transport_rate_limit_key`
+- `transport_principal_cdl_required_before_runtime_implementation`
+- `python_http_transport_formally_downgraded_to_devnet_test_only_required`
+- `rust_public_p2p_transport_lane_required_before_public_p2p`
+
+Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §2.
+
+### Gap 11 — Werner Topological Flow Governor
+
+**Status:** Forward planning recorded. Not yet in simulation. No CDL open. Pre-public-P2P item.
+**Recorded:** Phase 1238 (2026-05-07 Codex synthesis).
+
+The Werner φ-bound (CDL-085) already governs provenance-edge mint suppression. The
+`routing_reputation_runtime.py` (CDL-078) already rewards useful serving. These are the
+building blocks. What does not yet exist is a bidirectional topology-aware control layer that:
+- Constructs a heat vector over shard/peer topology from serve pressure, cache miss rate, and
+  circuit breaker activations
+- Runs primal/dual Laplacian smoothing over the network topology graph
+- Produces cooling signals (suppress unproductive amplification) AND heating signals (attract
+  capacity to underconnected high-demand regions)
+- Feeds ECU bounties and credit budgets where productive work demand is verified
+
+This is NOT a per-request ECU micropayment system. `no_per_hop_ecu_micropayment_for_fetch_relay_preserved`.
+The CDL-078 reputation-implicit relay incentive is preserved.
+
+Sequencing: SIM-FETCH-01 overlay first (Phase 1238 Fix series), then CDL, then runtime.
+The existing `laplacian_analytics.py` provides the Laplacian infrastructure. The dual graph
+extension (flows/edges as dual nodes: fetch streams, provenance paths, cache-mirror
+relationships) requires a new analysis module.
+
+Carry-forward tokens (all open):
+- `werner_topological_flow_governor_forward_planning_recorded_phase_1238`
+- `werner_flow_governor_overlay_required_for_sim_fetch_01`
+- `server_shard_credit_flow_governor_required_pre_public_p2p`
+- `flow_governor_cdl_required_before_runtime_policy_deployment`
+- `beta_decomposition_required_before_policy_use`
+
+Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §3.
+
+### Gap 12 — ECU Credit Creation in Agentic Wallet
+
+**Status:** Wallet is read-only (Phase 576 boundary). Pre-public-launch hard requirement.
+**Recorded:** Phase 1238 (2026-05-07 Codex synthesis).
+
+The current wallet (`economic_cycle_runtime.py`) provides visibility and accounting only. It
+cannot originate credit creation, accept a Werner work advance, sign spend or escrow actions, or
+manage active productive-credit lifecycle state.
+
+The complete ECU credit creation path requires:
+- `ECUCreditCreationIntent` — wallet-side request object with work commitment, demand signal,
+  authorization evidence, and repayment path
+- Werner productive credit authorization CDL — governing rules for what work justifies credit
+- Exposure ceilings — per-agent, per-shard, per-epoch, global outstanding credit cap
+- Escrow and clawback mechanics — failed commitments cancel credit without socializing loss
+- Separate wallet signing keys — identity / transfer / productive-credit-intent / recovery
+- Consensus-epoch-settled creation — ECU creation through Rust epoch authority, not Python
+  wallet mutation
+
+**Hard invariant:** the wallet requests or signs ECU creation; it does not create ECU itself.
+
+Carry-forward tokens (all open):
+- `agentic_wallet_ecu_credit_creation_runtime_required_pre_public_launch`
+- `ecu_credit_creation_intent_cdl_required`
+- `werner_productive_credit_authorization_cdl_required`
+- `ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation`
+- `wallet_signing_spend_transfer_claimability_boundary_required`
+
+Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §4.
+
+### Gap 13 — ECU-to-ILC Settlement Execution Runtime
+
+**Status:** CDL-048 ratified mandatory conversion; no production conversion runtime exists.
+Pre-public-launch hard requirement.
+**Recorded:** Phase 1238 (2026-05-07 Codex synthesis).
+
+CDL-048 ratifies a mandatory ECU conversion deadline of 4 issuance epochs. The `balance_ilc`
+field exists in RC wallet state but is internal bookkeeping only. No production conversion
+runtime, P_e fixed-point governor, mandatory sweeper, or public claimability state machine exists.
+
+**Scope split (important):** Two components must NOT be conflated:
+
+1. **Conversion mechanism** (internal bookkeeping) — eligible ECU → ILC at `P_e`, epoch-settled.
+   Can be built pre-launch without resolving public substrate. Should be on testnet before launch
+   to prove the economic model.
+
+2. **Public claimability substrate** (governance decision) — what chain/mechanism allows humans
+   to withdraw/claim ILC. Requires separate deliberation. Blocks public launch but NOT internal
+   testnet readiness.
+
+Required for conversion mechanism:
+- Production conversion runtime (Rust epoch-settled, Decimal/fixed-point `P_e`)
+- Mandatory conversion sweeper enforcing CDL-048 deadline
+- ILC issuance budget accounting (total budget, emitted per epoch, taper/long-tail)
+- Claimability state machine with machine-verifiable receipts
+
+Carry-forward tokens (all open):
+- `ecu_to_ilc_conversion_execution_runtime_required_pre_public_launch`
+- `pe_governor_fixed_point_runtime_required_pre_public_launch`
+- `mandatory_conversion_sweeper_required_for_cdl_048_runtime`
+- `ilc_public_claimability_substrate_required_pre_public_launch`
+- `ilc_public_claimability_substrate_does_not_block_internal_conversion_runtime`
+
+Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §4.
+
+---
 
 ### Gap 8 — Long-Range Economic and Scale Work
 
