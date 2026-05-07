@@ -81,10 +81,6 @@ def test_phase_1237_fix1_unsupported_query_type_rejected() -> None:
     ("query_type", "error_token"),
     (
         (
-            "centrality_metrics",
-            "sidecar_query_centrality_metrics_not_yet_implemented",
-        ),
-        (
             "convergence_trace",
             "sidecar_query_convergence_trace_not_yet_implemented",
         ),
