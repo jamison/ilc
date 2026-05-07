@@ -309,6 +309,16 @@ surface. The `openclaw_skill_local` profile is a local-preview profile only; the
 final public-RC target is the claimable OpenClaw/NemoClaw skill profile, which
 must include ECU-to-ILC conversion and public claimability runtime surfaces.
 
+First external harness deployment target, if available: DigitalOcean OpenClaw droplets with
+loopback/private harness wiring such as Tailscale. This should be used to test packaging,
+sidecar/CLI integration, and deployment ergonomics only. It does not authorize public P2P,
+public sidecar/projection serving, or treating DigitalOcean/OpenClaw/Tailscale as protocol law.
+
+```text
+digitalocean_openclaw_droplet_first_external_harness_target
+tailscale_private_harness_network_allowed_no_public_p2p_claim
+```
+
 ---
 
 ## 7. Gaps Closed By This Pre-Sequence Plan

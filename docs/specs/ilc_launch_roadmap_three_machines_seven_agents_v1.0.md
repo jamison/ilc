@@ -467,6 +467,11 @@ Declared non-excisable components are a packaging integrity guard, not fork prev
 resistance remains anchored in Genesis lineage verification, ratified CDL authority, and license/IP
 policy.
 
+First external harness deployment target: DigitalOcean OpenClaw droplets, with ILC exposed only via
+loopback/private harness wiring such as Tailscale. This is a deployment-test target for the
+OpenClaw/NemoClaw skill and sidecar profiles; it does not authorize public ILC P2P exposure,
+public sidecar/projection binding, or OpenClaw/Tailscale as protocol substrate.
+
 Carry-forward tokens (all open):
 - `ilc_package_modularity_split_required_before_openclaw_skill_launch`
 - `gap_14_package_modularity_first_slice_before_gap_10_transport_principal`
@@ -483,6 +488,8 @@ Carry-forward tokens (all open):
 - `generic_agent_harness_adapter_contract_required`
 - `localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth`
 - `sidecar_dependency_isolation_required_for_harness_adapters`
+- `digitalocean_openclaw_droplet_first_external_harness_target`
+- `tailscale_private_harness_network_allowed_no_public_p2p_claim`
 - `line_count_baseline_must_be_measured_not_estimated_before_public_rc`
 - `public_package_size_audit_required_before_openclaw_skill_launch`
 
