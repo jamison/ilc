@@ -80,7 +80,6 @@ def test_phase_1237_fix1_unsupported_query_type_rejected() -> None:
 @pytest.mark.parametrize(
     ("query_type", "error_token"),
     (
-        ("ego_graph", "sidecar_query_ego_graph_not_yet_implemented"),
         (
             "centrality_metrics",
             "sidecar_query_centrality_metrics_not_yet_implemented",
@@ -102,7 +101,7 @@ def test_phase_1237_fix1_supported_query_types_are_stable_stubs(
 def test_phase_1237_fix1_dispatcher_validates_bounds_before_stub() -> None:
     with pytest.raises(ValueError, match="max_hops_must_be_positive_int"):
         execute_sidecar_query(
-            query_type="ego_graph",
+            query_type="centrality_metrics",
             projection={},
             bounds=SidecarQueryBounds(max_hops=0),
         )
