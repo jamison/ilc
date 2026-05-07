@@ -131,7 +131,16 @@ Next fresh CDL number: **CDL-088** (CDL-087 is open, not ratified)
 - Cross-epoch compaction — SIM-COMPACTION-01 required first
 - Governance activation ceremony — pieces exist; end-to-end assembly deferred to a
   dedicated window after lineage tooling lands
-- Counsel obligations (C1-C5) — human/counsel track; no codebase phases assigned
+- Counsel obligations (C1-C5) — human/counsel track; no codebase phases assigned.
+  Open tokens: `counsel_license_instrument_selection_required_before_public_rc`,
+  `counsel_cla_text_approved_required_before_external_contributors`,
+  `counsel_trademark_policy_published_required_before_public_launch`
+- `genesis_canonical_lineage_contract_required_before_public_rc` — planning spec
+  drafted Phase 1153; ADR opening and acceptance route not yet assigned to a window
+- Remaining pre-RC float surfaces in reputation/centrality runtimes —
+  `temporal_decay_runtime.py`, `centrality_delta_gossip_runtime.py`, and
+  `routing_reputation_runtime.py` use `float` internally; not on critical economic
+  settlement path but should migrate before public RC. No window assigned yet.
 
 ---
 
@@ -339,6 +348,12 @@ This window does NOT:
 - Perform governance activation ceremony
 - Implement L4 privacy / onion / SURB
 - Begin cross-epoch compaction
+- Close counsel carry-forward tokens (`counsel_license_instrument_selection_required_before_public_rc`,
+  `counsel_cla_text_approved_required_before_external_contributors`,
+  `counsel_trademark_policy_published_required_before_public_launch`) — human/counsel track
+- Close `genesis_canonical_lineage_contract_required_before_public_rc` — ADR opening not assigned
+- Migrate float surfaces in `temporal_decay_runtime.py`, `centrality_delta_gossip_runtime.py`,
+  `routing_reputation_runtime.py` to Decimal (deferred; no window assigned)
 
 ---
 
