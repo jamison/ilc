@@ -14,9 +14,12 @@ def _adr_text() -> str:
 
 
 def test_adr_0008_records_reconciliation_scope_without_accepting_status() -> None:
+    # ADR-0008 was accepted (Status changed from Proposed → Accepted after Phase 600
+    # closure gates resolved all open issues). The "Scope of Acceptance" section must
+    # still be present — acceptance was scoped to the architectural boundary claim,
+    # not to every numeric parameter.
     text = _adr_text()
-    assert "Status: Proposed" in text
-    assert "Review posture: acceptance-ready for the architectural boundary claim" in text
+    assert "Status: Accepted" in text
     assert "## Scope of Acceptance" in text
     assert "not every numeric" in text
     assert "score parameter" in text
