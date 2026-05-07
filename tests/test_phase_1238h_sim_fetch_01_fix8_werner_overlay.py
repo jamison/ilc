@@ -45,7 +45,7 @@ _WERNER_SCENARIO: dict = {
 def test_phase_1238h_fix8_version_token_present() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238h.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238i.v0.1"
     assert mod.SIM_FETCH_01_FIX8_VERSION == (
         "sim_fetch_01_fix8_werner_topology_overlay_1238h.v0.1"
     )
