@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238e — Window 1233-1240 (Fix5: routed multi-hop retry)
+# Phase 1238f — Window 1233-1240 (Fix6: adaptive heat-driven replication)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
@@ -18,12 +18,13 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238e.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238f.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
 SIM_FETCH_01_FIX4_VERSION = "sim_fetch_01_fix4_routed_holder_model_1238d.v0.1"
 SIM_FETCH_01_FIX5_VERSION = "sim_fetch_01_fix5_routed_multihop_retry_1238e.v0.1"
+SIM_FETCH_01_FIX6_VERSION = "sim_fetch_01_fix6_adaptive_heat_replication_1238f.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
@@ -60,6 +61,7 @@ _DEFAULT_ZIPF_EXPONENT_TIER_B = Decimal("0.5")
 # random-model outcomes when the two models are run in parallel.
 _RNG_ROUTED_SEED_XOR = 0x5A4D3B2C1E0F9871
 _RNG_RETRY_SEED_XOR = 0xC7D8E9F001234567
+_RNG_REPLICATION_SEED_XOR = 0x9E3779B97F4A7C15
 
 
 class _DeterministicRNG:
@@ -171,6 +173,13 @@ def _holder_count_stats(
         "max": max(counts),
         "zero_holder_count": counts.count(0),
     }
+
+
+def _holder_mean(
+    holder_directory: dict[str, dict[int, frozenset[int]]], tier: str
+) -> str:
+    """Return mean holder count for a tier as a canonical Decimal string."""
+    return _holder_count_stats(holder_directory, tier)["mean"]
 
 
 def _compute_top_quartile_concentration(req_counts: dict[int, int]) -> str:
@@ -402,6 +411,41 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     ):
         raise ValueError("sim_fetch_01_invalid_max_retry_hops")
 
+    # --- Validate adaptive heat-driven replication controls (Fix6) ---
+    adaptive_replication_enabled = scenario_config.get("adaptive_replication_enabled", False)
+    if not isinstance(adaptive_replication_enabled, bool):
+        raise ValueError("sim_fetch_01_invalid_adaptive_replication_enabled")
+
+    heat_replication_threshold = scenario_config.get("heat_replication_threshold", 25)
+    if (
+        isinstance(heat_replication_threshold, bool)
+        or not isinstance(heat_replication_threshold, int)
+        or heat_replication_threshold < 1
+    ):
+        raise ValueError("sim_fetch_01_invalid_heat_replication_threshold")
+
+    max_adaptive_replications_per_epoch = scenario_config.get(
+        "max_adaptive_replications_per_epoch",
+        25,
+    )
+    if (
+        isinstance(max_adaptive_replications_per_epoch, bool)
+        or not isinstance(max_adaptive_replications_per_epoch, int)
+        or max_adaptive_replications_per_epoch < 1
+    ):
+        raise ValueError("sim_fetch_01_invalid_max_adaptive_replications_per_epoch")
+
+    adaptive_tiers_raw = scenario_config.get("adaptive_replication_tiers", [_TIER_B, _TIER_C])
+    if (
+        not isinstance(adaptive_tiers_raw, (list, tuple))
+        or not adaptive_tiers_raw
+        or any(not isinstance(t, str) for t in adaptive_tiers_raw)
+    ):
+        raise ValueError("sim_fetch_01_invalid_adaptive_replication_tiers")
+    adaptive_replication_tiers = tuple(dict.fromkeys(adaptive_tiers_raw))
+    if any(t not in (_TIER_B, _TIER_C) for t in adaptive_replication_tiers):
+        raise ValueError("sim_fetch_01_invalid_adaptive_replication_tiers")
+
     # --- Validate OOM guard ---
     max_req = scenario_config.get("max_requests_per_epoch", _DEFAULT_MAX_REQUESTS_PER_EPOCH)
     if isinstance(max_req, bool) or not isinstance(max_req, int) or max_req < 1:
@@ -482,6 +526,8 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     rng_routed = _DeterministicRNG(seed ^ _RNG_ROUTED_SEED_XOR)
     # Retry RNG: later-hop holder traversal, isolated from first-hop diagnostics.
     rng_retry = _DeterministicRNG(seed ^ _RNG_RETRY_SEED_XOR)
+    # Replication RNG: deterministic holder placement for heat-driven mirroring.
+    rng_replication = _DeterministicRNG(seed ^ _RNG_REPLICATION_SEED_XOR)
 
     # --- Build Zipf CDFs ---
     cdf_a = _build_zipf_cdf(tier_counts[_TIER_A], zipf_exp_a)
@@ -533,6 +579,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
     # --- Build holder directory (Fix4) ---
     holder_directory = _build_holder_directory(peer_inventories, tier_counts, n_peers)
+    initial_holder_count_stats = {t: _holder_count_stats(holder_directory, t) for t in _TIERS}
 
     # --- Aggregate counters: random (single-hop) model ---
     total_fetch: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
@@ -571,6 +618,13 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     routed_total_probe_count: int = 0
     routed_success_hop_total: int = 0
 
+    # --- Adaptive heat-driven replication counters (Fix6) ---
+    adaptive_replication_events_by_tier: dict[str, int] = {t: 0 for t in _TIERS}
+    adaptive_replication_total_events: int = 0
+    adaptive_replication_epochs_active: int = 0
+    routed_failure_rate_by_epoch_by_tier: dict[str, list[str]] = {t: [] for t in _TIERS}
+    adaptive_holder_mean_by_epoch_by_tier: dict[str, list[str]] = {t: [] for t in _TIERS}
+
     # --- Simulation loop ---
     for _epoch in range(n_epochs):
         # Tier B cache invalidation at epoch boundary (Tier B content mutable per epoch)
@@ -583,6 +637,17 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
         n_requests = min(rng.poisson_count(n_agents, avg_per_agent), max_req)
         peer_req_count = [0] * n_peers
+        epoch_artifact_req_counts: dict[str, dict[int, int]] = {
+            _TIER_A: {},
+            _TIER_B: {},
+            _TIER_C: {},
+        }
+        epoch_routed_total_fetch: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
+        epoch_routed_error_404_by_tier: dict[str, int] = {
+            _TIER_A: 0,
+            _TIER_B: 0,
+            _TIER_C: 0,
+        }
 
         for _ in range(n_requests):
             # --- Shared: tier and artifact selection ---
@@ -602,6 +667,9 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                 art_id = rng.randint(0, tier_counts[_TIER_C] - 1)
 
             artifact_req_counts[tier][art_id] = artifact_req_counts[tier].get(art_id, 0) + 1
+            epoch_artifact_req_counts[tier][art_id] = (
+                epoch_artifact_req_counts[tier].get(art_id, 0) + 1
+            )
 
             # === ROUTED HOLDER MODEL (Fix4/Fix5) ===
             # Processed before random-model peer selection so it is not affected by CB.
@@ -610,12 +678,14 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             routed_holder_lookups += 1
             holders = holder_directory[tier][art_id]
             routed_total_fetch[tier] += 1
+            epoch_routed_total_fetch[tier] += 1
 
             if not holders:
                 # Artifact not replicated on any peer — genuine 404 regardless of routing
                 routed_total_probe_count += 1
                 routed_single_hop_error_404_by_tier[tier] += 1
                 routed_error_404_by_tier[tier] += 1
+                epoch_routed_error_404_by_tier[tier] += 1
                 routed_retry_exhausted_count += 1
             else:
                 # Determine if this directory lookup is stale
@@ -670,6 +740,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     routed_success_hop_total += hops_used
                 else:
                     routed_error_404_by_tier[tier] += 1
+                    epoch_routed_error_404_by_tier[tier] += 1
                     routed_retry_exhausted_count += 1
 
             # === RANDOM (SINGLE-HOP) MODEL ===
@@ -723,6 +794,55 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     caches[peer_id].put(cache_key)
                 bytes_by_tier[_TIER_C] += _BYTES_PER_TIER[_TIER_C]
                 non_cacheable_vol += 1
+
+        # Record this epoch's effective routed availability before applying
+        # heat-driven replication, then let heat change the next epoch's topology.
+        for t in _TIERS:
+            routed_failure_rate_by_epoch_by_tier[t].append(
+                _safe_ratio(epoch_routed_error_404_by_tier[t], max(epoch_routed_total_fetch[t], 1))
+            )
+
+        epoch_replication_events = 0
+        if adaptive_replication_enabled:
+            for adaptive_tier in adaptive_replication_tiers:
+                ranked_hot_artifacts = sorted(
+                    (
+                        (-count, art_id)
+                        for art_id, count in epoch_artifact_req_counts[adaptive_tier].items()
+                        if count >= heat_replication_threshold
+                    )
+                )
+                for _neg_count, art_id in ranked_hot_artifacts:
+                    holders = holder_directory[adaptive_tier][art_id]
+                    if len(holders) >= n_peers:
+                        continue
+                    non_holders = [p for p in range(n_peers) if p not in holders]
+                    if not non_holders:
+                        continue
+
+                    new_holder = non_holders[
+                        rng_replication.randint(0, len(non_holders) - 1)
+                    ]
+                    peer_inventories[new_holder][adaptive_tier].add(art_id)
+                    new_holders = set(holders)
+                    new_holders.add(new_holder)
+                    holder_directory[adaptive_tier][art_id] = frozenset(new_holders)
+
+                    adaptive_replication_events_by_tier[adaptive_tier] += 1
+                    adaptive_replication_total_events += 1
+                    epoch_replication_events += 1
+                    if epoch_replication_events >= max_adaptive_replications_per_epoch:
+                        break
+                if epoch_replication_events >= max_adaptive_replications_per_epoch:
+                    break
+
+        if epoch_replication_events > 0:
+            adaptive_replication_epochs_active += 1
+
+        for t in _TIERS:
+            adaptive_holder_mean_by_epoch_by_tier[t].append(
+                _holder_mean(holder_directory, t)
+            )
 
     # --- Compute random-model aggregate rates ---
     total_want_have = want_have_hits + want_have_misses
@@ -790,7 +910,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
     # Routed tier_service_verdict uses routed failure rates.
     # cache_rate_a from the random model is used as a proxy (same artifact distribution).
-    # cb_fraction = 0 for routed model (no CB in Fix4).
+    # cb_fraction = 0 for routed model (CB routing pressure is outside Fix6 scope).
     routed_tier_service_verdict = _compute_tier_service_verdict(
         cache_rate_a=Decimal(cache_rate_a),
         tier_ab_failure_rate=Decimal(routed_tier_ab_failure_rate),
@@ -850,6 +970,10 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "seed": seed,
             "directory_staleness_rate": str(directory_staleness_rate),
             "max_retry_hops": max_retry_hops,
+            "adaptive_replication_enabled": adaptive_replication_enabled,
+            "heat_replication_threshold": heat_replication_threshold,
+            "max_adaptive_replications_per_epoch": max_adaptive_replications_per_epoch,
+            "adaptive_replication_tiers": list(adaptive_replication_tiers),
             "hot_mirror_peer_count": hot_mirror_count,
             "archive_shard_peer_count": archive_shard_count,
             "tier_b_exact_holder_count_per_artifact": tier_b_exact_holder_count,
@@ -905,7 +1029,19 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "routed_rescue_count": routed_rescue_count,
             "routed_retry_exhausted_count": routed_retry_exhausted_count,
             # Fix4: holder directory coverage statistics
+            "initial_known_holder_count_stats_by_tier": initial_holder_count_stats,
             "known_holder_count_stats_by_tier": holder_count_stats,
+            "final_known_holder_count_stats_by_tier": holder_count_stats,
+            # Fix6: adaptive heat-driven replication metrics
+            "adaptive_replication_enabled": adaptive_replication_enabled,
+            "adaptive_replication_events_by_tier": adaptive_replication_events_by_tier,
+            "adaptive_replication_total_events": adaptive_replication_total_events,
+            "adaptive_replication_epochs_active": adaptive_replication_epochs_active,
+            "adaptive_replication_tiers": list(adaptive_replication_tiers),
+            "adaptive_heat_threshold": heat_replication_threshold,
+            "adaptive_max_replications_per_epoch": max_adaptive_replications_per_epoch,
+            "routed_failure_rate_by_epoch_by_tier": routed_failure_rate_by_epoch_by_tier,
+            "adaptive_holder_mean_by_epoch_by_tier": adaptive_holder_mean_by_epoch_by_tier,
         },
         # Top-level verdicts
         "aggregate_verdict": verdict,

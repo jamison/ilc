@@ -39,7 +39,7 @@ _CONTROLLED_TIER_B_3_OF_5_STALE: dict = {
 def test_phase_1238e_fix5_version_token_present() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238e.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238f.v0.1"
     assert mod.SIM_FETCH_01_FIX5_VERSION == (
         "sim_fetch_01_fix5_routed_multihop_retry_1238e.v0.1"
     )
@@ -139,4 +139,3 @@ def test_phase_1238e_cdl_087_ratification_still_not_authorized() -> None:
         {**_CONTROLLED_TIER_B_3_OF_5_STALE, "max_retry_hops": 2}
     )
     assert result["cdl_087_ratification_authorized"] is False
-
