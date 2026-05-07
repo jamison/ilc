@@ -2,15 +2,15 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238c — Window 1233-1240 (Fix3: tier-stratified metrics + verdict decomposition)
+# Phase 1238d — Window 1233-1240 (Fix4: routed holder model)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
 #
 # This module lives in ilc_core/sim/ (not a sensitive taboo scan root).
-# It uses _DeterministicRNG, a SHA-256 counter-mode PRNG, for reproducible
-# simulation. This PRNG must NOT be imported or used in any production protocol
-# code path. Production code must use secrets.SystemRandom() for stochastic needs.
+# It uses _DeterministicRNG (SHA-256 counter-mode) for reproducible simulation.
+# This PRNG must NOT be imported or used in any production protocol code path.
+# Production code must use secrets.SystemRandom() for stochastic needs.
 
 import hashlib
 from bisect import bisect_left
@@ -18,16 +18,23 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238c.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238d.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
+SIM_FETCH_01_FIX4_VERSION = "sim_fetch_01_fix4_routed_holder_model_1238d.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
 _TIER_B = "B"
 _TIER_C = "C"
 _TIERS = (_TIER_A, _TIER_B, _TIER_C)
+
+# Peer role constants
+_PEER_ROLE_ANCHOR = "anchor"        # Full Tier A holder; primary Tier B hot-mirror candidate
+_PEER_ROLE_HOT_MIRROR = "hot_mirror"    # Elevated Tier B inventory fraction
+_PEER_ROLE_ARCHIVE_SHARD = "archive_shard"  # Elevated Tier C inventory fraction
+_PEER_ROLE_GENERAL = "general"       # Standard inventory fractions
 
 _DEFAULT_MAX_REQUESTS_PER_EPOCH = 500
 
@@ -38,13 +45,19 @@ _BYTES_PER_TIER = {
     _TIER_C: Decimal("1") / Decimal("10"),
 }
 
-# Default fraction of tier inventory each peer initially holds (configurable in Fix4)
+# Default inventory fractions (configurable since Fix1)
 _DEFAULT_TIER_B_PEER_INVENTORY_FRACTION = 6  # 60%
 _DEFAULT_TIER_C_PEER_INVENTORY_FRACTION = 2  # 20%
 
-# Default Zipf exponents (s=1.0 for Tier A canonical content; s=0.5 lighter tail for Tier B)
+# Default Zipf exponents
 _DEFAULT_ZIPF_EXPONENT_TIER_A = Decimal("1.0")
 _DEFAULT_ZIPF_EXPONENT_TIER_B = Decimal("0.5")
+
+# XOR mask for deriving the routed-model RNG seed from the main seed.
+# The routed model uses a separate _DeterministicRNG so that staleness draws
+# do not alter the main RNG's counter sequence and thus do not change the
+# random-model outcomes when the two models are run in parallel.
+_RNG_ROUTED_SEED_XOR = 0x5A4D3B2C1E0F9871
 
 
 class _DeterministicRNG:
@@ -52,14 +65,13 @@ class _DeterministicRNG:
     Deterministic hash-derived PRNG for SIM-FETCH-01 simulation only.
 
     Uses SHA-256 in counter mode: each draw is sha256(seed_bytes || counter_bytes).
-    The counter increments monotonically across all draws within one simulation run.
+    The counter increments monotonically across all draws within one run.
 
     Contract: identical seed + draw sequence → identical output.
     Must NOT be used in production protocol code (use secrets.SystemRandom).
     """
 
     def __init__(self, seed: int) -> None:
-        # Mask to unsigned 64-bit to handle any integer seed value
         self._seed_bytes = (seed & 0xFFFFFFFFFFFFFFFF).to_bytes(8, byteorder="big")
         self._counter = 0
 
@@ -86,20 +98,12 @@ class _DeterministicRNG:
     def fraction(self) -> Decimal:
         """Return deterministic uniform Decimal in [0, 1)."""
         val = self._next_uint64()
-        # Divide by 2^64 — exact in Decimal arithmetic
         return Decimal(val) / Decimal("18446744073709551616")
 
     def poisson_count(self, n_agents: int, avg_per_agent: Decimal) -> int:
         """
-        Poisson-like total request count for an epoch.
-
-        Models n_agents agents, each making avg_per_agent requests.
-        Each agent contributes floor(avg) requests unconditionally,
-        plus 1 additional request with probability frac(avg) (Bernoulli trial).
-
-        Expected total = n_agents * avg_per_agent.
-        For integer avg, result is deterministic (no variance).
-        This is a Binomial approximation of the Poisson process.
+        Poisson-like total request count via per-agent Bernoulli approximation.
+        Expected total = n_agents * avg_per_agent. Integer avg → deterministic.
         """
         base = int(avg_per_agent // Decimal("1"))
         frac_part = avg_per_agent - Decimal(base)
@@ -112,12 +116,7 @@ class _DeterministicRNG:
 
 
 def _build_zipf_cdf(n: int, exponent: Decimal) -> list[Decimal]:
-    """
-    Build cumulative distribution for Zipf(n, exponent).
-
-    P(rank k) ∝ 1/k^exponent for k=1..n. Rank 1 is most popular.
-    Returns list of n cumulative probabilities; last entry is exactly 1.
-    """
+    """Build cumulative Zipf(n, exponent) distribution. Last entry is exactly 1."""
     weights = [Decimal(1) / (Decimal(k) ** exponent) for k in range(1, n + 1)]
     total = sum(weights)
     cdf: list[Decimal] = []
@@ -125,27 +124,55 @@ def _build_zipf_cdf(n: int, exponent: Decimal) -> list[Decimal]:
     for w in weights:
         running += w / total
         cdf.append(running)
-    cdf[-1] = Decimal("1")  # Ensure last entry is exactly 1 (no floating rounding)
+    cdf[-1] = Decimal("1")
     return cdf
 
 
 def _zipf_draw(rng: _DeterministicRNG, cdf: list[Decimal]) -> int:
-    """
-    Draw artifact index from pre-built Zipf CDF.
-    Returns 0-indexed artifact ID (rank 1 → index 0, most popular).
-
-    Uses bisect_left: cdf is monotonically increasing, last entry is exactly 1,
-    and rng.fraction() returns values in [0, 1), so the result is always in-bounds.
-    """
+    """Draw 0-indexed artifact ID from pre-built Zipf CDF (rank 1 → index 0)."""
     return bisect_left(cdf, rng.fraction())
 
 
-def _compute_top_quartile_concentration(req_counts: dict[int, int]) -> str:
+def _build_holder_directory(
+    peer_inventories: list[dict[str, set[int]]],
+    tier_counts: dict[str, int],
+    n_peers: int,
+) -> dict[str, dict[int, frozenset[int]]]:
     """
-    Fraction of total requests served by the top 25% of artifacts (by popularity).
+    Build artifact → set-of-holder-peers index for each tier.
 
-    A Zipf distribution should produce concentration >> uniform (where it would be ~0.25).
+    This is the WANT-HAVE directory. An artifact with an empty holder set is
+    unreachable under the routed model (no peer holds it at all).
     """
+    directory: dict[str, dict[int, frozenset[int]]] = {}
+    for tier in _TIERS:
+        tier_dir: dict[int, frozenset[int]] = {}
+        for art_id in range(tier_counts[tier]):
+            holders = frozenset(
+                p for p in range(n_peers) if art_id in peer_inventories[p][tier]
+            )
+            tier_dir[art_id] = holders
+        directory[tier] = tier_dir
+    return directory
+
+
+def _holder_count_stats(
+    holder_directory: dict[str, dict[int, frozenset[int]]], tier: str
+) -> dict[str, Any]:
+    """Summary statistics on holder counts for a tier: min/mean/max."""
+    counts = [len(v) for v in holder_directory[tier].values()]
+    if not counts:
+        return {"min": 0, "mean": "0", "max": 0, "zero_holder_count": 0}
+    return {
+        "min": min(counts),
+        "mean": str((Decimal(sum(counts)) / Decimal(len(counts))).quantize(Decimal("0.000001"))),
+        "max": max(counts),
+        "zero_holder_count": counts.count(0),
+    }
+
+
+def _compute_top_quartile_concentration(req_counts: dict[int, int]) -> str:
+    """Fraction of total requests going to top 25% of artifacts (popularity measure)."""
     if not req_counts:
         return "0"
     sorted_counts = sorted(req_counts.values(), reverse=True)
@@ -187,11 +214,7 @@ def _reject_non_finite(d: Decimal, name: str) -> None:
 
 
 def _to_rate_decimal(val: Any, name: str) -> Decimal:
-    """Convert a rate value to Decimal with strict validation.
-
-    Rejects: float (precision), bool (type confusion), out-of-range [0, 1],
-    non-finite Decimal.
-    """
+    """Strict Decimal conversion for rate fields: rejects float, bool, out-of-range."""
     if isinstance(val, bool):
         raise ValueError(f"sim_fetch_01_bool_forbidden_in_rate_field_{name}")
     if isinstance(val, float):
@@ -207,7 +230,7 @@ def _to_rate_decimal(val: Any, name: str) -> Decimal:
 
 
 def _to_pos_decimal(val: Any, name: str, lo: Decimal, hi: Decimal) -> Decimal:
-    """Convert a positive Decimal parameter, rejecting float, bool, and out-of-range."""
+    """Strict Decimal conversion for positive parameter fields."""
     if isinstance(val, bool):
         raise ValueError(f"sim_fetch_01_bool_forbidden_in_field_{name}")
     if isinstance(val, float):
@@ -223,7 +246,6 @@ def _to_pos_decimal(val: Any, name: str, lo: Decimal, hi: Decimal) -> Decimal:
 
 
 def _safe_ratio(num: int, denom: int) -> str:
-    """Compute num/denom as a canonical Decimal string; returns '0' on zero denom."""
     if denom == 0:
         return "0"
     return str((Decimal(num) / Decimal(denom)).quantize(Decimal("0.000001")))
@@ -238,41 +260,33 @@ def _compute_verdict(
     total_requests: int,
 ) -> str:
     """
-    Apply SIM-FETCH-01 aggregate pass/fail thresholds (design spec §7).
-
-    Returns: 'pass', 'fail', or 'inconclusive'.
-    CDL-087 ratification is not authorized regardless of verdict.
+    SIM-FETCH-01 aggregate verdict (design spec §7).
+    Based on single-hop random-model metrics.
+    CDL-087 ratification not authorized regardless of verdict.
     """
-    # Inconclusive conditions
     if total_requests < 1000:
         return "inconclusive"
     if not cache_rate_a.is_finite() or not failure_rate.is_finite():
         return "inconclusive"
     if not spp or all(v == 0 for v in spp.values()):
         return "inconclusive"
-
-    # Block-ratification conditions (any one blocks)
     if cache_rate_a < Decimal("0.50"):
         return "fail"
     if failure_rate > Decimal("0.20"):
         return "fail"
     if cb_fraction > Decimal("0.20"):
         return "fail"
-
-    # Support-ratification conditions (all must hold)
     if (
         cache_rate_a >= Decimal("0.70")
         and failure_rate <= Decimal("0.10")
         and tier_a_fraction <= Decimal("0.20")
         and cb_fraction <= Decimal("0.05")
     ):
-        # Check serve pressure distribution: max/mean <= 3.0
         pressures = list(spp.values())
         max_p = Decimal(max(pressures))
         mean_p = Decimal(sum(pressures)) / Decimal(len(pressures))
         if mean_p > 0 and max_p / mean_p <= Decimal("3.0"):
             return "pass"
-
     return "inconclusive"
 
 
@@ -287,26 +301,21 @@ def _compute_tier_service_verdict(
     Tier A+B service quality verdict — INFORMATIONAL ONLY.
 
     CDL-087 §3 states Tier C has no infrastructure-grade service obligation.
-    This verdict reflects that reality by excluding Tier C from the failure rate.
+    Can be applied to both the single-hop random model and the routed holder model;
+    the metric inputs differ between the two.
 
-    This is NOT a CDL-087 ratification verdict. CDL-087 ratification is not
-    authorized by this harness regardless of this verdict's value. A spec amendment
-    is required before this verdict can be used as a ratification input.
+    NOT a CDL-087 ratification verdict. CDL-087 ratification is not authorized by this harness.
     """
     if total_tier_ab_requests < 100:
         return "inconclusive"
     if not cache_rate_a.is_finite() or not tier_ab_failure_rate.is_finite():
         return "inconclusive"
-
-    # Block conditions
     if cache_rate_a < Decimal("0.50"):
         return "fail"
     if tier_ab_failure_rate > Decimal("0.20"):
         return "fail"
     if cb_fraction > Decimal("0.20"):
         return "fail"
-
-    # Support conditions
     if (
         cache_rate_a >= Decimal("0.70")
         and tier_ab_failure_rate <= Decimal("0.10")
@@ -318,7 +327,6 @@ def _compute_tier_service_verdict(
             mean_p = Decimal(sum(pressures)) / Decimal(len(pressures))
             if mean_p > 0 and max_p / mean_p <= Decimal("3.0"):
                 return "pass"
-
     return "inconclusive"
 
 
@@ -326,28 +334,26 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     """
     Run SIM-FETCH-01 fetch distribution simulation.
 
-    Accepts scenario parameters as a config dict (no hardcoded constants).
-    Returns a result dict with CDL-087 §6 observability metrics aggregated
-    over all simulated epochs.
+    Returns metrics under two availability models in parallel:
 
-    Time axis: epoch sequence number. No wall-clock is used.
-    Deterministic: identical scenario_config (including seed) produces identical output.
+    single_hop_random_*: Null model — uniform random peer selection. Worst-case
+        availability; shows what happens when the requester has no routing signal.
 
-    OOM guard: total requests per epoch are capped at max_requests_per_epoch.
+    routed_*: Holder-directory model — requests routed to known holders of each
+        artifact. Zero failures for replicated artifacts under zero directory staleness.
+        CDL-087 evaluation should use routed_ metrics, not random_ metrics.
+
+    Both models process the same tiers and artifacts per epoch; only peer selection
+    and circuit-breaker behavior differ (routed model has no CB in Fix4).
 
     CDL-087 ratification is NOT authorized by this harness.
     """
     # --- Validate integer parameters ---
-    _required_pos_int = [
-        "n_serving_peers",
-        "n_epochs",
-        "n_agents",
-        "tier_a_artifact_count",
-        "tier_b_artifact_count",
-        "tier_c_artifact_count",
+    for key in (
+        "n_serving_peers", "n_epochs", "n_agents",
+        "tier_a_artifact_count", "tier_b_artifact_count", "tier_c_artifact_count",
         "cache_capacity_per_peer",
-    ]
-    for key in _required_pos_int:
+    ):
         if key not in scenario_config:
             raise ValueError(f"sim_fetch_01_missing_config_{key}")
         val = scenario_config[key]
@@ -355,38 +361,32 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             raise ValueError(f"sim_fetch_01_invalid_config_{key}")
 
     # --- Validate rate parameters ---
-    rate_a = _to_rate_decimal(
-        scenario_config.get("tier_a_request_rate", "0"), "tier_a_request_rate"
-    )
-    rate_b = _to_rate_decimal(
-        scenario_config.get("tier_b_request_rate", "0"), "tier_b_request_rate"
-    )
-    rate_c = _to_rate_decimal(
-        scenario_config.get("tier_c_request_rate", "0"), "tier_c_request_rate"
-    )
+    rate_a = _to_rate_decimal(scenario_config.get("tier_a_request_rate", "0"), "tier_a_request_rate")
+    rate_b = _to_rate_decimal(scenario_config.get("tier_b_request_rate", "0"), "tier_b_request_rate")
+    rate_c = _to_rate_decimal(scenario_config.get("tier_c_request_rate", "0"), "tier_c_request_rate")
     if rate_a + rate_b + rate_c != Decimal("1"):
         raise ValueError("sim_fetch_01_request_rates_must_sum_to_one")
 
     # --- Validate Zipf exponents ---
     zipf_exp_a = _to_pos_decimal(
         scenario_config.get("zipf_exponent_tier_a", str(_DEFAULT_ZIPF_EXPONENT_TIER_A)),
-        "zipf_exponent_tier_a",
-        Decimal("0.1"),
-        Decimal("5.0"),
+        "zipf_exponent_tier_a", Decimal("0.1"), Decimal("5.0"),
     )
     zipf_exp_b = _to_pos_decimal(
         scenario_config.get("zipf_exponent_tier_b", str(_DEFAULT_ZIPF_EXPONENT_TIER_B)),
-        "zipf_exponent_tier_b",
-        Decimal("0.1"),
-        Decimal("5.0"),
+        "zipf_exponent_tier_b", Decimal("0.1"), Decimal("5.0"),
     )
 
     # --- Validate avg requests per agent ---
     avg_per_agent = _to_pos_decimal(
         scenario_config.get("avg_requests_per_agent", "3"),
-        "avg_requests_per_agent",
-        Decimal("0.01"),
-        Decimal("100"),
+        "avg_requests_per_agent", Decimal("0.01"), Decimal("100"),
+    )
+
+    # --- Validate directory staleness rate (Fix4) ---
+    directory_staleness_rate = _to_rate_decimal(
+        scenario_config.get("directory_staleness_rate", "0"),
+        "directory_staleness_rate",
     )
 
     # --- Validate OOM guard ---
@@ -410,65 +410,112 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     }
     cache_cap: int = scenario_config["cache_capacity_per_peer"]
 
-    # Circuit breaker threshold: requests per peer per epoch before 429 fires
-    cb_threshold_raw = scenario_config.get(
-        "circuit_breaker_threshold", max(max_req // n_peers, 1)
-    )
-    if (
-        isinstance(cb_threshold_raw, bool)
-        or not isinstance(cb_threshold_raw, int)
-        or cb_threshold_raw < 1
-    ):
+    # --- Circuit breaker threshold ---
+    cb_threshold_raw = scenario_config.get("circuit_breaker_threshold", max(max_req // n_peers, 1))
+    if isinstance(cb_threshold_raw, bool) or not isinstance(cb_threshold_raw, int) or cb_threshold_raw < 1:
         raise ValueError("sim_fetch_01_invalid_circuit_breaker_threshold")
     cb_threshold: int = cb_threshold_raw
 
-    # --- Hash-derived deterministic PRNG (simulation only; not for protocol use) ---
-    rng = _DeterministicRNG(seed)
+    # --- Peer role configuration (Fix4) ---
+    # hot_mirror peers hold elevated Tier B inventory; archive_shard peers hold elevated Tier C.
+    # These roles change initial inventory fractions; all peers hold full Tier A (anchor behavior).
+    hot_mirror_count = scenario_config.get("hot_mirror_peer_count", 0)
+    if isinstance(hot_mirror_count, bool) or not isinstance(hot_mirror_count, int) or hot_mirror_count < 0:
+        raise ValueError("sim_fetch_01_invalid_hot_mirror_peer_count")
+    if hot_mirror_count > n_peers:
+        raise ValueError("sim_fetch_01_hot_mirror_peer_count_exceeds_n_peers")
 
-    # --- Pre-compute Zipf CDFs (once per run, not per epoch) ---
-    # Tier A and Tier B use Zipf artifact selection to model hot-artifact concentration.
-    # Tier C uses uniform selection (no infrastructure-grade caching obligation).
+    archive_shard_count = scenario_config.get("archive_shard_peer_count", 0)
+    if isinstance(archive_shard_count, bool) or not isinstance(archive_shard_count, int) or archive_shard_count < 0:
+        raise ValueError("sim_fetch_01_invalid_archive_shard_peer_count")
+    if archive_shard_count > n_peers:
+        raise ValueError("sim_fetch_01_archive_shard_peer_count_exceeds_n_peers")
+
+    # Inventory fractions per role (integer tenths: 6 = 60%, 9 = 90%, etc.)
+    tier_b_frac_general = scenario_config.get("tier_b_peer_inventory_fraction", _DEFAULT_TIER_B_PEER_INVENTORY_FRACTION)
+    tier_c_frac_general = scenario_config.get("tier_c_peer_inventory_fraction", _DEFAULT_TIER_C_PEER_INVENTORY_FRACTION)
+    for frac, name in [(tier_b_frac_general, "tier_b_peer_inventory_fraction"),
+                       (tier_c_frac_general, "tier_c_peer_inventory_fraction")]:
+        if isinstance(frac, bool) or not isinstance(frac, int) or not (1 <= frac <= 10):
+            raise ValueError(f"sim_fetch_01_invalid_{name}")
+
+    tier_b_frac_mirror = scenario_config.get("hot_mirror_tier_b_fraction", min(tier_b_frac_general + 3, 10))
+    tier_c_frac_shard = scenario_config.get("archive_shard_tier_c_fraction", min(tier_c_frac_general + 3, 10))
+    for frac, name in [(tier_b_frac_mirror, "hot_mirror_tier_b_fraction"),
+                       (tier_c_frac_shard, "archive_shard_tier_c_fraction")]:
+        if isinstance(frac, bool) or not isinstance(frac, int) or not (1 <= frac <= 10):
+            raise ValueError(f"sim_fetch_01_invalid_{name}")
+
+    # Controlled layout for Fix4 architectural tests:
+    # each Tier B artifact is placed on exactly K peers. This makes the
+    # "3 holders out of 5 peers" random-vs-routed comparison deterministic.
+    tier_b_exact_holder_count = scenario_config.get("tier_b_exact_holder_count_per_artifact")
+    if tier_b_exact_holder_count is not None:
+        if (
+            isinstance(tier_b_exact_holder_count, bool)
+            or not isinstance(tier_b_exact_holder_count, int)
+            or not (1 <= tier_b_exact_holder_count <= n_peers)
+        ):
+            raise ValueError("sim_fetch_01_invalid_tier_b_exact_holder_count_per_artifact")
+
+    # --- RNGs ---
+    # Main RNG: tier/artifact selection + random-model peer selection + inventory sampling
+    rng = _DeterministicRNG(seed)
+    # Routed RNG: staleness draws + routed holder selection (derived seed, independent sequence)
+    rng_routed = _DeterministicRNG(seed ^ _RNG_ROUTED_SEED_XOR)
+
+    # --- Build Zipf CDFs ---
     cdf_a = _build_zipf_cdf(tier_counts[_TIER_A], zipf_exp_a)
     cdf_b = _build_zipf_cdf(tier_counts[_TIER_B], zipf_exp_b)
 
     # --- Initialize per-peer LRU caches ---
     caches = [_LRUCache(cache_cap) for _ in range(n_peers)]
 
-    # --- Initialize peer inventories ---
-    tier_b_frac = scenario_config.get(
-        "tier_b_peer_inventory_fraction", _DEFAULT_TIER_B_PEER_INVENTORY_FRACTION
-    )
-    tier_c_frac = scenario_config.get(
-        "tier_c_peer_inventory_fraction", _DEFAULT_TIER_C_PEER_INVENTORY_FRACTION
-    )
-    if isinstance(tier_b_frac, bool) or not isinstance(tier_b_frac, int) or not (1 <= tier_b_frac <= 10):
-        raise ValueError("sim_fetch_01_invalid_tier_b_peer_inventory_fraction")
-    if isinstance(tier_c_frac, bool) or not isinstance(tier_c_frac, int) or not (1 <= tier_c_frac <= 10):
-        raise ValueError("sim_fetch_01_invalid_tier_c_peer_inventory_fraction")
-
+    # --- Assign peer roles and initialize inventories ---
+    peer_roles: list[str] = []
     peer_inventories: list[dict[str, set[int]]] = []
-    for _ in range(n_peers):
-        inv_b_size = max(1, tier_counts[_TIER_B] * tier_b_frac // 10)
-        inv_c_size = max(1, tier_counts[_TIER_C] * tier_c_frac // 10)
-        peer_inventories.append(
-            {
-                _TIER_A: set(range(tier_counts[_TIER_A])),
-                _TIER_B: set(
+    for p in range(n_peers):
+        if p < hot_mirror_count:
+            role = _PEER_ROLE_HOT_MIRROR
+            b_frac = tier_b_frac_mirror
+            c_frac = tier_c_frac_general
+        elif p < hot_mirror_count + archive_shard_count:
+            role = _PEER_ROLE_ARCHIVE_SHARD
+            b_frac = tier_b_frac_general
+            c_frac = tier_c_frac_shard
+        else:
+            role = _PEER_ROLE_GENERAL
+            b_frac = tier_b_frac_general
+            c_frac = tier_c_frac_general
+        peer_roles.append(role)
+
+        inv_b_size = max(1, tier_counts[_TIER_B] * b_frac // 10)
+        inv_c_size = max(1, tier_counts[_TIER_C] * c_frac // 10)
+        peer_inventories.append({
+            _TIER_A: set(range(tier_counts[_TIER_A])),  # All peers are Tier A anchors
+            _TIER_B: (
+                set()
+                if tier_b_exact_holder_count is not None
+                else set(
                     rng.sample(
                         range(tier_counts[_TIER_B]),
                         min(inv_b_size, tier_counts[_TIER_B]),
                     )
-                ),
-                _TIER_C: set(
-                    rng.sample(
-                        range(tier_counts[_TIER_C]),
-                        min(inv_c_size, tier_counts[_TIER_C]),
-                    )
-                ),
-            }
-        )
+                )
+            ),
+            _TIER_C: set(rng.sample(range(tier_counts[_TIER_C]), min(inv_c_size, tier_counts[_TIER_C]))),
+        })
 
-    # --- Aggregate counters ---
+    if tier_b_exact_holder_count is not None:
+        for art_id in range(tier_counts[_TIER_B]):
+            start_peer = art_id % n_peers
+            for offset in range(tier_b_exact_holder_count):
+                peer_inventories[(start_peer + offset) % n_peers][_TIER_B].add(art_id)
+
+    # --- Build holder directory (Fix4) ---
+    holder_directory = _build_holder_directory(peer_inventories, tier_counts, n_peers)
+
+    # --- Aggregate counters: random (single-hop) model ---
     total_fetch: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
     want_have_hits: int = 0
     want_have_misses: int = 0
@@ -486,18 +533,19 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     cb_activations: int = 0
     cdl_078_credits: int = 0
     serve_pressure: dict[int, int] = {p: 0 for p in range(n_peers)}
+    artifact_req_counts: dict[str, dict[int, int]] = {_TIER_A: {}, _TIER_B: {}, _TIER_C: {}}
 
-    # Per-artifact request counts for popularity / concentration metrics
-    artifact_req_counts: dict[str, dict[int, int]] = {
-        _TIER_A: {},
-        _TIER_B: {},
-        _TIER_C: {},
-    }
+    # --- Aggregate counters: routed holder model (Fix4) ---
+    # No circuit breaker in routed model (Fix4 scope: availability only; CB behavior deferred to Fix5)
+    routed_total_fetch: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
+    routed_error_404_by_tier: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
+    routed_holder_lookups: int = 0      # Requests where directory lookup was attempted
+    routed_holder_found: int = 0        # Requests routed to a known holder (not stale, has holders)
+    routed_stale_fallbacks: int = 0     # Lookups that fell back due to directory staleness
 
     # --- Simulation loop ---
     for _epoch in range(n_epochs):
-        # Tier B cache invalidation at epoch boundary (Tier B content is mutable
-        # per epoch; Tier A is immutable and remains in cache across epochs)
+        # Tier B cache invalidation at epoch boundary (Tier B content mutable per epoch)
         for p in range(n_peers):
             new_cache = _LRUCache(cache_cap)
             for key in list(caches[p]._data):
@@ -505,15 +553,11 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     new_cache.put(key)
             caches[p] = new_cache
 
-        # Poisson-like per-epoch request count (replaces fixed n_agents * 3)
-        # OOM guard: still capped at max_requests_per_epoch
         n_requests = min(rng.poisson_count(n_agents, avg_per_agent), max_req)
-
-        # Per-peer request counter for circuit breaker (reset each epoch)
         peer_req_count = [0] * n_peers
 
         for _ in range(n_requests):
-            # Select tier by rate thresholds using deterministic RNG
+            # --- Shared: tier and artifact selection ---
             roll = rng.fraction()
             if roll < rate_a:
                 tier = _TIER_A
@@ -522,9 +566,6 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             else:
                 tier = _TIER_C
 
-            # Select artifact within tier:
-            # Tier A/B: Zipf distribution (models hot-artifact concentration)
-            # Tier C: uniform (no mandatory caching; no infrastructure hot-spot model)
             if tier == _TIER_A:
                 art_id = _zipf_draw(rng, cdf_a)
             elif tier == _TIER_B:
@@ -532,27 +573,54 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             else:
                 art_id = rng.randint(0, tier_counts[_TIER_C] - 1)
 
-            # Track per-artifact request volume for popularity metrics
             artifact_req_counts[tier][art_id] = artifact_req_counts[tier].get(art_id, 0) + 1
 
-            # Select serving peer (uniform baseline)
+            # === ROUTED HOLDER MODEL (Fix4) ===
+            # Processed before random-model peer selection so it is not affected by CB.
+            # Routed model: route to a known holder; fall back to random if directory is stale.
+            routed_holder_lookups += 1
+            holders = holder_directory[tier][art_id]
+
+            if not holders:
+                # Artifact not replicated on any peer — genuine 404 regardless of routing
+                routed_total_fetch[tier] += 1
+                routed_error_404_by_tier[tier] += 1
+            else:
+                # Determine if this directory lookup is stale
+                is_stale = (
+                    directory_staleness_rate > Decimal("0")
+                    and rng_routed.fraction() < directory_staleness_rate
+                )
+                if is_stale:
+                    # Stale: fall back to random peer (routed model degrades to random model)
+                    routed_stale_fallbacks += 1
+                    stale_peer = rng_routed.randint(0, n_peers - 1)
+                    routed_total_fetch[tier] += 1
+                    if art_id not in peer_inventories[stale_peer][tier]:
+                        routed_error_404_by_tier[tier] += 1
+                else:
+                    # Fresh directory + known holders → route to a holder (always succeeds)
+                    routed_holder_found += 1
+                    holder_list = sorted(holders)  # Sorted for determinism
+                    routed_peer = holder_list[rng_routed.randint(0, len(holder_list) - 1)]
+                    routed_total_fetch[tier] += 1
+                    # Holder definitely has the artifact — no 404
+
+            # === RANDOM (SINGLE-HOP) MODEL ===
+            # Uniform peer selection; circuit breaker applies.
             peer_id = rng.randint(0, n_peers - 1)
             serve_pressure[peer_id] += 1
 
-            # Circuit breaker check (CDL-077 rate-limit model)
             if peer_req_count[peer_id] >= cb_threshold:
                 wb_error_429 += 1
                 cb_activations += 1
                 continue
             peer_req_count[peer_id] += 1
-
             total_fetch[tier] += 1
 
-            # WANT-HAVE probe: does this peer hold this artifact?
             has_artifact = art_id in peer_inventories[peer_id][tier]
 
             if not has_artifact:
-                # WANT-HAVE miss → WANT-BLOCK error 404
                 want_have_misses += 1
                 wb_error_404 += 1
                 wb_error_404_by_tier[tier] += 1
@@ -560,10 +628,9 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     cache_attempts_a += 1
                 elif tier == _TIER_C:
                     cache_attempts_c += 1
-                    non_cacheable_vol += 1  # Tier C: no mandatory caching
+                    non_cacheable_vol += 1
                 continue
 
-            # WANT-HAVE hit → proceed to WANT-BLOCK
             want_have_hits += 1
             cache_key = (tier, art_id)
             in_cache = caches[peer_id].has(cache_key)
@@ -576,74 +643,94 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                 else:
                     caches[peer_id].put(cache_key)
                 bytes_by_tier[_TIER_A] += _BYTES_PER_TIER[_TIER_A]
-                cdl_078_credits += 1  # Tier A successful serves credit CDL-078 reputation
+                cdl_078_credits += 1
             elif tier == _TIER_B:
                 if not in_cache:
                     caches[peer_id].put(cache_key)
                 bytes_by_tier[_TIER_B] += _BYTES_PER_TIER[_TIER_B]
-                cdl_078_credits += 1  # Tier B successful serves also credited
+                cdl_078_credits += 1
             else:
-                # Tier C: no mandatory caching per CDL-087 §3
                 cache_attempts_c += 1
                 if in_cache:
                     cache_hits_c += 1
                 else:
                     caches[peer_id].put(cache_key)
                 bytes_by_tier[_TIER_C] += _BYTES_PER_TIER[_TIER_C]
-                non_cacheable_vol += 1  # All Tier C requests are non-cacheable by policy
+                non_cacheable_vol += 1
 
-    # --- Compute aggregate rates ---
+    # --- Compute random-model aggregate rates ---
     total_want_have = want_have_hits + want_have_misses
-    total_requests = (
-        total_fetch[_TIER_A] + total_fetch[_TIER_B] + total_fetch[_TIER_C] + wb_error_429
-    )
+    total_requests = total_fetch[_TIER_A] + total_fetch[_TIER_B] + total_fetch[_TIER_C] + wb_error_429
 
     wh_hit_rate = _safe_ratio(want_have_hits, total_want_have)
     wh_miss_rate = _safe_ratio(want_have_misses, total_want_have)
     cache_rate_a = _safe_ratio(cache_hits_a, cache_attempts_a)
     cache_rate_c = _safe_ratio(cache_hits_c, cache_attempts_c)
-    failure_rate_str = _safe_ratio(
-        wb_error_404 + wb_error_429, max(total_requests, 1)
-    )
+    failure_rate_str = _safe_ratio(wb_error_404 + wb_error_429, max(total_requests, 1))
 
-    # serve_pressure_by_peer: string keys for JSON safety
+    # serve_pressure: string keys for JSON safety
     spp = {f"peer_{p}": serve_pressure[p] for p in range(n_peers)}
 
-    # --- Per-tier failure rates (Fix3) ---
-    # CDL-087 §3: Tier C has no infrastructure-grade service obligation.
-    # These per-tier rates expose the failure profile without conflating tiers.
-    failure_rate_by_tier = {
+    # --- Random model per-tier failure rates (Fix3, renamed Fix4) ---
+    rand_failure_rate_by_tier = {
         _TIER_A: _safe_ratio(wb_error_404_by_tier[_TIER_A], max(total_fetch[_TIER_A], 1)),
         _TIER_B: _safe_ratio(wb_error_404_by_tier[_TIER_B], max(total_fetch[_TIER_B], 1)),
         _TIER_C: _safe_ratio(wb_error_404_by_tier[_TIER_C], max(total_fetch[_TIER_C], 1)),
     }
-    total_tier_ab = total_fetch[_TIER_A] + total_fetch[_TIER_B]
-    tier_ab_failure_rate_str = _safe_ratio(
-        wb_error_404_by_tier[_TIER_A] + wb_error_404_by_tier[_TIER_B],
-        max(total_tier_ab, 1),
+    total_tier_ab_rand = total_fetch[_TIER_A] + total_fetch[_TIER_B]
+    rand_tier_ab_failure_rate = _safe_ratio(
+        wb_error_404_by_tier[_TIER_A] + wb_error_404_by_tier[_TIER_B], max(total_tier_ab_rand, 1)
     )
-    tier_c_advisory_failure_rate_str = failure_rate_by_tier[_TIER_C]
+    rand_tier_c_advisory = rand_failure_rate_by_tier[_TIER_C]
 
-    tier_service_verdict = _compute_tier_service_verdict(
+    rand_tier_service_verdict = _compute_tier_service_verdict(
         cache_rate_a=Decimal(cache_rate_a),
-        tier_ab_failure_rate=Decimal(tier_ab_failure_rate_str),
+        tier_ab_failure_rate=Decimal(rand_tier_ab_failure_rate),
         cb_fraction=Decimal(cb_activations) / Decimal(max(total_requests, 1)),
         spp=spp,
-        total_tier_ab_requests=total_tier_ab,
+        total_tier_ab_requests=total_tier_ab_rand,
     )
 
-    # Artifact popularity: top-quartile concentration by tier
+    # --- Routed model metrics (Fix4) ---
+    total_routed = sum(routed_total_fetch.values())
+    routed_failure_rate_by_tier = {
+        _TIER_A: _safe_ratio(routed_error_404_by_tier[_TIER_A], max(routed_total_fetch[_TIER_A], 1)),
+        _TIER_B: _safe_ratio(routed_error_404_by_tier[_TIER_B], max(routed_total_fetch[_TIER_B], 1)),
+        _TIER_C: _safe_ratio(routed_error_404_by_tier[_TIER_C], max(routed_total_fetch[_TIER_C], 1)),
+    }
+    total_tier_ab_routed = routed_total_fetch[_TIER_A] + routed_total_fetch[_TIER_B]
+    routed_tier_ab_failure_rate = _safe_ratio(
+        routed_error_404_by_tier[_TIER_A] + routed_error_404_by_tier[_TIER_B],
+        max(total_tier_ab_routed, 1),
+    )
+
+    # Routed tier_service_verdict uses routed failure rates.
+    # cache_rate_a from the random model is used as a proxy (same artifact distribution).
+    # cb_fraction = 0 for routed model (no CB in Fix4).
+    routed_tier_service_verdict = _compute_tier_service_verdict(
+        cache_rate_a=Decimal(cache_rate_a),
+        tier_ab_failure_rate=Decimal(routed_tier_ab_failure_rate),
+        cb_fraction=Decimal("0"),
+        spp=spp,
+        total_tier_ab_requests=total_tier_ab_routed,
+    )
+
+    routed_holder_hit_rate = _safe_ratio(routed_holder_found, max(routed_holder_lookups, 1))
+    routed_staleness_rate_observed = _safe_ratio(routed_stale_fallbacks, max(routed_holder_lookups, 1))
+
+    # --- Holder count statistics (Fix4) ---
+    holder_count_stats = {t: _holder_count_stats(holder_directory, t) for t in _TIERS}
+
+    # --- Artifact popularity ---
     top_q_concentration = {
         t: _compute_top_quartile_concentration(artifact_req_counts[t]) for t in _TIERS
     }
 
-    # --- Compute verdict ---
+    # --- Compute aggregate verdict (based on random model, per design spec §7) ---
     verdict = _compute_verdict(
         cache_rate_a=Decimal(cache_rate_a),
         failure_rate=Decimal(failure_rate_str),
-        tier_a_fraction=(
-            Decimal(total_fetch[_TIER_A]) / Decimal(max(total_requests, 1))
-        ),
+        tier_a_fraction=Decimal(total_fetch[_TIER_A]) / Decimal(max(total_requests, 1)),
         cb_fraction=Decimal(cb_activations) / Decimal(max(total_requests, 1)),
         spp=spp,
         total_requests=total_requests,
@@ -654,6 +741,9 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         "sim_version": SIM_FETCH_01_HARNESS_VERSION,
         "cdl_087_dependency": CDL_087_DEPENDENCY,
         "cdl_087_ratification_authorized": False,
+        "cdl_087_ratification_not_authorized_note": (
+            "tier_service_verdict does not authorize CDL-087 ratification"
+        ),
         "scenario": {
             "n_serving_peers": n_peers,
             "n_epochs": n_epochs,
@@ -670,14 +760,15 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "cache_capacity_per_peer": cache_cap,
             "max_requests_per_epoch": max_req,
             "seed": seed,
+            "directory_staleness_rate": str(directory_staleness_rate),
+            "hot_mirror_peer_count": hot_mirror_count,
+            "archive_shard_peer_count": archive_shard_count,
+            "tier_b_exact_holder_count_per_artifact": tier_b_exact_holder_count,
+            "peer_roles": peer_roles,
         },
         "aggregate_over_epochs": {
-            # CDL-087 §6 required signals (exact names)
-            "fetch_requests_by_tier": {
-                "A": total_fetch[_TIER_A],
-                "B": total_fetch[_TIER_B],
-                "C": total_fetch[_TIER_C],
-            },
+            # CDL-087 §6 required signals (exact names) — random model
+            "fetch_requests_by_tier": {t: total_fetch[t] for t in _TIERS},
             "want_have_hit_rate": wh_hit_rate,
             "want_have_miss_rate": wh_miss_rate,
             "want_block_success_count": wb_success,
@@ -685,40 +776,39 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "want_block_error_429": wb_error_429,
             "want_block_error_400": wb_error_400,
             "cache_hit_rate_tier_a": cache_rate_a,
-            "bytes_served_by_tier": {
-                "A": str(bytes_by_tier[_TIER_A]),
-                "B": str(bytes_by_tier[_TIER_B]),
-                "C": str(bytes_by_tier[_TIER_C]),
-            },
+            "bytes_served_by_tier": {t: str(bytes_by_tier[t]) for t in _TIERS},
             "non_cacheable_request_volume": non_cacheable_vol,
             "circuit_breaker_activations": cb_activations,
             "serve_events_credited_cdl_078": cdl_078_credits,
-            # Derived aliases (design spec §5 test contract)
+            # Derived aliases (design spec §5)
             "cache_hit_rate_high_centrality": cache_rate_a,
             "cache_hit_rate_tail": cache_rate_c,
-            "request_pressure_by_tier": {
-                "A": total_fetch[_TIER_A],
-                "B": total_fetch[_TIER_B],
-                "C": total_fetch[_TIER_C],
-            },
+            "request_pressure_by_tier": {t: total_fetch[t] for t in _TIERS},
             "serve_pressure_by_peer": spp,
             "failure_rate": failure_rate_str,
-            # Fix2: artifact popularity / Zipf concentration metrics
+            # Fix2: artifact popularity
             "top_quartile_request_concentration_by_tier": top_q_concentration,
-            # Fix3: tier-stratified failure rates
-            # CDL-087 §3: Tier C has no infrastructure-grade service obligation.
-            # These rates expose the per-tier failure profile without conflating tiers.
-            "failure_rate_by_tier": failure_rate_by_tier,
-            "tier_ab_failure_rate": tier_ab_failure_rate_str,
-            "tier_c_advisory_failure_rate": tier_c_advisory_failure_rate_str,
+            # Fix3/Fix4: single-hop random model per-tier metrics (canonical names)
+            "single_hop_random_failure_rate_by_tier": rand_failure_rate_by_tier,
+            "single_hop_random_tier_ab_failure_rate": rand_tier_ab_failure_rate,
+            "single_hop_random_tier_c_advisory_failure_rate": rand_tier_c_advisory,
+            "single_hop_random_tier_service_verdict": rand_tier_service_verdict,
+            # Backward-compatibility aliases (Fix3 names → Fix4 renamed equivalents)
+            "failure_rate_by_tier": rand_failure_rate_by_tier,
+            "tier_ab_failure_rate": rand_tier_ab_failure_rate,
+            "tier_c_advisory_failure_rate": rand_tier_c_advisory,
+            # Fix4: routed holder model metrics
+            # CDL-087 evaluation should use routed_ metrics, not single_hop_random_.
+            "routed_failure_rate_by_tier": routed_failure_rate_by_tier,
+            "routed_tier_ab_failure_rate": routed_tier_ab_failure_rate,
+            "routed_tier_service_verdict": routed_tier_service_verdict,
+            "routed_holder_hit_rate": routed_holder_hit_rate,
+            "routed_staleness_rate_observed": routed_staleness_rate_observed,
+            # Fix4: holder directory coverage statistics
+            "known_holder_count_stats_by_tier": holder_count_stats,
         },
-        # aggregate_verdict: backward-compatible alias for verdict (Fix3)
+        # Top-level verdicts
         "aggregate_verdict": verdict,
-        # tier_service_verdict: Tier A+B only — INFORMATIONAL, NOT CDL-087 ratification.
-        # A spec amendment is required before this can be used as a ratification input.
-        "tier_service_verdict": tier_service_verdict,
-        "cdl_087_ratification_not_authorized_note": (
-            "tier_service_verdict does not authorize CDL-087 ratification"
-        ),
+        "tier_service_verdict": rand_tier_service_verdict,   # backward compat alias
         "verdict": verdict,
     }
