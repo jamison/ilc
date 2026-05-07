@@ -54,7 +54,7 @@ _CONTROLLED_TIER_B_3_OF_5: dict = {
 def test_phase_1238d_fix4_version_token_present() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238g.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238h.v0.1"
     assert mod.SIM_FETCH_01_FIX4_VERSION == (
         "sim_fetch_01_fix4_routed_holder_model_1238d.v0.1"
     )
