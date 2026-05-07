@@ -77,21 +77,28 @@ def test_phase_1237_fix1_unsupported_query_type_rejected() -> None:
         execute_sidecar_query(query_type="unsupported", projection={})
 
 
-@pytest.mark.parametrize(
-    ("query_type", "error_token"),
-    (
-        (
-            "convergence_trace",
-            "sidecar_query_convergence_trace_not_yet_implemented",
-        ),
-    ),
-)
-def test_phase_1237_fix1_supported_query_types_are_stable_stubs(
-    query_type: str,
-    error_token: str,
-) -> None:
-    with pytest.raises(NotImplementedError, match=error_token):
-        execute_sidecar_query(query_type=query_type, projection={})
+def test_phase_1237_fix4_all_supported_query_types_have_dispatch_arms() -> None:
+    calls = (
+        {
+            "query_type": "ego_graph",
+            "projection": {"nodes": [{"canonical_id": "root"}], "edges": []},
+            "root_id": "root",
+        },
+        {
+            "query_type": "centrality_metrics",
+            "projection": {"nodes": [], "edges": [], "metrics": {}},
+        },
+        {
+            "query_type": "convergence_trace",
+            "projection": {"nodes": [{"canonical_id": "root"}], "edges": []},
+            "node_ids": ("root",),
+        },
+    )
+    for kwargs in calls:
+        try:
+            execute_sidecar_query(**kwargs)
+        except NotImplementedError as exc:
+            pytest.fail(f"unexpected stub remained: {exc}")
 
 
 def test_phase_1237_fix1_dispatcher_validates_bounds_before_stub() -> None:
