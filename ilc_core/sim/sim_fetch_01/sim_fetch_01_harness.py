@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238g — Window 1233-1240 (Fix7: CDL-078 credit bridge)
+# Phase 1238h — Window 1233-1240 (Fix8: Werner topology overlay)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
@@ -18,7 +18,7 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238g.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238h.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
@@ -26,6 +26,7 @@ SIM_FETCH_01_FIX4_VERSION = "sim_fetch_01_fix4_routed_holder_model_1238d.v0.1"
 SIM_FETCH_01_FIX5_VERSION = "sim_fetch_01_fix5_routed_multihop_retry_1238e.v0.1"
 SIM_FETCH_01_FIX6_VERSION = "sim_fetch_01_fix6_adaptive_heat_replication_1238f.v0.1"
 SIM_FETCH_01_FIX7_VERSION = "sim_fetch_01_fix7_cdl_078_credit_bridge_1238g.v0.1"
+SIM_FETCH_01_FIX8_VERSION = "sim_fetch_01_fix8_werner_topology_overlay_1238h.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
@@ -263,6 +264,11 @@ def _safe_ratio(num: int, denom: int) -> str:
     return str((Decimal(num) / Decimal(denom)).quantize(Decimal("0.000001")))
 
 
+def _quantized_decimal_str(value: Decimal) -> str:
+    """Canonical simulation Decimal string for non-ratio observability metrics."""
+    return str(value.quantize(Decimal("0.000001")))
+
+
 def _compute_verdict(
     cache_rate_a: Decimal,
     failure_rate: Decimal,
@@ -446,6 +452,44 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     adaptive_replication_tiers = tuple(dict.fromkeys(adaptive_tiers_raw))
     if any(t not in (_TIER_B, _TIER_C) for t in adaptive_replication_tiers):
         raise ValueError("sim_fetch_01_invalid_adaptive_replication_tiers")
+
+    # --- Validate Werner topology overlay controls (Fix8) ---
+    werner_overlay_enabled = scenario_config.get("werner_overlay_enabled", False)
+    if not isinstance(werner_overlay_enabled, bool):
+        raise ValueError("sim_fetch_01_invalid_werner_overlay_enabled")
+
+    werner_smoothing_alpha = _to_rate_decimal(
+        scenario_config.get("werner_smoothing_alpha", "0.50"),
+        "werner_smoothing_alpha",
+    )
+
+    werner_heat_signal_threshold = scenario_config.get("werner_heat_signal_threshold", 50)
+    if (
+        isinstance(werner_heat_signal_threshold, bool)
+        or not isinstance(werner_heat_signal_threshold, int)
+        or werner_heat_signal_threshold < 1
+    ):
+        raise ValueError("sim_fetch_01_invalid_werner_heat_signal_threshold")
+
+    werner_cooling_signal_threshold = scenario_config.get("werner_cooling_signal_threshold", 2)
+    if (
+        isinstance(werner_cooling_signal_threshold, bool)
+        or not isinstance(werner_cooling_signal_threshold, int)
+        or werner_cooling_signal_threshold < 0
+        or werner_cooling_signal_threshold >= werner_heat_signal_threshold
+    ):
+        raise ValueError("sim_fetch_01_invalid_werner_cooling_signal_threshold")
+
+    werner_pressure_tiers_raw = scenario_config.get("werner_pressure_tiers", [_TIER_B, _TIER_C])
+    if (
+        not isinstance(werner_pressure_tiers_raw, (list, tuple))
+        or not werner_pressure_tiers_raw
+        or any(not isinstance(t, str) for t in werner_pressure_tiers_raw)
+    ):
+        raise ValueError("sim_fetch_01_invalid_werner_pressure_tiers")
+    werner_pressure_tiers = tuple(dict.fromkeys(werner_pressure_tiers_raw))
+    if any(t not in (_TIER_B, _TIER_C) for t in werner_pressure_tiers):
+        raise ValueError("sim_fetch_01_invalid_werner_pressure_tiers")
 
     # --- Validate OOM guard ---
     max_req = scenario_config.get("max_requests_per_epoch", _DEFAULT_MAX_REQUESTS_PER_EPOCH)
@@ -634,6 +678,22 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     routed_failure_rate_by_epoch_by_tier: dict[str, list[str]] = {t: [] for t in _TIERS}
     adaptive_holder_mean_by_epoch_by_tier: dict[str, list[str]] = {t: [] for t in _TIERS}
 
+    # --- Werner topology pressure overlay counters (Fix8) ---
+    werner_smoothed_pressure_state: dict[str, Decimal] = {t: Decimal("0") for t in _TIERS}
+    werner_raw_pressure_by_epoch_by_tier: dict[str, list[str]] = {t: [] for t in _TIERS}
+    werner_smoothed_pressure_by_epoch_by_tier: dict[str, list[str]] = {
+        t: [] for t in _TIERS
+    }
+    werner_heat_signal_by_epoch_by_tier: dict[str, list[int]] = {t: [] for t in _TIERS}
+    werner_cooling_signal_by_epoch_by_tier: dict[str, list[int]] = {
+        t: [] for t in _TIERS
+    }
+    werner_heat_signal_count_by_tier: dict[str, int] = {t: 0 for t in _TIERS}
+    werner_cooling_signal_count_by_tier: dict[str, int] = {t: 0 for t in _TIERS}
+    werner_cumulative_smoothed_pressure_by_tier: dict[str, Decimal] = {
+        t: Decimal("0") for t in _TIERS
+    }
+
     # --- Simulation loop ---
     for _epoch in range(n_epochs):
         # Tier B cache invalidation at epoch boundary (Tier B content mutable per epoch)
@@ -656,6 +716,9 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             _TIER_A: 0,
             _TIER_B: 0,
             _TIER_C: 0,
+        }
+        epoch_routed_success_by_peer_by_tier: dict[str, dict[int, int]] = {
+            t: {p: 0 for p in range(n_peers)} for t in _TIERS
         }
 
         for _ in range(n_requests):
@@ -752,9 +815,10 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                 if success:
                     routed_success_count += 1
                     routed_success_hop_total += hops_used
+                    if successful_routed_peer is None:
+                        raise ValueError("sim_fetch_01_routed_success_peer_missing")
+                    epoch_routed_success_by_peer_by_tier[tier][successful_routed_peer] += 1
                     if tier in (_TIER_A, _TIER_B):
-                        if successful_routed_peer is None:
-                            raise ValueError("sim_fetch_01_routed_success_peer_missing")
                         routed_cdl_078_credits += 1
                         routed_cdl_078_credits_by_serving_peer[successful_routed_peer] += 1
                         routed_cdl_078_credits_by_tier[tier] += 1
@@ -827,6 +891,46 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             routed_failure_rate_by_epoch_by_tier[t].append(
                 _safe_ratio(epoch_routed_error_404_by_tier[t], max(epoch_routed_total_fetch[t], 1))
             )
+
+        if werner_overlay_enabled:
+            for t in _TIERS:
+                if t in werner_pressure_tiers:
+                    serve_counts = list(epoch_routed_success_by_peer_by_tier[t].values())
+                    mean_epoch_serve_pressure = Decimal(sum(serve_counts)) / Decimal(n_peers)
+                    serve_skew_pressure = max(
+                        Decimal(max(serve_counts)) - mean_epoch_serve_pressure,
+                        Decimal("0"),
+                    )
+                    request_heat = Decimal(sum(epoch_artifact_req_counts[t].values()))
+                    miss_heat = Decimal(epoch_routed_error_404_by_tier[t]) * Decimal("2")
+                    raw_pressure = request_heat + miss_heat + serve_skew_pressure
+                    prev_smoothed = werner_smoothed_pressure_state[t]
+                    smoothed = (
+                        (werner_smoothing_alpha * prev_smoothed)
+                        + ((Decimal("1") - werner_smoothing_alpha) * raw_pressure)
+                    )
+                    werner_smoothed_pressure_state[t] = smoothed
+                else:
+                    raw_pressure = Decimal("0")
+                    smoothed = Decimal("0")
+
+                heat_signal = int(smoothed >= Decimal(werner_heat_signal_threshold))
+                cooling_signal = int(
+                    t in werner_pressure_tiers
+                    and smoothed <= Decimal(werner_cooling_signal_threshold)
+                )
+
+                werner_raw_pressure_by_epoch_by_tier[t].append(
+                    _quantized_decimal_str(raw_pressure)
+                )
+                werner_smoothed_pressure_by_epoch_by_tier[t].append(
+                    _quantized_decimal_str(smoothed)
+                )
+                werner_heat_signal_by_epoch_by_tier[t].append(heat_signal)
+                werner_cooling_signal_by_epoch_by_tier[t].append(cooling_signal)
+                werner_heat_signal_count_by_tier[t] += heat_signal
+                werner_cooling_signal_count_by_tier[t] += cooling_signal
+                werner_cumulative_smoothed_pressure_by_tier[t] += smoothed
 
         epoch_replication_events = 0
         if adaptive_replication_enabled:
@@ -962,6 +1066,28 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     # --- Holder count statistics (Fix4) ---
     holder_count_stats = {t: _holder_count_stats(holder_directory, t) for t in _TIERS}
 
+    # --- Werner topology recommendations (Fix8) ---
+    werner_topology_recommendation_by_tier: dict[str, str] = {}
+    werner_ecu_pressure_signal_by_tier: dict[str, str] = {}
+    for t in _TIERS:
+        if not werner_overlay_enabled or t not in werner_pressure_tiers:
+            werner_topology_recommendation_by_tier[t] = "not_evaluated"
+            werner_ecu_pressure_signal_by_tier[t] = "0.000000"
+            continue
+
+        heat_count = werner_heat_signal_count_by_tier[t]
+        cooling_count = werner_cooling_signal_count_by_tier[t]
+        if heat_count > 0 and heat_count >= cooling_count:
+            werner_topology_recommendation_by_tier[t] = "expand_capacity"
+        elif cooling_count > 0 and heat_count == 0:
+            werner_topology_recommendation_by_tier[t] = "cool_capacity"
+        else:
+            werner_topology_recommendation_by_tier[t] = "hold_capacity"
+
+        werner_ecu_pressure_signal_by_tier[t] = _quantized_decimal_str(
+            werner_cumulative_smoothed_pressure_by_tier[t] / Decimal(max(n_epochs, 1))
+        )
+
     # --- Artifact popularity ---
     top_q_concentration = {
         t: _compute_top_quartile_concentration(artifact_req_counts[t]) for t in _TIERS
@@ -1007,6 +1133,11 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "heat_replication_threshold": heat_replication_threshold,
             "max_adaptive_replications_per_epoch": max_adaptive_replications_per_epoch,
             "adaptive_replication_tiers": list(adaptive_replication_tiers),
+            "werner_overlay_enabled": werner_overlay_enabled,
+            "werner_smoothing_alpha": str(werner_smoothing_alpha),
+            "werner_heat_signal_threshold": werner_heat_signal_threshold,
+            "werner_cooling_signal_threshold": werner_cooling_signal_threshold,
+            "werner_pressure_tiers": list(werner_pressure_tiers),
             "hot_mirror_peer_count": hot_mirror_count,
             "archive_shard_peer_count": archive_shard_count,
             "tier_b_exact_holder_count_per_artifact": tier_b_exact_holder_count,
@@ -1088,6 +1219,37 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "adaptive_max_replications_per_epoch": max_adaptive_replications_per_epoch,
             "routed_failure_rate_by_epoch_by_tier": routed_failure_rate_by_epoch_by_tier,
             "adaptive_holder_mean_by_epoch_by_tier": adaptive_holder_mean_by_epoch_by_tier,
+            # Fix8: Werner topology pressure overlay. This is a simulation-only
+            # pressure signal, not an ECU mint, ILC settlement, or CDL-087 ratification.
+            "werner_overlay_enabled": werner_overlay_enabled,
+            "werner_overlay_mode": "sim_fetch_topology_pressure_only",
+            "werner_topology_smoothing_model": (
+                "epoch_path_laplacian_exponential_smoothing_surrogate"
+            ),
+            "werner_pressure_tiers": list(werner_pressure_tiers),
+            "werner_smoothing_alpha": str(werner_smoothing_alpha),
+            "werner_heat_signal_threshold": werner_heat_signal_threshold,
+            "werner_cooling_signal_threshold": werner_cooling_signal_threshold,
+            "werner_raw_pressure_by_epoch_by_tier": werner_raw_pressure_by_epoch_by_tier,
+            "werner_smoothed_pressure_by_epoch_by_tier": (
+                werner_smoothed_pressure_by_epoch_by_tier
+            ),
+            "werner_heat_signal_by_epoch_by_tier": werner_heat_signal_by_epoch_by_tier,
+            "werner_cooling_signal_by_epoch_by_tier": (
+                werner_cooling_signal_by_epoch_by_tier
+            ),
+            "werner_heat_signal_count_by_tier": werner_heat_signal_count_by_tier,
+            "werner_cooling_signal_count_by_tier": werner_cooling_signal_count_by_tier,
+            "werner_topology_recommendation_by_tier": (
+                werner_topology_recommendation_by_tier
+            ),
+            "werner_ecu_pressure_signal_by_tier": werner_ecu_pressure_signal_by_tier,
+            "werner_ecu_pressure_mint_authorized": False,
+            "werner_ilc_settlement_authorized": False,
+            "werner_authorization_note": (
+                "Werner overlay emits topology pressure signals only; it does not "
+                "mint ECU, settle ILC, authorize CDL-087, or mutate production runtime."
+            ),
         },
         # Top-level verdicts
         "aggregate_verdict": verdict,
