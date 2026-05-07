@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238f — Window 1233-1240 (Fix6: adaptive heat-driven replication)
+# Phase 1238g — Window 1233-1240 (Fix7: CDL-078 credit bridge)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
@@ -18,13 +18,14 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238f.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238g.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
 SIM_FETCH_01_FIX4_VERSION = "sim_fetch_01_fix4_routed_holder_model_1238d.v0.1"
 SIM_FETCH_01_FIX5_VERSION = "sim_fetch_01_fix5_routed_multihop_retry_1238e.v0.1"
 SIM_FETCH_01_FIX6_VERSION = "sim_fetch_01_fix6_adaptive_heat_replication_1238f.v0.1"
+SIM_FETCH_01_FIX7_VERSION = "sim_fetch_01_fix7_cdl_078_credit_bridge_1238g.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
@@ -598,6 +599,8 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     non_cacheable_vol: int = 0
     cb_activations: int = 0
     cdl_078_credits: int = 0
+    cdl_078_credits_by_serving_peer: dict[int, int] = {p: 0 for p in range(n_peers)}
+    cdl_078_credits_by_tier: dict[str, int] = {t: 0 for t in _TIERS}
     serve_pressure: dict[int, int] = {p: 0 for p in range(n_peers)}
     artifact_req_counts: dict[str, dict[int, int]] = {_TIER_A: {}, _TIER_B: {}, _TIER_C: {}}
 
@@ -617,6 +620,12 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     routed_retry_exhausted_count: int = 0
     routed_total_probe_count: int = 0
     routed_success_hop_total: int = 0
+    routed_cdl_078_credits: int = 0
+    routed_cdl_078_credits_by_serving_peer: dict[int, int] = {
+        p: 0 for p in range(n_peers)
+    }
+    routed_cdl_078_credits_by_tier: dict[str, int] = {t: 0 for t in _TIERS}
+    routed_cdl_078_rescue_credit_count: int = 0
 
     # --- Adaptive heat-driven replication counters (Fix6) ---
     adaptive_replication_events_by_tier: dict[str, int] = {t: 0 for t in _TIERS}
@@ -697,6 +706,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                 tried_peers: set[int] = set()
                 success = False
                 hops_used = 0
+                successful_routed_peer: int | None = None
 
                 if is_stale:
                     # Stale: fall back to random peer (routed model degrades to random model)
@@ -706,6 +716,8 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     hops_used = 1
                     routed_total_probe_count += 1
                     success = art_id in peer_inventories[stale_peer][tier]
+                    if success:
+                        successful_routed_peer = stale_peer
                 else:
                     # Fresh directory + known holders → route to a holder (always succeeds)
                     holder_list = sorted(holders)  # Sorted for determinism
@@ -714,6 +726,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     hops_used = 1
                     routed_total_probe_count += 1
                     success = True
+                    successful_routed_peer = first_peer
 
                 if not success:
                     routed_single_hop_error_404_by_tier[tier] += 1
@@ -732,12 +745,21 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
                         if art_id in peer_inventories[retry_peer][tier]:
                             success = True
+                            successful_routed_peer = retry_peer
                             routed_rescue_count += 1
                             break
 
                 if success:
                     routed_success_count += 1
                     routed_success_hop_total += hops_used
+                    if tier in (_TIER_A, _TIER_B):
+                        if successful_routed_peer is None:
+                            raise ValueError("sim_fetch_01_routed_success_peer_missing")
+                        routed_cdl_078_credits += 1
+                        routed_cdl_078_credits_by_serving_peer[successful_routed_peer] += 1
+                        routed_cdl_078_credits_by_tier[tier] += 1
+                        if hops_used > 1:
+                            routed_cdl_078_rescue_credit_count += 1
                 else:
                     routed_error_404_by_tier[tier] += 1
                     epoch_routed_error_404_by_tier[tier] += 1
@@ -781,11 +803,15 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     caches[peer_id].put(cache_key)
                 bytes_by_tier[_TIER_A] += _BYTES_PER_TIER[_TIER_A]
                 cdl_078_credits += 1
+                cdl_078_credits_by_serving_peer[peer_id] += 1
+                cdl_078_credits_by_tier[_TIER_A] += 1
             elif tier == _TIER_B:
                 if not in_cache:
                     caches[peer_id].put(cache_key)
                 bytes_by_tier[_TIER_B] += _BYTES_PER_TIER[_TIER_B]
                 cdl_078_credits += 1
+                cdl_078_credits_by_serving_peer[peer_id] += 1
+                cdl_078_credits_by_tier[_TIER_B] += 1
             else:
                 cache_attempts_c += 1
                 if in_cache:
@@ -856,6 +882,13 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
     # serve_pressure: string keys for JSON safety
     spp = {f"peer_{p}": serve_pressure[p] for p in range(n_peers)}
+    cdl_078_peer_credits = {
+        f"peer_{p}": cdl_078_credits_by_serving_peer[p] for p in range(n_peers)
+    }
+    routed_cdl_078_peer_credits = {
+        f"peer_{p}": routed_cdl_078_credits_by_serving_peer[p]
+        for p in range(n_peers)
+    }
 
     # --- Random model per-tier failure rates (Fix3, renamed Fix4) ---
     rand_failure_rate_by_tier = {
@@ -910,7 +943,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
     # Routed tier_service_verdict uses routed failure rates.
     # cache_rate_a from the random model is used as a proxy (same artifact distribution).
-    # cb_fraction = 0 for routed model (CB routing pressure is outside Fix6 scope).
+    # cb_fraction = 0 for routed model (CB routing pressure is outside this SIM slice).
     routed_tier_service_verdict = _compute_tier_service_verdict(
         cache_rate_a=Decimal(cache_rate_a),
         tier_ab_failure_rate=Decimal(routed_tier_ab_failure_rate),
@@ -993,6 +1026,14 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "non_cacheable_request_volume": non_cacheable_vol,
             "circuit_breaker_activations": cb_activations,
             "serve_events_credited_cdl_078": cdl_078_credits,
+            # Fix7: credit attribution bridge. Legacy total above is preserved,
+            # but credit is now explicitly attributable to serving peers/operators.
+            "serve_credit_attribution_model": "serving_peer_operator_instance",
+            "serve_credit_served_graph_node_only_count": 0,
+            "serve_events_credited_cdl_078_by_serving_peer": cdl_078_peer_credits,
+            "serve_events_credited_cdl_078_by_tier": cdl_078_credits_by_tier,
+            "serve_credit_serving_peer_total": cdl_078_credits,
+            "serve_credit_artifact_only_crediting_allowed": False,
             # Derived aliases (design spec §5)
             "cache_hit_rate_high_centrality": cache_rate_a,
             "cache_hit_rate_tail": cache_rate_c,
@@ -1028,6 +1069,11 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "routed_avg_hops_per_successful_request": routed_avg_hops_per_successful_request,
             "routed_rescue_count": routed_rescue_count,
             "routed_retry_exhausted_count": routed_retry_exhausted_count,
+            # Fix7: routed serving-peer/operator credit attribution.
+            "routed_serve_events_credited_cdl_078": routed_cdl_078_credits,
+            "routed_serve_events_credited_cdl_078_by_serving_peer": routed_cdl_078_peer_credits,
+            "routed_serve_events_credited_cdl_078_by_tier": routed_cdl_078_credits_by_tier,
+            "routed_serve_credit_rescue_count": routed_cdl_078_rescue_credit_count,
             # Fix4: holder directory coverage statistics
             "initial_known_holder_count_stats_by_tier": initial_holder_count_stats,
             "known_holder_count_stats_by_tier": holder_count_stats,
