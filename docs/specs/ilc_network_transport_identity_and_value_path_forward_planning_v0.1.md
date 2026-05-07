@@ -171,11 +171,21 @@ These are not mutually exclusive. Path B (OpenClaw packaging as onboarding lane)
 parallel without blocking Path A. The SDK boundary contract already establishes the correct
 separation.
 
+Deployment note recorded 2026-05-07: the current VPS provider, DigitalOcean, offers OpenClaw
+droplets, and the existing Tailscale/private-infrastructure posture appears compatible enough to
+make DigitalOcean OpenClaw droplets the first external harness deployment test target. This is a
+deployment-testing target only. It does not authorize public ILC P2P exposure, public sidecar
+binding, unauthenticated projection serving, or treating OpenClaw/Tailscale as protocol substrate.
+The intended first target is an OpenClaw/NemoClaw skill or sidecar profile reachable over loopback,
+Tailscale, or other explicitly private harness wiring.
+
 **Planning tokens:**
 
 ```text
 openclaw_sdk_packaging_lane_not_base_transport_dependency
 openclaw_skill_packaging_phase_authorized_as_parallel_onboarding_lane
+digitalocean_openclaw_droplet_first_external_harness_target
+tailscale_private_harness_network_allowed_no_public_p2p_claim
 ```
 
 ### 2.7 Package modularity for agentic harness integration
@@ -247,6 +257,8 @@ localhost_sidecar_api_must_remain_loopback_or_transport_principal_auth
 sidecar_dependency_isolation_required_for_harness_adapters
 line_count_baseline_must_be_measured_not_estimated_before_public_rc
 public_package_size_audit_required_before_openclaw_skill_launch
+digitalocean_openclaw_droplet_first_external_harness_target
+tailscale_private_harness_network_allowed_no_public_p2p_claim
 ```
 
 ---
