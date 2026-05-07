@@ -205,6 +205,16 @@ Open carry-forward tokens (close before public RC / public launch):
   Token: `dynamic_epistemic_traversal_engine_forward_planning_recorded_phase_1233_1240`.
   Must not precede Phase 1236/1237/1238. v0.1 is read-only evaluation only; routing and
   settlement wiring require separate CDL openings.
+- **TLA+/TLC formal verification track** — three specs already verified (Spec A DAG
+  Liveness MaxRound=12, Spec B `SafetyNoDualCert` ECU transfer, Spec C partition/heal
+  Phase 818). One pre-RC item: TLA+ refinement notes bridging abstract model to Rust
+  implementation (`tla_refinement_notes_pre_rc`; NON-SENSITIVE, hours, Window 1241+
+  tail slot). Post-launch items: Spec D EpochSettlementTx shared-object model
+  (`tla_spec_d_epoch_settlement_complete`), TLAPS unbounded liveness proof
+  (`tla_tlaps_unbounded_liveness_post_launch`), economic protocol specs
+  (`tla_economic_protocol_specs_post_launch`). Forward-planning doc recorded Phase
+  1233-1240: `docs/specs/ilc_tla_plus_formal_verification_forward_planning_v0.1.md`.
+  Token: `tla_formal_verification_forward_planning_recorded_phase_1233_1240`.
 
 ---
 
