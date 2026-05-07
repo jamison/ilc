@@ -331,10 +331,17 @@ building blocks. What does not yet exist is a bidirectional topology-aware contr
 - Runs primal/dual Laplacian smoothing over the network topology graph
 - Produces cooling signals (suppress unproductive amplification) AND heating signals (attract
   capacity to underconnected high-demand regions)
-- Feeds ECU bounties and credit budgets where productive work demand is verified
+- Feeds organic control instruments first: routing reputation, routing weight, admission budget,
+  cache/mirror priority, escrow/clawback posture, and only then separately governed bounty or
+  productive-credit paths where verified work demand and authorization already exist
 
 This is NOT a per-request ECU micropayment system. `no_per_hop_ecu_micropayment_for_fetch_relay_preserved`.
-The CDL-078 reputation-implicit relay incentive is preserved.
+The CDL-078 reputation-implicit relay incentive is preserved: good service raises routing
+reputation/centrality and therefore can indirectly improve future ECU opportunity through existing
+passive and governed productive-work paths; bad behavior reduces or fails to earn reputation, which
+organically removes future ECU opportunity. Direct ECU creation requires a separate bounty,
+productive-credit, escrow, or wallet/settlement authorization path and must not be inferred from a
+heat signal alone.
 
 Sequencing: SIM-FETCH-01 overlay first (Phase 1238 Fix series), then CDL, then runtime.
 Phase 1238 Fix8 delivered `werner_overlay_enabled` as a simulation-only, non-authorizing
@@ -357,6 +364,8 @@ Carry-forward tokens (all open):
 - `heat_signal_must_not_directly_mint_ecu`
 - `werner_overlay_opt_in_must_be_promoted_or_retired_after_validation`
 - `werner_default_topology_pressure_profile_required_before_runtime_cdl`
+- `werner_heat_prefers_reputation_routing_admission_before_ecu_creation`
+- `direct_werner_ecu_creation_assumption_requires_repo_memtrace_check`
 
 Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §3.
 

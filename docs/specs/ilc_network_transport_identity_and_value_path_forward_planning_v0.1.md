@@ -314,7 +314,11 @@ topology-aware, bidirectional economic control system.
 **Heating signals** (attract capacity to where useful work is scarce):
 - Increase routing weight for peers that reliably serve useful data (CDL-078 reputation path)
 - Expand cache/mirror priority for underconnected shards with high verified demand
-- Offer bounded ECU bounties or productive credit advances where connectivity deficits block work
+- Increase future productive-work opportunity through reputation, discoverability, and admission
+  budget before any direct value path is considered
+- Offer bounded ECU bounties or productive credit advances only through separately governed bounty,
+  escrow, wallet-intent, or productive-credit authorization paths where connectivity deficits block
+  verified work
 - Raise serve/admission budget for authenticated principals with good `productive_flow_score`
 
 **Candidate `productive_flow_score` components:**
@@ -331,13 +335,18 @@ The clean invariant chain:
 ```
 network heat topology
 → smoothed pressure via primal/dual Laplacian
-→ productive work demand signal (beta-decomposed from noise)
-→ ECU allocation / bounty / credit budget
+→ organic control first: routing reputation, routing weight, admission budget, cache/mirror priority
+→ productive work demand signal (beta-decomposed from noise and reputation theater)
+→ optional governed bounty / escrow / credit-intent path
 → ILC incentive and settlement effects
 ```
 
 **Critical invariant:** heat must not directly create ECU. Heat identifies where useful work is
-scarce. ECU is emitted only when an agent performs *verified productive work* against that demand.
+scarce and where routing/reputation/admission/cache policy should shift first. ECU is emitted only
+when an agent performs *verified productive work* against an authorized demand path. Before any
+phase proposes direct Werner-linked ECU creation, it must check repo canon, MemPalace/historical
+conversation context, CDL-078, ADR-0016/0017, and the current wallet/settlement code for existing
+organic or indirect instruments.
 
 **Critical invariant preserved from prior repo decisions:** no per-hop ECU micropayment for
 fetch/relay. The relay incentive is reputation-implicit (CDL-078), not a per-packet toll.
@@ -384,6 +393,8 @@ flow_governor_spectral_trust_threshold_required_before_policy_use
 heat_signal_must_not_directly_mint_ecu
 werner_overlay_opt_in_must_be_promoted_or_retired_after_validation
 werner_default_topology_pressure_profile_required_before_runtime_cdl
+werner_heat_prefers_reputation_routing_admission_before_ecu_creation
+direct_werner_ecu_creation_assumption_requires_repo_memtrace_check
 ```
 
 ---
