@@ -319,7 +319,8 @@ Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path
 
 ### Gap 11 — Werner Topological Flow Governor
 
-**Status:** Forward planning recorded. Not yet in simulation. No CDL open. Pre-public-P2P item.
+**Status:** Forward planning recorded; Phase 1238 Fix8 added an opt-in SIM-FETCH overlay.
+No CDL open. Pre-public-P2P item.
 **Recorded:** Phase 1238 (2026-05-07 Codex synthesis).
 
 The Werner φ-bound (CDL-085) already governs provenance-edge mint suppression. The
@@ -336,6 +337,12 @@ This is NOT a per-request ECU micropayment system. `no_per_hop_ecu_micropayment_
 The CDL-078 reputation-implicit relay incentive is preserved.
 
 Sequencing: SIM-FETCH-01 overlay first (Phase 1238 Fix series), then CDL, then runtime.
+Phase 1238 Fix8 delivered `werner_overlay_enabled` as a simulation-only, non-authorizing
+analysis layer. That opt-in form is acceptable while the model is evidence-gathering only,
+but it must not become permanent architecture if Werner topology pressure is part of the
+canonical evaluation path. A future phase must either promote Werner pressure to the default
+SIM-FETCH topology evaluation profile (with null/legacy comparison as an explicit research mode)
+or explain why the overlay remains experimental.
 The existing `laplacian_analytics.py` provides the Laplacian infrastructure. The dual graph
 extension (flows/edges as dual nodes: fetch streams, provenance paths, cache-mirror
 relationships) requires a new analysis module.
@@ -348,6 +355,8 @@ Carry-forward tokens (all open):
 - `beta_decomposition_required_before_policy_use`
 - `flow_governor_spectral_trust_threshold_required_before_policy_use`
 - `heat_signal_must_not_directly_mint_ecu`
+- `werner_overlay_opt_in_must_be_promoted_or_retired_after_validation`
+- `werner_default_topology_pressure_profile_required_before_runtime_cdl`
 
 Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md` §3.
 
