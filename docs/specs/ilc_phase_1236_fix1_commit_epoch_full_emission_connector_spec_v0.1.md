@@ -257,6 +257,15 @@ is spec/test-only.
 Do not collapse Fix2-Fix6 into one large runtime mutation unless the prompt
 explicitly authorizes a larger sensitive strike-force phase.
 
+Sensitivity rule for the remaining strike-force work: Fix2 and Fix3 are
+sensitive because they mutate the `commit.epoch` finality-surface connector.
+Fix4 is also sensitive if it adds adapter code to `ilc_core/protocol/` or any
+consensus/finality runtime surface; it is non-sensitive only if scoped to tests,
+fixtures, or documentation. Fix5 is non-sensitive only while it remains test-only
+and read-only against Rust source/fixture shapes. Fix6 is non-sensitive only if
+confined to devnet/test harnesses with no runtime production path and no
+carry-forward closure claim.
+
 ---
 
 ## 7. Non-Goals
