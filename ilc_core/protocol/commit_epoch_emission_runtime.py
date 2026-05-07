@@ -23,6 +23,7 @@ from ilc_core.protocol.event_log import (
 COMMIT_EPOCH_EMISSION_RUNTIME_VERSION = "commit_epoch_emission_runtime_1236.v0.1"
 COMMIT_EPOCH_QUORUM_PROJECTION_VERSION = "commit_epoch_quorum_projection_1236_fix2.v0.1"
 COMMIT_EPOCH_CAUSAL_FRONTIER_PROJECTION_VERSION = "commit_epoch_causal_frontier_projection_1236_fix3.v0.1"
+COMMIT_EPOCH_FINALIZED_ADAPTER_VERSION = "commit_epoch_finalized_adapter_1236_fix4.v0.1"
 COMMIT_EPOCH_CAUSAL_FRONTIER_SCHEMA_VERSION = "commit_epoch_causal_frontier_mapping_1226.v0.1"
 COMMIT_EPOCH_TIMESTAMP_POLICY = "epoch_sequence_only_no_wall_clock"
 COMMIT_EPOCH_ISSUER = "consensus_layer"
@@ -100,6 +101,13 @@ def _require_genesis_domain_hash(value: object, token: str) -> str:
     return text
 
 
+def _require_state_root_cidv1_hex(value: object, token: str) -> str:
+    text = _require_lower_hex(value, token)
+    if len(text) != 72:
+        raise ValueError(token)
+    return text
+
+
 def _normalize_causal_frontier_refs(refs: object, *, genesis_domain_hash: str, epoch_sequence: int) -> list[str]:
     expected_genesis_ref = f"genesis_root:{genesis_domain_hash}"
     if epoch_sequence == 0:
@@ -170,7 +178,7 @@ def build_quorum_proof_projection(
             source_record_digest,
             "quorum_projection_source_record_digest_invalid",
         ),
-        "state_root_cidv1_hex": _require_lower_hex(
+        "state_root_cidv1_hex": _require_state_root_cidv1_hex(
             state_root_cidv1_hex,
             "quorum_projection_state_root_cidv1_hex_invalid",
         ),
@@ -222,7 +230,7 @@ def build_commit_epoch_causal_frontier_projection(
     else:
         if state_root_cidv1_hex is None:
             raise ValueError("causal_frontier_state_root_required")
-        normalized_state_root = _require_lower_hex(
+        normalized_state_root = _require_state_root_cidv1_hex(
             state_root_cidv1_hex,
             "causal_frontier_state_root_cidv1_hex_invalid",
         )
@@ -258,6 +266,118 @@ def compute_causal_frontier_ref(projection: Mapping[str, object]) -> str:
 
     digest = hashlib.sha256(_canonical_json_bytes(projection)).hexdigest()
     return f"sha256:{digest}"
+
+
+def _require_non_empty_quorum_records_for_adapter(
+    quorum_records: object,
+    epoch_index: int,
+) -> tuple[Mapping[str, Any], ...]:
+    normalized = _validate_quorum_records(quorum_records, epoch_index)
+    if len(normalized) == 0:
+        raise ValueError("finalized_epoch_adapter_quorum_records_empty")
+    return normalized
+
+
+def _validate_adapter_finalization_state(
+    quorum_records: Sequence[Mapping[str, Any]],
+    finalization_state: str,
+) -> None:
+    if finalization_state not in _ALLOWED_FINALIZATION_STATES:
+        raise ValueError("finalization_state_invalid")
+    for record in quorum_records:
+        record_state = record.get("finalization_state")
+        if record_state is not None and record_state != finalization_state:
+            raise ValueError("finalized_epoch_adapter_conflicting_finalization_state")
+
+
+def _require_quorum_ref_in_frontier_refs(quorum_ref: str, frontier_refs: object) -> Sequence[str]:
+    if not isinstance(frontier_refs, Sequence) or isinstance(frontier_refs, (str, bytes, bytearray)):
+        raise ValueError("finalized_epoch_adapter_frontier_refs_must_be_sequence")
+    if quorum_ref not in frontier_refs:
+        raise ValueError("finalized_epoch_adapter_quorum_proof_ref_missing_from_frontier")
+    return frontier_refs
+
+
+def adapt_finalized_epoch_to_connector_inputs(
+    *,
+    epoch_index: int,
+    epoch_id: str,
+    namespace_id: str,
+    finalization_state: str,
+    quorum_records: Sequence[Mapping[str, Any]],
+    state_root_cidv1_hex: str,
+    agg_sig_bytes_hex: str,
+    signers: Sequence[int],
+    source_record_digest: str | None,
+    causal_predecessor_ref: str | None,
+    causal_frontier_refs: Sequence[str],
+    genesis_domain_hash: str,
+    reward_total: Decimal,
+    stake_total: Decimal,
+    task_count: int,
+    agent_count: int,
+) -> dict[str, Any]:
+    """Compose finalized epoch inputs through Layers A-C.
+
+    This adapter is still a pure projection helper. It does not read Rust state,
+    verify BLS signatures, write consensus records, or authorize production
+    emission.
+    """
+
+    normalized_epoch_index = _require_non_negative_int(
+        epoch_index,
+        "epoch_index_must_be_non_negative_int",
+    )
+    if normalized_epoch_index == 0:
+        raise ValueError("finalized_epoch_adapter_genesis_epoch_zero_unsupported")
+    normalized_quorum_records = _require_non_empty_quorum_records_for_adapter(
+        quorum_records,
+        normalized_epoch_index,
+    )
+    _validate_adapter_finalization_state(normalized_quorum_records, finalization_state)
+
+    quorum_projection = build_quorum_proof_projection(
+        epoch_sequence=normalized_epoch_index,
+        state_root_cidv1_hex=state_root_cidv1_hex,
+        signers=signers,
+        agg_sig_bytes_hex=agg_sig_bytes_hex,
+        source_record_digest=source_record_digest,
+    )
+    quorum_proof_ref = compute_quorum_proof_ref(quorum_projection)
+    normalized_frontier_refs = _require_quorum_ref_in_frontier_refs(
+        quorum_proof_ref,
+        causal_frontier_refs,
+    )
+    causal_frontier_projection = build_commit_epoch_causal_frontier_projection(
+        epoch_sequence=normalized_epoch_index,
+        state_root_cidv1_hex=state_root_cidv1_hex,
+        causal_predecessor_ref=causal_predecessor_ref,
+        quorum_proof_ref=quorum_proof_ref,
+        causal_frontier_refs=normalized_frontier_refs,
+        genesis_domain_hash=genesis_domain_hash,
+    )
+    causal_frontier_ref = compute_causal_frontier_ref(causal_frontier_projection)
+    commit_epoch_event = build_commit_epoch_event(
+        epoch_index=normalized_epoch_index,
+        epoch_id=epoch_id,
+        namespace_id=namespace_id,
+        finalization_state=finalization_state,
+        quorum_records=normalized_quorum_records,
+        epoch_state_digest=causal_frontier_ref,
+        epoch_events_digest=quorum_proof_ref,
+        reward_total=reward_total,
+        stake_total=stake_total,
+        task_count=task_count,
+        agent_count=agent_count,
+    )
+    return {
+        "adapter_version": COMMIT_EPOCH_FINALIZED_ADAPTER_VERSION,
+        "causal_frontier_projection": causal_frontier_projection,
+        "causal_frontier_ref": causal_frontier_ref,
+        "commit_epoch_event": commit_epoch_event,
+        "quorum_proof_projection": quorum_projection,
+        "quorum_proof_ref": quorum_proof_ref,
+    }
 
 
 def _validate_quorum_records(quorum_records: object, epoch_index: int) -> tuple[Mapping[str, Any], ...]:
