@@ -6,6 +6,8 @@ query behavior. Later Fix phases fill the dispatcher arms.
 
 from __future__ import annotations
 
+from collections import deque
+from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Mapping
@@ -76,7 +78,114 @@ def execute_sidecar_query(
             bounds=active_bounds,
         )
 
+    if query_type == "convergence_trace":
+        return compute_convergence_trace(
+            projection,
+            node_ids=kwargs.get("node_ids"),
+            bounds=active_bounds,
+        )
+
     raise NotImplementedError(f"sidecar_query_{query_type}_not_yet_implemented")
+
+
+def compute_convergence_trace(
+    projection: Mapping[str, Any],
+    node_ids: Sequence[str],
+    *,
+    bounds: SidecarQueryBounds | None = None,
+) -> dict[str, Any]:
+    active_bounds = bounds or SidecarQueryBounds()
+    active_bounds.validate()
+
+    input_node_ids = _normalize_convergence_node_ids(node_ids)
+    all_node_ids = {
+        str(node["canonical_id"])
+        for node in projection.get("nodes", ())
+    }
+    for node_id in input_node_ids:
+        if node_id not in all_node_ids:
+            raise ValueError("sidecar_convergence_trace_node_id_not_found")
+
+    predecessors = _predecessors_by_target(projection)
+    ancestor_depths = {
+        node_id: _ancestor_depths(
+            node_id,
+            predecessors=predecessors,
+            max_hops=active_bounds.max_hops,
+        )
+        for node_id in input_node_ids
+    }
+
+    common = set(ancestor_depths[input_node_ids[0]])
+    for node_id in input_node_ids[1:]:
+        common &= set(ancestor_depths[node_id])
+    common_ancestors = sorted(common)
+
+    merge_depth = None
+    if common_ancestors:
+        merge_depth = min(
+            depths[ancestor]
+            for depths in ancestor_depths.values()
+            for ancestor in common_ancestors
+        )
+
+    return {
+        "common_ancestors": common_ancestors,
+        "input_node_ids": input_node_ids,
+        "merge_depth": merge_depth,
+        "query_type": "convergence_trace",
+    }
+
+
+def _normalize_convergence_node_ids(node_ids: Sequence[str] | None) -> list[str]:
+    if node_ids is None:
+        raise ValueError("sidecar_convergence_trace_node_ids_empty")
+    if isinstance(node_ids, (str, bytes)):
+        raise ValueError("sidecar_convergence_trace_node_ids_invalid")
+    if not isinstance(node_ids, Sequence):
+        raise ValueError("sidecar_convergence_trace_node_ids_invalid")
+    if len(node_ids) == 0:
+        raise ValueError("sidecar_convergence_trace_node_ids_empty")
+    for node_id in node_ids:
+        if type(node_id) is not str or not node_id:
+            raise ValueError("sidecar_convergence_trace_node_ids_invalid")
+    return sorted(set(node_ids))
+
+
+def _predecessors_by_target(projection: Mapping[str, Any]) -> dict[str, list[str]]:
+    predecessors: dict[str, list[str]] = {}
+    for edge in projection.get("edges", ()):
+        source = str(edge["source"])
+        target = str(edge["target"])
+        predecessors.setdefault(target, []).append(source)
+    for values in predecessors.values():
+        values.sort()
+    return predecessors
+
+
+def _ancestor_depths(
+    start_id: str,
+    *,
+    predecessors: Mapping[str, Sequence[str]],
+    max_hops: int,
+) -> dict[str, int]:
+    ancestors: dict[str, int] = {}
+    seen = {start_id}
+    frontier: deque[tuple[str, int]] = deque([(start_id, 0)])
+
+    while frontier:
+        current, depth = frontier.popleft()
+        if depth >= max_hops:
+            continue
+        for predecessor in predecessors.get(current, ()):
+            if predecessor in seen:
+                continue
+            seen.add(predecessor)
+            ancestor_depth = depth + 1
+            ancestors[predecessor] = ancestor_depth
+            frontier.append((predecessor, ancestor_depth))
+
+    return ancestors
 
 
 def compute_centrality_metrics(
