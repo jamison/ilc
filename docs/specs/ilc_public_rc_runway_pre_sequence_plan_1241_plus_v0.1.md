@@ -104,11 +104,12 @@ classify them in this form.
 | Blocker class | Blocks | Examples |
 |---------------|--------|----------|
 | Public repository publication | Making the repository or selected public source tree public | US provisional patent filing, license instrument, public-doc exclusions, patent-pending folder exclusion |
-| Public RC claim | Any claim that ILC is a public release candidate | package-size audit, release artifact manifest, lineage/allowlist export, regression closure |
+| Public RC claim | Any claim that ILC is a public release candidate | package-size audit, release artifact manifest, lineage/allowlist export, regression closure, public claimability present for the selected RC profile |
 | Public P2P exposure | Any hostile-network peer-to-peer node operation | TransportPrincipal, Rust P2P substrate ADR, Python HTTP downgrade, principal-bound rate limiting |
 | Public sidecar/projection serving | Network-accessible graph projection or sidecar endpoint | CDL-087 ratification, TransportPrincipal auth, privacy aggregation, rate limit policy |
 | Public economic claimability | Human withdrawal/claim/transfer path for ILC | ECU-to-ILC conversion runtime, public claimability substrate, receipts |
-| OpenClaw/NemoClaw skill preview | Local package/skill inside a harness, no public P2P claim | package boundary split, CLI/local sidecar API, harness adapter protocols, package-size audit |
+| OpenClaw/NemoClaw local skill preview | Local package/skill inside a harness, no public P2P claim, no public claimability claim | package boundary split, CLI/local sidecar API, harness adapter protocols, package-size audit |
+| OpenClaw/NemoClaw claimable public RC | Final public-RC target profile: local harness package, no ILC-owned public P2P claim, public ECU-to-ILC claimability present | Gap 14 package modularity, Gap 13 ECU-to-ILC conversion and public claimability, release artifact manifest |
 
 Token:
 
@@ -127,7 +128,11 @@ assigned by the Window 1241+ sequence lock after Phase 1240 closes.
 
 Primary scope:
 
-- Publish Roadmap v1.1 with current-canon reconciliation.
+- Publish Roadmap v1.1 as the new controlling public-RC roadmap with
+  current-canon reconciliation and a clear supersession/tombstone note on v1.0.
+- Execute the first Gap 14 implementation slice before Gap 10 public-P2P work:
+  package profile contracts, import boundary linting, adapter protocol stubs,
+  and dependency-isolated tests for the OpenClaw/NemoClaw skill path.
 - Consume Phase 1238 Fix evidence and decide whether CDL-087 can advance.
 - Publish Window 1241+ sequence lock.
 - Run lineage receipt / allowlist export tooling plan or implementation.
@@ -139,6 +144,9 @@ Candidate tokens:
 ```text
 window_1241_plus_sequence_lock_required_after_phase_1240
 roadmap_v1_1_must_reconcile_cdl_086_tier3_persistent_limiter_current_state
+roadmap_v1_1_must_become_controlling_public_rc_roadmap
+gap_14_package_modularity_first_slice_before_gap_10_transport_principal
+openclaw_skill_claimable_profile_is_final_public_rc_target_no_public_p2p
 cdl_087_ratification_candidate_requires_sim_fetch_01_fix_evidence
 allowlist_export_procedure_window_1241_plus_candidate
 tla_refinement_notes_pre_rc_window_1241_plus_candidate
@@ -180,18 +188,18 @@ sidecar_projection_endpoint_window_candidate_after_cdl_087_and_transport_princip
 werner_flow_governor_overlay_window_candidate
 ```
 
-### Window 1265-1272 candidate - package modularity and harness adapters
+### Window 1265-1272 candidate - package hardening and harness adapter integration
 
 Primary scope:
 
-- Decide OpenClaw/NemoClaw skill-first vs ILC-owned-public-P2P-first launch
-  posture.
-- Split package boundaries: `ilc_consensus_core`, `ilc_consensus_node`,
-  `ilc_logic`, `ilc_node_runtime`, `ilc_cli`, `ilc_harness_adapters`.
-- Define `TransportHarness` and `StorageHarness` protocols.
-- Publish PyO3/FFI binding plan.
-- Add generic harness adapter contract and dependency-isolation tests.
-- Define local sidecar/CLI skill preview packaging profile.
+- Continue the Gap 14 implementation after the first slice: package-boundary
+  enforcement across the actual import graph, packaging CI gates, and real
+  OpenClaw/NemoClaw adapter integration tests.
+- Split package boundaries if not already complete: `ilc_consensus_core`,
+  `ilc_consensus_node`, `ilc_logic`, `ilc_node_runtime`, `ilc_cli`,
+  `ilc_harness_adapters`.
+- Publish or finalize PyO3/FFI binding plan.
+- Harden local sidecar/CLI profiles after the import-boundary lint exists.
 
 Candidate tokens:
 
@@ -199,6 +207,7 @@ Candidate tokens:
 openclaw_skill_first_vs_ilc_p2p_first_decision_required
 package_boundary_import_lint_required_before_openclaw_skill_preview
 generic_harness_adapter_contract_window_candidate
+package_boundary_enforcement_ci_gate_window_candidate
 ```
 
 ### Window 1273-1280 candidate - ECU credit creation path
@@ -281,8 +290,9 @@ public_rc_closure_window_candidate_requires_all_blocker_classes_disposed
 The preferred public-RC path should be decided explicitly:
 
 1. **OpenClaw/NemoClaw skill-first RC** - local package/skill, CLI/local sidecar,
-   no public ILC P2P claim. This can likely reach an external agentic harness
-   preview earlier and reduces reliance on public transport readiness.
+   public ECU-to-ILC claimability for the selected public-RC profile, no public
+   ILC P2P claim. This can likely reach an external agentic harness preview
+   earlier and reduces reliance on public transport readiness.
 2. **ILC-owned public P2P RC** - full public network substrate first. This is the
    stronger infrastructure claim but requires TransportPrincipal, Rust P2P, and
    Python HTTP downgrade before exposure.
@@ -290,12 +300,14 @@ The preferred public-RC path should be decided explicitly:
 Recommended default unless overruled:
 
 ```text
-public_rc_default_path=openclaw_skill_first_no_public_p2p_claim
+public_rc_default_path=openclaw_skill_first_public_claimability_no_public_p2p_claim
 ```
 
 This default does not remove the public P2P lane. It makes public P2P a parallel
 hardening track while the first external-facing RC is a local/harness package
-surface.
+surface. The `openclaw_skill_local` profile is a local-preview profile only; the
+final public-RC target is the claimable OpenClaw/NemoClaw skill profile, which
+must include ECU-to-ILC conversion and public claimability runtime surfaces.
 
 ---
 
@@ -336,4 +348,3 @@ Token:
 ```text
 public_rc_runway_pre_sequence_plan_must_feed_window_1241_plus_sequence_lock
 ```
-
