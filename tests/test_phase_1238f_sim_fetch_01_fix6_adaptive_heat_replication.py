@@ -43,7 +43,7 @@ _HEAT_SCENARIO: dict = {
 def test_phase_1238f_fix6_version_token_present() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238h.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238i.v0.1"
     assert mod.SIM_FETCH_01_FIX6_VERSION == (
         "sim_fetch_01_fix6_adaptive_heat_replication_1238f.v0.1"
     )
