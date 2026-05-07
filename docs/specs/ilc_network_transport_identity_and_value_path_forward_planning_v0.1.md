@@ -355,6 +355,15 @@ topology smoother as a *simulation overlay*, not as runtime policy. The Phase 12
 This produces simulation evidence before any runtime deployment. A CDL is required before
 deploying as runtime policy.
 
+Phase 1238 Fix8 delivered the first Werner overlay as opt-in SIM-FETCH metrics
+(`werner_overlay_enabled`). This was the correct containment while the model remained
+non-authorizing evidence. It is not the desired permanent shape if Werner topology pressure is
+part of the core evaluation path. After the overlay is validated, a follow-up phase must promote
+it to the default SIM-FETCH topology-pressure evaluation profile, replacing the boolean with an
+explicit profile such as `topology_pressure_model = "werner_v1"`. A `"none"` or null model should
+remain only for legacy comparison/research evidence, not as the default production-facing
+simulation path.
+
 Before any heat/topology signal can become a policy input, it must pass the same spectral trust
 threshold discipline already established in the spectral SIM work: enough established nodes,
 connected-enough topology, nonzero reliable lambda2, and largest-component safeguards. Heat is a
@@ -373,6 +382,8 @@ flow_governor_must_not_replace_quality_reputation_mechanism
 fetch_rate_limit_must_remain_circuit_breaker_until_authenticated_principal_credit_governor_cdl
 flow_governor_spectral_trust_threshold_required_before_policy_use
 heat_signal_must_not_directly_mint_ecu
+werner_overlay_opt_in_must_be_promoted_or_retired_after_validation
+werner_default_topology_pressure_profile_required_before_runtime_cdl
 ```
 
 ---
