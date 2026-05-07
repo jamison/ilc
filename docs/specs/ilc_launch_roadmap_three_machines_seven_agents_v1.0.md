@@ -186,6 +186,14 @@ public launch. Internal roadmap or CDL opening docs do not constitute legal conc
 - Multi-hop centrality attribution CDL — research evidence exists; CDL not opened.
 - Cross-epoch compaction / snapshot export — required before network-scale operation.
 - CDL-070 PQ migration ceremony — SIM-MONETARY-01 prerequisite.
+- **Dynamic Epistemic Traversal Engine** — versioned path-activation runtime composing
+  decay, centrality, refutation, reputation, and projection context. Biologically-inspired
+  nonlinear dynamics layer. Forward-planning spec recorded Phase 1233-1240; earliest
+  implementation Window 1241+. See
+  `docs/specs/ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0.1.md`.
+  Token: `dynamic_epistemic_traversal_engine_forward_planning_recorded_phase_1233_1240`.
+  Must not precede Phase 1236/1237/1238. v0.1 is read-only evaluation only; routing and
+  settlement wiring require separate CDL openings.
 
 ---
 
