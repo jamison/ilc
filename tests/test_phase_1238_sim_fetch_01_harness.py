@@ -52,7 +52,7 @@ _TEST_CONTRACT_KEYS = {
 def test_phase_1238_harness_imports_without_error() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238f.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238g.v0.1"
     assert mod.CDL_087_DEPENDENCY == "cdl_087_prelock_committed_phase_1228"
 
 
