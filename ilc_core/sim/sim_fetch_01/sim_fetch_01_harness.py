@@ -2,7 +2,7 @@ from __future__ import annotations
 
 # SIM-FETCH-01: Canonical Fetch Distribution Simulation Harness
 #
-# Phase 1238i — Window 1233-1240 (Fix9: CDL-087 evidence matrix)
+# Phase 1238j — Window 1233-1240 (Fix10: robustness evidence suite)
 # Governing authority: docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md
 #
 # CDL-087 ratification is NOT authorized by this harness.
@@ -20,7 +20,7 @@ from collections import OrderedDict
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238i.v0.1"
+SIM_FETCH_01_HARNESS_VERSION = "sim_fetch_01_harness_1238j.v0.1"
 SIM_FETCH_01_FIX1_VERSION = "sim_fetch_01_fix1_hardening_1238a.v0.1"
 SIM_FETCH_01_FIX2_VERSION = "sim_fetch_01_fix2_request_model_1238b.v0.1"
 SIM_FETCH_01_FIX3_VERSION = "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
@@ -30,6 +30,7 @@ SIM_FETCH_01_FIX6_VERSION = "sim_fetch_01_fix6_adaptive_heat_replication_1238f.v
 SIM_FETCH_01_FIX7_VERSION = "sim_fetch_01_fix7_cdl_078_credit_bridge_1238g.v0.1"
 SIM_FETCH_01_FIX8_VERSION = "sim_fetch_01_fix8_werner_topology_overlay_1238h.v0.1"
 SIM_FETCH_01_FIX9_VERSION = "sim_fetch_01_fix9_cdl_087_evidence_matrix_1238i.v0.1"
+SIM_FETCH_01_FIX10_VERSION = "sim_fetch_01_fix10_robustness_suite_1238j.v0.1"
 CDL_087_DEPENDENCY = "cdl_087_prelock_committed_phase_1228"
 
 _TIER_A = "A"
@@ -45,6 +46,8 @@ _PEER_ROLE_GENERAL = "general"       # Standard inventory fractions
 
 _DEFAULT_MAX_REQUESTS_PER_EPOCH = 500
 _DEFAULT_MAX_SWEEP_SCENARIOS = 64
+_DEFAULT_MAX_ROBUSTNESS_PROFILES = 16
+_DEFAULT_MAX_ROBUSTNESS_SCENARIOS = 128
 _DEFAULT_EVIDENCE_MATRIX_MAX_BYTES = 5_000_000
 
 # Synthetic byte units per served artifact, by tier (CDL-087 §5 / design spec §5)
@@ -573,6 +576,182 @@ def run_sim_fetch_01_cdl_087_evidence_sweep(sweep_config: dict) -> dict:
         "verdict_counts": verdict_counts,
         "recommended_scenarios": recommended,
         "rows": rows,
+    }
+
+
+def _reason_counts(rows: list[dict[str, Any]], reason_key: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        for reason in row["evaluator"][reason_key]:
+            counts[reason] = counts.get(reason, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _robustness_acceptance(rule: str, verdict_counts: dict[str, int], total: int) -> bool:
+    if rule == "all_pass":
+        return verdict_counts["pass"] == total
+    if rule == "any_pass":
+        return verdict_counts["pass"] > 0
+    if rule == "all_fail":
+        return verdict_counts["fail"] == total
+    if rule == "any_fail":
+        return verdict_counts["fail"] > 0
+    if rule == "no_fail":
+        return verdict_counts["fail"] == 0
+    if rule == "mixed_allowed":
+        return True
+    raise ValueError("sim_fetch_01_invalid_robustness_acceptance_rule")
+
+
+def _profile_metric_extrema(rows: list[dict[str, Any]]) -> dict[str, str]:
+    tier_ab = [
+        Decimal(row["key_metrics"]["routed_effective_tier_ab_failure_rate"])
+        for row in rows
+    ]
+    tier_c = [
+        Decimal(row["key_metrics"]["tier_c_advisory_routed_failure_rate"])
+        for row in rows
+    ]
+    holder_hit = [Decimal(row["key_metrics"]["routed_holder_hit_rate"]) for row in rows]
+    cb_fraction = [Decimal(row["key_metrics"]["circuit_breaker_fraction"]) for row in rows]
+    return {
+        "min_routed_effective_tier_ab_failure_rate": _quantized_decimal_str(min(tier_ab)),
+        "max_routed_effective_tier_ab_failure_rate": _quantized_decimal_str(max(tier_ab)),
+        "max_tier_c_advisory_routed_failure_rate": _quantized_decimal_str(max(tier_c)),
+        "min_routed_holder_hit_rate": _quantized_decimal_str(min(holder_hit)),
+        "max_circuit_breaker_fraction": _quantized_decimal_str(max(cb_fraction)),
+    }
+
+
+def run_sim_fetch_01_cdl_087_robustness_suite(robustness_config: dict) -> dict:
+    """
+    Run named adversarial/robustness profiles over the Fix9 evidence sweep.
+
+    Each profile declares an acceptance rule. This lets the suite validate both
+    positive candidate envelopes and deliberate negative controls. For example,
+    a one-hop fully stale directory profile should fail, while a two-hop routed
+    retry profile should recover.
+
+    CDL-087 ratification is NOT authorized by this suite.
+    """
+    if not isinstance(robustness_config, dict):
+        raise ValueError("sim_fetch_01_robustness_config_must_be_dict")
+    _reject_float_tree(robustness_config, "robustness_config")
+
+    base_scenario = robustness_config.get("base_scenario")
+    if not isinstance(base_scenario, dict):
+        raise ValueError("sim_fetch_01_robustness_base_scenario_must_be_dict")
+
+    profiles = robustness_config.get("profiles")
+    if not isinstance(profiles, list) or not profiles:
+        raise ValueError("sim_fetch_01_robustness_profiles_must_be_non_empty_list")
+
+    max_profiles = robustness_config.get(
+        "max_robustness_profiles",
+        _DEFAULT_MAX_ROBUSTNESS_PROFILES,
+    )
+    if isinstance(max_profiles, bool) or not isinstance(max_profiles, int) or max_profiles < 1:
+        raise ValueError("sim_fetch_01_invalid_max_robustness_profiles")
+    if len(profiles) > max_profiles:
+        raise ValueError("sim_fetch_01_robustness_profile_count_exceeded")
+
+    max_total_scenarios = robustness_config.get(
+        "max_total_scenarios",
+        _DEFAULT_MAX_ROBUSTNESS_SCENARIOS,
+    )
+    if (
+        isinstance(max_total_scenarios, bool)
+        or not isinstance(max_total_scenarios, int)
+        or max_total_scenarios < 1
+    ):
+        raise ValueError("sim_fetch_01_invalid_max_robustness_total_scenarios")
+
+    profile_summaries: list[dict[str, Any]] = []
+    total_scenarios = 0
+    accepted_count = 0
+
+    for profile in profiles:
+        if not isinstance(profile, dict):
+            raise ValueError("sim_fetch_01_robustness_profile_must_be_dict")
+        profile_id = profile.get("profile_id")
+        if not isinstance(profile_id, str) or not profile_id:
+            raise ValueError("sim_fetch_01_invalid_robustness_profile_id")
+        description = profile.get("description", "")
+        if not isinstance(description, str):
+            raise ValueError("sim_fetch_01_invalid_robustness_profile_description")
+
+        acceptance_rule = profile.get("acceptance_rule", "any_pass")
+        if not isinstance(acceptance_rule, str):
+            raise ValueError("sim_fetch_01_invalid_robustness_acceptance_rule")
+
+        overrides = profile.get("scenario_overrides", {})
+        if not isinstance(overrides, dict):
+            raise ValueError("sim_fetch_01_robustness_overrides_must_be_dict")
+        grid = profile.get("grid")
+        if not isinstance(grid, dict) or not grid:
+            raise ValueError("sim_fetch_01_robustness_profile_grid_must_be_dict")
+
+        max_profile_scenarios = profile.get(
+            "max_sweep_scenarios",
+            _DEFAULT_MAX_SWEEP_SCENARIOS,
+        )
+        if (
+            isinstance(max_profile_scenarios, bool)
+            or not isinstance(max_profile_scenarios, int)
+            or max_profile_scenarios < 1
+        ):
+            raise ValueError("sim_fetch_01_invalid_profile_max_sweep_scenarios")
+
+        sweep_result = run_sim_fetch_01_cdl_087_evidence_sweep({
+            "base_scenario": {**base_scenario, **overrides},
+            "grid": grid,
+            "max_sweep_scenarios": max_profile_scenarios,
+        })
+        total_scenarios += int(sweep_result["scenario_count"])
+        if total_scenarios > max_total_scenarios:
+            raise ValueError("sim_fetch_01_robustness_total_scenario_count_exceeded")
+
+        verdict_counts = sweep_result["verdict_counts"]
+        accepted = _robustness_acceptance(
+            acceptance_rule,
+            verdict_counts,
+            int(sweep_result["scenario_count"]),
+        )
+        if accepted:
+            accepted_count += 1
+
+        profile_summaries.append({
+            "profile_id": profile_id,
+            "description": description,
+            "acceptance_rule": acceptance_rule,
+            "accepted": accepted,
+            "scenario_count": sweep_result["scenario_count"],
+            "verdict_counts": verdict_counts,
+            "evidence_recommendation": sweep_result["cdl_087_ratification_recommendation"],
+            "metric_extrema": _profile_metric_extrema(sweep_result["rows"]),
+            "fail_reason_counts": _reason_counts(sweep_result["rows"], "fail_reasons"),
+            "review_reason_counts": _reason_counts(sweep_result["rows"], "review_reasons"),
+            "representative_scenarios": sweep_result["recommended_scenarios"][:3],
+        })
+
+    overall_verdict = "pass" if accepted_count == len(profile_summaries) else "fail"
+    return {
+        "sim": "SIM-FETCH-01",
+        "robustness_version": SIM_FETCH_01_FIX10_VERSION,
+        "harness_version": SIM_FETCH_01_HARNESS_VERSION,
+        "methodology": "adversarial_robustness_envelope_expansion",
+        "cdl_087_dependency": CDL_087_DEPENDENCY,
+        "cdl_087_ratification_authorized": False,
+        "overall_robustness_verdict": overall_verdict,
+        "accepted_profile_count": accepted_count,
+        "profile_count": len(profile_summaries),
+        "total_scenario_count": total_scenarios,
+        "profiles": profile_summaries,
+        "non_authorization_note": (
+            "This robustness suite validates candidate and negative-control "
+            "envelopes only; it does not ratify CDL-087, mint ECU, settle ILC, "
+            "mutate production runtime, or authorize public network exposure."
+        ),
     }
 
 

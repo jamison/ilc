@@ -45,7 +45,7 @@ _EVIDENCE_SWEEP_CONFIG: dict = {
 def test_phase_1238i_fix9_version_token_present() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238i.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238j.v0.1"
     assert mod.SIM_FETCH_01_FIX9_VERSION == (
         "sim_fetch_01_fix9_cdl_087_evidence_matrix_1238i.v0.1"
     )
