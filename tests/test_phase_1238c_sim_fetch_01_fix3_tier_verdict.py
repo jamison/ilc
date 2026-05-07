@@ -35,7 +35,7 @@ _BASELINE_SCENARIO: dict = {
 def test_phase_1238c_fix3_version_token_present() -> None:
     import ilc_core.sim.sim_fetch_01.sim_fetch_01_harness as mod
 
-    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238g.v0.1"
+    assert mod.SIM_FETCH_01_HARNESS_VERSION == "sim_fetch_01_harness_1238h.v0.1"
     assert mod.SIM_FETCH_01_FIX3_VERSION == "sim_fetch_01_fix3_tier_verdict_1238c.v0.1"
 
 
