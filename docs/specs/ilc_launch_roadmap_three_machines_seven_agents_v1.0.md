@@ -497,6 +497,64 @@ Forward-planning spec: `docs/specs/ilc_network_transport_identity_and_value_path
 
 ---
 
+### Gap 15 — Atlas Graph Reachability and Integrated Phase Discipline
+
+**Status:** Forward planning recorded. Required before public-RC non-excisability can be
+claimed as machine-verifiable.
+**Recorded:** Phase 1238 (2026-05-07 Codex synthesis).
+
+The package modularity path only works if modularity does not become excisability. Public-RC
+load-bearing artifacts must be reachable from Genesis / ILC / ECU / Hypergraph anchors by typed,
+explainable authority/support/provenance paths. This is a graph reachability requirement, not a
+requirement that every repo file become Genesis-core.
+
+Current baseline:
+
+- Signed Genesis star map v0.1 remains canonical: 32 nodes, 55 edges.
+- Unsigned Genesis Atlas v0.2 candidate exists: 41 nodes, 73 edges.
+- Observed repo/governance hypergraph exists, but GENESIS-COMPILE remains
+  `PARTIAL_WITH_STRUCTURAL_GAPS`.
+
+The recurring phase discipline is:
+
+```text
+graph_delta=none:<reason>
+graph_delta=support_only:<paths>
+graph_delta=load_bearing_artifact_added:<path> -> <anchor>
+graph_delta=load_bearing_artifact_changed:<path> -> <anchor>
+graph_delta=deferred:<token>
+```
+
+ATLAS-G is the parallel strike-force lane that owns the compiler, diagnostics, package-profile
+reachability manifests, public-RC graph gate, and v0.2+ candidate preparation. Normal phases own
+their local graph-delta breadcrumbs.
+
+Carry-forward tokens (all open):
+
+- `atlas_graph_integrated_phase_discipline_forward_planning_recorded_phase_1238`
+- `atlas_g_1241_plus_candidate_phase_grouping_recorded_phase_1238`
+- `atlas_g_prompt_drafts_registered_phase_1238`
+- `phase_close_graph_delta_field_required`
+- `atlas_g_001_graph_delta_schema_required`
+- `atlas_g_002_repo_hypergraph_compiler_hardening_required`
+- `atlas_g_003_package_profile_reachability_manifest_required`
+- `atlas_g_004_high_authority_gap_closure_required`
+- `atlas_g_005_import_dependency_graph_bridge_required`
+- `atlas_g_006_public_rc_graph_reachability_gate_required`
+- `atlas_g_007_unsigned_v0_2_plus_candidate_regeneration_required`
+- `atlas_g_008_non_excisability_review_packet_required`
+- `atlas_g_009_signing_root_envelope_prep_required_no_signing`
+- `atlas_g_010_v0_2_signing_only_if_explicitly_authorized`
+- `ilc_package_self_compilation_homoiconic_graph_required_before_public_rc`
+- `public_rc_release_artifact_must_include_profile_graph_manifest`
+
+Forward-planning specs:
+
+- `docs/specs/ilc_atlas_graph_integrated_phase_discipline_forward_planning_1241_v0.1.md`
+- `docs/specs/ilc_atlas_g_1241_plus_candidate_phase_grouping_v0.1.md`
+
+---
+
 ### Gap 8 — Long-Range Economic and Scale Work
 
 **Status:** Deferred.
