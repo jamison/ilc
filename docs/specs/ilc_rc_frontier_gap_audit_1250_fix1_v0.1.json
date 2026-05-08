@@ -1,0 +1,1517 @@
+{
+  "audit_scope": {
+    "code_scan_roots": [
+      "ilc_core",
+      "ilc_consensus/src"
+    ],
+    "contradiction_tokens": [
+      "deferred",
+      "blocked",
+      "not authorized",
+      "not ratified",
+      "local-only",
+      "no public",
+      "superseded"
+    ],
+    "legacy_phase_doc_root": "docs/phases",
+    "phase": "1250 Fix1",
+    "purpose": "Reproducible canon-aware rerun of RC frontier gap scraping before Phase 1251.",
+    "tokens": [
+      "phase_1250_fix1_rc_frontier_gap_audit_complete",
+      "phase_1250_fix1_improved_gemini_gap_study_rerun"
+    ]
+  },
+  "code_scans": {
+    "claimability_hits": [
+      {
+        "line": 98,
+        "markers": [
+          "public claimability"
+        ],
+        "snippet": "| Contradiction and non-claim search | Confirmed no public RC is open; CDL-087 remains unratified; v0.2 signing remains deferred; OpenClaw/NemoClaw local preview is local/private and not final public RC; public P2P, public sidecar serving, and public claimability remain blocked. |",
+        "source_path": "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      },
+      {
+        "line": 223,
+        "markers": [
+          "public claimability"
+        ],
+        "snippet": "ECU-to-ILC conversion, public claimability, chain/crypto dependency inventory,",
+        "source_path": "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      },
+      {
+        "line": 231,
+        "markers": [
+          "public claimability",
+          "wallet withdrawal"
+        ],
+        "snippet": "Phase 1252 must not activate public claimability, wallet withdrawal, ILC",
+        "source_path": "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      },
+      {
+        "line": 232,
+        "markers": [
+          "transfer"
+        ],
+        "snippet": "transfer, release keys, public launch, or public RC.",
+        "source_path": "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      },
+      {
+        "line": 273,
+        "markers": [
+          "public claimability"
+        ],
+        "snippet": "- public claimability activation;",
+        "source_path": "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      },
+      {
+        "line": 274,
+        "markers": [
+          "spend semantics",
+          "transfer",
+          "wallet withdrawal"
+        ],
+        "snippet": "- wallet withdrawal, transfer, or spend semantics;",
+        "source_path": "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      },
+      {
+        "line": 66,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+      },
+      {
+        "line": 122,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+      },
+      {
+        "line": 157,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+      },
+      {
+        "line": 57,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/protocol/public_wallet_runtime.py"
+      },
+      {
+        "line": 78,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/protocol/public_wallet_runtime.py"
+      },
+      {
+        "line": 105,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/protocol/public_wallet_runtime.py"
+      },
+      {
+        "line": 129,
+        "markers": [
+          "claimability_state"
+        ],
+        "snippet": "\"claimability_state\": \"deferred\",",
+        "source_path": "ilc_core/protocol/public_wallet_runtime.py"
+      }
+    ],
+    "deferred_transport_hits": [
+      {
+        "line": 42,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "| v0.2 signing | Deferred; explicit signing authorization absent |",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 71,
+        "markers": [
+          "no public"
+        ],
+        "snippet": "- That path makes no public ILC-owned P2P claim.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 72,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "- Public ILC-owned P2P remains a parallel lane gated by TransportPrincipal and",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 85,
+        "markers": [
+          "TransportPrincipal",
+          "public P2P"
+        ],
+        "snippet": "| Public P2P exposure | Public hostile-network ILC node | Blocked by TransportPrincipal, Rust P2P substrate decision, Python HTTP downgrade |",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 86,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "| Public sidecar/projection serving | Non-loopback graph/projection endpoint | Blocked by CDL-087 ratification plus TransportPrincipal policy if exposed beyond loopback |",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 109,
+        "markers": [
+          "no public",
+          "public P2P"
+        ],
+        "snippet": "| Public-RC local harness preview | Clean OpenClaw/NemoClaw local skill package; no public P2P; no final claimability claim | Window 1241-1248 execution lane |",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 110,
+        "markers": [
+          "no public"
+        ],
+        "snippet": "| Public-RC claimable harness profile | Local harness package plus public ECU-to-ILC claimability; no public ILC P2P claim | Target profile, still blocked |",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 111,
+        "markers": [
+          "TransportPrincipal",
+          "public P2P"
+        ],
+        "snippet": "| Public P2P RC | ILC-owned public P2P node | Parallel lane, blocked by TransportPrincipal and Rust P2P decisions |",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 120,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Status:** Deferred.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 128,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "v0_2_signing_ceremony_deferred_pending_signing_authorization",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 173,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "binds to authenticated TransportPrincipal rather than IP or JSON/body identity.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 215,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Status:** Deferred / mixed.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 232,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "TransportPrincipal policy.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 241,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "### Gap 10 - TransportPrincipal Identity Layer",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 245,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "TransportPrincipal is the missing authenticated transport identity layer for",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 392,
+        "markers": [
+          "public P2P"
+        ],
+        "snippet": "- public P2P exposure authorized;",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 420,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "- CDL-087 governance review is complete, but ratification remains deferred",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 425,
+        "markers": [
+          "no public"
+        ],
+        "snippet": "- No public ILC-owned P2P claim is introduced by this closure.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 444,
+        "markers": [
+          "TransportPrincipal"
+        ],
+        "snippet": "TransportPrincipal, ATLAS-G, Werner flow, and publication/counsel gates.",
+        "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      },
+      {
+        "line": 38,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "/// Note: the live wiring of this call from the epoch settlement path is deferred",
+        "source_path": "ilc_consensus/src/fast_path.rs"
+      },
+      {
+        "line": 414,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "fn mock_socket() -> SocketAddr {",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 430,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_server(mock_socket(), server_peers, server_cert, server_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 434,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_client(mock_socket(), client_peers, client_cert, client_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 497,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_server(mock_socket(), server_peers, server_cert, server_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 501,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_client(mock_socket(), client_peers, unauth_cert, unauth_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 546,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_server(mock_socket(), server_peers, server_cert, server_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 550,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_client(mock_socket(), client_peers, client_cert, client_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 596,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_server(mock_socket(), server_peers, server_cert, server_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 624,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_server(mock_socket(), server_peers, server_cert, server_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 628,
+        "markers": [
+          "mock"
+        ],
+        "snippet": "PeerNetwork::new_client(mock_socket(), client_peers, client_cert, client_key).unwrap();",
+        "source_path": "ilc_consensus/src/network.rs"
+      },
+      {
+        "line": 760,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "\"[m010_node] validator_id={} MissingCertSync received \u2014 sync response deferred to M-011\",",
+        "source_path": "ilc_consensus/src/node.rs"
+      },
+      {
+        "line": 4,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "intentionally deferred because CDL-039 topology privacy requires explicit",
+        "source_path": "ilc_core/network/d2d/gossip_peer_registry.py"
+      },
+      {
+        "line": 9,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "The CID-addressed pull fetch leg is deferred to CDL-077.",
+        "source_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py"
+      },
+      {
+        "line": 13,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "empty, gossip is silently skipped and the receipt reflects \"deferred\".",
+        "source_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py"
+      },
+      {
+        "line": 152,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "\"gossip_delivery\": \"deferred \u2014 no node_id (edge-only primitive)\",",
+        "source_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py"
+      },
+      {
+        "line": 161,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "\"gossip_delivery\": \"deferred \u2014 gossip peers not configured\",",
+        "source_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py"
+      }
+    ],
+    "digest_truncation_hits": [
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 16,
+        "line": 267,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return hashlib.sha256(key).hexdigest()[:16]",
+        "source_path": "ilc_core/ledger/canon_bundle_key_registry.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 12,
+        "line": 636,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "content_hash = hashlib.sha256(content.encode(\"utf-8\")).hexdigest()[:12]",
+        "source_path": "ilc_core/ledger/canon_bundle_key_registry.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 16,
+        "line": 54,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return hashlib.sha256(key).hexdigest()[:16]",
+        "source_path": "ilc_core/ledger/canon_bundle_key_registry_channel_signing.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 16,
+        "line": 23,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return sha256(key_bytes).hexdigest()[:16]",
+        "source_path": "ilc_core/ledger/canon_bundle_utils.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 16,
+        "line": 51,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return hashlib.sha256(dump.encode(\"utf-8\")).hexdigest()[:16]",
+        "source_path": "ilc_core/ledger/settlement_verification.py"
+      },
+      {
+        "classification": "route_to_phase_1253",
+        "digest_hex_chars": 16,
+        "line": 181,
+        "route": "Phase 1253 TransportPrincipal and public-P2P substrate audit",
+        "snippet": "channel_tag = hashlib.sha256(normalized_channel.encode(\"utf-8\")).hexdigest()[:16]",
+        "source_path": "ilc_core/network/d2d/gossip.py"
+      },
+      {
+        "classification": "route_to_phase_1253",
+        "digest_hex_chars": 32,
+        "line": 207,
+        "route": "Phase 1253 TransportPrincipal and public-P2P substrate audit",
+        "snippet": "return \"agent:\" + hashlib.sha256(normalized).hexdigest()[:32]",
+        "source_path": "ilc_core/network/d2d/spectral_beacon.py"
+      },
+      {
+        "classification": "route_to_phase_1253",
+        "digest_hex_chars": 16,
+        "line": 120,
+        "route": "Phase 1253 TransportPrincipal and public-P2P substrate audit",
+        "snippet": "return hashlib.sha256(ngram.encode()).hexdigest()[:16]",
+        "source_path": "ilc_core/network/star_map/star_map_route_index_runtime.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 24,
+        "line": 248,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return hashlib.sha256(payload).hexdigest()[:24]",
+        "source_path": "ilc_core/security/key_compromise_runtime.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 24,
+        "line": 261,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return hashlib.sha256(payload).hexdigest()[:24]",
+        "source_path": "ilc_core/security/key_compromise_runtime.py"
+      },
+      {
+        "classification": "route_to_phase_1252",
+        "digest_hex_chars": 24,
+        "line": 350,
+        "route": "Phase 1252 chain/crypto dependency inventory",
+        "snippet": "return hashlib.sha256(payload).hexdigest()[:24]",
+        "source_path": "ilc_core/security/signer_lineage_runtime.py"
+      }
+    ],
+    "rust_fixme_hits": [
+      {
+        "classification": "route_to_phase_1253",
+        "line": 636,
+        "route": "Phase 1253 Rust public-P2P/TransportPrincipal audit",
+        "snippet": "// FIXME(M-5): self.f is captured at NodeRunner::new() and is NOT updated",
+        "source_path": "ilc_consensus/src/node.rs"
+      }
+    ]
+  },
+  "current_canon": {
+    "canonical_sources": [
+      "docs/PLANNING_INDEX.md",
+      "docs/specs/ilc_antigravity_context_capsule_v5.50.md",
+      "docs/phases/STATUS.md",
+      "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+      "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md",
+      "docs/specs/ilc_window_1249_1256_candidate_phase_grouping_v0.1.md",
+      "docs/specs/ilc_cdl_087_governance_review_disposition_1246_v0.1.md"
+    ],
+    "cdl_086": {
+      "classification": "resolved_stale",
+      "status": "ratified",
+      "token": "cdl_086_ratified_phase_1220"
+    },
+    "cdl_087": {
+      "classification": "current_blocker",
+      "status": "open_prelocked_not_ratified",
+      "token": "cdl_087_ratification_deferred_pending_production_candidate_fetch_evidence"
+    },
+    "current_frontier": {
+      "phase_1250_complete": true,
+      "phase_1251_next": true,
+      "phase_1252_sensitive": true
+    },
+    "non_claims": {
+      "no_public_p2p": true,
+      "no_public_rc_claim": true,
+      "v0_2_signing_deferred": true
+    }
+  },
+  "findings": [
+    {
+      "classification": "route_to_phase_1251",
+      "evidence": "Phase 1250 closed ilc_logic adapter-import debt; current canon still lists package CI, profile export audit, and package-size measurement as next.",
+      "finding_id": "RCGAP-1250-FIX1-001",
+      "route": "Phase 1251",
+      "severity": "high",
+      "source_paths": [
+        "docs/PLANNING_INDEX.md",
+        "docs/phases/STATUS.md",
+        "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      ],
+      "title": "Gap 14 immediate next step remains package CI/profile audit/size measurement."
+    },
+    {
+      "classification": "legacy_doc_hygiene",
+      "evidence": "129 closure/handoff phase docs lack graph_delta markers. These are legacy/historical hygiene holes, not current public-RC blockers.",
+      "finding_id": "RCGAP-1250-FIX1-002",
+      "route": "Phase 1254 ATLAS-G backfill planning, not Phase 1251 package CI",
+      "severity": "low",
+      "source_paths": [
+        "docs/phases/phase_0171_g8_constitution_cluster_a_runtime_logging_hardening_closure_and_handoff_gate_walkthrough.md",
+        "docs/phases/phase_0181_g8_constitution_cluster_a_domain_exception_migration_closure_and_handoff_gate_walkthrough.md",
+        "docs/phases/phase_0191_g8_constitution_cluster_a_non_replay_domain_exception_migration_closure_and_handoff_gate_walkthrough.md",
+        "docs/phases/phase_0201_g8_constitution_cluster_a_main_track_return_193_200_closure_regression_and_handoff_walkthrough.md",
+        "docs/phases/phase_0211_g8_constitution_cluster_a_main_track_return_202_210_closure_regression_and_handoff_walkthrough.md",
+        "docs/phases/phase_0215_g8_constitution_cluster_a_ra09_cdl_011_015_ratification_evidence_closure_walkthrough.md",
+        "docs/phases/phase_0221_g8_constitution_cluster_a_main_track_return_213_220_closure_regression_and_handoff_walkthrough.md",
+        "docs/phases/phase_0229_g8_constitution_cluster_a_genesis_packaging_closure_regression_and_handoff_222_228_walkthrough.md",
+        "docs/phases/phase_0239_g8_constitution_cluster_a_closure_regression_and_handoff_230_238_walkthrough.md",
+        "docs/phases/phase_0249_g8_constitution_cluster_a_security_runtime_window_closure_and_handoff_240_248_walkthrough.md",
+        "docs/phases/phase_0259_g8_cdl_ratification_window_closure_and_handoff_walkthrough.md",
+        "docs/phases/phase_0265_g8_constitution_cluster_a_d2e_03_composed_closure_gate_and_handoff_walkthrough.md",
+        "docs/phases/phase_0266_g8_constitution_cluster_a_issuance_evidence_closure_a_walkthrough.md",
+        "docs/phases/phase_0269_g8_constitution_cluster_a_ratification_verification_gate_and_handoff_walkthrough.md",
+        "docs/phases/phase_0270_g8_constitution_cluster_a_sequence_lock_270_279_issuance_governance_closure_walkthrough.md",
+        "docs/phases/phase_0271_g8_constitution_cluster_a_issuance_evidence_closure_b_walkthrough.md",
+        "docs/phases/phase_0275_g8_constitution_cluster_a_issuance_evidence_closure_c_option_b_lock_walkthrough.md",
+        "docs/phases/phase_0279_g8_constitution_cluster_a_ratification_verification_gate_and_handoff_walkthrough.md",
+        "docs/phases/phase_0287_g8_constitution_cluster_a_cdl_031_evidence_closure_a_walkthrough.md",
+        "docs/phases/phase_0289_g8_constitution_cluster_a_cdl_031_verification_gate_and_handoff_walkthrough.md"
+      ],
+      "title": "Legacy graph_delta gaps should be classified before any bulk backfill."
+    },
+    {
+      "classification": "route_to_phase_1252",
+      "evidence": "6 security/ledger/code surfaces contain truncated digest identifiers. Some may be human-readable fingerprints, but Phase 1252 should classify which are security-binding.",
+      "finding_id": "RCGAP-1250-FIX1-003",
+      "route": "Phase 1252 chain/crypto dependency inventory",
+      "severity": "medium",
+      "source_paths": [
+        "ilc_core/ledger/canon_bundle_key_registry.py",
+        "ilc_core/ledger/canon_bundle_key_registry_channel_signing.py",
+        "ilc_core/ledger/canon_bundle_utils.py",
+        "ilc_core/ledger/settlement_verification.py",
+        "ilc_core/security/key_compromise_runtime.py",
+        "ilc_core/security/signer_lineage_runtime.py"
+      ],
+      "title": "Digest truncation candidates require chain/crypto classification before public claimability."
+    },
+    {
+      "classification": "route_to_phase_1253",
+      "evidence": "3 network/consensus surfaces contain truncated digest identifiers or transport-adjacent fingerprints that should be assessed with TransportPrincipal work.",
+      "finding_id": "RCGAP-1250-FIX1-004",
+      "route": "Phase 1253 TransportPrincipal and public-P2P substrate audit",
+      "severity": "medium",
+      "source_paths": [
+        "ilc_core/network/d2d/gossip.py",
+        "ilc_core/network/d2d/spectral_beacon.py",
+        "ilc_core/network/star_map/star_map_route_index_runtime.py"
+      ],
+      "title": "Network digest/fingerprint truncations route to TransportPrincipal audit."
+    },
+    {
+      "classification": "route_to_phase_1253",
+      "evidence": "Rust consensus contains an active M-5 FIXME: f is captured at NodeRunner::new() and not updated. This does not block OpenClaw/NemoClaw local package work but matters for public-P2P substrate confidence.",
+      "finding_id": "RCGAP-1250-FIX1-005",
+      "route": "Phase 1253 Rust public-P2P/TransportPrincipal audit",
+      "severity": "medium",
+      "source_paths": [
+        "ilc_consensus/src/node.rs"
+      ],
+      "title": "Rust M-5 FIXME is real and should not be lost in generic marker noise."
+    },
+    {
+      "classification": "phase_1252_sensitive_gate",
+      "evidence": "13 current code/canon hits keep claimability deferred or blocked. This confirms Phase 1252 must inventory dependencies without activating wallet withdrawal/transfer/spend semantics.",
+      "finding_id": "RCGAP-1250-FIX1-006",
+      "route": "Phase 1252 after explicit GO Phase 1252",
+      "severity": "high",
+      "source_paths": [
+        "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md",
+        "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
+        "ilc_core/protocol/public_wallet_runtime.py"
+      ],
+      "title": "Public claimability remains deferred and sensitive."
+    },
+    {
+      "classification": "current_blocker",
+      "evidence": "CDL-087 is open/prelocked/not ratified. Current canon narrows remaining blockers to production-candidate fetch evidence and later sensitive ratification, not generic SIM-FETCH incompleteness.",
+      "finding_id": "RCGAP-1250-FIX1-007",
+      "route": "Future sensitive CDL-087 evidence/ratification phase; not Phase 1251",
+      "severity": "high",
+      "source_paths": [
+        "docs/specs/ilc_cdl_087_governance_review_disposition_1246_v0.1.md",
+        "docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md"
+      ],
+      "title": "CDL-087 remains a public sidecar/fetch blocker, but current blocker wording matters."
+    },
+    {
+      "classification": "route_to_phase_1253",
+      "evidence": "36 transport or gossip hits preserve deferred/public-P2P boundaries. Dynamic discovery and non-loopback exposure should stay in TransportPrincipal routing.",
+      "finding_id": "RCGAP-1250-FIX1-008",
+      "route": "Phase 1253",
+      "severity": "medium",
+      "source_paths": [
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+        "ilc_consensus/src/fast_path.rs",
+        "ilc_consensus/src/network.rs",
+        "ilc_consensus/src/node.rs",
+        "ilc_core/network/d2d/gossip_peer_registry.py",
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py"
+      ],
+      "title": "Deferred peer discovery/HTTP surfaces are public-P2P lane work, not skill-first package blockers."
+    },
+    {
+      "classification": "needs_human_gate",
+      "evidence": "v0.2 signing remains explicitly deferred pending signing authorization.",
+      "finding_id": "RCGAP-1250-FIX1-009",
+      "route": "Human signing authorization gate; no current-window code task",
+      "severity": "high",
+      "source_paths": [
+        "docs/specs/ilc_antigravity_context_capsule_v5.50.md",
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+      ],
+      "title": "v0.2 signing is not unlocked by gap scraping."
+    },
+    {
+      "classification": "resolved_stale",
+      "evidence": "Current canon status for CDL-086 is ratified; stale reports that treat CDL-086 as deferred should be ignored for current sequencing.",
+      "finding_id": "RCGAP-1250-FIX1-010",
+      "route": "No action",
+      "severity": "info",
+      "source_paths": [
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+        "docs/specs/ilc_cdl_086_ratification_evidence_1220_v0.1.md"
+      ],
+      "title": "CDL-086 deferred status is stale."
+    }
+  ],
+  "legacy_phase_scan": {
+    "classification": "legacy_doc_hygiene",
+    "marker_counts": {
+      "FIXME": 10,
+      "MOCK": 18,
+      "TODO": 224,
+      "deferred": 676,
+      "local-only": 8,
+      "mock": 18,
+      "no public": 24,
+      "not authorized": 35,
+      "not ratified": 48
+    },
+    "marker_sample_hit_limit": 80,
+    "marker_sample_hits": [
+      {
+        "line": 101,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "- Resolved TODO in `process_contradiction`.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 113,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "- Moved TODO from `engine.py` to root `TODO.txt`.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 209,
+        "markers": [
+          "TODO",
+          "deferred"
+        ],
+        "snippet": "- Captured deferred audit items in `TODO.txt` (Code Audit + Canon Bundle Replay followups).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 222,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "- Recorded signature hardening TODO cluster in `TODO.txt`.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 837,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "- MVP guardrails matrix mapping deferred clauses to owner artifacts and verification.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 838,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "- Constitutional TODO block for ratification and conformance follow-up.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 870,
+        "markers": [
+          "TODO",
+          "deferred"
+        ],
+        "snippet": "- Runtime behavior documented in `docs/specs/ilc_governance_record_schema_v0.1.md` and deferred transition work tracked in `TODO.txt`.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 1326,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added deterministic replay-proof typed-contract guardrail coverage and verified no residual replay-proof `Any`-based loose contract boundaries, preserving all replay-proof behavior and handoff to deferred non-replay CLI consolidation.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 1330,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Next planned phase:** Phase 972 (Track 2 deferred non-replay CLI typed-contract consolidation)",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 1436,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Description**: Phase 979 reclosure retry and deferred handoff artifact completion",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 1978,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "- Legacy prompt backfill for `phase_55..phase_66b` is explicitly deferred as a separate archival sprint and is non-blocking for current execution.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2052,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added deterministic return-sequence artifact `docs/specs/ilc_main_track_return_sequence_post_glossary_v0.1.md` locking ordered phases `192-201` with gate types and explicit pre-Phase-193 entry criteria; updated master-plan and TODO pointers; added focused sequence guardrail tests (`3 passed`); and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2162,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added locked sequence artifact `docs/specs/ilc_main_track_return_sequence_202_211_v0.1.md` for phases 202-211, added focused sequence guardrail tests (`3 passed`), updated TODO and master-plan pointers for the new sequence window, reconfirmed phase-192 sequence regression (`3 passed`), and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2272,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added reconciliation artifact `docs/specs/ilc_genesis_readiness_audit_reconciliation_v0.1.md` with claim-by-claim verdicts and remediation-phase mapping; corrected stale TODO entries that still marked phases 203-211 as pending; added a locked 997-1009 remediation TODO block; validated prompt contract (`VALID`); and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2415,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added closure gate script `tools/check_genesis_readiness_remediation_closure_996_1008.sh`; added gate contract tests in `tests/test_genesis_readiness_remediation_closure_gate_phase_1009.py`; added closure handoff artifact `docs/specs/ilc_genesis_readiness_remediation_996_1008_handoff_v0.1.md`; updated `TODO.txt` to mark the 996-1009 remediation sequence complete; validated prompt contract (`VALID`); ran closure gate and consolidated remediation subset (`34 passed`); and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2492,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added locked sequence artifact `docs/specs/ilc_main_track_return_sequence_213_221_v0.1.md` with dependency baseline, entry gate, and deterministic phase table for 213-221; added focused sequence guardrail tests in `tests/test_main_track_return_sequence_phase_213.py` (`3 passed`); updated planning pointers in `TODO.txt` and `docs/ILC_Master_Development_Plan_v0.4.md`; validated prompt contract (`VALID`); reconfirmed prior sequence guardrail regression (`3 passed`); and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2525,
+        "markers": [
+          "TODO",
+          "deferred"
+        ],
+        "snippet": "**Output**: Added deterministic anti-Sybil module `ilc_core/analysis/reuse_diversity_invariants.py` with strict policy and metric validation and bounded multiplier logic; integrated reuse-diversity weighting into node scoring in `ilc_core/analysis/node_value_kernel.py` with fail-closed provenance checks; integrated payout-side diversity handling in `ilc_core/analysis/utility_flow_rewards.py` with neutral fallback warning for missing metadata and explicit no-double-penalty path via `diversity_applied_in_scoring`; added contract spec `docs/specs/ilc_reuse_diversity_anti_sybil_contract_v0.1.md`; added gate script `tools/check_reuse_diversity_invariants_phase_216.sh` and focused tests (`tests/test_reuse_diversity_invariants_phase_216.py`, `tests/test_reuse_diversity_invariants_gate_phase_216.py`); extended kernel/reward/invariant regression tests (`tests/test_node_value_kernel_phase_205.py`, `tests/test_utility_flow_rewards_phase_208.py`, `tests/test_refutation_profitability_invariant_phase_212.py`); validated prompt contract (`VALID`); ran focused suite (`8 passed`), gate checks (`4 passed`, `19 passed`), direct regression subset (`19 passed`), node-value conformance regression (`3 passed`), and walkthrough ellipsis guardrail (`2 passed`); and added deferred TODO note for post-Genesis true node-removal counterfactual evaluation.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2547,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added deterministic governor module `ilc_core/analysis/genesis_accrual_governor.py` with typed policy/signal contracts, constant-lock enforcement for `theta_hard = 1/20` and `theta_soft = exp(-3)`, hard-cap exact-zero behavior, sigmoid taper computation, and cumulative trajectory simulation checks; added `GenesisAccrualGovernorError` in `ilc_core/exceptions.py`; added contract spec `docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md`; added deterministic phase gate `tools/check_genesis_accrual_governor_phase_218.sh` and focused tests (`tests/test_genesis_accrual_governor_phase_218.py`, `tests/test_genesis_accrual_governor_gate_phase_218.py`); validated prompt contract (`VALID`); ran focused suite (`12 passed`), gate checks (`8 passed`, `17 passed`), direct regression subset (`17 passed`), and walkthrough ellipsis guardrail (`2 passed`); and recorded reuse-diversity `math.isfinite()` consistency backfill TODO.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2580,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added deterministic closure gate `tools/check_main_track_return_closure_213_220.sh` that composes `check_node_value_governance_conformance_phase_219.sh` and `check_main_track_return_preflight_214_219.sh`; added closure gate contract tests `tests/test_main_track_return_closure_gate_phase_221.py`; published handoff artifact `docs/specs/ilc_main_track_return_213_220_handoff_v0.1.md` with required module/spec/gate inventories, CDL status snapshot, deferred follow-ups, and forward pointer; validated prompt contract (`VALID`); ran closure gate tests (`4 passed`), closure gate dry-run and composed execution (PASS), consolidated gate/workflow regression set (`20 passed`), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2591,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added locked sequence artifact `docs/specs/ilc_genesis_packaging_distribution_sequence_222_229_v0.1.md` with approved execution order `222 -> 223 -> 224 -> 226 -> 227 -> 225 -> 228 -> 229`, explicit dependency chain, and phase-specific constraint locks for 223/224/226/227/228; added focused guardrail tests in `tests/test_genesis_packaging_distribution_sequence_phase_222.py` (`4 passed`); updated planning pointers in `TODO.txt` and `docs/ILC_Master_Development_Plan_v0.4.md`; validated prompt contract (`VALID`); reconfirmed prior sequence guardrail regression (`3 passed`); and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2602,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added non-finite numeric guard backfill in `ilc_core/analysis/reuse_diversity_invariants.py` using `math.isfinite()` for policy and metrics validation while preserving existing fail-closed error tokens and formulas; added focused hygiene regression tests in `tests/test_analysis_hygiene_phase_223.py` (`3 passed`) covering non-finite rejection and broad-exception absence in `ilc_core/analysis`; updated TODO debt tracking to mark the reuse-diversity non-finite consistency gap resolved; validated prompt contract (`VALID`); ran reuse-diversity and scoring/reward regression subset (`17 passed`); and reconfirmed walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2679,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added sensitive phase prompt `docs/antigravity_tasks/antigravity_prompt__phase_230_g8_constitution_cluster_a_post_genesis_capability_proof_activation_readiness_sequence_lock_and_d1_reproducibility_baseline.md`; published sequence lock artifact `docs/specs/ilc_post_genesis_capability_proof_activation_sequence_230_239_v0.1.md`; published backend decision note `docs/specs/ilc_build_reproducibility_backend_decision_note_v0.1.md`; added deterministic rebuild gate `tools/check_reproducible_build.sh` with `SOURCE_DATE_EPOCH=0` pin and isolated two-build manifest comparison; added gate/contract tests `tests/test_reproducible_build_phase_230.py`; updated `docs/specs/ilc_genesis_release_artifact_contract_v0.1.md` and `docs/specs/ilc_genesis_release_artifact_provenance_phase_228_v0.1.md` with explicit reproducibility scope language; updated sequence pointer section in `TODO.txt`; validated prompt contract (`VALID`); ran focused tests (`5 passed`), gate dry-run and execution (PASS), phase-229/228 regression subset (`8 passed`), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2690,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added sensitive prompt `docs/antigravity_tasks/antigravity_prompt__phase_231_g8_constitution_cluster_a_capability_proof_activation_readiness_contract_lock.md`; published readiness contract `docs/specs/ilc_capability_proof_activation_readiness_contract_231_v0.1.md` that locks Gate A criteria as testable statements (including fail-closed behavior, no-direct-ILC-reward invariant, and no user-supplied kernels/backend hints invariant); preserved planning assessment values for all five capability-proof surfaces; encoded hard deferred boundaries for AWP/IIH (Gate C), QATPS/CIT (Gate E), ingenuity scoring (research only), and AWP pool split (Gate D); preserved open-CDL dependencies (`CDL-001`, `CDL-002`, `CDL-007`); added focused contract tests in `tests/test_capability_proof_activation_readiness_contract_231.py`; validated prompt contract (`VALID`); ran focused tests (`6 passed`), Phase-230 reproducibility regression tests (`5 passed`), reproducible-build gate execution (PASS), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2701,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added sensitive phase prompt `docs/antigravity_tasks/antigravity_prompt__phase_232_g8_constitution_cluster_a_security_runtime_implementation_plan_lock.md`; published planning artifact `docs/specs/ilc_security_runtime_implementation_plan_232_v0.1.md` with explicit dependency ordering (`CDL-001 -> CDL-002`, `CDL-007` partial parallelism with final closure after `CDL-001`), per-CDL deferred mapping from Phase-227 contracts, per-CDL test strategy, per-CDL risk/rollback modes, explicit entry criteria, and non-goals/canonical anchors; added focused contract tests `tests/test_security_runtime_implementation_plan_232.py`; validated prompt contract (`VALID`); ran focused tests (`6 passed`), Phase-231 readiness regression (`6 passed`), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2723,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output**: Added non-sensitive prompt `docs/antigravity_tasks/antigravity_prompt__phase_234_g8_constitution_cluster_a_sdk_boundary_contract_lock.md` with SKILL frontmatter; published boundary contract `docs/specs/ilc_sdk_boundary_contract_234_v0.1.md` defining protocol/orchestration/runtime surfaces, explicit star.map exclusion, CapProof Gate A invariant references, anti-leakage rules, and boundary examples; added focused tests `tests/test_sdk_boundary_contract_234.py` with structural coverage and anchor-integrity checks; completed Group B housekeeping by publishing `docs/specs/ilc_distribution_architecture_roadmap_v0.3.md` (D2e, D3, D2d amendments) and updating `TODO.txt` with D2e/D3/D2d task blocks and dependencies; validated prompt contract (`VALID`); ran focused tests (`5 passed`), Phase-233 regression (`6 passed`), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2855,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added non-sensitive prompt `docs/antigravity_tasks/antigravity_prompt__phase_246_g8_constitution_cluster_a_d2e_pipeline_scaffolding_spec.md`; published `docs/specs/ilc_d2e_pipeline_scaffolding_spec_v0.1.md` with six required sections and ADM-001 v0.2 anchoring; documented explicit D3/D4/D5 deferred boundaries; added focused tests `tests/test_d2e_pipeline_scaffolding_spec_246.py`; validated prompt contract (`VALID`); ran phase tests (`5 passed`), Phase-236 preflight regression (`PASS`), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 2943,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added non-sensitive prompt `docs/antigravity_tasks/antigravity_prompt__phase_255_g8_constitution_cluster_a_d2_minimal_schema_specification.md`; published `docs/specs/ilc_d2_minimal_schema_specification_255_v0.1.md` covering D2-01, D2-02, and D2-08 schema requirements with canonical encoding constraints and explicit deferred schema list; added focused tests `tests/test_d2_minimal_schema_spec_255.py`; validated prompt contract (`VALID`); ran schema tests (`6 passed`), Phase-236 preflight regression (`PASS`), and walkthrough ellipsis guardrail (`2 passed`).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 3229,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Added non-sensitive prompt `docs/antigravity_tasks/antigravity_prompt__phase_278_g8_constitution_cluster_a_integration_coherence_report_and_context_capsule_v0_6.md`; published coherence artifact `docs/specs/ilc_integration_coherence_report_278_v0.1.md` with five required sections and explicit CDL alignment assertions (`CDL-029/026/028/027/030` ratified, `CDL-031` open, and prior ratified continuity set); published superseding context capsule `docs/specs/ilc_antigravity_context_capsule_v0.6.md` with issuance-closure summary and explicit `CDL-031` deferred state; added focused tests `tests/test_integration_coherence_278.py`; validated prompt contract (`VALID`); ran phase tests (`7 passed`), Phase-277 ratification regression (`8 passed`), and walkthrough ellipsis guardrail (`2 passed`); confirmed no decision-log mutation and no `ilc_core/` runtime changes.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 3328,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive prelock prompt `docs/antigravity_tasks/antigravity_prompt__phase_280_g8_constitution_cluster_a_epistemic_type_and_subjective_objective_payout_boundary_prelock_pre1.md`; published non-ratifying prelock artifact `docs/specs/ilc_epistemic_type_and_subjective_objective_payout_boundary_prelock_280_pre1_v0.1.md` with required enum candidates, validation-path matrix, payout-boundary matrix, anti-Sybil anchors, and deferred-ratification criteria; added focused tests `tests/test_epistemic_type_payout_boundary_prelock_280_pre1.py`; validated prompt contract (`VALID`); ran phase tests (`6 passed`), reuse-diversity regression (`4 passed`), sybil defense regression (`1 passed`), and walkthrough ellipsis guardrail (`2 passed`); confirmed no decision-log mutation and no `ilc_core/` runtime changes.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 3791,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed non-sensitive sequence-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_328_g8_constitution_cluster_a_sequence_lock_328_337_parallel_tracks.md`; published sequence-lock artifact `docs/specs/ilc_phase_328_337_sequence_lock_v0.1.md` with ordered 328-337 lane table, full sensitivity map, dependency/synchronization rules, explicit no-ratification-before-lock guard, authorized ratification lanes `329` through `335`, explicit deferral of `CDL-021`, exact V-series sequencing constraints, Phase-332 structural-risk note, Phase-329 deferred historical-prelock hardening note, and explicit Phase-337 closure-gate snapshot-isolation/testing standard; added focused contract tests `tests/test_phase_328_sequence_lock.py` with hard-fail commit resolver semantics and commit-anchored no-decision-log/no-`ilc_core/`-runtime-mutation guards; validated prompt contract (`VALID`); completed entry criteria checks (`8 passed`, Phase-327 closure gate pass, mutation canary pass, `phase_328_open_inventory_ok`); completed pre-commit diagnostic (`10 passed, 2 failed` expected on missing commit subject) and post-commit verification chain (`12 passed`, `8 passed`, Phase-327 closure gate pass, mutation canary pass, `2 passed`); confirmed no decision-log mutation and no `ilc_core/` runtime changes.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 3839,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive ratification prompt `docs/antigravity_tasks/antigravity_prompt__phase_332_g8_constitution_cluster_a_cdl_v3_ratification.md`; published ratification evidence `docs/specs/ilc_cdl_v3_quorum_diversity_ratification_evidence_332_v0.1.md`; mutated only the `CDL-V3` decision-log row in `docs/specs/ilc_constitutional_decision_log_v0.1.md` with allowed ratification fields (`status`, `ratified_phase`, `ratified_date`, `evidence_document`); patched `tests/test_cdl_v_batch_a_open_and_evidence_prelock_324.py` so the historical Phase-324 `CDL-V1`, `CDL-V2`, and `CDL-V3` rows are validated entirely against historical Phase-324 state rather than the live post-ratification decision log; added focused ratification tests `tests/test_cdl_v3_ratification_332.py` with hard-fail content-qualified commit resolver semantics, four-field target-row mutation-scope guardrail, explicit evidence-token coverage for the Phase-324 prelock and Phase-325 `CDL-V4` forward anchor, and commit-anchored full non-target row shield; hardened `tests/test_cdl_v1_ratification_330.py` and `tests/test_cdl_v2_ratification_331.py` so the prior ratification suites continue to verify the strengthened historical Phase-324 preservation pattern after `CDL-V3` ratification; validated prompt contract (`VALID`); completed entry criteria checks (`12 passed`, `7 passed`, `7 passed`, `6 passed`, `5 passed`, `4 passed, 1 skipped`, `14 passed`, `8 passed`, `9 passed`, `8 passed`, Phase-327 closure gate pass, `9 passed`, mutation canary pass, `phase_332_pre_ratification_inventory_ok`, pre-mutation `rg` recorded); completed pre-commit diagnostic (`5 passed, 2 failed` expected on missing commit subject); completed post-commit verification chain (`7 passed`, `6 passed`, `7 passed`, `7 passed`, `5 passed`, `4 passed, 1 skipped`, `14 passed`, `8 passed`, `9 passed`, `12 passed`, `8 passed`, Phase-327 closure gate pass, `9 passed`, mutation canary pass); reran walkthrough hygiene after documentation updates (`2 passed`); confirmed only `CDL-V3` mutated, all non-target rows were commit-anchored unchanged, no `ilc_core/` runtime files changed, `CDL-V2` was treated as the ratified prerequisite consumed by `CDL-V3`, and the future `CDL-V4 <-> CDL-V6` coupled-governance boundary remained deferred to Phase 334.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 4147,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed non-sensitive planning prompt `docs/antigravity_tasks/antigravity_prompt__phase_358_g8_constitution_cluster_a_window_358_367_sequence_lock_and_roadmap_v0_4.md`; published `docs/specs/ilc_phase_358_367_sequence_lock_v0.1.md`, `docs/specs/ilc_distribution_architecture_roadmap_v0.4.md`, and `tests/test_phase_358_sequence_lock.py`; locked Window 358-367 ordering and sensitivity boundaries; bounded implementation authorization to ratified `CDL-034` through `CDL-038` surfaces; explicitly deferred V-series enforcement runtime implementation to Window 368-377; carried forward CDL-039 additive-only opening constraints for Phase 359 with finalized prelock deferred to Phase 374 evidence timing; added D2d communication-resilience framing in roadmap v0.4 (immune-system framing, topology privacy constraints, and partition-tolerant consensus requirements) while keeping implementation scheduled for Window 378+; completed entry criteria checks (`8 passed`, `21 passed`, env/diff checks clean), pre-commit diagnostic (`5 passed, 2 failed` expected on missing commit), verification chain (`16 passed`, decision-log and `ilc_core/` clean, walkthrough hygiene `2 passed`), and post-commit phase contract (`7 passed`); confirmed no decision-log mutation and no `ilc_core/` runtime changes.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 4592,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive closure prompt `docs/antigravity_tasks/antigravity_prompt__phase_401_g8_constitution_cluster_a_window_392_401_closure_verification_gate_and_402_plus_handoff.md`; published closure gate script `tools/check_window_392_401_closure_gate_phase_401.sh`, gate contract suite `tests/test_window_392_401_closure_gate_401.py`, and handoff artifact `docs/specs/ilc_window_392_401_handoff_401_v0.1.md`; verified six-category gate contract with exact dry-run format, pass/conditional/blocked exit semantics, recursion selftest guard, and snapshot override isolation; confirmed constitutional closure state (`CDL-039`, `CDL-040`, `CDL-041`, `CDL-043`, and `CDL-044` ratified with metadata), confirmed CDL-044 calibration-section bounded-range removal via section-scoped parsing, and confirmed CDL-042 deferred/open boundary to Window 402+; enforced carry-forward assertions for ADM-003 v0.2 signing interface token and capsule v1.4 runtime-integrity token; completed verification chain (prompt `VALID`, pre-commit diagnostic `6 passed, 2 failed`, post-commit gate suite `8 passed`, full gate `phase_401_verdict=pass`, lane/cross-phase regression `81 passed` and `84 passed, 25 skipped`, mutation canary pass, walkthrough hygiene `2 passed`); snapshot proof remained byte-identical and mtime-identical (`sha256=b7be4349e09abf23ac37df803982a8bf0a2cb5cb1848d9a5933a134e1a355a97`, `st_mtime_ns=1772723739022311163` before/after); confirmed no decision-log mutation and no `ilc_core/` runtime changes.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 4595,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Next planned phase:** Phase 402 (sensitive sequence-lock and deferred constitutional opening lane).",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 4666,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive constitutional prompt `docs/antigravity_tasks/antigravity_prompt__phase_408_g8_cdl_045_operational_emergency_response_ratification.md`; published ratification evidence artifact `docs/specs/ilc_cdl_045_operational_emergency_response_ratification_evidence_408_v0.1.md` locking the automated circuit breaker with CDL-V3 diversity quorum trigger and CDL-V6 sunset candidate, the positive-governance-action requirement for resumption of normal operation, mandatory post hoc CDL-V4 review after every invocation, rejection of manual-only and tiered-escalation alternatives, and the SIM-005 quantitative carry-forward (`0.338` unresolved orphan backlog rate, `2-minute` timeout horizon) with trigger-threshold calibration deferred to later D2e implementation; mutated exactly one decision-log row in `docs/specs/ilc_constitutional_decision_log_v0.1.md`, changing `CDL-045` from `open` to `ratified`, removing `(proposed)` from the selected candidate, and appending ratification metadata (`ratified_phase: 408`, `ratified_date: 2026-03-14`, evidence-document path) with no non-target row mutation; historicalized the Phase-404 prelock suite in `tests/test_phase_404_cdl_045_prelock_hardening.py` and added focused ratification contract suite `tests/test_phase_408_cdl_045_ratification.py`; completed verification chain (Phase-408 + Phase-404 bundle `14 passed`, Phase-402 suite `7 passed`, broader 402-407 regression bundle `42 passed` after follow-up historicalization fix `2468f50`, mutation canary pass, no `ilc_core/` runtime files dirtied); confirmed `CDL-042` remained `ratified`, `CDL-046` remained `open`, and no runtime implementation work occurred in this phase.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 4696,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed non-sensitive runtime prompt `docs/antigravity_tasks/antigravity_prompt__phase_411_g8_d2e_timed_out_lifecycle_runtime.md`; extended the existing node runtime package in `ilc_core/node/__init__.py` while preserving the exact pre-existing CDL-034 through CDL-038 export order; implemented `ilc_core/node/timed_out_lifecycle_runtime_411.py` with exact dependency locks `TIMED_OUT_LIFECYCLE_RUNTIME_VERSION = \"timed_out_lifecycle_runtime_411.v0.1\"`, `CDL_046_DEPENDENCY = \"cdl_046_ratified_409.v0.1\"`, and `LIFECYCLE_BASE_DEPENDENCY = \"cdl_035_ratified_350.v0.1\"`, plus constitutionally locked constants `ORPHAN_TIMEOUT_EPOCHS = 4` and `RECOVERY_POLICY = \"stake_full_release\"`, deterministic `is_claim_timed_out()` timeout checks, and tokenized validation failures for invalid epoch inputs; published handoff artifact `docs/specs/ilc_d2e_timed_out_lifecycle_runtime_handoff_411_v0.1.md` locking the CDL-046 constants, CDL-035 amendment boundary, silent impossible-epoch behavior, mutation-scope boundary, and carry-forward deferral to Phase 412 / Window 414+; added focused runtime contract suite `tests/test_phase_411_d2e_timed_out_lifecycle_runtime.py` with expected pre-commit split (`10 passed, 2 failed`) and post-commit full pass (`12 passed`), including exact-subject commit resolver and custom `ilc_core/node/`-scoped mutation guard; completed verification chain (Phase-411 suite `12 passed`, 407/408/409/410/411 regression bundle `46 passed`, node package regression bundle `49 passed`, mutation canary pass, post-canary node package plus Phase-411 recheck `61 passed`); confirmed no decision-log mutation occurred, no changes were made to `ilc_core/node/validation_lifecycle_runtime_361.py`, no `ilc_core/identity/` or `ilc_core/cli/main.py` files changed, and D2e-04 CLI integration remained deferred to Window 414+.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 4925,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive runtime-tranche prompt `docs/antigravity_tasks/antigravity_prompt__phase_435_g8_runtime_tranche_peer_fanout_integration.md`; published runtime changes in `ilc_core/network/peer.py`, `ilc_core/cli/main.py`, and `ilc_core/node/node_dissemination_runtime_362.py`; `PeerManager.broadcast()` now performs real HTTP peer fanout attempts with machine-auditable result dicts and delivery outcome logs, while CLI and node-dissemination refactors cleared the active code-health hotspots without changing delegated JSON payload semantics or node-dissemination token behavior; published `docs/specs/ilc_runtime_tranche_peer_fanout_handoff_435_v0.1.md` and focused contract suite `tests/test_phase_435_runtime_tranche_peer_fanout_integration.py` with expected pre-commit split (`6 passed, 2 failed`) and post-commit full pass (`8 passed`); completed verification chain (targeted network/runtime regression `17 passed`, `tests/test_code_health.py` `4 passed`, Phase-434 suite `7 passed`, Phase-433 gate suite `8 passed`, Phase-433 dry-run contract clean, mutation canary pass, signer-lineage runtime suite `8 passed` after cleanup restore); confirmed no decision-log mutation occurred, runtime mutation scope was limited to the exact Phase-435 path set, and `tools/runtime_baseline.py` remained deferred to Phase 436.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5006,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive runtime prompt `docs/antigravity_tasks/antigravity_prompt__phase_444_g8_consensus_runtime_i_epoch_state_and_quorum_record_surfaces.md`; published `ilc_core/consensus/epoch_state_runtime.py`, `docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md`, and `tests/test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces.py`; verified expected pre-commit split (`6 passed, 2 failed`) and post-commit full pass (`8 passed`); re-verified the Phase-443 through Phase-441 constitutional suites (`21 passed`), the consensus/event/ledger regression suite (`31 passed`), the Phase-440 dry-run contract, mutation canary pass, and signer-lineage suite (`8 passed`) after cleanup restore; confirmed no decision-log mutation occurred, runtime mutation scope was limited to the exact Phase-444 path set, no implicit constitutional quorum-threshold default was introduced, and deterministic finality evaluation remains deferred to Phase 445.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5015,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed sensitive runtime prompt `docs/antigravity_tasks/antigravity_prompt__phase_445_g8_consensus_runtime_ii_finality_evaluator_and_fork_resolution.md`; published `ilc_core/consensus/finality_evaluator.py`, `docs/specs/ilc_consensus_runtime_finality_evaluator_handoff_445_v0.1.md`, and `tests/test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution.py`; verified expected pre-commit split (`6 passed, 2 failed`) and post-commit full pass (`8 passed`); re-verified the Phase-444 through Phase-441 suites (`29 passed`), the consensus/event/ledger regression suite (`31 passed`), the Phase-440 dry-run contract, mutation canary pass, and signer-lineage suite (`8 passed`) after cleanup restore; confirmed no decision-log mutation occurred, runtime mutation scope was limited to the exact Phase-445 path set, and harness integration remains deferred to Phase 446.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5130,
+        "markers": [
+          "not authorized"
+        ],
+        "snippet": "**Next planned phase:** carry-forward outside Window 450-459; Phases 457-459 are not authorized.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5471,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the staking-specification prompt `docs/antigravity_tasks/antigravity_prompt__phase_463_g8_minimal_staking_contract_specification.md`; published `docs/specs/ilc_minimal_staking_contract_specification_463_v0.1.md`, `tests/test_phase_463_minimal_staking_contract_specification.py`, and `docs/phases/phase_463_minimal_staking_contract_specification_walkthrough.md`; recorded `Gate 3 cleared.`, defined submission and refutation staking obligations, fixed the reputation feed-through and reward timing rule, deferred all numeric calibration constants to a future simulation lane, changed no decision-log rows, and changed no `ilc_core/` runtime files.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5680,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the findings-memo prompt `docs/antigravity_tasks/antigravity_prompt__phase_482_g8_cdl_052_genesis_integration_findings_memo.md`; published `docs/specs/ilc_cdl_052_genesis_integration_findings_memo_482_v0.1.md`, `tests/test_phase_482_cdl_052_genesis_integration_findings_memo.py`, and `docs/phases/phase_482_cdl_052_genesis_integration_findings_memo_walkthrough.md`; recorded the honest cross-track identity-binding carry-forward gap, the full Phase 476-481 regression bundle, and the governance-priority deferred-item inventory, changed no decision-log rows, and changed no `ilc_core/` runtime files.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5852,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the architectural-scoping prompt `docs/antigravity_tasks/antigravity_prompt__phase_498_g8_epoch_boundary_enforcement_architectural_scoping.md`; published `docs/specs/ilc_epoch_boundary_enforcement_architectural_scoping_498_v0.1.md` and `tests/test_phase_498_epoch_boundary_enforcement_architectural_scoping.py`; concluded that provenance-only validator witness tagging can be added without reopening CDL-030 or CDL-051, while any witness role that blocks or authorizes ECU to ILC conversion would require a future constitutional amendment deferred to Window 505+; changed no decision-log rows and changed no `ilc_core/` runtime files.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5902,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the synthesis prompt `docs/antigravity_tasks/antigravity_prompt__phase_503_g8_coherence_report_and_capsule_v2_3.md`; published `docs/specs/ilc_integration_coherence_report_503_v0.1.md`, `docs/specs/ilc_antigravity_context_capsule_v2.3.md`, and `tests/test_phase_503_coherence_report_and_capsule_v2_3.py`; recorded the successful CDL-055 and CDL-056 validator path, preserved CDL-053 as deferred and reserved, carried epoch-boundary amendment work to Window 505+, and kept ADR-0022 and the private/gated shard rights/access lane separate from Werner and validator lanes; changed no decision-log rows and changed no `ilc_core/` runtime files.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5953,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the analytical prompt `docs/antigravity_tasks/antigravity_prompt__phase_508_g8_epoch_boundary_cdl_vehicle_selection.md`; published `docs/specs/ilc_epoch_boundary_cdl_vehicle_selection_508_v0.1.md` and `tests/test_phase_508_epoch_boundary_cdl_vehicle_selection.py`; selected `new_cdl_057` as the constitutional rationale for the numbered epoch-boundary lane, rejected `cdl_030_extension` and `cdl_051_extension`, set `blocking_authority_scope = deferred`, preserved CDL-030 P_e clamp semantics and CDL-053 reservation, and changed no decision-log rows or `ilc_core/` files.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5963,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the opening prompt `docs/antigravity_tasks/antigravity_prompt__phase_509_g8_epoch_boundary_cdl_opening.md`; published `docs/specs/ilc_epoch_boundary_witness_opening_stub_509_v0.1.md`, updated `docs/specs/ilc_constitutional_decision_log_v0.1.md` to add `CDL-057` with `status: open`, and published `tests/test_phase_509_epoch_boundary_cdl_opening_stub.py`; preserved the provenance-only scope, deferred blocking authority, preserved CDL-053 as reserved and unopened, and kept all pre-existing CDL rows byte-identical.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 5993,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the scoping prompt `docs/antigravity_tasks/antigravity_prompt__phase_512_g8_re_admission_boundary_cdl_scoping.md`; published `docs/specs/ilc_cdl_058_re_admission_boundary_scoping_512_v0.1.md` and `tests/test_phase_512_re_admission_boundary_cdl_scoping.py`; scoped CDL-058 as the future re-admission boundary lane, enumerated cool-down, stake re-deposit, reputation floor, and sponsor-attestation candidates, set `sim_011_required`, preserved CDL-058 as unopened and deferred to Window 515+, and changed no decision-log rows or `ilc_core/` files.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6013,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the closure prompt `docs/antigravity_tasks/antigravity_prompt__phase_514_g8_window_505_514_closure_gate_and_handoff.md`; published `tools/check_window_505_514_closure_gate_phase_514.sh`, `docs/specs/ilc_window_505_514_handoff_514_v0.1.md`, and `tests/test_window_505_514_closure_gate_514.py`; closed Window 505-514 on the success path with CDL-055 runtime implemented, CDL-056 runtime implemented, CDL-057 ratified, CDL-058 still unopened and deferred to Window 515+, and CDL-053 still reserved and unopened; changed no decision-log rows and changed no `ilc_core/` files in Phase 514.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6035,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the runtime prompt `docs/antigravity_tasks/antigravity_prompt__phase_516_g8_cdl_057_epoch_boundary_witness_runtime.md`; published `ilc_core/epoch/epoch_boundary_witness_runtime.py` and `tests/test_phase_516_epoch_boundary_witness_runtime.py`; exported `EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = \"epoch_boundary_witness_runtime_516.v0.1\"`, `CDL_057_DEPENDENCY = \"cdl_057_ratified_511.v0.1\"`, and `CDL_055_STAKING_DEPENDENCY = \"staking_liveness_runtime_506.v0.1\"`, fixed `BLOCKING_AUTHORITY_DEFERRED = True`, confirmed `is_blocking_authority_active()` always returns `False`, and changed no decision-log rows.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6267,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the runtime prompt `docs/antigravity_tasks/antigravity_prompt__phase_537_g8_reuse_centrality_runtime_algorithm.md`; published `ilc_core/epistemic/reuse_centrality_runtime.py` updates and `tests/test_phase_537_reuse_centrality_runtime_algorithm.py`; replaced `stub_deferred` with `incremental_direct_use_v1`, exported the Phase 537 constants, preserved backward-compatible zero-score behavior when `usage_data` is absent, added u-floor scoring at `0.05`, historicalized the Phase 478 `stub_deferred` check, and changed no decision-log rows or `ilc_core/epistemic/__init__.py` in Phase 537.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6355,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the sequence-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_545_g8_window_545_554_sequence_lock.md`; published `docs/specs/ilc_phase_545_554_sequence_lock_v0.1.md` and `tests/test_phase_545_sequence_lock_and_carry_forward_intake.py`; froze the ten-phase program for Window 545-554, bound the passive-ECU carry-forward obligations from Phase 542, confirmed the Phase 542 exact-value assertion baseline, preserved `CDL-053` reservation, deferred SIM-MULTI-HOP-01 to Phase 552, and changed no decision-log rows or `ilc_core/` files in Phase 545.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6487,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the prelock prompt `docs/antigravity_tasks/antigravity_prompt__phase_557_g8_cdl_061_prelock.md`; added the `CDL-061` open row to `docs/specs/ilc_constitutional_decision_log_v0.1.md`, published `docs/specs/ilc_cdl_061_gossip_http_envelope_prelock_557_v0.1.md`, and published `tests/test_phase_557_cdl_061_prelock.py`; locked the gossip HTTP envelope header field set, CDL-039 header exclusions, CDL-060 `ILC-Hop-Count: 1` rule, HTTP status semantics, CBOR production encoding, and CDL-024 kind mapping, with ratification deferred to Phase 561 and no `ilc_core/` mutation in Phase 557.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6575,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the sequence-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_565_g8_window_565_574_sequence_lock.md`; published `docs/specs/ilc_phase_565_574_sequence_lock_v0.1.md` and `tests/test_phase_565_window_565_574_sequence_lock.py`; locked the 10-phase three-machine testbed program, the primary transport gate vs. secondary packaging/genesis lane split, JSON static peer config, explicit `kind=http` fallback proof by config only, `venv + systemd` packaging, server TLS plus `ILC-Signature`, and the deferred `HTTP machine-payment skill` / `HTTP machine-payment ingress` nomenclature shift, with no decision-log mutation and no `ilc_core/` changes in Phase 565.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6663,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the coherence prompt `docs/antigravity_tasks/antigravity_prompt__phase_573_g8_coherence_report_and_capsule_v3_0.md`; published `docs/specs/ilc_integration_coherence_report_573_v0.1.md`, `docs/specs/ilc_antigravity_context_capsule_v3.0.md`, and `tests/test_phase_573_coherence_report_and_capsule_v3_0.py`; recorded the completed transport, startup/genesis, packaging, and smoke lanes for Window 565-574, carried forward the deferred `HTTP machine-payment skill` and `HTTP machine-payment ingress` lanes plus multi-hop and full node-orchestration redesign, and changed no decision-log rows or `ilc_core/` files in Phase 573.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6685,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the sequence-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_575_g8_window_575_584_sequence_lock.md`; published `docs/specs/ilc_phase_575_584_sequence_lock_v0.1.md` and `tests/test_phase_575_window_575_584_sequence_lock.py`; locked Window 575-584 as the RC0.1 testnet economics and agent-loop lane, required the settlement/wallet boundary and persisted-graph contract to precede runtime cutover, required a bounded CDL-V7 reproducibility disposition before closure, and explicitly deferred public genesis and minting stabilization to Phase 585+ without changing the decision log or `ilc_core/` in Phase 575.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6693,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the boundary-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_576_g8_rc0_1_settlement_wallet_boundary_lock.md`; published `docs/specs/ilc_rc0_1_settlement_wallet_boundary_lock_576_v0.1.md` and `tests/test_phase_576_rc0_1_settlement_wallet_boundary_lock.py`; locked visible RC0.1 balances to settled internal ledger balances only, fixed the wallet surface as read-only visibility/accounting, preserved machine-auditable replay-safe settlement semantics, and deferred signing, spend, transfer, withdrawal, and founder/genesis payout stabilization beyond RC0.1 without changing the decision log or `ilc_core/` in Phase 576.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6701,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the boundary-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_577_g8_rc0_1_persisted_graph_contract_lock.md`; published `docs/specs/ilc_rc0_1_persisted_graph_contract_lock_577_v0.1.md` and `tests/test_phase_577_rc0_1_persisted_graph_contract_lock.py`; locked the minimum durable graph record set as claim/support/refute/quorum/attribution/epoch-commit, kept node and link roles query-distinguishable, required runtime-store and manifest identity alignment, and deferred broader public linkage and payout-traceability closure beyond RC0.1 without changing the decision log or `ilc_core/` in Phase 577.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6709,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the boundary-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_578_g8_rc0_1_curated_genesis_bootstrap_lineage_lock.md`; published `docs/specs/ilc_rc0_1_curated_genesis_bootstrap_lineage_lock_578_v0.1.md` and `tests/test_phase_578_rc0_1_curated_genesis_bootstrap_lineage_lock.py`; locked curated testnet-only lineage scope, separated discovery from runtime promotion, preserved compromise and rollback posture for the curated fleet, selected an operator-authorized curated non-validator submission identity model, and deferred permissionless public admission and public lineage governance beyond RC0.1 without changing the decision log or `ilc_core/` in Phase 578.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6759,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the identity-boundary prompt `docs/antigravity_tasks/antigravity_prompt__phase_587_g8_public_identity_activation_namespace_boundary_lock.md`; published `docs/specs/ilc_public_identity_activation_and_namespace_boundary_lock_587_v0.1.md` and `tests/test_phase_587_public_identity_activation_and_namespace_boundary_lock.py`; locked canonical public identity as key-derived but activation-receipt-gated, selected a first-class namespace authority receipt chain bound to admitted identity lineage, preserved the distinction between local/private identity and canonical public legitimacy, and kept settlement-linked public legitimacy, quorum eligibility, and Genesis sunset/fork coherence deferred to later phases without changing the decision log or `ilc_core/` in Phase 587.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6767,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the quorum-authority prompt `docs/antigravity_tasks/antigravity_prompt__phase_588_g8_public_quorum_eligibility_genesis_lineage_authority_boundary_lock.md`; published `docs/specs/ilc_public_quorum_eligibility_and_genesis_lineage_authority_boundary_lock_588_v0.1.md` and `tests/test_phase_588_public_quorum_eligibility_and_genesis_lineage_authority_boundary_lock.py`; locked public quorum authority behind activated identity lineage plus canonical snapshot or epoch-root proof, preserved the CDL-V3 diversity boundary and CDL-051 quorum-record chain, tied public authority continuity to Genesis-rooted bootstrap anchors, and kept selection algorithms, settlement legitimacy, and Genesis/fork coherence deferred to later phases without changing the decision log or `ilc_core/` in Phase 588.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6775,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the settlement-legitimacy prompt `docs/antigravity_tasks/antigravity_prompt__phase_589_g8_settlement_linked_public_legitimacy_payout_traceability_lock.md`; published `docs/specs/ilc_settlement_linked_public_legitimacy_and_payout_traceability_lock_589_v0.1.md` and `tests/test_phase_589_settlement_linked_public_legitimacy_and_payout_traceability_lock.py`; locked canonical public legitimacy to a settled activation-plus-quorum-plus-settlement receipt chain, preserved beneficiary and payout traceability through `task_id`, `epoch_id`, and `claim_batch_sha256` anchors, rejected wallet visibility and promotion continuity as legitimacy shortcuts, and deferred Genesis/fork coherence plus final public minting and spend semantics without changing the decision log or `ilc_core/` in Phase 589.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6791,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the runtime-integration prompt `docs/antigravity_tasks/antigravity_prompt__phase_591_g8_public_runtime_integration_over_receipt_boundary.md`; published `docs/specs/ilc_public_runtime_integration_over_receipt_boundary_591_v0.1.md` and `tests/test_phase_591_public_runtime_integration_over_receipt_boundary.py`; locked the RC0.1 runtime and proof lane as a bounded bridge over the frozen public identity, quorum, settlement, and Genesis-lineage boundary, preserved the current `task_id`, `epoch_id`, `claim_batch_sha256`, settlement-status, and wallet-query anchors, kept release-candidate and release-claim tooling in implementation-context status rather than public law, and deferred the honesty package, coherence report, and closure gate to later phases without changing the decision log or `ilc_core/` in Phase 591.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6799,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the honesty-package prompt `docs/antigravity_tasks/antigravity_prompt__phase_592_g8_public_release_claim_and_operator_honesty_package.md`; published `docs/specs/ilc_public_release_claim_and_operator_honesty_package_592_v0.1.md` and `tests/test_phase_592_public_release_claim_and_operator_honesty_package.py`; locked the bounded RC0.1 public claim to the Phase 591 runtime boundary, required machine-legible candidate-manifest, release-claim, readiness-delta, and checked economic-summary disclosure, made publication-pending and post-RC deferred scope explicit, and blocked mainnet-equivalence, hostile-internet, permissionless-admission, and unresolved Genesis-law overclaiming without changing the decision log or `ilc_core/` in Phase 592.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6943,
+        "markers": [
+          "local-only"
+        ],
+        "snippet": "**Output**: Executed bounded Fix2 prompt `docs/antigravity_tasks/antigravity_prompt__phase_606_g8_fix2_mempalace_retrieval_correctness_and_manifest_hardening.md`; published `docs/specs/ilc_mempalace_retrieval_correctness_and_manifest_hardening_606_fix2_v0.1.md`, `docs/research/ilc_mempalace_retrieval_correctness_and_manifest_hardening_independent_audit_606_fix2_v0.1.md`, `tools/check_phase_606_fix2_mempalace_retrieval_correctness_and_manifest_hardening.py`, and `tests/test_phase_606_fix2_mempalace_retrieval_correctness_and_manifest_hardening.py`; removed misleading raw-similarity labeling from tiered query output in favor of preserved `distance`, surfaced metric metadata plus bounded `relevance_score`, moved the MemPalace and Chroma pins into the requirements file as the single source of truth, added optional-manifest handling for local-only Tier D history, expanded the Tier B planning corpus for Window 606+ retrieval utility, broadened retrieval-brief path extraction to repo-relative files such as `simulations/...`, and kept wrapper scripts as the supported bounded workflow over generic plugin use without changing the decision log or `ilc_core/`.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 6977,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the substrate-options prompt `docs/antigravity_tasks/antigravity_prompt__phase_610_g8_window_607_612_public_ledger_substrate_options_and_rejection_matrix.md`; published `docs/specs/ilc_public_ledger_substrate_options_and_rejection_matrix_610_v0.1.md` and `tests/test_phase_610_public_ledger_substrate_options_and_rejection_matrix.py`; explicitly evaluated the internal-ledger-final, custom minimal L1, external rollup/L2, and deferred-substrate ledger-interface paths, rejected internal-ledger-final as incompatible with the locked non-closure posture, deferred the custom minimal L1 and external rollup/L2 paths as later viable options, kept the deferred-substrate ledger-interface posture as the near-term architectural path, preserved the public auditability versus identity/privacy split across every option, and authorized no wallet widening, chain implementation, or payment runtime while leaving the decision log and `ilc_core/` unchanged in Phase 610.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7001,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the sequence-lock prompt `docs/antigravity_tasks/antigravity_prompt__phase_613_g8_window_613_619_sequence_lock.md`; published `docs/specs/ilc_phase_613_619_sequence_lock_v0.1.md` and `tests/test_phase_613_window_613_619_sequence_lock.py`; locked Window 613-619 as a seven-phase MVP gate spec lane only; fixed the hard pass condition that all four spec phases must close and pass, the Phase 618 coherence report must preserve the spec-form-only gate, the interface/runtime gate in Window 623+ remains required, and broader public RC claims remain blocked until both spec and runtime forms complete; carried forward the Phase 612 priority rule that receipt, lifecycle, wallet, and init/admission touchpoints must precede new sub-lanes; explicitly deferred Agent Skills to a post-619 window; preserved the Phase 576 and Phase 581 read-only wallet boundary; and prohibited wallet widening, payment runtime, chain implementation, decision-log mutation, and `ilc_core/` mutation in Phase 613.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7025,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the Phase 616 prompt `docs/antigravity_tasks/antigravity_prompt__phase_616_g8_public_receipt_schema_and_query_contract_spec.md`; published `docs/specs/ilc_public_receipt_schema_and_query_contract_spec_616_v0.1.md` and `tests/test_phase_616_public_receipt_schema_and_query_contract_spec.py`; locked the receipt issuance and query touchpoint as the second of the five minimum participant-touch surfaces from Phase 612; anchored the receipt schema contract explicitly to the Phase 586 public receipt representation cluster and converted that inherited discipline into a concrete minimum common field schema for `artifact_kind`, `schema_version`, `receipt_id`, `signer_agent_id`, `authority_scope`, `lineage_ref`, `epoch_id`, `issued_at`, `verification_material_ref`, and `verification_status`; fixed the four allowed receipt class schema extensions (public identity activation, public namespace authority, public quorum eligibility/proof, and settlement-linked public legitimacy) without introducing any new receipt classes; locked the read-only query modes (`receipt_id`, `signer_agent_id`, `artifact_kind + epoch_id`) and the JSON-array response shape; fixed the fail-closed verification discipline and minimum machine-legible failure tokens (`missing_lineage`, `missing_scope`, `missing_attestation`, `schema_mismatch`, `version_mismatch`, `receipt_not_found`); and explicitly deferred runtime issuance, runtime query execution, claimability semantics bound to receipt state, VRF mechanics, succession/revocation policy, decision-log mutation, and `ilc_core/` mutation. The packet remains spec-form only and does not widen wallet authority, admission authority, or settlement-substrate scope.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7033,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the Phase 617 prompt `docs/antigravity_tasks/antigravity_prompt__phase_617_g8_public_wallet_surface_contract_spec.md`; published `docs/specs/ilc_public_wallet_surface_contract_spec_617_v0.1.md` and `tests/test_phase_617_public_wallet_surface_contract_spec.py`; locked the wallet/query touchpoint as the fifth of the five minimum participant-touch surfaces from Phase 612; anchored the wallet surface explicitly to the Phase 576 read-only wallet boundary, the Phase 581 settled wallet-query proof, the Phase 615 lifecycle packet, and ADR-0026; fixed the permitted wallet query operations to exactly `wallet_status`, `wallet_history`, `wallet_export`, and `ledger_summary`; locked `wallet_status` to `agent_id`, `balance_ilc`, `ecu_accrual`, and mandatory `claimability_state: deferred`; preserved `balance_ilc` as the only exposed balance class; fixed wallet history to settled LMDB-backed state and wallet export to advisory/accounting-only semantics; and explicitly prohibited wallet write, spend, transfer, withdrawal, minting, public-claimability implication, chain or rollup interaction, decision-log mutation, and `ilc_core/` mutation. The packet does not create new wallet surfaces and does not widen the Phase 576 and Phase 581 bounded posture.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7041,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output**: Executed the Phase 618 prompt `docs/antigravity_tasks/antigravity_prompt__phase_618_g8_mvp_gate_synthesis_and_coherence_report.md`; published `docs/specs/ilc_window_613_619_coherence_report_618_v0.1.md`, `docs/specs/ilc_antigravity_context_capsule_v3.3.md`, and `tests/test_phase_618_mvp_gate_synthesis_and_coherence_report.py`; synthesized the full Window 613-619 spec lane against the Phase 612 five-touchpoint minimum participant package; confirmed all five touchpoints in spec form (`public_init_admission_contract_spec_614_locked`, `public_receipt_schema_and_query_contract_spec_locked`, bundled Phase 615 coverage for ECU visibility and delayed ILC visibility, and `public_wallet_surface_contract_spec_locked`); issued the explicit synthesis verdict `mvp_gate_spec_verdict=pass`; preserved the required blocked-status statement that spec-form closure is necessary but not sufficient for the full MVP gate and that interface/runtime form in Window 623+ remains required before broader public RC claims may proceed; confirmed `Option D` as the active near-term posture, CDL-062 as still unauthorized, the Phase 576 and Phase 581 wallet boundary as unchanged, and Agent Skills as deferred per the Phase 612 priority rule; and rolled the context capsule forward to v3.3 without any decision-log mutation or `ilc_core/` mutation.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7049,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output:** Executed the Phase 619 prompt `docs/antigravity_tasks/antigravity_prompt__phase_619_g8_window_613_619_closure_gate_and_handoff.md`; published `tools/run_window_613_619_closure_gate_phase_619.sh`, `tests/test_phase_619_window_613_619_closure_gate.py`, and `docs/specs/ilc_window_613_619_handoff_619_v0.1.md`; closed Window 613-619 with the Phase 605-style six-category gate pattern (prompt validation, MVP spec band tests, synthesis/coherence tests, mutation canary, closure-gate CLI contract, walkthrough hygiene); recorded the explicit closure verdict `phase_619_verdict=pass` and `mvp_gate_spec_lane_status=pass`; preserved `Option D` as the active posture, `CDL-062` as unauthorized, the Phase 576 and Phase 581 wallet boundary as unchanged, and Agent Skills as deferred; published the nine-row Option-B graduation checklist delta showing rows 1-4 advanced to `spec_closed_runtime_pending` while rows 5-9 remain unchanged; carried forward the four planning tokens without promoting them into canonical law; and left both the decision log and `ilc_core/` unchanged in Phase 619.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7057,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output:** Executed the Phase 620 prompt `docs/antigravity_tasks/antigravity_prompt__phase_620_g8_window_620_622_sequence_lock.md`; published `docs/specs/ilc_phase_620_622_sequence_lock_v0.1.md` and `tests/test_phase_620_window_620_622_sequence_lock.py`; opened Window 620-622 as a bounded planning/spec lane covering the Agent Skills surface spec and the bounded ECU exchange model spec; recorded the post-619 authorization basis explicitly, including the Phase 619 Agent Skills deferral, the 2026-04-13 human authorization, and the 2026-04-13 human assessment that the Phase 612 priority rule is satisfied for this bounded parallel planning lane because the five MVP touchpoints are now closed in spec form; locked the AG gates as the planning design filter for this window only; preserved the Phase 576 and Phase 581 read-only wallet boundary, the Phase 609 ECU/ILC/runtime separation, the Phase 612 two-form MVP gate requirement, and ADR-0028 Option D active posture; fixed Tier 3 skill_node work as deferred, Phase 622 as spec-form only, `CDL-062` as unauthorized, and `CDL-053` as deferred and not a prerequisite for Phase 622; and prohibited decision-log mutation, `ilc_core/` mutation, wallet widening, Option B selection claims, and any prescription about Window 623+ runtime sequencing.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7065,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output:** Executed the Phase 621 prompt `docs/antigravity_tasks/antigravity_prompt__phase_621_g8_agent_skills_surface_spec.md`; published `docs/specs/ilc_agent_skills_surface_spec_621_v0.1.md` and `tests/test_phase_621_agent_skills_surface_spec.py`; locked the Tier 1 and Tier 2 Agent Skills surface contract as a spec-only artifact rooted in ADR-0024 as proposed planning basis and the Phase 620 sequence lock; fixed the invocation contracts for all seven Tier 1 workflow skills (`phase-validate`, `phase-commit`, `run-canary`, `cdl-status`, `selftest-audit`, `pre-flight-check`, `cdl-open`) with explicit machine-legible outputs and failure tokens; fixed the invocation contracts for all five Tier 2 scaffold skills (`phase-test-scaffold`, `cdl-evidence-scaffold`, `sim-doc-scaffold`, `gate-scaffold`, `coherence-scaffold`) with reference example paths drawn from verified passing repo artifacts; surfaced the CDL-033 extension requirements for later graph-aware skills from the Phase 291 ratification evidence and the Phase 468 scoping artifact without opening any new CDL; locked root `skills/` as the canonical shared source path while explicitly preserving harness-specific discovery configuration; and explicitly deferred Tier 3 `skill_node`, actual `skills/` directory creation, benchmark protocol definition, CDL-033 extension opening, and any external skill import, with no decision-log mutation or `ilc_core/` mutation in Phase 621.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7073,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output:** Executed the Phase 622 prompt `docs/antigravity_tasks/antigravity_prompt__phase_622_g8_bounded_ecu_exchange_model_spec.md`; published `docs/specs/ilc_bounded_ecu_exchange_model_622_v0.1.md` and `tests/test_phase_622_bounded_ecu_exchange_model.py`; locked the first spec-form agent-commissioning-agent coordination model under the active Option-D posture; fixed the binding ECU/ILC separation constraints from Phase 609 so ECU remains the local productive-credit measurement layer and ILC remains the hard settlement asset; fixed the six-step bounded loop in which Agent A declares an ECU-denominated sponsorship or earmark, Agent B performs work, the graph processes the deliverable through the normal validation epoch path, and ECU accrual reaches Agent B only through normal attribution and epoch commit; explicitly prohibited any direct ECU debit, transfer, spend, wallet write, ILC transfer, public payment claim, or claimability widening; confirmed the Phase 576 and Phase 581 wallet boundary remains unchanged with `claimability_state: deferred`; and explicitly recorded that runtime implementation defers to post-623+, while CDL-053 remains deferred and is not a prerequisite for this bounded spec, with no decision-log mutation or `ilc_core/` mutation in Phase 622.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7113,
+        "markers": [
+          "no public"
+        ],
+        "snippet": "**Output:** Executed the Phase 628 prompt `docs/antigravity_tasks/antigravity_prompt__phase_628_g8_ecu_active_layer_runtime_and_accounting_spec.md`; published `docs/specs/ilc_ecu_active_layer_runtime_and_accounting_spec_628_v0.1.md`, `ilc_core/ledger/ecu_active_layer_runtime.py`, `tests/test_ecu_active_layer_runtime.py`, and `tests/test_phase_628_ecu_active_layer_runtime_and_accounting_spec.py`; consumed the ratified `CDL-063` boundary and implemented the first bounded live ECU active-layer runtime with all five earmark states `proposed`, `accepted`, `delivered`, `debited`, and `expired`; fixed the exact reserved-balance invariant `spendable_ecu(A) = total_accrued_ecu(A) - sum(reserved_earmarks_by_A)` where reserved means `proposed`, `accepted`, or `delivered`; implemented machine-legible interfaces for earmark proposal, acceptance, delivery, status, history, and epoch-bound processing; fixed the runtime defaults to consume the ratified expiry carry-forward `2880` validation epochs and the bounded runtime cap `8` active earmarks per commissioning agent; fixed `earmark_history` crash behavior, added named performing-agent verification for acceptance and delivery, rejected direct accrued-ECU resets below reserved earmarks, and added direct tests for active-cap enforcement, same-epoch multi-debit, history visibility, and reserved-balance floor rejection; preserved the Phase 576 and Phase 581 wallet boundary, preserved the Phase 609 ECU/ILC separation, created no public claimability widening, no ILC transfer path, and no decision-log mutation in Phase 628.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7137,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output:** Executed the Phase 631 prompt `docs/antigravity_tasks/antigravity_prompt__phase_631_g8_window_631_636_sequence_lock.md`; published `docs/specs/ilc_phase_631_636_sequence_lock_v0.1.md` and `tests/test_phase_631_window_631_636_sequence_lock.py`; locked Window 631-636 as the bounded Tier-0 Economic Numeric Determinism strike-force lane; fixed the 2026-04-13 authorization basis that Tier-0 float-based economic runtime is an active architectural defect rather than deferred technical debt and that human reprioritization is required to bracket the previously recorded Window 623+ priority; named `CDL-064` as the narrow constitutional vehicle for exact numeric representation, exact arithmetic, and canonical machine serialization on Tier-0 economic, ledger, and staking runtime surfaces; fixed the Tier-0 target surface to `ilc_core/ledger/`, `ilc_core/rc/economic_cycle_runtime.py`, `ilc_core/validator/staking_liveness_runtime.py`, `ilc_core/types.py`, and directly coupled runtime/export surfaces; required a complete inventory in Phase 632, prelock plus SIM in Phase 633, ratification in Phase 634, runtime migration in Phase 635, and a hardening gate in Phase 636 before closure; preserved the Phase 576 and Phase 581 read-only wallet boundary, the Phase 609 ECU/ILC separation, the Phase 612 two-form MVP gate, the bounded Window 624-630 active-layer runtime as inherited context, and ADR-0028 `Option D` posture; and explicitly prohibited `CDL-062` opening, `Option B` selection claims, ILC transferability, generalized ECU transfer widening, decision-log mutation in Phase 631, and `ilc_core/` mutation in Phase 631.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7225,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output:** Executed the Phase 642 prompt `docs/antigravity_tasks/antigravity_prompt__phase_642_g8_window_642_648_sequence_lock.md`; published `docs/specs/ilc_phase_642_648_sequence_lock_v0.1.md` and `tests/test_phase_642_window_642_648_sequence_lock.py`; locked Window 642-648 as a bounded non-constitutional implementation/security strike-force lane; fixed the window identity so it explicitly inherits the exact-numeric closures from Windows 631-641 while keeping the live Gemini-identified runtime/security defects and remaining-float carry-forward visible; required Phase 643 to publish the remaining-float inventory and TODO block; required second-order guardrails for canonical JSON compact separators, non-finite rejection, predictable-PRNG removal, bounded-stream fixes that do not shift the attack to temp disk, and assert-replacement without broad exception swallowing; preserved the wallet boundary, active `Option D` posture, and Window 623+ as the broader continuation; and preserved bounded scope with no decision-log mutation, no ADR mutation, and no `ilc_core/` mutation in Phase 642.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7233,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output:** Executed the Phase 643 prompt `docs/antigravity_tasks/antigravity_prompt__phase_643_g8_remaining_float_and_security_inventory.md`; published `docs/specs/ilc_remaining_float_and_security_follow_on_inventory_643_v0.1.md`, updated `TODO.txt`, and added `tests/test_phase_643_remaining_float_and_security_inventory.py`; recorded the post-641 remaining-float inventory across runtime-adjacent/public-contract, protocol/consensus helper, and lower-tier sim/analysis/devnet surfaces; fixed the carry-forward basis so completed exact-numeric work from Windows 631-641 is explicitly separated from still-open float debt; registered a durable top-level TODO block for shared/public contract cleanup, runtime-adjacent protocol and consensus cleanup, lower-tier sim/analysis cleanup, and mandatory exact-numeric review on any future runtime/public numeric surface; and preserved bounded scope with no decision-log mutation, no ADR mutation, and no `ilc_core/` mutation in Phase 643.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7265,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output:** Executed the Phase 647 prompt `docs/antigravity_tasks/antigravity_prompt__phase_647_g8_security_hardening_gate_and_fix_induced_regression_audit.md`; published `docs/specs/ilc_security_hardening_gate_and_fix_induced_regression_audit_647_v0.1.md`, `tools/run_window_642_648_security_hardening_gate_phase_647.sh`, and `tests/test_phase_647_security_hardening_gate_and_fix_induced_regression_audit.py`; found and fixed a real gate bug during execution by removing recursive self-invocation between the gate script and the Phase 647 test; reran the corrected gate and passed the full hardening slice with `136 passed`; passed the Phase 647 guard with `8 passed, 1 skipped`; verified the first-order fixes from Phases 644-646 and the expected second-order regression checks; verified that the remaining-float inventory and TODO carry-forward remained intact before closure; and preserved bounded scope with no decision-log mutation, no ADR mutation, and no new constitutional vehicle in Phase 647.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7273,
+        "markers": [
+          "TODO"
+        ],
+        "snippet": "**Output:** Executed the Phase 648 prompt `docs/antigravity_tasks/antigravity_prompt__phase_648_g8_window_642_648_closure_and_handoff.md`; published `docs/specs/ilc_window_642_648_handoff_648_v0.1.md`, `docs/specs/ilc_antigravity_context_capsule_v3.7.md`, and `tests/test_phase_648_window_642_648_closure_and_handoff.py`; closed Window 642-648 without a new constitutional vehicle; recorded the bounded first-order security issues closed in the window, the explicitly checked fix-induced regressions, and the surviving remaining-float/security carry-forward state from Phase 643 and `TODO.txt`; advanced the antigravity context capsule to v3.7; preserved `Option D`; and kept Window 623+ as the broader runtime/interface priority after closure.",
+        "source_path": "docs/phases/STATUS.md"
+      },
+      {
+        "line": 7313,
+        "markers": [
+          "deferred"
+        ],
+        "snippet": "**Output:** Executed the Phase 653 prompt `docs/antigravity_tasks/antigravity_prompt__phase_653_g8_public_wallet_runtime_integration.md`; published `docs/specs/ilc_public_wallet_runtime_integration_653_v0.1.md` and `tests/test_phase_653_public_wallet_runtime_integration.py`; added `ilc_core/protocol/public_wallet_runtime.py` to expose the four bounded read-only wallet operations `wallet_status`, `wallet_history`, `wallet_export`, and `ledger_summary`; extended `ilc_core/server.py` with the four GET-only wallet endpoints and initialized the bounded public wallet runtime in app state; bound wallet history/export visibility to deterministic settled-root and receipt references derived from the LMDB-backed wallet runtime root and latest settled balance receipt; preserved advisory ECU visibility, settled ILC visibility, and `claimability_state: deferred`; and preserved bounded scope with no decision-log mutation, no ADR mutation, no wallet write/spend/transfer/withdrawal opening, and no external chain interaction in Phase 653.",
+        "source_path": "docs/phases/STATUS.md"
+      }
+    ],
+    "missing_graph_delta_closure_or_handoff_count": 129,
+    "missing_graph_delta_closure_or_handoff_files": [
+      "docs/phases/phase_0171_g8_constitution_cluster_a_runtime_logging_hardening_closure_and_handoff_gate_walkthrough.md",
+      "docs/phases/phase_0181_g8_constitution_cluster_a_domain_exception_migration_closure_and_handoff_gate_walkthrough.md",
+      "docs/phases/phase_0191_g8_constitution_cluster_a_non_replay_domain_exception_migration_closure_and_handoff_gate_walkthrough.md",
+      "docs/phases/phase_0201_g8_constitution_cluster_a_main_track_return_193_200_closure_regression_and_handoff_walkthrough.md",
+      "docs/phases/phase_0211_g8_constitution_cluster_a_main_track_return_202_210_closure_regression_and_handoff_walkthrough.md",
+      "docs/phases/phase_0215_g8_constitution_cluster_a_ra09_cdl_011_015_ratification_evidence_closure_walkthrough.md",
+      "docs/phases/phase_0221_g8_constitution_cluster_a_main_track_return_213_220_closure_regression_and_handoff_walkthrough.md",
+      "docs/phases/phase_0229_g8_constitution_cluster_a_genesis_packaging_closure_regression_and_handoff_222_228_walkthrough.md",
+      "docs/phases/phase_0239_g8_constitution_cluster_a_closure_regression_and_handoff_230_238_walkthrough.md",
+      "docs/phases/phase_0249_g8_constitution_cluster_a_security_runtime_window_closure_and_handoff_240_248_walkthrough.md",
+      "docs/phases/phase_0259_g8_cdl_ratification_window_closure_and_handoff_walkthrough.md",
+      "docs/phases/phase_0265_g8_constitution_cluster_a_d2e_03_composed_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0266_g8_constitution_cluster_a_issuance_evidence_closure_a_walkthrough.md",
+      "docs/phases/phase_0269_g8_constitution_cluster_a_ratification_verification_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0270_g8_constitution_cluster_a_sequence_lock_270_279_issuance_governance_closure_walkthrough.md",
+      "docs/phases/phase_0271_g8_constitution_cluster_a_issuance_evidence_closure_b_walkthrough.md",
+      "docs/phases/phase_0275_g8_constitution_cluster_a_issuance_evidence_closure_c_option_b_lock_walkthrough.md",
+      "docs/phases/phase_0279_g8_constitution_cluster_a_ratification_verification_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0287_g8_constitution_cluster_a_cdl_031_evidence_closure_a_walkthrough.md",
+      "docs/phases/phase_0289_g8_constitution_cluster_a_cdl_031_verification_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0295_g8_constitution_cluster_a_closure_verification_gate_and_296_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0307_g8_constitution_cluster_a_window_298_307_closure_verification_gate_and_308_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0317_g8_constitution_cluster_a_window_308_317_closure_verification_gate_and_318_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0327_g8_constitution_cluster_a_window_318_327_closure_verification_gate_and_328_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0337_g8_constitution_cluster_a_window_328_337_closure_verification_gate_and_338_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0347_g8_constitution_cluster_a_window_338_347_closure_verification_gate_and_348_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0357_g8_constitution_cluster_a_window_348_357_closure_verification_gate_and_358_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0367_g8_constitution_cluster_a_window_358_367_closure_verification_gate_and_368_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0371_g8_constitution_cluster_a_sim_003_004_005_interpretation_and_cdl_039_risk_closure_walkthrough.md",
+      "docs/phases/phase_0377_g8_constitution_cluster_a_window_368_377_closure_verification_gate_and_378_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0391_g8_constitution_cluster_a_window_378_391_closure_verification_gate_and_392_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0401_g8_constitution_cluster_a_window_392_401_closure_verification_gate_and_402_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0413_g8_d2e_window_402_413_closure_gate_and_414_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0423_g8_window_414_423_closure_gate_and_424_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0433_g8_window_424_433_closure_gate_and_434_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0440_g8_window_434_440_closure_gate_and_441_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0449_g8_closure_gate_and_450_plus_handoff_walkthrough.md",
+      "docs/phases/phase_0459_cdl_050_ratification_and_window_closure_walkthrough.md",
+      "docs/phases/phase_0466_cdl_052_ratification_and_epistemic_model_closure_walkthrough.md",
+      "docs/phases/phase_0468_genesis_validator_openclaw_scoping_and_window_closure_gate_walkthrough.md",
+      "docs/phases/phase_0474_window_469_474_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0484_window_475_484_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0494_window_485_494_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0504_window_495_504_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0514_g8_window_505_514_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0524_g8_window_515_524_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0534_g8_window_525_534_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0544_g8_window_535_544_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0554_g8_window_545_554_closure_gate_walkthrough.md",
+      "docs/phases/phase_0564_g8_window_555_564_closure_gate_walkthrough.md",
+      "docs/phases/phase_0574_g8_window_565_574_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0594_g8_window_585_594_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0597_g8_genesis_governance_dilution_and_brake_semantics_closure_walkthrough.md",
+      "docs/phases/phase_0598_g8_freshness_gate_provenance_and_genesis_exemption_closure_walkthrough.md",
+      "docs/phases/phase_0600_g8_deterministic_genesis_economics_evidence_and_parameter_closure_walkthrough.md",
+      "docs/phases/phase_0605_g8_window_596_605_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0612_g8_window_607_612_settlement_substrate_closure_synthesis_and_mvp_gated_downstream_replan_walkthrough.md",
+      "docs/phases/phase_0619_g8_window_613_619_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_0630_g8_window_624_630_coherence_and_closure_walkthrough.md",
+      "docs/phases/phase_0636_g8_tier0_numeric_hardening_and_closure_walkthrough.md",
+      "docs/phases/phase_0641_g8_window_637_641_hardening_and_closure_walkthrough.md",
+      "docs/phases/phase_0648_g8_window_642_648_closure_and_handoff_walkthrough.md",
+      "docs/phases/phase_0654_g8_window_649_654_closure_and_handoff_walkthrough.md",
+      "docs/phases/phase_0658_g8_window_655_658_hardening_and_handoff_walkthrough.md",
+      "docs/phases/phase_0663_g8_cdl_065_ratification_and_row6_closure_candidate_walkthrough.md",
+      "docs/phases/phase_0664_g8_window_659_664_closure_and_handoff_walkthrough.md",
+      "docs/phases/phase_0682_g8_window_677_682_closure_and_handoff_walkthrough.md",
+      "docs/phases/phase_0700_g8_coherence_report_capsule_v4_4_and_window_693_700_closure_gate_walkthrough.md",
+      "docs/phases/phase_0706_g8_coherence_report_capsule_v4_5_and_window_701_706_closure_gate_walkthrough.md",
+      "docs/phases/phase_0712_g8_coherence_report_capsule_v4_6_and_window_707_712_closure_gate_walkthrough.md",
+      "docs/phases/phase_0716_g8_coherence_report_capsule_v4_7_and_window_713_716_closure_gate_walkthrough.md",
+      "docs/phases/phase_0722_g8_coherence_report_capsule_v4_8_and_window_717_722_closure_gate_walkthrough.md",
+      "docs/phases/phase_0726_g8_coherence_report_capsule_v4_9_and_window_723_726_closure_gate_walkthrough.md",
+      "docs/phases/phase_0732_g8_capsule_v5_0_and_window_727_732_closure_gate_walkthrough.md",
+      "docs/phases/phase_0738_g8_coherence_report_capsule_v5_1_and_window_733_738_closure_gate_walkthrough.md",
+      "docs/phases/phase_0774_g8_window_closure_gate_walkthrough.md",
+      "docs/phases/phase_0782_g8_window_closure_gate_walkthrough.md",
+      "docs/phases/phase_0790_closure_gate.md",
+      "docs/phases/phase_0800_closure_gate.md",
+      "docs/phases/phase_0804_verification_tooling_closure_gate.md",
+      "docs/phases/phase_0810_closure_gate.md",
+      "docs/phases/phase_0822_window_811_822_closure_gate.md",
+      "docs/phases/phase_0829_window_823_829_closure_gate.md",
+      "docs/phases/phase_0846_row5_closure_evaluation_walkthrough.md",
+      "docs/phases/phase_0847_window_844_847_closure_gate_walkthrough.md",
+      "docs/phases/phase_0852_window_848_852_closure_gate_walkthrough.md",
+      "docs/phases/phase_0858_hb_001_closure_evaluation_walkthrough.md",
+      "docs/phases/phase_0859_hb_003_closure_evaluation_walkthrough.md",
+      "docs/phases/phase_0862_window_853_862_closure_gate_walkthrough.md",
+      "docs/phases/phase_0872_window_863_872_closure_gate_walkthrough.md",
+      "docs/phases/phase_0876_window_873_876_closure_gate_walkthrough.md",
+      "docs/phases/phase_0886_window_877_886_closure_gate_walkthrough.md",
+      "docs/phases/phase_0891_window_887_891_closure_gate_walkthrough.md",
+      "docs/phases/phase_0898_window_892_898_closure_gate_walkthrough.md",
+      "docs/phases/phase_0905_window_899_905_closure_gate_walkthrough.md",
+      "docs/phases/phase_0912_window_906_912_closure_gate_walkthrough.md",
+      "docs/phases/phase_0919_window_913_920_closure_gate_walkthrough.md",
+      "docs/phases/phase_0928_window_921_929_closure_gate_walkthrough.md",
+      "docs/phases/phase_0938_h013_closure_gate_walkthrough.md",
+      "docs/phases/phase_0971_g8_constitution_cluster_a_typed_return_contract_rollout_replay_proof_track2_closure_guardrail_and_residual_sweep_phase17_walkthrough.md",
+      "docs/phases/phase_0978_g8_constitution_cluster_a_track1_full_edge_removal_closure_regression_sweep_and_residual_cleanup_walkthrough.md",
+      "docs/phases/phase_0979_g8_constitution_cluster_a_post_track1_closure_full_regression_gate_and_handoff_planning_walkthrough.md",
+      "docs/phases/phase_0980_g8_constitution_cluster_a_phase_979_regression_remediation_and_reclosure_gate_walkthrough.md",
+      "docs/phases/phase_0981_g8_constitution_cluster_a_phase_979_reclosure_retry_and_handoff_artifact_completion_walkthrough.md",
+      "docs/phases/phase_0982_g8_constitution_cluster_a_post_track1_handoff_execution_kickoff_and_guardrail_gate_operationalization_walkthrough.md",
+      "docs/phases/phase_0995_g8_constitution_cluster_a_glossary_term_elevation_track_990_994_closure_regression_and_handoff_phase6_walkthrough.md",
+      "docs/phases/phase_0997_g8_constitution_cluster_a_license_blocker_closure_and_guardrail_walkthrough.md",
+      "docs/phases/phase_1009_g8_constitution_cluster_a_genesis_readiness_remediation_closure_gate_and_handoff_walkthrough.md",
+      "docs/phases/phase_1012_g8_constitution_cluster_a_genesis_readiness_audit_reverification_gate_and_closure_report_walkthrough.md",
+      "docs/phases/phase_1014_g8_constitution_cluster_a_nodeid_strict_canonical_closure_reverification_and_handoff_walkthrough.md",
+      "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "docs/phases/phase_1109_window_1102_1109_closure_gate_walkthrough.md",
+      "docs/phases/phase_1117_window_1110_1117_closure_gate_walkthrough.md",
+      "docs/phases/phase_1123_window_1118_1123_closure_gate_walkthrough.md",
+      "docs/phases/phase_1129_window_1124_1129_closure_gate_walkthrough.md",
+      "docs/phases/phase_1138_window_1130_1138_closure_gate_walkthrough.md",
+      "docs/phases/phase_1147_window_1139_1147_closure_gate_walkthrough.md",
+      "docs/phases/phase_1155_window_1148_1156_closure_gate_walkthrough.md",
+      "docs/phases/phase_1165_window_1156_1165_closure_gate_walkthrough.md",
+      "docs/phases/phase_1175_window_1166_1175_closure_gate_walkthrough.md",
+      "docs/phases/phase_1182_window_1176_1182_closure_gate_walkthrough.md",
+      "docs/phases/phase_1190_window_1183_1190_closure_gate_walkthrough.md",
+      "docs/phases/phase_1199_window_1191_1199_closure_gate_walkthrough.md",
+      "docs/phases/phase_1208_window_1200_1208_closure_gate_walkthrough.md",
+      "docs/phases/phase_1217_window_1209_1217_closure_gate_walkthrough.md",
+      "docs/phases/phase_1224_window_1218_1224_closure_gate_walkthrough.md",
+      "docs/phases/phase_1232_window_1225_1232_closure_gate_walkthrough.md",
+      "docs/phases/phase_1240_window_1233_1240_closure_gate_walkthrough.md",
+      "docs/phases/phase_b5_row5_b_scope_closure_gate.md"
+    ],
+    "phase_doc_count": 1239,
+    "phase_doc_root": "docs/phases",
+    "route": "Phase 1254 ATLAS-G backfill plan; do not batch-edit legacy docs in Phase 1251"
+  },
+  "non_authorization_boundary": [
+    "no_public_rc_claim",
+    "no_public_repository_publication",
+    "no_public_p2p_exposure",
+    "no_public_sidecar_projection_serving",
+    "no_public_claimability_activation",
+    "no_wallet_withdrawal_transfer_spend_semantics",
+    "no_cdl_mutation",
+    "no_cdl_087_ratification",
+    "no_release_key_generation",
+    "no_v0_2_signing"
+  ],
+  "recommended_next_phase": "Phase 1251 - Gap 14 package CI gate, profile export audit, package-size measurement.",
+  "version": "rc_frontier_gap_audit_1250_fix1.v0.1"
+}
