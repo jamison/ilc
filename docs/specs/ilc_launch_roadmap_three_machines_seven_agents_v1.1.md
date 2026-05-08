@@ -34,11 +34,11 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1257-1264 CLOSED / PASS through Phase 1264; Window 1265+ sequence lock required before next phase assignment |
+| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1266; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
-| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1260 readiness verdict is ready for later sensitive ratification review, not ratified |
+| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1266 sensitive review recorded no-ratification/no-register-mutation |
 | v0.2 signing | Deferred; explicit signing authorization absent |
 | Tier-3 runtime linkage | **IMPLEMENTED** in Phase 1201 (`tier3_runtime_linkage_runtime_1201.v0.1`) |
 | Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
@@ -47,13 +47,15 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | L3 sidecar query runtime | Local/read-only runtime complete; Phase 1261 keeps public/non-loopback projection serving blocked |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
 
-Latest closed lock and handoff:
+Latest closed handoff and current window artifacts:
 
 ```text
 docs/specs/ilc_phase_1257_1264_sequence_lock_v0.1.md
 docs/specs/ilc_window_1257_1264_handoff_1264_v0.1.md
 window_1257_1264_closed_phase_1264
-window_1265_plus_sequence_lock_required_before_next_phase_assignment
+docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md
+docs/specs/ilc_cdl_087_sensitive_ratification_review_1266_v0.1.md
+cdl_087_ratification_decision_phase_1266=no_ratification_no_register_mutation
 ```
 
 ---
@@ -527,8 +529,6 @@ public_source_allowlist_execution_requires_publication_authorization
 v0_2_signing_requires_explicit_human_authorization
 ```
 
----
-
 ## 11. Phase 1264 Closure Addendum
 
 Window 1257-1264 closed at Phase 1264:
@@ -581,4 +581,39 @@ gap13_claimability_runtime_conversion_sweeper_required_before_final_public_rc
 atlas_g_006_public_rc_graph_reachability_gate_required
 public_source_allowlist_execution_requires_publication_authorization
 v0_2_signing_requires_explicit_human_authorization
+```
+
+---
+
+## 12. Phase 1266 CDL-087 Review Addendum
+
+Phase 1266 recorded the CDL-087 sensitive review decision:
+
+```text
+cdl_087_sensitive_ratification_review_phase_1266.v0.1
+cdl_087_ratification_decision_recorded_phase_1266
+cdl_087_ratification_not_executed_by_default_phase_1266
+cdl_087_register_mutation_requires_explicit_ratification_authorization_phase_1266
+no_public_fetch_serving_enabled_phase_1266
+cdl_087_ratification_decision_phase_1266=no_ratification_no_register_mutation
+```
+
+Roadmap impact:
+
+- CDL-087 remains open/prelocked/not ratified after Phase 1266.
+- The CDL register was not mutated.
+- The Phase 1258-1260 local evidence chain remains useful evidence for a later
+  explicit ratification phase, but it did not become a ratification act.
+- Public fetch serving remains disabled.
+- Public/non-loopback sidecar projection remains blocked by missing CDL-087
+  ratification and missing TransportPrincipal runtime/public-path policy.
+- Public RC remains blocked by CDL-087 ratification, TransportPrincipal/Rust
+  public-path hardening, public claimability/conversion sweeper, ATLAS-G-006+
+  graph reachability, counsel/publication authorization, and v0.2 signing
+  authorization.
+
+Public RC remains blocked after Phase 1266:
+
+```text
+public_rc_remains_blocked_after_phase_1266
 ```

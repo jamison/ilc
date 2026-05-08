@@ -123,10 +123,9 @@ def test_public_path_and_werner_boundaries_remain_blocked() -> None:
     assert "Public/non-loopback sidecar projection serving remains blocked" in handoff
 
 
-def test_planning_index_points_to_phase_1264_handoff_as_current_frontier() -> None:
+def test_planning_index_preserves_phase_1264_handoff_after_frontier_advances() -> None:
     planning = read(PLANNING)
 
-    assert "Window 1257-1264 CLOSED / PASS through Phase 1264" in planning
     assert HANDOFF in planning
-    assert "Window 1265+ sequence lock required before next phase assignment" in planning
+    assert "Window 1265-1272 OPEN / PASS through Phase 1266" in planning
     assert "Exact-token `rg` is only a schema/completion check" in planning
