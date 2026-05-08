@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1268; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
+| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1269; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -61,6 +61,8 @@ docs/specs/ilc_transport_principal_runtime_identity_pre_public_path_1267_v0.1.md
 transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1
 docs/specs/ilc_sidecar_loopback_projection_endpoint_boundary_1268_v0.1.md
 sidecar_loopback_projection_endpoint_boundary_phase_1268.v0.1
+docs/specs/ilc_werner_default_topology_pressure_profile_1269_v0.1.md
+werner_default_topology_pressure_profile_phase_1269.v0.1
 ```
 
 ---
@@ -296,6 +298,12 @@ profile, beta/noise decomposition, spectral trust threshold discipline,
 TransportPrincipal/admission binding before public-path effects, and separate
 productive-credit authorization before any value path.
 
+Phase 1269 closes only the default evidence-profile recording condition by
+adding an explicit SIM-FETCH profile adapter for `topology_pressure_model=werner_v1`
+and preserving `topology_pressure_model=none` as the comparison profile. It is
+simulation/evidence only and does not open/prelock a Werner CDL, activate
+runtime economic policy, mint ECU, settle ILC, or activate public claimability.
+
 Tokens:
 
 ```text
@@ -303,6 +311,10 @@ werner_flow_governor_cdl_opening_prelock_decision_phase_1263.v0.1
 werner_flow_governor_cdl_not_opened_without_evidence_phase_1263
 direct_werner_ecu_creation_rejected_phase_1263
 phase_1263_sensitive_cdl_gate_complete
+werner_default_topology_pressure_profile_phase_1269.v0.1
+topology_pressure_model_werner_v1_profile_recorded_phase_1269
+werner_none_profile_control_preserved_phase_1269
+no_werner_ecu_minting_or_ilc_settlement_phase_1269
 werner_overlay_opt_in_must_be_promoted_or_retired_after_validation
 werner_heat_prefers_reputation_routing_admission_before_ecu_creation
 direct_werner_ecu_creation_assumption_requires_repo_memtrace_check
@@ -674,6 +686,37 @@ Roadmap impact:
 Public RC remains blocked after Phase 1268:
 
 ```text
+public_rc_remains_blocked_after_phase_1268
+public_rc_remains_blocked_after_phase_1267
+public_rc_remains_blocked_after_phase_1266
+```
+
+## 15. Phase 1269 Werner Default Topology-Pressure Profile Addendum
+
+Phase 1269 recorded the Werner default profile as simulation/evidence:
+
+```text
+werner_default_topology_pressure_profile_phase_1269.v0.1
+topology_pressure_model_werner_v1_profile_recorded_phase_1269
+werner_none_profile_control_preserved_phase_1269
+no_werner_ecu_minting_or_ilc_settlement_phase_1269
+```
+
+Roadmap impact:
+
+- `topology_pressure_model=werner_v1` now maps to the existing SIM-FETCH Werner
+  overlay as the explicit default evidence profile.
+- `topology_pressure_model=none` remains the comparison/control profile.
+- Canonical evidence export rejects float, serializes finite Decimal values,
+  uses `sort_keys=True` and `allow_nan=False`, and enforces a max-byte bound.
+- Werner still does not authorize a runtime flow-governor CDL, ECU minting, ILC
+  settlement, public claimability, wallet semantics, public P2P, public fetch
+  serving, or public sidecar/projection serving.
+
+Public RC remains blocked after Phase 1269:
+
+```text
+public_rc_remains_blocked_after_phase_1269
 public_rc_remains_blocked_after_phase_1268
 public_rc_remains_blocked_after_phase_1267
 public_rc_remains_blocked_after_phase_1266
