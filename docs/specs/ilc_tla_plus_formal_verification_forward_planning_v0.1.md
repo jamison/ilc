@@ -1,22 +1,29 @@
 # TLA+/TLC Formal Verification — Forward Planning
 
 **Recorded:** Phase 1233-1240 era (2026-05-07)
-**Status:** Pre-planning. No phase assigned or authorized yet.
-**Earliest implementation:** Window 1241+ for pre-RC item; post-launch for remainder.
+**Updated:** Phase 1255 (2026-05-08)
+**Status:** Active planning. Pre-RC refinement notes are closed; post-launch
+formal-methods items remain deferred.
+**Earliest implementation:** Pre-RC item closed in Phase 1255; post-launch for
+remainder.
 
 ```text
 tla_formal_verification_forward_planning_recorded_phase_1233_1240
+tla_refinement_notes_pre_rc_closed_phase_1255
 ```
 
 ---
 
-## 1. Current Verified Baseline (as of Phase 1236)
+## 1. Current Verified Baseline (as of Phase 1255)
 
-All three gate specs pass cleanly under `tools/run_tlc_m_series_gate.sh`:
+The current formal baseline is mixed but usable for pre-RC documentation:
+Spec B and Spec C have clean TLC evidence; Spec A has clean Phase 698
+`MaxRound=5` evidence and a Phase 816 widened `MaxRound=12` configuration that
+was memory-bound without a discovered counterexample before the heap ceiling.
 
 | Spec | File | Properties checked | TLC result | Evidence |
 |------|------|--------------------|------------|---------|
-| Spec A — DAG Liveness | `ilc_dag_censorship_bounds.tla` | Liveness, TypeOK | PASS (MaxRound=12, N=4, F=1) | `ilc_dag_censorship_bounds_tlc_evidence_698_v0.1.md` |
+| Spec A — DAG Liveness | `ilc_dag_censorship_bounds.tla` | Liveness, TypeOK | PASS at `MaxRound=5`; `MaxRound=12` widened configuration was memory-bound/no counterexample before heap ceiling | `ilc_dag_censorship_bounds_tlc_evidence_698_v0.1.md`; `ilc_dag_censorship_bounds_tlc_evidence_816_v0.1.md` |
 | Spec B — ECU Transfer Safety | `ilc_ecu_fast_path_bcast.tla` | SafetyNoDualCert, TypeOK, AcksSubsetValidators, CertifiedSubsetProposed | PASS (N=4, F=1) | Phase 698 gate run |
 | Spec C — Partition/Heal | `ilc_partition_heal.tla` | NoFork, NoNewGlobalCommitDuringPartition, EventualCommit, TypeOK | PASS (N=4, F=1, 2\|2 split) | `ilc_partition_heal_tlc_evidence_818_v0.1.md` |
 
@@ -32,17 +39,23 @@ safety. The M-019 deferred todo item 1 is **resolved**.
 ### TLA-PRE-1 — Refinement Notes: TLA+ Variables → Rust Implementation
 
 **Token:** `tla_refinement_notes_pre_rc`
-**Status:** NOT DONE. No artifact exists.
+**Phase 1255 token:** `tla_refinement_notes_pre_rc_closed_phase_1255`
+**Status:** CLOSED in Phase 1255.
 **Effort:** Low (hours — documentation only, no new TLA+ spec)
 **Value:** High — external BFT auditors will ask how the abstract model maps to
-the Rust implementation. Without this, TLA+ and Rust are independent artifacts
-that can drift invisibly between sessions.
+the Rust implementation. The Phase 1255 artifact gives future implementers a
+direct drift-audit bridge from each current TLA/TLC model to the current Rust
+surfaces.
 
-**What it produces:**
+**Produced artifact:**
 
-A short document (`docs/research/ilc_tla_plus_rust_refinement_notes_v0.1.md`)
-mapping each TLA+ variable and action to the corresponding Rust type/function
-in `ilc_consensus/`:
+`docs/research/ilc_tla_plus_rust_refinement_notes_v0.1.md`
+
+The artifact maps the current Spec A/B/C model concepts to Rust implementation
+surfaces in `ilc_consensus/`, records the Spec A `MaxRound=12` memory-bound
+boundary, and corrects the stale HIGH-002 all-validator aggregate-signature
+divergence by mapping the current `EpochCheckpoint.signers` signer-subset
+verification path.
 
 | TLA+ (Spec A/B/C) | Rust location | Notes |
 |--------------------|---------------|-------|
@@ -55,20 +68,21 @@ in `ilc_consensus/`:
 | `partitioned` (network split state) | QUIC transport topology; no direct Rust analog — modelled abstractly | Spec C |
 | `EpochSettlementTx` submission | `NodeRunner` → `GossipMessage::EpochSettlementTx` | Spec C |
 
-**Suggested phase scope:**
+**Phase 1255 closure scope:**
 
 ```
-Phase NNNNa (NON-SENSITIVE, 1 phase)
 Topic: TLA+ refinement notes — formal model to Rust bridge
 Owner lane: G8
 Deliverables:
   - docs/research/ilc_tla_plus_rust_refinement_notes_v0.1.md
   - Token: tla_refinement_notes_pre_rc
-No runtime changes. No CDL mutation. No TLC rerun required.
+  - Token: tla_refinement_notes_pre_rc_closed_phase_1255
+No runtime changes. No CDL mutation. No TLC rerun.
 ```
 
-**Suggested window:** Any quiet tail slot in Window 1241+ or the pre-RC
-hardening window. Can be Strike Forced (NON-SENSITIVE, doc-only).
+This pre-RC item no longer needs scheduling. Future work should treat the
+document as the current informal refinement bridge and update it if Rust
+consensus surfaces or TLA specs change.
 
 ---
 
@@ -105,10 +119,12 @@ Deliverables:
 **Token:** `tla_tlaps_unbounded_liveness_post_launch`
 **Effort:** High (weeks — requires TLA+ Proof System expertise)
 
-Ports the Spec A `Liveness` temporal property from bounded TLC
-(MaxRound=12, N=4, F=1) to TLAPS — a machine-checked proof valid for
-all N, F satisfying N > 3F. This is mathematically rigorous post-launch
-audit hardening, not a pre-RC blocker.
+Ports the Spec A `Liveness` temporal property from bounded TLC evidence to
+TLAPS. The current clean bounded evidence is Phase 698 at `MaxRound=5`; the
+Phase 816 `MaxRound=12` widened configuration was memory-bound without a
+discovered counterexample before heap exhaustion. TLAPS would be a
+machine-checked proof valid for all N, F satisfying N > 3F. This is
+mathematically rigorous post-launch audit hardening, not a pre-RC blocker.
 
 ### TLA-POST-3 — Economic Protocol Specs
 
@@ -126,22 +142,23 @@ layer is not fully wired to production yet.
 
 | Phase slot | Topic | Sensitivity | Effort | Token produced |
 |-----------|-------|-------------|--------|----------------|
-| 1241+a | TLA+ refinement notes (TLA+ vars → Rust types/functions) | NON-SENSITIVE | Hours | `tla_refinement_notes_pre_rc` |
+| 1255 | TLA+ refinement notes (TLA+ vars → Rust types/functions) | NON-SENSITIVE | Closed | `tla_refinement_notes_pre_rc_closed_phase_1255` |
 | Post-launch | Spec D: EpochSettlementTx shared-object model | SENSITIVE | Days | `tla_spec_d_epoch_settlement_complete` |
 | Post-launch | TLAPS unbounded Liveness proof for Spec A | SENSITIVE | Weeks | `tla_tlaps_unbounded_liveness_post_launch` |
 | Post-launch | Economic protocol specs (treasury, ECU governor, node-transfer) | SENSITIVE | Weeks | `tla_economic_protocol_specs_post_launch` |
 
-The refinement notes phase is a single NON-SENSITIVE doc-only phase. It can
-sit in any window with tail capacity. The post-launch items each require a
+The refinement notes phase is now closed. The post-launch items each require a
 dedicated window with proper guidance doc and phase prompts.
 
 ---
 
 ## 5. What NOT to Do
 
-- Do not re-run TLC for Spec A with MaxRound > 12 before RC — it is already
-  MaxRound=12 and the evidence is recorded. Wider model-checking has
-  diminishing returns before TLAPS.
+- Do not describe Spec A as cleanly completed at `MaxRound=12`; the widened
+  configuration was memory-bound without a discovered counterexample before the
+  heap ceiling.
+- Do not re-run wider Spec A TLC before RC unless the phase explicitly includes
+  environment tuning and accepts the cost of that bounded-state expansion.
 - Do not write a new equivocation spec — `SafetyNoDualCert` is already
   formally verified in Spec B (M-019 deferred item 1 is resolved).
 - Do not write Spec C — it already exists and has Phase 818 TLC evidence.
@@ -162,3 +179,4 @@ live in `docs/specs/`.
 ---
 
 `tla_formal_verification_forward_planning_recorded_phase_1233_1240`
+`tla_refinement_notes_pre_rc_closed_phase_1255`

@@ -191,6 +191,9 @@ canon_bundle_signing_repair_pass_phase_1197
 ### Gap 7 - Counsel, License, CLA, Trademark, IP
 
 **Status:** Open hard gate before public repository publication and public RC.
+Phase 1255 defines the allowlist-export procedure, but does not authorize
+publication. Counsel/IP/trademark/CLA/patent gates and explicit publication
+authorization remain open.
 
 Required:
 
@@ -198,7 +201,8 @@ Required:
 - DCO/CLA decision before external contributors.
 - Trademark policy before public launch.
 - US provisional patent filing before public repository publication.
-- Public-source allowlist/export procedure.
+- Public-source allowlist/export procedure: defined in Phase 1255, execution
+  still blocked.
 
 Tokens:
 
@@ -208,6 +212,8 @@ counsel_cla_text_approved_required_before_external_contributors
 counsel_trademark_policy_published_required_before_public_launch
 us_provisional_patent_application_filed_required_before_public_repo_publication
 allowlist_export_procedure_defined_required_before_public_repo_publication
+allowlist_export_procedure_defined_phase_1255
+public_repository_publication_not_authorized_phase_1255
 ```
 
 ### Gap 8 - Long-Range Economic, Privacy, Scale, and Formal Work
@@ -217,10 +223,15 @@ allowlist_export_procedure_defined_required_before_public_repo_publication
 Includes multi-hop centrality attribution CDL, cross-epoch compaction,
 CDL-070 PQ ceremony, reputation/centrality float migration, dynamic epistemic
 traversal engine, and later TLA+/TLAPS work. The immediate pre-RC TLA item is
-refinement notes:
+now closed as informal refinement notes. Post-launch Spec D, TLAPS, and
+economic specs remain deferred. Spec A must not be described as a clean
+completed `MaxRound=12` gate; Phase 816 was memory-bound without a discovered
+counterexample before heap exhaustion.
 
 ```text
 tla_refinement_notes_pre_rc_window_1241_plus_candidate
+tla_refinement_notes_pre_rc_closed_phase_1255
+phase_1255_tla_allowlist_export_complete
 ```
 
 ### Gap 9 - Sidecar Projection Endpoint
