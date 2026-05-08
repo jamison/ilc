@@ -73,16 +73,16 @@ historical_retrieval_is_context_not_authority_current_canon_controls
 unknown_unknown_discovery_required_before_phase_execution
 ```
 
-Every executable prompt draft in this window must include a four-part §0
-discovery pass before coding:
+Every executable prompt draft in this window must include the exact four-part
+§0 discovery pass before coding:
 
-1. `§0a - Known-token audit` for Required Tokens and explicit claims.
-2. `§0b - Concept-discovery search` for forgotten synonyms, older names, code
+1. `### §0a — Known-token audit` for Required Tokens and explicit claims.
+2. `### §0b — Concept-discovery search` for forgotten synonyms, older names, code
    symbols, phase numbers, and domain concepts not already listed as tokens.
-3. `§0c - Contradiction and non-claim search` for blockers such as `deferred`,
-   `blocked`, `not authorized`, `not ratified`, `local-only`, `no public`,
-   `superseded`, and domain-specific denial terms.
-4. `§0d - Source expansion and newly discovered tokens` to direct-read every
+3. `### §0c — Contradiction and non-claim search` for blockers such as
+   `deferred`, `blocked`, `not authorized`, `not ratified`, `local-only`,
+   `no public`, `superseded`, and domain-specific denial terms.
+4. `### §0d — Source expansion and newly discovered tokens` to direct-read every
    relevant hit and carry newly discovered tokens/non-claims into the phase
    walkthrough, STATUS entry, or carry-forward docs.
 

@@ -32,6 +32,17 @@ SENSITIVE_PROMPTS = (
     "antigravity_prompt__phase_1264_g8_window_1257_1264_closure_gate.md",
 )
 
+PHASE_1257_PRIMARY_INPUTS = (
+    "docs/specs/ilc_transport_principal_identity_spec_1253_v0.1.md",
+    "docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md",
+    "docs/specs/ilc_cdl_087_canonical_fetch_distribution_policy_opening_1227_v0.1.md",
+    "docs/sims/sim_fetch_01/sim_fetch_01_cdl_087_evidence_matrix_1238i_v0.1.md",
+    "docs/sims/sim_fetch_01/sim_fetch_01_cdl_087_robustness_suite_1238j_v0.1.md",
+    "ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py",
+    "ilc_core/graph/sidecar_query_runtime.py",
+    "ilc_core/graph/agent_graph_projection_runtime.py",
+)
+
 
 def _text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -81,6 +92,18 @@ def test_window_1257_1264_prompt_drafts_have_token_audit_sections() -> None:
         assert "No ellipses in walkthrough" in text
         for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
             assert section in text
+
+
+def test_phase_1257_sequence_lock_prompt_direct_reads_primary_inputs() -> None:
+    text = _text(
+        PROMPT_DIR / "antigravity_prompt__phase_1257_g8_window_1257_1264_sequence_lock.md"
+    )
+    guidance = _text(GUIDANCE)
+
+    for source_path in PHASE_1257_PRIMARY_INPUTS:
+        assert source_path in guidance
+        assert source_path in text
+        assert (ROOT / source_path).exists()
 
 
 def test_window_1257_1264_required_token_blocks_are_non_empty() -> None:
