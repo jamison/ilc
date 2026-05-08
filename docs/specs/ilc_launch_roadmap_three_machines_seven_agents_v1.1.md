@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1270; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
+| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1271; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -68,6 +68,11 @@ gap13_claimability_conversion_sweeper_preflight_phase_1270.v0.1
 public_claimability_runtime_not_activated_phase_1270
 cdl_048_conversion_sweeper_requirements_recorded_phase_1270
 wallet_withdrawal_transfer_spend_not_enabled_phase_1270
+docs/specs/ilc_atlas_g_006_public_rc_graph_reachability_gate_1271_v0.1.md
+atlas_g_006_public_rc_graph_reachability_gate_phase_1271.v0.1
+public_rc_graph_reachability_verdict_recorded_phase_1271
+public_release_artifact_not_authorized_phase_1271
+no_genesis_atlas_mutation_phase_1271
 ```
 
 ---
@@ -768,6 +773,40 @@ Roadmap impact:
 Public RC remains blocked after Phase 1270:
 
 ```text
+public_rc_remains_blocked_after_phase_1270
+public_rc_remains_blocked_after_phase_1269
+public_rc_remains_blocked_after_phase_1268
+public_rc_remains_blocked_after_phase_1267
+public_rc_remains_blocked_after_phase_1266
+```
+
+## 17. Phase 1271 ATLAS-G-006 Public-RC Graph Reachability Gate Addendum
+
+Phase 1271 recorded the ATLAS-G-006 public-RC graph reachability verdict:
+
+```text
+atlas_g_006_public_rc_graph_reachability_gate_phase_1271.v0.1
+public_rc_graph_reachability_verdict_recorded_phase_1271
+public_release_artifact_not_authorized_phase_1271
+no_genesis_atlas_mutation_phase_1271
+```
+
+Roadmap impact:
+
+- Selected profile `openclaw_skill_claimable` passes the graph reachability gate
+  for the required `ecu`, `genesis`, `hypergraph`, and `ilc` anchors.
+- The Phase 1254 high-authority dependency bridge provides the required package
+  component, package surface, anchor reachability, Python, Rust, CLI, and source
+  classification edge families.
+- ATLAS-G-006 is no longer the selected-profile graph reachability blocker.
+- This does not authorize public release artifact production, public RC claim,
+  public repository publication, Genesis Atlas mutation/regeneration/signing, or
+  v0.2 signing.
+
+Public RC remains blocked after Phase 1271:
+
+```text
+public_rc_remains_blocked_after_phase_1271
 public_rc_remains_blocked_after_phase_1270
 public_rc_remains_blocked_after_phase_1269
 public_rc_remains_blocked_after_phase_1268

@@ -215,7 +215,7 @@ def test_phase_1267_docs_status_and_planning_record_required_tokens() -> None:
         for token in REQUIRED_TOKENS:
             assert token in text
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1270" in planning
+    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
     assert "## Phase 1268" in status
     assert "Phase 1269 - Werner default topology-pressure profile" in status
     assert "phase_1269_werner_default_topology_pressure_profile_next" in status
