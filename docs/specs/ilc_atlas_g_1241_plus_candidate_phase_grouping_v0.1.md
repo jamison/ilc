@@ -8,6 +8,7 @@ authorize public RC. Exact sequencing must be set by the future Window 1241+
 sequence lock after Phase 1240 closes.
 
 `atlas_g_1241_plus_candidate_phase_grouping_recorded_phase_1238`
+`unknown_unknown_discovery_required_before_phase_execution`
 
 ---
 
@@ -65,6 +66,13 @@ ATLAS-G-007 to ATLAS-G-010:
 - Requires Roadmap v1.1 public-RC blocker classification.
 - ATLAS-G-010 requires explicit signing authorization and remains SENSITIVE.
 
+Every ATLAS-G prompt derived from this candidate grouping must include the
+four-part §0 discovery pass before coding: `Known-token audit`,
+`Concept-discovery search`, `Contradiction and non-claim search`, and
+`Source expansion and newly discovered tokens`. This is especially important for
+ATLAS-G because forgotten high-authority files and dependency edges are exactly
+the class of unknown unknowns the graph lane is meant to expose.
+
 ---
 
 ## 4. Pending Pointers
@@ -73,6 +81,7 @@ The following pointers must remain visible in current planning until consumed:
 
 ```text
 atlas_g_1241_plus_candidate_phase_grouping_recorded_phase_1238
+unknown_unknown_discovery_required_before_phase_execution
 atlas_g_prompt_drafts_registered_phase_1238
 phase_close_graph_delta_field_required
 atlas_g_001_graph_delta_schema_required

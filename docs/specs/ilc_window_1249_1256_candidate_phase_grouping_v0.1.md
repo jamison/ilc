@@ -68,7 +68,24 @@ Standing retrieval rule:
 
 ```text
 historical_retrieval_is_context_not_authority_current_canon_controls
+unknown_unknown_discovery_required_before_phase_execution
 ```
+
+Every executable prompt draft in this window must include a four-part §0
+discovery pass before coding:
+
+1. `§0a — Known-token audit` for Required Tokens and explicit claims.
+2. `§0b — Concept-discovery search` for forgotten synonyms, older names, code
+   symbols, phase numbers, and domain concepts not already listed as tokens.
+3. `§0c — Contradiction and non-claim search` for blockers such as `deferred`,
+   `blocked`, `not authorized`, `not ratified`, `local-only`, `no public`,
+   `superseded`, and domain-specific denial terms.
+4. `§0d — Source expansion and newly discovered tokens` to direct-read every
+   relevant hit and carry newly discovered tokens/non-claims into the phase
+   walkthrough, STATUS entry, or carry-forward docs.
+
+MemPalace may be used as an advisory recall net in §0b/§0d, but returned paths
+must be direct-read before any result is treated as canon.
 
 ---
 
@@ -213,4 +230,5 @@ atlas_g_004_high_authority_gap_closure_required
 atlas_g_005_import_dependency_graph_bridge_required
 tla_refinement_notes_pre_rc_window_1241_plus_candidate
 allowlist_export_procedure_window_1241_plus_candidate
+unknown_unknown_discovery_required_before_phase_execution
 ```
