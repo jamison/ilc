@@ -26,7 +26,7 @@ MODULE_PATH = Path("ilc_core/rc/package_profiles.py")
 
 def test_all_committed_package_profiles_validate() -> None:
     validate_all_package_profiles()
-    assert PUBLIC_RC_PACKAGE_PROFILES_VERSION == "public_rc_package_profiles_1238_post.v0.2"
+    assert PUBLIC_RC_PACKAGE_PROFILES_VERSION == "public_rc_package_profiles_1243.v0.1"
 
 
 def test_openclaw_skill_local_profile_is_preview_only_and_not_public_p2p() -> None:
@@ -142,6 +142,13 @@ def test_profile_manifest_json_is_canonical_and_round_trips() -> None:
     assert parsed["local_preview_eligible"] is True
     assert parsed["public_claimability"] is True
     assert parsed["public_rc_eligible"] is True
+    assert parsed["package_surfaces"] == [
+        "ilc_logic",
+        "ilc_cli",
+        "ilc_harness_adapters",
+        "local_sidecar",
+        "public_claimability",
+    ]
     assert parsed["non_excisable_components"] == sorted(NON_EXCISABLE_COMPONENTS)
 
 

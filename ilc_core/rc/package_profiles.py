@@ -18,7 +18,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-PUBLIC_RC_PACKAGE_PROFILES_VERSION = "public_rc_package_profiles_1238_post.v0.2"
+PUBLIC_RC_PACKAGE_PROFILES_VERSION = "public_rc_package_profiles_1243.v0.1"
 
 PROFILE_OPENCLAW_SKILL_LOCAL = "openclaw_skill_local"
 PROFILE_OPENCLAW_SKILL_CLAIMABLE = "openclaw_skill_claimable"
@@ -55,6 +55,40 @@ PROFILE_COMPONENTS = frozenset(
         "transport_principal_identity",
     }
 )
+
+PROFILE_PACKAGE_SURFACES = {
+    PROFILE_OPENCLAW_SKILL_LOCAL: (
+        "ilc_logic",
+        "ilc_cli",
+        "ilc_harness_adapters",
+        "local_sidecar",
+    ),
+    PROFILE_OPENCLAW_SKILL_CLAIMABLE: (
+        "ilc_logic",
+        "ilc_cli",
+        "ilc_harness_adapters",
+        "local_sidecar",
+        "public_claimability",
+    ),
+    PROFILE_ILC_LOGIC_LIBRARY: ("ilc_logic",),
+    PROFILE_ILC_CLI_LOCAL: ("ilc_logic", "ilc_cli"),
+    PROFILE_LOCAL_SIDECAR_DAEMON: (
+        "ilc_logic",
+        "ilc_cli",
+        "ilc_harness_adapters",
+        "local_node_runtime",
+        "local_sidecar",
+    ),
+    PROFILE_FULL_NODE_PUBLIC_P2P: (
+        "ilc_logic",
+        "ilc_cli",
+        "ilc_harness_adapters",
+        "local_node_runtime",
+        "local_sidecar",
+        "public_claimability",
+        "rust_public_p2p",
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -274,6 +308,9 @@ def validate_all_package_profiles() -> None:
 def profile_manifest(profile: PackageProfile | str) -> dict[str, Any]:
     active = get_package_profile(profile) if isinstance(profile, str) else profile
     validate_package_profile(active)
+    package_surfaces = PROFILE_PACKAGE_SURFACES.get(active.profile_id)
+    if package_surfaces is None:
+        raise ValueError("public_rc_package_profile_missing_surface_contract")
     return {
         "components": sorted(active.components),
         "description": active.description,
@@ -281,6 +318,7 @@ def profile_manifest(profile: PackageProfile | str) -> dict[str, Any]:
         "local_preview_eligible": active.local_preview_eligible,
         "non_excisable_components": sorted(NON_EXCISABLE_COMPONENTS),
         "notes": list(active.notes),
+        "package_surfaces": list(package_surfaces),
         "profile_id": active.profile_id,
         "public_claimability": active.public_claimability,
         "public_p2p": active.public_p2p,
@@ -307,6 +345,7 @@ __all__ = [
     "PROFILE_LOCAL_SIDECAR_DAEMON",
     "PROFILE_OPENCLAW_SKILL_CLAIMABLE",
     "PROFILE_OPENCLAW_SKILL_LOCAL",
+    "PROFILE_PACKAGE_SURFACES",
     "PUBLIC_RC_PACKAGE_PROFILES_VERSION",
     "PackageProfile",
     "export_profile_manifest_json",
