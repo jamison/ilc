@@ -24,6 +24,14 @@ DEFAULT_OBSERVED_OUT = Path("out/genesis_observed_repo_hypergraph_v0.1.json")
 DEFAULT_GAP_OUT = Path("out/genesis_core_star_map_gap_analysis_v0.1.json")
 DEFAULT_REPORT_OUT = Path("docs/sims/sim_spectral_02/genesis_core_star_map_gap_analysis_v0.1.md")
 
+OBSERVED_REPO_HYPERGRAPH_COMPILER_VERSION = "observed_repo_hypergraph_compiler_1247.v0.1"
+MAX_SCAN_FILES = 20_000
+MAX_SCAN_FILE_BYTES = 3_000_000
+MAX_SCAN_LINES_PER_FILE = 200_000
+MAX_OBSERVED_VERTICES = 250_000
+MAX_OBSERVED_HYPEREDGES = 250_000
+MAX_OBSERVED_INCIDENCE = 750_000
+
 SCAN_ROOTS = (Path("docs"), Path("config"), Path("ilc_core"), Path("tools"), Path("tests"))
 SKIP_DIRS = {
     ".git",
@@ -101,12 +109,16 @@ def _read_json(path: Path) -> dict[str, Any]:
     return data
 
 
-def _iter_text_files(roots: Iterable[Path]) -> Iterable[Path]:
+def _iter_text_files(roots: Iterable[Path], max_files: int = MAX_SCAN_FILES) -> Iterable[Path]:
+    yielded = 0
     for root in roots:
         if not root.exists():
             continue
         if root.is_file():
             if root.suffix in TEXT_SUFFIXES:
+                yielded += 1
+                if yielded > max_files:
+                    raise ValueError("observed_repo_hypergraph_scan_file_limit_exceeded")
                 yield root
             continue
         for path in sorted(root.rglob("*")):
@@ -116,14 +128,32 @@ def _iter_text_files(roots: Iterable[Path]) -> Iterable[Path]:
                 continue
             if any(part in SKIP_DIRS for part in path.parts):
                 continue
+            yielded += 1
+            if yielded > max_files:
+                raise ValueError("observed_repo_hypergraph_scan_file_limit_exceeded")
             yield path
 
 
 def _read_lines(path: Path) -> list[str]:
     try:
-        return path.read_text(encoding="utf-8").splitlines()
+        if path.stat().st_size > MAX_SCAN_FILE_BYTES:
+            raise ValueError("observed_repo_hypergraph_scan_file_bytes_limit_exceeded")
+        lines: list[str] = []
+        contains_genesis_term = False
+        with path.open("r", encoding="utf-8") as handle:
+            for line_no, raw_line in enumerate(handle, start=1):
+                if line_no > MAX_SCAN_LINES_PER_FILE:
+                    raise ValueError("observed_repo_hypergraph_scan_file_line_limit_exceeded")
+                line = raw_line.rstrip("\n\r")
+                lines.append(line)
+                lowered = line.lower()
+                if not contains_genesis_term and any(term in lowered for term in GENESIS_TERMS):
+                    contains_genesis_term = True
     except UnicodeDecodeError:
         return []
+    if not contains_genesis_term:
+        return []
+    return lines
 
 
 def _node_aliases(node: dict[str, Any]) -> list[str]:
@@ -238,6 +268,7 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
     aliases_by_node = {node_id: _node_aliases(node) for node_id, node in star_nodes.items()}
     symbol_nodes = {node.get("symbol"): node_id for node_id, node in star_nodes.items() if node.get("symbol")}
 
+    scanned_file_count = 0
     for path in _iter_text_files(SCAN_ROOTS):
         if _is_generated_artifact(path):
             continue
@@ -245,9 +276,7 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
         if not lines:
             continue
         source_v = _source_vertex(path)
-        file_text_lower = "\n".join(lines).lower()
-        if not any(term in file_text_lower for term in GENESIS_TERMS):
-            continue
+        scanned_file_count += 1
         _add_vertex(vertices, source_v)
 
         mentioned_nodes: set[str] = set()
@@ -368,10 +397,21 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
                 }
             )
 
-    return {
+    observed = {
         "metadata": {
+            "compiler_version": OBSERVED_REPO_HYPERGRAPH_COMPILER_VERSION,
             "description": "Observed repo/governance hypergraph derived from deterministic source scans.",
             "format_version": "genesis_observed_repo_hypergraph.v0.1",
+            "limits": {
+                "max_observed_hyperedges": MAX_OBSERVED_HYPEREDGES,
+                "max_observed_incidence": MAX_OBSERVED_INCIDENCE,
+                "max_observed_vertices": MAX_OBSERVED_VERTICES,
+                "max_scan_file_bytes": MAX_SCAN_FILE_BYTES,
+                "max_scan_files": MAX_SCAN_FILES,
+                "max_scan_lines_per_file": MAX_SCAN_LINES_PER_FILE,
+            },
+            "scan_roots": [path.as_posix() for path in SCAN_ROOTS],
+            "scanned_source_file_count": scanned_file_count,
             "source_core_star_map": str(DEFAULT_STAR_MAP),
             "source_crawl": str(DEFAULT_CRAWL),
         },
@@ -385,6 +425,17 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
             "symbols": dict(sorted(observed_symbols.items())),
         },
     }
+    _enforce_observed_bounds(observed)
+    return observed
+
+
+def _enforce_observed_bounds(observed: dict[str, Any]) -> None:
+    if len(observed["vertices"]) > MAX_OBSERVED_VERTICES:
+        raise ValueError("observed_repo_hypergraph_vertex_limit_exceeded")
+    if len(observed["hyperedges"]) > MAX_OBSERVED_HYPEREDGES:
+        raise ValueError("observed_repo_hypergraph_hyperedge_limit_exceeded")
+    if len(observed["incidence"]) > MAX_OBSERVED_INCIDENCE:
+        raise ValueError("observed_repo_hypergraph_incidence_limit_exceeded")
 
 
 def _gap_analysis(star_map: dict[str, Any], observed: dict[str, Any]) -> dict[str, Any]:
@@ -461,6 +512,7 @@ def _gap_analysis(star_map: dict[str, Any], observed: dict[str, Any]) -> dict[st
 
     return {
         "metadata": {
+            "compiler_version": OBSERVED_REPO_HYPERGRAPH_COMPILER_VERSION,
             "description": "Gap analysis comparing observed repo hypergraph to proposed Genesis core star-map.",
             "format_version": "genesis_core_star_map_gap_analysis.v0.1",
             "source_observed_hypergraph": str(DEFAULT_OBSERVED_OUT),
@@ -499,6 +551,16 @@ def _gap_analysis(star_map: dict[str, Any], observed: dict[str, Any]) -> dict[st
             "symbol_nodes_without_occurrence": symbol_nodes_without_occurrence,
         },
     }
+
+
+def _write_canonical_json(path: Path, payload: dict[str, Any], *, indent: int | None = None) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    kwargs: dict[str, Any] = {"allow_nan": False, "sort_keys": True}
+    if indent is None:
+        kwargs["separators"] = (",", ":")
+    else:
+        kwargs["indent"] = indent
+    path.write_text(json.dumps(payload, **kwargs) + "\n", encoding="utf-8")
 
 
 def _write_report(path: Path, gap: dict[str, Any]) -> None:
@@ -563,13 +625,8 @@ def run(
     gap["metadata"]["source_observed_hypergraph"] = str(observed_out)
     gap["metadata"]["source_core_star_map"] = str(star_map_path)
 
-    observed_out.parent.mkdir(parents=True, exist_ok=True)
-    gap_out.parent.mkdir(parents=True, exist_ok=True)
-    observed_out.write_text(
-        json.dumps(observed, allow_nan=False, separators=(",", ":"), sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    gap_out.write_text(json.dumps(gap, allow_nan=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    _write_canonical_json(observed_out, observed)
+    _write_canonical_json(gap_out, gap, indent=2)
     _write_report(report_out, gap)
     return observed, gap
 
