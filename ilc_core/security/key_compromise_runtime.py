@@ -245,7 +245,7 @@ class KeyCompromiseResponseRuntime:
             f"{decision.lineage_id}|{decision.compromised_signer_id}|{decision.trigger_class}|"
             f"{decision.compromise_state}|{decision.event_ts}|{self._incident_counter}"
         ).encode("utf-8")
-        return hashlib.sha256(payload).hexdigest()[:24]
+        return hashlib.sha256(payload).hexdigest()
 
     @staticmethod
     def _derive_recovery_attestation(
@@ -258,4 +258,4 @@ class KeyCompromiseResponseRuntime:
         payload = (
             f"{lineage_id}|{replacement_signer_id}|{recovery_ticket_id}|{reason_code}"
         ).encode("utf-8")
-        return hashlib.sha256(payload).hexdigest()[:24]
+        return hashlib.sha256(payload).hexdigest()
