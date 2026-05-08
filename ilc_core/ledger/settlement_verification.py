@@ -47,8 +47,13 @@ def hash_inputs(
         "balances_before": normalize_json_scalars(dict(sorted(balances_before.items()))),
         "balances_after": normalize_json_scalars(dict(sorted(balances_after.items()))),
     }
-    dump = json.dumps(input_data, sort_keys=True, default=str)
-    return hashlib.sha256(dump.encode("utf-8")).hexdigest()[:16]
+    dump = json.dumps(
+        input_data,
+        allow_nan=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return hashlib.sha256(dump.encode("utf-8")).hexdigest()
 
 
 def verify_stake_distribution(
