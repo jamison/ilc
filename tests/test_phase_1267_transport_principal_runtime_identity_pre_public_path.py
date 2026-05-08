@@ -215,9 +215,10 @@ def test_phase_1267_docs_status_and_planning_record_required_tokens() -> None:
         for token in REQUIRED_TOKENS:
             assert token in text
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1267" in planning
-    assert "Phase 1268 - Sidecar loopback projection endpoint boundary" in status
-    assert "phase_1268_sidecar_loopback_projection_endpoint_boundary_next" in status
+    assert "Window 1265-1272 OPEN / PASS through Phase 1268" in planning
+    assert "## Phase 1268" in status
+    assert "Phase 1269 - Werner default topology-pressure profile" in status
+    assert "phase_1269_werner_default_topology_pressure_profile_next" in status
 
 
 def test_phase_1267_records_broad_discovery_and_non_claims() -> None:

@@ -132,6 +132,7 @@ def test_window_1265_1272_planning_index_points_to_guidance_and_open_lock() -> N
 
     assert "ilc_window_1265_1272_candidate_phase_grouping_v0.1.md" in text
     assert "ilc_phase_1265_1272_sequence_lock_v0.1.md" in text
-    assert "Window 1265-1272 OPEN / PASS through Phase 1267" in text
+    assert "Window 1265-1272 OPEN / PASS through Phase 1268" in text
     assert "cdl_087_sensitive_ratification_review_phase_1266.v0.1" in text
     assert "transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1" in text
+    assert "sidecar_loopback_projection_endpoint_boundary_phase_1268.v0.1" in text
