@@ -457,3 +457,55 @@ MemPalace is advisory recall only; direct repo reads remain authoritative.
 Exact-token `rg` is only a schema/completion check; concept discovery
 must also search token components, synonyms, neighboring ideas, older names,
 code symbols, and denial terms before any public-RC blocker is marked absent.
+
+---
+
+## 10. Phase 1256 Closure Addendum
+
+Window 1249-1256 closed at Phase 1256:
+
+```text
+window_1249_1256_closed_phase_1256
+window_1249_1256_closure_gate_verdict=pass
+phase_1256_window_1249_1256_closure_complete
+phase_1250_fix1_gap_audit_routes_reconciled_phase_1256
+```
+
+Closure status updates:
+
+- Gap 14 adapter extraction, package CI, and package-size measurement closed
+  for the selected OpenClaw/NemoClaw package profiles; no package publication
+  or public RC claim occurred.
+- Gap 13 public claimability remains blocked at runtime: Phase 1252 closed a
+  sensitive boundary/classification pass and did not activate claimability,
+  wallet withdrawal, wallet transfer, wallet spend, ECU mint, or ILC settlement
+  semantics.
+- TransportPrincipal is specified but not implemented as runtime public-P2P
+  admission identity; public P2P and non-loopback sidecar/projection serving
+  remain blocked.
+- ATLAS-G-004/005 high-authority classification and dependency bridge closed,
+  but ATLAS-G-006+ and the public-RC graph reachability gate remain open.
+- TLA refinement notes and allowlist-export procedure closed for documentation
+  scope; public repository publication remains unauthorized.
+- Phase 1250 Fix1 routes are reconciled in
+  `docs/specs/ilc_window_1249_1256_handoff_1256_v0.1.md`.
+- CDL-087 remains open/prelocked/not ratified.
+- v0.2 signing remains deferred pending explicit signing authorization.
+
+Public RC remains blocked after Phase 1256:
+
+```text
+public_rc_remains_blocked_after_phase_1256
+window_1257_plus_sequence_lock_required_before_next_phase_assignment
+```
+
+Recommended next-window direction:
+
+```text
+gap13_claimability_runtime_conversion_sweeper_required_before_final_public_rc
+transport_principal_runtime_adr_required_before_public_p2p
+atlas_g_006_public_rc_graph_reachability_gate_required
+cdl_087_production_candidate_evidence_ratification_phase_required
+public_source_allowlist_execution_requires_publication_authorization
+v0_2_signing_requires_explicit_human_authorization
+```
