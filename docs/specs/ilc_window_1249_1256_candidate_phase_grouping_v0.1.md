@@ -59,6 +59,16 @@ Direct lineage reads used for the Gap 13 / claimability slice:
 4. `ilc_core/protocol/public_wallet_runtime.py`
 5. `ilc_core/rc/package_profiles.py`
 
+Phase 1250 Fix1 audit input added after the sequence lock opened:
+
+1. `docs/specs/ilc_rc_frontier_gap_audit_1250_fix1_v0.1.md`
+2. `docs/specs/ilc_rc_frontier_gap_audit_1250_fix1_v0.1.json`
+
+The audit is advisory routing evidence with current-canon reconciliation. It
+confirms Phase 1251 remains next, routes digest truncation classification into
+Phase 1252/1253, routes Rust M-5 and network-public-P2P findings into Phase
+1253, and routes legacy `graph_delta` gaps into Phase 1254 ATLAS-G hygiene.
+
 MemPalace was used only as advisory retrieval support. Relevant historical
 hits pointed back to the Phase 576 and Phase 615 settlement/wallet boundary
 documents. Those documents were direct-read before this grouping treated their
@@ -124,6 +134,9 @@ interfaces before any public package claim.
 
 Phase 1251 then turns the scanner into a package CI gate and measures the
 selected package profile rather than using monorepo line counts as a proxy.
+The Phase 1250 Fix1 audit is an input to Phase 1251 only to confirm this routing;
+Phase 1251 must not silently absorb the sensitive claimability/crypto or
+TransportPrincipal/Rust findings.
 
 ### 4.2 Gap 13 is sensitive and must not silently widen wallet semantics
 
@@ -145,6 +158,10 @@ runtime. It must not activate public claimability or imply that agent-specific
 manual claims are required where canon instead routes conversion through epoch
 commit and settled runtime roots.
 
+Phase 1250 Fix1 additionally routes ledger/security digest truncation candidates
+to Phase 1252. Phase 1252 should classify each candidate as security-binding,
+display/storage-only, or already-covered before any mutation.
+
 ### 4.3 TransportPrincipal starts in parallel, not as the default RC path
 
 TransportPrincipal remains required before public P2P and before any non-loopback
@@ -154,12 +171,19 @@ appropriate. It must not expose public P2P, bind public sidecar endpoints, or
 implement a runtime identity layer before the lifecycle and revocation contract
 is locked.
 
+Phase 1250 Fix1 additionally routes network digest/fingerprint truncations and
+the Rust M-5 `FIXME` to Phase 1253 for public-P2P substrate disposition.
+
 ### 4.4 ATLAS-G-004/005 bridges graph reachability to real imports
 
 ATLAS-G-001..003 created graph-delta discipline and package-profile reachability
 manifests. Phase 1254 should continue with high-authority source classification
 and import/dependency graph bridge work so package modularity and graph
 reachability stop drifting independently.
+
+Phase 1250 Fix1 also routes 129 legacy closure/handoff docs missing
+`graph_delta=` to Phase 1254 as hygiene. Phase 1254 should produce a prioritized
+disposition/backfill plan and should not blindly edit all historical files.
 
 ### 4.5 TLA refinement and allowlist-export are low-cost pre-RC closures
 
@@ -186,10 +210,12 @@ Window 1249-1256 should not close as pass unless all of the following are true:
    deferred and what chain/crypto/Rust dependencies must close before runtime.
 6. TransportPrincipal design/spec packet records issuance, rotation, revocation,
    replay, privacy, and rate-limit key requirements without public exposure.
-7. ATLAS-G-004/005 produces high-authority classification and import/dependency
-   graph bridge artifacts or exact carry-forward blockers.
+7. ATLAS-G-004/005 produces high-authority classification, import/dependency
+   graph bridge artifacts, and Phase 1250 Fix1 legacy `graph_delta` gap
+   disposition or exact carry-forward blockers.
 8. TLA refinement notes and allowlist-export procedure are closed or explicitly
    carried forward with file-level references.
+9. Phase 1250 Fix1 audit routes are reconciled in the closure handoff.
 
 ---
 
@@ -228,6 +254,10 @@ gap_13_public_claimability_runtime_should_start_before_final_public_rc_claim
 transport_principal_identity_required_before_public_p2p
 atlas_g_004_high_authority_gap_closure_required
 atlas_g_005_import_dependency_graph_bridge_required
+phase_1252_digest_truncation_security_binding_classification_recorded
+phase_1253_transport_digest_and_rust_m5_disposition_recorded
+phase_1254_legacy_graph_delta_gap_disposition_recorded
+phase_1250_fix1_gap_audit_routes_reconciled_phase_1256
 tla_refinement_notes_pre_rc_window_1241_plus_candidate
 allowlist_export_procedure_window_1241_plus_candidate
 unknown_unknown_discovery_required_before_phase_execution

@@ -205,6 +205,27 @@ gap_14_adapter_extraction_runs_before_public_rc_claim_phase_1249
 Sensitive phases require separate explicit human authorization even if adjacent
 non-sensitive phases are executed in sequence.
 
+### Phase 1250 Fix1 Audit-Route Addendum
+
+Phase 1250 Fix1 added a reproducible RC frontier gap audit:
+
+```text
+docs/specs/ilc_rc_frontier_gap_audit_1250_fix1_v0.1.md
+docs/specs/ilc_rc_frontier_gap_audit_1250_fix1_v0.1.json
+phase_1250_fix1_rc_frontier_gap_audit_complete
+```
+
+The audit does not reorder the locked phase sequence, but it is now a required
+input to the remaining window phases:
+
+| Audit route | Required disposition |
+|-------------|----------------------|
+| Phase 1251 | Consume `RCGAP-1250-FIX1-001` as confirmation that Gap 14 package CI/profile audit/package-size measurement remains next; do not pull Phase 1252/1253/1254 findings into the package-CI phase. |
+| Phase 1252 | Classify all Phase 1250 Fix1 ledger/security digest truncation candidates as security-binding, storage/display-only, or already-covered; fix only cases safely in scope under the sensitive claimability/chain/crypto boundary. |
+| Phase 1253 | Classify network digest/fingerprint truncations and the Rust M-5 `FIXME` under TransportPrincipal/public-P2P readiness; no public exposure or runtime identity activation is authorized by the classification. |
+| Phase 1254 | Treat the 129 missing legacy `graph_delta=` closure/handoff docs as ATLAS-G hygiene. Produce a prioritized backfill/disposition plan rather than blindly editing every historical file. |
+| Phase 1256 | Reconcile every Phase 1250 Fix1 finding route in the closure handoff so no audit finding is dropped. |
+
 ---
 
 ## 8. Sensitive Gate Rules
@@ -250,6 +271,11 @@ GO Phase 1256
 | `transport_principal_identity_required_before_public_p2p` | Phase 1253 design/spec only |
 | `atlas_g_004_high_authority_gap_closure_required` | Phase 1254 |
 | `atlas_g_005_import_dependency_graph_bridge_required` | Phase 1254 |
+| `phase_1250_fix1_rc_frontier_gap_audit_complete` | Required input to Phases 1251-1254 and Phase 1256 closure |
+| `phase_1252_digest_truncation_security_binding_classification_recorded` | Phase 1252 Fix1/addendum route from Phase 1250 Fix1 |
+| `phase_1253_transport_digest_and_rust_m5_disposition_recorded` | Phase 1253 route from Phase 1250 Fix1 |
+| `phase_1254_legacy_graph_delta_gap_disposition_recorded` | Phase 1254 ATLAS-G route from Phase 1250 Fix1 |
+| `phase_1250_fix1_gap_audit_routes_reconciled_phase_1256` | Phase 1256 closure reconciliation requirement |
 | `tla_refinement_notes_pre_rc_window_1241_plus_candidate` | Phase 1255 |
 | `allowlist_export_procedure_window_1241_plus_candidate` | Phase 1255 |
 | `unknown_unknown_discovery_required_before_phase_execution` | All phases |
