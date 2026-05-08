@@ -97,6 +97,12 @@ discovery pass before coding:
 MemPalace may be used as an advisory recall net in §0b/§0d, but returned paths
 must be direct-read before any result is treated as canon.
 
+Exact-token `rg` is a schema/completion check only. It confirms that a required
+token appears somewhere; it does not prove that related historical wording,
+runtime symbols, or blocker concepts have been found. Phase execution must also
+search token components, synonyms, neighboring concepts, older names, code
+symbols, and denial terms before concluding that a concept is absent.
+
 ---
 
 ## 3. Candidate Phase Order

@@ -86,6 +86,10 @@ expected structure is:
 
 MemPalace is useful as an advisory recall net for §0b/§0d, but current canon
 still comes only from direct repo reads.
+Exact-token `rg` is only a schema/completion check. Future prompts must also
+search token components, synonyms, neighboring concepts, older names, code
+symbols, and denial terms; lack of an exact phrase match must not be treated as
+absence of project context.
 
 ---
 

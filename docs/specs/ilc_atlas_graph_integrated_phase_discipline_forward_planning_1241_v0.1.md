@@ -100,6 +100,10 @@ ATLAS-G or public-RC graph phase, run the four-part §0 discovery pass:
 
 MemPalace can help find historical graph-lineage material, but current graph
 authority still requires direct repo reads and canonical exports.
+Exact-token `rg` is only a schema/completion check for known graph markers.
+ATLAS-G phases must also search token components, synonyms, neighboring graph
+concepts, older names, code/import symbols, and denial terms before deciding a
+source class or dependency edge is absent.
 
 ---
 

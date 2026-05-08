@@ -38,6 +38,10 @@ Required prompt/execution structure:
 
 MemPalace can be used for historical recall, but every useful hit must be
 direct-read in the repo before it is treated as canon.
+Exact-token `rg` is only a schema/completion check for known markers. Transport
+and value-path phases must also search token components, synonyms, neighboring
+ideas, older names, runtime symbols, and denial terms before treating a blocker
+or implementation concept as absent.
 
 ---
 
