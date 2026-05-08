@@ -47,6 +47,9 @@ ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN = (
     "public_release_artifact_not_authorized_phase_1271"
 )
 ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN = "no_genesis_atlas_mutation_phase_1271"
+ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN = (
+    "atlas_g_006_manifest_profile_consistency_hardening_phase_1271_fix1.v0.1"
+)
 PHASE_1254_LEGACY_GRAPH_DELTA_DISPOSITION_TOKEN = (
     "phase_1254_legacy_graph_delta_gap_disposition_recorded"
 )
@@ -1081,6 +1084,8 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
     components = set(package_profile.get("components", []))
     surfaces = set(package_profile.get("package_surfaces", []))
     reachable_anchors = set(manifest.get("reachable_anchor_set", []))
+    manifest_profile_id = manifest.get("profile_id")
+    package_profile_id = package_profile.get("profile_id")
     edge_types = set(dependency_bridge.get("edge_types", []))
     profile_component_pairs = _atlas_g_006_edge_pairs(
         dependency_bridge, edge_type="package_profile_requires_component"
@@ -1107,6 +1112,16 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
     }
 
     checks = [
+        _atlas_g_006_check(
+            check_id="manifest_profile_matches_selected_profile",
+            passed=manifest_profile_id == profile_id and package_profile_id == profile_id,
+            evidence={
+                "manifest_profile_id": manifest_profile_id,
+                "package_profile_id": package_profile_id,
+                "selected_profile_id": profile_id,
+            },
+            fail_reason="atlas_g_006_manifest_profile_mismatch",
+        ),
         _atlas_g_006_check(
             check_id="selected_profile_is_public_rc_target",
             passed=profile_id == ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE
@@ -1252,6 +1267,7 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
             ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_VERDICT_TOKEN,
             ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN,
             ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN,
+            ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN,
         ],
         "selected_profile_id": profile_id,
         "status": status,
@@ -1280,6 +1296,7 @@ __all__ = [
     "ATLAS_G_004_COMPLETION_TOKEN",
     "ATLAS_G_005_COMPLETION_TOKEN",
     "ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN",
+    "ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN",
     "ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION",
     "ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_VERDICT_TOKEN",
     "ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN",

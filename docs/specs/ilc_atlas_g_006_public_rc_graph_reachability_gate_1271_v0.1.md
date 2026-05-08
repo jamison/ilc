@@ -18,6 +18,7 @@ graph_reachability_verdict=pass_graph_gate_only_release_artifacts_blocked
 public_rc_graph_reachability_verdict_recorded_phase_1271
 public_release_artifact_not_authorized_phase_1271
 no_genesis_atlas_mutation_phase_1271
+atlas_g_006_manifest_profile_consistency_hardening_phase_1271_fix1.v0.1
 ```
 
 The gate passes because the selected `openclaw_skill_claimable` profile is
@@ -117,7 +118,29 @@ It uses `json.dumps(..., sort_keys=True, allow_nan=False, separators=(",", ":"))
 
 ---
 
-## 4. Non-Authorization Boundary
+## 4. Phase 1271 Fix1 Audit Hardening
+
+The pre-1272 deterministic audit found a narrow implementation defect in the
+override path for
+`build_atlas_g_006_public_rc_graph_reachability_gate(...)`: a caller-supplied
+`reachability_manifest` could carry a top-level or nested `profile_id` that did
+not match the requested `profile_id`.
+
+Phase 1271 Fix1 hardens this path by adding a fail-closed check:
+
+```text
+manifest_profile_matches_selected_profile
+atlas_g_006_manifest_profile_mismatch
+atlas_g_006_manifest_profile_consistency_hardening_phase_1271_fix1.v0.1
+```
+
+The default Phase 1271 evidence path still passes for
+`openclaw_skill_claimable`; tampered override manifests now fail with
+`graph_reachability_verdict=fail_closed_release_artifacts_blocked`.
+
+Fix1 does not change the public-RC non-authorization boundary.
+
+## 5. Non-Authorization Boundary
 
 Phase 1271 records a graph evidence verdict only. It does not authorize:
 
@@ -150,7 +173,7 @@ no_genesis_atlas_mutation_phase_1271
 
 ---
 
-## 5. Open Public-RC Blockers After Phase 1271
+## 6. Open Public-RC Blockers After Phase 1271
 
 ATLAS-G-006 is no longer the graph-reachability blocker for the selected
 OpenClaw/NemoClaw claimable skill profile. Public RC remains blocked by:
@@ -171,7 +194,7 @@ public_rc_remains_blocked_after_phase_1271
 
 ---
 
-## 6. Graph Delta
+## 7. Graph Delta
 
 ```text
 graph_delta=load_bearing_code_changed:ilc_core/rc/atlas_graph_discipline.py -> hypergraph/public_rc

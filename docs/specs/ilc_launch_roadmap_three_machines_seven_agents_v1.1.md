@@ -73,6 +73,7 @@ atlas_g_006_public_rc_graph_reachability_gate_phase_1271.v0.1
 public_rc_graph_reachability_verdict_recorded_phase_1271
 public_release_artifact_not_authorized_phase_1271
 no_genesis_atlas_mutation_phase_1271
+atlas_g_006_manifest_profile_consistency_hardening_phase_1271_fix1.v0.1
 ```
 
 ---
@@ -789,6 +790,7 @@ atlas_g_006_public_rc_graph_reachability_gate_phase_1271.v0.1
 public_rc_graph_reachability_verdict_recorded_phase_1271
 public_release_artifact_not_authorized_phase_1271
 no_genesis_atlas_mutation_phase_1271
+atlas_g_006_manifest_profile_consistency_hardening_phase_1271_fix1.v0.1
 ```
 
 Roadmap impact:
@@ -799,6 +801,9 @@ Roadmap impact:
   component, package surface, anchor reachability, Python, Rust, CLI, and source
   classification edge families.
 - ATLAS-G-006 is no longer the selected-profile graph reachability blocker.
+- Phase 1271 Fix1 hardens supplied-manifest profile consistency; top-level or
+  nested profile-id mismatch now fails closed with
+  `atlas_g_006_manifest_profile_mismatch`.
 - This does not authorize public release artifact production, public RC claim,
   public repository publication, Genesis Atlas mutation/regeneration/signing, or
   v0.2 signing.
