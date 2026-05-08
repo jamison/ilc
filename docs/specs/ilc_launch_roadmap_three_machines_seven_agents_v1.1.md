@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1271; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
+| Window frontier | Window 1265-1272 CLOSED / PASS through Phase 1272; current closure handoff is `docs/specs/ilc_window_1265_1272_handoff_1272_v0.1.md` and Window 1273+ sequence lock is required before assigning further phase numbers |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -74,6 +74,11 @@ public_rc_graph_reachability_verdict_recorded_phase_1271
 public_release_artifact_not_authorized_phase_1271
 no_genesis_atlas_mutation_phase_1271
 atlas_g_006_manifest_profile_consistency_hardening_phase_1271_fix1.v0.1
+docs/specs/ilc_window_1265_1272_handoff_1272_v0.1.md
+window_1265_1272_closed_phase_1272
+window_1265_1272_closure_gate_verdict=pass
+phase_1272_window_1265_1272_closure_complete
+window_1273_plus_sequence_lock_required_before_next_phase_assignment
 ```
 
 ---
@@ -811,6 +816,53 @@ Roadmap impact:
 Public RC remains blocked after Phase 1271:
 
 ```text
+public_rc_remains_blocked_after_phase_1271
+public_rc_remains_blocked_after_phase_1270
+public_rc_remains_blocked_after_phase_1269
+public_rc_remains_blocked_after_phase_1268
+public_rc_remains_blocked_after_phase_1267
+public_rc_remains_blocked_after_phase_1266
+```
+
+## 18. Phase 1272 Window 1265-1272 Closure Addendum
+
+Phase 1272 closed Window 1265-1272:
+
+```text
+window_1265_1272_closed_phase_1272
+window_1265_1272_closure_gate_verdict=pass
+phase_1272_window_1265_1272_closure_complete
+window_1273_plus_sequence_lock_required_before_next_phase_assignment
+```
+
+Roadmap impact:
+
+- CDL-087 remains open/prelocked/not ratified; Phase 1266 recorded
+  no-ratification/no-register-mutation, and any future CDL-087 ratification or
+  register mutation requires explicit future human ratification authorization.
+- TransportPrincipal has a pre-public helper, but full public-path ADR,
+  revocation, replay, privacy, rate-limit binding, and Rust/public-P2P
+  hardening remain open.
+- Sidecar/projection remains local-only or loopback/subprocess/Unix-socket
+  scoped; public/non-loopback serving remains blocked.
+- Werner `topology_pressure_model=werner_v1` is now the default SIM-FETCH
+  evidence profile and `none` remains the control profile, but no Werner CDL,
+  ECU minting, ILC settlement, or public claimability is authorized.
+- Gap 13 and CDL-048 conversion-sweeper requirements are recorded, but public
+  claimability runtime, wallet withdrawal/transfer/spend, ECU minting, and ILC
+  settlement remain blocked.
+- ATLAS-G-006 is no longer the selected-profile graph reachability blocker for
+  `openclaw_skill_claimable`; Phase 1271 Fix1 also makes supplied-manifest
+  profile-id mismatches fail closed with `atlas_g_006_manifest_profile_mismatch`.
+- Public release artifact production, public RC claim, public repository
+  publication, Genesis Atlas mutation/regeneration/signing, release manifest
+  publication, allowlist publication, and v0.2 signing remain unauthorized.
+- Window 1273+ sequence lock is required before assigning further phase numbers.
+
+Public RC remains blocked after Phase 1272:
+
+```text
+public_rc_remains_blocked_after_phase_1272
 public_rc_remains_blocked_after_phase_1271
 public_rc_remains_blocked_after_phase_1270
 public_rc_remains_blocked_after_phase_1269
