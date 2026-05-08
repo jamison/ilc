@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from ilc_core.rc.atlas_graph_discipline import (
+    ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN,
     ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN,
     ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION,
     ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_VERDICT_TOKEN,
@@ -40,6 +41,7 @@ REQUIRED_TOKENS = (
     ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN,
     ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN,
 )
+FIX1_TOKENS = (ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN,)
 
 
 def _read(path: Path) -> str:
@@ -101,6 +103,49 @@ def test_phase_1271_gate_fails_closed_on_missing_anchor_and_component() -> None:
     assert "package_reachability_manifest_passes" in gate["failing_checks"]
     assert "all_required_anchors_reachable" in gate["failing_checks"]
     assert "required_components_present" in gate["failing_checks"]
+    assert gate["release_artifact_status"] == "not_authorized"
+
+
+def test_phase_1271_fix1_gate_fails_closed_on_manifest_profile_id_mismatch() -> None:
+    manifest = package_profile_reachability_manifest(PROFILE_OPENCLAW_SKILL_CLAIMABLE)
+    bad_manifest = copy.deepcopy(manifest)
+    bad_manifest["profile_id"] = PROFILE_OPENCLAW_SKILL_LOCAL
+
+    gate = build_atlas_g_006_public_rc_graph_reachability_gate(
+        profile_id=PROFILE_OPENCLAW_SKILL_CLAIMABLE,
+        reachability_manifest=bad_manifest,
+    )
+    checks = {check["check_id"]: check for check in gate["checks"]}
+
+    assert gate["status"] == "fail"
+    assert gate["graph_reachability_verdict"] == "fail_closed_release_artifacts_blocked"
+    assert "manifest_profile_matches_selected_profile" in gate["failing_checks"]
+    assert (
+        checks["manifest_profile_matches_selected_profile"]["fail_reason"]
+        == "atlas_g_006_manifest_profile_mismatch"
+    )
+    assert gate["release_artifact_status"] == "not_authorized"
+
+
+def test_phase_1271_fix1_gate_fails_closed_on_nested_profile_id_mismatch() -> None:
+    manifest = package_profile_reachability_manifest(PROFILE_OPENCLAW_SKILL_CLAIMABLE)
+    bad_manifest = copy.deepcopy(manifest)
+    bad_manifest["package_profile"]["profile_id"] = PROFILE_OPENCLAW_SKILL_LOCAL
+
+    gate = build_atlas_g_006_public_rc_graph_reachability_gate(
+        profile_id=PROFILE_OPENCLAW_SKILL_CLAIMABLE,
+        reachability_manifest=bad_manifest,
+    )
+    checks = {check["check_id"]: check for check in gate["checks"]}
+
+    assert gate["status"] == "fail"
+    assert gate["graph_reachability_verdict"] == "fail_closed_release_artifacts_blocked"
+    assert "manifest_profile_matches_selected_profile" in gate["failing_checks"]
+    assert checks["manifest_profile_matches_selected_profile"]["evidence"] == {
+        "manifest_profile_id": PROFILE_OPENCLAW_SKILL_CLAIMABLE,
+        "package_profile_id": PROFILE_OPENCLAW_SKILL_LOCAL,
+        "selected_profile_id": PROFILE_OPENCLAW_SKILL_CLAIMABLE,
+    }
     assert gate["release_artifact_status"] == "not_authorized"
 
 
@@ -170,6 +215,21 @@ def test_phase_1271_required_tokens_are_recorded_everywhere() -> None:
     assert "public_rc_remains_blocked_after_phase_1271" in roadmap
     assert "Phase 1272 - Window 1265-1272 closure gate" in status
     assert "phase_1272_window_1265_1272_closure_gate_requires_explicit_go" in status
+
+
+def test_phase_1271_fix1_tokens_are_recorded_in_phase_surfaces() -> None:
+    spec = _read(SPEC_PATH)
+    walkthrough = _read(WALKTHROUGH_PATH)
+    status = _read(STATUS_PATH)
+    planning = _read(PLANNING_INDEX_PATH)
+    roadmap = _read(ROADMAP_PATH)
+
+    for text in (spec, walkthrough, status, planning, roadmap):
+        for token in FIX1_TOKENS:
+            assert token in text
+
+    gate = build_atlas_g_006_public_rc_graph_reachability_gate()
+    assert set(FIX1_TOKENS) <= set(gate["required_tokens"])
 
 
 def test_phase_1271_records_discovery_non_claims_and_open_blockers() -> None:
