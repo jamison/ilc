@@ -28,7 +28,6 @@ from ilc_core.epistemic.truth_primitive_graph_store import (
     CDL_074_DEPENDENCY,
     CDL_075_DEPENDENCY,
     TRUTH_PRIMITIVE_GRAPH_STORE_VERSION,
-    TruthPrimitiveGraphStore,
     _edge_key,
     _resolve_edges,
     node_id_from_submission,
@@ -38,6 +37,7 @@ from ilc_core.epistemic.truth_primitive_graph_store import (
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 PHASE_882_COMMIT_SUBJECT = "feat(g8): phase 877-882 cdl-075 truth primitive graph store"
 MODULE_PATH = Path("ilc_core/epistemic/truth_primitive_graph_store.py")

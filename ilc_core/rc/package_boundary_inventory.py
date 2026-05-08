@@ -13,7 +13,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-IMPORT_BOUNDARY_INVENTORY_VERSION = "package_boundary_inventory_1244.v0.1"
+IMPORT_BOUNDARY_INVENTORY_VERSION = "package_boundary_inventory_1250.v0.1"
+GAP14_ADAPTER_EXTRACTION_VERSION = "gap14_adapter_extraction_phase_1250.v0.1"
+ILC_LOGIC_IMPORT_BOUNDARY_REDUCTION_TOKEN = (
+    "ilc_logic_import_boundary_migration_debt_reduced_phase_1250"
+)
+PHASE_1250_GAP14_ADAPTER_EXTRACTION_COMPLETE_TOKEN = (
+    "phase_1250_gap14_adapter_extraction_complete"
+)
 MAX_IMPORT_INVENTORY_FILES = 5_000
 MAX_IMPORT_INVENTORY_FILE_BYTES = 3_000_000
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -318,8 +325,11 @@ def export_import_boundary_inventory_json(inventory: dict[str, Any] | None = Non
 
 __all__ = [
     "DEFAULT_IMPORT_BOUNDARY_SPECS",
+    "GAP14_ADAPTER_EXTRACTION_VERSION",
+    "ILC_LOGIC_IMPORT_BOUNDARY_REDUCTION_TOKEN",
     "IMPORT_BOUNDARY_INVENTORY_VERSION",
     "ImportBoundarySpec",
+    "PHASE_1250_GAP14_ADAPTER_EXTRACTION_COMPLETE_TOKEN",
     "build_default_import_boundary_inventory",
     "build_import_boundary_inventory",
     "export_import_boundary_inventory_json",

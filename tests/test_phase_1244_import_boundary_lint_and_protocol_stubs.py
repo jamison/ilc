@@ -223,10 +223,10 @@ def test_phase_1244_default_inventory_is_repo_root_anchored(
     inventory = build_default_import_boundary_inventory()
     logic = inventory["surfaces"]["ilc_logic"]
     assert logic["file_count"] > 0
-    assert logic["status"] == "violations_present"
+    assert logic["status"] == "pass"
 
 
-def test_phase_1244_default_ilc_logic_boundary_records_migration_debt() -> None:
+def test_phase_1244_default_ilc_logic_boundary_records_phase_1250_debt_reduction() -> None:
     spec = DEFAULT_IMPORT_BOUNDARY_SPECS["ilc_logic"]
     assert "ilc_core.node" in spec.forbidden_module_prefixes
     assert "ilc_core.storage" in spec.forbidden_module_prefixes
@@ -234,46 +234,9 @@ def test_phase_1244_default_ilc_logic_boundary_records_migration_debt() -> None:
     assert "lmdb" in spec.forbidden_import_roots
 
     inventory = build_import_boundary_inventory(spec)
-    assert inventory["status"] == "violations_present"
-    assert inventory["violations"] == [
-        {
-            "file": "ilc_core/epistemic/truth_primitive_graph_store.py",
-            "import_root": "ilc_core",
-            "matched_rule": "ilc_core.storage",
-            "module": "ilc_core.storage.lmdb_public_runtime",
-            "violation_type": "forbidden_module_prefix",
-        },
-        {
-            "file": "ilc_core/epistemic/truth_primitive_submission_runtime.py",
-            "import_root": "ilc_core",
-            "matched_rule": "ilc_core.node",
-            "module": "ilc_core.node.node_schema_core_runtime_360",
-            "violation_type": "forbidden_module_prefix",
-        },
-        {
-            "file": "ilc_core/protocol/public_init_admission_runtime.py",
-            "import_root": "ilc_core",
-            "matched_rule": "ilc_core.storage",
-            "module": "ilc_core.storage.lmdb_public_runtime",
-            "violation_type": "forbidden_module_prefix",
-        },
-        {
-            "file": "ilc_core/protocol/public_receipt_runtime.py",
-            "import_root": "ilc_core",
-            "matched_rule": "ilc_core.storage",
-            "module": "ilc_core.storage.lmdb_public_runtime",
-            "violation_type": "forbidden_module_prefix",
-        },
-        {
-            "file": "ilc_core/protocol/public_wallet_runtime.py",
-            "import_root": "ilc_core",
-            "matched_rule": "ilc_core.storage",
-            "module": "ilc_core.storage.lmdb_public_runtime",
-            "violation_type": "forbidden_module_prefix",
-        },
-    ]
-    with pytest.raises(ValueError, match="package_boundary_inventory_forbidden_imports_present"):
-        validate_import_boundary(spec)
+    assert inventory["status"] == "pass"
+    assert inventory["violations"] == []
+    assert validate_import_boundary(spec)["status"] == "pass"
 
 
 def test_phase_1244_default_inventory_records_module_prefix_rules() -> None:
@@ -289,8 +252,8 @@ def test_phase_1244_default_inventory_records_module_prefix_rules() -> None:
 def test_phase_1244_inventory_export_remains_canonical_with_prefix_rules() -> None:
     payload = export_import_boundary_inventory_json()
     parsed = json.loads(payload)
-    assert parsed["version"] == "package_boundary_inventory_1244.v0.1"
-    assert IMPORT_BOUNDARY_INVENTORY_VERSION == "package_boundary_inventory_1244.v0.1"
+    assert parsed["version"] == "package_boundary_inventory_1250.v0.1"
+    assert IMPORT_BOUNDARY_INVENTORY_VERSION == "package_boundary_inventory_1250.v0.1"
     assert "forbidden_module_prefixes" in parsed["surfaces"]["ilc_logic"]
     assert payload == json.dumps(
         parsed,

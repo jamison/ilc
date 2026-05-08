@@ -144,8 +144,10 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
     if store_path:
         from ilc_core.epistemic.truth_primitive_graph_store import (
-            TruthPrimitiveGraphStore,
             write_truth_primitive_result,
+        )
+        from ilc_core.storage.truth_primitive_graph_lmdb_adapter import (
+            TruthPrimitiveGraphStore,
         )
         store = TruthPrimitiveGraphStore(store_path)
         try:

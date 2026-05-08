@@ -176,7 +176,7 @@ class HttpFetchTransportRuntime:
         """Open LMDB store if store_path is configured, else return None."""
         if not self.config.store_path:
             return None
-        from ilc_core.epistemic.truth_primitive_graph_store import TruthPrimitiveGraphStore
+        from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
         return TruthPrimitiveGraphStore(self.config.store_path)
 
     def start(self) -> None:
