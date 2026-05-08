@@ -37,6 +37,16 @@ ATLAS_G_004_COMPLETION_TOKEN = "atlas_g_004_high_authority_gap_closure_committed
 ATLAS_G_005_COMPLETION_TOKEN = (
     "atlas_g_005_import_dependency_graph_bridge_committed_phase_1254"
 )
+ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION = (
+    "atlas_g_006_public_rc_graph_reachability_gate_phase_1271.v0.1"
+)
+ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_VERDICT_TOKEN = (
+    "public_rc_graph_reachability_verdict_recorded_phase_1271"
+)
+ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN = (
+    "public_release_artifact_not_authorized_phase_1271"
+)
+ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN = "no_genesis_atlas_mutation_phase_1271"
 PHASE_1254_LEGACY_GRAPH_DELTA_DISPOSITION_TOKEN = (
     "phase_1254_legacy_graph_delta_gap_disposition_recorded"
 )
@@ -57,6 +67,29 @@ GRAPH_DELTA_KINDS = GRAPH_DELTA_SIMPLE_KINDS | GRAPH_DELTA_LOAD_BEARING_KINDS
 
 PROFILE_REACHABILITY_MANIFEST_IDS = frozenset(
     {PROFILE_OPENCLAW_SKILL_CLAIMABLE, PROFILE_OPENCLAW_SKILL_LOCAL}
+)
+ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE = PROFILE_OPENCLAW_SKILL_CLAIMABLE
+ATLAS_G_006_REQUIRED_EDGE_TYPES = frozenset(
+    {
+        "high_authority_source_classified_as",
+        "package_component_reachable_from_anchor",
+        "package_profile_exports_surface",
+        "package_profile_requires_component",
+        "python_cli_entrypoint",
+        "python_surface_imports_root",
+        "rust_binary_entrypoint",
+        "rust_crate_dependency",
+    }
+)
+ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS = frozenset(
+    {
+        *NON_EXCISABLE_COMPONENTS,
+        "ecu_to_ilc_conversion_runtime",
+        "public_claimability_runtime",
+    }
+)
+ATLAS_G_006_REQUIRED_PROFILE_SURFACES = frozenset(
+    {"ilc_cli", "ilc_harness_adapters", "ilc_logic", "local_sidecar", "public_claimability"}
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -134,6 +167,16 @@ _NON_AUTHORIZATION_BOUNDARY = (
     "no_public_sidecar_projection_serving",
     "no_public_claimability_activation",
     "no_cdl_mutation",
+)
+_ATLAS_G_006_NON_AUTHORIZATION_BOUNDARY = (
+    *_NON_AUTHORIZATION_BOUNDARY,
+    ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN,
+    ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN,
+    "no_release_artifact_production_phase_1271",
+    "no_public_rc_claim_phase_1271",
+    "no_public_repository_publication_phase_1271",
+    "no_v0_2_signing_phase_1271",
+    "no_cdl_mutation_phase_1271",
 )
 
 _COMPONENT_REACHABILITY: dict[str, dict[str, Any]] = {
@@ -962,10 +1005,288 @@ def export_atlas_g_004_005_artifact_json(artifact: dict[str, Any] | None = None)
     )
 
 
+def _atlas_g_006_check(
+    *,
+    check_id: str,
+    passed: bool,
+    evidence: Any,
+    fail_reason: str,
+) -> dict[str, Any]:
+    return {
+        "check_id": check_id,
+        "evidence": evidence,
+        "fail_reason": "" if passed else fail_reason,
+        "status": "pass" if passed else "fail",
+    }
+
+
+def _atlas_g_006_edge_pairs(
+    dependency_bridge: dict[str, Any],
+    *,
+    edge_type: str,
+) -> set[tuple[str, str]]:
+    edges = dependency_bridge.get("edges")
+    if not isinstance(edges, list):
+        return set()
+    return {
+        (str(edge.get("source")), str(edge.get("target")))
+        for edge in edges
+        if isinstance(edge, dict) and edge.get("edge_type") == edge_type
+    }
+
+
+def _atlas_g_006_component_anchor_pairs(
+    dependency_bridge: dict[str, Any],
+) -> set[tuple[str, str]]:
+    pairs = set()
+    for source, target in _atlas_g_006_edge_pairs(
+        dependency_bridge, edge_type="package_component_reachable_from_anchor"
+    ):
+        if source.startswith("package_component:") and target.startswith("atlas_anchor:"):
+            pairs.add(
+                (
+                    source.removeprefix("package_component:"),
+                    target.removeprefix("atlas_anchor:"),
+                )
+            )
+    return pairs
+
+
+def build_atlas_g_006_public_rc_graph_reachability_gate(
+    *,
+    profile_id: str = ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE,
+    reachability_manifest: dict[str, Any] | None = None,
+    bridge_artifact: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the Phase 1271 ATLAS-G-006 graph gate verdict.
+
+    The gate is evidence-only. A passing graph verdict means the selected
+    public-RC package profile is reachable from the required graph anchors; it
+    does not authorize a release artifact, Genesis Atlas mutation, signing, or
+    public RC claim.
+    """
+
+    if profile_id not in PROFILE_REACHABILITY_MANIFEST_IDS:
+        raise ValueError("atlas_g_006_profile_not_in_scope")
+    manifest = (
+        package_profile_reachability_manifest(profile_id)
+        if reachability_manifest is None
+        else reachability_manifest
+    )
+    bridge = build_atlas_g_004_005_artifact() if bridge_artifact is None else bridge_artifact
+    dependency_bridge = bridge.get("dependency_graph_bridge", {})
+    classification = bridge.get("high_authority_source_classification", {})
+    package_profile = manifest.get("package_profile", {})
+
+    components = set(package_profile.get("components", []))
+    surfaces = set(package_profile.get("package_surfaces", []))
+    reachable_anchors = set(manifest.get("reachable_anchor_set", []))
+    edge_types = set(dependency_bridge.get("edge_types", []))
+    profile_component_pairs = _atlas_g_006_edge_pairs(
+        dependency_bridge, edge_type="package_profile_requires_component"
+    )
+    profile_surface_pairs = _atlas_g_006_edge_pairs(
+        dependency_bridge, edge_type="package_profile_exports_surface"
+    )
+    component_anchor_pairs = _atlas_g_006_component_anchor_pairs(dependency_bridge)
+    source_prefix = f"package_profile:{profile_id}"
+
+    required_component_pairs = {
+        (source_prefix, f"package_component:{component}")
+        for component in sorted(ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS)
+    }
+    required_surface_pairs = {
+        (source_prefix, f"package_surface:{surface}")
+        for surface in sorted(ATLAS_G_006_REQUIRED_PROFILE_SURFACES)
+    }
+    required_anchor_pairs = {
+        (component, anchor)
+        for component in sorted(ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS)
+        for anchor in GRAPH_ANCHORS
+        if anchor in _COMPONENT_REACHABILITY.get(component, {}).get("anchors", ())
+    }
+
+    checks = [
+        _atlas_g_006_check(
+            check_id="selected_profile_is_public_rc_target",
+            passed=profile_id == ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE
+            and package_profile.get("public_rc_eligible") is True,
+            evidence={
+                "profile_id": profile_id,
+                "public_rc_eligible": package_profile.get("public_rc_eligible"),
+            },
+            fail_reason="atlas_g_006_selected_profile_not_public_rc_eligible",
+        ),
+        _atlas_g_006_check(
+            check_id="selected_profile_has_public_claimability_without_public_p2p",
+            passed=package_profile.get("public_claimability") is True
+            and package_profile.get("public_p2p") is False,
+            evidence={
+                "public_claimability": package_profile.get("public_claimability"),
+                "public_p2p": package_profile.get("public_p2p"),
+            },
+            fail_reason="atlas_g_006_selected_profile_claimability_or_p2p_boundary_invalid",
+        ),
+        _atlas_g_006_check(
+            check_id="package_reachability_manifest_passes",
+            passed=manifest.get("status") == "pass",
+            evidence={
+                "missing_non_excisable_components": manifest.get(
+                    "missing_non_excisable_components"
+                ),
+                "missing_representative_paths": manifest.get("missing_representative_paths"),
+                "missing_required_anchors": manifest.get("missing_required_anchors"),
+                "status": manifest.get("status"),
+                "unreachable_components": manifest.get("unreachable_components"),
+            },
+            fail_reason="atlas_g_006_reachability_manifest_not_pass",
+        ),
+        _atlas_g_006_check(
+            check_id="all_required_anchors_reachable",
+            passed=GRAPH_ANCHORS <= reachable_anchors,
+            evidence={"reachable_anchor_set": sorted(reachable_anchors)},
+            fail_reason="atlas_g_006_required_anchor_missing",
+        ),
+        _atlas_g_006_check(
+            check_id="required_components_present",
+            passed=ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS <= components,
+            evidence={
+                "missing_components": sorted(
+                    ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS - components
+                ),
+                "required_components": sorted(ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS),
+            },
+            fail_reason="atlas_g_006_required_profile_component_missing",
+        ),
+        _atlas_g_006_check(
+            check_id="required_surfaces_present",
+            passed=ATLAS_G_006_REQUIRED_PROFILE_SURFACES <= surfaces,
+            evidence={
+                "missing_surfaces": sorted(ATLAS_G_006_REQUIRED_PROFILE_SURFACES - surfaces),
+                "required_surfaces": sorted(ATLAS_G_006_REQUIRED_PROFILE_SURFACES),
+            },
+            fail_reason="atlas_g_006_required_profile_surface_missing",
+        ),
+        _atlas_g_006_check(
+            check_id="dependency_bridge_passes",
+            passed=bridge.get("status") == "pass"
+            and dependency_bridge.get("status") == "pass"
+            and classification.get("status") == "pass",
+            evidence={
+                "bridge_status": bridge.get("status"),
+                "dependency_bridge_status": dependency_bridge.get("status"),
+                "high_authority_classification_status": classification.get("status"),
+            },
+            fail_reason="atlas_g_006_dependency_bridge_not_pass",
+        ),
+        _atlas_g_006_check(
+            check_id="required_dependency_edge_types_present",
+            passed=ATLAS_G_006_REQUIRED_EDGE_TYPES <= edge_types,
+            evidence={
+                "edge_count": dependency_bridge.get("edge_count"),
+                "missing_edge_types": sorted(ATLAS_G_006_REQUIRED_EDGE_TYPES - edge_types),
+                "required_edge_types": sorted(ATLAS_G_006_REQUIRED_EDGE_TYPES),
+            },
+            fail_reason="atlas_g_006_required_dependency_edge_type_missing",
+        ),
+        _atlas_g_006_check(
+            check_id="required_profile_component_edges_present",
+            passed=required_component_pairs <= profile_component_pairs,
+            evidence={
+                "missing_component_edges": sorted(
+                    f"{source}->{target}"
+                    for source, target in required_component_pairs - profile_component_pairs
+                )
+            },
+            fail_reason="atlas_g_006_required_profile_component_edge_missing",
+        ),
+        _atlas_g_006_check(
+            check_id="required_profile_surface_edges_present",
+            passed=required_surface_pairs <= profile_surface_pairs,
+            evidence={
+                "missing_surface_edges": sorted(
+                    f"{source}->{target}"
+                    for source, target in required_surface_pairs - profile_surface_pairs
+                )
+            },
+            fail_reason="atlas_g_006_required_profile_surface_edge_missing",
+        ),
+        _atlas_g_006_check(
+            check_id="required_component_anchor_edges_present",
+            passed=required_anchor_pairs <= component_anchor_pairs,
+            evidence={
+                "missing_component_anchor_edges": sorted(
+                    f"{component}->{anchor}"
+                    for component, anchor in required_anchor_pairs - component_anchor_pairs
+                )
+            },
+            fail_reason="atlas_g_006_required_component_anchor_edge_missing",
+        ),
+    ]
+    failing_checks = [check["check_id"] for check in checks if check["status"] != "pass"]
+    status = "pass" if not failing_checks else "fail"
+    return {
+        "artifact_id": "ilc_atlas_g_006_public_rc_graph_reachability_gate_1271_v0.1",
+        "checks": checks,
+        "failing_checks": failing_checks,
+        "gate_status": status,
+        "graph_reachability_verdict": (
+            "pass_graph_gate_only_release_artifacts_blocked"
+            if status == "pass"
+            else "fail_closed_release_artifacts_blocked"
+        ),
+        "non_authorization_boundary": list(_ATLAS_G_006_NON_AUTHORIZATION_BOUNDARY),
+        "open_public_rc_blockers": [
+            "claimability_runtime_and_conversion_sweeper_implementation",
+            "cdl_087_ratification",
+            "public_sidecar_projection_serving_authorization",
+            "transport_principal_public_path_adr_and_rust_m5_hardening",
+            "counsel_ip_publication_authorization",
+            "v0_2_signing_authorization",
+            "release_manifest_and_allowlist_publication_authorization",
+        ],
+        "public_rc_claim_status": "not_authorized",
+        "release_artifact_status": "not_authorized",
+        "required_tokens": [
+            ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION,
+            ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_VERDICT_TOKEN,
+            ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN,
+            ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN,
+        ],
+        "selected_profile_id": profile_id,
+        "status": status,
+        "version": ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION,
+    }
+
+
+def export_atlas_g_006_public_rc_graph_reachability_gate_json(
+    artifact: dict[str, Any] | None = None,
+) -> str:
+    active = (
+        build_atlas_g_006_public_rc_graph_reachability_gate()
+        if artifact is None
+        else artifact
+    )
+    return json.dumps(
+        active,
+        allow_nan=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+
+
 __all__ = [
     "ATLAS_G_004_005_BRIDGE_VERSION",
     "ATLAS_G_004_COMPLETION_TOKEN",
     "ATLAS_G_005_COMPLETION_TOKEN",
+    "ATLAS_G_006_NO_GENESIS_ATLAS_MUTATION_TOKEN",
+    "ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION",
+    "ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_VERDICT_TOKEN",
+    "ATLAS_G_006_PUBLIC_RELEASE_ARTIFACT_NOT_AUTHORIZED_TOKEN",
+    "ATLAS_G_006_REQUIRED_EDGE_TYPES",
+    "ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS",
+    "ATLAS_G_006_REQUIRED_PROFILE_SURFACES",
+    "ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE",
     "ATLAS_GRAPH_DISCIPLINE_VERSION",
     "GRAPH_ANCHORS",
     "GRAPH_DELTA_KINDS",
@@ -975,9 +1296,11 @@ __all__ = [
     "PHASE_1254_COMPLETE_TOKEN",
     "PHASE_1254_LEGACY_GRAPH_DELTA_DISPOSITION_TOKEN",
     "build_atlas_g_004_005_artifact",
+    "build_atlas_g_006_public_rc_graph_reachability_gate",
     "build_high_authority_source_classification",
     "build_import_dependency_graph_bridge",
     "export_atlas_g_004_005_artifact_json",
+    "export_atlas_g_006_public_rc_graph_reachability_gate_json",
     "export_package_profile_reachability_manifest_json",
     "package_profile_reachability_manifest",
     "validate_graph_delta",

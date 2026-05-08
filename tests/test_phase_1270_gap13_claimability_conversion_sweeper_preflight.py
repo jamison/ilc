@@ -71,10 +71,10 @@ def test_phase_1270_required_tokens_are_recorded_everywhere() -> None:
         for token in REQUIRED_TOKENS:
             assert token in text
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1270" in planning
-    assert "public_rc_remains_blocked_after_phase_1270" in roadmap
-    assert "Phase 1271 - ATLAS-G-006 public-RC graph reachability gate" in status
-    assert "phase_1271_atlas_g_006_public_rc_graph_reachability_gate_next" in status
+    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
+    assert "public_rc_remains_blocked_after_phase_1271" in roadmap
+    assert "Phase 1272 - Window 1265-1272 closure gate" in status
+    assert "phase_1272_window_1265_1272_closure_gate_requires_explicit_go" in status
 
 
 def test_phase_1270_records_broad_discovery_and_source_expansion() -> None:
@@ -168,7 +168,7 @@ def test_phase_1270_cdl048_ratified_but_sweeper_runtime_remains_future_requireme
     assert "It does not mark" in spec
     assert "the conversion sweeper complete" in spec
     assert "mandatory_conversion_sweeper_required_for_cdl_048_runtime" in roadmap
-    assert "public_rc_remains_blocked_after_phase_1270" in roadmap
+    assert "public_rc_remains_blocked_after_phase_1271" in roadmap
 
 
 def test_phase_1270_spec_records_future_claimability_proof_requirements_and_non_claims() -> None:

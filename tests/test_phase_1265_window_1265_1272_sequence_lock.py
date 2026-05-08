@@ -132,20 +132,22 @@ def test_phase_1265_frontier_updates_planning_and_status() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1270" in planning
+    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
     assert SEQUENCE_LOCK in planning
     assert "cdl_087_sensitive_ratification_review_phase_1266.v0.1" in planning
     assert "transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1" in planning
     assert "sidecar_loopback_projection_endpoint_boundary_phase_1268.v0.1" in planning
     assert "werner_default_topology_pressure_profile_phase_1269.v0.1" in planning
     assert "gap13_claimability_conversion_sweeper_preflight_phase_1270.v0.1" in planning
+    assert "atlas_g_006_public_rc_graph_reachability_gate_phase_1271.v0.1" in planning
     assert "## Phase 1265" in status
     assert "## Phase 1266" in status
     assert "## Phase 1267" in status
     assert "## Phase 1268" in status
     assert "## Phase 1269" in status
     assert "## Phase 1270" in status
-    assert "Phase 1271 - ATLAS-G-006 public-RC graph reachability gate" in status
+    assert "## Phase 1271" in status
+    assert "Phase 1272 - Window 1265-1272 closure gate" in status
 
 
 def test_phase_1265_graph_delta_is_recorded() -> None:

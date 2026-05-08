@@ -172,8 +172,8 @@ def test_phase_1269_docs_status_planning_and_roadmap_record_required_tokens() ->
         for token in REQUIRED_TOKENS:
             assert token in text
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1270" in planning
-    assert "public_rc_remains_blocked_after_phase_1270" in roadmap
+    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
+    assert "public_rc_remains_blocked_after_phase_1271" in roadmap
     assert "Phase 1270 - Gap 13 claimability conversion-sweeper preflight" in status
     assert "phase_1270_requires_explicit_go_gap13_claimability_preflight" in status
 
