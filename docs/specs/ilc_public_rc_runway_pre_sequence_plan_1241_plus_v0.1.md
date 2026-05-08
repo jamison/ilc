@@ -68,7 +68,24 @@ Retrieval rule:
 
 ```text
 historical_retrieval_is_context_not_authority_current_canon_controls
+unknown_unknown_discovery_required_before_phase_execution
 ```
+
+### 2.1 Unknown-unknown discovery requirement for future windows
+
+Future phase prompts derived from this runway must not rely only on known
+planning tokens. Before execution, each prompt should require broad concept
+search, contradiction/non-claim search, and source expansion so forgotten
+historical terminology and stale blockers are discovered before coding. The
+expected structure is:
+
+- `§0a — Known-token audit`
+- `§0b — Concept-discovery search`
+- `§0c — Contradiction and non-claim search`
+- `§0d — Source expansion and newly discovered tokens`
+
+MemPalace is useful as an advisory recall net for §0b/§0d, but current canon
+still comes only from direct repo reads.
 
 ---
 

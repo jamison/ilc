@@ -8,6 +8,7 @@ latest context capsule. This document does not mutate Genesis, regenerate the At
 authorize v0.2 signing, authorize public RC, or change any CDL.
 
 `atlas_graph_integrated_phase_discipline_forward_planning_recorded_phase_1238`
+`unknown_unknown_discovery_required_before_phase_execution`
 
 ---
 
@@ -80,6 +81,25 @@ Token:
 ```text
 phase_close_graph_delta_field_required
 ```
+
+### 3.1 Unknown-unknown graph discovery
+
+Graph discipline must not stop at known graph tokens. Before executing any
+ATLAS-G or public-RC graph phase, run the four-part §0 discovery pass:
+
+1. `§0a — Known-token audit` for declared ATLAS-G and graph-delta tokens.
+2. `§0b — Concept-discovery search` for forgotten file classes, imports, Rust
+   crates, CLI entrypoints, package exports, high-authority docs, and old phase
+   names.
+3. `§0c — Contradiction and non-claim search` for `support_only`, `archive`,
+   `unreachable`, `deferred`, `not signed`, `no signing`, `not public RC`, and
+   immutable-diagnostic boundaries.
+4. `§0d — Source expansion and newly discovered tokens` so new high-authority
+   files or dependency edges become graph artifacts or explicit carry-forward
+   blockers.
+
+MemPalace can help find historical graph-lineage material, but current graph
+authority still requires direct repo reads and canonical exports.
 
 ---
 

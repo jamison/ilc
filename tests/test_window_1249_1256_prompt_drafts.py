@@ -18,6 +18,13 @@ PHASE_PROMPTS = (
     "antigravity_prompt__phase_1256_g8_window_1249_1256_closure_gate.md",
 )
 
+UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
+    "### §0a — Known-token audit",
+    "### §0b — Concept-discovery search",
+    "### §0c — Contradiction and non-claim search",
+    "### §0d — Source expansion and newly discovered tokens",
+)
+
 SENSITIVE_PROMPTS = (
     "antigravity_prompt__phase_1249_g8_window_1249_1256_sequence_lock.md",
     "antigravity_prompt__phase_1252_g8_gap13_claimability_resolution_boundary.md",
@@ -64,6 +71,48 @@ def test_window_1249_1256_prompt_drafts_match_phase_prompt_schema() -> None:
         assert validate(prompt_path) == []
 
 
+def test_phase_prompt_validator_enforces_unknown_unknown_sections_from_1249(
+    tmp_path: Path,
+) -> None:
+    base_prompt = """# Phase {phase}-G8: Minimal Prompt
+
+## Mission
+Mission text.
+
+## Inputs
+- `docs/phases/STATUS.md`
+
+## Scope
+Scope text.
+
+## Deliverables
+Deliverables text.
+
+## Verification commands
+- `true`
+
+## Walkthrough requirements
+No ellipses in walkthrough.
+
+## STATUS update requirements
+Update `docs/phases/STATUS.md`.
+
+## Commit
+Commit text.
+"""
+
+    phase_1248_prompt = tmp_path / "antigravity_prompt__phase_1248_g8_minimal.md"
+    phase_1248_prompt.write_text(base_prompt.format(phase=1248), encoding="utf-8")
+    assert validate(phase_1248_prompt) == []
+
+    phase_1249_prompt = tmp_path / "antigravity_prompt__phase_1249_g8_minimal.md"
+    phase_1249_prompt.write_text(base_prompt.format(phase=1249), encoding="utf-8")
+    errors = validate(phase_1249_prompt)
+    assert any(
+        error.startswith("missing_unknown_unknown_discovery_section") for error in errors
+    )
+
+
 def test_window_1249_1256_prompt_drafts_have_token_audit_sections() -> None:
     for prompt_name in PHASE_PROMPTS:
         text = _text(PROMPT_DIR / prompt_name)
@@ -71,6 +120,32 @@ def test_window_1249_1256_prompt_drafts_have_token_audit_sections() -> None:
         assert 'rg -n "<token>"' in text
         assert "MemPalace" in text
         assert "No ellipses in walkthrough" in text
+        for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
+            assert section in text
+
+
+def test_window_1249_1256_forward_docs_require_unknown_unknown_discovery() -> None:
+    docs = (
+        ROOT / "AGENTS.md",
+        ROOT / "docs/antigravity_tasks/README.md",
+        GUIDANCE,
+        ROOT / "docs/specs/ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0.1.md",
+        ROOT
+        / "docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md",
+        ROOT
+        / "docs/specs/ilc_atlas_graph_integrated_phase_discipline_forward_planning_1241_v0.1.md",
+        ROOT / "docs/specs/ilc_atlas_g_1241_plus_candidate_phase_grouping_v0.1.md",
+        ROOT / "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+        ROOT / "docs/PLANNING_INDEX.md",
+    )
+
+    for doc in docs:
+        text = _text(doc)
+        assert "unknown_unknown_discovery_required_before_phase_execution" in text
+        assert "Known-token audit" in text
+        assert "Concept-discovery search" in text
+        assert "Contradiction and non-claim search" in text
+        assert "Source expansion and newly discovered tokens" in text
 
 
 def test_window_1249_1256_required_token_blocks_are_non_empty() -> None:
