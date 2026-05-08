@@ -133,8 +133,9 @@ def test_window_1257_1264_preserves_public_non_claims() -> None:
         assert "Public RC claim" in text or "public-RC claim" in text
 
 
-def test_window_1257_1264_planning_index_points_to_draft_but_not_execution() -> None:
+def test_window_1257_1264_planning_index_points_to_guidance_and_sequence_lock() -> None:
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
     assert "ilc_window_1257_1264_candidate_phase_grouping_v0.1.md" in text
-    assert "prompt drafts for Phases 1257-1264" in text
-    assert "Does not open Window 1257-1264" in text
+    assert "ilc_phase_1257_1264_sequence_lock_v0.1.md" in text
+    assert "Window 1257-1264 OPEN / PASS through Phase 1257" in text
+    assert "Phase 1258 remains SENSITIVE and requires explicit `GO Phase 1258`" in text
