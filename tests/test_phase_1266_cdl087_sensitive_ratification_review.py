@@ -129,7 +129,7 @@ def test_phase_1266_public_non_claims_remain_blocked() -> None:
     assert "no_public_fetch_serving_enabled_phase_1266" in planning
     assert "public_rc_remains_blocked_after_phase_1266" in roadmap
     assert "public_rc_remains_blocked_after_phase_1267" in roadmap
-    assert "public_rc_remains_blocked_after_phase_1269" in roadmap
+    assert "public_rc_remains_blocked_after_phase_1270" in roadmap
     assert "CDL-087 remains open/prelocked/not ratified after Phase 1266" in planning
 
 
@@ -137,7 +137,7 @@ def test_phase_1266_frontier_updates_planning_status_and_next_phase() -> None:
     planning = _read(PLANNING_INDEX_PATH)
     status = _read(STATUS_PATH)
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1269" in planning
+    assert "Window 1265-1272 OPEN / PASS through Phase 1270" in planning
     assert str(SPEC_PATH) in planning
     assert "## Phase 1266" in status
     assert "## Phase 1267" in status
