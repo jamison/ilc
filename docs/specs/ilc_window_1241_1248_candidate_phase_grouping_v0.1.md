@@ -1,12 +1,14 @@
 # ILC Window 1241-1248 Candidate Phase Grouping v0.1
 
-**Status:** Candidate guidance / prompt-draft registry.
+**Status:** Current open-window guidance / prompt-draft registry after Phase
+1241 sequence lock.
 **Recorded:** 2026-05-08.
-**Authority:** This document does not open Window 1241-1248, does not replace a
-sequence lock, does not authorize public RC, public repository publication,
-public P2P exposure, CDL mutation, v0.2 signing, release-key generation, or
-production network exposure. Exact phase authorization requires a future Window
-1241-1248 sequence lock and explicit human GO for sensitive gates.
+**Authority:** Phase 1241 sequence lock
+`docs/specs/ilc_phase_1241_1248_sequence_lock_v0.1.md` is the active authority
+for exact phase order and sensitivity. This guidance did not itself open Window
+1241-1248, does not authorize public RC, public repository publication, public
+P2P exposure, CDL mutation, v0.2 signing, release-key generation, or production
+network exposure. Sensitive phases still require explicit human GO.
 
 ```text
 window_1241_1248_candidate_phase_grouping_recorded_after_phase_1240
@@ -146,4 +148,3 @@ This guidance does not:
 - authorize release-key generation;
 - authorize v0.2 signing;
 - mutate signed Genesis v0.1 or immutable diagnostic anchors.
-
