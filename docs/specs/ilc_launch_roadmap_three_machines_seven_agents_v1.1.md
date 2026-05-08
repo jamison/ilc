@@ -399,3 +399,36 @@ This roadmap does not claim:
 - v0.2 signing executed;
 - Genesis Atlas mutated.
 
+---
+
+## 9. Phase 1248 Closure Addendum
+
+Window 1241-1248 closed at Phase 1248:
+
+```text
+window_1241_1248_closed_phase_1248
+window_1241_1248_closure_gate_verdict=pass
+```
+
+Closure status updates:
+
+- Roadmap v1.1 is the controlling public-RC roadmap.
+- Gap 14 first slice is complete, but package split/CI remains open because the
+  Phase 1244 `ilc_logic` migration debt still needs adapter extraction.
+- OpenClaw/NemoClaw local skill preview exists as a local/private seam, not a
+  final public-RC claim.
+- CDL-087 governance review is complete, but ratification remains deferred
+  pending production-candidate fetch evidence and a later sensitive phase.
+- ATLAS-G-001..003 first slice is complete, but ATLAS-G-004..010 and the public
+  RC graph reachability gate remain open.
+- Final public RC still requires public claimability.
+- No public ILC-owned P2P claim is introduced by this closure.
+
+Recommended next-window direction:
+
+```text
+window_1249_plus_sequence_lock_required_before_next_phase_assignment
+gap_14_adapter_extraction_and_package_ci_gate_should_continue_before_public_rc_claim
+gap_13_public_claimability_runtime_should_start_before_final_public_rc_claim
+transport_principal_identity_required_before_public_p2p
+```
