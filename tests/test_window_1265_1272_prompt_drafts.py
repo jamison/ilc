@@ -127,9 +127,10 @@ def test_phase_1266_prompt_requires_default_no_ratification_token() -> None:
     assert token in guidance
 
 
-def test_window_1265_1272_planning_index_points_to_guidance_without_opening_window() -> None:
+def test_window_1265_1272_planning_index_points_to_guidance_and_open_lock() -> None:
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
 
     assert "ilc_window_1265_1272_candidate_phase_grouping_v0.1.md" in text
-    assert "Window 1265-1272 candidate guidance recorded" in text
-    assert "Window 1265-1272 is not open until Phase 1265 sequence lock" in text
+    assert "ilc_phase_1265_1272_sequence_lock_v0.1.md" in text
+    assert "Window 1265-1272 OPEN / PASS through Phase 1265" in text
+    assert "Phase 1266 remains SENSITIVE and requires explicit `GO Phase 1266`" in text
