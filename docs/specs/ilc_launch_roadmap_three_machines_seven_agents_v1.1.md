@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1241-1248 OPEN through Phase 1241 sequence lock |
+| Window frontier | Window 1249-1256 CLOSED / PASS through Phase 1256; Window 1257+ sequence lock required before next phase assignment |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -47,11 +47,13 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | L3 sidecar query runtime | Local/read-only runtime complete; no projection endpoint or public sidecar service |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
 
-Current lock:
+Latest closed lock and handoff:
 
 ```text
-docs/specs/ilc_phase_1241_1248_sequence_lock_v0.1.md
-window_1241_1248_sequence_lock_committed
+docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md
+docs/specs/ilc_window_1249_1256_handoff_1256_v0.1.md
+window_1249_1256_closed_phase_1256
+window_1257_plus_sequence_lock_required_before_next_phase_assignment
 ```
 
 ---
