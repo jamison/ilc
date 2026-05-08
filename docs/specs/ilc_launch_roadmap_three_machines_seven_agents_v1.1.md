@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1267; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
+| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1268; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -44,7 +44,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
 | Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
 | `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
-| L3 sidecar query runtime | Local/read-only runtime complete; Phase 1261 keeps public/non-loopback projection serving blocked |
+| L3 sidecar query runtime | Local/read-only runtime complete; Phase 1268 records loopback/subprocess-only boundary with no new listener and keeps public/non-loopback projection serving blocked |
 | TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; no public P2P or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
 
@@ -59,6 +59,8 @@ docs/specs/ilc_cdl_087_sensitive_ratification_review_1266_v0.1.md
 cdl_087_ratification_decision_phase_1266=no_ratification_no_register_mutation
 docs/specs/ilc_transport_principal_runtime_identity_pre_public_path_1267_v0.1.md
 transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1
+docs/specs/ilc_sidecar_loopback_projection_endpoint_boundary_1268_v0.1.md
+sidecar_loopback_projection_endpoint_boundary_phase_1268.v0.1
 ```
 
 ---
@@ -640,6 +642,39 @@ Roadmap impact:
 Public RC remains blocked after Phase 1267:
 
 ```text
+public_rc_remains_blocked_after_phase_1267
+public_rc_remains_blocked_after_phase_1266
+```
+
+## 14. Phase 1268 Sidecar Loopback Boundary Addendum
+
+Phase 1268 recorded the sidecar endpoint boundary:
+
+```text
+sidecar_loopback_projection_endpoint_boundary_phase_1268.v0.1
+sidecar_loopback_only_no_non_loopback_serving_phase_1268
+sidecar_public_path_still_blocked_phase_1268
+transport_principal_required_before_non_loopback_projection_phase_1268
+```
+
+Roadmap impact:
+
+- No HTTP server, socket listener, Unix-socket server, peer-discovery surface,
+  non-loopback bind, public sidecar/projection serving, or public P2P exposure
+  was implemented.
+- Local in-process sidecar query/export and local skill-preview seams remain the
+  only active sidecar surfaces.
+- Future loopback or Unix-socket prototypes require explicit phase scope and
+  must remain local-only.
+- Non-loopback sidecar/projection serving still requires CDL-087 or equivalent
+  governance authorization, full TransportPrincipal public-path integration,
+  privacy/replay/revocation controls, Rust/public-P2P hardening, and ATLAS-G
+  public-RC graph closure.
+
+Public RC remains blocked after Phase 1268:
+
+```text
+public_rc_remains_blocked_after_phase_1268
 public_rc_remains_blocked_after_phase_1267
 public_rc_remains_blocked_after_phase_1266
 ```
