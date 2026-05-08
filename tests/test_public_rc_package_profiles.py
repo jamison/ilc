@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ast
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -75,6 +77,21 @@ def test_profiles_cannot_exclude_genesis_ilc_or_ecu_components() -> None:
         public_rc_eligible=True,
     )
     with pytest.raises(ValueError, match="missing_non_excisable_component"):
+        validate_package_profile(profile)
+
+
+def test_profile_components_must_be_frozenset_for_stable_validation() -> None:
+    profile = PackageProfile(
+        profile_id="bad_components_type",
+        display_name="Bad",
+        description="Invalid profile",
+        components=list(NON_EXCISABLE_COMPONENTS),  # type: ignore[arg-type]
+        public_p2p=False,
+        public_claimability=False,
+        local_preview_eligible=False,
+        public_rc_eligible=False,
+    )
+    with pytest.raises(ValueError, match="components_must_be_frozenset"):
         validate_package_profile(profile)
 
 
@@ -173,6 +190,29 @@ def test_package_profile_runtime_has_no_server_storage_network_or_wall_clock_imp
                 assert alias.name.split(".")[0] not in forbidden_roots
         if isinstance(node, ast.ImportFrom):
             assert (node.module or "").split(".")[0] not in forbidden_roots
+
+
+def test_importing_profile_module_does_not_eagerly_load_heavy_rc_runtime() -> None:
+    script = "\n".join(
+        (
+            "import sys",
+            "import ilc_core.rc.package_profiles",
+            "for name in ('lmdb','ilc_core.storage.lmdb_public_runtime','ilc_core.ledger.lmdb_backend','datetime'):",
+            "    print(f'{name}={name in sys.modules}')",
+        )
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", script],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.stdout.splitlines() == [
+        "lmdb=False",
+        "ilc_core.storage.lmdb_public_runtime=False",
+        "ilc_core.ledger.lmdb_backend=False",
+        "datetime=False",
+    ]
 
 
 def test_package_profile_registry_names_are_stable() -> None:

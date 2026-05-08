@@ -184,6 +184,48 @@ def test_phase_1244_import_boundary_detects_relative_internal_runtime_prefix(
     ]
 
 
+def test_phase_1244_import_boundary_detects_dynamic_forbidden_import(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    root = tmp_path / "candidate"
+    root.mkdir()
+    (root / "logic.py").write_text(
+        "import importlib\n"
+        "from importlib import import_module\n"
+        "importlib.import_module('lmdb')\n"
+        "__import__('urllib.parse')\n"
+        "import_module('requests')\n",
+        encoding="utf-8",
+    )
+    spec = ImportBoundarySpec(
+        surface_id="tmp_logic",
+        root_paths=("candidate",),
+        forbidden_import_roots=("lmdb", "requests", "urllib"),
+    )
+
+    inventory = build_import_boundary_inventory(spec)
+    assert inventory["status"] == "violations_present"
+    assert [violation["module"] for violation in inventory["violations"]] == [
+        "lmdb",
+        "requests",
+        "urllib.parse",
+    ]
+
+
+def test_phase_1244_default_inventory_is_repo_root_anchored(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    inventory = build_default_import_boundary_inventory()
+    logic = inventory["surfaces"]["ilc_logic"]
+    assert logic["file_count"] > 0
+    assert logic["status"] == "violations_present"
+
+
 def test_phase_1244_default_ilc_logic_boundary_records_migration_debt() -> None:
     spec = DEFAULT_IMPORT_BOUNDARY_SPECS["ilc_logic"]
     assert "ilc_core.node" in spec.forbidden_module_prefixes
