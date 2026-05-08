@@ -95,12 +95,14 @@ def summarize_circuit_breaker_quorum_state(
     total_weight = sum(v['vote_weight'] for v in normalized)
     requested_votes = [v for v in normalized if v['circuit_breaker_requested']]
     requested_weight = round(sum(v['vote_weight'] for v in requested_votes), 12)
-    cluster_counts = Counter(v['cluster_id'] for v in requested_votes)
-    largest_cluster_slots = max(cluster_counts.values(), default=0)
-    distinct_clusters = len(cluster_counts)
+    cluster_weights = Counter()
+    for vote in requested_votes:
+        cluster_weights[vote['cluster_id']] += vote['vote_weight']
+    largest_cluster_slots = max(cluster_weights.values(), default=0)
+    distinct_clusters = len(cluster_weights)
     max_cluster_share = compute_max_cluster_share(
         largest_cluster_slots=largest_cluster_slots,
-        total_panel_slots=max(len(requested_votes), 1),
+        total_panel_slots=max(requested_weight, 1),
     )
     quorum_share = 0.0 if total_weight == 0 else round(requested_weight / total_weight, 12)
     distinct_ok = meets_distinct_cluster_floor(
@@ -136,7 +138,7 @@ def build_circuit_breaker_request(
     reason: str,
     validator_votes: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    if not isinstance(epoch, int) or epoch < 0:
+    if type(epoch) is not int or epoch < 0:
         raise CircuitBreakerInterfaceError(
             'circuit_breaker_epoch_invalid',
             'epoch must be a non-negative integer',

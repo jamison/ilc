@@ -48,6 +48,7 @@ _CONTROLLED_TIER_B_3_OF_5: dict = {
     "zipf_exponent_tier_b": "0.5",
     "directory_staleness_rate": "0",
     "tier_b_exact_holder_count_per_artifact": 3,
+    "circuit_breaker_threshold": 10_000,
 }
 
 

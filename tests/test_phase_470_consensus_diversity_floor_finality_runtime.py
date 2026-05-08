@@ -121,6 +121,41 @@ def test_diversity_aware_evaluation_returns_insufficient_diversity_when_diversit
     assert result['diversity_status'] == 'diversity_fail'
 
 
+def test_diversity_aware_evaluation_uses_weight_not_slot_share_for_cluster_ceiling() -> None:
+    records = [
+        {
+            'block_hash': 'block-a',
+            'epoch_index': 9,
+            'validator_id': 'validator-a',
+            'vote_weight': Decimal('0.90'),
+        },
+        {
+            'block_hash': 'block-a',
+            'epoch_index': 9,
+            'validator_id': 'validator-b',
+            'vote_weight': Decimal('0.05'),
+        },
+        {
+            'block_hash': 'block-a',
+            'epoch_index': 9,
+            'validator_id': 'validator-c',
+            'vote_weight': Decimal('0.05'),
+        },
+    ]
+    result = evaluate_epoch_finality_with_diversity(
+        records,
+        {'numerator': 2, 'denominator': 3},
+        {
+            'validator-a': 'cluster-1',
+            'validator-b': 'cluster-2',
+            'validator-c': 'cluster-3',
+        },
+        {'distinct_cluster_floor': 3, 'max_cluster_share_ceiling': 0.50},
+    )
+    assert result['finality_status'] == 'insufficient_diversity'
+    assert result['max_cluster_share'] == 0.9
+
+
 def test_missing_cluster_metadata_or_policy_raises_deterministic_tokens() -> None:
     vector = canonical_epoch_state_vectors()[0]
     records = copy.deepcopy(vector['quorum_records'])

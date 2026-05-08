@@ -13,6 +13,9 @@ from ilc_core.protocol.commit_epoch_emission_runtime import (
     compute_quorum_proof_ref,
 )
 
+STATE_DIGEST = "a" * 64
+EVENTS_DIGEST = "b" * 64
+
 
 def _projection(**overrides: object) -> dict[str, object]:
     kwargs = {
@@ -64,6 +67,11 @@ def test_non_integer_signer_raises_value_error():
         _projection(signers=[0, "1"])
 
 
+def test_signer_above_u32_max_raises_value_error():
+    with pytest.raises(ValueError, match="quorum_projection_signer_must_be_non_negative_int"):
+        _projection(signers=[0, 2**32])
+
+
 def test_non_hex_state_root_cidv1_hex_raises_value_error():
     with pytest.raises(ValueError, match="quorum_projection_state_root_cidv1_hex_invalid"):
         _projection(state_root_cidv1_hex="not-hex")
@@ -72,6 +80,11 @@ def test_non_hex_state_root_cidv1_hex_raises_value_error():
 def test_non_hex_agg_sig_bytes_hex_raises_value_error():
     with pytest.raises(ValueError, match="quorum_projection_agg_sig_bytes_hex_invalid"):
         _projection(agg_sig_bytes_hex="not-hex")
+
+
+def test_wrong_length_agg_sig_bytes_hex_raises_value_error():
+    with pytest.raises(ValueError, match="quorum_projection_agg_sig_bytes_hex_invalid"):
+        _projection(agg_sig_bytes_hex="cd" * 95)
 
 
 def test_bad_source_record_digest_raises_value_error():
@@ -118,8 +131,8 @@ def test_existing_phase_1236_build_commit_epoch_event_behavior_remains_unchanged
                 "vote_weight": 1,
             }
         ],
-        epoch_state_digest="state-digest-12",
-        epoch_events_digest="events-digest-12",
+        epoch_state_digest=STATE_DIGEST,
+        epoch_events_digest=EVENTS_DIGEST,
         reward_total=Decimal("10"),
         stake_total=Decimal("20"),
         task_count=3,
@@ -127,7 +140,7 @@ def test_existing_phase_1236_build_commit_epoch_event_behavior_remains_unchanged
     )
 
     assert event.kind == "commit.epoch"
-    assert event.payload["checksums"]["epoch_state_cid"] == "sha256:state-digest-12"
+    assert event.payload["checksums"]["epoch_state_cid"] == "sha256:" + STATE_DIGEST
 
 
 def test_version_token_present():

@@ -33,6 +33,7 @@ COMMIT_EPOCH_CANONICAL_DEPENDENCY = COMMIT_EPOCH_CANONICAL_CONSTRUCTOR_VERSION
 _ALLOWED_FINALIZATION_STATES = {"committed", "rolled_back", "superseded"}
 _ZERO = Decimal("0")
 _LOWER_HEX = frozenset("0123456789abcdef")
+_U32_MAX = (2**32) - 1
 
 
 def _require_non_negative_int(value: object, token: str) -> int:
@@ -59,9 +60,11 @@ def _digest_to_sha256_cid(value: object, token: str) -> str:
     digest = _require_non_empty_string(value, token)
     if digest.startswith("sha256:"):
         suffix = digest.removeprefix("sha256:")
-        if suffix == "":
+        if len(suffix) != 64 or any(char not in _LOWER_HEX for char in suffix):
             raise ValueError(token)
         return digest
+    if len(digest) != 64 or any(char not in _LOWER_HEX for char in digest):
+        raise ValueError(token)
     return f"sha256:{digest}"
 
 
@@ -69,6 +72,13 @@ def _require_lower_hex(value: object, token: str) -> str:
     text = _require_non_empty_string(value, token)
     if any(char not in _LOWER_HEX for char in text):
         raise ValueError(token)
+    return text
+
+
+def _require_agg_sig_hex(value: object) -> str:
+    text = _require_lower_hex(value, "quorum_projection_agg_sig_bytes_hex_invalid")
+    if len(text) != 192:
+        raise ValueError("quorum_projection_agg_sig_bytes_hex_invalid")
     return text
 
 
@@ -132,7 +142,7 @@ def _normalize_signers(signers: object) -> tuple[int, ...]:
     normalized: list[int] = []
     seen: set[int] = set()
     for signer in signers:
-        if type(signer) is not int or signer < 0:
+        if type(signer) is not int or signer < 0 or signer > _U32_MAX:
             raise ValueError("quorum_projection_signer_must_be_non_negative_int")
         if signer in seen:
             raise ValueError("quorum_projection_signers_must_be_unique")
@@ -165,10 +175,7 @@ def build_quorum_proof_projection(
     """
 
     return {
-        "agg_sig_bytes_hex": _require_lower_hex(
-            agg_sig_bytes_hex,
-            "quorum_projection_agg_sig_bytes_hex_invalid",
-        ),
+        "agg_sig_bytes_hex": _require_agg_sig_hex(agg_sig_bytes_hex),
         "epoch_sequence": _require_non_negative_int(
             epoch_sequence,
             "quorum_projection_epoch_sequence_must_be_non_negative_int",
@@ -397,6 +404,9 @@ def _validate_quorum_records(quorum_records: object, epoch_index: int) -> tuple[
         )
         if "vote_weight" not in record:
             raise ValueError("quorum_record_vote_weight_missing")
+        vote_weight = record.get("vote_weight")
+        if type(vote_weight) is not int or vote_weight <= 0:
+            raise ValueError("quorum_record_vote_weight_must_be_positive_int")
         normalized.append(record)
     return tuple(normalized)
 

@@ -26,6 +26,7 @@ _BASE_ROBUSTNESS_SCENARIO: dict = {
     "max_retry_hops": 1,
     "adaptive_replication_enabled": False,
     "werner_overlay_enabled": False,
+    "circuit_breaker_threshold": 10_000,
     "werner_smoothing_alpha": "0.25",
     "werner_heat_signal_threshold": 20,
     "werner_cooling_signal_threshold": 2,
