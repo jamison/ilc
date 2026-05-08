@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1266; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
+| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1267; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -45,6 +45,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
 | `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
 | L3 sidecar query runtime | Local/read-only runtime complete; Phase 1261 keeps public/non-loopback projection serving blocked |
+| TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; no public P2P or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
 
 Latest closed handoff and current window artifacts:
@@ -56,6 +57,8 @@ window_1257_1264_closed_phase_1264
 docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md
 docs/specs/ilc_cdl_087_sensitive_ratification_review_1266_v0.1.md
 cdl_087_ratification_decision_phase_1266=no_ratification_no_register_mutation
+docs/specs/ilc_transport_principal_runtime_identity_pre_public_path_1267_v0.1.md
+transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1
 ```
 
 ---
@@ -612,8 +615,31 @@ Roadmap impact:
   graph reachability, counsel/publication authorization, and v0.2 signing
   authorization.
 
-Public RC remains blocked after Phase 1266:
+## 13. Phase 1267 TransportPrincipal Pre-Public Identity Addendum
+
+Phase 1267 added a bounded pre-public TransportPrincipal runtime helper:
 
 ```text
+transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1
+transport_principal_runtime_not_public_p2p_activation_phase_1267
+requester_id_rate_limit_fallback_still_forbidden_phase_1267
+non_loopback_projection_still_blocked_phase_1267
+```
+
+Roadmap impact:
+
+- The public-path identity blocker is reduced but not closed.
+- Future public fetch/P2P admission, rate-limit, ban, and replay paths now have
+  a local deterministic helper to derive full-hash keys from authenticated
+  transport credential material.
+- JSON/body `requester_id`, AgentID, harness identity, and `client_ip` remain
+  forbidden as public-path identity fallbacks.
+- Public P2P, public fetch serving, and public/non-loopback sidecar projection
+  serving remain disabled.
+
+Public RC remains blocked after Phase 1267:
+
+```text
+public_rc_remains_blocked_after_phase_1267
 public_rc_remains_blocked_after_phase_1266
 ```
