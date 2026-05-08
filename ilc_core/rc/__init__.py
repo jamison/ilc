@@ -1,5 +1,10 @@
 from .atlas_graph_discipline import (
+    ATLAS_G_004_005_BRIDGE_VERSION,
+    build_atlas_g_004_005_artifact,
+    build_high_authority_source_classification,
+    build_import_dependency_graph_bridge,
     ATLAS_GRAPH_DISCIPLINE_VERSION,
+    export_atlas_g_004_005_artifact_json,
     export_package_profile_reachability_manifest_json,
     package_profile_reachability_manifest,
     validate_graph_delta,
@@ -47,6 +52,7 @@ def __getattr__(name: str):
 
 
 __all__ = [
+    "ATLAS_G_004_005_BRIDGE_VERSION",
     "ATLAS_GRAPH_DISCIPLINE_VERSION",
     "NON_EXCISABLE_COMPONENTS",
     "PACKAGE_PROFILES",
@@ -54,6 +60,10 @@ __all__ = [
     "PROFILE_OPENCLAW_SKILL_CLAIMABLE",
     "PROFILE_OPENCLAW_SKILL_LOCAL",
     "PUBLIC_RC_PACKAGE_PROFILES_VERSION",
+    "build_atlas_g_004_005_artifact",
+    "build_high_authority_source_classification",
+    "build_import_dependency_graph_bridge",
+    "export_atlas_g_004_005_artifact_json",
     "export_package_profile_reachability_manifest_json",
     "export_profile_manifest_json",
     "export_wallet_state",

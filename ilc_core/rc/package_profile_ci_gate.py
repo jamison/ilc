@@ -48,8 +48,8 @@ PHASE_1250_FIX1_CONSUMED_FINDINGS = ("RCGAP-1250-FIX1-001",)
 PHASE_1250_FIX1_CARRY_FORWARD_ROUTES = {
     "phase_1252": {
         "finding_ids": (
-            "RCGAP-1250-FIX1-002",
             "RCGAP-1250-FIX1-003",
+            "RCGAP-1250-FIX1-006",
         ),
         "status": "carried_forward",
         "token": "phase_1252_digest_truncation_security_binding_classification_recorded",
@@ -63,7 +63,7 @@ PHASE_1250_FIX1_CARRY_FORWARD_ROUTES = {
         "token": "phase_1253_transport_digest_and_rust_m5_disposition_recorded",
     },
     "phase_1254": {
-        "finding_ids": ("RCGAP-1250-FIX1-006",),
+        "finding_ids": ("RCGAP-1250-FIX1-002",),
         "status": "carried_forward",
         "token": "phase_1254_legacy_graph_delta_gap_disposition_recorded",
     },
