@@ -38,12 +38,12 @@ from ilc_core.cli.d2e_submit_cli import (
     handle_submit,
 )
 from ilc_core.epistemic.truth_primitive_graph_store import (
-    TruthPrimitiveGraphStore,
     write_truth_primitive_result,
 )
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 PHASE_896_COMMIT_SUBJECT = "feat(g8): phase 892-896 cdl-076 truth primitive announcement gossip"
 MODULE_PATH = Path("ilc_core/network/d2d/truth_primitive_gossip_runtime.py")

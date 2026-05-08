@@ -6,7 +6,7 @@ import hashlib
 import json
 from typing import Any
 
-from ilc_core.storage.lmdb_public_runtime import LmdbPublicReceiptStore
+from ilc_core.protocol.harness_interfaces import PublicReceiptStore
 
 
 PUBLIC_RECEIPT_RUNTIME_VERSION = "public_receipt_runtime_651.v0.1"
@@ -54,7 +54,7 @@ class PublicReceiptRuntimeError(ValueError):
 def issue_public_receipt(
     *,
     payload: dict[str, Any],
-    store: LmdbPublicReceiptStore,
+    store: PublicReceiptStore,
 ) -> dict[str, Any]:
     normalized = _normalize_payload(payload)
     receipt_id = _canonical_receipt_id(normalized)
@@ -69,7 +69,7 @@ def issue_public_receipt(
 
 def query_public_receipts(
     *,
-    store: LmdbPublicReceiptStore,
+    store: PublicReceiptStore,
     receipt_id: str | None = None,
     signer_agent_id: str | None = None,
     artifact_kind: str | None = None,

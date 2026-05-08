@@ -21,6 +21,8 @@ from typing import Any
 
 from ilc_core.epistemic.truth_primitive_graph_store import (
     CDL_075_DEPENDENCY as STORE_CDL_075_DEPENDENCY,
+)
+from ilc_core.storage.truth_primitive_graph_lmdb_adapter import (
     TruthPrimitiveGraphStore,
 )
 

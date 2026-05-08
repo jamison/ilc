@@ -29,12 +29,12 @@ from ilc_core.cli.d2e_query_truth_cli import (
     handle_query_truth_node,
 )
 from ilc_core.epistemic.truth_primitive_graph_store import (
-    TruthPrimitiveGraphStore,
     write_truth_primitive_result,
 )
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 PHASE_890_COMMIT_SUBJECT = "feat(g8): phase 887-890 truth primitive query cli"
 MODULE_PATH = Path("ilc_core/cli/d2e_query_truth_cli.py")
