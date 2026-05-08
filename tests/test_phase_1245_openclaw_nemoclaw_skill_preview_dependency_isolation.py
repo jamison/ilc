@@ -159,6 +159,8 @@ def test_phase_1245_preview_rejects_invalid_requests() -> None:
         execute_local_skill_preview({"action": "fetch_incentive_centrality", "top_k": True})
     with pytest.raises(ValueError, match="local_skill_preview_top_k_must_be_positive_int"):
         execute_local_skill_preview({"action": "fetch_incentive_centrality", "top_k": 0})
+    with pytest.raises(ValueError, match="local_skill_preview_top_k_limit_exceeded"):
+        execute_local_skill_preview({"action": "fetch_incentive_centrality", "top_k": 101})
     with pytest.raises(ValueError, match="local_skill_preview_max_bytes_must_be_positive"):
         execute_local_skill_preview({"action": "profile_manifest", "max_bytes": 0})
 

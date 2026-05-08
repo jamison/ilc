@@ -248,3 +248,22 @@ def test_phase_1247_repo_hypergraph_compiler_output_is_deterministic(
     )
     assert observed_once == (first / "observed.json").read_text(encoding="utf-8")
     assert gap_once == (first / "gap.json").read_text(encoding="utf-8")
+
+
+def test_phase_1247_repo_hypergraph_compiler_fails_before_hyperedge_overgrowth(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(compiler, "SCAN_ROOTS", (Path("docs"),))
+    monkeypatch.setattr(compiler, "MAX_OBSERVED_HYPEREDGES", 1)
+    star_map_path, crawl_path = _write_tiny_star_map_fixture(tmp_path)
+
+    with pytest.raises(ValueError, match="observed_repo_hypergraph_hyperedge_limit_exceeded"):
+        compiler.run(
+            star_map_path=star_map_path,
+            crawl_path=crawl_path,
+            observed_out=tmp_path / "observed.json",
+            gap_out=tmp_path / "gap.json",
+            report_out=tmp_path / "gap.md",
+        )

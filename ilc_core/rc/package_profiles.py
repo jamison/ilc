@@ -267,6 +267,10 @@ def get_package_profile(profile_id: str) -> PackageProfile:
 
 
 def validate_package_profile(profile: PackageProfile) -> None:
+    if not isinstance(profile, PackageProfile):
+        raise ValueError("public_rc_package_profile_must_be_package_profile")
+    if type(profile.components) is not frozenset:
+        raise ValueError("public_rc_package_profile_components_must_be_frozenset")
     if type(profile.public_p2p) is not bool:
         raise ValueError("public_rc_package_profile_public_p2p_must_be_bool")
     if type(profile.public_claimability) is not bool:
