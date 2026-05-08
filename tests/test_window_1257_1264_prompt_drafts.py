@@ -137,5 +137,5 @@ def test_window_1257_1264_planning_index_points_to_guidance_and_sequence_lock() 
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
     assert "ilc_window_1257_1264_candidate_phase_grouping_v0.1.md" in text
     assert "ilc_phase_1257_1264_sequence_lock_v0.1.md" in text
-    assert "Window 1257-1264 CLOSED / PASS through Phase 1264" in text
-    assert "Window 1265+ sequence lock required before next phase assignment" in text
+    assert "Window 1257-1264 CLOSED / PASS" in text
+    assert "Window 1265-1272 OPEN / PASS through Phase 1265" in text
