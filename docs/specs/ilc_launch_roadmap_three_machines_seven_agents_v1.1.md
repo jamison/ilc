@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1269; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
+| Window frontier | Window 1265-1272 OPEN / PASS through Phase 1270; current sequence lock is `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -63,6 +63,11 @@ docs/specs/ilc_sidecar_loopback_projection_endpoint_boundary_1268_v0.1.md
 sidecar_loopback_projection_endpoint_boundary_phase_1268.v0.1
 docs/specs/ilc_werner_default_topology_pressure_profile_1269_v0.1.md
 werner_default_topology_pressure_profile_phase_1269.v0.1
+docs/specs/ilc_gap13_claimability_conversion_sweeper_preflight_1270_v0.1.md
+gap13_claimability_conversion_sweeper_preflight_phase_1270.v0.1
+public_claimability_runtime_not_activated_phase_1270
+cdl_048_conversion_sweeper_requirements_recorded_phase_1270
+wallet_withdrawal_transfer_spend_not_enabled_phase_1270
 ```
 
 ---
@@ -342,7 +347,8 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 
 ### Gap 13 - ECU-to-ILC Settlement Execution Runtime and Claimability
 
-**Status:** Open; final public-RC hard requirement.
+**Status:** Open; Phase 1270 preflight requirements recorded; final public-RC
+hard requirement still open.
 
 Internal conversion runtime and public claimability substrate are distinct.
 Final public RC requires public claimability for the selected OpenClaw/NemoClaw
@@ -357,7 +363,17 @@ mandatory_conversion_sweeper_required_for_cdl_048_runtime
 ecu_lot_accounting_required_for_cdl_048_conversion_sweeper
 ilc_public_claimability_substrate_required_pre_public_launch
 public_claimability_required_for_final_public_rc_profile
+gap13_claimability_conversion_sweeper_preflight_phase_1270.v0.1
+public_claimability_runtime_not_activated_phase_1270
+cdl_048_conversion_sweeper_requirements_recorded_phase_1270
+wallet_withdrawal_transfer_spend_not_enabled_phase_1270
 ```
+
+Phase 1270 recorded the public claimability and CDL-048 conversion-sweeper
+requirements without activating runtime claimability. The conversion sweeper
+still requires ECU lot accounting, four issuance epoch deadline enforcement,
+finite exact numeric boundaries, canonical JSON receipt/root binding, and replay
+or double-conversion prevention before public claimability can close.
 
 ### Gap 14 - OpenClaw/NemoClaw Package Modularity and CLI/Sidecar Boundary
 
@@ -716,6 +732,43 @@ Roadmap impact:
 Public RC remains blocked after Phase 1269:
 
 ```text
+public_rc_remains_blocked_after_phase_1269
+public_rc_remains_blocked_after_phase_1268
+public_rc_remains_blocked_after_phase_1267
+public_rc_remains_blocked_after_phase_1266
+```
+
+## 16. Phase 1270 Gap 13 Claimability Conversion-Sweeper Preflight Addendum
+
+Phase 1270 recorded Gap 13 preflight requirements:
+
+```text
+gap13_claimability_conversion_sweeper_preflight_phase_1270.v0.1
+public_claimability_runtime_not_activated_phase_1270
+cdl_048_conversion_sweeper_requirements_recorded_phase_1270
+wallet_withdrawal_transfer_spend_not_enabled_phase_1270
+```
+
+Roadmap impact:
+
+- CDL-048 remains ratified with `ecu_conversion_deadline = 4 issuance epochs`,
+  but the mandatory conversion sweeper runtime is not complete.
+- Future sweeper runtime must track ECU lots, issue epochs, provenance,
+  deadline epochs, conversion status, and replay/double-conversion keys.
+- Future public claimability must consume settled runtime roots, wallet-state
+  roots, latest balance receipts, history digests, epoch identifiers, canonical
+  agent identity, and full SHA-256 or stronger proof binding.
+- The current lifecycle and public wallet runtimes remain read-only/deferred and
+  do not expose withdrawal, transfer, spend, signing, minting, or settlement
+  authority.
+- Non-loopback claimability APIs remain blocked until TransportPrincipal or an
+  equivalent authenticated transport identity contract is authorized and
+  integrated.
+
+Public RC remains blocked after Phase 1270:
+
+```text
+public_rc_remains_blocked_after_phase_1270
 public_rc_remains_blocked_after_phase_1269
 public_rc_remains_blocked_after_phase_1268
 public_rc_remains_blocked_after_phase_1267
