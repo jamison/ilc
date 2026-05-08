@@ -1,0 +1,401 @@
+# ILC Launch Roadmap: Three Computers, Seven Agents
+
+**Version:** v1.1
+**Produced:** 2026-05-08
+**Phase:** 1242
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242
+**Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
+
+`launch_roadmap_v1_1_published_phase_1242`
+`roadmap_v1_1_controlling_public_rc_roadmap_phase_1242`
+
+---
+
+## 1. Purpose
+
+Roadmap v1.1 replaces Roadmap v1.0 as the controlling public-RC roadmap. The
+refresh is not an addendum: v1.0 contained stale RC2 rows after later windows
+ratified CDL-086, implemented Tier-3 runtime linkage, implemented and wired the
+persistent fetch rate limiter, completed SIM-FETCH-01 evidence through Fix10,
+and opened Window 1241-1248.
+
+This roadmap governs public-RC execution from Window 1241-1248 onward. It
+preserves the default public-RC path selected in current planning:
+
+```text
+openclaw_nemoclaw_skill_first_public_rc_path_no_public_ilc_p2p_claim
+public_claimability_required_for_final_public_rc_profile
+gap_14_package_modularity_executes_before_gap_10_public_p2p
+```
+
+---
+
+## 2. Current Canon Baseline
+
+| Surface | Current status |
+|---------|----------------|
+| Window frontier | Window 1241-1248 OPEN through Phase 1241 sequence lock |
+| Capsule | v5.50 current |
+| Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
+| CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
+| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1238j candidate envelope only |
+| v0.2 signing | Deferred; explicit signing authorization absent |
+| Tier-3 runtime linkage | **IMPLEMENTED** in Phase 1201 (`tier3_runtime_linkage_runtime_1201.v0.1`) |
+| Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
+| Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
+| `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
+| L3 sidecar query runtime | Local/read-only runtime complete; no projection endpoint or public sidecar service |
+| SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
+
+Current lock:
+
+```text
+docs/specs/ilc_phase_1241_1248_sequence_lock_v0.1.md
+window_1241_1248_sequence_lock_committed
+```
+
+---
+
+## 3. Public-RC Branch Decision
+
+Default branch:
+
+```text
+public_rc_default_path=openclaw_skill_first_public_claimability_no_public_p2p_claim
+```
+
+Meaning:
+
+- The first public-RC path is a local OpenClaw/NemoClaw-compatible ILC skill or
+  package profile.
+- That path makes no public ILC-owned P2P claim.
+- Public ILC-owned P2P remains a parallel lane gated by TransportPrincipal and
+  Rust public-P2P substrate work.
+- A local preview profile is not final public RC.
+- The final public-RC profile must include public ECU-to-ILC claimability.
+
+---
+
+## 4. Public-RC Blocker Classes
+
+| Blocker class | Blocks | Current disposition |
+|---------------|--------|---------------------|
+| Public repository publication | Making selected source tree public | Blocked by license/IP/provisional-patent/allowlist work |
+| Public RC claim | Claiming any release candidate is public | Blocked until selected package profile, claimability, graph reachability, release manifest, and blocker classes close |
+| Public P2P exposure | Public hostile-network ILC node | Blocked by TransportPrincipal, Rust P2P substrate decision, Python HTTP downgrade |
+| Public sidecar/projection serving | Non-loopback graph/projection endpoint | Blocked by CDL-087 ratification plus TransportPrincipal policy if exposed beyond loopback |
+| Public economic claimability | Human withdrawal/claim/transfer path | Blocked by ECU-to-ILC conversion runtime and public claimability substrate |
+| OpenClaw/NemoClaw local skill preview | Local harness preview only | Open execution lane in Window 1241-1248; not final public RC |
+| OpenClaw/NemoClaw claimable public RC | Final selected public-RC target profile | Requires Gap 14 package modularity plus Gap 13 claimability path |
+
+Token:
+
+```text
+public_rc_blocker_classification_required_in_roadmap_v1_1
+```
+
+Status: satisfied by this roadmap as a classification surface; blockers remain
+open until their implementation/gate phases close.
+
+---
+
+## 5. Milestone Map
+
+| Milestone | Gate criteria | Current status |
+|-----------|---------------|----------------|
+| RC0.1 | Three-node substrate; seven-agent scenario; reproducible substrate | `satisfied_for_testbed` |
+| RC1 | Truth primitive stack operational; CDL-073 through CDL-084; HB-002 closed | `satisfied` |
+| RC2 | Pre-public-RC governance/runtime hardening, v0.2 decision, package/public-path blocker disposition | In progress; several original v1.0 subgates now satisfied |
+| Public-RC local harness preview | Clean OpenClaw/NemoClaw local skill package; no public P2P; no final claimability claim | Window 1241-1248 execution lane |
+| Public-RC claimable harness profile | Local harness package plus public ECU-to-ILC claimability; no public ILC P2P claim | Target profile, still blocked |
+| Public P2P RC | ILC-owned public P2P node | Parallel lane, blocked by TransportPrincipal and Rust P2P decisions |
+| Public launch | Post-RC launch obligations, counsel/IP/trademark, economic claimability, security gates | Long-range |
+
+---
+
+## 6. Gap Inventory
+
+### Gap 1 - v0.2 Signing Ceremony
+
+**Status:** Deferred.
+
+v0.2 remains an unsigned 41-node / 73-edge candidate. Explicit signing
+authorization remains required.
+
+Token:
+
+```text
+v0_2_signing_ceremony_deferred_pending_signing_authorization
+```
+
+### Gap 2 - Public-Launch Packaging Blocker / CDL-086
+
+**Status:** Governance precondition satisfied; public acts still blocked.
+
+CDL-086 was ratified in Phase 1220:
+
+```text
+cdl_086_ratified_phase_1220
+```
+
+Ratification did not authorize public launch, public repository publication,
+public RC claim, release-key generation, or external operator bootstrap.
+Remaining package/publication work is now tracked by blocker classes and Gap 7.
+
+### Gap 3 - Tier-3 Runtime Linkage
+
+**Status:** Satisfied at runtime level.
+
+Phase 1201 implemented additive Tier-3 runtime linkage validation:
+
+```text
+tier3_runtime_linkage_runtime_1201.v0.1
+```
+
+### Gap 4 - Persistent Rate Limiter
+
+**Status:** Satisfied for current devnet/test HTTP transport; not a public-P2P
+identity solution.
+
+Phase 1202 implemented the persistent backend:
+
+```text
+persistent_fetch_rate_limiter_runtime_1202.v0.1
+```
+
+Phase 1212 wired it into HTTP fetch transport:
+
+```text
+persistent_rate_limiter_transport_wiring_committed_phase_1212
+```
+
+For public hostile-network P2P, this remains insufficient until rate limiting
+binds to authenticated TransportPrincipal rather than IP or JSON/body identity.
+
+### Gap 5 - Truth-Primitive Permanence
+
+**Status:** Attested/governance-routed through Phase 1219.
+
+Phase 1219 records Genesis authority attestation, no dissent, and non-bypass
+rules. It does not remove later public-RC packaging, signing, or claimability
+obligations.
+
+### Gap 6 - Canon Bundle Signing Repair
+
+**Status:** Satisfied in Phase 1197.
+
+```text
+canon_bundle_signing_repair_pass_phase_1197
+```
+
+### Gap 7 - Counsel, License, CLA, Trademark, IP
+
+**Status:** Open hard gate before public repository publication and public RC.
+
+Required:
+
+- Root license and zone table decision.
+- DCO/CLA decision before external contributors.
+- Trademark policy before public launch.
+- US provisional patent filing before public repository publication.
+- Public-source allowlist/export procedure.
+
+Tokens:
+
+```text
+counsel_license_instrument_selection_required_before_public_rc
+counsel_cla_text_approved_required_before_external_contributors
+counsel_trademark_policy_published_required_before_public_launch
+us_provisional_patent_application_filed_required_before_public_repo_publication
+allowlist_export_procedure_defined_required_before_public_repo_publication
+```
+
+### Gap 8 - Long-Range Economic, Privacy, Scale, and Formal Work
+
+**Status:** Deferred / mixed.
+
+Includes multi-hop centrality attribution CDL, cross-epoch compaction,
+CDL-070 PQ ceremony, reputation/centrality float migration, dynamic epistemic
+traversal engine, and later TLA+/TLAPS work. The immediate pre-RC TLA item is
+refinement notes:
+
+```text
+tla_refinement_notes_pre_rc_window_1241_plus_candidate
+```
+
+### Gap 9 - Sidecar Projection Endpoint
+
+**Status:** Blocked.
+
+Local read-only sidecar query runtime exists. No projection endpoint is
+authorized. Non-loopback projection serving requires CDL-087 ratification and
+TransportPrincipal policy.
+
+Tokens:
+
+```text
+sidecar_projection_endpoint_required_post_cdl_087_ratification
+sidecar_projection_endpoint_public_path_requires_transport_principal_auth
+```
+
+### Gap 10 - TransportPrincipal Identity Layer
+
+**Status:** Open; public-P2P hard requirement.
+
+TransportPrincipal is the missing authenticated transport identity layer for
+public hostile-network operation. It is required before public ILC-owned P2P
+claim and before any non-loopback sidecar/projection public path.
+
+Tokens:
+
+```text
+transport_principal_identity_required_before_public_p2p
+d2d_rate_limiter_key_must_be_authenticated_transport_principal
+agent_id_must_not_be_default_transport_rate_limit_key
+json_requester_id_rate_limit_fallback_forbidden_public_p2p
+transport_principal_cdl_required_before_runtime_implementation
+python_http_transport_formally_downgraded_to_devnet_test_only_required
+rust_p2p_substrate_decision_adr_required_quinn_vs_libp2p
+```
+
+### Gap 11 - Werner Topological Flow Governor
+
+**Status:** SIM evidence surface exists; no CDL/runtime policy.
+
+SIM-FETCH Fix8 implemented an opt-in simulation-only Werner topology overlay.
+Future work must promote or retire the overlay before runtime-CDL use. Heat
+signals prefer reputation, routing, admission, and cache/mirror priority before
+any direct ECU creation assumption.
+
+Tokens:
+
+```text
+werner_overlay_opt_in_must_be_promoted_or_retired_after_validation
+werner_heat_prefers_reputation_routing_admission_before_ecu_creation
+direct_werner_ecu_creation_assumption_requires_repo_memtrace_check
+heat_signal_must_not_directly_mint_ecu
+```
+
+### Gap 12 - ECU Credit Creation In Agentic Wallet
+
+**Status:** Open; public-launch hard requirement.
+
+Wallet-visible balances are not ECU creation authority. Productive-credit
+creation requires intent objects, authorization evidence, exposure ceilings,
+escrow/clawback, and consensus-epoch settlement.
+
+Tokens:
+
+```text
+agentic_wallet_ecu_credit_creation_runtime_required_pre_public_launch
+ecu_credit_creation_intent_cdl_required
+werner_productive_credit_authorization_cdl_required
+ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
+```
+
+### Gap 13 - ECU-to-ILC Settlement Execution Runtime and Claimability
+
+**Status:** Open; final public-RC hard requirement.
+
+Internal conversion runtime and public claimability substrate are distinct.
+Final public RC requires public claimability for the selected OpenClaw/NemoClaw
+claimable profile.
+
+Tokens:
+
+```text
+ecu_to_ilc_conversion_execution_runtime_required_pre_public_launch
+pe_governor_fixed_point_runtime_required_pre_public_launch
+mandatory_conversion_sweeper_required_for_cdl_048_runtime
+ecu_lot_accounting_required_for_cdl_048_conversion_sweeper
+ilc_public_claimability_substrate_required_pre_public_launch
+public_claimability_required_for_final_public_rc_profile
+```
+
+### Gap 14 - OpenClaw/NemoClaw Package Modularity and CLI/Sidecar Boundary
+
+**Status:** Immediate Window 1241-1248 execution lane.
+
+Package modularity must prove that ILC can be consumed as a local skill/package
+without making OpenClaw/NemoClaw a protocol dependency and without letting
+Genesis, ILC, ECU, canonical JSON, protocol bundle verification, or Rust
+consensus-core binding become excisable.
+
+Window 1241-1248 routing:
+
+```text
+gap_14_package_modularity_first_slice_before_gap_10_transport_principal
+ilc_package_modularity_split_required_before_openclaw_skill_launch
+ilc_logic_pure_protocol_interfaces_required
+ilc_logic_must_not_require_http_lmdb_or_harness_transport
+ilc_cli_package_boundary_required
+harness_adapter_transport_storage_protocols_required
+generic_agent_harness_adapter_contract_required
+sidecar_dependency_isolation_required_for_harness_adapters
+public_package_size_audit_required_before_openclaw_skill_launch
+```
+
+First external harness deployment target remains private/local:
+
+```text
+digitalocean_openclaw_droplet_first_external_harness_target
+tailscale_private_harness_network_allowed_no_public_p2p_claim
+```
+
+### Gap 15 - Atlas Graph Reachability and Integrated Phase Discipline
+
+**Status:** Immediate Window 1241-1248 first slice; public-RC gate later.
+
+Package modularity must not become excisability. Public-RC load-bearing
+artifacts must remain reachable from Genesis, ILC, ECU, and hypergraph anchors.
+
+Window 1241-1248 first-slice tokens:
+
+```text
+phase_close_graph_delta_field_required
+atlas_g_001_graph_delta_schema_required
+atlas_g_002_repo_hypergraph_compiler_hardening_required
+atlas_g_003_package_profile_reachability_manifest_required
+```
+
+Later public-RC gate:
+
+```text
+atlas_g_006_public_rc_graph_reachability_gate_required
+ilc_package_self_compilation_homoiconic_graph_required_before_public_rc
+public_rc_release_artifact_must_include_profile_graph_manifest
+```
+
+---
+
+## 7. Window 1241-1248 Execution Policy
+
+| Phase | Role | Policy |
+|-------|------|--------|
+| 1242 | Roadmap v1.1 | This roadmap; no runtime/CDL mutation |
+| 1243 | Gap 14 package profile contracts | RC-code execution begins |
+| 1244 | Import-boundary lint and Protocol stubs | Enforce `ilc_logic` purity boundary |
+| 1245 | OpenClaw/NemoClaw local skill preview | Local/private harness only |
+| 1246 | CDL-087 governance review | Review-only; no ratification |
+| 1247 | ATLAS-G-001..003 first slice | Graph discipline and package-profile reachability |
+| 1248 | Closure | SENSITIVE; requires `GO Phase 1248` |
+
+---
+
+## 8. Non-Claims
+
+This roadmap does not claim:
+
+- public RC achieved;
+- public launch achieved;
+- public repository publication authorized;
+- public P2P exposure authorized;
+- public sidecar/projection serving authorized;
+- CDL-087 ratified;
+- CDL-088 opened;
+- public claimability implemented;
+- ECU minting or ILC settlement authorized;
+- release keys generated;
+- v0.2 signing executed;
+- Genesis Atlas mutated.
+
