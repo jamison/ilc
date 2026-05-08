@@ -113,6 +113,9 @@ def test_phase_1247_graph_delta_validator_accepts_locked_shapes() -> None:
         ("graph_delta=load_bearing_artifact_changed: -> genesis", "path_required"),
         ("graph_delta=support_only:", "payload_required"),
         ("graph_delta=load_bearing_artifact_added:docs/specs/x.json -> moon", "unknown_anchor"),
+        ("graph_delta=load_bearing_artifact_added:/tmp/x.json -> genesis", "repo_relative"),
+        ("graph_delta=load_bearing_artifact_added:../x.json -> genesis", "repo_relative"),
+        ("graph_delta=load_bearing_artifact_added:docs/specs/\nx.json -> genesis", "path_invalid"),
     ],
 )
 def test_phase_1247_graph_delta_validator_rejects_malformed_inputs(
@@ -133,7 +136,10 @@ def test_phase_1247_local_skill_reachability_manifest_preserves_non_excisable_an
     assert manifest["package_profile"]["public_claimability"] is False
     assert set(manifest["non_excisable_components"]) == set(NON_EXCISABLE_COMPONENTS)
     assert set(manifest["reachable_anchor_set"]) == {"ecu", "genesis", "hypergraph", "ilc"}
+    assert manifest["missing_required_anchors"] == []
+    assert manifest["missing_representative_paths"] == []
     components = {item["component"]: item for item in manifest["component_reachability"]}
+    assert all(item["representative_paths_present"] for item in components.values())
     assert components["genesis_lineage_verification"]["non_excisable"] is True
     assert "genesis" in components["genesis_lineage_verification"]["anchors"]
     assert components["ecu_ilc_economic_boundary"]["non_excisable"] is True
@@ -147,6 +153,8 @@ def test_phase_1247_claimable_skill_reachability_manifest_is_public_rc_target_wi
     assert manifest["package_profile"]["public_rc_eligible"] is True
     assert manifest["package_profile"]["public_claimability"] is True
     assert manifest["package_profile"]["public_p2p"] is False
+    assert manifest["missing_required_anchors"] == []
+    assert manifest["missing_representative_paths"] == []
     components = {item["component"]: item for item in manifest["component_reachability"]}
     assert "public_claimability_runtime" in components
     assert {"ecu", "ilc"} <= set(components["public_claimability_runtime"]["anchors"])
