@@ -10,6 +10,7 @@ surface visible from public-RC packaging profiles.
 from __future__ import annotations
 
 import json
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from ilc_core.rc.package_profiles import (
@@ -33,6 +34,8 @@ GRAPH_DELTA_KINDS = GRAPH_DELTA_SIMPLE_KINDS | GRAPH_DELTA_LOAD_BEARING_KINDS
 PROFILE_REACHABILITY_MANIFEST_IDS = frozenset(
     {PROFILE_OPENCLAW_SKILL_CLAIMABLE, PROFILE_OPENCLAW_SKILL_LOCAL}
 )
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _COMPONENT_REACHABILITY: dict[str, dict[str, Any]] = {
     "canonical_json_policy": {
@@ -187,6 +190,25 @@ def _split_anchor_text(text: str) -> list[str]:
     return anchors
 
 
+def _validate_load_bearing_path(path: str) -> str:
+    if "\x00" in path or "\n" in path or "\r" in path:
+        raise ValueError("atlas_graph_delta_path_invalid")
+    candidate = PurePosixPath(path)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        raise ValueError("atlas_graph_delta_path_must_be_repo_relative")
+    normalized = candidate.as_posix()
+    if normalized in {"", "."}:
+        raise ValueError("atlas_graph_delta_path_required")
+    return normalized
+
+
+def _representative_path_exists(path: str) -> bool:
+    candidate = PurePosixPath(path)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        return False
+    return (_REPO_ROOT / candidate.as_posix()).exists()
+
+
 def validate_graph_delta(declaration: str) -> dict[str, Any]:
     """Validate and parse a phase-close graph delta declaration."""
 
@@ -219,6 +241,7 @@ def validate_graph_delta(declaration: str) -> dict[str, Any]:
         path = path_text.strip()
         if not path:
             raise ValueError("atlas_graph_delta_path_required")
+        path = _validate_load_bearing_path(path)
         parsed["anchors"] = _split_anchor_text(anchor_text)
         parsed["paths"] = [path]
     else:
@@ -235,13 +258,19 @@ def _component_manifest(component: str) -> dict[str, Any]:
     except KeyError as exc:
         raise ValueError("atlas_profile_reachability_component_unmapped") from exc
     anchors = sorted(reachability["anchors"])
+    representative_paths = sorted(reachability["representative_paths"])
+    missing_representative_paths = sorted(
+        path for path in representative_paths if not _representative_path_exists(path)
+    )
     return {
         "anchors": anchors,
         "component": component,
+        "missing_representative_paths": missing_representative_paths,
         "non_excisable": component in NON_EXCISABLE_COMPONENTS,
         "reachable_from_required_anchor": bool(set(anchors) & GRAPH_ANCHORS),
         "relation": reachability["relation"],
-        "representative_paths": sorted(reachability["representative_paths"]),
+        "representative_paths": representative_paths,
+        "representative_paths_present": not missing_representative_paths,
     }
 
 
@@ -255,7 +284,11 @@ def package_profile_reachability_manifest(profile_id: str) -> dict[str, Any]:
     manifest = profile_manifest(profile_id)
     components = [_component_manifest(component) for component in manifest["components"]]
     reachable_anchors = sorted({anchor for item in components for anchor in item["anchors"]})
+    missing_required_anchors = sorted(GRAPH_ANCHORS - set(reachable_anchors))
     missing_non_excisable = sorted(set(NON_EXCISABLE_COMPONENTS) - set(manifest["components"]))
+    missing_representative_paths = sorted(
+        {path for item in components for path in item["missing_representative_paths"]}
+    )
     unreachable_components = sorted(
         item["component"] for item in components if not item["reachable_from_required_anchor"]
     )
@@ -266,11 +299,18 @@ def package_profile_reachability_manifest(profile_id: str) -> dict[str, Any]:
         "graph_delta_required_on_profile_change": True,
         "manifest_id": f"{profile_id}_reachability_manifest_1247.v0.1",
         "missing_non_excisable_components": missing_non_excisable,
+        "missing_representative_paths": missing_representative_paths,
+        "missing_required_anchors": missing_required_anchors,
         "non_excisable_components": sorted(NON_EXCISABLE_COMPONENTS),
         "package_profile": manifest,
         "profile_id": profile_id,
         "reachable_anchor_set": reachable_anchors,
-        "status": "pass" if not missing_non_excisable and not unreachable_components else "fail",
+        "status": "pass"
+        if not missing_non_excisable
+        and not missing_representative_paths
+        and not missing_required_anchors
+        and not unreachable_components
+        else "fail",
         "unreachable_components": unreachable_components,
         "version": ATLAS_GRAPH_DISCIPLINE_VERSION,
     }
