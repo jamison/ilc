@@ -1,5 +1,6 @@
 from .atlas_graph_discipline import (
     ATLAS_G_004_005_BRIDGE_VERSION,
+    ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN,
     ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION,
     build_atlas_g_004_005_artifact,
     build_atlas_g_006_public_rc_graph_reachability_gate,
@@ -56,6 +57,7 @@ def __getattr__(name: str):
 
 __all__ = [
     "ATLAS_G_004_005_BRIDGE_VERSION",
+    "ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN",
     "ATLAS_G_006_PUBLIC_RC_GRAPH_REACHABILITY_GATE_VERSION",
     "ATLAS_GRAPH_DISCIPLINE_VERSION",
     "NON_EXCISABLE_COMPONENTS",
