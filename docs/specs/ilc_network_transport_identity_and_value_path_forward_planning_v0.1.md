@@ -11,7 +11,33 @@ posture, package modularity, Werner topological flow governor, and ECU/ILC value
 
 ```text
 network_transport_identity_and_value_path_forward_planning_recorded_phase_1238
+unknown_unknown_discovery_required_before_phase_execution
 ```
+
+---
+
+## 0. Execution Discovery Discipline
+
+Any future phase derived from this forward plan must run an unknown-unknown
+discovery pass before coding. Known planning tokens are not enough for transport,
+Werner, ECU/ILC, or claimability work because older canon often uses different
+terms.
+
+Required prompt/execution structure:
+
+1. `§0a — Known-token audit`: verify the tokens already named in the prompt.
+2. `§0b — Concept-discovery search`: search concepts and synonyms such as
+   `principal`, `requester`, `claim`, `withdraw`, `redeem`, `mint`,
+   `settlement`, `Werner`, `heat`, `flow`, `wallet`, and `conversion`.
+3. `§0c — Contradiction and non-claim search`: search for `deferred`,
+   `blocked`, `not authorized`, `not ratified`, `local-only`, `no public`,
+   and domain-specific denial terms before widening any runtime or economic
+   claim.
+4. `§0d — Source expansion and newly discovered tokens`: direct-read every
+   relevant hit and carry new tokens/non-claims into the phase artifact.
+
+MemPalace can be used for historical recall, but every useful hit must be
+direct-read in the repo before it is treated as canon.
 
 ---
 

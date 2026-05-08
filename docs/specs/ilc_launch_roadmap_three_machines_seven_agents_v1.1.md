@@ -431,4 +431,15 @@ window_1249_plus_sequence_lock_required_before_next_phase_assignment
 gap_14_adapter_extraction_and_package_ci_gate_should_continue_before_public_rc_claim
 gap_13_public_claimability_runtime_should_start_before_final_public_rc_claim
 transport_principal_identity_required_before_public_p2p
+unknown_unknown_discovery_required_before_phase_execution
 ```
+
+### Phase 1249+ prompt discipline addendum
+
+Every future public-RC phase prompt derived from this roadmap should include the
+four-part §0 discovery pass before coding: `Known-token audit`,
+`Concept-discovery search`, `Contradiction and non-claim search`, and
+`Source expansion and newly discovered tokens`. This is required because the
+public-RC path crosses old terminology for ECU/ILC conversion, claimability,
+TransportPrincipal, ATLAS-G, Werner flow, and publication/counsel gates.
+MemPalace is advisory recall only; direct repo reads remain authoritative.

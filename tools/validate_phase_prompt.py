@@ -19,6 +19,13 @@ FILENAME_RE = re.compile(
 )
 H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+)-G(?P<group>\d+)\b", re.IGNORECASE)
 HEADING_RE = re.compile(r"^#{2,3}\s+(.+?)\s*$")
+UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR = 1249
+UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
+    "### §0a — Known-token audit",
+    "### §0b — Concept-discovery search",
+    "### §0c — Contradiction and non-claim search",
+    "### §0d — Source expansion and newly discovered tokens",
+)
 
 
 def _norm_heading(s: str) -> str:
@@ -122,6 +129,11 @@ def validate(path: Path) -> list[str]:
 
     if "STATUS.md" not in text:
         errors.append("missing_reference:STATUS.md")
+
+    if int(expected_phase) >= UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR:
+        for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
+            if section not in text:
+                errors.append(f"missing_unknown_unknown_discovery_section:{section}")
 
     return errors
 
