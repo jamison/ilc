@@ -1,5 +1,10 @@
 # ILC Launch Roadmap: Three Computers, Seven Agents
 
+> **SUPERSEDED:** Roadmap v1.0 is superseded by
+> `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md` as of
+> Phase 1242. Use v1.1 for current public-RC planning. v1.0 is retained as a
+> historical Phase 1192 roadmap and stale-status reconstruction source.
+
 **Version:** v1.0
 **Produced:** 2026-05-05
 **Session context:** Window 1191-1199 closed at Phase 1199. Window
