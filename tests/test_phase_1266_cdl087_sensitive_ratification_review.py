@@ -138,7 +138,7 @@ def test_phase_1266_frontier_updates_planning_status_and_next_phase() -> None:
     planning = _read(PLANNING_INDEX_PATH)
     status = _read(STATUS_PATH)
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
+    assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in planning
     assert str(SPEC_PATH) in planning
     assert "## Phase 1266" in status
     assert "## Phase 1267" in status

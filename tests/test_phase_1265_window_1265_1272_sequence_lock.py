@@ -132,7 +132,7 @@ def test_phase_1265_frontier_updates_planning_and_status() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
+    assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in planning
     assert SEQUENCE_LOCK in planning
     assert "cdl_087_sensitive_ratification_review_phase_1266.v0.1" in planning
     assert "transport_principal_runtime_identity_pre_public_path_phase_1267.v0.1" in planning
