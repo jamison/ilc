@@ -68,11 +68,14 @@ def test_digest_truncation_candidates_are_phase_routed() -> None:
     digest_hits = _audit()["code_scans"]["digest_truncation_hits"]
     phase_1252 = _finding("RCGAP-1250-FIX1-003")
     phase_1253 = _finding("RCGAP-1250-FIX1-004")
+    digest_sources = {hit["source_path"] for hit in digest_hits}
 
     assert digest_hits
-    assert any(hit["source_path"] == "ilc_core/security/signer_lineage_runtime.py" for hit in digest_hits)
     assert any(hit["classification"] == "route_to_phase_1252" for hit in digest_hits)
     assert any(hit["classification"] == "route_to_phase_1253" for hit in digest_hits)
+    assert "ilc_core/ledger/settlement_verification.py" not in digest_sources
+    assert "ilc_core/security/key_compromise_runtime.py" not in digest_sources
+    assert "ilc_core/security/signer_lineage_runtime.py" not in digest_sources
     assert phase_1252["route"] == "Phase 1252 chain/crypto dependency inventory"
     assert phase_1253["route"] == "Phase 1253 TransportPrincipal and public-P2P substrate audit"
 
@@ -110,19 +113,35 @@ def test_phase_1251_remains_recommended_next_phase() -> None:
     assert finding["classification"] == "route_to_phase_1251"
 
 
-def test_export_json_is_canonical_and_artifact_matches_builder() -> None:
+def test_export_json_is_canonical_and_historical_artifact_is_canonical() -> None:
     audit = _audit()
     exported = _tool().export_audit_json(audit)
     parsed = json.loads(exported)
+    artifact = JSON_ARTIFACT.read_text(encoding="utf-8")
+    artifact_parsed = json.loads(artifact)
 
     assert exported == json.dumps(parsed, allow_nan=False, indent=2, sort_keys=True) + "\n"
-    assert JSON_ARTIFACT.read_text(encoding="utf-8") == exported
+    assert artifact == json.dumps(
+        artifact_parsed,
+        allow_nan=False,
+        indent=2,
+        sort_keys=True,
+    ) + "\n"
+    assert artifact_parsed["version"] == "rc_frontier_gap_audit_1250_fix1.v0.1"
+    assert artifact_parsed["audit_scope"]["phase"] == "1250 Fix1"
+    assert {
+        finding["finding_id"] for finding in artifact_parsed["findings"]
+    } == {f"RCGAP-1250-FIX1-{index:03d}" for index in range(1, 11)}
 
 
-def test_markdown_artifact_matches_builder_and_records_non_claims() -> None:
+def test_markdown_artifact_records_non_claims_as_historical_snapshot() -> None:
     audit = _audit()
     markdown = _tool().export_audit_markdown(audit)
+    artifact = MARKDOWN_ARTIFACT.read_text(encoding="utf-8")
 
-    assert MARKDOWN_ARTIFACT.read_text(encoding="utf-8") == markdown
+    assert "# ILC RC Frontier Gap Audit 1250 Fix1 v0.1" in artifact
+    assert "phase_1250_fix1_rc_frontier_gap_audit_complete" in artifact
+    assert "no_public_rc_claim" in artifact
+    assert "graph_delta=support_only:tools/rc_frontier_gap_audit.py -> validation" in artifact
     assert "no_public_rc_claim" in markdown
     assert "graph_delta=support_only:tools/rc_frontier_gap_audit.py -> validation" in markdown
