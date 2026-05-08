@@ -347,4 +347,4 @@ class SignerLineageRegistry:
     @staticmethod
     def _derive_event_id(*, event_name: str, lineage_id: str, event_counter: int, event_ts: str) -> str:
         payload = f"{event_name}|{lineage_id}|{event_counter}|{event_ts}".encode("utf-8")
-        return hashlib.sha256(payload).hexdigest()[:24]
+        return hashlib.sha256(payload).hexdigest()
