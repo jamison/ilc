@@ -71,7 +71,7 @@ def test_phase_1270_required_tokens_are_recorded_everywhere() -> None:
         for token in REQUIRED_TOKENS:
             assert token in text
 
-    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
+    assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in planning
     assert "public_rc_remains_blocked_after_phase_1271" in roadmap
     assert "Phase 1272 - Window 1265-1272 closure gate" in status
     assert "phase_1272_window_1265_1272_closure_gate_requires_explicit_go" in status

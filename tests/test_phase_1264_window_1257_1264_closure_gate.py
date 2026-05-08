@@ -127,5 +127,5 @@ def test_planning_index_preserves_phase_1264_handoff_after_frontier_advances() -
     planning = read(PLANNING)
 
     assert HANDOFF in planning
-    assert "Window 1265-1272 OPEN / PASS through Phase 1271" in planning
+    assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in planning
     assert "Exact-token `rg` is only a schema/completion check" in planning
