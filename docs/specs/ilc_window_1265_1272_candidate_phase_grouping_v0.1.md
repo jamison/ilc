@@ -125,6 +125,9 @@ That verdict justifies a sensitive review window. It does not mutate the CDL
 register. Phase 1266 must either record no-ratification/no-mutation, or if a
 future human authorization explicitly widens scope to ratification, prove all
 six locked CDL-087 conditions and preserve a clean register diff discipline.
+The Phase 1266 prompt must carry
+`cdl_087_ratification_not_executed_by_default_phase_1266` as a required token
+unless the future human instruction explicitly authorizes ratification scope.
 
 ### 4.2 Public path depends on TransportPrincipal before exposure
 
@@ -215,6 +218,7 @@ gap13_claimability_preflight_window_candidate
 atlas_g_006_public_rc_graph_gate_window_candidate
 public_rc_remains_blocked_after_phase_1264
 cdl_087_sensitive_ratification_review_required_after_phase_1264
+cdl_087_ratification_not_executed_by_default_phase_1266
 transport_principal_runtime_required_before_non_loopback_projection
 sidecar_projection_public_path_still_blocked_after_phase_1264
 werner_default_topology_pressure_profile_required_before_runtime_cdl
