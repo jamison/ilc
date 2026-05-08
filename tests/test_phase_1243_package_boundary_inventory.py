@@ -97,8 +97,14 @@ def test_phase_1243_default_inventory_has_expected_surfaces() -> None:
 def test_phase_1243_default_inventory_records_current_logic_boundary_status() -> None:
     inventory = build_default_import_boundary_inventory()
     logic = inventory["surfaces"]["ilc_logic"]
-    assert logic["status"] == "pass"
-    assert logic["violations"] == []
+    assert logic["status"] == "violations_present"
+    assert {
+        violation["module"]
+        for violation in logic["violations"]
+    } == {
+        "ilc_core.node.node_schema_core_runtime_360",
+        "ilc_core.storage.lmdb_public_runtime",
+    }
     assert logic["file_count"] > 0
 
 

@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-IMPORT_BOUNDARY_INVENTORY_VERSION = "package_boundary_inventory_1243.v0.1"
+IMPORT_BOUNDARY_INVENTORY_VERSION = "package_boundary_inventory_1244.v0.1"
 MAX_IMPORT_INVENTORY_FILES = 5_000
 
 
@@ -21,7 +21,8 @@ MAX_IMPORT_INVENTORY_FILES = 5_000
 class ImportBoundarySpec:
     surface_id: str
     root_paths: tuple[str, ...]
-    forbidden_import_roots: tuple[str, ...]
+    forbidden_import_roots: tuple[str, ...] = ()
+    forbidden_module_prefixes: tuple[str, ...] = ()
 
 
 DEFAULT_IMPORT_BOUNDARY_SPECS = {
@@ -43,6 +44,14 @@ DEFAULT_IMPORT_BOUNDARY_SPECS = {
             "socket",
             "urllib",
             "uvicorn",
+        ),
+        forbidden_module_prefixes=(
+            "ilc_core.cli",
+            "ilc_core.network",
+            "ilc_core.node",
+            "ilc_core.server",
+            "ilc_core.sim",
+            "ilc_core.storage",
         ),
     ),
     "ilc_cli": ImportBoundarySpec(
@@ -93,6 +102,9 @@ def _validate_spec(spec: ImportBoundarySpec) -> None:
     for import_root in spec.forbidden_import_roots:
         if not isinstance(import_root, str) or not import_root:
             raise ValueError("package_boundary_inventory_invalid_forbidden_import")
+    for module_prefix in spec.forbidden_module_prefixes:
+        if not isinstance(module_prefix, str) or not module_prefix:
+            raise ValueError("package_boundary_inventory_invalid_forbidden_module_prefix")
 
 
 def _iter_python_files(root_paths: tuple[str, ...]) -> list[Path]:
@@ -116,6 +128,24 @@ def _iter_python_files(root_paths: tuple[str, ...]) -> list[Path]:
     return unique
 
 
+def _module_package_for_path(path: Path) -> tuple[str, ...]:
+    if path.name == "__init__.py":
+        return path.parent.parts
+    return path.parent.parts
+
+
+def _resolve_import_from_module(path: Path, node: ast.ImportFrom) -> str:
+    module_parts = tuple(part for part in (node.module or "").split(".") if part)
+    if node.level == 0:
+        return ".".join(module_parts)
+
+    package_parts = _module_package_for_path(path)
+    if node.level > len(package_parts):
+        return ".".join(module_parts)
+    base_parts = package_parts[: len(package_parts) - node.level + 1]
+    return ".".join((*base_parts, *module_parts))
+
+
 def _import_records(path: Path) -> list[dict[str, str]]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=path.as_posix())
     records: list[dict[str, str]] = []
@@ -131,7 +161,7 @@ def _import_records(path: Path) -> list[dict[str, str]]:
                     }
                 )
         elif isinstance(node, ast.ImportFrom):
-            module = node.module or ""
+            module = _resolve_import_from_module(path, node)
             if module:
                 records.append(
                     {
@@ -143,22 +173,42 @@ def _import_records(path: Path) -> list[dict[str, str]]:
     return records
 
 
+def _module_matches_prefix(module: str, prefix: str) -> bool:
+    return module == prefix or module.startswith(f"{prefix}.")
+
+
 def build_import_boundary_inventory(spec: ImportBoundarySpec) -> dict[str, Any]:
     _validate_spec(spec)
     forbidden = set(spec.forbidden_import_roots)
+    forbidden_prefixes = set(spec.forbidden_module_prefixes)
     files = _iter_python_files(spec.root_paths)
     imports: list[dict[str, str]] = []
     for path in files:
         imports.extend(_import_records(path))
 
-    violations = [
-        record
-        for record in imports
-        if record["import_root"] in forbidden
-    ]
+    violations: list[dict[str, str]] = []
+    for record in imports:
+        if record["import_root"] in forbidden:
+            violations.append(
+                {
+                    **record,
+                    "matched_rule": record["import_root"],
+                    "violation_type": "forbidden_import_root",
+                }
+            )
+        for module_prefix in forbidden_prefixes:
+            if _module_matches_prefix(record["module"], module_prefix):
+                violations.append(
+                    {
+                        **record,
+                        "matched_rule": module_prefix,
+                        "violation_type": "forbidden_module_prefix",
+                    }
+                )
     return {
         "file_count": len(files),
         "forbidden_import_roots": sorted(forbidden),
+        "forbidden_module_prefixes": sorted(forbidden_prefixes),
         "import_roots": sorted({record["import_root"] for record in imports}),
         "max_files": MAX_IMPORT_INVENTORY_FILES,
         "root_paths": list(spec.root_paths),
@@ -170,10 +220,19 @@ def build_import_boundary_inventory(spec: ImportBoundarySpec) -> dict[str, Any]:
             key=lambda record: (
                 record["file"],
                 record["import_root"],
+                record["matched_rule"],
                 record["module"],
+                record["violation_type"],
             ),
         ),
     }
+
+
+def validate_import_boundary(spec: ImportBoundarySpec) -> dict[str, Any]:
+    inventory = build_import_boundary_inventory(spec)
+    if inventory["status"] != "pass":
+        raise ValueError("package_boundary_inventory_forbidden_imports_present")
+    return inventory
 
 
 def build_default_import_boundary_inventory() -> dict[str, Any]:
@@ -203,4 +262,5 @@ __all__ = [
     "build_default_import_boundary_inventory",
     "build_import_boundary_inventory",
     "export_import_boundary_inventory_json",
+    "validate_import_boundary",
 ]
