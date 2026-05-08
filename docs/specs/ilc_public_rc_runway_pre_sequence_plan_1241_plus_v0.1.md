@@ -356,7 +356,7 @@ Closed at planning level:
 Still not closed, intentionally:
 
 - The Window 1241+ sequence lock itself.
-- Any exact Phase 1241+ phase numbers.
+- Any exact official Phase 1241+ phase numbers authorized by sequence lock.
 - Any CDL mutation or ratification.
 - Any implementation authorization.
 
@@ -375,4 +375,35 @@ Token:
 
 ```text
 public_rc_runway_pre_sequence_plan_must_feed_window_1241_plus_sequence_lock
+```
+
+---
+
+## 9. Post-1240 Candidate Guidance Registration
+
+After Phase 1240 closed Window 1233-1240, the first candidate 1241+ grouping was
+drafted at:
+
+- `docs/specs/ilc_window_1241_1248_candidate_phase_grouping_v0.1.md`
+
+That document registers prompt drafts for Phases 1241-1248 and routes this
+pre-sequence plan into a concrete next-window candidate. It remains
+planning-only: it does not open Window 1241-1248, does not replace the future
+sequence lock, and does not authorize public RC or any CDL mutation.
+
+Registered prompt drafts:
+
+- `docs/antigravity_tasks/antigravity_prompt__phase_1241_g8_window_1241_1248_sequence_lock.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1242_g8_roadmap_v1_1_controlling_public_rc_reconciliation.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1243_g8_gap14_package_profile_contracts_and_import_boundary_inventory.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1244_g8_ilc_logic_import_boundary_lint_and_protocol_stubs.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1245_g8_openclaw_nemoclaw_skill_preview_dependency_isolation.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1246_g8_cdl_087_governance_review_and_ratification_disposition.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1247_g8_atlas_g_001_003_graph_discipline_slice.md`
+- `docs/antigravity_tasks/antigravity_prompt__phase_1248_g8_window_1241_1248_coherence_and_closure_gate.md`
+
+Token:
+
+```text
+window_1241_1248_prompt_drafts_registered_after_phase_1240
 ```
