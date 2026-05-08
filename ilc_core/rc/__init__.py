@@ -1,9 +1,3 @@
-from .economic_cycle_runtime import (
-    export_wallet_state,
-    materialize_economic_cycle,
-    materialize_graph_state,
-    settle_economic_cycle,
-)
 from .atlas_graph_discipline import (
     ATLAS_GRAPH_DISCIPLINE_VERSION,
     export_package_profile_reachability_manifest_json,
@@ -23,6 +17,34 @@ from .package_profiles import (
     validate_all_package_profiles,
     validate_package_profile,
 )
+
+_ECONOMIC_CYCLE_EXPORTS = frozenset(
+    {
+        "export_wallet_state",
+        "materialize_economic_cycle",
+        "materialize_graph_state",
+        "settle_economic_cycle",
+    }
+)
+
+
+def __getattr__(name: str):
+    """Lazy-load heavyweight RC runtime helpers on demand.
+
+    The package-profile and harness-adapter modules are intentionally lightweight
+    OpenClaw/NemoClaw-facing surfaces. Importing ``ilc_core.rc`` must not
+    eagerly import LMDB, storage runtimes, or wall-clock runtime helpers just to
+    access declarative profile contracts.
+    """
+
+    if name in _ECONOMIC_CYCLE_EXPORTS:
+        from . import economic_cycle_runtime as runtime
+
+        value = getattr(runtime, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module 'ilc_core.rc' has no attribute {name!r}")
+
 
 __all__ = [
     "ATLAS_GRAPH_DISCIPLINE_VERSION",

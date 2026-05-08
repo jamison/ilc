@@ -221,7 +221,15 @@ def _authority_score(path: Path) -> int:
 
 
 def _add_vertex(vertices: dict[str, Vertex], vertex: Vertex) -> None:
+    if vertex.vertex_id not in vertices and len(vertices) >= MAX_OBSERVED_VERTICES:
+        raise ValueError("observed_repo_hypergraph_vertex_limit_exceeded")
     vertices.setdefault(vertex.vertex_id, vertex)
+
+
+def _add_hyperedge(hyperedges: dict[str, Hyperedge], hyperedge: Hyperedge) -> None:
+    if hyperedge.hyperedge_id not in hyperedges and len(hyperedges) >= MAX_OBSERVED_HYPEREDGES:
+        raise ValueError("observed_repo_hypergraph_hyperedge_limit_exceeded")
+    hyperedges[hyperedge.hyperedge_id] = hyperedge
 
 
 def _source_vertex(path: Path) -> Vertex:
@@ -294,19 +302,22 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
                         "text_hash": hashlib.sha256(line.strip().encode("utf-8")).hexdigest(),
                     }
                     edge_id = _stable_id("he:mentions", path.as_posix(), str(line_no), node_id)
-                    hyperedges[edge_id] = Hyperedge(
-                        hyperedge_id=edge_id,
-                        hyperedge_type="OBSERVED_MENTION",
-                        relation="source_mentions_core_node",
-                        members=[
-                            {"role": "source", "vertex": source_v.vertex_id},
-                            {"role": "mentioned", "vertex": node_id},
-                        ],
-                        evidence=[evidence],
-                        features={
-                            "authority_score": _authority_score(path),
-                            "source_kind": _source_kind(path),
-                        },
+                    _add_hyperedge(
+                        hyperedges,
+                        Hyperedge(
+                            hyperedge_id=edge_id,
+                            hyperedge_type="OBSERVED_MENTION",
+                            relation="source_mentions_core_node",
+                            members=[
+                                {"role": "source", "vertex": source_v.vertex_id},
+                                {"role": "mentioned", "vertex": node_id},
+                            ],
+                            evidence=[evidence],
+                            features={
+                                "authority_score": _authority_score(path),
+                                "source_kind": _source_kind(path),
+                            },
+                        ),
                     )
             for left in sorted(line_nodes):
                 for right in sorted(line_nodes):
@@ -327,23 +338,26 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
                         ),
                     )
                     edge_id = _stable_id("he:symbol", path.as_posix(), str(line_no), symbol)
-                    hyperedges[edge_id] = Hyperedge(
-                        hyperedge_id=edge_id,
-                        hyperedge_type="SYMBOL_OCCURRENCE",
-                        relation="source_contains_symbol",
-                        members=[
-                            {"role": "source", "vertex": source_v.vertex_id},
-                            {"role": "symbol", "vertex": symbol_id},
-                            {"role": "semantic_node", "vertex": symbol_nodes[symbol]},
-                        ],
-                        evidence=[
-                            {
-                                "source_line": line_no,
-                                "source_path": path.as_posix(),
-                                "text_hash": hashlib.sha256(line.strip().encode("utf-8")).hexdigest(),
-                            }
-                        ],
-                        features={"source_kind": _source_kind(path)},
+                    _add_hyperedge(
+                        hyperedges,
+                        Hyperedge(
+                            hyperedge_id=edge_id,
+                            hyperedge_type="SYMBOL_OCCURRENCE",
+                            relation="source_contains_symbol",
+                            members=[
+                                {"role": "source", "vertex": source_v.vertex_id},
+                                {"role": "symbol", "vertex": symbol_id},
+                                {"role": "semantic_node", "vertex": symbol_nodes[symbol]},
+                            ],
+                            evidence=[
+                                {
+                                    "source_line": line_no,
+                                    "source_path": path.as_posix(),
+                                    "text_hash": hashlib.sha256(line.strip().encode("utf-8")).hexdigest(),
+                                }
+                            ],
+                            features={"source_kind": _source_kind(path)},
+                        ),
                     )
 
             for reference in REFERENCE_RE.findall(line):
@@ -362,33 +376,38 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
         if source not in star_nodes or target not in star_nodes:
             continue
         edge_id = f"he:star_map_edge:{edge['edge_id']}"
-        hyperedges[edge_id] = Hyperedge(
-            hyperedge_id=edge_id,
-            hyperedge_type="PROPOSED_CORE_EDGE",
-            relation=edge.get("relation", ""),
-            members=[
-                {"role": "source", "vertex": source},
-                {"role": "target", "vertex": target},
-            ],
-            evidence=[
-                {
-                    "edge_id": edge["edge_id"],
+        _add_hyperedge(
+            hyperedges,
+            Hyperedge(
+                hyperedge_id=edge_id,
+                hyperedge_type="PROPOSED_CORE_EDGE",
+                relation=edge.get("relation", ""),
+                members=[
+                    {"role": "source", "vertex": source},
+                    {"role": "target", "vertex": target},
+                ],
+                evidence=[
+                    {
+                        "edge_id": edge["edge_id"],
+                        "edge_type": edge["edge_type"],
+                        "source": source,
+                        "target": target,
+                    }
+                ],
+                features={
+                    "co_mention_count": co_mention_counts.get((min(source, target), max(source, target)), 0),
                     "edge_type": edge["edge_type"],
-                    "source": source,
-                    "target": target,
-                }
-            ],
-            features={
-                "co_mention_count": co_mention_counts.get((min(source, target), max(source, target)), 0),
-                "edge_type": edge["edge_type"],
-                "proposed_edge_type": edge.get("feature_hints", {}).get("proposed_edge_type", False),
-                "sim_weight_seed": edge.get("feature_hints", {}).get("sim_weight_seed"),
-            },
+                    "proposed_edge_type": edge.get("feature_hints", {}).get("proposed_edge_type", False),
+                    "sim_weight_seed": edge.get("feature_hints", {}).get("sim_weight_seed"),
+                },
+            ),
         )
 
     incidence = []
     for hyperedge in hyperedges.values():
         for member in hyperedge.members:
+            if len(incidence) >= MAX_OBSERVED_INCIDENCE:
+                raise ValueError("observed_repo_hypergraph_incidence_limit_exceeded")
             incidence.append(
                 {
                     "hyperedge_id": hyperedge.hyperedge_id,

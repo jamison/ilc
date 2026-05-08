@@ -15,6 +15,8 @@ from typing import Any
 
 IMPORT_BOUNDARY_INVENTORY_VERSION = "package_boundary_inventory_1244.v0.1"
 MAX_IMPORT_INVENTORY_FILES = 5_000
+MAX_IMPORT_INVENTORY_FILE_BYTES = 3_000_000
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 @dataclass(frozen=True)
@@ -23,6 +25,7 @@ class ImportBoundarySpec:
     root_paths: tuple[str, ...]
     forbidden_import_roots: tuple[str, ...] = ()
     forbidden_module_prefixes: tuple[str, ...] = ()
+    anchor_to_repo_root: bool = False
 
 
 DEFAULT_IMPORT_BOUNDARY_SPECS = {
@@ -34,6 +37,7 @@ DEFAULT_IMPORT_BOUNDARY_SPECS = {
             "ilc_core/epistemic",
             "ilc_core/reputation",
         ),
+        anchor_to_repo_root=True,
         forbidden_import_roots=(
             "aiohttp",
             "argparse",
@@ -57,6 +61,7 @@ DEFAULT_IMPORT_BOUNDARY_SPECS = {
     "ilc_cli": ImportBoundarySpec(
         surface_id="ilc_cli",
         root_paths=("ilc_core/cli",),
+        anchor_to_repo_root=True,
         forbidden_import_roots=(
             "aiohttp",
             "fastapi",
@@ -71,11 +76,13 @@ DEFAULT_IMPORT_BOUNDARY_SPECS = {
             "ilc_core/node",
             "ilc_core/storage",
         ),
+        anchor_to_repo_root=True,
         forbidden_import_roots=(),
     ),
     "ilc_harness_adapters": ImportBoundarySpec(
         surface_id="ilc_harness_adapters",
         root_paths=("ilc_core/rc",),
+        anchor_to_repo_root=True,
         forbidden_import_roots=(
             "aiohttp",
             "fastapi",
@@ -97,6 +104,8 @@ def _validate_spec(spec: ImportBoundarySpec) -> None:
     for root in spec.root_paths:
         if not isinstance(root, str) or not root:
             raise ValueError("package_boundary_inventory_invalid_root")
+        if "\x00" in root or "\n" in root or "\r" in root:
+            raise ValueError("package_boundary_inventory_invalid_root")
         if Path(root).is_absolute() or ".." in Path(root).parts:
             raise ValueError("package_boundary_inventory_root_must_be_repo_relative")
     for import_root in spec.forbidden_import_roots:
@@ -105,13 +114,27 @@ def _validate_spec(spec: ImportBoundarySpec) -> None:
     for module_prefix in spec.forbidden_module_prefixes:
         if not isinstance(module_prefix, str) or not module_prefix:
             raise ValueError("package_boundary_inventory_invalid_forbidden_module_prefix")
+    if type(spec.anchor_to_repo_root) is not bool:
+        raise ValueError("package_boundary_inventory_anchor_to_repo_root_must_be_bool")
 
 
-def _iter_python_files(root_paths: tuple[str, ...]) -> list[Path]:
+def _display_path(path: Path, *, base: Path | None) -> str:
+    if base is not None:
+        try:
+            return path.relative_to(base).as_posix()
+        except ValueError:
+            pass
+    return path.as_posix()
+
+
+def _iter_python_files(spec: ImportBoundarySpec) -> list[Path]:
     files: list[Path] = []
-    for root_path in root_paths:
-        root = Path(root_path)
+    base = _REPO_ROOT if spec.anchor_to_repo_root else None
+    for root_path in spec.root_paths:
+        root = (base / root_path) if base is not None else Path(root_path)
         if not root.exists():
+            if spec.anchor_to_repo_root:
+                raise ValueError("package_boundary_inventory_root_missing")
             continue
         if root.is_file() and root.suffix == ".py":
             files.append(root)
@@ -125,6 +148,8 @@ def _iter_python_files(root_paths: tuple[str, ...]) -> list[Path]:
     unique = sorted(set(files), key=lambda path: path.as_posix())
     if len(unique) > MAX_IMPORT_INVENTORY_FILES:
         raise ValueError("package_boundary_inventory_file_limit_exceeded")
+    if spec.anchor_to_repo_root and not unique:
+        raise ValueError("package_boundary_inventory_root_empty")
     return unique
 
 
@@ -146,8 +171,32 @@ def _resolve_import_from_module(path: Path, node: ast.ImportFrom) -> str:
     return ".".join((*base_parts, *module_parts))
 
 
-def _import_records(path: Path) -> list[dict[str, str]]:
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=path.as_posix())
+def _dynamic_import_module(node: ast.Call) -> str | None:
+    function = node.func
+    if isinstance(function, ast.Attribute):
+        is_importlib_call = (
+            function.attr == "import_module"
+            and isinstance(function.value, ast.Name)
+            and function.value.id == "importlib"
+        )
+    else:
+        is_importlib_call = False
+    is_named_import_module = isinstance(function, ast.Name) and function.id == "import_module"
+    is_dunder_import = isinstance(function, ast.Name) and function.id == "__import__"
+    if not is_importlib_call and not is_named_import_module and not is_dunder_import:
+        return None
+    if not node.args:
+        return None
+    first_arg = node.args[0]
+    if isinstance(first_arg, ast.Constant) and type(first_arg.value) is str and first_arg.value:
+        return first_arg.value
+    return None
+
+
+def _import_records(path: Path, *, display_path: str) -> list[dict[str, str]]:
+    if path.stat().st_size > MAX_IMPORT_INVENTORY_FILE_BYTES:
+        raise ValueError("package_boundary_inventory_file_bytes_limit_exceeded")
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=display_path)
     records: list[dict[str, str]] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -155,17 +204,27 @@ def _import_records(path: Path) -> list[dict[str, str]]:
                 module = alias.name
                 records.append(
                     {
-                        "file": path.as_posix(),
+                        "file": display_path,
                         "import_root": module.split(".")[0],
                         "module": module,
                     }
                 )
         elif isinstance(node, ast.ImportFrom):
-            module = _resolve_import_from_module(path, node)
+            module = _resolve_import_from_module(Path(display_path), node)
             if module:
                 records.append(
                     {
-                        "file": path.as_posix(),
+                        "file": display_path,
+                        "import_root": module.split(".")[0],
+                        "module": module,
+                    }
+                )
+        elif isinstance(node, ast.Call):
+            module = _dynamic_import_module(node)
+            if module:
+                records.append(
+                    {
+                        "file": display_path,
                         "import_root": module.split(".")[0],
                         "module": module,
                     }
@@ -181,10 +240,11 @@ def build_import_boundary_inventory(spec: ImportBoundarySpec) -> dict[str, Any]:
     _validate_spec(spec)
     forbidden = set(spec.forbidden_import_roots)
     forbidden_prefixes = set(spec.forbidden_module_prefixes)
-    files = _iter_python_files(spec.root_paths)
+    files = _iter_python_files(spec)
+    base = _REPO_ROOT if spec.anchor_to_repo_root else None
     imports: list[dict[str, str]] = []
     for path in files:
-        imports.extend(_import_records(path))
+        imports.extend(_import_records(path, display_path=_display_path(path, base=base)))
 
     violations: list[dict[str, str]] = []
     for record in imports:
@@ -211,6 +271,7 @@ def build_import_boundary_inventory(spec: ImportBoundarySpec) -> dict[str, Any]:
         "forbidden_module_prefixes": sorted(forbidden_prefixes),
         "import_roots": sorted({record["import_root"] for record in imports}),
         "max_files": MAX_IMPORT_INVENTORY_FILES,
+        "max_file_bytes": MAX_IMPORT_INVENTORY_FILE_BYTES,
         "root_paths": list(spec.root_paths),
         "status": "pass" if not violations else "violations_present",
         "surface_id": spec.surface_id,

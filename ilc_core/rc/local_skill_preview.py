@@ -34,6 +34,7 @@ LOCAL_SKILL_PREVIEW_VERSION = "local_skill_preview_1245.v0.1"
 LOCAL_SKILL_PREVIEW_BINDING = "local_import_only"
 LOCAL_SKILL_PREVIEW_PROFILE = PROFILE_OPENCLAW_SKILL_LOCAL
 MAX_SKILL_PREVIEW_BYTES = 1_000_000
+MAX_SKILL_PREVIEW_RESULTS = 100
 ALLOWED_SKILL_PREVIEW_ACTIONS = frozenset(
     {
         "profile_manifest",
@@ -67,6 +68,8 @@ class LocalSkillPreviewRequest:
                 raise ValueError("local_skill_preview_top_k_must_be_positive_int")
             if self.top_k <= 0:
                 raise ValueError("local_skill_preview_top_k_must_be_positive_int")
+            if self.top_k > MAX_SKILL_PREVIEW_RESULTS:
+                raise ValueError("local_skill_preview_top_k_limit_exceeded")
         if self.root_id is not None and (type(self.root_id) is not str or not self.root_id):
             raise ValueError("local_skill_preview_root_id_invalid")
 
@@ -213,6 +216,7 @@ __all__ = [
     "LOCAL_SKILL_PREVIEW_PROFILE",
     "LOCAL_SKILL_PREVIEW_VERSION",
     "LocalSkillPreviewRequest",
+    "MAX_SKILL_PREVIEW_RESULTS",
     "build_local_skill_preview_manifest",
     "execute_local_skill_preview",
     "export_local_skill_preview_json",
