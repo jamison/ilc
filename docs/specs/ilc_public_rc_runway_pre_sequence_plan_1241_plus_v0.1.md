@@ -407,3 +407,19 @@ Token:
 ```text
 window_1241_1248_prompt_drafts_registered_after_phase_1240
 ```
+
+### Post-Phase-1241 disposition
+
+Phase 1241 consumed this pre-sequence plan by publishing:
+
+- `docs/specs/ilc_phase_1241_1248_sequence_lock_v0.1.md`
+
+The sequence lock is now the active authority for exact Phase 1241-1248 order
+and sensitivity. This pre-sequence plan remains useful as historical retrieval
+basis and broad public-RC runway rationale, not as the live phase authority.
+
+Token:
+
+```text
+public_rc_runway_pre_sequence_plan_consumed_by_phase_1241_sequence_lock
+```
