@@ -8,7 +8,7 @@ from typing import Any
 
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
 from ilc_core.ledger.exact_numeric import ZERO, decimal_to_canonical_string, to_decimal
-from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
+from ilc_core.protocol.harness_interfaces import PublicWalletStore
 
 
 PUBLIC_WALLET_RUNTIME_VERSION = "public_wallet_runtime_653.v0.1"
@@ -26,7 +26,7 @@ class PublicWalletRuntime:
     def __init__(
         self,
         *,
-        wallet_store: LmdbWalletStore,
+        wallet_store: PublicWalletStore,
         lifecycle_runtime: EcuIlcLifecycleRuntime,
     ) -> None:
         self.wallet_store = wallet_store

@@ -37,9 +37,20 @@ from .bundle_verify import (
     verify_bundle_record_from_bytes,
 )
 from .harness_interfaces import (
+    AdmissionReceiptStore,
+    GAP14_ADAPTER_EXTRACTION_VERSION,
     HARNESS_INTERFACES_VERSION,
+    PUBLIC_RUNTIME_STORE_INTERFACES_VERSION,
+    PublicReceiptStore,
+    PublicWalletStore,
     StorageHarness,
+    TruthPrimitiveGraphPersistence,
     TransportHarness,
+)
+from .primitive_type_registry import (
+    ALLOWED_PRIMITIVE_TYPES,
+    PRIMITIVE_TYPE_REGISTRY_VERSION,
+    SYSTEM_PRIMITIVE_TYPES,
 )
 
 __all__ = [
@@ -70,7 +81,17 @@ __all__ = [
     "verify_bundle_record",
     "verify_bundle_record_from_bytes",
     # Harness adapter interfaces
+    "AdmissionReceiptStore",
+    "GAP14_ADAPTER_EXTRACTION_VERSION",
     "HARNESS_INTERFACES_VERSION",
+    "PUBLIC_RUNTIME_STORE_INTERFACES_VERSION",
+    "PublicReceiptStore",
+    "PublicWalletStore",
     "StorageHarness",
+    "TruthPrimitiveGraphPersistence",
     "TransportHarness",
+    # Primitive type registry
+    "ALLOWED_PRIMITIVE_TYPES",
+    "PRIMITIVE_TYPE_REGISTRY_VERSION",
+    "SYSTEM_PRIMITIVE_TYPES",
 ]

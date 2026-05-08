@@ -7,7 +7,7 @@ import json
 from typing import Any
 
 from ilc_core.identity.agent_id_runtime import AgentIdentityError, verify_agent_id
-from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore
+from ilc_core.protocol.harness_interfaces import AdmissionReceiptStore
 
 
 PUBLIC_INIT_ADMISSION_RUNTIME_VERSION = "public_init_admission_runtime_650.v0.1"
@@ -28,7 +28,7 @@ def issue_public_init_admission_receipt(
     *,
     payload: dict[str, Any],
     epoch_id: str,
-    store: LmdbAdmissionStore,
+    store: AdmissionReceiptStore,
 ) -> dict[str, Any]:
     agent_id = _require_non_empty_string(payload.get("agent_id"), token="missing_agent_id")
     canonical_root_key_hex = _require_non_empty_string(

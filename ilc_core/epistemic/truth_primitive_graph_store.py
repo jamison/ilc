@@ -1,21 +1,21 @@
-"""CDL-075 truth primitive graph persistence runtime.
+"""CDL-075 truth primitive graph persistence logic.
 
 Defines the canonical node record schema, CIDv1 derivation rule, and
-LMDB-backed write path for truth primitive submissions validated by the
-CDL-074 runtime.
+store-contract write path for truth primitive submissions validated by the
+CDL-074 runtime. Concrete LMDB persistence lives behind the storage adapter in
+`ilc_core.storage.truth_primitive_graph_lmdb_adapter`.
 
 Write path only — no read-path query integration, no network delivery,
 no cross-epoch compaction.
 
 Phases:
     879 — node_record_from_submission, node_id_from_submission
-    880 — TruthPrimitiveGraphStore, write_truth_primitive_result
-    881 — idempotency guard, edge-only writes, read-back helpers
+    880 — graph persistence contract write path
+    881 — idempotency guard, edge-only writes
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 from ilc_core.encoding.cidv1 import node_id_from_obj
@@ -23,7 +23,7 @@ from ilc_core.epistemic.truth_primitive_submission_runtime import (
     TruthPrimitiveResult,
     AGENT_ISSUABLE_PRIMITIVES,
 )
-from ilc_core.storage.lmdb_public_runtime import _LmdbRuntimeBase, _encode_key, _encode_json, _decode_json
+from ilc_core.protocol.harness_interfaces import TruthPrimitiveGraphPersistence
 
 # ---------------------------------------------------------------------------
 # Dependency and version tokens
@@ -225,104 +225,16 @@ def _edge_key(record: dict[str, Any]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Phase 880 — TruthPrimitiveGraphStore (LMDB-backed)
-# ---------------------------------------------------------------------------
-
-
-class TruthPrimitiveGraphStore(_LmdbRuntimeBase):
-    """CDL-075 LMDB-backed store for truth primitive nodes and edges.
-
-    Named databases (CDL-075 §2.3):
-        b"nodes"  — key=CIDv1 string, value=JSON canonical node record
-        b"edges"  — key="{source}:{edge_type}:{target}", value=JSON edge record
-    """
-
-    def __init__(
-        self,
-        root: Path | str,
-        *,
-        map_size: int = 256 * 1024 * 1024,
-    ) -> None:
-        super().__init__(root, db_names=(b"nodes", b"edges"), map_size=map_size)
-
-    # ------------------------------------------------------------------
-    # Phase 881 — idempotency: put_if_absent semantics
-    # ------------------------------------------------------------------
-
-    def put_node_if_absent(self, node_id: str, record: dict[str, Any]) -> bool:
-        """Write node record to LMDB only if the CIDv1 key is not present.
-
-        Args:
-            node_id: CIDv1 string (LMDB key).
-            record: Canonical node record dict.
-
-        Returns:
-            True if the record was written; False if already present (idempotent).
-        """
-        key = _encode_key(node_id)
-        value = _encode_json(record)
-        with self.env.begin(write=True, db=self._dbs[b"nodes"]) as txn:
-            existing = txn.get(key)
-            if existing is not None:
-                return False
-            txn.put(key, value)
-            return True
-
-    def put_edge_if_absent(self, edge_key: str, record: dict[str, Any]) -> bool:
-        """Write edge record to LMDB only if the edge key is not present.
-
-        Args:
-            edge_key: "{source}:{edge_type}:{target}" key string.
-            record: Edge record dict.
-
-        Returns:
-            True if the record was written; False if already present (idempotent).
-        """
-        key = _encode_key(edge_key)
-        value = _encode_json(record)
-        with self.env.begin(write=True, db=self._dbs[b"edges"]) as txn:
-            existing = txn.get(key)
-            if existing is not None:
-                return False
-            txn.put(key, value)
-            return True
-
-    def get_node(self, node_id: str) -> dict[str, Any] | None:
-        """Retrieve a canonical node record by CIDv1."""
-        payload = self._get_json(b"nodes", node_id)
-        return payload if isinstance(payload, dict) else None
-
-    def get_edge(self, edge_key: str) -> dict[str, Any] | None:
-        """Retrieve an edge record by its composite key."""
-        payload = self._get_json(b"edges", edge_key)
-        return payload if isinstance(payload, dict) else None
-
-    def iter_nodes(self) -> list[dict[str, Any]]:
-        """Return all stored node records in key-sorted order."""
-        rows = [row for row in self._iter_json(b"nodes") if isinstance(row, dict)]
-        return sorted(rows, key=lambda r: str(r.get("primitive", "")))
-
-    def iter_edges(self) -> list[dict[str, Any]]:
-        """Return all stored edge records in key-sorted order."""
-        rows = [row for row in self._iter_json(b"edges") if isinstance(row, dict)]
-        return sorted(rows, key=lambda r: (
-            str(r.get("source", "")),
-            str(r.get("edge_type", "")),
-            str(r.get("target", "")),
-        ))
-
-
-# ---------------------------------------------------------------------------
 # Phase 880 — Primary write function
 # ---------------------------------------------------------------------------
 
 
 def write_truth_primitive_result(
-    store: TruthPrimitiveGraphStore,
+    store: TruthPrimitiveGraphPersistence,
     envelope: dict[str, Any],
     result: TruthPrimitiveResult,
 ) -> dict[str, Any]:
-    """Persist a validated truth primitive submission to the LMDB graph store.
+    """Persist a validated truth primitive submission to a graph store.
 
     For node-creating primitives (assert.truth, revise.assert):
         - Derives the CIDv1 node_id from the canonical node record.
@@ -338,7 +250,7 @@ def write_truth_primitive_result(
     records already present are skipped and the same node_id is returned.
 
     Args:
-        store: Open TruthPrimitiveGraphStore instance.
+        store: Open graph persistence contract.
         envelope: CDL-073 submission envelope dict.
         result: Validated TruthPrimitiveResult from CDL-074 runtime.
 

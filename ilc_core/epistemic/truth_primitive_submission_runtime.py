@@ -27,7 +27,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from ilc_core.node.node_schema_core_runtime_360 import (
+from ilc_core.protocol.primitive_type_registry import (
     ALLOWED_PRIMITIVE_TYPES,
     SYSTEM_PRIMITIVE_TYPES,
 )
