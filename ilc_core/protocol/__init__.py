@@ -36,6 +36,11 @@ from .bundle_verify import (
     verify_bundle_record,
     verify_bundle_record_from_bytes,
 )
+from .harness_interfaces import (
+    HARNESS_INTERFACES_VERSION,
+    StorageHarness,
+    TransportHarness,
+)
 
 __all__ = [
     # Constants
@@ -64,4 +69,8 @@ __all__ = [
     # Verification
     "verify_bundle_record",
     "verify_bundle_record_from_bytes",
+    # Harness adapter interfaces
+    "HARNESS_INTERFACES_VERSION",
+    "StorageHarness",
+    "TransportHarness",
 ]
