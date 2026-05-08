@@ -273,20 +273,35 @@ rust_p2p_substrate_decision_adr_required_quinn_vs_libp2p
 
 ### Gap 11 - Werner Topological Flow Governor
 
-**Status:** SIM evidence surface exists; no CDL/runtime policy.
+**Status:** SIM evidence surface exists; Phase 1263 sensitive decision recorded
+no CDL opening or prelock.
 
 SIM-FETCH Fix8 implemented an opt-in simulation-only Werner topology overlay.
 Future work must promote or retire the overlay before runtime-CDL use. Heat
 signals prefer reputation, routing, admission, and cache/mirror priority before
 any direct ECU creation assumption.
 
+Phase 1262 promoted Werner only as a future SIM-FETCH evidence profile after
+follow-up. Phase 1263 then executed the sensitive Werner CDL decision gate and
+recorded that evidence is not yet sufficient to open or prelock a Werner
+flow-governor CDL. The closing conditions are now explicit: default evidence
+profile, beta/noise decomposition, spectral trust threshold discipline,
+TransportPrincipal/admission binding before public-path effects, and separate
+productive-credit authorization before any value path.
+
 Tokens:
 
 ```text
+werner_flow_governor_cdl_opening_prelock_decision_phase_1263.v0.1
+werner_flow_governor_cdl_not_opened_without_evidence_phase_1263
+direct_werner_ecu_creation_rejected_phase_1263
+phase_1263_sensitive_cdl_gate_complete
 werner_overlay_opt_in_must_be_promoted_or_retired_after_validation
 werner_heat_prefers_reputation_routing_admission_before_ecu_creation
 direct_werner_ecu_creation_assumption_requires_repo_memtrace_check
 heat_signal_must_not_directly_mint_ecu
+beta_decomposition_required_before_policy_use
+flow_governor_spectral_trust_threshold_required_before_policy_use
 ```
 
 ### Gap 12 - ECU Credit Creation In Agentic Wallet
