@@ -34,26 +34,26 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1249-1256 CLOSED / PASS through Phase 1256; Window 1257+ sequence lock required before next phase assignment |
+| Window frontier | Window 1257-1264 CLOSED / PASS through Phase 1264; Window 1265+ sequence lock required before next phase assignment |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
-| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1238j candidate envelope only |
+| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1260 readiness verdict is ready for later sensitive ratification review, not ratified |
 | v0.2 signing | Deferred; explicit signing authorization absent |
 | Tier-3 runtime linkage | **IMPLEMENTED** in Phase 1201 (`tier3_runtime_linkage_runtime_1201.v0.1`) |
 | Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
 | Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
 | `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
-| L3 sidecar query runtime | Local/read-only runtime complete; no projection endpoint or public sidecar service |
+| L3 sidecar query runtime | Local/read-only runtime complete; Phase 1261 keeps public/non-loopback projection serving blocked |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
 
 Latest closed lock and handoff:
 
 ```text
-docs/specs/ilc_phase_1249_1256_sequence_lock_v0.1.md
-docs/specs/ilc_window_1249_1256_handoff_1256_v0.1.md
-window_1249_1256_closed_phase_1256
-window_1257_plus_sequence_lock_required_before_next_phase_assignment
+docs/specs/ilc_phase_1257_1264_sequence_lock_v0.1.md
+docs/specs/ilc_window_1257_1264_handoff_1264_v0.1.md
+window_1257_1264_closed_phase_1264
+window_1265_plus_sequence_lock_required_before_next_phase_assignment
 ```
 
 ---
@@ -523,6 +523,62 @@ gap13_claimability_runtime_conversion_sweeper_required_before_final_public_rc
 transport_principal_runtime_adr_required_before_public_p2p
 atlas_g_006_public_rc_graph_reachability_gate_required
 cdl_087_production_candidate_evidence_ratification_phase_required
+public_source_allowlist_execution_requires_publication_authorization
+v0_2_signing_requires_explicit_human_authorization
+```
+
+---
+
+## 11. Phase 1264 Closure Addendum
+
+Window 1257-1264 closed at Phase 1264:
+
+```text
+window_1257_1264_closed_phase_1264
+window_1257_1264_closure_gate_verdict=pass
+phase_1264_window_1257_1264_closure_complete
+window_1265_plus_sequence_lock_required_before_next_phase_assignment
+```
+
+Closure status updates:
+
+- CDL-087 local production-candidate evidence improved: Phase 1259 recorded
+  local Tier A/B/C classification and bootstrap snapshot builder/verifier
+  evidence; Phase 1260 recorded local Section 6 observability and final
+  CDL-077 limiter regression evidence.
+- CDL-087 remains open/prelocked/not ratified. Phase 1260 readiness is only:
+  `cdl_087_ratification_readiness_verdict_phase_1260=ready_for_later_sensitive_ratification_review`.
+- Public/non-loopback sidecar projection serving remains blocked:
+  `sidecar_projection_endpoint_authorization_verdict_phase_1261=blocked_public_path`.
+- TransportPrincipal remains a spec/ADR input, not runtime public-path identity
+  with lifecycle, revocation, replay, privacy, and authenticated rate-limit
+  binding.
+- Werner remains an evidence lane. Phase 1262 promoted Werner only as a future
+  SIM-FETCH topology-pressure evidence profile after follow-up; Phase 1263
+  recorded `werner_flow_governor_cdl_decision_phase_1263=no_open_no_prelock`.
+- Direct Werner ECU creation is rejected:
+  `direct_werner_ecu_creation_rejected_phase_1263`.
+- Public RC remains blocked by claimability runtime/conversion sweeper,
+  CDL-087 sensitive ratification review, sidecar/public-path gates,
+  TransportPrincipal/Rust public-P2P hardening, ATLAS-G-006+ graph reachability,
+  counsel/publication authorization, and v0.2 signing authorization.
+
+Public RC remains blocked after Phase 1264:
+
+```text
+public_rc_remains_blocked_after_phase_1264
+```
+
+Recommended Window 1265+ direction:
+
+```text
+cdl_087_sensitive_ratification_review_required_after_phase_1264
+transport_principal_runtime_required_before_non_loopback_projection
+sidecar_projection_public_path_still_blocked_after_phase_1264
+werner_default_topology_pressure_profile_required_before_runtime_cdl
+werner_productive_credit_authorization_cdl_required
+gap13_claimability_runtime_conversion_sweeper_required_before_final_public_rc
+atlas_g_006_public_rc_graph_reachability_gate_required
 public_source_allowlist_execution_requires_publication_authorization
 v0_2_signing_requires_explicit_human_authorization
 ```
