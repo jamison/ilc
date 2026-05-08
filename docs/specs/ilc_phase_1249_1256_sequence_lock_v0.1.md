@@ -118,6 +118,13 @@ not canon until the returned repo path is direct-read and reconciled against
 current `docs/PLANNING_INDEX.md`, current capsule, current `docs/phases/STATUS.md`,
 and the active window lock.
 
+Exact-token `rg` is a schema/completion check only. It verifies that known phase
+markers and required tokens exist; it must not be used as the sole context
+retrieval method. For §0b/§0d, search token components, synonyms, neighboring
+ideas, older names, code symbols, and domain-specific denial terms, then
+direct-read relevant repo or MemPalace-returned sources before concluding that a
+concept or blocker is absent.
+
 ---
 
 ## 5. CDL, Signing, and Public-RC State at Window Entry

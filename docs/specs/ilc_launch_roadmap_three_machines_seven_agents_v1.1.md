@@ -454,3 +454,6 @@ four-part §0 discovery pass before coding: `Known-token audit`,
 public-RC path crosses old terminology for ECU/ILC conversion, claimability,
 TransportPrincipal, ATLAS-G, Werner flow, and publication/counsel gates.
 MemPalace is advisory recall only; direct repo reads remain authoritative.
+Exact-token `rg` is only a schema/completion check; concept discovery
+must also search token components, synonyms, neighboring ideas, older names,
+code symbols, and denial terms before any public-RC blocker is marked absent.

@@ -72,6 +72,10 @@ four-part §0 discovery pass before coding: `Known-token audit`,
 `Source expansion and newly discovered tokens`. This is especially important for
 ATLAS-G because forgotten high-authority files and dependency edges are exactly
 the class of unknown unknowns the graph lane is meant to expose.
+Exact-token `rg` is only a schema/completion check; ATLAS-G discovery must also
+search token components, synonyms, neighboring graph concepts, older names,
+code/import symbols, and denial terms before concluding that a file class,
+source authority, or dependency edge is absent.
 
 ---
 
