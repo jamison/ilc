@@ -84,7 +84,7 @@ class ConsensusEpochStateValidationError(ValueError):
 
 
 def _stable_json(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def _stable_sha256(value: Any) -> str:
@@ -108,7 +108,7 @@ def _require_non_empty_str(raw: Any, token: str, message: str) -> str:
 
 
 def _require_epoch_index(raw: Any, token: str, message: str) -> int:
-    if not isinstance(raw, int) or raw < 0:
+    if type(raw) is not int or raw < 0:
         raise ConsensusEpochStateValidationError(token, message)
     return raw
 
@@ -135,12 +135,12 @@ def _normalize_quorum_threshold(raw: Any) -> dict[str, int]:
     )
     numerator = data.get("numerator")
     denominator = data.get("denominator")
-    if not isinstance(numerator, int) or numerator <= 0:
+    if type(numerator) is not int or numerator <= 0:
         raise ConsensusEpochStateValidationError(
             "consensus_epoch_state_quorum_threshold_invalid",
             "quorum_threshold.numerator must be a positive integer",
         )
-    if not isinstance(denominator, int) or denominator <= 0:
+    if type(denominator) is not int or denominator <= 0:
         raise ConsensusEpochStateValidationError(
             "consensus_epoch_state_quorum_threshold_invalid",
             "quorum_threshold.denominator must be a positive integer",

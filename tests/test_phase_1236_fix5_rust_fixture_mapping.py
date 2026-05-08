@@ -121,15 +121,16 @@ def test_validator_id_rust_layout_maps_to_non_negative_python_ints():
     assert projection["signers"] == [0, 2**32 - 1]
 
 
-def test_python_projection_currently_does_not_enforce_u32_upper_bound():
-    projection = build_quorum_proof_projection(
-        epoch_sequence=12,
-        state_root_cidv1_hex=STATE_ROOT_HEX,
-        signers=[2**32],
-        agg_sig_bytes_hex=AGG_SIG_HEX,
-    )
+def test_python_projection_enforces_u32_upper_bound():
+    import pytest
 
-    assert projection["signers"] == [2**32]
+    with pytest.raises(ValueError, match="quorum_projection_signer_must_be_non_negative_int"):
+        build_quorum_proof_projection(
+            epoch_sequence=12,
+            state_root_cidv1_hex=STATE_ROOT_HEX,
+            signers=[2**32],
+            agg_sig_bytes_hex=AGG_SIG_HEX,
+        )
 
 
 def test_stored_checkpoint_rust_fields_match_projection_material():

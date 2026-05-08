@@ -21,6 +21,8 @@ from ilc_core.protocol.event_log import (
 )
 
 RUNTIME_PATH = Path("ilc_core/protocol/commit_epoch_emission_runtime.py")
+STATE_DIGEST = "a" * 64
+EVENTS_DIGEST = "b" * 64
 
 
 def _quorum_records() -> list[dict[str, object]]:
@@ -47,8 +49,8 @@ def _event(**overrides: object) -> ProtocolEvent:
         "namespace_id": "ilc:test",
         "finalization_state": "committed",
         "quorum_records": _quorum_records(),
-        "epoch_state_digest": "state-digest-12",
-        "epoch_events_digest": "events-digest-12",
+        "epoch_state_digest": STATE_DIGEST,
+        "epoch_events_digest": EVENTS_DIGEST,
         "reward_total": Decimal("10.50"),
         "stake_total": Decimal("20"),
         "task_count": 3,
@@ -75,10 +77,17 @@ def test_output_payload_contains_no_created_at_field():
 
 
 def test_epoch_state_cid_derived_from_digest_argument_not_wall_clock():
-    event = _event(epoch_state_digest="abc123", epoch_events_digest="def456")
+    event = _event(epoch_state_digest="c" * 64, epoch_events_digest="d" * 64)
 
-    assert event.payload["checksums"]["epoch_state_cid"] == "sha256:abc123"
-    assert event.payload["checksums"]["epoch_events_cid"] == "sha256:def456"
+    assert event.payload["checksums"]["epoch_state_cid"] == "sha256:" + "c" * 64
+    assert event.payload["checksums"]["epoch_events_cid"] == "sha256:" + "d" * 64
+
+
+def test_epoch_digest_arguments_must_be_sha256_hex_material():
+    with pytest.raises(ValueError, match="epoch_state_digest"):
+        _event(epoch_state_digest="state-digest-12")
+    with pytest.raises(ValueError, match="epoch_events_digest"):
+        _event(epoch_events_digest="sha256:not-a-digest")
 
 
 def test_reward_total_float_input_raises_value_error():

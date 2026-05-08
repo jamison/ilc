@@ -77,6 +77,24 @@ def _parse_non_negative_decimal(value: int | float | str | Decimal, *, token: st
     return number
 
 
+def _parse_non_negative_decimal_no_float(value: int | str | Decimal, *, token: str) -> Decimal:
+    number = _to_decimal_no_float(value, token=token)
+    if number < ZERO:
+        raise EventLogValidationError(token)
+    return number
+
+
+def _validate_commit_epoch_ref(value: Any, *, token: str) -> None:
+    if not isinstance(value, str) or not value:
+        raise EventLogValidationError(token)
+    if any(char.isspace() for char in value):
+        raise EventLogValidationError(token)
+    if value.startswith("sha256:"):
+        suffix = value.removeprefix("sha256:")
+        if len(suffix) != 64 or any(char not in "0123456789abcdef" for char in suffix):
+            raise EventLogValidationError(token)
+
+
 def _decimal_to_canonical_string(value: Decimal) -> str:
     if value == ZERO:
         return "0"
@@ -252,7 +270,7 @@ def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
     if payload["event_kind"] != "commit.epoch":
         raise EventLogValidationError(f"Invalid event_kind: {payload.get('event_kind')}")
 
-    if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
+    if type(payload["epoch_index"]) is not int or payload["epoch_index"] < 0:
         raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["epoch_id"], str):
         raise EventLogValidationError("epoch_id must be a string")
@@ -280,9 +298,9 @@ def validate_commit_epoch_payload(payload: Dict[str, Any]) -> None:
     extra_summary = summary_keys - required_summary
     if extra_summary:
         raise EventLogValidationError(f"Unexpected summary fields: {extra_summary}")
-    if not isinstance(summary["task_count"], int) or summary["task_count"] < 0:
+    if type(summary["task_count"]) is not int or summary["task_count"] < 0:
         raise EventLogValidationError("summary.task_count must be a non-negative integer")
-    if not isinstance(summary["agent_count"], int) or summary["agent_count"] < 0:
+    if type(summary["agent_count"]) is not int or summary["agent_count"] < 0:
         raise EventLogValidationError("summary.agent_count must be a non-negative integer")
     try:
         _parse_non_negative_decimal(
@@ -361,7 +379,7 @@ def _validate_commit_epoch_common(payload: Dict[str, Any], *, canonical: bool) -
         except ValueError as exc:
             raise EventLogValidationError("created_at must be ISO 8601 with UTC timezone") from exc
 
-    if not isinstance(payload["epoch_index"], int) or payload["epoch_index"] < 0:
+    if type(payload["epoch_index"]) is not int or payload["epoch_index"] < 0:
         raise EventLogValidationError("epoch_index must be a non-negative integer")
     if not isinstance(payload["epoch_id"], str):
         raise EventLogValidationError("epoch_id must be a string")
@@ -381,19 +399,20 @@ def _validate_commit_epoch_common(payload: Dict[str, Any], *, canonical: bool) -
     extra_summary = summary_keys - required_summary
     if extra_summary:
         raise EventLogValidationError(f"Unexpected summary fields: {extra_summary}")
-    if not isinstance(summary["task_count"], int) or summary["task_count"] < 0:
+    if type(summary["task_count"]) is not int or summary["task_count"] < 0:
         raise EventLogValidationError("summary.task_count must be a non-negative integer")
-    if not isinstance(summary["agent_count"], int) or summary["agent_count"] < 0:
+    if type(summary["agent_count"]) is not int or summary["agent_count"] < 0:
         raise EventLogValidationError("summary.agent_count must be a non-negative integer")
     try:
-        _parse_non_negative_decimal(
+        decimal_parser = _parse_non_negative_decimal_no_float if canonical else _parse_non_negative_decimal
+        decimal_parser(
             summary["reward_total"],
             token="summary.reward_total must be a non-negative number",
         )
     except ValueError as exc:
         raise EventLogValidationError(str(exc)) from exc
     try:
-        _parse_non_negative_decimal(
+        decimal_parser(
             summary["stake_total"],
             token="summary.stake_total must be a non-negative number",
         )
@@ -411,10 +430,14 @@ def _validate_commit_epoch_common(payload: Dict[str, Any], *, canonical: bool) -
     extra_checksums = checksum_keys - required_checksums
     if extra_checksums:
         raise EventLogValidationError(f"Unexpected checksums fields: {extra_checksums}")
-    if not isinstance(checksums["epoch_events_cid"], str):
-        raise EventLogValidationError("checksums.epoch_events_cid must be a string")
-    if not isinstance(checksums["epoch_state_cid"], str):
-        raise EventLogValidationError("checksums.epoch_state_cid must be a string")
+    _validate_commit_epoch_ref(
+        checksums["epoch_events_cid"],
+        token="checksums.epoch_events_cid must be a non-empty canonical ref",
+    )
+    _validate_commit_epoch_ref(
+        checksums["epoch_state_cid"],
+        token="checksums.epoch_state_cid must be a non-empty canonical ref",
+    )
 
 
 def validate_canonical_commit_epoch_payload(payload: Dict[str, Any]) -> None:

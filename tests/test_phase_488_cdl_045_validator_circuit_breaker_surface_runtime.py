@@ -115,6 +115,23 @@ def test_duplicate_validator_vote_is_rejected() -> None:
         raise AssertionError('expected CircuitBreakerInterfaceError for duplicate validator vote')
 
 
+def test_quorum_summary_uses_weight_not_slot_share_for_cluster_ceiling() -> None:
+    votes = [
+        {'validator_id': 'v1', 'cluster_id': 'a', 'vote_weight': 90, 'circuit_breaker_requested': True},
+        {'validator_id': 'v2', 'cluster_id': 'b', 'vote_weight': 5, 'circuit_breaker_requested': True},
+        {'validator_id': 'v3', 'cluster_id': 'c', 'vote_weight': 5, 'circuit_breaker_requested': True},
+    ]
+    summary = summarize_circuit_breaker_quorum_state(
+        votes,
+        distinct_cluster_floor=3,
+        max_cluster_share_ceiling=0.50,
+    )
+    assert summary['distinct_ok'] is True
+    assert summary['max_cluster_share'] == 0.9
+    assert summary['share_ok'] is False
+    assert summary['eligible'] is False
+
+
 def test_runtime_file_exists_and_is_reexported() -> None:
     assert RUNTIME_PATH.exists()
     text = INIT_PATH.read_text(encoding='utf-8')
