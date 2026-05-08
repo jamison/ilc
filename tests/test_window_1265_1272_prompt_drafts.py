@@ -116,6 +116,17 @@ def test_window_1265_1272_preserves_public_non_claims() -> None:
         assert "Public RC claim" in text or "public-RC claim" in text
 
 
+def test_phase_1266_prompt_requires_default_no_ratification_token() -> None:
+    text = _text(
+        PROMPT_DIR / "antigravity_prompt__phase_1266_g8_cdl087_sensitive_ratification_review.md"
+    )
+    guidance = _text(GUIDANCE)
+    token = "cdl_087_ratification_not_executed_by_default_phase_1266"
+
+    assert token in _required_tokens(text)
+    assert token in guidance
+
+
 def test_window_1265_1272_planning_index_points_to_guidance_without_opening_window() -> None:
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
 
