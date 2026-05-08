@@ -396,6 +396,7 @@ def _evaluate_cdl_087_candidate(result: dict[str, Any]) -> dict[str, Any]:
     routed_tier_ab_failure = Decimal(metrics["routed_effective_tier_ab_failure_rate"])
     routed_holder_hit_rate = Decimal(metrics["routed_holder_hit_rate"])
     cb_fraction = _cb_fraction_from_metrics(metrics)
+    routed_cb_fraction = Decimal(metrics["routed_circuit_breaker_fraction"])
 
     fail_reasons: list[str] = []
     review_reasons: list[str] = []
@@ -416,6 +417,10 @@ def _evaluate_cdl_087_candidate(result: dict[str, Any]) -> dict[str, Any]:
         fail_reasons.append("circuit_breaker_fraction_above_block_floor")
     elif cb_fraction > Decimal("0.05"):
         review_reasons.append("circuit_breaker_fraction_above_support_floor")
+    if routed_cb_fraction > Decimal("0.20"):
+        fail_reasons.append("routed_circuit_breaker_fraction_above_block_floor")
+    elif routed_cb_fraction > Decimal("0.05"):
+        review_reasons.append("routed_circuit_breaker_fraction_above_support_floor")
     if metrics["serve_credit_artifact_only_crediting_allowed"]:
         fail_reasons.append("artifact_only_crediting_allowed")
     if metrics["serve_credit_attribution_model"] != "serving_peer_operator_instance":
@@ -455,6 +460,7 @@ def _evidence_key_metrics(result: dict[str, Any]) -> dict[str, Any]:
         "cache_hit_rate_tier_a": metrics["cache_hit_rate_tier_a"],
         "circuit_breaker_fraction": _quantized_decimal_str(_cb_fraction_from_metrics(metrics)),
         "routed_avg_hops_per_successful_request": metrics["routed_avg_hops_per_successful_request"],
+        "routed_circuit_breaker_fraction": metrics["routed_circuit_breaker_fraction"],
         "routed_effective_tier_ab_failure_rate": metrics["routed_effective_tier_ab_failure_rate"],
         "routed_failure_rate_by_tier": metrics["routed_failure_rate_by_tier"],
         "routed_holder_hit_rate": metrics["routed_holder_hit_rate"],
@@ -784,7 +790,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         random_ metrics.
 
     Both models process the same tiers and artifacts per epoch; only peer selection
-    and circuit-breaker behavior differ (routed model has no CB in Fix5).
+    differs. The routed model tracks separate holder-load circuit-breaker pressure.
 
     CDL-087 ratification is NOT authorized by this harness.
     """
@@ -1070,7 +1076,6 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     artifact_req_counts: dict[str, dict[int, int]] = {_TIER_A: {}, _TIER_B: {}, _TIER_C: {}}
 
     # --- Aggregate counters: routed holder model (Fix4/Fix5) ---
-    # No circuit breaker in routed model (Fix5 scope: availability + retry only).
     routed_total_fetch: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
     routed_single_hop_error_404_by_tier: dict[str, int] = {
         _TIER_A: 0,
@@ -1085,6 +1090,8 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
     routed_retry_exhausted_count: int = 0
     routed_total_probe_count: int = 0
     routed_success_hop_total: int = 0
+    routed_cb_activations: int = 0
+    routed_cb_activations_by_tier: dict[str, int] = {_TIER_A: 0, _TIER_B: 0, _TIER_C: 0}
     routed_cdl_078_credits: int = 0
     routed_cdl_078_credits_by_serving_peer: dict[int, int] = {
         p: 0 for p in range(n_peers)
@@ -1127,6 +1134,7 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
 
         n_requests = min(rng.poisson_count(n_agents, avg_per_agent), max_req)
         peer_req_count = [0] * n_peers
+        routed_peer_req_count = [0] * n_peers
         epoch_artifact_req_counts: dict[str, dict[int, int]] = {
             _TIER_A: {},
             _TIER_B: {},
@@ -1238,6 +1246,10 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
                     routed_success_hop_total += hops_used
                     if successful_routed_peer is None:
                         raise ValueError("sim_fetch_01_routed_success_peer_missing")
+                    if routed_peer_req_count[successful_routed_peer] >= cb_threshold:
+                        routed_cb_activations += 1
+                        routed_cb_activations_by_tier[tier] += 1
+                    routed_peer_req_count[successful_routed_peer] += 1
                     epoch_routed_success_by_peer_by_tier[tier][successful_routed_peer] += 1
                     if tier in (_TIER_A, _TIER_B):
                         routed_cdl_078_credits += 1
@@ -1466,22 +1478,22 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
         max(total_tier_ab_routed, 1),
     )
 
-    # Routed tier_service_verdict uses routed failure rates.
-    # cache_rate_a from the random model is used as a proxy (same artifact distribution).
-    # cb_fraction = 0 for routed model (CB routing pressure is outside this SIM slice).
-    routed_tier_service_verdict = _compute_tier_service_verdict(
-        cache_rate_a=Decimal(cache_rate_a),
-        tier_ab_failure_rate=Decimal(routed_tier_ab_failure_rate),
-        cb_fraction=Decimal("0"),
-        spp=spp,
-        total_tier_ab_requests=total_tier_ab_routed,
-    )
-
     routed_holder_hit_rate = _safe_ratio(routed_success_count, max(routed_holder_lookups, 1))
     routed_staleness_rate_observed = _safe_ratio(routed_stale_fallbacks, max(routed_holder_lookups, 1))
     routed_avg_hops_per_successful_request = _safe_ratio(
         routed_success_hop_total,
         max(routed_success_count, 1),
+    )
+    routed_cb_fraction = Decimal(routed_cb_activations) / Decimal(max(routed_total_probe_count, 1))
+
+    # Routed tier_service_verdict uses routed failure rates.
+    # cache_rate_a from the random model is used as a proxy (same artifact distribution).
+    routed_tier_service_verdict = _compute_tier_service_verdict(
+        cache_rate_a=Decimal(cache_rate_a),
+        tier_ab_failure_rate=Decimal(routed_tier_ab_failure_rate),
+        cb_fraction=routed_cb_fraction,
+        spp=spp,
+        total_tier_ab_requests=total_tier_ab_routed,
     )
 
     # --- Holder count statistics (Fix4) ---
@@ -1621,6 +1633,9 @@ def run_sim_fetch_01(scenario_config: dict) -> dict:
             "routed_avg_hops_per_successful_request": routed_avg_hops_per_successful_request,
             "routed_rescue_count": routed_rescue_count,
             "routed_retry_exhausted_count": routed_retry_exhausted_count,
+            "routed_circuit_breaker_activations": routed_cb_activations,
+            "routed_circuit_breaker_activations_by_tier": routed_cb_activations_by_tier,
+            "routed_circuit_breaker_fraction": _quantized_decimal_str(routed_cb_fraction),
             # Fix7: routed serving-peer/operator credit attribution.
             "routed_serve_events_credited_cdl_078": routed_cdl_078_credits,
             "routed_serve_events_credited_cdl_078_by_serving_peer": routed_cdl_078_peer_credits,

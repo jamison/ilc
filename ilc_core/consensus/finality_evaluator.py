@@ -73,12 +73,12 @@ def _normalize_quorum_threshold(quorum_threshold: Any) -> tuple[int, int]:
     )
     numerator = threshold.get("numerator")
     denominator = threshold.get("denominator")
-    if not isinstance(numerator, int) or numerator <= 0:
+    if type(numerator) is not int or numerator <= 0:
         raise ConsensusFinalityEvaluatorError(
             "consensus_finality_evaluator_quorum_threshold_invalid",
             "quorum_threshold.numerator must be a positive integer",
         )
-    if not isinstance(denominator, int) or denominator <= 0:
+    if type(denominator) is not int or denominator <= 0:
         raise ConsensusFinalityEvaluatorError(
             "consensus_finality_evaluator_quorum_threshold_invalid",
             "quorum_threshold.denominator must be a positive integer",
@@ -107,7 +107,7 @@ def _normalize_quorum_records(quorum_records: Any) -> list[dict[str, Any]]:
             "quorum record must be an object",
         )
         record_epoch = record.get("epoch_index")
-        if not isinstance(record_epoch, int) or record_epoch < 0:
+        if type(record_epoch) is not int or record_epoch < 0:
             raise ConsensusFinalityEvaluatorError(
                 "consensus_finality_evaluator_quorum_record_invalid",
                 "quorum record epoch_index must be an integer >= 0",
@@ -284,6 +284,7 @@ def evaluate_epoch_finality_with_diversity(
         candidate_hash = qualifying_hashes[0]
         candidate_records = [record for record in normalized_records if record["block_hash"] == candidate_hash]
         cluster_counts: dict[str, int] = {}
+        cluster_weights: dict[str, Decimal] = {}
         for record in candidate_records:
             validator_id = record["validator_id"]
             if validator_id not in clusters:
@@ -293,13 +294,14 @@ def evaluate_epoch_finality_with_diversity(
                 )
             cluster_id = clusters[validator_id]
             cluster_counts[cluster_id] = cluster_counts.get(cluster_id, 0) + 1
+            cluster_weights[cluster_id] = cluster_weights.get(cluster_id, Decimal("0")) + record["vote_weight"]
 
         distinct_clusters = len(cluster_counts)
-        largest_cluster_slots = max(cluster_counts.values())
-        total_panel_slots = len(candidate_records)
+        largest_cluster_weight = max(cluster_weights.values())
+        total_candidate_weight = sum(cluster_weights.values(), Decimal("0"))
         max_cluster_share = compute_max_cluster_share(
-            largest_cluster_slots=largest_cluster_slots,
-            total_panel_slots=total_panel_slots,
+            largest_cluster_slots=float(largest_cluster_weight),
+            total_panel_slots=float(total_candidate_weight),
         )
         diversity_penalty = compute_diversity_floor_penalty(
             distinct_clusters=distinct_clusters,

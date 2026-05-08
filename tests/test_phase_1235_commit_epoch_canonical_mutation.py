@@ -115,6 +115,56 @@ def test_canonical_constructor_rejects_float_economic_summary_values():
         _canonical_event(summary=_summary(stake_total=2.0))
 
 
+def test_canonical_validator_rejects_float_economic_summary_values():
+    payload = _canonical_event().payload
+    mutated = {
+        **payload,
+        "summary": {
+            **payload["summary"],
+            "reward_total": 1.0,
+        },
+    }
+    with pytest.raises(EventLogValidationError, match="reward_total"):
+        validate_canonical_commit_epoch_payload(mutated)
+
+
+def test_canonical_validator_rejects_bool_integer_fields():
+    payload = _canonical_event().payload
+    for field_name in ("epoch_index",):
+        mutated = {**payload, field_name: True}
+        with pytest.raises(EventLogValidationError, match=field_name):
+            validate_canonical_commit_epoch_payload(mutated)
+
+    for field_name in ("task_count", "agent_count"):
+        mutated = {
+            **payload,
+            "summary": {
+                **payload["summary"],
+                field_name: True,
+            },
+        }
+        with pytest.raises(EventLogValidationError, match=field_name):
+            validate_canonical_commit_epoch_payload(mutated)
+
+
+def test_canonical_validator_rejects_malformed_sha256_checksum_refs():
+    payload = _canonical_event(
+        checksums={
+            "epoch_events_cid": "sha256:" + "a" * 64,
+            "epoch_state_cid": "sha256:" + "b" * 64,
+        }
+    ).payload
+    mutated = {
+        **payload,
+        "checksums": {
+            **payload["checksums"],
+            "epoch_events_cid": "sha256:not-a-valid-digest",
+        },
+    }
+    with pytest.raises(EventLogValidationError, match="epoch_events_cid"):
+        validate_canonical_commit_epoch_payload(mutated)
+
+
 def test_canonical_payload_json_is_deterministic_for_same_inputs():
     first = _canonical_event().payload
     second = _canonical_event().payload

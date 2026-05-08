@@ -27,6 +27,7 @@ _BASE_EVIDENCE_SCENARIO: dict = {
     "max_retry_hops": 1,
     "adaptive_replication_enabled": False,
     "werner_overlay_enabled": False,
+    "circuit_breaker_threshold": 10_000,
 }
 
 
@@ -97,6 +98,31 @@ def test_phase_1238i_evidence_evaluator_uses_routed_not_random_baseline() -> Non
     assert Decimal(metrics["single_hop_random_tier_ab_failure_rate"]) > Decimal("0.20")
     assert Decimal(metrics["routed_effective_tier_ab_failure_rate"]) == Decimal("0")
     assert row["evaluator"]["verdict"] == "pass"
+
+
+def test_phase_1238i_evidence_evaluator_blocks_routed_hotspot_cb_pressure() -> None:
+    from ilc_core.sim.sim_fetch_01.sim_fetch_01_harness import (
+        run_sim_fetch_01_cdl_087_evidence_sweep,
+    )
+
+    result = run_sim_fetch_01_cdl_087_evidence_sweep(
+        {
+            "base_scenario": {**_BASE_EVIDENCE_SCENARIO, "circuit_breaker_threshold": 1},
+            "grid": {
+                "directory_staleness_rate": ["0"],
+                "max_retry_hops": [1],
+                "tier_b_exact_holder_count_per_artifact": [1],
+            },
+            "max_sweep_scenarios": 1,
+        }
+    )
+    row = result["rows"][0]
+    assert Decimal(row["key_metrics"]["routed_circuit_breaker_fraction"]) > Decimal("0.20")
+    assert row["evaluator"]["verdict"] == "fail"
+    assert (
+        "routed_circuit_breaker_fraction_above_block_floor"
+        in row["evaluator"]["fail_reasons"]
+    )
 
 
 def test_phase_1238i_evidence_sweep_caps_scenario_count() -> None:
