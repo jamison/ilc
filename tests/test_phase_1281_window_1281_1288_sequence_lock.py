@@ -162,11 +162,11 @@ def test_phase_1281_frontier_updates_planning_and_status() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1281-1288 is OPEN through Phase 1282 Fix1" in planning
+    assert "Window 1281-1288 is OPEN through Phase 1283" in planning
     assert SEQUENCE_LOCK in planning
     assert "## Phase 1281" in status
     assert "Phase 1282 - Context Capsule v5.51 frontier refresh" in status
-    assert "Phase 1283 is sensitive" in status
+    assert "Phase 1284 - Public claimability verifier/API boundary preflight" in status
 
 
 def test_phase_1281_graph_delta_is_recorded() -> None:
