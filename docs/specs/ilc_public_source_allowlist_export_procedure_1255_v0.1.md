@@ -94,6 +94,7 @@ allowlisted:
 | Raw chat or memory corpus | Exclude `Z_Past_Chats/`, raw dredge corpora, MemPalace stages, local context recovery packs, and private transcript derivatives. |
 | Generated local outputs | Exclude `out/`, local monitoring snapshots, generated diagnostics, cache directories, coverage artifacts, and benchmark scratch output unless a specific evidence artifact is approved. |
 | Secrets and local environment | Exclude `.env*`, private keys, release keys, TLS keys, local certificates, `.venv/`, editor files, and OS metadata. |
+| Header-marked internal helpers | Exclude any source, test, tool, or doc carrying `PUBLIC_RC_EXCLUDE` unless a later explicit allowlist review removes or supersedes the marker. |
 | Public-claimability and release artifacts | Exclude unsigned release envelopes, draft release manifests, signing ceremony material, and claimability artifacts until their independent gates close. |
 | Ambiguous docs | Route `docs/research/`, whitepaper drafts, counsel notes, licensing memos, and roadmap drafts to human review rather than automatic export. |
 

@@ -85,6 +85,19 @@ This is a verifier substrate boundary only. It does not create a public claim
 endpoint, wallet spend path, withdrawal path, transfer path, mint path, or
 settlement path.
 
+The runtime is header-marked for public RC exclusion:
+
+```text
+PUBLIC_RC_EXCLUDE: internal_phase_helper_not_public_rc_launch_surface
+PUBLIC_RC_EXCLUDE_REASON: local Phase 1275 proof-binding scaffold only.
+PUBLIC_RC_INCLUDE_REQUIRES: explicit allowlist review and ratified public claimability verifier/API authority.
+```
+
+That marker means the helper is not a public RC launch surface by default and
+must remain out of public source exports, release manifests, and selected public
+package profiles unless a later explicit allowlist review promotes or replaces
+it.
+
 ---
 
 ## 3. Validation Rules

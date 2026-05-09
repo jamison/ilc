@@ -24,6 +24,8 @@ from ilc_core.ledger.claimability_proof_binding_runtime import (
     claimability_proof_ref,
     latest_balance_receipt_ref,
 )
+from ilc_core.rc.package_profile_ci_gate import build_package_profile_ci_audit
+from ilc_core.rc.package_profiles import PROFILE_OPENCLAW_SKILL_CLAIMABLE
 
 
 RUNTIME_PATH = Path("ilc_core/ledger/claimability_proof_binding_runtime.py")
@@ -34,6 +36,13 @@ PLANNING_INDEX_PATH = Path("docs/PLANNING_INDEX.md")
 ROADMAP_PATH = Path("docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md")
 GUARDRAIL_PATH = Path("tools/check_sensitive_runtime_coding_taboos.py")
 CDL_REGISTER_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
+AGENTS_PATH = Path("AGENTS.md")
+ALLOWLIST_PROCEDURE_PATH = Path(
+    "docs/specs/ilc_public_source_allowlist_export_procedure_1255_v0.1.md"
+)
+PUBLIC_RC_EXCLUDE_MARKER = (
+    "PUBLIC_RC_EXCLUDE: internal_phase_helper_not_public_rc_launch_surface"
+)
 REQUIRED_TOKENS = (
     "claimability_proof_binding_runtime_boundary_phase_1275.v0.1",
     "settled_root_wallet_root_receipt_binding_recorded_phase_1275",
@@ -292,6 +301,30 @@ def test_runtime_source_contains_no_public_api_or_wallet_authority() -> None:
     )
     for term in forbidden_terms:
         assert term not in source
+
+
+def test_internal_helper_is_marked_and_absent_from_current_public_claimable_profile() -> None:
+    source = RUNTIME_PATH.read_text(encoding="utf-8")
+    header = "\n".join(source.splitlines()[:6])
+
+    assert PUBLIC_RC_EXCLUDE_MARKER in header
+    assert "PUBLIC_RC_EXCLUDE_REASON: local Phase 1275 proof-binding scaffold only." in header
+    assert "PUBLIC_RC_INCLUDE_REQUIRES:" in header
+
+    audit = build_package_profile_ci_audit()
+    claimable_files = {
+        file_record["path"]
+        for measurement in audit["profiles"][PROFILE_OPENCLAW_SKILL_CLAIMABLE][
+            "surface_measurements"
+        ].values()
+        for file_record in measurement["files"]
+    }
+    assert RUNTIME_PATH.as_posix() not in claimable_files
+
+    assert "PUBLIC_RC_EXCLUDE" in AGENTS_PATH.read_text(encoding="utf-8")
+    assert "PUBLIC_RC_EXCLUDE" in ALLOWLIST_PROCEDURE_PATH.read_text(encoding="utf-8")
+    assert PUBLIC_RC_EXCLUDE_MARKER in SPEC_PATH.read_text(encoding="utf-8")
+    assert PUBLIC_RC_EXCLUDE_MARKER in WALKTHROUGH_PATH.read_text(encoding="utf-8")
 
 
 def test_phase_1275_docs_status_guardrail_and_cdl_register_non_mutation() -> None:
