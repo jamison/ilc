@@ -74,20 +74,20 @@ def test_phase_1282_window_frontier_and_sensitive_stop_are_explicit() -> None:
     status = read(STATUS)
 
     assert "Window 1273-1280 is closed with a pass verdict" in capsule
-    assert "Window 1281-1288 open through Phase 1283" in capsule
-    assert "Window 1281-1288 is OPEN through Phase 1283" in planning
+    assert "Window 1281-1288 open through Phase 1284" in capsule
+    assert "Window 1281-1288 is OPEN through Phase 1284" in planning
     assert "## Phase 1282" in status
     assert "## Phase 1283" in status
-    assert "requires explicit `GO Phase 1284`" in capsule
-    assert "Phase 1284 is sensitive and requires explicit `GO Phase 1284`" in planning
+    assert "requires explicit `GO Phase 1285`" in capsule
+    assert "Phase 1285 is sensitive and requires explicit `GO Phase 1285`" in planning
 
 
 def test_phase_1282_public_rc_release_and_signing_remain_blocked() -> None:
     capsule = read(CAPSULE)
 
     for phrase in (
-        "Public RC remains blocked after Phase 1283",
-        "public claimability authority and verifier/API boundary",
+        "Public RC remains blocked after Phase 1284",
+        "final public claimability API/verifier authority",
         "public sidecar/projection serving authorization",
         "Source allowlist export execution",
         "release artifacts, release keys, release envelopes",

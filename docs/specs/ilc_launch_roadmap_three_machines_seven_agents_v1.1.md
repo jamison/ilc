@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 OPEN through Phase 1283; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, and Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`; Phase 1284 public claimability verifier/API boundary preflight is next and remains sensitive |
-| Capsule | v5.51 current and updated in place through Phase 1283 |
+| Window frontier | Window 1281-1288 OPEN through Phase 1284; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, and Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`; the public claimability verifier/API boundary remains an explicit public-RC blocker; Phase 1285 TransportPrincipal public-path activation preflight is next and remains sensitive |
+| Capsule | v5.51 current and updated in place through Phase 1284 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1261,6 +1261,55 @@ settle ILC, or make a public-RC claim.
 Public RC remains blocked after Phase 1280 Fix1:
 
 ```text
+public_rc_remains_blocked_after_phase_1280_fix1
+```
+
+## 30. Phase 1284 Public Claimability Verifier/API Boundary Preflight Addendum
+
+Phase 1284 records the sensitive public-claimability verifier/API boundary
+preflight after explicit `GO Phase 1284`:
+
+```text
+public_claimability_verifier_api_boundary_preflight_phase_1284.v0.1
+claimability_api_public_serving_not_enabled_phase_1284
+claimability_verifier_authority_not_activated_phase_1284
+wallet_withdrawal_transfer_spend_still_blocked_phase_1284
+public_rc_exclude_internal_helper_required_phase_1284
+public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api
+phase_1285_transport_principal_public_path_activation_preflight_next
+public_rc_remains_blocked_after_phase_1284
+```
+
+Roadmap impact:
+
+- Phase 1284 closes only the verifier/API boundary preflight record. It does
+  not activate a public verifier service, public or non-loopback claimability
+  API, public claim endpoint, HTTP route, socket listener, wallet withdrawal,
+  wallet transfer, wallet spend, ECU minting, ILC settlement, release artifact,
+  Genesis mutation, v0.2 signing, CDL mutation, CDL-088 opening, public-RC
+  claim, or public launch claim.
+- No new runtime helper was introduced. The existing Phase 1274 and Phase 1275
+  helpers remain internal `PUBLIC_RC_EXCLUDE` scaffolds until a later explicit
+  public-RC allowlist review promotes or replaces them.
+- The future public verifier surface still needs a public-safe presentation
+  schema, privacy filtering, public claim nullifier or claim-registry semantics,
+  TransportPrincipal binding before non-loopback serving, hostile-network
+  hardening, and release allowlist promotion.
+- The next executable public-path slice is Phase 1285, a sensitive
+  TransportPrincipal public-path activation preflight.
+
+Public RC remains blocked after Phase 1284 by TransportPrincipal public-path
+activation, sidecar public projection privacy/serving preflight, release
+publication and v0.2 signing authorization, counsel/IP/public-release
+authority, source/release artifact authority, final public claimability
+API/verifier authority, wallet withdrawal/transfer/spend semantics, ECU
+minting, and ILC settlement:
+
+```text
+public_rc_remains_blocked_after_phase_1284
+public_rc_remains_blocked_after_phase_1283
+public_rc_remains_blocked_after_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282
 public_rc_remains_blocked_after_phase_1280_fix1
 ```
 

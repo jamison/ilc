@@ -94,12 +94,12 @@ def test_phase_1283_frontier_routes_to_sensitive_phase_1284() -> None:
     capsule = read(CAPSULE)
     status = read(STATUS)
 
-    assert "Window 1281-1288 is OPEN through Phase 1283" in planning
-    assert "Window 1281-1288 is open through Phase 1283" in capsule
+    assert "Window 1281-1288 is OPEN through Phase 1284" in planning
+    assert "Window 1281-1288 is open through Phase 1284" in capsule
     assert "## Phase 1283" in status
-    assert "Phase 1284 is sensitive and requires explicit `GO Phase 1284`" in planning
-    assert "Phase 1284 remains pending and SENSITIVE" in capsule
-    assert "Phase 1284 - Public claimability verifier/API boundary preflight" in status
+    assert "Phase 1285 is sensitive and requires explicit `GO Phase 1285`" in planning
+    assert "Phase 1285 remains pending and SENSITIVE" in capsule
+    assert "Phase 1285 - TransportPrincipal public-path activation preflight" in status
 
 
 def test_phase_1283_public_rc_blockers_remain_explicit() -> None:
