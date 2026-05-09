@@ -146,15 +146,16 @@ def test_phase_1283_prompt_requires_default_no_public_claimability_activation() 
     assert "explicit human authorization" in text
 
 
-def test_window_1281_1288_planning_index_points_to_candidate_not_execution() -> None:
+def test_window_1281_1288_planning_index_points_to_active_lock_after_phase_1281() -> None:
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
 
+    assert "ilc_phase_1281_1288_sequence_lock_v0.1.md" in text
+    assert "window_1281_1288_sequence_lock_committed" in text
+    assert "window_1281_1288_sequence_lock_verdict=pass" in text
+    assert "Window 1281-1288 is OPEN through Phase 1281" in text
     assert "ilc_window_1281_1288_candidate_phase_grouping_v0.1.md" in text
     assert "window_1281_1288_candidate_phase_grouping_recorded_after_phase_1280" in text
-    assert "window_1281_1288_not_open_until_sequence_lock" in text
-    assert "Window 1281-1288 is not open until an explicit Phase 1281 sequence lock" in text
     assert "ilc_window_1273_1280_handoff_1280_v0.1.md" in text
-    assert "Window 1273-1280 remains CLOSED / PASS through Phase 1280" in text
     assert "public_rc_remains_blocked_after_phase_1280" in text
     assert "Exact-token `rg` is only a schema/completion check" in text
 
@@ -165,8 +166,9 @@ def test_planning_index_session_start_canon_routes_to_1281_candidate_package() -
         "## 2.", maxsplit=1
     )[0]
 
+    assert "Window 1281-1288 sequence lock" in session_start
+    assert "ilc_phase_1281_1288_sequence_lock_v0.1.md" in session_start
     assert "Window 1281-1288 guidance" in session_start
     assert "ilc_window_1281_1288_candidate_phase_grouping_v0.1.md" in session_start
     assert "Window 1273-1280 handoff" in session_start
     assert "ilc_window_1273_1280_handoff_1280_v0.1.md" in session_start
-    assert "Window 1281-1288 sequence lock" not in session_start
