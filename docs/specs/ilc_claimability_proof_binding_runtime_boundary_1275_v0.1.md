@@ -11,6 +11,12 @@ claimability_proof_binding_runtime_boundary_phase_1275.v0.1
 settled_root_wallet_root_receipt_binding_recorded_phase_1275
 non_loopback_claimability_api_still_blocked_phase_1275
 public_claimability_not_activated_phase_1275
+phase_1282_fix1_claimability_runtime_audit_hardening
+claimability_conversion_receipt_semantics_hardened_phase_1282_fix1
+settled_runtime_root_domain_separation_hardened_phase_1282_fix1
+balance_receipt_decimal_boundary_hardened_phase_1282_fix1
+cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282_fix1
 ```
 
 Verdict:
@@ -98,6 +104,17 @@ must remain out of public source exports, release manifests, and selected public
 package profiles unless a later explicit allowlist review promotes or replaces
 it.
 
+Phase 1282 Fix1 hardens this local helper after an implementation audit:
+
+```text
+phase_1282_fix1_claimability_runtime_audit_hardening
+claimability_conversion_receipt_semantics_hardened_phase_1282_fix1
+settled_runtime_root_domain_separation_hardened_phase_1282_fix1
+balance_receipt_decimal_boundary_hardened_phase_1282_fix1
+cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282_fix1
+```
+
 ---
 
 ## 3. Validation Rules
@@ -106,12 +123,12 @@ Phase 1275 validation is fail-closed:
 
 | Surface | Validation |
 |---------|------------|
-| Settled runtime root | Must be a full prefixed SHA-256 ref with `settled_runtime_sha256:` or `wallet_state_sha256:`. |
+| Settled runtime root | Must be a full prefixed SHA-256 ref with `settled_runtime_sha256:`. Phase 1282 Fix1 rejects `wallet_state_sha256:` in this position to preserve domain separation. |
 | Wallet-state root | Must be a full `wallet_state_sha256:<64-lowercase-hex>` ref. |
-| Latest balance receipt | Must be an object with matching `epoch_id`, string economic fields, and `settlement_status: applied`. |
+| Latest balance receipt | Must be an object with matching `epoch_id`, finite Decimal-string economic fields, non-negative `balance_after_ilc`, and `settlement_status: applied`. |
 | Latest balance receipt ref | Derived as `balance_receipt_sha256:<64-lowercase-hex>` over canonical JSON. |
 | History digest | Must be a bare full SHA-256 digest or `history_sha256:<64-lowercase-hex>`. |
-| Conversion receipt | Must match the exact Phase 1274 receipt shape, canonical receipt hash, root bindings, agent identity, conversion epoch semantics, and non-activation tokens. |
+| Conversion receipt | Must match the exact Phase 1274 receipt shape, canonical receipt hash, root bindings, agent identity, positive Decimal-string amount, CDL-048 deadline math, conversion transition, conversion-key derivation, conversion epoch bounds, and non-activation tokens. |
 | Floats | Rejected recursively from latest balance receipt and conversion receipt payloads with `claimability_float_forbidden`. |
 | Public activation flags | Must remain false; a rehashed conversion receipt with activation enabled fails with `claimability_conversion_receipt_activation_forbidden`. |
 
@@ -204,7 +221,10 @@ cdl087_register_mutation_not_authorized_by_default_phase_1276
 
 ```text
 graph_delta=load_bearing_code_added:ilc_core/ledger/claimability_proof_binding_runtime.py -> ecu/ilc/public_rc
+graph_delta=load_bearing_code_changed:ilc_core/ledger/claimability_proof_binding_runtime.py -> ecu/ilc/public_rc
 graph_delta=support_tests_added:tests/test_phase_1275_claimability_proof_binding_runtime_boundary.py -> validation
+graph_delta=support_tests_changed:tests/test_phase_1275_claimability_proof_binding_runtime_boundary.py -> validation
+graph_delta=support_tests_added:tests/test_phase_1282_fix1_claimability_runtime_audit_hardening.py -> validation
 graph_delta=support_guardrail_changed:tools/check_sensitive_runtime_coding_taboos.py -> validation/security
 graph_delta=load_bearing_spec_added:docs/specs/ilc_claimability_proof_binding_runtime_boundary_1275_v0.1.md -> ecu/ilc/public_rc
 graph_delta=support_tests_changed:tests/test_window_1273_1280_prompt_drafts.py -> validation/frontier

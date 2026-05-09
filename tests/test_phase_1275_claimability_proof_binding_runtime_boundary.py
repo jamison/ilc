@@ -102,6 +102,13 @@ def _error_token(exc_info: pytest.ExceptionInfo[BaseException]) -> str | None:
     return getattr(exc_info.value, "token", None)
 
 
+def _rehash_conversion_receipt(payload: dict[str, object]) -> dict[str, object]:
+    active = dict(payload)
+    active.pop("receipt_sha256", None)
+    active["receipt_sha256"] = hashlib.sha256(canonical_json(active).encode("utf-8")).hexdigest()
+    return active
+
+
 def test_required_tokens_and_public_non_activation_flags_are_bound() -> None:
     binding = _binding()
     payload = claimability_proof_payload(binding)
@@ -231,6 +238,43 @@ def test_latest_balance_receipt_epoch_mismatch_and_float_fail_closed() -> None:
     assert _error_token(payload_float_exc) == "claimability_float_forbidden"
 
 
+@pytest.mark.parametrize(
+    "field",
+    ("reward_delta_ilc", "balance_after_ilc"),
+)
+def test_latest_balance_receipt_rejects_non_finite_and_non_numeric_decimal_strings(
+    field: str,
+) -> None:
+    for bad_value in ("NaN", "Infinity", "not-a-number"):
+        receipt = _latest_balance_receipt()
+        receipt[field] = bad_value
+        with pytest.raises(ClaimabilityProofBindingRuntimeError) as exc_info:
+            build_claimability_proof_binding(
+                agent_id="agent:alpha",
+                epoch_id="epoch:0012",
+                settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
+                wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+                latest_balance_receipt=receipt,
+                history_digest="c" * 64,
+                conversion_receipt=_conversion_receipt_payload(),
+            )
+        assert _error_token(exc_info) == "claimability_latest_balance_receipt_invalid"
+
+    negative_balance = _latest_balance_receipt()
+    negative_balance["balance_after_ilc"] = "-0.1"
+    with pytest.raises(ClaimabilityProofBindingRuntimeError) as negative_balance_exc:
+        build_claimability_proof_binding(
+            agent_id="agent:alpha",
+            epoch_id="epoch:0012",
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            latest_balance_receipt=negative_balance,
+            history_digest="c" * 64,
+            conversion_receipt=_conversion_receipt_payload(),
+        )
+    assert _error_token(negative_balance_exc) == "claimability_latest_balance_receipt_invalid"
+
+
 def test_conversion_receipt_must_match_agent_roots_and_non_activation_semantics() -> None:
     receipt = _conversion_receipt_payload()
     agent_mismatch = dict(receipt)
@@ -262,11 +306,7 @@ def test_conversion_receipt_must_match_agent_roots_and_non_activation_semantics(
 
     activated = _conversion_receipt_payload()
     activated["public_claimability_activated"] = True
-    receipt_hash = activated.pop("receipt_sha256")
-    assert isinstance(receipt_hash, str)
-    activated["receipt_sha256"] = hashlib.sha256(
-        canonical_json(activated).encode("utf-8")
-    ).hexdigest()
+    activated = _rehash_conversion_receipt(activated)
     with pytest.raises(ClaimabilityProofBindingRuntimeError) as activated_exc:
         build_claimability_proof_binding(
             agent_id="agent:alpha",
@@ -278,6 +318,72 @@ def test_conversion_receipt_must_match_agent_roots_and_non_activation_semantics(
             conversion_receipt=activated,
         )
     assert _error_token(activated_exc) == "claimability_conversion_receipt_activation_forbidden"
+
+
+def test_conversion_receipt_rechecks_deadline_math_and_conversion_key_derivation() -> None:
+    late = _conversion_receipt_payload()
+    late["conversion_epoch"] = 99
+    late["settled_runtime_epoch"] = 99
+    late = _rehash_conversion_receipt(late)
+    with pytest.raises(ClaimabilityProofBindingRuntimeError) as late_exc:
+        build_claimability_proof_binding(
+            agent_id="agent:alpha",
+            epoch_id="epoch:0012",
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            latest_balance_receipt=_latest_balance_receipt(),
+            history_digest="c" * 64,
+            conversion_receipt=late,
+        )
+    assert _error_token(late_exc) == "claimability_conversion_receipt_invalid"
+
+    wrong_deadline = _conversion_receipt_payload()
+    wrong_deadline["deadline_epoch"] = 999
+    wrong_deadline = _rehash_conversion_receipt(wrong_deadline)
+    with pytest.raises(ClaimabilityProofBindingRuntimeError) as deadline_exc:
+        build_claimability_proof_binding(
+            agent_id="agent:alpha",
+            epoch_id="epoch:0012",
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            latest_balance_receipt=_latest_balance_receipt(),
+            history_digest="c" * 64,
+            conversion_receipt=wrong_deadline,
+        )
+    assert _error_token(deadline_exc) == "claimability_conversion_receipt_invalid"
+
+    key_tampered = _conversion_receipt_payload()
+    key_tampered["conversion_key_sha256"] = "d" * 64
+    key_tampered = _rehash_conversion_receipt(key_tampered)
+    with pytest.raises(ClaimabilityProofBindingRuntimeError) as key_exc:
+        build_claimability_proof_binding(
+            agent_id="agent:alpha",
+            epoch_id="epoch:0012",
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            latest_balance_receipt=_latest_balance_receipt(),
+            history_digest="c" * 64,
+            conversion_receipt=key_tampered,
+        )
+    assert _error_token(key_exc) == "claimability_conversion_key_sha256_invalid"
+
+
+def test_settled_runtime_root_rejects_wallet_state_root_namespace() -> None:
+    wallet_root = _sha_ref("wallet_state_sha256", "a")
+    receipt = _conversion_receipt_payload()
+    receipt["settled_runtime_root"] = wallet_root
+    receipt = _rehash_conversion_receipt(receipt)
+    with pytest.raises(ClaimabilityProofBindingRuntimeError) as exc_info:
+        build_claimability_proof_binding(
+            agent_id="agent:alpha",
+            epoch_id="epoch:0012",
+            settled_runtime_root=wallet_root,
+            wallet_state_root=wallet_root,
+            latest_balance_receipt=_latest_balance_receipt(),
+            history_digest="c" * 64,
+            conversion_receipt=receipt,
+        )
+    assert _error_token(exc_info) == "claimability_settled_runtime_root_invalid"
 
 
 def test_runtime_source_contains_no_public_api_or_wallet_authority() -> None:

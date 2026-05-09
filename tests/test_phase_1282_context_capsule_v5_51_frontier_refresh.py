@@ -138,7 +138,7 @@ def test_phase_1282_does_not_mutate_cdl_register_status_beyond_existing_cdl087_r
     capsule = read(CAPSULE)
     planning = read(PLANNING)
 
-    assert "Phase 1282 does not" in planning
+    assert "Phase 1282 Fix1 does not" in planning
     assert "mutate the CDL register" in planning
     assert "CDL mutation" in capsule
     assert "CDL-088 opening" in capsule

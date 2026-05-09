@@ -179,11 +179,26 @@ claimability_proof_binding_runtime_boundary_phase_1275.v0.1
 settled_root_wallet_root_receipt_binding_recorded_phase_1275
 non_loopback_claimability_api_still_blocked_phase_1275
 public_claimability_not_activated_phase_1275
+phase_1282_fix1_claimability_runtime_audit_hardening
+claimability_conversion_receipt_semantics_hardened_phase_1282_fix1
+settled_runtime_root_domain_separation_hardened_phase_1282_fix1
+balance_receipt_decimal_boundary_hardened_phase_1282_fix1
+cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282_fix1
 ```
 
 No wallet withdrawal, transfer, spend, wallet signing authority, wallet
 ledger-write authority, ECU minting, ILC settlement, or withdrawal runtime is
 authorized by this capsule.
+
+Phase 1282 Fix1 hardens the local claimability/conversion helpers after
+deterministic implementation audit. The current local verifier now rejects
+hash-consistent forged conversion receipts when CDL-048 deadline math,
+conversion epoch bounds, transition, conversion-key derivation, root namespace,
+positive Decimal amount, required tokens, or false activation flags do not
+match. Latest balance receipt economic fields must be finite Decimal strings,
+and `settled_runtime_root` accepts only the `settled_runtime_sha256:` namespace.
+The helpers remain internal and public RC remains blocked.
 
 ---
 
@@ -229,6 +244,7 @@ Current profile split:
 Public RC remains blocked after Phase 1282:
 
 ```text
+public_rc_remains_blocked_after_phase_1282_fix1
 public_rc_remains_blocked_after_phase_1282
 public_rc_remains_blocked_after_phase_1280_fix1
 public_rc_remains_blocked_after_phase_1280
@@ -288,8 +304,9 @@ longer reflects the live frontier:
 | CDL-087 state | CDL-087 is ratified by Phase 1278 Fix1 and reflected here by `cdl087_ratification_reflected_in_capsule_phase_1282`. |
 | Window state | Window 1273-1280 is closed by Phase 1280 and reflected here by `window_1273_1280_closure_reflected_in_capsule_phase_1282`. |
 | H/IP planning | Phase 1280 Fix1 registered H-020..H-028 and IP-001..IP-006 without public-RC authority. |
-| Active window | Window 1281-1288 is open through Phase 1282; Phase 1283 is sensitive and pending. |
-| Public RC | Public RC remains blocked after Phase 1282. |
+| Runtime audit hardening | Phase 1282 Fix1 hardened local claimability/conversion receipt semantics without public activation. |
+| Active window | Window 1281-1288 is open through Phase 1282 Fix1; Phase 1283 is sensitive and pending. |
+| Public RC | Public RC remains blocked after Phase 1282 Fix1. |
 
 ```text
 capsule_v5_51_supersedes_v5_50
@@ -315,6 +332,12 @@ Phase 1282 verification:
 - CDL register diff remained clean.
 - Scoped `git diff --check` passed.
 
+Phase 1282 Fix1 verification:
+
+- Focused claimability/conversion hardening tests passed.
+- Sensitive-runtime guardrail passed.
+- Scoped `git diff --check` passed.
+
 Phase 1283 remains pending and SENSITIVE.
 
 ```text
@@ -323,4 +346,10 @@ capsule_v5_51_supersedes_v5_50
 cdl087_ratification_reflected_in_capsule_phase_1282
 window_1273_1280_closure_reflected_in_capsule_phase_1282
 public_rc_remains_blocked_after_phase_1282
+phase_1282_fix1_claimability_runtime_audit_hardening
+claimability_conversion_receipt_semantics_hardened_phase_1282_fix1
+settled_runtime_root_domain_separation_hardened_phase_1282_fix1
+balance_receipt_decimal_boundary_hardened_phase_1282_fix1
+cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282_fix1
 ```
