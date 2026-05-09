@@ -82,7 +82,7 @@ def test_all_window_phases_are_mapped_to_closure_status() -> None:
         assert row in handoff
 
 
-def test_cdl087_remains_open_without_register_mutation() -> None:
+def test_cdl087_handoff_records_historical_open_before_later_fix1() -> None:
     handoff = read(HANDOFF)
     cdl_register = read(CDL_REGISTER)
 
@@ -98,7 +98,8 @@ def test_cdl087_remains_open_without_register_mutation() -> None:
         assert token in handoff
 
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
+    assert "ratified_phase: 1278 Fix1" in cdl_register
     assert "window_1265_1272_closed_phase_1272" not in cdl_register
 
 
@@ -132,19 +133,19 @@ def test_planning_index_marks_window_closed_and_requires_new_sequence_lock() -> 
 
     assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in planning
     assert HANDOFF in planning
-    assert "Window 1273+ sequence lock required before assigning further phase numbers" in planning
-    assert "phase_1273_" not in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
+    assert "release_manifest_allowlist_publication_preflight_phase_1279.v0.1" in planning
     assert "Exact-token `rg` is only a schema/completion check" in planning
 
 
 def test_roadmap_baseline_and_addendum_record_phase_1272_closure() -> None:
     roadmap = read(ROADMAP)
 
-    assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in roadmap
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in roadmap
     assert HANDOFF in roadmap
     assert "## 18. Phase 1272 Window 1265-1272 Closure Addendum" in roadmap
     assert "ATLAS-G-006 is no longer the selected-profile graph reachability blocker" in roadmap
-    assert "Window 1273+ sequence lock is required before assigning further phase numbers" in roadmap
+    assert "cdl087_ratified_phase_1278_fix1" in roadmap
 
 
 def test_phase_1272_graph_delta_is_recorded() -> None:

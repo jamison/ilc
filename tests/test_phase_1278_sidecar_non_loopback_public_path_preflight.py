@@ -291,11 +291,11 @@ def test_phase_1278_docs_status_planning_and_roadmap_record_required_tokens() ->
         assert CDL087_FIX_AFTER_1278_PLANNED_TOKEN in text
 
     planning = _read(PLANNING_INDEX_PATH)
-    assert "Window 1273-1280 OPEN through Phase 1278" in planning
-    assert "CDL-087 ratification Fix phase is planned next" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
+    assert "CDL-087 is now RATIFIED" in planning
 
 
-def test_phase_1278_records_broad_discovery_non_claims_and_cdl087_open_state() -> None:
+def test_phase_1278_records_broad_discovery_non_claims_and_later_cdl087_ratification() -> None:
     spec = _read(SPEC_PATH)
     walkthrough = _read(WALKTHROUGH_PATH)
     register = _read(CDL_REGISTER_PATH)
@@ -317,7 +317,8 @@ def test_phase_1278_records_broad_discovery_non_claims_and_cdl087_open_state() -
 
     cdl087_rows = [line for line in register.splitlines() if line.startswith("| CDL-087 |")]
     assert len(cdl087_rows) == 1
-    assert "| open |" in cdl087_rows[0]
+    assert "| ratified |" in cdl087_rows[0]
+    assert "ratified_phase: 1278 Fix1" in cdl087_rows[0]
 
 
 def test_phase_1278_graph_delta_is_recorded() -> None:

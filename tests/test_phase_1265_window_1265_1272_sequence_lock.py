@@ -83,7 +83,8 @@ def test_phase_1265_cdl087_review_gate_is_sensitive_and_not_ratification() -> No
     assert "cdl_087_ratification_not_executed_by_default_phase_1266" in lock
     assert "Phase 1266 must not ratify CDL-087 or mutate the CDL register by default" in lock
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
+    assert "ratified_phase: 1278 Fix1" in cdl_register
 
 
 def test_phase_1265_locked_order_and_sensitive_gates_are_explicit() -> None:

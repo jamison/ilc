@@ -97,17 +97,17 @@ def test_phase_1273_claimability_cdl048_boundary_is_sensitive_and_no_activation(
     assert "Phase 1274 may implement a bounded runtime skeleton only after explicit GO" in lock
 
 
-def test_phase_1273_cdl087_remains_open_and_register_mutation_is_gated() -> None:
+def test_phase_1273_cdl087_fix1_addendum_records_authorized_later_mutation() -> None:
     lock = read(SEQUENCE_LOCK)
     cdl_register = read(CDL_REGISTER)
 
-    assert "CDL-087 remains:" in lock
-    assert "OPEN / PRELOCKED / NOT RATIFIED" in lock
     assert "cdl_087_ratification_not_executed_by_default_phase_1266" in lock
     assert "cdl_087_register_mutation_requires_explicit_ratification_authorization_phase_1266" in lock
-    assert "CDL-087 ratification and register mutation" in lock
+    assert "## 6. Phase 1278 Fix1 Ratification Addendum" in lock
+    assert "cdl087_ratified_phase_1278_fix1" in lock
+    assert "cdl087_register_mutated_phase_1278_fix1" in lock
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
 
 
 def test_phase_1273_locked_order_and_sensitive_gates_are_explicit() -> None:
@@ -144,7 +144,8 @@ def test_phase_1273_public_economic_and_release_non_claims_are_preserved() -> No
         "public claimability activation",
         "wallet withdrawal, wallet transfer, or wallet spend semantics",
         "wallet signing authority or ledger-write authority",
-        "CDL mutation, CDL-087 ratification, Werner CDL opening/prelock",
+        "CDL mutation beyond the authorized CDL-087 Phase 1278 Fix1 register mutation",
+        "Werner CDL opening/prelock, or CDL-088 opening",
         "ECU mint authorization",
         "ILC settlement or withdrawal runtime activation",
         "public release artifact production",
@@ -169,9 +170,9 @@ def test_phase_1273_frontier_updates_planning_and_status() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1273-1280 OPEN through Phase 1273" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
     assert SEQUENCE_LOCK in planning
-    assert "Phase 1274 is next and remains SENSITIVE" in planning
+    assert "Phase 1279 remains the next locked non-sensitive inventory phase" in planning
     assert "Window 1273-1280 sequence lock" in planning
     assert "## Phase 1273" in status
     assert "Phase 1274 - CDL-048 conversion-sweeper runtime skeleton" in status

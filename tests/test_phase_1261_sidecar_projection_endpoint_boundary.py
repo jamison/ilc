@@ -54,12 +54,13 @@ def test_phase_1261_spec_records_required_tokens_and_blocked_verdict() -> None:
     assert "No sidecar projection endpoint is publicly exposed" in text
 
 
-def test_cdl087_gate_recheck_preserves_open_register_and_no_ratification() -> None:
+def test_cdl087_gate_recheck_records_historical_no_ratification_before_fix1() -> None:
     spec = _spec_text()
     register = CDL_REGISTER_PATH.read_text(encoding="utf-8")
 
     assert "| CDL-087 |" in register
-    assert "| open |" in register
+    assert "| ratified |" in register
+    assert "ratified_phase: 1278 Fix1" in register
     assert "no_cdl_087_ratification_phase_1260" in spec
     assert (
         "cdl_087_ratification_readiness_verdict_phase_1260=ready_for_later_sensitive_ratification_review"
