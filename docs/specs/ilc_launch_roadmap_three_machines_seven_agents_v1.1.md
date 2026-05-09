@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1265-1272 CLOSED / PASS through Phase 1272; current closure handoff is `docs/specs/ilc_window_1265_1272_handoff_1272_v0.1.md` and Window 1273+ sequence lock is required before assigning further phase numbers |
+| Window frontier | Window 1273-1280 OPEN through Phase 1274; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton without public claimability activation |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -79,6 +79,14 @@ window_1265_1272_closed_phase_1272
 window_1265_1272_closure_gate_verdict=pass
 phase_1272_window_1265_1272_closure_complete
 window_1273_plus_sequence_lock_required_before_next_phase_assignment
+docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md
+window_1273_1280_sequence_lock_committed
+window_1273_1280_sequence_lock_verdict=pass
+docs/specs/ilc_cdl048_conversion_sweeper_runtime_skeleton_1274_v0.1.md
+cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1
+conversion_sweeper_no_public_claimability_activation_phase_1274
+ecu_lot_deadline_epoch_enforcement_recorded_phase_1274
+wallet_withdrawal_transfer_spend_still_blocked_phase_1274
 ```
 
 ---
@@ -358,8 +366,9 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 
 ### Gap 13 - ECU-to-ILC Settlement Execution Runtime and Claimability
 
-**Status:** Open; Phase 1270 preflight requirements recorded; final public-RC
-hard requirement still open.
+**Status:** Open; Phase 1274 conversion-sweeper runtime skeleton recorded;
+public claimability proof binding and final public-RC hard requirement still
+open.
 
 Internal conversion runtime and public claimability substrate are distinct.
 Final public RC requires public claimability for the selected OpenClaw/NemoClaw
@@ -378,13 +387,21 @@ gap13_claimability_conversion_sweeper_preflight_phase_1270.v0.1
 public_claimability_runtime_not_activated_phase_1270
 cdl_048_conversion_sweeper_requirements_recorded_phase_1270
 wallet_withdrawal_transfer_spend_not_enabled_phase_1270
+cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1
+conversion_sweeper_no_public_claimability_activation_phase_1274
+ecu_lot_deadline_epoch_enforcement_recorded_phase_1274
+wallet_withdrawal_transfer_spend_still_blocked_phase_1274
 ```
 
 Phase 1270 recorded the public claimability and CDL-048 conversion-sweeper
-requirements without activating runtime claimability. The conversion sweeper
-still requires ECU lot accounting, four issuance epoch deadline enforcement,
-finite exact numeric boundaries, canonical JSON receipt/root binding, and replay
-or double-conversion prevention before public claimability can close.
+requirements without activating runtime claimability. Phase 1274 adds the
+narrow conversion-sweeper runtime skeleton for ECU lot accounting, four issuance
+epoch deadline enforcement, finite exact numeric boundaries, canonical JSON
+receipt/root binding, and replay or double-conversion prevention. Public
+claimability still cannot close until Phase 1275 or later binds settled runtime
+roots, wallet-state roots, latest balance receipts, history digests, epoch
+identifiers, and canonical agent identity into a proof verifier without opening
+wallet withdrawal, transfer, or spend semantics.
 
 ### Gap 14 - OpenClaw/NemoClaw Package Modularity and CLI/Sidecar Boundary
 
@@ -869,4 +886,41 @@ public_rc_remains_blocked_after_phase_1269
 public_rc_remains_blocked_after_phase_1268
 public_rc_remains_blocked_after_phase_1267
 public_rc_remains_blocked_after_phase_1266
+```
+
+## 19. Phase 1274 CDL-048 Conversion-Sweeper Runtime Skeleton Addendum
+
+Phase 1274 recorded the narrow CDL-048 runtime skeleton:
+
+```text
+cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1
+conversion_sweeper_no_public_claimability_activation_phase_1274
+ecu_lot_deadline_epoch_enforcement_recorded_phase_1274
+wallet_withdrawal_transfer_spend_still_blocked_phase_1274
+```
+
+Roadmap impact:
+
+- CDL-048 ECU lot registration now has a bounded runtime skeleton with exact
+  positive Decimal-compatible amount handling, issue epoch tracking, computed
+  four-issuance-epoch deadline, origin, funding provenance, and conversion
+  status.
+- Internal conversion receipts now bind conversion epoch, canonical agent id,
+  lot id, wallet-state root, conversion transition, settled runtime root, and
+  sweeper state root using canonical JSON and SHA-256.
+- Replay and double-conversion guards are present at the skeleton state level,
+  and stale settled-runtime root epoch mismatches fail closed.
+- The skeleton does not prove public claimability, wallet-root membership,
+  latest-balance receipt inclusion, or non-loopback API authority; those remain
+  routed to Phase 1275 and later.
+- Public claimability runtime, wallet withdrawal/transfer/spend, ECU minting,
+  and ILC settlement remain blocked.
+
+Public RC remains blocked after Phase 1274:
+
+```text
+public_rc_remains_blocked_after_phase_1274
+public_rc_remains_blocked_after_phase_1272
+public_rc_remains_blocked_after_phase_1271
+public_rc_remains_blocked_after_phase_1270
 ```

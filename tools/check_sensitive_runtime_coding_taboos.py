@@ -43,6 +43,7 @@ WALL_CLOCK_ALLOWLIST = {
 }
 
 STRICT_MACHINE_JSON_FILES = {
+    "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py",
     "ilc_core/protocol/public_init_admission_runtime.py",
     "ilc_core/protocol/public_receipt_runtime.py",
     "ilc_core/protocol/public_wallet_runtime.py",
