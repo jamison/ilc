@@ -115,11 +115,12 @@ def test_phase_1285_frontier_routes_to_phase_1286_preflight() -> None:
     capsule = read(CAPSULE)
     status = read(STATUS)
 
-    assert "Window 1281-1288 is OPEN through Phase 1285" in planning
-    assert "Window 1281-1288 is open through Phase 1285" in capsule
+    assert "Window 1281-1288 is OPEN through Phase 1286" in planning
+    assert "Window 1281-1288 is open through Phase 1286" in capsule
     assert "## Phase 1285" in status
     assert "phase_1286_sidecar_public_projection_privacy_serving_preflight_next" in planning
-    assert "Phase 1286" in status
+    assert "## Phase 1286" in status
+    assert "phase_1287_release_publication_signing_authorization_preflight_next" in planning
 
 
 def test_phase_1285_does_not_mutate_cdl_register_or_open_cdl088() -> None:

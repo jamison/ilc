@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 OPEN through Phase 1285; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, and Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`; Phase 1286 sidecar public projection privacy/serving preflight is next under the preflight-only stance |
-| Capsule | v5.51 current and updated in place through Phase 1285 |
+| Window frontier | Window 1281-1288 OPEN through Phase 1286; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, and Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`; Phase 1287 release publication/signing authorization preflight is next under the preflight-only stance |
+| Capsule | v5.51 current and updated in place through Phase 1286 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1401,32 +1401,67 @@ authorization, final public claimability API/verifier authority, actual
 TransportPrincipal public-path activation authority, wallet
 withdrawal/transfer/spend semantics, ECU minting, and ILC settlement.
 
-Roadmap impact:
+## 32. Phase 1286 Sidecar Public Projection Privacy/Serving Preflight Addendum
 
-- Local CDL-048 conversion-sweeper and claimability proof-binding evidence is
-  sufficient for the next verifier/API boundary preflight, but not sufficient
-  for public claimability activation.
-- Public claimability authority is not granted by Phase 1283. The next
-  executable claimability slice is Phase 1284, a sensitive verifier/API boundary
-  preflight.
-- The Phase 1274 and Phase 1275 helpers remain `PUBLIC_RC_EXCLUDE` internal
-  scaffolds. The release allowlist review has not promoted the internal helpers;
-  a later explicit release allowlist review must promote or replace them before
-  any public RC package inclusion.
-- No public or non-loopback claimability API, public verifier service, wallet
-  withdrawal, wallet transfer, wallet spend, wallet signing authority,
-  wallet ledger-write authority, ECU minting, ILC settlement, publication,
-  release artifact, Genesis mutation, v0.2 signing, CDL mutation, CDL-088
-  opening, public-RC claim, or public launch claim is authorized.
-
-Public RC remains blocked after Phase 1283 by public claimability verifier/API
-boundary, TransportPrincipal public-path activation, sidecar public projection
-privacy/serving preflight, release publication and v0.2 signing authorization,
-and source/release artifact authority:
+Phase 1286 records the sensitive sidecar public projection privacy/serving
+preflight under explicit `GO Phase 1285-1288` and the user's preflight-only
+stance:
 
 ```text
+sidecar_public_projection_privacy_serving_preflight_phase_1286.v0.1
+sidecar_public_serving_not_enabled_phase_1286
+non_loopback_bind_not_enabled_phase_1286
+public_projection_endpoint_not_enabled_phase_1286
+transport_principal_activation_required_before_public_projection_phase_1286
+sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving
+no_new_public_listener_phase_1286
+peer_discovery_not_enabled_phase_1286
+phase_1287_release_publication_signing_authorization_preflight_next
+public_rc_remains_blocked_after_phase_1286
+```
+
+Phase 1286 does not activate public sidecar/projection serving, public
+projection endpoint serving, non-loopback bind, wildcard bind, public host bind,
+listener, peer discovery, public fetch serving, public P2P, TransportPrincipal
+public-path activation, public claimability, wallet withdrawal/transfer/spend,
+ECU minting, ILC settlement, release publication, Genesis Atlas mutation, v0.2
+signing, CDL mutation, CDL-088 opening, or a public RC claim.
+
+Public RC remains blocked after Phase 1286 by release publication and v0.2
+signing authorization, counsel/IP/publication authorization, source
+publication/release artifact authorization, final public claimability
+API/verifier authority, actual TransportPrincipal public-path activation
+authority, actual sidecar public projection serving authority, privacy
+filtering/public-safe projection schema, wallet withdrawal/transfer/spend
+semantics, ECU minting, and ILC settlement.
+
+Roadmap impact:
+
+- Phase 1286 closes only the sidecar public projection privacy/serving
+  preflight record. It does not activate public sidecar/projection serving or
+  create a listener, endpoint, non-loopback bind, wildcard bind, public host
+  bind, or peer discovery surface.
+- The Phase 1278 sidecar public-path helper remains `PUBLIC_RC_EXCLUDE`
+  internal preflight scaffolding. Release allowlist review has not promoted it
+  into a public RC package.
+- Future public projection serving still requires explicit sidecar public
+  serving authority, actual TransportPrincipal public-path activation,
+  public-safe projection schema, field filtering, privacy review, abuse/rate
+  limit controls, and hostile-network validation.
+- The next executable sensitive slice is Phase 1287, release publication and
+  v0.2 signing authorization preflight.
+
+Public RC remains blocked after Phase 1286 by release publication and v0.2
+signing authorization, counsel/IP/publication authorization, source
+publication/release artifact authorization, final public claimability
+API/verifier authority, actual TransportPrincipal public-path activation
+authority, actual sidecar public projection serving authority, privacy
+filtering/public-safe projection schema, wallet withdrawal/transfer/spend
+semantics, ECU minting, and ILC settlement:
+
+```text
+public_rc_remains_blocked_after_phase_1286
+public_rc_remains_blocked_after_phase_1285
+public_rc_remains_blocked_after_phase_1284
 public_rc_remains_blocked_after_phase_1283
-public_rc_remains_blocked_after_phase_1282_fix1
-public_rc_remains_blocked_after_phase_1282
-public_rc_remains_blocked_after_phase_1280_fix1
 ```
