@@ -155,7 +155,7 @@ def test_window_1273_1280_planning_index_points_to_open_sequence_lock() -> None:
 
     assert "ilc_phase_1273_1280_sequence_lock_v0.1.md" in text
     assert "ilc_window_1273_1280_candidate_phase_grouping_v0.1.md" in text
-    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in text
+    assert "Window 1273-1280 OPEN through Phase 1279" in text
     assert "window_1273_1280_sequence_lock_committed" in text
     assert "cdl087_ratification_evidence_phase_1278_fix1.v0.1" in text
     assert "cdl087_ratified_phase_1278_fix1" in text
@@ -163,6 +163,9 @@ def test_window_1273_1280_planning_index_points_to_open_sequence_lock() -> None:
     assert "cdl087_public_fetch_serving_not_enabled_phase_1278_fix1" in text
     assert "cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1" in text
     assert "release_manifest_allowlist_publication_preflight_phase_1279.v0.1" in text
+    assert "public_repository_publication_not_authorized_phase_1279" in text
+    assert "release_artifact_production_not_authorized_phase_1279" in text
+    assert "v0_2_signing_not_authorized_phase_1279" in text
     assert "Window 1265-1272 is CLOSED / PASS through Phase 1272" in text
 
 
@@ -189,6 +192,6 @@ def test_window_1273_1280_outside_audit_records_hardening_without_authority_expa
     assert "window_1273_1280_audit_no_authority_expansion" in audit
     assert "planning_index_session_start_canon_stale_after_window_1273_1280_prompt_draft" in audit
     assert "does not open Window 1273-1280" in audit
-    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in index
+    assert "Window 1273-1280 OPEN through Phase 1279" in index
     assert "window_1273_1280_sequence_lock_committed" in index
     assert "ilc_window_1273_1280_prompt_package_outside_audit_2026_05_09_v0.1.md" in index

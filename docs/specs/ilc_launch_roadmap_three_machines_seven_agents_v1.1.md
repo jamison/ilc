@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 OPEN through Phase 1278 Fix1; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery, and Phase 1278 Fix1 ratifies CDL-087 without public fetch/sidecar/projection activation |
+| Window frontier | Window 1273-1280 OPEN through Phase 1279; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery, Phase 1278 Fix1 ratifies CDL-087 without public fetch/sidecar/projection activation, and Phase 1279 records release manifest/source allowlist prepublication inventory without source publication, release artifact production, release keys, release envelopes, Genesis Atlas mutation, v0.2 signing, or a public-RC claim |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -1133,4 +1133,51 @@ public_rc_remains_blocked_after_phase_1278_fix1
 public_rc_remains_blocked_after_phase_1278
 public_rc_remains_blocked_after_phase_1277
 public_rc_remains_blocked_after_phase_1276
+```
+
+## 25. Phase 1279 Release Manifest Allowlist Prepublication Addendum
+
+Phase 1279 records release manifest/source allowlist prepublication inventory
+only:
+
+```text
+release_manifest_allowlist_publication_preflight_phase_1279.v0.1
+public_repository_publication_not_authorized_phase_1279
+release_artifact_production_not_authorized_phase_1279
+v0_2_signing_not_authorized_phase_1279
+source_allowlist_export_not_executed_phase_1279
+release_keys_not_generated_phase_1279
+release_envelope_not_produced_phase_1279
+genesis_atlas_mutation_not_authorized_phase_1279
+public_rc_remains_blocked_after_phase_1279
+```
+
+Roadmap impact:
+
+- Phase 1279 binds the existing Phase 1213 release artifact manifest schema,
+  Phase 1213 distribution checklist, Phase 1255 public-source allowlist export
+  procedure, Phase 1271 ATLAS-G-006 graph reachability pass, and Phase 1278
+  Fix1 CDL-087 ratification into a single prepublication inventory.
+- The source allowlist procedure remains defined but not executed; no clean
+  public repository export, source publication, public package publication, or
+  public release artifact production is authorized.
+- Release keys, release envelopes, Genesis Atlas mutation/regeneration/signing,
+  and v0.2 signing remain unauthorized.
+- Counsel/IP/publication gates remain open for license instruments, CLA or
+  no-external-contributor policy, trademark/fork labeling, patent/publication
+  review, reviewed source allowlist manifest, and explicit publication
+  authorization.
+- Public RC remains blocked by public sidecar/projection serving authorization,
+  TransportPrincipal public-path activation, Rust M-5/public-P2P
+  hostile-network hardening, counsel/IP/publication authorization, v0.2 signing
+  authorization, source publication/release artifact authorization, and final
+  public claimability API/verifier authority.
+
+Public RC remains blocked after Phase 1279:
+
+```text
+public_rc_remains_blocked_after_phase_1279
+public_rc_remains_blocked_after_phase_1278_fix1
+public_rc_remains_blocked_after_phase_1278
+public_rc_remains_blocked_after_phase_1277
 ```

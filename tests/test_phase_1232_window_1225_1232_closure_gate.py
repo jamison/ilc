@@ -155,4 +155,4 @@ def test_cat16_planning_index_superseded_rows_remain_hardened() -> None:
     text = _read(PLANNING_INDEX)
     assert "Reciprocal fetch admission spec 1222** (non-selected research candidate)" in text
     assert "Launch Roadmap v0.9** (superseded)" in text
-    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in text
+    assert "Window 1273-1280 OPEN through Phase 1279" in text
