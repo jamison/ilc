@@ -3,7 +3,7 @@
 **Date:** 2026-05-09
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.50.md`
 **Produced:** Phase 1282, Window 1281-1288
-**Frontier:** Window 1281-1288 open through Phase 1284; Phase 1285 sensitive TransportPrincipal public-path activation gate pending
+**Frontier:** Window 1281-1288 open through Phase 1285; Phase 1286 sensitive sidecar public projection privacy/serving preflight next
 
 ```text
 context_capsule_v5_51_frontier_refresh_phase_1282.v0.1
@@ -22,6 +22,15 @@ public_rc_exclude_internal_helper_required_phase_1284
 public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api
 phase_1285_transport_principal_public_path_activation_preflight_next
 public_rc_remains_blocked_after_phase_1284
+transport_principal_public_path_activation_preflight_phase_1285.v0.1
+transport_principal_public_p2p_not_activated_phase_1285
+public_fetch_serving_not_enabled_phase_1285
+requester_id_fallback_still_forbidden_phase_1285
+transport_principal_lifecycle_revocation_replay_required_phase_1285
+transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation
+transport_principal_public_path_authority_not_activated_phase_1285
+phase_1286_sidecar_public_projection_privacy_serving_preflight_next
+public_rc_remains_blocked_after_phase_1285
 ```
 
 ---
@@ -29,8 +38,8 @@ public_rc_remains_blocked_after_phase_1284
 ## 1. Current State
 
 Window 1273-1280 is closed with a pass verdict, Phase 1280 Fix1 hardening is
-complete, Window 1281-1288 is open through Phase 1284, and Phase 1285 is the
-next locked phase. Phase 1285 is sensitive and requires explicit `GO Phase 1285`.
+complete, Window 1281-1288 is open through Phase 1285, and Phase 1286 is the
+next locked phase under the explicit preflight-only `GO Phase 1285-1288`.
 
 Current active window lock:
 
@@ -48,14 +57,14 @@ Current H/IP planning hardening packet:
 
 - `docs/specs/ilc_phase_1280_fix1_hypergraph_laplacian_docs_hardening_v0.1.md`
 
-Phase 1284 is a sensitive public claimability verifier/API boundary preflight
-only. It records an internal-only boundary verdict and does not authorize public
-RC, public serving, public verifier service, public or non-loopback
+Phase 1285 is a sensitive TransportPrincipal public-path activation preflight
+only. It records a preflight-only verdict and does not authorize public RC,
+public P2P, public fetch serving, non-loopback sidecar/projection serving,
+public claimability, public verifier service, public or non-loopback
 claimability API, source publication, release artifacts, release keys, release
-envelopes, Genesis mutation, CDL mutation, CDL-088 opening, public
-claimability, wallet withdrawal, wallet transfer, wallet spend, wallet signing
-authority, wallet ledger-write authority, ECU minting, ILC settlement, or v0.2
-signing.
+envelopes, Genesis mutation, CDL mutation, CDL-088 opening, wallet withdrawal,
+wallet transfer, wallet spend, wallet signing authority, wallet ledger-write
+authority, ECU minting, ILC settlement, or v0.2 signing.
 
 ---
 
@@ -98,6 +107,15 @@ public_rc_exclude_internal_helper_required_phase_1284
 public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api
 phase_1285_transport_principal_public_path_activation_preflight_next
 public_rc_remains_blocked_after_phase_1284
+transport_principal_public_path_activation_preflight_phase_1285.v0.1
+transport_principal_public_p2p_not_activated_phase_1285
+public_fetch_serving_not_enabled_phase_1285
+requester_id_fallback_still_forbidden_phase_1285
+transport_principal_lifecycle_revocation_replay_required_phase_1285
+transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation
+transport_principal_public_path_authority_not_activated_phase_1285
+phase_1286_sidecar_public_projection_privacy_serving_preflight_next
+public_rc_remains_blocked_after_phase_1285
 ```
 
 Locked Window 1281-1288 order:
@@ -109,7 +127,7 @@ Locked Window 1281-1288 order:
 | 1282 Fix1 | Claimability runtime audit hardening | Complete |
 | 1283 | Public claimability authority decision preflight | SENSITIVE, complete: no activation / no public API |
 | 1284 | Public claimability verifier/API boundary preflight | SENSITIVE, complete: internal-only boundary / no public API |
-| 1285 | TransportPrincipal public-path activation preflight | SENSITIVE, pending explicit `GO Phase 1285` |
+| 1285 | TransportPrincipal public-path activation preflight | SENSITIVE, complete: preflight-only / no public path activation |
 | 1286 | Sidecar public projection privacy/serving preflight | SENSITIVE |
 | 1287 | Release publication and v0.2 signing authorization preflight | SENSITIVE |
 | 1288 | Window 1281-1288 closure gate | SENSITIVE |
@@ -274,6 +292,20 @@ public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_o
 phase_1285_transport_principal_public_path_activation_preflight_next
 ```
 
+Phase 1285 records the TransportPrincipal public-path activation preflight.
+The boundary is preflight-only and activates no public path:
+
+```text
+transport_principal_public_path_activation_preflight_phase_1285.v0.1
+transport_principal_public_p2p_not_activated_phase_1285
+public_fetch_serving_not_enabled_phase_1285
+requester_id_fallback_still_forbidden_phase_1285
+transport_principal_lifecycle_revocation_replay_required_phase_1285
+transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation
+transport_principal_public_path_authority_not_activated_phase_1285
+phase_1286_sidecar_public_projection_privacy_serving_preflight_next
+```
+
 ---
 
 ## 5. SIM-FETCH and Canonical Fetch Frontier
@@ -315,9 +347,10 @@ Current profile split:
 - `full_node_public_p2p` - future full node profile requiring TransportPrincipal
   and hostile-network hardening.
 
-Public RC remains blocked after Phase 1284:
+Public RC remains blocked after Phase 1285:
 
 ```text
+public_rc_remains_blocked_after_phase_1285
 public_rc_remains_blocked_after_phase_1284
 public_rc_remains_blocked_after_phase_1283
 public_rc_remains_blocked_after_phase_1282_fix1
@@ -330,8 +363,8 @@ Current blocker classes:
 
 - final public claimability API/verifier authority and release allowlist
   promotion.
-- TransportPrincipal public-path activation, lifecycle, revocation, replay,
-  admission, ban, and hostile-network hardening.
+- actual TransportPrincipal public-path activation authority plus lifecycle,
+  revocation, replay, admission, ban, and hostile-network hardening.
 - public sidecar/projection serving authorization, privacy review,
   sidecar public projection privacy/serving preflight,
   non-loopback bind/listener policy, and peer-discovery policy.
@@ -383,10 +416,11 @@ longer reflects the live frontier:
 | Window state | Window 1273-1280 is closed by Phase 1280 and reflected here by `window_1273_1280_closure_reflected_in_capsule_phase_1282`. |
 | H/IP planning | Phase 1280 Fix1 registered H-020..H-028 and IP-001..IP-006 without public-RC authority. |
 | Runtime audit hardening | Phase 1282 Fix1 hardened local claimability/conversion receipt semantics without public activation. |
-| Active window | Window 1281-1288 is open through Phase 1284; Phase 1285 is sensitive and pending. |
+| Active window | Window 1281-1288 is open through Phase 1285; Phase 1286 is the next preflight. |
 | Public claimability authority | Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`; public claimability remains blocked. |
 | Public claimability verifier/API boundary | Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`; public API serving remains blocked. |
-| Public RC | Public RC remains blocked after Phase 1284. |
+| TransportPrincipal public path | Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`; public path activation remains blocked. |
+| Public RC | Public RC remains blocked after Phase 1285. |
 
 ```text
 capsule_v5_51_supersedes_v5_50
@@ -434,7 +468,12 @@ Phase 1284 verification:
 - CDL register diff remained clean.
 - Scoped `git diff --check` passed.
 
-Phase 1285 remains pending and SENSITIVE.
+Phase 1285 verification:
+
+- Phase 1285 focused TransportPrincipal preflight tests passed.
+- Sensitive-runtime guardrail passed.
+- CDL register diff remained clean.
+- Scoped `git diff --check` passed.
 
 ```text
 context_capsule_v5_51_frontier_refresh_phase_1282.v0.1
@@ -464,4 +503,13 @@ public_rc_exclude_internal_helper_required_phase_1284
 public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api
 phase_1285_transport_principal_public_path_activation_preflight_next
 public_rc_remains_blocked_after_phase_1284
+transport_principal_public_path_activation_preflight_phase_1285.v0.1
+transport_principal_public_p2p_not_activated_phase_1285
+public_fetch_serving_not_enabled_phase_1285
+requester_id_fallback_still_forbidden_phase_1285
+transport_principal_lifecycle_revocation_replay_required_phase_1285
+transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation
+transport_principal_public_path_authority_not_activated_phase_1285
+phase_1286_sidecar_public_projection_privacy_serving_preflight_next
+public_rc_remains_blocked_after_phase_1285
 ```

@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 OPEN through Phase 1284; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, and Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`; the public claimability verifier/API boundary remains an explicit public-RC blocker; Phase 1285 TransportPrincipal public-path activation preflight is next and remains sensitive |
-| Capsule | v5.51 current and updated in place through Phase 1284 |
+| Window frontier | Window 1281-1288 OPEN through Phase 1285; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, and Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`; Phase 1286 sidecar public projection privacy/serving preflight is next under the preflight-only stance |
+| Capsule | v5.51 current and updated in place through Phase 1285 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1370,6 +1370,36 @@ public_claimability_authority_verdict_phase_1283=no_activation_no_public_api
 phase_1284_claimability_verifier_api_boundary_preflight_next
 public_rc_remains_blocked_after_phase_1283
 ```
+
+## 31. Phase 1285 TransportPrincipal Public-Path Activation Preflight Addendum
+
+Phase 1285 records the sensitive TransportPrincipal public-path activation
+preflight under explicit `GO Phase 1285-1288` and the user's preflight-only
+stance:
+
+```text
+transport_principal_public_path_activation_preflight_phase_1285.v0.1
+transport_principal_public_p2p_not_activated_phase_1285
+public_fetch_serving_not_enabled_phase_1285
+requester_id_fallback_still_forbidden_phase_1285
+transport_principal_lifecycle_revocation_replay_required_phase_1285
+transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation
+transport_principal_public_path_authority_not_activated_phase_1285
+phase_1286_sidecar_public_projection_privacy_serving_preflight_next
+public_rc_remains_blocked_after_phase_1285
+```
+
+Phase 1285 does not activate public P2P, public fetch serving, non-loopback
+sidecar/projection serving, public claimability, wallet withdrawal/transfer/
+spend, ECU minting, ILC settlement, release publication, Genesis Atlas
+mutation, v0.2 signing, CDL mutation, CDL-088 opening, or a public RC claim.
+
+Public RC remains blocked after Phase 1285 by sidecar public projection
+privacy/serving preflight, release publication and v0.2 signing authorization,
+counsel/IP/publication authorization, source publication/release artifact
+authorization, final public claimability API/verifier authority, actual
+TransportPrincipal public-path activation authority, wallet
+withdrawal/transfer/spend semantics, ECU minting, and ILC settlement.
 
 Roadmap impact:
 
