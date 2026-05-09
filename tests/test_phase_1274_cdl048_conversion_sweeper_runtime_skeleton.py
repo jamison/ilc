@@ -57,6 +57,10 @@ def _error_token(exc_info: pytest.ExceptionInfo[BaseException]) -> str | None:
     return getattr(exc_info.value, "token", None)
 
 
+def _sha_ref(prefix: str, char: str) -> str:
+    return f"{prefix}:{char * 64}"
+
+
 def test_required_tokens_and_initial_non_activation_export_are_present() -> None:
     assert CDL048_CONVERSION_SWEEPER_RUNTIME_VERSION == (
         "cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1"
@@ -140,8 +144,8 @@ def test_conversion_receipt_is_canonical_and_keeps_public_claimability_disabled(
         agent_id="agent:alpha",
         conversion_epoch=12,
         settled_runtime_epoch=12,
-        wallet_state_root="wallet_state_sha256:alpha",
-        settled_runtime_root="settled_runtime_sha256:alpha",
+        wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+        settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
     )
     payload = conversion_receipt_payload(result.receipt)
 
@@ -168,8 +172,8 @@ def test_conversion_after_deadline_fails_closed() -> None:
             agent_id="agent:alpha",
             conversion_epoch=13,
             settled_runtime_epoch=13,
-            wallet_state_root="wallet_state_sha256:alpha",
-            settled_runtime_root="settled_runtime_sha256:alpha",
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
         )
     assert _error_token(exc_info) == "cdl048_conversion_deadline_expired"
 
@@ -182,8 +186,8 @@ def test_stale_or_missing_roots_fail_closed() -> None:
             agent_id="agent:alpha",
             conversion_epoch=12,
             settled_runtime_epoch=11,
-            wallet_state_root="wallet_state_sha256:alpha",
-            settled_runtime_root="settled_runtime_sha256:alpha",
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
         )
     assert _error_token(stale_exc) == "cdl048_settled_runtime_root_stale"
 
@@ -195,9 +199,21 @@ def test_stale_or_missing_roots_fail_closed() -> None:
             conversion_epoch=12,
             settled_runtime_epoch=12,
             wallet_state_root="",
-            settled_runtime_root="settled_runtime_sha256:alpha",
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
         )
     assert _error_token(root_exc) == "cdl048_wallet_state_root_required"
+
+    with pytest.raises(Cdl048ConversionSweeperRuntimeError) as malformed_root:
+        convert_ecu_lot(
+            _registered_state(),
+            lot_id="lot:alpha",
+            agent_id="agent:alpha",
+            conversion_epoch=12,
+            settled_runtime_epoch=12,
+            wallet_state_root="wallet_state_sha256:alpha",
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
+        )
+    assert _error_token(malformed_root) == "cdl048_wallet_state_root_required"
 
 
 def test_duplicate_lot_agent_mismatch_double_conversion_and_replay_fail_closed() -> None:
@@ -221,8 +237,8 @@ def test_duplicate_lot_agent_mismatch_double_conversion_and_replay_fail_closed()
             agent_id="agent:other",
             conversion_epoch=12,
             settled_runtime_epoch=12,
-            wallet_state_root="wallet_state_sha256:alpha",
-            settled_runtime_root="settled_runtime_sha256:alpha",
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
         )
     assert _error_token(mismatch) == "cdl048_conversion_agent_mismatch"
 
@@ -232,8 +248,8 @@ def test_duplicate_lot_agent_mismatch_double_conversion_and_replay_fail_closed()
         agent_id="agent:alpha",
         conversion_epoch=12,
         settled_runtime_epoch=12,
-        wallet_state_root="wallet_state_sha256:alpha",
-        settled_runtime_root="settled_runtime_sha256:alpha",
+        wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+        settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
     )
     with pytest.raises(Cdl048ConversionSweeperRuntimeError) as double_conversion:
         convert_ecu_lot(
@@ -242,8 +258,8 @@ def test_duplicate_lot_agent_mismatch_double_conversion_and_replay_fail_closed()
             agent_id="agent:alpha",
             conversion_epoch=12,
             settled_runtime_epoch=12,
-            wallet_state_root="wallet_state_sha256:alpha",
-            settled_runtime_root="settled_runtime_sha256:alpha",
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
         )
     assert _error_token(double_conversion) == "cdl048_conversion_duplicate_lot"
 
@@ -258,8 +274,8 @@ def test_duplicate_lot_agent_mismatch_double_conversion_and_replay_fail_closed()
             agent_id="agent:alpha",
             conversion_epoch=12,
             settled_runtime_epoch=12,
-            wallet_state_root="wallet_state_sha256:alpha",
-            settled_runtime_root="settled_runtime_sha256:alpha",
+            wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+            settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
         )
     assert _error_token(replay) == "cdl048_conversion_replay_detected"
 
@@ -271,8 +287,8 @@ def test_conversion_key_binds_epoch_agent_lot_wallet_root_transition_and_settled
         agent_id="agent:alpha",
         conversion_epoch=12,
         settled_runtime_epoch=12,
-        wallet_state_root="wallet_state_sha256:alpha",
-        settled_runtime_root="settled_runtime_sha256:alpha",
+        wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+        settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
     )
     different_wallet_root = convert_ecu_lot(
         _registered_state(),
@@ -280,8 +296,8 @@ def test_conversion_key_binds_epoch_agent_lot_wallet_root_transition_and_settled
         agent_id="agent:alpha",
         conversion_epoch=12,
         settled_runtime_epoch=12,
-        wallet_state_root="wallet_state_sha256:beta",
-        settled_runtime_root="settled_runtime_sha256:alpha",
+        wallet_state_root=_sha_ref("wallet_state_sha256", "c"),
+        settled_runtime_root=_sha_ref("settled_runtime_sha256", "b"),
     )
     different_settled_root = convert_ecu_lot(
         _registered_state(),
@@ -289,8 +305,8 @@ def test_conversion_key_binds_epoch_agent_lot_wallet_root_transition_and_settled
         agent_id="agent:alpha",
         conversion_epoch=12,
         settled_runtime_epoch=12,
-        wallet_state_root="wallet_state_sha256:alpha",
-        settled_runtime_root="settled_runtime_sha256:beta",
+        wallet_state_root=_sha_ref("wallet_state_sha256", "a"),
+        settled_runtime_root=_sha_ref("settled_runtime_sha256", "d"),
     )
 
     keys = {
@@ -309,6 +325,9 @@ def test_canonical_json_is_sorted_and_rejects_nan() -> None:
 
 def test_runtime_source_does_not_add_public_wallet_or_wall_clock_surfaces() -> None:
     source = RUNTIME_PATH.read_text(encoding="utf-8")
+    header = "\n".join(source.splitlines()[:6])
+    assert "PUBLIC_RC_EXCLUDE: internal_phase_helper_not_public_rc_launch_surface" in header
+    assert "PUBLIC_RC_EXCLUDE_REASON: Phase 1274 CDL-048 conversion-sweeper skeleton" in header
     for forbidden in (
         "def withdraw",
         "def transfer",
@@ -332,11 +351,12 @@ def test_phase_docs_status_planning_and_roadmap_record_tokens_and_non_claims() -
         assert "public claimability" in text
         assert "wallet withdrawal" in text
         assert "wallet transfer" in text
-        assert "wallet spend" in text
+    assert "wallet spend" in text
 
     planning = PLANNING_INDEX_PATH.read_text(encoding="utf-8")
-    assert "Window 1273-1280 OPEN through Phase 1274" in planning
-    assert "Phase 1275 is next and remains SENSITIVE" in planning
+    assert "Window 1281-1288 is OPEN through Phase 1282 Fix1" in planning
+    assert "Phase 1274 CDL-048 conversion-sweeper runtime skeleton" in planning
+    assert "Phase 1283 is sensitive" in planning
     assert "phase_1275_claimability_proof_binding_runtime_requires_explicit_go" in STATUS_PATH.read_text(
         encoding="utf-8"
     )

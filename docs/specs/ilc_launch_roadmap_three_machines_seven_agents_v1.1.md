@@ -1263,3 +1263,45 @@ Public RC remains blocked after Phase 1280 Fix1:
 ```text
 public_rc_remains_blocked_after_phase_1280_fix1
 ```
+
+## 28. Phase 1282 Fix1 Claimability Runtime Audit Hardening Addendum
+
+Phase 1282 Fix1 records a deterministic implementation-audit hardening pass over
+the local CDL-048 conversion-sweeper helper and local claimability proof-binding
+helper:
+
+```text
+phase_1282_fix1_claimability_runtime_audit_hardening
+claimability_conversion_receipt_semantics_hardened_phase_1282_fix1
+settled_runtime_root_domain_separation_hardened_phase_1282_fix1
+balance_receipt_decimal_boundary_hardened_phase_1282_fix1
+cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282_fix1
+```
+
+Roadmap impact:
+
+- The Phase 1274 sweeper helper is now marked `PUBLIC_RC_EXCLUDE` and remains an
+  internal phase helper, not a public RC launch surface.
+- Conversion receipts now fail closed unless root refs are full prefixed
+  lowercase SHA-256 refs, deadline math matches CDL-048, conversion epoch is
+  inside the issue/deadline window, settled epoch matches conversion epoch,
+  conversion transition is exact, conversion key derivation matches the receipt
+  binding material, required tokens are present, and activation flags are false.
+- Claimability proof binding now rejects `wallet_state_sha256:` in the
+  settled-runtime-root position, preserving settled-runtime vs wallet-state root
+  domain separation.
+- Latest balance receipt economic fields must be finite Decimal strings, with
+  non-negative `balance_after_ilc`.
+- Public claimability remains blocked; no public API, wallet withdrawal, wallet
+  transfer, wallet spend, ECU minting, ILC settlement, publication, release
+  artifact, Genesis mutation, v0.2 signing, CDL mutation, or public-RC claim is
+  authorized.
+
+Public RC remains blocked after Phase 1282 Fix1:
+
+```text
+public_rc_remains_blocked_after_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282
+public_rc_remains_blocked_after_phase_1280_fix1
+```

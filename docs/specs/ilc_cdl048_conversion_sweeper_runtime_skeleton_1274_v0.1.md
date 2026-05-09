@@ -11,6 +11,12 @@ Required tokens:
 - `conversion_sweeper_no_public_claimability_activation_phase_1274`
 - `ecu_lot_deadline_epoch_enforcement_recorded_phase_1274`
 - `wallet_withdrawal_transfer_spend_still_blocked_phase_1274`
+- `phase_1282_fix1_claimability_runtime_audit_hardening`
+- `claimability_conversion_receipt_semantics_hardened_phase_1282_fix1`
+- `settled_runtime_root_domain_separation_hardened_phase_1282_fix1`
+- `balance_receipt_decimal_boundary_hardened_phase_1282_fix1`
+- `cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1`
+- `public_rc_remains_blocked_after_phase_1282_fix1`
 
 Verdict:
 
@@ -39,6 +45,16 @@ Phase 1274 adds `ilc_core/ledger/cdl048_conversion_sweeper_runtime.py` as an
 isolated ledger helper. It does not widen `PublicWalletRuntime`, the lifecycle
 runtime, FastAPI routes, public receipt classes, storage backends, or settlement
 surfaces.
+
+Phase 1282 Fix1 marks the helper with `PUBLIC_RC_EXCLUDE` and hardens the local
+receipt verifier after an implementation audit:
+
+```text
+phase_1282_fix1_claimability_runtime_audit_hardening
+claimability_conversion_receipt_semantics_hardened_phase_1282_fix1
+cdl048_conversion_sweeper_public_rc_exclude_marked_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282_fix1
+```
 
 The skeleton records:
 
@@ -95,6 +111,13 @@ Missing wallet-state roots and missing settled-runtime roots fail closed. A
 settled-runtime root is accepted only when the supplied settled-runtime epoch
 matches the conversion epoch; otherwise the runtime fails closed with
 `cdl048_settled_runtime_root_stale`.
+
+After Phase 1282 Fix1, wallet and settled runtime roots must be full prefixed
+lowercase SHA-256 references. Placeholder roots such as
+`wallet_state_sha256:alpha` are rejected. Receipt export also rechecks
+deadline math, transition value, conversion-key derivation, required false
+activation flags, required boundary tokens, and digest shapes before returning
+canonical receipt payloads.
 
 This is still a skeleton. It binds supplied roots and performs deterministic
 freshness checks at the epoch-field level, but it does not yet prove wallet-root
@@ -194,7 +217,10 @@ phase_1275_claimability_proof_binding_runtime_requires_explicit_go
 
 ```text
 graph_delta=load_bearing_code_added:ilc_core/ledger/cdl048_conversion_sweeper_runtime.py -> ecu/ilc/public_rc
+graph_delta=load_bearing_code_changed:ilc_core/ledger/cdl048_conversion_sweeper_runtime.py -> ecu/ilc/public_rc
 graph_delta=support_tests_added:tests/test_phase_1274_cdl048_conversion_sweeper_runtime_skeleton.py -> validation
+graph_delta=support_tests_changed:tests/test_phase_1274_cdl048_conversion_sweeper_runtime_skeleton.py -> validation
+graph_delta=support_tests_added:tests/test_phase_1282_fix1_claimability_runtime_audit_hardening.py -> validation
 graph_delta=support_tests_changed:tests/test_window_1273_1280_prompt_drafts.py -> validation/frontier
 graph_delta=support_guardrail_changed:tools/check_sensitive_runtime_coding_taboos.py -> validation/security
 graph_delta=load_bearing_spec_added:docs/specs/ilc_cdl048_conversion_sweeper_runtime_skeleton_1274_v0.1.md -> ecu/ilc/public_rc
