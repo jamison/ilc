@@ -275,8 +275,8 @@ def test_phase_1277_docs_status_planning_and_roadmap_record_required_tokens() ->
         assert GENESIS_ATLAS_V02_SIGNING_DEFERRED_TOKEN in text
 
     planning = _read(PLANNING_INDEX_PATH)
-    assert "Window 1273-1280 OPEN through Phase 1277" in planning
-    assert "Phase 1278 is next and remains SENSITIVE" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278" in planning
+    assert "CDL-087 ratification Fix phase is planned next" in planning
 
 
 def test_phase_1277_records_broad_discovery_non_claims_and_user_decisions() -> None:
