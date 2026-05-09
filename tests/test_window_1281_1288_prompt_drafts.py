@@ -152,7 +152,7 @@ def test_window_1281_1288_planning_index_points_to_active_lock_after_phase_1281(
     assert "ilc_phase_1281_1288_sequence_lock_v0.1.md" in text
     assert "window_1281_1288_sequence_lock_committed" in text
     assert "window_1281_1288_sequence_lock_verdict=pass" in text
-    assert "Window 1281-1288 is OPEN through Phase 1283" in text
+    assert "Window 1281-1288 is OPEN through Phase 1284" in text
     assert "ilc_window_1281_1288_candidate_phase_grouping_v0.1.md" in text
     assert "window_1281_1288_candidate_phase_grouping_recorded_after_phase_1280" in text
     assert "ilc_window_1273_1280_handoff_1280_v0.1.md" in text
