@@ -120,9 +120,9 @@ def test_phase_1279_updates_frontier_and_next_phase() -> None:
     status = _read(STATUS_PATH)
     sequence_lock = _read(SEQUENCE_LOCK_PATH)
 
-    assert "Window 1273-1280 OPEN through Phase 1279" in planning
-    assert "Phase 1280 remains the next locked sensitive closure phase" in planning
-    assert "Window frontier | Window 1273-1280 OPEN through Phase 1279" in roadmap
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in planning
+    assert "window_1281_plus_sequence_lock_required_before_next_phase_assignment" in planning
+    assert "Window frontier | Window 1273-1280 CLOSED / PASS through Phase 1280" in roadmap
     assert "## 25. Phase 1279 Release Manifest Allowlist Prepublication Addendum" in roadmap
     assert "## Phase 1279" in status
     assert "Phase 1280 - Window 1273-1280 coherence, blocker classification, and closure gate" in status
