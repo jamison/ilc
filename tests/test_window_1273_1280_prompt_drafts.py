@@ -6,6 +6,10 @@ from tools.validate_phase_prompt import validate
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT_DIR = ROOT / "docs/antigravity_tasks"
 GUIDANCE = ROOT / "docs/specs/ilc_window_1273_1280_candidate_phase_grouping_v0.1.md"
+AUDIT = (
+    ROOT
+    / "docs/specs/ilc_window_1273_1280_prompt_package_outside_audit_2026_05_09_v0.1.md"
+)
 
 PHASE_PROMPTS = (
     "antigravity_prompt__phase_1273_g8_window_1273_1280_sequence_lock.md",
@@ -154,3 +158,29 @@ def test_window_1273_1280_planning_index_points_to_guidance_without_opening_wind
     assert "Window 1273-1280 planning-only guidance" in text
     assert "window_1273_1280_not_open_until_sequence_lock" in text
     assert "window_1273_plus_sequence_lock_required_before_next_phase_assignment" in text
+
+
+def test_planning_index_session_start_canon_routes_to_current_frontier() -> None:
+    text = _text(ROOT / "docs/PLANNING_INDEX.md")
+    session_start = text.split("## 1. Session-Start Canon", maxsplit=1)[1].split(
+        "## 2.", maxsplit=1
+    )[0]
+
+    assert "Window 1273-1280 guidance" in session_start
+    assert "ilc_window_1273_1280_candidate_phase_grouping_v0.1.md" in session_start
+    assert "Window 1265-1272 handoff" in session_start
+    assert "ilc_window_1265_1272_handoff_1272_v0.1.md" in session_start
+    assert "Window 1249-1256 handoff** ⬅ CURRENT" not in session_start
+    assert "Window 1249-1256 handoff** (closed reference)" in session_start
+
+
+def test_window_1273_1280_outside_audit_records_hardening_without_authority_expansion() -> None:
+    audit = _text(AUDIT)
+    index = _text(ROOT / "docs/PLANNING_INDEX.md")
+
+    assert "window_1273_1280_prompt_package_outside_audit_2026_05_09.v0.1" in audit
+    assert "planning_index_session_start_frontier_hardened_after_audit" in audit
+    assert "window_1273_1280_audit_no_authority_expansion" in audit
+    assert "planning_index_session_start_canon_stale_after_window_1273_1280_prompt_draft" in audit
+    assert "does not open Window 1273-1280" in index
+    assert "ilc_window_1273_1280_prompt_package_outside_audit_2026_05_09_v0.1.md" in index
