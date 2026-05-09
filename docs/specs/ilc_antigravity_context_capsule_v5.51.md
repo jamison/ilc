@@ -3,7 +3,7 @@
 **Date:** 2026-05-09
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.50.md`
 **Produced:** Phase 1282, Window 1281-1288
-**Frontier:** Window 1281-1288 closed with pass verdict through Phase 1288; Window 1289+ sequence lock required before next phase assignment
+**Frontier:** Window 1281-1288 closed with pass verdict through Phase 1288; Phase 1288 Fix1 runtime deep audit hardening complete; Window 1289+ sequence lock required before next phase assignment
 
 ```text
 context_capsule_v5_51_frontier_refresh_phase_1282.v0.1
@@ -60,6 +60,11 @@ window_1281_1288_closure_gate_verdict=pass
 phase_1288_window_1281_1288_closure_complete
 window_1289_plus_sequence_lock_required_before_next_phase_assignment
 public_rc_remains_blocked_after_phase_1288
+phase_1288_fix1_runtime_deep_audit_hardening
+canonical_payload_float_rejection_hardened_phase_1288_fix1
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_path_preflight_key_shape_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
 ```
 
 ---
@@ -67,8 +72,9 @@ public_rc_remains_blocked_after_phase_1288
 ## 1. Current State
 
 Window 1273-1280 is closed with a pass verdict, Phase 1280 Fix1 hardening is
-complete, Window 1281-1288 is closed with pass verdict through Phase 1288, and
-Window 1289+ sequence lock is required before any next phase assignment.
+complete, Window 1281-1288 is closed with pass verdict through Phase 1288,
+Phase 1288 Fix1 runtime deep audit hardening is complete, and Window 1289+
+sequence lock is required before any next phase assignment.
 
 Current closed window lock:
 
@@ -200,6 +206,11 @@ window_1281_1288_closure_gate_verdict=pass
 phase_1288_window_1281_1288_closure_complete
 window_1289_plus_sequence_lock_required_before_next_phase_assignment
 public_rc_remains_blocked_after_phase_1288
+phase_1288_fix1_runtime_deep_audit_hardening
+canonical_payload_float_rejection_hardened_phase_1288_fix1
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_path_preflight_key_shape_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
 ```
 
 Locked Window 1281-1288 order:
@@ -215,6 +226,7 @@ Locked Window 1281-1288 order:
 | 1286 | Sidecar public projection privacy/serving preflight | SENSITIVE, complete: preflight-only / no public serving |
 | 1287 | Release publication and v0.2 signing authorization preflight | SENSITIVE, complete: preflight-only / no publication or signing |
 | 1288 | Window 1281-1288 closure gate | SENSITIVE, complete: closed / pass |
+| 1288 Fix1 | Runtime deep audit hardening | Complete: bounded/cycle-safe canonical and preflight payload traversal |
 
 ---
 
@@ -436,6 +448,24 @@ window_1289_plus_sequence_lock_required_before_next_phase_assignment
 public_rc_remains_blocked_after_phase_1288
 ```
 
+Phase 1288 Fix1 hardens the local runtime/preflight helper payload boundaries
+after a deep deterministic implementation audit:
+
+```text
+phase_1288_fix1_runtime_deep_audit_hardening
+canonical_payload_float_rejection_hardened_phase_1288_fix1
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_path_preflight_key_shape_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
+```
+
+The hardening covers local CDL-048 conversion canonical payloads, claimability
+proof-binding canonical payloads, TransportPrincipal public-path preflight
+payloads, and sidecar public-path preflight payloads. Those surfaces now fail
+closed on finite floats, non-string JSON keys, cycles, excessive traversal
+depth, and excessive traversal node count before canonical hashing or export.
+No public activation or release authority is granted.
+
 ---
 
 ## 5. SIM-FETCH and Canonical Fetch Frontier
@@ -477,9 +507,10 @@ Current profile split:
 - `full_node_public_p2p` - future full node profile requiring TransportPrincipal
   and hostile-network hardening.
 
-Public RC remains blocked after Phase 1288:
+Public RC remains blocked after Phase 1288 Fix1:
 
 ```text
+public_rc_remains_blocked_after_phase_1288_fix1
 public_rc_remains_blocked_after_phase_1288
 public_rc_remains_blocked_after_phase_1287
 public_rc_remains_blocked_after_phase_1286

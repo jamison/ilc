@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 CLOSED / PASS through Phase 1288; closure handoff is `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`, and Phase 1288 records `window_1281_1288_closure_gate_verdict=pass`; Window 1289+ sequence lock required before next phase assignment |
-| Capsule | v5.51 current and updated in place through Phase 1288 |
+| Window frontier | Window 1281-1288 CLOSED / PASS through Phase 1288; closure handoff is `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`, Phase 1288 records `window_1281_1288_closure_gate_verdict=pass`, and Phase 1288 Fix1 records `phase_1288_fix1_runtime_deep_audit_hardening`; Window 1289+ sequence lock required before next phase assignment |
+| Capsule | v5.51 current and updated in place through Phase 1288 Fix1 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1387,6 +1387,45 @@ transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_
 transport_principal_public_path_authority_not_activated_phase_1285
 phase_1286_sidecar_public_projection_privacy_serving_preflight_next
 public_rc_remains_blocked_after_phase_1285
+```
+
+## 35. Phase 1288 Fix1 Runtime Deep Audit Hardening Addendum
+
+Phase 1288 Fix1 records a deep deterministic implementation audit and hardening
+pass over the runtime/helper surfaces introduced or relied on by Phases 1274,
+1275, 1277, 1278, and 1282 Fix1:
+
+```text
+phase_1288_fix1_runtime_deep_audit_hardening
+canonical_payload_float_rejection_hardened_phase_1288_fix1
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_path_preflight_key_shape_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
+```
+
+Roadmap impact:
+
+- Local CDL-048 conversion canonical payloads and claimability proof-binding
+  canonical payloads reject finite floats before canonical hashing/export.
+- Local conversion/claimability canonical payload traversal and
+  TransportPrincipal/sidecar public-path preflight validation now fail closed on
+  recursive cycles, excessive traversal depth, excessive traversal node count,
+  and non-string JSON object keys.
+- `tools/check_sensitive_runtime_coding_taboos.py` now tracks the untrusted
+  payload-bound contracts for these four helper surfaces.
+- No public claimability, public verifier/API, TransportPrincipal public path,
+  public sidecar/projection serving, source publication, release artifact,
+  release key, release envelope, Genesis mutation/signing, CDL mutation,
+  CDL-088 opening, wallet withdrawal/transfer/spend, ECU minting, ILC
+  settlement, public RC claim, or v0.2 signing is authorized.
+
+Public RC remains blocked after Phase 1288 Fix1:
+
+```text
+public_rc_remains_blocked_after_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288
+public_rc_remains_blocked_after_phase_1287
+public_rc_remains_blocked_after_phase_1286
 ```
 
 Phase 1285 does not activate public P2P, public fetch serving, non-loopback
