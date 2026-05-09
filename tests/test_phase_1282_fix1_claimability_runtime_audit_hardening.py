@@ -226,8 +226,8 @@ def test_phase_1282_fix1_docs_and_frontier_records_are_published() -> None:
             assert token in text
 
     planning = PLANNING.read_text(encoding="utf-8")
-    assert "Window 1281-1288 is OPEN through Phase 1284" in planning
-    assert "Phase 1285 is sensitive" in planning
+    assert "Window 1281-1288 CLOSED / PASS through Phase 1288" in planning
+    assert "Window 1289+ sequence lock required before next phase assignment" in planning
     assert "wallet withdrawal, wallet transfer, wallet spend" in planning
 
 

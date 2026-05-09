@@ -107,6 +107,37 @@ OUTBOUND_FETCH_BOUND_CONTRACTS = {
     ),
 }
 
+UNTRUSTED_PAYLOAD_BOUND_CONTRACTS = {
+    "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py": (
+        "_MAX_CANONICAL_PAYLOAD_DEPTH",
+        "_MAX_CANONICAL_PAYLOAD_NODES",
+        "cdl048_payload_cycle_forbidden",
+        "cdl048_float_forbidden",
+        "cdl048_payload_key_invalid",
+    ),
+    "ilc_core/ledger/claimability_proof_binding_runtime.py": (
+        "_MAX_CANONICAL_PAYLOAD_DEPTH",
+        "_MAX_CANONICAL_PAYLOAD_NODES",
+        "claimability_payload_cycle_forbidden",
+        "claimability_float_forbidden",
+        "claimability_payload_key_invalid",
+    ),
+    "ilc_core/network/d2d/transport_principal_public_path_preflight.py": (
+        "_MAX_PREFLIGHT_PAYLOAD_DEPTH",
+        "_MAX_PREFLIGHT_PAYLOAD_NODES",
+        "transport_principal_public_path_payload_cycle_forbidden",
+        "transport_principal_public_path_float_values_forbidden",
+        "transport_principal_public_path_payload_key_invalid",
+    ),
+    "ilc_core/graph/sidecar_public_path_preflight.py": (
+        "_MAX_PREFLIGHT_PAYLOAD_DEPTH",
+        "_MAX_PREFLIGHT_PAYLOAD_NODES",
+        "sidecar_public_path_payload_cycle_forbidden",
+        "sidecar_public_path_float_values_forbidden",
+        "sidecar_public_path_payload_key_invalid",
+    ),
+}
+
 
 def _iter_python_files() -> list[Path]:
     files: set[Path] = set()
@@ -343,6 +374,12 @@ def find_violations() -> list[str]:
             for required in OUTBOUND_FETCH_BOUND_CONTRACTS[rel]:
                 if required not in text:
                     violations.append(f"{rel}:outbound_fetch_bound_contract_missing_{required}")
+
+        if rel in UNTRUSTED_PAYLOAD_BOUND_CONTRACTS:
+            text = path.read_text(encoding="utf-8")
+            for required in UNTRUSTED_PAYLOAD_BOUND_CONTRACTS[rel]:
+                if required not in text:
+                    violations.append(f"{rel}:untrusted_payload_bound_contract_missing_{required}")
 
     return violations
 

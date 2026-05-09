@@ -154,6 +154,20 @@ release_artifact_authorized
 The helper uses canonical JSON with `sort_keys=True`, compact separators,
 `allow_nan=False`, full SHA-256 hashes, and recursive float rejection.
 
+Phase 1288 Fix1 hardens sidecar preflight payload traversal:
+
+```text
+phase_1288_fix1_runtime_deep_audit_hardening
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_path_preflight_key_shape_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
+```
+
+Validation now rejects finite floats, non-string JSON keys, recursive cycles,
+excessive traversal depth, and excessive traversal node count before canonical
+preflight hashing/export. This is internal preflight hardening only and does not
+activate public sidecar/projection serving.
+
 ## 6. Post-1278 Fix-Phase Planning
 
 Phase 1277 and Phase 1278 now both pass as preflight gates without public

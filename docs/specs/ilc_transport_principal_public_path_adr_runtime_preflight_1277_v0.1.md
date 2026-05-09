@@ -121,6 +121,20 @@ harness_identity_rate_limit_key_still_forbidden_phase_1277
 | Canonical binding | Preflight JSON uses deterministic key ordering, compact separators, `allow_nan=False`, full SHA-256 digests, and recursive float rejection. |
 | Runtime surface | The helper has no socket, HTTP server, network fetch, wall-clock protocol time, or predictable PRNG dependency. |
 
+Phase 1288 Fix1 hardens preflight payload traversal:
+
+```text
+phase_1288_fix1_runtime_deep_audit_hardening
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_path_preflight_key_shape_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
+```
+
+Validation now rejects finite floats, non-string JSON keys, recursive cycles,
+excessive traversal depth, and excessive traversal node count before canonical
+preflight hashing/export. This is internal preflight hardening only and does not
+activate a public TransportPrincipal path.
+
 Phase 1277 does not select the final public credential authority. Any future
 phase that tries to choose that authority, enable a listener, relax fallback
 rules, or expose public P2P/fetch/sidecar surfaces must stop for human review.

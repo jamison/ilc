@@ -132,6 +132,20 @@ Phase 1275 validation is fail-closed:
 | Floats | Rejected recursively from latest balance receipt and conversion receipt payloads with `claimability_float_forbidden`. |
 | Public activation flags | Must remain false; a rehashed conversion receipt with activation enabled fails with `claimability_conversion_receipt_activation_forbidden`. |
 
+Phase 1288 Fix1 hardens the canonical proof payload boundary:
+
+```text
+phase_1288_fix1_runtime_deep_audit_hardening
+canonical_payload_float_rejection_hardened_phase_1288_fix1
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
+```
+
+Canonical proof hashing/export now rejects finite floats, non-string JSON keys,
+recursive cycles, excessive traversal depth, and excessive traversal node count.
+This is local verifier hardening only and does not activate public claimability
+or a public/non-loopback claimability API.
+
 The Phase 1274 conversion receipt semantics remain binding:
 
 ```text

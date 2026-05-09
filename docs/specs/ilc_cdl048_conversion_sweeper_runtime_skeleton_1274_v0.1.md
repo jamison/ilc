@@ -138,6 +138,20 @@ The sensitive-runtime guardrail now includes
 JSON scan, so future edits that remove `sort_keys=True` or `allow_nan=False`
 from its canonical JSON helper fail the guardrail.
 
+Phase 1288 Fix1 additionally hardens canonical payload traversal:
+
+```text
+phase_1288_fix1_runtime_deep_audit_hardening
+canonical_payload_float_rejection_hardened_phase_1288_fix1
+untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix1
+```
+
+The canonical JSON helper now rejects finite floats, non-string JSON keys,
+recursive cycles, excessive traversal depth, and excessive traversal node count
+before hashing/export. This closes the untrusted payload traversal gap without
+activating public claimability or any wallet/ECU/ILC economic surface.
+
 Receipts explicitly record:
 
 ```text
