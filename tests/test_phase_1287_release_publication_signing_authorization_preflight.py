@@ -110,11 +110,14 @@ def test_phase_1287_frontier_routes_to_phase_1288_closure() -> None:
     capsule = read(CAPSULE)
     status = read(STATUS)
 
-    assert "Window 1281-1288 is OPEN through Phase 1287" in planning
-    assert "Window 1281-1288 is open through Phase 1287" in capsule
+    assert "Window 1281-1288 CLOSED / PASS through Phase 1288" in planning
+    assert "Window 1281-1288 closed with pass verdict through Phase 1288" in capsule
     assert "## Phase 1287" in status
+    assert "## Phase 1288" in status
     assert "phase_1288_window_1281_1288_closure_gate_next" in planning
     assert "public_rc_remains_blocked_after_phase_1287" in planning
+    assert "window_1281_1288_closed_phase_1288" in planning
+    assert "window_1289_plus_sequence_lock_required_before_next_phase_assignment" in planning
 
 
 def test_phase_1287_does_not_mutate_cdl_register_or_open_cdl088() -> None:
