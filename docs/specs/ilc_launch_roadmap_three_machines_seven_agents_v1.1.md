@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 OPEN through Phase 1286; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, and Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`; Phase 1287 release publication/signing authorization preflight is next under the preflight-only stance |
-| Capsule | v5.51 current and updated in place through Phase 1286 |
+| Window frontier | Window 1281-1288 OPEN through Phase 1287; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, and Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`; Phase 1288 window closure is next |
+| Capsule | v5.51 current and updated in place through Phase 1287 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1448,8 +1448,8 @@ Roadmap impact:
   serving authority, actual TransportPrincipal public-path activation,
   public-safe projection schema, field filtering, privacy review, abuse/rate
   limit controls, and hostile-network validation.
-- The next executable sensitive slice is Phase 1287, release publication and
-  v0.2 signing authorization preflight.
+- At Phase 1286 close, the locked successor was Phase 1287, release
+  publication and v0.2 signing authorization preflight.
 
 Public RC remains blocked after Phase 1286 by release publication and v0.2
 signing authorization, counsel/IP/publication authorization, source
@@ -1464,4 +1464,59 @@ public_rc_remains_blocked_after_phase_1286
 public_rc_remains_blocked_after_phase_1285
 public_rc_remains_blocked_after_phase_1284
 public_rc_remains_blocked_after_phase_1283
+```
+
+## 33. Phase 1287 Release Publication Signing Authorization Preflight Addendum
+
+Phase 1287 records the sensitive release publication/signing authorization
+preflight under explicit `GO Phase 1285-1288` and the user's preflight-only
+stance:
+
+```text
+release_publication_signing_authorization_preflight_phase_1287.v0.1
+public_repository_publication_not_authorized_phase_1287
+release_artifact_production_not_authorized_phase_1287
+source_allowlist_export_not_executed_phase_1287
+release_keys_not_generated_phase_1287
+release_envelope_not_produced_phase_1287
+v0_2_signing_not_authorized_phase_1287
+genesis_atlas_mutation_not_authorized_phase_1287
+release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing
+public_package_publication_not_authorized_phase_1287
+public_rc_claim_not_authorized_phase_1287
+genesis_atlas_signing_not_authorized_phase_1287
+phase_1288_window_1281_1288_closure_gate_next
+public_rc_remains_blocked_after_phase_1287
+```
+
+Phase 1287 does not execute source allowlist export, publish a public repository
+or package, produce release artifacts, generate release keys, produce release
+envelopes, mutate/regenerate/sign Genesis Atlas, sign v0.2, make a public RC
+claim, open CDL-088, mutate the CDL register, or activate public runtime or
+economic surfaces.
+
+Roadmap impact:
+
+- Phase 1287 closes only the release publication/signing authorization preflight
+  record. It does not convert Phase 1255 allowlist procedure, Phase 1213
+  manifest schema, Phase 1271 graph pass, or Phase 1279 inventory into release
+  authority.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, actual TransportPrincipal public-path activation authority, actual
+  sidecar public projection serving authority, counsel/IP/publication
+  authorization, source allowlist export execution, release artifact
+  production, release keys, release envelopes, Genesis Atlas mutation/signing if
+  needed, v0.2 signing authorization, wallet semantics, ECU minting, and ILC
+  settlement.
+- The next executable sensitive slice is Phase 1288, Window 1281-1288 closure
+  gate, which must close the window honestly without making a public RC claim
+  unless an explicit later activation/release phase is planned.
+
+Public RC remains blocked after Phase 1287:
+
+```text
+public_rc_remains_blocked_after_phase_1287
+public_rc_remains_blocked_after_phase_1286
+public_rc_remains_blocked_after_phase_1285
+public_rc_remains_blocked_after_phase_1284
 ```

@@ -110,7 +110,7 @@ def test_phase_1286_records_privacy_and_abuse_risks() -> None:
         assert phrase in spec
 
 
-def test_phase_1286_frontier_routes_to_phase_1287_preflight() -> None:
+def test_phase_1286_frontier_is_carried_forward_after_phase_1287_preflight() -> None:
     planning = read(PLANNING)
     capsule = read(CAPSULE)
     status = read(STATUS)
@@ -120,6 +120,8 @@ def test_phase_1286_frontier_routes_to_phase_1287_preflight() -> None:
     assert "## Phase 1286" in status
     assert "phase_1287_release_publication_signing_authorization_preflight_next" in planning
     assert "public_rc_remains_blocked_after_phase_1286" in planning
+    assert "release_publication_signing_authorization_preflight_phase_1287.v0.1" in planning
+    assert "phase_1288_window_1281_1288_closure_gate_next" in planning
 
 
 def test_phase_1286_does_not_mutate_cdl_register_or_open_cdl088() -> None:
