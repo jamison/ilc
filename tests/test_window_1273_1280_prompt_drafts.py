@@ -150,14 +150,16 @@ def test_phase_1276_prompt_requires_default_no_register_mutation() -> None:
     assert "explicit human ratification authorization" in text
 
 
-def test_window_1273_1280_planning_index_points_to_guidance_without_opening_window() -> None:
+def test_window_1273_1280_planning_index_points_to_open_sequence_lock() -> None:
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
 
+    assert "ilc_phase_1273_1280_sequence_lock_v0.1.md" in text
     assert "ilc_window_1273_1280_candidate_phase_grouping_v0.1.md" in text
-    assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in text
-    assert "Window 1273-1280 planning-only guidance" in text
-    assert "window_1273_1280_not_open_until_sequence_lock" in text
-    assert "window_1273_plus_sequence_lock_required_before_next_phase_assignment" in text
+    assert "Window 1273-1280 OPEN through Phase 1273" in text
+    assert "window_1273_1280_sequence_lock_committed" in text
+    assert "phase_1274_cdl048_conversion_sweeper_runtime_requires_explicit_go" in text
+    assert "Phase 1274 is next and remains SENSITIVE" in text
+    assert "Window 1265-1272 is CLOSED / PASS through Phase 1272" in text
 
 
 def test_planning_index_session_start_canon_routes_to_current_frontier() -> None:
@@ -182,5 +184,7 @@ def test_window_1273_1280_outside_audit_records_hardening_without_authority_expa
     assert "planning_index_session_start_frontier_hardened_after_audit" in audit
     assert "window_1273_1280_audit_no_authority_expansion" in audit
     assert "planning_index_session_start_canon_stale_after_window_1273_1280_prompt_draft" in audit
-    assert "does not open Window 1273-1280" in index
+    assert "does not open Window 1273-1280" in audit
+    assert "Window 1273-1280 OPEN through Phase 1273" in index
+    assert "window_1273_1280_sequence_lock_committed" in index
     assert "ilc_window_1273_1280_prompt_package_outside_audit_2026_05_09_v0.1.md" in index
