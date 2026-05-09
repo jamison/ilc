@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 CLOSED / PASS through Phase 1280; current handoff is `docs/specs/ilc_window_1273_1280_handoff_1280_v0.1.md`; closed sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery, Phase 1278 Fix1 ratifies CDL-087 without public fetch/sidecar/projection activation, Phase 1279 records release manifest/source allowlist prepublication inventory without source publication, release artifact production, release keys, release envelopes, Genesis Atlas mutation, v0.2 signing, or a public-RC claim, and Phase 1280 closes the window with `window_1281_plus_sequence_lock_required_before_next_phase_assignment` |
-| Capsule | v5.50 current |
+| Window frontier | Window 1281-1288 OPEN through Phase 1283; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, and Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`; Phase 1284 public claimability verifier/API boundary preflight is next and remains sensitive |
+| Capsule | v5.51 current and updated in place through Phase 1283 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1301,6 +1301,52 @@ Roadmap impact:
 Public RC remains blocked after Phase 1282 Fix1:
 
 ```text
+public_rc_remains_blocked_after_phase_1282_fix1
+public_rc_remains_blocked_after_phase_1282
+public_rc_remains_blocked_after_phase_1280_fix1
+```
+
+## 29. Phase 1283 Public Claimability Authority Decision Preflight Addendum
+
+Phase 1283 records the sensitive public-claimability authority decision
+preflight after explicit `GO Phase 1283`:
+
+```text
+public_claimability_authority_decision_preflight_phase_1283.v0.1
+public_claimability_activation_requires_explicit_human_authorization_phase_1283
+public_claimability_activation_not_authorized_by_default_phase_1283
+wallet_withdrawal_transfer_spend_still_blocked_phase_1283
+claimability_human_question_escalation_required_phase_1283
+public_claimability_authority_verdict_phase_1283=no_activation_no_public_api
+phase_1284_claimability_verifier_api_boundary_preflight_next
+public_rc_remains_blocked_after_phase_1283
+```
+
+Roadmap impact:
+
+- Local CDL-048 conversion-sweeper and claimability proof-binding evidence is
+  sufficient for the next verifier/API boundary preflight, but not sufficient
+  for public claimability activation.
+- Public claimability authority is not granted by Phase 1283. The next
+  executable claimability slice is Phase 1284, a sensitive verifier/API boundary
+  preflight.
+- The Phase 1274 and Phase 1275 helpers remain `PUBLIC_RC_EXCLUDE` internal
+  scaffolds. The release allowlist review has not promoted the internal helpers;
+  a later explicit release allowlist review must promote or replace them before
+  any public RC package inclusion.
+- No public or non-loopback claimability API, public verifier service, wallet
+  withdrawal, wallet transfer, wallet spend, wallet signing authority,
+  wallet ledger-write authority, ECU minting, ILC settlement, publication,
+  release artifact, Genesis mutation, v0.2 signing, CDL mutation, CDL-088
+  opening, public-RC claim, or public launch claim is authorized.
+
+Public RC remains blocked after Phase 1283 by public claimability verifier/API
+boundary, TransportPrincipal public-path activation, sidecar public projection
+privacy/serving preflight, release publication and v0.2 signing authorization,
+and source/release artifact authority:
+
+```text
+public_rc_remains_blocked_after_phase_1283
 public_rc_remains_blocked_after_phase_1282_fix1
 public_rc_remains_blocked_after_phase_1282
 public_rc_remains_blocked_after_phase_1280_fix1
