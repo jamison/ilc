@@ -15,6 +15,9 @@ Phase 1281 sequence lock after explicit human `GO Phase 1281`.
 window_1281_1288_candidate_phase_grouping_recorded_after_phase_1280
 window_1281_1288_not_open_until_sequence_lock
 human_question_escalation_required_for_uncertain_authority
+phase_1280_fix1_hypergraph_laplacian_docs_hardened
+h_series_020_plus_registered_phase_1280_fix1
+ip_lane_001_plus_registered_phase_1280_fix1
 ```
 
 ---
@@ -44,6 +47,16 @@ release_publication_signing_authorization_window_candidate
 No candidate phase below is a public-RC claim. The future sequence lock must
 decide which scopes are executable and which must stop for human authorization.
 
+Phase 1280 Fix1 adds a docs-only planning registry for hypergraph/Laplacian and
+IP/publication work. That registry does not open Window 1281-1288 and does not
+authorize publication or IP filing. It should be direct-read before any future
+phase touches Merkle-Laplacian, PoSK, sealed spectral beacons, spectral routing,
+star expansion, or publication/IP boundaries:
+
+```text
+docs/specs/ilc_phase_1280_fix1_hypergraph_laplacian_docs_hardening_v0.1.md
+```
+
 ---
 
 ## 2. Retrieval And Verification Basis
@@ -70,6 +83,7 @@ Direct current-canon inputs:
 18. `ilc_core/ledger/claimability_proof_binding_runtime.py`
 19. `ilc_core/network/d2d/transport_principal_public_path_preflight.py`
 20. `ilc_core/graph/sidecar_public_path_preflight.py`
+21. `docs/specs/ilc_phase_1280_fix1_hypergraph_laplacian_docs_hardening_v0.1.md`
 
 Standing retrieval rule:
 
@@ -186,6 +200,10 @@ phase reaches the relevant decision point:
 - Phase 1287: are counsel/IP/publication, release key/envelope, Genesis Atlas,
   and v0.2 signing gates still deferred, or has explicit authority arrived?
 
+Do not route IP filing or publication-draft work into Phases 1281-1288 unless
+a future sequence lock explicitly widens scope. The IP lane registered in Phase
+1280 Fix1 is advisory carry-forward planning, not publication authorization.
+
 ## 7. Window Exit Criteria
 
 Window 1281-1288 should not close as pass unless all of the following are true:
@@ -251,9 +269,15 @@ release_publication_signing_authorization_window_candidate
 human_question_escalation_required_for_uncertain_authority
 default_to_no_authorization_when_canon_is_ambiguous
 public_rc_remains_blocked_after_phase_1280
+public_rc_remains_blocked_after_phase_1280_fix1
 capsule_v5_51_refresh_recommended_after_phase_1280
 public_claimability_activation_requires_explicit_human_authorization_phase_1283
 transport_principal_activation_required_before_public_projection_phase_1286
 release_publication_and_v0_2_signing_still_authorization_gated_after_phase_1280
 unknown_unknown_discovery_required_before_phase_execution
+phase_1280_fix1_hypergraph_laplacian_docs_hardened
+h_series_020_plus_registered_phase_1280_fix1
+ip_lane_001_plus_registered_phase_1280_fix1
+publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
+public_rc_candidate_standard_preserved_phase_1280_fix1
 ```

@@ -2,15 +2,37 @@
 
 **Phase originated:** 1233-1240 (design discussion, human + Codex)
 **Earliest implementation window:** 1241+
-**Status:** Pre-planning only. No spec-open or CDL-open decision has been made.
+**Status:** Pre-planning only. No spec-open or CDL-open decision has been made. Phase 1280 Fix1 addendum below supersedes stale CDL-087 text.
 **Sequence gate:** Must not precede Phase 1236 (commit.epoch connector),
 Phase 1237 (L3 sidecar spec), or Phase 1238 (SIM-FETCH-01).
-**Current planning status:** Not yet scheduled as a locked phase in Window 1233-1240.
+**Current planning status:** Not scheduled in the current Phase 1280 frontier.
 This artifact is a citeable planning record for Window 1241+ consideration, not an
 authorization to implement or wire economics.
 
 ```text
 dynamic_epistemic_traversal_engine_forward_planning_recorded_phase_1233_1240
+```
+
+---
+
+## Phase 1280 Fix1 Current-Status Addendum
+
+As of Phase 1280 Fix1:
+
+- CDL-087 is ratified by Phase 1278 Fix1, so older text below that says the
+  CDL-087 ratification flag remains false is stale.
+- CDL-087 ratification does not authorize public fetch serving, public
+  sidecar/projection serving, public claimability, public P2P, or public RC.
+- The Dynamic Epistemic Traversal Engine remains pre-planning only and is not currently scheduled in Window 1281-1288. It should be routed separately after
+  the public-RC critical path unless a future sequence lock explicitly includes
+  it.
+- Any implementation must remain read-only, deterministic, bounded, exact
+  numeric, and projection-layer only until separate SIM/CDL gates authorize
+  routing or settlement effects.
+
+```text
+phase_1280_fix1_dynamic_traversal_status_addendum
+dynamic_epistemic_traversal_engine_remains_unscheduled_after_phase_1280_fix1
 ```
 
 ---
@@ -332,8 +354,9 @@ Tests should cover:
 - This is NOT an LLM or matrix-multiply engine added to ILC.
 - This is NOT authorization for CDL-088 or any economic settlement change.
 - This is NOT a public-launch act or production wiring decision.
-- The `cdl_087_ratification_authorized` flag remains `false` until the six
-  Phase 1228 ratification conditions are satisfied independently.
+- CDL-087 ratification is complete as of Phase 1278 Fix1, but that does not
+  authorize this engine, public fetch serving, public sidecar/projection
+  serving, or public RC.
 - This is NOT a replacement for `commit.epoch`; epoch/finality remains governed
   by CDL-051 and the Phase 1226/1235 `commit.epoch` path.
 

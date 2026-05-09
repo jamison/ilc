@@ -1236,3 +1236,30 @@ public_rc_remains_blocked_after_phase_1280
 public_rc_remains_blocked_after_phase_1279
 public_rc_remains_blocked_after_phase_1278_fix1
 ```
+
+## 27. Phase 1280 Fix1 Hypergraph/Laplacian Planning Hardening Addendum
+
+Phase 1280 Fix1 records a docs-only hardening pass after the Window 1273-1280
+closure:
+
+```text
+phase_1280_fix1_hypergraph_laplacian_docs_hardened
+h_series_020_plus_registered_phase_1280_fix1
+ip_lane_001_plus_registered_phase_1280_fix1
+publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
+public_rc_candidate_standard_preserved_phase_1280_fix1
+```
+
+The phase fixes stale hypergraph/Laplacian/ATLAS-G/DTE planning records and
+registers H-020 through H-028 plus IP-001 through IP-006. It does not file any
+patent application, publish any paper, authorize public source publication,
+produce release artifacts, generate release keys/envelopes, mutate Genesis,
+sign v0.2, open or mutate any CDL row, activate public fetch serving, activate
+public sidecar/projection serving, activate public claimability, mint ECU,
+settle ILC, or make a public-RC claim.
+
+Public RC remains blocked after Phase 1280 Fix1:
+
+```text
+public_rc_remains_blocked_after_phase_1280_fix1
+```
