@@ -12,6 +12,26 @@ sequence lock after Phase 1240 closes.
 
 ---
 
+## Phase 1280 Fix1 Current-Status Addendum
+
+This candidate grouping has been partially consumed. As of Phase 1280 Fix1:
+
+- ATLAS-G-001 through ATLAS-G-003 executed in Phase 1247.
+- ATLAS-G-004 and ATLAS-G-005 executed in Phase 1254.
+- ATLAS-G-006 executed in Phase 1271 and was hardened in Phase 1271 Fix1.
+- ATLAS-G-007 through ATLAS-G-010 remain future candidate work, expected after
+  Window 1281-1288 and only under a later sequence lock.
+- IP-001 through IP-006 are registered separately for patent/publication prep;
+  do not treat IP drafting as an ATLAS-G phase.
+
+```text
+phase_1280_fix1_atlas_g_candidate_status_addendum
+atlas_g_001_through_006_consumed_before_phase_1280_fix1
+atlas_g_007_through_010_remain_future_after_phase_1280_fix1
+```
+
+---
+
 ## 1. Purpose
 
 ATLAS-G is the public-RC graph reachability and homoiconicity strike-force lane.
@@ -33,12 +53,12 @@ delta metadata.
 
 | Atlas phase | Candidate window | Scope | Prompt draft |
 |-------------|------------------|-------|--------------|
-| ATLAS-G-001 | 1241-1248 | Graph Delta schema, AGENTS/phase discipline, validator tests | `docs/antigravity_tasks/antigravity_prompt__atlas_g_001_graph_delta_schema_and_phase_discipline.md` |
-| ATLAS-G-002 | 1241-1248 | Deterministic repo hypergraph compiler hardening | `docs/antigravity_tasks/antigravity_prompt__atlas_g_002_repo_hypergraph_compiler_hardening.md` |
-| ATLAS-G-003 | 1241-1248 | Public-RC package profile reachability manifests | `docs/antigravity_tasks/antigravity_prompt__atlas_g_003_package_profile_reachability_manifest.md` |
-| ATLAS-G-004 | 1249-1256 | High-authority ADR/CDL/runtime/economic/package source classification | `docs/antigravity_tasks/antigravity_prompt__atlas_g_004_high_authority_gap_closure.md` |
-| ATLAS-G-005 | 1249-1256 | Python/Rust import and dependency graph bridge | `docs/antigravity_tasks/antigravity_prompt__atlas_g_005_import_dependency_graph_bridge.md` |
-| ATLAS-G-006 | 1265-1272 | Public-RC graph reachability gate for selected package profile | `docs/antigravity_tasks/antigravity_prompt__atlas_g_006_public_rc_graph_reachability_gate.md` |
+| ATLAS-G-001 | 1241-1248 | CONSUMED Phase 1247 — Graph Delta schema, AGENTS/phase discipline, validator tests | `docs/antigravity_tasks/antigravity_prompt__atlas_g_001_graph_delta_schema_and_phase_discipline.md` |
+| ATLAS-G-002 | 1241-1248 | CONSUMED Phase 1247 — Deterministic repo hypergraph compiler hardening | `docs/antigravity_tasks/antigravity_prompt__atlas_g_002_repo_hypergraph_compiler_hardening.md` |
+| ATLAS-G-003 | 1241-1248 | CONSUMED Phase 1247 — Public-RC package profile reachability manifests | `docs/antigravity_tasks/antigravity_prompt__atlas_g_003_package_profile_reachability_manifest.md` |
+| ATLAS-G-004 | 1249-1256 | CONSUMED Phase 1254 — High-authority ADR/CDL/runtime/economic/package source classification | `docs/antigravity_tasks/antigravity_prompt__atlas_g_004_high_authority_gap_closure.md` |
+| ATLAS-G-005 | 1249-1256 | CONSUMED Phase 1254 — Python/Rust import and dependency graph bridge | `docs/antigravity_tasks/antigravity_prompt__atlas_g_005_import_dependency_graph_bridge.md` |
+| ATLAS-G-006 | 1265-1272 | CONSUMED Phase 1271 / Fix1 — Public-RC graph reachability gate for selected package profile | `docs/antigravity_tasks/antigravity_prompt__atlas_g_006_public_rc_graph_reachability_gate.md` |
 | ATLAS-G-007 | 1289-1296 | Unsigned Genesis Atlas v0.2+ candidate regeneration | `docs/antigravity_tasks/antigravity_prompt__atlas_g_007_unsigned_atlas_candidate_regeneration.md` |
 | ATLAS-G-008 | 1289-1296 | Genesis/ILC/ECU/hypergraph non-excisability review packet | `docs/antigravity_tasks/antigravity_prompt__atlas_g_008_non_excisability_review_packet.md` |
 | ATLAS-G-009 | 1289-1296 | Signing root envelope prep, no signing | `docs/antigravity_tasks/antigravity_prompt__atlas_g_009_signing_root_envelope_prep.md` |
