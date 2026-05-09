@@ -141,13 +141,14 @@ def test_phase_1268_records_broad_discovery_and_graph_node_boundary() -> None:
         assert "Graph Node" in text
 
 
-def test_phase_1268_preserves_cdl087_open_state_and_public_non_claims() -> None:
+def test_phase_1268_preserves_public_non_claims_after_later_cdl087_fix1() -> None:
     register = _read(CDL_REGISTER_PATH)
     spec = _read(SPEC_PATH)
 
     cdl087_rows = [line for line in register.splitlines() if line.startswith("| CDL-087 |")]
     assert len(cdl087_rows) == 1
-    assert "| open |" in cdl087_rows[0]
+    assert "| ratified |" in cdl087_rows[0]
+    assert "ratified_phase: 1278 Fix1" in cdl087_rows[0]
 
     for phrase in (
         "CDL-087 ratification",

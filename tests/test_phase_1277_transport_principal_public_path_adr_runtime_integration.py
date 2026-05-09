@@ -275,8 +275,8 @@ def test_phase_1277_docs_status_planning_and_roadmap_record_required_tokens() ->
         assert GENESIS_ATLAS_V02_SIGNING_DEFERRED_TOKEN in text
 
     planning = _read(PLANNING_INDEX_PATH)
-    assert "Window 1273-1280 OPEN through Phase 1278" in planning
-    assert "CDL-087 ratification Fix phase is planned next" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
+    assert "CDL-087 is now RATIFIED" in planning
 
 
 def test_phase_1277_records_broad_discovery_non_claims_and_user_decisions() -> None:
@@ -300,7 +300,8 @@ def test_phase_1277_records_broad_discovery_non_claims_and_user_decisions() -> N
 
     cdl087_rows = [line for line in register.splitlines() if line.startswith("| CDL-087 |")]
     assert len(cdl087_rows) == 1
-    assert "| open |" in cdl087_rows[0]
+    assert "| ratified |" in cdl087_rows[0]
+    assert "ratified_phase: 1278 Fix1" in cdl087_rows[0]
 
 
 def test_phase_1277_graph_delta_is_recorded() -> None:

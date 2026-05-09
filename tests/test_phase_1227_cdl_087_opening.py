@@ -18,14 +18,16 @@ def _cdl_087_row() -> str:
     raise AssertionError("CDL-087 row not found")
 
 
-def test_phase_1227_cdl_087_open_in_register():
+def test_phase_1227_cdl_087_opening_row_later_ratified():
     row = _cdl_087_row()
     cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
 
     assert cells[0] == "CDL-087"
-    assert cells[3].lower() == "open"
+    assert cells[3].lower() == "ratified"
     assert "Canonical fetch distribution policy" in cells[2]
     assert "SIM-FETCH-01" in row
+    assert "opening_token: cdl_087_canonical_fetch_distribution_policy_opened_phase_1227" in row
+    assert "ratified_phase: 1278 Fix1" in row
 
 
 def test_phase_1227_opening_spec_exists_and_token_present():

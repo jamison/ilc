@@ -150,4 +150,5 @@ def test_phase_1262_status_planning_walkthrough_and_cdl_register_boundary() -> N
     assert "SENSITIVE" in status
     assert "Phase 1263" in planning
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
+    assert "ratified_phase: 1278 Fix1" in cdl_register

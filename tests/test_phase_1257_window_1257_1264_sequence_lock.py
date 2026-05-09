@@ -86,7 +86,8 @@ def test_phase_1257_cdl087_conditions_are_locked_without_ratification() -> None:
     assert "| 5. CDL-077 static rate limiter remains active and no unlimited fetch path exists | Final regression required. |" in lock
     assert "| 6. Fetch-incentive projection/credit bridge recheck | Requires recheck" in lock
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
+    assert "ratified_phase: 1278 Fix1" in cdl_register
 
 
 def test_phase_1257_locked_order_and_sensitive_gates_are_explicit() -> None:
@@ -134,9 +135,9 @@ def test_phase_1257_frontier_updates_planning_and_status() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1257-1264 OPEN / PASS through Phase 1257" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
     assert SEQUENCE_LOCK in planning
-    assert "Phase 1258 remains SENSITIVE and requires explicit `GO Phase 1258`" in planning
+    assert "Phase 1279 remains the next locked non-sensitive inventory phase" in planning
     assert "## Phase 1257" in status
     assert "Phase 1258 - CDL-087 production-candidate evidence readiness" in status
 

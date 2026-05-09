@@ -88,15 +88,15 @@ def test_phase_1266_condition_table_reviews_all_six_conditions() -> None:
     assert "cdl_077_rate_limiter_final_regression_recorded_phase_1260" in spec
 
 
-def test_phase_1266_preserves_cdl_register_open_state_without_mutation_marker() -> None:
+def test_phase_1266_records_historical_no_mutation_before_later_fix1() -> None:
     spec = _read(SPEC_PATH)
     register = _read(CDL_REGISTER_PATH)
 
     cdl087_rows = [line for line in register.splitlines() if line.startswith("| CDL-087 |")]
     assert len(cdl087_rows) == 1
     row = cdl087_rows[0]
-    assert "| open |" in row
-    assert "ratified_phase:" not in row
+    assert "| ratified |" in row
+    assert "ratified_phase: 1278 Fix1" in row
     assert "phase_1266" not in row
 
     assert "CDL-087 remains open" in spec
@@ -131,7 +131,7 @@ def test_phase_1266_public_non_claims_remain_blocked() -> None:
     assert "public_rc_remains_blocked_after_phase_1267" in roadmap
     assert "public_rc_remains_blocked_after_phase_1270" in roadmap
     assert "public_rc_remains_blocked_after_phase_1271" in roadmap
-    assert "CDL-087 remains open/prelocked/not ratified after Phase 1266" in planning
+    assert "CDL-087 is now RATIFIED" in planning
 
 
 def test_phase_1266_frontier_updates_planning_status_and_next_phase() -> None:

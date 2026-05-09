@@ -74,7 +74,8 @@ def test_phase_1258_preserves_non_ratification_and_cdl_register_state() -> None:
     assert "The CDL register is not mutated by this phase" in spec
     assert "CDL-087 ratification" in spec
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
+    assert "ratified_phase: 1278 Fix1" in cdl_register
 
 
 def test_phase_1258_non_authorization_boundary_is_explicit() -> None:
@@ -98,7 +99,7 @@ def test_phase_1258_updates_frontier_and_graph_delta() -> None:
     status = read(STATUS)
     spec = read(SPEC)
 
-    assert "Window 1257-1264 OPEN / PASS through Phase 1258" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
     assert SPEC in planning
     assert "## Phase 1258" in status
     assert "Phase 1259 - CDL-087 serving-peer evidence slice" in status

@@ -34,11 +34,11 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 OPEN through Phase 1278; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight without ratification or register mutation, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, and Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery |
+| Window frontier | Window 1273-1280 OPEN through Phase 1278 Fix1; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery, and Phase 1278 Fix1 ratifies CDL-087 without public fetch/sidecar/projection activation |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
-| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1266 sensitive review and Phase 1276 authorization preflight recorded no-ratification/no-register-mutation |
+| CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
 | v0.2 signing | Deferred; explicit signing authorization absent |
 | Tier-3 runtime linkage | **IMPLEMENTED** in Phase 1201 (`tier3_runtime_linkage_runtime_1201.v0.1`) |
 | Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
@@ -46,7 +46,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
 | L3 sidecar query runtime | Local/read-only runtime complete; Phase 1268 records loopback/subprocess-only boundary with no new listener and Phase 1278 adds an internal public-path preflight helper while keeping public/non-loopback projection serving blocked |
 | TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1277 adds an internal public-path preflight helper; no public P2P, public fetch serving, or non-loopback serving activation |
-| SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
+| SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; consumed into CDL-087 ratification by Phase 1278 Fix1 |
 
 Latest closed handoff and current window artifacts:
 
@@ -579,7 +579,8 @@ Closure status updates:
   scope; public repository publication remains unauthorized.
 - Phase 1250 Fix1 routes are reconciled in
   `docs/specs/ilc_window_1249_1256_handoff_1256_v0.1.md`.
-- CDL-087 remains open/prelocked/not ratified.
+- CDL-087 remained open/prelocked/not ratified through this closure. This
+  historical blocker is superseded by Phase 1278 Fix1 ratification.
 - v0.2 signing remains deferred pending explicit signing authorization.
 
 Public RC remains blocked after Phase 1256:
@@ -617,7 +618,7 @@ Closure status updates:
   local Tier A/B/C classification and bootstrap snapshot builder/verifier
   evidence; Phase 1260 recorded local Section 6 observability and final
   CDL-077 limiter regression evidence.
-- CDL-087 remains open/prelocked/not ratified. Phase 1260 readiness is only:
+- CDL-087 remained open/prelocked/not ratified at Phase 1264 close. Phase 1260 readiness was only:
   `cdl_087_ratification_readiness_verdict_phase_1260=ready_for_later_sensitive_ratification_review`.
 - Public/non-loopback sidecar projection serving remains blocked:
   `sidecar_projection_endpoint_authorization_verdict_phase_1261=blocked_public_path`.
@@ -671,7 +672,8 @@ cdl_087_ratification_decision_phase_1266=no_ratification_no_register_mutation
 
 Roadmap impact:
 
-- CDL-087 remains open/prelocked/not ratified after Phase 1266.
+- CDL-087 remained open/prelocked/not ratified after Phase 1266. Phase 1278
+  Fix1 later ratifies it with explicit register-mutation authorization.
 - The CDL register was not mutated.
 - The Phase 1258-1260 local evidence chain remains useful evidence for a later
   explicit ratification phase, but it did not become a ratification act.
@@ -864,9 +866,10 @@ window_1273_plus_sequence_lock_required_before_next_phase_assignment
 
 Roadmap impact:
 
-- CDL-087 remains open/prelocked/not ratified; Phase 1266 recorded
-  no-ratification/no-register-mutation, and any future CDL-087 ratification or
-  register mutation requires explicit future human ratification authorization.
+- CDL-087 remained open/prelocked/not ratified at Phase 1272 close; Phase 1266
+  recorded no-ratification/no-register-mutation, and any future CDL-087
+  ratification or register mutation required explicit future human ratification
+  authorization. Phase 1278 Fix1 later consumed that authorization.
 - TransportPrincipal has a pre-public helper, but full public-path ADR,
   revocation, replay, privacy, rate-limit binding, and Rust/public-P2P
   hardening remain open.
@@ -1064,9 +1067,10 @@ cdl087_ratification_fix_phase_planned_after_1277_1278_if_both_pass_phase_1278
 
 Roadmap impact:
 
-- Public sidecar/projection serving remains blocked by CDL-087 not being
-  ratified and by TransportPrincipal public-path preflight being available only
-  as an internal preflight, not activation authority.
+- Public sidecar/projection serving remained blocked in Phase 1278 because
+  CDL-087 was not yet ratified and because TransportPrincipal public-path
+  preflight was available only as an internal preflight, not activation
+  authority.
 - The Phase 1278 helper is marked `PUBLIC_RC_EXCLUDE` and is not a public RC
   launch surface.
 - No public projection endpoint, non-loopback bind, wildcard bind, public host
@@ -1074,17 +1078,59 @@ Roadmap impact:
   exposure is authorized.
 - Existing local sidecar query exports remain read-only, canonical, bounded,
   and float-safe.
-- A CDL-087 ratification Fix phase is planned next inside the current window if
-  explicitly authorized for ratification and CDL register mutation; otherwise
-  Phase 1279 remains the next locked non-sensitive inventory phase.
+- Before Phase 1278 Fix1, CDL-087 ratification was the next gated action
+  requiring explicit authorization for ratification and CDL register mutation.
 - Genesis Atlas v0.2 signing remains deferred until the end of the planned
   Atlas-G phases.
 
-Public RC remains blocked after Phase 1278:
+Public RC remained blocked after Phase 1278 before the Fix1 ratification:
 
 ```text
 public_rc_remains_blocked_after_phase_1278
 public_rc_remains_blocked_after_phase_1277
 public_rc_remains_blocked_after_phase_1276
 public_rc_remains_blocked_after_phase_1275
+```
+
+## 24. Phase 1278 Fix1 CDL-087 Ratification Addendum
+
+Phase 1278 Fix1 records explicit CDL-087 ratification and CDL register mutation:
+
+```text
+cdl087_ratification_evidence_phase_1278_fix1.v0.1
+cdl087_ratified_phase_1278_fix1
+cdl087_register_mutated_phase_1278_fix1
+cdl087_conditions_1_to_6_reproved_phase_1278_fix1
+cdl087_public_fetch_serving_not_enabled_phase_1278_fix1
+cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1
+no_cdl088_opening_phase_1278_fix1
+```
+
+Roadmap impact:
+
+- CDL-087 is no longer a public-RC governance blocker; the CDL register now
+  records `CDL-087` as ratified with evidence document
+  `docs/specs/ilc_cdl_087_ratification_evidence_1278_fix1_v0.1.md`.
+- The six ratification conditions were re-proved from SIM-FETCH-01 evidence,
+  Phase 1259 Tier A/B/C and bootstrap snapshot evidence, Phase 1260
+  observability and limiter evidence, and Phase 1276 authorization preflight.
+- Public fetch serving remains disabled; ratification does not activate
+  CDL-077 serving endpoints, peer discovery, public P2P, or public release
+  distribution.
+- Public sidecar/projection serving remains blocked pending separate
+  TransportPrincipal public-path activation, sidecar/projection serving
+  authorization, privacy review, and hostile-network hardening.
+- CDL-088 remains unopened. Reciprocal scoring and ECU-escrow admission remain
+  deferred unless opened by a later explicit constitutional act.
+- Phase 1279 remains the next locked non-sensitive inventory/prepublication
+  preflight, and Genesis Atlas v0.2 signing remains deferred until the end of
+  the planned Atlas-G phases.
+
+Public RC remains blocked after Phase 1278 Fix1:
+
+```text
+public_rc_remains_blocked_after_phase_1278_fix1
+public_rc_remains_blocked_after_phase_1278
+public_rc_remains_blocked_after_phase_1277
+public_rc_remains_blocked_after_phase_1276
 ```

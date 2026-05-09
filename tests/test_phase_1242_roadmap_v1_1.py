@@ -71,8 +71,8 @@ def test_atlas_g_public_rc_graph_gate_is_carried() -> None:
 
 def test_cdl_087_and_public_claimability_remain_unclaimed() -> None:
     text = _read(ROADMAP_V1_1)
-    assert "CDL-087 | OPEN / PRELOCKED / NOT RATIFIED" in text
-    assert "CDL-087 ratified" in text
+    assert "CDL-087 | **RATIFIED** in Phase 1278 Fix1" in text
+    assert "CDL-087 is no longer a public-RC governance blocker" in text
     assert "public claimability implemented" in text
     assert "public P2P exposure authorized" in text
 

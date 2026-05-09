@@ -201,7 +201,8 @@ def test_phase_1269_records_broad_discovery_and_public_non_claims() -> None:
 
     cdl087_rows = [line for line in register.splitlines() if line.startswith("| CDL-087 |")]
     assert len(cdl087_rows) == 1
-    assert "| open |" in cdl087_rows[0]
+    assert "| ratified |" in cdl087_rows[0]
+    assert "ratified_phase: 1278 Fix1" in cdl087_rows[0]
 
 
 def test_phase_1269_graph_delta_is_recorded() -> None:
