@@ -3,7 +3,7 @@
 **Date:** 2026-05-09
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.50.md`
 **Produced:** Phase 1282, Window 1281-1288
-**Frontier:** Window 1281-1288 open through Phase 1286; Phase 1287 sensitive release publication/signing authorization preflight next
+**Frontier:** Window 1281-1288 open through Phase 1287; Phase 1288 window closure gate next
 
 ```text
 context_capsule_v5_51_frontier_refresh_phase_1282.v0.1
@@ -41,6 +41,20 @@ no_new_public_listener_phase_1286
 peer_discovery_not_enabled_phase_1286
 phase_1287_release_publication_signing_authorization_preflight_next
 public_rc_remains_blocked_after_phase_1286
+release_publication_signing_authorization_preflight_phase_1287.v0.1
+public_repository_publication_not_authorized_phase_1287
+release_artifact_production_not_authorized_phase_1287
+source_allowlist_export_not_executed_phase_1287
+release_keys_not_generated_phase_1287
+release_envelope_not_produced_phase_1287
+v0_2_signing_not_authorized_phase_1287
+genesis_atlas_mutation_not_authorized_phase_1287
+release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing
+public_package_publication_not_authorized_phase_1287
+public_rc_claim_not_authorized_phase_1287
+genesis_atlas_signing_not_authorized_phase_1287
+phase_1288_window_1281_1288_closure_gate_next
+public_rc_remains_blocked_after_phase_1287
 ```
 
 ---
@@ -48,8 +62,8 @@ public_rc_remains_blocked_after_phase_1286
 ## 1. Current State
 
 Window 1273-1280 is closed with a pass verdict, Phase 1280 Fix1 hardening is
-complete, Window 1281-1288 is open through Phase 1286, and Phase 1287 is the
-next locked phase under the explicit preflight-only `GO Phase 1285-1288`.
+complete, Window 1281-1288 is open through Phase 1287, and Phase 1288 is the
+next locked phase under the explicit `GO Phase 1285-1288`.
 
 Current active window lock:
 
@@ -83,6 +97,14 @@ wildcard bind, public host bind, listener, peer discovery, public fetch serving,
 public P2P, public claimability, source publication, release artifacts, Genesis
 mutation, CDL mutation, CDL-088 opening, wallet withdrawal, wallet transfer,
 wallet spend, ECU minting, ILC settlement, or v0.2 signing.
+
+Phase 1287 is a sensitive release publication/signing authorization preflight
+only. It records a preflight-only verdict and does not authorize source
+allowlist export execution, public repository publication, public package
+publication, public release artifact production, release keys, release
+envelopes, Genesis Atlas mutation/regeneration/signing, v0.2 signing, public RC
+claim, public launch claim, CDL mutation, CDL-088 opening, wallet withdrawal,
+wallet transfer, wallet spend, ECU minting, or ILC settlement.
 
 ---
 
@@ -144,6 +166,20 @@ no_new_public_listener_phase_1286
 peer_discovery_not_enabled_phase_1286
 phase_1287_release_publication_signing_authorization_preflight_next
 public_rc_remains_blocked_after_phase_1286
+release_publication_signing_authorization_preflight_phase_1287.v0.1
+public_repository_publication_not_authorized_phase_1287
+release_artifact_production_not_authorized_phase_1287
+source_allowlist_export_not_executed_phase_1287
+release_keys_not_generated_phase_1287
+release_envelope_not_produced_phase_1287
+v0_2_signing_not_authorized_phase_1287
+genesis_atlas_mutation_not_authorized_phase_1287
+release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing
+public_package_publication_not_authorized_phase_1287
+public_rc_claim_not_authorized_phase_1287
+genesis_atlas_signing_not_authorized_phase_1287
+phase_1288_window_1281_1288_closure_gate_next
+public_rc_remains_blocked_after_phase_1287
 ```
 
 Locked Window 1281-1288 order:
@@ -157,7 +193,7 @@ Locked Window 1281-1288 order:
 | 1284 | Public claimability verifier/API boundary preflight | SENSITIVE, complete: internal-only boundary / no public API |
 | 1285 | TransportPrincipal public-path activation preflight | SENSITIVE, complete: preflight-only / no public path activation |
 | 1286 | Sidecar public projection privacy/serving preflight | SENSITIVE, complete: preflight-only / no public serving |
-| 1287 | Release publication and v0.2 signing authorization preflight | SENSITIVE |
+| 1287 | Release publication and v0.2 signing authorization preflight | SENSITIVE, complete: preflight-only / no publication or signing |
 | 1288 | Window 1281-1288 closure gate | SENSITIVE |
 
 ---
@@ -350,6 +386,25 @@ peer_discovery_not_enabled_phase_1286
 phase_1287_release_publication_signing_authorization_preflight_next
 ```
 
+Phase 1287 records the release publication/signing authorization preflight.
+The boundary is preflight-only and activates no publication or signing:
+
+```text
+release_publication_signing_authorization_preflight_phase_1287.v0.1
+public_repository_publication_not_authorized_phase_1287
+release_artifact_production_not_authorized_phase_1287
+source_allowlist_export_not_executed_phase_1287
+release_keys_not_generated_phase_1287
+release_envelope_not_produced_phase_1287
+v0_2_signing_not_authorized_phase_1287
+genesis_atlas_mutation_not_authorized_phase_1287
+release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing
+public_package_publication_not_authorized_phase_1287
+public_rc_claim_not_authorized_phase_1287
+genesis_atlas_signing_not_authorized_phase_1287
+phase_1288_window_1281_1288_closure_gate_next
+```
+
 ---
 
 ## 5. SIM-FETCH and Canonical Fetch Frontier
@@ -391,9 +446,10 @@ Current profile split:
 - `full_node_public_p2p` - future full node profile requiring TransportPrincipal
   and hostile-network hardening.
 
-Public RC remains blocked after Phase 1286:
+Public RC remains blocked after Phase 1287:
 
 ```text
+public_rc_remains_blocked_after_phase_1287
 public_rc_remains_blocked_after_phase_1286
 public_rc_remains_blocked_after_phase_1285
 public_rc_remains_blocked_after_phase_1284
@@ -461,12 +517,13 @@ longer reflects the live frontier:
 | Window state | Window 1273-1280 is closed by Phase 1280 and reflected here by `window_1273_1280_closure_reflected_in_capsule_phase_1282`. |
 | H/IP planning | Phase 1280 Fix1 registered H-020..H-028 and IP-001..IP-006 without public-RC authority. |
 | Runtime audit hardening | Phase 1282 Fix1 hardened local claimability/conversion receipt semantics without public activation. |
-| Active window | Window 1281-1288 is open through Phase 1286; Phase 1287 is the next preflight. |
+| Active window | Window 1281-1288 is open through Phase 1287; Phase 1288 closure is next. |
 | Public claimability authority | Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`; public claimability remains blocked. |
 | Public claimability verifier/API boundary | Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`; public API serving remains blocked. |
 | TransportPrincipal public path | Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`; public path activation remains blocked. |
 | Sidecar public projection serving | Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`; public sidecar/projection serving remains blocked. |
-| Public RC | Public RC remains blocked after Phase 1286. |
+| Release publication/signing | Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`; publication and signing remain blocked. |
+| Public RC | Public RC remains blocked after Phase 1287. |
 
 ```text
 capsule_v5_51_supersedes_v5_50
@@ -528,6 +585,13 @@ Phase 1286 verification:
 - CDL register diff remained clean.
 - Scoped `git diff --check` passed.
 
+Phase 1287 verification:
+
+- Phase 1287 focused release publication/signing preflight tests passed.
+- Sensitive-runtime guardrail passed.
+- CDL register diff remained clean.
+- Scoped `git diff --check` passed.
+
 ```text
 context_capsule_v5_51_frontier_refresh_phase_1282.v0.1
 capsule_v5_51_supersedes_v5_50
@@ -575,4 +639,18 @@ no_new_public_listener_phase_1286
 peer_discovery_not_enabled_phase_1286
 phase_1287_release_publication_signing_authorization_preflight_next
 public_rc_remains_blocked_after_phase_1286
+release_publication_signing_authorization_preflight_phase_1287.v0.1
+public_repository_publication_not_authorized_phase_1287
+release_artifact_production_not_authorized_phase_1287
+source_allowlist_export_not_executed_phase_1287
+release_keys_not_generated_phase_1287
+release_envelope_not_produced_phase_1287
+v0_2_signing_not_authorized_phase_1287
+genesis_atlas_mutation_not_authorized_phase_1287
+release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing
+public_package_publication_not_authorized_phase_1287
+public_rc_claim_not_authorized_phase_1287
+genesis_atlas_signing_not_authorized_phase_1287
+phase_1288_window_1281_1288_closure_gate_next
+public_rc_remains_blocked_after_phase_1287
 ```
