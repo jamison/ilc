@@ -354,9 +354,9 @@ def test_phase_docs_status_planning_and_roadmap_record_tokens_and_non_claims() -
     assert "wallet spend" in text
 
     planning = PLANNING_INDEX_PATH.read_text(encoding="utf-8")
-    assert "Window 1281-1288 is OPEN through Phase 1284" in planning
+    assert "Window 1281-1288 CLOSED / PASS through Phase 1288" in planning
     assert "Phase 1274 CDL-048 conversion-sweeper runtime skeleton" in planning
-    assert "Phase 1285 is sensitive" in planning
+    assert "Window 1289+ sequence lock required before next phase assignment" in planning
     assert "phase_1275_claimability_proof_binding_runtime_requires_explicit_go" in STATUS_PATH.read_text(
         encoding="utf-8"
     )
