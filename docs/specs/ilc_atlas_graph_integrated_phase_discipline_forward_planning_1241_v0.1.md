@@ -12,6 +12,29 @@ authorize v0.2 signing, authorize public RC, or change any CDL.
 
 ---
 
+## Phase 1280 Fix1 Current-Status Addendum
+
+This document remains the ATLAS-G discipline reference, but its original
+baseline was written before ATLAS-G-001 through ATLAS-G-006 executed. As of
+Phase 1280 Fix1:
+
+- ATLAS-G-001 through ATLAS-G-003 were consumed by Phase 1247.
+- ATLAS-G-004 and ATLAS-G-005 were consumed by Phase 1254.
+- ATLAS-G-006 passed in Phase 1271 and was hardened by Phase 1271 Fix1.
+- ATLAS-G-007 through ATLAS-G-010 remain future work, expected only after a
+  later sequence lock and explicit authority for the relevant signing steps.
+- IP/patent/publication drafting is not ATLAS-G work. ATLAS-G may reference IP
+  status as release metadata, but IP-001 through IP-006 own filing/publication
+  prep.
+
+```text
+phase_1280_fix1_atlas_g_status_addendum
+atlas_g_001_through_006_consumed_before_phase_1280_fix1
+atlas_g_007_through_010_remain_future_after_phase_1280_fix1
+```
+
+---
+
 ## 1. Purpose
 
 The public-RC packaging strategy requires ILC Core to be modular but not
@@ -31,9 +54,11 @@ explainable typed path from Genesis / ILC / ECU / Hypergraph anchors.
 
 ---
 
-## 2. Current Baseline
+## 2. Historical Baseline
 
-Current verified baseline, as of 2026-05-07:
+Historical verified baseline, as of 2026-05-07. Use the Phase 1280 Fix1
+addendum above and current `PLANNING_INDEX.md` before scheduling new ATLAS-G
+work:
 
 - Signed Genesis star map v0.1 remains canonical: 32 nodes, 55 edges.
 - Unsigned Genesis Atlas v0.2 candidate exists: 41 nodes, 73 edges.
