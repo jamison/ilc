@@ -285,16 +285,44 @@ cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1
 no_cdl088_opening_phase_1278_fix1
 ```
 
-This addendum does not alter the locked order for Phase 1279 or Phase 1280.
-Phase 1279 remains a non-sensitive inventory/prepublication preflight unless a
-later human instruction widens authority.
+This addendum did not alter the locked order for Phase 1279 or Phase 1280.
+Phase 1279 later executed as a non-sensitive inventory/prepublication preflight
+without widening authority.
 
 Phase 1278 Fix1 does not authorize public fetch serving, public
 sidecar/projection serving, non-loopback bind, new listener, public P2P, public
 claimability, public release artifacts, public RC, CDL-088 opening, Genesis
 Atlas mutation, or v0.2 signing.
 
-## 7. Human Escalation and Execution Rules
+## 7. Phase 1279 Prepublication Addendum
+
+Phase 1279 executed the locked release manifest/source allowlist
+prepublication route as inventory and validation only:
+
+```text
+release_manifest_allowlist_publication_preflight_phase_1279.v0.1
+public_repository_publication_not_authorized_phase_1279
+release_artifact_production_not_authorized_phase_1279
+v0_2_signing_not_authorized_phase_1279
+source_allowlist_export_not_executed_phase_1279
+release_keys_not_generated_phase_1279
+release_envelope_not_produced_phase_1279
+genesis_atlas_mutation_not_authorized_phase_1279
+public_rc_remains_blocked_after_phase_1279
+```
+
+Phase 1279 binds the Phase 1213 release manifest schema, Phase 1213
+distribution checklist, Phase 1255 source allowlist export procedure, Phase
+1271 ATLAS-G-006 graph gate, and Phase 1278 Fix1 CDL-087 ratification into a
+single prepublication inventory. It does not execute source export, publish a
+repository, publish a package, produce release artifacts, generate release
+keys, produce release envelopes, mutate or sign Genesis Atlas, sign v0.2, open
+CDL-088, or make a public-RC claim.
+
+This addendum does not alter Phase 1280. Phase 1280 remains the next locked
+sensitive closure phase and requires explicit `GO Phase 1280`.
+
+## 8. Human Escalation and Execution Rules
 
 If a phase discovers a decision that cannot be resolved from committed canon and
 would widen authority, mutate a CDL register row, enable public exposure, enable
@@ -364,7 +392,7 @@ This sequence lock does not authorize:
 
 ---
 
-## 8. Carry-Forward Tokens
+## 9. Carry-Forward Tokens
 
 ```text
 window_1273_1280_sequence_lock_committed
@@ -385,12 +413,21 @@ no_cdl088_opening_phase_1278_fix1
 public_claimability_runtime_still_requires_conversion_sweeper_after_phase_1272
 transport_principal_required_before_public_projection_after_phase_1272
 release_manifest_allowlist_publication_still_authorization_gated_after_phase_1272
+release_manifest_allowlist_publication_preflight_phase_1279.v0.1
+public_repository_publication_not_authorized_phase_1279
+release_artifact_production_not_authorized_phase_1279
+v0_2_signing_not_authorized_phase_1279
+source_allowlist_export_not_executed_phase_1279
+release_keys_not_generated_phase_1279
+release_envelope_not_produced_phase_1279
+genesis_atlas_mutation_not_authorized_phase_1279
+public_rc_remains_blocked_after_phase_1279
 unknown_unknown_discovery_required_before_phase_execution
 ```
 
 ---
 
-## 9. Graph Delta
+## 10. Graph Delta
 
 ```text
 graph_delta=support_only:docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md -> planning/frontier

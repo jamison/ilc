@@ -170,9 +170,9 @@ def test_phase_1273_frontier_updates_planning_and_status() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
+    assert "Window 1273-1280 OPEN through Phase 1279" in planning
     assert SEQUENCE_LOCK in planning
-    assert "Phase 1279 remains the next locked non-sensitive inventory phase" in planning
+    assert "Phase 1280 remains the next locked sensitive closure phase" in planning
     assert "Window 1273-1280 sequence lock" in planning
     assert "## Phase 1273" in status
     assert "Phase 1274 - CDL-048 conversion-sweeper runtime skeleton" in status

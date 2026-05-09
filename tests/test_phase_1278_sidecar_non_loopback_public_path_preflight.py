@@ -291,8 +291,8 @@ def test_phase_1278_docs_status_planning_and_roadmap_record_required_tokens() ->
         assert CDL087_FIX_AFTER_1278_PLANNED_TOKEN in text
 
     planning = _read(PLANNING_INDEX_PATH)
-    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
-    assert "CDL-087 is now RATIFIED" in planning
+    assert "Window 1273-1280 OPEN through Phase 1279" in planning
+    assert "CDL-087 is RATIFIED" in planning
 
 
 def test_phase_1278_records_broad_discovery_non_claims_and_later_cdl087_ratification() -> None:
