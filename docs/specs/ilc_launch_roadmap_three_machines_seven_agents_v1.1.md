@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 OPEN through Phase 1274; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton without public claimability activation |
+| Window frontier | Window 1273-1280 OPEN through Phase 1275; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton and Phase 1275 records local claimability proof binding without public claimability activation |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -87,6 +87,11 @@ cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1
 conversion_sweeper_no_public_claimability_activation_phase_1274
 ecu_lot_deadline_epoch_enforcement_recorded_phase_1274
 wallet_withdrawal_transfer_spend_still_blocked_phase_1274
+docs/specs/ilc_claimability_proof_binding_runtime_boundary_1275_v0.1.md
+claimability_proof_binding_runtime_boundary_phase_1275.v0.1
+settled_root_wallet_root_receipt_binding_recorded_phase_1275
+non_loopback_claimability_api_still_blocked_phase_1275
+public_claimability_not_activated_phase_1275
 ```
 
 ---
@@ -366,9 +371,9 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 
 ### Gap 13 - ECU-to-ILC Settlement Execution Runtime and Claimability
 
-**Status:** Open; Phase 1274 conversion-sweeper runtime skeleton recorded;
-public claimability proof binding and final public-RC hard requirement still
-open.
+**Status:** Open; Phase 1274 conversion-sweeper runtime skeleton and Phase 1275
+local proof binding recorded; final public-RC claimability API/verifier
+authority still open.
 
 Internal conversion runtime and public claimability substrate are distinct.
 Final public RC requires public claimability for the selected OpenClaw/NemoClaw
@@ -391,6 +396,10 @@ cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1
 conversion_sweeper_no_public_claimability_activation_phase_1274
 ecu_lot_deadline_epoch_enforcement_recorded_phase_1274
 wallet_withdrawal_transfer_spend_still_blocked_phase_1274
+claimability_proof_binding_runtime_boundary_phase_1275.v0.1
+settled_root_wallet_root_receipt_binding_recorded_phase_1275
+non_loopback_claimability_api_still_blocked_phase_1275
+public_claimability_not_activated_phase_1275
 ```
 
 Phase 1270 recorded the public claimability and CDL-048 conversion-sweeper
@@ -398,10 +407,11 @@ requirements without activating runtime claimability. Phase 1274 adds the
 narrow conversion-sweeper runtime skeleton for ECU lot accounting, four issuance
 epoch deadline enforcement, finite exact numeric boundaries, canonical JSON
 receipt/root binding, and replay or double-conversion prevention. Public
-claimability still cannot close until Phase 1275 or later binds settled runtime
-roots, wallet-state roots, latest balance receipts, history digests, epoch
-identifiers, and canonical agent identity into a proof verifier without opening
-wallet withdrawal, transfer, or spend semantics.
+claimability still cannot close until later work authorizes a public verifier
+and API; Phase 1275 only binds settled runtime roots, wallet-state roots,
+latest balance receipts, history digests, epoch identifiers, canonical agent
+identity, and conversion receipt semantics into a local proof boundary without
+opening wallet withdrawal, transfer, or spend semantics.
 
 ### Gap 14 - OpenClaw/NemoClaw Package Modularity and CLI/Sidecar Boundary
 
@@ -919,6 +929,45 @@ Roadmap impact:
 Public RC remains blocked after Phase 1274:
 
 ```text
+public_rc_remains_blocked_after_phase_1274
+public_rc_remains_blocked_after_phase_1272
+public_rc_remains_blocked_after_phase_1271
+public_rc_remains_blocked_after_phase_1270
+```
+
+## 20. Phase 1275 Claimability Proof-Binding Runtime Boundary Addendum
+
+Phase 1275 recorded the local proof-binding boundary:
+
+```text
+claimability_proof_binding_runtime_boundary_phase_1275.v0.1
+settled_root_wallet_root_receipt_binding_recorded_phase_1275
+non_loopback_claimability_api_still_blocked_phase_1275
+public_claimability_not_activated_phase_1275
+```
+
+Roadmap impact:
+
+- Future claimability verification now has a deterministic local binding over
+  settled runtime root, wallet-state root, latest balance receipt, history
+  digest, epoch identifier, canonical agent identity, and Phase 1274 conversion
+  receipt semantics.
+- Proof exports use canonical JSON with deterministic key ordering,
+  `allow_nan=False`, compact separators, and full SHA-256 digest bindings.
+- Phase 1275 rejects floats recursively from proof input payloads and validates
+  full root, receipt, history, conversion-key, and proof hashes.
+- The boundary remains local-only and does not add a public/non-loopback API,
+  route, listener, wallet withdrawal, wallet transfer, wallet spend, ECU mint,
+  ILC settlement, or public claim endpoint.
+- Public RC remains blocked by CDL-087, public-path TransportPrincipal and
+  sidecar serving gates, counsel/IP/publication authorization, v0.2 signing,
+  release manifest/allowlist publication, and final public claimability API
+  authority.
+
+Public RC remains blocked after Phase 1275:
+
+```text
+public_rc_remains_blocked_after_phase_1275
 public_rc_remains_blocked_after_phase_1274
 public_rc_remains_blocked_after_phase_1272
 public_rc_remains_blocked_after_phase_1271
