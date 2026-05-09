@@ -52,6 +52,8 @@ def test_allowlist_export_procedure_preserves_publication_boundary_and_exclusion
         "Z_Past_Chats/",
         "docs/antigravity_tasks/",
         "docs/phases/",
+        "Header-marked internal helpers",
+        "PUBLIC_RC_EXCLUDE",
         "denylist overrides allowlist",
         "clean public genesis commit",
         "no git history rewrite",
