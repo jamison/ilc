@@ -20,6 +20,7 @@ EXPLICIT_SCAN_FILES = {
     "ilc_core/network/peer.py",
     "ilc_core/network/d2d/http_fetch_transport_runtime.py",
     "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+    "ilc_core/graph/sidecar_public_path_preflight.py",
     "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
     "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
     "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
@@ -51,6 +52,7 @@ STRICT_MACHINE_JSON_FILES = {
     "ilc_core/protocol/public_wallet_runtime.py",
     "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
     "ilc_core/mcp/service.py",
+    "ilc_core/graph/sidecar_public_path_preflight.py",
     "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
     "ilc_core/storage/lmdb_public_runtime.py",
 }

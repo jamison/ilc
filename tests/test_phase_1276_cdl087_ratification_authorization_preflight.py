@@ -142,11 +142,11 @@ def test_phase_1276_frontier_updates_status_planning_and_next_phase() -> None:
     status = _read(STATUS_PATH)
     roadmap = _read(ROADMAP_PATH)
 
-    assert "Window 1273-1280 OPEN through Phase 1277" in planning
-    assert "Phase 1278 is next and remains SENSITIVE" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278" in planning
+    assert "CDL-087 ratification Fix phase is planned next" in planning
     assert "## Phase 1276" in status
     assert "Phase 1277 - TransportPrincipal public-path ADR" in status
-    assert "Window frontier | Window 1273-1280 OPEN through Phase 1277" in roadmap
+    assert "Window frontier | Window 1273-1280 OPEN through Phase 1278" in roadmap
 
 
 def test_phase_1276_graph_delta_is_recorded() -> None:
