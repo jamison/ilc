@@ -133,7 +133,8 @@ def test_planning_index_marks_window_closed_and_requires_new_sequence_lock() -> 
 
     assert "Window 1265-1272 CLOSED / PASS through Phase 1272" in planning
     assert HANDOFF in planning
-    assert "Window 1273-1280 OPEN through Phase 1279" in planning
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in planning
+    assert "window_1281_plus_sequence_lock_required_before_next_phase_assignment" in planning
     assert "release_manifest_allowlist_publication_preflight_phase_1279.v0.1" in planning
     assert "Exact-token `rg` is only a schema/completion check" in planning
 
@@ -141,7 +142,7 @@ def test_planning_index_marks_window_closed_and_requires_new_sequence_lock() -> 
 def test_roadmap_baseline_and_addendum_record_phase_1272_closure() -> None:
     roadmap = read(ROADMAP)
 
-    assert "Window 1273-1280 OPEN through Phase 1279" in roadmap
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in roadmap
     assert HANDOFF in roadmap
     assert "## 18. Phase 1272 Window 1265-1272 Closure Addendum" in roadmap
     assert "ATLAS-G-006 is no longer the selected-profile graph reachability blocker" in roadmap

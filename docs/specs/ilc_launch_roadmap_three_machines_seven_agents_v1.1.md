@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 OPEN through Phase 1279; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery, Phase 1278 Fix1 ratifies CDL-087 without public fetch/sidecar/projection activation, and Phase 1279 records release manifest/source allowlist prepublication inventory without source publication, release artifact production, release keys, release envelopes, Genesis Atlas mutation, v0.2 signing, or a public-RC claim |
+| Window frontier | Window 1273-1280 CLOSED / PASS through Phase 1280; current handoff is `docs/specs/ilc_window_1273_1280_handoff_1280_v0.1.md`; closed sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight, Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization, Phase 1278 records sidecar public-path preflight without public serving, public endpoint, non-loopback bind, listener, or peer discovery, Phase 1278 Fix1 ratifies CDL-087 without public fetch/sidecar/projection activation, Phase 1279 records release manifest/source allowlist prepublication inventory without source publication, release artifact production, release keys, release envelopes, Genesis Atlas mutation, v0.2 signing, or a public-RC claim, and Phase 1280 closes the window with `window_1281_plus_sequence_lock_required_before_next_phase_assignment` |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -92,6 +92,22 @@ claimability_proof_binding_runtime_boundary_phase_1275.v0.1
 settled_root_wallet_root_receipt_binding_recorded_phase_1275
 non_loopback_claimability_api_still_blocked_phase_1275
 public_claimability_not_activated_phase_1275
+docs/specs/ilc_cdl087_ratification_authorization_preflight_1276_v0.1.md
+cdl087_ratification_authorization_preflight_phase_1276.v0.1
+docs/specs/ilc_transport_principal_public_path_adr_runtime_preflight_1277_v0.1.md
+transport_principal_public_path_adr_runtime_preflight_phase_1277.v0.1
+docs/specs/ilc_sidecar_non_loopback_public_path_preflight_1278_v0.1.md
+sidecar_non_loopback_projection_authorization_preflight_phase_1278.v0.1
+docs/specs/ilc_cdl_087_ratification_evidence_1278_fix1_v0.1.md
+cdl087_ratified_phase_1278_fix1
+cdl087_register_mutated_phase_1278_fix1
+docs/specs/ilc_release_manifest_allowlist_prepublication_preflight_1279_v0.1.md
+release_manifest_allowlist_publication_preflight_phase_1279.v0.1
+docs/specs/ilc_window_1273_1280_handoff_1280_v0.1.md
+window_1273_1280_closed_phase_1280
+window_1273_1280_closure_gate_verdict=pass
+phase_1280_window_1273_1280_closure_complete
+window_1281_plus_sequence_lock_required_before_next_phase_assignment
 ```
 
 ---
@@ -1180,4 +1196,43 @@ public_rc_remains_blocked_after_phase_1279
 public_rc_remains_blocked_after_phase_1278_fix1
 public_rc_remains_blocked_after_phase_1278
 public_rc_remains_blocked_after_phase_1277
+```
+
+## 26. Phase 1280 Window 1273-1280 Closure Addendum
+
+Phase 1280 closes Window 1273-1280:
+
+```text
+window_1273_1280_closed_phase_1280
+window_1273_1280_closure_gate_verdict=pass
+phase_1280_window_1273_1280_closure_complete
+window_1281_plus_sequence_lock_required_before_next_phase_assignment
+public_rc_remains_blocked_after_phase_1280
+```
+
+Roadmap impact:
+
+- Window 1273-1280 is closed with a scoped pass verdict for sequence-lock,
+  local claimability/conversion-sweeper work, proof binding, CDL-087
+  ratification, public-path preflight helpers, release prepublication
+  inventory, and handoff coherence.
+- CDL-087 remains ratified from Phase 1278 Fix1, but public fetch serving,
+  public sidecar/projection serving, public P2P exposure, CDL-088, and public
+  RC remain separately gated.
+- Claimability remains local-only after Phases 1274-1275; public claimability
+  API/verifier authority remains open.
+- Release publication remains blocked after Phase 1279 inventory; no source
+  export, public repository publication, public package publication, release
+  artifact production, release keys, release envelopes, Genesis Atlas mutation,
+  or v0.2 signing is authorized.
+- A Window 1281+ sequence lock is required before assigning the next phase.
+- A capsule refresh is recommended because v5.50 is still the latest published
+  capsule but is stale on CDL-087 ratification and this window closure.
+
+Public RC remains blocked after Phase 1280:
+
+```text
+public_rc_remains_blocked_after_phase_1280
+public_rc_remains_blocked_after_phase_1279
+public_rc_remains_blocked_after_phase_1278_fix1
 ```

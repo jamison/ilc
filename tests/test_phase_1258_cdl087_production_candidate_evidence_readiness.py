@@ -99,7 +99,7 @@ def test_phase_1258_updates_frontier_and_graph_delta() -> None:
     status = read(STATUS)
     spec = read(SPEC)
 
-    assert "Window 1273-1280 OPEN through Phase 1279" in planning
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in planning
     assert SPEC in planning
     assert "## Phase 1258" in status
     assert "Phase 1259 - CDL-087 serving-peer evidence slice" in status

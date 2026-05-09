@@ -118,10 +118,10 @@ def test_phase_1278_fix1_updates_frontier_and_next_phase() -> None:
     status = _read(STATUS_PATH)
     sequence_lock = _read(SEQUENCE_LOCK_PATH)
 
-    assert "Window 1273-1280 OPEN through Phase 1279" in planning
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in planning
     assert "CDL-087 is RATIFIED" in planning
-    assert "Phase 1280 remains the next locked sensitive closure phase" in planning
-    assert "Window frontier | Window 1273-1280 OPEN through Phase 1279" in roadmap
+    assert "window_1281_plus_sequence_lock_required_before_next_phase_assignment" in planning
+    assert "Window frontier | Window 1273-1280 CLOSED / PASS through Phase 1280" in roadmap
     assert "CDL-087 | **RATIFIED** in Phase 1278 Fix1" in roadmap
     assert "public_rc_remains_blocked_after_phase_1278_fix1" in roadmap
     assert "## Phase 1278 Fix1" in status
