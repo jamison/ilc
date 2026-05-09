@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 OPEN through Phase 1287; active sequence lock is `docs/specs/ilc_phase_1281_1288_sequence_lock_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, and Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`; Phase 1288 window closure is next |
-| Capsule | v5.51 current and updated in place through Phase 1287 |
+| Window frontier | Window 1281-1288 CLOSED / PASS through Phase 1288; closure handoff is `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`, and Phase 1288 records `window_1281_1288_closure_gate_verdict=pass`; Window 1289+ sequence lock required before next phase assignment |
+| Capsule | v5.51 current and updated in place through Phase 1288 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1508,9 +1508,9 @@ Roadmap impact:
   production, release keys, release envelopes, Genesis Atlas mutation/signing if
   needed, v0.2 signing authorization, wallet semantics, ECU minting, and ILC
   settlement.
-- The next executable sensitive slice is Phase 1288, Window 1281-1288 closure
-  gate, which must close the window honestly without making a public RC claim
-  unless an explicit later activation/release phase is planned.
+- At Phase 1287 close, the locked successor was Phase 1288, Window 1281-1288
+  closure gate, which closed the window honestly without making a public RC
+  claim and without granting release or activation authority.
 
 Public RC remains blocked after Phase 1287:
 
@@ -1519,4 +1519,44 @@ public_rc_remains_blocked_after_phase_1287
 public_rc_remains_blocked_after_phase_1286
 public_rc_remains_blocked_after_phase_1285
 public_rc_remains_blocked_after_phase_1284
+```
+
+## 34. Phase 1288 Window 1281-1288 Closure Addendum
+
+Phase 1288 closes Window 1281-1288 under explicit `GO Phase 1285-1288`:
+
+```text
+window_1281_1288_closed_phase_1288
+window_1281_1288_closure_gate_verdict=pass
+phase_1288_window_1281_1288_closure_complete
+window_1289_plus_sequence_lock_required_before_next_phase_assignment
+public_rc_remains_blocked_after_phase_1288
+```
+
+The closure pass is a coherence and handoff verdict only. It does not authorize
+public RC, public launch, public claimability, public verifier/API serving,
+TransportPrincipal public-path activation, public sidecar/projection serving,
+source publication, release artifacts, release keys, release envelopes, Genesis
+Atlas mutation/signing, CDL mutation, CDL-088 opening, wallet economics, ECU
+minting, ILC settlement, or v0.2 signing.
+
+Roadmap impact:
+
+- Window 1281-1288 is closed/pass through Phase 1288.
+- Window 1289+ sequence lock is required before assigning any next phase.
+- Public RC remains blocked by final public claimability API/verifier authority,
+  actual TransportPrincipal public-path activation authority, actual sidecar
+  public projection serving authority, privacy filtering/public-safe projection
+  schema, counsel/IP/publication authorization, source allowlist export
+  execution, release artifact production, release keys, release envelopes,
+  Genesis Atlas mutation/regeneration/signing if needed, v0.2 signing
+  authorization, wallet semantics, ECU minting, and ILC settlement.
+
+Public RC remains blocked after Phase 1288:
+
+```text
+public_rc_remains_blocked_after_phase_1288
+public_rc_remains_blocked_after_phase_1287
+public_rc_remains_blocked_after_phase_1286
+public_rc_remains_blocked_after_phase_1285
 ```
