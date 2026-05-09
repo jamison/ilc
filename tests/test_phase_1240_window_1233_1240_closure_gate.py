@@ -161,7 +161,7 @@ def test_cat13_planning_index_updated_to_closed_window() -> None:
     text = _read(PLANNING_INDEX)
     assert "Window 1233-1240 CLOSED through Phase 1240" in text
     assert "ilc_window_1233_1240_handoff_1240_v0.1.md" in text
-    assert "Window 1273-1280 OPEN through Phase 1279" in text
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in text
     assert "Capsule v5.50" in text
 
 
@@ -170,11 +170,11 @@ def test_cat14_status_records_phase_1240_closure() -> None:
     assert "## Phase 1240" in text
     assert "window_1233_1240_closed_phase_1240" in text
     assert "window_1233_1240_closure_gate_verdict=pass" in text
-    assert "Window 1273-1280 OPEN through Phase 1279" in _read(PLANNING_INDEX)
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in _read(PLANNING_INDEX)
 
 
 def test_cat15_no_window_1241_sequence_lock_opened() -> None:
     text = _read(HANDOFF) + _read(PLANNING_INDEX)
     assert "No Window 1241+ phase is opened here" in text
-    assert "Window 1273-1280 OPEN through Phase 1279" in text
+    assert "Window 1273-1280 CLOSED / PASS through Phase 1280" in text
     assert "window_1273_1280_sequence_lock_committed" in text
