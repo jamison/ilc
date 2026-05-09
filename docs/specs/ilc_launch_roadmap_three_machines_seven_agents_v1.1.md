@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 OPEN through Phase 1276; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, and Phase 1276 records CDL-087 authorization preflight without ratification or register mutation |
+| Window frontier | Window 1273-1280 OPEN through Phase 1277; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, Phase 1276 records CDL-087 authorization preflight without ratification or register mutation, and Phase 1277 records TransportPrincipal public-path preflight without public P2P, public fetch serving, non-loopback projection, or release authorization |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -45,7 +45,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
 | `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
 | L3 sidecar query runtime | Local/read-only runtime complete; Phase 1268 records loopback/subprocess-only boundary with no new listener and keeps public/non-loopback projection serving blocked |
-| TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; no public P2P or non-loopback serving activation |
+| TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1277 adds an internal public-path preflight helper; no public P2P, public fetch serving, or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; CDL-087 not ratified |
 
 Latest closed handoff and current window artifacts:
@@ -1004,4 +1004,45 @@ public_rc_remains_blocked_after_phase_1276
 public_rc_remains_blocked_after_phase_1275
 public_rc_remains_blocked_after_phase_1274
 public_rc_remains_blocked_after_phase_1272
+```
+
+## 22. Phase 1277 TransportPrincipal Public-Path Preflight Addendum
+
+Phase 1277 recorded the TransportPrincipal public-path ADR/runtime preflight:
+
+```text
+transport_principal_public_path_adr_runtime_preflight_phase_1277.v0.1
+transport_principal_public_p2p_not_activated_phase_1277
+requester_id_fallback_still_forbidden_phase_1277
+non_loopback_projection_still_blocked_phase_1277
+public_fetch_serving_not_enabled_phase_1277
+cdl087_ratification_fix_phase_planned_after_1277_1278_if_both_pass_phase_1277
+genesis_atlas_v0_2_signing_deferred_until_atlas_g_tail_phase_1277
+```
+
+Roadmap impact:
+
+- Public-path admission, rate limiting, bans, and replay controls now have an
+  internal preflight helper bound to authenticated TransportPrincipal material.
+- The helper is marked `PUBLIC_RC_EXCLUDE` and is not a public RC launch surface.
+- The helper rejects requester_id, client_ip, AgentID, and harness-identity
+  fallback authority, and it keeps public P2P, public fetch serving, non-loopback
+  projection, sidecar public path authorization, CDL-087 ratification, Rust
+  public-P2P hardening completion, and release authorization false.
+- Credential lifecycle, revocation, replay, privacy, canonical JSON, full
+  SHA-256 binding, and recursive float rejection are now recorded for the
+  TransportPrincipal public-path preflight boundary.
+- The current window should plan a CDL-087 ratification Fix phase after Phase
+  1277 and Phase 1278 if both pass, but that later Fix still requires explicit
+  human ratification and CDL register mutation authorization.
+- Genesis Atlas v0.2 signing remains deferred until the end of the planned
+  Atlas-G phases.
+
+Public RC remains blocked after Phase 1277:
+
+```text
+public_rc_remains_blocked_after_phase_1277
+public_rc_remains_blocked_after_phase_1276
+public_rc_remains_blocked_after_phase_1275
+public_rc_remains_blocked_after_phase_1274
 ```
