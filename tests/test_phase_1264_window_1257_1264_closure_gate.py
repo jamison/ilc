@@ -97,7 +97,8 @@ def test_cdl087_conditions_are_classified_without_ratification() -> None:
         assert token in handoff
 
     assert "| CDL-087 |" in cdl_register
-    assert "| open |" in cdl_register
+    assert "| ratified |" in cdl_register
+    assert "ratified_phase: 1278 Fix1" in cdl_register
     assert "window_1257_1264_closed_phase_1264" not in cdl_register
 
 

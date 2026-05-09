@@ -99,7 +99,8 @@ def test_phase_1263_cdl_register_is_referenced_but_not_mutated_in_decision() -> 
 
     assert "| CDL-085 |" in register
     assert "| CDL-087 |" in register
-    assert "| open |" in register
+    assert "| ratified |" in register
+    assert "ratified_phase: 1278 Fix1" in register
     assert "No new CDL row is added" in spec
     assert "CDL-087 remains open" in spec
     assert "CDL-088 remains unopened" in spec

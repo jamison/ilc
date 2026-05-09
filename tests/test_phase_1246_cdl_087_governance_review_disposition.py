@@ -62,10 +62,10 @@ def test_phase_1246_sensitive_ratification_prompt_gate_is_explicit() -> None:
     assert "CDL register mutation;" in text
 
 
-def test_phase_1246_cdl_register_remains_open_for_cdl_087() -> None:
+def test_phase_1246_records_historical_no_ratification_before_later_fix1() -> None:
     text = CDL_REGISTER.read_text(encoding="utf-8")
     row = next(line for line in text.splitlines() if line.startswith("| CDL-087 |"))
-    assert "| open |" in row
-    assert " ratified |" not in row
-    assert "evidence_document:" not in row
+    assert "| ratified |" in row
+    assert "ratified_phase: 1278 Fix1" in row
+    assert "phase_1246" not in row
     assert "cdl_087_not_ratified_phase_1227" in row

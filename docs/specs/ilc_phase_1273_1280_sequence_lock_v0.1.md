@@ -51,13 +51,13 @@ settlement, public release artifacts, or v0.2 signing state.
 |-------|-------------------|
 | `docs/PLANNING_INDEX.md` | Current planning frontier after Window 1265-1272 closure and Window 1273-1280 planning-package hardening. |
 | `docs/phases/STATUS.md` | Actual status through Phase 1272, plus the Phase 1271 Fix1 audit-hardening entry. |
-| `docs/specs/ilc_antigravity_context_capsule_v5.50.md` | Current capsule until superseded; still records CDL-087 not ratified, public launch obligations, and v0.2 signing deferred. |
+| `docs/specs/ilc_antigravity_context_capsule_v5.50.md` | Current capsule until superseded; it was produced before Phase 1278 Fix1 and its CDL-087 not-ratified statement is superseded by the current register. Public launch obligations and v0.2 signing remain deferred. |
 | `docs/specs/ilc_window_1265_1272_handoff_1272_v0.1.md` | Closed-window baseline and carry-forward blocker list. |
 | `docs/specs/ilc_phase_1265_1272_sequence_lock_v0.1.md` | Prior closed sequence lock and sensitive-gate precedent. |
 | `docs/specs/ilc_window_1273_1280_candidate_phase_grouping_v0.1.md` | Planning-only candidate guidance consumed by this lock. |
 | `docs/specs/ilc_window_1273_1280_prompt_package_outside_audit_2026_05_09_v0.1.md` | Outside audit and Session-Start Canon hardening record. |
 | `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md` | Current controlling public-RC roadmap and Phase 1272 closure addendum. |
-| `docs/specs/ilc_constitutional_decision_log_v0.1.md` | CDL register; CDL-048 is ratified and CDL-087 remains open. |
+| `docs/specs/ilc_constitutional_decision_log_v0.1.md` | CDL register; CDL-048 is ratified and CDL-087 is ratified by Phase 1278 Fix1. |
 | `docs/specs/ilc_cdl_087_sensitive_ratification_review_1266_v0.1.md` | CDL-087 review/no-ratification/no-register-mutation boundary. |
 | `docs/specs/ilc_transport_principal_runtime_identity_pre_public_path_1267_v0.1.md` | Pre-public TransportPrincipal helper and non-loopback projection block. |
 | `docs/specs/ilc_sidecar_loopback_projection_endpoint_boundary_1268_v0.1.md` | No-new-listener and public/non-loopback sidecar projection block. |
@@ -175,7 +175,7 @@ Phase 1274 may implement a bounded runtime skeleton only after explicit GO.
 
 ### CDL-087
 
-CDL-087 remains:
+At initial Window 1273-1280 lock time, CDL-087 remained:
 
 ```text
 OPEN / PRELOCKED / NOT RATIFIED
@@ -189,10 +189,11 @@ cdl_087_ratification_not_executed_by_default_phase_1266
 cdl_087_register_mutation_requires_explicit_ratification_authorization_phase_1266
 ```
 
-This lock does not ratify CDL-087 and does not mutate the CDL register. Phase
-1276 is an authorization preflight by default; any register mutation requires
-explicit human ratification authorization and a fresh proof of all applicable
-conditions.
+The sequence lock itself did not ratify CDL-087 and did not mutate the CDL
+register. Phase 1276 was an authorization preflight by default; any later
+register mutation required explicit human ratification authorization and a
+fresh proof of all applicable conditions. Phase 1278 Fix1 later received that
+explicit authorization and ratified CDL-087.
 
 ### TransportPrincipal, Sidecar, and Public Path
 
@@ -260,7 +261,40 @@ Phase 1273 under this lock.
 
 ---
 
-## 6. Human Escalation and Execution Rules
+## 6. Phase 1278 Fix1 Ratification Addendum
+
+After Phase 1278 passed, the human reviewer explicitly authorized the planned
+CDL-087 Fix phase:
+
+```text
+GO Phase 1278 Fix1. I authorize CDL-087 ratification and CDL register mutation
+```
+
+Phase 1278 Fix1 consumed that authorization, re-proved the six CDL-087
+ratification conditions, and mutated only the CDL-087 row in
+`docs/specs/ilc_constitutional_decision_log_v0.1.md` from `open` to
+`ratified`.
+
+```text
+cdl087_ratification_evidence_phase_1278_fix1.v0.1
+cdl087_ratified_phase_1278_fix1
+cdl087_register_mutated_phase_1278_fix1
+cdl087_conditions_1_to_6_reproved_phase_1278_fix1
+cdl087_public_fetch_serving_not_enabled_phase_1278_fix1
+cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1
+no_cdl088_opening_phase_1278_fix1
+```
+
+This addendum does not alter the locked order for Phase 1279 or Phase 1280.
+Phase 1279 remains a non-sensitive inventory/prepublication preflight unless a
+later human instruction widens authority.
+
+Phase 1278 Fix1 does not authorize public fetch serving, public
+sidecar/projection serving, non-loopback bind, new listener, public P2P, public
+claimability, public release artifacts, public RC, CDL-088 opening, Genesis
+Atlas mutation, or v0.2 signing.
+
+## 7. Human Escalation and Execution Rules
 
 If a phase discovers a decision that cannot be resolved from committed canon and
 would widen authority, mutate a CDL register row, enable public exposure, enable
@@ -285,8 +319,9 @@ Phase-specific execution rules:
   activation.
 - Phase 1275 must remain a proof/root binding boundary and must not open a
   public claimability API or wallet spend/transfer/withdrawal semantics.
-- Phase 1276 must preserve no CDL register mutation unless the phase prompt
-  explicitly authorizes CDL-087 ratification and register mutation.
+- Phase 1276 preserved no CDL register mutation because it lacked ratification
+  authority. Phase 1278 Fix1 later received explicit authority and executed the
+  narrow CDL-087 ratification/register mutation.
 - Phase 1277 must not activate public P2P; JSON/body `requester_id`,
   `client_ip`, AgentID, and harness identity remain forbidden as public-path
   rate-limit, admission, ban, or replay keys.
@@ -313,7 +348,8 @@ This sequence lock does not authorize:
 - public claimability activation;
 - wallet withdrawal, wallet transfer, or wallet spend semantics;
 - wallet signing authority or ledger-write authority;
-- CDL mutation, CDL-087 ratification, Werner CDL opening/prelock, or CDL-088 opening;
+- CDL mutation beyond the authorized CDL-087 Phase 1278 Fix1 register mutation,
+  Werner CDL opening/prelock, or CDL-088 opening;
 - ECU mint authorization;
 - direct Werner ECU creation;
 - ILC settlement or withdrawal runtime activation;
@@ -328,7 +364,7 @@ This sequence lock does not authorize:
 
 ---
 
-## 7. Carry-Forward Tokens
+## 8. Carry-Forward Tokens
 
 ```text
 window_1273_1280_sequence_lock_committed
@@ -341,6 +377,11 @@ window_1273_1280_candidate_phase_grouping_recorded_after_phase_1272
 window_1273_1280_audit_no_authority_expansion
 public_rc_remains_blocked_after_phase_1272
 cdl_087_register_mutation_requires_explicit_ratification_authorization_phase_1276
+cdl087_ratified_phase_1278_fix1
+cdl087_register_mutated_phase_1278_fix1
+cdl087_public_fetch_serving_not_enabled_phase_1278_fix1
+cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1
+no_cdl088_opening_phase_1278_fix1
 public_claimability_runtime_still_requires_conversion_sweeper_after_phase_1272
 transport_principal_required_before_public_projection_after_phase_1272
 release_manifest_allowlist_publication_still_authorization_gated_after_phase_1272
@@ -349,7 +390,7 @@ unknown_unknown_discovery_required_before_phase_execution
 
 ---
 
-## 8. Graph Delta
+## 9. Graph Delta
 
 ```text
 graph_delta=support_only:docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md -> planning/frontier

@@ -92,15 +92,15 @@ def test_phase_1276_condition_matrix_cites_current_evidence_chain() -> None:
         assert evidence_token in spec
 
 
-def test_phase_1276_preserves_cdl087_open_register_state() -> None:
+def test_phase_1276_records_historical_no_mutation_before_later_fix1_ratification() -> None:
     register = _read(CDL_REGISTER_PATH)
     spec = _read(SPEC_PATH)
 
     cdl087_rows = [line for line in register.splitlines() if line.startswith("| CDL-087 |")]
     assert len(cdl087_rows) == 1
     row = cdl087_rows[0]
-    assert "| open |" in row
-    assert "ratified_phase:" not in row
+    assert "| ratified |" in row
+    assert "ratified_phase: 1278 Fix1" in row
     assert "phase_1276" not in row
     assert "cdl087_ratification_authorization_preflight_phase_1276.v0.1" not in register
 
@@ -142,11 +142,11 @@ def test_phase_1276_frontier_updates_status_planning_and_next_phase() -> None:
     status = _read(STATUS_PATH)
     roadmap = _read(ROADMAP_PATH)
 
-    assert "Window 1273-1280 OPEN through Phase 1278" in planning
-    assert "CDL-087 ratification Fix phase is planned next" in planning
+    assert "Window 1273-1280 OPEN through Phase 1278 Fix1" in planning
+    assert "CDL-087 is now RATIFIED" in planning
     assert "## Phase 1276" in status
     assert "Phase 1277 - TransportPrincipal public-path ADR" in status
-    assert "Window frontier | Window 1273-1280 OPEN through Phase 1278" in roadmap
+    assert "Window frontier | Window 1273-1280 OPEN through Phase 1278 Fix1" in roadmap
 
 
 def test_phase_1276_graph_delta_is_recorded() -> None:
