@@ -34,11 +34,11 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1273-1280 OPEN through Phase 1275; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton and Phase 1275 records local claimability proof binding without public claimability activation |
+| Window frontier | Window 1273-1280 OPEN through Phase 1276; current sequence lock is `docs/specs/ilc_phase_1273_1280_sequence_lock_v0.1.md`; Phase 1274 records the CDL-048 conversion-sweeper runtime skeleton, Phase 1275 records local claimability proof binding without public claimability activation, and Phase 1276 records CDL-087 authorization preflight without ratification or register mutation |
 | Capsule | v5.50 current |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
-| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1266 sensitive review recorded no-ratification/no-register-mutation |
+| CDL-087 | OPEN / PRELOCKED / NOT RATIFIED; Phase 1266 sensitive review and Phase 1276 authorization preflight recorded no-ratification/no-register-mutation |
 | v0.2 signing | Deferred; explicit signing authorization absent |
 | Tier-3 runtime linkage | **IMPLEMENTED** in Phase 1201 (`tier3_runtime_linkage_runtime_1201.v0.1`) |
 | Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
@@ -972,4 +972,36 @@ public_rc_remains_blocked_after_phase_1274
 public_rc_remains_blocked_after_phase_1272
 public_rc_remains_blocked_after_phase_1271
 public_rc_remains_blocked_after_phase_1270
+```
+
+## 21. Phase 1276 CDL-087 Ratification Authorization Preflight Addendum
+
+Phase 1276 recorded the CDL-087 authorization preflight:
+
+```text
+cdl087_ratification_authorization_preflight_phase_1276.v0.1
+cdl087_ratification_requires_explicit_human_ratification_authorization_phase_1276
+cdl087_register_mutation_not_authorized_by_default_phase_1276
+no_public_fetch_serving_enabled_phase_1276
+```
+
+Roadmap impact:
+
+- CDL-087 evidence is now classified as ready for a future explicitly
+  authorized ratification attempt, not as ratified.
+- Phase 1276 does not mutate the CDL register; CDL-087 remains open/prelocked
+  and not ratified.
+- Future ratification must explicitly authorize CDL-087 ratification and CDL
+  register mutation, then reprove all six conditions against current canon.
+- Public fetch serving remains disabled; public P2P, public sidecar/projection
+  serving, public claimability, public release artifacts, source publication,
+  and v0.2 signing remain unauthorized.
+
+Public RC remains blocked after Phase 1276:
+
+```text
+public_rc_remains_blocked_after_phase_1276
+public_rc_remains_blocked_after_phase_1275
+public_rc_remains_blocked_after_phase_1274
+public_rc_remains_blocked_after_phase_1272
 ```

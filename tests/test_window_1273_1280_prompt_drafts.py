@@ -155,14 +155,14 @@ def test_window_1273_1280_planning_index_points_to_open_sequence_lock() -> None:
 
     assert "ilc_phase_1273_1280_sequence_lock_v0.1.md" in text
     assert "ilc_window_1273_1280_candidate_phase_grouping_v0.1.md" in text
-    assert "Window 1273-1280 OPEN through Phase 1275" in text
+    assert "Window 1273-1280 OPEN through Phase 1276" in text
     assert "window_1273_1280_sequence_lock_committed" in text
-    assert "claimability_proof_binding_runtime_boundary_phase_1275.v0.1" in text
-    assert "settled_root_wallet_root_receipt_binding_recorded_phase_1275" in text
-    assert "non_loopback_claimability_api_still_blocked_phase_1275" in text
-    assert "public_claimability_not_activated_phase_1275" in text
     assert "cdl087_ratification_authorization_preflight_phase_1276.v0.1" in text
-    assert "Phase 1276 is next and remains SENSITIVE" in text
+    assert "cdl087_ratification_requires_explicit_human_ratification_authorization_phase_1276" in text
+    assert "cdl087_register_mutation_not_authorized_by_default_phase_1276" in text
+    assert "no_public_fetch_serving_enabled_phase_1276" in text
+    assert "Phase 1277 is next and remains SENSITIVE" in text
+    assert "transport_principal_public_path_adr_runtime_preflight_phase_1277.v0.1" in text
     assert "Window 1265-1272 is CLOSED / PASS through Phase 1272" in text
 
 
@@ -189,6 +189,6 @@ def test_window_1273_1280_outside_audit_records_hardening_without_authority_expa
     assert "window_1273_1280_audit_no_authority_expansion" in audit
     assert "planning_index_session_start_canon_stale_after_window_1273_1280_prompt_draft" in audit
     assert "does not open Window 1273-1280" in audit
-    assert "Window 1273-1280 OPEN through Phase 1275" in index
+    assert "Window 1273-1280 OPEN through Phase 1276" in index
     assert "window_1273_1280_sequence_lock_committed" in index
     assert "ilc_window_1273_1280_prompt_package_outside_audit_2026_05_09_v0.1.md" in index
