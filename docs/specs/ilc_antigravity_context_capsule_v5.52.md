@@ -2,10 +2,10 @@
 
 **Date:** 2026-05-10
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.51.md`
-**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1297
-**Frontier:** Window 1289-1302 is open through Phase 1297. Phase 1297 records a
-sidecar public-safe projection schema only. Phase 1298 is sensitive and
-requires explicit `GO Phase 1298`.
+**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1298
+**Frontier:** Window 1289-1302 is open through Phase 1298. Phase 1298 records a
+sidecar bind/listener/peer-discovery authority preflight only. Phase 1299 is
+sensitive and requires explicit `GO Phase 1299`.
 
 ```text
 context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
@@ -88,6 +88,14 @@ sidecar_public_projection_fields_not_served_phase_1297
 public_sidecar_projection_serving_not_enabled_phase_1297
 public_rc_remains_blocked_after_phase_1297
 phase_1298_sidecar_bind_listener_peer_discovery_authority_preflight_next
+sidecar_bind_listener_peer_discovery_authority_preflight_phase_1298.v0.1
+sidecar_bind_listener_peer_discovery_verdict_phase_1298=preflight_only_no_public_serving
+non_loopback_bind_not_enabled_phase_1298
+public_listener_not_enabled_phase_1298
+peer_discovery_not_enabled_phase_1298
+public_sidecar_projection_serving_not_enabled_phase_1298
+public_rc_remains_blocked_after_phase_1298
+phase_1299_release_allowlist_artifact_genesis_readiness_preflight_next
 ```
 
 ---
@@ -120,10 +128,11 @@ Current launch roadmap:
 
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md`
 
-The user's explicit `GO Phase 1297` authorized the sidecar public-safe
-projection schema only. The next phase, Phase 1298, is sensitive because it
-preflights sidecar bind, listener, and peer-discovery authority and must not
-proceed without explicit authorization.
+The user's explicit `GO Phase 1298 and any subsequent non-sensitive phases, in
+order` authorized the Phase 1298 sidecar bind/listener/peer-discovery authority
+preflight only. The next phase, Phase 1299, is sensitive because it preflights
+release allowlist, artifact, and Genesis readiness and must not proceed without
+explicit authorization.
 
 ---
 
@@ -308,6 +317,27 @@ public_rc_remains_blocked_after_phase_1297
 phase_1298_sidecar_bind_listener_peer_discovery_authority_preflight_next
 ```
 
+Historical Phase 1297 frontier phrase guard:
+
+```text
+Window 1289-1302 is open through Phase 1297
+Phase 1298 is sensitive
+```
+
+Phase 1298 records the sidecar bind, listener, and peer-discovery authority
+preflight:
+
+```text
+sidecar_bind_listener_peer_discovery_authority_preflight_phase_1298.v0.1
+sidecar_bind_listener_peer_discovery_verdict_phase_1298=preflight_only_no_public_serving
+non_loopback_bind_not_enabled_phase_1298
+public_listener_not_enabled_phase_1298
+peer_discovery_not_enabled_phase_1298
+public_sidecar_projection_serving_not_enabled_phase_1298
+public_rc_remains_blocked_after_phase_1298
+phase_1299_release_allowlist_artifact_genesis_readiness_preflight_next
+```
+
 Locked Window 1289-1302 order:
 
 | Phase | Scope | Sensitivity |
@@ -321,8 +351,8 @@ Locked Window 1289-1302 order:
 | 1295 | TransportPrincipal lifecycle, revocation, replay preflight | SENSITIVE, complete |
 | 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE, complete |
 | 1297 | Sidecar public-safe projection schema | SENSITIVE, complete |
-| 1298 | Sidecar bind, listener, peer-discovery authority preflight | SENSITIVE, requires explicit `GO Phase 1298` |
-| 1299 | Release allowlist, artifact, Genesis readiness preflight | SENSITIVE |
+| 1298 | Sidecar bind, listener, peer-discovery authority preflight | SENSITIVE, complete |
+| 1299 | Release allowlist, artifact, Genesis readiness preflight | SENSITIVE, requires explicit `GO Phase 1299` |
 | 1300 | Counsel, IP, publication clearance inventory | SENSITIVE |
 | 1301 | Deep no-activation assertion audit | SENSITIVE |
 | 1302 | Window 1289-1302 closure gate | SENSITIVE |
@@ -344,7 +374,7 @@ no_cdl088_opening_phase_1278_fix1
 ```
 
 CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phases
-1291, 1292, 1293, 1294, 1295, 1296, and 1297 also do not mutate the CDL
+1291, 1292, 1293, 1294, 1295, 1296, 1297, and 1298 also do not mutate the CDL
 register and do not open any new constitutional decision log entry.
 
 Open counsel/public-release obligations remain:
@@ -363,7 +393,7 @@ publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
 
 ## 4. Public-RC Blocker Map
 
-Public RC remains blocked after Phase 1297 by:
+Public RC remains blocked after Phase 1298 by:
 
 - Final public claimability verifier/API authority and public endpoint
   authorization.
@@ -377,7 +407,8 @@ Public RC remains blocked after Phase 1297 by:
   registry, replay cache, admission, ban, rate-limit, and privacy controls.
 - Actual public sidecar/projection serving authority, including public-safe
   field serving, filtering implementation, bind/listener policy, and
-  peer-discovery policy.
+  peer-discovery policy. Phase 1298 records those bind/listener/peer-discovery
+  surfaces as preflight-only and does not grant authority.
 - Counsel/license/CLA/trademark/IP/publication clearance.
 - Source allowlist export execution and public source/package publication.
 - Release artifact production, release-key generation, release envelope
@@ -392,11 +423,12 @@ Public RC remains blocked after Phase 1297 by:
 Phase 1295 closes the TransportPrincipal lifecycle/revocation/replay preflight
 as a classification-only pass. Phase 1296 closes the hostile-network
 admission/ban/rate/privacy plan as a planning-only pass. Phase 1297 records the
-public-safe projection schema as a schema-only pass. None of these phases
-activates public path serving, lifecycle policy, revocation registry, replay
-cache, admission policy, ban registry, rate-limit state, privacy policy,
-sidecar projection serving, publication, release, Genesis signing, v0.2
-signing, wallet, ECU, or ILC blockers.
+public-safe projection schema as a schema-only pass. Phase 1298 records
+bind/listener/peer-discovery authority as a preflight-only pass. None of these
+phases activates public path serving, lifecycle policy, revocation registry,
+replay cache, admission policy, ban registry, rate-limit state, privacy policy,
+sidecar projection serving, bind, listener, peer discovery, publication,
+release, Genesis signing, v0.2 signing, wallet, ECU, or ILC blockers.
 
 Exact blocker phrase guard:
 
@@ -409,6 +441,7 @@ replay/nullifier policy
 Actual TransportPrincipal public-path activation authority
 Actual public sidecar/projection serving authority
 sidecar bind/listener policy
+peer-discovery policy
 Counsel/license/CLA/trademark/IP/publication clearance
 Source allowlist export execution
 Release artifact production
@@ -537,26 +570,44 @@ public_sidecar_projection_serving_not_enabled_phase_1297
 runtime. `ilc_core/graph/sidecar_public_path_preflight.py` remains
 `PUBLIC_RC_EXCLUDE` and records no listener, bind, or serving surface.
 
+Phase 1298 records the sidecar bind/listener/peer-discovery authority preflight
+without runtime changes:
+
+```text
+sidecar_bind_listener_peer_discovery_authority_preflight_phase_1298.v0.1
+sidecar_bind_listener_peer_discovery_verdict_phase_1298=preflight_only_no_public_serving
+non_loopback_bind_not_enabled_phase_1298
+public_listener_not_enabled_phase_1298
+peer_discovery_not_enabled_phase_1298
+public_sidecar_projection_serving_not_enabled_phase_1298
+```
+
+The current sidecar helper remains `PUBLIC_RC_EXCLUDE` and deliberately does
+not open a listener, bind a socket, serve projection data, or enable peer
+discovery. Local in-process sidecar reads remain the only active sidecar path.
+
 ---
 
 ## 6. Non-Authorization Boundary
 
-Phase 1297 does not authorize TransportPrincipal public-path activation,
+Phase 1298 does not authorize TransportPrincipal public-path activation,
 admission policy activation, ban registry activation, public rate-limit state
 activation, privacy policy activation, Werner overlay activation, public
 credential issuer authority, credential lifecycle policy activation, public
 revocation registry activation, public replay cache activation, materialized
-export manifest production, helper promotion, marker removal, public RC, public launch, public repository
-publication, public package publication, source allowlist export execution,
-public release artifact production, release-key generation, release envelope
-production, public P2P, public fetch serving, public sidecar/projection
-serving, non-loopback sidecar/projection serving, public claimability API
-activation, public verifier service, public claimability activation, wallet
-withdrawal, wallet transfer, wallet spend, wallet signing authority, wallet
-ledger-write authority, ECU minting, ILC settlement, withdrawal runtime
-activation, CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration
-or signing, v0.2 signing, IP filing, paper publication, immutable diagnostic
-mutation, or production `commit.epoch` emission.
+export manifest production, helper promotion, marker removal, public RC, public
+launch, public repository publication, public package publication, source
+allowlist export execution, public release artifact production, release-key
+generation, release envelope production, non-loopback bind, wildcard bind,
+public host bind, public listener, socket listener, HTTP route, peer discovery,
+public P2P, public fetch serving, public sidecar/projection serving,
+non-loopback sidecar/projection serving, public claimability API activation,
+public verifier service, public claimability activation, wallet withdrawal,
+wallet transfer, wallet spend, wallet signing authority, wallet ledger-write
+authority, ECU minting, ILC settlement, withdrawal runtime activation, CDL
+mutation, CDL-088 opening, Genesis Atlas mutation/regeneration or signing, v0.2
+signing, IP filing, paper publication, immutable diagnostic mutation, or
+production `commit.epoch` emission.
 
 Exact non-authorization phrase guard:
 
@@ -571,6 +622,13 @@ public credential issuer authority
 credential lifecycle policy activation
 public revocation registry activation
 public replay cache activation
+non-loopback bind
+wildcard bind
+public host bind
+public listener
+socket listener
+HTTP route
+peer discovery
 public P2P
 public fetch serving
 public sidecar/projection serving
@@ -619,12 +677,14 @@ or ILC settlement endpoint is added.
 Next phase:
 
 ```text
-Phase 1298 - Sidecar bind, listener, peer-discovery authority preflight
+Phase 1299 - Release allowlist, artifact, Genesis readiness preflight
 ```
 
-Phase 1298 is sensitive. It requires explicit `GO Phase 1298` before execution.
+Phase 1299 is sensitive. It requires explicit `GO Phase 1299` before execution.
 Default authority stance remains no public endpoint, no public claimability API,
 no source export, no helper promotion, no package publication, no public P2P or
 fetch serving, no admission/ban/rate/privacy activation, no public sidecar or
-projection serving, no wallet spend semantics, no ECU minting, and no ILC
-settlement.
+projection serving, no bind/listener/peer-discovery activation, no release
+artifact production, no release-key generation, no release envelope production,
+no Genesis mutation/signing, no v0.2 signing, no wallet spend semantics, no ECU
+minting, and no ILC settlement.
