@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 CLOSED / PASS through Phase 1288; closure handoff is `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`, Phase 1288 records `window_1281_1288_closure_gate_verdict=pass`, and Phase 1288 Fix1 records `phase_1288_fix1_runtime_deep_audit_hardening`; Window 1289+ sequence lock required before next phase assignment |
+| Window frontier | Window 1281-1288 CLOSED / PASS through Phase 1288; closure handoff is `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`, Phase 1288 records `window_1281_1288_closure_gate_verdict=pass`, Phase 1288 Fix1 records `phase_1288_fix1_runtime_deep_audit_hardening`, and Phase 1288 Fix2 records `phase_1288_fix2_window_1289_1296_guidance_drafted`; Window 1289+ sequence lock required before next phase assignment |
 | Capsule | v5.51 current and updated in place through Phase 1288 Fix1 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -1598,4 +1598,45 @@ public_rc_remains_blocked_after_phase_1288
 public_rc_remains_blocked_after_phase_1287
 public_rc_remains_blocked_after_phase_1286
 public_rc_remains_blocked_after_phase_1285
+```
+
+---
+
+## 36. Phase 1288 Fix2 Window 1289-1296 Guidance Addendum
+
+Phase 1288 Fix2 records the planning-only guidance and prompt-draft package for
+candidate Window 1289-1296:
+
+```text
+phase_1288_fix2_window_1289_1296_guidance_drafted
+window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1
+window_1289_1296_not_open_until_sequence_lock
+phase_1289_window_1289_1296_sequence_lock_required
+```
+
+Candidate routing:
+
+| Candidate phase | Candidate scope | Default authority stance |
+|-----------------|-----------------|--------------------------|
+| 1289 | Window 1289-1296 sequence lock | Sensitive; requires explicit GO. |
+| 1290 | Context Capsule v5.52 frontier refresh | Docs/canon refresh only. |
+| 1291 | Public claimability verifier contract preflight | Sensitive; no public API or activation by default. |
+| 1292 | Claimability package-profile allowlist rehearsal | Sensitive; no source export or package publication. |
+| 1293 | TransportPrincipal lifecycle activation-blocker preflight | Sensitive; no public P2P or fetch serving. |
+| 1294 | Sidecar public-safe projection schema preflight | Sensitive; no listener, non-loopback bind, endpoint, or peer discovery. |
+| 1295 | Release allowlist/artifact/Genesis readiness preflight | Sensitive; no publication, artifacts, keys, envelopes, Genesis signing, or v0.2 signing. |
+| 1296 | Window 1289-1296 closure gate | Sensitive; closes honestly or carries blockers forward. |
+
+Roadmap impact:
+
+- Window 1289-1296 is not open until a future Phase 1289 sequence lock.
+- The drafted prompt package does not authorize public RC, public activation,
+  source export, source publication, package publication, release artifact
+  production, release keys, release envelopes, Genesis mutation/signing, CDL
+  mutation, CDL-088 opening, wallet economics, ECU minting, ILC settlement, or
+  v0.2 signing.
+- Public RC remains blocked.
+
+```text
+public_rc_remains_blocked_after_phase_1288_fix2
 ```

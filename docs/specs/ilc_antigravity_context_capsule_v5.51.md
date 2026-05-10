@@ -3,7 +3,7 @@
 **Date:** 2026-05-09
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.50.md`
 **Produced:** Phase 1282, Window 1281-1288
-**Frontier:** Window 1281-1288 closed with pass verdict through Phase 1288; Phase 1288 Fix1 runtime deep audit hardening complete; Window 1289+ sequence lock required before next phase assignment
+**Frontier:** Window 1281-1288 closed with pass verdict through Phase 1288; Phase 1288 Fix1 runtime deep audit hardening complete; Phase 1288 Fix2 Window 1289-1296 guidance drafting complete; Window 1289+ sequence lock required before next phase assignment
 
 ```text
 context_capsule_v5_51_frontier_refresh_phase_1282.v0.1
@@ -65,6 +65,11 @@ canonical_payload_float_rejection_hardened_phase_1288_fix1
 untrusted_payload_cycle_depth_bounds_hardened_phase_1288_fix1
 public_path_preflight_key_shape_hardened_phase_1288_fix1
 public_rc_remains_blocked_after_phase_1288_fix1
+phase_1288_fix2_window_1289_1296_guidance_drafted
+window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1
+window_1289_1296_not_open_until_sequence_lock
+phase_1289_window_1289_1296_sequence_lock_required
+public_rc_remains_blocked_after_phase_1288_fix2
 ```
 
 ---
@@ -73,8 +78,9 @@ public_rc_remains_blocked_after_phase_1288_fix1
 
 Window 1273-1280 is closed with a pass verdict, Phase 1280 Fix1 hardening is
 complete, Window 1281-1288 is closed with pass verdict through Phase 1288,
-Phase 1288 Fix1 runtime deep audit hardening is complete, and Window 1289+
-sequence lock is required before any next phase assignment.
+Phase 1288 Fix1 runtime deep audit hardening is complete, Phase 1288 Fix2
+Window 1289-1296 guidance drafting is complete, and Window 1289+ sequence lock
+is required before any next phase assignment.
 
 Current closed window lock:
 
@@ -95,6 +101,10 @@ Current launch roadmap:
 Current H/IP planning hardening packet:
 
 - `docs/specs/ilc_phase_1280_fix1_hypergraph_laplacian_docs_hardening_v0.1.md`
+
+Current next-window planning guidance:
+
+- `docs/specs/ilc_window_1289_1296_candidate_phase_grouping_v0.1.md`
 
 Phase 1285 is a sensitive TransportPrincipal public-path activation preflight
 only. It records a preflight-only verdict and does not authorize public RC,
@@ -466,6 +476,25 @@ closed on finite floats, non-string JSON keys, cycles, excessive traversal
 depth, and excessive traversal node count before canonical hashing or export.
 No public activation or release authority is granted.
 
+Phase 1288 Fix2 records the planning-only Window 1289-1296 guidance and prompt
+draft package:
+
+```text
+phase_1288_fix2_window_1289_1296_guidance_drafted
+window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1
+window_1289_1296_not_open_until_sequence_lock
+phase_1289_window_1289_1296_sequence_lock_required
+public_rc_remains_blocked_after_phase_1288_fix2
+```
+
+The package drafts candidate phases 1289 through 1296 for sequence lock,
+capsule v5.52 refresh, public claimability verifier contract preflight,
+claimability package-profile allowlist rehearsal, TransportPrincipal lifecycle
+activation-blocker preflight, sidecar public-safe projection schema preflight,
+release allowlist/artifact/Genesis readiness preflight, and closure. It does
+not open Window 1289-1296 and grants no public activation, publication, release,
+CDL, Genesis, wallet, ECU, ILC settlement, or v0.2 signing authority.
+
 ---
 
 ## 5. SIM-FETCH and Canonical Fetch Frontier
@@ -511,6 +540,7 @@ Public RC remains blocked after Phase 1288 Fix1:
 
 ```text
 public_rc_remains_blocked_after_phase_1288_fix1
+public_rc_remains_blocked_after_phase_1288_fix2
 public_rc_remains_blocked_after_phase_1288
 public_rc_remains_blocked_after_phase_1287
 public_rc_remains_blocked_after_phase_1286
@@ -580,7 +610,7 @@ longer reflects the live frontier:
 | Window state | Window 1273-1280 is closed by Phase 1280 and reflected here by `window_1273_1280_closure_reflected_in_capsule_phase_1282`. |
 | H/IP planning | Phase 1280 Fix1 registered H-020..H-028 and IP-001..IP-006 without public-RC authority. |
 | Runtime audit hardening | Phase 1282 Fix1 hardened local claimability/conversion receipt semantics without public activation. |
-| Active window | Window 1281-1288 is closed/pass through Phase 1288; Window 1289+ sequence lock required. |
+| Active window | Window 1281-1288 is closed/pass through Phase 1288; Phase 1288 Fix2 recorded Window 1289-1296 candidate guidance; Window 1289+ sequence lock required. |
 | Public claimability authority | Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`; public claimability remains blocked. |
 | Public claimability verifier/API boundary | Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`; public API serving remains blocked. |
 | TransportPrincipal public path | Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`; public path activation remains blocked. |
@@ -616,6 +646,22 @@ Phase 1282 Fix1 verification:
 
 - Focused claimability/conversion hardening tests passed.
 - Sensitive-runtime guardrail passed.
+- Scoped `git diff --check` passed.
+
+Phase 1288 Fix1 verification:
+
+- Phase 1274/1275/1277/1278/1282 Fix1/1288 Fix1 focused runtime and
+  preflight tests passed.
+- Sensitive-runtime guardrail passed.
+- CDL register diff remained clean.
+- Scoped `git diff --check` passed.
+
+Phase 1288 Fix2 verification:
+
+- Window 1289-1296 prompt-draft regression tests passed.
+- Phase prompt schema validation passed for all drafted prompts.
+- Sensitive-runtime guardrail passed.
+- CDL register diff remained clean.
 - Scoped `git diff --check` passed.
 
 Phase 1283 verification:
