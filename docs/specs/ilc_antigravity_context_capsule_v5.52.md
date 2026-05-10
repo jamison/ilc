@@ -2,10 +2,10 @@
 
 **Date:** 2026-05-10
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.51.md`
-**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1292
-**Frontier:** Window 1289-1302 is open through Phase 1292. Phase 1292 is a
-sensitive verifier/package-boundary rehearsal only. Phase 1293 is the next
-sensitive gate and requires explicit `GO Phase 1293`.
+**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1293
+**Frontier:** Window 1289-1302 is open through Phase 1293. Phase 1293 is a
+sensitive `PUBLIC_RC_EXCLUDE` helper register only. Phase 1294 is the next
+sensitive gate and requires explicit `GO Phase 1294`.
 
 ```text
 context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
@@ -35,6 +35,16 @@ ilc_logic_network_import_boundary_repaired_phase_1292
 package_profile_ci_artifacts_refreshed_phase_1292
 phase_1293_public_rc_exclude_helper_promotion_removal_register_next
 public_rc_remains_blocked_after_phase_1292
+public_rc_exclude_helper_promotion_removal_register_phase_1293.v0.1
+public_rc_exclude_helper_register_verdict_phase_1293=all_current_helpers_keep_internal_no_promotion
+public_rc_exclude_helpers_keep_internal_phase_1293
+public_rc_exclude_helper_promotion_not_authorized_phase_1293
+public_rc_exclude_helper_removal_not_authorized_phase_1293
+public_rc_exclude_helper_replacement_required_before_public_export_phase_1293
+source_allowlist_export_not_executed_phase_1293
+public_package_publication_not_authorized_phase_1293
+public_rc_remains_blocked_after_phase_1293
+phase_1294_claimability_package_allowlist_rehearsal_next
 ```
 
 ---
@@ -67,10 +77,10 @@ Current launch roadmap:
 
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md`
 
-The user's explicit `GO Phase 1292` authorized the verifier negative-path corpus
-and package-profile boundary rehearsal only. The next phase, Phase 1293, is
-sensitive because it touches `PUBLIC_RC_EXCLUDE` helper promotion/removal and
-must not proceed without explicit authorization.
+The user's explicit `GO Phase 1293` authorized the `PUBLIC_RC_EXCLUDE` helper
+promotion/removal register only. The next phase, Phase 1294, is sensitive
+because it reheats the claimability package allowlist boundary and must not
+proceed without explicit authorization.
 
 ---
 
@@ -140,6 +150,28 @@ phase_1293_public_rc_exclude_helper_promotion_removal_register_next
 public_rc_remains_blocked_after_phase_1292
 ```
 
+Historical Phase 1292 frontier phrase guard:
+
+```text
+Window 1289-1302 is open through Phase 1292
+Phase 1293 is sensitive
+```
+
+Phase 1293 records the `PUBLIC_RC_EXCLUDE` helper promotion/removal register:
+
+```text
+public_rc_exclude_helper_promotion_removal_register_phase_1293.v0.1
+public_rc_exclude_helper_register_verdict_phase_1293=all_current_helpers_keep_internal_no_promotion
+public_rc_exclude_helpers_keep_internal_phase_1293
+public_rc_exclude_helper_promotion_not_authorized_phase_1293
+public_rc_exclude_helper_removal_not_authorized_phase_1293
+public_rc_exclude_helper_replacement_required_before_public_export_phase_1293
+source_allowlist_export_not_executed_phase_1293
+public_package_publication_not_authorized_phase_1293
+public_rc_remains_blocked_after_phase_1293
+phase_1294_claimability_package_allowlist_rehearsal_next
+```
+
 Locked Window 1289-1302 order:
 
 | Phase | Scope | Sensitivity |
@@ -148,8 +180,8 @@ Locked Window 1289-1302 order:
 | 1290 | Context Capsule v5.52 frontier refresh | NON-SENSITIVE, complete |
 | 1291 | Public claimability verifier contract preflight | SENSITIVE, complete |
 | 1292 | Verifier negative-path corpus and package-profile boundary | SENSITIVE, complete |
-| 1293 | `PUBLIC_RC_EXCLUDE` helper promotion/removal register | SENSITIVE, requires explicit `GO Phase 1293` |
-| 1294 | Claimability package allowlist rehearsal | SENSITIVE |
+| 1293 | `PUBLIC_RC_EXCLUDE` helper promotion/removal register | SENSITIVE, complete |
+| 1294 | Claimability package allowlist rehearsal | SENSITIVE, requires explicit `GO Phase 1294` |
 | 1295 | TransportPrincipal lifecycle, revocation, replay preflight | SENSITIVE |
 | 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE |
 | 1297 | Sidecar public-safe projection schema | SENSITIVE |
@@ -175,9 +207,9 @@ cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1
 no_cdl088_opening_phase_1278_fix1
 ```
 
-CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phase
-1291 also does not mutate the CDL register and does not open any new
-constitutional decision log entry.
+CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phases
+1291, 1292, and 1293 also do not mutate the CDL register and do not open any
+new constitutional decision log entry.
 
 Open counsel/public-release obligations remain:
 
@@ -195,11 +227,12 @@ publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
 
 ## 4. Public-RC Blocker Map
 
-Public RC remains blocked after Phase 1292 by:
+Public RC remains blocked after Phase 1293 by:
 
 - Final public claimability verifier/API authority and public endpoint
   authorization.
-- `PUBLIC_RC_EXCLUDE` helper promotion/removal review.
+- Public-safe helper replacement or later explicit helper promotion
+  prerequisites for any materialized public export.
 - Public-safe disclosure schema, privacy filtering, replay/nullifier policy,
   and duplicate-claim registry.
 - Actual TransportPrincipal public-path activation authority, including
@@ -218,16 +251,17 @@ Public RC remains blocked after Phase 1292 by:
   wallet ledger-write authority, ECU minting, ILC settlement, and withdrawal
   runtime activation.
 
-Phase 1292 records the negative-path corpus and repairs the package-profile
-import boundary, but it does not close public claimability API authority,
-helper promotion/removal review, disclosure schema, publication, release,
-Genesis signing, v0.2 signing, wallet, ECU, or ILC blockers.
+Phase 1293 closes the current helper promotion/removal review only as a
+keep-internal/no-promotion register decision. It does not close public
+claimability API authority, public-safe helper replacement or future promotion
+prerequisites, disclosure schema, publication, release, Genesis signing, v0.2
+signing, wallet, ECU, or ILC blockers.
 
 Exact blocker phrase guard:
 
 ```text
 Final public claimability verifier/API authority
-PUBLIC_RC_EXCLUDE helper promotion/removal review
+PUBLIC_RC_EXCLUDE helper replacement or later explicit promotion prerequisites
 Public-safe disclosure schema
 replay/nullifier policy
 Actual TransportPrincipal public-path activation authority
@@ -304,11 +338,26 @@ ilc_core/graph/sidecar_public_path_preflight.py no longer imports ilc_core.netwo
 The helper remains `PUBLIC_RC_EXCLUDE`; Phase 1292 does not promote it to a
 public RC launch surface.
 
+Phase 1293 records the helper register and keeps all current runtime helpers
+internal:
+
+```text
+public_rc_exclude_helpers_keep_internal_phase_1293
+ilc_core/ledger/cdl048_conversion_sweeper_runtime.py keep_internal
+ilc_core/ledger/claimability_proof_binding_runtime.py keep_internal
+ilc_core/network/d2d/transport_principal_public_path_preflight.py keep_internal
+ilc_core/graph/sidecar_public_path_preflight.py keep_internal
+```
+
+No helper is promoted, removed, replaced, exported, or made public-RC eligible
+by Phase 1293.
+
 ---
 
 ## 6. Non-Authorization Boundary
 
-Phase 1292 does not authorize public RC, public launch, public repository
+Phase 1293 does not authorize helper promotion, marker removal, public RC,
+public launch, public repository
 publication, public package publication, source allowlist export execution,
 public release artifact production, release-key generation, release envelope
 production, public P2P, public fetch serving, public sidecar/projection
@@ -324,6 +373,8 @@ Exact non-authorization phrase guard:
 
 ```text
 public claimability API activation
+helper promotion
+marker removal
 public verifier service
 public P2P
 public fetch serving
@@ -373,10 +424,10 @@ or ILC settlement endpoint is added.
 Next phase:
 
 ```text
-Phase 1293 - PUBLIC_RC_EXCLUDE helper promotion/removal register
+Phase 1294 - Claimability package allowlist rehearsal
 ```
 
-Phase 1293 is sensitive. It requires explicit `GO Phase 1293` before execution.
+Phase 1294 is sensitive. It requires explicit `GO Phase 1294` before execution.
 Default authority stance remains no public endpoint, no public claimability API,
-no source export, no helper promotion, no wallet spend semantics, no ECU
-minting, and no ILC settlement.
+no source export, no helper promotion, no package publication, no wallet spend
+semantics, no ECU minting, and no ILC settlement.
