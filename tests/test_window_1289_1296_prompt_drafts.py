@@ -48,13 +48,13 @@ def _required_tokens(text: str) -> list[str]:
     return [line.strip() for line in block.splitlines() if line.strip()]
 
 
-def test_window_1289_1296_guidance_is_planning_only_and_points_to_sequence_lock() -> None:
+def test_window_1289_1296_guidance_is_superseded_planning_only_package() -> None:
     text = _text(GUIDANCE)
 
     assert "window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1" in text
     assert "window_1289_1296_not_open_until_sequence_lock" in text
-    assert "This document does not open Window 1289-1296" in text
-    assert "GO Phase 1289" in text
+    assert "window_1289_1296_candidate_grouping_superseded_by_1289_1302_phase_1289" in text
+    assert "This document is superseded by Phase 1289" in text
 
 
 def test_window_1289_1296_guidance_routes_all_candidate_phases() -> None:
@@ -145,13 +145,14 @@ def test_phase_1291_prompt_requires_default_no_public_claimability_activation() 
     assert "no public endpoint or claimability activation by default" in guidance
 
 
-def test_window_1289_1296_planning_index_records_candidate_package_without_opening_window() -> None:
+def test_window_1289_1296_planning_index_records_candidate_package_as_superseded() -> None:
     text = _text(ROOT / "docs/PLANNING_INDEX.md")
 
     assert "ilc_window_1289_1296_candidate_phase_grouping_v0.1.md" in text
     assert "window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1" in text
     assert "window_1289_1296_not_open_until_sequence_lock" in text
-    assert "Window 1289-1296 is not open until a future Phase 1289 sequence lock" in text
+    assert "window_1289_1296_candidate_grouping_superseded_by_1289_1302_phase_1289" in text
+    assert "superseded by the Phase 1289 Window 1289-1302 sequence lock" in text
     assert "ilc_window_1281_1288_handoff_1288_v0.1.md" in text
     assert "window_1289_plus_sequence_lock_required_before_next_phase_assignment" in text
     assert "Exact-token `rg` is only a schema/completion check" in text
@@ -163,8 +164,10 @@ def test_planning_index_session_start_canon_routes_to_1289_candidate_package() -
         "## 2.", maxsplit=1
     )[0]
 
-    assert "Window 1289-1296 guidance" in session_start
-    assert "ilc_window_1289_1296_candidate_phase_grouping_v0.1.md" in session_start
+    assert "Window 1289-1302 sequence lock" in session_start
+    assert "ilc_phase_1289_1302_sequence_lock_v0.1.md" in session_start
+    assert "Window 1289-1302 guidance" in session_start
+    assert "ilc_window_1289_1302_candidate_phase_grouping_v0.1.md" in session_start
     assert "Window 1281-1288 handoff" in session_start
     assert "ilc_window_1281_1288_handoff_1288_v0.1.md" in session_start
     assert "Window 1281-1288 sequence lock" in session_start

@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1281-1288 CLOSED / PASS through Phase 1288; closure handoff is `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`; Phase 1282 publishes Capsule v5.51, Phase 1282 Fix1 hardens local claimability/conversion helpers without public activation, Phase 1283 records `public_claimability_authority_verdict_phase_1283=no_activation_no_public_api`, Phase 1284 records `public_claimability_verifier_api_boundary_verdict_phase_1284=internal_boundary_only_no_public_api`, Phase 1285 records `transport_principal_public_path_activation_verdict_phase_1285=preflight_only_no_public_path_activation`, Phase 1286 records `sidecar_public_projection_privacy_serving_verdict_phase_1286=preflight_only_no_public_serving`, Phase 1287 records `release_publication_signing_verdict_phase_1287=preflight_only_no_publication_no_signing`, Phase 1288 records `window_1281_1288_closure_gate_verdict=pass`, Phase 1288 Fix1 records `phase_1288_fix1_runtime_deep_audit_hardening`, and Phase 1288 Fix2 records `phase_1288_fix2_window_1289_1296_guidance_drafted`; Window 1289+ sequence lock required before next phase assignment |
+| Window frontier | Window 1289-1302 OPEN through Phase 1289; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1290 is the only automatic non-sensitive continuation; Phase 1291 requires explicit `GO Phase 1291`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
 | Capsule | v5.51 current and updated in place through Phase 1288 Fix1 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -1640,3 +1640,29 @@ Roadmap impact:
 ```text
 public_rc_remains_blocked_after_phase_1288_fix2
 ```
+
+---
+
+## 37. Phase 1289 Window 1289-1302 Sequence Lock Addendum
+
+Phase 1289 opens the next active planning window after explicit `GO Phase 1289`
+and expands the Phase 1288 Fix2 draft from Window 1289-1296 to Window 1289-1302:
+
+```text
+window_1289_1302_sequence_lock_committed
+window_1289_1302_sequence_lock_verdict=pass
+phase_1290_context_capsule_v5_52_refresh_next
+window_1289_1302_no_public_rc_or_public_activation
+window_1289_1296_candidate_grouping_superseded_by_1289_1302_phase_1289
+```
+
+Roadmap impact:
+
+- Phase 1290 is non-sensitive context-capsule refresh and may proceed under the
+  user's continue-through-non-sensitive instruction.
+- Phase 1291 is the next sensitive gate and requires explicit `GO Phase 1291`.
+- Public RC remains blocked by public claimability verifier/API authority,
+  TransportPrincipal public-path activation authority, sidecar public projection
+  serving authority, release publication/artifact/key/envelope authority,
+  Genesis/v0.2 signing authority, wallet/ECU/ILC activation, and IP/publication
+  clearance.
