@@ -34,7 +34,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1289; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1290 is the only automatic non-sensitive continuation; Phase 1291 requires explicit `GO Phase 1291`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Window frontier | Window 1289-1302 OPEN through Phase 1290; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1291 requires explicit `GO Phase 1291`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
 | Capsule | v5.51 current and updated in place through Phase 1288 Fix1 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -1666,3 +1666,25 @@ Roadmap impact:
   serving authority, release publication/artifact/key/envelope authority,
   Genesis/v0.2 signing authority, wallet/ECU/ILC activation, and IP/publication
   clearance.
+
+---
+
+## 38. Phase 1290 Context Capsule v5.52 Addendum
+
+Phase 1290 publishes Context Capsule v5.52 and updates the roadmap frontier to
+Window 1289-1302 OPEN through Phase 1290:
+
+```text
+context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
+capsule_v5_52_supersedes_v5_51
+window_1289_1302_sequence_lock_reflected_in_capsule_phase_1290
+public_rc_blocker_map_refreshed_phase_1290
+public_rc_remains_blocked_after_phase_1290
+```
+
+Roadmap impact:
+
+- Capsule v5.52 supersedes v5.51 as the session-start capsule.
+- Phase 1291 is the next phase and remains sensitive.
+- No public RC blocker is closed by Phase 1290; the blocker map is refreshed
+  and carried forward for explicit future phases.
