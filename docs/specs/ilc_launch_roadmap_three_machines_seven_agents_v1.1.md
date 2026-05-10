@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1296; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1297 is the next sensitive phase and requires explicit `GO Phase 1297`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1296 |
+| Window frontier | Window 1289-1302 OPEN through Phase 1297; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1298 is the next sensitive phase and requires explicit `GO Phase 1298`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1297 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1985,3 +1985,47 @@ Roadmap impact:
   activation authority, sidecar public projection serving authority, release
   publication/artifact/key and envelope authority, Genesis/v0.2 signing
   authority, wallet/ECU/ILC activation, CDL-088, and IP/publication clearance.
+
+---
+
+## 45. Phase 1297 Sidecar Public-Safe Projection Schema Addendum
+
+Historical Phase 1296 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1296
+Phase 1297 is the next sensitive phase
+```
+
+Phase 1297 records the sidecar public-safe projection schema after explicit
+`GO Phase 1297`:
+
+```text
+sidecar_public_safe_projection_schema_phase_1297.v0.1
+sidecar_public_safe_projection_schema_verdict_phase_1297=schema_recorded_no_serving
+privacy_filtering_contract_recorded_phase_1297
+sidecar_public_projection_fields_not_served_phase_1297
+public_sidecar_projection_serving_not_enabled_phase_1297
+public_rc_remains_blocked_after_phase_1297
+phase_1298_sidecar_bind_listener_peer_discovery_authority_preflight_next
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1297.
+- Phase 1297 records a deny-by-default public-safe projection envelope, field
+  classification, and privacy filtering contract only.
+- Phase 1297 does not implement a public filter, serve projection fields, add a
+  public endpoint, add a listener, bind non-loopback, enable peer discovery, or
+  promote any `PUBLIC_RC_EXCLUDE` helper.
+- The existing sidecar query runtime remains local/read-only and bounded; the
+  existing sidecar public-path preflight helper remains `PUBLIC_RC_EXCLUDE` and
+  records no listener, bind, or serving surface.
+- Phase 1298 is the next sensitive phase and requires explicit `GO Phase 1298`.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, privacy filter implementation/review, replay/nullifier and
+  duplicate-claim registry policy, actual TransportPrincipal public-path
+  activation authority, sidecar public projection serving authority, sidecar
+  bind/listener/peer-discovery authority, release publication/artifact/key and
+  envelope authority, Genesis/v0.2 signing authority, wallet/ECU/ILC
+  activation, CDL-088, and IP/publication clearance.
