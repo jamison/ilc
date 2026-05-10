@@ -2,10 +2,10 @@
 
 **Date:** 2026-05-10
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.51.md`
-**Produced:** Phase 1290, Window 1289-1302
-**Frontier:** Window 1289-1302 is open through Phase 1290. Phase 1290 is a
-non-sensitive docs/canon refresh only. Phase 1291 is the next sensitive gate
-and requires explicit `GO Phase 1291`.
+**Produced:** Phase 1290, Window 1289-1302; updated by Phase 1291
+**Frontier:** Window 1289-1302 is open through Phase 1291. Phase 1291 is a
+sensitive contract preflight only. Phase 1292 is the next sensitive gate and
+requires explicit `GO Phase 1292`.
 
 ```text
 context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
@@ -17,6 +17,14 @@ phase_1291_public_claimability_verifier_contract_preflight_requires_explicit_go
 public_rc_blocker_map_refreshed_phase_1290
 public_rc_remains_blocked_after_phase_1290
 phase_1290_non_sensitive_docs_canon_refresh_no_activation
+public_claimability_verifier_contract_preflight_phase_1291.v0.1
+public_claimability_activation_not_authorized_by_default_phase_1291
+claimability_verifier_public_api_not_enabled_phase_1291
+wallet_withdrawal_transfer_spend_still_blocked_phase_1291
+public_claimability_verifier_contract_verdict_phase_1291=contract_defined_public_api_not_enabled
+claimability_contract_no_runtime_helper_added_phase_1291
+phase_1292_verifier_negative_path_corpus_package_boundary_next
+public_rc_remains_blocked_after_phase_1291
 ```
 
 ---
@@ -49,10 +57,10 @@ Current launch roadmap:
 
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md`
 
-The user's continue-through-non-sensitive instruction authorizes Phase 1290
-only after Phase 1289. The next phase, Phase 1291, is sensitive because it
-touches the public claimability verifier contract and must not proceed without
-explicit authorization.
+The user's explicit `GO Phase 1291` authorized the public claimability verifier
+contract preflight only. The next phase, Phase 1292, is sensitive because it
+touches the verifier negative-path corpus and package-profile boundary and must
+not proceed without explicit authorization.
 
 ---
 
@@ -79,14 +87,35 @@ public_rc_blocker_map_refreshed_phase_1290
 public_rc_remains_blocked_after_phase_1290
 ```
 
+Historical Phase 1290 frontier phrase guard:
+
+```text
+Window 1289-1302 is open through Phase 1290
+requires explicit `GO Phase 1291`
+Phase 1290 does not close any of those blockers
+```
+
+Phase 1291 records the verifier contract preflight:
+
+```text
+public_claimability_verifier_contract_preflight_phase_1291.v0.1
+public_claimability_activation_not_authorized_by_default_phase_1291
+claimability_verifier_public_api_not_enabled_phase_1291
+wallet_withdrawal_transfer_spend_still_blocked_phase_1291
+public_claimability_verifier_contract_verdict_phase_1291=contract_defined_public_api_not_enabled
+claimability_contract_no_runtime_helper_added_phase_1291
+phase_1292_verifier_negative_path_corpus_package_boundary_next
+public_rc_remains_blocked_after_phase_1291
+```
+
 Locked Window 1289-1302 order:
 
 | Phase | Scope | Sensitivity |
 |-------|-------|-------------|
 | 1289 | Window 1289-1302 sequence lock | SENSITIVE, complete |
 | 1290 | Context Capsule v5.52 frontier refresh | NON-SENSITIVE, complete |
-| 1291 | Public claimability verifier contract preflight | SENSITIVE, requires explicit `GO Phase 1291` |
-| 1292 | Verifier negative-path corpus and package-profile boundary | SENSITIVE |
+| 1291 | Public claimability verifier contract preflight | SENSITIVE, complete |
+| 1292 | Verifier negative-path corpus and package-profile boundary | SENSITIVE, requires explicit `GO Phase 1292` |
 | 1293 | `PUBLIC_RC_EXCLUDE` helper promotion/removal register | SENSITIVE |
 | 1294 | Claimability package allowlist rehearsal | SENSITIVE |
 | 1295 | TransportPrincipal lifecycle, revocation, replay preflight | SENSITIVE |
@@ -114,8 +143,9 @@ cdl087_public_sidecar_projection_still_blocked_phase_1278_fix1
 no_cdl088_opening_phase_1278_fix1
 ```
 
-CDL-088 remains unopened. Phase 1290 does not mutate the CDL register and does
-not open any new constitutional decision log entry.
+CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phase
+1291 also does not mutate the CDL register and does not open any new
+constitutional decision log entry.
 
 Open counsel/public-release obligations remain:
 
@@ -133,10 +163,13 @@ publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
 
 ## 4. Public-RC Blocker Map
 
-Public RC remains blocked after Phase 1290 by:
+Public RC remains blocked after Phase 1291 by:
 
 - Final public claimability verifier/API authority and public endpoint
   authorization.
+- Verifier negative-path corpus and package-profile boundary.
+- Public-safe disclosure schema, privacy filtering, replay/nullifier policy,
+  and duplicate-claim registry.
 - Actual TransportPrincipal public-path activation authority, including
   lifecycle, revocation, replay, admission, ban, rate-limit, and privacy
   controls.
@@ -153,13 +186,17 @@ Public RC remains blocked after Phase 1290 by:
   wallet ledger-write authority, ECU minting, ILC settlement, and withdrawal
   runtime activation.
 
-Phase 1290 does not close any of those blockers. It records their current
-frontier location so Phase 1291 and later phases can address them explicitly.
+Phase 1291 does not close any of those blockers. It records the future
+verifier contract envelope and denial conditions so Phase 1292 and later phases
+can address them explicitly.
 
 Exact blocker phrase guard:
 
 ```text
 Final public claimability verifier/API authority
+Verifier negative-path corpus and package-profile boundary
+Public-safe disclosure schema
+replay/nullifier policy
 Actual TransportPrincipal public-path activation authority
 Actual public sidecar/projection serving authority
 Counsel/license/CLA/trademark/IP/publication clearance
@@ -212,11 +249,23 @@ public_path_preflight_key_shape_hardened_phase_1288_fix1
 
 No runtime code changes are made by Phase 1290.
 
+Phase 1291 adds no runtime helper. Existing local helper surfaces remain
+internal preflight helpers and retain their `PUBLIC_RC_EXCLUDE` launch-surface
+exclusion:
+
+```text
+claimability_contract_no_runtime_helper_added_phase_1291
+ilc_core/ledger/cdl048_conversion_sweeper_runtime.py
+PUBLIC_RC_EXCLUDE: internal_phase_helper_not_public_rc_launch_surface
+ilc_core/ledger/claimability_proof_binding_runtime.py
+PUBLIC_RC_EXCLUDE: internal_phase_helper_not_public_rc_launch_surface
+```
+
 ---
 
 ## 6. Non-Authorization Boundary
 
-Phase 1290 does not authorize public RC, public launch, public repository
+Phase 1291 does not authorize public RC, public launch, public repository
 publication, public package publication, source allowlist export execution,
 public release artifact production, release-key generation, release envelope
 production, public P2P, public fetch serving, public sidecar/projection
@@ -254,14 +303,36 @@ production `commit.epoch` emission
 
 ---
 
-## 7. Next Gate
+## 7. Phase 1291 Contract Boundary
+
+Phase 1291 defines future `ClaimabilityVerifierInput` and
+`ClaimabilityVerifierDecision` envelopes. It keeps all activation and economic
+flags false, records mandatory future denial conditions, and leaves public-safe
+field disclosure unresolved.
+
+The Phase 1291 contract is a planning/spec boundary only:
+
+```text
+ClaimabilityVerifierInput
+ClaimabilityVerifierDecision
+public_claimability_verifier_contract_verdict_phase_1291=contract_defined_public_api_not_enabled
+```
+
+No HTTP route, FastAPI route, socket listener, non-loopback bind, wildcard bind,
+public host bind, peer discovery surface, public verifier service, public claim
+endpoint, wallet withdrawal, wallet transfer, wallet spend, ECU mint endpoint,
+or ILC settlement endpoint is added.
+
+---
+
+## 8. Next Gate
 
 Next phase:
 
 ```text
-Phase 1291 - Public claimability verifier contract preflight
+Phase 1292 - Verifier negative-path corpus and package-profile boundary
 ```
 
-Phase 1291 is sensitive. It requires explicit `GO Phase 1291` before execution.
+Phase 1292 is sensitive. It requires explicit `GO Phase 1292` before execution.
 Default authority stance remains no public endpoint, no public claimability API,
 no wallet spend semantics, no ECU minting, and no ILC settlement.
