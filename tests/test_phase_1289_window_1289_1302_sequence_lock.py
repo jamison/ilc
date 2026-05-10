@@ -115,7 +115,7 @@ def test_phase_1289_graph_delta_is_recorded() -> None:
         "graph_delta=support_only:docs/phases/STATUS.md -> planning/frontier",
         "graph_delta=support_only:docs/phases/phase_1289_window_1289_1302_sequence_lock_walkthrough.md -> planning/frontier",
         "graph_delta=support_tests_added:tests/test_phase_1289_window_1289_1302_sequence_lock.py -> validation",
-        "graph_delta=support_tests_changed:tests/test_window_1289_1296_prompt_drafts.py -> validation/frontier",
+        "graph_delta=support_tests_changed:tests/test_window_1289_1302_prompt_drafts.py -> validation/frontier",
     ):
         assert graph_delta in lock
         assert graph_delta in walkthrough
