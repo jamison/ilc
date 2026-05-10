@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1290; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1291 requires explicit `GO Phase 1291`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.51 current and updated in place through Phase 1288 Fix1 |
+| Window frontier | Window 1289-1302 OPEN through Phase 1291; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1292 requires explicit `GO Phase 1292`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1291 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1688,3 +1688,39 @@ Roadmap impact:
 - Phase 1291 is the next phase and remains sensitive.
 - No public RC blocker is closed by Phase 1290; the blocker map is refreshed
   and carried forward for explicit future phases.
+
+---
+
+## 39. Phase 1291 Public Claimability Verifier Contract Preflight Addendum
+
+Phase 1291 records the public claimability verifier contract boundary after
+explicit `GO Phase 1291`:
+
+```text
+public_claimability_verifier_contract_preflight_phase_1291.v0.1
+public_claimability_activation_not_authorized_by_default_phase_1291
+claimability_verifier_public_api_not_enabled_phase_1291
+wallet_withdrawal_transfer_spend_still_blocked_phase_1291
+public_claimability_verifier_contract_verdict_phase_1291=contract_defined_public_api_not_enabled
+claimability_contract_no_runtime_helper_added_phase_1291
+phase_1292_verifier_negative_path_corpus_package_boundary_next
+public_rc_remains_blocked_after_phase_1291
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1291.
+- Phase 1291 defines future `ClaimabilityVerifierInput` and
+  `ClaimabilityVerifierDecision` envelopes, mandatory denial conditions, and a
+  public-safe disclosure carry-forward.
+- Phase 1291 adds no runtime helper, public verifier service, public claim
+  endpoint, HTTP route, FastAPI route, socket listener, non-loopback bind,
+  wildcard bind, public host bind, peer discovery, wallet withdrawal, wallet
+  transfer, wallet spend, ECU minting, or ILC settlement.
+- Phase 1292 is the next sensitive phase and requires explicit `GO Phase 1292`.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, negative-path corpus and package-profile boundary, public-safe
+  disclosure schema, TransportPrincipal public-path activation authority,
+  sidecar public projection serving authority, release publication/artifact/key
+  and envelope authority, Genesis/v0.2 signing authority, wallet/ECU/ILC
+  activation, CDL-088, and IP/publication clearance.
