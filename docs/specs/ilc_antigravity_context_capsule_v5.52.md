@@ -2,10 +2,10 @@
 
 **Date:** 2026-05-10
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.51.md`
-**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1294
-**Frontier:** Window 1289-1302 is open through Phase 1294. Phase 1294 is a
-sensitive claimability package allowlist rehearsal only. Phase 1295 is the next
-sensitive gate and requires explicit `GO Phase 1295`.
+**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1295
+**Frontier:** Window 1289-1302 is open through Phase 1295. Phase 1295 is a
+sensitive TransportPrincipal lifecycle/revocation/replay preflight only. Phase
+1296 is the next sensitive gate and requires explicit `GO Phase 1296`.
 
 ```text
 context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
@@ -56,6 +56,18 @@ public_package_publication_not_authorized_phase_1294
 public_claimability_activation_not_authorized_phase_1294
 public_rc_remains_blocked_after_phase_1294
 phase_1295_transport_principal_lifecycle_revocation_replay_preflight_next
+transport_principal_lifecycle_revocation_replay_preflight_phase_1295.v0.1
+transport_principal_lifecycle_revocation_replay_verdict_phase_1295=preflight_only_stale_helper_not_promotable
+cdl087_ratified_but_phase_1277_helper_still_pre_ratification_gate_phase_1295
+transport_principal_public_path_helper_not_promoted_phase_1295
+transport_principal_lifecycle_policy_not_activated_phase_1295
+transport_principal_revocation_registry_not_activated_phase_1295
+transport_principal_replay_cache_not_activated_phase_1295
+requester_id_fallback_still_forbidden_phase_1295
+public_p2p_not_activated_phase_1295
+public_fetch_serving_not_enabled_phase_1295
+public_rc_remains_blocked_after_phase_1295
+phase_1296_hostile_network_admission_ban_rate_privacy_plan_next
 ```
 
 ---
@@ -88,10 +100,10 @@ Current launch roadmap:
 
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md`
 
-The user's explicit `GO Phase 1294` authorized the claimability package
-allowlist rehearsal only. The next phase, Phase 1295, is sensitive because it
-preflights TransportPrincipal lifecycle, revocation, and replay blockers and
-must not proceed without explicit authorization.
+The user's explicit `GO Phase 1295` authorized the TransportPrincipal
+lifecycle, revocation, and replay preflight only. The next phase, Phase 1296,
+is sensitive because it plans hostile-network admission, ban, rate-limit, and
+privacy controls and must not proceed without explicit authorization.
 
 ---
 
@@ -206,6 +218,31 @@ public_rc_remains_blocked_after_phase_1294
 phase_1295_transport_principal_lifecycle_revocation_replay_preflight_next
 ```
 
+Historical Phase 1294 frontier phrase guard:
+
+```text
+Window 1289-1302 is open through Phase 1294
+Phase 1295 is sensitive
+```
+
+Phase 1295 records the TransportPrincipal lifecycle, revocation, and replay
+preflight:
+
+```text
+transport_principal_lifecycle_revocation_replay_preflight_phase_1295.v0.1
+transport_principal_lifecycle_revocation_replay_verdict_phase_1295=preflight_only_stale_helper_not_promotable
+cdl087_ratified_but_phase_1277_helper_still_pre_ratification_gate_phase_1295
+transport_principal_public_path_helper_not_promoted_phase_1295
+transport_principal_lifecycle_policy_not_activated_phase_1295
+transport_principal_revocation_registry_not_activated_phase_1295
+transport_principal_replay_cache_not_activated_phase_1295
+requester_id_fallback_still_forbidden_phase_1295
+public_p2p_not_activated_phase_1295
+public_fetch_serving_not_enabled_phase_1295
+public_rc_remains_blocked_after_phase_1295
+phase_1296_hostile_network_admission_ban_rate_privacy_plan_next
+```
+
 Locked Window 1289-1302 order:
 
 | Phase | Scope | Sensitivity |
@@ -216,8 +253,8 @@ Locked Window 1289-1302 order:
 | 1292 | Verifier negative-path corpus and package-profile boundary | SENSITIVE, complete |
 | 1293 | `PUBLIC_RC_EXCLUDE` helper promotion/removal register | SENSITIVE, complete |
 | 1294 | Claimability package allowlist rehearsal | SENSITIVE, complete |
-| 1295 | TransportPrincipal lifecycle, revocation, replay preflight | SENSITIVE, requires explicit `GO Phase 1295` |
-| 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE |
+| 1295 | TransportPrincipal lifecycle, revocation, replay preflight | SENSITIVE, complete |
+| 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE, requires explicit `GO Phase 1296` |
 | 1297 | Sidecar public-safe projection schema | SENSITIVE |
 | 1298 | Sidecar bind, listener, peer-discovery authority preflight | SENSITIVE |
 | 1299 | Release allowlist, artifact, Genesis readiness preflight | SENSITIVE |
@@ -242,8 +279,8 @@ no_cdl088_opening_phase_1278_fix1
 ```
 
 CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phases
-1291, 1292, 1293, and 1294 also do not mutate the CDL register and do not open
-any new constitutional decision log entry.
+1291, 1292, 1293, 1294, and 1295 also do not mutate the CDL register and do not
+open any new constitutional decision log entry.
 
 Open counsel/public-release obligations remain:
 
@@ -261,7 +298,7 @@ publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
 
 ## 4. Public-RC Blocker Map
 
-Public RC remains blocked after Phase 1294 by:
+Public RC remains blocked after Phase 1295 by:
 
 - Final public claimability verifier/API authority and public endpoint
   authorization.
@@ -270,8 +307,8 @@ Public RC remains blocked after Phase 1294 by:
 - Public-safe disclosure schema, privacy filtering, replay/nullifier policy,
   and duplicate-claim registry.
 - Actual TransportPrincipal public-path activation authority, including
-  lifecycle, revocation, replay, admission, ban, rate-limit, and privacy
-  controls.
+  post-ratification CDL-087 helper replacement, lifecycle policy, revocation
+  registry, replay cache, admission, ban, rate-limit, and privacy controls.
 - Actual public sidecar/projection serving authority, including public-safe
   field schema, filtering, bind/listener policy, and peer-discovery policy.
 - Counsel/license/CLA/trademark/IP/publication clearance.
@@ -285,11 +322,14 @@ Public RC remains blocked after Phase 1294 by:
   wallet ledger-write authority, ECU minting, ILC settlement, and withdrawal
   runtime activation.
 
-Phase 1294 closes the claimability package allowlist rehearsal as a
-classification-only pass. It does not materialize an export manifest, execute
-source export, or close public claimability API authority, public-safe helper
-replacement or future promotion prerequisites, disclosure schema, publication,
-release, Genesis signing, v0.2 signing, wallet, ECU, or ILC blockers.
+Phase 1295 closes the TransportPrincipal lifecycle/revocation/replay preflight
+as a classification-only pass. It records that the Phase 1277 helper remains
+internal and fail-closed but is not directly promotable because CDL-087 is now
+ratified while the helper still carries the pre-ratification
+`cdl087_not_ratified_by_phase_1277` false gate. It does not activate public
+path serving, lifecycle policy, revocation registry, replay cache, admission,
+ban, rate-limit, privacy, publication, release, Genesis signing, v0.2 signing,
+wallet, ECU, or ILC blockers.
 
 Exact blocker phrase guard:
 
@@ -399,12 +439,29 @@ The package-profile CI pass is preserved, but the raw measured profile is not
 directly exportable because `ilc_core/graph/sidecar_public_path_preflight.py`
 remains `PUBLIC_RC_EXCLUDE` inside the measured `ilc_logic` surface.
 
+Phase 1295 records that the TransportPrincipal public-path helper remains an
+internal preflight substrate and is not directly promotable:
+
+```text
+transport_principal_lifecycle_revocation_replay_verdict_phase_1295=preflight_only_stale_helper_not_promotable
+cdl087_ratified_but_phase_1277_helper_still_pre_ratification_gate_phase_1295
+transport_principal_public_path_helper_not_promoted_phase_1295
+```
+
+The blocker is specific: CDL-087 is ratified by Phase 1278 Fix1, but
+`ilc_core/network/d2d/transport_principal_public_path_preflight.py` still
+requires `authorization_flags.cdl087_ratified == False` under the old
+`cdl087_not_ratified_by_phase_1277` token. That is safe only while the helper
+remains `PUBLIC_RC_EXCLUDE`.
+
 ---
 
 ## 6. Non-Authorization Boundary
 
-Phase 1294 does not authorize materialized export manifest production, helper
-promotion, marker removal, public RC,
+Phase 1295 does not authorize TransportPrincipal public-path activation,
+public credential issuer authority, credential lifecycle policy activation,
+public revocation registry activation, public replay cache activation,
+materialized export manifest production, helper promotion, marker removal, public RC,
 public launch, public repository
 publication, public package publication, source allowlist export execution,
 public release artifact production, release-key generation, release envelope
@@ -425,6 +482,11 @@ materialized export manifest production
 helper promotion
 marker removal
 public verifier service
+TransportPrincipal public-path activation
+public credential issuer authority
+credential lifecycle policy activation
+public revocation registry activation
+public replay cache activation
 public P2P
 public fetch serving
 public sidecar/projection serving
@@ -473,10 +535,11 @@ or ILC settlement endpoint is added.
 Next phase:
 
 ```text
-Phase 1295 - TransportPrincipal lifecycle, revocation, replay preflight
+Phase 1296 - Hostile-network admission, ban, rate-limit, privacy plan
 ```
 
-Phase 1295 is sensitive. It requires explicit `GO Phase 1295` before execution.
+Phase 1296 is sensitive. It requires explicit `GO Phase 1296` before execution.
 Default authority stance remains no public endpoint, no public claimability API,
 no source export, no helper promotion, no package publication, no public P2P or
-fetch serving, no wallet spend semantics, no ECU minting, and no ILC settlement.
+fetch serving, no admission/ban/rate/privacy activation, no wallet spend
+semantics, no ECU minting, and no ILC settlement.
