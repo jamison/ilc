@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1291; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1292 requires explicit `GO Phase 1292`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1291 |
+| Window frontier | Window 1289-1302 OPEN through Phase 1292; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1293 requires explicit `GO Phase 1293`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1292 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1724,3 +1724,45 @@ Roadmap impact:
   sidecar public projection serving authority, release publication/artifact/key
   and envelope authority, Genesis/v0.2 signing authority, wallet/ECU/ILC
   activation, CDL-088, and IP/publication clearance.
+
+---
+
+## 40. Phase 1292 Verifier Negative-Path And Package Boundary Addendum
+
+Phase 1292 records the verifier negative-path corpus and claimability
+package-profile boundary rehearsal after explicit `GO Phase 1292`:
+
+```text
+claimability_package_profile_allowlist_rehearsal_phase_1292.v0.1
+source_allowlist_export_not_executed_phase_1292
+public_package_publication_not_authorized_phase_1292
+public_rc_exclude_helpers_preserved_phase_1292
+verifier_negative_path_corpus_recorded_phase_1292
+claimability_package_profile_boundary_verdict_phase_1292=pass_import_boundary_publication_blocked
+ilc_logic_network_import_boundary_repaired_phase_1292
+package_profile_ci_artifacts_refreshed_phase_1292
+phase_1293_public_rc_exclude_helper_promotion_removal_register_next
+public_rc_remains_blocked_after_phase_1292
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1292.
+- Phase 1292 repairs the pure `ilc_logic` import-boundary regression where
+  `ilc_core/graph/sidecar_public_path_preflight.py` imported
+  `ilc_core.network`.
+- The deterministic package-profile CI audit now passes for
+  `openclaw_skill_local` and `openclaw_skill_claimable`, but that pass is not
+  source-publication, package-publication, release-artifact, or public-RC
+  authority.
+- Phase 1292 records verifier denial cases for forged receipts, wrong roots,
+  stale roots, replay, missing nullifier/duplicate-claim policy, exact-numeric
+  violations, traversal bounds, public-safe disclosure gaps, and accidental
+  `PUBLIC_RC_EXCLUDE` inclusion.
+- Phase 1293 is the next sensitive phase and requires explicit `GO Phase 1293`.
+- Public RC remains blocked by helper promotion/removal review, final public
+  claimability API/verifier authority, public-safe disclosure schema,
+  TransportPrincipal public-path activation authority, sidecar public projection
+  serving authority, release publication/artifact/key and envelope authority,
+  Genesis/v0.2 signing authority, wallet/ECU/ILC activation, CDL-088, and
+  IP/publication clearance.
