@@ -5,17 +5,24 @@ from tools.validate_phase_prompt import validate
 
 ROOT = Path(__file__).resolve().parents[1]
 PROMPT_DIR = ROOT / "docs/antigravity_tasks"
-GUIDANCE = ROOT / "docs/specs/ilc_window_1289_1296_candidate_phase_grouping_v0.1.md"
+GUIDANCE = ROOT / "docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md"
+SUPERSEDED_GUIDANCE = ROOT / "docs/specs/ilc_window_1289_1296_candidate_phase_grouping_v0.1.md"
 
 PHASE_PROMPTS = (
-    "antigravity_prompt__phase_1289_g8_window_1289_1296_sequence_lock.md",
+    "antigravity_prompt__phase_1289_g8_window_1289_1302_sequence_lock.md",
     "antigravity_prompt__phase_1290_g8_context_capsule_v5_52_frontier_refresh.md",
     "antigravity_prompt__phase_1291_g8_public_claimability_verifier_contract_preflight.md",
     "antigravity_prompt__phase_1292_g8_claimability_package_profile_allowlist_rehearsal.md",
     "antigravity_prompt__phase_1293_g8_transport_principal_lifecycle_activation_blocker_preflight.md",
     "antigravity_prompt__phase_1294_g8_sidecar_public_safe_projection_schema_preflight.md",
     "antigravity_prompt__phase_1295_g8_release_allowlist_artifact_genesis_readiness_preflight.md",
-    "antigravity_prompt__phase_1296_g8_window_1289_1296_closure_gate.md",
+    "antigravity_prompt__phase_1296_g8_hostile_network_admission_ban_rate_privacy_plan.md",
+    "antigravity_prompt__phase_1297_g8_sidecar_public_safe_projection_schema.md",
+    "antigravity_prompt__phase_1298_g8_sidecar_bind_listener_peer_discovery_authority_preflight.md",
+    "antigravity_prompt__phase_1299_g8_release_allowlist_artifact_genesis_readiness_preflight.md",
+    "antigravity_prompt__phase_1300_g8_counsel_ip_publication_clearance_inventory.md",
+    "antigravity_prompt__phase_1301_g8_deep_no_activation_assertion_audit.md",
+    "antigravity_prompt__phase_1302_g8_window_1289_1302_closure_gate.md",
 )
 
 UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
@@ -26,13 +33,19 @@ UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
 )
 
 SENSITIVE_PROMPTS = (
-    "antigravity_prompt__phase_1289_g8_window_1289_1296_sequence_lock.md",
+    "antigravity_prompt__phase_1289_g8_window_1289_1302_sequence_lock.md",
     "antigravity_prompt__phase_1291_g8_public_claimability_verifier_contract_preflight.md",
     "antigravity_prompt__phase_1292_g8_claimability_package_profile_allowlist_rehearsal.md",
     "antigravity_prompt__phase_1293_g8_transport_principal_lifecycle_activation_blocker_preflight.md",
     "antigravity_prompt__phase_1294_g8_sidecar_public_safe_projection_schema_preflight.md",
     "antigravity_prompt__phase_1295_g8_release_allowlist_artifact_genesis_readiness_preflight.md",
-    "antigravity_prompt__phase_1296_g8_window_1289_1296_closure_gate.md",
+    "antigravity_prompt__phase_1296_g8_hostile_network_admission_ban_rate_privacy_plan.md",
+    "antigravity_prompt__phase_1297_g8_sidecar_public_safe_projection_schema.md",
+    "antigravity_prompt__phase_1298_g8_sidecar_bind_listener_peer_discovery_authority_preflight.md",
+    "antigravity_prompt__phase_1299_g8_release_allowlist_artifact_genesis_readiness_preflight.md",
+    "antigravity_prompt__phase_1300_g8_counsel_ip_publication_clearance_inventory.md",
+    "antigravity_prompt__phase_1301_g8_deep_no_activation_assertion_audit.md",
+    "antigravity_prompt__phase_1302_g8_window_1289_1302_closure_gate.md",
 )
 
 
@@ -49,7 +62,7 @@ def _required_tokens(text: str) -> list[str]:
 
 
 def test_window_1289_1296_guidance_is_superseded_planning_only_package() -> None:
-    text = _text(GUIDANCE)
+    text = _text(SUPERSEDED_GUIDANCE)
 
     assert "window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1" in text
     assert "window_1289_1296_not_open_until_sequence_lock" in text
@@ -57,31 +70,37 @@ def test_window_1289_1296_guidance_is_superseded_planning_only_package() -> None
     assert "This document is superseded by Phase 1289" in text
 
 
-def test_window_1289_1296_guidance_routes_all_candidate_phases() -> None:
+def test_window_1289_1302_guidance_routes_all_locked_phases() -> None:
     text = _text(GUIDANCE)
 
-    for phase in range(1289, 1297):
+    for phase in range(1289, 1303):
         assert f"| {phase} |" in text
-        assert f"antigravity_prompt__phase_{phase}_" in text
 
     for concept in (
         "Context Capsule v5.52 frontier refresh",
         "Public claimability verifier contract preflight",
-        "Claimability package-profile allowlist rehearsal",
-        "TransportPrincipal lifecycle activation-blocker preflight",
-        "Sidecar public-safe projection schema preflight",
+        "Verifier negative-path corpus and package-profile boundary",
+        "PUBLIC_RC_EXCLUDE helper promotion/removal register",
+        "Claimability package allowlist rehearsal",
+        "TransportPrincipal lifecycle, revocation, replay preflight",
+        "Hostile-network admission, ban, rate-limit, privacy plan",
+        "Sidecar public-safe projection schema",
+        "Sidecar bind, listener, peer-discovery authority preflight",
         "Release allowlist, artifact, Genesis readiness preflight",
+        "Counsel, IP, publication clearance inventory",
+        "Deep no-activation assertion audit",
+        "Window 1289-1302 closure gate",
     ):
         assert concept in text
 
 
-def test_window_1289_1296_prompt_drafts_match_phase_prompt_schema() -> None:
+def test_window_1289_1302_prompt_drafts_match_phase_prompt_schema() -> None:
     for prompt_name in PHASE_PROMPTS:
         prompt_path = PROMPT_DIR / prompt_name
         assert validate(prompt_path) == []
 
 
-def test_window_1289_1296_prompt_drafts_have_token_audit_sections() -> None:
+def test_window_1289_1302_prompt_drafts_have_token_audit_sections() -> None:
     for prompt_name in PHASE_PROMPTS:
         text = _text(PROMPT_DIR / prompt_name)
         assert "## §0 — Canon checks and token audit" in text
@@ -92,14 +111,14 @@ def test_window_1289_1296_prompt_drafts_have_token_audit_sections() -> None:
             assert section in text
 
 
-def test_window_1289_1296_required_token_blocks_are_non_empty() -> None:
+def test_window_1289_1302_required_token_blocks_are_non_empty() -> None:
     for prompt_name in PHASE_PROMPTS:
         tokens = _required_tokens(_text(PROMPT_DIR / prompt_name))
         assert tokens
         assert all(" " not in token for token in tokens)
 
 
-def test_window_1289_1296_sensitive_prompts_require_explicit_go() -> None:
+def test_window_1289_1302_sensitive_prompts_require_explicit_go() -> None:
     for prompt_name in SENSITIVE_PROMPTS:
         text = _text(PROMPT_DIR / prompt_name)
         phase = prompt_name.split("__phase_", maxsplit=1)[1].split("_", maxsplit=1)[0]
@@ -107,7 +126,7 @@ def test_window_1289_1296_sensitive_prompts_require_explicit_go() -> None:
         assert f"GO Phase {phase}" in text
 
 
-def test_window_1289_1296_preserves_public_non_claims() -> None:
+def test_window_1289_1302_preserves_public_non_claims() -> None:
     guidance = _text(GUIDANCE)
     assert "authorize public RC" in guidance
     assert "activate public claimability" in guidance
@@ -121,7 +140,7 @@ def test_window_1289_1296_preserves_public_non_claims() -> None:
         assert "Public RC claim" in text or "public-RC claim" in text
 
 
-def test_window_1289_1296_human_escalation_is_embedded() -> None:
+def test_window_1289_1302_human_escalation_is_embedded() -> None:
     guidance = _text(GUIDANCE)
     assert "human_question_escalation_required_for_uncertain_authority" in guidance
     assert "prompt the human reviewer" in guidance
@@ -172,3 +191,34 @@ def test_planning_index_session_start_canon_routes_to_1289_candidate_package() -
     assert "ilc_window_1281_1288_handoff_1288_v0.1.md" in session_start
     assert "Window 1281-1288 sequence lock" in session_start
     assert "ilc_phase_1281_1288_sequence_lock_v0.1.md" in session_start
+
+
+def test_window_1289_1302_prompt_files_are_complete_and_not_old_window_named() -> None:
+    names = {path.name for path in PROMPT_DIR.glob("antigravity_prompt__phase_*.md")}
+
+    for prompt_name in PHASE_PROMPTS:
+        assert prompt_name in names
+
+    assert "antigravity_prompt__phase_1289_g8_window_1289_1296_sequence_lock.md" not in names
+    assert "antigravity_prompt__phase_1296_g8_window_1289_1296_closure_gate.md" not in names
+
+
+def test_window_1289_1302_prompt_drafts_do_not_cite_old_sequence_authority() -> None:
+    forbidden = (
+        "ilc_phase_1289_1296_sequence_lock_v0.1.md",
+        "window_1289_1296_closed_phase_1296",
+        "Window 1289-1296 Closure Gate",
+        "Open Window 1289-1296",
+    )
+
+    for prompt_name in PHASE_PROMPTS:
+        text = _text(PROMPT_DIR / prompt_name)
+        for phrase in forbidden:
+            assert phrase not in text
+
+
+def test_window_1289_1302_prompt_drafts_reference_active_lock_and_guidance() -> None:
+    for prompt_name in PHASE_PROMPTS:
+        text = _text(PROMPT_DIR / prompt_name)
+        assert "ilc_phase_1289_1302_sequence_lock_v0.1.md" in text
+        assert "ilc_window_1289_1302_candidate_phase_grouping_v0.1.md" in text
