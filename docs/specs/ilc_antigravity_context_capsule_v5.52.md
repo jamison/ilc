@@ -2,10 +2,10 @@
 
 **Date:** 2026-05-10
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.51.md`
-**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1295
-**Frontier:** Window 1289-1302 is open through Phase 1295. Phase 1295 is a
-sensitive TransportPrincipal lifecycle/revocation/replay preflight only. Phase
-1296 is the next sensitive gate and requires explicit `GO Phase 1296`.
+**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1296
+**Frontier:** Window 1289-1302 is open through Phase 1296. Phase 1296 is a
+sensitive hostile-network admission, ban, rate-limit, and privacy plan only.
+Phase 1297 is sensitive and requires explicit `GO Phase 1297`.
 
 ```text
 context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
@@ -68,6 +68,19 @@ public_p2p_not_activated_phase_1295
 public_fetch_serving_not_enabled_phase_1295
 public_rc_remains_blocked_after_phase_1295
 phase_1296_hostile_network_admission_ban_rate_privacy_plan_next
+hostile_network_admission_ban_rate_privacy_plan_phase_1296.v0.1
+hostile_network_plan_verdict_phase_1296=plan_recorded_no_activation
+transport_principal_admission_policy_not_activated_phase_1296
+transport_principal_ban_registry_not_activated_phase_1296
+transport_principal_rate_limit_state_not_activated_phase_1296
+transport_principal_privacy_policy_not_activated_phase_1296
+requester_id_client_ip_agentid_fallback_still_forbidden_phase_1296
+werner_overlay_not_activated_phase_1296
+public_p2p_not_activated_phase_1296
+public_fetch_serving_not_enabled_phase_1296
+public_sidecar_projection_serving_not_enabled_phase_1296
+public_rc_remains_blocked_after_phase_1296
+phase_1297_sidecar_public_safe_projection_schema_next
 ```
 
 ---
@@ -100,10 +113,10 @@ Current launch roadmap:
 
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md`
 
-The user's explicit `GO Phase 1295` authorized the TransportPrincipal
-lifecycle, revocation, and replay preflight only. The next phase, Phase 1296,
-is sensitive because it plans hostile-network admission, ban, rate-limit, and
-privacy controls and must not proceed without explicit authorization.
+The user's explicit `GO Phase 1296` authorized the hostile-network admission,
+ban, rate-limit, and privacy plan only. The next phase, Phase 1297, is
+sensitive because it plans sidecar public-safe projection schema and must not
+proceed without explicit authorization.
 
 ---
 
@@ -243,6 +256,32 @@ public_rc_remains_blocked_after_phase_1295
 phase_1296_hostile_network_admission_ban_rate_privacy_plan_next
 ```
 
+Historical Phase 1295 frontier phrase guard:
+
+```text
+Window 1289-1302 is open through Phase 1295
+Phase 1296 is sensitive
+```
+
+Phase 1296 records the hostile-network admission, ban, rate-limit, and privacy
+plan:
+
+```text
+hostile_network_admission_ban_rate_privacy_plan_phase_1296.v0.1
+hostile_network_plan_verdict_phase_1296=plan_recorded_no_activation
+transport_principal_admission_policy_not_activated_phase_1296
+transport_principal_ban_registry_not_activated_phase_1296
+transport_principal_rate_limit_state_not_activated_phase_1296
+transport_principal_privacy_policy_not_activated_phase_1296
+requester_id_client_ip_agentid_fallback_still_forbidden_phase_1296
+werner_overlay_not_activated_phase_1296
+public_p2p_not_activated_phase_1296
+public_fetch_serving_not_enabled_phase_1296
+public_sidecar_projection_serving_not_enabled_phase_1296
+public_rc_remains_blocked_after_phase_1296
+phase_1297_sidecar_public_safe_projection_schema_next
+```
+
 Locked Window 1289-1302 order:
 
 | Phase | Scope | Sensitivity |
@@ -254,8 +293,8 @@ Locked Window 1289-1302 order:
 | 1293 | `PUBLIC_RC_EXCLUDE` helper promotion/removal register | SENSITIVE, complete |
 | 1294 | Claimability package allowlist rehearsal | SENSITIVE, complete |
 | 1295 | TransportPrincipal lifecycle, revocation, replay preflight | SENSITIVE, complete |
-| 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE, requires explicit `GO Phase 1296` |
-| 1297 | Sidecar public-safe projection schema | SENSITIVE |
+| 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE, complete |
+| 1297 | Sidecar public-safe projection schema | SENSITIVE, requires explicit `GO Phase 1297` |
 | 1298 | Sidecar bind, listener, peer-discovery authority preflight | SENSITIVE |
 | 1299 | Release allowlist, artifact, Genesis readiness preflight | SENSITIVE |
 | 1300 | Counsel, IP, publication clearance inventory | SENSITIVE |
@@ -279,7 +318,7 @@ no_cdl088_opening_phase_1278_fix1
 ```
 
 CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phases
-1291, 1292, 1293, 1294, and 1295 also do not mutate the CDL register and do not
+1291, 1292, 1293, 1294, 1295, and 1296 also do not mutate the CDL register and do not
 open any new constitutional decision log entry.
 
 Open counsel/public-release obligations remain:
@@ -298,7 +337,7 @@ publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
 
 ## 4. Public-RC Blocker Map
 
-Public RC remains blocked after Phase 1295 by:
+Public RC remains blocked after Phase 1296 by:
 
 - Final public claimability verifier/API authority and public endpoint
   authorization.
@@ -323,13 +362,12 @@ Public RC remains blocked after Phase 1295 by:
   runtime activation.
 
 Phase 1295 closes the TransportPrincipal lifecycle/revocation/replay preflight
-as a classification-only pass. It records that the Phase 1277 helper remains
-internal and fail-closed but is not directly promotable because CDL-087 is now
-ratified while the helper still carries the pre-ratification
-`cdl087_not_ratified_by_phase_1277` false gate. It does not activate public
-path serving, lifecycle policy, revocation registry, replay cache, admission,
-ban, rate-limit, privacy, publication, release, Genesis signing, v0.2 signing,
-wallet, ECU, or ILC blockers.
+as a classification-only pass. Phase 1296 closes the hostile-network
+admission/ban/rate/privacy plan as a planning-only pass. Neither phase
+activates public path serving, lifecycle policy, revocation registry, replay
+cache, admission policy, ban registry, rate-limit state, privacy policy,
+publication, release, Genesis signing, v0.2 signing, wallet, ECU, or ILC
+blockers.
 
 Exact blocker phrase guard:
 
@@ -458,11 +496,12 @@ remains `PUBLIC_RC_EXCLUDE`.
 
 ## 6. Non-Authorization Boundary
 
-Phase 1295 does not authorize TransportPrincipal public-path activation,
-public credential issuer authority, credential lifecycle policy activation,
-public revocation registry activation, public replay cache activation,
-materialized export manifest production, helper promotion, marker removal, public RC,
-public launch, public repository
+Phase 1296 does not authorize TransportPrincipal public-path activation,
+admission policy activation, ban registry activation, public rate-limit state
+activation, privacy policy activation, Werner overlay activation, public
+credential issuer authority, credential lifecycle policy activation, public
+revocation registry activation, public replay cache activation, materialized
+export manifest production, helper promotion, marker removal, public RC, public launch, public repository
 publication, public package publication, source allowlist export execution,
 public release artifact production, release-key generation, release envelope
 production, public P2P, public fetch serving, public sidecar/projection
@@ -535,11 +574,12 @@ or ILC settlement endpoint is added.
 Next phase:
 
 ```text
-Phase 1296 - Hostile-network admission, ban, rate-limit, privacy plan
+Phase 1297 - Sidecar public-safe projection schema
 ```
 
-Phase 1296 is sensitive. It requires explicit `GO Phase 1296` before execution.
+Phase 1297 is sensitive. It requires explicit `GO Phase 1297` before execution.
 Default authority stance remains no public endpoint, no public claimability API,
 no source export, no helper promotion, no package publication, no public P2P or
-fetch serving, no admission/ban/rate/privacy activation, no wallet spend
-semantics, no ECU minting, and no ILC settlement.
+fetch serving, no admission/ban/rate/privacy activation, no public sidecar or
+projection serving, no wallet spend semantics, no ECU minting, and no ILC
+settlement.

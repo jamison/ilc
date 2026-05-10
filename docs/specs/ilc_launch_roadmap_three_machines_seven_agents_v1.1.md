@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1295; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1296 requires explicit `GO Phase 1296`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1295 |
+| Window frontier | Window 1289-1302 OPEN through Phase 1296; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1297 is the next sensitive phase and requires explicit `GO Phase 1297`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1296 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1819,6 +1819,67 @@ Roadmap impact:
   activation authority, sidecar public projection serving authority, release
   publication/artifact/key and envelope authority, Genesis/v0.2 signing
   authority, wallet/ECU/ILC activation, CDL-088, and IP/publication clearance.
+
+---
+
+## 44. Phase 1296 Hostile-Network Admission Ban Rate Privacy Plan Addendum
+
+Historical Phase 1295 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1295
+Phase 1296 is the next sensitive phase
+```
+
+Phase 1296 records the hostile-network admission, ban, rate-limit, and privacy
+plan after explicit `GO Phase 1296`:
+
+```text
+hostile_network_admission_ban_rate_privacy_plan_phase_1296.v0.1
+hostile_network_plan_verdict_phase_1296=plan_recorded_no_activation
+transport_principal_admission_policy_not_activated_phase_1296
+transport_principal_ban_registry_not_activated_phase_1296
+transport_principal_rate_limit_state_not_activated_phase_1296
+transport_principal_privacy_policy_not_activated_phase_1296
+requester_id_client_ip_agentid_fallback_still_forbidden_phase_1296
+werner_overlay_not_activated_phase_1296
+public_p2p_not_activated_phase_1296
+public_fetch_serving_not_enabled_phase_1296
+public_sidecar_projection_serving_not_enabled_phase_1296
+public_rc_remains_blocked_after_phase_1296
+phase_1297_sidecar_public_safe_projection_schema_next
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1296.
+- Phase 1296 records admission, ban, rate-limit, privacy, and Werner interaction
+  requirements only; it activates no admission policy, ban registry, rate-limit
+  state, privacy policy, or Werner overlay.
+- Phase 1296 keeps `requester_id`, `client_ip`, AgentID, agent id, harness
+  identity, OpenClaw identity, and Tailscale identity forbidden as default
+  public-path admission/rate/ban keys.
+- Phase 1296 also refreshes the active Window 1289-1302 Phase Prompt drafts so
+  they cite the 1289-1302 lock/guidance rather than the superseded 1289-1296
+  draft window or stale Phase 1296 closure boundary.
+- Phase 1296 does not activate TransportPrincipal public path, public credential
+  issuer authority, public revocation registry, public replay cache, public
+  P2P, public fetch, public sidecar/projection serving, helper promotion,
+  marker removal, source export, repository or package publication, release
+  artifacts, release keys, release envelopes, Genesis mutation/signing, v0.2
+  signing, CDL mutation, CDL-088, IP filing, paper publication, or
+  wallet/ECU/ILC activation.
+- Phase 1297 is the next sensitive phase and requires explicit `GO Phase 1297`.
+- Public RC remains blocked by final public claimability API/verifier authority,
+  public-safe helper replacement or later explicit helper promotion
+  prerequisites, public-safe disclosure schema, replay/nullifier and
+  duplicate-claim registry policy, actual TransportPrincipal public-path
+  activation authority including post-ratification CDL-087 helper replacement,
+  lifecycle policy, revocation registry, replay cache, admission policy, ban
+  registry, rate-limit state, privacy policy, sidecar public projection serving
+  authority, release publication/artifact/key and envelope authority,
+  Genesis/v0.2 signing authority, wallet/ECU/ILC activation, CDL-088, and
+  IP/publication clearance.
 
 ---
 

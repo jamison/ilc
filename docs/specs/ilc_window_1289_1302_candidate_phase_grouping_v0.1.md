@@ -22,6 +22,20 @@ This window remains an authority and surface-contract window. It does not make
 a public RC claim, activate public serving, publish source, produce release
 artifacts, mutate Genesis, open CDL-088, or sign v0.2.
 
+## Human Escalation Discipline
+
+If any phase discovers uncertain authority, contradictory canon, a widening
+decision, or a scope question that cannot be resolved from committed documents,
+it must stop and prompt the human reviewer.
+
+```text
+human_question_escalation_required_for_uncertain_authority
+```
+
+Default to the narrower no-authorization route. Phase 1291 also preserves no public endpoint or claimability activation by default.
+
+This guidance does not activate public claimability, authorize public sidecar/projection serving, authorize ECU minting, authorize ILC settlement or withdrawal runtime, or authorize v0.2 signing.
+
 ## Candidate Phase Order
 
 | Phase | Scope | Sensitivity | Primary blocker or lane |
