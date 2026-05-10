@@ -1,16 +1,23 @@
 # ILC Window 1289-1296 Candidate Phase Grouping v0.1
 
-**Status:** Planning-only candidate guidance / prompt-draft registry.
+**Status:** Superseded planning-only candidate guidance / prompt-draft registry.
 **Recorded:** 2026-05-10.
-**Authority:** This document does not open Window 1289-1296, assign official
+**Authority:** This document did not open Window 1289-1296, assign official
 phase authority, mutate any CDL row, open CDL-088, authorize public RC,
 authorize public repository publication, execute source allowlist export,
 produce public release artifacts, generate release keys, produce release
 envelopes, expose public P2P, expose public fetch serving, expose public
 sidecar/projection serving, activate public claimability, enable wallet
 withdrawal/transfer/spend, mint ECU, settle ILC, mutate Genesis, sign Genesis
-Atlas, or authorize v0.2 signing. Exact execution authority must be set by the
-future Phase 1289 sequence lock after explicit human `GO Phase 1289`.
+Atlas, or authorize v0.2 signing. Phase 1289 consumed this draft as planning
+input and superseded it with the expanded Window 1289-1302 sequence lock.
+
+```text
+window_1289_1296_candidate_grouping_superseded_by_1289_1302_phase_1289
+```
+
+This document is superseded by Phase 1289 and remains as a historical prompt
+draft package reference only.
 
 ```text
 window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1
