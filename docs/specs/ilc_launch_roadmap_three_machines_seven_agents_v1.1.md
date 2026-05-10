@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1297; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1298 is the next sensitive phase and requires explicit `GO Phase 1298`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1297 |
+| Window frontier | Window 1289-1302 OPEN through Phase 1298; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1299 is the next sensitive phase and requires explicit `GO Phase 1299`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1298 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -2022,6 +2022,57 @@ Roadmap impact:
   existing sidecar public-path preflight helper remains `PUBLIC_RC_EXCLUDE` and
   records no listener, bind, or serving surface.
 - Phase 1298 is the next sensitive phase and requires explicit `GO Phase 1298`.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, privacy filter implementation/review, replay/nullifier and
+  duplicate-claim registry policy, actual TransportPrincipal public-path
+  activation authority, sidecar public projection serving authority, sidecar
+  bind/listener/peer-discovery authority, release publication/artifact/key and
+  envelope authority, Genesis/v0.2 signing authority, wallet/ECU/ILC
+  activation, CDL-088, and IP/publication clearance.
+
+---
+
+## 46. Phase 1298 Sidecar Bind Listener Peer Discovery Authority Preflight Addendum
+
+Historical Phase 1297 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1297
+Phase 1298 is the next sensitive phase
+```
+
+Phase 1298 records the sidecar bind, listener, and peer-discovery authority
+preflight after explicit `GO Phase 1298 and any subsequent non-sensitive
+phases, in order`:
+
+```text
+sidecar_bind_listener_peer_discovery_authority_preflight_phase_1298.v0.1
+sidecar_bind_listener_peer_discovery_verdict_phase_1298=preflight_only_no_public_serving
+non_loopback_bind_not_enabled_phase_1298
+public_listener_not_enabled_phase_1298
+peer_discovery_not_enabled_phase_1298
+public_sidecar_projection_serving_not_enabled_phase_1298
+public_rc_remains_blocked_after_phase_1298
+phase_1299_release_allowlist_artifact_genesis_readiness_preflight_next
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1298.
+- Window 1289-1302 OPEN through Phase 1298.
+- Phase 1298 records a preflight-only authority table for local in-process
+  sidecar reads, loopback-only historical boundaries, non-loopback bind,
+  wildcard bind, public host bind, public listener, socket listener, HTTP route,
+  peer discovery, public sidecar/projection serving, public P2P, and public
+  fetch serving.
+- Phase 1298 does not enable non-loopback bind, wildcard bind, public host
+  bind, public listener, socket listener, HTTP route, peer discovery, public
+  sidecar/projection serving, public projection endpoint serving, public P2P,
+  or public fetch serving.
+- The existing sidecar public-path preflight helper remains `PUBLIC_RC_EXCLUDE`
+  and records no listener, bind, or serving surface. Local in-process sidecar
+  reads remain the only active sidecar path.
+- Phase 1299 is the next sensitive phase and requires explicit `GO Phase 1299`.
 - Public RC remains blocked by final public claimability API/verifier
   authority, privacy filter implementation/review, replay/nullifier and
   duplicate-claim registry policy, actual TransportPrincipal public-path
