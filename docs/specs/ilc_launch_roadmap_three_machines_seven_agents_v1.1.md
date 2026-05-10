@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1292; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1293 requires explicit `GO Phase 1293`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1292 |
+| Window frontier | Window 1289-1302 OPEN through Phase 1293; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1294 requires explicit `GO Phase 1294`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
+| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1293 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -1607,6 +1607,10 @@ public_rc_remains_blocked_after_phase_1285
 Phase 1288 Fix2 records the planning-only guidance and prompt-draft package for
 candidate Window 1289-1296:
 
+This addendum is historical. Phase 1289 supersedes its active routing with the
+Window 1289-1302 sequence lock; later addenda control the active Phase 1293
+scope.
+
 ```text
 phase_1288_fix2_window_1289_1296_guidance_drafted
 window_1289_1296_candidate_phase_grouping_recorded_after_phase_1288_fix1
@@ -1766,3 +1770,52 @@ Roadmap impact:
   serving authority, release publication/artifact/key and envelope authority,
   Genesis/v0.2 signing authority, wallet/ECU/ILC activation, CDL-088, and
   IP/publication clearance.
+
+---
+
+## 41. Phase 1293 PUBLIC_RC_EXCLUDE Helper Register Addendum
+
+Historical Phase 1292 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1292
+```
+
+Phase 1293 records the `PUBLIC_RC_EXCLUDE` helper promotion/removal register
+after explicit `GO Phase 1293`:
+
+```text
+public_rc_exclude_helper_promotion_removal_register_phase_1293.v0.1
+public_rc_exclude_helper_register_verdict_phase_1293=all_current_helpers_keep_internal_no_promotion
+public_rc_exclude_helpers_keep_internal_phase_1293
+public_rc_exclude_helper_promotion_not_authorized_phase_1293
+public_rc_exclude_helper_removal_not_authorized_phase_1293
+public_rc_exclude_helper_replacement_required_before_public_export_phase_1293
+source_allowlist_export_not_executed_phase_1293
+public_package_publication_not_authorized_phase_1293
+public_rc_remains_blocked_after_phase_1293
+phase_1294_claimability_package_allowlist_rehearsal_next
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1293.
+- The current runtime helpers in `ilc_core/ledger/` and `ilc_core/network/d2d/`
+  plus the sidecar public-path helper remain internal and keep their
+  `PUBLIC_RC_EXCLUDE` markers.
+- The stale Phase 1288 Fix2 Phase 1293 prompt body is corrected to the active
+  1289-1302 helper-register scope; the old TransportPrincipal Phase 1293 row is
+  historical only.
+- No helper promotion, marker removal, source allowlist export execution,
+  public repository publication, public package publication, release artifact,
+  release-key generation, release envelope, public claimability API, public
+  verifier service, public P2P/fetch/sidecar serving, Genesis signing, v0.2
+  signing, CDL mutation, CDL-088 opening, wallet/ECU/ILC activation, IP filing,
+  or paper publication is authorized.
+- Phase 1294 is the next sensitive phase and requires explicit `GO Phase 1294`.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, public-safe helper replacement or later explicit helper promotion
+  prerequisites, public-safe disclosure schema, TransportPrincipal public-path
+  activation authority, sidecar public projection serving authority, release
+  publication/artifact/key and envelope authority, Genesis/v0.2 signing
+  authority, wallet/ECU/ILC activation, CDL-088, and IP/publication clearance.
