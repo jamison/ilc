@@ -355,6 +355,14 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "release_key_generation_not_authorized_phase_1321" in text
     assert "signing_procedure_rehearsed_no_real_signing_phase_1321" in text
     assert "phase_1322_private_deployment_rehearsal_next" in text
+    assert "three_machine_seven_agent_private_deployment_rehearsal_phase_1322.v0.1" in text
+    assert (
+        "essential_graph_native_sidecar_suite_private_deployment_rehearsed_phase_1322"
+        in text
+    )
+    assert "private_wiring_only_no_public_serving_phase_1322" in text
+    assert "identity_artifact_creation_stop_guard_phase_1322" in text
+    assert "phase_1323_openclaw_nemoclaw_claimable_profile_dry_run_next" in text
     assert "openclaw_skill_format_discovery_required_phase_1323" in text
     assert "cli_first_skill_surface_recorded_phase_1323" in text
     assert "python_import_bridge_surface_recorded_phase_1323" in text
@@ -362,4 +370,4 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323" in text
     assert "openclaw_skill_not_published_or_installable_phase_1323" in text
     assert "genesis_rooted_agent_birth_attestation_blocker_phase_1323" in text
-    assert "Window 1317-1329 is OPEN through Phase 1321 only" in text
+    assert "Window 1317-1329 is OPEN through Phase 1322 only" in text

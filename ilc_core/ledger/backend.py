@@ -9,7 +9,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from decimal import Decimal
-from typing import Literal, NotRequired, Optional, TypeAlias, TypedDict, cast
+from typing import Literal, Optional, TypeAlias, TypedDict, cast
+
+try:
+    from typing import NotRequired
+except ImportError:  # pragma: no cover - Python 3.10 compatibility path.
+    from typing_extensions import NotRequired
 
 from ilc_core.ledger.exact_numeric import (
     ZERO,
