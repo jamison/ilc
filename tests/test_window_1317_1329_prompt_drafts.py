@@ -329,4 +329,8 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "phase_1320_release_artifact_manifest_instance_rehearsal_next" in text
     assert "release_artifact_manifest_instance_rehearsal_phase_1320.v0.1" in text
     assert "phase_1321_release_key_envelope_rehearsal_next" in text
-    assert "Window 1317-1329 is OPEN through Phase 1320 only" in text
+    assert "release_key_envelope_procedure_rehearsal_phase_1321.v0.1" in text
+    assert "release_key_generation_not_authorized_phase_1321" in text
+    assert "signing_procedure_rehearsed_no_real_signing_phase_1321" in text
+    assert "phase_1322_private_deployment_rehearsal_next" in text
+    assert "Window 1317-1329 is OPEN through Phase 1321 only" in text
