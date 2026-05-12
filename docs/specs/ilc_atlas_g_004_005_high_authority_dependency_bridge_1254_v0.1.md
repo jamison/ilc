@@ -29,7 +29,7 @@
 ## Import And Dependency Bridge
 
 - Policy token: `package_modularity_edges_required_for_public_rc_graph`
-- Edge count: `296`
+- Edge count: `343`
 - Edge types: `high_authority_source_classified_as, package_component_reachable_from_anchor, package_profile_exports_surface, package_profile_requires_component, python_cli_entrypoint, python_surface_imports_root, rust_binary_entrypoint, rust_crate_dependency`
 - Python import roots are derived from the existing bounded import-boundary inventory.
 - Python CLI entrypoint edges are derived from `pyproject.toml` `[project.scripts]`.

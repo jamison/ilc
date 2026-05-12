@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -80,6 +82,7 @@ PACKAGE_SURFACE_ROOTS = {
     "local_sidecar": (
         "ilc_core/graph/agent_graph_projection_runtime.py",
         "ilc_core/graph/sidecar_query_runtime.py",
+        "ilc_core/sidecars",
     ),
     "public_claimability": (
         "ilc_core/ledger/ecu_active_layer_runtime.py",
@@ -120,17 +123,20 @@ def _iter_surface_files(surface_id: str) -> tuple[Path, ...]:
         root = _REPO_ROOT / root_path
         if not root.exists():
             raise ValueError("package_profile_ci_gate_surface_root_missing")
+        if root.is_symlink():
+            raise ValueError("package_profile_ci_gate_symlink_forbidden")
         if root.is_file():
             if root.suffix in PACKAGE_PROFILE_AUDIT_FILE_SUFFIXES:
                 files.append(root)
             continue
         if root.is_dir():
             for suffix in PACKAGE_PROFILE_AUDIT_FILE_SUFFIXES:
-                files.extend(
-                    path
-                    for path in root.rglob(f"*{suffix}")
-                    if "__pycache__" not in path.parts
-                )
+                for path in root.rglob(f"*{suffix}"):
+                    if "__pycache__" in path.parts:
+                        continue
+                    if path.is_symlink():
+                        raise ValueError("package_profile_ci_gate_symlink_forbidden")
+                    files.append(path)
 
     unique = tuple(sorted(set(files), key=lambda path: path.as_posix()))
     if not unique:
@@ -141,10 +147,14 @@ def _iter_surface_files(surface_id: str) -> tuple[Path, ...]:
 
 
 def _measure_file(path: Path) -> dict[str, Any]:
+    if path.is_symlink():
+        raise ValueError("package_profile_ci_gate_symlink_forbidden")
     file_size = path.stat().st_size
     if file_size > MAX_PACKAGE_PROFILE_AUDIT_FILE_BYTES:
         raise ValueError("package_profile_ci_gate_file_bytes_limit_exceeded")
     payload = path.read_bytes()
+    if len(payload) > MAX_PACKAGE_PROFILE_AUDIT_FILE_BYTES:
+        raise ValueError("package_profile_ci_gate_file_bytes_limit_exceeded")
     return {
         "bytes": len(payload),
         "lines": payload.count(b"\n") + (1 if payload and not payload.endswith(b"\n") else 0),
@@ -396,7 +406,23 @@ def render_package_profile_ci_audit_markdown(audit: dict[str, Any] | None = None
 
 def _write_text(path: Path, payload: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(payload, encoding="utf-8")
+    fd, tmp_name = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        text=True,
+    )
+    tmp_path = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(payload)
+        os.replace(tmp_path, path)
+    except Exception:
+        try:
+            tmp_path.unlink()
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def main(argv: list[str] | None = None) -> int:

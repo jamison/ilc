@@ -88,7 +88,12 @@ ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS = frozenset(
     {
         *NON_EXCISABLE_COMPONENTS,
         "ecu_to_ilc_conversion_runtime",
+        "graph_native_sidecar_registry_manifest",
+        "offline_claimability_receipt_verifier_sidecar",
+        "openclaw_compatible_local_bridge",
         "public_claimability_runtime",
+        "value_path_activation_boundary_preflight_sidecar",
+        "wallet_action_semantics_preflight_sidecar",
     }
 )
 ATLAS_G_006_REQUIRED_PROFILE_SURFACES = frozenset(
@@ -216,6 +221,14 @@ _COMPONENT_REACHABILITY: dict[str, dict[str, Any]] = {
         ),
         "relation": "claimability_profile_requires_conversion_surface",
     },
+    "confidential_coordination_local_preview_profile": {
+        "anchors": ("hypergraph", "ilc"),
+        "representative_paths": (
+            "docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md",
+            "ilc_core/sidecars/registry_manifest.py",
+        ),
+        "relation": "confidential_coordination_profile_is_private_local_manifest_metadata",
+    },
     "genesis_lineage_verification": {
         "anchors": ("genesis", "hypergraph"),
         "representative_paths": (
@@ -231,6 +244,14 @@ _COMPONENT_REACHABILITY: dict[str, dict[str, Any]] = {
             "ilc_core/rc/local_skill_preview.py",
         ),
         "relation": "external_harnesses_attach_without_owning_protocol_transport",
+    },
+    "graph_native_sidecar_registry_manifest": {
+        "anchors": ("hypergraph", "ilc"),
+        "representative_paths": (
+            "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+            "ilc_core/sidecars/registry_manifest.py",
+        ),
+        "relation": "sidecar_registry_declares_harness_agnostic_graph_native_suite",
     },
     "ilc_identity_namespace": {
         "anchors": ("genesis", "ilc"),
@@ -264,6 +285,38 @@ _COMPONENT_REACHABILITY: dict[str, dict[str, Any]] = {
             "ilc_core/graph/agent_graph_projection_runtime.py",
         ),
         "relation": "local_read_only_graph_query_surface",
+    },
+    "offline_claimability_receipt_verifier_sidecar": {
+        "anchors": ("ecu", "ilc"),
+        "representative_paths": (
+            "ilc_core/sidecars/claimability_receipt_verifier.py",
+            "docs/specs/ilc_offline_claimability_receipt_verifier_sidecar_1305_v0.1.md",
+        ),
+        "relation": "claimability_profile_requires_local_receipt_and_proof_verifier",
+    },
+    "value_path_activation_boundary_preflight_sidecar": {
+        "anchors": ("ecu", "ilc", "hypergraph"),
+        "representative_paths": (
+            "ilc_core/sidecars/value_path_activation_boundary_preflight.py",
+            "docs/specs/ilc_ecu_minting_ilc_settlement_boundary_preflight_1315_v0.1.md",
+        ),
+        "relation": "claimable_profile_requires_ecu_ilc_value_path_activation_boundary_preflight",
+    },
+    "wallet_action_semantics_preflight_sidecar": {
+        "anchors": ("ecu", "ilc", "hypergraph"),
+        "representative_paths": (
+            "ilc_core/sidecars/wallet_action_semantics_preflight.py",
+            "docs/specs/ilc_wallet_withdrawal_transfer_spend_semantics_preflight_1314_v0.1.md",
+        ),
+        "relation": "claimable_profile_requires_wallet_facing_value_action_boundary_preflight",
+    },
+    "openclaw_compatible_local_bridge": {
+        "anchors": ("hypergraph", "ilc"),
+        "representative_paths": (
+            "ilc_core/rc/local_skill_preview.py",
+            "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+        ),
+        "relation": "openclaw_nemoclaw_are_hosts_for_graph_native_sidecars_not_protocol_substrates",
     },
     "protocol_bundle_verification": {
         "anchors": ("genesis", "hypergraph", "ilc"),
