@@ -1,0 +1,274 @@
+{
+  "authority_boundary": {
+    "future_real_signing_requires_explicit_human_authority": true,
+    "phase_1321_satisfies_future_authority_checkpoint": false,
+    "required_future_checkpoint": "two_person_or_explicit_human_authority_before_real_key_or_signature",
+    "v0_2_signing_gate": "phase_1340_or_dedicated_atlas_g_010_authority"
+  },
+  "blocked_materials": [
+    {
+      "material": "release_key_generation",
+      "reason": "not_authorized_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "release_key_registration_artifact",
+      "reason": "not_produced_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "release_public_key_export",
+      "reason": "not_produced_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "release_envelope_production",
+      "reason": "not_authorized_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "release_signing_material",
+      "reason": "not_generated_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "signature",
+      "reason": "not_produced_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "hsm_interface",
+      "reason": "not_called_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "cloud_kms_api",
+      "reason": "not_called_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "wallet_or_signing_provider",
+      "reason": "not_called_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "genesis_atlas_mutation_or_signing",
+      "reason": "not_authorized_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "v0_2_signing",
+      "reason": "not_authorized_phase_1321",
+      "status": "blocked"
+    },
+    {
+      "material": "public_rc_claim",
+      "reason": "public_rc_remains_blocked_after_phase_1321",
+      "status": "blocked"
+    }
+  ],
+  "credential_observation_policy": {
+    "credential_like_environment_values_read": false,
+    "environment_names_inspected": [],
+    "operator_key_paths_accepted_by_cli": false,
+    "operator_key_paths_read": [],
+    "release_key_path_inputs": [],
+    "secret_material_read": false
+  },
+  "dry_run_envelope_shape": {
+    "artifact_manifest_input": "docs/specs/ilc_release_artifact_manifest_instance_rehearsal_1320_v0.1.json",
+    "artifact_manifest_input_sha256": "350a73eb4d84018a38cd32e23e4709d8355d96a2b29de6c7304ac84f99ad7814",
+    "dry_run_envelope_id": "DRY_RUN_RELEASE_ENVELOPE_ID_DO_NOT_USE",
+    "dry_run_release_key_id": "DRY_RUN_KEY_ID_DO_NOT_USE",
+    "public_key_placeholder": "DRY_RUN_PUBLIC_KEY_BYTES_NOT_A_KEY",
+    "signature_placeholder": "DRY_RUN_SIGNATURE_NOT_A_SIGNATURE",
+    "signed_payload_digest_placeholder": "DRY_RUN_DIGEST_NOT_SHA256",
+    "signing_status": "not_signed_rehearsal_only"
+  },
+  "file_hash_references": [
+    {
+      "hash_classification": "existing_rehearsal_input_not_key_or_signature",
+      "path": "docs/specs/ilc_release_artifact_manifest_instance_rehearsal_1320_v0.1.json",
+      "sha256": "350a73eb4d84018a38cd32e23e4709d8355d96a2b29de6c7304ac84f99ad7814",
+      "source": "phase_1320_dry_run_report_input"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_key_or_signature",
+      "path": "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md",
+      "sha256": "d64a702b784f740c339708170bfbf608106f3d6f2da6f5cd689e0f298cf613ac",
+      "source": "adr_0036_release_key_mechanism"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_key_or_signature",
+      "path": "docs/specs/ilc_release_publication_signing_authorization_preflight_1287_v0.1.md",
+      "sha256": "a46ad3b8ba9e0c4b8d8fe84624be24f99d8fe2fd6d0d2b84ba4d49a5737f889a",
+      "source": "phase_1287_signing_preflight"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_key_or_signature",
+      "path": "docs/antigravity_tasks/antigravity_prompt__atlas_g_009_signing_root_envelope_prep.md",
+      "sha256": "52caec71f760ff8324f2bc7e8388e9b339a11907621bd3e3b2f44f8da66a2fbb",
+      "source": "atlas_g_009_future_prompt"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_key_or_signature",
+      "path": "docs/antigravity_tasks/antigravity_prompt__atlas_g_010_v0_2_signing_ceremony.md",
+      "sha256": "15c7d8298a9717b13dd34e202e4f499e74077f2c0df8ddca1db2156dd462f755",
+      "source": "atlas_g_010_future_prompt"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_key_or_signature",
+      "path": "docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md",
+      "sha256": "5f8f4905a26577e05f56d6b32b760d1de9ad628e8a32f699db9418ddab078b2d",
+      "source": "forward_plan_phase_1339_1340_gate"
+    }
+  ],
+  "hash_algorithm": {
+    "canonical_json": "json.dumps(..., sort_keys=True, allow_nan=False, separators=(\",\", \":\"))",
+    "machine_content_must_not_include_current_timestamps": true,
+    "phase_1321_rehearsal_manifest_hash": "80c6d591c4187c5f881898e40944da50ab25dbd9dd944be843dea3bcf4011849"
+  },
+  "mode": "dry_run_rehearsal_only",
+  "non_claims": [
+    "no_release_key_generation",
+    "no_release_key_registration_artifact",
+    "no_release_envelope_production",
+    "no_release_signing_material_generation",
+    "no_signature",
+    "no_hsm_or_kms_call",
+    "no_wallet_or_signing_provider_call",
+    "no_credential_environment_value_read",
+    "no_operator_key_path_read",
+    "no_release_artifact_production",
+    "no_source_export_execution",
+    "no_source_publication",
+    "no_package_publication",
+    "no_genesis_atlas_mutation_or_signing",
+    "no_v0_2_signing",
+    "no_public_rc_claim",
+    "public_rc_remains_blocked_after_phase_1321"
+  ],
+  "phase": 1321,
+  "phase_1287_preflight": {
+    "phase_1287_preserves_no_envelope_production": true,
+    "phase_1287_preserves_no_key_generation": true,
+    "phase_1287_preserves_no_v0_2_signing": true
+  },
+  "phase_1320_rehearsal_input": {
+    "input_report_sha256": "350a73eb4d84018a38cd32e23e4709d8355d96a2b29de6c7304ac84f99ad7814",
+    "path": "docs/specs/ilc_release_artifact_manifest_instance_rehearsal_1320_v0.1.json",
+    "result": "pass",
+    "schema_version": "release_artifact_manifest_instance_rehearsal_phase_1320.v0.1",
+    "status": "dry_run_manifest_shape_input_only"
+  },
+  "procedure": {
+    "commands_executed_by_this_rehearsal": [
+      "python3 -m ilc_core.rc.release_key_envelope_rehearsal --repo-root ."
+    ],
+    "dangerous_command_markers_blocked": [
+      "openssl genpkey",
+      "openssl pkeyutl",
+      "gpg --sign",
+      "cosign sign",
+      "ssh-keygen",
+      "age-keygen",
+      "aws kms sign",
+      "gcloud kms asymmetric-sign",
+      "az keyvault key sign",
+      "pkcs11-tool",
+      "ykman piv keys generate"
+    ],
+    "future_real_ceremony_file_inventory": [
+      {
+        "material": "release_key_registration_artifact",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      },
+      {
+        "material": "operational_release_public_key_export",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      },
+      {
+        "material": "release_envelope_json",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      },
+      {
+        "material": "release_envelope_signature",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      },
+      {
+        "material": "signing_root_envelope_candidate",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      },
+      {
+        "material": "signature_verification_report",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      },
+      {
+        "material": "release_signing_audit_log",
+        "path": null,
+        "produced_in_phase_1321": false,
+        "status": "not_produced_dry_run_only"
+      }
+    ],
+    "procedure_steps": [
+      {
+        "status": "rehearsed_no_artifact_or_key_material",
+        "step": "verify_phase_1320_rehearsal_input"
+      },
+      {
+        "status": "dry_run_identifier_only",
+        "step": "bind_dummy_release_key_identifier"
+      },
+      {
+        "status": "placeholder_only_not_real_envelope",
+        "step": "construct_dummy_envelope_shape"
+      },
+      {
+        "status": "checkpoint_not_satisfied_by_phase_1321",
+        "step": "record_future_human_authority_checkpoint"
+      },
+      {
+        "status": "all_output_lists_empty",
+        "step": "prove_no_key_envelope_signature_outputs"
+      }
+    ],
+    "signing_binaries_called": []
+  },
+  "public_rc_remains_blocked": true,
+  "release_key_binding_context": {
+    "adr_token": "adr_0036_release_key_draft_committed_phase_1159",
+    "header_status": "Accepted",
+    "observed_status_note": "ADR text also contains older deferred/proposed wording; Phase 1321 treats ADR-0036 as mechanism context only, never as signing authority.",
+    "release_key_is_delegated_not_root": true,
+    "signing_authority_created_by_phase_1321": false
+  },
+  "required_tokens": [
+    "release_key_envelope_procedure_rehearsal_phase_1321.v0.1",
+    "release_key_generation_not_authorized_phase_1321",
+    "release_envelope_production_not_authorized_phase_1321",
+    "signing_procedure_rehearsed_no_real_signing_phase_1321",
+    "phase_1322_private_deployment_rehearsal_next",
+    "public_rc_remains_blocked_after_phase_1321"
+  ],
+  "result": "pass",
+  "schema_version": "release_key_envelope_procedure_rehearsal_phase_1321.v0.1",
+  "signing_gate_context": {
+    "atlas_g_009_no_signing_token": "atlas_g_009_signing_root_envelope_prep_required_no_signing",
+    "atlas_g_010_authorization_token": "atlas_g_010_v0_2_signing_only_if_explicitly_authorized",
+    "phase_1321_satisfies_atlas_g_009": false,
+    "phase_1321_satisfies_atlas_g_010": false,
+    "signing_gate_phase": 1340
+  }
+}
