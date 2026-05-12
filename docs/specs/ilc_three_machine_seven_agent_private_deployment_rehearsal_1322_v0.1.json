@@ -1,0 +1,363 @@
+{
+  "acceptance": {
+    "credential_handling_recorded": true,
+    "evidence_outcome_recorded": "executed_live_private_droplet",
+    "identity_artifact_stop_guard_checked": true,
+    "openclaw_nemoclaw_harness_boundary_recorded": true,
+    "private_wiring_recorded": true,
+    "public_exposure_none_for_ilc_roles": true,
+    "resource_limits_recorded": true,
+    "teardown_checklist_recorded": true,
+    "topology_exactly_seven_agent_roles": true,
+    "topology_exactly_three_machine_roles": true
+  },
+  "artifact": {
+    "date": "2026-05-12",
+    "description": "Live private three-machine/seven-agent deployment rehearsal over DigitalOcean droplets connected by Tailscale.",
+    "phase": 1322,
+    "required_tokens": [
+      "three_machine_seven_agent_private_deployment_rehearsal_phase_1322.v0.1",
+      "essential_graph_native_sidecar_suite_private_deployment_rehearsed_phase_1322",
+      "private_wiring_only_no_public_serving_phase_1322",
+      "digitalocean_openclaw_private_test_evidence_recorded_phase_1322",
+      "identity_artifact_creation_stop_guard_phase_1322",
+      "phase_1323_openclaw_nemoclaw_claimable_profile_dry_run_next",
+      "public_rc_remains_blocked_after_phase_1322"
+    ],
+    "version": "three_machine_seven_agent_private_deployment_rehearsal_phase_1322.v0.1"
+  },
+  "discovery": {
+    "claim_table": [
+      {
+        "claim": "Phase 1322 is authorized by explicit human GO only.",
+        "file_or_symbol_checked": "docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_three_machine_seven_agent_private_deployment_rehearsal.md",
+        "result": "confirmed"
+      },
+      {
+        "claim": "OpenClaw, NemoClaw, and DigitalOcean droplets are hosts or deployment targets, not protocol substrates.",
+        "file_or_symbol_checked": "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md; docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md; ilc_core/rc/package_profiles.py",
+        "result": "confirmed"
+      },
+      {
+        "claim": "The essential graph-native sidecar suite supports private DigitalOcean/OpenClaw droplet testing without public P2P, public sidecar serving, public claim endpoint, source publication, or release/signing authority.",
+        "file_or_symbol_checked": "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+        "result": "confirmed"
+      },
+      {
+        "claim": "The local skill preview is local/import-only, loopback or subprocess only, with no OpenClaw or NemoClaw protocol dependency.",
+        "file_or_symbol_checked": "ilc_core/rc/local_skill_preview.py",
+        "result": "confirmed"
+      },
+      {
+        "claim": "The Phase 1322 path must stop if it would create identity artifacts before the CDL-069 commitment-formula mismatch is resolved.",
+        "file_or_symbol_checked": "docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_three_machine_seven_agent_private_deployment_rehearsal.md",
+        "result": "confirmed"
+      },
+      {
+        "claim": "Live DigitalOcean private droplets were reachable for this rehearsal.",
+        "file_or_symbol_checked": "SSH over supplied Tailscale IPs; testbed/hosts.json",
+        "result": "confirmed"
+      }
+    ],
+    "mempalace": {
+      "direct_read_paths_after_recall": [
+        "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+        "docs/PLANNING_INDEX.md"
+      ],
+      "result": "advisory hits only; no historical hit superseded current repo canon",
+      "tier": "tier_b_planning"
+    },
+    "non_claim_search_result": "Private/local-only and no-public-serving constraints confirmed; no authority found for public P2P, public sidecar serving, public claim endpoints, source publication, release authority, signing, identity artifact creation, wallet write, ECU minting, or ILC settlement."
+  },
+  "evidence_outcome": {
+    "digitalocean_openclaw_private_test_evidence_recorded_phase_1322": true,
+    "live_private_droplet_evidence": true,
+    "outcome": "executed_live_private_droplet",
+    "outcome_reason": "Three supplied DigitalOcean droplets were reachable over Tailscale, sidecar imports and role checks passed on each node after a Python 3.10 compatibility fallback was synced, and UFW was tightened to Tailscale-only inbound rules.",
+    "public_serving_evidence": false
+  },
+  "graph_delta": "graph_delta=load_bearing_artifact_changed:ilc_core/ledger/backend.py -> testbed/runtime-python-3.10-compatibility; graph_delta=support_only:testbed/hosts.json,docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.json,docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md,docs/phases/phase_1322_three_machine_seven_agent_private_deployment_rehearsal_walkthrough.md -> planning/frontier",
+  "identity_artifact_stop_guard": {
+    "checked_before_execution": true,
+    "created_or_written_identity_artifacts": [],
+    "guard_token": "identity_artifact_creation_stop_guard_phase_1322",
+    "prohibited_artifacts": [
+      "identity artifact",
+      "genesis record",
+      "seed commitment",
+      "identity_seed_commitment",
+      "dummy Agent Birth artifact"
+    ],
+    "result": "pass_no_identity_artifact_created_or_written",
+    "stop_required_if_artifact_identified": true
+  },
+  "live_execution": {
+    "commands_bound_to_public_interfaces": [],
+    "ilc_public_listener_enabled": false,
+    "private_overlay_reachability": {
+      "ilc-node-2": [
+        "ping_node3=ok",
+        "ping_node6=ok"
+      ],
+      "ilc-node-3": [
+        "ping_node2=ok",
+        "ping_node6=ok"
+      ],
+      "ilc-node-6": [
+        "ping_node2=ok",
+        "ping_node3=ok"
+      ]
+    },
+    "public_dns_enabled": false,
+    "public_ip_ilc_service_exposure_enabled": false,
+    "public_peer_discovery_enabled": false,
+    "system_infrastructure_listeners_observed": [
+      "sshd",
+      "tailscaled",
+      "systemd-resolved"
+    ],
+    "ufw_after_hardening": {
+      "ilc-node-2": [
+        "Anywhere on tailscale0 ALLOW IN Anywhere",
+        "Anywhere (v6) on tailscale0 ALLOW IN Anywhere (v6)"
+      ],
+      "ilc-node-3": [
+        "Anywhere on tailscale0 ALLOW IN Anywhere",
+        "Anywhere (v6) on tailscale0 ALLOW IN Anywhere (v6)"
+      ],
+      "ilc-node-6": [
+        "Anywhere on tailscale0 ALLOW IN Anywhere",
+        "Anywhere (v6) on tailscale0 ALLOW IN Anywhere (v6)"
+      ]
+    }
+  },
+  "non_authorization_floor": {
+    "cdl_088_opened": false,
+    "clean_public_tree_materialized": false,
+    "ecu_minting_activated": false,
+    "genesis_atlas_mutated_or_signed": false,
+    "identity_artifacts_created": false,
+    "ilc_settlement_activated": false,
+    "package_publication_executed": false,
+    "public_claimability_api_activated": false,
+    "public_claimability_enabled": false,
+    "public_confidential_coordination_serving_enabled": false,
+    "public_p2p_enabled": false,
+    "public_rc_claimed": false,
+    "public_sidecar_serving_enabled": false,
+    "release_artifacts_produced": false,
+    "release_envelopes_produced": false,
+    "release_keys_generated": false,
+    "signing_executed": false,
+    "source_export_executed": false,
+    "wallet_write_or_value_path_activated": false
+  },
+  "operations_notes": {
+    "firewall_hardening": "Removed public 22/tcp UFW allow rules on all three nodes after confirming Tailscale SSH reachability; inbound rules now allow traffic only on tailscale0.",
+    "remote_repo_shape": "Remote trees are rsynced working trees without .git, so tools/testbed/sync_repo.sh is not suitable until the deploy key or remote clone issue is resolved.",
+    "ssh_alias_note": "Local ~/.ssh/config aliases for ilc-node-2 and ilc-node-3 still pointed at stale Tailscale IPs during the run; testbed/hosts.json now uses explicit Tailscale IPs for all three ssh_host fields."
+  },
+  "private_wiring": {
+    "allowed_modes": [
+      "loopback",
+      "private_overlay",
+      "tailscale_private_overlay"
+    ],
+    "executed_mode": "tailscale_private_overlay",
+    "fail_closed_conditions": [
+      "public inbound ports required for ILC sidecars",
+      "public P2P bootstrap required",
+      "public claim endpoint required",
+      "unmanaged secrets required",
+      "undocumented manual host state required",
+      "identity artifact creation required before CDL-069 mismatch fix"
+    ],
+    "private_wiring_only_no_public_serving_phase_1322": true
+  },
+  "remote_patch": {
+    "reason": "Ubuntu 22.04 remote venvs use Python 3.10; ilc_core import failed until NotRequired was imported from typing_extensions on Python 3.10.",
+    "rsync_targets": [
+      "100.112.32.42:/opt/ilc/current/ilc_core/ledger/backend.py",
+      "100.91.33.46:/opt/ilc/current/ilc_core/ledger/backend.py",
+      "100.72.17.38:/opt/ilc/current/ilc_core/ledger/backend.py"
+    ],
+    "source_file": "ilc_core/ledger/backend.py"
+  },
+  "resource_and_teardown": {
+    "credential_handling": [
+      "No credential environment values printed.",
+      "No operator key paths printed.",
+      "No seed, mnemonic, private key, wallet signing material, HSM material, KMS material, or token material written.",
+      "All remote execution used existing SSH access over Tailscale."
+    ],
+    "log_redaction": [
+      "No public droplet IPs were recorded in the evidence packet.",
+      "Evidence records Tailscale IPs and role names only because the user supplied them as private rehearsal inputs.",
+      "No secrets, seed material, private keys, wallet identifiers, or API tokens are recorded."
+    ],
+    "resource_limits": {
+      "max_agent_roles": 7,
+      "max_machine_roles": 3,
+      "max_public_ilc_listeners": 0,
+      "max_public_peer_discovery": 0,
+      "max_secret_reads": 0,
+      "network_modes": [
+        "tailscale private overlay"
+      ]
+    },
+    "teardown_checklist": [
+      "Keep public 22/tcp UFW allow rules removed unless the operator intentionally reopens emergency access.",
+      "Stop any later local sidecar or harness substitute processes.",
+      "Confirm no public ILC listeners remain bound.",
+      "Confirm no credential files, seed files, mnemonic files, key files, or identity artifacts were created.",
+      "Before Phase 1323, resolve remote rsync versus git-clone/deploy-key workflow so sync_repo.sh is not used against non-git working trees."
+    ]
+  },
+  "sidecar_suite": {
+    "essential_graph_native_sidecar_suite_private_deployment_rehearsed_phase_1322": true,
+    "openclaw_nemoclaw_are_protocol_substrates": false,
+    "profiles": [
+      "confidential_coordination_local_preview",
+      "openclaw_claimable_local_bridge",
+      "openclaw_compatible_local_bridge"
+    ],
+    "role_check_results": {
+      "ilc-node-2": {
+        "admission_contract_version": "transport_principal_admission_sidecar_lifecycle_hardening_phase_1309.v0.1",
+        "admission_local_only": true,
+        "admission_public_p2p_enabled": false,
+        "admission_public_sidecar_serving_enabled": false,
+        "registry_version": "graph_native_sidecar_registry_manifest_phase_1307.v0.1",
+        "roles": [
+          "sidecar registry",
+          "TransportPrincipal admission"
+        ]
+      },
+      "ilc-node-3": {
+        "projection_contract_version": "local_graph_memory_projection_sidecar_phase_1311.v0.1",
+        "projection_local_only": true,
+        "projection_public_listener_enabled": false,
+        "projection_public_sidecar_projection_serving_enabled": false,
+        "query_action": "fetch_incentive_centrality",
+        "roles": [
+          "verifier",
+          "projection"
+        ],
+        "verifier_contract_version": "offline_claimability_receipt_verifier_sidecar_phase_1305.v0.1",
+        "verifier_local_only": true,
+        "verifier_public_api_enabled": false,
+        "verifier_public_claimability_activated": false
+      },
+      "ilc-node-6": {
+        "preview_action": "profile_manifest",
+        "preview_binding": "local_import_only",
+        "preview_public_p2p_enabled": false,
+        "roles": [
+          "wallet-facing preflight",
+          "value-path preflight",
+          "harness bridge"
+        ],
+        "value_contract_version": "ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1",
+        "value_ilc_settlement_authorized": false,
+        "value_packet_verdict": "preflight_recorded_value_path_activation_blocked",
+        "value_preflight_only": true,
+        "wallet_contract_version": "wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1",
+        "wallet_packet_verdict": "preflight_recorded_wallet_actions_blocked",
+        "wallet_preflight_only": true,
+        "wallet_write_authorized": false
+      }
+    },
+    "sidecars": [
+      "sidecar_registry_manifest",
+      "offline_claimability_receipt_verifier",
+      "local_graph_memory_projection",
+      "transport_principal_admission",
+      "truth_primitive_submission_boundary",
+      "wallet_action_semantics_preflight",
+      "value_path_activation_boundary_preflight",
+      "openclaw_nemoclaw_local_bridge"
+    ],
+    "source_files_checked": [
+      "ilc_core/sidecars/registry_manifest.py",
+      "ilc_core/rc/local_skill_preview.py",
+      "ilc_core/rc/package_profiles.py",
+      "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md"
+    ]
+  },
+  "topology": [
+    {
+      "agent_role": "sidecar registry",
+      "evidence_path": "remote role check on ilc-node-2 plus checked-in Phase 1322 report",
+      "machine_role": "coordinator",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.112.32.42"
+    },
+    {
+      "agent_role": "TransportPrincipal admission",
+      "evidence_path": "remote role check on ilc-node-2 plus checked-in Phase 1322 report",
+      "machine_role": "coordinator",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.112.32.42"
+    },
+    {
+      "agent_role": "verifier",
+      "evidence_path": "remote role check on ilc-node-3 plus checked-in Phase 1322 report",
+      "machine_role": "verifier/projection",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.91.33.46"
+    },
+    {
+      "agent_role": "projection",
+      "evidence_path": "remote role check on ilc-node-3 plus checked-in Phase 1322 report",
+      "machine_role": "verifier/projection",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.91.33.46"
+    },
+    {
+      "agent_role": "wallet-facing preflight",
+      "evidence_path": "remote role check on ilc-node-6 plus checked-in Phase 1322 report",
+      "machine_role": "harness-adapter",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.72.17.38"
+    },
+    {
+      "agent_role": "value-path preflight",
+      "evidence_path": "remote role check on ilc-node-6 plus checked-in Phase 1322 report",
+      "machine_role": "harness-adapter",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.72.17.38"
+    },
+    {
+      "agent_role": "harness bridge",
+      "evidence_path": "remote role check on ilc-node-6 plus checked-in Phase 1322 report",
+      "machine_role": "harness-adapter",
+      "network_mode": "tailscale_private_overlay",
+      "public_exposure": "none_for_ilc_role",
+      "secret_handling": "no secret read",
+      "tailscale_ip": "100.72.17.38"
+    }
+  ],
+  "verification": {
+    "expected_commands": [
+      "python3 tools/validate_phase_prompt.py docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_three_machine_seven_agent_private_deployment_rehearsal.md",
+      ".venv/bin/python -m pytest tests/test_phase_1322_three_machine_seven_agent_private_deployment_rehearsal.py tests/test_window_1317_1329_prompt_drafts.py tests/test_testbed_control_surface.py",
+      ".venv/bin/python -m pytest tests/test_sensitive_runtime_coding_taboos.py",
+      "python3 tools/check_sensitive_runtime_coding_taboos.py",
+      "git diff --check -- ilc_core/ledger/backend.py testbed/hosts.json docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.json docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md docs/phases/phase_1322_three_machine_seven_agent_private_deployment_rehearsal_walkthrough.md tests/test_phase_1322_three_machine_seven_agent_private_deployment_rehearsal.py docs/PLANNING_INDEX.md docs/specs/ilc_antigravity_context_capsule_v5.54.md docs/phases/STATUS.md"
+    ],
+    "status": "passed_phase_close"
+  }
+}
