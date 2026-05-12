@@ -306,4 +306,6 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "context_capsule_v5_54_frontier_refresh_phase_1318.v0.1" in text
     assert "deterministic_source_allowlist_export_rehearsal_phase_1319.v0.1" in text
     assert "phase_1320_release_artifact_manifest_instance_rehearsal_next" in text
-    assert "Window 1317-1329 is OPEN through Phase 1319 only" in text
+    assert "release_artifact_manifest_instance_rehearsal_phase_1320.v0.1" in text
+    assert "phase_1321_release_key_envelope_rehearsal_next" in text
+    assert "Window 1317-1329 is OPEN through Phase 1320 only" in text
