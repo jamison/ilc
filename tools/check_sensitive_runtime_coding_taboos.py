@@ -24,6 +24,8 @@ EXPLICIT_SCAN_FILES = {
     "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
     "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
     "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+    "ilc_core/rc/release_artifact_manifest_rehearsal.py",
+    "ilc_core/rc/source_allowlist_export_rehearsal.py",
     "ilc_core/sidecars/local_graph_memory_projection.py",
     "ilc_core/sidecars/public_fetch_p2p_readiness.py",
     "ilc_core/sidecars/transport_principal_admission.py",
@@ -59,6 +61,8 @@ STRICT_MACHINE_JSON_FILES = {
     "ilc_core/mcp/service.py",
     "ilc_core/graph/sidecar_public_path_preflight.py",
     "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+    "ilc_core/rc/release_artifact_manifest_rehearsal.py",
+    "ilc_core/rc/source_allowlist_export_rehearsal.py",
     "ilc_core/sidecars/local_graph_memory_projection.py",
     "ilc_core/sidecars/public_fetch_p2p_readiness.py",
     "ilc_core/sidecars/transport_principal_admission.py",
@@ -102,6 +106,14 @@ ATOMIC_WRITE_CONTRACTS = {
         "os.replace",
     ),
     "ilc_core/network/d2d/persistent_fetch_rate_limiter_runtime.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+    "ilc_core/rc/release_artifact_manifest_rehearsal.py": (
+        "tempfile.mkstemp",
+        "os.replace",
+    ),
+    "ilc_core/rc/source_allowlist_export_rehearsal.py": (
         "tempfile.mkstemp",
         "os.replace",
     ),
