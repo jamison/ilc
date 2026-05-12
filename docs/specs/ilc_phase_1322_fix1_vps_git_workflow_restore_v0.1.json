@@ -1,0 +1,121 @@
+{
+  "fix1_version": "phase_1322_fix1_restore_vps_git_workflow.v0.1",
+  "graph_delta": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_restore_vps_git_workflow_fix1.md,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.json,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.md,docs/phases/phase_1322_fix1_vps_git_workflow_restore_walkthrough.md,docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_antigravity_context_capsule_v5.54.md,tests/test_phase_1322_fix1_vps_git_workflow_restore.py -> planning/frontier",
+  "local_commit": {
+    "branch": "main",
+    "head": "a982c567171c76488bed6c9d7143290ad801fcf7",
+    "origin_main_at_fix1_start": "d91e173c2da17aa5e1b5981a46c4a6aa839bbf94",
+    "publication_to_github_authorized": false
+  },
+  "non_authorization_floor": {
+    "clean_public_tree_materialization_authorized": false,
+    "ecu_minting_authorized": false,
+    "genesis_atlas_mutation_or_signing_authorized": false,
+    "identity_artifact_creation_authorized": false,
+    "ilc_settlement_authorized": false,
+    "package_publication_authorized": false,
+    "public_claimability_activation_authorized": false,
+    "public_confidential_coordination_serving_authorized": false,
+    "public_p2p_authorized": false,
+    "public_rc_claim_authorized": false,
+    "public_serving_authorized": false,
+    "release_artifact_production_authorized": false,
+    "release_key_generation_authorized": false,
+    "release_signing_authorized": false,
+    "source_publication_authorized": false,
+    "v0_2_signing_authorized": false,
+    "wallet_write_authorized": false
+  },
+  "operator_scope": {
+    "execution_mode": "real_private_digitalocean_tailscale_nodes",
+    "phase_1323_authorized": false,
+    "private_overlay_only": true,
+    "public_inbound_exposure_changed": false,
+    "remote_command_surface": "ssh_over_tailscale_with_agent_forwarding"
+  },
+  "origin_state": {
+    "github_origin_url": "git@github.com:jamison/ilc-core.git",
+    "local_main_ahead_of_origin_main_by_commits": 3,
+    "sync_repo_behavior": "fetch_origin_main_reports_local_branch_ahead_and_pull_is_already_up_to_date"
+  },
+  "remote_nodes": [
+    {
+      "ahead_behind_origin_main": "0 3",
+      "backup_path": "/opt/ilc/current.rsync_backup_phase1322_fix1_20260512T174002Z",
+      "branch": "main",
+      "git_dir_present": true,
+      "head": "a982c567171c76488bed6c9d7143290ad801fcf7",
+      "head_matches_local_commit": true,
+      "hostname": "ilc-node-2",
+      "origin_url": "git@github.com:jamison/ilc-core.git",
+      "repo_status_short_count": 0,
+      "sidecar_profiles": 3,
+      "sidecars": 10,
+      "ssh_host": "100.112.32.42",
+      "sync_repo_ok": true,
+      "tailscale_ip": "100.112.32.42",
+      "venv_non_ilcops_owned_count": 0
+    },
+    {
+      "ahead_behind_origin_main": "0 3",
+      "backup_path": "/opt/ilc/current.rsync_backup_phase1322_fix1_20260512T174002Z",
+      "branch": "main",
+      "git_dir_present": true,
+      "head": "a982c567171c76488bed6c9d7143290ad801fcf7",
+      "head_matches_local_commit": true,
+      "hostname": "ilc-node-3",
+      "origin_url": "git@github.com:jamison/ilc-core.git",
+      "repo_status_short_count": 0,
+      "sidecar_profiles": 3,
+      "sidecars": 10,
+      "ssh_host": "100.91.33.46",
+      "sync_repo_ok": true,
+      "tailscale_ip": "100.91.33.46",
+      "venv_non_ilcops_owned_count": 0
+    },
+    {
+      "ahead_behind_origin_main": "0 3",
+      "backup_path": "/opt/ilc/current.rsync_backup_phase1322_fix1_20260512T174002Z",
+      "branch": "main",
+      "git_dir_present": true,
+      "head": "a982c567171c76488bed6c9d7143290ad801fcf7",
+      "head_matches_local_commit": true,
+      "hostname": "ilc-node-6",
+      "origin_url": "git@github.com:jamison/ilc-core.git",
+      "repo_status_short_count": 0,
+      "sidecar_profiles": 3,
+      "sidecars": 10,
+      "ssh_host": "100.72.17.38",
+      "sync_repo_ok": true,
+      "tailscale_ip": "100.72.17.38",
+      "venv_non_ilcops_owned_count": 0
+    }
+  ],
+  "required_tokens": [
+    "phase_1322_fix1_restore_vps_git_workflow.v0.1",
+    "remote_rsync_tree_provenance_blocker_resolved_phase_1322_fix1",
+    "vps_git_clone_head_matches_local_commit_phase_1322_fix1",
+    "sync_repo_git_workflow_restored_phase_1322_fix1",
+    "phase_1323_remote_sync_precondition_cleared_phase_1322_fix1",
+    "public_rc_remains_blocked_after_phase_1322_fix1"
+  ],
+  "sync_repo_result": {
+    "command": "bash tools/testbed/sync_repo.sh ilc-node-2 ilc-node-3 ilc-node-6",
+    "result": "pass",
+    "sync_repo_git_workflow_restored_phase_1322_fix1": true
+  },
+  "venv_permission_repair": {
+    "action": "sudo chown -R ilcops:ilcops /opt/ilc/venv",
+    "reason": "previous setup left root-owned editable-install files in the shared venv",
+    "result": "editable reinstall passed on all three nodes"
+  },
+  "verification": {
+    "import_smoke_test": "build_sidecar_registry_manifest imported on all three nodes and reported 10 sidecars / 3 profiles",
+    "prompt_validation": "passed",
+    "remote_rsync_tree_provenance_blocker_resolved_phase_1322_fix1": true,
+    "sensitive_runtime_guardrail": "passed",
+    "testbed_and_window_regressions": "passed",
+    "tests": "tests/test_phase_1322_fix1_vps_git_workflow_restore.py passed; tests/test_window_1317_1329_prompt_drafts.py and tests/test_testbed_control_surface.py passed; tests/test_sensitive_runtime_coding_taboos.py passed; tools/check_sensitive_runtime_coding_taboos.py passed",
+    "vps_git_clone_head_matches_local_commit_phase_1322_fix1": true
+  }
+}

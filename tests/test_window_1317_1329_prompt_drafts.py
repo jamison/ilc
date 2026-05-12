@@ -370,4 +370,8 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323" in text
     assert "openclaw_skill_not_published_or_installable_phase_1323" in text
     assert "genesis_rooted_agent_birth_attestation_blocker_phase_1323" in text
-    assert "Window 1317-1329 is OPEN through Phase 1322 only" in text
+    assert "phase_1322_fix1_restore_vps_git_workflow.v0.1" in text
+    assert "remote_rsync_tree_provenance_blocker_resolved_phase_1322_fix1" in text
+    assert "sync_repo_git_workflow_restored_phase_1322_fix1" in text
+    assert "phase_1323_remote_sync_precondition_cleared_phase_1322_fix1" in text
+    assert "Window 1317-1329 is OPEN through Phase 1322 Fix1 only" in text
