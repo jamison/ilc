@@ -162,6 +162,7 @@ def test_window_1317_1329_guidance_is_planning_only_and_routes_all_phases() -> N
         "openclaw_skill_format_discovery_required_phase_1323",
         "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323",
         "openclaw_skill_not_published_or_installable_phase_1323",
+        "genesis_rooted_agent_birth_attestation_blocker_phase_1323",
         "ccss_tail_routed_phase_1324_1328_without_atlas_g_compression",
         "atlas_g_tail_carried_forward_not_hidden_inside_ccss_phase_1317_1329",
         "window_1317_1329_prompt_drafts_registered",
@@ -222,6 +223,7 @@ def test_forward_plan_records_resolved_ccss_atlas_g_split() -> None:
         "identity_seed_ux_public_bootstrap_blocker_phase_1323",
         "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323",
         "openclaw_skill_not_published_or_installable_phase_1323",
+        "genesis_rooted_agent_birth_attestation_blocker_phase_1323",
         "no seed/mnemonic/private-key disclosure to LLM chat",
     ):
         assert phrase in forward_plan
@@ -357,4 +359,5 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "identity_seed_ux_public_bootstrap_blocker_phase_1323" in text
     assert "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323" in text
     assert "openclaw_skill_not_published_or_installable_phase_1323" in text
+    assert "genesis_rooted_agent_birth_attestation_blocker_phase_1323" in text
     assert "Window 1317-1329 is OPEN through Phase 1321 only" in text

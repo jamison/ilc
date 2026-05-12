@@ -28,6 +28,7 @@ python_import_bridge_surface_recorded_phase_1323
 identity_seed_ux_public_bootstrap_blocker_phase_1323
 identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323
 openclaw_skill_not_published_or_installable_phase_1323
+genesis_rooted_agent_birth_attestation_blocker_phase_1323
 ccss_tail_routed_phase_1324_1328_without_atlas_g_compression
 atlas_g_tail_carried_forward_not_hidden_inside_ccss_phase_1317_1329
 window_1317_1329_prompt_drafts_registered
@@ -62,6 +63,12 @@ guardrails:
   bootstrap blocker. The default identity rule is non-custodial: no
   seed/mnemonic/private-key material may be disclosed to an LLM, chat
   transcript, OpenClaw memory, walkthrough, or `STATUS.md`.
+- Phase 1323 must also record Genesis-rooted identity origin as unresolved for
+  public bootstrap: no OpenClaw/NemoClaw user, digital agent, or local ILC
+  identity may be claimed Genesis-rooted until a later ADR/CDL or equivalent
+  identity-bootstrap spec defines an agent birth attestation or equivalent proof
+  binding `agent_id` to signed Genesis/Atlas lineage without using private graph
+  content as identity-seed entropy or recovery material.
 - Phases 1324-1328 are the CCSS tail only if the sequence lock keeps Atlas-G
   tail separate. Atlas-G-007 through ATLAS-G-010 remain required before signing
   but must not be hidden inside CCSS phases.
@@ -186,6 +193,12 @@ Phase 1323 has an additional skill/bootstrap boundary:
 - The identity-seed UX path is a carry-forward blocker until a later ADR/CDL or
   equivalent identity-bootstrap spec defines path validation, permissions,
   recovery UX, and non-custodial defaults.
+- Public bootstrap may not claim an agent identity is Genesis-rooted until that
+  later identity-bootstrap spec also defines an agent birth attestation or
+  equivalent Genesis-rooted identity-origin proof. The proof should bind
+  `agent_id` to a signed Genesis/Atlas lineage anchor and optional private/local
+  node commitments, while keeping private graph content out of identity-seed
+  entropy and recovery semantics.
 
 ## 8. Confidential Coordination Tail Routing
 
@@ -236,6 +249,7 @@ publication, OpenClaw skill publication/listing/installability, release
 artifact production, release keys, release envelopes, real signing, Genesis
 mutation/signing, v0.2 signing, CDL mutation, CDL-088 opening, identity-seed
 generation, mnemonic generation, secret-store writes, custodial agent-mode
-activation, seed/mnemonic/private-key disclosure to an LLM or transcript, wallet
-economics, ECU minting, ILC settlement, IP filing, paper publication, or
-OpenClaw/NemoClaw as protocol substrates.
+activation, seed/mnemonic/private-key disclosure to an LLM or transcript,
+Genesis-rooted public bootstrap identity claims, wallet economics, ECU minting,
+ILC settlement, IP filing, paper publication, or OpenClaw/NemoClaw as protocol
+substrates.
