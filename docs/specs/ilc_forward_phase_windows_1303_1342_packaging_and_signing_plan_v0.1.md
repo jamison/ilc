@@ -123,12 +123,26 @@ Essential graph-native sidecar ordering inside this window:
 | 1328 | CCSS-005 private OpenClaw/NemoClaw confidential coordination droplet dry run plus reproducibility pass | Private harness evidence over loopback, Tailscale, or equivalent private wiring; no public serving claim | Confidential Coordination Sidecar Suite / RC operations |
 | 1329 | Window closure gate | Classifies dry-run, CCSS, Atlas-G, and release blockers closed/open/carried forward | Planning/frontier |
 
-The earlier Atlas-G tail concepts remain required before signing, but the best
-current plan is not to compress Atlas-G tail implementation and the
-Confidential Coordination Sidecar Suite into the same 1324-1328 phases. If a
-future sequence lock chooses to prioritize Atlas-G tail before CCSS, these CCSS
-rows should move to the next dedicated sidecar window instead of being executed
-as hidden scope inside Atlas-G phases.
+Resolved by the Phase 1317 sequence lock:
+
+```text
+ccss_tail_routed_without_atlas_g_compression_phase_1317
+atlas_g_tail_carried_forward_not_hidden_inside_ccss_phase_1317_1329
+```
+
+Phases 1324-1328 are the current CCSS-001 through CCSS-005 private/local lane.
+They are not Atlas-G tail phases and must not execute ATLAS-G-007 through
+ATLAS-G-010 as hidden scope. Atlas-G tail work remains required before signing,
+but it is carried forward outside Phases 1324-1328 unless a later explicit
+sequence lock reopens the route and moves the CCSS rows to a later dedicated
+sidecar window.
+
+| Atlas-G tail item | Current routing control |
+|-------------------|-------------------------|
+| ATLAS-G-007 unsigned v0.2 candidate regeneration | Carried forward outside Phases 1324-1328; candidate tie-in remains Phase 1339 or a dedicated Atlas-G tail window. |
+| ATLAS-G-008 non-excisability review packet | Carried forward outside Phases 1324-1328; must not be hidden inside CCSS implementation. |
+| ATLAS-G-009 signing root envelope prep | Carried forward outside Phases 1324-1328; no real envelope or signing material before explicit authority. |
+| ATLAS-G-010 v0.2 signing ceremony gate | Phase 1340 explicit signing gate; no signing by default. |
 
 Phase 1319 is the first materialization rehearsal. Its dry-run export report
 must prove:
