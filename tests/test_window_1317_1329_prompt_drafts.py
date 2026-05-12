@@ -74,6 +74,8 @@ PHASE_SPECIFIC_HARDENING_PHRASES = {
         "executed_live_private_droplet",
         "inbound ports",
         "teardown instructions",
+        "identity_artifact_creation_stop_guard_phase_1322",
+        "stop and do not proceed until the CDL-069 commitment-formula mismatch is resolved",
         "Machine role: coordinator, verifier/projection, harness-adapter, or local-only substitute.",
         "Public exposure column is `none` for every executed role.",
     ),
