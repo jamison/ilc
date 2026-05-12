@@ -1,21 +1,28 @@
-MIT License
+ILC Layered License Notice
 
-Copyright (c) 2026 ILC contributors
+Copyright (c) 2026 ILC contributors.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This repository does not use a blanket MIT license.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Unless a more specific file-level, directory-level, or zone-level notice applies,
+runtime source code in this repository is licensed under:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+    GNU Affero General Public License v3.0 only (AGPL-3.0-only)
+
+The ILC repository uses a layered license posture. The authoritative project
+zone table is in LICENSING.md and covers:
+
+- AGPL-3.0-only default for runtime/source code during bootstrap;
+- strict canonical-identity terms for Genesis, lineage, release, and
+  authority-bearing canonical artifacts;
+- CC BY 4.0 style terms for explanatory public documentation;
+- All Rights Reserved / Patent Pending treatment for patent-sensitive material;
+- trademark and canonical network identity restrictions that are not granted by
+  the code license.
+
+No license is granted to use ILC names, marks, official network identity, or
+canonical lineage claims except as stated in LICENSING.md or a later explicit
+project policy.
+
+If this file conflicts with a more specific license notice in a file, directory,
+or release artifact, the more specific notice controls for that material.

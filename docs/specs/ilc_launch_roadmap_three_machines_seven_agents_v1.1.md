@@ -253,16 +253,21 @@ canon_bundle_signing_repair_pass_phase_1197
 
 ### Gap 7 - Counsel, License, CLA, Trademark, IP
 
-**Status:** Open hard gate before public repository publication and public RC.
-Phase 1300 inventories this state only and grants no legal clearance, IP filing,
+**Status:** Partially satisfied after Phase 1323 Fix3. The root license and
+zone table are now implemented provisionally as a layered posture, with
+`AGPL-3.0-only` as the runtime/package default and `LICENSING.md` as the zone
+table. Future counsel review/modification remains expected, but unresolved
+root-license selection is no longer a standalone implementation blocker. Phase
+1300 inventoried this state only and granted no legal clearance, IP filing,
 paper publication, repository publication, or package publication authority.
 Phase 1255 defines the allowlist-export procedure, but does not authorize
-publication. Counsel/IP/trademark/CLA/patent gates and explicit publication
-authorization remain open.
+publication. CLA, trademark, IP/patent gates, source-export execution, and
+explicit publication authorization remain open.
 
 Required:
 
-- Root license and zone table decision.
+- Root license and zone table decision: implemented provisionally in Phase 1323
+  Fix3; future counsel review/modification expected.
 - DCO/CLA decision before external contributors.
 - Trademark policy before public launch.
 - US provisional patent filing before public repository publication.
@@ -272,7 +277,8 @@ Required:
 Tokens:
 
 ```text
-counsel_license_instrument_selection_required_before_public_rc
+layered_license_posture_implemented_phase_1323_fix3
+counsel_license_review_future_modification_not_public_rc_blocker_phase_1323_fix3
 counsel_cla_text_approved_required_before_external_contributors
 counsel_trademark_policy_published_required_before_public_launch
 us_provisional_patent_application_filed_required_before_public_repo_publication
@@ -2343,10 +2349,47 @@ Roadmap impact:
   authority, privacy filter implementation/review, replay/nullifier and
   duplicate-claim registry policy, actual TransportPrincipal public-path
   activation authority, sidecar public projection serving authority, sidecar
-  bind/listener/peer-discovery authority, counsel-approved
-  license/CLA/trademark/IP/publication clearance, source allowlist export
+  bind/listener/peer-discovery authority, open
+  CLA/trademark/IP/patent/publication clearance, source allowlist export
   execution, release publication/artifact/key and envelope authority,
   Genesis/v0.2 signing authority, wallet/ECU/ILC activation, and CDL-088.
+
+## 50a. Phase 1323 Fix3 Layered License Posture Addendum
+
+Phase 1323 Fix3 implements the provisional layered license posture now, rather
+than leaving blanket MIT as the effective current posture while awaiting future
+counsel review.
+
+```text
+phase_1323_fix3_layered_license_posture.v0.1
+blanket_mit_license_removed_phase_1323_fix3
+agpl_runtime_default_recorded_phase_1323_fix3
+licensing_zone_table_committed_phase_1323_fix3
+genesis_canonical_identity_zone_recorded_phase_1323_fix3
+patent_pending_zone_reserved_phase_1323_fix3
+whitepaper_mit_language_replaced_phase_1323_fix3
+ip_series_confirmed_as_ip001_to_ip006_phase_1323_fix3
+public_rc_remains_blocked_after_phase_1323_fix3
+```
+
+Roadmap impact:
+
+- The current root `LICENSE` is no longer blanket MIT; it records a layered
+  license notice and delegates zone boundaries to `LICENSING.md`.
+- Runtime/source package metadata now defaults to `AGPL-3.0-only` for bootstrap
+  protection.
+- `LICENSING.md` records separate zones for runtime code, protocol interfaces
+  and schemas, Genesis canonical artifacts, explanatory docs, patent-sensitive
+  material, services, trademarks/canonical identity, and internal-only files.
+- The remembered legal/patent phase lane is confirmed in current canon as
+  IP-001 through IP-006, not an active P-series or L-series.
+- Future counsel review/modification remains expected, but root license/zone
+  table selection is no longer an unresolved implementation blocker.
+- Fix3 does not approve CLA text, publish trademark policy, file IP, publish
+  papers, execute source allowlist export, publish a repository, publish a
+  package, produce release artifacts, generate release keys or envelopes,
+  mutate/sign Genesis Atlas, authorize v0.2 signing, open CDL-088, activate
+  public paths, or authorize wallet/ECU/ILC economics.
 
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
@@ -2393,7 +2436,7 @@ Roadmap impact:
   implementation/review, replay/nullifier and duplicate-claim registry policy,
   actual TransportPrincipal public-path activation authority, sidecar public
   projection serving authority, sidecar bind/listener/peer-discovery authority,
-  counsel-approved license/CLA/trademark/IP/publication clearance, source
+  open CLA/trademark/IP/patent/publication clearance, source
   allowlist export execution, release publication/artifact/key and envelope
   authority, Genesis/v0.2 signing authority, wallet/ECU/ILC activation, and
   CDL-088.
