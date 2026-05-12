@@ -401,6 +401,9 @@ phase_1300_counsel_ip_publication_clearance_inventory_next
 
 Phase 1300 records the counsel, IP, and publication clearance inventory:
 
+Historical Phase 1300 frontier phrase guard: Window 1289-1302 is open through Phase 1300.
+At Phase 1300 close, Phase 1301 is sensitive and requires explicit `GO Phase 1301`.
+
 ```text
 counsel_ip_publication_clearance_inventory_phase_1300.v0.1
 counsel_ip_publication_verdict_phase_1300=inventory_only_no_publication

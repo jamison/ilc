@@ -1,9 +1,9 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, and Phase 1323 Fix2 OpenClaw VPS install/local skill discovery
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, and Phase 1323 Fix3 layered license posture
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1323 Fix2
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1323 Fix3
 **Next phase:** Phase 1324 - CCSS-001 private/gated shard sidecar contract, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
@@ -67,6 +67,15 @@ clawhub_publication_not_authorized_phase_1323_fix2
 ilc_runtime_not_modified_phase_1323_fix2
 public_rc_remains_blocked_after_phase_1323_fix2
 phase_1324_ccss_private_gated_shard_contract_next_after_fix2
+phase_1323_fix3_layered_license_posture.v0.1
+blanket_mit_license_removed_phase_1323_fix3
+agpl_runtime_default_recorded_phase_1323_fix3
+licensing_zone_table_committed_phase_1323_fix3
+genesis_canonical_identity_zone_recorded_phase_1323_fix3
+patent_pending_zone_reserved_phase_1323_fix3
+whitepaper_mit_language_replaced_phase_1323_fix3
+ip_series_confirmed_as_ip001_to_ip006_phase_1323_fix3
+public_rc_remains_blocked_after_phase_1323_fix3
 ```
 
 ---
@@ -165,7 +174,19 @@ install actions, and no missing requirements. The first draft command mismatch
 was caught and corrected before claiming success. Fix2 did not modify ILC
 runtime code and did not publish to ClawHub or claim public installability.
 
-Phase 1324 is the next phase after Phase 1323 Fix2. Phase 1324 remains sensitive and
+Phase 1323 Fix3 is complete as a provisional layered license posture
+implementation. It removes the blanket MIT posture, sets runtime/package
+metadata to `AGPL-3.0-only`, commits `LICENSING.md` as the mixed-zone license
+table, preserves Genesis canonical identity and patent-pending zones, replaces
+stale MIT language in current whitepaper drafts, and confirms the legal/patent
+lane is IP-001 through IP-006. Future counsel review/modification remains
+expected, but unresolved root-license selection is no longer treated as a
+separate blocker. Fix3 does not authorize public RC, source export, publication,
+package publication, patent filing, CLA/trademark approval, release artifacts,
+keys, envelopes, signing, identity artifacts, wallet writes, ECU minting, ILC
+settlement, value-path activation, or Phase 1324 execution.
+
+Phase 1324 is the next phase after Phase 1323 Fix3. Phase 1324 remains sensitive and
 requires explicit `GO Phase 1324`.
 
 ---
@@ -194,7 +215,7 @@ must repeat the same discovery discipline before execution.
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
 | 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Complete as dry-run procedure evidence only; no keys, envelopes, signing material, signatures, HSM/KMS/wallet calls, or secret reads. |
 | 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Complete as live private DigitalOcean/Tailscale rehearsal; UFW tightened to Tailscale-only inbound; no public ILC serving, no identity artifacts, no public claimability activation. Fix1 restored the VPS Git workflow and cleared the remote sync precondition for Phase 1323. |
-| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled. Fix2 installed native OpenClaw on `ilc-node-6` and verified local workspace skill discovery, while ClawHub listing/public installability remain blocked. |
+| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled. Fix2 installed native OpenClaw on `ilc-node-6` and verified local workspace skill discovery, while ClawHub listing/public installability remain blocked. Fix3 implemented the provisional layered license posture and replaced blanket MIT. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Open; no public confidential coordination serving. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
@@ -215,7 +236,7 @@ Public RC remains blocked after Phase 1323 by:
 - Rust public-P2P substrate ADR/integration gate;
 - TransportPrincipal public-path activation authority;
 - public sidecar/projection serving authority;
-- counsel-approved license, CLA, trademark, IP, and publication authorization;
+- implemented layered license posture with future counsel review/modification expected, plus open CLA, trademark, IP/patent, and explicit publication authorization;
 - source allowlist export execution and clean materialized public tree production;
 - release artifact production, release-key generation, release envelopes, and release signing material; Phase 1320 supplied manifest-shape rehearsal evidence only and Phase 1321 supplied procedure-only key/envelope rehearsal evidence only;
 - Genesis Atlas mutation/regeneration/signing if needed and v0.2 signing authorization;
@@ -342,6 +363,19 @@ serving, ClawHub publication, public installability, identity bootstrap, ILC
 runtime mutation, wallet/ECU/settlement activation, and Phase 1324 execution
 remain unauthorized.
 
+Phase 1323 Fix3 publishes the layered license posture evidence path:
+
+```text
+docs/specs/ilc_layered_license_posture_1323_fix3_v0.1.md
+```
+
+The Fix3 report records the provisional mixed-zone posture in `LICENSING.md`,
+the root `AGPL-3.0-only` runtime/package default, the removal of blanket MIT,
+the reserved Genesis canonical identity and patent-pending zones, and the
+IP-001 through IP-006 lane names. Future counsel review/modification remains
+expected, but root license/zone-table selection is no longer open as a separate
+implementation blocker.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -394,7 +428,7 @@ wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
-Phase 1322, Fix1, Phase 1323, and Phase 1323 Fix2 also do not authorize identity artifact creation, genesis record
+Phase 1322, Fix1, Phase 1323, Phase 1323 Fix2, and Phase 1323 Fix3 also do not authorize identity artifact creation, genesis record
 creation, seed commitment creation, `identity_seed_commitment` creation, dummy
 Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
 installability, OpenClaw skill listing, ClawHub submission, mnemonic generation,
