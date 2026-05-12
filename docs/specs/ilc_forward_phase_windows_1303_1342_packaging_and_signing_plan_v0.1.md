@@ -115,7 +115,7 @@ Essential graph-native sidecar ordering inside this window:
 | 1320 | Release artifact manifest instance rehearsal | Proves release manifest shape without producing public artifacts | Phase 1213 / release |
 | 1321 | Release key/envelope procedure rehearsal, no real signing by default | Rehearses signing procedure without key generation or envelope production | Release/signing |
 | 1322 | Three-machine/seven-agent private deployment rehearsal with essential graph-native sidecar suite | Private deployment evidence; no public serving claim | RC operations / graph-native sidecars |
-| 1323 | OpenClaw/NemoClaw claimable profile full dry run against graph-native sidecar suite | Final target profile rehearsal with public claimability still gated | Gap 13 / Gap 14 / graph-native sidecars |
+| 1323 | OpenClaw/NemoClaw claimable profile full dry run against graph-native sidecar suite | Final target profile rehearsal with public claimability still gated; skill-format discovery and identity-seed UX blockers recorded | Gap 13 / Gap 14 / graph-native sidecars / identity bootstrap |
 | 1324 | CCSS-001 private/gated shard sidecar contract | Encrypted coordination-node envelope, shard-header projection, and private-to-public promotion evidence shape | Confidential Coordination Sidecar Suite |
 | 1325 | CCSS-002 capability, membership, grant, revocation, and optional ZK interface boundary | Private shard access-control blocker without plaintext or membership disclosure | Confidential Coordination Sidecar Suite |
 | 1326 | CCSS-003 sealed sender local delivery sidecar boundary | H-013/H-015 fixed-size payload and relay-seam integration without public P2P activation | Confidential Coordination Sidecar Suite / H-013/H-015 |
@@ -161,6 +161,31 @@ private DigitalOcean/OpenClaw or equivalent droplets where available. Those
 tests must use loopback/private wiring such as Tailscale and must not claim
 public P2P, public sidecar serving, public claim endpoints, source publication,
 or release authority.
+
+Phase 1323 must harden the OpenClaw/NemoClaw skill boundary before any future
+public bootstrap claim:
+
+```text
+openclaw_skill_format_discovery_required_phase_1323
+cli_first_skill_surface_recorded_phase_1323
+python_import_bridge_surface_recorded_phase_1323
+identity_seed_ux_public_bootstrap_blocker_phase_1323
+identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323
+openclaw_skill_not_published_or_installable_phase_1323
+```
+
+The dry run must treat ILC-internal package-profile labels as package metadata,
+not as proof that an OpenClaw skill is already published, listed, accepted by
+ClawHub, or installable. The preferred public-facing surface is CLI-first: a
+thin `SKILL.md` or equivalent instructs the harness agent to call `ilc`
+CLI/bootstrap commands. The deeper Python import bridge remains a private or
+advanced harness surface through `TransportHarness` and `StorageHarness`
+adapters. Identity bootstrap remains a carry-forward blocker until a later
+ADR/CDL or equivalent spec defines a non-custodial default: one cryptographic
+path, interactive and agent-mode ceremony modes, explicit secure output or
+secure-store target for agent mode, no stdout fallback for secret material, and
+no seed/mnemonic/private-key disclosure to LLM chat, OpenClaw transcript memory,
+logs, walkthroughs, or `STATUS.md`.
 
 Confidential Coordination Sidecar Suite build-out after the essential
 OpenClaw-compatible suite is testable should route:

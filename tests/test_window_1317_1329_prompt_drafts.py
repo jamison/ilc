@@ -81,7 +81,13 @@ PHASE_SPECIFIC_HARDENING_PHRASES = {
         "profile requirements are satisfied by checked-in code",
         "wallet-provider signing request",
         "harness invocation through an adapter/sidecar boundary",
+        "discover the current OpenClaw skill format",
+        "Surface 1: CLI-first thin skill",
+        "Surface 2: Python import bridge",
+        "no seed/mnemonic/key material in LLM chat",
+        "OpenClaw skill is already published, listed, installable",
         "Exact claimable profile name and package-profile version are recorded.",
+        "Identity-seed UX is recorded as a public-bootstrap blocker",
     ),
     "antigravity_prompt__phase_1324_g8_ccss_001_private_gated_shard_sidecar_contract.md": (
         "shard identifiers as opaque references",
@@ -153,6 +159,9 @@ def test_window_1317_1329_guidance_is_planning_only_and_routes_all_phases() -> N
         "phase_1317_window_1317_1329_sequence_lock_required",
         "window_1317_1329_release_dry_run_public_rc_blocked",
         "deterministic_source_allowlist_export_rehearsal_required_phase_1319",
+        "openclaw_skill_format_discovery_required_phase_1323",
+        "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323",
+        "openclaw_skill_not_published_or_installable_phase_1323",
         "ccss_tail_routed_phase_1324_1328_without_atlas_g_compression",
         "atlas_g_tail_carried_forward_not_hidden_inside_ccss_phase_1317_1329",
         "window_1317_1329_prompt_drafts_registered",
@@ -167,6 +176,8 @@ def test_window_1317_1329_guidance_is_planning_only_and_routes_all_phases() -> N
         "Phase 1319 is the first materialization rehearsal",
         "zero exported files contain `PUBLIC_RC_EXCLUDE`",
         "OpenClaw and NemoClaw remain harness/deployment targets",
+        "CLI-first OpenClaw skill surface",
+        "non-custodial",
         "ATLAS-G-007 through ATLAS-G-010 remain required before signing",
         "public confidential coordination serving",
     ):
@@ -205,6 +216,13 @@ def test_forward_plan_records_resolved_ccss_atlas_g_split() -> None:
         "ATLAS-G-010 as hidden scope.",
         "ATLAS-G-010 v0.2 signing ceremony gate",
         "Phase 1340 explicit signing gate; no signing by default.",
+        "openclaw_skill_format_discovery_required_phase_1323",
+        "cli_first_skill_surface_recorded_phase_1323",
+        "python_import_bridge_surface_recorded_phase_1323",
+        "identity_seed_ux_public_bootstrap_blocker_phase_1323",
+        "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323",
+        "openclaw_skill_not_published_or_installable_phase_1323",
+        "no seed/mnemonic/private-key disclosure to LLM chat",
     ):
         assert phrase in forward_plan
 
@@ -333,4 +351,10 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "release_key_generation_not_authorized_phase_1321" in text
     assert "signing_procedure_rehearsed_no_real_signing_phase_1321" in text
     assert "phase_1322_private_deployment_rehearsal_next" in text
+    assert "openclaw_skill_format_discovery_required_phase_1323" in text
+    assert "cli_first_skill_surface_recorded_phase_1323" in text
+    assert "python_import_bridge_surface_recorded_phase_1323" in text
+    assert "identity_seed_ux_public_bootstrap_blocker_phase_1323" in text
+    assert "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323" in text
+    assert "openclaw_skill_not_published_or_installable_phase_1323" in text
     assert "Window 1317-1329 is OPEN through Phase 1321 only" in text

@@ -22,6 +22,12 @@ deterministic_source_allowlist_export_rehearsal_required_phase_1319
 release_manifest_and_key_envelope_rehearsal_no_real_signing_phase_1320_1321
 private_deployment_rehearsal_no_public_serving_phase_1322
 openclaw_nemoclaw_claimable_profile_dry_run_public_claimability_gated_phase_1323
+openclaw_skill_format_discovery_required_phase_1323
+cli_first_skill_surface_recorded_phase_1323
+python_import_bridge_surface_recorded_phase_1323
+identity_seed_ux_public_bootstrap_blocker_phase_1323
+identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323
+openclaw_skill_not_published_or_installable_phase_1323
 ccss_tail_routed_phase_1324_1328_without_atlas_g_compression
 atlas_g_tail_carried_forward_not_hidden_inside_ccss_phase_1317_1329
 window_1317_1329_prompt_drafts_registered
@@ -50,6 +56,12 @@ guardrails:
   release envelopes, or signing.
 - Phases 1322 and 1323 rehearse private deployment and OpenClaw/NemoClaw
   claimable profile operation over private wiring only.
+- Phase 1323 must distinguish the CLI-first OpenClaw skill surface from the
+  deeper Python import bridge, discover the actual OpenClaw skill format before
+  making any skill-surface claim, and record identity-seed UX as a public
+  bootstrap blocker. The default identity rule is non-custodial: no
+  seed/mnemonic/private-key material may be disclosed to an LLM, chat
+  transcript, OpenClaw memory, walkthrough, or `STATUS.md`.
 - Phases 1324-1328 are the CCSS tail only if the sequence lock keeps Atlas-G
   tail separate. Atlas-G-007 through ATLAS-G-010 remain required before signing
   but must not be hidden inside CCSS phases.
@@ -158,6 +170,23 @@ Those tests must not claim:
 OpenClaw and NemoClaw remain harness/deployment targets, not protocol
 substrates.
 
+Phase 1323 has an additional skill/bootstrap boundary:
+
+- ILC-internal profile names such as `openclaw_skill_claimable` are package
+  profile labels, not proof that a public OpenClaw skill is already listed,
+  published, accepted by ClawHub, or installable.
+- The public-facing integration target is CLI-first: an OpenClaw `SKILL.md` or
+  equivalent should teach an agent to call `ilc` CLI/bootstrap commands.
+- The deeper Python import bridge remains an advanced/private harness surface
+  through `TransportHarness` and `StorageHarness` adapter wiring.
+- Identity bootstrap must remain one cryptographic path with separate ceremony
+  modes: interactive human ceremony and non-interactive agent-mode ceremony.
+  Agent mode must require an explicit secure output or secure-store target and
+  must fail closed rather than printing seed material to stdout or chat.
+- The identity-seed UX path is a carry-forward blocker until a later ADR/CDL or
+  equivalent identity-bootstrap spec defines path validation, permissions,
+  recovery UX, and non-custodial defaults.
+
 ## 8. Confidential Coordination Tail Routing
 
 | Sidecar | Candidate routing |
@@ -203,7 +232,10 @@ This grouping does not authorize public RC, public launch, public claimability,
 public verifier/API serving, public P2P, public fetch serving, public
 sidecar/projection serving, public confidential messaging, public confidential
 coordination serving, source export execution, source publication, package
-publication, release artifact production, release keys, release envelopes,
-real signing, Genesis mutation/signing, v0.2 signing, CDL mutation, CDL-088
-opening, wallet economics, ECU minting, ILC settlement, IP filing, paper
-publication, or OpenClaw/NemoClaw as protocol substrates.
+publication, OpenClaw skill publication/listing/installability, release
+artifact production, release keys, release envelopes, real signing, Genesis
+mutation/signing, v0.2 signing, CDL mutation, CDL-088 opening, identity-seed
+generation, mnemonic generation, secret-store writes, custodial agent-mode
+activation, seed/mnemonic/private-key disclosure to an LLM or transcript, wallet
+economics, ECU minting, ILC settlement, IP filing, paper publication, or
+OpenClaw/NemoClaw as protocol substrates.
