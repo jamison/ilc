@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, and Phase 1322 Fix1 VPS Git workflow restore
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, and Phase 1323 OpenClaw/NemoClaw claimable profile full dry run
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1322 Fix1 only
-**Next phase:** Phase 1323 - OpenClaw/NemoClaw claimable profile full dry run, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1323 only
+**Next phase:** Phase 1324 - CCSS-001 private/gated shard sidecar contract, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -46,6 +46,19 @@ vps_git_clone_head_matches_local_commit_phase_1322_fix1
 sync_repo_git_workflow_restored_phase_1322_fix1
 phase_1323_remote_sync_precondition_cleared_phase_1322_fix1
 public_rc_remains_blocked_after_phase_1322_fix1
+openclaw_nemoclaw_claimable_profile_full_dry_run_phase_1323.v0.1
+claimable_profile_dry_run_public_claimability_still_gated_phase_1323
+graph_native_sidecar_suite_profile_integrity_rehearsed_phase_1323
+openclaw_nemoclaw_hosts_not_protocol_substrates_phase_1323
+openclaw_skill_format_discovery_required_phase_1323
+cli_first_skill_surface_recorded_phase_1323
+python_import_bridge_surface_recorded_phase_1323
+identity_seed_ux_public_bootstrap_blocker_phase_1323
+identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323
+openclaw_skill_not_published_or_installable_phase_1323
+genesis_rooted_agent_birth_attestation_blocker_phase_1323
+phase_1324_ccss_private_gated_shard_contract_next
+public_rc_remains_blocked_after_phase_1323
 ```
 
 ---
@@ -119,8 +132,22 @@ and verified `tools/testbed/sync_repo.sh` succeeds across all three nodes. Local
 `main` remains ahead of `origin/main` by three commits, so GitHub publication
 remains a separate non-authorized action.
 
-Phase 1323 is the next phase after Phase 1322. Phase 1323 remains sensitive and
-requires explicit `GO Phase 1323`.
+Phase 1323 is complete as a private OpenClaw/NemoClaw claimable profile dry run.
+It synced all three private VPS clones to GitHub-published `main` at
+`4ea3d0857764075b88775b25f1d31e1e252df855`, exercised the checked-in ILC
+claimable profile and graph-native sidecar suite, recorded current OpenClaw
+skill-format discovery, separated the CLI-first thin skill surface from the
+Python import bridge, and preserved public claimability/public serving/public
+skill-publication blockers. Neither `openclaw` nor `clawhub` was installed on
+the droplets, so native OpenClaw skill install/listing/installability remains
+blocked and was not claimed. Phase 1323 also records identity-seed UX and
+Genesis-rooted agent birth attestation as public-bootstrap blockers, including
+the CDL-069 `identity_seed_commitment` formula mismatch as fix-before-identity
+bootstrap debt. No identity artifact, mnemonic, key, secret-store write, or
+Genesis-rooted public bootstrap identity claim was created.
+
+Phase 1324 is the next phase after Phase 1323. Phase 1324 remains sensitive and
+requires explicit `GO Phase 1324`.
 
 ---
 
@@ -133,21 +160,22 @@ requires explicit `GO Phase 1323`.
 | Section 0c Contradiction and non-claim search | Searched deferred, blocked, not authorized, not ratified, prelocked, superseded, local-only, private/local, no public, must not, carry-forward, CDL-088, v0.2 signing, public RC, source publication, and public confidential coordination serving. No source granted public activation, publication, signing, source export execution, public serving, wallet/ECU/ILC economics, Genesis mutation/signing, CDL mutation, or public confidential coordination authority. |
 | Section 0d Source expansion | Direct-read PLANNING_INDEX, STATUS tail, Capsule v5.53, Phase 1316 handoff, Phase 1317 sequence lock, Window 1317-1329 guidance, forward packaging/signing plan, public-RC packaging architecture gate, graph-native sidecar suite architecture, CCSS forward plan, roadmap, and prompt/test scaffolding. MemPalace returned stale historical planning hits only; no hit superseded current repo canon. |
 
-Exact-token `rg` remains only a schema and completion check. Phase 1323 must
-repeat broad concept, synonym, older-name, code-symbol, and contradiction
-searches before rehearsing any OpenClaw/NemoClaw claimable profile path.
+Exact-token `rg` remains only a schema and completion check. Phase 1323 repeated
+broad concept, synonym, older-name, code-symbol, and contradiction searches
+before rehearsing the OpenClaw/NemoClaw claimable profile path; future phases
+must repeat the same discovery discipline before execution.
 
 ---
 
 ## 3. Release Dry-Run Blocker Map
 
-| Phase or lane | Current blocker | Phase 1322 Fix1 status |
+| Phase or lane | Current blocker | Phase 1323 status |
 |---------------|-----------------|-------------------|
 | 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Complete as rehearsal evidence only; no source export execution, no copied public tree, no publication, no clean public tree materialization. |
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
 | 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Complete as dry-run procedure evidence only; no keys, envelopes, signing material, signatures, HSM/KMS/wallet calls, or secret reads. |
 | 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Complete as live private DigitalOcean/Tailscale rehearsal; UFW tightened to Tailscale-only inbound; no public ILC serving, no identity artifacts, no public claimability activation. Fix1 restored the VPS Git workflow and cleared the remote sync precondition for Phase 1323. |
-| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Open; next sensitive phase; no public claimability activation. |
+| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled; native OpenClaw/ClawHub installability was not rehearsed because binaries are absent on droplets. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Open; no public confidential coordination serving. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
@@ -159,7 +187,7 @@ searches before rehearsing any OpenClaw/NemoClaw claimable profile path.
 
 ## 4. Cross-Cutting Public-RC Blockers
 
-Public RC remains blocked after Phase 1322 by:
+Public RC remains blocked after Phase 1323 by:
 
 - legacy public-labeled FastAPI routes that must be excluded, replaced, or explicitly gated before a clean public-RC package or endpoint claim;
 - public claimability verifier/API serving authority;
@@ -175,6 +203,9 @@ Public RC remains blocked after Phase 1322 by:
 - CDL-088 opening if reciprocal/value-path policy is selected;
 - wallet-facing withdrawal, transfer, spend, signing, and ledger-write activation;
 - ECU minting activation, ILC settlement activation, withdrawal runtime, wallet write authority, and final value-path activation authority;
+- identity-seed UX and CDL-069 commitment-formula repair before any identity bootstrap artifact;
+- Genesis-rooted agent birth attestation or equivalent identity-origin proof before any public bootstrap claim;
+- native OpenClaw/ClawHub installation, listing, and installability rehearsal before any public skill claim;
 - public confidential messaging or public confidential coordination serving if later selected as public scope.
 
 The graph-native sidecar suite remains the preferred harness-agnostic path.
@@ -257,7 +288,26 @@ docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.md
 
 The Fix1 report records that the earlier rsynced non-Git tree blocker is
 resolved, the intended `sync_repo.sh` workflow passes for all three nodes, and
-Phase 1323 remains sensitive and requires explicit `GO Phase 1323`.
+the Phase 1323 remote sync precondition was cleared before the Phase 1323 dry run.
+
+## 4.5 Phase 1323 Claimable Profile Evidence
+
+Phase 1323 publishes the private claimable profile evidence paths:
+
+```text
+docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json
+docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.md
+```
+
+The report records that `openclaw_claimable_local_bridge` and package profile
+`openclaw_skill_claimable` remain ILC metadata, not proof of a published
+OpenClaw skill. It records current OpenClaw `SKILL.md` format discovery, the
+CLI-first thin skill surface as future/public-facing and not yet published, the
+Python import bridge as checked-in and local/import-only, and all sidecar checks
+as private/local with no public claimability/API activation. It also carries
+forward the identity-seed UX blocker, the CDL-069 commitment-formula mismatch
+before identity bootstrap, the Genesis-rooted agent birth attestation blocker,
+and the absence of native OpenClaw/ClawHub binaries on the droplets.
 
 ---
 
@@ -286,7 +336,7 @@ phase prompt or planning index row explicitly promotes them.
 
 ## 7. Non-Authorization Boundary
 
-Phases 1318 through 1322 Fix1 do not authorize public RC claim, public launch claim, public
+Phases 1318 through 1323 do not authorize public RC claim, public launch claim, public
 repository publication, public package publication, source allowlist export
 execution, source publication, materialized export manifest production, clean
 public export tree production, release artifact production, release artifact
@@ -311,10 +361,12 @@ wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
-Phase 1322 and Fix1 also do not authorize identity artifact creation, genesis record
+Phase 1322, Fix1, and Phase 1323 also do not authorize identity artifact creation, genesis record
 creation, seed commitment creation, `identity_seed_commitment` creation, dummy
 Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
-installability, or Genesis-rooted public bootstrap identity claims.
+installability, OpenClaw skill listing, ClawHub submission, mnemonic generation,
+secret-store writes, custodial agent-mode activation, or Genesis-rooted public
+bootstrap identity claims.
 
 For exact machine checks, the non-authorized boundary includes:
 
@@ -322,6 +374,9 @@ For exact machine checks, the non-authorized boundary includes:
 public RC claim
 public claimability API activation
 public verifier service activation
+OpenClaw skill publication
+ClawHub listing
+public installability claim
 public P2P exposure
 public fetch serving
 public sidecar/projection serving
@@ -358,6 +413,7 @@ graph_delta=support_only:docs/phases/STATUS.md -> planning/frontier
 graph_delta=support_only:docs/PLANNING_INDEX.md -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.json,docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_restore_vps_git_workflow_fix1.md,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.json,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.md,docs/phases/phase_1322_fix1_vps_git_workflow_restore_walkthrough.md,tests/test_phase_1322_fix1_vps_git_workflow_restore.py -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json,docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.md,docs/phases/phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run_walkthrough.md,tests/test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run.py -> planning/frontier
 ```
 
 ---
@@ -365,9 +421,9 @@ graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1322_g
 ## 9. Next Phase
 
 ```text
-phase_1323_openclaw_nemoclaw_claimable_profile_dry_run_next
+phase_1324_ccss_private_gated_shard_contract_next
 ```
 
-Phase 1323 is sensitive and requires explicit `GO Phase 1323`. It is an
-OpenClaw/NemoClaw claimable profile dry run only unless its own prompt, canon
+Phase 1324 is sensitive and requires explicit `GO Phase 1324`. It is a CCSS-001
+private/gated shard sidecar contract phase only unless its own prompt, canon
 checks, and human authorization say otherwise.

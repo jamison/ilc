@@ -1,0 +1,332 @@
+{
+  "claim_table": [
+    {
+      "claim": "Window 1317-1329 is open through Phase 1322 Fix1 before Phase 1323 execution.",
+      "files_checked": [
+        "docs/PLANNING_INDEX.md",
+        "docs/phases/STATUS.md",
+        "docs/specs/ilc_antigravity_context_capsule_v5.54.md"
+      ],
+      "result": "confirmed"
+    },
+    {
+      "claim": "The OpenClaw/NemoClaw claimable local bridge profile is ILC package metadata, not proof of public skill publication.",
+      "files_checked": [
+        "ilc_core/sidecars/registry_manifest.py",
+        "ilc_core/rc/package_profiles.py",
+        "docs/specs/ilc_window_1317_1329_candidate_phase_grouping_v0.1.md"
+      ],
+      "result": "confirmed"
+    },
+    {
+      "claim": "The Python bridge is local/import-only and does not require OpenClaw or NemoClaw as protocol dependencies.",
+      "files_checked": [
+        "ilc_core/rc/local_skill_preview.py",
+        "ilc_core/protocol/harness_interfaces.py"
+      ],
+      "result": "confirmed"
+    },
+    {
+      "claim": "Current OpenClaw skill format requires an AgentSkills-compatible folder with SKILL.md frontmatter and metadata.openclaw gating.",
+      "files_checked": [
+        "docs/specs/ilc_openclaw_architecture_deep_dive_v0.1.md",
+        "https://raw.githubusercontent.com/openclaw/openclaw/main/docs/tools/skills.md",
+        "https://raw.githubusercontent.com/openclaw/clawhub/main/docs/skill-format.md"
+      ],
+      "result": "confirmed_from_local_and_current_upstream_docs"
+    },
+    {
+      "claim": "Identity-seed UX and Genesis-rooted agent birth attestation are blockers, not implemented public-bootstrap claims.",
+      "files_checked": [
+        "docs/specs/ilc_window_1317_1329_candidate_phase_grouping_v0.1.md",
+        "docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md",
+        "docs/specs/ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_ratification_evidence_838j_v0.1.md",
+        "ilc_core/identity/genesis_record_schema.py"
+      ],
+      "result": "confirmed_with_implementation_mismatch_carried_forward"
+    }
+  ],
+  "dry_run_execution": {
+    "clawhub_binary_present_on_droplets": false,
+    "execution_mode": "private_digitalocean_tailscale_droplet_code_dry_run",
+    "github_origin_synced_before_execution": true,
+    "native_openclaw_binary_present_on_droplets": false,
+    "native_openclaw_skill_install_rehearsed": false,
+    "private_wiring_only": true,
+    "remote_git_head": "4ea3d0857764075b88775b25f1d31e1e252df855",
+    "remote_hosts": [
+      "ilc-node-2",
+      "ilc-node-3",
+      "ilc-node-6"
+    ],
+    "remote_sync_command": "bash tools/testbed/sync_repo.sh ilc-node-2 ilc-node-3 ilc-node-6",
+    "remote_sync_result": "pass"
+  },
+  "genesis_rooted_identity_origin_blocker": {
+    "agent_birth_attestation_specified": false,
+    "blocker_token": "genesis_rooted_agent_birth_attestation_blocker_phase_1323",
+    "genesis_rooted_public_bootstrap_claim_allowed": false,
+    "private_node_commitments_role": "optional_birth_witnesses_not_identity_seed_entropy_or_recovery_material",
+    "required_future_artifact": "agent_birth_attestation_or_equivalent_genesis_lineage_origin_proof",
+    "star_map_status": "l2_routing_artifact_not_genesis_primitive"
+  },
+  "graph_delta": "graph_delta=support_only:docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json,docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.md,docs/phases/phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run_walkthrough.md,tests/test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run.py,docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_antigravity_context_capsule_v5.54.md -> planning/frontier",
+  "identity_seed_ux_blocker": {
+    "agent_mode_secret_output_required": true,
+    "blocker_token": "identity_seed_ux_public_bootstrap_blocker_phase_1323",
+    "custodial_agent_mode_default": false,
+    "implementation_audit_note": "CDL-069 ratification evidence records identity_seed_commitment = sha384(\"ilc-seed-commit-v1:\" || identity_seed), while ilc_core/identity/genesis_record_schema.py currently computes bare sha384(identity_seed); no Phase 1323 identity artifact was created, and the mismatch remains a fix-before-identity-bootstrap blocker.",
+    "interactive_mode_required": true,
+    "llm_secret_visibility_allowed": false,
+    "no_stdout_fallback_in_agent_mode": true,
+    "one_crypto_path_required": true,
+    "secret_material_generated_in_phase_1323": false
+  },
+  "negative_checks": {
+    "cdl088_opened": false,
+    "clawhub_listing_created": false,
+    "clean_public_tree_materialized": false,
+    "ecu_minting_invoked": false,
+    "genesis_atlas_mutated_or_signed": false,
+    "identity_seed_generated": false,
+    "ilc_settlement_invoked": false,
+    "mnemonic_generated": false,
+    "openclaw_skill_published": false,
+    "openclaw_skill_registry_submission": false,
+    "package_publication_invoked": false,
+    "public_claim_endpoint_invoked": false,
+    "public_claimability_api_activated": false,
+    "public_p2p_activated": false,
+    "public_verifier_service_invoked": false,
+    "release_artifact_produced": false,
+    "release_key_generated": false,
+    "secret_store_write_invoked": false,
+    "seed_or_key_material_recorded": false,
+    "source_export_executed": false,
+    "wallet_ledger_write_request_invoked": false,
+    "wallet_provider_signing_request_invoked": false
+  },
+  "next_phase": "phase_1324_ccss_private_gated_shard_contract_next",
+  "non_claims": [
+    "openclaw_skill_not_published_or_installable_phase_1323",
+    "no_clawhub_listing_or_public_skill_registry_submission",
+    "no_native_openclaw_skill_install_rehearsal_on_droplets",
+    "no_public_package_publication",
+    "no_public_claimability_api_activation",
+    "no_public_verifier_service",
+    "no_public_p2p_or_public_sidecar_serving",
+    "no_wallet_provider_signing_request",
+    "no_wallet_ledger_write_request",
+    "no_ecu_minting",
+    "no_ilc_settlement",
+    "no_identity_seed_generation",
+    "no_mnemonic_generation",
+    "no_seed_or_private_key_disclosure_to_llm_chat_logs_memory_walkthrough_or_status",
+    "no_genesis_rooted_public_bootstrap_identity_claim"
+  ],
+  "phase": 1323,
+  "profile_integrity": {
+    "bridge_profile_id": "openclaw_claimable_local_bridge",
+    "claimable_profile_dry_run_public_claimability_still_gated": true,
+    "claimable_profile_public_claimability_metadata": true,
+    "claimable_profile_public_claimability_runtime_activated": false,
+    "claimable_profile_public_p2p_activated": false,
+    "claimable_profile_public_serving_enabled": false,
+    "openclaw_nemoclaw_are_hosts_not_protocol_substrates": true,
+    "package_profile_id": "openclaw_skill_claimable",
+    "package_profile_version": "public_rc_package_profiles_1307.v0.1",
+    "public_rc_eligible_metadata": true,
+    "required_sidecars": [
+      "offline_claimability_receipt_verifier",
+      "openclaw_nemoclaw_local_bridge",
+      "sidecar_registry_manifest",
+      "value_path_activation_boundary_preflight",
+      "wallet_action_semantics_preflight"
+    ],
+    "sidecar_registry_version": "graph_native_sidecar_registry_manifest_phase_1307.v0.1"
+  },
+  "profile_requirement_matrix": [
+    {
+      "evidence": "ilc_core/sidecars/registry_manifest.py",
+      "requirement": "sidecar registry and claimable bridge profile",
+      "status": "satisfied_by_checked_in_code"
+    },
+    {
+      "evidence": "ilc_core/sidecars/claimability_receipt_verifier.py",
+      "requirement": "offline/local claimability receipt verifier",
+      "status": "satisfied_by_checked_in_code_and_remote_dry_run"
+    },
+    {
+      "evidence": "ilc_core/sidecars/local_graph_memory_projection.py",
+      "requirement": "local graph/memory projection",
+      "status": "satisfied_by_checked_in_code_and_remote_dry_run"
+    },
+    {
+      "evidence": "ilc_core/sidecars/wallet_action_semantics_preflight.py",
+      "requirement": "wallet-facing preflight remains non-activating",
+      "status": "satisfied_by_checked_in_code_and_remote_dry_run"
+    },
+    {
+      "evidence": "ilc_core/sidecars/value_path_activation_boundary_preflight.py",
+      "requirement": "value-path boundary preflight remains non-activating",
+      "status": "satisfied_by_checked_in_code_and_remote_dry_run"
+    },
+    {
+      "evidence": "ilc_core/rc/local_skill_preview.py and ilc_core/protocol/harness_interfaces.py",
+      "requirement": "Python import bridge surface",
+      "status": "satisfied_by_checked_in_code_and_remote_dry_run"
+    },
+    {
+      "evidence": "OpenClaw upstream docs and local OpenClaw architecture docs",
+      "requirement": "current OpenClaw skill-format discovery",
+      "status": "satisfied_as_discovery_only_not_skill_publication"
+    },
+    {
+      "evidence": "droplet probes for openclaw and clawhub binaries",
+      "requirement": "native OpenClaw skill install/listing rehearsal",
+      "status": "blocked_not_installed_on_phase_1323_droplets"
+    },
+    {
+      "evidence": "Window 1317-1329 guidance and CDL-069 identity evidence",
+      "requirement": "identity-seed UX public bootstrap",
+      "status": "blocked_pending_identity_seed_ux_and_commitment_formula_fix"
+    },
+    {
+      "evidence": "Window 1317-1329 guidance and Genesis/Atlas signing blockers",
+      "requirement": "Genesis-rooted agent birth attestation",
+      "status": "blocked_pending_agent_birth_attestation_or_equivalent_proof"
+    }
+  ],
+  "public_rc_remains_blocked": true,
+  "remote_role_results": {
+    "ilc-node-2": {
+      "claimable_public_claimability_runtime_activated": false,
+      "claimable_public_p2p_activated": false,
+      "claimable_public_serving_enabled": false,
+      "clawhub_present": false,
+      "git_head": "4ea3d0857764075b88775b25f1d31e1e252df855",
+      "local_skill_preview_binding": "local_import_only",
+      "local_skill_preview_openclaw_dependency_required": false,
+      "local_skill_preview_public_claimability_enabled": false,
+      "offline_verifier_local_only": true,
+      "offline_verifier_public_api_enabled": false,
+      "openclaw_present": false,
+      "projection_local_only": true,
+      "projection_public_listener_enabled": false,
+      "projection_public_sidecar_projection_serving_enabled": false,
+      "value_ecu_mint_authorized": false,
+      "value_ilc_settlement_authorized": false,
+      "wallet_signing_authorized": false,
+      "wallet_write_authorized": false
+    },
+    "ilc-node-3": {
+      "claimable_public_claimability_runtime_activated": false,
+      "claimable_public_p2p_activated": false,
+      "claimable_public_serving_enabled": false,
+      "clawhub_present": false,
+      "git_head": "4ea3d0857764075b88775b25f1d31e1e252df855",
+      "local_skill_preview_binding": "local_import_only",
+      "local_skill_preview_openclaw_dependency_required": false,
+      "local_skill_preview_public_claimability_enabled": false,
+      "offline_verifier_local_only": true,
+      "offline_verifier_public_api_enabled": false,
+      "openclaw_present": false,
+      "projection_local_only": true,
+      "projection_public_listener_enabled": false,
+      "projection_public_sidecar_projection_serving_enabled": false,
+      "value_ecu_mint_authorized": false,
+      "value_ilc_settlement_authorized": false,
+      "wallet_signing_authorized": false,
+      "wallet_write_authorized": false
+    },
+    "ilc-node-6": {
+      "claimable_public_claimability_runtime_activated": false,
+      "claimable_public_p2p_activated": false,
+      "claimable_public_serving_enabled": false,
+      "clawhub_present": false,
+      "git_head": "4ea3d0857764075b88775b25f1d31e1e252df855",
+      "local_skill_preview_binding": "local_import_only",
+      "local_skill_preview_openclaw_dependency_required": false,
+      "local_skill_preview_public_claimability_enabled": false,
+      "offline_verifier_local_only": true,
+      "offline_verifier_public_api_enabled": false,
+      "openclaw_present": false,
+      "projection_local_only": true,
+      "projection_public_listener_enabled": false,
+      "projection_public_sidecar_projection_serving_enabled": false,
+      "value_ecu_mint_authorized": false,
+      "value_ilc_settlement_authorized": false,
+      "wallet_signing_authorized": false,
+      "wallet_write_authorized": false
+    }
+  },
+  "required_tokens": [
+    "openclaw_nemoclaw_claimable_profile_full_dry_run_phase_1323.v0.1",
+    "claimable_profile_dry_run_public_claimability_still_gated_phase_1323",
+    "graph_native_sidecar_suite_profile_integrity_rehearsed_phase_1323",
+    "openclaw_nemoclaw_hosts_not_protocol_substrates_phase_1323",
+    "openclaw_skill_format_discovery_required_phase_1323",
+    "cli_first_skill_surface_recorded_phase_1323",
+    "python_import_bridge_surface_recorded_phase_1323",
+    "identity_seed_ux_public_bootstrap_blocker_phase_1323",
+    "identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323",
+    "openclaw_skill_not_published_or_installable_phase_1323",
+    "genesis_rooted_agent_birth_attestation_blocker_phase_1323",
+    "phase_1324_ccss_private_gated_shard_contract_next",
+    "public_rc_remains_blocked_after_phase_1323"
+  ],
+  "result": "pass_rehearsal_with_blockers",
+  "schema_version": "openclaw_nemoclaw_claimable_profile_full_dry_run_phase_1323.v0.1",
+  "sidecar_suite_checks": {
+    "graph_native_sidecar_suite_profile_integrity_rehearsed": true,
+    "public_claim_endpoint_enabled": false,
+    "public_claimability_runtime_activated": false,
+    "public_p2p_enabled": false,
+    "required_sidecars_checked": true,
+    "wallet_and_value_path_preflights_remain_blocking": true
+  },
+  "skill_format_discovery": {
+    "clawhub_publish_claimed": false,
+    "current_upstream_checked": true,
+    "discovered_current_requirements": [
+      "skill is a folder containing SKILL.md or skill.md",
+      "SKILL.md is Markdown with YAML frontmatter",
+      "minimum frontmatter includes name and description",
+      "metadata.openclaw declares runtime requirements such as bins, env, config, primaryEnv, envVars, install",
+      "workspace skills load from /skills with higher precedence than managed ~/.openclaw/skills",
+      "openclaw skills install installs from ClawHub into the active workspace skills directory",
+      "secrets must stay out of prompts and logs"
+    ],
+    "local_docs_checked": [
+      "docs/specs/ilc_openclaw_architecture_deep_dive_v0.1.md",
+      "docs/specs/ilc_cdl_033_openclaw_skill_publication_ratification_evidence_291_v0.1.md",
+      "docs/specs/ilc_distribution_architecture_roadmap_v0.3.md",
+      "docs/specs/ilc_cdl_032_cli_first_sdk_ratification_evidence_253_v0.1.md"
+    ],
+    "phase_1323_skill_artifact_created": false,
+    "source_urls_checked": [
+      "https://raw.githubusercontent.com/openclaw/openclaw/main/docs/tools/skills.md",
+      "https://raw.githubusercontent.com/openclaw/clawhub/main/docs/skill-format.md",
+      "https://github.com/openclaw/clawhub"
+    ],
+    "token": "openclaw_skill_format_discovery_required_phase_1323"
+  },
+  "surface_matrix": [
+    {
+      "authority": "future_skill_surface_only_no_publication_in_phase_1323",
+      "entry": "SKILL.md guidance around ilc CLI commands",
+      "secret_policy": "LLM may guide ceremony but must not receive seed mnemonic private key or recovery material",
+      "status": "recorded_not_implemented_not_published_not_installable",
+      "surface": "cli_first_thin_skill",
+      "token": "cli_first_skill_surface_recorded_phase_1323"
+    },
+    {
+      "authority": "local_import_only_harness_adapter_boundary",
+      "entry": "execute_local_skill_preview with TransportHarness and StorageHarness protocols",
+      "secret_policy": "no identity seed mnemonic private key or secret-store write used in Phase 1323",
+      "status": "checked_in_and_remote_dry_run_passed",
+      "surface": "python_import_bridge",
+      "token": "python_import_bridge_surface_recorded_phase_1323"
+    }
+  ]
+}
