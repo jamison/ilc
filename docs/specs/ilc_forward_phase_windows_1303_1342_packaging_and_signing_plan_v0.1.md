@@ -172,6 +172,7 @@ python_import_bridge_surface_recorded_phase_1323
 identity_seed_ux_public_bootstrap_blocker_phase_1323
 identity_seed_ux_agent_mode_not_custodial_by_default_phase_1323
 openclaw_skill_not_published_or_installable_phase_1323
+genesis_rooted_agent_birth_attestation_blocker_phase_1323
 ```
 
 The dry run must treat ILC-internal package-profile labels as package metadata,
@@ -185,7 +186,13 @@ ADR/CDL or equivalent spec defines a non-custodial default: one cryptographic
 path, interactive and agent-mode ceremony modes, explicit secure output or
 secure-store target for agent mode, no stdout fallback for secret material, and
 no seed/mnemonic/private-key disclosure to LLM chat, OpenClaw transcript memory,
-logs, walkthroughs, or `STATUS.md`.
+logs, walkthroughs, or `STATUS.md`. Public bootstrap must also preserve the
+Genesis-rooted identity invariant: before any OpenClaw/NemoClaw user or agent is
+claimed to be Genesis-rooted, a later ADR/CDL or equivalent identity-bootstrap
+spec must define an agent birth attestation or equivalent Genesis-rooted
+identity-origin proof. That proof should bind `agent_id` to a signed
+Genesis/Atlas lineage anchor and optional private/local node commitments without
+using private graph content as identity-seed entropy or recovery material.
 
 Confidential Coordination Sidecar Suite build-out after the essential
 OpenClaw-compatible suite is testable should route:
@@ -241,6 +248,11 @@ OpenClaw droplet tests.
 
 Phase 1341 must not imply a public confidential messaging or coordination
 product unless Phase 1337 explicitly selected and passed that scope.
+
+Phase 1341 must also not imply that public OpenClaw/NemoClaw users, digital
+agents, or local ILC identities are Genesis-rooted unless a prior identity
+bootstrap ADR/CDL or equivalent spec has defined and rehearsed the required
+agent birth attestation or equivalent Genesis-rooted identity-origin proof.
 
 ## 5. Non-Claims
 
