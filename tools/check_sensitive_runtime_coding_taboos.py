@@ -24,6 +24,11 @@ EXPLICIT_SCAN_FILES = {
     "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
     "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
     "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+    "ilc_core/sidecars/local_graph_memory_projection.py",
+    "ilc_core/sidecars/public_fetch_p2p_readiness.py",
+    "ilc_core/sidecars/transport_principal_admission.py",
+    "ilc_core/sidecars/value_path_activation_boundary_preflight.py",
+    "ilc_core/sidecars/wallet_action_semantics_preflight.py",
 }
 
 PRNG_FORBIDDEN_FILES = {
@@ -54,6 +59,11 @@ STRICT_MACHINE_JSON_FILES = {
     "ilc_core/mcp/service.py",
     "ilc_core/graph/sidecar_public_path_preflight.py",
     "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+    "ilc_core/sidecars/local_graph_memory_projection.py",
+    "ilc_core/sidecars/public_fetch_p2p_readiness.py",
+    "ilc_core/sidecars/transport_principal_admission.py",
+    "ilc_core/sidecars/value_path_activation_boundary_preflight.py",
+    "ilc_core/sidecars/wallet_action_semantics_preflight.py",
     "ilc_core/storage/lmdb_public_runtime.py",
 }
 
@@ -128,6 +138,41 @@ UNTRUSTED_PAYLOAD_BOUND_CONTRACTS = {
         "transport_principal_public_path_payload_cycle_forbidden",
         "transport_principal_public_path_float_values_forbidden",
         "transport_principal_public_path_payload_key_invalid",
+    ),
+    "ilc_core/sidecars/transport_principal_admission.py": (
+        "_MAX_PAYLOAD_DEPTH",
+        "_MAX_PAYLOAD_NODES",
+        "transport_principal_admission_payload_cycle_forbidden_phase_1309",
+        "transport_principal_admission_float_values_forbidden_phase_1309",
+        "transport_principal_admission_payload_key_invalid_phase_1309",
+    ),
+    "ilc_core/sidecars/local_graph_memory_projection.py": (
+        "_MAX_PAYLOAD_DEPTH",
+        "_MAX_PAYLOAD_NODES",
+        "local_graph_memory_projection_payload_cycle_forbidden_phase_1311",
+        "local_graph_memory_projection_float_values_forbidden_phase_1311",
+        "local_graph_memory_projection_payload_key_invalid_phase_1311",
+    ),
+    "ilc_core/sidecars/public_fetch_p2p_readiness.py": (
+        "_MAX_PAYLOAD_DEPTH",
+        "_MAX_PAYLOAD_NODES",
+        "public_fetch_p2p_payload_cycle_forbidden_phase_1313",
+        "public_fetch_p2p_float_values_forbidden_phase_1313",
+        "public_fetch_p2p_text_invalid_phase_1313",
+    ),
+    "ilc_core/sidecars/wallet_action_semantics_preflight.py": (
+        "_MAX_PAYLOAD_DEPTH",
+        "_MAX_PAYLOAD_NODES",
+        "wallet_action_semantics_payload_cycle_forbidden_phase_1314",
+        "wallet_action_semantics_float_values_forbidden_phase_1314",
+        "wallet_action_semantics_text_invalid_phase_1314",
+    ),
+    "ilc_core/sidecars/value_path_activation_boundary_preflight.py": (
+        "_MAX_PAYLOAD_DEPTH",
+        "_MAX_PAYLOAD_NODES",
+        "value_path_activation_boundary_payload_cycle_forbidden_phase_1315",
+        "value_path_activation_boundary_float_values_forbidden_phase_1315",
+        "value_path_activation_boundary_text_invalid_phase_1315",
     ),
     "ilc_core/graph/sidecar_public_path_preflight.py": (
         "_MAX_PREFLIGHT_PAYLOAD_DEPTH",
@@ -292,7 +337,8 @@ def find_violations() -> list[str]:
         rel = _rel(path)
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=rel)
         in_sensitive_roots = any(rel.startswith(f"{root}/") for root in SENSITIVE_SCAN_ROOTS)
-        prng_forbidden = in_sensitive_roots or rel in PRNG_FORBIDDEN_FILES
+        sensitive_file = in_sensitive_roots or rel in EXPLICIT_SCAN_FILES
+        prng_forbidden = sensitive_file or rel in PRNG_FORBIDDEN_FILES
         random_module_aliases: set[str] = set()
         random_constructor_names: set[str] = set()
 
@@ -302,7 +348,7 @@ def find_violations() -> list[str]:
             network_call_seen = False
 
         for node in ast.walk(tree):
-            if in_sensitive_roots and isinstance(node, ast.Assert):
+            if sensitive_file and isinstance(node, ast.Assert):
                 violations.append(f"{rel}:{node.lineno}:assert_forbidden_in_sensitive_runtime")
 
             if prng_forbidden and isinstance(node, ast.Import):
@@ -319,7 +365,7 @@ def find_violations() -> list[str]:
             if not isinstance(node, ast.Call):
                 continue
 
-            if in_sensitive_roots and rel not in WALL_CLOCK_ALLOWLIST:
+            if sensitive_file and rel not in WALL_CLOCK_ALLOWLIST:
                 if _is_datetime_now(node):
                     violations.append(f"{rel}:{node.lineno}:datetime_now_forbidden")
                 if _is_time_time(node):
