@@ -66,7 +66,10 @@ This guidance does not activate public claimability, authorize public sidecar/pr
 - Counsel, license, CLA, trademark, patent, and publication authorization.
 - Source allowlist export execution, public source publication, package
   publication, release artifacts, release keys, release envelopes, and release
-  manifest instance production.
+  manifest instance production. The next packaging/export plan must route
+  `PUBLIC_RC_EXCLUDE` helper replacement or stripping into the later
+  materialization gates rather than treating helper flags as false-to-true
+  toggles.
 - Genesis Atlas mutation/regeneration/signing and v0.2 signing authorization.
 - CDL-088 opening or any reciprocal scoring/ECU-escrow admission policy.
 - Wallet withdrawal/transfer/spend, ECU minting, ILC settlement, and withdrawal

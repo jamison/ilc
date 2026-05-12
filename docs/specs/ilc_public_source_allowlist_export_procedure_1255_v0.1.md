@@ -14,6 +14,10 @@ counsel_license_instrument_selection_required_before_public_rc
 counsel_cla_text_approved_required_before_external_contributors
 counsel_trademark_policy_published_required_before_public_launch
 us_provisional_patent_application_filed_required_before_public_repo_publication
+source_allowlist_export_materialization_must_fail_on_public_rc_exclude_markers
+public_rc_package_export_must_be_public_tree_clean_not_flag_flip
+public_rc_exclude_absence_is_not_allowlist_clearance
+legacy_untagged_docs_default_review_required_before_public_export
 ```
 
 ## 1. Purpose
@@ -75,6 +79,7 @@ Required manifest fields:
 | `review_required` | Paths or classes requiring counsel, patent, trademark, or Genesis review. |
 | `license_zone_map` | Per-path license zone after counsel approval. |
 | `file_hashes` | Full SHA-256 hash for every exported file after dry-run materialization. |
+| `legacy_untagged_review` | Evidence that untagged legacy files included in the export were explicitly reviewed; absence of `PUBLIC_RC_EXCLUDE` is not clearance. |
 | `non_claims` | Explicit statement that dry-run evidence is not publication authorization. |
 
 Selectors must be repo-relative, must not contain absolute paths, and must not
@@ -98,6 +103,11 @@ allowlisted:
 | Public-claimability and release artifacts | Exclude unsigned release envelopes, draft release manifests, signing ceremony material, and claimability artifacts until their independent gates close. |
 | Ambiguous docs | Route `docs/research/`, whitepaper drafts, counsel notes, licensing memos, and roadmap drafts to human review rather than automatic export. |
 
+Legacy files that predate `PUBLIC_RC_EXCLUDE` are not safe by default merely
+because they lack the marker. Any untagged file outside a narrow source-code
+allowlist must be excluded or listed in `legacy_untagged_review` with a
+reviewer, rationale, and clearance state.
+
 ## 6. Candidate Allowlist Classes
 
 These classes may be considered for future allowlisting after the gates above
@@ -112,6 +122,52 @@ close. Listing them here is not approval.
 | Selected tools | Reproducibility review, no private-path assumptions, bounded IO, and dependency/license review. |
 | Public evidence summaries | Must avoid unpublished patent disclosure, private deliberation, and unsupported public-RC claims. |
 
+## 6.1 PUBLIC_RC_EXCLUDE Helper Stripping Gate
+
+A materialized public-source or public-package export must not include internal
+fail-closed helper scaffolds marked `PUBLIC_RC_EXCLUDE`.
+
+Future packaging phases must not simply flip internal helper authorization flags from false to true.
+Each marked helper must be handled by one of these routes before a public export
+can pass:
+
+| Route | Required result |
+|---|---|
+| `replace_before_export` | A public-safe module replaces the internal helper, and exported code imports only the public-safe module. |
+| `strip_from_export` | The helper is excluded from the exported tree, and exported code has no import dependency on it. |
+| `defer_public_rc` | The affected profile remains blocked and no public-RC claim is made. |
+
+The export or package materialization gate must fail closed if any exported file
+contains `PUBLIC_RC_EXCLUDE`, if any exported module imports an excluded helper,
+or if the manifest omits marker-scan and import-scan evidence.
+
+This gate is the source-export side of the architecture rule recorded in
+`docs/architecture/ilc_public_rc_packaging_architecture_gate_v0.1.md`: public RC
+packaging must be based on a clean materialized public tree, not on private repo
+helper flags being toggled.
+
+## 6.2 Legacy Untagged File Rule
+
+`PUBLIC_RC_EXCLUDE` is a deny marker, not an allowlist signal. The public-source
+export process must not infer that an unmarked file is public-safe. This matters
+because most historical docs, research notes, whitepaper drafts, phase
+walkthroughs, and older planning artifacts were created before the marker
+existed.
+
+For every candidate export, the manifest must separate files into:
+
+| Class | Export disposition |
+|---|---|
+| Explicitly allowlisted source/package files | Eligible after normal path, license, secret, import, and marker scans. |
+| Marked `PUBLIC_RC_EXCLUDE` files | Excluded unless a later explicit review removes or supersedes the marker before materialization. |
+| Untagged legacy docs/research/planning files | Excluded by default or routed through `legacy_untagged_review`; no automatic inclusion. |
+| Ambiguous untagged files with public/release/private/patent/counsel language | Fail the dry run unless reviewed and explicitly allowlisted. |
+
+The dry-run report must include a legacy-untagged scan covering at least
+`private`, `not public`, `do not publish`, `patent`, `patent pending`,
+`counsel`, `publication`, `public RC`, `release artifact`, `release key`,
+`release envelope`, `signing`, `launch`, `claim`, and `internal`.
+
 ## 7. Dry-Run Procedure
 
 1. Build the manifest from reviewed include and exclude rules.
@@ -121,12 +177,20 @@ close. Listing them here is not approval.
 5. Run secret scans and broad contradiction searches for terms including
    `private`, `not public`, `do not publish`, `patent pending`, `counsel
    required`, `not authorized`, `release key`, `secret`, and `token`.
-6. Run license/SPDX checks against the counsel-approved license zone map.
-7. Run package/build tests only inside the exported tree, using public
+6. Scan the materialized tree for `PUBLIC_RC_EXCLUDE` markers and fail if any
+   remain.
+7. Scan exported imports for dependencies on excluded helper paths and fail if
+   any remain.
+8. Scan untagged legacy files for review-required public/release/private/patent
+   language and fail if any included file lacks explicit
+   `legacy_untagged_review` clearance.
+9. Run license/SPDX checks against the counsel-approved license zone map.
+10. Run package/build tests only inside the exported tree, using public
    dependency sources and no private path references.
-8. Produce a dry-run report listing included files, excluded files, ambiguous
-   paths, scan findings, and all non-claims.
-9. Require human review of the dry-run report before any publication act.
+11. Produce a dry-run report listing included files, excluded files, ambiguous
+   paths, marker-scan results, import-scan results, legacy-untagged review
+   results, scan findings, and all non-claims.
+12. Require human review of the dry-run report before any publication act.
 
 ## 8. Publication Procedure
 
@@ -140,10 +204,12 @@ If authorized later:
 2. Verify the manifest hash matches the authorized manifest.
 3. Create a clean public repository with a public genesis commit.
 4. Commit only the materialized allowlist export, not private history.
-5. Include a public provenance file that states the public repo is a clean
+5. Reconfirm that the materialized tree contains no `PUBLIC_RC_EXCLUDE` marker
+   and no import dependency on excluded helpers.
+6. Include a public provenance file that states the public repo is a clean
    export from a private canonical archive and does not contain full internal
    phase history.
-6. Tag or release only if release-key and release-envelope gates are also
+7. Tag or release only if release-key and release-envelope gates are also
    separately authorized.
 
 ## 9. Non-Claims

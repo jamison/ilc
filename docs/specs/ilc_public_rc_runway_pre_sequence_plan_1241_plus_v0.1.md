@@ -129,14 +129,63 @@ classify them in this form.
 | Public P2P exposure | Any hostile-network peer-to-peer node operation | TransportPrincipal, Rust P2P substrate ADR, Python HTTP downgrade, principal-bound rate limiting |
 | Public sidecar/projection serving | Network-accessible graph projection or sidecar endpoint | CDL-087 ratification, TransportPrincipal auth, privacy aggregation, rate limit policy |
 | Public economic claimability | Human withdrawal/claim/transfer path for ILC | ECU-to-ILC conversion runtime, public claimability substrate, receipts |
-| OpenClaw/NemoClaw local skill preview | Local package/skill inside a harness, no public P2P claim, no public claimability claim | package boundary split, CLI/local sidecar API, harness adapter protocols, package-size audit |
-| OpenClaw/NemoClaw claimable public RC | Final public-RC target profile: local harness package, no ILC-owned public P2P claim, public ECU-to-ILC claimability present | Gap 14 package modularity, Gap 13 ECU-to-ILC conversion and public claimability, release artifact manifest |
+| Graph-native sidecar suite local preview | Local truth/projection/claimability sidecars operated by a harness or native ILC host; no public serving claim | sidecar registry, truth primitive sidecar, local graph/memory projection sidecar, offline verifier sidecar, bridge sidecar |
+| Confidential coordination local preview | Private/local graph-native coordination suite hosted by OpenClaw/NemoClaw, native ILC harness, or equivalent; no public confidential messaging claim | private/gated shard sidecar, capability/membership sidecar, sealed sender sidecar, gossip announce/pull with jitter/cover policy, private droplet dry run |
+| OpenClaw/NemoClaw local skill preview | OpenClaw/NemoClaw as host for the local graph-native sidecar suite, no public P2P claim, no public claimability claim | package boundary split, CLI/local sidecar/private loopback bridge, harness adapter protocols, package-size audit |
+| OpenClaw/NemoClaw claimable public RC | Final public-RC target profile: local graph-native sidecar suite hosted by OpenClaw/NemoClaw or equivalent, no ILC-owned public P2P claim, public ECU-to-ILC claimability present | Gap 14 package modularity, Gap 13 ECU-to-ILC conversion and public claimability, release artifact manifest |
 
 Token:
 
 ```text
 public_rc_blocker_classification_required_in_roadmap_v1_1
 ```
+
+### 4.1 Public RC packaging architecture gate
+
+Later roadmap and phase-window planning must preserve the public RC packaging
+gate now recorded in
+`docs/architecture/ilc_public_rc_packaging_architecture_gate_v0.1.md` and
+`docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md`.
+
+The durable plan is implementation first, deterministic dry-run materialization second, and explicit export/release/signing gate third. Future plans should not turn this into a one-step packaging phase.
+
+```text
+public_rc_packaging_architecture_gate_recorded
+public_rc_packaging_gate_sequence_implementation_then_dry_run_then_execution
+public_rc_package_export_must_be_public_tree_clean_not_flag_flip
+public_rc_exclude_absence_is_not_allowlist_clearance
+legacy_untagged_docs_default_review_required_before_public_export
+ilc_graph_native_sidecar_suite_architecture_recorded
+openclaw_nemoclaw_are_hosts_not_protocol_substrates
+essential_openclaw_rc_sidecars_truth_projection_claimability_bridge
+graph_native_sidecar_creation_routed_to_forward_windows_1303_1342
+sidecar_suite_public_serving_remains_blocked_until_explicit_authority
+confidential_coordination_sidecar_suite_forward_plan_recorded
+confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329
+confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
+```
+
+Packaging rule:
+
+- Phase 1308 or its successor should decide replacement, stripping, or
+  carry-forward for every `PUBLIC_RC_EXCLUDE` helper.
+- Phase 1319 or its successor should materialize a dry-run public tree and prove
+  zero markers and zero stripped-helper imports.
+- Phase 1333 or its successor should execute or reject the public export only
+  after explicit authorization.
+- Release artifacts, release keys, envelopes, public claimability, public
+  serving, wallet/ECU/ILC economics, Genesis mutation, and v0.2 signing remain
+  separate gates.
+- `PUBLIC_RC_EXCLUDE` is a deny marker only. Untagged legacy docs are not
+  automatically public-safe and must remain excluded or review-required until an
+  explicit allowlist manifest names them.
+- OpenClaw/NemoClaw should be treated as hosts for ILC graph-native sidecars,
+  not as the architectural center. The sidecar suite correction is recorded in
+  `docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md`.
+- Confidential coordination should be treated as a private/local sidecar suite
+  lane, not as a Signal clone or first-public-RC public product claim by
+  default. The lane is recorded in
+  `docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md`.
 
 ---
 
@@ -328,10 +377,12 @@ public_rc_closure_window_candidate_requires_all_blocker_classes_disposed
 
 The preferred public-RC path should be decided explicitly:
 
-1. **OpenClaw/NemoClaw skill-first RC** - local package/skill, CLI/local sidecar,
+1. **Graph-native sidecar suite hosted by OpenClaw/NemoClaw first RC** - local
+   truth/projection/claimability sidecars, CLI/local/private-loopback bridge,
    public ECU-to-ILC claimability for the selected public-RC profile, no public
    ILC P2P claim. This can likely reach an external agentic harness preview
-   earlier and reduces reliance on public transport readiness.
+   earlier and reduces reliance on public transport readiness while staying
+   ILC-native.
 2. **ILC-owned public P2P RC** - full public network substrate first. This is the
    stronger infrastructure claim but requires TransportPrincipal, Rust P2P, and
    Python HTTP downgrade before exposure.
@@ -340,13 +391,15 @@ Recommended default unless overruled:
 
 ```text
 public_rc_default_path=openclaw_skill_first_public_claimability_no_public_p2p_claim
+public_rc_default_path=graph_native_sidecar_suite_hosted_by_openclaw_nemoclaw_no_public_p2p_claim
 ```
 
 This default does not remove the public P2P lane. It makes public P2P a parallel
-hardening track while the first external-facing RC is a local/harness package
-surface. The `openclaw_skill_local` profile is a local-preview profile only; the
-final public-RC target is the claimable OpenClaw/NemoClaw skill profile, which
-must include ECU-to-ILC conversion and public claimability runtime surfaces.
+hardening track while the first external-facing RC is a local graph-native
+sidecar suite package surface. The `openclaw_skill_local` profile is a
+local-preview profile only; the final public-RC target is the claimable
+OpenClaw/NemoClaw skill profile, which must include ECU-to-ILC conversion and
+public claimability runtime surfaces.
 
 First external harness deployment target, if available: DigitalOcean OpenClaw droplets with
 loopback/private harness wiring such as Tailscale. This should be used to test packaging,

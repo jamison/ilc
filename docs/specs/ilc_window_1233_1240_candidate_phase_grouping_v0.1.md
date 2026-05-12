@@ -126,6 +126,13 @@ Next fresh CDL number: **CDL-088** (CDL-087 is open, not ratified)
 
 - CDL-087 ratification — gated by SIM-FETCH-01; SIM harness is Phase 1238; ratification
   is Window 1241+ at earliest
+- **Sidecar projection endpoint** — `sidecar_projection_endpoint_required_post_cdl_087_ratification`
+  carry-forward token open as of Phase 1237 Fix8. Phase 1237 Fix1-Fix7 delivered the
+  complete sidecar query library. The `server.py` FastAPI layer exists but has no
+  projection route. Implementation gated on CDL-087 ratification + authentication/rate-
+  limit authorization. Prompt at
+  `docs/antigravity_tasks/antigravity_prompt__phase_1237_fix8_g8_sidecar_projection_endpoint_planning.md`.
+  Phase number to be assigned in the window where CDL-087 ratification lands.
 - v0.2 signing — deferred; `v0_2_signing_ceremony_deferred_pending_signing_authorization`
 - L4 privacy / onion / SURB — correctly deferred; no prerequisite runtime exists
 - Cross-epoch compaction — SIM-COMPACTION-01 required first
