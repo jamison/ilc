@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1318 only
-**Next phase:** Phase 1319 - deterministic source allowlist export rehearsal, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1319 only
+**Next phase:** Phase 1320 - release artifact manifest instance rehearsal, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -14,6 +14,13 @@ window_1317_1329_sequence_lock_reflected_in_capsule_phase_1318
 release_dry_run_blocker_map_refreshed_phase_1318
 phase_1319_deterministic_source_allowlist_export_rehearsal_next
 public_rc_remains_blocked_after_phase_1318
+deterministic_source_allowlist_export_rehearsal_phase_1319.v0.1
+public_rc_exclude_marker_scan_zero_exported_markers_phase_1319
+stripped_helper_import_scan_zero_phase_1319
+legacy_untagged_review_results_recorded_phase_1319
+source_export_rehearsal_no_publication_phase_1319
+phase_1320_release_artifact_manifest_instance_rehearsal_next
+public_rc_remains_blocked_after_phase_1319
 ```
 
 ---
@@ -46,7 +53,14 @@ envelopes, sign, publish, activate public endpoints, open CDL-088, mutate
 Genesis Atlas, activate wallet-facing value actions, mint ECU, settle ILC, or
 serve public confidential coordination.
 
-Phase 1319 is the next phase after Phase 1318. Phase 1319 remains sensitive and requires explicit `GO Phase 1319`.
+Phase 1319 is complete as a dry-run scanner/report only. It did not execute
+source export, copy a public tree, publish source/packages, materialize a clean
+public tree, produce release artifacts, generate keys/envelopes, sign, promote
+helpers, remove markers, execute helper stripping, activate public serving,
+activate wallet/ECU/ILC economics, mutate Genesis/Atlas, open CDL-088, or claim
+public RC.
+
+Phase 1320 is the next phase after Phase 1319. Phase 1320 remains sensitive and requires explicit `GO Phase 1320`.
 
 ---
 
@@ -69,8 +83,8 @@ searches before rehearsing any source materialization.
 
 | Phase or lane | Current blocker | Phase 1318 status |
 |---------------|-----------------|-------------------|
-| 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Open; next sensitive phase; no export execution. |
-| 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Open; no artifact manifest instance produced. |
+| 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Complete as rehearsal evidence only; no source export execution, no copied public tree, no publication, no clean public tree materialization. |
+| 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Open; next sensitive phase; no artifact manifest instance produced. |
 | 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Open; no keys, envelopes, or signing. |
 | 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Open; no deployment executed. |
 | 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Open; no public claimability activation. |
@@ -85,12 +99,12 @@ searches before rehearsing any source materialization.
 
 ## 4. Cross-Cutting Public-RC Blockers
 
-Public RC remains blocked after Phase 1318 by:
+Public RC remains blocked after Phase 1319 by:
 
 - legacy public-labeled FastAPI routes that must be excluded, replaced, or explicitly gated before a clean public-RC package or endpoint claim;
 - public claimability verifier/API serving authority;
 - replay/nullifier and duplicate-claim registry policy;
-- `PUBLIC_RC_EXCLUDE` helper replacement, stripping, or explicit deferral plus dry-run export proof;
+- `PUBLIC_RC_EXCLUDE` helper replacement, stripping, or explicit deferral; Phase 1319 supplied dry-run proof, not export execution;
 - Rust public-P2P substrate ADR/integration gate;
 - TransportPrincipal public-path activation authority;
 - public sidecar/projection serving authority;
@@ -106,6 +120,22 @@ Public RC remains blocked after Phase 1318 by:
 The graph-native sidecar suite remains the preferred harness-agnostic path.
 OpenClaw, NemoClaw, DigitalOcean droplets, and equivalent harnesses remain
 hosts or deployment targets, not protocol substrates.
+
+## 4.1 Phase 1319 Rehearsal Evidence
+
+Phase 1319 publishes the dry-run evidence paths:
+
+```text
+docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json
+docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.md
+ilc_core/rc/source_allowlist_export_rehearsal.py
+```
+
+The scanner proves the selected source/package candidate set has zero exported
+`PUBLIC_RC_EXCLUDE` marker hits, zero stripped-helper dependency hits, and zero
+legacy-untagged review-required blockers in the checked-in rehearsal state.
+The scanner is internal and marked `PUBLIC_RC_EXCLUDE`; it is not part of a
+future public RC export candidate.
 
 ---
 
