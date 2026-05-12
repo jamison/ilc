@@ -193,6 +193,27 @@ def test_window_1317_1329_guidance_matches_forward_plan_assignments() -> None:
         assert phrase in forward_plan
 
 
+def test_forward_plan_records_resolved_ccss_atlas_g_split() -> None:
+    forward_plan = _text(FORWARD_PLAN)
+
+    for phrase in (
+        "Resolved by the Phase 1317 sequence lock",
+        "ccss_tail_routed_without_atlas_g_compression_phase_1317",
+        "atlas_g_tail_carried_forward_not_hidden_inside_ccss_phase_1317_1329",
+        "Phases 1324-1328 are the current CCSS-001 through CCSS-005 private/local lane.",
+        "They are not Atlas-G tail phases and must not execute ATLAS-G-007 through",
+        "ATLAS-G-010 as hidden scope.",
+        "ATLAS-G-010 v0.2 signing ceremony gate",
+        "Phase 1340 explicit signing gate; no signing by default.",
+    ):
+        assert phrase in forward_plan
+
+    assert (
+        "If a future sequence lock chooses to prioritize Atlas-G tail before CCSS"
+        not in forward_plan
+    )
+
+
 def test_window_1317_1329_prompt_drafts_match_phase_prompt_schema() -> None:
     for prompt_name in PHASE_PROMPTS:
         assert validate(PROMPT_DIR / prompt_name) == []
