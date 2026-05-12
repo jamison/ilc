@@ -303,4 +303,5 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "window_1317_1329_candidate_phase_grouping_consumed_by_phase_1317_sequence_lock" in text
     assert "window_1317_1329_sequence_lock_committed" in text
     assert "phase_1318_context_capsule_v5_54_refresh_next" in text
-    assert "Window 1317-1329 is OPEN through Phase 1317 only" in text
+    assert "context_capsule_v5_54_frontier_refresh_phase_1318.v0.1" in text
+    assert "Window 1317-1329 is OPEN through Phase 1318 only" in text
