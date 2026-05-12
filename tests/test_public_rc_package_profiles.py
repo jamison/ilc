@@ -11,6 +11,7 @@ import pytest
 from ilc_core.rc.package_profiles import (
     NON_EXCISABLE_COMPONENTS,
     PACKAGE_PROFILES,
+    PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW,
     PROFILE_FULL_NODE_PUBLIC_P2P,
     PROFILE_OPENCLAW_SKILL_CLAIMABLE,
     PROFILE_OPENCLAW_SKILL_LOCAL,
@@ -28,7 +29,7 @@ MODULE_PATH = Path("ilc_core/rc/package_profiles.py")
 
 def test_all_committed_package_profiles_validate() -> None:
     validate_all_package_profiles()
-    assert PUBLIC_RC_PACKAGE_PROFILES_VERSION == "public_rc_package_profiles_1243.v0.1"
+    assert PUBLIC_RC_PACKAGE_PROFILES_VERSION == "public_rc_package_profiles_1307.v0.1"
 
 
 def test_openclaw_skill_local_profile_is_preview_only_and_not_public_p2p() -> None:
@@ -49,8 +50,21 @@ def test_openclaw_skill_claimable_profile_is_final_public_rc_target() -> None:
     assert profile.public_p2p is False
     assert profile.public_claimability is True
     assert "ecu_to_ilc_conversion_runtime" in profile.components
+    assert "offline_claimability_receipt_verifier_sidecar" in profile.components
     assert "public_claimability_runtime" in profile.components
     assert "rust_public_p2p_node" not in profile.components
+
+
+def test_confidential_coordination_local_preview_profile_is_private_only() -> None:
+    profile = get_package_profile(PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW)
+
+    assert profile.local_preview_eligible is True
+    assert profile.public_rc_eligible is False
+    assert profile.public_p2p is False
+    assert profile.public_claimability is False
+    assert "confidential_coordination_local_preview_profile" in profile.components
+    assert "graph_native_sidecar_registry_manifest" in profile.components
+    assert "openclaw_compatible_local_bridge" in profile.components
 
 
 def test_full_node_profile_definition_includes_public_p2p_and_claimability_gates() -> None:
@@ -217,6 +231,7 @@ def test_importing_profile_module_does_not_eagerly_load_heavy_rc_runtime() -> No
 
 def test_package_profile_registry_names_are_stable() -> None:
     assert sorted(PACKAGE_PROFILES) == [
+        "confidential_coordination_local_preview",
         "full_node_public_p2p",
         "ilc_cli_local",
         "ilc_logic_library",

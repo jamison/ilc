@@ -18,10 +18,13 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-PUBLIC_RC_PACKAGE_PROFILES_VERSION = "public_rc_package_profiles_1243.v0.1"
+PUBLIC_RC_PACKAGE_PROFILES_VERSION = "public_rc_package_profiles_1307.v0.1"
 
 PROFILE_OPENCLAW_SKILL_LOCAL = "openclaw_skill_local"
 PROFILE_OPENCLAW_SKILL_CLAIMABLE = "openclaw_skill_claimable"
+PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW = (
+    "confidential_coordination_local_preview"
+)
 PROFILE_ILC_LOGIC_LIBRARY = "ilc_logic_library"
 PROFILE_ILC_CLI_LOCAL = "ilc_cli_local"
 PROFILE_LOCAL_SIDECAR_DAEMON = "local_sidecar_daemon"
@@ -42,17 +45,23 @@ PROFILE_COMPONENTS = frozenset(
     {
         *NON_EXCISABLE_COMPONENTS,
         "cli_subprocess_surface",
+        "confidential_coordination_local_preview_profile",
         "ecu_to_ilc_conversion_runtime",
+        "graph_native_sidecar_registry_manifest",
         "harness_adapter_contracts",
         "ilc_logic_import_surface",
         "local_node_runtime",
         "local_sidecar_query_runtime",
+        "offline_claimability_receipt_verifier_sidecar",
+        "openclaw_compatible_local_bridge",
         "public_claimability_runtime",
         "rust_consensus_core_binding",
         "rust_public_p2p_node",
         "storage_adapter_contracts",
         "transport_harness_contracts",
         "transport_principal_identity",
+        "value_path_activation_boundary_preflight_sidecar",
+        "wallet_action_semantics_preflight_sidecar",
     }
 )
 
@@ -69,6 +78,12 @@ PROFILE_PACKAGE_SURFACES = {
         "ilc_harness_adapters",
         "local_sidecar",
         "public_claimability",
+    ),
+    PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW: (
+        "ilc_logic",
+        "ilc_cli",
+        "ilc_harness_adapters",
+        "local_sidecar",
     ),
     PROFILE_ILC_LOGIC_LIBRARY: ("ilc_logic",),
     PROFILE_ILC_CLI_LOCAL: ("ilc_logic", "ilc_cli"),
@@ -117,9 +132,11 @@ PACKAGE_PROFILES = {
             {
                 *NON_EXCISABLE_COMPONENTS,
                 "cli_subprocess_surface",
+                "graph_native_sidecar_registry_manifest",
                 "harness_adapter_contracts",
                 "ilc_logic_import_surface",
                 "local_sidecar_query_runtime",
+                "openclaw_compatible_local_bridge",
                 "rust_consensus_core_binding",
                 "storage_adapter_contracts",
                 "transport_harness_contracts",
@@ -147,12 +164,17 @@ PACKAGE_PROFILES = {
                 *NON_EXCISABLE_COMPONENTS,
                 "cli_subprocess_surface",
                 "ecu_to_ilc_conversion_runtime",
+                "graph_native_sidecar_registry_manifest",
                 "harness_adapter_contracts",
                 "ilc_logic_import_surface",
                 "local_sidecar_query_runtime",
+                "offline_claimability_receipt_verifier_sidecar",
+                "openclaw_compatible_local_bridge",
                 "public_claimability_runtime",
                 "storage_adapter_contracts",
                 "transport_harness_contracts",
+                "value_path_activation_boundary_preflight_sidecar",
+                "wallet_action_semantics_preflight_sidecar",
             }
         ),
         public_p2p=False,
@@ -162,6 +184,38 @@ PACKAGE_PROFILES = {
         notes=(
             "Default final public-RC target: OpenClaw/NemoClaw skill-first, public claimability present, no ILC public P2P claim.",
             "Requires Gap 13 conversion and public claimability gates before any public RC claim.",
+        ),
+    ),
+    PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW: PackageProfile(
+        profile_id=PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW,
+        display_name="Confidential coordination local preview",
+        description=(
+            "Private/local graph-native coordination preview profile: sidecar registry, "
+            "OpenClaw/NemoClaw-compatible harness bridge, local graph projection seams, "
+            "and confidential-coordination manifest metadata. This profile is private "
+            "by default and does not make a public confidential messaging claim."
+        ),
+        components=frozenset(
+            {
+                *NON_EXCISABLE_COMPONENTS,
+                "cli_subprocess_surface",
+                "confidential_coordination_local_preview_profile",
+                "graph_native_sidecar_registry_manifest",
+                "harness_adapter_contracts",
+                "ilc_logic_import_surface",
+                "local_sidecar_query_runtime",
+                "openclaw_compatible_local_bridge",
+                "storage_adapter_contracts",
+                "transport_harness_contracts",
+            }
+        ),
+        public_p2p=False,
+        public_claimability=False,
+        local_preview_eligible=True,
+        public_rc_eligible=False,
+        notes=(
+            "Local/private preview only; no public confidential messaging or coordination claim.",
+            "OpenClaw/NemoClaw, DigitalOcean droplets, and equivalent harnesses are hosts, not protocol substrates.",
         ),
     ),
     PROFILE_ILC_LOGIC_LIBRARY: PackageProfile(
@@ -209,10 +263,12 @@ PACKAGE_PROFILES = {
             {
                 *NON_EXCISABLE_COMPONENTS,
                 "cli_subprocess_surface",
+                "graph_native_sidecar_registry_manifest",
                 "harness_adapter_contracts",
                 "ilc_logic_import_surface",
                 "local_node_runtime",
                 "local_sidecar_query_runtime",
+                "openclaw_compatible_local_bridge",
                 "rust_consensus_core_binding",
                 "storage_adapter_contracts",
                 "transport_harness_contracts",
@@ -236,16 +292,21 @@ PACKAGE_PROFILES = {
                 *NON_EXCISABLE_COMPONENTS,
                 "cli_subprocess_surface",
                 "ecu_to_ilc_conversion_runtime",
+                "graph_native_sidecar_registry_manifest",
                 "harness_adapter_contracts",
                 "ilc_logic_import_surface",
                 "local_node_runtime",
                 "local_sidecar_query_runtime",
+                "offline_claimability_receipt_verifier_sidecar",
+                "openclaw_compatible_local_bridge",
                 "public_claimability_runtime",
                 "rust_consensus_core_binding",
                 "rust_public_p2p_node",
                 "storage_adapter_contracts",
                 "transport_harness_contracts",
                 "transport_principal_identity",
+                "value_path_activation_boundary_preflight_sidecar",
+                "wallet_action_semantics_preflight_sidecar",
             }
         ),
         public_p2p=True,
@@ -294,7 +355,15 @@ def validate_package_profile(profile: PackageProfile) -> None:
             raise ValueError("public_rc_public_p2p_profile_requires_transport_principal")
 
     if profile.public_claimability:
-        required = frozenset({"ecu_to_ilc_conversion_runtime", "public_claimability_runtime"})
+        required = frozenset(
+            {
+                "ecu_to_ilc_conversion_runtime",
+                "offline_claimability_receipt_verifier_sidecar",
+                "public_claimability_runtime",
+                "value_path_activation_boundary_preflight_sidecar",
+                "wallet_action_semantics_preflight_sidecar",
+            }
+        )
         if not required <= profile.components:
             raise ValueError("public_rc_claimability_profile_requires_conversion_and_claimability")
 
@@ -302,6 +371,11 @@ def validate_package_profile(profile: PackageProfile) -> None:
         raise ValueError("public_rc_skill_first_profile_must_not_claim_public_p2p")
     if profile.public_rc_eligible and not profile.public_claimability:
         raise ValueError("public_rc_profile_requires_public_claimability")
+    if "confidential_coordination_local_preview_profile" in profile.components:
+        if profile.public_claimability or profile.public_p2p or profile.public_rc_eligible:
+            raise ValueError("confidential_coordination_local_preview_must_not_claim_public_rc")
+        if not profile.local_preview_eligible:
+            raise ValueError("confidential_coordination_local_preview_must_be_local_preview")
 
 
 def validate_all_package_profiles() -> None:
@@ -343,6 +417,7 @@ def export_profile_manifest_json(profile: PackageProfile | str) -> str:
 __all__ = [
     "NON_EXCISABLE_COMPONENTS",
     "PACKAGE_PROFILES",
+    "PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW",
     "PROFILE_FULL_NODE_PUBLIC_P2P",
     "PROFILE_ILC_CLI_LOCAL",
     "PROFILE_ILC_LOGIC_LIBRARY",
