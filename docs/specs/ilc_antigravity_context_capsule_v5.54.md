@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal and Phase 1320 release artifact manifest instance rehearsal
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, and Phase 1321 release key/envelope procedure rehearsal
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1320 only
-**Next phase:** Phase 1321 - release key/envelope procedure rehearsal, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1321 only
+**Next phase:** Phase 1322 - three-machine/seven-agent private deployment rehearsal, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -27,6 +27,12 @@ release_artifact_production_not_authorized_phase_1320
 clean_export_evidence_dependency_recorded_phase_1320
 phase_1321_release_key_envelope_rehearsal_next
 public_rc_remains_blocked_after_phase_1320
+release_key_envelope_procedure_rehearsal_phase_1321.v0.1
+release_key_generation_not_authorized_phase_1321
+release_envelope_production_not_authorized_phase_1321
+signing_procedure_rehearsed_no_real_signing_phase_1321
+phase_1322_private_deployment_rehearsal_next
+public_rc_remains_blocked_after_phase_1321
 ```
 
 ---
@@ -72,7 +78,15 @@ bundles, container images, produced-artifact checksums, release keys,
 envelopes, signatures, source export, publication, clean public tree
 materialization, or public RC authority.
 
-Phase 1321 is the next phase after Phase 1320. Phase 1321 remains sensitive and requires explicit `GO Phase 1321`.
+Phase 1321 is complete as a dry-run release key/envelope procedure rehearsal
+only. It did not generate release keys, produce release key registration
+artifacts, export public keys, produce release envelopes, generate release
+signing material, produce signatures, call HSM/KMS/wallet providers, read
+operator key paths, read credential environment values, mutate Genesis Atlas,
+sign v0.2, publish source/packages, produce release artifacts, or claim public
+RC.
+
+Phase 1322 is the next phase after Phase 1321. Phase 1322 remains sensitive and requires explicit `GO Phase 1322`.
 
 ---
 
@@ -93,12 +107,12 @@ searches before rehearsing any source materialization.
 
 ## 3. Release Dry-Run Blocker Map
 
-| Phase or lane | Current blocker | Phase 1320 status |
+| Phase or lane | Current blocker | Phase 1321 status |
 |---------------|-----------------|-------------------|
 | 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Complete as rehearsal evidence only; no source export execution, no copied public tree, no publication, no clean public tree materialization. |
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
-| 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Open; next sensitive phase; no keys, envelopes, or signing. |
-| 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Open; no deployment executed. |
+| 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Complete as dry-run procedure evidence only; no keys, envelopes, signing material, signatures, HSM/KMS/wallet calls, or secret reads. |
+| 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Open; next sensitive phase; no deployment executed. |
 | 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Open; no public claimability activation. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Open; no public confidential coordination serving. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
@@ -111,7 +125,7 @@ searches before rehearsing any source materialization.
 
 ## 4. Cross-Cutting Public-RC Blockers
 
-Public RC remains blocked after Phase 1320 by:
+Public RC remains blocked after Phase 1321 by:
 
 - legacy public-labeled FastAPI routes that must be excluded, replaced, or explicitly gated before a clean public-RC package or endpoint claim;
 - public claimability verifier/API serving authority;
@@ -122,7 +136,7 @@ Public RC remains blocked after Phase 1320 by:
 - public sidecar/projection serving authority;
 - counsel-approved license, CLA, trademark, IP, and publication authorization;
 - source allowlist export execution and clean materialized public tree production;
-- release artifact production, release-key generation, release envelopes, and release signing material; Phase 1320 supplied manifest-shape rehearsal evidence only;
+- release artifact production, release-key generation, release envelopes, and release signing material; Phase 1320 supplied manifest-shape rehearsal evidence only and Phase 1321 supplied procedure-only key/envelope rehearsal evidence only;
 - Genesis Atlas mutation/regeneration/signing if needed and v0.2 signing authorization;
 - CDL-088 opening if reciprocal/value-path policy is selected;
 - wallet-facing withdrawal, transfer, spend, signing, and ledger-write activation;
@@ -165,6 +179,25 @@ zero release artifact payloads and zero produced-artifact checksum paths were
 created. The scanner is internal and marked `PUBLIC_RC_EXCLUDE`; it is not a
 future public RC export candidate or release artifact.
 
+## 4.3 Phase 1321 Rehearsal Evidence
+
+Phase 1321 publishes the dry-run evidence paths:
+
+```text
+docs/specs/ilc_release_key_envelope_procedure_rehearsal_1321_v0.1.json
+docs/specs/ilc_release_key_envelope_procedure_rehearsal_1321_v0.1.md
+ilc_core/rc/release_key_envelope_rehearsal.py
+```
+
+The rehearsal records fake identifiers only, including
+`DRY_RUN_KEY_ID_DO_NOT_USE` and
+`DRY_RUN_RELEASE_ENVELOPE_ID_DO_NOT_USE`. It proves zero release key files, zero
+release envelope files, zero signature files, zero HSM/KMS/wallet-provider
+calls, zero operator key paths read, and zero credential environment values
+read. The scanner is internal and marked `PUBLIC_RC_EXCLUDE`; it is not a
+future public RC export candidate, release key artifact, release envelope, or
+signing material.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -192,7 +225,7 @@ phase prompt or planning index row explicitly promotes them.
 
 ## 7. Non-Authorization Boundary
 
-Phase 1318 does not authorize public RC claim, public launch claim, public
+Phases 1318 through 1321 do not authorize public RC claim, public launch claim, public
 repository publication, public package publication, source allowlist export
 execution, source publication, materialized export manifest production, clean
 public export tree production, release artifact production, release artifact
