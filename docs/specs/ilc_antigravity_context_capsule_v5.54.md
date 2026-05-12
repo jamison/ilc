@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, and Phase 1321 release key/envelope procedure rehearsal
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, and Phase 1322 live private deployment rehearsal
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1321 only
-**Next phase:** Phase 1322 - three-machine/seven-agent private deployment rehearsal, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1322 only
+**Next phase:** Phase 1323 - OpenClaw/NemoClaw claimable profile full dry run, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -33,6 +33,13 @@ release_envelope_production_not_authorized_phase_1321
 signing_procedure_rehearsed_no_real_signing_phase_1321
 phase_1322_private_deployment_rehearsal_next
 public_rc_remains_blocked_after_phase_1321
+three_machine_seven_agent_private_deployment_rehearsal_phase_1322.v0.1
+essential_graph_native_sidecar_suite_private_deployment_rehearsed_phase_1322
+private_wiring_only_no_public_serving_phase_1322
+digitalocean_openclaw_private_test_evidence_recorded_phase_1322
+identity_artifact_creation_stop_guard_phase_1322
+phase_1323_openclaw_nemoclaw_claimable_profile_dry_run_next
+public_rc_remains_blocked_after_phase_1322
 ```
 
 ---
@@ -86,7 +93,19 @@ operator key paths, read credential environment values, mutate Genesis Atlas,
 sign v0.2, publish source/packages, produce release artifacts, or claim public
 RC.
 
-Phase 1322 is the next phase after Phase 1321. Phase 1322 remains sensitive and requires explicit `GO Phase 1322`.
+Phase 1322 is complete as a live private DigitalOcean/Tailscale deployment
+rehearsal. It recorded exactly three machine roles and seven agent roles over
+`ilc-node-2`, `ilc-node-3`, and `ilc-node-6`; tightened UFW to Tailscale-only
+inbound rules; patched Python 3.10 compatibility for `typing.NotRequired` in
+`ilc_core/ledger/backend.py`; and created no identity artifact, genesis record,
+seed commitment, `identity_seed_commitment`, or dummy Agent Birth artifact. It
+did not authorize public serving, public P2P, public claimability/API activation,
+source publication, package publication, release authority, signing,
+wallet-facing value actions, ECU minting, ILC settlement, Genesis/Atlas
+mutation/signing, v0.2 signing, CDL mutation, or CDL-088 opening.
+
+Phase 1323 is the next phase after Phase 1322. Phase 1323 remains sensitive and
+requires explicit `GO Phase 1323`.
 
 ---
 
@@ -107,13 +126,13 @@ searches before rehearsing any source materialization.
 
 ## 3. Release Dry-Run Blocker Map
 
-| Phase or lane | Current blocker | Phase 1321 status |
+| Phase or lane | Current blocker | Phase 1322 status |
 |---------------|-----------------|-------------------|
 | 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Complete as rehearsal evidence only; no source export execution, no copied public tree, no publication, no clean public tree materialization. |
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
 | 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Complete as dry-run procedure evidence only; no keys, envelopes, signing material, signatures, HSM/KMS/wallet calls, or secret reads. |
-| 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Open; next sensitive phase; no deployment executed. |
-| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Open; no public claimability activation. |
+| 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Complete as live private DigitalOcean/Tailscale rehearsal; UFW tightened to Tailscale-only inbound; no public ILC serving, no identity artifacts, no public claimability activation. |
+| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Open; next sensitive phase; no public claimability activation. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Open; no public confidential coordination serving. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
@@ -125,7 +144,7 @@ searches before rehearsing any source materialization.
 
 ## 4. Cross-Cutting Public-RC Blockers
 
-Public RC remains blocked after Phase 1321 by:
+Public RC remains blocked after Phase 1322 by:
 
 - legacy public-labeled FastAPI routes that must be excluded, replaced, or explicitly gated before a clean public-RC package or endpoint claim;
 - public claimability verifier/API serving authority;
@@ -198,6 +217,23 @@ read. The scanner is internal and marked `PUBLIC_RC_EXCLUDE`; it is not a
 future public RC export candidate, release key artifact, release envelope, or
 signing material.
 
+## 4.4 Phase 1322 Rehearsal Evidence
+
+Phase 1322 publishes the live private deployment evidence paths:
+
+```text
+docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.json
+docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md
+```
+
+The rehearsal ran against `ilc-node-2`, `ilc-node-3`, and `ilc-node-6` over
+Tailscale. It verified private overlay reachability, local-only sidecar manifests,
+OpenClaw/NemoClaw harness-boundary posture, wallet/value-path preflight blocks,
+and local skill preview binding. It records that remote trees are rsynced
+working trees without `.git`, that public `22/tcp` UFW allow rules were removed
+after Tailscale SSH reachability was confirmed, and that a Python 3.10
+compatibility fallback was required for `typing.NotRequired`.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -225,7 +261,7 @@ phase prompt or planning index row explicitly promotes them.
 
 ## 7. Non-Authorization Boundary
 
-Phases 1318 through 1321 do not authorize public RC claim, public launch claim, public
+Phases 1318 through 1322 do not authorize public RC claim, public launch claim, public
 repository publication, public package publication, source allowlist export
 execution, source publication, materialized export manifest production, clean
 public export tree production, release artifact production, release artifact
@@ -249,6 +285,11 @@ wallet-provider signing authority, wallet-provider ledger-write authority,
 wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
+
+Phase 1322 also does not authorize identity artifact creation, genesis record
+creation, seed commitment creation, `identity_seed_commitment` creation, dummy
+Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
+installability, or Genesis-rooted public bootstrap identity claims.
 
 For exact machine checks, the non-authorized boundary includes:
 
@@ -290,6 +331,7 @@ graph_delta=support_tests_added:tests/test_phase_1318_context_capsule_v5_54_fron
 graph_delta=support_only:docs/phases/phase_1318_context_capsule_v5_54_frontier_refresh_walkthrough.md -> planning/frontier
 graph_delta=support_only:docs/phases/STATUS.md -> planning/frontier
 graph_delta=support_only:docs/PLANNING_INDEX.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.json,docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md -> planning/frontier
 ```
 
 ---
