@@ -1,0 +1,230 @@
+# ILC Forward Phase Windows 1303-1342 Packaging and Signing Plan v0.1
+
+**Status:** Planning-only candidate guidance.
+**Recorded:** 2026-05-10.
+**Authority:** This document records forward planning only. It does not open
+Window 1303+, assign an active sequence lock, execute source export, publish a repository or package, produce release artifacts, generate release keys or envelopes, mutate Genesis Atlas, sign v0.2, activate public claimability, activate public P2P/fetch/sidecar serving, or authorize wallet/ECU/ILC economics.
+
+```text
+forward_phase_windows_1303_1342_packaging_and_signing_plan_recorded
+public_rc_exclude_helper_stripping_routed_to_phase_1308_1319_1333
+source_allowlist_export_materialization_must_fail_on_public_rc_exclude_markers
+public_rc_packaging_gate_sequence_implementation_then_dry_run_then_execution
+legacy_untagged_docs_default_review_required_before_public_export
+graph_native_sidecar_creation_routed_to_forward_windows_1303_1342
+essential_openclaw_rc_sidecars_truth_projection_claimability_bridge
+openclaw_nemoclaw_are_hosts_not_protocol_substrates
+sidecar_suite_public_serving_remains_blocked_until_explicit_authority
+confidential_coordination_sidecar_suite_forward_plan_recorded
+confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329
+confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
+confidential_coordination_not_public_rc_blocker_without_explicit_selection
+```
+
+## 1. Purpose
+
+This plan preserves the best current post-1302 phase sequence and attaches the
+`PUBLIC_RC_EXCLUDE` helper stripping obligation to the correct future packaging
+phases. It intentionally treats earlier recovered phase tables as planning
+input, not as a binding format. The controlling architecture rule is recorded
+in `docs/architecture/ilc_public_rc_packaging_architecture_gate_v0.1.md`.
+The graph-native sidecar-suite correction is recorded in
+`docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md`.
+
+The practical rule is simple: do not flip fail-closed helper flags from `False` to `True`. Those helpers are internal scaffolds. Public RC packaging must either
+replace them with public-safe modules after their authority gates close or strip
+them from the materialized public export. A public-source/package artifact must
+fail closed if any `PUBLIC_RC_EXCLUDE` marker or import dependency on an
+excluded helper remains.
+
+The best current plan is:
+
+1. implement and harden the public-safe surfaces first;
+2. dry-run a deterministic materialized public tree and prove it is clean;
+3. only then consider an explicitly authorized export/release/signing gate.
+
+Source export must precede release artifact production. Release artifacts must
+not become the mechanism that hides private helper scaffolds or converts a
+false authorization flag into a public claim.
+
+`PUBLIC_RC_EXCLUDE` is a deny marker, not an allowlist marker. Absence of the tag
+does not make old docs, research notes, phase walkthroughs, whitepaper drafts,
+or roadmap fragments exportable. Legacy untagged files must be excluded or
+reviewed explicitly in the source export manifest.
+
+The OpenClaw/NemoClaw path should also be corrected from "ordinary API wrapper"
+to "graph-native sidecar suite." The essential first suite is a local registry
+and manifest, truth primitive submission sidecar, local graph/memory projection
+sidecar, offline claimability/receipt verifier sidecar, and OpenClaw/NemoClaw
+bridge sidecar. OpenClaw/NemoClaw droplets are hosts for private deployment
+testing of that suite, not protocol substrates.
+
+The Confidential Coordination Sidecar Suite is routed as the next private/local
+sidecar build-out after the essential OpenClaw-compatible suite is testable. It
+is not a first-public-RC blocker by default. Its detailed routing is recorded in
+`docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md`.
+
+## 2. Window 1303-1316 - Implementation Hardening
+
+| Phase | Scope | Blocker addressed | Task lane |
+|-------|-------|-------------------|-----------|
+| 1303 | Sequence lock for implementation hardening | Opens no public RC authority by itself | Planning/frontier |
+| 1304 | Capsule v5.53 refresh | Prevents stale frontier before implementation work | Planning/frontier |
+| 1305 | Offline/local claimability and receipt verifier sidecar/library, no API serving | Final public claimability verifier authority substrate | Gap 13 / graph-native sidecars |
+| 1306 | Proof-binding, canonical hash, and negative-path tests | Forged receipts, replay, exact numeric and canonical JSON proof safety | Gap 13 |
+| 1307 | Graph-native sidecar registry/manifest plus claimability package profile hardening | Essential sidecar manifest, OpenClaw-compatible local bridge profile, `confidential_coordination_local_preview` profile declaration, package-profile integrity, and source allowlist readiness | Gap 14 / graph-native sidecars / CCSS |
+| 1308 | Helper pruning/replacement plan with `PUBLIC_RC_EXCLUDE` enforcement and truth-primitive sidecar boundary | Converts Phase 1293 keep-internal register into concrete replacement-or-strip decisions; records local truth-primitive sidecar boundary; no export yet | Gap 14 / packaging security / graph-native sidecars |
+| 1309 | TransportPrincipal admission sidecar lifecycle implementation hardening | Public-path identity lifecycle blocker | Gap 10 / graph-native sidecars |
+| 1310 | Revocation, replay, admission, and ban tests | Hostile-network public-path blocker | Gap 10 / Gap 11 |
+| 1311 | Local graph/memory projection sidecar and public-safe projection implementation | Public-safe projection, private/gated shard header projection, encrypted coordination-node reference, and privacy-filter blocker | Gap 9 / graph-native sidecars / CCSS |
+| 1312 | Projection privacy and field-filtering tests | Field disclosure, identifier leakage, bounded serving blocker, and confidential-coordination projection non-leakage | Gap 9 / CCSS |
+| 1313 | Public fetch/P2P readiness candidate, default off with no activation | Public fetch/P2P readiness without activation in this implementation-hardening window | Gap 10 / CDL-087 |
+| 1314 | Wallet-facing withdrawal, transfer, and spend request semantics preflight | Public claimability user action blocker; wallets remain adapters around ledger-truth objects | Gap 13 |
+| 1315 | ECU minting and ILC settlement boundary preflight | ECU/ILC value-path activation blocker | Gap 12 / Gap 13 |
+| 1316 | Window closure and implementation audit | Classifies implementation blockers closed/open/carried forward | Planning/frontier |
+
+Phase 1308 is the first explicit stripping-planning point. It should produce an
+inventory that maps each current `PUBLIC_RC_EXCLUDE` helper to one of:
+
+| Disposition | Meaning |
+|-------------|---------|
+| `replace_before_export` | Implement a public-safe module and remove imports from the internal helper before any export materialization. |
+| `strip_from_export` | Exclude the helper from public source/package/release artifacts and prove no exported code imports it. |
+| `defer_public_rc` | Carry the blocker forward and do not claim public RC for the affected package profile. |
+
+*Note on Scope and Prerequisites:* Phases 1309 and 1311 are candidate umbrella scopes that the future sequence lock may split into multiple integer phases to prevent scope blowout. Additionally, an explicit **Rust public-P2P substrate ADR/integration gate** is a strict prerequisite and must be formally inserted into the sequence *before* any Phase 1313-style public fetch/P2P activation candidate can be executed.
+
+Essential graph-native sidecar ordering inside this window:
+
+| Order | Sidecar | Candidate phase target |
+|-------|---------|------------------------|
+| 1 | Sidecar registry and deterministic manifest | 1307 |
+| 2 | Offline claimability and receipt verifier sidecar | 1305/1306 |
+| 3 | Truth primitive submission sidecar boundary | 1308 |
+| 4 | TransportPrincipal admission sidecar substrate | 1309/1310 |
+| 5 | Local graph/memory projection sidecar | 1311/1312 |
+| 6 | Confidential coordination local preview profile | 1307 prerequisites, 1311/1312 projection prerequisites, 1324-1329 implementation/dry-run lane |
+
+## 3. Window 1317-1329 - Release Dry Run and Confidential Coordination Tail
+
+| Phase | Scope | Blocker addressed | Task lane |
+|-------|-------|-------------------|-----------|
+| 1317 | Sequence lock for release dry run and Atlas-G tail | Opens no publication/signing authority by itself | Planning/frontier |
+| 1318 | Capsule v5.54 refresh | Freezes current blocker map before dry runs | Planning/frontier |
+| 1319 | Deterministic source allowlist export rehearsal | Dry-run materialization must strip `PUBLIC_RC_EXCLUDE` helpers and fail on markers/imports in the exported tree | Phase 1255 / Gap 14 |
+| 1320 | Release artifact manifest instance rehearsal | Proves release manifest shape without producing public artifacts | Phase 1213 / release |
+| 1321 | Release key/envelope procedure rehearsal, no real signing by default | Rehearses signing procedure without key generation or envelope production | Release/signing |
+| 1322 | Three-machine/seven-agent private deployment rehearsal with essential graph-native sidecar suite | Private deployment evidence; no public serving claim | RC operations / graph-native sidecars |
+| 1323 | OpenClaw/NemoClaw claimable profile full dry run against graph-native sidecar suite | Final target profile rehearsal with public claimability still gated | Gap 13 / Gap 14 / graph-native sidecars |
+| 1324 | CCSS-001 private/gated shard sidecar contract | Encrypted coordination-node envelope, shard-header projection, and private-to-public promotion evidence shape | Confidential Coordination Sidecar Suite |
+| 1325 | CCSS-002 capability, membership, grant, revocation, and optional ZK interface boundary | Private shard access-control blocker without plaintext or membership disclosure | Confidential Coordination Sidecar Suite |
+| 1326 | CCSS-003 sealed sender local delivery sidecar boundary | H-013/H-015 fixed-size payload and relay-seam integration without public P2P activation | Confidential Coordination Sidecar Suite / H-013/H-015 |
+| 1327 | CCSS-004 gossip announce/pull, jitter, batching, cover-policy, and traffic-analysis tests | Metadata-correlation hardening and no-anonymity-overclaim evidence | Confidential Coordination Sidecar Suite / privacy |
+| 1328 | CCSS-005 private OpenClaw/NemoClaw confidential coordination droplet dry run plus reproducibility pass | Private harness evidence over loopback, Tailscale, or equivalent private wiring; no public serving claim | Confidential Coordination Sidecar Suite / RC operations |
+| 1329 | Window closure gate | Classifies dry-run, CCSS, Atlas-G, and release blockers closed/open/carried forward | Planning/frontier |
+
+The earlier Atlas-G tail concepts remain required before signing, but the best
+current plan is not to compress Atlas-G tail implementation and the
+Confidential Coordination Sidecar Suite into the same 1324-1328 phases. If a
+future sequence lock chooses to prioritize Atlas-G tail before CCSS, these CCSS
+rows should move to the next dedicated sidecar window instead of being executed
+as hidden scope inside Atlas-G phases.
+
+Phase 1319 is the first materialization rehearsal. Its dry-run export report
+must prove:
+
+- zero exported files contain `PUBLIC_RC_EXCLUDE`;
+- zero exported files import or depend on stripped helper modules;
+- `docs/antigravity_tasks/`, `docs/phases/`, raw chats, `out/`, local
+  monitoring, private context material, and patent-sensitive material are
+  excluded unless separately reviewed;
+- the manifest records included files, excluded files, marker-scan results,
+  import-scan results, legacy-untagged review results, file hashes, and
+  non-claims with deterministic ordering.
+
+Sidecar suite dry runs in this window should test the essential suite on
+private DigitalOcean/OpenClaw or equivalent droplets where available. Those
+tests must use loopback/private wiring such as Tailscale and must not claim
+public P2P, public sidecar serving, public claim endpoints, source publication,
+or release authority.
+
+Confidential Coordination Sidecar Suite build-out after the essential
+OpenClaw-compatible suite is testable should route:
+
+| Sidecar | Candidate routing |
+|---------|-------------------|
+| Private/gated shard sidecar | Phase 1324 CCSS-001. |
+| Capability/membership sidecar | Phase 1325 CCSS-002. |
+| Sealed sender sidecar | Phase 1326 CCSS-003, local/private by default and no public P2P. |
+| Gossip announce/pull and jitter/cover policy sidecar | Phase 1327 CCSS-004. |
+| Confidential OpenClaw/NemoClaw bridge dry run | Phase 1328 CCSS-005. |
+| Contributor sidecar SDK/conformance pack | Start after one private OpenClaw/NemoClaw dry run proves the generic sidecar manifest and bridge contract. |
+| Wallet-facing/ECU/ILC value-action sidecar | Remains tied to Phase 1314/1315/1338 authority gates; wallets are provider adapters around ledger-truth value transitions; no economics by default. |
+| Optional ILC wallet recipe profile | Compose provider-adapter, signing-intent, ledger-truth value-action, receipt/history, and recovery/export sidecars after Phase 1315 if explicitly selected; not a first-RC blocker by default. |
+
+## 4. Window 1330-1342 - Final RC and Signing Gate
+
+| Phase | Scope | Blocker addressed | Task lane |
+|-------|-------|-------------------|-----------|
+| 1330 | Sequence lock for final RC and signing gate | Opens no final publication/signing authority by itself | Planning/frontier |
+| 1331 | Capsule v5.55 release-candidate freeze | Freezes candidate frontier before final gates | Planning/frontier |
+| 1332 | Final deterministic code/security audit | Last code/security blocker audit | Audit/release |
+| 1333 | Source allowlist export execution gate | Executes or blocks clean source export; must strip `PUBLIC_RC_EXCLUDE` helpers and fail on remaining markers/imports | Phase 1255 / Gap 14 |
+| 1334 | Release artifact production gate | Produces release artifacts only if export gate passes | Phase 1213 / release |
+| 1335 | Release keys/envelopes generation gate | Generates keys/envelopes only with explicit authority | Release/signing |
+| 1336 | Public claimability/API activation gate or explicit no-claim carry-forward | Final claimability authority decision | Gap 13 |
+| 1337 | TransportPrincipal/sidecar public-path activation gate or explicit exclusion, including any confidential coordination public-serving claim | Public-path activation decision; local/private CCSS dry-run evidence is not public authority | Gap 9 / Gap 10 / CCSS |
+| 1338 | Wallet/ECU/ILC activation gate or explicit carry-forward | Value-path activation decision | Gap 12 / Gap 13 |
+| 1339 | Genesis Atlas mutation/regeneration finalization | Final Atlas mutation/regeneration decision | ATLAS-G-007/008 |
+| 1340 | v0.2 signing ceremony gate | Signing only if explicitly authorized | ATLAS-G-009/010 |
+| 1341 | Public RC publication/claim gate | Public RC claim only if all selected blockers are closed | Public RC |
+| 1342 | Closure handoff and next-window routing if anything remains blocked | Honest closure and carry-forward | Planning/frontier |
+
+Phase 1333 is the execution gate for stripping, if public export is authorized.
+It must not carry dual-use internal helper scaffolds into the public package.
+The gate should reject the candidate export if any of these are true:
+
+- a `PUBLIC_RC_EXCLUDE` marker remains in the exported tree;
+- an exported module imports a stripped helper;
+- an exported package profile still requires an internal fail-closed helper;
+- helper flags are flipped from false to true instead of replacing or removing
+  the helper;
+- the manifest omits marker-scan or import-scan evidence.
+- untagged legacy docs/research/planning files are included without explicit
+  legacy review evidence.
+
+Phase 1337 is the execution-or-exclusion gate for any public graph-native
+sidecar serving claim. If the selected public RC remains the OpenClaw/NemoClaw
+skill-first no-public-P2P profile, the expected outcome may be explicit
+exclusion of public sidecar serving while keeping local/private sidecar suite
+operation. Public sidecar serving must not be inferred from successful local
+OpenClaw droplet tests.
+
+Phase 1341 must not imply a public confidential messaging or coordination
+product unless Phase 1337 explicitly selected and passed that scope.
+
+## 5. Non-Claims
+
+This plan does not authorize:
+
+- Window 1303+ execution;
+- helper promotion or marker removal;
+- source allowlist export execution;
+- publish a repository or package;
+- public repository publication;
+- public package publication;
+- release artifact production;
+- release-key generation;
+- release envelope production;
+- public RC claim;
+- public launch claim;
+- public claimability activation;
+- public P2P/fetch/sidecar serving;
+- public graph-native sidecar serving;
+- public confidential messaging or confidential coordination serving;
+- OpenClaw/NemoClaw as protocol substrate;
+- wallet-facing withdrawal/transfer/spend requests, ECU minting, or ILC settlement;
+- Genesis Atlas mutation, regeneration, or signing;
+- v0.2 signing;
+- CDL mutation or CDL-088 opening;
+- IP filing or paper publication.
