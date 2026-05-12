@@ -377,6 +377,14 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "openclaw_nemoclaw_claimable_profile_full_dry_run_phase_1323.v0.1" in text
     assert "claimable_profile_dry_run_public_claimability_still_gated_phase_1323" in text
     assert "graph_native_sidecar_suite_profile_integrity_rehearsed_phase_1323" in text
+    assert "phase_1323_fix2_openclaw_vps_install_skill_discovery.v0.1" in text
+    assert "openclaw_cli_installed_on_private_vps_phase_1323_fix2" in text
+    assert "local_ilc_skill_draft_discovered_by_openclaw_phase_1323_fix2" in text
+    assert "openclaw_gateway_not_started_phase_1323_fix2" in text
+    assert "clawhub_publication_not_authorized_phase_1323_fix2" in text
+    assert "ilc_runtime_not_modified_phase_1323_fix2" in text
+    assert "public_rc_remains_blocked_after_phase_1323_fix2" in text
+    assert "phase_1324_ccss_private_gated_shard_contract_next_after_fix2" in text
     assert "phase_1324_ccss_private_gated_shard_contract_next" in text
     assert "public_rc_remains_blocked_after_phase_1323" in text
-    assert "Window 1317-1329 is OPEN through Phase 1323 only" in text
+    assert "Window 1317-1329 is OPEN through Phase 1323 Fix2" in text
