@@ -1,11 +1,11 @@
 # ILC Antigravity Context Capsule v5.52
 
-**Date:** 2026-05-10
+**Date:** 2026-05-11
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.51.md`
-**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1298
-**Frontier:** Window 1289-1302 is open through Phase 1298. Phase 1298 records a
-sidecar bind/listener/peer-discovery authority preflight only. Phase 1299 is
-sensitive and requires explicit `GO Phase 1299`.
+**Produced:** Phase 1290, Window 1289-1302; updated by Phases 1291-1302
+**Frontier:** Window 1289-1302 is closed through Phase 1302 with a
+pass-with-carry-forward closure verdict. Window 1303+ sequence lock is required
+before assigning further phases.
 
 ```text
 context_capsule_v5_52_frontier_refresh_phase_1290.v0.1
@@ -96,6 +96,42 @@ peer_discovery_not_enabled_phase_1298
 public_sidecar_projection_serving_not_enabled_phase_1298
 public_rc_remains_blocked_after_phase_1298
 phase_1299_release_allowlist_artifact_genesis_readiness_preflight_next
+release_allowlist_artifact_genesis_readiness_preflight_phase_1299.v0.1
+release_readiness_verdict_phase_1299=preflight_only_no_artifacts
+source_allowlist_export_not_executed_phase_1299
+release_artifact_not_produced_phase_1299
+release_keys_not_generated_phase_1299
+release_envelope_not_produced_phase_1299
+genesis_atlas_not_mutated_or_signed_phase_1299
+v0_2_signing_not_authorized_phase_1299
+public_rc_exclude_helper_stripping_deferred_to_package_materialization_after_phase_1299
+public_rc_remains_blocked_after_phase_1299
+phase_1300_counsel_ip_publication_clearance_inventory_next
+counsel_ip_publication_clearance_inventory_phase_1300.v0.1
+counsel_ip_publication_verdict_phase_1300=inventory_only_no_publication
+ip_filing_not_performed_phase_1300
+paper_publication_not_authorized_phase_1300
+public_repository_publication_not_authorized_phase_1300
+public_package_publication_not_authorized_phase_1300
+public_rc_remains_blocked_after_phase_1300
+phase_1301_deep_no_activation_assertion_audit_next
+deep_no_activation_assertion_audit_phase_1301.v0.1
+no_activation_audit_verdict_phase_1301=pass_or_blockers_recorded
+public_endpoint_activation_absent_or_blocked_phase_1301
+release_artifact_activation_absent_or_blocked_phase_1301
+genesis_signing_activation_absent_or_blocked_phase_1301
+wallet_ecu_ilc_activation_absent_or_blocked_phase_1301
+public_rc_remains_blocked_after_phase_1301
+phase_1302_window_1289_1302_closure_gate_next
+legacy_public_labeled_fastapi_routes_carry_forward_phase_1301
+legacy_public_labeled_fastapi_routes_not_public_rc_clean_phase_1301
+phase_1302_requires_explicit_go_phase_1301
+window_1289_1302_closed_phase_1302
+window_1289_1302_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1302_window_1289_1302_closure_complete
+window_1303_plus_sequence_lock_required_before_next_phase_assignment
+public_rc_exclude_helper_stripping_carried_forward_to_window_1303_plus
+public_rc_remains_blocked_after_phase_1302
 ```
 
 ---
@@ -105,14 +141,14 @@ phase_1299_release_allowlist_artifact_genesis_readiness_preflight_next
 Window 1273-1280 is closed with a pass verdict. Window 1281-1288 is closed
 with a pass verdict through Phase 1288. Phase 1288 Fix1 runtime deep audit
 hardening is complete. Phase 1288 Fix2 drafted the narrower Window 1289-1296
-prompt package, and Phase 1289 superseded that draft by opening the active
-Window 1289-1302 sequence lock.
+prompt package, and Phase 1289 superseded that draft by opening the
+Window 1289-1302 sequence lock. Phase 1302 closes Window 1289-1302.
 
-Current active sequence lock:
+Closed sequence lock:
 
 - `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`
 
-Current active guidance:
+Closed guidance:
 
 - `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`
 
@@ -122,17 +158,18 @@ Superseded prompt-draft source:
 
 Current closure handoff:
 
-- `docs/specs/ilc_window_1281_1288_handoff_1288_v0.1.md`
+- `docs/specs/ilc_window_1289_1302_handoff_1302_v0.1.md`
 
 Current launch roadmap:
 
 - `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md`
 
-The user's explicit `GO Phase 1298 and any subsequent non-sensitive phases, in
-order` authorized the Phase 1298 sidecar bind/listener/peer-discovery authority
-preflight only. The next phase, Phase 1299, is sensitive because it preflights
-release allowlist, artifact, and Genesis readiness and must not proceed without
-explicit authorization.
+The user's explicit `GO Phase 1302` authorized the Phase 1302 closure gate only.
+Phase 1302 closes Window 1289-1302 and records blockers honestly:
+legacy public-labeled FastAPI routes exist in `ilc_core/server.py` and must be
+excluded, replaced, or explicitly gated before a clean public-RC package or
+public endpoint claim. Window 1303+ sequence lock is required before assigning
+further phases.
 
 ---
 
@@ -338,6 +375,69 @@ public_rc_remains_blocked_after_phase_1298
 phase_1299_release_allowlist_artifact_genesis_readiness_preflight_next
 ```
 
+Historical Phase 1298 frontier phrase guard:
+
+```text
+Window 1289-1302 is open through Phase 1298
+Phase 1299 is sensitive
+```
+
+Phase 1299 records the release allowlist, artifact, and Genesis readiness
+preflight:
+
+```text
+release_allowlist_artifact_genesis_readiness_preflight_phase_1299.v0.1
+release_readiness_verdict_phase_1299=preflight_only_no_artifacts
+source_allowlist_export_not_executed_phase_1299
+release_artifact_not_produced_phase_1299
+release_keys_not_generated_phase_1299
+release_envelope_not_produced_phase_1299
+genesis_atlas_not_mutated_or_signed_phase_1299
+v0_2_signing_not_authorized_phase_1299
+public_rc_exclude_helper_stripping_deferred_to_package_materialization_after_phase_1299
+public_rc_remains_blocked_after_phase_1299
+phase_1300_counsel_ip_publication_clearance_inventory_next
+```
+
+Phase 1300 records the counsel, IP, and publication clearance inventory:
+
+```text
+counsel_ip_publication_clearance_inventory_phase_1300.v0.1
+counsel_ip_publication_verdict_phase_1300=inventory_only_no_publication
+ip_filing_not_performed_phase_1300
+paper_publication_not_authorized_phase_1300
+public_repository_publication_not_authorized_phase_1300
+public_package_publication_not_authorized_phase_1300
+public_rc_remains_blocked_after_phase_1300
+phase_1301_deep_no_activation_assertion_audit_next
+```
+
+Phase 1301 records the deep no-activation assertion audit:
+
+```text
+deep_no_activation_assertion_audit_phase_1301.v0.1
+no_activation_audit_verdict_phase_1301=pass_or_blockers_recorded
+public_endpoint_activation_absent_or_blocked_phase_1301
+release_artifact_activation_absent_or_blocked_phase_1301
+genesis_signing_activation_absent_or_blocked_phase_1301
+wallet_ecu_ilc_activation_absent_or_blocked_phase_1301
+public_rc_remains_blocked_after_phase_1301
+phase_1302_window_1289_1302_closure_gate_next
+legacy_public_labeled_fastapi_routes_carry_forward_phase_1301
+legacy_public_labeled_fastapi_routes_not_public_rc_clean_phase_1301
+```
+
+Phase 1302 records the Window 1289-1302 closure gate:
+
+```text
+window_1289_1302_closed_phase_1302
+window_1289_1302_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1302_window_1289_1302_closure_complete
+window_1303_plus_sequence_lock_required_before_next_phase_assignment
+public_rc_exclude_helper_stripping_carried_forward_to_window_1303_plus
+public_rc_remains_blocked_after_phase_1302
+```
+
 Locked Window 1289-1302 order:
 
 | Phase | Scope | Sensitivity |
@@ -352,10 +452,10 @@ Locked Window 1289-1302 order:
 | 1296 | Hostile-network admission, ban, rate-limit, privacy plan | SENSITIVE, complete |
 | 1297 | Sidecar public-safe projection schema | SENSITIVE, complete |
 | 1298 | Sidecar bind, listener, peer-discovery authority preflight | SENSITIVE, complete |
-| 1299 | Release allowlist, artifact, Genesis readiness preflight | SENSITIVE, requires explicit `GO Phase 1299` |
-| 1300 | Counsel, IP, publication clearance inventory | SENSITIVE |
-| 1301 | Deep no-activation assertion audit | SENSITIVE |
-| 1302 | Window 1289-1302 closure gate | SENSITIVE |
+| 1299 | Release allowlist, artifact, Genesis readiness preflight | SENSITIVE, complete |
+| 1300 | Counsel, IP, publication clearance inventory | SENSITIVE, complete |
+| 1301 | Deep no-activation assertion audit | SENSITIVE, complete |
+| 1302 | Window 1289-1302 closure gate | SENSITIVE, complete |
 
 ---
 
@@ -374,8 +474,9 @@ no_cdl088_opening_phase_1278_fix1
 ```
 
 CDL-088 remains unopened. Phase 1290 does not mutate the CDL register. Phases
-1291, 1292, 1293, 1294, 1295, 1296, 1297, and 1298 also do not mutate the CDL
-register and do not open any new constitutional decision log entry.
+1291, 1292, 1293, 1294, 1295, 1296, 1297, 1298, 1299, 1300, 1301, and 1302 also
+do not mutate the CDL register and do not open any new constitutional decision
+log entry.
 
 Open counsel/public-release obligations remain:
 
@@ -393,23 +494,28 @@ publication_ip_boundary_tracked_without_public_rc_activation_phase_1280_fix1
 
 ## 4. Public-RC Blocker Map
 
-Public RC remains blocked after Phase 1298 by:
+Public RC remains blocked after Phase 1302 by:
 
+- Legacy public-labeled FastAPI routes that must be excluded, replaced, or
+  explicitly gated before clean public-RC packaging.
 - Final public claimability verifier/API authority and public endpoint
   authorization.
-- Public-safe helper replacement or later explicit helper promotion
-  prerequisites for any materialized public export.
+- `PUBLIC_RC_EXCLUDE` helper replacement, stripping, or later explicit helper
+  promotion prerequisites for any materialized public export.
 - Public-safe disclosure schema is now recorded, but privacy filter
   implementation/review, replay/nullifier policy, and duplicate-claim registry
   remain open.
 - Actual TransportPrincipal public-path activation authority, including
   post-ratification CDL-087 helper replacement, lifecycle policy, revocation
   registry, replay cache, admission, ban, rate-limit, and privacy controls.
+- Rust public P2P integration and hostile-network transport hardening.
 - Actual public sidecar/projection serving authority, including public-safe
   field serving, filtering implementation, bind/listener policy, and
   peer-discovery policy. Phase 1298 records those bind/listener/peer-discovery
   surfaces as preflight-only and does not grant authority.
-- Counsel/license/CLA/trademark/IP/publication clearance.
+- Counsel-approved license/CLA/trademark/IP/publication clearance. Phase 1300
+  inventories this state only and records no legal clearance, filing, or
+  publication authority.
 - Source allowlist export execution and public source/package publication.
 - Release artifact production, release-key generation, release envelope
   production, and release manifest instance production.
@@ -424,11 +530,18 @@ Phase 1295 closes the TransportPrincipal lifecycle/revocation/replay preflight
 as a classification-only pass. Phase 1296 closes the hostile-network
 admission/ban/rate/privacy plan as a planning-only pass. Phase 1297 records the
 public-safe projection schema as a schema-only pass. Phase 1298 records
-bind/listener/peer-discovery authority as a preflight-only pass. None of these
-phases activates public path serving, lifecycle policy, revocation registry,
-replay cache, admission policy, ban registry, rate-limit state, privacy policy,
-sidecar projection serving, bind, listener, peer discovery, publication,
-release, Genesis signing, v0.2 signing, wallet, ECU, or ILC blockers.
+bind/listener/peer-discovery authority as a preflight-only pass. Phase 1299
+records release allowlist/artifact/Genesis readiness as a preflight-only pass.
+Phase 1300 records counsel/IP/publication clearance as inventory-only with no
+filing or publication authority. Phase 1301 records the no-activation audit as
+pass with blockers recorded and identifies legacy public-labeled FastAPI routes
+as clean-public-RC blockers. Phase 1302 closes Window 1289-1302 as pass with
+blockers carried forward and requires Window 1303+ sequence lock before further
+phase assignment. None of these phases activates public path serving, lifecycle policy,
+revocation registry, replay cache, admission policy, ban registry, rate-limit
+state, privacy policy, sidecar projection serving, bind, listener, peer
+discovery, publication, release, Genesis signing, v0.2 signing, wallet, ECU, or
+ILC blockers.
 
 Exact blocker phrase guard:
 
@@ -586,11 +699,30 @@ The current sidecar helper remains `PUBLIC_RC_EXCLUDE` and deliberately does
 not open a listener, bind a socket, serve projection data, or enable peer
 discovery. Local in-process sidecar reads remain the only active sidecar path.
 
+Phase 1299 records release allowlist/artifact/Genesis readiness without runtime
+or release artifact changes:
+
+```text
+release_allowlist_artifact_genesis_readiness_preflight_phase_1299.v0.1
+release_readiness_verdict_phase_1299=preflight_only_no_artifacts
+source_allowlist_export_not_executed_phase_1299
+release_artifact_not_produced_phase_1299
+release_keys_not_generated_phase_1299
+release_envelope_not_produced_phase_1299
+genesis_atlas_not_mutated_or_signed_phase_1299
+v0_2_signing_not_authorized_phase_1299
+```
+
+The public RC packaging route still requires later helper replacement or
+stripping, deterministic dry-run materialization, clean export evidence,
+counsel/IP/publication clearance, release artifact authority, release
+key/envelope authority, and explicit Genesis/v0.2 signing authority.
+
 ---
 
 ## 6. Non-Authorization Boundary
 
-Phase 1298 does not authorize TransportPrincipal public-path activation,
+Phase 1302 does not authorize TransportPrincipal public-path activation,
 admission policy activation, ban registry activation, public rate-limit state
 activation, privacy policy activation, Werner overlay activation, public
 credential issuer authority, credential lifecycle policy activation, public
@@ -605,8 +737,9 @@ non-loopback sidecar/projection serving, public claimability API activation,
 public verifier service, public claimability activation, wallet withdrawal,
 wallet transfer, wallet spend, wallet signing authority, wallet ledger-write
 authority, ECU minting, ILC settlement, withdrawal runtime activation, CDL
-mutation, CDL-088 opening, Genesis Atlas mutation/regeneration or signing, v0.2
-signing, IP filing, paper publication, immutable diagnostic mutation, or
+mutation, CDL-088 opening, helper stripping, release artifact manifest instance
+production, Genesis Atlas mutation/regeneration or signing, v0.2 signing, IP
+filing, paper publication, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
 Exact non-authorization phrase guard:
@@ -616,6 +749,7 @@ public claimability API activation
 materialized export manifest production
 helper promotion
 marker removal
+helper stripping
 public verifier service
 TransportPrincipal public-path activation
 public credential issuer authority
@@ -634,6 +768,7 @@ public fetch serving
 public sidecar/projection serving
 source allowlist export execution
 public release artifact production
+release artifact manifest instance production
 release-key generation
 release envelope production
 wallet withdrawal
@@ -674,17 +809,20 @@ or ILC settlement endpoint is added.
 
 ## 8. Next Gate
 
-Next phase:
+Next authority step:
 
 ```text
-Phase 1299 - Release allowlist, artifact, Genesis readiness preflight
+window_1303_plus_sequence_lock_required_before_next_phase_assignment
 ```
 
-Phase 1299 is sensitive. It requires explicit `GO Phase 1299` before execution.
-Default authority stance remains no public endpoint, no public claimability API,
-no source export, no helper promotion, no package publication, no public P2P or
-fetch serving, no admission/ban/rate/privacy activation, no public sidecar or
-projection serving, no bind/listener/peer-discovery activation, no release
-artifact production, no release-key generation, no release envelope production,
-no Genesis mutation/signing, no v0.2 signing, no wallet spend semantics, no ECU
-minting, and no ILC settlement.
+Window 1303+ sequence lock is required before assigning further phases. Existing
+forward planning for Phase 1303 and later implementation hardening, packaging,
+sidecar, release dry-run, and signing gates remains planning-only until a future
+sequence lock consumes it. Default authority stance remains no public endpoint,
+no public claimability API, no source export, no helper promotion or stripping,
+no package publication, no public P2P or fetch serving, no
+admission/ban/rate/privacy activation, no public sidecar or projection serving,
+no bind/listener/peer-discovery activation, no release artifact production, no
+release-key generation, no release envelope production, no Genesis
+mutation/signing, no v0.2 signing, no wallet spend semantics, no ECU minting,
+no ILC settlement, no IP filing, and no paper publication.

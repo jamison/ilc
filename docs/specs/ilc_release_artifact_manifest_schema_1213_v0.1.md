@@ -168,6 +168,32 @@ Free-text lineage references are invalid.
 
 ---
 
+## 6.1 Public RC Packaging Gate Carry-Forward
+
+This schema is the minimum manifest schema. A future public-RC release packet
+that contains or references source/package artifacts must also reference clean
+source export evidence from the public RC packaging gate recorded in
+`docs/architecture/ilc_public_rc_packaging_architecture_gate_v0.1.md`.
+
+The release packet must not describe a source/package artifact as public-RC
+clean unless the corresponding materialized public tree has:
+
+- zero `PUBLIC_RC_EXCLUDE` markers;
+- zero imports of stripped helper modules;
+- deterministic file hashes;
+- marker-scan and import-scan evidence;
+- legacy untagged-file review state;
+- counsel/IP/publication clearance status;
+- explicit non-claims for any still-deferred public path or economics gate.
+
+```text
+release_artifact_packet_must_reference_clean_export_gate
+public_rc_package_export_must_be_public_tree_clean_not_flag_flip
+legacy_untagged_docs_default_review_required_before_public_export
+```
+
+---
+
 ## 7. Non-Claims
 
 This schema does not ratify CDL-086, approve counsel items, authorize public release,

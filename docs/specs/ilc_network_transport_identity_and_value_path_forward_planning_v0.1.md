@@ -8,6 +8,20 @@ Phase 1237 Fix1-Fix7 complete; audit hardening committed (9601ac79).
 **Purpose:** Record architectural decisions and planning tokens from Gemini review synthesis
 (2026-05-07 Codex conversation) across five threads: transport identity, OpenClaw/deployment
 posture, package modularity, Werner topological flow governor, and ECU/ILC value path.
+**Phase 1313 update:** The default-off public fetch/P2P readiness packet is now
+recorded. It preserves this document's Rust substrate gate and Python HTTP
+devnet/test classification.
+**Phase 1314 update:** The wallet-facing withdrawal/transfer/spend request
+semantics preflight packet is now recorded. It preserves the read-only public
+wallet-facing surface, keeps wallet-provider signing, wallet-provider
+ledger-write, public claim endpoint, ECU minting, and ILC settlement blocked,
+and records that wallets are adapters around ledger-truth objects.
+**Phase 1315 update:** The ECU minting and ILC settlement boundary preflight
+packet is now recorded. It preserves local read-only substrates, keeps ECU
+minting, ILC settlement, withdrawal runtime, wallet writes, public claim
+endpoint, public claimability activation, release materialization, CDL-088,
+and value-path activation blocked, and records that ILC is wallet-provider
+agnostic but not ledger-truth agnostic.
 
 ```text
 network_transport_identity_and_value_path_forward_planning_recorded_phase_1238
@@ -526,6 +540,12 @@ ilc_public_claimability_substrate_required_pre_public_launch
 ilc_public_claimability_substrate_does_not_block_internal_conversion_runtime
 wallet_signing_spend_transfer_claimability_boundary_required
 ecu_credit_creation_intent_cdl_required
+wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1
+wallet_withdrawal_transfer_spend_not_activated_phase_1314
+wallet_signing_ledger_write_not_authorized_phase_1314
+public_claimability_user_action_boundary_recorded_phase_1314
+phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next
+public_rc_remains_blocked_after_phase_1314
 ```
 
 ---
@@ -568,6 +588,112 @@ sim_fetch_01_warmup_epoch_separation_required
 
 ---
 
+## 6.1 Phase 1313 Default-Off Readiness Result
+
+Phase 1313 records the public fetch/P2P readiness candidate as a deterministic
+default-off gate packet:
+
+```text
+public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1
+rust_public_p2p_substrate_gate_status_recorded_phase_1313
+public_p2p_default_off_phase_1313
+public_fetch_serving_default_off_phase_1313
+transport_public_path_activation_not_authorized_phase_1313
+phase_1314_wallet_withdrawal_transfer_spend_preflight_next
+public_rc_remains_blocked_after_phase_1313
+```
+
+The Phase 1313 packet confirms that Rust QUIC/rustls source evidence exists in
+`ilc_consensus/src/network.rs`, but it does not satisfy the public-P2P substrate
+gate by itself. A later ADR/integration gate still needs to decide and verify the
+public D2D substrate boundary before any public fetch/P2P activation candidate can
+move beyond default-off readiness.
+
+Python HTTP fetch/gossip runtimes remain classified as devnet/test regression
+surfaces, not public-P2P substrates. TransportPrincipal public-path activation
+also remains blocked pending explicit public credential issuer authority, public
+revocation registry, public replay cache, public rate-limit state, admission and
+ban policy, privacy policy, Rust public-P2P substrate evidence, and explicit
+activation authority.
+
+Phase 1313 does not authorize public P2P, public fetch serving, public listener,
+peer discovery, non-loopback bind, wildcard bind, public host bind, public
+sidecar/projection serving, public TransportPrincipal path activation, source
+export, release materialization, wallet-facing withdrawal requests, ECU
+minting, ILC settlement, Genesis mutation/signing, v0.2 signing, or public RC
+publication.
+
+---
+
+## 6.2 Phase 1314 Wallet-Facing Value-Action Semantics Preflight Result
+
+Phase 1314 records the wallet-facing withdrawal/transfer/spend request
+semantics preflight as a deterministic local gate packet:
+
+```text
+wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1
+wallet_withdrawal_transfer_spend_not_activated_phase_1314
+wallet_signing_ledger_write_not_authorized_phase_1314
+public_claimability_user_action_boundary_recorded_phase_1314
+wallet_provider_agnostic_not_ledger_truth_agnostic_phase_1314
+phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next
+public_rc_remains_blocked_after_phase_1314
+```
+
+The packet confirms that the wallet path remains read-only: `wallet_status`,
+`wallet_history`, `wallet_export`, and `ledger_summary` are the only current
+public wallet-facing operations. Wallet-facing withdrawal requests,
+wallet-facing transfer requests, wallet-facing spend requests, wallet-provider
+signing requests, wallet-provider ledger-write requests, public claim endpoint
+submission, external chain destination collection, ECU minting, and ILC
+settlement remain blocked.
+
+Phase 1314 updates the graph-native sidecar registry with
+`wallet_action_semantics_preflight` and requires that sidecar for the
+OpenClaw/NemoClaw claimable local bridge profile. This is a local preflight and
+package-profile boundary only. It does not authorize public claimability
+activation, public claim endpoint serving, wallet-facing action runtime
+behavior, ECU minting, ILC settlement, source export, release materialization,
+or public RC publication.
+
+The planning interpretation is wallet-provider agnostic but not ledger-truth
+agnostic. A future ILC-native wallet should be a sidecar recipe over
+provider-adapter, signing-intent, ledger-truth value-action, receipt/history,
+and recovery/export modules. It should be routed after Phase 1315 settlement
+boundary work and before any Phase 1338-style activation gate only if a later
+sequence lock explicitly selects it.
+
+Phase 1315 records the ECU minting and ILC settlement boundary preflight as a
+deterministic local gate packet:
+
+```text
+ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1
+ecu_minting_not_authorized_phase_1315
+ilc_settlement_not_authorized_phase_1315
+value_path_activation_boundary_recorded_phase_1315
+phase_1316_window_1303_1316_closure_audit_next
+public_rc_remains_blocked_after_phase_1315
+```
+
+The packet confirms that the value path remains read-only/local-preflight only.
+ECU minting, ECU creation, ECU supply policy mutation, ILC settlement, ILC
+transfer, settlement root publication, withdrawal runtime, wallet write,
+wallet-provider signing request, wallet-provider ledger-write request, public
+claim endpoint, public claimability activation, external chain bridge, release
+materialization, and CDL-088 opening remain blocked.
+
+Phase 1315 updates the graph-native sidecar registry with
+`value_path_activation_boundary_preflight` and requires that sidecar for the
+OpenClaw/NemoClaw claimable local bridge profile. This is a local preflight and
+package-profile boundary only. It records no ECU minting, no ILC settlement,
+no withdrawal runtime, no wallet-facing withdrawal request, no wallet-facing
+transfer request, no wallet-facing spend request, no wallet-provider signing
+request, no wallet-provider ledger-write request, no public claim endpoint, no
+public claimability activation, no source export, no release materialization,
+no public RC publication, and no value-path activation.
+
+---
+
 ## 7. Planning Token Registry
 
 ```text
@@ -585,6 +711,13 @@ rust_p2p_substrate_decision_adr_required_quinn_vs_libp2p
 openclaw_sdk_packaging_lane_not_base_transport_dependency
 openclaw_skill_packaging_phase_authorized_as_parallel_onboarding_lane
 sidecar_projection_endpoint_public_path_requires_transport_principal_auth
+public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1
+rust_public_p2p_substrate_gate_status_recorded_phase_1313
+public_p2p_default_off_phase_1313
+public_fetch_serving_default_off_phase_1313
+transport_public_path_activation_not_authorized_phase_1313
+phase_1314_wallet_withdrawal_transfer_spend_preflight_next
+public_rc_remains_blocked_after_phase_1313
 
 # OpenClaw/NemoClaw package modularity
 ilc_package_modularity_split_required_before_openclaw_skill_launch
@@ -626,6 +759,18 @@ ilc_public_claimability_substrate_required_pre_public_launch
 ilc_public_claimability_substrate_does_not_block_internal_conversion_runtime
 wallet_signing_spend_transfer_claimability_boundary_required
 ecu_credit_creation_intent_cdl_required
+wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1
+wallet_withdrawal_transfer_spend_not_activated_phase_1314
+wallet_signing_ledger_write_not_authorized_phase_1314
+public_claimability_user_action_boundary_recorded_phase_1314
+phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next
+public_rc_remains_blocked_after_phase_1314
+ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1
+ecu_minting_not_authorized_phase_1315
+ilc_settlement_not_authorized_phase_1315
+value_path_activation_boundary_recorded_phase_1315
+phase_1316_window_1303_1316_closure_audit_next
+public_rc_remains_blocked_after_phase_1315
 
 # SIM-FETCH-01 improvements
 sim_fetch_01_tier_stratified_failure_rates_required

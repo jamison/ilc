@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1289-1302 OPEN through Phase 1298; active sequence lock is `docs/specs/ilc_phase_1289_1302_sequence_lock_v0.1.md`; active guidance is `docs/specs/ilc_window_1289_1302_candidate_phase_grouping_v0.1.md`; current capsule is `docs/specs/ilc_antigravity_context_capsule_v5.52.md`; prior Window 1289-1296 guidance is superseded by the Phase 1289 lock; Phase 1299 is the next sensitive phase and requires explicit `GO Phase 1299`; no public RC, public activation, publication, release artifact, Genesis signing, CDL-088, wallet/ECU/ILC, or v0.2 signing authority is granted |
-| Capsule | v5.52 current; supersedes v5.51 and is updated through Phase 1298 |
+| Window frontier | Window 1303-1316 is CLOSED / PASS with carry-forward through Phase 1316; closure handoff is `docs/specs/ilc_window_1303_1316_handoff_1316_v0.1.md`; sequence lock `docs/specs/ilc_phase_1303_1316_sequence_lock_v0.1.md` and guidance `docs/specs/ilc_window_1303_1316_candidate_phase_grouping_v0.1.md` are closed references; no next phase is assigned; Window 1317+ sequence lock is required before any further phase assignment; no public RC, public activation, publication, release artifact production, release-key generation, Genesis Atlas mutation/regeneration/signing, CDL-088, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, or v0.2 signing authorization is granted |
+| Capsule | v5.53 current; supersedes v5.52 and is updated through Phase 1316 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -45,7 +45,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
 | `commit.epoch` runtime alignment | Complete through devnet E2E harness; production emission unauthorized |
 | L3 sidecar query runtime | Local/read-only runtime complete; Phase 1268 records loopback/subprocess-only boundary with no new listener and Phase 1278 adds an internal public-path preflight helper while keeping public/non-loopback projection serving blocked |
-| TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1277 adds an internal public-path preflight helper; no public P2P, public fetch serving, or non-loopback serving activation |
+| TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1309 adds the local admission sidecar substrate; Phase 1310 hardens revocation, replay, admission, ban, rate-limit, and privacy negative paths; Phase 1313 records a default-off public fetch/P2P readiness packet and Rust substrate gate status; no public P2P, public fetch serving, public listener, peer discovery, public revocation registry, public replay cache, public rate-limit state, or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; consumed into CDL-087 ratification by Phase 1278 Fix1 |
 
 Latest closed handoff and current window artifacts:
@@ -122,9 +122,11 @@ public_rc_default_path=openclaw_skill_first_public_claimability_no_public_p2p_cl
 
 Meaning:
 
-- The first public-RC path is a local OpenClaw/NemoClaw-compatible ILC skill or
-  package profile.
+- The first public-RC path is a graph-native sidecar suite that can be hosted by
+  OpenClaw/NemoClaw, Codex-style agents, or a future first-party ILC harness.
 - That path makes no public ILC-owned P2P claim.
+- OpenClaw/NemoClaw are hosts or consumers of ILC graph-native sidecars, not
+  protocol substrates and not protocol-truth authorities.
 - Public ILC-owned P2P remains a parallel lane gated by TransportPrincipal and
   Rust public-P2P substrate work.
 - A local preview profile is not final public RC.
@@ -141,13 +143,18 @@ Meaning:
 | Public P2P exposure | Public hostile-network ILC node | Blocked by TransportPrincipal, Rust P2P substrate decision, Python HTTP downgrade |
 | Public sidecar/projection serving | Non-loopback graph/projection endpoint | Blocked by CDL-087 ratification plus TransportPrincipal policy if exposed beyond loopback |
 | Public economic claimability | Human withdrawal/claim/transfer path | Blocked by ECU-to-ILC conversion runtime and public claimability substrate |
-| OpenClaw/NemoClaw local skill preview | Local harness preview only | Open execution lane in Window 1241-1248; not final public RC |
-| OpenClaw/NemoClaw claimable public RC | Final selected public-RC target profile | Requires Gap 14 package modularity plus Gap 13 claimability path |
+| Graph-native sidecar suite local preview | Local truth/projection/claimability sidecars operated by a harness or native ILC host | Essential-suite planning routed to Windows 1303-1342; no public serving authority |
+| OpenClaw/NemoClaw local skill preview | Local host/consumer preview of the graph-native sidecar suite | Open execution lane in Window 1241-1248; not final public RC |
+| OpenClaw/NemoClaw claimable public RC | Final selected public-RC target profile hosted by OpenClaw/NemoClaw or equivalent | Requires essential sidecar suite, Gap 14 package modularity, and Gap 13 claimability path |
 
 Token:
 
 ```text
 public_rc_blocker_classification_required_in_roadmap_v1_1
+ilc_graph_native_sidecar_suite_architecture_recorded
+openclaw_nemoclaw_are_hosts_not_protocol_substrates
+essential_openclaw_rc_sidecars_truth_projection_claimability_bridge
+sidecar_suite_public_serving_remains_blocked_until_explicit_authority
 ```
 
 Status: satisfied by this roadmap as a classification surface; blockers remain
@@ -162,8 +169,8 @@ open until their implementation/gate phases close.
 | RC0.1 | Three-node substrate; seven-agent scenario; reproducible substrate | `satisfied_for_testbed` |
 | RC1 | Truth primitive stack operational; CDL-073 through CDL-084; HB-002 closed | `satisfied` |
 | RC2 | Pre-public-RC governance/runtime hardening, v0.2 decision, package/public-path blocker disposition | In progress; several original v1.0 subgates now satisfied |
-| Public-RC local harness preview | Clean OpenClaw/NemoClaw local skill package; no public P2P; no final claimability claim | Window 1241-1248 execution lane |
-| Public-RC claimable harness profile | Local harness package plus public ECU-to-ILC claimability; no public ILC P2P claim | Target profile, still blocked |
+| Public-RC local harness preview | Clean graph-native sidecar suite hosted by OpenClaw/NemoClaw or equivalent; no public P2P; no final claimability claim | Window 1241-1248 execution lane plus Windows 1303-1342 essential-suite routing |
+| Public-RC claimable harness profile | Graph-native sidecar suite package plus public ECU-to-ILC claimability; no public ILC P2P claim | Target profile, still blocked |
 | Public P2P RC | ILC-owned public P2P node | Parallel lane, blocked by TransportPrincipal and Rust P2P decisions |
 | Public launch | Post-RC launch obligations, counsel/IP/trademark, economic claimability, security gates | Long-range |
 
@@ -247,6 +254,8 @@ canon_bundle_signing_repair_pass_phase_1197
 ### Gap 7 - Counsel, License, CLA, Trademark, IP
 
 **Status:** Open hard gate before public repository publication and public RC.
+Phase 1300 inventories this state only and grants no legal clearance, IP filing,
+paper publication, repository publication, or package publication authority.
 Phase 1255 defines the allowlist-export procedure, but does not authorize
 publication. Counsel/IP/trademark/CLA/patent gates and explicit publication
 authorization remain open.
@@ -387,9 +396,9 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 
 ### Gap 13 - ECU-to-ILC Settlement Execution Runtime and Claimability
 
-**Status:** Open; Phase 1274 conversion-sweeper runtime skeleton and Phase 1275
-local proof binding recorded; final public-RC claimability API/verifier
-authority still open.
+**Status:** Open; Phase 1274 conversion-sweeper runtime skeleton, Phase 1275
+local proof binding, and Phase 1305 offline/local verifier sidecar substrate
+recorded. Public-RC claimability API/verifier serving authority remains open.
 
 Internal conversion runtime and public claimability substrate are distinct.
 Final public RC requires public claimability for the selected OpenClaw/NemoClaw
@@ -416,6 +425,12 @@ claimability_proof_binding_runtime_boundary_phase_1275.v0.1
 settled_root_wallet_root_receipt_binding_recorded_phase_1275
 non_loopback_claimability_api_still_blocked_phase_1275
 public_claimability_not_activated_phase_1275
+offline_claimability_receipt_verifier_sidecar_phase_1305.v0.1
+claimability_verifier_local_only_no_api_phase_1305
+receipt_verifier_public_serving_not_enabled_phase_1305
+public_claimability_activation_not_authorized_phase_1305
+phase_1306_proof_binding_canonical_hash_negative_path_tests_next
+public_rc_remains_blocked_after_phase_1305
 ```
 
 Phase 1270 recorded the public claimability and CDL-048 conversion-sweeper
@@ -429,6 +444,15 @@ latest balance receipts, history digests, epoch identifiers, canonical agent
 identity, and conversion receipt semantics into a local proof boundary without
 opening wallet withdrawal, transfer, or spend semantics.
 
+Phase 1305 adds a local-only verifier sidecar substrate for canonical
+claimability presentations and deterministic decisions. It validates local
+receipt/proof/root material and keeps all public API, public verifier service,
+public claimability activation, wallet action, ECU minting, and ILC settlement
+flags false. It does not close final public claimability because public serving
+authority, public-safe disclosure, replay/nullifier policy, duplicate-claim
+policy, TransportPrincipal public-path authority, package/export materialization,
+and release authority remain open.
+
 ### Gap 14 - OpenClaw/NemoClaw Package Modularity and CLI/Sidecar Boundary
 
 **Status:** Immediate Window 1241-1248 execution lane.
@@ -437,6 +461,13 @@ Package modularity must prove that ILC can be consumed as a local skill/package
 without making OpenClaw/NemoClaw a protocol dependency and without letting
 Genesis, ILC, ECU, canonical JSON, protocol bundle verification, or Rust
 consensus-core binding become excisable.
+
+The corrected architecture is not an ordinary wrapper API. It is a
+graph-native sidecar suite: sidecar registry/manifest, truth primitive
+submission, local graph/memory projection, offline claimability/receipt
+verification, and OpenClaw/NemoClaw bridge components that consume and emit
+ILC-native graph objects. OpenClaw/NemoClaw remain optional hosts for the suite,
+not protocol substrates.
 
 Window 1241-1248 routing:
 
@@ -450,6 +481,9 @@ harness_adapter_transport_storage_protocols_required
 generic_agent_harness_adapter_contract_required
 sidecar_dependency_isolation_required_for_harness_adapters
 public_package_size_audit_required_before_openclaw_skill_launch
+ilc_graph_native_sidecar_suite_architecture_recorded
+graph_native_sidecar_creation_routed_to_forward_windows_1303_1342
+essential_openclaw_rc_sidecars_truth_projection_claimability_bridge
 ```
 
 First external harness deployment target remains private/local:
@@ -2032,6 +2066,131 @@ Roadmap impact:
 
 ---
 
+## 47. Forward Phase Windows 1303-1342 Packaging and Signing Plan Addendum
+
+The forward plan
+`docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md`
+and architecture gates
+`docs/architecture/ilc_public_rc_packaging_architecture_gate_v0.1.md` and
+`docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md` record
+the best current candidate sequence for the next three post-1302 windows.
+The Confidential Coordination Sidecar Suite routing is recorded in
+`docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md`:
+
+```text
+forward_phase_windows_1303_1342_packaging_and_signing_plan_recorded
+public_rc_exclude_helper_stripping_routed_to_phase_1308_1319_1333
+source_allowlist_export_materialization_must_fail_on_public_rc_exclude_markers
+public_rc_packaging_gate_sequence_implementation_then_dry_run_then_execution
+public_rc_package_export_must_be_public_tree_clean_not_flag_flip
+release_artifact_packet_must_reference_clean_export_gate
+public_rc_exclude_absence_is_not_allowlist_clearance
+legacy_untagged_docs_default_review_required_before_public_export
+ilc_graph_native_sidecar_suite_architecture_recorded
+graph_native_sidecar_creation_routed_to_forward_windows_1303_1342
+essential_openclaw_rc_sidecars_truth_projection_claimability_bridge
+openclaw_nemoclaw_are_hosts_not_protocol_substrates
+sidecar_suite_public_serving_remains_blocked_until_explicit_authority
+confidential_coordination_sidecar_suite_forward_plan_recorded
+confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329
+confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
+confidential_coordination_not_public_rc_blocker_without_explicit_selection
+```
+
+Roadmap impact:
+
+- The durable plan is implementation first, deterministic dry-run
+  materialization second, and explicit export/release/signing gate third.
+- Phase 1308 is the implementation-hardening planning point for
+  `PUBLIC_RC_EXCLUDE` helper replacement, stripping, or explicit carry-forward.
+- Phase 1307 through Phase 1314 are the implementation-hardening planning points
+  for the essential graph-native sidecar suite: registry/manifest, offline
+  claimability verifier, truth primitive submission boundary, TransportPrincipal
+  admission substrate, local graph/memory projection, and default-off public
+  fetch/P2P readiness, and wallet-facing value-action semantics preflight.
+- Phase 1322 and Phase 1323 are the private deployment and OpenClaw/NemoClaw
+  dry-run points for the essential sidecar suite; successful private
+  DigitalOcean/OpenClaw tests do not authorize public sidecar serving.
+- Phase 1324 through Phase 1328 are now the preferred planning lane for the
+  Confidential Coordination Sidecar Suite after the essential sidecar suite is
+  testable: private/gated shard sidecar, capability/membership sidecar, sealed
+  sender delivery sidecar, gossip announce/pull with jitter/cover policy, and a
+  private OpenClaw/NemoClaw droplet dry run.
+- Phase 1329 is the closure point for deciding whether confidential
+  coordination remains a private/post-RC lane, becomes a selected public-RC
+  blocker, or moves to a dedicated later window.
+- Phase 1319 is the deterministic source allowlist export rehearsal; the
+  materialized dry-run tree must contain zero `PUBLIC_RC_EXCLUDE` markers and no
+  imports of stripped helper modules.
+- Phase 1333 is the final source allowlist export execution gate, if later
+  explicitly authorized. It must fail closed if marked helpers, imports of
+  stripped helpers, or missing marker/import-scan evidence remain.
+- Internal helper flags must not be flipped from false to true as a publication
+  shortcut. Public RC packaging must replace the helper with public-safe code,
+  strip it from the public export, or carry the affected profile forward as
+  blocked.
+- `PUBLIC_RC_EXCLUDE` is a deny marker, not allowlist clearance. Older unmarked
+  docs, research notes, roadmap fragments, whitepaper drafts, and phase
+  walkthroughs remain excluded or review-required until an explicit manifest
+  lists them with legacy-untagged review evidence.
+- Release artifact packets must reference the clean export evidence; release
+  artifacts must not be used to hide private helper scaffolds or convert a false
+  internal helper flag into a public claim.
+- Confidential coordination is not a first-public-RC blocker by default and
+  does not become a public confidential messaging claim without explicit Phase
+  1337 and Phase 1341 authority.
+- This addendum does not open Window 1303+, execute export, publish source or
+  packages, produce release artifacts, generate keys/envelopes, mutate or sign
+  Genesis, sign v0.2, activate public paths, or authorize economics.
+
+---
+
+## 48. Confidential Coordination Sidecar Suite Forward Plan Addendum
+
+The forward plan
+`docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md`
+records the graph-native confidential coordination lane:
+
+```text
+confidential_coordination_sidecar_suite_forward_plan_recorded
+confidential_coordination_sidecar_suite_graph_native_not_signal_clone
+confidential_coordination_sidecar_suite_not_public_rc_blocker_by_default
+confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329
+confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
+confidential_coordination_public_claim_requires_phase_1337_1341_authority
+```
+
+Roadmap impact:
+
+- Phase 1297 and Phase 1298 are related prerequisites only; they do not
+  implement confidential coordination or enable serving.
+- Phase 1307 should add the `confidential_coordination_local_preview` profile
+  to the sidecar registry/manifest design with private wiring modes and
+  explicit non-claims.
+- Phase 1311 and Phase 1312 should ensure projection support for private/gated
+  shard headers and encrypted coordination-node references without leaking
+  plaintext, membership, route history, or sealed payloads.
+- Phase 1324 is CCSS-001 private/gated shard sidecar contract.
+- Phase 1325 is CCSS-002 capability, membership, grant, revocation, and
+  optional ZK-membership proof interface boundary.
+- Phase 1326 is CCSS-003 sealed sender local delivery sidecar boundary using
+  H-013/H-015 seams and no-public-P2P defaults.
+- Phase 1327 is CCSS-004 gossip announce/pull, jitter, batching, cover-policy,
+  and traffic-analysis negative tests with no anonymity-guarantee claim.
+- Phase 1328 is CCSS-005 private OpenClaw/NemoClaw or equivalent DigitalOcean
+  droplet dry run over loopback, Tailscale, or other private wiring.
+- Phase 1329 decides whether the suite remains post-RC/private, becomes a
+  selected public-RC blocker, or moves to a later dedicated window.
+- Phase 1337 must explicitly activate or exclude any public confidential
+  coordination serving claim; private droplet success is not public authority.
+- Phase 1341 must not imply a public confidential messaging product unless
+  Phase 1337 explicitly selected and passed that scope.
+- This addendum does not open Window 1303+, activate public serving, publish
+  source, produce release artifacts, generate keys/envelopes, mutate/sign
+  Genesis, sign v0.2, or authorize wallet/ECU/ILC economics.
+
+---
+
 ## 46. Phase 1298 Sidecar Bind Listener Peer Discovery Authority Preflight Addendum
 
 Historical Phase 1297 frontier phrase guard:
@@ -2080,3 +2239,878 @@ Roadmap impact:
   bind/listener/peer-discovery authority, release publication/artifact/key and
   envelope authority, Genesis/v0.2 signing authority, wallet/ECU/ILC
   activation, CDL-088, and IP/publication clearance.
+
+---
+
+## 49. Phase 1299 Release Allowlist Artifact Genesis Readiness Preflight Addendum
+
+Historical Phase 1298 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1298
+Phase 1299 is the next sensitive phase
+```
+
+Phase 1299 records the release allowlist, artifact, and Genesis readiness
+preflight after explicit `GO Phase 1299`:
+
+```text
+release_allowlist_artifact_genesis_readiness_preflight_phase_1299.v0.1
+release_readiness_verdict_phase_1299=preflight_only_no_artifacts
+source_allowlist_export_not_executed_phase_1299
+release_artifact_not_produced_phase_1299
+release_keys_not_generated_phase_1299
+release_envelope_not_produced_phase_1299
+genesis_atlas_not_mutated_or_signed_phase_1299
+v0_2_signing_not_authorized_phase_1299
+public_rc_exclude_helper_stripping_deferred_to_package_materialization_after_phase_1299
+public_rc_remains_blocked_after_phase_1299
+phase_1300_counsel_ip_publication_clearance_inventory_next
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1299.
+- Window 1289-1302 OPEN through Phase 1299.
+- Phase 1299 records release readiness classification only. Phase 1255 remains
+  a source allowlist procedure, Phase 1213 remains a release artifact manifest
+  schema, Phase 1279 and Phase 1287 remain prepublication/pre-signing
+  preflights, and ATLAS-G-006 remains graph evidence with release artifacts
+  blocked.
+- Phase 1299 does not execute source export, materialize an export manifest,
+  publish source or packages, produce release artifacts, produce a release
+  artifact manifest instance, generate release keys, produce release envelopes,
+  strip or promote helpers, remove markers, mutate Genesis Atlas, sign Genesis
+  Atlas, authorize v0.2 signing, mutate the CDL register, open CDL-088, file
+  IP, publish papers, or authorize wallet/ECU/ILC economics.
+- `PUBLIC_RC_EXCLUDE` helper stripping is deferred to package materialization:
+  Phase 1308 replacement/strip/carry-forward planning, Phase 1319 dry-run
+  materialization, and Phase 1333 export execution gate if later authorized.
+- Phase 1300 is the next sensitive phase and requires explicit `GO Phase 1300`.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, privacy filter implementation/review, replay/nullifier and
+  duplicate-claim registry policy, actual TransportPrincipal public-path
+  activation authority, sidecar public projection serving authority, sidecar
+  bind/listener/peer-discovery authority, counsel/IP/publication clearance,
+  source allowlist export execution, release publication/artifact/key and
+  envelope authority, Genesis/v0.2 signing authority, wallet/ECU/ILC
+  activation, and CDL-088.
+
+---
+
+## 50. Phase 1300 Counsel IP Publication Clearance Inventory Addendum
+
+Historical Phase 1299 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1299
+Phase 1300 is the next sensitive phase
+```
+
+Phase 1300 records the counsel, IP, and publication clearance inventory after
+explicit `GO Phase 1300`:
+
+```text
+counsel_ip_publication_clearance_inventory_phase_1300.v0.1
+counsel_ip_publication_verdict_phase_1300=inventory_only_no_publication
+ip_filing_not_performed_phase_1300
+paper_publication_not_authorized_phase_1300
+public_repository_publication_not_authorized_phase_1300
+public_package_publication_not_authorized_phase_1300
+public_rc_remains_blocked_after_phase_1300
+phase_1301_deep_no_activation_assertion_audit_next
+```
+
+Roadmap impact:
+
+- At Phase 1300 close, Window 1289-1302 was open through Phase 1300.
+- Historical Phase 1300 frontier phrase guard: Window 1289-1302 OPEN through Phase 1300.
+- Phase 1300 confirms CDL-086 counsel dispositions are Genesis-authorized
+  provisional dispositions only, not counsel-approved legal conclusions.
+- Phase 1300 confirms IP-001 through IP-006 remain internal-only
+  IP/publication planning lanes, with IP-lane files `PUBLIC_RC_EXCLUDE` by
+  default.
+- Phase 1300 does not select final license instruments, approve CLA text,
+  approve DCO-only contributor policy, publish trademark or canonical identity
+  policy, execute the publication clearance matrix, file IP, publish papers,
+  release a preprint, execute source allowlist export, publish a repository,
+  publish a package, produce release artifacts, generate release keys, produce
+  release envelopes, mutate Genesis Atlas, sign Genesis Atlas, authorize v0.2
+  signing, mutate the CDL register, open CDL-088, activate public paths, or
+  authorize wallet/ECU/ILC economics.
+- At Phase 1300 close, Phase 1301 was the next sensitive phase and required explicit `GO Phase 1301`; Phase 1301 is now complete.
+- Public RC remains blocked by final public claimability API/verifier
+  authority, privacy filter implementation/review, replay/nullifier and
+  duplicate-claim registry policy, actual TransportPrincipal public-path
+  activation authority, sidecar public projection serving authority, sidecar
+  bind/listener/peer-discovery authority, counsel-approved
+  license/CLA/trademark/IP/publication clearance, source allowlist export
+  execution, release publication/artifact/key and envelope authority,
+  Genesis/v0.2 signing authority, wallet/ECU/ILC activation, and CDL-088.
+
+## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
+
+Historical Phase 1300 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1300
+Phase 1301 is the next sensitive phase
+```
+
+Phase 1301 records the deep no-activation assertion audit after explicit
+`GO Phase 1301`:
+
+```text
+deep_no_activation_assertion_audit_phase_1301.v0.1
+no_activation_audit_verdict_phase_1301=pass_or_blockers_recorded
+public_endpoint_activation_absent_or_blocked_phase_1301
+release_artifact_activation_absent_or_blocked_phase_1301
+genesis_signing_activation_absent_or_blocked_phase_1301
+wallet_ecu_ilc_activation_absent_or_blocked_phase_1301
+public_rc_remains_blocked_after_phase_1301
+phase_1302_window_1289_1302_closure_gate_next
+legacy_public_labeled_fastapi_routes_carry_forward_phase_1301
+legacy_public_labeled_fastapi_routes_not_public_rc_clean_phase_1301
+```
+
+Roadmap impact:
+
+- Window 1289-1302 is now open through Phase 1301.
+- Window 1289-1302 OPEN through Phase 1301.
+- Phase 1301 confirms no source allowlist export execution, materialized export
+  manifest production, public repository publication, public package
+  publication, release artifact production, release-key generation, release
+  envelope production, Genesis Atlas mutation/signing, v0.2 signing, CDL
+  mutation, CDL-088 opening, public claimability activation, public P2P/fetch
+  serving activation, public sidecar/projection serving, wallet withdrawal,
+  wallet transfer, wallet spend, ECU minting, or ILC settlement authority was
+  granted.
+- Phase 1301 records legacy `/v1/public/*` FastAPI routes in `ilc_core/server.py`
+  as clean-public-RC blockers, not as public-RC activation authority.
+- Phase 1302 is sensitive and requires explicit `GO Phase 1302`.
+- Public RC remains blocked by legacy public-labeled FastAPI route exclusion or
+  replacement, final public claimability API/verifier authority, privacy filter
+  implementation/review, replay/nullifier and duplicate-claim registry policy,
+  actual TransportPrincipal public-path activation authority, sidecar public
+  projection serving authority, sidecar bind/listener/peer-discovery authority,
+  counsel-approved license/CLA/trademark/IP/publication clearance, source
+  allowlist export execution, release publication/artifact/key and envelope
+  authority, Genesis/v0.2 signing authority, wallet/ECU/ILC activation, and
+  CDL-088.
+
+## 52. Phase 1302 Window 1289-1302 Closure Gate Addendum
+
+Historical Phase 1301 frontier phrase guard:
+
+```text
+Window 1289-1302 OPEN through Phase 1301
+Phase 1302 is the next sensitive phase
+```
+
+Phase 1302 records the Window 1289-1302 closure gate after explicit
+`GO Phase 1302`:
+
+```text
+window_1289_1302_closed_phase_1302
+window_1289_1302_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1302_window_1289_1302_closure_complete
+window_1303_plus_sequence_lock_required_before_next_phase_assignment
+public_rc_exclude_helper_stripping_carried_forward_to_window_1303_plus
+public_rc_remains_blocked_after_phase_1302
+```
+
+Roadmap impact:
+
+- Window 1289-1302 CLOSED / PASS through Phase 1302 with blockers carried
+  forward.
+- Window 1303+ sequence lock is required before assigning further phases,
+  including any Phase 1303 implementation-hardening work.
+- Phase 1302 closes the window's planned sequence lock, capsule refresh,
+  claimability verifier contract, package-boundary rehearsal, helper register,
+  allowlist rehearsal, TransportPrincipal preflight, hostile-network plan,
+  sidecar schema, sidecar bind/listener/peer-discovery preflight, release
+  readiness preflight, counsel/IP/publication inventory, and no-activation
+  audit work.
+- Phase 1302 does not execute source allowlist export, materialize a public
+  export tree, publish a repository, publish a package, produce release
+  artifacts, generate release keys, produce release envelopes, promote or strip
+  helpers, mutate Genesis Atlas, sign Genesis Atlas, authorize v0.2 signing,
+  mutate the CDL register, open CDL-088, activate public paths, or authorize
+  wallet/ECU/ILC economics.
+- Public RC remains blocked after Phase 1302 by legacy public-labeled FastAPI
+  route exclusion or replacement, Final public claimability verifier/API
+  authority, `PUBLIC_RC_EXCLUDE` helper replacement, stripping, or explicit
+  deferral, privacy filter implementation/review, replay/nullifier and
+  duplicate-claim registry policy, actual TransportPrincipal public-path
+  activation authority, Rust public P2P integration and hostile-network
+  transport hardening, sidecar public projection serving authority, sidecar
+  bind/listener/peer-discovery authority, counsel-approved
+  license/CLA/trademark/IP/publication clearance, source allowlist export
+  execution, clean public tree materialization, release artifact production,
+  release-key generation, release envelope production, Genesis Atlas
+  mutation/regeneration/signing, v0.2 signing, CDL-088 opening, wallet
+  withdrawal, wallet transfer, wallet spend, wallet signing authority, wallet
+  ledger-write authority, ECU minting, and ILC settlement.
+
+Exact Phase 1302 blocker phrase guard:
+
+```text
+Final public claimability verifier/API authority
+`PUBLIC_RC_EXCLUDE` helper replacement, stripping
+Rust public P2P integration
+privacy filter implementation/review
+source allowlist export execution
+release artifact production
+release-key generation
+release envelope production
+Genesis Atlas mutation/regeneration/signing
+v0.2 signing
+CDL-088 opening
+wallet withdrawal
+ECU minting
+ILC settlement
+```
+
+## 53. Phase 1305 Offline Claimability Receipt Verifier Sidecar Addendum
+
+Phase 1305 records the offline/local claimability receipt verifier sidecar after
+explicit `GO Phase 1305`:
+
+```text
+offline_claimability_receipt_verifier_sidecar_phase_1305.v0.1
+claimability_verifier_local_only_no_api_phase_1305
+receipt_verifier_public_serving_not_enabled_phase_1305
+public_claimability_activation_not_authorized_phase_1305
+phase_1306_proof_binding_canonical_hash_negative_path_tests_next
+public_rc_remains_blocked_after_phase_1305
+```
+
+Roadmap impact:
+
+- Gap 13 now has a local-only verifier substrate at
+  `ilc_core/sidecars/claimability_receipt_verifier.py`.
+- The sidecar verifies canonical local presentations, conversion receipts,
+  claimability proofs, settled runtime roots, wallet-state roots, balance
+  receipt refs, history digests, activation flags, exact numeric strings, and
+  canonical decision hashes.
+- Accepted decisions are `accepted_local_only_no_public_serving_phase_1305` and
+  still carry public-mode blockers.
+- Rejected decisions fail closed with stable rejection tokens.
+- The sidecar does not import or promote the existing `PUBLIC_RC_EXCLUDE`
+  Phase 1274/1275 ledger helpers.
+- Public RC remains blocked by public claimability API/verifier serving
+  authority, public-safe disclosure, replay/nullifier policy, duplicate-claim
+  policy, TransportPrincipal public-path authority, `PUBLIC_RC_EXCLUDE` helper
+  disposition, package/export materialization, release authority, wallet
+  withdrawal/transfer/spend semantics, ECU minting, and ILC settlement.
+
+Phase 1305 does not authorize source export, public repository publication,
+public package publication, release artifacts, release keys, release envelopes,
+release signing material, public claimability activation, public verifier
+service, public claim endpoint, public P2P/fetch/sidecar serving, helper
+promotion, marker removal, helper stripping, CDL mutation, CDL-088 opening,
+Genesis Atlas mutation/regeneration/signing, v0.2 signing, wallet withdrawal,
+wallet transfer, wallet spend, ECU minting, ILC settlement, public confidential
+messaging, or public confidential coordination serving.
+
+Phase 1306 is sensitive and requires explicit `GO Phase 1306`.
+
+## 54. Phase 1306 Proof-Binding Canonical-Hash Negative-Path Addendum
+
+Phase 1306 records proof-binding, canonical-hash, exact-numeric, and
+negative-path hardening after explicit `GO Phase 1306`:
+
+```text
+proof_binding_canonical_hash_negative_path_tests_phase_1306.v0.1
+forged_receipt_negative_paths_hardened_phase_1306
+canonical_json_exact_numeric_proof_safety_hardened_phase_1306
+replay_nullifier_duplicate_claim_policy_still_gated_phase_1306
+phase_1307_sidecar_registry_manifest_profile_hardening_next
+public_rc_remains_blocked_after_phase_1306
+```
+
+Roadmap impact:
+
+- Gap 13 now has focused local verifier negative-path tests for forged
+  conversion receipts, forged proof-binding hashes, forged proof refs, root
+  namespace drift, latest balance receipt ref drift, exact numeric drift,
+  canonical JSON drift, canonical decision hash drift, and semantic decision
+  forgery.
+- `ilc_core/sidecars/claimability_receipt_verifier.py` now rejects tuple values
+  as non-JSON canonical payloads and bounds mapping-key text before hashing.
+- Replay/nullifier policy and duplicate-claim registry policy remain gated
+  blockers, not solved by local proof validity.
+- The public RC packaging architecture gate now records deterministic scaffold
+  compilation: development scaffolding and token chains are retained in the
+  private workspace, while public RC materialization must compile them into
+  final contracts or exclude them by disposition.
+- Public RC remains blocked by public claimability API/verifier serving
+  authority, public-safe disclosure, replay/nullifier policy, duplicate-claim
+  policy, TransportPrincipal public-path authority, `PUBLIC_RC_EXCLUDE` helper
+  disposition, package/export materialization, release authority, wallet
+  withdrawal/transfer/spend semantics, ECU minting, and ILC settlement.
+
+Phase 1306 does not authorize source export, public repository publication,
+public package publication, release artifacts, release keys, release envelopes,
+release signing material, public claimability activation, public verifier
+service, public claim endpoint, public P2P/fetch/sidecar serving, helper
+promotion, marker removal, helper stripping, CDL mutation, CDL-088 opening,
+Genesis Atlas mutation/regeneration/signing, v0.2 signing, wallet withdrawal,
+wallet transfer, wallet spend, ECU minting, ILC settlement, public confidential
+messaging, or public confidential coordination serving.
+
+Phase 1307 has now completed, and Phase 1308 is recorded below. Phase 1309 is
+sensitive and requires explicit `GO Phase 1309`.
+
+## 55. Phase 1307 Graph-Native Sidecar Registry Manifest Addendum
+
+Phase 1307 records graph-native sidecar registry/manifest and package-profile
+hardening after explicit `GO Phase 1307`:
+
+```text
+graph_native_sidecar_registry_manifest_phase_1307.v0.1
+sidecar_manifest_deterministic_profile_declared_phase_1307
+openclaw_compatible_local_bridge_profile_declared_phase_1307
+confidential_coordination_local_preview_profile_declared_phase_1307
+package_profile_integrity_hardened_phase_1307
+phase_1308_public_rc_exclude_helper_pruning_replacement_plan_next
+public_rc_remains_blocked_after_phase_1307
+```
+
+Roadmap impact:
+
+- Gap 14 now has deterministic local/package sidecar registry metadata at
+  `ilc_core/sidecars/registry_manifest.py`.
+- `openclaw_skill_local` and `openclaw_skill_claimable` package profiles now
+  include the graph-native sidecar registry and OpenClaw-compatible local bridge
+  components.
+- `openclaw_skill_claimable` now requires the offline claimability receipt
+  verifier sidecar as package-profile integrity metadata; public claimability
+  runtime activation remains false.
+- `confidential_coordination_local_preview` is declared as a private/local
+  package profile with no public confidential messaging claim and no public
+  confidential coordination serving claim.
+- OpenClaw, NemoClaw, DigitalOcean droplets, and equivalent harnesses remain
+  hosts or consumers, not protocol substrates.
+- The `local_sidecar` package-profile CI surface now measures
+  `ilc_core/sidecars`, and the deterministic Phase 1251 package-profile audit
+  artifacts were refreshed under profile version
+  `public_rc_package_profiles_1307.v0.1`.
+- Source allowlist readiness remains fail-closed: no source allowlist export,
+  no clean public tree materialization, no public package publication, and no
+  release materialization occurred.
+- Phase 1308 is the helper disposition planning point for `PUBLIC_RC_EXCLUDE`
+  helper replacement, stripping, or deferral and has now recorded the concrete
+  runtime-helper inventory.
+
+Phase 1307 does not authorize public serving, source export, public repository
+publication, public package publication, release artifacts, release keys,
+release envelopes, release signing material, public claimability activation,
+public verifier service, public claim endpoint, public P2P/fetch/sidecar
+serving, helper promotion, marker removal, helper stripping, CDL mutation,
+CDL-088 opening, Genesis Atlas mutation/regeneration/signing, v0.2 signing,
+wallet withdrawal, wallet transfer, wallet spend, ECU minting, ILC settlement,
+public confidential messaging, or public confidential coordination serving.
+
+Phase 1308, Phase 1309, Phase 1310, Phase 1311, Phase 1312, Phase 1313,
+Phase 1314, Phase 1315, and Phase 1316 have now completed. Window 1303-1316 is
+closed with carry-forward.
+
+## 62. Phase 1316 Window 1303-1316 Closure Implementation Audit Addendum
+
+Phase 1316 closes Window 1303-1316 after explicit `GO Phase 1316`:
+
+```text
+window_1303_1316_closed_phase_1316
+window_1303_1316_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1316_window_1303_1316_closure_complete
+window_1317_plus_sequence_lock_required_before_next_phase_assignment
+implementation_hardening_blockers_classified_phase_1316
+public_rc_remains_blocked_after_phase_1316
+```
+
+Window 1303-1316 is CLOSED / PASS with carry-forward through Phase 1316.
+The closure handoff is
+`docs/specs/ilc_window_1303_1316_handoff_1316_v0.1.md`. No next phase is
+assigned; Window 1317+ sequence lock is required before any further phase
+assignment.
+
+Roadmap impact:
+
+- Window 1303-1316 completed local/offline implementation hardening for the
+  claimability verifier substrate, proof-binding negative paths, graph-native
+  sidecar registry/profile metadata, `PUBLIC_RC_EXCLUDE` helper disposition
+  planning, TransportPrincipal local admission, hostile-network negative-path
+  tests, local projection privacy, default-off public fetch/P2P readiness,
+  wallet-facing preflight boundaries, and ECU/ILC value-path preflight
+  boundaries.
+
+Exact Phase 1316 blocker phrase guard:
+
+```text
+legacy public-labeled FastAPI routes
+public claimability verifier/API serving authority
+replay/nullifier and duplicate-claim registry policy
+PUBLIC_RC_EXCLUDE helper replacement and dry-run export proof
+Rust public-P2P substrate ADR/integration gate
+TransportPrincipal public-path activation authority
+public sidecar/projection serving authority
+source allowlist export execution
+clean materialized public tree production
+release artifact production
+release-key generation
+Genesis Atlas mutation/regeneration/signing
+v0.2 signing authorization
+wallet-facing action activation
+ECU minting activation
+ILC settlement activation
+final value-path activation authority
+```
+
+- Public RC remains blocked by legacy public-labeled FastAPI routes, public
+  claimability verifier/API serving authority, replay/nullifier and
+  duplicate-claim registry policy, PUBLIC_RC_EXCLUDE helper replacement and
+  dry-run export proof, Rust public-P2P substrate ADR/integration gate,
+  TransportPrincipal public-path activation authority, public
+  sidecar/projection serving authority, source allowlist export execution,
+  clean materialized public tree production, release artifact production,
+  release-key generation, Genesis Atlas mutation/regeneration/signing, v0.2
+  signing authorization, wallet-facing action activation, ECU minting
+  activation, ILC settlement activation, and final value-path activation
+  authority.
+- No public RC claim, source allowlist export execution, public repository
+  publication, public package publication, release artifact production,
+  release-key generation, release envelope production, release signing
+  material, public claimability activation, public verifier service, public
+  claim endpoint, public P2P, public fetch serving, public sidecar/projection
+  serving, non-loopback bind, public listener, peer discovery, helper
+  promotion, marker removal, helper stripping, CDL mutation, CDL-088 opening,
+  Genesis Atlas mutation, v0.2 signing, wallet-facing withdrawal request,
+  wallet-facing transfer request, wallet-facing spend request,
+  wallet-provider signing, wallet-provider ledger-write, ECU minting, ILC
+  settlement, or value-path activation is authorized by Phase 1316.
+
+## 56. Phase 1308 PUBLIC_RC_EXCLUDE Helper Disposition Addendum
+
+Phase 1308 records helper pruning/replacement planning after explicit
+`GO Phase 1308`:
+
+```text
+public_rc_exclude_helper_pruning_replacement_plan_phase_1308.v0.1
+public_rc_exclude_helper_disposition_inventory_recorded_phase_1308
+truth_primitive_sidecar_boundary_recorded_phase_1308
+helper_stripping_not_executed_phase_1308
+source_allowlist_export_not_executed_phase_1308
+phase_1309_transport_principal_admission_sidecar_lifecycle_next
+public_rc_remains_blocked_after_phase_1308
+```
+
+Roadmap impact:
+
+- The four current runtime `PUBLIC_RC_EXCLUDE` helpers are mapped to
+  `replace_before_export`: the CDL-048 conversion sweeper, claimability
+  proof-binding scaffold, TransportPrincipal public-path preflight scaffold,
+  and sidecar public-path preflight scaffold.
+- The public-RC package path remains materialization-based: later dry-run and
+  execution gates must prove no marked helpers and no stripped-helper imports
+  exist in the clean public tree.
+- The truth primitive submission sidecar boundary is now recorded for local
+  graph-native use. It does not authorize public API serving, graph
+  persistence, network delivery, public confidential messaging, or public
+  confidential coordination serving.
+- Legacy docs and documents carrying `PUBLIC_RC_EXCLUDE` remain excluded or
+  review-required by default; absence of the marker remains not enough for
+  allowlist clearance.
+- Phase 1309 is now the next sensitive gate for TransportPrincipal admission
+  sidecar lifecycle hardening.
+
+Phase 1308 does not authorize helper promotion, marker removal, helper
+stripping, source allowlist export, clean public tree materialization, public
+repository publication, public package publication, release artifacts, release
+keys, release envelopes, release signing material, public claimability
+activation, public verifier service, public claim endpoint, public P2P/fetch
+serving, public sidecar/projection serving, CDL mutation, CDL-088 opening,
+Genesis Atlas mutation/regeneration/signing, v0.2 signing, wallet withdrawal,
+wallet transfer, wallet spend, ECU minting, ILC settlement, public confidential
+messaging, or public confidential coordination serving.
+
+Phase 1309, Phase 1310, Phase 1311, Phase 1312, Phase 1313, Phase 1314, and
+Phase 1315 have now completed. Phase 1316 is sensitive and requires explicit
+`GO Phase 1316`.
+
+## 57. Phase 1309 TransportPrincipal Admission Sidecar Lifecycle Addendum
+
+Phase 1309 records local-only TransportPrincipal admission sidecar lifecycle
+hardening after explicit `GO Phase 1309`:
+
+```text
+transport_principal_admission_sidecar_lifecycle_hardening_phase_1309.v0.1
+transport_principal_lifecycle_policy_local_substrate_phase_1309
+transport_principal_public_path_not_activated_phase_1309
+public_p2p_not_activated_phase_1309
+phase_1310_revocation_replay_admission_ban_tests_next
+public_rc_remains_blocked_after_phase_1309
+```
+
+Roadmap impact:
+
+- Gap 10 now has a deterministic local-only TransportPrincipal admission
+  sidecar lifecycle substrate at `ilc_core/sidecars/transport_principal_admission.py`.
+- The sidecar uses Phase 1267 authenticated TransportPrincipal context material
+  and emits canonical local admission decisions with bounded revocation, replay,
+  accepted-kind, and ban inputs.
+- The sidecar rejects requester_id, JSON requester id, client IP, AgentID,
+  harness identity, OpenClaw identity, and Tailscale identity fallback flags.
+- The sidecar does not import or promote the stale Phase 1277
+  `PUBLIC_RC_EXCLUDE` public-path preflight helper.
+- The graph-native sidecar registry now records `transport_principal_admission`
+  as `lifecycle_substrate_recorded_phase_1309_tests_hardened_phase_1310`.
+- The sensitive-runtime coding taboo checker now scans the new admission
+  sidecar for canonical JSON, untrusted payload bounds, assert usage, wall-clock
+  usage, and predictable PRNG usage.
+- Phase 1310 has now hardened revocation, replay, admission, and ban
+  negative-path tests. Public-path readiness remains blocked until later
+  explicit public-path authority and substrate evidence.
+
+Phase 1309 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, admission policy activation for a
+public path, ban registry activation for a public path, public rate-limit state
+activation, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet withdrawal, wallet transfer, wallet spend, ECU minting,
+ILC settlement, public confidential messaging, or public confidential
+coordination serving.
+
+Phase 1310, Phase 1311, Phase 1312, Phase 1313, Phase 1314, and Phase 1315
+have now completed. Phase 1316 is sensitive and requires explicit
+`GO Phase 1316`.
+
+## 62. Phase 1314 Wallet-Facing Value-Action Semantics Preflight Addendum
+
+Phase 1314 records wallet-facing withdrawal, transfer, and spend request
+semantics preflight after explicit `GO Phase 1314`:
+
+```text
+wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1
+wallet_withdrawal_transfer_spend_not_activated_phase_1314
+wallet_signing_ledger_write_not_authorized_phase_1314
+public_claimability_user_action_boundary_recorded_phase_1314
+wallet_provider_agnostic_not_ledger_truth_agnostic_phase_1314
+phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next
+public_rc_remains_blocked_after_phase_1314
+```
+
+Roadmap impact:
+
+- Gap 13 now has a deterministic local wallet-facing value-action semantics
+  preflight packet at `ilc_core/sidecars/wallet_action_semantics_preflight.py`.
+- The current public wallet runtime remains read-only with only
+  `wallet_status`, `wallet_history`, `wallet_export`, and `ledger_summary`.
+- The graph-native sidecar registry now records
+  `wallet_action_semantics_preflight` with no public serving and requires it
+  for the OpenClaw/NemoClaw claimable local bridge profile.
+- The claimable package profile now records
+  `wallet_action_semantics_preflight_sidecar` as a package component, but this
+  is still preflight/package metadata and not wallet activation.
+- Public RC remains blocked by public claimability API/verifier authority,
+  public claim endpoint authority, replay/nullifier and duplicate-claim policy,
+  source/release/signing authority, ECU minting, ILC settlement, and final
+  explicit wallet-facing action activation authority.
+- ILC is recorded as wallet-provider agnostic but not ledger-truth agnostic:
+  wallets are adapters/sidecars around ledger state, graph state, receipts,
+  settled roots, wallet-root bindings, claimability proofs, and deterministic
+  sidecar manifests.
+- A future ILC-native wallet should be routed as an optional recipe of
+  graph-native sidecars: provider adapter, signing-intent/payload binding,
+  ledger-truth value-action validation, receipt/history presentation, and
+  recovery/export portability. This is a later planning lane after Phase 1315
+  settlement-boundary work, not a Phase 1314 deliverable.
+
+Phase 1314 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, public rate-limit state activation,
+admission policy activation for a public path, ban registry activation for a
+public path, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet-facing withdrawal requests, wallet-facing transfer
+requests, wallet-facing spend requests, wallet-provider signing requests,
+wallet-provider ledger-write requests, public claim endpoint, ECU minting, ILC
+settlement, withdrawal runtime activation, public confidential messaging, or
+public confidential coordination serving.
+
+Phase 1315 has now completed. Phase 1316 is sensitive and requires explicit
+`GO Phase 1316`.
+
+## 63. Phase 1315 ECU/ILC Value-Path Boundary Preflight Addendum
+
+Phase 1315 records ECU minting and ILC settlement boundary preflight after
+explicit `GO Phase 1315`:
+
+```text
+ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1
+ecu_minting_not_authorized_phase_1315
+ilc_settlement_not_authorized_phase_1315
+value_path_activation_boundary_recorded_phase_1315
+phase_1316_window_1303_1316_closure_audit_next
+public_rc_remains_blocked_after_phase_1315
+```
+
+Roadmap impact:
+
+- Gap 12/13 now has a deterministic local ECU/ILC value-path activation
+  boundary packet at
+  `ilc_core/sidecars/value_path_activation_boundary_preflight.py`.
+- The packet records local read-only substrates while blocking ECU minting, ECU
+  creation, ECU supply policy mutation, ILC settlement, ILC transfer,
+  settlement root publication, withdrawal runtime, wallet writes, public
+  claimability activation, public claim endpoint, release materialization, and
+  CDL-088 opening.
+- The graph-native sidecar registry now records
+  `value_path_activation_boundary_preflight` with no public serving and
+  requires it for the OpenClaw/NemoClaw claimable local bridge profile.
+- The claimable package profile now records
+  `value_path_activation_boundary_preflight_sidecar` as a package component,
+  but this is still preflight/package metadata and not value-path activation.
+- Public RC remains blocked by public claimability API/verifier authority,
+  public claim endpoint authority, replay/nullifier and duplicate-claim policy,
+  source/release/signing authority, public transport/projection authority,
+  ECU minting activation authority, ILC settlement activation authority,
+  withdrawal runtime authority, wallet write authority, and final explicit
+  value-path activation authority.
+- ILC remains wallet-provider agnostic but not ledger-truth agnostic: wallets
+  are adapters/sidecars around ledger state, graph state, receipts, settled
+  roots, wallet-root bindings, claimability proofs, and deterministic sidecar
+  manifests.
+
+Phase 1315 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, public rate-limit state activation,
+admission policy activation for a public path, ban registry activation for a
+public path, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet-facing withdrawal requests, wallet-facing transfer
+requests, wallet-facing spend requests, wallet-provider signing requests,
+wallet-provider ledger-write requests, public claim endpoint, public
+claimability activation, withdrawal runtime, ECU minting, ILC settlement,
+value-path activation, public confidential messaging, or public confidential
+coordination serving.
+
+Phase 1316 has now completed and closed Window 1303-1316 with carry-forward.
+
+## 58. Phase 1310 Revocation Replay Admission Ban Tests Addendum
+
+Phase 1310 records hostile-network local negative-path hardening after explicit
+`GO Phase 1310`:
+
+```text
+revocation_replay_admission_ban_tests_phase_1310.v0.1
+transport_principal_revocation_replay_tests_hardened_phase_1310
+admission_ban_rate_privacy_tests_hardened_phase_1310
+hostile_network_public_path_still_blocked_phase_1310
+phase_1311_local_graph_memory_projection_sidecar_next
+public_rc_remains_blocked_after_phase_1310
+```
+
+Roadmap impact:
+
+- Gap 10 now has local hostile-network negative-path coverage for
+  TransportPrincipal revocation, replay, admission, ban, rate-limit, and
+  privacy behavior.
+- The admission sidecar now rejects fallback/private context keys including
+  `requester_id`, `client_ip`, `AgentID`, `agent_id`, harness identity,
+  OpenClaw identity, Tailscale identity, wallet fields, stake fields, economic
+  position, and graph position.
+- Local rate-limit checks are bounded and keyed only by authenticated
+  `tp_rate:<sha256>` material. This is caller-supplied local state only, not a
+  public rate-limit registry.
+- Admission decision validation now rejects unexpected decision keys and
+  non-JSON value types before canonical validation or export.
+- The graph-native sidecar registry now records `transport_principal_admission`
+  as `lifecycle_substrate_recorded_phase_1309_tests_hardened_phase_1310`.
+- Public TransportPrincipal path activation remains blocked pending public
+  credential issuer authority, public revocation registry, public replay cache,
+  public rate-limit state, public admission and ban policy, public privacy
+  policy, Rust public-P2P substrate evidence, and explicit public transport
+  activation authority.
+
+Phase 1310 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, public rate-limit state activation,
+admission policy activation for a public path, ban registry activation for a
+public path, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet withdrawal, wallet transfer, wallet spend, ECU minting,
+ILC settlement, public confidential messaging, or public confidential
+coordination serving.
+
+Phase 1311, Phase 1312, Phase 1313, Phase 1314, Phase 1315, and Phase 1316
+have now completed. Window 1303-1316 is closed with carry-forward.
+
+## 59. Phase 1311 Local Graph Memory Projection Sidecar Addendum
+
+Phase 1311 records local graph/memory projection sidecar implementation after
+explicit `GO Phase 1311`:
+
+```text
+local_graph_memory_projection_sidecar_phase_1311.v0.1
+public_safe_projection_implementation_local_only_phase_1311
+confidential_coordination_projection_reference_local_only_phase_1311
+public_sidecar_projection_serving_not_enabled_phase_1311
+phase_1312_projection_privacy_field_filtering_tests_next
+public_rc_remains_blocked_after_phase_1311
+```
+
+Roadmap impact:
+
+- Gap 9 now has a deterministic local-only projection sidecar substrate at
+  `ilc_core/sidecars/local_graph_memory_projection.py`.
+- The sidecar emits bounded canonical projection envelopes with aggregate
+  summaries, opaque private/gated shard header refs, and opaque encrypted
+  coordination-node refs.
+- The sidecar denies plaintext, membership, route history, sealed payloads,
+  AgentID, requester id, client IP, harness identity, OpenClaw identity,
+  Tailscale identity, wallet fields, stake fields, and economic fields.
+- The graph-native sidecar registry now records `local_graph_memory_projection`
+  as
+  `local_projection_substrate_implemented_phase_1311_privacy_tests_hardened_phase_1312`.
+- Public sidecar/projection serving remains blocked pending explicit public
+  projection serving authority, bind/listener/peer-discovery authority,
+  TransportPrincipal public-path
+  activation authority, source/release authority, and final public RC gates.
+
+Phase 1311 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, public rate-limit state activation,
+admission policy activation for a public path, ban registry activation for a
+public path, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet withdrawal, wallet transfer, wallet spend, ECU minting,
+ILC settlement, public confidential messaging, or public confidential
+coordination serving.
+
+Phase 1312, Phase 1313, Phase 1314, Phase 1315, and Phase 1316 have now
+completed. Window 1303-1316 is closed with carry-forward.
+
+## 60. Phase 1312 Projection Privacy Field Filtering Tests Addendum
+
+Phase 1312 records projection privacy and field-filtering hardening after
+explicit `GO Phase 1312`:
+
+```text
+projection_privacy_field_filtering_tests_phase_1312.v0.1
+projection_privacy_filters_hardened_phase_1312
+confidential_coordination_projection_non_leakage_tests_phase_1312
+public_sidecar_projection_serving_not_enabled_phase_1312
+phase_1313_public_fetch_p2p_activation_candidate_default_off_next
+public_rc_remains_blocked_after_phase_1312
+```
+
+Roadmap impact:
+
+- Gap 9 now has focused local tests for deny-by-default projection field
+  filtering, raw identifier redaction, confidential-coordination non-leakage,
+  and bounded-serving blockers.
+- `ilc_core/sidecars/local_graph_memory_projection.py` now rejects forbidden
+  raw export fragments before canonical JSON export, in addition to the Phase
+  1311 forbidden-key and exact-schema checks.
+- The graph-native sidecar registry now records `local_graph_memory_projection`
+  as
+  `local_projection_substrate_implemented_phase_1311_privacy_tests_hardened_phase_1312`.
+- Public sidecar/projection serving remains blocked pending explicit public
+  projection serving authority, bind/listener/peer-discovery authority,
+  TransportPrincipal public-path activation authority, source/release authority,
+  and final public RC gates.
+
+Phase 1312 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, public rate-limit state activation,
+admission policy activation for a public path, ban registry activation for a
+public path, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet withdrawal, wallet transfer, wallet spend, ECU minting,
+ILC settlement, public confidential messaging, or public confidential
+coordination serving.
+
+Phase 1313, Phase 1314, Phase 1315, and Phase 1316 have now completed. Window
+1303-1316 is closed with carry-forward.
+
+## 61. Phase 1313 Public Fetch/P2P Default-Off Readiness Addendum
+
+Phase 1313 records a public fetch/P2P readiness candidate after explicit
+`GO Phase 1313`:
+
+```text
+public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1
+rust_public_p2p_substrate_gate_status_recorded_phase_1313
+public_p2p_default_off_phase_1313
+public_fetch_serving_default_off_phase_1313
+transport_public_path_activation_not_authorized_phase_1313
+phase_1314_wallet_withdrawal_transfer_spend_preflight_next
+public_rc_remains_blocked_after_phase_1313
+```
+
+Roadmap impact:
+
+- Gap 10 now has a deterministic default-off public fetch/P2P readiness packet
+  at `ilc_core/sidecars/public_fetch_p2p_readiness.py`.
+- The packet records Rust QUIC/rustls source evidence from
+  `ilc_consensus/src/network.rs`, but classifies the Rust public-P2P substrate
+  gate as still required before any public activation.
+- Python HTTP fetch/gossip runtimes remain devnet/test regression surfaces and
+  are not public-P2P substrates.
+- The graph-native sidecar registry now records
+  `public_fetch_p2p_readiness_candidate` with no public serving.
+- Public TransportPrincipal path activation remains blocked pending public
+  credential issuer authority, public revocation registry, public replay cache,
+  public rate-limit state, public admission and ban policy, public privacy
+  policy, Rust public-P2P substrate ADR/integration evidence, and explicit
+  public transport activation authority.
+
+Phase 1313 does not authorize public P2P, public fetch serving, public
+sidecar/projection serving, public credential issuer authority, credential
+lifecycle policy activation for a public path, public revocation registry
+activation, public replay cache activation, public rate-limit state activation,
+admission policy activation for a public path, ban registry activation for a
+public path, privacy policy activation for a public path, non-loopback bind,
+wildcard bind, public host bind, listener, peer discovery, helper promotion,
+marker removal, helper stripping, source allowlist export, clean public tree
+materialization, public repository publication, public package publication,
+release artifacts, release keys, release envelopes, release signing material,
+CDL mutation, CDL-088 opening, Genesis Atlas mutation/regeneration/signing,
+v0.2 signing, wallet withdrawal, wallet transfer, wallet spend, ECU minting,
+ILC settlement, public confidential messaging, or public confidential
+coordination serving.
+
+Phase 1314, Phase 1315, and Phase 1316 have now completed. Window 1303-1316 is
+closed with carry-forward.
