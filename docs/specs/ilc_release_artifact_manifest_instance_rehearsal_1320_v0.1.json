@@ -1,0 +1,234 @@
+{
+  "artifact_manifest_shape": {
+    "allowed_artifact_types": [
+      "runtime_module",
+      "genesis_bundle",
+      "cli_binary",
+      "documentation_bundle",
+      "source_release_tarball",
+      "public_repository_tag",
+      "container_image",
+      "star_map_release_envelope",
+      "operator_bootstrap_bundle",
+      "verification_bundle"
+    ],
+    "canonical_hash_rule": "real artifacts require sha256:<64 lowercase hex>",
+    "dry_run_placeholder_instance": {
+      "artifact_id": "DRY_RUN_PLACEHOLDER_NOT_A_REAL_ARTIFACT_ID",
+      "artifact_type": "DRY_RUN_PLACEHOLDER_NOT_A_REAL_ARTIFACT_TYPE",
+      "canonical_hash": "DRY_RUN_PLACEHOLDER_NO_ARTIFACT_BYTES_NO_SHA256",
+      "lineage_reference": "DRY_RUN_PLACEHOLDER_NO_GENESIS_LINEAGE_CLAIM",
+      "produced_phase": "DRY_RUN_PLACEHOLDER_NO_PRODUCED_PHASE",
+      "ratification_token": "DRY_RUN_PLACEHOLDER_NO_RELEASE_RATIFICATION_TOKEN",
+      "signing_status": "DRY_RUN_PLACEHOLDER_NO_SIGNING_STATUS"
+    },
+    "dummy_placeholder_policy": "intentionally_non_conformant_placeholders_prevent_real_artifact_use",
+    "phase_1213_schema_contract": {
+      "additional_properties": false,
+      "artifact_types_exhaustive": true,
+      "canonical_hash_pattern": "^sha256:[0-9a-f]{64}$",
+      "required_fields": [
+        "artifact_id",
+        "artifact_type",
+        "canonical_hash",
+        "lineage_reference",
+        "produced_phase",
+        "ratification_token",
+        "signing_status"
+      ],
+      "schema_token": "release_artifact_manifest_schema_committed_phase_1213",
+      "schema_validated_against_phase_1320_expectations": true
+    },
+    "required_semantic_fields": [
+      "artifact_id",
+      "artifact_type",
+      "canonical_hash",
+      "lineage_reference",
+      "produced_phase",
+      "ratification_token",
+      "signing_status"
+    ],
+    "signing_status_values": [
+      "signed",
+      "unsigned",
+      "deferred"
+    ]
+  },
+  "blocked_materials": [
+    {
+      "material": "source_export_execution",
+      "reason": "phase_1319_was_rehearsal_only",
+      "status": "blocked"
+    },
+    {
+      "material": "clean_public_tree_materialization",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "release_artifact_production",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "release_artifact_checksums",
+      "reason": "no_artifact_bytes_produced",
+      "status": "blocked"
+    },
+    {
+      "material": "release_keys",
+      "reason": "phase_1321_rehearsal_next_no_real_keys",
+      "status": "blocked"
+    },
+    {
+      "material": "release_envelopes",
+      "reason": "phase_1321_rehearsal_next_no_real_envelopes",
+      "status": "blocked"
+    },
+    {
+      "material": "release_signing",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "public_repository_publication",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "public_package_publication",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "genesis_atlas_mutation_or_signing",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "v0_2_signing",
+      "reason": "not_authorized_phase_1320",
+      "status": "blocked"
+    },
+    {
+      "material": "public_rc_claim",
+      "reason": "public_rc_remains_blocked_after_phase_1320",
+      "status": "blocked"
+    }
+  ],
+  "distribution_channel_integrity_checklist": {
+    "checklist_token": "distribution_channel_integrity_checklist_committed_phase_1213",
+    "distribution_attempted": false,
+    "required_items_present": [
+      "Signing verification",
+      "Lineage chain verification",
+      "ADR-0036 compliance",
+      "ADR-0037 compliance",
+      "CDL-086 ratification check",
+      "Counsel disposition check",
+      "No public-launch implication",
+      "Manifest schema conformance",
+      "Preview-label non-bypass"
+    ],
+    "verdict": "not_run_no_distribution_phase_1320"
+  },
+  "file_hash_references": [
+    {
+      "hash_classification": "existing_rehearsal_input_not_produced_artifact_checksum",
+      "path": "docs/specs/ilc_release_artifact_manifest_schema_1213_v0.1.md",
+      "sha256": "7860f5746570d20e8272d7d8c6f0e3dd2a859a9b5aac23141af0a28c1ff0c9a7",
+      "source": "existing_checked_in_phase_1213_schema"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_produced_artifact_checksum",
+      "path": "docs/specs/ilc_distribution_channel_integrity_checklist_1213_v0.1.md",
+      "sha256": "b9594c1f4d6eecc1c8bec251e7a57bb8355649adc0e6cb4e3e4dc7baf76f0d57",
+      "source": "existing_checked_in_phase_1213_checklist"
+    },
+    {
+      "hash_classification": "existing_rehearsal_input_not_produced_artifact_checksum",
+      "path": "docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
+      "sha256": "4db85eb5fc89fa8d7167b911393bf826826c12ad1641e7eb87aa521855511dcd",
+      "source": "phase_1319_rehearsal_output"
+    }
+  ],
+  "hash_algorithm": {
+    "artifact_hash_algorithm_for_real_artifacts": "sha256",
+    "canonical_json": "json.dumps(..., sort_keys=True, allow_nan=False, separators=(\",\", \":\"))",
+    "machine_content_must_not_include_current_timestamps": true,
+    "phase_1320_rehearsal_manifest_hash": "9be55eb019ce88a2ac10eabd634f32a769a8ff6e26e9cf3e90bff605cc5f9e85"
+  },
+  "mode": "dry_run_rehearsal_only",
+  "negative_evidence": {
+    "artifact_payload_absence_checks": [
+      {
+        "payload_class": "tarball",
+        "status": "not_produced_phase_1320"
+      },
+      {
+        "payload_class": "wheel",
+        "status": "not_produced_phase_1320"
+      },
+      {
+        "payload_class": "release_bundle",
+        "status": "not_produced_phase_1320"
+      },
+      {
+        "payload_class": "container_image",
+        "status": "not_produced_phase_1320"
+      },
+      {
+        "payload_class": "artifact_checksum",
+        "status": "not_produced_phase_1320"
+      }
+    ],
+    "generated_release_artifact_paths": [],
+    "generated_release_checksum_paths": [],
+    "no_artifact_checksums_created": true,
+    "no_artifact_payloads_created": true
+  },
+  "non_claims": [
+    "no_public_source_export",
+    "no_source_publication",
+    "no_package_publication",
+    "no_clean_public_tree_materialization",
+    "no_release_artifact_production",
+    "no_release_artifact_checksums_for_produced_artifacts",
+    "no_release_key_generation",
+    "no_release_envelope_production",
+    "no_signing",
+    "no_genesis_atlas_mutation_or_signing",
+    "no_v0_2_signing",
+    "no_public_rc_claim",
+    "no_public_claimability_activation",
+    "no_public_p2p_or_fetch_serving",
+    "no_public_confidential_coordination_serving",
+    "public_rc_remains_blocked_after_phase_1320"
+  ],
+  "phase": 1320,
+  "public_rc_remains_blocked": true,
+  "required_tokens": [
+    "release_artifact_manifest_instance_rehearsal_phase_1320.v0.1",
+    "release_manifest_shape_rehearsed_no_artifacts_phase_1320",
+    "release_artifact_production_not_authorized_phase_1320",
+    "clean_export_evidence_dependency_recorded_phase_1320",
+    "phase_1321_release_key_envelope_rehearsal_next",
+    "public_rc_remains_blocked_after_phase_1320"
+  ],
+  "result": "pass",
+  "schema_version": "release_artifact_manifest_instance_rehearsal_phase_1320.v0.1",
+  "source_tree_rehearsal_input": {
+    "clean_export_evidence_dependency": "phase_1319_rehearsal_only_not_export",
+    "counts": {
+      "blocked_ambiguities": 0,
+      "dependency_hits": 0,
+      "included_files": 335,
+      "marker_hits": 0
+    },
+    "expected_manifest_hash": "b6f747b7ada90efa70358f11aa17243bc70ca35f3d32577a35380e3324915280",
+    "path": "docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
+    "result": "pass",
+    "schema_version": "deterministic_source_allowlist_export_rehearsal_phase_1319.v0.1",
+    "source_tree_status": "dry_run_only_no_clean_public_tree_materialized"
+  }
+}
