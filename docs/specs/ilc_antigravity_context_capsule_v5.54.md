@@ -1,9 +1,9 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, and Phase 1323 OpenClaw/NemoClaw claimable profile full dry run
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, and Phase 1323 Fix2 OpenClaw VPS install/local skill discovery
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1323 only
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1323 Fix2
 **Next phase:** Phase 1324 - CCSS-001 private/gated shard sidecar contract, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
@@ -59,6 +59,14 @@ openclaw_skill_not_published_or_installable_phase_1323
 genesis_rooted_agent_birth_attestation_blocker_phase_1323
 phase_1324_ccss_private_gated_shard_contract_next
 public_rc_remains_blocked_after_phase_1323
+phase_1323_fix2_openclaw_vps_install_skill_discovery.v0.1
+openclaw_cli_installed_on_private_vps_phase_1323_fix2
+local_ilc_skill_draft_discovered_by_openclaw_phase_1323_fix2
+openclaw_gateway_not_started_phase_1323_fix2
+clawhub_publication_not_authorized_phase_1323_fix2
+ilc_runtime_not_modified_phase_1323_fix2
+public_rc_remains_blocked_after_phase_1323_fix2
+phase_1324_ccss_private_gated_shard_contract_next_after_fix2
 ```
 
 ---
@@ -146,7 +154,18 @@ the CDL-069 `identity_seed_commitment` formula mismatch as fix-before-identity
 bootstrap debt. No identity artifact, mnemonic, key, secret-store write, or
 Genesis-rooted public bootstrap identity claim was created.
 
-Phase 1324 is the next phase after Phase 1323. Phase 1324 remains sensitive and
+Phase 1323 Fix2 is complete as a private OpenClaw VPS install and local skill
+discovery follow-up. It installed `OpenClaw 2026.5.7 (eeef486)` on
+`ilc-node-6`, skipped onboarding, left the gateway stopped and loopback-only with
+no listener on `18789` or `19001`, created local-only workspace skill
+`/home/ilcops/.openclaw/workspace/skills/ilc-local/SKILL.md`, and verified
+`openclaw skills info ilc-local --json` reports the skill as eligible,
+model-visible, user-invocable, and command-visible with no env requirements, no
+install actions, and no missing requirements. The first draft command mismatch
+was caught and corrected before claiming success. Fix2 did not modify ILC
+runtime code and did not publish to ClawHub or claim public installability.
+
+Phase 1324 is the next phase after Phase 1323 Fix2. Phase 1324 remains sensitive and
 requires explicit `GO Phase 1324`.
 
 ---
@@ -175,7 +194,7 @@ must repeat the same discovery discipline before execution.
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
 | 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Complete as dry-run procedure evidence only; no keys, envelopes, signing material, signatures, HSM/KMS/wallet calls, or secret reads. |
 | 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Complete as live private DigitalOcean/Tailscale rehearsal; UFW tightened to Tailscale-only inbound; no public ILC serving, no identity artifacts, no public claimability activation. Fix1 restored the VPS Git workflow and cleared the remote sync precondition for Phase 1323. |
-| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled; native OpenClaw/ClawHub installability was not rehearsed because binaries are absent on droplets. |
+| 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled. Fix2 installed native OpenClaw on `ilc-node-6` and verified local workspace skill discovery, while ClawHub listing/public installability remain blocked. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Open; no public confidential coordination serving. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
@@ -205,7 +224,7 @@ Public RC remains blocked after Phase 1323 by:
 - ECU minting activation, ILC settlement activation, withdrawal runtime, wallet write authority, and final value-path activation authority;
 - identity-seed UX and CDL-069 commitment-formula repair before any identity bootstrap artifact;
 - Genesis-rooted agent birth attestation or equivalent identity-origin proof before any public bootstrap claim;
-- native OpenClaw/ClawHub installation, listing, and installability rehearsal before any public skill claim;
+- native ClawHub listing, public installability rehearsal, and real OpenClaw agent-turn integration before any public skill claim;
 - public confidential messaging or public confidential coordination serving if later selected as public scope.
 
 The graph-native sidecar suite remains the preferred harness-agnostic path.
@@ -309,6 +328,20 @@ forward the identity-seed UX blocker, the CDL-069 commitment-formula mismatch
 before identity bootstrap, the Genesis-rooted agent birth attestation blocker,
 and the absence of native OpenClaw/ClawHub binaries on the droplets.
 
+Phase 1323 Fix2 publishes the private OpenClaw install/local skill discovery
+evidence paths:
+
+```text
+docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.json
+docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.md
+```
+
+The Fix2 report records that native OpenClaw CLI installation and local
+workspace skill discovery now pass on `ilc-node-6`, while onboarding, gateway
+serving, ClawHub publication, public installability, identity bootstrap, ILC
+runtime mutation, wallet/ECU/settlement activation, and Phase 1324 execution
+remain unauthorized.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -336,7 +369,7 @@ phase prompt or planning index row explicitly promotes them.
 
 ## 7. Non-Authorization Boundary
 
-Phases 1318 through 1323 do not authorize public RC claim, public launch claim, public
+Phases 1318 through 1323 Fix2 do not authorize public RC claim, public launch claim, public
 repository publication, public package publication, source allowlist export
 execution, source publication, materialized export manifest production, clean
 public export tree production, release artifact production, release artifact
@@ -361,7 +394,7 @@ wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
-Phase 1322, Fix1, and Phase 1323 also do not authorize identity artifact creation, genesis record
+Phase 1322, Fix1, Phase 1323, and Phase 1323 Fix2 also do not authorize identity artifact creation, genesis record
 creation, seed commitment creation, `identity_seed_commitment` creation, dummy
 Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
 installability, OpenClaw skill listing, ClawHub submission, mnemonic generation,

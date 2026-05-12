@@ -1,0 +1,159 @@
+{
+  "claim_table": [
+    {
+      "claim": "Phase 1323 carried native OpenClaw/ClawHub installability forward as blocked.",
+      "file_or_symbol_checked": "docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.md",
+      "result": "confirmed"
+    },
+    {
+      "claim": "OpenClaw official install path supports non-interactive install without onboarding.",
+      "file_or_symbol_checked": "https://openclaw.ai/install.sh, https://raw.githubusercontent.com/openclaw/openclaw/main/README.md",
+      "result": "confirmed"
+    },
+    {
+      "claim": "OpenClaw skills are AgentSkills-compatible folders containing SKILL.md with YAML frontmatter.",
+      "file_or_symbol_checked": "https://raw.githubusercontent.com/openclaw/openclaw/main/docs/tools/skills.md and https://raw.githubusercontent.com/openclaw/clawhub/main/docs/skill-format.md",
+      "result": "confirmed"
+    },
+    {
+      "claim": "The private VPS node ilc-node-6 is reachable over Tailscale and has the Phase 1323 ILC checkout.",
+      "file_or_symbol_checked": "ssh ilcops@100.72.17.38; /opt/ilc/current git rev-parse HEAD",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Fix2 does not need ILC runtime code changes.",
+      "file_or_symbol_checked": "remote draft skill and OpenClaw CLI discovery only; no ilc_core file modified",
+      "result": "confirmed"
+    }
+  ],
+  "draft_skill": {
+    "command_visible": true,
+    "corrected_after_first_probe": true,
+    "eligible": true,
+    "file_path": "/home/ilcops/.openclaw/workspace/skills/ilc-local/SKILL.md",
+    "install_actions": [],
+    "local_ilc_skill_draft_discovered_by_openclaw_phase_1323_fix2": true,
+    "missing_requirements": {
+      "anyBins": [],
+      "bins": [],
+      "config": [],
+      "env": [],
+      "os": []
+    },
+    "model_visible": true,
+    "name": "ilc-local",
+    "public_installability_claimed": false,
+    "requirements": {
+      "anyBins": [],
+      "bins": [
+        "python3"
+      ],
+      "config": [],
+      "env": [],
+      "os": [
+        "linux"
+      ]
+    },
+    "sha256": "406451b681be0674ca40271a924651c9c35ca2cd7c5e674d6ef03f4bcdd3c31b",
+    "size_bytes": 1333,
+    "source": "openclaw-workspace",
+    "user_invocable": true
+  },
+  "fix2_version": "phase_1323_fix2_openclaw_vps_install_skill_discovery.v0.1",
+  "gateway_state": {
+    "bind": "127.0.0.1",
+    "configured_as_loopback_only": true,
+    "gateway_deep_probe_skipped_during_install": true,
+    "gateway_not_started_after_fix2": true,
+    "gateway_service": "systemd user disabled",
+    "listening_on_18789_or_19001": false,
+    "openclaw_gateway_not_started_phase_1323_fix2": true,
+    "runtime": "stopped"
+  },
+  "graph_delta": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1323_g8_openclaw_vps_install_skill_discovery_fix2.md,docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.json,docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.md,docs/phases/phase_1323_fix2_openclaw_vps_install_skill_discovery_walkthrough.md,docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_antigravity_context_capsule_v5.54.md,tests/test_phase_1323_fix2_openclaw_vps_install_skill_discovery.py -> planning/frontier",
+  "ilc_preview_result": {
+    "ilc_runtime_not_modified_phase_1323_fix2": true,
+    "package_profile_id": "openclaw_skill_claimable",
+    "preview_binding": "local_import_only",
+    "preview_openclaw_dependency_required": false,
+    "profile_id": "openclaw_claimable_local_bridge",
+    "public_claimability_runtime_activated": false,
+    "public_p2p_activated": false,
+    "public_serving_enabled": false,
+    "registry_public_rc_claimed": false
+  },
+  "installation": {
+    "clawhub_present": false,
+    "command": "curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard --no-prompt --verify",
+    "install_method": "npm",
+    "installer_url": "https://openclaw.ai/install.sh",
+    "node_version": "v24.15.0",
+    "npm_prefix": "/home/ilcops/.npm-global",
+    "npm_version": "11.12.1",
+    "onboarding_skipped": true,
+    "openclaw_cli_installed_on_private_vps_phase_1323_fix2": true,
+    "openclaw_path": "/home/ilcops/.npm-global/bin/openclaw",
+    "openclaw_version": "OpenClaw 2026.5.7 (eeef486)"
+  },
+  "non_authorization_floor": {
+    "clawhub_publication_not_authorized_phase_1323_fix2": true,
+    "clawhub_submission_authorized": false,
+    "ecu_minting_authorized": false,
+    "gateway_daemon_install_authorized": false,
+    "identity_artifact_creation_authorized": false,
+    "ilc_settlement_authorized": false,
+    "mnemonic_generation_authorized": false,
+    "openclaw_onboarding_authorized": false,
+    "openclaw_public_gateway_authorized": false,
+    "openclaw_skill_publication_authorized": false,
+    "package_publication_authorized": false,
+    "public_claimability_activation_authorized": false,
+    "public_installability_claim_authorized": false,
+    "public_p2p_authorized": false,
+    "public_rc_claim_authorized": false,
+    "release_signing_authorized": false,
+    "secret_store_write_authorized": false,
+    "source_publication_authorized": false,
+    "wallet_write_authorized": false
+  },
+  "remote_node": {
+    "branch": "main",
+    "git_head": "4ea3d0857764075b88775b25f1d31e1e252df855",
+    "hostname": "ilc-node-6",
+    "origin_url": "git@github.com:jamison/ilc-core.git",
+    "repo_status_short_count": 0,
+    "ssh_target": "ilcops@100.72.17.38",
+    "tailscale_ip": "100.72.17.38"
+  },
+  "required_tokens": [
+    "phase_1323_fix2_openclaw_vps_install_skill_discovery.v0.1",
+    "openclaw_cli_installed_on_private_vps_phase_1323_fix2",
+    "local_ilc_skill_draft_discovered_by_openclaw_phase_1323_fix2",
+    "openclaw_gateway_not_started_phase_1323_fix2",
+    "clawhub_publication_not_authorized_phase_1323_fix2",
+    "ilc_runtime_not_modified_phase_1323_fix2",
+    "public_rc_remains_blocked_after_phase_1323_fix2",
+    "phase_1324_ccss_private_gated_shard_contract_next_after_fix2"
+  ],
+  "result": "pass_discovery_with_carry_forward",
+  "skill_format_findings": {
+    "agent_skill_folder_required": true,
+    "allowed_public_install_path": "openclaw skills install <slug>",
+    "metadata_openclaw_supports_bins_env_config_install_requirements": true,
+    "public_skill_publish_executed": false,
+    "skill_file_required": "SKILL.md or skill.md",
+    "workspace_skill_root_used": "/home/ilcops/.openclaw/workspace/skills",
+    "yaml_frontmatter_required_for_name_description": true
+  },
+  "verification": {
+    "focused_tests": "tests/test_phase_1323_fix2_openclaw_vps_install_skill_discovery.py passed",
+    "openclaw_skills_check_includes_ilc_local": true,
+    "openclaw_skills_info_ilc_local_json_passed": true,
+    "phase_1323_and_window_regressions": "tests/test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run.py and tests/test_window_1317_1329_prompt_drafts.py passed",
+    "phase_1324_next": "Phase 1324 - CCSS-001 private/gated shard sidecar contract remains sensitive and requires explicit GO Phase 1324",
+    "prompt_validation": "passed",
+    "public_rc_remains_blocked_after_phase_1323_fix2": true,
+    "safe_ilc_preview_command_passed_after_snippet_correction": true,
+    "sensitive_runtime_guardrail": "tests/test_sensitive_runtime_coding_taboos.py and tools/check_sensitive_runtime_coding_taboos.py passed"
+  }
+}
