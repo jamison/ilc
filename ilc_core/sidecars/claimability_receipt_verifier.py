@@ -71,6 +71,7 @@ _MAX_CANONICAL_PAYLOAD_DEPTH = 32
 _MAX_CANONICAL_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
 _MAX_CANONICAL_PAYLOAD_TEXT_BYTES = 1_000_000
+_MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_PROTOCOL_INT = 1_000_000_000_000
 _MAX_DECIMAL_DIGITS = 128
 _MAX_DECIMAL_SCALE = 128
@@ -394,7 +395,13 @@ def canonical_decision_json(decision: Mapping[str, Any]) -> str:
 
 def canonical_json(payload: Any) -> str:
     _reject_unsafe_json_tree(payload)
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    if len(canonical.encode("utf-8")) > _MAX_CANONICAL_JSON_BYTES:
+        raise ClaimabilityReceiptVerifierError(
+            "claimability_payload_size_exceeded_phase_1305",
+            "canonical JSON payload exceeds byte bound",
+        )
+    return canonical
 
 
 def _normalize_presentation(presentation: Mapping[str, Any]) -> dict[str, Any]:
@@ -1155,6 +1162,8 @@ def _require_text(value: object, *, token: str) -> str:
         raise ClaimabilityReceiptVerifierError(token, "required non-empty string")
     if len(value) > _MAX_TEXT_LENGTH:
         raise ClaimabilityReceiptVerifierError(token, "string exceeds maximum length")
+    if any(ord(char) < 0x20 for char in value):
+        raise ClaimabilityReceiptVerifierError(token, "string contains a control character")
     if value != value.strip():
         raise ClaimabilityReceiptVerifierError(token, "string must be canonical without padding")
     return value
@@ -1164,10 +1173,10 @@ def _require_non_negative_int(value: object, *, token: str) -> int:
     if (
         isinstance(value, bool)
         or not isinstance(value, int)
-        or value < 0
+        or value < 1
         or value > _MAX_PROTOCOL_INT
     ):
-        raise ClaimabilityReceiptVerifierError(token, "required non-negative integer")
+        raise ClaimabilityReceiptVerifierError(token, "required positive bounded integer")
     return value
 
 
@@ -1271,6 +1280,11 @@ def _reject_unsafe_json_tree(
                 "claimability_payload_text_too_large_phase_1305",
                 "canonical payload string exceeds maximum length",
             )
+        if any(ord(char) < 0x20 for char in value):
+            raise ClaimabilityReceiptVerifierError(
+                "claimability_payload_text_invalid_phase_1305",
+                "canonical payload string contains a control character",
+            )
         _text_counter[0] += len(value)
         if _text_counter[0] > _MAX_CANONICAL_PAYLOAD_TEXT_BYTES:
             raise ClaimabilityReceiptVerifierError(
@@ -1330,7 +1344,7 @@ def _reject_unsafe_json_tree(
         finally:
             _seen.remove(object_id)
         return
-    if value is None or isinstance(value, str):
+    if value is None:
         return
     raise ClaimabilityReceiptVerifierError(
         "claimability_payload_type_invalid_phase_1305",

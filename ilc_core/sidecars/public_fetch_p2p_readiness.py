@@ -43,6 +43,7 @@ READINESS_REF_PREFIX = "public_fetch_p2p_readiness_candidate_sha256"
 _MAX_PAYLOAD_DEPTH = 32
 _MAX_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
+_MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_EPOCH = 1_000_000_000_000
 _HEX_DIGEST_LENGTH = 64
 _HEX = frozenset("0123456789abcdef")
@@ -497,14 +498,20 @@ def public_fetch_p2p_readiness_candidate_ref(packet: Mapping[str, Any]) -> str:
 
 def canonical_public_fetch_p2p_readiness_candidate_json(packet: Mapping[str, Any]) -> str:
     _reject_unsafe_json_tree(packet)
-    return json.dumps(packet, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    canonical = json.dumps(packet, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    if len(canonical.encode("utf-8")) > _MAX_CANONICAL_JSON_BYTES:
+        raise PublicFetchP2PReadinessError(
+            "public_fetch_p2p_payload_size_exceeded_phase_1313",
+            "Phase 1313 readiness canonical JSON exceeds the byte bound",
+        )
+    return canonical
 
 
 def export_public_fetch_p2p_readiness_candidate_json(
     packet: Mapping[str, Any] | None = None,
 ) -> str:
     active = (
-        build_public_fetch_p2p_readiness_candidate(current_epoch=0)
+        build_public_fetch_p2p_readiness_candidate(current_epoch=1)
         if packet is None
         else validate_public_fetch_p2p_readiness_candidate(packet)
     )
@@ -571,6 +578,12 @@ def _reject_unsafe_json_tree(
         try:
             for key, item in value.items():
                 _require_text(key)
+                _counter[0] += 1
+                if _counter[0] > _MAX_PAYLOAD_NODES:
+                    raise PublicFetchP2PReadinessError(
+                        "public_fetch_p2p_payload_too_large_phase_1313",
+                        "Phase 1313 readiness payload is too large",
+                    )
                 _reject_unsafe_json_tree(
                     item,
                     _depth=_depth + 1,
@@ -609,12 +622,12 @@ def _require_epoch(name: str, value: object) -> int:
     if (
         not isinstance(value, int)
         or isinstance(value, bool)
-        or value < 0
+        or value < 1
         or value > _MAX_EPOCH
     ):
         raise PublicFetchP2PReadinessError(
             f"public_fetch_p2p_{name}_epoch_invalid_phase_1313",
-            "Phase 1313 readiness epoch must be a non-negative integer",
+            "Phase 1313 readiness epoch must be a positive bounded integer",
         )
     return value
 
@@ -624,6 +637,11 @@ def _require_text(value: object) -> str:
         raise PublicFetchP2PReadinessError(
             "public_fetch_p2p_text_invalid_phase_1313",
             "Phase 1313 readiness text is invalid",
+        )
+    if any(ord(char) < 0x20 for char in value):
+        raise PublicFetchP2PReadinessError(
+            "public_fetch_p2p_text_invalid_phase_1313",
+            "Phase 1313 readiness text must not contain control characters",
         )
     if len(value) > _MAX_TEXT_LENGTH:
         raise PublicFetchP2PReadinessError(

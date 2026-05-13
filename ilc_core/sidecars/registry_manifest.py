@@ -59,6 +59,12 @@ PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1307_TOKEN = (
     "public_rc_remains_blocked_after_phase_1307"
 )
 
+_MAX_PAYLOAD_DEPTH = 32
+_MAX_PAYLOAD_NODES = 100_000
+_MAX_TEXT_LENGTH = 4096
+_MAX_CANONICAL_JSON_BYTES = 10_000_000
+_MAX_PROTOCOL_INT = 1_000_000_000_000
+
 _PRIVATE_WIRING_MODES = (
     "in_process_import",
     "local_cli_subprocess",
@@ -444,7 +450,11 @@ def validate_sidecar_registry_manifest(manifest: Mapping[str, Any] | None = None
 
 
 def canonical_sidecar_registry_manifest_json(manifest: Mapping[str, Any]) -> str:
-    return json.dumps(manifest, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    _reject_unsafe_json_tree(manifest)
+    canonical = json.dumps(manifest, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    if len(canonical.encode("utf-8")) > _MAX_CANONICAL_JSON_BYTES:
+        raise ValueError("sidecar_registry_payload_size_exceeded_phase_1307")
+    return canonical
 
 
 def export_sidecar_registry_manifest_json(manifest: Mapping[str, Any] | None = None) -> str:
@@ -853,8 +863,10 @@ def _ids(records: list[Mapping[str, Any]], key: str, *, token: str) -> set[str]:
 def _require_text(value: object) -> str:
     if not isinstance(value, str) or not value.strip() or value != value.strip():
         raise ValueError("sidecar_registry_text_invalid_phase_1307")
-    if len(value) > 4096:
+    if len(value) > _MAX_TEXT_LENGTH:
         raise ValueError("sidecar_registry_text_too_large_phase_1307")
+    if any(ord(char) < 0x20 for char in value):
+        raise ValueError("sidecar_registry_text_invalid_phase_1307")
     return value
 
 
@@ -876,6 +888,54 @@ def _require_text_list(value: object, *, token: str) -> list[str]:
 def _require_false(value: object, *, token: str) -> None:
     if value is not False:
         raise ValueError(token)
+
+
+def _reject_unsafe_json_tree(value: object) -> None:
+    seen: set[int] = set()
+    node_count = 0
+
+    def visit(item: object, depth: int) -> None:
+        nonlocal node_count
+        if depth > _MAX_PAYLOAD_DEPTH:
+            raise ValueError("sidecar_registry_payload_too_deep_phase_1307")
+        node_count += 1
+        if node_count > _MAX_PAYLOAD_NODES:
+            raise ValueError("sidecar_registry_payload_too_large_phase_1307")
+        if isinstance(item, float):
+            raise ValueError("sidecar_registry_payload_float_forbidden_phase_1307")
+        if item is None or isinstance(item, bool):
+            return
+        if isinstance(item, int):
+            if item < 0 or item > _MAX_PROTOCOL_INT:
+                raise ValueError("sidecar_registry_payload_int_invalid_phase_1307")
+            return
+        if isinstance(item, str):
+            _require_text(item)
+            return
+        if isinstance(item, tuple):
+            raise ValueError("sidecar_registry_tuple_values_forbidden_phase_1307")
+        if isinstance(item, (Mapping, list)):
+            marker = id(item)
+            if marker in seen:
+                raise ValueError("sidecar_registry_payload_cycle_forbidden_phase_1307")
+            seen.add(marker)
+            if isinstance(item, Mapping):
+                for key, nested in item.items():
+                    if not isinstance(key, str):
+                        raise ValueError("sidecar_registry_payload_key_invalid_phase_1307")
+                    _require_text(key)
+                    node_count += 1
+                    if node_count > _MAX_PAYLOAD_NODES:
+                        raise ValueError("sidecar_registry_payload_too_large_phase_1307")
+                    visit(nested, depth + 1)
+            else:
+                for nested in item:
+                    visit(nested, depth + 1)
+            seen.remove(marker)
+            return
+        raise ValueError("sidecar_registry_payload_type_invalid_phase_1307")
+
+    visit(value, 0)
 
 
 __all__ = [
