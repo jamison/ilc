@@ -1034,7 +1034,7 @@ def _normalize_ref_set(
     allowed_prefixes: tuple[str, ...],
     max_items: int,
 ) -> set[str]:
-    if isinstance(value, (str, bytes)) or not isinstance(value, Collection):
+    if isinstance(value, (str, bytes, bytearray)) or not isinstance(value, Collection):
         raise ConfidentialCoordinationSealedSenderError(token, "expected reference collection")
     if len(value) > max_items:
         raise ConfidentialCoordinationSealedSenderError(token, "reference collection exceeds bound")
