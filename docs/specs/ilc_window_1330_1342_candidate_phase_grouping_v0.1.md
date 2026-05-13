@@ -186,6 +186,10 @@ an identity-bootstrap ADR/CDL or equivalent spec exists and has been rehearsed.
 Before any identity artifact is created, a future phase must resolve the
 CDL-069 commitment mismatch:
 
+Supersession note: Phase 1331 Fix1 later repaired this runtime formula. This
+candidate grouping remains useful as historical guidance for the no-identity
+artifact and no-public-Genesis-rooted-identity-claim boundary.
+
 ```text
 identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)
 ```

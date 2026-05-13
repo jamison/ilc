@@ -155,6 +155,10 @@ claim.
 Before any identity-bootstrap phase creates artifacts, it must resolve the
 CDL-069 commitment mismatch:
 
+Supersession note: Phase 1331 Fix1 later repaired this runtime formula. This
+Phase 1330 guard remains authoritative for the no-identity-artifact,
+no-identity-bootstrap, and no-public-Genesis-rooted-identity-claim boundary.
+
 ```text
 identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)
 ```

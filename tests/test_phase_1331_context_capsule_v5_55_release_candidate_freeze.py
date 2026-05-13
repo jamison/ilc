@@ -89,7 +89,7 @@ def test_phase_1331_preserves_identity_bootstrap_guard() -> None:
 
     for phrase in (
         "identity_seed_commitment = sha384(\"ilc-seed-commit-v1:\" || identity_seed)",
-        "sha384(identity_seed)",
+        "Phase 1331 Fix1 repaired the runtime CDL-069 commitment formula",
         "Public bootstrap must also preserve the Genesis-rooted identity invariant",
         "Private graph content must not become identity-seed entropy or recovery material",
         "dummy Agent Birth artifact",

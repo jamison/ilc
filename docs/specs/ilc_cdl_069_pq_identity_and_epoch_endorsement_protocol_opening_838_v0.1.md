@@ -133,7 +133,11 @@ blinding factor.
 **Genesis record — four committed fields:**
 Every agent genesis record contains:
 
-1. `identity_seed_commitment` — `sha384(identity_seed)`. 48 bytes, opaque.
+Supersession note: CDL-069 ratification evidence and Phase 1331 Fix1 supersede
+the opening-document bare-hash formula. The canonical runtime formula is
+`sha384("ilc-seed-commit-v1:" || identity_seed)`.
+
+1. `identity_seed_commitment` — `sha384("ilc-seed-commit-v1:" || identity_seed)`. 48 bytes, opaque.
    Proves the agent holds a specific identity_seed without revealing it.
 2. `canonical_root_pk` — ML-DSA-65 public key, 1,952 bytes. Necessarily
    public; validators verify epoch endorsement packets against it.

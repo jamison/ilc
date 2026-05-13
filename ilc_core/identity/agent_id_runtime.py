@@ -74,7 +74,11 @@ def derive_agent_id_v2(identity_seed: bytes) -> str:
             f"got {len(identity_seed)}",
         )
     digest = hashlib.sha384(_AGENT_ID_DOMAIN_V2 + identity_seed).hexdigest()
-    assert len(digest) == _AGENT_ID_LENGTH_V2  # invariant
+    if len(digest) != _AGENT_ID_LENGTH_V2:
+        raise AgentIdentityError(
+            "cdl_069_agent_id_digest_length_invariant_failed",
+            "agent_id digest length invariant failed",
+        )
     return digest
 
 

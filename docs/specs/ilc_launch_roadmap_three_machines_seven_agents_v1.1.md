@@ -2692,12 +2692,12 @@ Roadmap impact:
 - Public RC remains blocked by public claimability/API and public verifier
   authority, public P2P, public sidecar/projection serving, public confidential
   coordination serving, wallet-facing activation, ECU minting, ILC settlement,
-  the `CDL-069 commitment` formula repair
-  (`identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)`
-  versus current `sha384(identity_seed)` runtime code), Genesis-rooted agent
-  birth attestation, OpenClaw/ClawHub public listing/installability evidence, and
-  counsel review/publication authority. Layered license posture is implemented
-  provisionally and remains pending counsel review before public release.
+  Genesis-rooted agent birth attestation, OpenClaw/ClawHub public
+  listing/installability evidence, and counsel review/publication authority.
+  The `CDL-069 commitment` formula repair was applied in Phase 1331 Fix1:
+  `identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)`.
+  Layered license posture is implemented provisionally and remains pending
+  counsel review before public release.
 - Machine-check identity blocker phrase: Genesis-rooted agent birth attestation.
 - Phase 1329 does not authorize public RC claim, source publication, public
   repository publication, public package publication, OpenClaw skill publication,

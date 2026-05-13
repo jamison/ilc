@@ -5,7 +5,7 @@ the recovery_spec format for all supported types, and the recovery transaction
 protocol including freeze_from_epoch clamping.
 
 Genesis record fields (all SHA-384 commitments except canonical_root_pk):
-  1. identity_seed_commitment  — sha384(identity_seed)
+  1. identity_seed_commitment  — sha384("ilc-seed-commit-v1:" || identity_seed)
   2. canonical_root_pk         — ML-DSA-65 public key hex (necessarily public)
   3. recovery_commitment       — sha384(recovery_spec_bytes || blinding_factor)
   4. personhood_commitment     — sha384(personhood_proof || blinding_factor) [optional]
@@ -34,6 +34,7 @@ CDL_069_DEPENDENCY = "cdl_069_opens_phase_838"
 # Domain separators
 _BLIND_DOMAIN: bytes = b"ilc-recovery-blind-v1:"
 _AGENT_ID_DOMAIN: bytes = b"ilc-agent-id-v1:"
+_IDENTITY_SEED_COMMIT_DOMAIN: bytes = b"ilc-seed-commit-v1:"
 
 # Field length constants
 _IDENTITY_SEED_LENGTH: int = 32
@@ -67,13 +68,13 @@ def derive_blinding_factor(identity_seed: bytes) -> bytes:
 
 
 def compute_identity_seed_commitment(identity_seed: bytes) -> str:
-    """sha384(identity_seed) → 96-char hex."""
+    """sha384("ilc-seed-commit-v1:" || identity_seed) → 96-char hex."""
     if not isinstance(identity_seed, bytes) or len(identity_seed) != _IDENTITY_SEED_LENGTH:
         raise GenesisRecordError(
             "cdl_069_genesis_invalid_identity_seed",
             f"identity_seed must be {_IDENTITY_SEED_LENGTH} bytes",
         )
-    return hashlib.sha384(identity_seed).hexdigest()
+    return hashlib.sha384(_IDENTITY_SEED_COMMIT_DOMAIN + identity_seed).hexdigest()
 
 
 def compute_recovery_commitment(recovery_spec_bytes: bytes, blinding_factor: bytes) -> str:
@@ -150,7 +151,7 @@ class GenesisRecord:
     All commitment fields are 96-char SHA-384 hex strings (Tier 3, permanent).
     canonical_root_pk is the ML-DSA-65 public key hex (3328 chars).
     """
-    identity_seed_commitment: str    # sha384(identity_seed)
+    identity_seed_commitment: str    # sha384("ilc-seed-commit-v1:" || identity_seed)
     canonical_root_pk: str           # ML-DSA-65 pk hex — necessarily public
     recovery_commitment: str         # sha384(recovery_spec || blinding_factor)
     personhood_commitment: Optional[str] = None  # optional; omitted if not used

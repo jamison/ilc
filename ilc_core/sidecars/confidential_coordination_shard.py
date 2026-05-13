@@ -44,6 +44,7 @@ _MAX_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
 _MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_EPOCH = 1_000_000_000_000
+_MAX_CANONICAL_JSON_INT_ABS = _MAX_EPOCH
 _MAX_CIPHERTEXT_BYTES = 1_048_576
 _MAX_ENVELOPES_PER_SHARD_HEADER = 256
 _MAX_PROMOTION_EVIDENCE_REFS = 64
@@ -1159,6 +1160,16 @@ def _reject_forbidden_private_values(value: object) -> None:
 def _reject_unsafe_json_tree(value: object) -> None:
     seen: set[int] = set()
     node_count = 0
+    payload_text_bytes = 0
+
+    def add_payload_bytes(text: str) -> None:
+        nonlocal payload_text_bytes
+        payload_text_bytes += len(text.encode("utf-8"))
+        if payload_text_bytes > _MAX_CANONICAL_JSON_BYTES:
+            raise ConfidentialCoordinationShardError(
+                "ccss_001_payload_size_exceeded_phase_1324",
+                "canonical JSON payload exceeds byte bound",
+            )
 
     def visit(item: object, depth: int) -> None:
         nonlocal node_count
@@ -1189,6 +1200,7 @@ def _reject_unsafe_json_tree(value: object) -> None:
                             "payload keys must be strings",
                         )
                     _require_text("payload_key", key)
+                    add_payload_bytes(key)
                     node_count += 1
                     if node_count > _MAX_PAYLOAD_NODES:
                         raise ConfidentialCoordinationShardError(
@@ -1214,6 +1226,14 @@ def _reject_unsafe_json_tree(value: object) -> None:
         if item is None or isinstance(item, (str, int, bool)):
             if isinstance(item, str):
                 _require_text("payload_text", item)
+                add_payload_bytes(item)
+            elif isinstance(item, int) and not isinstance(item, bool):
+                if abs(item) > _MAX_CANONICAL_JSON_INT_ABS:
+                    raise ConfidentialCoordinationShardError(
+                        "ccss_001_payload_int_invalid_phase_1324",
+                        "integer payload exceeds canonical JSON integer bound",
+                    )
+                add_payload_bytes(str(item))
             return
         raise ConfidentialCoordinationShardError(
             "ccss_001_payload_key_invalid_phase_1324",
