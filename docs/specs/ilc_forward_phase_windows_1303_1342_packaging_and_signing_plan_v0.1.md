@@ -17,8 +17,14 @@ openclaw_nemoclaw_are_hosts_not_protocol_substrates
 sidecar_suite_public_serving_remains_blocked_until_explicit_authority
 confidential_coordination_sidecar_suite_forward_plan_recorded
 confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329
-confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
-confidential_coordination_not_public_rc_blocker_without_explicit_selection
+	confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
+	confidential_coordination_not_public_rc_blocker_without_explicit_selection
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
 ```
 
 ## 1. Purpose
@@ -61,7 +67,7 @@ testing of that suite, not protocol substrates.
 
 The Confidential Coordination Sidecar Suite is routed as the next private/local
 sidecar build-out after the essential OpenClaw-compatible suite is testable. It
-is not a first-public-RC blocker by default. Its detailed routing is recorded in
+is not a first-RC blocker by default. Its detailed routing is recorded in
 `docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md`.
 
 ## 2. Window 1303-1316 - Implementation Hardening
@@ -368,6 +374,28 @@ public P2P, public confidential coordination serving, public messaging, source
 publication, OpenClaw skill publication, ClawHub listing, identity artifacts,
 wallet writes, ECU minting, ILC settlement, value-path activation, release
 authority, signing authority, or Atlas-G tail authority.
+
+Phase 1329 completion note:
+
+```text
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
+```
+
+Phase 1329 closes Window 1317-1329 with handoff
+`docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md`. CCSS is complete enough as private/local evidence and is not a first-RC blocker by default unless a
+later Window 1330+ sequence lock explicitly selects public confidential
+coordination serving as first-RC scope. `ATLAS-G-007 through ATLAS-G-010` remain
+carried forward outside the CCSS lane. Source allowlist export execution, clean
+materialized public tree production, release artifact production, release-key
+generation, release envelope production, public claimability/API authority,
+public P2P, public sidecar/projection serving, wallet-facing activation, ECU
+minting, ILC settlement, identity bootstrap, counsel review, and publication
+authority remain blocked.
 
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 

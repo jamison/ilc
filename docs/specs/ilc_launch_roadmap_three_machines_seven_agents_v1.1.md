@@ -34,8 +34,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1303-1316 is CLOSED / PASS with carry-forward through Phase 1316; closure handoff is `docs/specs/ilc_window_1303_1316_handoff_1316_v0.1.md`; sequence lock `docs/specs/ilc_phase_1303_1316_sequence_lock_v0.1.md` and guidance `docs/specs/ilc_window_1303_1316_candidate_phase_grouping_v0.1.md` are closed references; no next phase is assigned; Window 1317+ sequence lock is required before any further phase assignment; no public RC, public activation, publication, release artifact production, release-key generation, Genesis Atlas mutation/regeneration/signing, CDL-088, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, or v0.2 signing authorization is granted |
-| Capsule | v5.53 current; supersedes v5.52 and is updated through Phase 1316 |
+| Window frontier | Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329; closure handoff is `docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md`; sequence lock `docs/specs/ilc_phase_1317_1329_sequence_lock_v0.1.md` and guidance `docs/specs/ilc_window_1317_1329_candidate_phase_grouping_v0.1.md` are closed references; no next phase is assigned; `window_1330_plus_sequence_lock_required_before_next_phase_assignment`; no public RC, public activation, publication, source allowlist export execution, clean materialized public tree production, release artifact production, release-key generation, release envelope production, release signing material, Genesis Atlas mutation/regeneration/signing, `ATLAS-G-007` through `ATLAS-G-010`, CDL-088, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, or v0.2 signing authorization is granted |
+| Capsule | v5.54 current; supersedes v5.53 and is updated through Phase 1329 |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -2659,6 +2659,55 @@ Roadmap impact:
 - Phase 1328 does not authorize public RC, source publication, package
   publication, release material, signing, identity artifacts, wallet writes,
   ECU minting, ILC settlement, value-path activation, or Atlas-G tail execution.
+
+## 50j. Phase 1329 Window 1317-1329 Closure Gate Addendum
+
+Phase 1329 closes Window 1317-1329:
+
+```text
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
+```
+
+Roadmap impact:
+
+- Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329.
+- The closure handoff is
+  `docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md`.
+- No Phase 1330+ work is assigned; Window 1330+ requires a new explicit sequence
+  lock before the next phase assignment.
+- The release dry-run ledger remains rehearsal-only: source allowlist export
+  execution, clean materialized public tree production, release artifact
+  production, release-key generation, release envelope production, and release
+  signing material remain blocked by explicit authority.
+- CCSS is complete enough as private/local evidence and is not a first-RC blocker
+  by default unless a later sequence lock selects public confidential
+  coordination serving as first-RC scope.
+- `ATLAS-G-007 through ATLAS-G-010` remain carried forward outside the CCSS lane
+  and must not be hidden in private/local CCSS implementation phases.
+- Public RC remains blocked by public claimability/API and public verifier
+  authority, public P2P, public sidecar/projection serving, public confidential
+  coordination serving, wallet-facing activation, ECU minting, ILC settlement,
+  the `CDL-069 commitment` formula repair
+  (`identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)`
+  versus current `sha384(identity_seed)` runtime code), Genesis-rooted agent
+  birth attestation, OpenClaw/ClawHub public listing/installability evidence, and
+  counsel review/publication authority. Layered license posture is implemented
+  provisionally and remains pending counsel review before public release.
+- Machine-check identity blocker phrase: Genesis-rooted agent birth attestation.
+- Phase 1329 does not authorize public RC claim, source publication, public
+  repository publication, public package publication, OpenClaw skill publication,
+  ClawHub listing, public installability claim, public claimability activation,
+  public verifier service, public claim endpoint, non-loopback bind, public P2P,
+  public fetch serving, public sidecar/projection serving, public confidential
+  messaging, public confidential coordination serving, CDL mutation, CDL-088
+  opening, Genesis Atlas mutation, `ATLAS-G-007`, v0.2 signing, identity artifact
+  creation, `identity_seed_commitment`, dummy Agent Birth artifact, wallet-facing
+  withdrawal request, ECU minting, ILC settlement, or value-path activation.
 
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 

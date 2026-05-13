@@ -413,4 +413,4 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "ccss_002_payload_depth_node_limits_covered_phase_1325_fix2" in text
     assert "public_rc_remains_blocked_after_phase_1325_fix2" in text
     assert "phase_1326_ccss_sealed_sender_boundary_next_after_fix2" in text
-    assert "Window 1317-1329 is OPEN through Phase 1325 Fix2" in text
+    assert "Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329" in text
