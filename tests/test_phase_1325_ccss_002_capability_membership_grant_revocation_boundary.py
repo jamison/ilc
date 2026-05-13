@@ -46,12 +46,19 @@ FIX1_SPEC_PATH = (
     ROOT
     / "docs/specs/ilc_phase_1325_fix1_ccss_002_access_audit_hardening_v0.1.md"
 )
+FIX2_SPEC_PATH = (
+    ROOT
+    / "docs/specs/ilc_phase_1325_fix2_ccss_002_branch_and_integer_hardening_v0.1.md"
+)
 WALKTHROUGH_PATH = (
     ROOT
     / "docs/phases/phase_1325_ccss_002_capability_membership_grant_revocation_boundary_walkthrough.md"
 )
 FIX1_WALKTHROUGH_PATH = (
     ROOT / "docs/phases/phase_1325_fix1_ccss_002_access_audit_hardening_walkthrough.md"
+)
+FIX2_WALKTHROUGH_PATH = (
+    ROOT / "docs/phases/phase_1325_fix2_ccss_002_branch_and_integer_hardening_walkthrough.md"
 )
 STATUS_PATH = ROOT / "docs/phases/STATUS.md"
 PLANNING_INDEX_PATH = ROOT / "docs/PLANNING_INDEX.md"
@@ -77,6 +84,14 @@ FIX1_TOKENS = [
     "sidecar_del_control_character_rejected_cross_module_phase_1325_fix1",
     "public_rc_remains_blocked_after_phase_1325_fix1",
     "phase_1326_ccss_sealed_sender_boundary_next_after_fix1",
+]
+FIX2_TOKENS = [
+    "phase_1325_fix2_ccss_002_branch_and_integer_hardening.v0.1",
+    "ccss_002_oversized_raw_int_rejected_before_stringification_phase_1325_fix2",
+    "ccss_002_access_branch_coverage_expanded_phase_1325_fix2",
+    "ccss_002_payload_depth_node_limits_covered_phase_1325_fix2",
+    "public_rc_remains_blocked_after_phase_1325_fix2",
+    "phase_1326_ccss_sealed_sender_boundary_next_after_fix2",
 ]
 
 
@@ -272,6 +287,17 @@ def test_phase_1325_access_state_machine_fails_closed_for_required_negative_path
     assert replay["access_state"] == "candidate_granted"
     assert replay["deny_reason"] == "replayed_capability_grant"
 
+    superseded = build_local_access_decision(
+        private_shard_ref=_ref("private_shard", "a"),
+        capability_ref=_ref("capability", "e"),
+        current_epoch=1325,
+        grant_record=grant,
+        membership_boundary_record=membership,
+        superseded_capability_refs=[_ref("capability", "e")],
+    )
+    assert superseded["access_state"] == "expired_or_superseded"
+    assert superseded["deny_reason"] == "superseded_capability"
+
     cross_shard = build_local_access_decision(
         private_shard_ref=_ref("private_shard", "9"),
         capability_ref=_ref("capability", "e"),
@@ -281,6 +307,48 @@ def test_phase_1325_access_state_machine_fails_closed_for_required_negative_path
     )
     assert cross_shard["access_state"] == "candidate_granted"
     assert cross_shard["deny_reason"] == "cross_shard_capability"
+
+    capability_mismatch = build_local_access_decision(
+        private_shard_ref=_ref("private_shard", "a"),
+        capability_ref=_ref("capability", "f"),
+        current_epoch=1325,
+        grant_record=grant,
+        membership_boundary_record=membership,
+    )
+    assert capability_mismatch["access_state"] == "candidate_granted"
+    assert capability_mismatch["deny_reason"] == "capability_ref_mismatch"
+
+    other_shard_boundary = build_membership_boundary_ref(
+        private_shard_ref=_ref("private_shard", "9"),
+        membership_root_ref=_ref("membership_root", "b"),
+        membership_proof_ref=_ref("membership_proof", "c"),
+        boundary_epoch=1325,
+    )
+    shard_mismatch = build_local_access_decision(
+        private_shard_ref=_ref("private_shard", "a"),
+        capability_ref=_ref("capability", "e"),
+        current_epoch=1325,
+        grant_record=grant,
+        membership_boundary_record=other_shard_boundary,
+    )
+    assert shard_mismatch["access_state"] == "candidate_granted"
+    assert shard_mismatch["deny_reason"] == "membership_boundary_shard_mismatch"
+
+    other_boundary = build_membership_boundary_ref(
+        private_shard_ref=_ref("private_shard", "a"),
+        membership_root_ref=_ref("membership_root", "9"),
+        membership_proof_ref=_ref("membership_proof", "8"),
+        boundary_epoch=1325,
+    )
+    boundary_mismatch = build_local_access_decision(
+        private_shard_ref=_ref("private_shard", "a"),
+        capability_ref=_ref("capability", "e"),
+        current_epoch=1325,
+        grant_record=grant,
+        membership_boundary_record=other_boundary,
+    )
+    assert boundary_mismatch["access_state"] == "candidate_granted"
+    assert boundary_mismatch["deny_reason"] == "membership_boundary_ref_mismatch"
 
 
 def test_phase_1325_rejects_plaintext_membership_malformed_refs_public_dependencies_and_epoch_zero() -> None:
@@ -346,6 +414,38 @@ def test_phase_1325_rejects_plaintext_membership_malformed_refs_public_dependenc
         )
     assert epoch_exc.value.token == "ccss_002_grant_epoch_invalid_phase_1325"
 
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as window_exc:
+        build_capability_grant_ref(
+            private_shard_ref=_ref("private_shard", "a"),
+            shard_header_ref=_ref("private_shard_header", "d"),
+            capability_policy_ref=records["policy"]["capability_policy_ref"],
+            membership_boundary_ref=membership["membership_boundary_ref"],
+            membership_proof_ref=_ref("membership_proof", "c"),
+            capability_ref=_ref("capability", "e"),
+            grant_scope="read_ciphertext_ref",
+            grant_epoch=1325,
+            grant_sequence=1,
+            valid_from_epoch=1330,
+            valid_to_epoch=1325,
+        )
+    assert window_exc.value.token == "ccss_002_grant_epoch_window_invalid_phase_1325"
+
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as sequence_exc:
+        build_capability_grant_ref(
+            private_shard_ref=_ref("private_shard", "a"),
+            shard_header_ref=_ref("private_shard_header", "d"),
+            capability_policy_ref=records["policy"]["capability_policy_ref"],
+            membership_boundary_ref=membership["membership_boundary_ref"],
+            membership_proof_ref=_ref("membership_proof", "c"),
+            capability_ref=_ref("capability", "e"),
+            grant_scope="read_ciphertext_ref",
+            grant_epoch=1325,
+            grant_sequence=0,
+            valid_from_epoch=1325,
+            valid_to_epoch=1330,
+        )
+    assert sequence_exc.value.token == "ccss_002_grant_sequence_invalid_phase_1325"
+
     zk_decision = build_local_access_decision(
         private_shard_ref=_ref("private_shard", "a"),
         capability_ref=_ref("capability", "e"),
@@ -403,6 +503,22 @@ def test_phase_1325_bounds_payloads_and_rejects_control_chars_floats_tuples_and_
         ccss._MAX_CANONICAL_JSON_BYTES = 10_000_000
 
 
+def test_phase_1325_payload_depth_node_and_integer_limits_are_enforced(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    nested: object = "leaf"
+    for _ in range(ccss._MAX_PAYLOAD_DEPTH + 1):
+        nested = {"x": nested}
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as depth_exc:
+        canonical_ccss_002_json(nested)
+    assert depth_exc.value.token == "ccss_002_payload_depth_exceeded_phase_1325"
+
+    monkeypatch.setattr(ccss, "_MAX_PAYLOAD_NODES", 2)
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as node_exc:
+        canonical_ccss_002_json({"alpha": "beta"})
+    assert node_exc.value.token == "ccss_002_payload_node_limit_exceeded_phase_1325"
+
+
 def test_phase_1325_rejects_oversized_payload_before_json_serialization(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -416,6 +532,19 @@ def test_phase_1325_rejects_oversized_payload_before_json_serialization(
         canonical_ccss_002_json({"alpha": "beta"})
 
     assert size_exc.value.token == "ccss_002_payload_size_exceeded_phase_1325"
+
+
+def test_phase_1325_rejects_oversized_integer_before_json_serialization(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_json_dumps(*_args: object, **_kwargs: object) -> str:
+        raise AssertionError("json.dumps should not run after integer bound fails")
+
+    monkeypatch.setattr(ccss.json, "dumps", fail_json_dumps)
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as int_exc:
+        canonical_ccss_002_json({"alpha": ccss._MAX_CANONICAL_JSON_INT_ABS + 1})
+
+    assert int_exc.value.token == "ccss_002_payload_int_invalid_phase_1325"
 
 
 def test_phase_1325_registry_guardrail_docs_and_frontier_record_boundary() -> None:
@@ -444,8 +573,10 @@ def test_phase_1325_registry_guardrail_docs_and_frontier_record_boundary() -> No
             GUARDRAIL_PATH,
             SPEC_PATH,
             FIX1_SPEC_PATH,
+            FIX2_SPEC_PATH,
             WALKTHROUGH_PATH,
             FIX1_WALKTHROUGH_PATH,
+            FIX2_WALKTHROUGH_PATH,
             STATUS_PATH,
             PLANNING_INDEX_PATH,
             CAPSULE_PATH,
@@ -456,6 +587,8 @@ def test_phase_1325_registry_guardrail_docs_and_frontier_record_boundary() -> No
     for token in REQUIRED_TOKENS:
         assert token in corpus
     for token in FIX1_TOKENS:
+        assert token in corpus
+    for token in FIX2_TOKENS:
         assert token in corpus
     for phrase in (
         "unknown",

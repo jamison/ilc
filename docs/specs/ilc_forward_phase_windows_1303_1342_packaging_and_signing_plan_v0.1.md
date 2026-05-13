@@ -284,6 +284,24 @@ does not authorize Phase 1326 execution or any public
 serving, public P2P, publication, release, signing, identity, wallet, ECU, ILC
 settlement, or value-path activation.
 
+Phase 1325 Fix2 completion note:
+
+```text
+phase_1325_fix2_ccss_002_branch_and_integer_hardening.v0.1
+ccss_002_oversized_raw_int_rejected_before_stringification_phase_1325_fix2
+ccss_002_access_branch_coverage_expanded_phase_1325_fix2
+ccss_002_payload_depth_node_limits_covered_phase_1325_fix2
+public_rc_remains_blocked_after_phase_1325_fix2
+phase_1326_ccss_sealed_sender_boundary_next_after_fix2
+```
+
+Phase 1325 Fix2 rejects oversized raw integer leaves before decimal
+stringification in CCSS-002 canonical JSON traversal and expands focused
+coverage for supersession, mismatch, invalid-window, zero-sequence, depth-limit,
+and node-limit paths. It does not authorize Phase 1326 execution or any public
+serving, public P2P, publication, release, signing, identity, wallet, ECU, ILC
+settlement, or value-path activation.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |

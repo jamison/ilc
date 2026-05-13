@@ -45,6 +45,7 @@ _MAX_TEXT_LENGTH = 4096
 _MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_EPOCH = 1_000_000_000_000
 _MAX_SEQUENCE = 1_000_000_000_000
+_MAX_CANONICAL_JSON_INT_ABS = _MAX_SEQUENCE
 _MAX_REF_LIST_ITEMS = 256
 _HEX_DIGEST_LENGTH = 64
 _HEX = frozenset("0123456789abcdef")
@@ -1407,6 +1408,11 @@ def _reject_unsafe_json_tree(value: object) -> None:
                 _require_text("payload_text", item)
                 add_payload_bytes(item)
             elif isinstance(item, int) and not isinstance(item, bool):
+                if abs(item) > _MAX_CANONICAL_JSON_INT_ABS:
+                    raise ConfidentialCoordinationCapabilityError(
+                        "ccss_002_payload_int_invalid_phase_1325",
+                        "integer payload exceeds canonical JSON integer bound",
+                    )
                 add_payload_bytes(str(item))
             return
         raise ConfidentialCoordinationCapabilityError(
