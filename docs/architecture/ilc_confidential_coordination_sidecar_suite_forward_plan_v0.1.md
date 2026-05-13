@@ -208,6 +208,31 @@ serving, public confidential coordination serving, public messaging, source
 publication, release authority, release signing, identity bootstrap, wallet
 actions, ECU minting, ILC settlement, or value-path activation.
 
+Phase 1327 completion:
+
+```text
+ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1
+gossip_announce_pull_jitter_policy_recorded_phase_1327
+traffic_analysis_negative_tests_recorded_phase_1327
+anonymity_guarantee_not_claimed_phase_1327
+phase_1328_ccss_private_droplet_reproducibility_next
+public_rc_remains_blocked_after_phase_1327
+```
+
+The CCSS-004 contract is now implemented locally at
+`ilc_core/sidecars/confidential_coordination_gossip_policy.py` and registered as
+`confidential_coordination_gossip_jitter_cover_policy`. It defines
+traffic-analysis matrix refs, private/local gossip announce/pull policy refs,
+and cover-policy decision refs for bounded metadata announce, receiver-controlled
+pull, bounded jitter, bounded batching, idle cover, deterministic test-fixture
+jitter, rejected public network attempts, rejected deterministic runtime jitter
+seed attempts, rejected participant metadata, rejected disabled cover, and
+rejected unbounded batches. The sidecar does not activate public P2P, public
+relay serving, public confidential coordination serving, public messaging,
+source publication, release authority, release signing, identity bootstrap,
+wallet actions, ECU minting, ILC settlement, value-path activation, anonymity,
+unlinkability, or Signal-equivalent protection.
+
 Window 1330-1342:
 
 | Phase | Assignment |

@@ -3,6 +3,7 @@
 __all__ = [
     "claimability_receipt_verifier",
     "confidential_coordination_capability",
+    "confidential_coordination_gossip_policy",
     "confidential_coordination_sealed_sender",
     "confidential_coordination_shard",
     "local_graph_memory_projection",

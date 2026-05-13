@@ -2593,6 +2593,37 @@ Roadmap impact:
   publication, release material, signing, identity artifacts, wallet writes,
   ECU minting, ILC settlement, value-path activation, or Atlas-G tail execution.
 
+## 50h. Phase 1327 CCSS-004 Gossip Jitter Cover Policy Tests Addendum
+
+Phase 1327 records the local/private CCSS-004 gossip jitter cover policy tests:
+
+```text
+ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1
+gossip_announce_pull_jitter_policy_recorded_phase_1327
+traffic_analysis_negative_tests_recorded_phase_1327
+anonymity_guarantee_not_claimed_phase_1327
+phase_1328_ccss_private_droplet_reproducibility_next
+public_rc_remains_blocked_after_phase_1327
+```
+
+Roadmap impact:
+
+- The confidential coordination local-preview profile now requires
+  `confidential_coordination_gossip_jitter_cover_policy`.
+- The CCSS-004 contract records bounded private/local announce metadata,
+  receiver-controlled pull, bounded jitter, bounded batching, idle cover,
+  deterministic test-fixture jitter, and traffic-analysis matrix rows.
+- The traffic-analysis matrix records sender timing, receiver timing, batch
+  size, idle-cover absence, retry burst, shard-header correlation, and harness
+  identity leakage observations with tested mitigations, evidence artifacts,
+  residual risk, and exact non-claims.
+- This is not public P2P, public relay serving, public confidential
+  coordination serving, public confidential messaging, anonymity, unlinkability,
+  or Signal-equivalent protection.
+- Phase 1327 does not authorize public RC, source publication, package
+  publication, release material, signing, identity artifacts, wallet writes,
+  ECU minting, ILC settlement, value-path activation, or Atlas-G tail execution.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:
