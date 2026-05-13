@@ -125,6 +125,29 @@ reference strings only as refs; actual membership lists, member-agent
 identifiers, participant identities, route history, and capability contents
 remain denied.
 
+Phase 1325 completion:
+
+```text
+ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1
+private_shard_access_control_boundary_recorded_phase_1325
+membership_plaintext_disclosure_forbidden_phase_1325
+optional_zk_interface_boundary_recorded_phase_1325
+phase_1326_ccss_sealed_sender_boundary_next
+public_rc_remains_blocked_after_phase_1325
+```
+
+The CCSS-002 contract is now implemented locally at
+`ilc_core/sidecars/confidential_coordination_capability.py` and registered as
+`confidential_coordination_capability_membership_boundary`. It defines
+`CapabilityPolicyRef`, `MembershipBoundaryRef`, `CapabilityGrantRef`,
+`CapabilityRevocationRef`, `ZKMembershipInterfaceRef`, and local
+`CapabilityAccessDecision` records. Unknown, malformed, replayed, cross-shard,
+revoked, expired, superseded, and ZK-deferred capabilities deny by default.
+The optional ZK seam records interface shape only and does not activate a
+ratified verifier or public proof service. Actual member lists, bearer
+identities, raw grants, raw membership material, revocation reasons, plaintext,
+route history, and ZK witnesses remain denied.
+
 Window 1330-1342:
 
 | Phase | Assignment |

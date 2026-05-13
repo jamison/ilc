@@ -243,6 +243,27 @@ per-item validation, manifests the canonical-size and promotion-ref bounds,
 rejects zero-envelope shard headers, and preserves Phase 1325 membership-boundary
 ref compatibility without authorizing Phase 1325 execution or public serving.
 
+Phase 1325 completion note:
+
+```text
+ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1
+private_shard_access_control_boundary_recorded_phase_1325
+membership_plaintext_disclosure_forbidden_phase_1325
+optional_zk_interface_boundary_recorded_phase_1325
+phase_1326_ccss_sealed_sender_boundary_next
+public_rc_remains_blocked_after_phase_1325
+```
+
+Phase 1325 added the local-only
+`confidential_coordination_capability_membership_boundary` sidecar contract and
+preserved the CCSS/Atlas-G split. It records capability policy, opaque
+membership boundary, grant, revocation, optional ZK seam, and fail-closed access
+decision surfaces. It does not authorize ATLAS-G-007 through ATLAS-G-010,
+public confidential coordination serving, public membership directory, public
+credential authority, public ZK verifier, public P2P, public promotion, source
+publication, release authority, release signing, identity bootstrap, wallet
+actions, ECU minting, ILC settlement, or value-path activation.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |

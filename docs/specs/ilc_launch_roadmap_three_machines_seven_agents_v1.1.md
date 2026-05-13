@@ -2459,6 +2459,48 @@ Roadmap impact:
   package publication, release material, signing, identity artifacts, wallet
   actions, ECU minting, ILC settlement, or value-path activation.
 
+## 50d. Phase 1325 CCSS-002 Capability/Membership Boundary Addendum
+
+Phase 1325 implements the second Confidential Coordination Sidecar Suite
+contract as a local-only capability, membership, grant, revocation, and optional
+ZK interface boundary.
+
+```text
+ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1
+private_shard_access_control_boundary_recorded_phase_1325
+membership_plaintext_disclosure_forbidden_phase_1325
+optional_zk_interface_boundary_recorded_phase_1325
+phase_1326_ccss_sealed_sender_boundary_next
+public_rc_remains_blocked_after_phase_1325
+```
+
+Roadmap impact:
+
+- `ilc_core/sidecars/confidential_coordination_capability.py` now defines and
+  validates `CapabilityPolicyRef`, `MembershipBoundaryRef`,
+  `CapabilityGrantRef`, `CapabilityRevocationRef`, `ZKMembershipInterfaceRef`,
+  and local `CapabilityAccessDecision` records.
+- The sidecar registry records
+  `confidential_coordination_capability_membership_boundary` under
+  `phase_1325_private_local_contract_only` and requires it for the
+  confidential coordination local-preview profile.
+- Unknown, malformed, replayed, cross-shard, revoked, expired, superseded, and
+  ZK-deferred capabilities deny by default.
+- Revocation wins over grant evidence.
+- Membership proof references remain opaque. Participant lists, membership
+  lists, bearer identity, raw grants, raw membership material, plaintext,
+  revocation reasons, route history, AgentID, wallet, harness, IP, seed,
+  mnemonic, private-key, and ZK witness material are denied.
+- The optional ZK seam records only interface shape. It does not ratify a
+  proving system, enable a public verifier, disclose proof payloads, disclose
+  witness material, or grant access.
+- Phase 1325 does not execute ATLAS-G-007 through ATLAS-G-010, authorize public
+  confidential coordination serving, public membership directory, public
+  credential authority, public ZK verifier, public P2P, source publication,
+  package publication, release artifact/key/envelope production, release
+  signing, public promotion, identity bootstrap, wallet actions, ECU minting,
+  ILC settlement, or value-path activation.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:

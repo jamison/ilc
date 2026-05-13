@@ -21,6 +21,9 @@ from ilc_core.rc.package_profiles import (
 from ilc_core.sidecars.claimability_receipt_verifier import (
     claimability_receipt_verifier_manifest,
 )
+from ilc_core.sidecars.confidential_coordination_capability import (
+    ccss_002_capability_membership_boundary_manifest,
+)
 from ilc_core.sidecars.confidential_coordination_shard import (
     ccss_001_private_gated_shard_manifest,
 )
@@ -264,6 +267,22 @@ _SIDECAR_DEFINITIONS = (
         "wiring_modes": _PRIVATE_WIRING_MODES,
     },
     {
+        "authority_gate": "phase_1325_private_local_contract_only",
+        "component": "ccss_002_capability_membership_boundary",
+        "implementation_status": "contract_recorded_phase_1325_no_public_serving",
+        "public_serving_enabled": False,
+        "required_capabilities": (
+            "CapabilityPolicyRef",
+            "MembershipBoundaryRef",
+            "CapabilityGrantRef",
+            "CapabilityRevocationRef",
+            "ZKMembershipInterfaceRef",
+            "local_access_state_fail_closed",
+        ),
+        "sidecar_id": "confidential_coordination_capability_membership_boundary",
+        "wiring_modes": _PRIVATE_WIRING_MODES,
+    },
+    {
         "authority_gate": "phase_1323_1328_private_dry_run_before_public_claim",
         "component": "openclaw_compatible_local_bridge",
         "implementation_status": "profile_declared_phase_1307",
@@ -339,6 +358,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
                 package_profile_id=PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW,
                 required_sidecars=(
                     "sidecar_registry_manifest",
+                    "confidential_coordination_capability_membership_boundary",
                     "confidential_coordination_private_gated_shard",
                     "confidential_coordination_local_preview",
                     "local_graph_memory_projection",
@@ -360,6 +380,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
         "non_authorization_boundary": list(_NON_AUTHORIZATION_BOUNDARY),
         "package_profile_integrity": {
             "claimable_profile_requires_offline_verifier": True,
+            "confidential_coordination_capability_manifest": ccss_002_capability_membership_boundary_manifest(),
             "confidential_coordination_shard_manifest": ccss_001_private_gated_shard_manifest(),
             "confidential_coordination_profile_is_private_local_only": True,
             "local_graph_memory_projection_sidecar_manifest": local_graph_memory_projection_sidecar_manifest(),
@@ -557,6 +578,10 @@ def _validate_profile_record(record: Mapping[str, Any], *, sidecar_ids: set[str]
             raise ValueError("sidecar_registry_confidential_profile_public_claim_forbidden_phase_1307")
         if "confidential_coordination_local_preview" not in required:
             raise ValueError("sidecar_registry_confidential_profile_missing_sidecar_phase_1307")
+        if "confidential_coordination_private_gated_shard" not in required:
+            raise ValueError("sidecar_registry_confidential_profile_missing_ccss_001_phase_1324")
+        if "confidential_coordination_capability_membership_boundary" not in required:
+            raise ValueError("sidecar_registry_confidential_profile_missing_ccss_002_phase_1325")
 
 
 def _validate_package_profile_integrity(value: object) -> None:
@@ -619,6 +644,52 @@ def _validate_package_profile_integrity(value: object) -> None:
     ]:
         raise ValueError(
             "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
+        )
+    ccss_capability = _require_mapping(
+        integrity.get("confidential_coordination_capability_manifest"),
+        token="sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325",
+    )
+    if ccss_capability.get("contract_version") != (
+        "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1"
+    ):
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
+        )
+    for key in (
+        "grant_revocation_boundary_recorded",
+        "local_only",
+        "membership_plaintext_disclosure_forbidden",
+        "optional_zk_interface_boundary_recorded",
+        "private_shard_access_control_boundary_recorded",
+    ):
+        if ccss_capability.get(key) is not True:
+            raise ValueError(
+                "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
+            )
+    for key in (
+        "public_confidential_coordination_serving_enabled",
+        "public_membership_directory_enabled",
+        "public_p2p_enabled",
+        "public_zk_verifier_enabled",
+    ):
+        _require_false(
+            ccss_capability.get(key),
+            token="sidecar_registry_package_profile_integrity_ccss_capability_public_authority_forbidden_phase_1325",
+        )
+    if ccss_capability.get("next_phase") != "phase_1326_ccss_sealed_sender_boundary_next":
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
+        )
+    if ccss_capability.get("tokens") != [
+        "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1",
+        "private_shard_access_control_boundary_recorded_phase_1325",
+        "membership_plaintext_disclosure_forbidden_phase_1325",
+        "optional_zk_interface_boundary_recorded_phase_1325",
+        "phase_1326_ccss_sealed_sender_boundary_next",
+        "public_rc_remains_blocked_after_phase_1325",
+    ]:
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
         )
     verifier = _require_mapping(
         integrity.get("offline_claimability_verifier_manifest"),
