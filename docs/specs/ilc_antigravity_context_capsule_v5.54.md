@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, and Phase 1324 Fix2 sidecar harness cross-module hardening
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, and Phase 1325 CCSS-002 capability/membership boundary
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1324 Fix2
-**Next phase:** Phase 1325 - CCSS-002 capability/membership boundary, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1325
+**Next phase:** Phase 1326 - CCSS-003 sealed sender boundary, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -96,6 +96,12 @@ sidecar_canonical_json_byte_caps_cross_module_phase_1324_fix2
 sidecar_payload_key_counting_cross_module_phase_1324_fix2
 public_rc_remains_blocked_after_phase_1324_fix2
 phase_1325_ccss_capability_membership_boundary_next_after_fix2
+ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1
+private_shard_access_control_boundary_recorded_phase_1325
+membership_plaintext_disclosure_forbidden_phase_1325
+optional_zk_interface_boundary_recorded_phase_1325
+phase_1326_ccss_sealed_sender_boundary_next
+public_rc_remains_blocked_after_phase_1325
 ```
 
 ---
@@ -206,8 +212,21 @@ package publication, patent filing, CLA/trademark approval, release artifacts,
 keys, envelopes, signing, identity artifacts, wallet writes, ECU minting, ILC
 settlement, value-path activation, or Phase 1324 execution.
 
-Phase 1324 is the next phase after Phase 1323 Fix3. Phase 1324 remains sensitive and
-requires explicit `GO Phase 1324`.
+Phase 1324 is complete as CCSS-001 private/gated shard contract work. Phase
+1324 Fix1 and Fix2 are complete as implementation-audit and cross-module
+sidecar hardening passes.
+
+Phase 1325 is complete as the CCSS-002 capability/membership boundary. It adds
+a local-only capability policy, opaque membership-boundary, grant, revocation,
+optional ZK seam, and fail-closed access-decision substrate. It does not
+authorize public confidential coordination serving, public P2P, public
+membership directory, public credential authority, public ZK verifier, public
+RC, source publication, release material, signing, identity artifacts, wallet
+actions, ECU minting, ILC settlement, value-path activation, or Atlas-G tail
+execution.
+
+Phase 1326 is the next phase after Phase 1325. Phase 1326 remains sensitive and
+requires explicit `GO Phase 1326`.
 
 ---
 
@@ -237,7 +256,7 @@ must repeat the same discovery discipline before execution.
 | 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Complete as live private DigitalOcean/Tailscale rehearsal; UFW tightened to Tailscale-only inbound; no public ILC serving, no identity artifacts, no public claimability activation. Fix1 restored the VPS Git workflow and cleared the remote sync precondition for Phase 1323. |
 | 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled. Fix2 installed native OpenClaw on `ilc-node-6` and verified local workspace skill discovery, while ClawHub listing/public installability remain blocked. Fix3 implemented the provisional layered license posture and replaced blanket MIT. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Complete as local-only contract substrate; no public confidential coordination serving, no public P2P, no public promotion. Fix1 hardened the CCSS-001 implementation-audit findings; Fix2 hardened repeated validator classes across older sidecar harness modules. |
-| 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
+| 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Complete as local-only boundary substrate; no public confidential coordination serving, public membership directory, public credential authority, public ZK verifier, or public P2P. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
 | 1327 CCSS-004 gossip/jitter/cover tests | Must harden metadata-correlation evidence and avoid anonymity overclaims. | Open; no anonymity guarantee or public gossip claim. |
 | 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run | Private harness evidence only; no public serving, publication, or release authority. | Open; no droplet dry run executed. |
@@ -396,7 +415,7 @@ IP-001 through IP-006 lane names. Future counsel review/modification remains
 expected, but root license/zone-table selection is no longer open as a separate
 implementation blocker.
 
-## 4.6 Phase 1324 CCSS And Sidecar Hardening Evidence
+## 4.6 Phase 1324-1325 CCSS And Sidecar Hardening Evidence
 
 Phase 1324 publishes the CCSS-001 contract evidence path:
 
@@ -416,6 +435,22 @@ rejection, cross-module epoch-zero rejection, control-character rejection,
 canonical JSON byte caps, payload
 mapping-key counting, and guardrail expansion across audited sidecar harness
 modules. It does not execute CCSS-002 or authorize public serving.
+
+Phase 1325 publishes the CCSS-002 capability/membership boundary evidence path:
+
+```text
+docs/specs/ilc_ccss_002_capability_membership_grant_revocation_boundary_1325_v0.1.md
+```
+
+Phase 1325 adds `ilc_core/sidecars/confidential_coordination_capability.py`,
+registers `confidential_coordination_capability_membership_boundary`, and
+requires that sidecar in the confidential coordination local-preview profile.
+It records local-only capability policy, opaque membership boundary, grant,
+revocation, optional ZK seam, and access-decision surfaces. Unknown,
+malformed, replayed, cross-shard, revoked, expired, superseded, and
+ZK-deferred capabilities fail closed. It does not authorize public confidential
+coordination serving, public membership directory, public credential authority,
+public ZK verifier, or public P2P.
 
 ---
 
@@ -469,7 +504,7 @@ wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
-Phase 1322, Fix1, Phase 1323, Phase 1323 Fix2, Phase 1323 Fix3, Phase 1324, Phase 1324 Fix1, and Phase 1324 Fix2 also do not authorize identity artifact creation, genesis record
+Phase 1322, Fix1, Phase 1323, Phase 1323 Fix2, Phase 1323 Fix3, Phase 1324, Phase 1324 Fix1, Phase 1324 Fix2, and Phase 1325 also do not authorize identity artifact creation, genesis record
 creation, seed commitment creation, `identity_seed_commitment` creation, dummy
 Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
 installability, OpenClaw skill listing, ClawHub submission, mnemonic generation,
@@ -506,6 +541,9 @@ ECU minting
 ILC settlement
 public confidential messaging
 public confidential coordination serving
+public membership directory
+public credential authority
+public ZK verifier
 production `commit.epoch` emission
 ```
 
@@ -526,6 +564,9 @@ graph_delta=support_only:docs/specs/ilc_ccss_001_private_gated_shard_sidecar_con
 graph_delta=support_only:ilc_core/sidecars/confidential_coordination_shard.py,tests/test_phase_1324_ccss_001_private_gated_shard_sidecar_contract.py,tools/check_sensitive_runtime_coding_taboos.py -> graph-native-sidecars/confidential-coordination/ccss-001-private-gated-shard
 graph_delta=support_only:docs/specs/ilc_phase_1324_fix2_sidecar_harness_cross_module_hardening_v0.1.md,docs/phases/phase_1324_fix2_sidecar_harness_cross_module_hardening_walkthrough.md,tests/test_sidecar_cross_module_hardening_fix1.py -> planning/frontier
 graph_delta=load_bearing_artifact_changed:ilc_core/sidecars/registry_manifest.py,ilc_core/sidecars/claimability_receipt_verifier.py,ilc_core/sidecars/transport_principal_admission.py,ilc_core/sidecars/local_graph_memory_projection.py,ilc_core/sidecars/public_fetch_p2p_readiness.py -> graph-native-sidecars/cross-module-hardening
+graph_delta=support_only:docs/specs/ilc_ccss_002_capability_membership_grant_revocation_boundary_1325_v0.1.md,docs/phases/phase_1325_ccss_002_capability_membership_grant_revocation_boundary_walkthrough.md,tests/test_phase_1325_ccss_002_capability_membership_grant_revocation_boundary.py -> planning/frontier
+graph_delta=load_bearing_artifact_added:ilc_core/sidecars/confidential_coordination_capability.py -> graph-native-sidecars/confidential-coordination/ccss-002-capability-membership-boundary
+graph_delta=support_only:docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json,docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.md -> package/public_rc/profile-audit
 ```
 
 ---
@@ -533,9 +574,9 @@ graph_delta=load_bearing_artifact_changed:ilc_core/sidecars/registry_manifest.py
 ## 9. Next Phase
 
 ```text
-phase_1325_ccss_capability_membership_boundary_next
+phase_1326_ccss_sealed_sender_boundary_next
 ```
 
-Phase 1325 is sensitive and requires explicit `GO Phase 1325`. It is a CCSS-002
-capability/membership boundary phase only unless its own prompt, canon checks,
-and human authorization say otherwise.
+Phase 1326 is sensitive and requires explicit `GO Phase 1326`. It is a CCSS-003
+sealed-sender boundary phase only unless its own prompt, canon checks, and human
+authorization say otherwise.
