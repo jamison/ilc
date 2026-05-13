@@ -24,6 +24,9 @@ from ilc_core.sidecars.claimability_receipt_verifier import (
 from ilc_core.sidecars.confidential_coordination_capability import (
     ccss_002_capability_membership_boundary_manifest,
 )
+from ilc_core.sidecars.confidential_coordination_sealed_sender import (
+    ccss_003_sealed_sender_local_delivery_manifest,
+)
 from ilc_core.sidecars.confidential_coordination_shard import (
     ccss_001_private_gated_shard_manifest,
 )
@@ -283,6 +286,22 @@ _SIDECAR_DEFINITIONS = (
         "wiring_modes": _PRIVATE_WIRING_MODES,
     },
     {
+        "authority_gate": "phase_1326_private_local_contract_only",
+        "component": "ccss_003_sealed_sender_local_delivery_boundary",
+        "implementation_status": "contract_recorded_phase_1326_no_public_serving",
+        "public_serving_enabled": False,
+        "required_capabilities": (
+            "SealedPayloadClassRef",
+            "SealedLocalDeliveryIntent",
+            "SealedLocalDeliveryReceipt",
+            "SealedDeliveryProjection",
+            "fixed_size_payload_boundary",
+            "sealed_delivery_state_fail_closed",
+        ),
+        "sidecar_id": "confidential_coordination_sealed_sender_local_delivery",
+        "wiring_modes": _PRIVATE_WIRING_MODES,
+    },
+    {
         "authority_gate": "phase_1323_1328_private_dry_run_before_public_claim",
         "component": "openclaw_compatible_local_bridge",
         "implementation_status": "profile_declared_phase_1307",
@@ -360,6 +379,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
                     "sidecar_registry_manifest",
                     "confidential_coordination_capability_membership_boundary",
                     "confidential_coordination_private_gated_shard",
+                    "confidential_coordination_sealed_sender_local_delivery",
                     "confidential_coordination_local_preview",
                     "local_graph_memory_projection",
                     "openclaw_nemoclaw_local_bridge",
@@ -381,6 +401,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
         "package_profile_integrity": {
             "claimable_profile_requires_offline_verifier": True,
             "confidential_coordination_capability_manifest": ccss_002_capability_membership_boundary_manifest(),
+            "confidential_coordination_sealed_sender_manifest": ccss_003_sealed_sender_local_delivery_manifest(),
             "confidential_coordination_shard_manifest": ccss_001_private_gated_shard_manifest(),
             "confidential_coordination_profile_is_private_local_only": True,
             "local_graph_memory_projection_sidecar_manifest": local_graph_memory_projection_sidecar_manifest(),
@@ -582,6 +603,8 @@ def _validate_profile_record(record: Mapping[str, Any], *, sidecar_ids: set[str]
             raise ValueError("sidecar_registry_confidential_profile_missing_ccss_001_phase_1324")
         if "confidential_coordination_capability_membership_boundary" not in required:
             raise ValueError("sidecar_registry_confidential_profile_missing_ccss_002_phase_1325")
+        if "confidential_coordination_sealed_sender_local_delivery" not in required:
+            raise ValueError("sidecar_registry_confidential_profile_missing_ccss_003_phase_1326")
 
 
 def _validate_package_profile_integrity(value: object) -> None:
@@ -690,6 +713,51 @@ def _validate_package_profile_integrity(value: object) -> None:
     ]:
         raise ValueError(
             "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
+        )
+    ccss_sealed_sender = _require_mapping(
+        integrity.get("confidential_coordination_sealed_sender_manifest"),
+        token="sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326",
+    )
+    if ccss_sealed_sender.get("contract_version") != (
+        "ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1"
+    ):
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
+        )
+    for key in (
+        "fixed_size_payload_boundary_recorded",
+        "h013_h015_dependency_seams_recorded",
+        "local_only",
+        "sealed_sender_fixed_size_payload_boundary_recorded",
+    ):
+        if ccss_sealed_sender.get(key) is not True:
+            raise ValueError(
+                "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
+            )
+    for key in (
+        "public_confidential_coordination_serving_enabled",
+        "public_confidential_messaging_claimed",
+        "public_p2p_enabled",
+        "public_relay_serving_enabled",
+    ):
+        _require_false(
+            ccss_sealed_sender.get(key),
+            token="sidecar_registry_package_profile_integrity_ccss_sealed_sender_public_authority_forbidden_phase_1326",
+        )
+    if ccss_sealed_sender.get("next_phase") != "phase_1327_ccss_gossip_jitter_cover_policy_next":
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
+        )
+    if ccss_sealed_sender.get("tokens") != [
+        "ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1",
+        "sealed_sender_fixed_size_payload_boundary_recorded_phase_1326",
+        "h013_h015_dependency_seams_recorded_phase_1326",
+        "public_p2p_not_activated_by_ccss_phase_1326",
+        "phase_1327_ccss_gossip_jitter_cover_policy_next",
+        "public_rc_remains_blocked_after_phase_1326",
+    ]:
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
         )
     verifier = _require_mapping(
         integrity.get("offline_claimability_verifier_manifest"),
