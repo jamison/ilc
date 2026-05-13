@@ -32,7 +32,9 @@ CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 TRUTH_PRIMITIVE_GOSSIP_TYPE = "truth_primitive_announced"
-TRUTH_PRIMITIVE_GOSSIP_CHANNEL = "cdl076:truth_primitive_announced_v1"
+TRUTH_PRIMITIVE_GOSSIP_CHANNEL = (
+    "cid:0760000000000000000000000000000000000000000000000000000000000000"
+)
 _GOSSIP_TIMEOUT_SECONDS = 2.0
 _UNSIGNED_SIGNATURE = "UNSIGNED"
 _GOSSIP_TLS_INSECURE_ENV = "ILC_D2D_INSECURE_SKIP_TLS_VERIFY"
@@ -51,6 +53,24 @@ class GossipAnnouncementError(Exception):
         super().__init__(message)
         self.token = token
         self.message = message
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Reject redirects so malicious peers cannot retarget gossip POSTs."""
+
+    def redirect_request(
+        self,
+        _req: urllib.request.Request,
+        _fp: object,
+        code: int,
+        _msg: str,
+        _headers: object,
+        newurl: str,
+    ) -> None:
+        raise GossipAnnouncementError(
+            "truth_primitive_gossip_redirect_not_permitted",
+            f"peer returned redirect {code} to {newurl}",
+        )
 
 
 def _load_peers() -> list[str]:
@@ -118,11 +138,11 @@ def _send_to_peer(peer_endpoint: str, payload_bytes: bytes, epoch: int) -> bool:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(
-            request,
-            timeout=_GOSSIP_TIMEOUT_SECONDS,
-            context=_client_ssl_context(),
-        ) as response:
+        opener = urllib.request.build_opener(
+            _NoRedirectHandler,
+            urllib.request.HTTPSHandler(context=_client_ssl_context()),
+        )
+        with opener.open(request, timeout=_GOSSIP_TIMEOUT_SECONDS) as response:
             return 200 <= int(response.getcode()) < 300
     except Exception:  # noqa: BLE001
         return False

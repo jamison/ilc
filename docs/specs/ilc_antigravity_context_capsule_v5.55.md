@@ -83,27 +83,18 @@ Phase 1332 is the next planned phase and is sensitive. It requires explicit
 | ATLAS-G-008 | Carried forward. Genesis/ILC/ECU/hypergraph non-excisability review packet is not closed and must not be hidden inside CCSS. | Phase 1339 review packet or explicit block/carry-forward. |
 | ATLAS-G-009 | Blocked by authority. Signing root envelope prep is not authorized to produce real envelope or signing material before explicit ceremony authority. | Phase 1340 prep under signing-gate authority; no signature by prep alone. |
 | ATLAS-G-010 | Blocked by authority. v0.2 signing ceremony is not authorized by this capsule or the sequence lock. | Phase 1340 signing only if explicitly authorized. |
-| Identity bootstrap | Blocked. No identity artifacts, genesis records, seed commitments, `identity_seed_commitment`, dummy Agent Birth artifacts, mnemonics, private keys, or secret-store writes are authorized. | Future identity-bootstrap ADR/CDL or equivalent spec before public bootstrap claims. |
+| Identity bootstrap | Blocked. Phase 1331 Fix1 repaired the runtime `identity_seed_commitment` formula to the domain-separated CDL-069 form, but no identity artifacts, genesis records, seed commitment artifacts, dummy Agent Birth artifacts, mnemonics, private keys, or secret-store writes are authorized. | Future identity-bootstrap ADR/CDL or equivalent spec before public bootstrap claims. |
 | Counsel/publication | Blocked. Layered license posture is implemented provisionally, but counsel review/modification, CLA, trademark, IP/patent, source publication, package publication, and public RC publication authority remain future gates. | Counsel/publication authority before Phase 1341 publication claim. |
 
 ## 5. Identity Bootstrap Guard
 
-The identity bootstrap lane remains blocked for public bootstrap claims. Before
-any identity artifact is created, a future phase must resolve the CDL-069
-commitment mismatch:
+The identity bootstrap lane remains blocked for public bootstrap claims. Phase 1331 Fix1 repaired the runtime CDL-069 commitment formula; the canonical runtime formula is:
 
 ```text
 identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)
 ```
 
-versus the current runtime bare-hash path:
-
-```text
-sha384(identity_seed)
-```
-
-Public bootstrap must also preserve the Genesis-rooted identity invariant by a
-later agent birth attestation or equivalent identity-origin proof. Private graph content must not become identity-seed entropy or recovery material.
+Public bootstrap must also preserve the Genesis-rooted identity invariant by a later agent birth attestation or equivalent identity-origin proof. Private graph content must not become identity-seed entropy or recovery material.
 
 ## 6. Window 1330-1342 Gate Order
 

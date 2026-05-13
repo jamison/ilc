@@ -178,21 +178,19 @@ def verify_bootstrap_bundle_signature(
         payload = {k: v for k, v in bundle.items() if k != "signature"}
         signed_bytes = json.dumps(payload, sort_keys=True).encode("utf-8")
 
-        # Test-environment bypass: skip crypto verification when flag is set.
-        # Key-match check above (signed_by == genesis_authority_pubkey_hex) still
-        # runs so the wrong-key test still fails correctly.
-        import os as _os
-        if _os.environ.get("ILC_BOOTSTRAP_SKIP_SIG_VERIFY") == "1":
-            return True
-
-        # ML-DSA-65 signature verification via oqs
+        # ML-DSA-65 signature verification via oqs. Some oqs Python builds try
+        # to install liboqs at import time and may raise SystemExit; fail closed.
         try:
             import oqs  # type: ignore[import]
+        except (ImportError, RuntimeError, SystemExit):
+            return False
+
+        try:
             sig_bytes = bytes.fromhex(signature_hex)
             pubkey_bytes = bytes.fromhex(genesis_authority_pubkey_hex)
             verifier = oqs.Signature("ML-DSA-65")
             return bool(verifier.verify(signed_bytes, sig_bytes, pubkey_bytes))
-        except (ImportError, RuntimeError):
+        except (RuntimeError, ValueError):
             return False
 
     except Exception:  # noqa: BLE001

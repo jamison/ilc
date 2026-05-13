@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
@@ -56,6 +57,27 @@ VALID_BUNDLE = {
     "signature": "ddeeff" * 20,
     "cdl_version": "cdl_079_bootstrap_bundle_v1",
 }
+
+
+class _RejectingOqsSignature:
+    def __init__(self, _algorithm: str) -> None:
+        pass
+
+    def verify(
+        self,
+        _signed_bytes: bytes,
+        _sig_bytes: bytes,
+        _pubkey_bytes: bytes,
+    ) -> bool:
+        return False
+
+
+class _RejectingOqsModule:
+    Signature = _RejectingOqsSignature
+
+
+def _install_rejecting_oqs(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(sys.modules, "oqs", _RejectingOqsModule())
 
 
 # ---------------------------------------------------------------------------
@@ -187,11 +209,12 @@ def test_verify_signature_not_a_dict_returns_false():
     assert result is False
 
 
-def test_verify_signature_correct_key_with_bypass(monkeypatch):
-    """With ILC_BOOTSTRAP_SKIP_SIG_VERIFY=1 and matching signed_by → True (test bypass)."""
+def test_verify_signature_env_bypass_not_accepted(monkeypatch):
+    """ILC_BOOTSTRAP_SKIP_SIG_VERIFY must not bypass production signature checks."""
     monkeypatch.setenv("ILC_BOOTSTRAP_SKIP_SIG_VERIFY", "1")
+    _install_rejecting_oqs(monkeypatch)
     result = verify_bootstrap_bundle_signature(VALID_BUNDLE, GENESIS_PUBKEY)
-    assert result is True
+    assert result is False
 
 
 # ---------------------------------------------------------------------------
@@ -280,17 +303,21 @@ def test_detect_bootstrap_mode_only_cid_raises(monkeypatch):
 
 def test_bootstrap_node_startup_success(monkeypatch):
     """Full bootstrap path: fetch → verify → extract → return endpoints."""
-    monkeypatch.setenv("ILC_BOOTSTRAP_SKIP_SIG_VERIFY", "1")
     with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
-         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb, \
+         patch(
+             "ilc_core.network.d2d.bootstrap_fetch_runtime.verify_bootstrap_bundle_signature"
+         ) as mock_verify:
         mock_wh.return_value = {"have": True, "node_id": "bafyreiabc001"}
         mock_wb.return_value = json.dumps(VALID_BUNDLE, sort_keys=True).encode()
+        mock_verify.return_value = True
         endpoints = bootstrap_node_startup(
             "https://seed.ilc.example",
             "bafyreiabc001",
             GENESIS_PUBKEY,
         )
     assert len(endpoints) == 2
+    mock_verify.assert_called_once()
 
 
 def test_bootstrap_node_startup_bundle_not_found_raises(monkeypatch):

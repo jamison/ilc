@@ -82,7 +82,7 @@ class LedgerBackend(ABC):
         """
 
     @abstractmethod
-    def get_balance(self, agent_id: str) -> float:
+    def get_balance(self, agent_id: str) -> Decimal:
         """
         Get the current balance for an agent.
 
@@ -90,7 +90,7 @@ class LedgerBackend(ABC):
             agent_id: The agent identifier
 
         Returns:
-            Current balance (0.0 if agent has no balance)
+            Current balance (Decimal("0") if agent has no balance)
         """
 
     @abstractmethod
@@ -294,9 +294,9 @@ class InMemoryLedgerBackend(LedgerBackend):
         epoch_id = cast(str, record["epoch_id"])
         self.epoch_records[epoch_id] = record
 
-    def get_balance(self, agent_id: str) -> float:
-        """Get agent balance. Returns 0.0 if not found."""
-        return float(self.balances.get(agent_id, ZERO))
+    def get_balance(self, agent_id: str) -> Decimal:
+        """Get agent balance. Returns Decimal("0") if not found."""
+        return self.balances.get(agent_id, ZERO)
 
     def get_epoch_record(self, epoch_id: str) -> Optional[EpochRecord]:
         """Get epoch settlement record."""
