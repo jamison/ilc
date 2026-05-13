@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import ilc_core.sidecars.confidential_coordination_shard as ccss
 from ilc_core.sidecars.confidential_coordination_shard import (
     CCSS_001_PRIVATE_GATED_SHARD_CONTRACT_VERSION,
     CCSS_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
@@ -21,6 +22,7 @@ from ilc_core.sidecars.confidential_coordination_shard import (
     build_private_shard_ref,
     build_promotion_evidence_ref,
     build_shard_header_projection,
+    canonical_ccss_001_json,
     ccss_001_private_gated_shard_manifest,
     ccss_001_record_ref,
     ccss_001_required_tokens,
@@ -125,8 +127,10 @@ def test_phase_1324_manifest_and_records_are_deterministic_local_only() -> None:
     assert manifest["tokens"] == REQUIRED_TOKENS
     assert manifest["local_only"] is True
     assert manifest["next_phase"] == PHASE_1325_NEXT_TOKEN
+    assert manifest["max_canonical_json_bytes"] == 10_000_000
     assert manifest["public_confidential_coordination_serving_enabled"] is False
     assert manifest["public_p2p_enabled"] is False
+    assert manifest["max_promotion_evidence_refs"] == 64
     assert all(value is False for value in manifest["authorization_flags"].values())
     assert validate_ccss_001_manifest(manifest) == manifest
 
@@ -252,6 +256,90 @@ def test_phase_1324_negative_paths_reject_plaintext_identity_oversize_and_hash_d
     with pytest.raises(ConfidentialCoordinationShardError) as tuple_exc:
         validate_ccss_001_record(mutated)
     assert tuple_exc.value.token == "ccss_001_payload_key_invalid_phase_1324"
+
+
+def test_phase_1324_fix1_rejects_pre_genesis_epochs_and_empty_headers() -> None:
+    records = _records()
+
+    with pytest.raises(ConfidentialCoordinationShardError) as envelope_epoch_exc:
+        build_encrypted_coordination_node_envelope(
+            private_shard_ref=records["shard"]["private_shard_ref"],
+            shard_header_ref=_ref("private_shard_header", "e"),
+            capability_policy_ref=_ref("capability_policy", "f"),
+            disclosure_denial_ref=records["denial"]["disclosure_denial_ref"],
+            encryption_scheme_ref=_ref("encryption_scheme", "1"),
+            ciphertext_digest_ref=_ref("ciphertext", "2"),
+            ciphertext_storage_ref=_ref("ciphertext_storage", "3"),
+            ciphertext_size_bytes=4096,
+            envelope_epoch=0,
+        )
+    assert envelope_epoch_exc.value.token == "ccss_001_envelope_epoch_invalid_phase_1324"
+
+    with pytest.raises(ConfidentialCoordinationShardError) as promotion_epoch_exc:
+        build_promotion_evidence_ref(
+            source_private_shard_ref=records["shard"]["private_shard_ref"],
+            source_shard_header_ref=_ref("private_shard_header", "e"),
+            original_private_node_commitment_ref=_ref("private_node_commitment", "4"),
+            successor_public_node_candidate_ref=_ref("public_successor_candidate", "5"),
+            disclosed_lineage_ref=_ref("disclosed_lineage", "6"),
+            promotion_epoch=0,
+        )
+    assert promotion_epoch_exc.value.token == "ccss_001_promotion_epoch_invalid_phase_1324"
+
+    with pytest.raises(ConfidentialCoordinationShardError) as empty_header_exc:
+        build_shard_header_projection(
+            private_shard_ref=records["shard"]["private_shard_ref"],
+            shard_header_ref=_ref("private_shard_header", "e"),
+            root_commitment_ref=_ref("shard_commitment", "b"),
+            capability_policy_ref=_ref("capability_policy", "f"),
+            disclosure_denial_ref=records["denial"]["disclosure_denial_ref"],
+            header_epoch=0,
+            encrypted_coordination_refs=[],
+        )
+    assert empty_header_exc.value.token in {
+        "ccss_001_header_epoch_invalid_phase_1324",
+        "ccss_001_envelope_count_invalid_phase_1324",
+    }
+
+    with pytest.raises(ConfidentialCoordinationShardError) as no_envelope_exc:
+        build_shard_header_projection(
+            private_shard_ref=records["shard"]["private_shard_ref"],
+            shard_header_ref=_ref("private_shard_header", "e"),
+            root_commitment_ref=_ref("shard_commitment", "b"),
+            capability_policy_ref=_ref("capability_policy", "f"),
+            disclosure_denial_ref=records["denial"]["disclosure_denial_ref"],
+            header_epoch=1324,
+            encrypted_coordination_refs=[],
+        )
+    assert no_envelope_exc.value.token == "ccss_001_envelope_count_invalid_phase_1324"
+
+
+def test_phase_1324_fix1_bounds_canonical_json_and_ref_list_work() -> None:
+    with pytest.raises(ConfidentialCoordinationShardError) as control_exc:
+        canonical_ccss_001_json({"payload": "tab\tforbidden"})
+    assert control_exc.value.token == "ccss_001_payload_text_text_invalid_phase_1324"
+
+    ccss._reject_forbidden_private_values("capability_membership_boundary_ref")
+
+    with pytest.raises(ConfidentialCoordinationShardError) as ref_list_exc:
+        build_shard_header_projection(
+            private_shard_ref=_ref("private_shard", "a"),
+            shard_header_ref=_ref("private_shard_header", "b"),
+            root_commitment_ref=_ref("shard_commitment", "c"),
+            capability_policy_ref=_ref("capability_policy", "d"),
+            disclosure_denial_ref=_ref("disclosure_denial", "e"),
+            header_epoch=1324,
+            encrypted_coordination_refs=[object()] * 257,
+        )
+    assert ref_list_exc.value.token == "ccss_001_encrypted_coordination_refs_invalid_phase_1324"
+
+    try:
+        ccss._MAX_CANONICAL_JSON_BYTES = 10
+        with pytest.raises(ConfidentialCoordinationShardError) as size_exc:
+            canonical_ccss_001_json({"alpha": "beta"})
+        assert size_exc.value.token == "ccss_001_payload_size_exceeded_phase_1324"
+    finally:
+        ccss._MAX_CANONICAL_JSON_BYTES = 10_000_000
 
 
 def test_phase_1324_public_serving_and_manifest_authorization_flags_fail_closed() -> None:

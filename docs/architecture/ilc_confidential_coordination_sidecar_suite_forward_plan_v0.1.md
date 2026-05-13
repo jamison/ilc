@@ -109,6 +109,22 @@ confidential coordination serving, public P2P, public promotion, source
 publication, release signing, identity bootstrap, wallet actions, ECU minting,
 ILC settlement, or value-path activation.
 
+Phase 1324 Fix1 hardens that contract before CCSS-002:
+
+```text
+phase_1324_fix1_ccss_001_shard_contract_hardening.v0.1
+ccss_001_epoch_zero_rejected_phase_1324_fix1
+ccss_001_canonical_json_byte_cap_enforced_phase_1324_fix1
+ccss_001_ref_list_count_prechecked_phase_1324_fix1
+ccss_001_phase_1325_membership_ref_false_positive_removed_phase_1324_fix1
+```
+
+CCSS-002 should define capability and membership semantics without routing raw
+membership material through CCSS-001. CCSS-001 permits opaque membership-boundary
+reference strings only as refs; actual membership lists, member-agent
+identifiers, participant identities, route history, and capability contents
+remain denied.
+
 Window 1330-1342:
 
 | Phase | Assignment |

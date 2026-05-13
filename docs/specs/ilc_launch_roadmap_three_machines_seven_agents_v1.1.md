@@ -2429,6 +2429,36 @@ Roadmap impact:
   public promotion, identity bootstrap, wallet actions, ECU minting, ILC
   settlement, or value-path activation.
 
+## 50c. Phase 1324 Fix1 CCSS-001 Implementation-Audit Hardening Addendum
+
+Phase 1324 Fix1 hardens the CCSS-001 implementation before Phase 1325:
+
+```text
+phase_1324_fix1_ccss_001_shard_contract_hardening.v0.1
+ccss_001_epoch_zero_rejected_phase_1324_fix1
+ccss_001_canonical_json_byte_cap_enforced_phase_1324_fix1
+ccss_001_ref_list_count_prechecked_phase_1324_fix1
+ccss_001_phase_1325_membership_ref_false_positive_removed_phase_1324_fix1
+```
+
+Roadmap impact:
+
+- Epoch 0 is rejected for envelope, header, and promotion epoch fields.
+- Canonical JSON export is byte-capped, and mapping keys count toward the
+  untrusted-payload node budget.
+- Reference-list length is pre-checked before per-item validation.
+- `max_canonical_json_bytes` and `max_promotion_evidence_refs` are now manifest
+  fields.
+- Zero-envelope shard-header projections are rejected.
+- Text validation rejects all ASCII control characters.
+- CCSS-001 still forbids membership-list/member-agent disclosure, but no longer
+  rejects opaque Phase 1325 membership-boundary reference strings solely because
+  they contain the word `membership`.
+- Fix1 does not authorize Phase 1325 execution, public confidential
+  coordination serving, public P2P, public promotion, source publication,
+  package publication, release material, signing, identity artifacts, wallet
+  actions, ECU minting, ILC settlement, or value-path activation.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:
