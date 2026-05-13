@@ -50,15 +50,16 @@ def test_phase_1318_reflects_phase_1317_lock_and_next_sensitive_phase() -> None:
     planning = read(PLANNING)
     status = read(STATUS)
 
-    assert "Window 1317-1329 is OPEN through Phase 1324 Fix2" in capsule
-    assert "Window 1317-1329 is OPEN through Phase 1324 Fix2" in planning
+    assert "Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329" in capsule
+    assert "Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329" in planning
     assert "docs/specs/ilc_phase_1317_1329_sequence_lock_v0.1.md" in capsule
     assert "window_1317_1329_sequence_lock_committed" in capsule
     assert "window_1317_1329_sequence_lock_verdict=pass" in capsule
-    assert "Phase 1325 - CCSS-002 capability/membership boundary" in capsule
-    assert "Phase 1325 is sensitive and requires explicit `GO Phase 1325`" in capsule
+    assert "phase_1329_window_1317_1329_closure_complete" in capsule
+    assert "window_1330_plus_sequence_lock_required_before_next_phase_assignment" in capsule
     assert "## Phase 1318" in status
-    assert "Phase 1325 - CCSS-002 capability/membership boundary" in status
+    assert "## Phase 1329" in status
+    assert "Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329" in status
 
 
 def test_phase_1318_release_dry_run_blocker_map_is_current() -> None:
