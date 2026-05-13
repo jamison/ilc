@@ -407,4 +407,10 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "sidecar_del_control_character_rejected_cross_module_phase_1325_fix1" in text
     assert "public_rc_remains_blocked_after_phase_1325_fix1" in text
     assert "phase_1326_ccss_sealed_sender_boundary_next_after_fix1" in text
-    assert "Window 1317-1329 is OPEN through Phase 1325 Fix1" in text
+    assert "phase_1325_fix2_ccss_002_branch_and_integer_hardening.v0.1" in text
+    assert "ccss_002_oversized_raw_int_rejected_before_stringification_phase_1325_fix2" in text
+    assert "ccss_002_access_branch_coverage_expanded_phase_1325_fix2" in text
+    assert "ccss_002_payload_depth_node_limits_covered_phase_1325_fix2" in text
+    assert "public_rc_remains_blocked_after_phase_1325_fix2" in text
+    assert "phase_1326_ccss_sealed_sender_boundary_next_after_fix2" in text
+    assert "Window 1317-1329 is OPEN through Phase 1325 Fix2" in text
