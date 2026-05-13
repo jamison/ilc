@@ -59,6 +59,7 @@ TRANSPORT_PRINCIPAL_ADMISSION_DECISION_REF_PREFIX = (
 _MAX_PAYLOAD_DEPTH = 32
 _MAX_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
+_MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_COLLECTION_SIZE = 10_000
 _MAX_PROTOCOL_INT = 1_000_000_000_000
 _MAX_RATE_LIMIT_COUNT = 1_000_000_000
@@ -585,7 +586,13 @@ def transport_principal_admission_decision_ref(decision: Mapping[str, Any]) -> s
 
 def canonical_transport_principal_admission_json(payload: Mapping[str, Any]) -> str:
     _reject_unsafe_json_tree(payload)
-    return json.dumps(payload, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    canonical = json.dumps(payload, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    if len(canonical.encode("utf-8")) > _MAX_CANONICAL_JSON_BYTES:
+        raise TransportPrincipalAdmissionSidecarError(
+            "transport_principal_admission_payload_size_exceeded_phase_1309",
+            "canonical JSON payload exceeds byte bound",
+        )
+    return canonical
 
 
 def export_transport_principal_admission_decision_json(decision: Mapping[str, Any]) -> str:
@@ -841,12 +848,12 @@ def _require_epoch(name: str, value: object) -> int:
     if (
         not isinstance(value, int)
         or isinstance(value, bool)
-        or value < 0
+        or value < 1
         or value > _MAX_PROTOCOL_INT
     ):
         raise TransportPrincipalAdmissionSidecarError(
             f"transport_principal_admission_{name}_epoch_invalid_phase_1309",
-            f"{name} epoch must be a non-negative integer",
+            f"{name} epoch must be a positive bounded integer",
         )
     return value
 
@@ -885,6 +892,11 @@ def _require_text(value: object) -> str:
         raise TransportPrincipalAdmissionSidecarError(
             "transport_principal_admission_text_too_large_phase_1309",
             "text value is too large",
+        )
+    if any(ord(char) < 0x20 for char in value):
+        raise TransportPrincipalAdmissionSidecarError(
+            "transport_principal_admission_text_invalid_phase_1309",
+            "text value contains a control character",
         )
     return value
 
@@ -983,6 +995,13 @@ def _reject_unsafe_json_tree(
                         "transport_principal_admission_payload_key_invalid_phase_1309",
                         "mapping keys must be strings",
                     )
+                _require_text(key)
+                _counter[0] += 1
+                if _counter[0] > _MAX_PAYLOAD_NODES:
+                    raise TransportPrincipalAdmissionSidecarError(
+                        "transport_principal_admission_payload_too_large_phase_1309",
+                        "payload has too many nodes",
+                    )
                 _reject_unsafe_json_tree(
                     item,
                     _depth=_depth + 1,
@@ -1016,7 +1035,10 @@ def _reject_unsafe_json_tree(
         finally:
             _seen.remove(object_id)
         return
-    if value is None or isinstance(value, str):
+    if isinstance(value, str):
+        _require_text(value)
+        return
+    if value is None:
         return
     raise TransportPrincipalAdmissionSidecarError(
         "transport_principal_admission_payload_type_invalid_phase_1310",

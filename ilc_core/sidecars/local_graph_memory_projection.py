@@ -60,6 +60,7 @@ _MAX_PAYLOAD_DEPTH = 32
 _MAX_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
 _MAX_COLLECTION_SIZE = 10_000
+_MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_PROTOCOL_INT = 1_000_000_000_000
 _HEX_DIGEST_LENGTH = 64
 _HEX = frozenset("0123456789abcdef")
@@ -692,7 +693,13 @@ def local_graph_memory_projection_ref(envelope: Mapping[str, Any]) -> str:
 
 def canonical_local_graph_memory_projection_json(payload: object) -> str:
     validate_projection_privacy_filtering_payload(payload)
-    return json.dumps(payload, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    canonical = json.dumps(payload, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    if len(canonical.encode("utf-8")) > _MAX_CANONICAL_JSON_BYTES:
+        raise LocalGraphMemoryProjectionError(
+            "local_graph_memory_projection_payload_size_exceeded_phase_1311",
+            "canonical projection JSON exceeds the byte bound",
+        )
+    return canonical
 
 
 def validate_projection_privacy_filtering_payload(payload: object) -> None:
@@ -803,12 +810,12 @@ def _require_epoch(name: str, value: object) -> int:
     if (
         not isinstance(value, int)
         or isinstance(value, bool)
-        or value < 0
+        or value < 1
         or value > _MAX_PROTOCOL_INT
     ):
         raise LocalGraphMemoryProjectionError(
             f"local_graph_memory_projection_{name}_epoch_invalid_phase_1311",
-            f"{name} epoch must be a non-negative integer",
+            f"{name} epoch must be a positive bounded integer",
         )
     return value
 
@@ -856,6 +863,11 @@ def _require_text(value: object) -> str:
         raise LocalGraphMemoryProjectionError(
             "local_graph_memory_projection_text_invalid_phase_1311",
             "text value is invalid",
+        )
+    if any(ord(char) < 0x20 for char in value):
+        raise LocalGraphMemoryProjectionError(
+            "local_graph_memory_projection_text_invalid_phase_1311",
+            "text value must not contain control characters",
         )
     if len(value) > _MAX_TEXT_LENGTH:
         raise LocalGraphMemoryProjectionError(
@@ -989,6 +1001,13 @@ def _reject_unsafe_json_tree(
                         "local_graph_memory_projection_payload_key_invalid_phase_1311",
                         "mapping keys must be strings",
                     )
+                _require_text(key)
+                _counter[0] += 1
+                if _counter[0] > _MAX_PAYLOAD_NODES:
+                    raise LocalGraphMemoryProjectionError(
+                        "local_graph_memory_projection_payload_too_large_phase_1311",
+                        "payload has too many nodes",
+                    )
                 _reject_unsafe_json_tree(
                     item,
                     _depth=_depth + 1,
@@ -1022,7 +1041,10 @@ def _reject_unsafe_json_tree(
         finally:
             _seen.remove(object_id)
         return
-    if value is None or isinstance(value, str):
+    if isinstance(value, str):
+        _require_text(value)
+        return
+    if value is None:
         return
     raise LocalGraphMemoryProjectionError(
         "local_graph_memory_projection_payload_type_invalid_phase_1311",
