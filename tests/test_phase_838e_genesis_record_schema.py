@@ -104,7 +104,7 @@ def test_identity_seed_commitment_returns_96_hex() -> None:
 
 def test_identity_seed_commitment_known_vector() -> None:
     seed = b"\x00" * 32
-    expected = hashlib.sha384(seed).hexdigest()
+    expected = hashlib.sha384(b"ilc-seed-commit-v1:" + seed).hexdigest()
     assert compute_identity_seed_commitment(seed) == expected
 
 

@@ -35,6 +35,8 @@ def to_decimal(value: ExactNumberish, *, token: str = "invalid_exact_numeric_val
 
 
 def decimal_to_canonical_string(value: Decimal) -> str:
+    if not value.is_finite():
+        raise ValueError("invalid_exact_numeric_value")
     if value == ZERO:
         return "0"
 
