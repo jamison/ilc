@@ -14,8 +14,14 @@ confidential_coordination_sidecar_suite_forward_plan_recorded
 confidential_coordination_sidecar_suite_graph_native_not_signal_clone
 confidential_coordination_sidecar_suite_not_public_rc_blocker_by_default
 confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329
-confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
-confidential_coordination_public_claim_requires_phase_1337_1341_authority
+	confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only
+	confidential_coordination_public_claim_requires_phase_1337_1341_authority
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
 ```
 
 ## 1. Purpose
@@ -34,6 +40,7 @@ without making that harness a protocol dependency.
 
 The suite should remain non-public and non-blocking for the first public RC
 unless a later explicit sequence lock selects it as a public-RC requirement.
+CCSS is complete enough as private/local evidence and is not a first-RC blocker by default unless a later sequence lock selects public confidential coordination serving as first-RC scope.
 
 ## 2. Canon Basis
 
@@ -86,7 +93,7 @@ Window 1317-1329:
 | 1326 | CCSS-003: implement or formally specify sealed sender local delivery sidecar boundaries, fixed-size payload handling, H-013/H-015 dependency seams, and no-public-P2P defaults. |
 | 1327 | CCSS-004: implement or formally specify gossip announce/pull, jitter, batching, cover-policy, and traffic-analysis negative tests; explicitly avoid an anonymity-guarantee claim. |
 | 1328 | CCSS-005: run a private OpenClaw/NemoClaw or equivalent DigitalOcean droplet dry run over loopback, Tailscale, or other private wiring. No public serving claim. |
-| 1329 | Closure gate: decide whether the suite remains a post-RC/private lane, becomes a selected public-RC blocker, or is split into a later dedicated window. |
+| 1329 | Closure gate complete: the suite remains private/local evidence, is not a first-RC blocker by default, and public confidential coordination serving remains separately gated. |
 
 Phase 1324 completion:
 
@@ -257,6 +264,23 @@ P2P, public confidential coordination serving, public messaging, source
 publication, OpenClaw skill publication, ClawHub listing, public installability,
 identity bootstrap, wallet actions, ECU minting, ILC settlement, value-path
 activation, release authority, signing authority, or Atlas-G tail work.
+
+Phase 1329 completion:
+
+```text
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
+```
+
+Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329. CCSS is complete enough as private/local evidence and is not a first-RC blocker by
+default. `ATLAS-G-007 through ATLAS-G-010` remain outside the CCSS lane and must
+not be hidden in CCSS implementation. Public confidential coordination serving
+remains blocked unless a later Window 1330+ sequence lock explicitly selects and
+authorizes that scope.
 
 Window 1330-1342:
 

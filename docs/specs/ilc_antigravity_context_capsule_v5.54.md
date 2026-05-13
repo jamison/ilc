@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, Phase 1326 CCSS-003 sealed sender local delivery boundary, Phase 1327 CCSS-004 gossip jitter cover policy tests, and Phase 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, Phase 1326 CCSS-003 sealed sender local delivery boundary, Phase 1326 Fix1 sealed-sender ref collection hardening, Phase 1327 CCSS-004 gossip jitter cover policy tests, Phase 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run, and Phase 1329 Window 1317-1329 closure gate
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1328
-**Next phase:** Phase 1329 - Window 1317-1329 closure gate, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329
+**Next phase:** Window 1330+ sequence lock required before next phase assignment
 **Public RC status:** Blocked
 
 ```text
@@ -131,8 +131,14 @@ ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
 confidential_coordination_private_wiring_dry_run_recorded_phase_1328
 reproducibility_pass_recorded_phase_1328
 public_confidential_coordination_serving_not_enabled_phase_1328
-phase_1329_window_1317_1329_closure_next
-public_rc_remains_blocked_after_phase_1328
+	phase_1329_window_1317_1329_closure_next
+	public_rc_remains_blocked_after_phase_1328
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
 ```
 
 ---
@@ -258,9 +264,12 @@ execution.
 
 Phase 1325 Fix1 and Fix2 are complete as CCSS-002 access-audit,
 canonical-payload, and branch-coverage hardening passes. Phase 1326 is complete
-as the CCSS-003 sealed-sender local delivery boundary. Phase 1327 is the next
-sensitive CCSS-004 gossip/jitter/cover-policy phase and requires explicit
-`GO Phase 1327`.
+as the CCSS-003 sealed-sender local delivery boundary, and Phase 1326 Fix1
+records the bytearray ref-collection hardening pass. Phase 1327 is complete as
+the CCSS-004 gossip/jitter/cover-policy phase. Phase 1328 is complete as the
+CCSS-005 private OpenClaw/NemoClaw droplet dry run. Phase 1329 closes Window
+1317-1329 with `docs/specs/ilc_window_1317_1329_handoff_1329_v0.1` and records
+`window_1330_plus_sequence_lock_required_before_next_phase_assignment`.
 
 ---
 
@@ -282,7 +291,7 @@ must repeat the same discovery discipline before execution.
 
 ## 3. Release Dry-Run Blocker Map
 
-| Phase or lane | Current blocker | Phase 1327 status |
+| Phase or lane | Current blocker | Phase 1329 status |
 |---------------|-----------------|-------------------|
 | 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Complete as rehearsal evidence only; no source export execution, no copied public tree, no publication, no clean public tree materialization. |
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
@@ -294,7 +303,7 @@ must repeat the same discovery discipline before execution.
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Complete as local-only boundary substrate; no public P2P, public relay serving, public confidential coordination serving, or public messaging. |
 | 1327 CCSS-004 gossip/jitter/cover tests | Must harden metadata-correlation evidence and avoid anonymity overclaims. | Complete as local-only policy/test substrate; no public gossip, public P2P, anonymity, unlinkability, or Signal-equivalent claim. |
 | 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run | Private harness evidence only; no public serving, publication, or release authority. | Complete as live private DigitalOcean/Tailscale droplet evidence; OpenClaw local skill ready on `ilc-node-6`; CCSS sample construction reproducible across all three nodes; no public serving or publication. |
-| 1329 closure gate | Must classify dry-run, CCSS, Atlas-G, and release blockers honestly. | Open; not reached. |
+| 1329 closure gate | Must classify dry-run, CCSS, Atlas-G, and release blockers honestly. | Closed as `docs/specs/ilc_window_1317_1329_handoff_1329_v0.1`; Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329. |
 
 ---
 
@@ -316,14 +325,17 @@ Public RC remains blocked after Phase 1323 by:
 - CDL-088 opening if reciprocal/value-path policy is selected;
 - wallet-facing withdrawal, transfer, spend, signing, and ledger-write activation;
 - ECU minting activation, ILC settlement activation, withdrawal runtime, wallet write authority, and final value-path activation authority;
-- identity-seed UX and CDL-069 commitment-formula repair before any identity bootstrap artifact;
-- Genesis-rooted agent birth attestation or equivalent identity-origin proof before any public bootstrap claim;
+	- identity-seed UX and `CDL-069 commitment` formula repair before any identity bootstrap artifact: `identity_seed_commitment = sha384("ilc-seed-commit-v1:" || identity_seed)` must supersede the current runtime `sha384(identity_seed)` path before public bootstrap;
+	- Genesis-rooted agent birth attestation or equivalent identity-origin proof before any public bootstrap claim;
 - native ClawHub listing, public installability rehearsal, and real OpenClaw agent-turn integration before any public skill claim;
 - public confidential messaging or public confidential coordination serving if later selected as public scope.
 
 The graph-native sidecar suite remains the preferred harness-agnostic path.
 OpenClaw, NemoClaw, DigitalOcean droplets, and equivalent harnesses remain
 hosts or deployment targets, not protocol substrates.
+
+Layered license posture is implemented provisionally and remains pending future
+counsel review/modification before any public repository or package publication.
 
 ## 4.1 Phase 1319 Rehearsal Evidence
 
@@ -564,6 +576,24 @@ package publication, OpenClaw skill publication, ClawHub listing, public
 installability, signing, identity artifacts, wallet writes, ECU minting, ILC
 settlement, value-path activation, or Phase 1329 execution.
 
+Phase 1329 publishes the Window 1317-1329 closure handoff:
+
+```text
+docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md
+```
+
+Phase 1329 records that Window 1317-1329 is CLOSED / PASS with carry-forward
+through Phase 1329. CCSS is complete enough as private/local evidence and is
+not a first-RC blocker by default unless a later sequence lock selects public
+confidential coordination serving as first-RC scope. `ATLAS-G-007 through
+ATLAS-G-010` remain carried forward outside CCSS scope. Public RC remains blocked
+by source allowlist export execution, clean materialized public tree production,
+release artifact production, release-key generation, release envelope
+production, public claimability/API authority, public P2P, public
+sidecar/projection serving, public confidential coordination serving,
+wallet-facing activation, ECU minting, ILC settlement, the `CDL-069 commitment`
+formula repair, Genesis-rooted agent birth attestation, and counsel review.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -591,7 +621,7 @@ phase prompt or planning index row explicitly promotes them.
 
 ## 7. Non-Authorization Boundary
 
-Phases 1318 through 1325 Fix2 do not authorize public RC claim, public launch claim, public
+Phases 1318 through 1329 do not authorize public RC claim, public launch claim, public
 repository publication, public package publication, source allowlist export
 execution, source publication, materialized export manifest production, clean
 public export tree production, release artifact production, release artifact
@@ -616,12 +646,13 @@ wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
-Phase 1322, Fix1, Phase 1323, Phase 1323 Fix2, Phase 1323 Fix3, Phase 1324, Phase 1324 Fix1, Phase 1324 Fix2, Phase 1325, Phase 1325 Fix1, and Phase 1325 Fix2 also do not authorize identity artifact creation, genesis record
-creation, seed commitment creation, `identity_seed_commitment` creation, dummy
-Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
-installability, OpenClaw skill listing, ClawHub submission, mnemonic generation,
-secret-store writes, custodial agent-mode activation, or Genesis-rooted public
-bootstrap identity claims.
+Phase 1322 through Phase 1329, including Fix1/Fix2/Fix3 sub-phases, also do not
+authorize identity artifact creation, genesis record creation, seed commitment
+creation, `identity_seed_commitment` creation, dummy Agent Birth artifact
+creation, public OpenClaw skill publication, public OpenClaw installability,
+OpenClaw skill listing, ClawHub submission, mnemonic generation, secret-store
+writes, custodial agent-mode activation, or Genesis-rooted public bootstrap
+identity claims.
 
 For exact machine checks, the non-authorized boundary includes:
 
@@ -685,6 +716,15 @@ graph_delta=support_only:docs/specs/ilc_phase_1325_fix1_ccss_002_access_audit_ha
 graph_delta=support_only:docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json,docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.md -> package/public_rc/profile-audit
 graph_delta=load_bearing_artifact_changed:ilc_core/sidecars/confidential_coordination_capability.py -> graph-native-sidecars/confidential-coordination/ccss-002-capability-membership-boundary
 graph_delta=support_only:docs/specs/ilc_phase_1325_fix2_ccss_002_branch_and_integer_hardening_v0.1.md,docs/phases/phase_1325_fix2_ccss_002_branch_and_integer_hardening_walkthrough.md,tests/test_phase_1325_ccss_002_capability_membership_grant_revocation_boundary.py -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md -> planning/frontier
+graph_delta=support_tests_added:tests/test_phase_1329_window_1317_1329_closure_gate.py -> validation
+graph_delta=support_only:docs/phases/phase_1329_window_1317_1329_closure_gate_walkthrough.md -> planning/frontier
+graph_delta=support_only:docs/phases/STATUS.md -> planning/frontier
+graph_delta=support_only:docs/PLANNING_INDEX.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_antigravity_context_capsule_v5.54.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md -> planning/frontier
+graph_delta=support_only:docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md -> graph-native-sidecars/confidential-coordination
 ```
 
 ---
@@ -692,17 +732,23 @@ graph_delta=support_only:docs/specs/ilc_phase_1325_fix2_ccss_002_branch_and_inte
 ## 9. Current Frontier
 
 ```text
-ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
+window_1317_1329_closed_phase_1329
+window_1317_1329_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1329_window_1317_1329_closure_complete
+window_1330_plus_sequence_lock_required_before_next_phase_assignment
+release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
+public_rc_remains_blocked_after_phase_1329
 ```
 
-Phase 1328 completed the CCSS-005 private OpenClaw/NemoClaw-compatible droplet
-dry run. It recorded private Tailscale evidence across `ilc-node-2`,
-`ilc-node-3`, and `ilc-node-6`, OpenClaw local skill readiness on `ilc-node-6`,
-and reproducible CCSS sample construction without activating public P2P, public
-relay serving, public confidential coordination serving, public messaging,
-source publication, public skill publication, identity artifacts, wallet writes,
-ECU minting, ILC settlement, value-path activation, or Atlas-G tail work.
+Phase 1329 completed the Window 1317-1329 closure gate. The window handoff is
+`docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md`. No next phase is assigned;
+Window 1330+ sequence lock is required before next phase assignment.
 
-Phase 1329 is sensitive and requires explicit `GO Phase 1329`. It is the
-Window 1317-1329 closure gate unless its own prompt, canon checks, and human
-authorization say otherwise.
+Public RC remains blocked after Phase 1329. The carried-forward blockers include
+source allowlist export execution, clean materialized public tree production,
+release artifact production, release-key generation, release envelope production,
+release signing material, public claimability/API and public verifier authority,
+public P2P, public sidecar/projection serving, public confidential coordination
+serving, `ATLAS-G-007` through `ATLAS-G-010`, wallet-facing activation, ECU
+minting, ILC settlement, the `CDL-069 commitment` formula repair,
+Genesis-rooted agent birth attestation, and counsel review/publication authority.
