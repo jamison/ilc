@@ -71,6 +71,10 @@ def test_window_1330_1342_guidance_is_planning_only_and_routes_all_phases() -> N
         "public_path_sidecar_confidential_coordination_gate_or_exclusion_phase_1337",
         "wallet_ecu_ilc_activation_gate_or_carry_forward_phase_1338",
         "atlas_g_tail_routed_phase_1339_1340_before_signing",
+        "atlas_g_007_unsigned_v0_2_candidate_regeneration_routed_phase_1339",
+        "atlas_g_008_non_excisability_review_packet_routed_phase_1339",
+        "atlas_g_009_signing_root_envelope_prep_routed_phase_1340",
+        "atlas_g_010_v0_2_signing_ceremony_routed_phase_1340",
         "public_rc_publication_claim_gate_routed_phase_1341",
         "window_1330_1342_prompt_drafts_registered",
     ):
@@ -88,6 +92,10 @@ def test_window_1330_1342_guidance_is_planning_only_and_routes_all_phases() -> N
         "GO Phase 1335: authorize release key/envelope generation",
         "GO Phase 1340: authorize v0.2 signing ceremony",
         "GO Phase 1341: authorize public RC publication/claim",
+        "ATLAS-G-007 | Unsigned Genesis Atlas v0.2+ candidate regeneration",
+        "ATLAS-G-008 | Genesis/ILC/ECU/hypergraph non-excisability review packet",
+        "ATLAS-G-009 | Signing root envelope prep, no signing",
+        "ATLAS-G-010 | v0.2 signing ceremony if explicitly authorized",
     ):
         assert phrase in text
 
@@ -148,6 +156,63 @@ def test_window_1330_1342_high_authority_prompts_require_stronger_phrases() -> N
         assert "Ordinary queue position is not enough" in text
 
 
+def test_window_1330_1342_atlas_g_tail_tasks_are_explicitly_routed() -> None:
+    phase_1339 = _text(
+        PROMPT_DIR
+        / "antigravity_prompt__phase_1339_g8_atlas_g_mutation_regeneration_finalization.md"
+    )
+    phase_1340 = _text(
+        PROMPT_DIR / "antigravity_prompt__phase_1340_g8_v0_2_signing_ceremony_gate.md"
+    )
+    phase_1341 = _text(
+        PROMPT_DIR / "antigravity_prompt__phase_1341_g8_public_rc_publication_claim_gate.md"
+    )
+
+    for phrase in (
+        "antigravity_prompt__atlas_g_007_unsigned_atlas_candidate_regeneration.md",
+        "antigravity_prompt__atlas_g_008_non_excisability_review_packet.md",
+        "atlas_g_007_unsigned_v0_2_plus_candidate_regeneration_required",
+        "atlas_g_008_non_excisability_review_packet_required",
+        "do not silently collapse them into a generic Atlas-G status check",
+    ):
+        assert phrase in phase_1339
+
+    for phrase in (
+        "antigravity_prompt__atlas_g_009_signing_root_envelope_prep.md",
+        "antigravity_prompt__atlas_g_010_v0_2_signing_ceremony.md",
+        "atlas_g_009_signing_root_envelope_prep_required_no_signing",
+        "atlas_g_010_v0_2_signing_only_if_explicitly_authorized",
+        "ATLAS-G-009 prep alone must not produce a signature",
+        "root_envelope_prepared_no_signing",
+    ):
+        assert phrase in phase_1340
+
+    assert "Do not claim signed Genesis/Atlas v0.2 unless Phase 1340 records `v0_2_signed`" in phase_1341
+
+
+def test_window_1330_1342_public_activation_gates_do_not_precede_atlas_signing() -> None:
+    phase_1334 = _text(
+        PROMPT_DIR / "antigravity_prompt__phase_1334_g8_release_artifact_production_gate.md"
+    )
+    phase_1336 = _text(
+        PROMPT_DIR
+        / "antigravity_prompt__phase_1336_g8_public_claimability_api_activation_or_carry_forward_gate.md"
+    )
+    phase_1337 = _text(
+        PROMPT_DIR
+        / "antigravity_prompt__phase_1337_g8_public_path_sidecar_activation_or_exclusion_gate.md"
+    )
+    phase_1338 = _text(
+        PROMPT_DIR
+        / "antigravity_prompt__phase_1338_g8_wallet_ecu_ilc_activation_or_carry_forward_gate.md"
+    )
+
+    assert "must not claim signed Genesis/Atlas v0.2 content" in phase_1334
+    assert "before Atlas-G tail/signing and publication gates are closed" in phase_1336
+    assert "before Atlas-G tail/signing and publication gates are closed" in phase_1337
+    assert "before Atlas-G tail/signing and publication gates are closed" in phase_1338
+
+
 def test_planning_index_registers_window_1330_1342_as_draft_only() -> None:
     text = _text(PLANNING_INDEX)
 
@@ -156,6 +221,7 @@ def test_planning_index_registers_window_1330_1342_as_draft_only() -> None:
         "docs/specs/ilc_window_1330_1342_candidate_phase_grouping_v0.1.md",
         "antigravity_prompt__phase_1330_g8_window_1330_1342_sequence_lock.md",
         "do not open Window 1330-1342",
+        "Atlas-G tail routing is explicit",
         "Phase 1330 requires a future explicit `GO Phase 1330`",
     ):
         assert phrase in text

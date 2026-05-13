@@ -23,6 +23,10 @@ public_claimability_api_gate_or_carry_forward_phase_1336
 public_path_sidecar_confidential_coordination_gate_or_exclusion_phase_1337
 wallet_ecu_ilc_activation_gate_or_carry_forward_phase_1338
 atlas_g_tail_routed_phase_1339_1340_before_signing
+atlas_g_007_unsigned_v0_2_candidate_regeneration_routed_phase_1339
+atlas_g_008_non_excisability_review_packet_routed_phase_1339
+atlas_g_009_signing_root_envelope_prep_routed_phase_1340
+atlas_g_010_v0_2_signing_ceremony_routed_phase_1340
 public_rc_publication_claim_gate_routed_phase_1341
 window_1330_1342_prompt_drafts_registered
 ```
@@ -61,9 +65,12 @@ guardrails:
   and all prerequisites met, or records a carry-forward. Wallets remain provider
   adapters around ledger-truth state, not independent truth sources.
 - Phase 1339 handles Atlas-G mutation/regeneration finalization and must close
-  or block ATLAS-G-007/008 before signing can be considered.
-- Phase 1340 is the v0.2 signing ceremony gate and must require explicit signing
-  authority. The preferred authority phrase is
+  or block ATLAS-G-007 unsigned v0.2+ candidate regeneration and ATLAS-G-008
+  Genesis/ILC/ECU/hypergraph non-excisability review packet before signing can
+  be considered.
+- Phase 1340 handles ATLAS-G-009 signing root envelope prep and ATLAS-G-010
+  v0.2 signing ceremony. It must require explicit signing authority for any
+  signature production. The preferred authority phrase is
   `GO Phase 1340: authorize v0.2 signing ceremony`. It must not sign by default.
 - Phase 1341 is the public RC publication/claim gate. It must fail closed unless
   all selected gates are closed and counsel/publication authority is explicit.
@@ -125,8 +132,8 @@ v0.2 signing.
 | 1336 | Public claimability/API activation gate or explicit no-claim carry-forward | SENSITIVE | Final claimability/API authority decision. |
 | 1337 | TransportPrincipal, public sidecar/P2P, and confidential coordination public-path gate or explicit exclusion | SENSITIVE | Public-path activation decision; private CCSS evidence is not public authority. |
 | 1338 | Wallet/ECU/ILC activation gate or explicit carry-forward | SENSITIVE | Value-path activation decision with provider-adapter boundary. |
-| 1339 | Genesis Atlas mutation/regeneration finalization | SENSITIVE | ATLAS-G-007/008 finalization before signing. |
-| 1340 | v0.2 signing ceremony gate | SENSITIVE | ATLAS-G-009/010 signing only if explicitly authorized. |
+| 1339 | Genesis Atlas mutation/regeneration finalization | SENSITIVE | ATLAS-G-007 unsigned v0.2+ candidate regeneration and ATLAS-G-008 non-excisability review packet. |
+| 1340 | v0.2 signing ceremony gate | SENSITIVE | ATLAS-G-009 signing root envelope prep and ATLAS-G-010 v0.2 signing ceremony; no signature without explicit authority. |
 | 1341 | Public RC publication/claim gate | SENSITIVE | Public RC claim only if all selected blockers are closed. |
 | 1342 | Window closure handoff | SENSITIVE | Honest closure and carry-forward. |
 
@@ -150,7 +157,24 @@ Any prompt may block and carry forward its lane instead of activating it. No
 later prompt may infer authority from a prior rehearsal; it must verify the
 specific gate evidence.
 
-## 6. Identity Bootstrap Stop Guard
+## 6. Atlas-G Tail Routing
+
+The Atlas-G tail is included in this candidate window as routed task work, not
+as an implied signing grant:
+
+| Atlas-G item | Canonical source name | Window route | Boundary |
+|--------------|-----------------------|--------------|----------|
+| ATLAS-G-007 | Unsigned Genesis Atlas v0.2+ candidate regeneration | Phase 1339 | May regenerate unsigned candidate only with explicit Atlas-G authority; no signing. |
+| ATLAS-G-008 | Genesis/ILC/ECU/hypergraph non-excisability review packet | Phase 1339 | Must classify non-excisability evidence; CCSS evidence cannot substitute. |
+| ATLAS-G-009 | Signing root envelope prep, no signing | Phase 1340 | May prepare root envelope/checklist only under explicit ceremony authority; no signature production by prep alone. |
+| ATLAS-G-010 | v0.2 signing ceremony if explicitly authorized | Phase 1340 | Requires explicit signing authority; no signing by default. |
+
+Phase 1340 must fail closed if Phase 1339 did not close or explicitly carry
+forward ATLAS-G-007 and ATLAS-G-008 with a safe no-signing disposition. Phase
+1341 must not claim a signed Genesis/Atlas v0.2 unless Phase 1340 records a
+valid signing outcome.
+
+## 7. Identity Bootstrap Stop Guard
 
 Public bootstrap must not claim OpenClaw/NemoClaw users, digital agents, local
 ILC identities, or any newly initialized agent identity are Genesis-rooted until
@@ -174,7 +198,7 @@ mnemonic generation, private-key generation, secret-store writes, or dummy Agent
 Birth artifacts unless a later explicitly authorized identity-bootstrap phase
 supersedes this stop guard.
 
-## 7. Non-Claims
+## 8. Non-Claims
 
 This guidance does not authorize:
 
@@ -202,7 +226,7 @@ This guidance does not authorize:
   value-path activation;
 - counsel/IP/CLA/trademark/publication clearance.
 
-## 8. Prompt Draft Registry
+## 9. Prompt Draft Registry
 
 The candidate prompt drafts for this window are:
 
@@ -222,7 +246,7 @@ docs/antigravity_tasks/antigravity_prompt__phase_1341_g8_public_rc_publication_c
 docs/antigravity_tasks/antigravity_prompt__phase_1342_g8_window_1330_1342_closure_handoff.md
 ```
 
-## 9. Graph Delta
+## 10. Graph Delta
 
 ```text
 graph_delta=support_only:docs/specs/ilc_window_1330_1342_candidate_phase_grouping_v0.1.md -> planning/frontier
