@@ -1,9 +1,9 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, and Phase 1324 CCSS-001 private/gated shard sidecar contract
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, and Phase 1324 Fix1 implementation-audit hardening
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1324
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1324 Fix1
 **Next phase:** Phase 1325 - CCSS-002 capability/membership boundary, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
@@ -83,6 +83,11 @@ private_to_public_promotion_evidence_shape_recorded_phase_1324
 ccss_public_serving_not_enabled_phase_1324
 phase_1325_ccss_capability_membership_boundary_next
 public_rc_remains_blocked_after_phase_1324
+phase_1324_fix1_ccss_001_shard_contract_hardening.v0.1
+ccss_001_epoch_zero_rejected_phase_1324_fix1
+ccss_001_canonical_json_byte_cap_enforced_phase_1324_fix1
+ccss_001_ref_list_count_prechecked_phase_1324_fix1
+ccss_001_phase_1325_membership_ref_false_positive_removed_phase_1324_fix1
 ```
 
 ---
@@ -489,6 +494,7 @@ graph_delta=support_only:docs/specs/ilc_three_machine_seven_agent_private_deploy
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_restore_vps_git_workflow_fix1.md,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.json,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.md,docs/phases/phase_1322_fix1_vps_git_workflow_restore_walkthrough.md,tests/test_phase_1322_fix1_vps_git_workflow_restore.py -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json,docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.md,docs/phases/phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run_walkthrough.md,tests/test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run.py -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_ccss_001_private_gated_shard_sidecar_contract_1324_v0.1.md,docs/phases/phase_1324_ccss_001_private_gated_shard_sidecar_contract_walkthrough.md,tests/test_phase_1324_ccss_001_private_gated_shard_sidecar_contract.py -> planning/frontier
+graph_delta=support_only:ilc_core/sidecars/confidential_coordination_shard.py,tests/test_phase_1324_ccss_001_private_gated_shard_sidecar_contract.py,tools/check_sensitive_runtime_coding_taboos.py -> graph-native-sidecars/confidential-coordination/ccss-001-private-gated-shard
 ```
 
 ---

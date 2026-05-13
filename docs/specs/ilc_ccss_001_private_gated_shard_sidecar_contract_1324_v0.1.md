@@ -86,8 +86,19 @@ json.dumps(..., sort_keys=True, allow_nan=False, separators=(",", ":"))
 ```
 
 The validator rejects floats, cycles, tuples, non-string keys, excessive depth,
-excessive node count, oversized text, unexpected record keys, wrong digest
-prefixes, digest/hash drift, and authorization-flag drift.
+excessive node count, oversized text, ASCII control characters, excessive
+canonical JSON byte size, unexpected record keys, wrong digest prefixes,
+digest/hash drift, pre-Genesis epoch 0, and authorization-flag drift.
+
+Phase 1324 Fix1 records implementation-audit hardening:
+
+```text
+phase_1324_fix1_ccss_001_shard_contract_hardening.v0.1
+ccss_001_epoch_zero_rejected_phase_1324_fix1
+ccss_001_canonical_json_byte_cap_enforced_phase_1324_fix1
+ccss_001_ref_list_count_prechecked_phase_1324_fix1
+ccss_001_phase_1325_membership_ref_false_positive_removed_phase_1324_fix1
+```
 
 ## 3. PrivateShardRef
 
@@ -142,7 +153,8 @@ opaque_ref_only_ciphertext_digest
 The envelope does not carry plaintext bytes, membership, route history, sender,
 recipient, capability contents, raw sealed payloads, wallet material, seed
 material, mnemonic material, private keys, or identity fields. The current size
-bound is 1 MiB per ciphertext reference for this contract.
+bound is 1 MiB per ciphertext reference for this contract. `envelope_epoch`
+must be positive; epoch 0 is rejected as pre-Genesis.
 
 ## 5. ShardHeaderProjection
 
@@ -168,7 +180,9 @@ private_gated_shard_header
 The projection is local-header-only and must not reveal plaintext body,
 membership list, route history, sender identity, recipient identity, capability
 contents, wallet identity, AgentID, IP address, harness identity, or raw sealed
-payload content.
+payload content. `header_epoch` must be positive, `envelope_count` must match
+the encrypted coordination refs, and zero-envelope shard-header projections are
+rejected rather than treated as placeholders.
 
 ## 6. PromotionEvidenceRef
 
@@ -190,6 +204,8 @@ The record carries opaque references for:
 - successor public-node candidate;
 - disclosed lineage;
 - promotion epoch.
+
+`promotion_epoch` must be positive; epoch 0 is rejected as pre-Genesis.
 
 It enforces:
 
@@ -270,4 +286,8 @@ phase_1325_ccss_capability_membership_boundary_next
 Phase 1325 should define the capability/membership boundary that CCSS-001 only
 references here. It must keep membership private, avoid plaintext disclosure,
 and avoid public serving/P2P activation unless a later prompt explicitly opens
-that authority.
+that authority. CCSS-001 rejects literal `membership_list` and member-agent
+disclosures while avoiding a broad substring ban on the word `membership`;
+Phase 1325 may define opaque membership-boundary references, but those references
+must not disclose actual membership, participant identity, route history, or
+capability contents through CCSS-001 records.

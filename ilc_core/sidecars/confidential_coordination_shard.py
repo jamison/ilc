@@ -42,6 +42,7 @@ DisclosureDenial = dict[str, Any]
 _MAX_PAYLOAD_DEPTH = 32
 _MAX_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
+_MAX_CANONICAL_JSON_BYTES = 10_000_000
 _MAX_EPOCH = 1_000_000_000_000
 _MAX_CIPHERTEXT_BYTES = 1_048_576
 _MAX_ENVELOPES_PER_SHARD_HEADER = 256
@@ -226,7 +227,7 @@ _FORBIDDEN_VALUE_FRAGMENTS = tuple(
         "harness_identity",
         "identity_seed",
         "member_agent",
-        "membership",
+        "membership_list",
         "mnemonic",
         "openclaw_identity",
         "participant_id",
@@ -275,8 +276,10 @@ def ccss_001_private_gated_shard_manifest() -> dict[str, Any]:
         "disclosure_denial_fields": list(_DISCLOSURE_DENIAL_FIELDS),
         "encrypted_coordination_node_envelope_contract_recorded": True,
         "local_only": True,
+        "max_canonical_json_bytes": _MAX_CANONICAL_JSON_BYTES,
         "max_ciphertext_bytes": _MAX_CIPHERTEXT_BYTES,
         "max_envelopes_per_shard_header": _MAX_ENVELOPES_PER_SHARD_HEADER,
+        "max_promotion_evidence_refs": _MAX_PROMOTION_EVIDENCE_REFS,
         "next_phase": PHASE_1325_NEXT_TOKEN,
         "private_to_public_promotion_evidence_shape_recorded": True,
         "public_confidential_coordination_serving_enabled": False,
@@ -453,8 +456,10 @@ def validate_ccss_001_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
         "disclosure_denial_fields",
         "encrypted_coordination_node_envelope_contract_recorded",
         "local_only",
+        "max_canonical_json_bytes",
         "max_ciphertext_bytes",
         "max_envelopes_per_shard_header",
+        "max_promotion_evidence_refs",
         "next_phase",
         "private_to_public_promotion_evidence_shape_recorded",
         "public_confidential_coordination_serving_enabled",
@@ -516,10 +521,20 @@ def validate_ccss_001_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
             "ccss_001_manifest_size_bound_invalid_phase_1324",
             "CCSS-001 manifest ciphertext bound is invalid",
         )
+    if payload.get("max_canonical_json_bytes") != _MAX_CANONICAL_JSON_BYTES:
+        raise ConfidentialCoordinationShardError(
+            "ccss_001_manifest_size_bound_invalid_phase_1324",
+            "CCSS-001 manifest canonical JSON bound is invalid",
+        )
     if payload.get("max_envelopes_per_shard_header") != _MAX_ENVELOPES_PER_SHARD_HEADER:
         raise ConfidentialCoordinationShardError(
             "ccss_001_manifest_envelope_bound_invalid_phase_1324",
             "CCSS-001 manifest envelope count bound is invalid",
+        )
+    if payload.get("max_promotion_evidence_refs") != _MAX_PROMOTION_EVIDENCE_REFS:
+        raise ConfidentialCoordinationShardError(
+            "ccss_001_manifest_promotion_ref_bound_invalid_phase_1324",
+            "CCSS-001 manifest promotion ref count bound is invalid",
         )
     if payload.get("next_phase") != PHASE_1325_NEXT_TOKEN:
         raise ConfidentialCoordinationShardError(
@@ -570,7 +585,13 @@ def validate_ccss_001_record(record: Mapping[str, Any]) -> dict[str, Any]:
 
 def canonical_ccss_001_json(payload: Mapping[str, Any]) -> str:
     _reject_unsafe_json_tree(payload)
-    return json.dumps(payload, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    canonical = json.dumps(payload, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    if len(canonical.encode("utf-8")) > _MAX_CANONICAL_JSON_BYTES:
+        raise ConfidentialCoordinationShardError(
+            "ccss_001_payload_size_exceeded_phase_1324",
+            "canonical JSON payload exceeds byte bound",
+        )
+    return canonical
 
 
 def ccss_001_record_ref(record: Mapping[str, Any]) -> str:
@@ -811,6 +832,11 @@ def _validate_shard_header_projection(payload: Mapping[str, Any]) -> ShardHeader
             "ccss_001_envelope_count_mismatch_phase_1324",
             "shard-header envelope count does not match references",
         )
+    if normalized["envelope_count"] < 1:
+        raise ConfidentialCoordinationShardError(
+            "ccss_001_envelope_count_invalid_phase_1324",
+            "shard header projection requires at least one envelope",
+        )
     expected = _hash_payload(normalized)
     normalized["projection_sha256"] = _require_hex_digest(
         "projection_sha256",
@@ -964,12 +990,12 @@ def _normalize_ref_list(
 ) -> list[str]:
     if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
         raise ConfidentialCoordinationShardError(token, "reference list must be a sequence")
+    if len(value) > max_items:
+        raise ConfidentialCoordinationShardError(token, "reference list exceeds bound")
     refs = [
         _require_prefixed_digest("ref", item, allowed_prefixes=allowed_prefixes)
         for item in value
     ]
-    if len(refs) > max_items:
-        raise ConfidentialCoordinationShardError(token, "reference list exceeds bound")
     if len(set(refs)) != len(refs):
         raise ConfidentialCoordinationShardError(token, "reference list contains duplicates")
     sorted_refs = sorted(refs)
@@ -999,6 +1025,11 @@ def _require_ciphertext_size(value: object) -> int:
 
 def _require_epoch(label: str, value: object) -> int:
     epoch = _require_non_negative_int(f"{label}_epoch", value)
+    if epoch < 1:
+        raise ConfidentialCoordinationShardError(
+            f"ccss_001_{label}_epoch_invalid_phase_1324",
+            "epoch must be positive",
+        )
     if epoch > _MAX_EPOCH:
         raise ConfidentialCoordinationShardError(
             f"ccss_001_{label}_epoch_invalid_phase_1324",
@@ -1082,7 +1113,7 @@ def _require_text(label: str, value: object) -> str:
             f"ccss_001_{label}_text_invalid_phase_1324",
             "expected non-empty text",
         )
-    if len(value) > _MAX_TEXT_LENGTH or "\x00" in value or "\n" in value or "\r" in value:
+    if len(value) > _MAX_TEXT_LENGTH or any(ord(char) < 0x20 for char in value):
         raise ConfidentialCoordinationShardError(
             f"ccss_001_{label}_text_invalid_phase_1324",
             "text field is invalid or oversized",
@@ -1158,6 +1189,12 @@ def _reject_unsafe_json_tree(value: object) -> None:
                             "payload keys must be strings",
                         )
                     _require_text("payload_key", key)
+                    node_count += 1
+                    if node_count > _MAX_PAYLOAD_NODES:
+                        raise ConfidentialCoordinationShardError(
+                            "ccss_001_payload_node_limit_exceeded_phase_1324",
+                            "payload exceeds node bound",
+                        )
                     visit(nested, depth + 1)
             else:
                 for nested in item:
