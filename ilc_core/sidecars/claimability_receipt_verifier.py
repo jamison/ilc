@@ -1162,7 +1162,7 @@ def _require_text(value: object, *, token: str) -> str:
         raise ClaimabilityReceiptVerifierError(token, "required non-empty string")
     if len(value) > _MAX_TEXT_LENGTH:
         raise ClaimabilityReceiptVerifierError(token, "string exceeds maximum length")
-    if any(ord(char) < 0x20 for char in value):
+    if any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise ClaimabilityReceiptVerifierError(token, "string contains a control character")
     if value != value.strip():
         raise ClaimabilityReceiptVerifierError(token, "string must be canonical without padding")
@@ -1280,7 +1280,7 @@ def _reject_unsafe_json_tree(
                 "claimability_payload_text_too_large_phase_1305",
                 "canonical payload string exceeds maximum length",
             )
-        if any(ord(char) < 0x20 for char in value):
+        if any(ord(char) < 0x20 or char == "\x7f" for char in value):
             raise ClaimabilityReceiptVerifierError(
                 "claimability_payload_text_invalid_phase_1305",
                 "canonical payload string contains a control character",

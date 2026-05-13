@@ -864,7 +864,7 @@ def _require_text(value: object) -> str:
             "local_graph_memory_projection_text_invalid_phase_1311",
             "text value is invalid",
         )
-    if any(ord(char) < 0x20 for char in value):
+    if any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise LocalGraphMemoryProjectionError(
             "local_graph_memory_projection_text_invalid_phase_1311",
             "text value must not contain control characters",

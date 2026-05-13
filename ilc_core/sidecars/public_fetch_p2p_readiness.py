@@ -638,7 +638,7 @@ def _require_text(value: object) -> str:
             "public_fetch_p2p_text_invalid_phase_1313",
             "Phase 1313 readiness text is invalid",
         )
-    if any(ord(char) < 0x20 for char in value):
+    if any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise PublicFetchP2PReadinessError(
             "public_fetch_p2p_text_invalid_phase_1313",
             "Phase 1313 readiness text must not contain control characters",

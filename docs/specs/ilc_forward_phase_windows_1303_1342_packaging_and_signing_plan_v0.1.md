@@ -264,6 +264,26 @@ credential authority, public ZK verifier, public P2P, public promotion, source
 publication, release authority, release signing, identity bootstrap, wallet
 actions, ECU minting, ILC settlement, or value-path activation.
 
+Phase 1325 Fix1 completion note:
+
+```text
+phase_1325_fix1_ccss_002_access_audit_hardening.v0.1
+ccss_002_zk_record_kind_validated_phase_1325_fix1
+ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1
+ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1
+sidecar_del_control_character_rejected_cross_module_phase_1325_fix1
+public_rc_remains_blocked_after_phase_1325_fix1
+phase_1326_ccss_sealed_sender_boundary_next_after_fix1
+```
+
+Phase 1325 Fix1 makes matching revocation evidence precede optional ZK
+deferral, validates that `zk_interface_record` is a matching
+`zk_membership_interface_ref`, enforces a CCSS-002 pre-serialization payload
+byte budget, and rejects ASCII DEL across audited sidecar text validators. It
+does not authorize Phase 1326 execution or any public
+serving, public P2P, publication, release, signing, identity, wallet, ECU, ILC
+settlement, or value-path activation.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |

@@ -1,9 +1,9 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, and Phase 1325 CCSS-002 capability/membership boundary
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, and Phase 1325 Fix1 access audit hardening
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1325
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1325 Fix1
 **Next phase:** Phase 1326 - CCSS-003 sealed sender boundary, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
@@ -102,6 +102,13 @@ membership_plaintext_disclosure_forbidden_phase_1325
 optional_zk_interface_boundary_recorded_phase_1325
 phase_1326_ccss_sealed_sender_boundary_next
 public_rc_remains_blocked_after_phase_1325
+phase_1325_fix1_ccss_002_access_audit_hardening.v0.1
+ccss_002_zk_record_kind_validated_phase_1325_fix1
+ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1
+ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1
+sidecar_del_control_character_rejected_cross_module_phase_1325_fix1
+public_rc_remains_blocked_after_phase_1325_fix1
+phase_1326_ccss_sealed_sender_boundary_next_after_fix1
 ```
 
 ---
@@ -452,6 +459,21 @@ ZK-deferred capabilities fail closed. It does not authorize public confidential
 coordination serving, public membership directory, public credential authority,
 public ZK verifier, or public P2P.
 
+Phase 1325 Fix1 publishes the CCSS-002 access audit hardening evidence path:
+
+```text
+docs/specs/ilc_phase_1325_fix1_ccss_002_access_audit_hardening_v0.1.md
+```
+
+Phase 1325 Fix1 makes deterministic revocation evidence precede optional ZK
+deferral in `build_local_access_decision()`, requires `zk_interface_record` to
+be a matching `zk_membership_interface_ref`, and rejects ASCII DEL (`0x7f`)
+across the audited sidecar text validators. It does not authorize public
+confidential coordination serving, public membership directory, public
+credential authority, public ZK verifier, public P2P, source publication,
+package publication, signing, identity artifacts, wallet writes, ECU minting,
+ILC settlement, value-path activation, or Phase 1326 execution.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -479,7 +501,7 @@ phase prompt or planning index row explicitly promotes them.
 
 ## 7. Non-Authorization Boundary
 
-Phases 1318 through 1324 Fix2 do not authorize public RC claim, public launch claim, public
+Phases 1318 through 1325 Fix1 do not authorize public RC claim, public launch claim, public
 repository publication, public package publication, source allowlist export
 execution, source publication, materialized export manifest production, clean
 public export tree production, release artifact production, release artifact
@@ -504,7 +526,7 @@ wallet write authority, ECU minting, ILC settlement, withdrawal runtime
 activation, value-path activation, immutable diagnostic mutation, or
 production `commit.epoch` emission.
 
-Phase 1322, Fix1, Phase 1323, Phase 1323 Fix2, Phase 1323 Fix3, Phase 1324, Phase 1324 Fix1, Phase 1324 Fix2, and Phase 1325 also do not authorize identity artifact creation, genesis record
+Phase 1322, Fix1, Phase 1323, Phase 1323 Fix2, Phase 1323 Fix3, Phase 1324, Phase 1324 Fix1, Phase 1324 Fix2, Phase 1325, and Phase 1325 Fix1 also do not authorize identity artifact creation, genesis record
 creation, seed commitment creation, `identity_seed_commitment` creation, dummy
 Agent Birth artifact creation, public OpenClaw skill publication, public OpenClaw
 installability, OpenClaw skill listing, ClawHub submission, mnemonic generation,
@@ -566,6 +588,10 @@ graph_delta=support_only:docs/specs/ilc_phase_1324_fix2_sidecar_harness_cross_mo
 graph_delta=load_bearing_artifact_changed:ilc_core/sidecars/registry_manifest.py,ilc_core/sidecars/claimability_receipt_verifier.py,ilc_core/sidecars/transport_principal_admission.py,ilc_core/sidecars/local_graph_memory_projection.py,ilc_core/sidecars/public_fetch_p2p_readiness.py -> graph-native-sidecars/cross-module-hardening
 graph_delta=support_only:docs/specs/ilc_ccss_002_capability_membership_grant_revocation_boundary_1325_v0.1.md,docs/phases/phase_1325_ccss_002_capability_membership_grant_revocation_boundary_walkthrough.md,tests/test_phase_1325_ccss_002_capability_membership_grant_revocation_boundary.py -> planning/frontier
 graph_delta=load_bearing_artifact_added:ilc_core/sidecars/confidential_coordination_capability.py -> graph-native-sidecars/confidential-coordination/ccss-002-capability-membership-boundary
+graph_delta=support_only:docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json,docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.md -> package/public_rc/profile-audit
+graph_delta=load_bearing_artifact_changed:ilc_core/sidecars/confidential_coordination_capability.py -> graph-native-sidecars/confidential-coordination/ccss-002-capability-membership-boundary
+graph_delta=load_bearing_artifact_changed:ilc_core/sidecars/confidential_coordination_shard.py,ilc_core/sidecars/registry_manifest.py,ilc_core/sidecars/claimability_receipt_verifier.py,ilc_core/sidecars/transport_principal_admission.py,ilc_core/sidecars/local_graph_memory_projection.py,ilc_core/sidecars/public_fetch_p2p_readiness.py -> graph-native-sidecars/cross-module-text-validation
+graph_delta=support_only:docs/specs/ilc_phase_1325_fix1_ccss_002_access_audit_hardening_v0.1.md,docs/phases/phase_1325_fix1_ccss_002_access_audit_hardening_walkthrough.md,tests/test_sidecar_cross_module_hardening_fix1.py -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json,docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.md -> package/public_rc/profile-audit
 ```
 

@@ -400,4 +400,11 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "optional_zk_interface_boundary_recorded_phase_1325" in text
     assert "phase_1326_ccss_sealed_sender_boundary_next" in text
     assert "public_rc_remains_blocked_after_phase_1325" in text
-    assert "Window 1317-1329 is OPEN through Phase 1325" in text
+    assert "phase_1325_fix1_ccss_002_access_audit_hardening.v0.1" in text
+    assert "ccss_002_zk_record_kind_validated_phase_1325_fix1" in text
+    assert "ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1" in text
+    assert "ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1" in text
+    assert "sidecar_del_control_character_rejected_cross_module_phase_1325_fix1" in text
+    assert "public_rc_remains_blocked_after_phase_1325_fix1" in text
+    assert "phase_1326_ccss_sealed_sender_boundary_next_after_fix1" in text
+    assert "Window 1317-1329 is OPEN through Phase 1325 Fix1" in text

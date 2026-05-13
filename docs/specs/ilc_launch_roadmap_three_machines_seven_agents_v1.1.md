@@ -2501,6 +2501,40 @@ Roadmap impact:
   signing, public promotion, identity bootstrap, wallet actions, ECU minting,
   ILC settlement, or value-path activation.
 
+## 50e. Phase 1325 Fix1 CCSS-002 Access Audit Hardening Addendum
+
+Phase 1325 Fix1 hardens the CCSS-002 access decision and sidecar text
+validation sweep:
+
+```text
+phase_1325_fix1_ccss_002_access_audit_hardening.v0.1
+ccss_002_zk_record_kind_validated_phase_1325_fix1
+ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1
+ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1
+sidecar_del_control_character_rejected_cross_module_phase_1325_fix1
+public_rc_remains_blocked_after_phase_1325_fix1
+phase_1326_ccss_sealed_sender_boundary_next_after_fix1
+```
+
+Roadmap impact:
+
+- Deterministic revocation evidence now precedes optional ZK deferral in
+  `build_local_access_decision()`, preserving the `revoked` audit state when a
+  matching revocation and ZK seam are both present.
+- `zk_interface_record` must validate as a matching
+  `zk_membership_interface_ref`; wrong-kind, malformed, or mismatched ZK seam
+  records remain denied as `zk_deferred` with `malformed_zk_interface`.
+- CCSS-002 canonical JSON traversal now enforces a payload byte budget before
+  `json.dumps()` runs, reducing direct-caller oversized-payload work.
+- Sidecar text validators now reject ASCII DEL (`0x7f`) in addition to
+  `0x00` through `0x1f`.
+- Fix1 does not authorize public RC, public serving, public P2P, public
+  confidential coordination serving, public membership directory, public
+  credential authority, public ZK verifier, source publication, package
+  publication, release material, signing, identity artifacts, wallet writes,
+  ECU minting, ILC settlement, value-path activation, Atlas-G tail execution,
+  or Phase 1326 execution.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:
