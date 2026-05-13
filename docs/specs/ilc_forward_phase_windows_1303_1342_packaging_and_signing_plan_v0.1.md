@@ -227,6 +227,22 @@ public confidential coordination serving, public P2P, public promotion, source
 publication, release authority, release signing, identity bootstrap, wallet
 actions, ECU minting, ILC settlement, or value-path activation.
 
+Phase 1324 Fix1 implementation-audit hardening:
+
+```text
+phase_1324_fix1_ccss_001_shard_contract_hardening.v0.1
+ccss_001_epoch_zero_rejected_phase_1324_fix1
+ccss_001_canonical_json_byte_cap_enforced_phase_1324_fix1
+ccss_001_ref_list_count_prechecked_phase_1324_fix1
+ccss_001_phase_1325_membership_ref_false_positive_removed_phase_1324_fix1
+```
+
+Fix1 rejects pre-Genesis epoch 0, caps canonical JSON bytes, counts mapping keys
+in the untrusted-payload budget, pre-checks reference-list length before
+per-item validation, manifests the canonical-size and promotion-ref bounds,
+rejects zero-envelope shard headers, and preserves Phase 1325 membership-boundary
+ref compatibility without authorizing Phase 1325 execution or public serving.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |

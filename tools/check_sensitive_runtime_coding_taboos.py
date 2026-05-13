@@ -176,9 +176,11 @@ UNTRUSTED_PAYLOAD_BOUND_CONTRACTS = {
     "ilc_core/sidecars/confidential_coordination_shard.py": (
         "_MAX_PAYLOAD_DEPTH",
         "_MAX_PAYLOAD_NODES",
+        "_MAX_CANONICAL_JSON_BYTES",
         "ccss_001_payload_cycle_forbidden_phase_1324",
         "ccss_001_float_values_forbidden_phase_1324",
         "ccss_001_payload_key_invalid_phase_1324",
+        "ccss_001_payload_size_exceeded_phase_1324",
     ),
     "ilc_core/sidecars/public_fetch_p2p_readiness.py": (
         "_MAX_PAYLOAD_DEPTH",
