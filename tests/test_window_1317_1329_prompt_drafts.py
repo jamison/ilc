@@ -394,4 +394,10 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "ccss_public_serving_not_enabled_phase_1324" in text
     assert "phase_1325_ccss_capability_membership_boundary_next" in text
     assert "public_rc_remains_blocked_after_phase_1324" in text
-    assert "Window 1317-1329 is OPEN through Phase 1324" in text
+    assert "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1" in text
+    assert "private_shard_access_control_boundary_recorded_phase_1325" in text
+    assert "membership_plaintext_disclosure_forbidden_phase_1325" in text
+    assert "optional_zk_interface_boundary_recorded_phase_1325" in text
+    assert "phase_1326_ccss_sealed_sender_boundary_next" in text
+    assert "public_rc_remains_blocked_after_phase_1325" in text
+    assert "Window 1317-1329 is OPEN through Phase 1325" in text
