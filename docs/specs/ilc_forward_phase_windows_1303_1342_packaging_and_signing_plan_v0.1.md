@@ -208,6 +208,25 @@ OpenClaw-compatible suite is testable should route:
 | Wallet-facing/ECU/ILC value-action sidecar | Remains tied to Phase 1314/1315/1338 authority gates; wallets are provider adapters around ledger-truth value transitions; no economics by default. |
 | Optional ILC wallet recipe profile | Compose provider-adapter, signing-intent, ledger-truth value-action, receipt/history, and recovery/export sidecars after Phase 1315 if explicitly selected; not a first-RC blocker by default. |
 
+Phase 1324 completion note:
+
+```text
+ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1
+encrypted_coordination_node_envelope_contract_recorded_phase_1324
+shard_header_projection_contract_recorded_phase_1324
+private_to_public_promotion_evidence_shape_recorded_phase_1324
+ccss_public_serving_not_enabled_phase_1324
+phase_1325_ccss_capability_membership_boundary_next
+public_rc_remains_blocked_after_phase_1324
+```
+
+Phase 1324 added the local-only
+`confidential_coordination_private_gated_shard` sidecar contract and preserved
+the CCSS/Atlas-G split. It did not authorize ATLAS-G-007 through ATLAS-G-010,
+public confidential coordination serving, public P2P, public promotion, source
+publication, release authority, release signing, identity bootstrap, wallet
+actions, ECU minting, ILC settlement, or value-path activation.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |

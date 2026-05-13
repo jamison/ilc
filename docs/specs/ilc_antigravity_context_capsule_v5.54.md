@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, and Phase 1323 Fix3 layered license posture
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, and Phase 1324 CCSS-001 private/gated shard sidecar contract
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1323 Fix3
-**Next phase:** Phase 1324 - CCSS-001 private/gated shard sidecar contract, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1324
+**Next phase:** Phase 1325 - CCSS-002 capability/membership boundary, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -76,6 +76,13 @@ patent_pending_zone_reserved_phase_1323_fix3
 whitepaper_mit_language_replaced_phase_1323_fix3
 ip_series_confirmed_as_ip001_to_ip006_phase_1323_fix3
 public_rc_remains_blocked_after_phase_1323_fix3
+ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1
+encrypted_coordination_node_envelope_contract_recorded_phase_1324
+shard_header_projection_contract_recorded_phase_1324
+private_to_public_promotion_evidence_shape_recorded_phase_1324
+ccss_public_serving_not_enabled_phase_1324
+phase_1325_ccss_capability_membership_boundary_next
+public_rc_remains_blocked_after_phase_1324
 ```
 
 ---
@@ -216,7 +223,7 @@ must repeat the same discovery discipline before execution.
 | 1321 release key/envelope procedure rehearsal | Requires fake/dry-run identifiers only; no real keys, envelopes, signing material, or signatures. | Complete as dry-run procedure evidence only; no keys, envelopes, signing material, signatures, HSM/KMS/wallet calls, or secret reads. |
 | 1322 three-machine/seven-agent private deployment rehearsal | Must use private wiring such as loopback, Tailscale, or equivalent; no public serving claim or unmanaged secrets. | Complete as live private DigitalOcean/Tailscale rehearsal; UFW tightened to Tailscale-only inbound; no public ILC serving, no identity artifacts, no public claimability activation. Fix1 restored the VPS Git workflow and cleared the remote sync precondition for Phase 1323. |
 | 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled. Fix2 installed native OpenClaw on `ilc-node-6` and verified local workspace skill discovery, while ClawHub listing/public installability remain blocked. Fix3 implemented the provisional layered license posture and replaced blanket MIT. |
-| 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Open; no public confidential coordination serving. |
+| 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Complete as local-only contract substrate; no public confidential coordination serving, no public P2P, no public promotion. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Open; no access-control runtime activation. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
 | 1327 CCSS-004 gossip/jitter/cover tests | Must harden metadata-correlation evidence and avoid anonymity overclaims. | Open; no anonymity guarantee or public gossip claim. |
@@ -481,6 +488,7 @@ graph_delta=support_only:docs/PLANNING_INDEX.md -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.json,docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1322_g8_restore_vps_git_workflow_fix1.md,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.json,docs/specs/ilc_phase_1322_fix1_vps_git_workflow_restore_v0.1.md,docs/phases/phase_1322_fix1_vps_git_workflow_restore_walkthrough.md,tests/test_phase_1322_fix1_vps_git_workflow_restore.py -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json,docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.md,docs/phases/phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run_walkthrough.md,tests/test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run.py -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_ccss_001_private_gated_shard_sidecar_contract_1324_v0.1.md,docs/phases/phase_1324_ccss_001_private_gated_shard_sidecar_contract_walkthrough.md,tests/test_phase_1324_ccss_001_private_gated_shard_sidecar_contract.py -> planning/frontier
 ```
 
 ---
@@ -488,9 +496,9 @@ graph_delta=support_only:docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full
 ## 9. Next Phase
 
 ```text
-phase_1324_ccss_private_gated_shard_contract_next
+phase_1325_ccss_capability_membership_boundary_next
 ```
 
-Phase 1324 is sensitive and requires explicit `GO Phase 1324`. It is a CCSS-001
-private/gated shard sidecar contract phase only unless its own prompt, canon
-checks, and human authorization say otherwise.
+Phase 1325 is sensitive and requires explicit `GO Phase 1325`. It is a CCSS-002
+capability/membership boundary phase only unless its own prompt, canon checks,
+and human authorization say otherwise.

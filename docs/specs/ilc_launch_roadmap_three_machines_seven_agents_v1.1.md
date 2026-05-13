@@ -2391,6 +2391,44 @@ Roadmap impact:
   mutate/sign Genesis Atlas, authorize v0.2 signing, open CDL-088, activate
   public paths, or authorize wallet/ECU/ILC economics.
 
+## 50b. Phase 1324 CCSS-001 Private/Gated Shard Contract Addendum
+
+Phase 1324 implements the first concrete Confidential Coordination Sidecar
+Suite contract as a local-only private/gated shard sidecar substrate.
+
+```text
+ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1
+encrypted_coordination_node_envelope_contract_recorded_phase_1324
+shard_header_projection_contract_recorded_phase_1324
+private_to_public_promotion_evidence_shape_recorded_phase_1324
+ccss_public_serving_not_enabled_phase_1324
+phase_1325_ccss_capability_membership_boundary_next
+public_rc_remains_blocked_after_phase_1324
+```
+
+Roadmap impact:
+
+- `ilc_core/sidecars/confidential_coordination_shard.py` now defines and
+  validates `PrivateShardRef`, `EncryptedCoordinationNodeEnvelope`,
+  `ShardHeaderProjection`, `PromotionEvidenceRef`, and `DisclosureDenial`.
+- The sidecar registry records `confidential_coordination_private_gated_shard`
+  under `phase_1324_private_local_contract_only` and requires it for the
+  confidential coordination local-preview profile.
+- The contract carries only opaque refs, ciphertext digests/storage refs,
+  bounded sizes, local header projection metadata, and promotion-evidence refs.
+- Plaintext body, membership list, route history, sender/recipient identity,
+  AgentID, wallet, harness, IP, seed, mnemonic, private-key, and secret fields
+  are denied by the contract and focused tests.
+- Promotion evidence remains shape-only and preserves CDL-038: no public
+  promotion, no private content reveal, no public availability claim, no
+  automatic public corroboration carry-forward, and no automatic public
+  reputation carry-forward.
+- Phase 1324 does not execute ATLAS-G-007 through ATLAS-G-010, authorize public
+  confidential coordination serving, public P2P, source publication, package
+  publication, release artifact/key/envelope production, release signing,
+  public promotion, identity bootstrap, wallet actions, ECU minting, ILC
+  settlement, or value-path activation.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:

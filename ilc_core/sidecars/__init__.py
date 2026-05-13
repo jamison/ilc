@@ -2,6 +2,7 @@
 
 __all__ = [
     "claimability_receipt_verifier",
+    "confidential_coordination_shard",
     "local_graph_memory_projection",
     "public_fetch_p2p_readiness",
     "registry_manifest",

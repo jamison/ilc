@@ -15,21 +15,21 @@
 
 | Profile | Status | Files | Bytes | Lines | Public P2P | Public claimability | Public RC claimed |
 | --- | --- | ---: | ---: | ---: | --- | --- | --- |
-| `openclaw_skill_local` | `pass` | 103 | 984963 | 26745 | `False` | `False` | `False` |
-| `openclaw_skill_claimable` | `pass` | 106 | 1009159 | 27415 | `False` | `True` | `False` |
+| `openclaw_skill_local` | `pass` | 107 | 1122551 | 30218 | `False` | `False` | `False` |
+| `openclaw_skill_claimable` | `pass` | 110 | 1146747 | 30888 | `False` | `True` | `False` |
 
 ## Surface Measurements
 
 | Profile | Surface | Boundary status | Files | Bytes | Lines |
 | --- | --- | --- | ---: | ---: | ---: |
 | `openclaw_skill_local` | `ilc_cli` | `pass` | 25 | 174260 | 5131 |
-| `openclaw_skill_local` | `ilc_harness_adapters` | `pass` | 8 | 164288 | 4154 |
+| `openclaw_skill_local` | `ilc_harness_adapters` | `pass` | 11 | 247112 | 6196 |
 | `openclaw_skill_local` | `ilc_logic` | `pass` | 62 | 397123 | 11363 |
-| `openclaw_skill_local` | `local_sidecar` | `measurement_only` | 10 | 285680 | 7166 |
+| `openclaw_skill_local` | `local_sidecar` | `measurement_only` | 11 | 340444 | 8597 |
 | `openclaw_skill_claimable` | `ilc_cli` | `pass` | 25 | 174260 | 5131 |
-| `openclaw_skill_claimable` | `ilc_harness_adapters` | `pass` | 8 | 164288 | 4154 |
+| `openclaw_skill_claimable` | `ilc_harness_adapters` | `pass` | 11 | 247112 | 6196 |
 | `openclaw_skill_claimable` | `ilc_logic` | `pass` | 62 | 397123 | 11363 |
-| `openclaw_skill_claimable` | `local_sidecar` | `measurement_only` | 10 | 285680 | 7166 |
+| `openclaw_skill_claimable` | `local_sidecar` | `measurement_only` | 11 | 340444 | 8597 |
 | `openclaw_skill_claimable` | `public_claimability` | `measurement_only` | 6 | 46139 | 1233 |
 
 ## Phase 1250 Fix1 Scope Preservation
