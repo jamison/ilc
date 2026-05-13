@@ -149,6 +149,19 @@ def test_local_delivery_projection_states_are_fail_closed() -> None:
     assert size_rejection["sealed_payload_class_ref"] != payload_class["sealed_payload_class_ref"]
 
 
+def test_replay_collection_rejects_bytearray_with_collection_token() -> None:
+    _, intent, *_ = _sample_bundle()
+
+    with pytest.raises(ConfidentialCoordinationSealedSenderError) as exc:
+        build_local_delivery_projection(
+            intent_record=intent,
+            projection_epoch=1326,
+            replayed_delivery_token_refs=bytearray(b"not-a-ref"),
+        )
+
+    assert exc.value.token == "ccss_003_replay_collection_invalid_phase_1326"
+
+
 def test_public_relay_config_and_unbounded_queue_are_forbidden() -> None:
     payload_class, intent, *_ = _sample_bundle()
 
