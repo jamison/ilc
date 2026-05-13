@@ -24,6 +24,9 @@ from ilc_core.sidecars.claimability_receipt_verifier import (
 from ilc_core.sidecars.confidential_coordination_capability import (
     ccss_002_capability_membership_boundary_manifest,
 )
+from ilc_core.sidecars.confidential_coordination_gossip_policy import (
+    ccss_004_gossip_jitter_cover_policy_manifest,
+)
 from ilc_core.sidecars.confidential_coordination_sealed_sender import (
     ccss_003_sealed_sender_local_delivery_manifest,
 )
@@ -302,6 +305,21 @@ _SIDECAR_DEFINITIONS = (
         "wiring_modes": _PRIVATE_WIRING_MODES,
     },
     {
+        "authority_gate": "phase_1327_private_local_contract_only",
+        "component": "ccss_004_gossip_jitter_cover_policy_tests",
+        "implementation_status": "contract_recorded_phase_1327_no_public_serving",
+        "public_serving_enabled": False,
+        "required_capabilities": (
+            "GossipAnnouncePullPolicyRef",
+            "TrafficAnalysisMatrixRef",
+            "GossipCoverPolicyDecision",
+            "bounded_metadata_announce_receiver_controlled_pull",
+            "traffic_analysis_negative_tests_no_anonymity_claim",
+        ),
+        "sidecar_id": "confidential_coordination_gossip_jitter_cover_policy",
+        "wiring_modes": _PRIVATE_WIRING_MODES,
+    },
+    {
         "authority_gate": "phase_1323_1328_private_dry_run_before_public_claim",
         "component": "openclaw_compatible_local_bridge",
         "implementation_status": "profile_declared_phase_1307",
@@ -378,6 +396,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
                 required_sidecars=(
                     "sidecar_registry_manifest",
                     "confidential_coordination_capability_membership_boundary",
+                    "confidential_coordination_gossip_jitter_cover_policy",
                     "confidential_coordination_private_gated_shard",
                     "confidential_coordination_sealed_sender_local_delivery",
                     "confidential_coordination_local_preview",
@@ -401,6 +420,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
         "package_profile_integrity": {
             "claimable_profile_requires_offline_verifier": True,
             "confidential_coordination_capability_manifest": ccss_002_capability_membership_boundary_manifest(),
+            "confidential_coordination_gossip_policy_manifest": ccss_004_gossip_jitter_cover_policy_manifest(),
             "confidential_coordination_sealed_sender_manifest": ccss_003_sealed_sender_local_delivery_manifest(),
             "confidential_coordination_shard_manifest": ccss_001_private_gated_shard_manifest(),
             "confidential_coordination_profile_is_private_local_only": True,
@@ -605,6 +625,8 @@ def _validate_profile_record(record: Mapping[str, Any], *, sidecar_ids: set[str]
             raise ValueError("sidecar_registry_confidential_profile_missing_ccss_002_phase_1325")
         if "confidential_coordination_sealed_sender_local_delivery" not in required:
             raise ValueError("sidecar_registry_confidential_profile_missing_ccss_003_phase_1326")
+        if "confidential_coordination_gossip_jitter_cover_policy" not in required:
+            raise ValueError("sidecar_registry_confidential_profile_missing_ccss_004_phase_1327")
 
 
 def _validate_package_profile_integrity(value: object) -> None:
@@ -758,6 +780,57 @@ def _validate_package_profile_integrity(value: object) -> None:
     ]:
         raise ValueError(
             "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
+        )
+    ccss_gossip = _require_mapping(
+        integrity.get("confidential_coordination_gossip_policy_manifest"),
+        token="sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327",
+    )
+    if ccss_gossip.get("contract_version") != (
+        "ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1"
+    ):
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
+        )
+    for key in (
+        "anonymity_guarantee_not_claimed",
+        "gossip_announce_pull_jitter_policy_recorded",
+        "local_only",
+        "metadata_correlation_tests_required",
+        "traffic_analysis_negative_tests_recorded",
+    ):
+        if ccss_gossip.get(key) is not True:
+            raise ValueError(
+                "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
+            )
+    for key in (
+        "anonymity_guarantee_claimed",
+        "public_confidential_coordination_serving_enabled",
+        "public_confidential_messaging_claimed",
+        "public_listener_enabled",
+        "public_p2p_enabled",
+        "public_peer_discovery_enabled",
+        "public_relay_serving_enabled",
+        "signal_equivalent_claimed",
+        "unlinkability_claimed",
+    ):
+        _require_false(
+            ccss_gossip.get(key),
+            token="sidecar_registry_package_profile_integrity_ccss_gossip_public_authority_forbidden_phase_1327",
+        )
+    if ccss_gossip.get("next_phase") != "phase_1328_ccss_private_droplet_reproducibility_next":
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
+        )
+    if ccss_gossip.get("tokens") != [
+        "ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1",
+        "gossip_announce_pull_jitter_policy_recorded_phase_1327",
+        "traffic_analysis_negative_tests_recorded_phase_1327",
+        "anonymity_guarantee_not_claimed_phase_1327",
+        "phase_1328_ccss_private_droplet_reproducibility_next",
+        "public_rc_remains_blocked_after_phase_1327",
+    ]:
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
         )
     verifier = _require_mapping(
         integrity.get("offline_claimability_verifier_manifest"),
@@ -1087,6 +1160,7 @@ __all__ = [
     "SIDECAR_REGISTRY_MANIFEST_VERSION",
     "build_sidecar_registry_manifest",
     "canonical_sidecar_registry_manifest_json",
+    "ccss_004_gossip_jitter_cover_policy_manifest",
     "claimability_receipt_verifier_manifest",
     "export_sidecar_registry_manifest_json",
     "public_fetch_p2p_readiness_candidate_manifest",

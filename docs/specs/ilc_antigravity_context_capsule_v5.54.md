@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, and Phase 1326 CCSS-003 sealed sender local delivery boundary
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, Phase 1326 CCSS-003 sealed sender local delivery boundary, and Phase 1327 CCSS-004 gossip jitter cover policy tests
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1326
-**Next phase:** Phase 1327 - CCSS-004 gossip jitter cover policy tests, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1327
+**Next phase:** Phase 1328 - CCSS-005 private droplet reproducibility dry run, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -121,6 +121,12 @@ h013_h015_dependency_seams_recorded_phase_1326
 public_p2p_not_activated_by_ccss_phase_1326
 phase_1327_ccss_gossip_jitter_cover_policy_next
 public_rc_remains_blocked_after_phase_1326
+ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1
+gossip_announce_pull_jitter_policy_recorded_phase_1327
+traffic_analysis_negative_tests_recorded_phase_1327
+anonymity_guarantee_not_claimed_phase_1327
+phase_1328_ccss_private_droplet_reproducibility_next
+public_rc_remains_blocked_after_phase_1327
 ```
 
 ---
@@ -270,7 +276,7 @@ must repeat the same discovery discipline before execution.
 
 ## 3. Release Dry-Run Blocker Map
 
-| Phase or lane | Current blocker | Phase 1323 status |
+| Phase or lane | Current blocker | Phase 1327 status |
 |---------------|-----------------|-------------------|
 | 1319 source materialization rehearsal | Dry-run export must prove zero exported `PUBLIC_RC_EXCLUDE` markers, zero stripped-helper imports, reviewed exclusions for legacy/private/patent-sensitive material, deterministic ordering, and complete hashes/non-claims. | Complete as rehearsal evidence only; no source export execution, no copied public tree, no publication, no clean public tree materialization. |
 | 1320 release artifact manifest rehearsal | Requires Phase 1319 rehearsal evidence or an explicit blocker record; must not produce public artifacts. | Complete as dry-run shape evidence only; no release artifact payload, produced-artifact checksum, key, envelope, signature, publication, or public RC claim. |
@@ -279,8 +285,8 @@ must repeat the same discovery discipline before execution.
 | 1323 OpenClaw/NemoClaw claimable profile dry run | Harnesses are deployment targets, not protocol substrates; public claimability remains gated. | Complete as private ILC profile/sidecar dry run; public claimability runtime remains disabled. Fix2 installed native OpenClaw on `ilc-node-6` and verified local workspace skill discovery, while ClawHub listing/public installability remain blocked. Fix3 implemented the provisional layered license posture and replaced blanket MIT. |
 | 1324 CCSS-001 private/gated shard contract | Private/gated shard references and encrypted coordination-node envelopes must stay private/local. | Complete as local-only contract substrate; no public confidential coordination serving, no public P2P, no public promotion. Fix1 hardened the CCSS-001 implementation-audit findings; Fix2 hardened repeated validator classes across older sidecar harness modules. |
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Complete as local-only boundary substrate; no public confidential coordination serving, public membership directory, public credential authority, public ZK verifier, or public P2P. |
-| 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Open; no sealed sender runtime/public transport activation. |
-| 1327 CCSS-004 gossip/jitter/cover tests | Must harden metadata-correlation evidence and avoid anonymity overclaims. | Open; no anonymity guarantee or public gossip claim. |
+| 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Complete as local-only boundary substrate; no public P2P, public relay serving, public confidential coordination serving, or public messaging. |
+| 1327 CCSS-004 gossip/jitter/cover tests | Must harden metadata-correlation evidence and avoid anonymity overclaims. | Complete as local-only policy/test substrate; no public gossip, public P2P, anonymity, unlinkability, or Signal-equivalent claim. |
 | 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run | Private harness evidence only; no public serving, publication, or release authority. | Open; no droplet dry run executed. |
 | 1329 closure gate | Must classify dry-run, CCSS, Atlas-G, and release blockers honestly. | Open; not reached. |
 
@@ -521,6 +527,22 @@ source publication, package publication, signing, identity artifacts, wallet
 writes, ECU minting, ILC settlement, value-path activation, or Phase 1327
 execution.
 
+Phase 1327 publishes the CCSS-004 gossip jitter cover policy test evidence path:
+
+```text
+docs/specs/ilc_ccss_004_gossip_jitter_cover_policy_tests_1327_v0.1.md
+```
+
+Phase 1327 defines private/local bounded announce metadata, receiver-controlled
+pull, bounded jitter, bounded batching, idle-cover policy, deterministic
+test-fixture jitter, traffic-analysis matrix rows, residual
+metadata-correlation risk, and explicit no-anonymity/non-unlinkability/
+non-Signal-equivalence boundaries. It does not authorize public P2P, public
+relay serving, public confidential coordination serving, public messaging,
+source publication, package publication, signing, identity artifacts, wallet
+writes, ECU minting, ILC settlement, value-path activation, or Phase 1328
+execution.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -649,16 +671,15 @@ graph_delta=support_only:docs/specs/ilc_phase_1325_fix2_ccss_002_branch_and_inte
 ## 9. Current Frontier
 
 ```text
-ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1
+ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1
 ```
 
-Phase 1326 completed the CCSS-003 sealed-sender local delivery boundary. It
-added fixed-size H-013 sealed payload classes, local delivery intents, local
-delivery receipts, and private/local delivery projections without activating
-public P2P, public relay serving, public confidential coordination serving, or
-public messaging.
+Phase 1327 completed the CCSS-004 gossip announce/pull, jitter, batching,
+cover-policy, and traffic-analysis test boundary. It added private/local policy
+records and negative-test coverage without activating public P2P, public relay
+serving, public confidential coordination serving, public messaging,
+anonymity, unlinkability, or Signal-equivalent claims.
 
-Phase 1327 is sensitive and requires explicit `GO Phase 1327`. It is a CCSS-004
-gossip announce/pull, jitter, batching, cover-policy, and traffic-analysis test
-phase only unless its own prompt, canon checks, and human authorization say
-otherwise.
+Phase 1328 is sensitive and requires explicit `GO Phase 1328`. It is the CCSS
+private droplet reproducibility dry run unless its own prompt, canon checks, and
+human authorization say otherwise.

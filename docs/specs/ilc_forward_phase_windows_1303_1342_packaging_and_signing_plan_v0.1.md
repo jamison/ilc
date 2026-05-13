@@ -323,6 +323,29 @@ seams only. It does not authorize ATLAS-G-007 through ATLAS-G-010, source
 publication, release authority, release signing, identity bootstrap, wallet
 actions, ECU minting, ILC settlement, or value-path activation.
 
+Phase 1327 completion note:
+
+```text
+ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1
+gossip_announce_pull_jitter_policy_recorded_phase_1327
+traffic_analysis_negative_tests_recorded_phase_1327
+anonymity_guarantee_not_claimed_phase_1327
+phase_1328_ccss_private_droplet_reproducibility_next
+public_rc_remains_blocked_after_phase_1327
+```
+
+Phase 1327 added the local-only
+`confidential_coordination_gossip_jitter_cover_policy` sidecar contract and
+preserved the CCSS/Atlas-G split. It records bounded private/local announce
+metadata, receiver-controlled pull, bounded jitter, bounded batching, idle
+cover, deterministic test-fixture jitter, traffic-analysis rows, residual
+metadata-correlation risk, and explicit no-anonymity/non-unlinkability/
+non-Signal-equivalent claims. It does not authorize public P2P, public relay
+serving, public confidential coordination serving, public messaging, ATLAS-G-007
+through ATLAS-G-010, source publication, release authority, release signing,
+identity bootstrap, wallet actions, ECU minting, ILC settlement, or value-path
+activation.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |
