@@ -2565,6 +2565,34 @@ Roadmap impact:
   ECU minting, ILC settlement, value-path activation, Atlas-G tail execution,
   or Phase 1326 execution.
 
+## 50g. Phase 1326 CCSS-003 Sealed Sender Local Delivery Boundary Addendum
+
+Phase 1326 records the local/private CCSS-003 sealed sender delivery boundary:
+
+```text
+ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1
+sealed_sender_fixed_size_payload_boundary_recorded_phase_1326
+h013_h015_dependency_seams_recorded_phase_1326
+public_p2p_not_activated_by_ccss_phase_1326
+phase_1327_ccss_gossip_jitter_cover_policy_next
+public_rc_remains_blocked_after_phase_1326
+```
+
+Roadmap impact:
+
+- The confidential coordination local-preview profile now requires
+  `confidential_coordination_sealed_sender_local_delivery`.
+- The CCSS-003 contract records fixed-size H-013 sealed payload classes,
+  local delivery intents, local delivery receipts, and private delivery
+  projection states for pending, delivered, size-class rejection, metadata-leak
+  rejection, replay rejection, and blocked-public-transport rejection.
+- H-013/H-015 are dependency seams only. This is not public P2P, public relay
+  serving, public confidential coordination serving, public confidential
+  messaging, or an anonymity guarantee.
+- Phase 1326 does not authorize public RC, source publication, package
+  publication, release material, signing, identity artifacts, wallet writes,
+  ECU minting, ILC settlement, value-path activation, or Atlas-G tail execution.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:

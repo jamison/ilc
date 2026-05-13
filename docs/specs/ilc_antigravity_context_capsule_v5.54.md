@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, and Phase 1325 Fix2 branch/integer hardening
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, and Phase 1326 CCSS-003 sealed sender local delivery boundary
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1325 Fix2
-**Next phase:** Phase 1326 - CCSS-003 sealed sender boundary, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1326
+**Next phase:** Phase 1327 - CCSS-004 gossip jitter cover policy tests, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -115,6 +115,12 @@ ccss_002_access_branch_coverage_expanded_phase_1325_fix2
 ccss_002_payload_depth_node_limits_covered_phase_1325_fix2
 public_rc_remains_blocked_after_phase_1325_fix2
 phase_1326_ccss_sealed_sender_boundary_next_after_fix2
+ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1
+sealed_sender_fixed_size_payload_boundary_recorded_phase_1326
+h013_h015_dependency_seams_recorded_phase_1326
+public_p2p_not_activated_by_ccss_phase_1326
+phase_1327_ccss_gossip_jitter_cover_policy_next
+public_rc_remains_blocked_after_phase_1326
 ```
 
 ---
@@ -239,9 +245,10 @@ actions, ECU minting, ILC settlement, value-path activation, or Atlas-G tail
 execution.
 
 Phase 1325 Fix1 and Fix2 are complete as CCSS-002 access-audit,
-canonical-payload, and branch-coverage hardening passes. Phase 1326 is the next
-phase after Phase 1325 Fix2. Phase 1326 remains sensitive and requires explicit
-`GO Phase 1326`.
+canonical-payload, and branch-coverage hardening passes. Phase 1326 is complete
+as the CCSS-003 sealed-sender local delivery boundary. Phase 1327 is the next
+sensitive CCSS-004 gossip/jitter/cover-policy phase and requires explicit
+`GO Phase 1327`.
 
 ---
 
@@ -498,6 +505,22 @@ directory, public credential authority, public ZK verifier, public P2P, source
 publication, package publication, signing, identity artifacts, wallet writes,
 ECU minting, ILC settlement, value-path activation, or Phase 1326 execution.
 
+Phase 1326 publishes the CCSS-003 sealed sender local delivery boundary
+evidence path:
+
+```text
+docs/specs/ilc_ccss_003_sealed_sender_local_delivery_boundary_1326_v0.1.md
+```
+
+Phase 1326 defines fixed-size H-013 sealed payload classes, local delivery
+intents, local delivery receipts, and private delivery projections for pending,
+delivered, size-class rejection, metadata-leak rejection, replay rejection, and
+blocked-public-transport rejection. It does not authorize public P2P, public
+relay serving, public confidential coordination serving, public messaging,
+source publication, package publication, signing, identity artifacts, wallet
+writes, ECU minting, ILC settlement, value-path activation, or Phase 1327
+execution.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -623,12 +646,19 @@ graph_delta=support_only:docs/specs/ilc_phase_1325_fix2_ccss_002_branch_and_inte
 
 ---
 
-## 9. Next Phase
+## 9. Current Frontier
 
 ```text
-phase_1326_ccss_sealed_sender_boundary_next
+ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1
 ```
 
-Phase 1326 is sensitive and requires explicit `GO Phase 1326`. It is a CCSS-003
-sealed-sender boundary phase only unless its own prompt, canon checks, and human
-authorization say otherwise.
+Phase 1326 completed the CCSS-003 sealed-sender local delivery boundary. It
+added fixed-size H-013 sealed payload classes, local delivery intents, local
+delivery receipts, and private/local delivery projections without activating
+public P2P, public relay serving, public confidential coordination serving, or
+public messaging.
+
+Phase 1327 is sensitive and requires explicit `GO Phase 1327`. It is a CCSS-004
+gossip announce/pull, jitter, batching, cover-policy, and traffic-analysis test
+phase only unless its own prompt, canon checks, and human authorization say
+otherwise.
