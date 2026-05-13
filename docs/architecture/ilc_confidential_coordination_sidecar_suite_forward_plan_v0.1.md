@@ -88,6 +88,27 @@ Window 1317-1329:
 | 1328 | CCSS-005: run a private OpenClaw/NemoClaw or equivalent DigitalOcean droplet dry run over loopback, Tailscale, or other private wiring. No public serving claim. |
 | 1329 | Closure gate: decide whether the suite remains a post-RC/private lane, becomes a selected public-RC blocker, or is split into a later dedicated window. |
 
+Phase 1324 completion:
+
+```text
+ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1
+encrypted_coordination_node_envelope_contract_recorded_phase_1324
+shard_header_projection_contract_recorded_phase_1324
+private_to_public_promotion_evidence_shape_recorded_phase_1324
+ccss_public_serving_not_enabled_phase_1324
+phase_1325_ccss_capability_membership_boundary_next
+public_rc_remains_blocked_after_phase_1324
+```
+
+The CCSS-001 contract is now implemented locally at
+`ilc_core/sidecars/confidential_coordination_shard.py` and registered as
+`confidential_coordination_private_gated_shard`. It defines `PrivateShardRef`,
+`EncryptedCoordinationNodeEnvelope`, `ShardHeaderProjection`,
+`PromotionEvidenceRef`, and `DisclosureDenial` without enabling public
+confidential coordination serving, public P2P, public promotion, source
+publication, release signing, identity bootstrap, wallet actions, ECU minting,
+ILC settlement, or value-path activation.
+
 Window 1330-1342:
 
 | Phase | Assignment |

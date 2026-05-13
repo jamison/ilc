@@ -21,6 +21,9 @@ from ilc_core.rc.package_profiles import (
 from ilc_core.sidecars.claimability_receipt_verifier import (
     claimability_receipt_verifier_manifest,
 )
+from ilc_core.sidecars.confidential_coordination_shard import (
+    ccss_001_private_gated_shard_manifest,
+)
 from ilc_core.sidecars.local_graph_memory_projection import (
     local_graph_memory_projection_sidecar_manifest,
 )
@@ -240,6 +243,21 @@ _SIDECAR_DEFINITIONS = (
         "wiring_modes": _PRIVATE_WIRING_MODES,
     },
     {
+        "authority_gate": "phase_1324_private_local_contract_only",
+        "component": "ccss_001_private_gated_shard_contract",
+        "implementation_status": "contract_recorded_phase_1324_no_public_serving",
+        "public_serving_enabled": False,
+        "required_capabilities": (
+            "PrivateShardRef",
+            "EncryptedCoordinationNodeEnvelope",
+            "ShardHeaderProjection",
+            "PromotionEvidenceRef",
+            "DisclosureDenial",
+        ),
+        "sidecar_id": "confidential_coordination_private_gated_shard",
+        "wiring_modes": _PRIVATE_WIRING_MODES,
+    },
+    {
         "authority_gate": "phase_1323_1328_private_dry_run_before_public_claim",
         "component": "openclaw_compatible_local_bridge",
         "implementation_status": "profile_declared_phase_1307",
@@ -315,6 +333,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
                 package_profile_id=PROFILE_CONFIDENTIAL_COORDINATION_LOCAL_PREVIEW,
                 required_sidecars=(
                     "sidecar_registry_manifest",
+                    "confidential_coordination_private_gated_shard",
                     "confidential_coordination_local_preview",
                     "local_graph_memory_projection",
                     "openclaw_nemoclaw_local_bridge",
@@ -335,6 +354,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
         "non_authorization_boundary": list(_NON_AUTHORIZATION_BOUNDARY),
         "package_profile_integrity": {
             "claimable_profile_requires_offline_verifier": True,
+            "confidential_coordination_shard_manifest": ccss_001_private_gated_shard_manifest(),
             "confidential_coordination_profile_is_private_local_only": True,
             "local_graph_memory_projection_sidecar_manifest": local_graph_memory_projection_sidecar_manifest(),
             "offline_claimability_verifier_manifest": claimability_receipt_verifier_manifest(),
@@ -548,6 +568,47 @@ def _validate_package_profile_integrity(value: object) -> None:
         _require_false(
             integrity.get(key),
             token="sidecar_registry_package_profile_integrity_public_authority_forbidden_phase_1307",
+        )
+    ccss = _require_mapping(
+        integrity.get("confidential_coordination_shard_manifest"),
+        token="sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324",
+    )
+    if ccss.get("contract_version") != (
+        "ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1"
+    ):
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
+        )
+    for key in (
+        "encrypted_coordination_node_envelope_contract_recorded",
+        "local_only",
+        "private_to_public_promotion_evidence_shape_recorded",
+        "shard_header_projection_contract_recorded",
+    ):
+        if ccss.get(key) is not True:
+            raise ValueError(
+                "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
+            )
+    for key in ("public_confidential_coordination_serving_enabled", "public_p2p_enabled"):
+        _require_false(
+            ccss.get(key),
+            token="sidecar_registry_package_profile_integrity_ccss_public_authority_forbidden_phase_1324",
+        )
+    if ccss.get("next_phase") != "phase_1325_ccss_capability_membership_boundary_next":
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
+        )
+    if ccss.get("tokens") != [
+        "ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1",
+        "encrypted_coordination_node_envelope_contract_recorded_phase_1324",
+        "shard_header_projection_contract_recorded_phase_1324",
+        "private_to_public_promotion_evidence_shape_recorded_phase_1324",
+        "ccss_public_serving_not_enabled_phase_1324",
+        "phase_1325_ccss_capability_membership_boundary_next",
+        "public_rc_remains_blocked_after_phase_1324",
+    ]:
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
         )
     verifier = _require_mapping(
         integrity.get("offline_claimability_verifier_manifest"),
