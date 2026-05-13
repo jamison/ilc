@@ -168,6 +168,23 @@ sweep now rejects ASCII DEL (`0x7f`) as a control character. Phase 1326 remains 
 sensitive CCSS-003 sealed sender boundary and requires explicit `GO Phase
 1326`.
 
+Phase 1325 Fix2 completion:
+
+```text
+phase_1325_fix2_ccss_002_branch_and_integer_hardening.v0.1
+ccss_002_oversized_raw_int_rejected_before_stringification_phase_1325_fix2
+ccss_002_access_branch_coverage_expanded_phase_1325_fix2
+ccss_002_payload_depth_node_limits_covered_phase_1325_fix2
+public_rc_remains_blocked_after_phase_1325_fix2
+phase_1326_ccss_sealed_sender_boundary_next_after_fix2
+```
+
+CCSS-002 now rejects oversized raw integer canonical-JSON payload leaves before
+decimal stringification and has focused coverage for supersession, mismatch,
+invalid-window, zero-sequence, depth-limit, and node-limit paths. Phase 1326
+remains the next sensitive CCSS-003 sealed sender boundary and requires
+explicit `GO Phase 1326`.
+
 Window 1330-1342:
 
 | Phase | Assignment |

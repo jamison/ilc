@@ -2535,6 +2535,36 @@ Roadmap impact:
   ECU minting, ILC settlement, value-path activation, Atlas-G tail execution,
   or Phase 1326 execution.
 
+## 50f. Phase 1325 Fix2 CCSS-002 Branch And Integer Hardening Addendum
+
+Phase 1325 Fix2 hardens the CCSS-002 canonical JSON integer path and expands
+focused decision-branch coverage:
+
+```text
+phase_1325_fix2_ccss_002_branch_and_integer_hardening.v0.1
+ccss_002_oversized_raw_int_rejected_before_stringification_phase_1325_fix2
+ccss_002_access_branch_coverage_expanded_phase_1325_fix2
+ccss_002_payload_depth_node_limits_covered_phase_1325_fix2
+public_rc_remains_blocked_after_phase_1325_fix2
+phase_1326_ccss_sealed_sender_boundary_next_after_fix2
+```
+
+Roadmap impact:
+
+- CCSS-002 canonical JSON traversal now rejects oversized raw integer leaves
+  before decimal stringification, reducing direct-caller work before the final
+  canonical JSON byte cap.
+- Focused tests now cover superseded capability handling, capability-ref
+  mismatch, membership-boundary shard mismatch, membership-boundary ref
+  mismatch, invalid grant windows, zero grant sequence, and payload
+  depth/node-count limits.
+- Fix2 does not authorize public RC, public serving, public P2P, public
+  confidential coordination serving, public membership directory, public
+  credential authority, public ZK verifier, source publication, package
+  publication, release material, signing, identity artifacts, wallet writes,
+  ECU minting, ILC settlement, value-path activation, Atlas-G tail execution,
+  or Phase 1326 execution.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:
