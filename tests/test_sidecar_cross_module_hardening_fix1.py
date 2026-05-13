@@ -8,6 +8,8 @@ from typing import Any
 import pytest
 
 from ilc_core.sidecars import claimability_receipt_verifier as crv
+from ilc_core.sidecars import confidential_coordination_capability as ccss
+from ilc_core.sidecars import confidential_coordination_shard as shard
 from ilc_core.sidecars import local_graph_memory_projection as lgmp
 from ilc_core.sidecars import public_fetch_p2p_readiness as pfp
 from ilc_core.sidecars import registry_manifest as registry
@@ -18,6 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 FRONTIER_DOCS = (
     ROOT / "docs/specs/ilc_phase_1324_fix2_sidecar_harness_cross_module_hardening_v0.1.md",
     ROOT / "docs/phases/phase_1324_fix2_sidecar_harness_cross_module_hardening_walkthrough.md",
+    ROOT / "docs/specs/ilc_phase_1325_fix1_ccss_002_access_audit_hardening_v0.1.md",
+    ROOT / "docs/phases/phase_1325_fix1_ccss_002_access_audit_hardening_walkthrough.md",
     ROOT / "docs/phases/STATUS.md",
     ROOT / "docs/PLANNING_INDEX.md",
     ROOT / "docs/specs/ilc_antigravity_context_capsule_v5.54.md",
@@ -35,6 +39,16 @@ def _error_token(error: BaseException) -> str:
             registry.canonical_sidecar_registry_manifest_json,
             ValueError,
             "sidecar_registry_text_invalid_phase_1307",
+        ),
+        (
+            shard.canonical_ccss_001_json,
+            shard.ConfidentialCoordinationShardError,
+            "ccss_001_payload_text_text_invalid_phase_1324",
+        ),
+        (
+            ccss.canonical_ccss_002_json,
+            ccss.ConfidentialCoordinationCapabilityError,
+            "ccss_002_payload_text_text_invalid_phase_1325",
         ),
         (
             crv.canonical_json,
@@ -63,10 +77,11 @@ def test_sidecar_canonical_payloads_reject_control_characters(
     error_type: type[BaseException],
     token: str,
 ) -> None:
-    with pytest.raises(error_type) as exc_info:
-        canonical({"alpha": "bad\tvalue"})
+    for bad_value in ("bad\tvalue", "bad\x7fvalue"):
+        with pytest.raises(error_type) as exc_info:
+            canonical({"alpha": bad_value})
 
-    assert _error_token(exc_info.value) == token
+        assert _error_token(exc_info.value) == token
 
 
 @pytest.mark.parametrize(
@@ -215,5 +230,12 @@ def test_phase_1324_fix2_frontier_docs_record_hardening_tokens() -> None:
         "sidecar_payload_key_counting_cross_module_phase_1324_fix2",
         "public_rc_remains_blocked_after_phase_1324_fix2",
         "phase_1325_ccss_capability_membership_boundary_next_after_fix2",
+        "phase_1325_fix1_ccss_002_access_audit_hardening.v0.1",
+        "ccss_002_zk_record_kind_validated_phase_1325_fix1",
+        "ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1",
+        "ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1",
+        "sidecar_del_control_character_rejected_cross_module_phase_1325_fix1",
+        "public_rc_remains_blocked_after_phase_1325_fix1",
+        "phase_1326_ccss_sealed_sender_boundary_next_after_fix1",
     ):
         assert token in combined

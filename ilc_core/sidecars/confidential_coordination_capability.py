@@ -535,13 +535,6 @@ def build_local_access_decision(
         max_items=_MAX_REF_LIST_ITEMS,
     )
 
-    if zk_interface_record is not None:
-        try:
-            validate_ccss_002_record(zk_interface_record)
-        except ConfidentialCoordinationCapabilityError:
-            return _access_decision("zk_deferred", "malformed_zk_interface", shard_ref, cap_ref, current)
-        return _access_decision("zk_deferred", "zk_verifier_not_ratified", shard_ref, cap_ref, current)
-
     if grant_record is None:
         return _access_decision("unknown", "no_grant_evidence", shard_ref, cap_ref, current)
     try:
@@ -571,6 +564,19 @@ def build_local_access_decision(
 
     if not (grant["valid_from_epoch"] <= current <= grant["valid_to_epoch"]):
         return _access_decision("expired_or_superseded", "epoch_window_closed", shard_ref, cap_ref, current)
+
+    if zk_interface_record is not None:
+        try:
+            zk = validate_ccss_002_record(zk_interface_record)
+        except ConfidentialCoordinationCapabilityError:
+            return _access_decision("zk_deferred", "malformed_zk_interface", shard_ref, cap_ref, current)
+        if (
+            zk["record_kind"] != "zk_membership_interface_ref"
+            or zk["private_shard_ref"] != shard_ref
+            or zk["membership_boundary_ref"] != grant["membership_boundary_ref"]
+        ):
+            return _access_decision("zk_deferred", "malformed_zk_interface", shard_ref, cap_ref, current)
+        return _access_decision("zk_deferred", "zk_verifier_not_ratified", shard_ref, cap_ref, current)
 
     if membership_boundary_record is None:
         return _access_decision("candidate_granted", "membership_boundary_unresolved", shard_ref, cap_ref, current)
@@ -1287,7 +1293,7 @@ def _require_text(label: str, value: object) -> str:
             f"ccss_002_{label}_text_invalid_phase_1325",
             "expected non-empty text",
         )
-    if len(value) > _MAX_TEXT_LENGTH or any(ord(char) < 0x20 for char in value):
+    if len(value) > _MAX_TEXT_LENGTH or any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise ConfidentialCoordinationCapabilityError(
             f"ccss_002_{label}_text_invalid_phase_1325",
             "text field is invalid or oversized",
@@ -1333,6 +1339,16 @@ def _reject_forbidden_private_values(value: object) -> None:
 def _reject_unsafe_json_tree(value: object) -> None:
     seen: set[int] = set()
     node_count = 0
+    payload_text_bytes = 0
+
+    def add_payload_bytes(text: str) -> None:
+        nonlocal payload_text_bytes
+        payload_text_bytes += len(text.encode("utf-8"))
+        if payload_text_bytes > _MAX_CANONICAL_JSON_BYTES:
+            raise ConfidentialCoordinationCapabilityError(
+                "ccss_002_payload_size_exceeded_phase_1325",
+                "canonical JSON payload exceeds byte bound",
+            )
 
     def visit(item: object, depth: int) -> None:
         nonlocal node_count
@@ -1363,6 +1379,7 @@ def _reject_unsafe_json_tree(value: object) -> None:
                             "payload keys must be strings",
                         )
                     _require_text("payload_key", key)
+                    add_payload_bytes(key)
                     node_count += 1
                     if node_count > _MAX_PAYLOAD_NODES:
                         raise ConfidentialCoordinationCapabilityError(
@@ -1388,6 +1405,9 @@ def _reject_unsafe_json_tree(value: object) -> None:
         if item is None or isinstance(item, (str, int, bool)):
             if isinstance(item, str):
                 _require_text("payload_text", item)
+                add_payload_bytes(item)
+            elif isinstance(item, int) and not isinstance(item, bool):
+                add_payload_bytes(str(item))
             return
         raise ConfidentialCoordinationCapabilityError(
             "ccss_002_payload_key_invalid_phase_1325",

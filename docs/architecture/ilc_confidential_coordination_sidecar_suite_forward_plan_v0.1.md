@@ -148,6 +148,26 @@ ratified verifier or public proof service. Actual member lists, bearer
 identities, raw grants, raw membership material, revocation reasons, plaintext,
 route history, and ZK witnesses remain denied.
 
+Phase 1325 Fix1 completion:
+
+```text
+phase_1325_fix1_ccss_002_access_audit_hardening.v0.1
+ccss_002_zk_record_kind_validated_phase_1325_fix1
+ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1
+ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1
+sidecar_del_control_character_rejected_cross_module_phase_1325_fix1
+public_rc_remains_blocked_after_phase_1325_fix1
+phase_1326_ccss_sealed_sender_boundary_next_after_fix1
+```
+
+The CCSS-002 access decision now preserves deterministic revocation audit
+state before optional ZK deferral and validates the ZK seam record kind and
+boundary match. CCSS-002 canonical JSON traversal now enforces a
+pre-serialization payload byte budget. The cross-module sidecar text-validation
+sweep now rejects ASCII DEL (`0x7f`) as a control character. Phase 1326 remains the next
+sensitive CCSS-003 sealed sender boundary and requires explicit `GO Phase
+1326`.
+
 Window 1330-1342:
 
 | Phase | Assignment |

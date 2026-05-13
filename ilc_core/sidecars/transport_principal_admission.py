@@ -893,7 +893,7 @@ def _require_text(value: object) -> str:
             "transport_principal_admission_text_too_large_phase_1309",
             "text value is too large",
         )
-    if any(ord(char) < 0x20 for char in value):
+    if any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise TransportPrincipalAdmissionSidecarError(
             "transport_principal_admission_text_invalid_phase_1309",
             "text value contains a control character",

@@ -1113,7 +1113,7 @@ def _require_text(label: str, value: object) -> str:
             f"ccss_001_{label}_text_invalid_phase_1324",
             "expected non-empty text",
         )
-    if len(value) > _MAX_TEXT_LENGTH or any(ord(char) < 0x20 for char in value):
+    if len(value) > _MAX_TEXT_LENGTH or any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise ConfidentialCoordinationShardError(
             f"ccss_001_{label}_text_invalid_phase_1324",
             "text field is invalid or oversized",
