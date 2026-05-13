@@ -387,4 +387,11 @@ def test_planning_index_references_window_1317_1329_sequence_lock_and_guidance()
     assert "phase_1324_ccss_private_gated_shard_contract_next_after_fix2" in text
     assert "phase_1324_ccss_private_gated_shard_contract_next" in text
     assert "public_rc_remains_blocked_after_phase_1323" in text
-    assert "Window 1317-1329 is OPEN through Phase 1323 Fix2" in text
+    assert "ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1" in text
+    assert "encrypted_coordination_node_envelope_contract_recorded_phase_1324" in text
+    assert "shard_header_projection_contract_recorded_phase_1324" in text
+    assert "private_to_public_promotion_evidence_shape_recorded_phase_1324" in text
+    assert "ccss_public_serving_not_enabled_phase_1324" in text
+    assert "phase_1325_ccss_capability_membership_boundary_next" in text
+    assert "public_rc_remains_blocked_after_phase_1324" in text
+    assert "Window 1317-1329 is OPEN through Phase 1324" in text
