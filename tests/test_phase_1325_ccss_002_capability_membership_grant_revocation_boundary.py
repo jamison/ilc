@@ -42,9 +42,16 @@ SPEC_PATH = (
     ROOT
     / "docs/specs/ilc_ccss_002_capability_membership_grant_revocation_boundary_1325_v0.1.md"
 )
+FIX1_SPEC_PATH = (
+    ROOT
+    / "docs/specs/ilc_phase_1325_fix1_ccss_002_access_audit_hardening_v0.1.md"
+)
 WALKTHROUGH_PATH = (
     ROOT
     / "docs/phases/phase_1325_ccss_002_capability_membership_grant_revocation_boundary_walkthrough.md"
+)
+FIX1_WALKTHROUGH_PATH = (
+    ROOT / "docs/phases/phase_1325_fix1_ccss_002_access_audit_hardening_walkthrough.md"
 )
 STATUS_PATH = ROOT / "docs/phases/STATUS.md"
 PLANNING_INDEX_PATH = ROOT / "docs/PLANNING_INDEX.md"
@@ -61,6 +68,15 @@ REQUIRED_TOKENS = [
     OPTIONAL_ZK_INTERFACE_BOUNDARY_RECORDED_TOKEN,
     PHASE_1326_NEXT_TOKEN,
     PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1325_TOKEN,
+]
+FIX1_TOKENS = [
+    "phase_1325_fix1_ccss_002_access_audit_hardening.v0.1",
+    "ccss_002_zk_record_kind_validated_phase_1325_fix1",
+    "ccss_002_revocation_precedes_zk_deferred_phase_1325_fix1",
+    "ccss_002_pre_serialization_payload_byte_budget_phase_1325_fix1",
+    "sidecar_del_control_character_rejected_cross_module_phase_1325_fix1",
+    "public_rc_remains_blocked_after_phase_1325_fix1",
+    "phase_1326_ccss_sealed_sender_boundary_next_after_fix1",
 ]
 
 
@@ -224,6 +240,18 @@ def test_phase_1325_access_state_machine_fails_closed_for_required_negative_path
     assert revoked["access_state"] == "revoked"
     assert revoked["deny_reason"] == "revocation_wins_over_grant"
 
+    revoked_with_zk = build_local_access_decision(
+        private_shard_ref=_ref("private_shard", "a"),
+        capability_ref=_ref("capability", "e"),
+        current_epoch=1326,
+        grant_record=grant,
+        membership_boundary_record=membership,
+        revocation_record=revocation,
+        zk_interface_record=records["zk"],
+    )
+    assert revoked_with_zk["access_state"] == "revoked"
+    assert revoked_with_zk["deny_reason"] == "revocation_wins_over_grant"
+
     expired = build_local_access_decision(
         private_shard_ref=_ref("private_shard", "a"),
         capability_ref=_ref("capability", "e"),
@@ -328,12 +356,29 @@ def test_phase_1325_rejects_plaintext_membership_malformed_refs_public_dependenc
     )
     assert zk_decision["access_state"] == "zk_deferred"
     assert zk_decision["local_access_allowed"] is False
+    assert zk_decision["deny_reason"] == "zk_verifier_not_ratified"
+
+    wrong_zk_kind = build_local_access_decision(
+        private_shard_ref=_ref("private_shard", "a"),
+        capability_ref=_ref("capability", "e"),
+        current_epoch=1325,
+        grant_record=grant,
+        membership_boundary_record=membership,
+        zk_interface_record=grant,
+    )
+    assert wrong_zk_kind["access_state"] == "zk_deferred"
+    assert wrong_zk_kind["local_access_allowed"] is False
+    assert wrong_zk_kind["deny_reason"] == "malformed_zk_interface"
 
 
 def test_phase_1325_bounds_payloads_and_rejects_control_chars_floats_tuples_and_cycles() -> None:
     with pytest.raises(ConfidentialCoordinationCapabilityError) as control_exc:
         canonical_ccss_002_json({"payload": "tab\tforbidden"})
     assert control_exc.value.token == "ccss_002_payload_text_text_invalid_phase_1325"
+
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as del_exc:
+        canonical_ccss_002_json({"payload": "del\x7fforbidden"})
+    assert del_exc.value.token == "ccss_002_payload_text_text_invalid_phase_1325"
 
     with pytest.raises(ConfidentialCoordinationCapabilityError) as float_exc:
         canonical_ccss_002_json({"payload": 3.14})
@@ -356,6 +401,21 @@ def test_phase_1325_bounds_payloads_and_rejects_control_chars_floats_tuples_and_
         assert size_exc.value.token == "ccss_002_payload_size_exceeded_phase_1325"
     finally:
         ccss._MAX_CANONICAL_JSON_BYTES = 10_000_000
+
+
+def test_phase_1325_rejects_oversized_payload_before_json_serialization(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(ccss, "_MAX_CANONICAL_JSON_BYTES", 8)
+
+    def fail_json_dumps(*_args: object, **_kwargs: object) -> str:
+        raise AssertionError("json.dumps should not run after traversal byte cap fails")
+
+    monkeypatch.setattr(ccss.json, "dumps", fail_json_dumps)
+    with pytest.raises(ConfidentialCoordinationCapabilityError) as size_exc:
+        canonical_ccss_002_json({"alpha": "beta"})
+
+    assert size_exc.value.token == "ccss_002_payload_size_exceeded_phase_1325"
 
 
 def test_phase_1325_registry_guardrail_docs_and_frontier_record_boundary() -> None:
@@ -383,7 +443,9 @@ def test_phase_1325_registry_guardrail_docs_and_frontier_record_boundary() -> No
             REGISTRY_PATH,
             GUARDRAIL_PATH,
             SPEC_PATH,
+            FIX1_SPEC_PATH,
             WALKTHROUGH_PATH,
+            FIX1_WALKTHROUGH_PATH,
             STATUS_PATH,
             PLANNING_INDEX_PATH,
             CAPSULE_PATH,
@@ -392,6 +454,8 @@ def test_phase_1325_registry_guardrail_docs_and_frontier_record_boundary() -> No
         )
     )
     for token in REQUIRED_TOKENS:
+        assert token in corpus
+    for token in FIX1_TOKENS:
         assert token in corpus
     for phrase in (
         "unknown",

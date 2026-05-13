@@ -936,7 +936,7 @@ def _require_text(value: object) -> str:
         raise ValueError("sidecar_registry_text_invalid_phase_1307")
     if len(value) > _MAX_TEXT_LENGTH:
         raise ValueError("sidecar_registry_text_too_large_phase_1307")
-    if any(ord(char) < 0x20 for char in value):
+    if any(ord(char) < 0x20 or char == "\x7f" for char in value):
         raise ValueError("sidecar_registry_text_invalid_phase_1307")
     return value
 
