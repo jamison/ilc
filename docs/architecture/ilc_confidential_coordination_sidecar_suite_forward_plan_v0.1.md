@@ -233,6 +233,31 @@ source publication, release authority, release signing, identity bootstrap,
 wallet actions, ECU minting, ILC settlement, value-path activation, anonymity,
 unlinkability, or Signal-equivalent protection.
 
+Phase 1328 completion:
+
+```text
+ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
+confidential_coordination_private_wiring_dry_run_recorded_phase_1328
+reproducibility_pass_recorded_phase_1328
+public_confidential_coordination_serving_not_enabled_phase_1328
+phase_1329_window_1317_1329_closure_next
+public_rc_remains_blocked_after_phase_1328
+```
+
+The CCSS-005 private OpenClaw/NemoClaw-compatible dry run is now recorded at
+`docs/specs/ilc_ccss_005_private_openclaw_nemoclaw_droplet_dry_run_1328_v0.1.md`.
+It used the real private Tailscale droplets `ilc-node-2`, `ilc-node-3`, and
+`ilc-node-6`, verified private Git-bundle sync to committed source
+`acc92d645055c4ea288aad947df0f54604975fc6`, full mesh reachability, UFW
+Tailscale-only inbound, OpenClaw local workspace skill readiness on
+`ilc-node-6`, no OpenClaw gateway listener on `18789` or `19001`, and
+deterministic CCSS-001 through CCSS-004 sample construction on all three nodes.
+It remains private evidence only and does not authorize public serving, public
+P2P, public confidential coordination serving, public messaging, source
+publication, OpenClaw skill publication, ClawHub listing, public installability,
+identity bootstrap, wallet actions, ECU minting, ILC settlement, value-path
+activation, release authority, signing authority, or Atlas-G tail work.
+
 Window 1330-1342:
 
 | Phase | Assignment |

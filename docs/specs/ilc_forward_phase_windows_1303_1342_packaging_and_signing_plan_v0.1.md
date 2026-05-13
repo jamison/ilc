@@ -346,6 +346,29 @@ through ATLAS-G-010, source publication, release authority, release signing,
 identity bootstrap, wallet actions, ECU minting, ILC settlement, or value-path
 activation.
 
+Phase 1328 completion note:
+
+```text
+ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
+confidential_coordination_private_wiring_dry_run_recorded_phase_1328
+reproducibility_pass_recorded_phase_1328
+public_confidential_coordination_serving_not_enabled_phase_1328
+phase_1329_window_1317_1329_closure_next
+public_rc_remains_blocked_after_phase_1328
+```
+
+Phase 1328 completed the CCSS-005 private OpenClaw/NemoClaw-compatible droplet
+dry run on real private DigitalOcean/Tailscale nodes `ilc-node-2`,
+`ilc-node-3`, and `ilc-node-6`. The run used private Git-bundle sync, verified
+full mesh reachability, clean remote Git state, UFW Tailscale-only inbound,
+OpenClaw local workspace skill readiness on `ilc-node-6`, no OpenClaw gateway
+listener on `18789` or `19001`, and deterministic CCSS-001 through CCSS-004
+sample construction on all three nodes. It does not create public serving,
+public P2P, public confidential coordination serving, public messaging, source
+publication, OpenClaw skill publication, ClawHub listing, identity artifacts,
+wallet writes, ECU minting, ILC settlement, value-path activation, release
+authority, signing authority, or Atlas-G tail authority.
+
 ## 4. Window 1330-1342 - Final RC and Signing Gate
 
 | Phase | Scope | Blocker addressed | Task lane |
