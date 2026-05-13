@@ -2624,6 +2624,42 @@ Roadmap impact:
   publication, release material, signing, identity artifacts, wallet writes,
   ECU minting, ILC settlement, value-path activation, or Atlas-G tail execution.
 
+## 50i. Phase 1328 CCSS-005 Private OpenClaw/NemoClaw Droplet Dry Run Addendum
+
+Phase 1328 records the private CCSS-005 OpenClaw/NemoClaw-compatible droplet dry
+run:
+
+```text
+ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
+confidential_coordination_private_wiring_dry_run_recorded_phase_1328
+reproducibility_pass_recorded_phase_1328
+public_confidential_coordination_serving_not_enabled_phase_1328
+phase_1329_window_1317_1329_closure_next
+public_rc_remains_blocked_after_phase_1328
+```
+
+Roadmap impact:
+
+- The CCSS private/local lane now has live private droplet evidence through
+  CCSS-005.
+- The dry run used real DigitalOcean/Tailscale nodes `ilc-node-2`,
+  `ilc-node-3`, and `ilc-node-6`, with private Git-bundle sync to committed
+  source `acc92d645055c4ea288aad947df0f54604975fc6`.
+- Full mesh Tailscale reachability, UFW Tailscale-only inbound, clean remote
+  Git state, and Python 3.10.12 runtime were recorded across all three nodes.
+- OpenClaw `2026.5.7 (eeef486)` and the local workspace `ilc-local` skill were
+  verified on `ilc-node-6`; no OpenClaw gateway listener was observed on
+  `18789` or `19001`.
+- Deterministic CCSS-001 through CCSS-004 sample record construction passed on
+  all three nodes.
+- This is not public P2P, public relay serving, public confidential
+  coordination serving, public confidential messaging, OpenClaw skill
+  publication, ClawHub listing, public installability, NemoClaw production
+  readiness, anonymity, unlinkability, or Signal-equivalent protection.
+- Phase 1328 does not authorize public RC, source publication, package
+  publication, release material, signing, identity artifacts, wallet writes,
+  ECU minting, ILC settlement, value-path activation, or Atlas-G tail execution.
+
 ## 51. Phase 1301 Deep No-Activation Assertion Audit Addendum
 
 Historical Phase 1300 frontier phrase guard:

@@ -1,10 +1,10 @@
 # ILC Antigravity Context Capsule v5.54
 
 **Date:** 2026-05-12
-**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, Phase 1326 CCSS-003 sealed sender local delivery boundary, and Phase 1327 CCSS-004 gossip jitter cover policy tests
+**Produced by:** Phase 1318 - Context Capsule v5.54 frontier refresh; updated by Phase 1319 dry-run source allowlist rehearsal, Phase 1320 release artifact manifest instance rehearsal, Phase 1321 release key/envelope procedure rehearsal, Phase 1322 live private deployment rehearsal, Phase 1322 Fix1 VPS Git workflow restore, Phase 1323 OpenClaw/NemoClaw claimable profile full dry run, Phase 1323 Fix2 OpenClaw VPS install/local skill discovery, Phase 1323 Fix3 layered license posture, Phase 1324 CCSS-001 private/gated shard sidecar contract, Phase 1324 Fix1 implementation-audit hardening, Phase 1324 Fix2 sidecar harness cross-module hardening, Phase 1325 CCSS-002 capability/membership boundary, Phase 1325 Fix1 access audit hardening, Phase 1325 Fix2 branch/integer hardening, Phase 1326 CCSS-003 sealed sender local delivery boundary, Phase 1327 CCSS-004 gossip jitter cover policy tests, and Phase 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run
 **Supersedes:** `docs/specs/ilc_antigravity_context_capsule_v5.53.md`
-**Window frontier:** Window 1317-1329 is OPEN through Phase 1327
-**Next phase:** Phase 1328 - CCSS-005 private droplet reproducibility dry run, sensitive, not pre-authorized
+**Window frontier:** Window 1317-1329 is OPEN through Phase 1328
+**Next phase:** Phase 1329 - Window 1317-1329 closure gate, sensitive, not pre-authorized
 **Public RC status:** Blocked
 
 ```text
@@ -127,6 +127,12 @@ traffic_analysis_negative_tests_recorded_phase_1327
 anonymity_guarantee_not_claimed_phase_1327
 phase_1328_ccss_private_droplet_reproducibility_next
 public_rc_remains_blocked_after_phase_1327
+ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
+confidential_coordination_private_wiring_dry_run_recorded_phase_1328
+reproducibility_pass_recorded_phase_1328
+public_confidential_coordination_serving_not_enabled_phase_1328
+phase_1329_window_1317_1329_closure_next
+public_rc_remains_blocked_after_phase_1328
 ```
 
 ---
@@ -287,7 +293,7 @@ must repeat the same discovery discipline before execution.
 | 1325 CCSS-002 capability/membership boundary | Capability, membership, grant, revocation, and optional ZK seams must not disclose plaintext or membership. | Complete as local-only boundary substrate; no public confidential coordination serving, public membership directory, public credential authority, public ZK verifier, or public P2P. |
 | 1326 CCSS-003 sealed sender local delivery boundary | Fixed-size payload and relay seam must remain local/private and no public P2P may activate. | Complete as local-only boundary substrate; no public P2P, public relay serving, public confidential coordination serving, or public messaging. |
 | 1327 CCSS-004 gossip/jitter/cover tests | Must harden metadata-correlation evidence and avoid anonymity overclaims. | Complete as local-only policy/test substrate; no public gossip, public P2P, anonymity, unlinkability, or Signal-equivalent claim. |
-| 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run | Private harness evidence only; no public serving, publication, or release authority. | Open; no droplet dry run executed. |
+| 1328 CCSS-005 private OpenClaw/NemoClaw droplet dry run | Private harness evidence only; no public serving, publication, or release authority. | Complete as live private DigitalOcean/Tailscale droplet evidence; OpenClaw local skill ready on `ilc-node-6`; CCSS sample construction reproducible across all three nodes; no public serving or publication. |
 | 1329 closure gate | Must classify dry-run, CCSS, Atlas-G, and release blockers honestly. | Open; not reached. |
 
 ---
@@ -543,6 +549,21 @@ source publication, package publication, signing, identity artifacts, wallet
 writes, ECU minting, ILC settlement, value-path activation, or Phase 1328
 execution.
 
+Phase 1328 publishes the CCSS-005 private droplet dry-run evidence path:
+
+```text
+docs/specs/ilc_ccss_005_private_openclaw_nemoclaw_droplet_dry_run_1328_v0.1.md
+```
+
+Phase 1328 used real private DigitalOcean/Tailscale droplets, private Git-bundle
+sync, full-mesh reachability, OpenClaw local workspace skill discovery on
+`ilc-node-6`, and deterministic CCSS-001 through CCSS-004 sample construction
+on all three nodes. It does not authorize public P2P, public relay serving,
+public confidential coordination serving, public messaging, source publication,
+package publication, OpenClaw skill publication, ClawHub listing, public
+installability, signing, identity artifacts, wallet writes, ECU minting, ILC
+settlement, value-path activation, or Phase 1329 execution.
+
 ---
 
 ## 5. Atlas-G And CCSS Split
@@ -671,15 +692,17 @@ graph_delta=support_only:docs/specs/ilc_phase_1325_fix2_ccss_002_branch_and_inte
 ## 9. Current Frontier
 
 ```text
-ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1
+ccss_005_private_openclaw_nemoclaw_droplet_dry_run_phase_1328.v0.1
 ```
 
-Phase 1327 completed the CCSS-004 gossip announce/pull, jitter, batching,
-cover-policy, and traffic-analysis test boundary. It added private/local policy
-records and negative-test coverage without activating public P2P, public relay
-serving, public confidential coordination serving, public messaging,
-anonymity, unlinkability, or Signal-equivalent claims.
+Phase 1328 completed the CCSS-005 private OpenClaw/NemoClaw-compatible droplet
+dry run. It recorded private Tailscale evidence across `ilc-node-2`,
+`ilc-node-3`, and `ilc-node-6`, OpenClaw local skill readiness on `ilc-node-6`,
+and reproducible CCSS sample construction without activating public P2P, public
+relay serving, public confidential coordination serving, public messaging,
+source publication, public skill publication, identity artifacts, wallet writes,
+ECU minting, ILC settlement, value-path activation, or Atlas-G tail work.
 
-Phase 1328 is sensitive and requires explicit `GO Phase 1328`. It is the CCSS
-private droplet reproducibility dry run unless its own prompt, canon checks, and
-human authorization say otherwise.
+Phase 1329 is sensitive and requires explicit `GO Phase 1329`. It is the
+Window 1317-1329 closure gate unless its own prompt, canon checks, and human
+authorization say otherwise.
