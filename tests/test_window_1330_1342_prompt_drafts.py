@@ -56,11 +56,12 @@ def _required_tokens(text: str) -> list[str]:
     return [line.strip() for line in block.splitlines() if line.strip()]
 
 
-def test_window_1330_1342_guidance_is_planning_only_and_routes_all_phases() -> None:
+def test_window_1330_1342_guidance_is_consumed_and_routes_all_phases() -> None:
     text = _text(GUIDANCE)
 
     for token in (
         "window_1330_1342_candidate_phase_grouping_drafted_after_phase_1329",
+        "window_1330_1342_candidate_grouping_consumed_by_phase_1330_sequence_lock",
         "window_1330_1342_not_open_until_sequence_lock",
         "phase_1330_window_1330_1342_sequence_lock_required",
         "final_rc_signing_gate_public_rc_still_blocked_by_default",
@@ -84,8 +85,9 @@ def test_window_1330_1342_guidance_is_planning_only_and_routes_all_phases() -> N
         assert f"| {phase} |" in text
 
     for phrase in (
-        "Planning-only candidate guidance. Not a sequence lock.",
-        "does not open Window 1330-1342",
+        "Consumed by Phase 1330 sequence lock",
+        "docs/specs/ilc_phase_1330_1342_sequence_lock_v0.1.md",
+        "consumed planning input, not execution authority for Phase 1331 or later",
         "Phase 1330 sequence lock is required",
         "Identity Bootstrap Stop Guard",
         "CDL-069 commitment mismatch",
@@ -213,15 +215,17 @@ def test_window_1330_1342_public_activation_gates_do_not_precede_atlas_signing()
     assert "before Atlas-G tail/signing and publication gates are closed" in phase_1338
 
 
-def test_planning_index_registers_window_1330_1342_as_draft_only() -> None:
+def test_planning_index_registers_window_1330_1342_sequence_lock() -> None:
     text = _text(PLANNING_INDEX)
 
     for phrase in (
-        "Window 1330-1342 draft package (planning-only)",
+        "Window 1330-1342 sequence lock addendum",
+        "Window 1330-1342 is OPEN through Phase 1330 only",
+        "docs/specs/ilc_phase_1330_1342_sequence_lock_v0.1.md",
         "docs/specs/ilc_window_1330_1342_candidate_phase_grouping_v0.1.md",
         "antigravity_prompt__phase_1330_g8_window_1330_1342_sequence_lock.md",
-        "do not open Window 1330-1342",
+        "window_1330_1342_candidate_grouping_consumed_by_phase_1330_sequence_lock",
         "Atlas-G tail routing is explicit",
-        "Phase 1330 requires a future explicit `GO Phase 1330`",
+        "Phase 1331 is the next planned phase",
     ):
         assert phrase in text

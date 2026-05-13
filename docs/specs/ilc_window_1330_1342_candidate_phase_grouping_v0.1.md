@@ -1,6 +1,8 @@
 # ILC Window 1330-1342 Candidate Phase Grouping v0.1
 
-**Status:** Planning-only candidate guidance. Not a sequence lock.
+**Status:** Consumed by Phase 1330 sequence lock. Active lock:
+`docs/specs/ilc_phase_1330_1342_sequence_lock_v0.1.md`. This remains
+candidate guidance and is not execution authority beyond the active lock.
 **Recorded:** 2026-05-13.
 **Authority:** This document drafts the next candidate window after Phase 1329
 closure. It does not open Window 1330-1342, execute source export, publish a
@@ -13,6 +15,7 @@ execute.
 
 ```text
 window_1330_1342_candidate_phase_grouping_drafted_after_phase_1329
+window_1330_1342_candidate_grouping_consumed_by_phase_1330_sequence_lock
 window_1330_1342_not_open_until_sequence_lock
 phase_1330_window_1330_1342_sequence_lock_required
 final_rc_signing_gate_public_rc_still_blocked_by_default
@@ -35,8 +38,8 @@ window_1330_1342_prompt_drafts_registered
 
 Window 1317-1329 is closed by
 `docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md`. The next logical window
-is a final-RC and signing gate candidate only if Phase 1330 locks it. This
-candidate grouping must be treated as planning input, not execution authority.
+is now locked by Phase 1330 through Phase 1330 only. This candidate grouping is
+consumed planning input, not execution authority for Phase 1331 or later.
 
 The proposed Window 1330-1342 plan is consistent with current canon under these
 guardrails:
