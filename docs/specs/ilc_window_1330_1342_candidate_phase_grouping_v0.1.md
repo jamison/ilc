@@ -563,8 +563,40 @@ claim endpoint, value-path activation, source publication, package publication,
 release signing, public RC claim, identity bootstrap, CDL mutation, CDL-088
 opening, Genesis/Atlas mutation/signing, or v0.2 signing.
 
-Phase 1339 is now the next sensitive gate and requires explicit future
-`GO Phase 1339`.
+Phase 1339 executed after explicit `GO Phase 1339`; Phase 1340 is now the next
+sensitive gate and requires explicit future
+`GO Phase 1340: authorize v0.2 signing ceremony`.
+
+## 9.6 Phase 1339 Execution Addendum
+
+Phase 1339 executed after explicit `GO Phase 1339` and finalized the Atlas-G tail
+required before the v0.2 signing ceremony gate:
+
+```text
+atlas_g_mutation_regeneration_finalization_phase_1339.v0.1
+atlas_g_007_candidate_regeneration_classified_phase_1339
+atlas_g_008_non_excisability_packet_classified_phase_1339
+atlas_g_007_unsigned_v0_2_plus_candidate_regeneration_required
+atlas_g_008_non_excisability_review_packet_required
+ccss_evidence_not_substitute_for_atlas_g_tail_phase_1339
+phase_1340_v0_2_signing_ceremony_gate_next
+public_rc_remains_blocked_after_phase_1339
+```
+
+Gate result: `atlas_g_tail_finalized`. The regenerated unsigned v0.2 candidate
+diagnostic now reports `PARTIAL_WITH_STRUCTURAL_GAPS`,
+`core_nodes_total=49`, `authority_traceable_core_nodes=49`,
+`authority_traceable_core_nodes_ratio=1.000000`, and
+`missing_decomposition_recipe_count=0`. The prior recipe failure is closed.
+ADR-0037, CDL-V1, CDL-V2, CDL-V3, CDL-V7, CDL-085,
+`REUSE_ATTRIBUTION_RATE`, and `EDGE_MINT_PHI_BOUND` are present in the unsigned
+candidate as pending-signing nodes. ATLAS-G-008 records the non-excisability
+packet and classifies residual basis-reachability gaps as compiler-coverage debt.
+
+Phase 1339 did not execute Genesis v0.2 signing, release signing, signature
+production, public RC claim, public launch claim, public activation, wallet
+value-path activation, CDL mutation, CDL-088 opening, counsel approval, patent
+filing, trademark-policy publication, or legal conclusion.
 
 ## 10. Graph Delta
 
@@ -595,4 +627,9 @@ graph_delta=support_only:docs/phases/phase_1337_public_path_sidecar_activation_o
 graph_delta=support_only:docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json,docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.md -> planning/frontier
 graph_delta=support_tests_added:tests/test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate.py -> validation
 graph_delta=support_only:docs/phases/phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate_walkthrough.md -> planning/frontier
+graph_delta=load_bearing_artifact_changed:out/genesis_core_star_map_v0.2_candidate.json -> genesis_atlas_v0_2_unsigned_candidate
+graph_delta=load_bearing_artifact_added:docs/specs/ilc_atlas_g_tail_finalization_1339_v0.1.json,docs/specs/ilc_atlas_g_tail_finalization_1339_v0.1.md,docs/specs/ilc_atlas_g_008_non_excisability_review_packet_1339_v0.1.md -> atlas-g-tail-evidence
+graph_delta=support_tests_added:tests/test_phase_1339_atlas_g_tail_finalization.py -> validation
+graph_delta=support_only:docs/phases/phase_1339_atlas_g_mutation_regeneration_finalization_walkthrough.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md -> planning/frontier
 ```
