@@ -645,7 +645,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1345 | Production epoch emission engine: CDL-025/026/027 non-activating quote runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | COMPLETE; records `production_minting_not_activated_phase_1345`; no ledger write or mint activation |
 | 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | COMPLETE; records `fee_burn_not_activated_phase_1346`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production fee collection or ledger write |
 | 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | COMPLETE; records `production_distribution_not_activated_phase_1347`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production distribution or ledger write |
-| 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, velocity alert trigger) | CDL-047 | SENSITIVE; economic surface |
+| 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, 0.91 velocity alert floor monitoring) | CDL-047 | COMPLETE; records `treasury_not_activated_phase_1348`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no treasury activation or ledger write |
 | 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | SENSITIVE; economic surface |
 | 1350 | CDL-083 ejected stake treasury distribution: close `NotImplementedError` in `epoch_attribution_settle_runtime.py`; H-CON-02 quorum guard required | CDL-083 | SENSITIVE; economic surface |
 | 1351 | CDL-030 ECU price clamp runtime (P_min/P_max bounds derived from CDL-027 schedule) | CDL-030 | SENSITIVE; economic surface |
@@ -666,6 +666,13 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; explicit `GO Phase 1366` required |
 | 1367 | Reserved for pre-gate fix pass | — | SENSITIVE |
 | 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | SENSITIVE; must record exactly one of `production_minting_activated_phase_1368` or `production_minting_activation_deferred_phase_1368` |
+
+Phase 1348 execution addendum: `cdl_047_treasury_governance_runtime_phase_1348.v0.1`,
+`bounty_cap_0_15_b_e_runtime_phase_1348`, `burn_floor_0_05_runtime_phase_1348`,
+`velocity_alert_trigger_runtime_phase_1348`, `velocity_alert_floor_0_91_runtime_phase_1348`,
+`treasury_not_activated_phase_1348`,
+`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
+`no_direct_treasury_stub_found_phase_1348`.
 
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
