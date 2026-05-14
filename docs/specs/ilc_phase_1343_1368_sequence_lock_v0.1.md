@@ -102,6 +102,7 @@ mutation environment authority in addition to human GO:
 | 1349 | CDL-054 validator reward-pool routing runtime | SENSITIVE; future explicit GO required. |
 | 1350 | CDL-083 ejected-stake treasury distribution | SENSITIVE; future explicit GO required. |
 | 1351 | CDL-030 ECU price clamp runtime | SENSITIVE; future explicit GO required. |
+| 1351a | CDL-029 post-theta_hard sub-quantum residual routing policy: amend CDL-029; use caller-supplied `genesis_overhead_cap_blocked=True`; route settlement residual first to CDL-083 Q4 caller-filtered upheld-refutation recipients when a deterministic non-empty list is supplied, otherwise to performer pool; fail closed for non-zero full Genesis base tranche routing | SENSITIVE governance phase; must land before Phase 1352; supersedes Phase 1347a draft; CDL-V7 is admissibility-only and CDL-083 Q4 is the attribution interface. |
 | 1352 | Issuance economics integration gate | SENSITIVE; future explicit GO required. |
 | 1353 | CDL-017 validator admission/ejection + SEC-004 live rotation | SENSITIVE; future explicit GO required. |
 | 1354 | CDL-068 topology shuffle VRF runtime | SENSITIVE; future explicit GO required. |

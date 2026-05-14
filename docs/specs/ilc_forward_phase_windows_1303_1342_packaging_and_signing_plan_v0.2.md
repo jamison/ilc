@@ -513,7 +513,8 @@ execute with explicit `GO Phase NNNN`.
 forward_phase_windows_post_1342_comprehensive_gap_closure_plan_revised_2026_05_14_v2
 window_1343_1368_issuance_economics_validator_governance_cdl_v6_mysticeti_wiring
 window_1369_1390_public_claimability_governance_cdl_006_009_external_audit
-window_1391_plus_sovereign_substrate_long_range_genuine_deferrals_only
+window_1391_1398_mode_2_refutation_adjudication_and_settlement
+window_1399_plus_sovereign_substrate_long_range_genuine_deferrals_only
 phase_1366_soft_rc_gate_replaces_earlier_phase_1358
 phase_1389_public_claimability_activation_gate_replaces_earlier_phase_1375
 mysticeti_m_series_complete_7_phases_remaining_not_20_30
@@ -662,7 +663,20 @@ inactive.
 and anchored to CDL-027 `halving/H=48/1_month` schedule constants. Live price
 adjustment remains inactive.
 
-### Three-window post-1342 structure
+### ECU / ILC Layer Distinction — Standing Policy
+
+**CDL-029 80/15/5 applies at ILC issuance/conversion settlement boundaries, not to local ECU
+attribution events.** Local ECU generation for refutation, curation, productive work, or
+aesthetic-panel rewards is governed by local operator policy and may be informed by
+Werner-type productive-work attribution. CDL-081/083/084 settlement-grade attribution must be
+checked only when a local event is promoted into an ILC conversion, epoch, or public-claim
+path. The ILC layer is globally scarce, deterministic, and replay-safe; the ECU layer is
+local, fast-moving, and context-sensitive by design. These two layers must not be conflated in
+phase prompts or runtime contracts.
+
+---
+
+### Post-1342 window structure
 
 ```
 Window 1343–1368  →  issuance economics + validator governance + CDL-V6
@@ -670,7 +684,11 @@ Window 1343–1368  →  issuance economics + validator governance + CDL-V6
                       → closes soft RC blockers; enables private VPS mining with BFT consensus
 Window 1369–1390  →  public claimability governance + CDL-006/009 + external audit
                       CDL-088, identity bootstrap, activation gate — full public RC milestone (Phase 1389)
-Window 1391+      →  sovereign substrate, long-range (CDL-021, CDL-031, ADR-0015, ADR-0016/0017)
+Window 1391-1398  →  Mode-2 refutation adjudication and settlement (opt-in CDL-052 path only:
+                      local ECU incentive calibration, verdict/adjudication runtime, settlement-grade
+                      recognition for cross-shard/ILC-facing refutations, epoch/ILC integration,
+                      public-claim gate if RC claims active refutation rewards)
+Window 1399+      →  sovereign substrate, long-range (CDL-021, CDL-031, ADR-0015, ADR-0016/0017)
                       genuine deferrals only — all items require live network data or post-soft-RC milestone
 ```
 
@@ -702,18 +720,18 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | COMPLETE; records `validator_reward_distribution_not_activated_phase_1349`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production reward distribution or ledger write |
 | 1350 | CDL-083 ejected stake treasury distribution: default-off production boundary around existing H-CON-02 evaluator; stale `NotImplementedError` comments repaired | CDL-083 | COMPLETE; records `ejected_stake_distribution_not_activated_phase_1350`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production stake distribution or ledger write |
 | 1351 | CDL-030 ECU price clamp runtime (P_min/P_max bounds derived from CDL-027 schedule) | CDL-030 | COMPLETE; records `live_price_adjustment_not_activated_phase_1351`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no live price adjustment or ledger write |
-| 1351a | CDL-029 post-theta_hard residual routing policy: verify CDL-V7 upheld-refutation recipient semantics, design Decimal-only cap-block signal, ratify or carry forward recipient/fallback rule | CDL-029/CDL-V7 interaction | SENSITIVE governance phase before Phase 1352; Phase 1347a prompt remains DRAFT until respecified |
+| 1351a | CDL-029 post-theta_hard residual routing policy: two-tier sub-quantum residual routing — primary to CDL-083 Q4 caller-filtered upheld-refutation recipients; fallback to performer pool; non-zero full Genesis base tranche routing remains fail-closed | CDL-029 amendment; CDL-083 Q4 interaction | COMPLETE; records `cdl_029_post_theta_hard_dust_routing_amendment_phase_1351a.v0.1`, `post_theta_hard_routing_implemented_phase_1351a`, `production_distribution_not_activated_phase_1351a`, and `genesis_overhead_base_cap_blocked_full_tranche_deferred_phase_1351a`; CDL-052 full refutation economy semantics and local ECU attribution are out of scope — Window 1391-1398 |
 | 1352 | Issuance economics integration gate: CDL-025–031/047/054/083 stack end-to-end, double-entry ledger invariant, epoch-boundary test | Integration gate | SENSITIVE gate; explicit `GO Phase 1352` required |
 | 1353 | CDL-017 validator admission/ejection: `admit_validator`, `eject_validator` production implementation; SEC-004 TransferCertificate epoch binding and live validator-set rotation wiring in `fast_path.rs` (scaffolded; gated here on CDL-017) | CDL-017, SEC-004 | SENSITIVE; validator governance |
 | 1354 | CDL-068 topology shuffle VRF runtime: VRF-based per-epoch shuffle rotation, `shuffle_cadence_epochs=1`, k-regular sizing, ≥10-validator VRF upgrade trigger | CDL-068 | SENSITIVE; consensus surface |
 | 1355 | CDL-V6 genesis intervention enforcement: `genesis_intervention_runtime.py`, persistent invocation counter (max 3 lifetime, append-only log), epoch ceiling enforcer, audit record writer; converts CDL-V6 from GOV-B to GOV-A | CDL-V6 | SENSITIVE; Genesis authority surface |
 | 1356 | CDL-013 governance weight live integration: connect `governance_weight.py` output to live governance decision surfaces | CDL-013 | SENSITIVE; governance surface |
-| 1357 | reputation.py H11 rewrite: Decimal float elimination throughout `reputation.py` and `governance_weight.py`; add `REPUTATION_RUNTIME_VERSION` + `CDL_013_DEPENDENCY` tokens; wire `compute_governance_weights()` output into governance call path | CDL-013 | SENSITIVE; blocked on Phase 1356; moves from Window 1391+ |
-| 1358 | `ilc_core/` → `ilc_consensus/` production bridge: gRPC read adapter in `ilc_core/` (`GetEpoch`, `GetBalance`, `GetEpochRecord`, `GetEpochChain`); QUIC ECU transfer submission path from `ilc_core/` production economic routines to `ilc_consensus/` fast path (only `tools/testbed/` stubs exist today) | ADR-0028 | SENSITIVE; first production Mysticeti wire-up; M-022 open item; moves from Window 1391+ |
-| 1359 | HIGH-001 two-layer defense: log-redaction runtime (replace plaintext AgentID in validator logs); transfer mixing/k-anonymity framework; required before any sender-privacy claim | M-022 HIGH-001 | SENSITIVE; security surface; moves from Window 1391+ |
+| 1357 | reputation.py H11 rewrite: Decimal float elimination throughout `reputation.py` and `governance_weight.py`; add `REPUTATION_RUNTIME_VERSION` + `CDL_013_DEPENDENCY` tokens; wire `compute_governance_weights()` output into governance call path | CDL-013 | SENSITIVE; blocked on Phase 1356; moves from prior 1391+ long-range bucket |
+| 1358 | `ilc_core/` → `ilc_consensus/` production bridge: gRPC read adapter in `ilc_core/` (`GetEpoch`, `GetBalance`, `GetEpochRecord`, `GetEpochChain`); QUIC ECU transfer submission path from `ilc_core/` production economic routines to `ilc_consensus/` fast path (only `tools/testbed/` stubs exist today) | ADR-0028 | SENSITIVE; first production Mysticeti wire-up; M-022 open item; moves from prior 1391+ long-range bucket |
+| 1359 | HIGH-001 two-layer defense: log-redaction runtime (replace plaintext AgentID in validator logs); transfer mixing/k-anonymity framework; required before any sender-privacy claim | M-022 HIGH-001 | SENSITIVE; security surface; moves from prior 1391+ long-range bucket |
 | 1360 | Multi-operator non-loopback Mysticeti testnet: run 4-validator testnet across geographically distinct VPSs (M-009 was loopback-only); SEC-007a/b dependency updates (tonic 0.13+ upgrade resolving `protoc-bin-vendored` and `rand 0.8.6` Dependabot alerts) | ADR-0028, M-022 | SENSITIVE |
-| 1361 | CDL-043/044 adaptive pruning completion: adaptive threshold logic per CDL-043 SIM-003 calibration anchors; CDL-044 `retention_epochs` as constitutionally-bound constant (not caller parameter); LMDB graph-level pruning path; CDL-071 Tier-2 epoch-scope enforcement | CDL-043, CDL-044 | SENSITIVE; moves from Window 1391+ |
-| 1362 | Blocking-authority vehicle opening: Phase 1344 rerouted this away from CDL-053; select or open a non-CDL-053 vehicle if blocking authority remains desired | non-CDL-053 vehicle, CDL-057 | SENSITIVE; explicit `GO Phase 1362` required; CDL mutation; moves from Window 1391+ |
+| 1361 | CDL-043/044 adaptive pruning completion: adaptive threshold logic per CDL-043 SIM-003 calibration anchors; CDL-044 `retention_epochs` as constitutionally-bound constant (not caller parameter); LMDB graph-level pruning path; CDL-071 Tier-2 epoch-scope enforcement | CDL-043, CDL-044 | SENSITIVE; moves from prior 1391+ long-range bucket |
+| 1362 | Blocking-authority vehicle opening: Phase 1344 rerouted this away from CDL-053; select or open a non-CDL-053 vehicle if blocking authority remains desired | non-CDL-053 vehicle, CDL-057 | SENSITIVE; explicit `GO Phase 1362` required; CDL mutation; moves from prior 1391+ long-range bucket |
 | 1363 | Blocking-authority deliberation/prelock: resolve open questions from Phase 1362; lock blocking-authority scope and any CDL-055/CDL-030 interaction clauses | TBD vehicle, CDL-057 | SENSITIVE |
 | 1364 | Blocking-authority ratification + CDL-057 activation: ratify the selected vehicle; flip `BLOCKING_AUTHORITY_DEFERRED = True` -> `False` in `epoch_boundary_witness_runtime.py`; epoch-boundary witness lane becomes a blocking lane | TBD vehicle, CDL-057 | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
 | 1365 | Capsule refresh (v5.57) + coherence report | — | NON-SENSITIVE after sequence lock |
@@ -760,6 +778,19 @@ Phase 1351 execution addendum: `cdl_030_ecu_price_clamp_runtime_phase_1351.v0.1`
 default-off. It does not mutate CDL-030, activate live price adjustment, or write
 ledger state.
 
+Phase 1351a execution addendum: `cdl_029_post_theta_hard_dust_routing_amendment_phase_1351a.v0.1`,
+`cdl_029_amendment_phase_1351a`,
+`cdl_083_upheld_refutation_recipients_primary_dust_route_phase_1351a`,
+`performer_pool_fallback_dust_route_phase_1351a`,
+`post_theta_hard_routing_implemented_phase_1351a`,
+`pre_theta_hard_routing_unchanged_phase_1351a`,
+`production_distribution_not_activated_phase_1351a`, and
+`genesis_overhead_base_cap_blocked_full_tranche_deferred_phase_1351a`. This phase amends CDL-029
+and implements only sub-quantum residual routing at the ILC issuance/conversion
+settlement boundary. It does not govern local ECU attribution, activate CDL-052
+settlement semantics, route non-zero full Genesis base tranches, activate
+production distribution, or write ledger state.
+
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
 - Phase 1352 or 1366 passes without all prior phases landed
@@ -803,9 +834,9 @@ and expanded with CDL-006/009, external audit, TLA+ disposition, and key ceremon
 | 1378 | Legacy `/v1/public/*` FastAPI route cleanup: remove or replace all routes flagged Phase 1301; prove no public-labeled route exists outside authorized public verifier surface | Legacy FastAPI routes | Mechanical fix; SENSITIVE because public-facing server |
 | 1379 | ADR-0031 sidecar query runtime completeness: close `NotImplementedError` for all query types in `sidecar_query_runtime.py` | ADR-0031 partial | SENSITIVE; required for sidecar completeness |
 | 1380 | CDL-048 ECU-to-ILC conversion path dry-run wiring: wire sweeper runtime in gate-closed state (no live activation); prove ECU→ILC flow semantics and double-entry correctness; actual value-path activation gated behind Phase 1387 hardening gate and Phase 1388 | CDL-048 dry-run | SENSITIVE; no live value-path activation in this phase |
-| 1381 | CDL-006 challenge node spec: challenge record schema, multi-body (3-body) quorum logic, audit path writer, spec document (`challenge_node_runtime.py` stub) | CDL-006 (spec unbuilt) | SENSITIVE; governance completeness; moves from Window 1391+ |
+| 1381 | CDL-006 challenge node spec: challenge record schema, multi-body (3-body) quorum logic, audit path writer, spec document (`challenge_node_runtime.py` stub) | CDL-006 (spec unbuilt) | SENSITIVE; governance completeness; moves from prior 1391+ long-range bucket |
 | 1382 | CDL-006 challenge node runtime + tests: production `challenge_node_runtime.py`, quorum verification tests, audit-path record tests | CDL-006 | SENSITIVE |
-| 1383 | CDL-009 fork legitimacy UX: badge schema + eligibility rules contract + CLI/operator surface for fork-signal inspection | CDL-009 (UX unbuilt) | SENSITIVE; governance completeness; moves from Window 1391+ |
+| 1383 | CDL-009 fork legitimacy UX: badge schema + eligibility rules contract + CLI/operator surface for fork-signal inspection | CDL-009 (UX unbuilt) | SENSITIVE; governance completeness; moves from prior 1391+ long-range bucket |
 | 1384 | External security audit engagement: open engagement with Trail of Bits, Sigma Prime, or Zellic; scope = `ilc_consensus/` BFT safety, `ilc_core/` economic surfaces, HIGH-001 defense review; initiates and funds engagement; Phase 1387 cannot pass until a signed audit report or signed risk-acceptance letter for any HIGH-severity consensus or economic finding is received | M-022 open item #6 | NON-SENSITIVE to initiate; signed report or explicit risk-acceptance required at Phase 1387 |
 | 1385 | TLA+ SafetyNoDualCert disposition: either complete formal proof or record explicit governance decision to defer with rationale and bounded carry-forward authority (empirical M-019 confirmation is current coverage) | M-022 open item #1 | NON-SENSITIVE disposition doc |
 | 1386 | Multi-operator genesis key ceremony: distribute genesis validator keys across ≥2 operators; production ceremony record; required before any production genesis-signed artifact | M-022 open item #7 | SENSITIVE; Genesis authority surface |
@@ -848,7 +879,162 @@ Phase 1369 sequence lock
 
 ---
 
-### Window 1391+ — Sovereign Substrate and Long-Range Lanes
+### Window 1391-1398 — Mode-2 Refutation Adjudication and Settlement
+
+**Purpose:** Complete the opt-in CDL-052 Mode-2 Popperian evaluation path for settlement-grade
+use. CDL-052 is ratified (Phase 466) and a runtime skeleton exists
+(`ilc_core/epistemic/refutation_runtime.py`, `ilc_core/epistemic/novelty_check_runtime.py`),
+but the following remain deferred. This is a named concrete window, not vague long-range debt.
+
+**Layer clarification:** CDL-029 allocation rules (including the Phase 1351a amendment) apply
+at ILC issuance and conversion settlement boundaries only. Local ECU generation for refutation
+or productive work does not need to satisfy CDL-029 split requirements. This window governs
+only the Mode-2 formal path for refutations seeking cross-shard, ILC-facing, or globally
+recognized settlement status. The vast majority of graph refutation/curation activity remains
+local ECU, operator-policy-governed, and outside this window's scope.
+
+| Lane | CDL/ADR | Description | Notes |
+|------|---------|-------------|-------|
+| Local refutation incentive calibration | Local operator policy / Werner productive-work attribution; CDL-052 context only | Calibrate ECU reward ranges and KPIs for encouraging local refutation work. No global settlement required. Helps operators tune reward levels to get the desired rate of graph improvement and productive refutation. | Does not require C(R) traversal, CDL-029 split rules, CDL-083 Q4 attribution, or global settlement machinery |
+| Verdict/adjudication runtime | CDL-052 Mode 2 / Mode 3 escalation | Generic closeout machinery for disputes, audits, and adjudication records. Formal Mode-2 refutations proceed through staking + novelty + challenge mechanics first; Mode-3 anomaly-triggered panel is the escalation/dispute path for contested novelty or anomaly cases only — not invoked for every refutation. Completes `process_refutation_submission()` adjudication closeout flow and ratifies or rejects any `corroborated_reuse` designation rules. | Mode-3 panel is dispute/escalation, not universal jury; `corroborated_reuse` is proposed vocabulary until ratified |
+| Settlement-grade refutation recognition | CDL-052 Mode 2 / novelty requirement | Opt-in path for refutations seeking cross-shard/ILC-facing/globally recognized status. Stake bond calibration (`SUBMISSION_STAKE_AMOUNT_TBD`, `REFUTATION_STAKE_AMOUNT_TBD` currently TBD). Novelty verification: C(R) traversal is a proof-witness boundary for settlement-grade claims, not a universal network obligation. | Requires soft RC production data for stake calibration; 5 novelty-spec open items must be resolved |
+| Epoch/ILC integration | CDL-029 amendment / CDL-083 Q4 | Wire settlement-grade upheld refutations through CDL-029 allocation; Phase 1351a establishes policy narrowly (caller-filtered list at ILC settlement boundary); this lane completes the full integration. | After verdict/adjudication runtime completes |
+| Public-claim gate | Phase 1389 public RC gate | Blocks Phase 1389 public RC only if the RC claim explicitly asserts active refuter mining/refutation rewards are live at global settlement layer. Does not block Phase 1366 or Phase 1352. | Conditional |
+
+**Phase 1351a carry-forward note:** Phase 1351a establishes the narrow CDL-029 post-theta_hard
+ILC settlement residual routing policy (CDL-083 caller-filtered upheld-refutation recipients →
+performer pool fallback). It does not activate CDL-052 settlement semantics or govern local
+ECU refutation incentives. This window completes the production path for settlement-grade cases.
+
+#### Ordering conditional
+
+Default: this window opens after Window 1390 closure. Exception: if Phase 1389 public RC
+explicitly claims active refutation rewards are live at the global settlement layer, the
+verdict/adjudication runtime and settlement-grade recognition lanes must move into Window
+1369-1390 before Phase 1389. This determination is made at the Window 1369-1390 sequence
+lock — not before. Phase 1389 scope is not yet defined.
+
+#### Accumulated context (recorded 2026-05-14 — survives context compression)
+
+This section records all design decisions, canon anchors, and key facts established during
+Window 1343-1368 planning so they survive context window compressions before this window opens.
+
+**What already exists (do not rebuild):**
+
+- CDL-052 ratified Phase 466: "full three-mode epistemic evaluation architecture." Three
+  modes: Mode 1 = default reuse-valuation (all nodes), Mode 2 = Popperian elevation path
+  (opt-in via `refutation_criterion` authored-envelope field), Mode 3 = anomaly-triggered
+  auditor panel (escalation only, not universal).
+- `ilc_core/epistemic/refutation_runtime.py` (Phase 478): validates refutation submissions
+  (target_cid, agent_id, authored_envelope, refutation_criterion fields); handles
+  novelty_failed path (return stake), challenge_succeeds path (partial slash), default
+  hold-pending. `SUBMISSION_STAKE_AMOUNT_TBD` and `REFUTATION_STAKE_AMOUNT_TBD` are
+  explicitly TBD pending simulation.
+- `ilc_core/epistemic/novelty_check_runtime.py` (Phase 478): currently a simple
+  duplicate-CID check (`_KNOWN_DUPLICATE_CIDS` hardcoded set). NOT full C(R) traversal.
+  This is intentionally bounded — full C(R) traversal is an open item for this window.
+- `ilc_core/consensus/popperian_gate_runtime.py` (Phase 398): CDL-V7 admissibility gate.
+  `_ADMISSIBLE_CLAIM_FORMS = {"singular", "bounded_existential", "falsifiable_positive"}`.
+  This is a decomposition ADMISSIBILITY gate, NOT a refutation settlement mechanism.
+  Do NOT conflate CDL-V7 (admissibility) with CDL-083 Q4 (upheld-refutation attribution).
+- `ilc_core/epistemic/node_submission_runtime.py` (Phase 477): CDL-052 Part 1.
+
+**Key specs (read before drafting phase prompts for this window):**
+
+- `docs/specs/ilc_simplified_epistemic_model_synthesis_v0.1.md` — canonical Mode 1/2/3
+  routing model. Establishes: static epistemic type enum was dropped; epistemic status
+  emerges from behavior not declaration; Mode 2 is opt-in via `refutation_criterion` field;
+  `corroborated_reuse` designation is proposed vocabulary (not yet ratified).
+- `docs/specs/ilc_refutation_novelty_requirement_v0.1.md` — full novelty requirement spec.
+  Three types of valid novelty: (1) new empirical evidence, (2) new counter-example,
+  (3) new logical derivation from graph-independent premises. "New" = not representable as
+  a content-addressed node in C(R) at refutation submission time. Five open items for
+  ratification: (1) C(R) traversal algorithm (depth, timestamp anchor, cycles), (2)
+  submission-gate vs challenge-target tradeoff, (3) partial novelty, (4) temporal decay
+  interaction, (5) friendly refutation detection threshold.
+- `docs/specs/ilc_refutation_criterion_schema_specification_462_v0.1.md` — `refutation_criterion`
+  authored-envelope field: requires claim, evidence_type, scope_boundary. Authored-envelope
+  placement only (CDL-034 conformance). A node carrying both `refutation_criterion` and
+  `normative: true` is rejected.
+- `docs/specs/ilc_minimal_staking_contract_specification_463_v0.1.md` — staking mechanics.
+  Novelty fail → full stake return. Novelty passes but challenge succeeds → partial slash.
+  Survives challenge → earn reward. Reward is proportional to reuse centrality of refuted
+  node at REFUTATION SUBMISSION TIME (not original creation time). Numeric stake params TBD
+  pending simulation (follow CDL-050/SIM-009 precedent: SIM first, then constitutional lock).
+- `docs/specs/ilc_popper_ilc_analysis_v0.1.md` — canonical Popperian analysis.
+
+**Key design decisions (recorded 2026-05-14):**
+
+1. **ECU/ILC layering (standing policy):** Local ECU is free-wheeling — local, fast-moving,
+   context-sensitive, operator-policy-governed. CDL-029 80/15/5 and all ILC allocation rules
+   apply ONLY at ILC issuance/conversion settlement boundaries. Do not force local ECU
+   refutation events through CDL-029 split requirements. Werner-type productive work
+   attribution may inform local ECU policy; CDL-081/083/084 settlement-grade attribution must
+   be checked only when a local event is promoted into a settlement, epoch, or public-claim path.
+
+2. **C(R) traversal is not a universal network obligation.** It is a proof-witness boundary
+   for settlement-grade claims only. For settlement-grade recognition, the submitting agent
+   provides evidence that a verifier can check against C(R). This is not a runtime obligation
+   the whole graph runs for every local refutation.
+
+3. **"Encrusted node" reward mechanism:** Reward proportional to reuse centrality at
+   refutation submission time. As a node ages and accumulates genuine reuse, its centrality
+   grows, making it more economically valuable to successfully refute. There is no separate
+   accumulating bounty pool per node — the reuse centrality score IS that value proxy.
+
+4. **Staking is a bond, not a pure fee.** Novelty failure returns stake in full. Stake is
+   at risk only if refutation passes novelty but is successfully challenged. This design
+   discourages spam without penalizing genuine but unsuccessful refutation attempts.
+
+5. **Mode-3 is escalation, not universal jury.** Formal Mode-2 refutations proceed through
+   staking + novelty + challenge mechanics. Mode-3 anomaly-triggered auditor panel activates
+   only on: centrality spike, citation cluster anomaly, new-agent heavy-citation pattern, or
+   formal challenge against a novelty decision. Not every refutation goes through a jury.
+
+6. **Aesthetic/subjective nodes are a separate lane (CDL-059).** CDL-059 ratifies a
+   diversity-maximizing aesthetic panel for Register 2 expressive content — orthogonal to
+   Mode-2 Popperian truth-claim governance. Do not route aesthetic/normative/subjective
+   nodes through Mode-2. `normative: true` flag opts a node OUT of Popperian evaluation.
+
+7. **CDL-V7 vs CDL-083 Q4:** CDL-V7 = admissibility gate (can this decomposition be
+   challenged?). CDL-083 Q4 = attribution on upheld refutation (REUSE_ATTRIBUTION_RATE=0.20
+   to refuting_agent_id from epoch mint; caller-filters upheld events). The Phase 1351a
+   amendment uses CDL-083 Q4 for ILC settlement residual routing, NOT CDL-V7.
+
+8. **CDL-049:** bounded-existential claim form alignment. The popperian_gate_runtime.py
+   `_ADMISSIBLE_CLAIM_FORMS` set should use `bounded_existential` (not bare `existential`).
+   Phase 417 identified this as a MODERATE finding; CDL-049 was the fix vehicle (ratified
+   Phase 427). Verify `popperian_gate_runtime.py` uses `bounded_existential` before drafting
+   any Mode-2 prompts.
+
+**Runtime tokens already in codebase:**
+
+```
+EPISTEMIC_RUNTIME_PART2_VERSION = "epistemic_refutation_novelty_reuse_runtime_478.v0.1"
+EPISTEMIC_PART1_DEPENDENCY = "epistemic_node_submission_runtime_477.v0.1"
+CDL_V7_RUNTIME_VERSION = "cdl_v7_popperian_gate_runtime_398.v0.1"
+CDL_V7_DEPENDENCY = "cdl_v7_popperian_gate_398.v0.1"
+SUBMISSION_STAKE_AMOUNT_TBD = "submission_stake_amount_tbd"
+REFUTATION_STAKE_AMOUNT_TBD = "refutation_stake_amount_tbd"
+REUSE_ATTRIBUTION_RATE = Decimal("0.20")  # CDL-081 / CDL-083 Q4
+HCON02_QUORUM_FLOOR = Decimal("0.50")
+HCON02_QUORUM_MINIMUM_VOTERS = 2
+```
+
+**What this window must NOT do:**
+
+- Do not claim local ECU refutation incentives are globally governed by CDL-029
+- Do not treat C(R) traversal as a universal network runtime obligation
+- Do not invoke Mode-3 panel for every Mode-2 refutation
+- Do not conflate CDL-V7 admissibility with CDL-083 Q4 upheld-refutation attribution
+- Do not build a single "refutation economy" as if it is one graph-wide economic machine
+- Do not activate public settlement-grade refutation reward claim paths without the applicable
+  Phase 1389 / Window 1391-1398 gate; do not use this section to alter Phase 1366/1368
+  ordinary production-minting activation boundaries
+
+---
+
+### Window 1399+ — Sovereign Substrate and Long-Range Lanes
 
 **Purpose:** Post-public-RC completion. All items below have genuine reasons for
 post-public-RC sequencing: they require live network data for calibration, depend
@@ -856,7 +1042,7 @@ on a post-soft-RC milestone gate, or are multi-window governance tracks. Items
 previously listed here that had existing prior work (CDL-043/044, CDL-057,
 CDL-006/009, reputation.py H11, ADR-0028 production wiring) have been moved to
 concrete phases in Windows 1343–1368 or 1369–1390. Phase assignments for Window
-1391+ items will be made when Window 1390 closure handoff is done.
+1399+ items will be made when Window 1398 closure handoff is done.
 
 | Lane | CDL/ADR | Description | Notes |
 |------|---------|-------------|-------|
@@ -934,14 +1120,16 @@ The final Phase 1341 publication blockers are:
 - `public_path_p2p_sidecar_serving_not_activated`
 - `wallet_ecu_ilc_value_path_not_activated`
 
-Window 1343+ is not open. Window 1343+ sequence lock required before next phase
-assignment.
+At Phase 1342 closure, Window 1343+ was not yet open and required a sequence
+lock before the next phase assignment. Window 1343-1368 later opened via Phase
+1343; later windows remain closed until their own sequence-lock phases execute.
 
 ```text
 forward_phase_windows_post_1342_three_window_structure_finalized_2026_05_14
 window_1343_1368_soft_rc_gate_phase_1366
 window_1369_1390_public_claimability_gate_phase_1389
-window_1391_plus_genuine_deferrals_only
+window_1391_1398_mode_2_refutation_adjudication_and_settlement
+window_1399_plus_genuine_deferrals_only
 cdl_088_opening_routed_window_1369_1390_phase_1374
 identity_bootstrap_adr_cdl_routed_window_1369_1390_phases_1370_1373
 agent_birth_attestation_spec_routed_window_1369_1390_phase_1370

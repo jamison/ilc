@@ -11,21 +11,32 @@ from ilc_core.epoch import (
     ALLOCATION_FRACTION_TOTAL,
     AUDITOR_ALLOCATION_FRACTION,
     AUDITOR_REWARD_POOL_LABEL,
+    CDL_029_AMENDMENT_PHASE_1351A_TOKEN,
     CDL_029_ALLOCATION_DISTRIBUTOR_RUNTIME_TOKEN,
     CDL_029_DEPENDENCY,
+    CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN,
     CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN,
+    CDL_083_UPHELD_REFUTATION_RECIPIENTS_PRIMARY_DUST_ROUTE_TOKEN,
     GENESIS_OVERHEAD_ALLOCATION_FRACTION,
+    GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN,
     GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN,
     GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN,
     GENESIS_OVERHEAD_POOL_LABEL,
+    GENESIS_RESIDUAL_ROUTE,
     NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN,
     PERFORMER_ALLOCATION_FRACTION,
+    PERFORMER_POOL_FALLBACK_DUST_ROUTE_TOKEN,
+    PERFORMER_POOL_RESIDUAL_ROUTE,
     PERFORMER_REWARD_POOL_LABEL,
+    POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN,
+    PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN,
     PRODUCTION_ALLOCATION_DISTRIBUTION_ACTIVATION_TOKEN,
+    PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN,
     PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
     SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN,
     THETA_HARD_CONTINUITY_FRACTION,
     THETA_HARD_ILC,
+    UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE,
     build_allocation_distribution_quote,
     require_cdl_029_allocation_fractions,
     require_production_allocation_distribution_activation,
@@ -78,6 +89,31 @@ def test_phase_1347_constants_bind_cdl_029_and_default_off_state() -> None:
     assert CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN == (
         "cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor"
     )
+    assert CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN == (
+        "cdl_029_post_theta_hard_dust_routing_amendment_phase_1351a.v0.1"
+    )
+    assert CDL_029_AMENDMENT_PHASE_1351A_TOKEN == "cdl_029_amendment_phase_1351a"
+    assert CDL_083_UPHELD_REFUTATION_RECIPIENTS_PRIMARY_DUST_ROUTE_TOKEN == (
+        "cdl_083_upheld_refutation_recipients_primary_dust_route_phase_1351a"
+    )
+    assert PERFORMER_POOL_FALLBACK_DUST_ROUTE_TOKEN == (
+        "performer_pool_fallback_dust_route_phase_1351a"
+    )
+    assert POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN == (
+        "post_theta_hard_routing_implemented_phase_1351a"
+    )
+    assert PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN == (
+        "pre_theta_hard_routing_unchanged_phase_1351a"
+    )
+    assert PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN == (
+        "production_distribution_not_activated_phase_1351a"
+    )
+    assert GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN == (
+        "genesis_overhead_base_cap_blocked_full_tranche_deferred_phase_1351a"
+    )
+    assert GENESIS_RESIDUAL_ROUTE == "genesis"
+    assert UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE == "upheld_refutation_recipients"
+    assert PERFORMER_POOL_RESIDUAL_ROUTE == "performer_pool"
     assert SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN == (
         "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1"
     )
@@ -102,15 +138,17 @@ def test_allocation_distributor_routes_80_15_5() -> None:
     assert quote.genesis_overhead_pool_ilc == Decimal("5.000000000")
     assert quote.rounding_residual_to_genesis_overhead_ilc == Decimal("0E-9")
     assert quote.genesis_overhead_cap_blocked is False
-    assert quote.post_theta_hard_routing_token == (
-        CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN
-    )
+    assert quote.rounding_residual_to_upheld_refutation_recipients_ilc == Decimal("0")
+    assert quote.rounding_residual_to_performer_pool_ilc == Decimal("0")
+    assert quote.residual_route == GENESIS_RESIDUAL_ROUTE
+    assert quote.upheld_refutation_recipients == ()
+    assert quote.post_theta_hard_routing_token == PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN
     assert quote.split_quote_boundary_token == SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN
     assert quote.performer_reward_pool_label == PERFORMER_REWARD_POOL_LABEL
     assert quote.auditor_reward_pool_label == AUDITOR_REWARD_POOL_LABEL
     assert quote.genesis_overhead_pool_label == GENESIS_OVERHEAD_POOL_LABEL
     assert quote.production_allocation_distribution_activated is False
-    assert quote.decision_token == PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN
+    assert quote.decision_token == PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN
 
 
 def test_allocation_distributor_quantizes_down_and_preserves_total() -> None:
@@ -128,10 +166,10 @@ def test_allocation_distributor_quantizes_down_and_preserves_total() -> None:
     ) == quote.total_epoch_allocation_ilc
 
 
-def test_allocation_distributor_fails_closed_when_genesis_cap_blocked() -> None:
+def test_allocation_distributor_fails_closed_on_nonzero_genesis_base_when_cap_blocked() -> None:
     with pytest.raises(
         ValueError,
-        match=GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN,
+        match=GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN,
     ):
         build_allocation_distribution_quote(
             issuance_epoch=0,
@@ -141,7 +179,7 @@ def test_allocation_distributor_fails_closed_when_genesis_cap_blocked() -> None:
 
     with pytest.raises(
         ValueError,
-        match=GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN,
+        match=GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN,
     ):
         build_allocation_distribution_quote(
             issuance_epoch=0,
@@ -157,6 +195,58 @@ def test_allocation_distributor_fails_closed_when_genesis_cap_blocked() -> None:
 
     assert zero_quote.genesis_overhead_cap_blocked is True
     assert zero_quote.genesis_overhead_pool_ilc == Decimal("0E-9")
+    assert zero_quote.residual_route == PERFORMER_POOL_RESIDUAL_ROUTE
+    assert zero_quote.post_theta_hard_routing_token == POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN
+
+
+def test_post_theta_hard_residual_routes_to_upheld_refutation_recipients() -> None:
+    quote = build_allocation_distribution_quote(
+        issuance_epoch=9,
+        total_epoch_allocation_ilc="0.000000009",
+        genesis_overhead_cap_blocked=True,
+        upheld_refutation_recipients=["agent:z", "agent:a"],
+    )
+
+    assert quote.total_epoch_allocation_ilc == Decimal("0.000000009")
+    assert quote.performer_reward_pool_ilc == Decimal("0.000000007")
+    assert quote.auditor_reward_pool_ilc == Decimal("0.000000001")
+    assert quote.genesis_overhead_pool_ilc == Decimal("0E-9")
+    assert quote.rounding_residual_to_genesis_overhead_ilc == Decimal("0")
+    assert quote.rounding_residual_to_upheld_refutation_recipients_ilc == Decimal("0.000000001")
+    assert quote.rounding_residual_to_performer_pool_ilc == Decimal("0")
+    assert quote.residual_route == UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE
+    assert quote.upheld_refutation_recipients == ("agent:a", "agent:z")
+    assert quote.post_theta_hard_routing_token == POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN
+    assert quote.decision_token == PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN
+    assert (
+        quote.performer_reward_pool_ilc
+        + quote.auditor_reward_pool_ilc
+        + quote.genesis_overhead_pool_ilc
+        + quote.rounding_residual_to_upheld_refutation_recipients_ilc
+    ) == quote.total_epoch_allocation_ilc
+
+
+def test_post_theta_hard_residual_falls_back_to_performer_pool() -> None:
+    quote = build_allocation_distribution_quote(
+        issuance_epoch=9,
+        total_epoch_allocation_ilc="0.000000009",
+        genesis_overhead_cap_blocked=True,
+        upheld_refutation_recipients=[],
+    )
+
+    assert quote.performer_reward_pool_ilc == Decimal("0.000000008")
+    assert quote.auditor_reward_pool_ilc == Decimal("0.000000001")
+    assert quote.genesis_overhead_pool_ilc == Decimal("0E-9")
+    assert quote.rounding_residual_to_genesis_overhead_ilc == Decimal("0")
+    assert quote.rounding_residual_to_upheld_refutation_recipients_ilc == Decimal("0")
+    assert quote.rounding_residual_to_performer_pool_ilc == Decimal("0.000000001")
+    assert quote.residual_route == PERFORMER_POOL_RESIDUAL_ROUTE
+    assert quote.upheld_refutation_recipients == ()
+    assert (
+        quote.performer_reward_pool_ilc
+        + quote.auditor_reward_pool_ilc
+        + quote.genesis_overhead_pool_ilc
+    ) == quote.total_epoch_allocation_ilc
 
 
 def test_allocation_fraction_guards_enforce_sum_and_exact_cdl_029_values() -> None:
@@ -186,6 +276,27 @@ def test_exact_numeric_guards_reject_float_bool_negative_and_non_finite() -> Non
         build_allocation_distribution_quote(0, "10", performer_fraction=0.8)
     with pytest.raises(ValueError, match="genesis_overhead_cap_blocked_must_be_bool"):
         build_allocation_distribution_quote(0, "10", genesis_overhead_cap_blocked=1)
+    with pytest.raises(ValueError, match="upheld_refutation_recipients_must_be_list_or_none"):
+        build_allocation_distribution_quote(
+            0,
+            "0.000000009",
+            genesis_overhead_cap_blocked=True,
+            upheld_refutation_recipients=("agent:a",),  # type: ignore[arg-type]
+        )
+    with pytest.raises(ValueError, match="upheld_refutation_recipient_must_be_non_empty_string"):
+        build_allocation_distribution_quote(
+            0,
+            "0.000000009",
+            genesis_overhead_cap_blocked=True,
+            upheld_refutation_recipients=[""],
+        )
+    with pytest.raises(ValueError, match="upheld_refutation_recipients_must_be_unique"):
+        build_allocation_distribution_quote(
+            0,
+            "0.000000009",
+            genesis_overhead_cap_blocked=True,
+            upheld_refutation_recipients=["agent:a", "agent:a"],
+        )
 
 
 def test_production_allocation_distribution_guard_remains_closed() -> None:
@@ -213,14 +324,16 @@ def test_canonical_record_uses_strings_for_decimal_amounts() -> None:
     assert record["performer_reward_pool_ilc"] == "80"
     assert record["auditor_reward_pool_ilc"] == "15"
     assert record["genesis_overhead_pool_ilc"] == "5"
-    assert record["post_theta_hard_routing_token"] == (
-        CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN
-    )
+    assert record["rounding_residual_to_upheld_refutation_recipients_ilc"] == "0"
+    assert record["rounding_residual_to_performer_pool_ilc"] == "0"
+    assert record["residual_route"] == GENESIS_RESIDUAL_ROUTE
+    assert record["upheld_refutation_recipients"] == []
+    assert record["post_theta_hard_routing_token"] == PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN
     assert record["split_quote_boundary_token"] == (
         SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN
     )
     assert record["production_allocation_distribution_activated"] is False
-    assert record["decision_token"] == PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN
+    assert record["decision_token"] == PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN
 
 
 def test_evidence_prompt_frontier_and_walkthrough_record_tokens() -> None:
