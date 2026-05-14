@@ -564,6 +564,16 @@ emission quotes and cap-clamped budgets only. It does not write ledger state,
 produce mint instructions, activate production mining, or mark soft-RC
 eligibility.
 
+**Phase 1345 Fix1 addendum:** Phase 1345 Fix1 repairs CDL-025/026/027 register
+prose and hardens the Phase 1368 prompt. `C_max = 25,920,000 ILC` is recorded
+without ambiguity as the Platonic Year/precessional-cycle constant (25,920 ×
+1,000) carried through Phase 273/275/298/600 evidence and locked as
+`C_MAX_ILC = Decimal("25920000")` in the Phase 1345 runtime. Phase 1368 is the
+concrete production-minting activation-or-defer point: it may implement the
+private soft-RC runtime gate only if Phase 1366 records `soft_rc_eligible=true`
+and Phase 1367 records `phase_1366_blockers_addressed_or_clean_pass_phase_1367`;
+otherwise it must record `production_minting_activation_deferred_phase_1368`.
+
 ### Three-window post-1342 structure
 
 ```
@@ -619,7 +629,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1365 | Capsule refresh (v5.57) + coherence report | — | NON-SENSITIVE after sequence lock |
 | 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; explicit `GO Phase 1366` required |
 | 1367 | Reserved for pre-gate fix pass | — | SENSITIVE |
-| 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; carries forward anything still open into Window 1369 sequence lock | — | SENSITIVE |
+| 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | SENSITIVE; must record exactly one of `production_minting_activated_phase_1368` or `production_minting_activation_deferred_phase_1368` |
 
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
@@ -627,6 +637,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 - Phase 1355 fires the genesis intervention brake more than once in any test context
 - Phase 1358 routes live ECU transfers through `ilc_consensus/` without explicit activation authorization
 - Any phase implies "soft RC mining is now live" without Phase 1366 recording `soft_rc_eligible=true`
+- Phase 1368 records production minting activation without both Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass evidence
 - HIGH-001 log-redaction not complete and a phase makes any sender-privacy claim
 
 ---
