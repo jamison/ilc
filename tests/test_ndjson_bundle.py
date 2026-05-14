@@ -257,6 +257,20 @@ class TestStreamingLarge:
         with pytest.raises(ValueError, match="max_records"):
             read_bundle(buf, max_records=1)
 
+    def test_read_bundle_rejects_materialized_record_count_above_limit(self):
+        payloads = [{"message": "a"}, {"message": "b"}]
+        records = []
+        for i, payload in enumerate(payloads, 1):
+            record, _ = make_signed_record(payload, seq=i)
+            records.append(record)
+
+        buf = io.StringIO()
+        write_bundle(buf, header=make_bundle_header(), records=records)
+        buf.seek(0)
+
+        with pytest.raises(ValueError, match="max_materialized_records"):
+            read_bundle(buf, max_materialized_records=1)
+
     def test_read_bundle_rejects_total_bytes_above_limit(self):
         record, _ = make_signed_record({"message": "oversized"}, seq=1)
         buf = io.StringIO()

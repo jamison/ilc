@@ -30,6 +30,7 @@ from __future__ import annotations
 import json
 import os
 import ssl
+import collections
 import threading
 import time
 import urllib.error
@@ -49,6 +50,7 @@ CDL_078_DEPENDENCY = "cdl_078_relay_incentive_constitutional_lock.v0.1"
 WANT_HAVE_PATH = "/fetch/want-have"
 WANT_BLOCK_PATH = "/fetch/want-block"
 WANT_BLOCK_RATE_LIMIT_PER_MINUTE = 10
+FETCH_RATE_LIMITER_MAX_BUCKETS = 10_000
 _FETCH_TIMEOUT_SECONDS = 5.0
 _MAX_RESPONSE_BYTES = 1_048_576  # 1 MiB — OOM guard on inbound
 _FETCH_TLS_INSECURE_ENV = "ILC_D2D_INSECURE_SKIP_TLS_VERIFY"
@@ -141,17 +143,27 @@ class FetchRateLimiter:
     Thread-safe via a single re-entrant lock.
     """
 
-    def __init__(self, limit_per_minute: int = WANT_BLOCK_RATE_LIMIT_PER_MINUTE) -> None:
-        if limit_per_minute < 1:
+    def __init__(
+        self,
+        limit_per_minute: int = WANT_BLOCK_RATE_LIMIT_PER_MINUTE,
+        max_buckets: int = FETCH_RATE_LIMITER_MAX_BUCKETS,
+    ) -> None:
+        if not isinstance(limit_per_minute, int) or isinstance(limit_per_minute, bool) or limit_per_minute < 1:
             raise ValueError("limit_per_minute must be >= 1")
+        if not isinstance(max_buckets, int) or isinstance(max_buckets, bool) or max_buckets < 1:
+            raise ValueError("max_buckets must be >= 1")
         self._limit = limit_per_minute
-        self._buckets: dict[str, tuple[int, float]] = {}  # requester_id → (count, window_start)
+        self._max_buckets = max_buckets
+        self._buckets: collections.OrderedDict[str, tuple[int, float]] = collections.OrderedDict()
         self._lock = threading.Lock()
 
     def check_and_consume(self, requester_id: str) -> bool:
         """Return True if the request is allowed; False if rate limit exceeded."""
+        if not isinstance(requester_id, str) or requester_id == "":
+            return False
         now = time.monotonic()
         with self._lock:
+            self._prune_expired(now)
             count, window_start = self._buckets.get(requester_id, (0, now))
             if now - window_start >= 60.0:
                 # New window — reset count
@@ -159,9 +171,25 @@ class FetchRateLimiter:
                 window_start = now
             if count >= self._limit:
                 self._buckets[requester_id] = (count, window_start)
+                self._buckets.move_to_end(requester_id)
                 return False
             self._buckets[requester_id] = (count + 1, window_start)
+            self._buckets.move_to_end(requester_id)
+            self._prune_if_needed()
             return True
+
+    def _prune_expired(self, now: float) -> None:
+        expired = [
+            requester_id
+            for requester_id, (_count, window_start) in self._buckets.items()
+            if now - window_start >= 60.0
+        ]
+        for requester_id in expired:
+            self._buckets.pop(requester_id, None)
+
+    def _prune_if_needed(self) -> None:
+        while len(self._buckets) > self._max_buckets:
+            self._buckets.popitem(last=False)
 
 
 # ---------------------------------------------------------------------------

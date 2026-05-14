@@ -110,6 +110,31 @@ def test_gossip_request_path_rejects_empty_string() -> None:
         raise AssertionError('expected ValueError for empty message type')
 
 
+def test_gossip_type_header_rejects_oversized_value() -> None:
+    oversized = 'g' * (gossip_transport.MAX_GOSSIP_TYPE_BYTES + 1)
+    try:
+        gossip_transport.gossip_request_path(oversized)
+    except ValueError as exc:
+        assert str(exc) == 'gossip_message_type_too_long'
+    else:
+        raise AssertionError('expected ValueError for oversized gossip type')
+
+    headers = gossip_transport.build_gossip_headers(
+        gossip_type='centrality_delta',
+        channel='cid:9f7a8c42bb11ddee99aa22cc33ff44aa',
+        epoch=7,
+        hop_count=1,
+        signature='sig-abc',
+    )
+    headers['ILC-Gossip-Type'] = oversized
+    try:
+        gossip_transport.validate_gossip_headers(headers)
+    except ValueError as exc:
+        assert str(exc) == 'gossip_message_type_too_long'
+    else:
+        raise AssertionError('expected ValueError for oversized gossip type header')
+
+
 def test_build_gossip_headers_returns_exact_required_header_set() -> None:
     headers = gossip_transport.build_gossip_headers(
         gossip_type='centrality_delta',

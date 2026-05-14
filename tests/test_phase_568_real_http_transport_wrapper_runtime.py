@@ -480,6 +480,35 @@ def test_loopback_rejects_oversized_payload_before_buffering(tmp_path: Path) -> 
         server_transport.stop()
 
 
+def test_loopback_rejects_chunked_transfer_encoding_without_body_drain(tmp_path: Path) -> None:
+    server_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'server'))
+    server_transport.start()
+    try:
+        headers = gossip_transport.build_gossip_headers(
+            gossip_type='centrality_delta',
+            channel='cid:1234567890abcdef',
+            epoch=7,
+            hop_count=1,
+            signature='sig-7',
+        )
+        headers['Transfer-Encoding'] = 'chunked'
+        response = _raw_tls_post(
+            port=int(server_transport.state['bound_port']),
+            path=gossip_transport.gossip_request_path('centrality_delta'),
+            headers=headers,
+            body_prefix=b'5\r\nhello',
+            timeout=1.0,
+        )
+        assert b' 400 ' in response.splitlines()[0]
+        assert server_transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+        assert (
+            server_transport.state['event_log'][-1]['token']
+            == runtime.TRANSFER_ENCODING_UNSUPPORTED_TOKEN
+        )
+    finally:
+        server_transport.stop()
+
+
 def test_phase_568_main_commit_scope_is_exact() -> None:
     commit_ref = _resolve_phase_568_commit_ref()
     changed_paths = _changed_paths_for_commit(commit_ref)
