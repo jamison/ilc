@@ -11,14 +11,14 @@ from ilc_core.epoch import (
     FEE_BURN_10_PERCENT_GENESIS_POOL_TOKEN,
     FEE_BURN_RATIO,
     FEE_BURN_SPLIT_RUNTIME_VERSION,
-    FEE_COLLECTION_ACTIVATION_TOKEN,
     GENESIS_BURN_POOL_LABEL,
     NO_DIRECT_FEE_BURN_STUB_FOUND_TOKEN,
     POST_CDL_028_REMAINING_FEE_POOL_LABEL,
-    PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN,
+    PRODUCTION_FEE_BURN_ACTIVATION_TOKEN,
+    PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN,
     build_fee_burn_split_quote,
     require_cdl_028_fee_burn_ratio,
-    require_production_fee_collection_activation,
+    require_production_fee_burn_activation,
 )
 
 
@@ -43,8 +43,9 @@ def test_phase_1346_constants_bind_cdl_028_and_default_off_state() -> None:
     assert CDL_028_DEPENDENCY == "cdl_028_fee_burn_split_ratified_phase_274.v0.1"
     assert CDL_028_FEE_BURN_SPLIT_RUNTIME_TOKEN == "cdl_028_fee_burn_split_runtime_phase_1346.v0.1"
     assert FEE_BURN_10_PERCENT_GENESIS_POOL_TOKEN == "fee_burn_10_percent_genesis_pool_phase_1346"
-    assert PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN == (
-        "production_fee_collection_not_activated_phase_1346"
+    assert PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN == "fee_burn_not_activated_phase_1346"
+    assert PRODUCTION_FEE_BURN_ACTIVATION_TOKEN == (
+        "phase_1366_soft_rc_eligible_true_value_path_activation_required"
     )
     assert NO_DIRECT_FEE_BURN_STUB_FOUND_TOKEN == "no_direct_fee_burn_stub_found_phase_1346"
     assert FEE_BURN_RATIO == Decimal("0.10")
@@ -62,8 +63,8 @@ def test_fee_burn_split_routes_10_percent_to_genesis_burn_pool() -> None:
     assert quote.remaining_fee_pool_ilc == Decimal("111.105000000")
     assert quote.genesis_burn_pool_ilc + quote.remaining_fee_pool_ilc == quote.total_epoch_fees_ilc
     assert quote.genesis_burn_pool_label == GENESIS_BURN_POOL_LABEL
-    assert quote.production_fee_collection_activated is False
-    assert quote.decision_token == PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN
+    assert quote.production_fee_burn_activated is False
+    assert quote.decision_token == PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN
 
 
 def test_fee_burn_split_quantizes_down_without_losing_total_balance() -> None:
@@ -98,11 +99,11 @@ def test_exact_numeric_guards_reject_float_bool_negative_and_non_finite() -> Non
         build_fee_burn_split_quote(0, Decimal("-0.000000001"))
 
 
-def test_production_fee_collection_guard_remains_closed() -> None:
-    with pytest.raises(ValueError, match=PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN):
-        require_production_fee_collection_activation(None)
-    with pytest.raises(ValueError, match="production_fee_collection_activation_not_implemented_phase_1346"):
-        require_production_fee_collection_activation(FEE_COLLECTION_ACTIVATION_TOKEN)
+def test_production_fee_burn_guard_remains_closed() -> None:
+    with pytest.raises(ValueError, match=PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN):
+        require_production_fee_burn_activation(None)
+    with pytest.raises(ValueError, match="production_fee_burn_activation_not_implemented_phase_1346"):
+        require_production_fee_burn_activation(PRODUCTION_FEE_BURN_ACTIVATION_TOKEN)
 
 
 def test_canonical_record_uses_strings_for_decimal_amounts() -> None:
@@ -113,8 +114,8 @@ def test_canonical_record_uses_strings_for_decimal_amounts() -> None:
     assert record["total_epoch_fees_ilc"] == "100"
     assert record["genesis_burn_pool_ilc"] == "10"
     assert record["remaining_fee_pool_ilc"] == "90"
-    assert record["production_fee_collection_activated"] is False
-    assert record["decision_token"] == PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN
+    assert record["production_fee_burn_activated"] is False
+    assert record["decision_token"] == PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN
 
 
 def test_evidence_prompt_frontier_and_walkthrough_record_tokens() -> None:
@@ -131,7 +132,8 @@ def test_evidence_prompt_frontier_and_walkthrough_record_tokens() -> None:
     for token in (
         "cdl_028_fee_burn_split_runtime_phase_1346.v0.1",
         "fee_burn_10_percent_genesis_pool_phase_1346",
-        "production_fee_collection_not_activated_phase_1346",
+        "fee_burn_not_activated_phase_1346",
+        "phase_1366_soft_rc_eligible_true_value_path_activation_required",
         "no_direct_fee_burn_stub_found_phase_1346",
     ):
         assert token in prompt
