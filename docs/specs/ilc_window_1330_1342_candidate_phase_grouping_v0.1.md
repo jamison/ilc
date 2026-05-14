@@ -417,12 +417,53 @@ P2P/fetch/sidecar serving, Genesis mutation/signing, identity artifacts, wallet
 actions, ECU minting, ILC settlement, or public confidential coordination
 serving.
 
-Phase 1335 remains the next sensitive gate and requires explicit
-key/envelope-generation authority:
+Phase 1335 executed after explicit key/envelope-generation authority:
 
 ```text
 GO Phase 1335: authorize release key/envelope generation
 ```
+
+## 9.2 Phase 1335 Execution Addendum
+
+Phase 1335 executed after explicit `GO Phase 1335: authorize release
+key/envelope generation` and closed the release key/envelope generation gate as
+safe metadata plus external operator-local secret custody:
+
+```text
+release_keys_envelopes_generation_gate_phase_1335.v0.1
+release_key_generation_requires_explicit_authority_phase_1335
+release_envelope_generation_requires_explicit_authority_phase_1335
+secret_material_not_written_to_repo_phase_1335
+phase_1336_public_claimability_api_gate_next
+public_rc_remains_blocked_after_phase_1335
+```
+
+Gate result: `keys_envelopes_generated`. Phase 1335 validated the Phase 1334
+unsigned source-release artifact and generated or reused an Ed25519 release key
+through the operator-local external keyfile provider boundary. Checked-in
+metadata records only public identifiers, public key bytes, public key
+fingerprint, release-key registration metadata, and unsigned release-envelope
+metadata.
+
+| Record | Value |
+|--------|-------|
+| Release key id | `ilc-release-key-phase-1335-rc-candidate` |
+| Public key fingerprint | `sha256:4f2ca127b54872cff4010cfce3d0fbef617ca92cc97d8ef09be13bdfe3dea056` |
+| Registration hash | `sha256:3a6b45b3cc45929c09930688c556e682c3166404d85201a6daae1ed31d20c1df` |
+| Envelope id | `ilc-release-envelope-phase-1335-unsigned-candidate` |
+| Envelope hash | `sha256:4b26d11a5ee9008d41ad8449907b359f241f8d8a7863940694aef639222ed135` |
+| Signing status | `unsigned` |
+
+No private key bytes, private key path, private key fingerprint, seed,
+mnemonic, KMS secret, HSM credential, or operator credential value is recorded
+in git. Phase 1335 does not authorize release signing, signature production,
+v0.2 signing, public repository publication, public package publication, public
+RC publication/claim, public serving, Genesis/Atlas mutation/signing, identity
+artifacts, wallet actions, ECU minting, ILC settlement, CDL mutation, or
+CDL-088 opening.
+
+Phase 1336 is now the next sensitive gate and requires explicit future
+`GO Phase 1336`.
 
 ## 10. Graph Delta
 
@@ -434,6 +475,9 @@ graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1332_g
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1333_g8_source_allowlist_export_execution_gate.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1334_g8_release_artifact_production_gate.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1335_g8_release_keys_envelopes_generation_gate.md -> planning/frontier
+graph_delta=load_bearing_artifact_added:docs/specs/ilc_release_keys_envelopes_generation_gate_1335_v0.1.json -> release-key-envelope-metadata
+graph_delta=load_bearing_code_added:ilc_core/rc/release_keys_envelopes_generation_gate.py -> rc/release-key-envelope-generation-gate
+graph_delta=support_tests_added:tests/test_phase_1335_release_keys_envelopes_generation_gate.py -> validation
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1336_g8_public_claimability_api_activation_or_carry_forward_gate.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1337_g8_public_path_sidecar_activation_or_exclusion_gate.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1338_g8_wallet_ecu_ilc_activation_or_carry_forward_gate.md -> planning/frontier

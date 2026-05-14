@@ -1,0 +1,159 @@
+{
+  "authority": {
+    "authority_token": "explicit_phase_1335_release_key_envelope_generation_authority",
+    "explicit_authority_present": true,
+    "release_envelope_generation_requires_explicit_authority": true,
+    "release_key_generation_requires_explicit_authority": true,
+    "required_authority_phrase": "GO Phase 1335: authorize release key/envelope generation"
+  },
+  "blockers": [],
+  "canon_dependency": {
+    "adr_0036_path": "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md",
+    "adr_0037_path": "docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md",
+    "blockers": [],
+    "dependency_result": "pass",
+    "genesis_root_envelope_hash": "sha256:ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c"
+  },
+  "graph_delta": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_release_keys_envelopes_generation_gate_1335_v0.1.json -> release-key-envelope-metadata",
+  "manifest_hash": "12dd3a77f15f77e05d2b9bb0b7528f4f012e564d85c5fad5352985c399ca71eb",
+  "mode": "release_keys_envelopes_generation_gate",
+  "next_phase": "phase_1336_public_claimability_api_gate_next",
+  "non_authorization_floor": {
+    "cdl_088_opening_authorized": false,
+    "cdl_mutation_authorized": false,
+    "genesis_atlas_mutation_or_signing_authorized": false,
+    "identity_artifact_creation_authorized": false,
+    "identity_bootstrap_authorized": false,
+    "public_claimability_api_authorized": false,
+    "public_confidential_coordination_serving_authorized": false,
+    "public_p2p_fetch_sidecar_serving_authorized": false,
+    "public_package_publication_authorized": false,
+    "public_rc_publication_claim_authorized": false,
+    "public_repository_publication_authorized": false,
+    "release_envelope_generation_authorized_by_go_phase_1335": true,
+    "release_key_generation_authorized_by_go_phase_1335": true,
+    "release_signature_production_authorized": false,
+    "release_signing_authorized": false,
+    "source_publication_authorized": false,
+    "v0_2_signing_authorized": false,
+    "wallet_ecu_ilc_activation_authorized": false
+  },
+  "non_claims": [
+    "release_key_generation_authorized_by_go_phase_1335",
+    "release_envelope_generation_authorized_by_go_phase_1335",
+    "secret_material_not_written_to_repo_phase_1335",
+    "no_source_publication",
+    "no_public_repository_publication",
+    "no_public_package_publication",
+    "no_release_signing",
+    "no_release_signature_production",
+    "no_v0_2_signing",
+    "no_public_rc_publication_or_claim",
+    "no_public_claimability_api_activation",
+    "no_public_p2p_fetch_sidecar_serving_activation",
+    "no_public_confidential_coordination_serving",
+    "no_identity_bootstrap",
+    "no_identity_artifacts",
+    "no_wallet_ecu_ilc_activation",
+    "no_genesis_atlas_mutation_or_signing",
+    "no_cdl_mutation_or_cdl_088_opening",
+    "public_rc_remains_blocked_after_phase_1335"
+  ],
+  "phase": 1335,
+  "phase_1334_dependency": {
+    "artifact_path_recorded": "out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz",
+    "blockers": [],
+    "dependency_result": "pass",
+    "manifest_hash": "b234d5316dfe8bd2c491f5416cbbc9cb83af42cf43f1a54e149618389e60d2b3",
+    "phase_1334_result": "artifacts_produced_unsigned",
+    "phase_1334_verdict": "release_artifact_production_gate_verdict=pass",
+    "recomputed_source_release_artifact_hash": "sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+    "report_path": "docs/specs/ilc_release_artifact_production_gate_1334_v0.1.json",
+    "source_release_artifact_hash": "sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+    "source_release_artifact_id": "ilc-artifact:source-release-tarball@phase-1334",
+    "source_release_artifact_type": "source_release_tarball"
+  },
+  "public_key_metadata": {
+    "algorithm_id": "Ed25519/COSE-EdDSA(-8)",
+    "cose_kid": "ilc-release-key-phase-1335-rc-candidate",
+    "cose_kid_policy": "opaque_identifier_not_raw_public_key_or_direct_hash",
+    "public_key_fingerprint": "sha256:4f2ca127b54872cff4010cfce3d0fbef617ca92cc97d8ef09be13bdfe3dea056",
+    "public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "release_key_id": "ilc-release-key-phase-1335-rc-candidate"
+  },
+  "public_rc_remains_blocked": true,
+  "release_envelope_candidate": {
+    "artifact_manifests": [
+      {
+        "artifact_id": "ilc-artifact:source-release-tarball@phase-1334",
+        "artifact_type": "source_release_tarball",
+        "canonical_hash": "sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+        "produced_phase": 1334,
+        "signing_status": "unsigned"
+      }
+    ],
+    "atlas_g_status": {
+      "atlas_g_009_signing_root_envelope_prep_closed": false,
+      "atlas_g_010_v0_2_signing_ceremony_closed": false,
+      "signed_genesis_atlas_v0_2_claimed": false
+    },
+    "envelope_hash": "sha256:4b26d11a5ee9008d41ad8449907b359f241f8d8a7863940694aef639222ed135",
+    "genesis_root_envelope_hash": "sha256:ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c",
+    "phase_1334_manifest_hash": "b234d5316dfe8bd2c491f5416cbbc9cb83af42cf43f1a54e149618389e60d2b3",
+    "prior_release_envelope_hash": null,
+    "produced_phase": 1335,
+    "record_kind": "release_envelope_candidate",
+    "release_envelope_id": "ilc-release-envelope-phase-1335-unsigned-candidate",
+    "release_key_id": "ilc-release-key-phase-1335-rc-candidate",
+    "release_key_registration_hash": "sha256:3a6b45b3cc45929c09930688c556e682c3166404d85201a6daae1ed31d20c1df",
+    "schema_version": "release_keys_envelopes_generation_gate_phase_1335.v0.1",
+    "signature_produced": false,
+    "signing_status": "unsigned"
+  },
+  "release_key_registration": {
+    "algorithm_id": "Ed25519/COSE-EdDSA(-8)",
+    "binding_status": "pending_future_genesis_root_or_successor_envelope_reference",
+    "cose_kid": "ilc-release-key-phase-1335-rc-candidate",
+    "cose_kid_policy": "opaque_identifier_not_raw_public_key_or_direct_hash",
+    "genesis_root_envelope_hash": "sha256:ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c",
+    "key_scope": [
+      "source_release_tarball",
+      "release_envelope",
+      "verification_bundle"
+    ],
+    "produced_phase": 1335,
+    "public_key_fingerprint": "sha256:4f2ca127b54872cff4010cfce3d0fbef617ca92cc97d8ef09be13bdfe3dea056",
+    "public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "record_kind": "release_key_registration_candidate",
+    "registration_hash": "sha256:3a6b45b3cc45929c09930688c556e682c3166404d85201a6daae1ed31d20c1df",
+    "release_key_id": "ilc-release-key-phase-1335-rc-candidate",
+    "schema_version": "release_keys_envelopes_generation_gate_phase_1335.v0.1",
+    "signature_produced": false,
+    "signing_status": "unsigned",
+    "validity_window": {
+      "activation_phase": 1335,
+      "not_after": "deferred_until_future_ceremony_or_supersession",
+      "not_before": "phase_1335_generation_gate"
+    }
+  },
+  "release_keys_envelopes_generation_gate_verdict": "release_keys_envelopes_generation_gate_verdict=pass",
+  "required_tokens": [
+    "release_keys_envelopes_generation_gate_phase_1335.v0.1",
+    "release_key_generation_requires_explicit_authority_phase_1335",
+    "release_envelope_generation_requires_explicit_authority_phase_1335",
+    "secret_material_not_written_to_repo_phase_1335",
+    "phase_1336_public_claimability_api_gate_next",
+    "public_rc_remains_blocked_after_phase_1335"
+  ],
+  "result": "keys_envelopes_generated",
+  "schema_version": "release_keys_envelopes_generation_gate_phase_1335.v0.1",
+  "secret_material_boundary": {
+    "external_operator_local_keyfile_used": true,
+    "private_material_fingerprint_recorded_in_repo": false,
+    "private_material_path_recorded_in_repo": false,
+    "secret_material_printed_to_stdout": false,
+    "secret_material_storage_scope": "external_operator_local_keyfile_not_repo",
+    "secret_material_written_to_repo": false,
+    "token": "secret_material_not_written_to_repo_phase_1335"
+  }
+}
