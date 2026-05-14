@@ -15,9 +15,9 @@ from pathlib import Path
 
 
 FILENAME_RE = re.compile(
-    r"^antigravity_prompt__phase_(?P<phase>\d+)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
+    r"^antigravity_prompt__phase_(?P<phase>\d+[a-z]?)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
 )
-H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+)-G(?P<group>\d+)\b", re.IGNORECASE)
+H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+[a-z]?)-G(?P<group>\d+)\b", re.IGNORECASE)
 HEADING_RE = re.compile(r"^#{2,3}\s+(.+?)\s*$")
 UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR = 1249
 UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
@@ -130,7 +130,8 @@ def validate(path: Path) -> list[str]:
     if "STATUS.md" not in text:
         errors.append("missing_reference:STATUS.md")
 
-    if int(expected_phase) >= UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR:
+    expected_phase_number = int(re.match(r"\d+", expected_phase).group(0))
+    if expected_phase_number >= UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR:
         for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
             if section not in text:
                 errors.append(f"missing_unknown_unknown_discovery_section:{section}")
