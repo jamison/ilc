@@ -19,6 +19,7 @@ from .cose_sign1 import (
     COSE_ALG_EDDSA,
 )
 from .cbor_canonical import (
+    MAX_CANONICAL_CBOR_INPUT_BYTES,
     cbor_dumps_canonical,
     cbor_loads,
     validate_canonical_cbor_bytes,
@@ -34,9 +35,9 @@ __all__ = [
     "COSE_HDR_ALG",
     "COSE_HDR_KID",
     "COSE_ALG_EDDSA",
+    "MAX_CANONICAL_CBOR_INPUT_BYTES",
     "cbor_dumps_canonical",
     "cbor_loads",
     "validate_canonical_cbor_bytes",
     "is_canonical_cbor",
 ]
-

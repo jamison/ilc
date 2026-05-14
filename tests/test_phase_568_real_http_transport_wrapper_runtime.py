@@ -101,6 +101,7 @@ def _config(tmp_path: Path, *, transport_kind: str = runtime.TRANSPORT_KIND_HTTP
         tls_cert_path=cert_path,
         tls_key_path=key_path,
         verify_peer_tls=False,
+        allow_private_peer_endpoints_for_tests=True,
     )
 
 

@@ -276,7 +276,27 @@ Phase 1332 confirmed that `test_code_health.py` still fails on non-sim runtime
 hotspots and that private-address endpoint denial plus CBOR pre-load size caps
 remain open Fix4 blockers before Phase 1333.
 
-### Deferred to Fix4 / Phase 1332 enumeration
+Phase 1332 Fix4 subsequently closed the six pre-Phase 1333 Fix4 blockers:
+
+```text
+phase_1332_fix4_pre_phase_1333_hardening.v0.1
+private_address_endpoint_denial_phase_1332_fix4
+cbor_preload_size_cap_phase_1332_fix4
+package_profile_integrity_split_phase_1332_fix4
+atlas_g_006_gate_split_phase_1332_fix4
+source_allowlist_export_rehearsal_split_phase_1332_fix4
+transport_principal_admission_params_dataclass_phase_1332_fix4
+phase_1333_source_allowlist_export_execution_gate_unblocked_after_fix4
+public_rc_remains_blocked_after_phase_1332_fix4
+```
+
+Phase 1333 remains sensitive and still requires explicit future `GO Phase 1333`.
+Fix4 did not execute source export, produce a clean public tree, publish source,
+produce release artifacts, generate release keys/envelopes/signing material,
+sign, activate public serving, mutate Genesis/Atlas, mutate CDLs, activate
+wallet/economics paths, or claim public RC.
+
+### Phase 1332 Enumeration and Fix4 Closure
 
 | ID | Finding | File:line | Target |
 |----|---------|-----------|--------|
@@ -290,18 +310,18 @@ remain open Fix4 blockers before Phase 1333.
 | LOW-4 | CCSS-004 error token omits received `record_kind` in detail string | `confidential_coordination_gossip_policy.py:545` | Low priority; fix-in-place alongside any CCSS-004 touch |
 | LOW-5 | CCSS-001 test mutates `_MAX_CANONICAL_JSON_BYTES` via try/finally not `monkeypatch` | `tests/test_phase_1324_ccss_001_*.py:337` | Fix-in-place alongside any CCSS-001 test touch |
 | LOW-2 | CCSS-004 test uses path-relative `Path("ilc_core/...")` not repo-root-anchored path | `tests/test_phase_1327_ccss_004_*.py:287` | Fix-in-place alongside any CCSS-004 test touch |
-| — | Private-address endpoint denial (SSRF via internal network targets) | `ilc_core/network/` HTTP clients | Phase 1332 enumeration → Fix4 before Phase 1333 |
-| — | CBOR pre-load size cap missing before `cbor2.loads` | `ilc_core/crypto/cbor_canonical.py:35` | Phase 1332 enumeration → Fix4 before Phase 1333 |
+| — | Private-address endpoint denial (SSRF via internal network targets) | `ilc_core/network/` HTTP clients | CLOSED by Phase 1332 Fix4 |
+| — | CBOR pre-load size cap missing before `cbor2.loads` | `ilc_core/crypto/cbor_canonical.py:35` | CLOSED by Phase 1332 Fix4 |
 
-### Deferred to Fix4 (must land before Phase 1333)
+### Phase 1332 Fix4 Closures
 
 Network hardening items confirmed by Phase 1332 enumeration. Fix3 closed H6/H7/H8/H9.
-The following remain open:
+Fix4 closed the following before Phase 1333:
 
 | ID | Finding | File:line | Note |
 |----|---------|-----------|------|
-| — | Private-address SSRF denial on outbound HTTP (TOCTOU on IP range) | `ilc_core/network/` HTTP clients | Fix4 required before any phase making real outbound network calls |
-| — | CBOR pre-load size cap | `ilc_core/crypto/cbor_canonical.py:35` | Fix4 |
+| — | Private-address SSRF denial on outbound HTTP (TOCTOU on IP range) | `ilc_core/network/` HTTP clients | CLOSED by `validate_peer_endpoint()` and `PeerManager` default-private denial; test/private opt-in remains explicit |
+| — | CBOR pre-load size cap | `ilc_core/crypto/cbor_canonical.py:35` | CLOSED by `MAX_CANONICAL_CBOR_INPUT_BYTES` guard before `cbor2.loads` |
 
 ### Code health — `test_code_health.py` failures (2026-05-14)
 
@@ -317,12 +337,12 @@ Thresholds: `MAX_FUNC_LINES=150`, `MAX_CLASS_LINES=300`, `MAX_NESTING_DEPTH=4`, 
 
 | Lines/Depth/Args | Function or Class | File | Priority |
 |-----------------|-------------------|------|---------|
-| 415 lines | `_validate_package_profile_integrity()` | `sidecars/registry_manifest.py:632` | HIGH — pre-release gate function; unreviewable at 415 lines; split into per-lane validators |
-| 218 lines | `build_atlas_g_006_public_rc_graph_reachability_gate()` | `rc/atlas_graph_discipline.py:1111` | HIGH — release-gate function |
+| 415 lines → 32 lines | `_validate_package_profile_integrity()` | `sidecars/registry_manifest.py` | CLOSED by Phase 1332 Fix4 per-lane validator split |
+| 218 lines → 55 lines | `build_atlas_g_006_public_rc_graph_reachability_gate()` | `rc/atlas_graph_discipline.py` | CLOSED by Phase 1332 Fix4 helper split |
 | 209 lines | `validate_public_fetch_p2p_readiness_candidate()` | `sidecars/public_fetch_p2p_readiness.py:283` | MED |
-| 199 lines | `build_source_allowlist_export_rehearsal()` | `rc/source_allowlist_export_rehearsal.py:136` | MED — directly used by Phase 1333 |
+| 199 lines → 103 lines | `build_source_allowlist_export_rehearsal()` | `rc/source_allowlist_export_rehearsal.py` | CLOSED by Phase 1332 Fix4 helper split |
 | 198 lines | `_build_parser()` | `cli/main.py:910` | LOW — argparse builder; split into subcommand groups or add to EXCLUDE_PATHS |
-| 185 lines / **28 args** | `build_transport_principal_admission_decision()` | `sidecars/transport_principal_admission.py:249` | HIGH — 28 positional args is a structural issue; introduce a dataclass/params struct |
+| 185 lines / **28 args** → 135 lines / 2 args | `build_transport_principal_admission_decision()` | `sidecars/transport_principal_admission.py` | CLOSED by Phase 1332 Fix4 `TransportPrincipalAdmissionParams` dataclass and helper split |
 | 183 lines | `_normalize_claimability_proof()` | `sidecars/claimability_receipt_verifier.py:770` | MED |
 | 182 lines | `validate_transport_principal_public_path_preflight()` | `network/d2d/transport_principal_public_path_preflight.py:316` | MED |
 | 168 lines | `_normalize_conversion_receipt()` | `sidecars/claimability_receipt_verifier.py:600` | MED |
@@ -338,8 +358,8 @@ Thresholds: `MAX_FUNC_LINES=150`, `MAX_CLASS_LINES=300`, `MAX_NESTING_DEPTH=4`, 
 #### Suggested routing for code health
 
 1. **Resolved before Phase 1332:** `ilc_core/sim/` is now in `EXCLUDE_DIRS` in `test_code_health.py`, so simulation-only harness bulk no longer dominates the code-health report.
-2. **Fix4 (alongside network hardening):** Address `build_transport_principal_admission_decision()` 28-arg issue (introduce `TransportPrincipalAdmissionParams` dataclass). Address `_validate_package_profile_integrity()` 415-line split.
-3. **Phase 1332 disposition:** Record remaining code-health violations with file:line and assign fix-before-1333 or carry-forward per item. The two release-gate functions (`build_atlas_g_006_*` and `build_source_allowlist_export_rehearsal`) should be fixed before Phase 1333 since Phase 1332 is auditing exactly those code paths.
+2. **Resolved by Phase 1332 Fix4:** `build_transport_principal_admission_decision()` now uses `TransportPrincipalAdmissionParams`; `_validate_package_profile_integrity()` is split into per-lane validators; `build_atlas_g_006_*` and `build_source_allowlist_export_rehearsal()` are split below the release-gate function threshold.
+3. **Carry-forward after Fix4:** Remaining code-health violations outside the six Fix4 items remain recorded for future lane-specific fixes.
 
 ```text
 deferred_issues_register_recorded_window_1330_1342_2026_05_14
@@ -348,6 +368,8 @@ code_health_test_sim_exclusion_resolved_phase_1332
 code_health_refactor_candidates_recorded_window_1330_1342
 reputation_py_rewrite_deferred_window_1343_plus
 fix4_private_address_denial_cbor_size_cap_required_before_phase_1333
+phase_1332_fix4_pre_phase_1333_hardening.v0.1
+phase_1333_source_allowlist_export_execution_gate_unblocked_after_fix4
 ```
 
 ## 10. Graph Delta

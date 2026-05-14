@@ -7,6 +7,8 @@ constitutional authorization for any discovery mechanism beyond static v1.
 
 from __future__ import annotations
 
+import ipaddress
+import socket
 from urllib.parse import urlsplit
 
 from ilc_core.network.d2d.gossip_transport import (
@@ -20,6 +22,9 @@ CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
 PEER_DISCOVERY_MODE = "static_v1"
 MAX_PEERS = 16
+PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
+_LOCALHOST_NAMES = frozenset({"localhost", "localhost.localdomain"})
+_NONSTANDARD_IPV4_LITERAL_CHARS = frozenset("0123456789abcdefABCDEFxX.")
 
 if _GOSSIP_TRANSPORT_CHECK != GOSSIP_TRANSPORT_DEPENDENCY:
     import json as _json, sys as _sys
@@ -49,7 +54,38 @@ if PEER_DISCOVERY_MODE != "static_v1":
     )
 
 
-def validate_peer_endpoint(endpoint: str) -> str:
+def reject_private_address_literal(hostname: str) -> None:
+    normalized = hostname.strip().lower().rstrip(".")
+    if normalized in _LOCALHOST_NAMES or normalized.endswith(".localhost"):
+        raise ValueError(PRIVATE_PEER_ENDPOINT_TOKEN)
+    try:
+        address = ipaddress.ip_address(normalized)
+    except ValueError:
+        address = _parse_nonstandard_ipv4_literal(normalized)
+        if address is None:
+            return
+    if not address.is_global:
+        raise ValueError(PRIVATE_PEER_ENDPOINT_TOKEN)
+
+
+def _parse_nonstandard_ipv4_literal(hostname: str) -> ipaddress.IPv4Address | None:
+    """Catch inet_aton-compatible IPv4 shorthands before outbound clients do."""
+
+    if not hostname or not any(char.isdigit() for char in hostname):
+        return None
+    if any(char not in _NONSTANDARD_IPV4_LITERAL_CHARS for char in hostname):
+        return None
+    try:
+        return ipaddress.IPv4Address(socket.inet_aton(hostname))
+    except OSError:
+        return None
+
+
+def validate_peer_endpoint(
+    endpoint: str,
+    *,
+    allow_private_address_literals: bool = False,
+) -> str:
     if not isinstance(endpoint, str) or not endpoint.strip():
         raise ValueError('peer_endpoint_invalid_format')
     normalized = endpoint.strip()
@@ -65,12 +101,16 @@ def validate_peer_endpoint(endpoint: str) -> str:
         raise ValueError('peer_endpoint_invalid_format')
     if not parts.hostname:
         raise ValueError('peer_endpoint_invalid_format')
+    hostname = parts.hostname.lower()
+    if not allow_private_address_literals:
+        reject_private_address_literal(hostname)
     try:
         port = parts.port
     except ValueError as exc:
         raise ValueError('peer_endpoint_invalid_format') from exc
 
-    normalized_endpoint = f'https://{parts.hostname.lower()}'
+    formatted_host = f"[{hostname}]" if ":" in hostname else hostname
+    normalized_endpoint = f'https://{formatted_host}'
     if port is not None:
         normalized_endpoint += f':{port}'
     return normalized_endpoint

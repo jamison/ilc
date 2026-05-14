@@ -1108,20 +1108,11 @@ def _atlas_g_006_component_anchor_pairs(
     return pairs
 
 
-def build_atlas_g_006_public_rc_graph_reachability_gate(
-    *,
-    profile_id: str = ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE,
-    reachability_manifest: dict[str, Any] | None = None,
-    bridge_artifact: dict[str, Any] | None = None,
+def _atlas_g_006_prepare_context(
+    profile_id: str,
+    reachability_manifest: dict[str, Any] | None,
+    bridge_artifact: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Build the Phase 1271 ATLAS-G-006 graph gate verdict.
-
-    The gate is evidence-only. A passing graph verdict means the selected
-    public-RC package profile is reachable from the required graph anchors; it
-    does not authorize a release artifact, Genesis Atlas mutation, signing, or
-    public RC claim.
-    """
-
     if profile_id not in PROFILE_REACHABILITY_MANIFEST_IDS:
         raise ValueError("atlas_g_006_profile_not_in_scope")
     manifest = (
@@ -1131,46 +1122,60 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
     )
     bridge = build_atlas_g_004_005_artifact() if bridge_artifact is None else bridge_artifact
     dependency_bridge = bridge.get("dependency_graph_bridge", {})
-    classification = bridge.get("high_authority_source_classification", {})
     package_profile = manifest.get("package_profile", {})
-
-    components = set(package_profile.get("components", []))
-    surfaces = set(package_profile.get("package_surfaces", []))
-    reachable_anchors = set(manifest.get("reachable_anchor_set", []))
-    manifest_profile_id = manifest.get("profile_id")
-    package_profile_id = package_profile.get("profile_id")
-    edge_types = set(dependency_bridge.get("edge_types", []))
-    profile_component_pairs = _atlas_g_006_edge_pairs(
-        dependency_bridge, edge_type="package_profile_requires_component"
-    )
-    profile_surface_pairs = _atlas_g_006_edge_pairs(
-        dependency_bridge, edge_type="package_profile_exports_surface"
-    )
-    component_anchor_pairs = _atlas_g_006_component_anchor_pairs(dependency_bridge)
     source_prefix = f"package_profile:{profile_id}"
+    required_components = ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS
+    required_surfaces = ATLAS_G_006_REQUIRED_PROFILE_SURFACES
+    return {
+        "bridge": bridge,
+        "classification": bridge.get("high_authority_source_classification", {}),
+        "component_anchor_pairs": _atlas_g_006_component_anchor_pairs(dependency_bridge),
+        "components": set(package_profile.get("components", [])),
+        "dependency_bridge": dependency_bridge,
+        "edge_types": set(dependency_bridge.get("edge_types", [])),
+        "manifest": manifest,
+        "manifest_profile_id": manifest.get("profile_id"),
+        "package_profile": package_profile,
+        "package_profile_id": package_profile.get("profile_id"),
+        "profile_component_pairs": _atlas_g_006_edge_pairs(
+            dependency_bridge,
+            edge_type="package_profile_requires_component",
+        ),
+        "profile_id": profile_id,
+        "profile_surface_pairs": _atlas_g_006_edge_pairs(
+            dependency_bridge,
+            edge_type="package_profile_exports_surface",
+        ),
+        "reachable_anchors": set(manifest.get("reachable_anchor_set", [])),
+        "required_anchor_pairs": {
+            (component, anchor)
+            for component in sorted(required_components)
+            for anchor in GRAPH_ANCHORS
+            if anchor in _COMPONENT_REACHABILITY.get(component, {}).get("anchors", ())
+        },
+        "required_component_pairs": {
+            (source_prefix, f"package_component:{component}")
+            for component in sorted(required_components)
+        },
+        "required_surface_pairs": {
+            (source_prefix, f"package_surface:{surface}") for surface in sorted(required_surfaces)
+        },
+        "surfaces": set(package_profile.get("package_surfaces", [])),
+    }
 
-    required_component_pairs = {
-        (source_prefix, f"package_component:{component}")
-        for component in sorted(ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS)
-    }
-    required_surface_pairs = {
-        (source_prefix, f"package_surface:{surface}")
-        for surface in sorted(ATLAS_G_006_REQUIRED_PROFILE_SURFACES)
-    }
-    required_anchor_pairs = {
-        (component, anchor)
-        for component in sorted(ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS)
-        for anchor in GRAPH_ANCHORS
-        if anchor in _COMPONENT_REACHABILITY.get(component, {}).get("anchors", ())
-    }
 
-    checks = [
+def _atlas_g_006_profile_checks(ctx: dict[str, Any]) -> list[dict[str, Any]]:
+    manifest = ctx["manifest"]
+    package_profile = ctx["package_profile"]
+    profile_id = ctx["profile_id"]
+    return [
         _atlas_g_006_check(
             check_id="manifest_profile_matches_selected_profile",
-            passed=manifest_profile_id == profile_id and package_profile_id == profile_id,
+            passed=ctx["manifest_profile_id"] == profile_id
+            and ctx["package_profile_id"] == profile_id,
             evidence={
-                "manifest_profile_id": manifest_profile_id,
-                "package_profile_id": package_profile_id,
+                "manifest_profile_id": ctx["manifest_profile_id"],
+                "package_profile_id": ctx["package_profile_id"],
                 "selected_profile_id": profile_id,
             },
             fail_reason="atlas_g_006_manifest_profile_mismatch",
@@ -1209,18 +1214,23 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
             },
             fail_reason="atlas_g_006_reachability_manifest_not_pass",
         ),
+    ]
+
+
+def _atlas_g_006_reachability_checks(ctx: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
         _atlas_g_006_check(
             check_id="all_required_anchors_reachable",
-            passed=GRAPH_ANCHORS <= reachable_anchors,
-            evidence={"reachable_anchor_set": sorted(reachable_anchors)},
+            passed=GRAPH_ANCHORS <= ctx["reachable_anchors"],
+            evidence={"reachable_anchor_set": sorted(ctx["reachable_anchors"])},
             fail_reason="atlas_g_006_required_anchor_missing",
         ),
         _atlas_g_006_check(
             check_id="required_components_present",
-            passed=ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS <= components,
+            passed=ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS <= ctx["components"],
             evidence={
                 "missing_components": sorted(
-                    ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS - components
+                    ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS - ctx["components"]
                 ),
                 "required_components": sorted(ATLAS_G_006_REQUIRED_PROFILE_COMPONENTS),
             },
@@ -1228,13 +1238,23 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
         ),
         _atlas_g_006_check(
             check_id="required_surfaces_present",
-            passed=ATLAS_G_006_REQUIRED_PROFILE_SURFACES <= surfaces,
+            passed=ATLAS_G_006_REQUIRED_PROFILE_SURFACES <= ctx["surfaces"],
             evidence={
-                "missing_surfaces": sorted(ATLAS_G_006_REQUIRED_PROFILE_SURFACES - surfaces),
+                "missing_surfaces": sorted(
+                    ATLAS_G_006_REQUIRED_PROFILE_SURFACES - ctx["surfaces"]
+                ),
                 "required_surfaces": sorted(ATLAS_G_006_REQUIRED_PROFILE_SURFACES),
             },
             fail_reason="atlas_g_006_required_profile_surface_missing",
         ),
+    ]
+
+
+def _atlas_g_006_dependency_checks(ctx: dict[str, Any]) -> list[dict[str, Any]]:
+    bridge = ctx["bridge"]
+    dependency_bridge = ctx["dependency_bridge"]
+    classification = ctx["classification"]
+    return [
         _atlas_g_006_check(
             check_id="dependency_bridge_passes",
             passed=bridge.get("status") == "pass"
@@ -1249,47 +1269,75 @@ def build_atlas_g_006_public_rc_graph_reachability_gate(
         ),
         _atlas_g_006_check(
             check_id="required_dependency_edge_types_present",
-            passed=ATLAS_G_006_REQUIRED_EDGE_TYPES <= edge_types,
+            passed=ATLAS_G_006_REQUIRED_EDGE_TYPES <= ctx["edge_types"],
             evidence={
                 "edge_count": dependency_bridge.get("edge_count"),
-                "missing_edge_types": sorted(ATLAS_G_006_REQUIRED_EDGE_TYPES - edge_types),
+                "missing_edge_types": sorted(ATLAS_G_006_REQUIRED_EDGE_TYPES - ctx["edge_types"]),
                 "required_edge_types": sorted(ATLAS_G_006_REQUIRED_EDGE_TYPES),
             },
             fail_reason="atlas_g_006_required_dependency_edge_type_missing",
         ),
         _atlas_g_006_check(
             check_id="required_profile_component_edges_present",
-            passed=required_component_pairs <= profile_component_pairs,
+            passed=ctx["required_component_pairs"] <= ctx["profile_component_pairs"],
             evidence={
                 "missing_component_edges": sorted(
                     f"{source}->{target}"
-                    for source, target in required_component_pairs - profile_component_pairs
+                    for source, target in (
+                        ctx["required_component_pairs"] - ctx["profile_component_pairs"]
+                    )
                 )
             },
             fail_reason="atlas_g_006_required_profile_component_edge_missing",
         ),
         _atlas_g_006_check(
             check_id="required_profile_surface_edges_present",
-            passed=required_surface_pairs <= profile_surface_pairs,
+            passed=ctx["required_surface_pairs"] <= ctx["profile_surface_pairs"],
             evidence={
                 "missing_surface_edges": sorted(
                     f"{source}->{target}"
-                    for source, target in required_surface_pairs - profile_surface_pairs
+                    for source, target in (
+                        ctx["required_surface_pairs"] - ctx["profile_surface_pairs"]
+                    )
                 )
             },
             fail_reason="atlas_g_006_required_profile_surface_edge_missing",
         ),
         _atlas_g_006_check(
             check_id="required_component_anchor_edges_present",
-            passed=required_anchor_pairs <= component_anchor_pairs,
+            passed=ctx["required_anchor_pairs"] <= ctx["component_anchor_pairs"],
             evidence={
                 "missing_component_anchor_edges": sorted(
                     f"{component}->{anchor}"
-                    for component, anchor in required_anchor_pairs - component_anchor_pairs
+                    for component, anchor in (
+                        ctx["required_anchor_pairs"] - ctx["component_anchor_pairs"]
+                    )
                 )
             },
             fail_reason="atlas_g_006_required_component_anchor_edge_missing",
         ),
+    ]
+
+
+def build_atlas_g_006_public_rc_graph_reachability_gate(
+    *,
+    profile_id: str = ATLAS_G_006_SELECTED_PUBLIC_RC_PROFILE,
+    reachability_manifest: dict[str, Any] | None = None,
+    bridge_artifact: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the Phase 1271 ATLAS-G-006 graph gate verdict.
+
+    The gate is evidence-only. A passing graph verdict means the selected
+    public-RC package profile is reachable from the required graph anchors; it
+    does not authorize a release artifact, Genesis Atlas mutation, signing, or
+    public RC claim.
+    """
+
+    ctx = _atlas_g_006_prepare_context(profile_id, reachability_manifest, bridge_artifact)
+    checks = [
+        *_atlas_g_006_profile_checks(ctx),
+        *_atlas_g_006_reachability_checks(ctx),
+        *_atlas_g_006_dependency_checks(ctx),
     ]
     failing_checks = [check["check_id"] for check in checks if check["status"] != "pass"]
     status = "pass" if not failing_checks else "fail"
