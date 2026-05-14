@@ -1,0 +1,55 @@
+{
+  "add_before_signing_closed": [
+    "missing_decomposition_recipes",
+    "adr_0037_genesis_canonical_lineage_contract",
+    "cdl_v1_temporal_decay",
+    "cdl_v2_sybil_resistance",
+    "cdl_v3_quorum_diversity",
+    "cdl_v7_agent_decomposition",
+    "cdl_085_werner_phi_bound",
+    "reuse_attribution_rate_0_20",
+    "edge_mint_phi_bound_0_60"
+  ],
+  "artifacts": {
+    "diagnostic_json": {
+      "path": "out/genesis_compile_coverage_diagnostic_v0.2_candidate.json",
+      "sha256": "1e3195702a1b8df2f2a95e812eff2703af042e3f130a2b9d59d7aa6796582833"
+    },
+    "node_candidates": {
+      "path": "out/genesis_node_candidates_v0.2_candidate.json",
+      "sha256": "fa600e15e2b483b671d1f28982661872fdf9c9a232f8dcc90db0d21f6e4f3988"
+    },
+    "star_map": {
+      "path": "out/genesis_core_star_map_v0.2_candidate.json",
+      "sha256": "0cff65535aa53f145e834e32192cd3ed290024a6f9021431058d47e4fcc12bb2"
+    },
+    "star_map_index": {
+      "path": "out/genesis_core_star_map_index_v0.2_candidate.json",
+      "sha256": "187f314347aa5f183f2dd274da5a0b4362030da89c67505926aeff03899855b9"
+    }
+  },
+  "atlas_g_007_status": "atlas_g_007_candidate_regeneration_classified_phase_1339",
+  "atlas_g_008_status": "atlas_g_008_non_excisability_packet_classified_phase_1339",
+  "diagnostic": {
+    "authority_traceable_core_nodes": 49,
+    "authority_traceable_core_nodes_ratio": "1.000000",
+    "basis_reachable_core_nodes": 17,
+    "core_nodes_total": 49,
+    "missing_decomposition_recipe_count": 0,
+    "verdict": "PARTIAL_WITH_STRUCTURAL_GAPS"
+  },
+  "gate_result": "atlas_g_tail_finalized",
+  "graph_delta": "load_bearing_artifact_changed:out/genesis_core_star_map_v0.2_candidate.json -> genesis_atlas_v0_2_unsigned_candidate",
+  "non_authorizations": [
+    "no_cdl_mutation",
+    "no_genesis_v0_2_signing",
+    "no_release_signing",
+    "no_publication",
+    "no_public_claim",
+    "no_public_claimability_api_activation",
+    "no_wallet_ecu_ilc_value_path_activation"
+  ],
+  "phase": 1339,
+  "phase_1340_status": "unblocked_pending_explicit_go_phase_1340",
+  "token": "atlas_g_mutation_regeneration_finalization_phase_1339.v0.1"
+}
