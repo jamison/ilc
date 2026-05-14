@@ -1,8 +1,10 @@
 """Phase 1347 default-off CDL-029 split quote runtime.
 
 This module computes allocation quotes only. It does not implement full
-Genesis-tranche realization and intentionally does not import the float-based
-Genesis accrual governor.
+Genesis-tranche realization. Phase 1351a adds settlement-bound sub-quantum
+residual routing after theta_hard, but full post-cap Genesis-tranche routing
+remains fail-closed and intentionally does not import the float-based Genesis
+accrual governor.
 """
 
 from __future__ import annotations
@@ -42,6 +44,22 @@ GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN = (
 CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN = (
     "cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor"
 )
+CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN = (
+    "cdl_029_post_theta_hard_dust_routing_amendment_phase_1351a.v0.1"
+)
+CDL_029_AMENDMENT_PHASE_1351A_TOKEN = "cdl_029_amendment_phase_1351a"
+CDL_083_UPHELD_REFUTATION_RECIPIENTS_PRIMARY_DUST_ROUTE_TOKEN = (
+    "cdl_083_upheld_refutation_recipients_primary_dust_route_phase_1351a"
+)
+PERFORMER_POOL_FALLBACK_DUST_ROUTE_TOKEN = "performer_pool_fallback_dust_route_phase_1351a"
+POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN = "post_theta_hard_routing_implemented_phase_1351a"
+PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN = "pre_theta_hard_routing_unchanged_phase_1351a"
+PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN = (
+    "production_distribution_not_activated_phase_1351a"
+)
+GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN = (
+    "genesis_overhead_base_cap_blocked_full_tranche_deferred_phase_1351a"
+)
 SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN = (
     "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1"
 )
@@ -56,6 +74,9 @@ ALLOCATION_FRACTION_TOTAL = Decimal("1.00")
 PERFORMER_REWARD_POOL_LABEL = "performer_reward_pool"
 AUDITOR_REWARD_POOL_LABEL = "auditor_reward_pool"
 GENESIS_OVERHEAD_POOL_LABEL = "genesis_overhead_pool"
+UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE = "upheld_refutation_recipients"
+PERFORMER_POOL_RESIDUAL_ROUTE = "performer_pool"
+GENESIS_RESIDUAL_ROUTE = "genesis"
 
 
 @dataclass(frozen=True)
@@ -74,7 +95,11 @@ class EpochAllocationDistributionQuote:
     auditor_reward_pool_ilc: Decimal
     genesis_overhead_pool_ilc: Decimal
     rounding_residual_to_genesis_overhead_ilc: Decimal
+    rounding_residual_to_upheld_refutation_recipients_ilc: Decimal
+    rounding_residual_to_performer_pool_ilc: Decimal
     genesis_overhead_cap_blocked: bool
+    residual_route: str
+    upheld_refutation_recipients: tuple[str, ...]
     performer_reward_pool_label: str
     auditor_reward_pool_label: str
     genesis_overhead_pool_label: str
@@ -106,12 +131,20 @@ class EpochAllocationDistributionQuote:
             "rounding_residual_to_genesis_overhead_ilc": _decimal_to_string(
                 self.rounding_residual_to_genesis_overhead_ilc
             ),
+            "rounding_residual_to_performer_pool_ilc": _decimal_to_string(
+                self.rounding_residual_to_performer_pool_ilc
+            ),
+            "rounding_residual_to_upheld_refutation_recipients_ilc": _decimal_to_string(
+                self.rounding_residual_to_upheld_refutation_recipients_ilc
+            ),
             "runtime_version": self.runtime_version,
+            "residual_route": self.residual_route,
             "split_quote_boundary_token": self.split_quote_boundary_token,
             "theta_hard_continuity_fraction": _decimal_to_string(
                 self.theta_hard_continuity_fraction
             ),
             "total_epoch_allocation_ilc": _decimal_to_string(self.total_epoch_allocation_ilc),
+            "upheld_refutation_recipients": list(self.upheld_refutation_recipients),
             "validation_epoch_seconds": self.validation_epoch_seconds,
         }
 
@@ -140,6 +173,25 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
     if amount < Decimal("0"):
         raise ValueError(f"{field_name}_must_be_non_negative")
     return amount
+
+
+def _normalize_upheld_refutation_recipients(
+    upheld_refutation_recipients: list[str] | None,
+) -> tuple[str, ...]:
+    if upheld_refutation_recipients is None:
+        return ()
+    if not isinstance(upheld_refutation_recipients, list):
+        raise ValueError("upheld_refutation_recipients_must_be_list_or_none")
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for recipient in upheld_refutation_recipients:
+        if not isinstance(recipient, str) or not recipient:
+            raise ValueError("upheld_refutation_recipient_must_be_non_empty_string")
+        if recipient in seen:
+            raise ValueError("upheld_refutation_recipients_must_be_unique")
+        seen.add(recipient)
+        normalized.append(recipient)
+    return tuple(sorted(normalized))
 
 
 def _quantize_ilc(value: Decimal) -> Decimal:
@@ -183,9 +235,11 @@ def build_allocation_distribution_quote(
     auditor_fraction: Decimal | int | str = AUDITOR_ALLOCATION_FRACTION,
     genesis_overhead_fraction: Decimal | int | str = GENESIS_OVERHEAD_ALLOCATION_FRACTION,
     genesis_overhead_cap_blocked: bool = False,
+    upheld_refutation_recipients: list[str] | None = None,
 ) -> EpochAllocationDistributionQuote:
     epoch = _require_epoch_sequence(issuance_epoch)
     cap_blocked = _require_bool(genesis_overhead_cap_blocked, "genesis_overhead_cap_blocked")
+    refutation_recipients = _normalize_upheld_refutation_recipients(upheld_refutation_recipients)
     total_allocation = _quantize_ilc(
         _require_decimal_amount(total_epoch_allocation_ilc, "total_epoch_allocation_ilc")
     )
@@ -199,9 +253,24 @@ def build_allocation_distribution_quote(
     auditor_pool = _quantize_ilc(total_allocation * auditor)
     genesis_overhead_base = _quantize_ilc(total_allocation * genesis_overhead)
     rounding_residual = total_allocation - performer_pool - auditor_pool - genesis_overhead_base
-    if cap_blocked and (genesis_overhead_base != Decimal("0") or rounding_residual != Decimal("0")):
-        raise ValueError(GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN)
-    genesis_overhead_pool = genesis_overhead_base + rounding_residual
+    residual_to_genesis = Decimal("0")
+    residual_to_refutation_recipients = Decimal("0")
+    residual_to_performer = Decimal("0")
+    residual_route = GENESIS_RESIDUAL_ROUTE
+    if cap_blocked:
+        if genesis_overhead_base != Decimal("0"):
+            raise ValueError(GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN)
+        genesis_overhead_pool = Decimal("0")
+        if refutation_recipients:
+            residual_to_refutation_recipients = rounding_residual
+            residual_route = UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE
+        else:
+            residual_to_performer = rounding_residual
+            performer_pool += rounding_residual
+            residual_route = PERFORMER_POOL_RESIDUAL_ROUTE
+    else:
+        residual_to_genesis = rounding_residual
+        genesis_overhead_pool = genesis_overhead_base + rounding_residual
 
     return EpochAllocationDistributionQuote(
         runtime_version=ALLOCATION_DISTRIBUTOR_RUNTIME_VERSION,
@@ -217,15 +286,23 @@ def build_allocation_distribution_quote(
         performer_reward_pool_ilc=performer_pool,
         auditor_reward_pool_ilc=auditor_pool,
         genesis_overhead_pool_ilc=genesis_overhead_pool,
-        rounding_residual_to_genesis_overhead_ilc=rounding_residual,
+        rounding_residual_to_genesis_overhead_ilc=residual_to_genesis,
+        rounding_residual_to_upheld_refutation_recipients_ilc=residual_to_refutation_recipients,
+        rounding_residual_to_performer_pool_ilc=residual_to_performer,
         genesis_overhead_cap_blocked=cap_blocked,
+        residual_route=residual_route,
+        upheld_refutation_recipients=refutation_recipients,
         performer_reward_pool_label=PERFORMER_REWARD_POOL_LABEL,
         auditor_reward_pool_label=AUDITOR_REWARD_POOL_LABEL,
         genesis_overhead_pool_label=GENESIS_OVERHEAD_POOL_LABEL,
-        post_theta_hard_routing_token=CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN,
+        post_theta_hard_routing_token=(
+            POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN
+            if cap_blocked
+            else PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN
+        ),
         split_quote_boundary_token=SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN,
         production_allocation_distribution_activated=False,
-        decision_token=PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
+        decision_token=PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN,
     )
 
 
@@ -243,23 +320,34 @@ __all__ = [
     "ALLOCATION_FRACTION_TOTAL",
     "AUDITOR_ALLOCATION_FRACTION",
     "AUDITOR_REWARD_POOL_LABEL",
+    "CDL_029_AMENDMENT_PHASE_1351A_TOKEN",
     "CDL_029_ALLOCATION_DISTRIBUTOR_RUNTIME_TOKEN",
     "CDL_029_DEPENDENCY",
+    "CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN",
     "CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN",
+    "CDL_083_UPHELD_REFUTATION_RECIPIENTS_PRIMARY_DUST_ROUTE_TOKEN",
     "GENESIS_OVERHEAD_ALLOCATION_FRACTION",
+    "GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN",
     "GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN",
     "GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN",
     "GENESIS_OVERHEAD_POOL_LABEL",
+    "GENESIS_RESIDUAL_ROUTE",
     "NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN",
     "PERFORMER_ALLOCATION_FRACTION",
+    "PERFORMER_POOL_FALLBACK_DUST_ROUTE_TOKEN",
+    "PERFORMER_POOL_RESIDUAL_ROUTE",
     "PERFORMER_REWARD_POOL_LABEL",
     "PHASE_1345_EMISSION_RUNTIME_DEPENDENCY",
     "PHASE_1346_FEE_BURN_RUNTIME_DEPENDENCY",
+    "POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN",
+    "PRE_THETA_HARD_ROUTING_UNCHANGED_TOKEN",
     "PRODUCTION_ALLOCATION_DISTRIBUTION_ACTIVATION_TOKEN",
+    "PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN",
     "PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN",
     "SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN",
     "THETA_HARD_CONTINUITY_FRACTION",
     "THETA_HARD_ILC",
+    "UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE",
     "EpochAllocationDistributionQuote",
     "build_allocation_distribution_quote",
     "require_cdl_029_allocation_fractions",
