@@ -17,11 +17,11 @@ public_rc_remains_blocked_after_phase_1319
 
 - Result: `pass`.
 - Included files: `339`.
-- Excluded files: `8`.
+- Excluded files: `9`.
 - Exported marker hits: `0`.
 - Stripped-helper dependency hits: `0`.
 - Blocked ambiguities: `0`.
-- Expected manifest hash: `10f89228a029082cd23a147dbb87eeed828ced42337cc3e6808c38692d051e4d`.
+- Expected manifest hash: `2060155e147a58804b5bb84d2d647cb50fe01a192374f507aa9d1506598a0e1d`.
 
 ## Scanner Scope
 

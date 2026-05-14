@@ -290,11 +290,28 @@ phase_1333_source_allowlist_export_execution_gate_unblocked_after_fix4
 public_rc_remains_blocked_after_phase_1332_fix4
 ```
 
-Phase 1333 remains sensitive and still requires explicit future `GO Phase 1333`.
-Fix4 did not execute source export, produce a clean public tree, publish source,
-produce release artifacts, generate release keys/envelopes/signing material,
-sign, activate public serving, mutate Genesis/Atlas, mutate CDLs, activate
-wallet/economics paths, or claim public RC.
+Phase 1333 subsequently executed after explicit `GO Phase 1333` and records:
+
+```text
+source_allowlist_export_execution_gate_phase_1333.v0.1
+public_rc_exclude_marker_scan_required_phase_1333
+stripped_helper_import_scan_required_phase_1333
+legacy_untagged_review_required_phase_1333
+source_publication_not_authorized_phase_1333
+phase_1334_release_artifact_production_gate_next
+public_rc_remains_blocked_after_phase_1333
+```
+
+Phase 1333 produced a local clean materialized source export candidate at
+`out/public_rc/source_allowlist_export_phase_1333/tree` with binary verdict
+`source_allowlist_export_execution_gate_verdict=pass`, 329 files, zero
+`PUBLIC_RC_EXCLUDE` marker hits, zero stripped-helper dependency hits, zero
+legacy-review ambiguities, and zero dirty included files. The export excludes
+`ilc_core/sim/` as simulation harness material. Phase 1333 did not publish
+source, publish a public repository, publish a package, produce release
+artifacts, generate release keys/envelopes/signing material, sign, activate
+public serving, mutate Genesis/Atlas, mutate CDLs, activate wallet/economics
+paths, or claim public RC. Phase 1334 is next and remains sensitive.
 
 ### Phase 1332 Enumeration and Fix4 Closure
 

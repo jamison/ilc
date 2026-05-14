@@ -40,9 +40,9 @@
   "counts": {
     "blocked_ambiguities": 0,
     "dependency_hits": 0,
-    "excluded_files": 8,
+    "excluded_files": 9,
     "included_files": 339,
-    "legacy_untagged_default_excluded": 8,
+    "legacy_untagged_default_excluded": 9,
     "legacy_untagged_included_reviewed": 339,
     "legacy_untagged_review_required_blocked": 0,
     "marker_hits": 0
@@ -8549,6 +8549,13 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
+      "path": "ilc_core/rc/source_allowlist_export_execution_gate.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
       "path": "ilc_core/rc/source_allowlist_export_rehearsal.py",
       "review_required_before_public_export": true
     }
@@ -8560,7 +8567,7 @@
       "root": "docs/antigravity_tasks"
     },
     {
-      "count": 1337,
+      "count": 1338,
       "reason": "private_phase_walkthrough_history_default_excluded",
       "root": "docs/phases"
     },
@@ -8570,7 +8577,7 @@
       "root": "docs/research"
     },
     {
-      "count": 44102,
+      "count": 44760,
       "reason": "generated_mempalace_and_local_output_default_excluded",
       "root": "out"
     },
@@ -8595,7 +8602,7 @@
       "root": "ilc_consensus/target"
     },
     {
-      "count": 1246,
+      "count": 1247,
       "reason": "private_phase_regression_tests_default_excluded",
       "root": "tests"
     }
@@ -11346,6 +11353,10 @@
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
+        "path": "ilc_core/rc/source_allowlist_export_execution_gate.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
         "path": "ilc_core/rc/source_allowlist_export_rehearsal.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       }
@@ -12823,7 +12834,7 @@
   "rerun": {
     "command": "./.venv/bin/python -m ilc_core.rc.source_allowlist_export_rehearsal --json-out docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
     "determinism": "manifest_hash_must_match_expected_manifest_hash_on_unchanged_inputs",
-    "expected_manifest_hash": "10f89228a029082cd23a147dbb87eeed828ced42337cc3e6808c38692d051e4d"
+    "expected_manifest_hash": "2060155e147a58804b5bb84d2d647cb50fe01a192374f507aa9d1506598a0e1d"
   },
   "result": "pass",
   "scanner_limitations": [
