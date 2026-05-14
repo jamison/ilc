@@ -1,4 +1,9 @@
-"""Phase 1347 default-off CDL-029 allocation distributor quote runtime."""
+"""Phase 1347 default-off CDL-029 split quote runtime.
+
+This module computes allocation quotes only. It does not implement full
+Genesis-tranche realization and intentionally does not import the float-based
+Genesis accrual governor.
+"""
 
 from __future__ import annotations
 
@@ -30,11 +35,22 @@ PRODUCTION_ALLOCATION_DISTRIBUTION_ACTIVATION_TOKEN = (
     "phase_1366_soft_rc_eligible_true_value_path_activation_required"
 )
 NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN = "no_direct_allocation_stub_found_phase_1347"
+GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN = "genesis_overhead_cap_blocked_guard_phase_1347_fix1"
+GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN = (
+    "genesis_overhead_cap_blocked_dust_routing_deferred"
+)
+CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN = (
+    "cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor"
+)
+SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN = (
+    "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1"
+)
 
 PERFORMER_ALLOCATION_FRACTION = Decimal("0.80")
 AUDITOR_ALLOCATION_FRACTION = Decimal("0.15")
 GENESIS_OVERHEAD_ALLOCATION_FRACTION = Decimal("0.05")
-THETA_HARD_CONTINUITY_FRACTION = Decimal("0.05")
+THETA_HARD_ILC = Decimal("0.05")
+THETA_HARD_CONTINUITY_FRACTION = THETA_HARD_ILC
 ALLOCATION_FRACTION_TOTAL = Decimal("1.00")
 
 PERFORMER_REWARD_POOL_LABEL = "performer_reward_pool"
@@ -58,9 +74,12 @@ class EpochAllocationDistributionQuote:
     auditor_reward_pool_ilc: Decimal
     genesis_overhead_pool_ilc: Decimal
     rounding_residual_to_genesis_overhead_ilc: Decimal
+    genesis_overhead_cap_blocked: bool
     performer_reward_pool_label: str
     auditor_reward_pool_label: str
     genesis_overhead_pool_label: str
+    post_theta_hard_routing_token: str
+    split_quote_boundary_token: str
     production_allocation_distribution_activated: bool
     decision_token: str
 
@@ -72,6 +91,7 @@ class EpochAllocationDistributionQuote:
             "cdl_029_dependency": self.cdl_029_dependency,
             "decision_token": self.decision_token,
             "genesis_overhead_fraction": _decimal_to_string(self.genesis_overhead_fraction),
+            "genesis_overhead_cap_blocked": self.genesis_overhead_cap_blocked,
             "genesis_overhead_pool_ilc": _decimal_to_string(self.genesis_overhead_pool_ilc),
             "genesis_overhead_pool_label": self.genesis_overhead_pool_label,
             "issuance_epoch": self.issuance_epoch,
@@ -79,6 +99,7 @@ class EpochAllocationDistributionQuote:
             "performer_fraction": _decimal_to_string(self.performer_fraction),
             "performer_reward_pool_ilc": _decimal_to_string(self.performer_reward_pool_ilc),
             "performer_reward_pool_label": self.performer_reward_pool_label,
+            "post_theta_hard_routing_token": self.post_theta_hard_routing_token,
             "production_allocation_distribution_activated": (
                 self.production_allocation_distribution_activated
             ),
@@ -86,6 +107,7 @@ class EpochAllocationDistributionQuote:
                 self.rounding_residual_to_genesis_overhead_ilc
             ),
             "runtime_version": self.runtime_version,
+            "split_quote_boundary_token": self.split_quote_boundary_token,
             "theta_hard_continuity_fraction": _decimal_to_string(
                 self.theta_hard_continuity_fraction
             ),
@@ -97,6 +119,12 @@ class EpochAllocationDistributionQuote:
 def _require_epoch_sequence(value: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ValueError("allocation_issuance_epoch_must_be_non_negative_int")
+    return value
+
+
+def _require_bool(value: bool, field_name: str) -> bool:
+    if not isinstance(value, bool):
+        raise ValueError(f"{field_name}_must_be_bool")
     return value
 
 
@@ -154,8 +182,10 @@ def build_allocation_distribution_quote(
     performer_fraction: Decimal | int | str = PERFORMER_ALLOCATION_FRACTION,
     auditor_fraction: Decimal | int | str = AUDITOR_ALLOCATION_FRACTION,
     genesis_overhead_fraction: Decimal | int | str = GENESIS_OVERHEAD_ALLOCATION_FRACTION,
+    genesis_overhead_cap_blocked: bool = False,
 ) -> EpochAllocationDistributionQuote:
     epoch = _require_epoch_sequence(issuance_epoch)
+    cap_blocked = _require_bool(genesis_overhead_cap_blocked, "genesis_overhead_cap_blocked")
     total_allocation = _quantize_ilc(
         _require_decimal_amount(total_epoch_allocation_ilc, "total_epoch_allocation_ilc")
     )
@@ -169,6 +199,8 @@ def build_allocation_distribution_quote(
     auditor_pool = _quantize_ilc(total_allocation * auditor)
     genesis_overhead_base = _quantize_ilc(total_allocation * genesis_overhead)
     rounding_residual = total_allocation - performer_pool - auditor_pool - genesis_overhead_base
+    if cap_blocked and (genesis_overhead_base != Decimal("0") or rounding_residual != Decimal("0")):
+        raise ValueError(GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN)
     genesis_overhead_pool = genesis_overhead_base + rounding_residual
 
     return EpochAllocationDistributionQuote(
@@ -186,9 +218,12 @@ def build_allocation_distribution_quote(
         auditor_reward_pool_ilc=auditor_pool,
         genesis_overhead_pool_ilc=genesis_overhead_pool,
         rounding_residual_to_genesis_overhead_ilc=rounding_residual,
+        genesis_overhead_cap_blocked=cap_blocked,
         performer_reward_pool_label=PERFORMER_REWARD_POOL_LABEL,
         auditor_reward_pool_label=AUDITOR_REWARD_POOL_LABEL,
         genesis_overhead_pool_label=GENESIS_OVERHEAD_POOL_LABEL,
+        post_theta_hard_routing_token=CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN,
+        split_quote_boundary_token=SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN,
         production_allocation_distribution_activated=False,
         decision_token=PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
     )
@@ -210,7 +245,10 @@ __all__ = [
     "AUDITOR_REWARD_POOL_LABEL",
     "CDL_029_ALLOCATION_DISTRIBUTOR_RUNTIME_TOKEN",
     "CDL_029_DEPENDENCY",
+    "CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN",
     "GENESIS_OVERHEAD_ALLOCATION_FRACTION",
+    "GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN",
+    "GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN",
     "GENESIS_OVERHEAD_POOL_LABEL",
     "NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN",
     "PERFORMER_ALLOCATION_FRACTION",
@@ -219,7 +257,9 @@ __all__ = [
     "PHASE_1346_FEE_BURN_RUNTIME_DEPENDENCY",
     "PRODUCTION_ALLOCATION_DISTRIBUTION_ACTIVATION_TOKEN",
     "PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN",
+    "SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN",
     "THETA_HARD_CONTINUITY_FRACTION",
+    "THETA_HARD_ILC",
     "EpochAllocationDistributionQuote",
     "build_allocation_distribution_quote",
     "require_cdl_029_allocation_fractions",

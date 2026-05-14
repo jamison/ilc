@@ -13,14 +13,19 @@ from ilc_core.epoch import (
     AUDITOR_REWARD_POOL_LABEL,
     CDL_029_ALLOCATION_DISTRIBUTOR_RUNTIME_TOKEN,
     CDL_029_DEPENDENCY,
+    CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN,
     GENESIS_OVERHEAD_ALLOCATION_FRACTION,
+    GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN,
+    GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN,
     GENESIS_OVERHEAD_POOL_LABEL,
     NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN,
     PERFORMER_ALLOCATION_FRACTION,
     PERFORMER_REWARD_POOL_LABEL,
     PRODUCTION_ALLOCATION_DISTRIBUTION_ACTIVATION_TOKEN,
     PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
+    SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN,
     THETA_HARD_CONTINUITY_FRACTION,
+    THETA_HARD_ILC,
     build_allocation_distribution_quote,
     require_cdl_029_allocation_fractions,
     require_production_allocation_distribution_activation,
@@ -64,10 +69,23 @@ def test_phase_1347_constants_bind_cdl_029_and_default_off_state() -> None:
         "phase_1366_soft_rc_eligible_true_value_path_activation_required"
     )
     assert NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN == "no_direct_allocation_stub_found_phase_1347"
+    assert GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN == (
+        "genesis_overhead_cap_blocked_guard_phase_1347_fix1"
+    )
+    assert GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN == (
+        "genesis_overhead_cap_blocked_dust_routing_deferred"
+    )
+    assert CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN == (
+        "cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor"
+    )
+    assert SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN == (
+        "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1"
+    )
     assert PERFORMER_ALLOCATION_FRACTION == Decimal("0.80")
     assert AUDITOR_ALLOCATION_FRACTION == Decimal("0.15")
     assert GENESIS_OVERHEAD_ALLOCATION_FRACTION == Decimal("0.05")
     assert ALLOCATION_FRACTION_TOTAL == Decimal("1.00")
+    assert THETA_HARD_ILC == Decimal("0.05")
     assert THETA_HARD_CONTINUITY_FRACTION == Decimal("0.05")
 
 
@@ -83,6 +101,11 @@ def test_allocation_distributor_routes_80_15_5() -> None:
     assert quote.auditor_reward_pool_ilc == Decimal("15.000000000")
     assert quote.genesis_overhead_pool_ilc == Decimal("5.000000000")
     assert quote.rounding_residual_to_genesis_overhead_ilc == Decimal("0E-9")
+    assert quote.genesis_overhead_cap_blocked is False
+    assert quote.post_theta_hard_routing_token == (
+        CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN
+    )
+    assert quote.split_quote_boundary_token == SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN
     assert quote.performer_reward_pool_label == PERFORMER_REWARD_POOL_LABEL
     assert quote.auditor_reward_pool_label == AUDITOR_REWARD_POOL_LABEL
     assert quote.genesis_overhead_pool_label == GENESIS_OVERHEAD_POOL_LABEL
@@ -103,6 +126,37 @@ def test_allocation_distributor_quantizes_down_and_preserves_total() -> None:
         + quote.auditor_reward_pool_ilc
         + quote.genesis_overhead_pool_ilc
     ) == quote.total_epoch_allocation_ilc
+
+
+def test_allocation_distributor_fails_closed_when_genesis_cap_blocked() -> None:
+    with pytest.raises(
+        ValueError,
+        match=GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN,
+    ):
+        build_allocation_distribution_quote(
+            issuance_epoch=0,
+            total_epoch_allocation_ilc="1.2345678999",
+            genesis_overhead_cap_blocked=True,
+        )
+
+    with pytest.raises(
+        ValueError,
+        match=GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN,
+    ):
+        build_allocation_distribution_quote(
+            issuance_epoch=0,
+            total_epoch_allocation_ilc="100",
+            genesis_overhead_cap_blocked=True,
+        )
+
+    zero_quote = build_allocation_distribution_quote(
+        issuance_epoch=0,
+        total_epoch_allocation_ilc="0",
+        genesis_overhead_cap_blocked=True,
+    )
+
+    assert zero_quote.genesis_overhead_cap_blocked is True
+    assert zero_quote.genesis_overhead_pool_ilc == Decimal("0E-9")
 
 
 def test_allocation_fraction_guards_enforce_sum_and_exact_cdl_029_values() -> None:
@@ -130,6 +184,8 @@ def test_exact_numeric_guards_reject_float_bool_negative_and_non_finite() -> Non
         build_allocation_distribution_quote(0, Decimal("-0.000000001"))
     with pytest.raises(ValueError, match="performer_fraction_must_be_exact_decimal"):
         build_allocation_distribution_quote(0, "10", performer_fraction=0.8)
+    with pytest.raises(ValueError, match="genesis_overhead_cap_blocked_must_be_bool"):
+        build_allocation_distribution_quote(0, "10", genesis_overhead_cap_blocked=1)
 
 
 def test_production_allocation_distribution_guard_remains_closed() -> None:
@@ -151,11 +207,18 @@ def test_canonical_record_uses_strings_for_decimal_amounts() -> None:
     assert record["performer_fraction"] == "0.8"
     assert record["auditor_fraction"] == "0.15"
     assert record["genesis_overhead_fraction"] == "0.05"
+    assert record["genesis_overhead_cap_blocked"] is False
     assert record["theta_hard_continuity_fraction"] == "0.05"
     assert record["total_epoch_allocation_ilc"] == "100"
     assert record["performer_reward_pool_ilc"] == "80"
     assert record["auditor_reward_pool_ilc"] == "15"
     assert record["genesis_overhead_pool_ilc"] == "5"
+    assert record["post_theta_hard_routing_token"] == (
+        CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN
+    )
+    assert record["split_quote_boundary_token"] == (
+        SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN
+    )
     assert record["production_allocation_distribution_activated"] is False
     assert record["decision_token"] == PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_TOKEN
 
@@ -173,14 +236,18 @@ def test_evidence_prompt_frontier_and_walkthrough_record_tokens() -> None:
     assert 'PERFORMER_ALLOCATION_FRACTION = Decimal("0.80")' in runtime
     assert 'AUDITOR_ALLOCATION_FRACTION = Decimal("0.15")' in runtime
     assert 'GENESIS_OVERHEAD_ALLOCATION_FRACTION = Decimal("0.05")' in runtime
+    assert 'THETA_HARD_ILC = Decimal("0.05")' in runtime
+    assert "genesis_overhead_cap_blocked_dust_routing_deferred" in runtime
     for token in (
         "cdl_029_allocation_distributor_runtime_phase_1347.v0.1",
         "allocation_80_15_5_routing_phase_1347",
         "production_distribution_not_activated_phase_1347",
         "phase_1366_soft_rc_eligible_true_value_path_activation_required",
         "no_direct_allocation_stub_found_phase_1347",
+        "genesis_overhead_cap_blocked_guard_phase_1347_fix1",
+        "cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor",
+        "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1",
     ):
-        assert token in prompt
         assert token in status
         assert token in index
         assert token in forward_plan
