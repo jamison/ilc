@@ -1,0 +1,187 @@
+{
+  "artifact_manifests": [
+    {
+      "artifact_id": "ilc-artifact:source-release-tarball@phase-1334",
+      "artifact_type": "source_release_tarball",
+      "canonical_hash": "sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "lineage_reference": "genesis:v0.1",
+      "produced_phase": 1334,
+      "ratification_token": "release_artifact_production_gate_phase_1334.v0.1",
+      "signing_status": "unsigned"
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": "ilc-artifact:source-release-tarball@phase-1334",
+      "artifact_type": "source_release_tarball",
+      "byte_size": 588118,
+      "canonical_hash": "sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "deterministic_tar_policy": {
+        "compression": "gzip_mtime_0_compresslevel_9_no_filename",
+        "entry_order": "lexicographic_relative_path",
+        "entry_root": "ilc-source-release-phase-1334",
+        "mtime": 0,
+        "owner": "uid_0_gid_0_uname_empty_gname_empty",
+        "regular_files_only": true
+      },
+      "path": "out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz",
+      "signing_status": "unsigned"
+    }
+  ],
+  "atlas_g_status": {
+    "atlas_g_007_unsigned_candidate_regeneration_closed": false,
+    "atlas_g_008_non_excisability_review_closed": false,
+    "atlas_g_009_signing_root_envelope_prep_closed": false,
+    "atlas_g_010_v0_2_signing_ceremony_closed": false,
+    "signed_genesis_atlas_v0_2_claimed": false,
+    "status": "no_signed_v0_2_or_atlas_linked_release_claim_phase_1334"
+  },
+  "clean_source_export_dependency": {
+    "blockers": [],
+    "dependency_result": "pass",
+    "dirty_included_files": 0,
+    "exported_file_count": 329,
+    "legacy_untagged_ambiguities": 0,
+    "manifest_hash": "cbe7586e42f4b4bfe5fe59a2965fc4e359330f0ed021382b703bf4febdef3adc",
+    "manifest_path": "docs/specs/ilc_source_allowlist_export_execution_gate_1333_v0.1.json",
+    "phase_1333_result": "executed_clean_export",
+    "phase_1333_verdict": "source_allowlist_export_execution_gate_verdict=pass",
+    "public_rc_exclude_marker_hits": 0,
+    "recomputed_tree_sha256": "f22fbfae7f2360c46b73c34978df9cccf21812f831a9bd7fcb30d90ecac3a1b3",
+    "stripped_helper_import_hits": 0,
+    "tree_path": "/Users/jamison/Documents/ILC_Main/01_Current/out/public_rc/source_allowlist_export_phase_1333/tree",
+    "tree_sha256": "f22fbfae7f2360c46b73c34978df9cccf21812f831a9bd7fcb30d90ecac3a1b3"
+  },
+  "gate_preconditions": [
+    {
+      "check_id": "clean_source_export_dependency_passed",
+      "evidence": "dependency_result=pass",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "phase_1333_gate_passed",
+      "evidence": "phase_1333_result=executed_clean_export",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "phase_1333_binary_verdict_passed",
+      "evidence": "phase_1333_verdict=source_allowlist_export_execution_gate_verdict=pass",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "public_rc_exclude_marker_scan_zero",
+      "evidence": "marker_hits=0",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "stripped_helper_import_scan_zero",
+      "evidence": "stripped_helper_import_hits=0",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "legacy_untagged_review_clear",
+      "evidence": "legacy_ambiguities=0",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "dirty_included_files_absent",
+      "evidence": "dirty_included_files=0",
+      "passed": true,
+      "status": "pass"
+    },
+    {
+      "check_id": "tree_hash_recomputed",
+      "evidence": "tree_hash=f22fbfae7f2360c46b73c34978df9cccf21812f831a9bd7fcb30d90ecac3a1b3",
+      "passed": true,
+      "status": "pass"
+    }
+  ],
+  "graph_delta": "graph_delta=load_bearing_artifact_added:out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz -> public-rc/release-artifact-candidate",
+  "manifest_hash": "b234d5316dfe8bd2c491f5416cbbc9cb83af42cf43f1a54e149618389e60d2b3",
+  "mode": "release_artifact_production_gate",
+  "next_phase": "phase_1335_release_keys_envelopes_generation_gate_next",
+  "non_authorization_floor": {
+    "cdl_088_opening_authorized": false,
+    "cdl_mutation_authorized": false,
+    "genesis_atlas_mutation_or_signing_authorized": false,
+    "identity_artifact_creation_authorized": false,
+    "identity_bootstrap_authorized": false,
+    "public_claimability_api_authorized": false,
+    "public_confidential_coordination_serving_authorized": false,
+    "public_p2p_fetch_sidecar_serving_authorized": false,
+    "public_package_publication_authorized": false,
+    "public_rc_publication_claim_authorized": false,
+    "public_repository_publication_authorized": false,
+    "release_artifact_production_authorized_by_go_phase_1334": true,
+    "release_envelope_production_authorized": false,
+    "release_key_generation_authorized": false,
+    "release_signing_material_generation_authorized": false,
+    "signing_authorized": false,
+    "source_publication_authorized": false,
+    "v0_2_signing_authorized": false,
+    "wallet_ecu_ilc_activation_authorized": false
+  },
+  "non_claims": [
+    "release_artifact_production_authorized_by_go_phase_1334",
+    "no_source_publication",
+    "no_public_repository_publication",
+    "no_public_package_publication",
+    "no_release_key_generation",
+    "no_release_envelope_production",
+    "no_release_signing_material_generation",
+    "no_signing",
+    "no_v0_2_signing",
+    "no_public_rc_publication_or_claim",
+    "no_public_claimability_api_activation",
+    "no_public_p2p_fetch_sidecar_serving_activation",
+    "no_public_confidential_coordination_serving",
+    "no_identity_bootstrap",
+    "no_identity_artifacts",
+    "no_wallet_ecu_ilc_activation",
+    "no_genesis_atlas_mutation_or_signing",
+    "no_cdl_mutation_or_cdl_088_opening",
+    "public_rc_remains_blocked_after_phase_1334"
+  ],
+  "phase": 1334,
+  "phase_1213_manifest_validation": {
+    "artifact_manifest_count": 1,
+    "required_fields": [
+      "artifact_id",
+      "artifact_type",
+      "canonical_hash",
+      "lineage_reference",
+      "produced_phase",
+      "ratification_token",
+      "signing_status"
+    ],
+    "result": "pass",
+    "schema_path": "docs/specs/ilc_release_artifact_manifest_schema_1213_v0.1.md",
+    "token": "release_artifact_manifest_validated_phase_1334"
+  },
+  "public_rc_remains_blocked": true,
+  "release_artifact_production_gate_verdict": "release_artifact_production_gate_verdict=pass",
+  "required_tokens": [
+    "release_artifact_production_gate_phase_1334.v0.1",
+    "release_artifact_manifest_validated_phase_1334",
+    "clean_source_export_dependency_verified_phase_1334",
+    "release_artifacts_unsigned_by_default_phase_1334",
+    "phase_1335_release_keys_envelopes_generation_gate_next",
+    "public_rc_remains_blocked_after_phase_1334"
+  ],
+  "result": "artifacts_produced_unsigned",
+  "schema_version": "release_artifact_production_gate_phase_1334.v0.1",
+  "unsigned_artifact_policy": {
+    "all_artifacts_unsigned": true,
+    "keys_generated": false,
+    "release_envelopes_produced": false,
+    "result": "pass",
+    "signatures_produced": false,
+    "token": "release_artifacts_unsigned_by_default_phase_1334"
+  }
+}
