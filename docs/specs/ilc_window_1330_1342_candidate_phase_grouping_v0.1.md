@@ -565,8 +565,9 @@ opening, Genesis/Atlas mutation/signing, or v0.2 signing.
 
 Phase 1339 executed after explicit `GO Phase 1339`; Phase 1340 later executed
 after exact authority phrase `GO Phase 1340: authorize v0.2 signing ceremony`.
-Phase 1341 is now the next sensitive gate and requires explicit future
-`GO Phase 1341: authorize public RC publication/claim`.
+Phase 1341 later executed after exact authority phrase
+`GO Phase 1341: authorize public RC publication/claim` and blocked with
+findings. Phase 1342 is now the next sensitive window-closure gate.
 
 ## 9.6 Phase 1339 Execution Addendum
 
@@ -633,6 +634,45 @@ activation, CDL mutation, CDL-088 opening, counsel approval, patent filing,
 trademark-policy publication, or legal conclusion. Phase 1341 remains a
 separate explicit gate.
 
+## 9.8 Phase 1341 Execution Addendum
+
+Phase 1341 executed after exact authority phrase
+`GO Phase 1341: authorize public RC publication/claim` and completed the public
+RC publication/claim gate:
+
+```text
+public_rc_publication_claim_gate_phase_1341.v0.1
+public_rc_publication_requires_explicit_authority_phase_1341
+all_selected_public_rc_blockers_checked_phase_1341
+unselected_public_claims_not_implied_phase_1341
+phase_1342_window_1330_1342_closure_next
+public_rc_publication_verdict_recorded_phase_1341
+```
+
+Gate result: `blocked_with_findings`; binary verdict:
+`public_rc_publication_claim_gate_verdict=blocked_with_findings`. The exact
+authority phrase was present, but the gate failed closed because selected
+blockers remain open: `publication_target_or_tag_not_selected`,
+`counsel_publication_clearance_missing`, `release_artifact_not_release_signed`,
+`public_claimability_api_not_activated`,
+`public_path_p2p_sidecar_serving_not_activated`, and
+`wallet_ecu_ilc_value_path_not_activated`.
+
+Phase 1341 records positive scoped evidence only: the Phase 1333 clean source
+export exists, the Phase 1334 release artifact remains unsigned, the Phase 1335
+release key/envelope metadata remains unsigned metadata, and the Phase 1340
+Genesis Atlas v0.2 root envelope is signed and verified. These facts do not
+imply public RC publication, release signing, public claimability/API
+activation, public serving, wallet/ECU/ILC activation, counsel clearance, or
+OpenClaw/ClawHub publication.
+
+Phase 1341 did not publish source, push a public repository, upload a package,
+publish an OpenClaw/ClawHub listing, claim installability, perform release
+signing, activate public serving, activate public claimability, activate wallet
+value paths, mutate a CDL, open CDL-088, approve counsel/legal posture, file
+patents, publish trademark policy, or make a legal conclusion. Phase 1342 is
+now the next window-closure handoff gate.
+
 ## 10. Graph Delta
 
 ```text
@@ -672,4 +712,9 @@ graph_delta=load_bearing_code_added:ilc_core/rc/genesis_v0_2_signing_ceremony_ga
 graph_delta=load_bearing_artifact_added:docs/specs/ilc_v0_2_signing_ceremony_gate_1340_v0.1.json,docs/specs/ilc_v0_2_signing_ceremony_gate_1340_v0.1.md -> genesis-atlas-v0-2-signing-evidence
 graph_delta=support_tests_added:tests/test_phase_1340_v0_2_signing_ceremony_gate.py -> validation
 graph_delta=support_only:docs/phases/phase_1340_v0_2_signing_ceremony_gate_walkthrough.md -> planning/frontier
+graph_delta=deferred:phase_1341_public_rc_publication_claim_blocked
+graph_delta=load_bearing_code_added:ilc_core/rc/public_rc_publication_claim_gate.py -> rc/public-rc-publication-claim-gate
+graph_delta=load_bearing_artifact_added:docs/specs/ilc_public_rc_publication_claim_gate_1341_v0.1.json,docs/specs/ilc_public_rc_publication_claim_gate_1341_v0.1.md -> public-rc/publication-claim-evidence
+graph_delta=support_tests_added:tests/test_phase_1341_public_rc_publication_claim_gate.py -> validation
+graph_delta=support_only:docs/phases/phase_1341_public_rc_publication_claim_gate_walkthrough.md -> planning/frontier
 ```
