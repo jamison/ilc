@@ -2,6 +2,7 @@
 import pytest
 import json
 import hashlib
+from decimal import Decimal
 from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
 
 class TestCanonExportBundle:
@@ -107,14 +108,14 @@ class TestCanonExportBundle:
         # {"a":1,"b":2,"canon_hash":"h"} given alphabetical sort
         assert e1_text.startswith('{"a":1')
 
-    def test_bundle_writer_normalizes_finite_float_scalars_to_canonical_strings(self, tmp_path):
+    def test_bundle_writer_normalizes_finite_decimal_scalars_to_canonical_strings(self, tmp_path):
         bundle_dir = tmp_path / "bundle"
         export = {
             "canon_hash": "h1",
             "canon_export_format": "v0.1",
-            "snapshots": [{"epoch_id": "e1", "balances": {"alice": 1.25}}],
+            "snapshots": [{"epoch_id": "e1", "balances": {"alice": Decimal("1.25")}}],
         }
-        validation = {"ok": True, "score": 2.5}
+        validation = {"ok": True, "score": Decimal("2.5")}
 
         write_canon_export_bundle(export, validation, bundle_dir)
 

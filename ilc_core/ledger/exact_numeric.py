@@ -4,7 +4,7 @@ from decimal import Decimal, InvalidOperation
 from typing import TypeAlias
 
 
-ExactNumberish: TypeAlias = Decimal | int | float | str
+ExactNumberish: TypeAlias = Decimal | int | str
 ZERO = Decimal("0")
 
 
@@ -22,8 +22,6 @@ def to_decimal(value: ExactNumberish, *, token: str = "invalid_exact_numeric_val
         number = value
     elif isinstance(value, int):
         number = Decimal(value)
-    elif isinstance(value, float):
-        number = Decimal(str(value))
     elif isinstance(value, str):
         number = _str_to_decimal(value, token)
     else:

@@ -22,9 +22,9 @@ def _make_agent(starting_balance: Decimal = Decimal("5.0")):
 
 def test_simple_claim_reward_monotonic():
     # Higher stake and higher potential → higher reward
-    r1 = simple_claim_reward(1.0, 0.0)
-    r2 = simple_claim_reward(1.0, 1.0)
-    r3 = simple_claim_reward(2.0, 0.5)
+    r1 = simple_claim_reward(Decimal("1"), Decimal("0"))
+    r2 = simple_claim_reward(Decimal("1"), Decimal("1"))
+    r3 = simple_claim_reward(Decimal("2"), Decimal("0.5"))
 
     assert r1 > 0
     assert r2 > r1
@@ -42,7 +42,8 @@ def test_agent_can_recover_balance_with_rewards():
         if node is None:
             break
         spent = max(Decimal("0"), pre - agent.wallet_balance)
-        reward = simple_claim_reward(spent, agent.trust_vector.get("potential", 0.0))
+        potential = Decimal(str(agent.trust_vector.get("potential", "0")))
+        reward = simple_claim_reward(spent, potential)
         agent.receive_reward(reward)
 
     # Agent should not be completely bankrupt; balance should be > 0

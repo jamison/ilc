@@ -113,7 +113,7 @@ class TestCanonExportCLI:
         # But validation fail
         assert result.returncode == 1
         assert '"ok":false' in result.stdout.replace(" ", "")
-        assert 'must be a number' in result.stdout
+        assert 'must be a non-negative exact numeric value' in result.stdout
 
     def test_overwrite_protection(self, tmp_path):
         """Test overwrite file protection."""

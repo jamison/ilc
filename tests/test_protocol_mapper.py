@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 from ilc_core.types import Node
 from ilc_core.economics.outcome import TaskOutcome
 from ilc_core.exceptions import ProtocolMappingError
@@ -16,7 +17,7 @@ def test_node_to_protocol_claim_basic():
         content="1 + 1 = 2",
         agent_id="agent:test",
         signature="sig",
-        net_stake=10.0
+        net_stake=Decimal("10")
     )
     proto = node_to_protocol_claim(node)
     assert proto["id"] == "abc"
@@ -36,7 +37,7 @@ def test_node_to_protocol_refute_basic():
         content="Counter-evidence",
         agent_id="agent:refuter",
         signature="sig2",
-        net_stake=5.0
+        net_stake=Decimal("5")
     )
     # Node is a Pydantic model and now has target_id field.
     node.target_id = "abc"
@@ -55,7 +56,7 @@ def test_node_to_protocol_refute_missing_target_defaults_none():
         content="Refute with no explicit target",
         agent_id="agent:refuter",
         signature="sig3",
-        net_stake=1.0,
+        net_stake=Decimal("1"),
     )
     # target_id defaults to None
     proto = node_to_protocol_refute(node)
@@ -69,7 +70,7 @@ def test_node_to_protocol_claim_invalid_type_raises_domain_error():
         content="wrong mapper call",
         agent_id="agent:test",
         signature="sig",
-        net_stake=1.0,
+        net_stake=Decimal("1"),
     )
     with pytest.raises(ProtocolMappingError) as exc:
         node_to_protocol_claim(node)
@@ -83,7 +84,7 @@ def test_node_to_protocol_refute_invalid_type_raises_domain_error():
         content="wrong mapper call",
         agent_id="agent:test",
         signature="sig",
-        net_stake=1.0,
+        net_stake=Decimal("1"),
     )
     with pytest.raises(ProtocolMappingError) as exc:
         node_to_protocol_refute(node)
@@ -93,8 +94,8 @@ def test_outcome_to_protocol_task_outcome_basic():
     outcome = TaskOutcome(
         task_type="claim.submit",
         domain="MEDIUM",
-        stake_spent=0.1,
-        reward_paid=0.2,
+        stake_spent=Decimal("0.1"),
+        reward_paid=Decimal("0.2"),
         success=True,
     )
     proto = outcome_to_protocol_task_outcome(outcome, epoch=3, agent_id="agent:test")
@@ -109,9 +110,9 @@ def test_outcome_to_protocol_task_outcome_basic():
 def test_epoch_summary_to_protocol_basic():
     summary = {
         "total_tasks": 10,
-        "total_ecu_spent": 1.5,
-        "total_reward_paid": 2.0,
-        "clearing_price_ilc_per_ecu": 1.3333,
+        "total_ecu_spent": Decimal("1.5"),
+        "total_reward_paid": Decimal("2.0"),
+        "clearing_price_ilc_per_ecu": Decimal("1.3333"),
     }
     proto = epoch_summary_to_protocol(epoch=7, summary=summary)
     assert proto["epoch"] == 7

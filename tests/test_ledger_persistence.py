@@ -5,6 +5,7 @@ Tests for FileLedgerBackend persistence and parity.
 import pytest
 import os
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Generator, Any
 
 from ilc_core.ledger.persistent_backend import FileLedgerBackend
@@ -21,7 +22,11 @@ def temp_storage_dir(tmp_path: Any) -> Generator[str, None, None]:
     yield str(d)
 
 
-def make_commit_event(epoch_id: str, index: int, reward: float = 100.0) -> ProtocolEvent:
+def make_commit_event(
+    epoch_id: str,
+    index: int,
+    reward: Decimal | str = Decimal("100"),
+) -> ProtocolEvent:
     """Helper to create minimal valid commit event."""
     return ProtocolEvent(
         kind="commit.epoch",
@@ -35,8 +40,8 @@ def make_commit_event(epoch_id: str, index: int, reward: float = 100.0) -> Proto
             "created_at": datetime.now(timezone.utc).isoformat(),
             "finalization_state": "committed",
             "summary": {
-                "reward_total": reward,
-                "stake_total": 1000.0,
+                "reward_total": str(reward),
+                "stake_total": "1000",
                 "task_count": 10,
                 "agent_count": 2,
             },
@@ -56,17 +61,17 @@ class TestFileLedgerBackend:
             epoch_id="epoch_persistence",
             epoch_index=1,
             namespace_id="test_ns",
-            stakes={"agent_a": 100.0},
-            total_stake=100.0,
+            stakes={"agent_a": Decimal("100")},
+            total_stake=Decimal("100"),
             created_at=datetime.now(timezone.utc).isoformat()
         )
         backend1.put_stake_snapshot(snap)
         
         # Apply settlement
-        event = make_commit_event("epoch_persistence", 1, reward=50.0)
+        event = make_commit_event("epoch_persistence", 1, reward=Decimal("50"))
         backend1.apply_epoch_settlement(event)
         
-        assert backend1.get_balance("agent_a") == 50.0
+        assert backend1.get_balance("agent_a") == Decimal("50")
         
         # 2. Init backend B (restart)
         backend2 = FileLedgerBackend(temp_storage_dir)
@@ -77,7 +82,7 @@ class TestFileLedgerBackend:
         assert rec["status"] == "settled"
         assert rec["distribution_status"] == "distributed"
         
-        assert backend2.get_balance("agent_a") == 50.0
+        assert backend2.get_balance("agent_a") == Decimal("50")
         
         snap_retrieved = backend2.get_stake_snapshot("epoch_persistence")
         # Direct comparison might fail due to float epsilon or strict equality, 
@@ -145,8 +150,8 @@ class TestFileLedgerBackend:
         assert backend.balances == {}
         
         # Write valid data
-        backend._set_balance("foo", 10.0)
+        backend._set_balance("foo", Decimal("10"))
         
         # Restart
         backend2 = FileLedgerBackend(temp_storage_dir)
-        assert backend2.get_balance("foo") == 10.0
+        assert backend2.get_balance("foo") == Decimal("10")
