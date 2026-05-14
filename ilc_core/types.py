@@ -102,7 +102,8 @@ STAR_NODE_MIN_STAKE_ECU: Decimal = Decimal("1")          # H-CON-01 Q2 Option A;
 #
 # CDL-081 ratified (Phase 943). H-012 attribution runtime implemented in
 # ilc_core/economics/epoch_attribution_settle_runtime.py (Phase 946).
-# H-CON-02 forward obligation: ejected stake treasury sub-path remains stubbed.
+# H-CON-02 ejected-stake treasury release is implemented in the economics
+# runtime; Phase 1350 adds the default-off production distribution quote boundary.
 # ---------------------------------------------------------------------------
 EPOCH_ATTRIBUTION_BATCH_VERSION = "epoch_attribution_batch.v0.2"
 
@@ -114,8 +115,8 @@ class EpochAttributionBatch:
     Collect traversal clearance records during an epoch; process at epoch
     close with a fresh visited_set per event. CDL-078 precedent pattern.
 
-    Not yet wired: settle() raises NotImplementedError until H-CON-01 CDL
-    is ratified and the H-012 attribution runtime is implemented.
+    settle() delegates to the H-012 attribution runtime. It returns payout quotes
+    only; callers remain responsible for applying returned transfers at most once.
     """
     epoch: int
     events: List[Any] = dc_field(default_factory=list)
@@ -140,7 +141,9 @@ class EpochAttributionBatch:
         """Process all events and return ECU attribution payout quotes.
 
         CDL-081 §§4.1–4.6. Delegates to epoch_attribution_settle_runtime.
-        Partial: ejected stake treasury path raises NotImplementedError(CDL_HCON_02_DEPENDENCY).
+        CDL-083/H-CON-02 ejected-stake treasury release is exposed through the
+        economics runtime's default-off Phase 1350 quote boundary, not through
+        this attribution-batch event loop.
 
         Args:
             stake_map: {star_node_id: {member_agent_id: stake_amount}}

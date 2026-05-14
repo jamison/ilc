@@ -14,8 +14,8 @@ with geometric decay ECU payout.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_DOWN
-from typing import TYPE_CHECKING, Optional
+from decimal import Decimal, InvalidOperation, ROUND_DOWN
+from typing import TYPE_CHECKING, Any, Optional
 
 from ilc_core.types import (
     EDGE_MINT_PHI_BOUND,
@@ -34,6 +34,19 @@ CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_ex
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
 CDL_084_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
 CDL_085_DEPENDENCY = "cdl_085_werner_phi_bound_ratified_1185.v0.1"
+CDL_083_EJECTED_STAKE_TREASURY_DISTRIBUTION_TOKEN = (
+    "cdl_083_ejected_stake_treasury_distribution_phase_1350.v0.1"
+)
+H_CON_02_QUORUM_GUARD_PHASE_1350_TOKEN = "h_con_02_quorum_guard_phase_1350"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_NOT_IMPLEMENTED_CLOSED_PHASE_1350_TOKEN = (
+    "epoch_attribution_settle_runtime_not_implemented_closed_phase_1350"
+)
+EJECTED_STAKE_DISTRIBUTION_NOT_ACTIVATED_TOKEN = (
+    "ejected_stake_distribution_not_activated_phase_1350"
+)
+PRODUCTION_EJECTED_STAKE_DISTRIBUTION_ACTIVATION_TOKEN = (
+    "phase_1366_soft_rc_eligible_true_value_path_activation_required"
+)
 MAX_PROVENANCE_CHAIN_INPUT_LENGTH = 64
 
 HCON02_QUORUM_FLOOR = Decimal("0.50")       # Q1: >=50% of remaining members must vote
@@ -68,6 +81,216 @@ def _stake_proportional_payouts(
             running_total += share
         payouts.append((agent_id, share))
     return payouts
+
+
+@dataclass(frozen=True)
+class EjectedStakeTreasuryDistributionQuote:
+    """Default-off Phase 1350 quote for CDL-083 ejected-stake release."""
+
+    runtime_version: str
+    cdl_083_dependency: str
+    distribution_token: str
+    h_con_02_guard_token: str
+    historical_not_implemented_closed_token: str
+    distribution_epoch: int
+    ejected_stake_ilc: Decimal
+    remaining_member_stake_total_ilc: Decimal
+    remaining_member_count: int
+    participating_voters: int
+    approve_votes: int
+    quorum_floor: Decimal
+    quorum_minimum_voters: int
+    vote_threshold_numerator: int
+    vote_threshold_denominator: int
+    payouts: tuple[tuple[str, Decimal], ...]
+    production_ejected_stake_distribution_activated: bool
+    decision_token: str
+
+    def to_canonical_record(self) -> dict[str, Any]:
+        return {
+            "approve_votes": self.approve_votes,
+            "cdl_083_dependency": self.cdl_083_dependency,
+            "decision_token": self.decision_token,
+            "distribution_epoch": self.distribution_epoch,
+            "distribution_token": self.distribution_token,
+            "ejected_stake_ilc": _decimal_to_string(self.ejected_stake_ilc),
+            "h_con_02_guard_token": self.h_con_02_guard_token,
+            "historical_not_implemented_closed_token": (
+                self.historical_not_implemented_closed_token
+            ),
+            "participating_voters": self.participating_voters,
+            "payouts": tuple(
+                {
+                    "agent_id": agent_id,
+                    "amount_ilc": _decimal_to_string(amount),
+                }
+                for agent_id, amount in self.payouts
+            ),
+            "production_ejected_stake_distribution_activated": (
+                self.production_ejected_stake_distribution_activated
+            ),
+            "quorum_floor": _decimal_to_string(self.quorum_floor),
+            "quorum_minimum_voters": self.quorum_minimum_voters,
+            "remaining_member_count": self.remaining_member_count,
+            "remaining_member_stake_total_ilc": _decimal_to_string(
+                self.remaining_member_stake_total_ilc
+            ),
+            "runtime_version": self.runtime_version,
+            "vote_threshold_denominator": self.vote_threshold_denominator,
+            "vote_threshold_numerator": self.vote_threshold_numerator,
+        }
+
+
+def _decimal_to_string(value: Decimal) -> str:
+    normalized = value.normalize()
+    if normalized == normalized.to_integral():
+        return format(normalized, "f")
+    return format(normalized, "f")
+
+
+def _require_non_negative_int(value: object, error_token: str) -> int:
+    if type(value) is not int or value < 0:
+        raise ValueError(error_token)
+    return value
+
+
+def _require_decimal_amount(
+    value: object,
+    field_name: str,
+    *,
+    positive: bool = False,
+) -> Decimal:
+    if isinstance(value, bool) or isinstance(value, float):
+        raise ValueError(f"{field_name}_must_be_exact_decimal")
+    if not isinstance(value, (Decimal, int, str)):
+        raise ValueError(f"{field_name}_must_be_exact_decimal")
+    try:
+        amount = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(f"{field_name}_must_be_exact_decimal") from exc
+    if not amount.is_finite():
+        raise ValueError("invalid_amount_non_finite")
+    if positive and amount <= _ZERO:
+        raise ValueError(f"{field_name}_must_be_positive")
+    if not positive and amount < _ZERO:
+        raise ValueError(f"{field_name}_must_be_non_negative")
+    return amount
+
+
+def _normalize_distribution_member_stakes(members: object) -> dict[str, Decimal]:
+    if not isinstance(members, dict):
+        raise ValueError("ejected_stake_remaining_members_must_be_dict")
+    normalized: dict[str, Decimal] = {}
+    for member_id, stake in members.items():
+        if not isinstance(member_id, str) or member_id == "":
+            raise ValueError("ejected_stake_member_id_must_be_non_empty_string")
+        normalized[member_id] = _require_decimal_amount(
+            stake,
+            "ejected_stake_member_stake",
+        )
+    return normalized
+
+
+def require_h_con_02_quorum_guard(
+    remaining_member_stakes: object,
+    approve_votes: object,
+    participating_voters: object,
+) -> dict[str, Decimal]:
+    """Fail closed unless the CDL-083 H-CON-02 quorum and threshold pass."""
+
+    members = _normalize_distribution_member_stakes(remaining_member_stakes)
+    approvals = _require_non_negative_int(
+        approve_votes,
+        "approve_votes_must_be_non_negative_integer",
+    )
+    voters = _require_non_negative_int(
+        participating_voters,
+        "participating_voters_must_be_non_negative_integer",
+    )
+    if approvals > voters:
+        raise ValueError("approve_votes_must_not_exceed_participating_voters")
+
+    total_members = len(members)
+    if total_members == 0:
+        raise ValueError("h_con_02_quorum_guard_no_remaining_members_phase_1350")
+    if voters > total_members:
+        raise ValueError("participating_voters_must_not_exceed_total_members")
+    if voters < HCON02_QUORUM_MINIMUM_VOTERS:
+        raise ValueError("h_con_02_quorum_guard_minimum_voters_not_met_phase_1350")
+    if Decimal(voters) / Decimal(total_members) < HCON02_QUORUM_FLOOR:
+        raise ValueError("h_con_02_quorum_guard_floor_not_met_phase_1350")
+    if (
+        approvals * HCON02_VOTE_THRESHOLD_DENOMINATOR
+        < voters * HCON02_VOTE_THRESHOLD_NUMERATOR
+    ):
+        raise ValueError("h_con_02_quorum_guard_threshold_not_met_phase_1350")
+    return members
+
+
+def build_ejected_stake_treasury_distribution_quote(
+    distribution_epoch: int,
+    ejected_stake_ilc: object,
+    remaining_member_stakes: object,
+    approve_votes: int,
+    participating_voters: int,
+) -> EjectedStakeTreasuryDistributionQuote:
+    """Build a non-activating CDL-083 ejected-stake distribution quote."""
+
+    epoch = _require_non_negative_int(
+        distribution_epoch,
+        "ejected_stake_distribution_epoch_must_be_non_negative_integer",
+    )
+    ejected_stake = _quantize_payout(
+        _require_decimal_amount(ejected_stake_ilc, "ejected_stake_ilc", positive=True)
+    )
+    members = require_h_con_02_quorum_guard(
+        remaining_member_stakes,
+        approve_votes,
+        participating_voters,
+    )
+    total_stake = sum(members.values(), _ZERO)
+    if total_stake == _ZERO:
+        raise ValueError("ejected_stake_distribution_requires_positive_remaining_stake_phase_1350")
+
+    approved, payouts = evaluate_ejected_stake_vote(
+        ejected_stake,
+        members,
+        approve_votes,
+        participating_voters,
+    )
+    if not approved:
+        raise ValueError("h_con_02_quorum_guard_phase_1350_failed")
+
+    return EjectedStakeTreasuryDistributionQuote(
+        runtime_version=EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
+        cdl_083_dependency=CDL_083_DEPENDENCY,
+        distribution_token=CDL_083_EJECTED_STAKE_TREASURY_DISTRIBUTION_TOKEN,
+        h_con_02_guard_token=H_CON_02_QUORUM_GUARD_PHASE_1350_TOKEN,
+        historical_not_implemented_closed_token=(
+            EPOCH_ATTRIBUTION_SETTLE_RUNTIME_NOT_IMPLEMENTED_CLOSED_PHASE_1350_TOKEN
+        ),
+        distribution_epoch=epoch,
+        ejected_stake_ilc=ejected_stake,
+        remaining_member_stake_total_ilc=total_stake,
+        remaining_member_count=len(members),
+        participating_voters=participating_voters,
+        approve_votes=approve_votes,
+        quorum_floor=HCON02_QUORUM_FLOOR,
+        quorum_minimum_voters=HCON02_QUORUM_MINIMUM_VOTERS,
+        vote_threshold_numerator=HCON02_VOTE_THRESHOLD_NUMERATOR,
+        vote_threshold_denominator=HCON02_VOTE_THRESHOLD_DENOMINATOR,
+        payouts=tuple(payouts),
+        production_ejected_stake_distribution_activated=False,
+        decision_token=EJECTED_STAKE_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
+    )
+
+
+def require_production_ejected_stake_distribution_activation(
+    activation_token: str | None = None,
+) -> None:
+    if activation_token != PRODUCTION_EJECTED_STAKE_DISTRIBUTION_ACTIVATION_TOKEN:
+        raise ValueError(EJECTED_STAKE_DISTRIBUTION_NOT_ACTIVATED_TOKEN)
+    raise ValueError("production_ejected_stake_distribution_activation_not_implemented_phase_1350")
 
 
 def _require_non_empty_string(value: object, error_token: str) -> str:
