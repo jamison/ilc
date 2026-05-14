@@ -5,6 +5,7 @@ import tempfile
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, Any
+from decimal import Decimal
 
 from ilc_core.ledger.backend import LedgerBackend, InMemoryLedgerBackend
 from ilc_core.ledger.canon_export import export_canon_state_json, compute_canon_hash
@@ -15,7 +16,7 @@ def test_canon_export_determinism():
     Test that exporting the same state twice results in identical hashes and file content.
     """
     ledger = InMemoryLedgerBackend()
-    ledger.balances = {"alice": 100.0, "bob": 50.0}
+    ledger.balances = {"alice": Decimal("100"), "bob": Decimal("50")}
     
     # Add some records
     # Create fake epoch records manually
@@ -23,7 +24,7 @@ def test_canon_export_determinism():
          "epoch_index": 1,
          "epoch_id": "ns:0001",
          "status": "settled",
-         "summary": {"tasks": 10, "reward": 50.0}
+         "summary": {"tasks": 10, "reward": "50"}
     }
     ledger.epoch_records["ns:0001"] = record_1
     
@@ -32,8 +33,8 @@ def test_canon_export_determinism():
         epoch_id="ns:0001",
         epoch_index=1,
         namespace_id="ns",
-        stakes={"alice": 1.0},
-        total_stake=1.0,
+        stakes={"alice": Decimal("1")},
+        total_stake=Decimal("1"),
         created_at="2026-01-01T00:00:00Z"
     )
     ledger.stake_snapshots["ns:0001"] = snap
@@ -67,7 +68,7 @@ def test_canon_export_structure():
     Verify required fields exist.
     """
     ledger = InMemoryLedgerBackend()
-    ledger.balances = {"alice": 10.0}
+    ledger.balances = {"alice": Decimal("10")}
     
     with tempfile.TemporaryDirectory() as tmpdir:
         p = Path(tmpdir) / "out.json"
@@ -83,7 +84,7 @@ def test_no_mutation():
     Ensure export doesn't change the ledger.
     """
     ledger = InMemoryLedgerBackend()
-    ledger.balances = {"alice": 10.0}
+    ledger.balances = {"alice": Decimal("10")}
     original_balances = ledger.balances.copy()
     
     with tempfile.TemporaryDirectory() as tmpdir:

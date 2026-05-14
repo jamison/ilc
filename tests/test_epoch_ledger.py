@@ -36,4 +36,5 @@ def test_epoch_ledger_basic_aggregation():
     # Clearing price (aggregate)
     price = ledger.clearing_price()
     # 2.25 ILC / 1.5 ECU = 1.5
-    assert abs(price - 1.5) < 1e-9
+    assert price == Decimal("1.5")
+    assert isinstance(price, Decimal)

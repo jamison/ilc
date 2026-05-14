@@ -1,5 +1,6 @@
 
 import pytest
+from decimal import Decimal
 from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.settlement_metrics import compute_settlement_metrics
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
@@ -19,7 +20,7 @@ def test_settlement_metrics_mixed_states():
         "epoch_index": 1,
         "status": "settled",
         "distribution_status": "distributed",
-        "summary": {"reward_total": 100.0}
+        "summary": {"reward_total": "100"}
     }
     
     # 2. Settled + Stub (no snapshot)
@@ -27,14 +28,14 @@ def test_settlement_metrics_mixed_states():
         "epoch_index": 2,
         "status": "settled",
         "distribution_status": "stub_no_snapshot",
-        "summary": {"reward_total": 50.0}
+        "summary": {"reward_total": "50"}
     }
     
     # 3. Rolled Back
     ledger.epoch_records["e3"] = {
         "epoch_index": 3,
         "status": "rolled_back",
-        "summary": {"reward_total": 200.0} # Should not be counted
+        "summary": {"reward_total": "200"} # Should not be counted
     }
     
     # 4. Unknown/Pending
@@ -48,8 +49,8 @@ def test_settlement_metrics_mixed_states():
         epoch_id="e1",
         epoch_index=1,
         namespace_id="ns1",
-        stakes={"a1": 1.0},
-        total_stake=1.0,
+        stakes={"a1": Decimal("1")},
+        total_stake=Decimal("1"),
         created_at="now"
     ))
     

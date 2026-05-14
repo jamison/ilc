@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 import hashlib
 import json
 from typing import Mapping, TypedDict, TypeAlias
@@ -19,6 +19,7 @@ from ilc_core.ledger.stake_snapshot import StakeSnapshot
 JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
+_SETTLEMENT_QUANTUM = Decimal("0.000000001")
 
 
 class SettlementVerificationResult(TypedDict):
@@ -29,6 +30,31 @@ class SettlementVerificationResult(TypedDict):
     top_errors: list[str]
     error_note: str
     input_hash: str
+
+
+def _quantize_distribution_amount(amount: Decimal) -> Decimal:
+    return amount.quantize(_SETTLEMENT_QUANTUM, rounding=ROUND_DOWN)
+
+
+def _expected_distribution(
+    snapshot: StakeSnapshot,
+    reward_total: Decimal,
+) -> dict[str, Decimal]:
+    if snapshot.total_stake <= ZERO:
+        return {}
+    expected: dict[str, Decimal] = {}
+    running_total = ZERO
+    stake_items = sorted(snapshot.stakes.items(), key=lambda item: item[0])
+    for index, (agent_id, stake) in enumerate(stake_items):
+        if index == len(stake_items) - 1:
+            share = reward_total - running_total
+        else:
+            share = _quantize_distribution_amount(
+                (stake / snapshot.total_stake) * reward_total
+            )
+            running_total += share
+        expected[agent_id] = share
+    return expected
 
 
 def hash_inputs(
@@ -106,8 +132,8 @@ def verify_stake_distribution(
     )
 
     if status == "distributed" and snapshot and snapshot.total_stake > ZERO:
-        for agent_id, stake in snapshot.stakes.items():
-            expected = (stake / snapshot.total_stake) * reward_total
+        expected_distribution = _expected_distribution(snapshot, reward_total)
+        for agent_id, expected in expected_distribution.items():
             actual = deltas.get(agent_id, ZERO)
             err = abs(actual - expected)
             max_err = max(max_err, err)
@@ -122,17 +148,17 @@ def verify_stake_distribution(
         max_err = max((abs(v) for v in deltas.values()), default=ZERO)
 
     # Check bounds
-    ok_total = total_delta == expected_total
-    ok_individual = max_err == ZERO
+    ok_total = abs(total_delta - expected_total) <= _SETTLEMENT_QUANTUM
+    ok_individual = max_err <= _SETTLEMENT_QUANTUM
     ok = ok_total and ok_individual and not missing_snapshot
 
     # Top errors
     error_map: dict[str, Decimal] = {}
     if status == "distributed" and snapshot and snapshot.total_stake > ZERO:
+        expected_distribution = _expected_distribution(snapshot, reward_total)
         for agent_id in deltas.keys() | snapshot.stakes.keys():
             actual = deltas.get(agent_id, ZERO)
-            stake = snapshot.stakes.get(agent_id, ZERO)
-            expected = (stake / snapshot.total_stake) * reward_total
+            expected = expected_distribution.get(agent_id, ZERO)
             error_map[agent_id] = abs(actual - expected)
     else:
         for agent_id, delta in deltas.items():

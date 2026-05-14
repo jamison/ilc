@@ -6,6 +6,8 @@ from os import PathLike
 import json
 import hashlib
 import datetime
+import os
+import tempfile
 from dataclasses import asdict
 
 from ilc_core.ledger.backend import LedgerBackend
@@ -26,7 +28,12 @@ def compute_canon_hash(payload: JsonObject) -> str:
     """
     # Sort keys for determinism.
     # We use sort_keys=True. ensuring stable ordering of dictionary keys.
-    canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    canonical_json = json.dumps(
+        payload,
+        allow_nan=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
 
 def export_canon_state_json(
@@ -95,7 +102,24 @@ def export_canon_state_json(
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, sort_keys=True)
+    tmp_path: str | None = None
+    try:
+        fd, tmp_path = tempfile.mkstemp(
+            prefix=f".{out_path.name}.",
+            suffix=".tmp",
+            dir=out_path.parent,
+            text=True,
+        )
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(payload, f, allow_nan=False, indent=2, sort_keys=True)
+            f.write("\n")
+        os.replace(tmp_path, out_path)
+        tmp_path = None
+    finally:
+        if tmp_path is not None:
+            try:
+                os.unlink(tmp_path)
+            except FileNotFoundError:
+                pass
         
     return payload

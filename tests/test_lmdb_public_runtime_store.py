@@ -13,7 +13,11 @@ from ilc_core.protocol.event_log import ProtocolEvent
 from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
 
 
-def _commit_event(epoch_id: str, index: int, reward: float = 50.0) -> ProtocolEvent:
+def _commit_event(
+    epoch_id: str,
+    index: int,
+    reward: Decimal | str = Decimal("50"),
+) -> ProtocolEvent:
     return ProtocolEvent(
         kind="commit.epoch",
         received_at=datetime.now(timezone.utc).isoformat(),
@@ -26,8 +30,8 @@ def _commit_event(epoch_id: str, index: int, reward: float = 50.0) -> ProtocolEv
             "created_at": datetime.now(timezone.utc).isoformat(),
             "finalization_state": "committed",
             "summary": {
-                "reward_total": reward,
-                "stake_total": 100.0,
+                "reward_total": str(reward),
+                "stake_total": "100",
                 "task_count": 1,
                 "agent_count": 1,
             },
@@ -91,15 +95,15 @@ def test_lmdb_ledger_backend_survives_restart_and_factory_supports_it(tmp_path: 
         epoch_id="epoch-1",
         epoch_index=1,
         namespace_id="test_ns",
-        stakes={"agent-a": 100.0},
-        total_stake=100.0,
+        stakes={"agent-a": Decimal("100")},
+        total_stake=Decimal("100"),
         created_at=datetime.now(timezone.utc).isoformat(),
     )
     ledger.put_stake_snapshot(snapshot)
     ledger.apply_epoch_settlement(_commit_event("epoch-1", 1))
 
     reloaded = LmdbLedgerBackend(ledger_root)
-    assert reloaded.get_balance("agent-a") == 50.0
+    assert reloaded.get_balance("agent-a") == Decimal("50")
     assert reloaded.get_epoch_record("epoch-1")["status"] == "settled"
     assert reloaded.get_stake_snapshot("epoch-1") == snapshot
 
@@ -117,8 +121,8 @@ def test_lmdb_ledger_backend_rolls_back_partial_epoch_settlement_on_error(
         epoch_id="epoch-rollback",
         epoch_index=2,
         namespace_id="test_ns",
-        stakes={"agent-a": 50.0, "agent-b": 50.0},
-        total_stake=100.0,
+        stakes={"agent-a": Decimal("50"), "agent-b": Decimal("50")},
+        total_stake=Decimal("100"),
         created_at=datetime.now(timezone.utc).isoformat(),
     )
     ledger.put_stake_snapshot(snapshot)
@@ -126,7 +130,7 @@ def test_lmdb_ledger_backend_rolls_back_partial_epoch_settlement_on_error(
     original_set_balance = ledger._set_balance
     call_count = 0
 
-    def flaky_set_balance(agent_id: str, new_balance: float) -> None:
+    def flaky_set_balance(agent_id: str, new_balance: Decimal | int | str) -> None:
         nonlocal call_count
         call_count += 1
         original_set_balance(agent_id, new_balance)
@@ -138,11 +142,11 @@ def test_lmdb_ledger_backend_rolls_back_partial_epoch_settlement_on_error(
     with pytest.raises(RuntimeError, match="simulated_settlement_failure"):
         ledger.apply_epoch_settlement(_commit_event("epoch-rollback", 2))
 
-    assert ledger.get_balance("agent-a") == 0.0
-    assert ledger.get_balance("agent-b") == 0.0
+    assert ledger.get_balance("agent-a") == Decimal("0")
+    assert ledger.get_balance("agent-b") == Decimal("0")
     assert ledger.get_epoch_record("epoch-rollback") is None
 
     reloaded = LmdbLedgerBackend(ledger_root)
-    assert reloaded.get_balance("agent-a") == 0.0
-    assert reloaded.get_balance("agent-b") == 0.0
+    assert reloaded.get_balance("agent-a") == Decimal("0")
+    assert reloaded.get_balance("agent-b") == Decimal("0")
     assert reloaded.get_epoch_record("epoch-rollback") is None
