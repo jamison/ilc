@@ -1426,7 +1426,8 @@ def _curated_seed_edges(seed: dict[str, Any]) -> list[dict[str, Any]]:
                 rationale=edge_spec["rationale"],
                 feature_hints=edge_spec.get("feature_hints", {}),
                 decision_log_refs=edge_spec.get("decision_log_refs", []),
-                decomposition_recipe=edge_spec.get("decomposition_recipe"),
+                decomposition_recipe=edge_spec.get("decomposition_recipe")
+                or _edge_recipe_from_seed(seed, edge_spec["edge_id"]),
             )
         )
     return edges
