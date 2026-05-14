@@ -68,5 +68,5 @@ def test_prompt_and_frontier_docs_reflect_phase_1344_completion() -> None:
     index = _read(INDEX)
     assert "## Phase 1344" in status
     assert "phase_1345_emission_engine_next" in status
-    assert "Phase 1345 is the next planned phase" in index
-
+    assert "Phase 1345 - CDL-025/026/027 epoch emission runtime" in status
+    assert "Phase 1344 issuance stack scoping" in index

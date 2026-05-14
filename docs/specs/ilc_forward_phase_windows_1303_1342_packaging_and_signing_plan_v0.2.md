@@ -525,6 +525,12 @@ issuance_stack_scoping_phase_1344.v0.1
 cdl_053_vehicle_collision_resolved_or_rerouted_phase_1344
 blocking_authority_vehicle_must_not_be_cdl_053_phase_1344
 phase_1345_emission_engine_next
+cdl_025_emission_schedule_runtime_phase_1345.v0.1
+cdl_026_cmax_cap_runtime_phase_1345.v0.1
+cdl_027_epoch_length_runtime_phase_1345.v0.1
+c_max_enforcement_runtime_phase_1345
+devnet_production_transition_gate_recorded_phase_1345
+production_minting_not_activated_phase_1345
 ```
 
 **Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
@@ -545,6 +551,18 @@ from CDL-053. Phase 1362 must choose or open a non-CDL-053 vehicle if blocking
 authority is still desired. Phase 1344 also binds Phase 1345 to the Phase 267
 CDL-025 evidence, Phase 273/275/298/600 `C_max` chain, and Phase 276 CDL-027
 halving evidence, while preserving `production_minting_not_authorized_phase_1344`.
+
+**Phase 1345 execution addendum:** Phase 1345 added the non-activating
+`ilc_core/epoch/epoch_emission_runtime.py` quote engine and records
+`cdl_025_emission_schedule_runtime_phase_1345.v0.1`,
+`cdl_026_cmax_cap_runtime_phase_1345.v0.1`,
+`cdl_027_epoch_length_runtime_phase_1345.v0.1`,
+`c_max_enforcement_runtime_phase_1345`,
+`devnet_production_transition_gate_recorded_phase_1345`, and
+`production_minting_not_activated_phase_1345`. The runtime computes Decimal
+emission quotes and cap-clamped budgets only. It does not write ledger state,
+produce mint instructions, activate production mining, or mark soft-RC
+eligibility.
 
 ### Three-window post-1342 structure
 
@@ -578,7 +596,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 |-------|-------|----------------|-------|
 | 1343 | Sequence lock + capsule v5.56 | — | SENSITIVE gate; explicit `GO Phase 1343` required |
 | 1344 | Issuance stack scoping: production architecture for CDL-025/026/027/028/029 emission engine; design document before any implementation; CDL-053 collision rerouted away from blocking authority | CDL-025/026/027 design | COMPLETE; records `issuance_stack_scoping_phase_1344.v0.1`; no implementation or production minting authority |
-| 1345 | Production epoch emission engine: CDL-025/026/027 halving schedule runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | SENSITIVE; first production minting code |
+| 1345 | Production epoch emission engine: CDL-025/026/027 non-activating quote runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | COMPLETE; records `production_minting_not_activated_phase_1345`; no ledger write or mint activation |
 | 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | SENSITIVE; economic surface |
 | 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | SENSITIVE; economic surface |
 | 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, velocity alert trigger) | CDL-047 | SENSITIVE; economic surface |
