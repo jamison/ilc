@@ -192,7 +192,13 @@ def test_network_bridge_consensus_record_roundtrip() -> None:
         captured_payloads.append(json.loads(json.dumps(payload, sort_keys=True)))
         return _Response(202)
 
-    manager = PeerManager(local_port=8000, fanout_limit=1, request_timeout_s=0.1, sender=sender)
+    manager = PeerManager(
+        local_port=8000,
+        fanout_limit=1,
+        request_timeout_s=0.1,
+        sender=sender,
+        allow_private_peer_endpoints_for_tests=True,
+    )
     manager.add_peer("127.0.0.2", 8101)
 
     result = manager.broadcast("/consensus/receive", quorum_record)

@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Collection, Mapping
+from dataclasses import dataclass, fields
 from typing import Any
 
 from ilc_core.network.d2d.transport_principal_pre_public_path import (
@@ -186,6 +187,60 @@ _ADMISSION_DECISION_KEYS = frozenset(
 )
 
 
+@dataclass(frozen=True)
+class TransportPrincipalAdmissionParams:
+    """Validated input envelope for building local TransportPrincipal decisions."""
+
+    transport_principal_context: Mapping[str, Any]
+    current_epoch: int
+    privacy_mode: str = "ephemeral_principal_no_agentid_default"
+    accepted_credential_kinds: Collection[str] = _DEFAULT_ACCEPTED_CREDENTIAL_KINDS
+    revoked_credential_fingerprints: Collection[str] = ()
+    replay_cache: Collection[str] = ()
+    banned_transport_keys: Collection[str] = ()
+    rate_limit_counters: Mapping[str, int] | None = None
+    local_rate_limit_ceiling: int = _DEFAULT_LOCAL_RATE_LIMIT_CEILING
+    public_path_activation_authorized: bool = False
+    public_p2p_enabled: bool = False
+    public_fetch_serving_enabled: bool = False
+    public_sidecar_serving_enabled: bool = False
+    non_loopback_projection_enabled: bool = False
+    public_listener_enabled: bool = False
+    peer_discovery_enabled: bool = False
+    public_credential_issuer_authorized: bool = False
+    public_revocation_registry_activated: bool = False
+    public_replay_cache_activated: bool = False
+    public_rate_limit_state_activated: bool = False
+    release_artifact_authorized: bool = False
+    requester_id_fallback_allowed: bool = False
+    json_body_requester_id_fallback_allowed: bool = False
+    client_ip_rate_limit_key_allowed: bool = False
+    agent_id_rate_limit_key_allowed: bool = False
+    harness_identity_rate_limit_key_allowed: bool = False
+    openclaw_identity_rate_limit_key_allowed: bool = False
+    tailscale_identity_rate_limit_key_allowed: bool = False
+
+    @classmethod
+    def from_legacy_kwargs(
+        cls,
+        values: Mapping[str, Any],
+    ) -> "TransportPrincipalAdmissionParams":
+        allowed = {field.name for field in fields(cls)}
+        unexpected = sorted(set(values) - allowed)
+        if unexpected:
+            raise TransportPrincipalAdmissionSidecarError(
+                "transport_principal_admission_params_invalid_phase_1332_fix4",
+                f"unexpected admission parameter: {unexpected[0]}",
+            )
+        try:
+            return cls(**dict(values))
+        except TypeError as exc:
+            raise TransportPrincipalAdmissionSidecarError(
+                "transport_principal_admission_params_invalid_phase_1332_fix4",
+                str(exc),
+            ) from exc
+
+
 class TransportPrincipalAdmissionSidecarError(ValueError):
     """Fail-closed local admission error with a stable token."""
 
@@ -246,85 +301,23 @@ def transport_principal_admission_sidecar_manifest() -> dict[str, Any]:
     return manifest
 
 
-def build_transport_principal_admission_decision(
-    *,
-    transport_principal_context: Mapping[str, Any],
-    current_epoch: int,
-    privacy_mode: str = "ephemeral_principal_no_agentid_default",
-    accepted_credential_kinds: Collection[str] = _DEFAULT_ACCEPTED_CREDENTIAL_KINDS,
-    revoked_credential_fingerprints: Collection[str] = (),
-    replay_cache: Collection[str] = (),
-    banned_transport_keys: Collection[str] = (),
-    rate_limit_counters: Mapping[str, int] | None = None,
-    local_rate_limit_ceiling: int = _DEFAULT_LOCAL_RATE_LIMIT_CEILING,
-    public_path_activation_authorized: bool = False,
-    public_p2p_enabled: bool = False,
-    public_fetch_serving_enabled: bool = False,
-    public_sidecar_serving_enabled: bool = False,
-    non_loopback_projection_enabled: bool = False,
-    public_listener_enabled: bool = False,
-    peer_discovery_enabled: bool = False,
-    public_credential_issuer_authorized: bool = False,
-    public_revocation_registry_activated: bool = False,
-    public_replay_cache_activated: bool = False,
-    public_rate_limit_state_activated: bool = False,
-    release_artifact_authorized: bool = False,
-    requester_id_fallback_allowed: bool = False,
-    json_body_requester_id_fallback_allowed: bool = False,
-    client_ip_rate_limit_key_allowed: bool = False,
-    agent_id_rate_limit_key_allowed: bool = False,
-    harness_identity_rate_limit_key_allowed: bool = False,
-    openclaw_identity_rate_limit_key_allowed: bool = False,
-    tailscale_identity_rate_limit_key_allowed: bool = False,
-) -> dict[str, Any]:
-    """Build a deterministic local-only admission decision.
-
-    Caller-supplied revocation, replay, ban, and accepted-kind collections are
-    normalized and bounded before the Phase 1267 context validator is called.
-    """
-
-    _reject_unsafe_json_tree(transport_principal_context)
-    _reject_forbidden_context_keys(transport_principal_context)
-    _require_transport_principal_context_keys(transport_principal_context)
-    current = _require_epoch("current", current_epoch)
-    ceiling = _require_local_rate_limit_ceiling(local_rate_limit_ceiling)
-    mode = _require_choice(
-        "privacy_mode",
-        privacy_mode,
-        allowed=_ALLOWED_PRIVACY_MODES,
-        token="transport_principal_admission_privacy_mode_invalid_phase_1309",
-    )
-    accepted_kinds = _normalize_text_collection(
-        accepted_credential_kinds,
-        token="transport_principal_admission_credential_kind_policy_invalid_phase_1309",
-    )
-    revoked = _normalize_text_collection(
-        revoked_credential_fingerprints,
-        token="transport_principal_admission_revocation_state_invalid_phase_1309",
-    )
-    replay = _normalize_text_collection(
-        replay_cache,
-        token="transport_principal_admission_replay_state_invalid_phase_1309",
-    )
-    banned = _normalize_text_collection(
-        banned_transport_keys,
-        token="transport_principal_admission_ban_state_invalid_phase_1309",
-    )
-    rate_counters = _normalize_rate_limit_counters(rate_limit_counters)
+def _require_transport_admission_local_only_flags(
+    params: TransportPrincipalAdmissionParams,
+) -> None:
     _require_all_false(
         {
-            "public_path_activation_authorized": public_path_activation_authorized,
-            "public_p2p_enabled": public_p2p_enabled,
-            "public_fetch_serving_enabled": public_fetch_serving_enabled,
-            "public_sidecar_serving_enabled": public_sidecar_serving_enabled,
-            "non_loopback_projection_enabled": non_loopback_projection_enabled,
-            "public_listener_enabled": public_listener_enabled,
-            "peer_discovery_enabled": peer_discovery_enabled,
-            "public_credential_issuer_authorized": public_credential_issuer_authorized,
-            "public_revocation_registry_activated": public_revocation_registry_activated,
-            "public_replay_cache_activated": public_replay_cache_activated,
-            "public_rate_limit_state_activated": public_rate_limit_state_activated,
-            "release_artifact_authorized": release_artifact_authorized,
+            "public_path_activation_authorized": params.public_path_activation_authorized,
+            "public_p2p_enabled": params.public_p2p_enabled,
+            "public_fetch_serving_enabled": params.public_fetch_serving_enabled,
+            "public_sidecar_serving_enabled": params.public_sidecar_serving_enabled,
+            "non_loopback_projection_enabled": params.non_loopback_projection_enabled,
+            "public_listener_enabled": params.public_listener_enabled,
+            "peer_discovery_enabled": params.peer_discovery_enabled,
+            "public_credential_issuer_authorized": params.public_credential_issuer_authorized,
+            "public_revocation_registry_activated": params.public_revocation_registry_activated,
+            "public_replay_cache_activated": params.public_replay_cache_activated,
+            "public_rate_limit_state_activated": params.public_rate_limit_state_activated,
+            "release_artifact_authorized": params.release_artifact_authorized,
         },
         token_by_name={
             "public_path_activation_authorized": TRANSPORT_PRINCIPAL_PUBLIC_PATH_NOT_ACTIVATED_TOKEN,
@@ -334,19 +327,77 @@ def build_transport_principal_admission_decision(
     )
     _require_all_false(
         {
-            "requester_id_fallback_allowed": requester_id_fallback_allowed,
-            "json_body_requester_id_fallback_allowed": json_body_requester_id_fallback_allowed,
-            "client_ip_rate_limit_key_allowed": client_ip_rate_limit_key_allowed,
-            "agent_id_rate_limit_key_allowed": agent_id_rate_limit_key_allowed,
-            "harness_identity_rate_limit_key_allowed": harness_identity_rate_limit_key_allowed,
-            "openclaw_identity_rate_limit_key_allowed": openclaw_identity_rate_limit_key_allowed,
-            "tailscale_identity_rate_limit_key_allowed": tailscale_identity_rate_limit_key_allowed,
+            "requester_id_fallback_allowed": params.requester_id_fallback_allowed,
+            "json_body_requester_id_fallback_allowed": (
+                params.json_body_requester_id_fallback_allowed
+            ),
+            "client_ip_rate_limit_key_allowed": params.client_ip_rate_limit_key_allowed,
+            "agent_id_rate_limit_key_allowed": params.agent_id_rate_limit_key_allowed,
+            "harness_identity_rate_limit_key_allowed": (
+                params.harness_identity_rate_limit_key_allowed
+            ),
+            "openclaw_identity_rate_limit_key_allowed": (
+                params.openclaw_identity_rate_limit_key_allowed
+            ),
+            "tailscale_identity_rate_limit_key_allowed": (
+                params.tailscale_identity_rate_limit_key_allowed
+            ),
         },
         default_token="transport_principal_admission_fallback_identity_forbidden_phase_1309",
     )
 
+
+def build_transport_principal_admission_decision(
+    params: TransportPrincipalAdmissionParams | None = None,
+    **legacy_kwargs: Any,
+) -> dict[str, Any]:
+    """Build a deterministic local-only admission decision.
+
+    Caller-supplied revocation, replay, ban, and accepted-kind collections are
+    normalized and bounded before the Phase 1267 context validator is called.
+    """
+
+    if params is None:
+        params = TransportPrincipalAdmissionParams.from_legacy_kwargs(legacy_kwargs)
+    elif legacy_kwargs:
+        raise TransportPrincipalAdmissionSidecarError(
+            "transport_principal_admission_params_invalid_phase_1332_fix4",
+            "params object cannot be mixed with legacy keyword arguments",
+        )
+
+    context = params.transport_principal_context
+    _reject_unsafe_json_tree(context)
+    _reject_forbidden_context_keys(context)
+    _require_transport_principal_context_keys(context)
+    current = _require_epoch("current", params.current_epoch)
+    ceiling = _require_local_rate_limit_ceiling(params.local_rate_limit_ceiling)
+    mode = _require_choice(
+        "privacy_mode",
+        params.privacy_mode,
+        allowed=_ALLOWED_PRIVACY_MODES,
+        token="transport_principal_admission_privacy_mode_invalid_phase_1309",
+    )
+    accepted_kinds = _normalize_text_collection(
+        params.accepted_credential_kinds,
+        token="transport_principal_admission_credential_kind_policy_invalid_phase_1309",
+    )
+    revoked = _normalize_text_collection(
+        params.revoked_credential_fingerprints,
+        token="transport_principal_admission_revocation_state_invalid_phase_1309",
+    )
+    replay = _normalize_text_collection(
+        params.replay_cache,
+        token="transport_principal_admission_replay_state_invalid_phase_1309",
+    )
+    banned = _normalize_text_collection(
+        params.banned_transport_keys,
+        token="transport_principal_admission_ban_state_invalid_phase_1309",
+    )
+    rate_counters = _normalize_rate_limit_counters(params.rate_limit_counters)
+    _require_transport_admission_local_only_flags(params)
+
     validated_context = validate_transport_principal_context(
-        transport_principal_context,
+        context,
         current_epoch=current,
         revoked_credential_fingerprints=revoked,
         replay_cache=replay,
@@ -1062,6 +1113,7 @@ __all__ = [
     "TRANSPORT_PRINCIPAL_LIFECYCLE_POLICY_LOCAL_SUBSTRATE_TOKEN",
     "TRANSPORT_PRINCIPAL_PUBLIC_PATH_NOT_ACTIVATED_TOKEN",
     "TRANSPORT_PRINCIPAL_REVOCATION_REPLAY_TESTS_HARDENED_PHASE_1310_TOKEN",
+    "TransportPrincipalAdmissionParams",
     "TransportPrincipalAdmissionSidecarError",
     "build_transport_principal_admission_decision",
     "canonical_transport_principal_admission_json",

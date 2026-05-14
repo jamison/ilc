@@ -116,6 +116,7 @@ class TransportRuntimeConfig:
     tls_key_path: str
     request_timeout_seconds: float = 2.0
     verify_peer_tls: bool = True
+    allow_private_peer_endpoints_for_tests: bool = False
 
 
 def _encode_gossip_payload(payload: bytes | str) -> bytes:
@@ -124,6 +125,47 @@ def _encode_gossip_payload(payload: bytes | str) -> bytes:
     if isinstance(payload, bytes):
         return payload
     raise ValueError("gossip_payload_must_be_bytes_or_string")
+
+
+def _canonicalize_headers(headers: dict[str, str]) -> dict[str, str]:
+    canonical_by_lower = {key.lower(): key for key in gossip_transport.REQUIRED_HEADERS}
+    normalized: dict[str, str] = {}
+    for key, value in headers.items():
+        if isinstance(key, str):
+            normalized[canonical_by_lower.get(key.lower(), key)] = value
+        else:
+            normalized[key] = value
+    return normalized
+
+
+def _validated_content_length(value: Any) -> int:
+    if value is None:
+        return 0
+    try:
+        normalized = int(str(value).strip())
+    except (TypeError, ValueError) as exc:
+        raise ValueError(CONTENT_LENGTH_INVALID_TOKEN) from exc
+    if normalized < 0:
+        raise ValueError(CONTENT_LENGTH_INVALID_TOKEN)
+    return normalized
+
+
+def _drain_request_body(stream: Any, content_length: int) -> None:
+    remaining = content_length
+    while remaining > 0:
+        chunk = stream.read(min(MAX_INBOUND_READ_CHUNK_BYTES, remaining))
+        if not chunk:
+            raise ConnectionError(PAYLOAD_INCOMPLETE_TOKEN)
+        remaining -= len(chunk)
+
+
+def _require_path(value: str, missing_token: str, not_found_token: str) -> Path:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(missing_token)
+    path = Path(value)
+    if not path.is_file():
+        raise ValueError(not_found_token)
+    return path
 
 
 class HttpGossipTransportRuntime:
@@ -155,18 +197,6 @@ class HttpGossipTransportRuntime:
         self.state["last_error"] = payload
         self._record("transport_error", **payload)
 
-    def _canonicalize_headers(self, headers: dict[str, str]) -> dict[str, str]:
-        canonical_by_lower = {
-            key.lower(): key for key in gossip_transport.REQUIRED_HEADERS
-        }
-        normalized: dict[str, str] = {}
-        for key, value in headers.items():
-            if isinstance(key, str):
-                normalized[canonical_by_lower.get(key.lower(), key)] = value
-            else:
-                normalized[key] = value
-        return normalized
-
     def _normalize_transport_kind(self) -> str:
         kind = self.config.transport_kind
         if not isinstance(kind, str) or not kind.strip():
@@ -177,39 +207,15 @@ class HttpGossipTransportRuntime:
         return normalized
 
     def _validated_content_length(self, value: Any) -> int:
-        if value is None:
-            return 0
-        try:
-            normalized = int(str(value).strip())
-        except (TypeError, ValueError) as exc:
-            raise ValueError(CONTENT_LENGTH_INVALID_TOKEN) from exc
-        if normalized < 0:
-            raise ValueError(CONTENT_LENGTH_INVALID_TOKEN)
-        return normalized
-
-    def _drain_request_body(self, stream: Any, content_length: int) -> None:
-        remaining = content_length
-        while remaining > 0:
-            chunk = stream.read(min(MAX_INBOUND_READ_CHUNK_BYTES, remaining))
-            if not chunk:
-                raise ConnectionError(PAYLOAD_INCOMPLETE_TOKEN)
-            remaining -= len(chunk)
-
-    def _require_path(self, value: str, missing_token: str, not_found_token: str) -> Path:
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(missing_token)
-        path = Path(value)
-        if not path.is_file():
-            raise ValueError(not_found_token)
-        return path
+        return _validated_content_length(value)
 
     def _server_ssl_context(self) -> ssl.SSLContext:
-        cert_path = self._require_path(
+        cert_path = _require_path(
             self.config.tls_cert_path,
             "tls_cert_path_required",
             "tls_cert_path_not_found",
         )
-        key_path = self._require_path(
+        key_path = _require_path(
             self.config.tls_key_path,
             "tls_key_path_required",
             "tls_key_path_not_found",
@@ -222,12 +228,12 @@ class HttpGossipTransportRuntime:
         return context
 
     def _client_ssl_context(self) -> ssl.SSLContext:
-        self._require_path(
+        _require_path(
             self.config.tls_cert_path,
             "tls_cert_path_required",
             "tls_cert_path_not_found",
         )
-        self._require_path(
+        _require_path(
             self.config.tls_key_path,
             "tls_key_path_required",
             "tls_key_path_not_found",
@@ -274,9 +280,7 @@ class HttpGossipTransportRuntime:
                     self.end_headers()
                     return
                 try:
-                    content_length = runtime._validated_content_length(
-                        self.headers.get("Content-Length")
-                    )
+                    content_length = _validated_content_length(self.headers.get("Content-Length"))
                 except ValueError as exc:
                     token = str(exc)
                     runtime._record("incoming_envelope_rejected", token=token)
@@ -291,7 +295,7 @@ class HttpGossipTransportRuntime:
                 )
                 if status_code == gossip_transport.HTTP_STATUS_BUFFERED and content_length:
                     try:
-                        runtime._drain_request_body(self.rfile, content_length)
+                        _drain_request_body(self.rfile, content_length)
                     except socket.timeout:
                         runtime._record(
                             "incoming_envelope_rejected",
@@ -351,7 +355,7 @@ class HttpGossipTransportRuntime:
         *,
         content_length: int | None = None,
     ) -> int:
-        normalized_headers = self._canonicalize_headers(headers)
+        normalized_headers = _canonicalize_headers(headers)
         if content_length is not None and content_length > MAX_INBOUND_PAYLOAD_BYTES:
             self._record(
                 "incoming_envelope_rejected",
@@ -395,7 +399,10 @@ class HttpGossipTransportRuntime:
         if kind != TRANSPORT_KIND_HTTP:
             raise ValueError("transport_kind_unsupported")
 
-        normalized_endpoint = validate_peer_endpoint(peer_endpoint)
+        normalized_endpoint = validate_peer_endpoint(
+            peer_endpoint,
+            allow_private_address_literals=self.config.allow_private_peer_endpoints_for_tests,
+        )
         request_path = gossip_transport.gossip_request_path(gossip_type)
         headers = gossip_transport.build_gossip_headers(
             gossip_type=gossip_type,

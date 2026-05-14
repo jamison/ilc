@@ -634,262 +634,276 @@ def _validate_package_profile_integrity(value: object) -> None:
         value,
         token="sidecar_registry_package_profile_integrity_invalid_phase_1307",
     )
-    for key in (
-        "claimable_profile_requires_offline_verifier",
-        "confidential_coordination_profile_is_private_local_only",
-        "openclaw_nemoclaw_are_hosts_not_protocol_substrates",
-    ):
-        if integrity.get(key) is not True:
-            raise ValueError("sidecar_registry_package_profile_integrity_invalid_phase_1307")
-    for key in (
-        "public_claimability_runtime_activation_authorized",
-        "public_p2p_activation_authorized",
-    ):
-        _require_false(
-            integrity.get(key),
-            token="sidecar_registry_package_profile_integrity_public_authority_forbidden_phase_1307",
-        )
-    ccss = _require_mapping(
-        integrity.get("confidential_coordination_shard_manifest"),
+    _require_true_keys(
+        integrity,
+        (
+            "claimable_profile_requires_offline_verifier",
+            "confidential_coordination_profile_is_private_local_only",
+            "openclaw_nemoclaw_are_hosts_not_protocol_substrates",
+        ),
+        token="sidecar_registry_package_profile_integrity_invalid_phase_1307",
+    )
+    _require_false_keys(
+        integrity,
+        (
+            "public_claimability_runtime_activation_authorized",
+            "public_p2p_activation_authorized",
+        ),
+        token="sidecar_registry_package_profile_integrity_public_authority_forbidden_phase_1307",
+    )
+    _validate_ccss_shard_manifest(integrity)
+    _validate_ccss_capability_manifest(integrity)
+    _validate_ccss_sealed_sender_manifest(integrity)
+    _validate_ccss_gossip_manifest(integrity)
+    _validate_offline_verifier_manifest(integrity)
+    _validate_transport_principal_manifest(integrity)
+    _validate_projection_manifest(integrity)
+    _validate_public_fetch_readiness_manifest(integrity)
+    _validate_wallet_actions_manifest(integrity)
+    _validate_value_path_manifest(integrity)
+
+
+def _require_true_keys(record: Mapping[str, Any], keys: tuple[str, ...], *, token: str) -> None:
+    for key in keys:
+        if record.get(key) is not True:
+            raise ValueError(token)
+
+
+def _require_false_keys(record: Mapping[str, Any], keys: tuple[str, ...], *, token: str) -> None:
+    for key in keys:
+        _require_false(record.get(key), token=token)
+
+
+def _validate_contract_manifest(
+    integrity: Mapping[str, Any],
+    *,
+    key: str,
+    token: str,
+    contract_version: str,
+    true_keys: tuple[str, ...],
+    false_keys: tuple[str, ...],
+    false_token: str,
+    next_phase: str | None = None,
+    tokens: list[str] | None = None,
+) -> Mapping[str, Any]:
+    manifest = _require_mapping(integrity.get(key), token=token)
+    if manifest.get("contract_version") != contract_version:
+        raise ValueError(token)
+    _require_true_keys(manifest, true_keys, token=token)
+    _require_false_keys(manifest, false_keys, token=false_token)
+    if next_phase is not None and manifest.get("next_phase") != next_phase:
+        raise ValueError(token)
+    if tokens is not None and manifest.get("tokens") != tokens:
+        raise ValueError(token)
+    return manifest
+
+
+def _validate_ccss_shard_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="confidential_coordination_shard_manifest",
         token="sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324",
+        contract_version="ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1",
+        true_keys=(
+            "encrypted_coordination_node_envelope_contract_recorded",
+            "local_only",
+            "private_to_public_promotion_evidence_shape_recorded",
+            "shard_header_projection_contract_recorded",
+        ),
+        false_keys=("public_confidential_coordination_serving_enabled", "public_p2p_enabled"),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_ccss_public_authority_forbidden_phase_1324"
+        ),
+        next_phase="phase_1325_ccss_capability_membership_boundary_next",
+        tokens=[
+            "ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1",
+            "encrypted_coordination_node_envelope_contract_recorded_phase_1324",
+            "shard_header_projection_contract_recorded_phase_1324",
+            "private_to_public_promotion_evidence_shape_recorded_phase_1324",
+            "ccss_public_serving_not_enabled_phase_1324",
+            "phase_1325_ccss_capability_membership_boundary_next",
+            "public_rc_remains_blocked_after_phase_1324",
+        ],
     )
-    if ccss.get("contract_version") != (
-        "ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1"
-    ):
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
-        )
-    for key in (
-        "encrypted_coordination_node_envelope_contract_recorded",
-        "local_only",
-        "private_to_public_promotion_evidence_shape_recorded",
-        "shard_header_projection_contract_recorded",
-    ):
-        if ccss.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
-            )
-    for key in ("public_confidential_coordination_serving_enabled", "public_p2p_enabled"):
-        _require_false(
-            ccss.get(key),
-            token="sidecar_registry_package_profile_integrity_ccss_public_authority_forbidden_phase_1324",
-        )
-    if ccss.get("next_phase") != "phase_1325_ccss_capability_membership_boundary_next":
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
-        )
-    if ccss.get("tokens") != [
-        "ccss_001_private_gated_shard_sidecar_contract_phase_1324.v0.1",
-        "encrypted_coordination_node_envelope_contract_recorded_phase_1324",
-        "shard_header_projection_contract_recorded_phase_1324",
-        "private_to_public_promotion_evidence_shape_recorded_phase_1324",
-        "ccss_public_serving_not_enabled_phase_1324",
-        "phase_1325_ccss_capability_membership_boundary_next",
-        "public_rc_remains_blocked_after_phase_1324",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_manifest_invalid_phase_1324"
-        )
-    ccss_capability = _require_mapping(
-        integrity.get("confidential_coordination_capability_manifest"),
-        token="sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325",
+
+
+def _validate_ccss_capability_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="confidential_coordination_capability_manifest",
+        token=(
+            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
+        ),
+        contract_version=(
+            "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1"
+        ),
+        true_keys=(
+            "grant_revocation_boundary_recorded",
+            "local_only",
+            "membership_plaintext_disclosure_forbidden",
+            "optional_zk_interface_boundary_recorded",
+            "private_shard_access_control_boundary_recorded",
+        ),
+        false_keys=(
+            "public_confidential_coordination_serving_enabled",
+            "public_membership_directory_enabled",
+            "public_p2p_enabled",
+            "public_zk_verifier_enabled",
+        ),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_ccss_capability_public_authority_forbidden_phase_1325"
+        ),
+        next_phase="phase_1326_ccss_sealed_sender_boundary_next",
+        tokens=[
+            "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1",
+            "private_shard_access_control_boundary_recorded_phase_1325",
+            "membership_plaintext_disclosure_forbidden_phase_1325",
+            "optional_zk_interface_boundary_recorded_phase_1325",
+            "phase_1326_ccss_sealed_sender_boundary_next",
+            "public_rc_remains_blocked_after_phase_1325",
+        ],
     )
-    if ccss_capability.get("contract_version") != (
-        "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1"
-    ):
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
-        )
-    for key in (
-        "grant_revocation_boundary_recorded",
-        "local_only",
-        "membership_plaintext_disclosure_forbidden",
-        "optional_zk_interface_boundary_recorded",
-        "private_shard_access_control_boundary_recorded",
-    ):
-        if ccss_capability.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
-            )
-    for key in (
-        "public_confidential_coordination_serving_enabled",
-        "public_membership_directory_enabled",
-        "public_p2p_enabled",
-        "public_zk_verifier_enabled",
-    ):
-        _require_false(
-            ccss_capability.get(key),
-            token="sidecar_registry_package_profile_integrity_ccss_capability_public_authority_forbidden_phase_1325",
-        )
-    if ccss_capability.get("next_phase") != "phase_1326_ccss_sealed_sender_boundary_next":
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
-        )
-    if ccss_capability.get("tokens") != [
-        "ccss_002_capability_membership_grant_revocation_boundary_phase_1325.v0.1",
-        "private_shard_access_control_boundary_recorded_phase_1325",
-        "membership_plaintext_disclosure_forbidden_phase_1325",
-        "optional_zk_interface_boundary_recorded_phase_1325",
-        "phase_1326_ccss_sealed_sender_boundary_next",
-        "public_rc_remains_blocked_after_phase_1325",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_capability_manifest_invalid_phase_1325"
-        )
-    ccss_sealed_sender = _require_mapping(
-        integrity.get("confidential_coordination_sealed_sender_manifest"),
-        token="sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326",
+
+
+def _validate_ccss_sealed_sender_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="confidential_coordination_sealed_sender_manifest",
+        token=(
+            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
+        ),
+        contract_version="ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1",
+        true_keys=(
+            "fixed_size_payload_boundary_recorded",
+            "h013_h015_dependency_seams_recorded",
+            "local_only",
+            "sealed_sender_fixed_size_payload_boundary_recorded",
+        ),
+        false_keys=(
+            "public_confidential_coordination_serving_enabled",
+            "public_confidential_messaging_claimed",
+            "public_p2p_enabled",
+            "public_relay_serving_enabled",
+        ),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_public_authority_forbidden_phase_1326"
+        ),
+        next_phase="phase_1327_ccss_gossip_jitter_cover_policy_next",
+        tokens=[
+            "ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1",
+            "sealed_sender_fixed_size_payload_boundary_recorded_phase_1326",
+            "h013_h015_dependency_seams_recorded_phase_1326",
+            "public_p2p_not_activated_by_ccss_phase_1326",
+            "phase_1327_ccss_gossip_jitter_cover_policy_next",
+            "public_rc_remains_blocked_after_phase_1326",
+        ],
     )
-    if ccss_sealed_sender.get("contract_version") != (
-        "ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1"
-    ):
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
-        )
-    for key in (
-        "fixed_size_payload_boundary_recorded",
-        "h013_h015_dependency_seams_recorded",
-        "local_only",
-        "sealed_sender_fixed_size_payload_boundary_recorded",
-    ):
-        if ccss_sealed_sender.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
-            )
-    for key in (
-        "public_confidential_coordination_serving_enabled",
-        "public_confidential_messaging_claimed",
-        "public_p2p_enabled",
-        "public_relay_serving_enabled",
-    ):
-        _require_false(
-            ccss_sealed_sender.get(key),
-            token="sidecar_registry_package_profile_integrity_ccss_sealed_sender_public_authority_forbidden_phase_1326",
-        )
-    if ccss_sealed_sender.get("next_phase") != "phase_1327_ccss_gossip_jitter_cover_policy_next":
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
-        )
-    if ccss_sealed_sender.get("tokens") != [
-        "ccss_003_sealed_sender_local_delivery_boundary_phase_1326.v0.1",
-        "sealed_sender_fixed_size_payload_boundary_recorded_phase_1326",
-        "h013_h015_dependency_seams_recorded_phase_1326",
-        "public_p2p_not_activated_by_ccss_phase_1326",
-        "phase_1327_ccss_gossip_jitter_cover_policy_next",
-        "public_rc_remains_blocked_after_phase_1326",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_sealed_sender_manifest_invalid_phase_1326"
-        )
-    ccss_gossip = _require_mapping(
-        integrity.get("confidential_coordination_gossip_policy_manifest"),
+
+
+def _validate_ccss_gossip_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="confidential_coordination_gossip_policy_manifest",
         token="sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327",
+        contract_version="ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1",
+        true_keys=(
+            "anonymity_guarantee_not_claimed",
+            "gossip_announce_pull_jitter_policy_recorded",
+            "local_only",
+            "metadata_correlation_tests_required",
+            "traffic_analysis_negative_tests_recorded",
+        ),
+        false_keys=(
+            "anonymity_guarantee_claimed",
+            "public_confidential_coordination_serving_enabled",
+            "public_confidential_messaging_claimed",
+            "public_listener_enabled",
+            "public_p2p_enabled",
+            "public_peer_discovery_enabled",
+            "public_relay_serving_enabled",
+            "signal_equivalent_claimed",
+            "unlinkability_claimed",
+        ),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_ccss_gossip_public_authority_forbidden_phase_1327"
+        ),
+        next_phase="phase_1328_ccss_private_droplet_reproducibility_next",
+        tokens=[
+            "ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1",
+            "gossip_announce_pull_jitter_policy_recorded_phase_1327",
+            "traffic_analysis_negative_tests_recorded_phase_1327",
+            "anonymity_guarantee_not_claimed_phase_1327",
+            "phase_1328_ccss_private_droplet_reproducibility_next",
+            "public_rc_remains_blocked_after_phase_1327",
+        ],
     )
-    if ccss_gossip.get("contract_version") != (
-        "ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1"
-    ):
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
-        )
-    for key in (
-        "anonymity_guarantee_not_claimed",
-        "gossip_announce_pull_jitter_policy_recorded",
-        "local_only",
-        "metadata_correlation_tests_required",
-        "traffic_analysis_negative_tests_recorded",
-    ):
-        if ccss_gossip.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
-            )
-    for key in (
-        "anonymity_guarantee_claimed",
-        "public_confidential_coordination_serving_enabled",
-        "public_confidential_messaging_claimed",
-        "public_listener_enabled",
-        "public_p2p_enabled",
-        "public_peer_discovery_enabled",
-        "public_relay_serving_enabled",
-        "signal_equivalent_claimed",
-        "unlinkability_claimed",
-    ):
-        _require_false(
-            ccss_gossip.get(key),
-            token="sidecar_registry_package_profile_integrity_ccss_gossip_public_authority_forbidden_phase_1327",
-        )
-    if ccss_gossip.get("next_phase") != "phase_1328_ccss_private_droplet_reproducibility_next":
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
-        )
-    if ccss_gossip.get("tokens") != [
-        "ccss_004_gossip_jitter_cover_policy_tests_phase_1327.v0.1",
-        "gossip_announce_pull_jitter_policy_recorded_phase_1327",
-        "traffic_analysis_negative_tests_recorded_phase_1327",
-        "anonymity_guarantee_not_claimed_phase_1327",
-        "phase_1328_ccss_private_droplet_reproducibility_next",
-        "public_rc_remains_blocked_after_phase_1327",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_ccss_gossip_manifest_invalid_phase_1327"
-        )
+
+
+def _validate_offline_verifier_manifest(integrity: Mapping[str, Any]) -> None:
     verifier = _require_mapping(
         integrity.get("offline_claimability_verifier_manifest"),
         token="sidecar_registry_package_profile_integrity_verifier_manifest_invalid_phase_1307",
     )
-    for key in (
-        "non_loopback_claimability_api_enabled",
-        "public_api_enabled",
-        "public_claimability_activated",
-        "receipt_verifier_public_serving_enabled",
-    ):
-        _require_false(
-            verifier.get(key),
-            token="sidecar_registry_package_profile_integrity_verifier_public_authority_forbidden_phase_1307",
-        )
+    _require_false_keys(
+        verifier,
+        (
+            "non_loopback_claimability_api_enabled",
+            "public_api_enabled",
+            "public_claimability_activated",
+            "receipt_verifier_public_serving_enabled",
+        ),
+        token="sidecar_registry_package_profile_integrity_verifier_public_authority_forbidden_phase_1307",
+    )
+
+
+def _validate_transport_principal_manifest(integrity: Mapping[str, Any]) -> None:
     transport = _require_mapping(
         integrity.get("transport_principal_admission_sidecar_manifest"),
         token="sidecar_registry_package_profile_integrity_transport_manifest_invalid_phase_1310",
     )
-    for key in (
-        "local_only",
-        "admission_ban_rate_privacy_tests_hardened",
-        "hostile_network_public_path_blocked",
-        "revocation_replay_tests_hardened",
-    ):
-        if transport.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_transport_manifest_invalid_phase_1310"
-            )
-    for key in (
-        "public_credential_issuer_authorized",
-        "public_fetch_serving_enabled",
-        "public_path_activation_authorized",
-        "public_p2p_enabled",
-        "public_rate_limit_state_activated",
-        "public_replay_cache_activated",
-        "public_revocation_registry_activated",
-        "public_sidecar_serving_enabled",
-    ):
-        _require_false(
-            transport.get(key),
-            token="sidecar_registry_package_profile_integrity_transport_public_authority_forbidden_phase_1310",
-        )
+    _require_true_keys(
+        transport,
+        (
+            "local_only",
+            "admission_ban_rate_privacy_tests_hardened",
+            "hostile_network_public_path_blocked",
+            "revocation_replay_tests_hardened",
+        ),
+        token="sidecar_registry_package_profile_integrity_transport_manifest_invalid_phase_1310",
+    )
+    _require_false_keys(
+        transport,
+        (
+            "public_credential_issuer_authorized",
+            "public_fetch_serving_enabled",
+            "public_path_activation_authorized",
+            "public_p2p_enabled",
+            "public_rate_limit_state_activated",
+            "public_replay_cache_activated",
+            "public_revocation_registry_activated",
+            "public_sidecar_serving_enabled",
+        ),
+        token="sidecar_registry_package_profile_integrity_transport_public_authority_forbidden_phase_1310",
+    )
+
+
+def _validate_projection_manifest(integrity: Mapping[str, Any]) -> None:
     projection = _require_mapping(
         integrity.get("local_graph_memory_projection_sidecar_manifest"),
         token="sidecar_registry_package_profile_integrity_projection_manifest_invalid_phase_1311",
     )
-    for key in (
-        "local_only",
-        "bounded_projection_serving_blocker_tests_hardened",
-        "confidential_coordination_projection_non_leakage_tests",
-        "private_gated_shard_header_projection_supported",
-        "projection_privacy_filtering_hardened",
-        "public_safe_projection_local_only",
-    ):
-        if projection.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_projection_manifest_invalid_phase_1312"
-            )
+    _require_true_keys(
+        projection,
+        (
+            "local_only",
+            "bounded_projection_serving_blocker_tests_hardened",
+            "confidential_coordination_projection_non_leakage_tests",
+            "private_gated_shard_header_projection_supported",
+            "projection_privacy_filtering_hardened",
+            "public_safe_projection_local_only",
+        ),
+        token="sidecar_registry_package_profile_integrity_projection_manifest_invalid_phase_1312",
+    )
     if projection.get("projection_privacy_field_filtering_tests_version") != (
         "projection_privacy_field_filtering_tests_phase_1312.v0.1"
     ):
@@ -909,141 +923,112 @@ def _validate_package_profile_integrity(value: object) -> None:
         raise ValueError(
             "sidecar_registry_package_profile_integrity_projection_manifest_invalid_phase_1312"
         )
-    for key in (
-        "public_confidential_coordination_serving_enabled",
-        "public_confidential_messaging_claimed",
-        "public_fetch_serving_enabled",
-        "public_listener_enabled",
-        "public_p2p_enabled",
-        "public_sidecar_projection_serving_enabled",
-    ):
-        _require_false(
-            projection.get(key),
-            token="sidecar_registry_package_profile_integrity_projection_public_authority_forbidden_phase_1311",
-        )
-    readiness = _require_mapping(
-        integrity.get("public_fetch_p2p_readiness_candidate_manifest"),
-        token="sidecar_registry_package_profile_integrity_public_fetch_p2p_manifest_invalid_phase_1313",
+    _require_false_keys(
+        projection,
+        (
+            "public_confidential_coordination_serving_enabled",
+            "public_confidential_messaging_claimed",
+            "public_fetch_serving_enabled",
+            "public_listener_enabled",
+            "public_p2p_enabled",
+            "public_sidecar_projection_serving_enabled",
+        ),
+        token="sidecar_registry_package_profile_integrity_projection_public_authority_forbidden_phase_1311",
     )
-    if readiness.get("contract_version") != (
-        "public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1"
-    ):
-        raise ValueError(
+
+
+def _validate_public_fetch_readiness_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="public_fetch_p2p_readiness_candidate_manifest",
+        token=(
             "sidecar_registry_package_profile_integrity_public_fetch_p2p_manifest_invalid_phase_1313"
-        )
-    for key in (
-        "local_only",
-        "readiness_only",
-        "rust_public_p2p_substrate_gate_required",
-    ):
-        if readiness.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_public_fetch_p2p_manifest_invalid_phase_1313"
-            )
-    for key in (
-        "activation_candidate_authorized",
-        "public_fetch_serving_enabled",
-        "public_listener_enabled",
-        "public_p2p_enabled",
-        "transport_public_path_activation_authorized",
-    ):
-        _require_false(
-            readiness.get(key),
-            token="sidecar_registry_package_profile_integrity_public_fetch_p2p_authority_forbidden_phase_1313",
-        )
-    if readiness.get("tokens") != [
-        "public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1",
-        "rust_public_p2p_substrate_gate_status_recorded_phase_1313",
-        "public_p2p_default_off_phase_1313",
-        "public_fetch_serving_default_off_phase_1313",
-        "transport_public_path_activation_not_authorized_phase_1313",
-        "phase_1314_wallet_withdrawal_transfer_spend_preflight_next",
-        "public_rc_remains_blocked_after_phase_1313",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_public_fetch_p2p_manifest_invalid_phase_1313"
-        )
-    wallet_actions = _require_mapping(
-        integrity.get("wallet_action_semantics_preflight_manifest"),
+        ),
+        contract_version="public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1",
+        true_keys=("local_only", "readiness_only", "rust_public_p2p_substrate_gate_required"),
+        false_keys=(
+            "activation_candidate_authorized",
+            "public_fetch_serving_enabled",
+            "public_listener_enabled",
+            "public_p2p_enabled",
+            "transport_public_path_activation_authorized",
+        ),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_public_fetch_p2p_authority_forbidden_phase_1313"
+        ),
+        tokens=[
+            "public_fetch_p2p_activation_candidate_default_off_phase_1313.v0.1",
+            "rust_public_p2p_substrate_gate_status_recorded_phase_1313",
+            "public_p2p_default_off_phase_1313",
+            "public_fetch_serving_default_off_phase_1313",
+            "transport_public_path_activation_not_authorized_phase_1313",
+            "phase_1314_wallet_withdrawal_transfer_spend_preflight_next",
+            "public_rc_remains_blocked_after_phase_1313",
+        ],
+    )
+
+
+def _validate_wallet_actions_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="wallet_action_semantics_preflight_manifest",
         token="sidecar_registry_package_profile_integrity_wallet_actions_manifest_invalid_phase_1314",
+        contract_version="wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1",
+        true_keys=("local_only", "preflight_only"),
+        false_keys=(
+            "public_claim_endpoint_enabled",
+            "public_claimability_activated",
+            "wallet_ledger_write_authorized",
+            "wallet_signing_authorized",
+            "wallet_spend_enabled",
+            "wallet_transfer_enabled",
+            "wallet_withdrawal_enabled",
+        ),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_wallet_actions_authority_forbidden_phase_1314"
+        ),
+        tokens=[
+            "wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1",
+            "wallet_withdrawal_transfer_spend_not_activated_phase_1314",
+            "wallet_signing_ledger_write_not_authorized_phase_1314",
+            "public_claimability_user_action_boundary_recorded_phase_1314",
+            "phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next",
+            "public_rc_remains_blocked_after_phase_1314",
+        ],
     )
-    if wallet_actions.get("contract_version") != (
-        "wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1"
-    ):
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_wallet_actions_manifest_invalid_phase_1314"
-        )
-    for key in ("local_only", "preflight_only"):
-        if wallet_actions.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_wallet_actions_manifest_invalid_phase_1314"
-            )
-    for key in (
-        "public_claim_endpoint_enabled",
-        "public_claimability_activated",
-        "wallet_ledger_write_authorized",
-        "wallet_signing_authorized",
-        "wallet_spend_enabled",
-        "wallet_transfer_enabled",
-        "wallet_withdrawal_enabled",
-    ):
-        _require_false(
-            wallet_actions.get(key),
-            token="sidecar_registry_package_profile_integrity_wallet_actions_authority_forbidden_phase_1314",
-        )
-    if wallet_actions.get("tokens") != [
-        "wallet_withdrawal_transfer_spend_semantics_preflight_phase_1314.v0.1",
-        "wallet_withdrawal_transfer_spend_not_activated_phase_1314",
-        "wallet_signing_ledger_write_not_authorized_phase_1314",
-        "public_claimability_user_action_boundary_recorded_phase_1314",
-        "phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next",
-        "public_rc_remains_blocked_after_phase_1314",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_wallet_actions_manifest_invalid_phase_1314"
-        )
-    value_path = _require_mapping(
-        integrity.get("value_path_activation_boundary_preflight_manifest"),
+
+
+def _validate_value_path_manifest(integrity: Mapping[str, Any]) -> None:
+    _validate_contract_manifest(
+        integrity,
+        key="value_path_activation_boundary_preflight_manifest",
         token="sidecar_registry_package_profile_integrity_value_path_manifest_invalid_phase_1315",
+        contract_version="ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1",
+        true_keys=("local_only", "preflight_only"),
+        false_keys=(
+            "ecu_creation_enabled",
+            "ecu_mint_authorized",
+            "ilc_settlement_authorized",
+            "ilc_transfer_enabled",
+            "public_claim_endpoint_enabled",
+            "public_claimability_activated",
+            "wallet_ledger_write_authorized",
+            "wallet_signing_authorized",
+            "wallet_write_authorized",
+            "withdrawal_runtime_enabled",
+        ),
+        false_token=(
+            "sidecar_registry_package_profile_integrity_value_path_authority_forbidden_phase_1315"
+        ),
+        tokens=[
+            "ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1",
+            "ecu_minting_not_authorized_phase_1315",
+            "ilc_settlement_not_authorized_phase_1315",
+            "value_path_activation_boundary_recorded_phase_1315",
+            "phase_1316_window_1303_1316_closure_audit_next",
+            "public_rc_remains_blocked_after_phase_1315",
+        ],
     )
-    if value_path.get("contract_version") != (
-        "ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1"
-    ):
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_value_path_manifest_invalid_phase_1315"
-        )
-    for key in ("local_only", "preflight_only"):
-        if value_path.get(key) is not True:
-            raise ValueError(
-                "sidecar_registry_package_profile_integrity_value_path_manifest_invalid_phase_1315"
-            )
-    for key in (
-        "ecu_creation_enabled",
-        "ecu_mint_authorized",
-        "ilc_settlement_authorized",
-        "ilc_transfer_enabled",
-        "public_claim_endpoint_enabled",
-        "public_claimability_activated",
-        "wallet_ledger_write_authorized",
-        "wallet_signing_authorized",
-        "wallet_write_authorized",
-        "withdrawal_runtime_enabled",
-    ):
-        _require_false(
-            value_path.get(key),
-            token="sidecar_registry_package_profile_integrity_value_path_authority_forbidden_phase_1315",
-        )
-    if value_path.get("tokens") != [
-        "ecu_minting_ilc_settlement_boundary_preflight_phase_1315.v0.1",
-        "ecu_minting_not_authorized_phase_1315",
-        "ilc_settlement_not_authorized_phase_1315",
-        "value_path_activation_boundary_recorded_phase_1315",
-        "phase_1316_window_1303_1316_closure_audit_next",
-        "public_rc_remains_blocked_after_phase_1315",
-    ]:
-        raise ValueError(
-            "sidecar_registry_package_profile_integrity_value_path_manifest_invalid_phase_1315"
-        )
 
 
 def _require_records(value: object, *, token: str) -> list[dict[str, Any]]:

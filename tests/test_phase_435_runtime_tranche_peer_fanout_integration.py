@@ -145,6 +145,7 @@ def test_peer_broadcast_records_success_and_failure_logs(monkeypatch, caplog) ->
         local_port=8000,
         fanout_limit=2,
         sender=lambda url, payload, timeout_s: _Response(202 if url.endswith("8100/gossip/receive") else 503),
+        allow_private_peer_endpoints_for_tests=True,
     )
     manager.add_peer("10.0.0.1", 8100)
     manager.add_peer("10.0.0.2", 8101)
@@ -173,7 +174,11 @@ def test_peer_broadcast_normalizes_paths_and_keeps_http_boundary_local(monkeypat
 
     caplog.set_level(logging.INFO)
 
-    manager = PeerManager(local_port=8000, sender=_raising_sender)
+    manager = PeerManager(
+        local_port=8000,
+        sender=_raising_sender,
+        allow_private_peer_endpoints_for_tests=True,
+    )
     manager.add_peer("10.0.0.3", 8102)
     result = manager.broadcast("gossip/receive", {"id": "claim-2"})
 
