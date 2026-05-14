@@ -389,6 +389,41 @@ phase_1332_fix4_pre_phase_1333_hardening.v0.1
 phase_1333_source_allowlist_export_execution_gate_unblocked_after_fix4
 ```
 
+## 9.1 Phase 1334 Execution Addendum
+
+Phase 1334 executed after explicit `GO Phase 1334` and closed the release
+artifact production gate as unsigned local artifact evidence only:
+
+```text
+release_artifact_production_gate_phase_1334.v0.1
+release_artifact_manifest_validated_phase_1334
+clean_source_export_dependency_verified_phase_1334
+release_artifacts_unsigned_by_default_phase_1334
+phase_1335_release_keys_envelopes_generation_gate_next
+public_rc_remains_blocked_after_phase_1334
+```
+
+The gate verified the Phase 1333 clean source export dependency and produced
+one deterministic source-release tarball:
+
+| Artifact | Hash | Signing |
+|----------|------|---------|
+| `out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz` | `sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47` | `unsigned` |
+
+Phase 1334 does not authorize public repository publication, public package
+publication, public RC claim, release-key generation, release-envelope
+production, signing, v0.2 signing, public claimability/API activation, public
+P2P/fetch/sidecar serving, Genesis mutation/signing, identity artifacts, wallet
+actions, ECU minting, ILC settlement, or public confidential coordination
+serving.
+
+Phase 1335 remains the next sensitive gate and requires explicit
+key/envelope-generation authority:
+
+```text
+GO Phase 1335: authorize release key/envelope generation
+```
+
 ## 10. Graph Delta
 
 ```text
