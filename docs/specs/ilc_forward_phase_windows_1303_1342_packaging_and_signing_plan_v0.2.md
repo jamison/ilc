@@ -504,8 +504,9 @@ HIGH-001 two-layer defense (~1 phase); multi-operator non-loopback testnet
 SEC-004 live rotation wiring is scaffolded in `fast_path.rs` and gates on
 CDL-017 (already Phase 1353).
 
-No window in this section is open until its own sequence lock phase executes
-with explicit `GO Phase NNNN`.
+Window 1343-1368 opened through Phase 1343 after explicit `GO Phase 1343`.
+Later windows in this section remain closed until their own sequence-lock phases
+execute with explicit `GO Phase NNNN`.
 
 ```text
 forward_phase_windows_post_1342_comprehensive_gap_closure_plan_revised_2026_05_14_v2
@@ -515,7 +516,19 @@ window_1391_plus_sovereign_substrate_long_range_genuine_deferrals_only
 phase_1366_soft_rc_gate_replaces_earlier_phase_1358
 phase_1389_public_claimability_activation_gate_replaces_earlier_phase_1375
 mysticeti_m_series_complete_7_phases_remaining_not_20_30
+window_1343_1368_sequence_lock_committed
+context_capsule_v5_56_window_1343_sequence_lock_phase_1343.v0.1
+phase_1344_issuance_stack_scoping_next
+cdl_053_vehicle_collision_recorded_phase_1343
 ```
+
+**Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
+Phase 1343 only and published Capsule v5.56. Phase 1344 is the next planned phase and is scoping-only.
+The sequence lock confirmed the M-series and `ilc_consensus/`
+status, but also recorded a vehicle collision: this plan's Phase 1362 currently
+uses CDL-053 for blocking-authority activation, while older canon reserves
+CDL-053 for Werner-credit architecture. Phase 1344 must resolve or reroute that
+vehicle before any Phase 1362 prompt is executable.
 
 ### Three-window post-1342 structure
 
@@ -566,9 +579,9 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1359 | HIGH-001 two-layer defense: log-redaction runtime (replace plaintext AgentID in validator logs); transfer mixing/k-anonymity framework; required before any sender-privacy claim | M-022 HIGH-001 | SENSITIVE; security surface; moves from Window 1391+ |
 | 1360 | Multi-operator non-loopback Mysticeti testnet: run 4-validator testnet across geographically distinct VPSs (M-009 was loopback-only); SEC-007a/b dependency updates (tonic 0.13+ upgrade resolving `protoc-bin-vendored` and `rand 0.8.6` Dependabot alerts) | ADR-0028, M-022 | SENSITIVE |
 | 1361 | CDL-043/044 adaptive pruning completion: adaptive threshold logic per CDL-043 SIM-003 calibration anchors; CDL-044 `retention_epochs` as constitutionally-bound constant (not caller parameter); LMDB graph-level pruning path; CDL-071 Tier-2 epoch-scope enforcement | CDL-043, CDL-044 | SENSITIVE; moves from Window 1391+ |
-| 1362 | CDL-053 opening: open CDL-053 (reserved since Phase 511) to authorize CDL-057 blocking authority activation; define blocking semantics, scope, and interaction with CDL-055/CDL-030 | CDL-053 | SENSITIVE; explicit `GO Phase 1362` required; CDL mutation; moves from Window 1391+ |
-| 1363 | CDL-053 deliberation/prelock: resolve open questions from Phase 1362; lock blocking-authority scope and any CDL-055/CDL-030 interaction clauses | CDL-053 | SENSITIVE |
-| 1364 | CDL-053 ratification + CDL-057 activation: ratify CDL-053; flip `BLOCKING_AUTHORITY_DEFERRED = True` → `False` in `epoch_boundary_witness_runtime.py`; epoch-boundary witness lane becomes a blocking lane | CDL-053, CDL-057 | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
+| 1362 | Blocking-authority vehicle opening: Phase 1343 records a CDL-053 vehicle collision because older canon reserves CDL-053 for Werner-credit architecture; Phase 1344 must reroute or explicitly resolve before this prompt is executable | TBD vehicle, CDL-057 | SENSITIVE; explicit `GO Phase 1362` required; CDL mutation; moves from Window 1391+ |
+| 1363 | Blocking-authority deliberation/prelock: resolve open questions from Phase 1362; lock blocking-authority scope and any CDL-055/CDL-030 interaction clauses | TBD vehicle, CDL-057 | SENSITIVE |
+| 1364 | Blocking-authority ratification + CDL-057 activation: ratify the selected vehicle; flip `BLOCKING_AUTHORITY_DEFERRED = True` -> `False` in `epoch_boundary_witness_runtime.py`; epoch-boundary witness lane becomes a blocking lane | TBD vehicle, CDL-057 | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
 | 1365 | Capsule refresh (v5.57) + coherence report | — | NON-SENSITIVE after sequence lock |
 | 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; explicit `GO Phase 1366` required |
 | 1367 | Reserved for pre-gate fix pass | — | SENSITIVE |
