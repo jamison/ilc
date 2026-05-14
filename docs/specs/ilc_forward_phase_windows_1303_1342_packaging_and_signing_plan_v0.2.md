@@ -26,6 +26,12 @@ phase_1329_window_1317_1329_closure_complete
 window_1330_plus_sequence_lock_required_before_next_phase_assignment
 release_dry_run_ccss_atlas_g_blockers_classified_phase_1329
 public_rc_remains_blocked_after_phase_1329
+window_1330_1342_closed_phase_1342
+window_1330_1342_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1342_window_1330_1342_closure_complete
+window_1343_plus_sequence_lock_required_before_next_phase_assignment
+final_rc_publication_and_signing_blockers_classified_phase_1342
+public_rc_final_status_recorded_phase_1342
 ```
 
 ## 1. Purpose
@@ -697,7 +703,7 @@ exact authority phrase `GO Phase 1340: authorize v0.2 signing ceremony` and
 recorded `v0_2_signed`. Phase 1341 later executed after exact authority phrase
 `GO Phase 1341: authorize public RC publication/claim` and recorded
 `blocked_with_findings`. **No public RC publication/claim occurred.** Phase
-1342 is now the next closure handoff gate.
+1342 closed Window 1330-1342 with carry-forward.
 
 ```text
 genesis_manifest_compile_verdict_partial_with_structural_gaps_after_phase_1339
@@ -707,10 +713,42 @@ phase_1339_atlas_g_tail_finalized
 phase_1340_v0_2_signed
 phase_1341_publication_blocked_with_findings
 public_rc_remains_blocked_after_phase_1341
-phase_1342_window_1330_1342_closure_next
+window_1330_1342_closed_phase_1342
+window_1330_1342_closure_gate_verdict=pass_or_blocked_with_carry_forward
+phase_1342_window_1330_1342_closure_complete
+window_1343_plus_sequence_lock_required_before_next_phase_assignment
+final_rc_publication_and_signing_blockers_classified_phase_1342
+public_rc_final_status_recorded_phase_1342
 adr_0037_added_to_genesis_manifest_phase_1339
 cdl_v_series_added_to_genesis_manifest_phase_1339
 ```
+
+### Window 1330-1342 Closure Disposition
+
+Window 1330-1342 is CLOSED / PASS with carry-forward through Phase 1342. The
+closure handoff is:
+
+```text
+docs/specs/ilc_window_1330_1342_handoff_1342_v0.1.md
+```
+
+Public RC final status is:
+
+```text
+public_rc_final_status=not_published_blocked_with_findings
+```
+
+The final Phase 1341 publication blockers are:
+
+- `publication_target_or_tag_not_selected`
+- `counsel_publication_clearance_missing`
+- `release_artifact_not_release_signed`
+- `public_claimability_api_not_activated`
+- `public_path_p2p_sidecar_serving_not_activated`
+- `wallet_ecu_ilc_value_path_not_activated`
+
+Window 1343+ is not open. Window 1343+ sequence lock required before next phase
+assignment.
 
 ```text
 forward_phase_windows_post_1342_three_window_structure_finalized_2026_05_14
