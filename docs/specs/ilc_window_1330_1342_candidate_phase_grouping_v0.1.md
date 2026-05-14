@@ -253,6 +253,103 @@ docs/antigravity_tasks/antigravity_prompt__phase_1341_g8_public_rc_publication_c
 docs/antigravity_tasks/antigravity_prompt__phase_1342_g8_window_1330_1342_closure_handoff.md
 ```
 
+## 11. Deferred Issues Register (Phase 1331 Fix1/Fix2/Fix3 post-audit)
+
+Recorded 2026-05-14 after the pre-1332 deep audit and Fix1/Fix2/Fix3 hardening
+passes. Each item is assigned to its target phase or carry-forward lane.
+
+Phase 1332 completed the audit/enumeration gate and records:
+
+```text
+final_deterministic_code_security_audit_phase_1332.v0.1
+runtime_guardrail_scope_revalidated_phase_1332
+canonical_json_security_sweep_recorded_phase_1332
+release_blocker_audit_no_activation_phase_1332
+phase_1333_source_allowlist_export_execution_gate_next
+public_rc_remains_blocked_after_phase_1332
+phase_1333_status=blocked_pending_fix4_before_phase_1333
+code_health_test_sim_exclusion_resolved_phase_1332
+```
+
+The one-line sim-harness code-health exclusion was closed before Phase 1332.
+Phase 1332 confirmed that `test_code_health.py` still fails on non-sim runtime
+hotspots and that private-address endpoint denial plus CBOR pre-load size caps
+remain open Fix4 blockers before Phase 1333.
+
+### Deferred to Fix4 / Phase 1332 enumeration
+
+| ID | Finding | File:line | Target |
+|----|---------|-----------|--------|
+| H11 | `reputation.py` float/in-place-mutation/no-version-token rewrite | `ilc_core/consensus/reputation.py` | Window 1343+ (requires governance/CDL pass before Decimal/token decisions) |
+| H12 | hash-before-ref helper centralization across CCSS modules | CCSS-001/002 inline vs. CCSS-003 `_verify_ref` | Carry-forward acceptable; Phase 1332 records file:line only |
+| H14 | CCSS-004 `_require_non_negative_int` bakes in `_MAX_SEQUENCE` upper bound for unrelated count fields | `confidential_coordination_gossip_policy.py:938` | Phase 1332 disposition; likely carry-forward-with-note |
+| M3–M12 | CCSS cross-module style/consistency items (guard ordering, dict return vs. normalized dict, etc.) | Various CCSS modules | Phase 1332 disposition per item |
+| M13 | `_require_text` parameter order reversed in CCSS-004 vs. 001/002/003 | `confidential_coordination_gossip_policy.py:875` | Standalone CCSS-004 fix with search-and-replace; route post-Phase 1332 only if tests confirm no regressions |
+| LOW-1 | `str(exc)` returns message in CCSS-001/002 but token in CCSS-003/004 | All four CCSS error classes | Fix-in-place alongside any CCSS touch |
+| LOW-3 | CCSS-003/004 missing AST-walk `assert`-ban test | `tests/test_phase_1326_*.py`, `tests/test_phase_1327_*.py` | Fix-in-place alongside any CCSS-003/004 test touch |
+| LOW-4 | CCSS-004 error token omits received `record_kind` in detail string | `confidential_coordination_gossip_policy.py:545` | Low priority; fix-in-place alongside any CCSS-004 touch |
+| LOW-5 | CCSS-001 test mutates `_MAX_CANONICAL_JSON_BYTES` via try/finally not `monkeypatch` | `tests/test_phase_1324_ccss_001_*.py:337` | Fix-in-place alongside any CCSS-001 test touch |
+| LOW-2 | CCSS-004 test uses path-relative `Path("ilc_core/...")` not repo-root-anchored path | `tests/test_phase_1327_ccss_004_*.py:287` | Fix-in-place alongside any CCSS-004 test touch |
+| — | Private-address endpoint denial (SSRF via internal network targets) | `ilc_core/network/` HTTP clients | Phase 1332 enumeration → Fix4 before Phase 1333 |
+| — | CBOR pre-load size cap missing before `cbor2.loads` | `ilc_core/crypto/cbor_canonical.py:35` | Phase 1332 enumeration → Fix4 before Phase 1333 |
+
+### Deferred to Fix4 (must land before Phase 1333)
+
+Network hardening items confirmed by Phase 1332 enumeration. Fix3 closed H6/H7/H8/H9.
+The following remain open:
+
+| ID | Finding | File:line | Note |
+|----|---------|-----------|------|
+| — | Private-address SSRF denial on outbound HTTP (TOCTOU on IP range) | `ilc_core/network/` HTTP clients | Fix4 required before any phase making real outbound network calls |
+| — | CBOR pre-load size cap | `ilc_core/crypto/cbor_canonical.py:35` | Fix4 |
+
+### Code health — `test_code_health.py` failures (2026-05-14)
+
+Thresholds: `MAX_FUNC_LINES=150`, `MAX_CLASS_LINES=300`, `MAX_NESTING_DEPTH=4`, `MAX_FUNC_ARGS=10`, `MAX_FILE_LINES=1500`.
+
+#### Immediate fix (test exclusion only — not protocol code)
+
+| Action | Target | Rationale |
+|--------|--------|-----------|
+| Add `ilc_core/sim/` to `EXCLUDE_DIRS` in `test_code_health.py` | `sim_fetch_01_harness.py` (1694 lines, `run_sim_fetch_01()` 917 lines / nesting 6) | Simulation harnesses are legitimately monolithic; not protocol code |
+
+#### Refactor candidates (route before Phase 1333 or as a code-health fix phase)
+
+| Lines/Depth/Args | Function or Class | File | Priority |
+|-----------------|-------------------|------|---------|
+| 415 lines | `_validate_package_profile_integrity()` | `sidecars/registry_manifest.py:632` | HIGH — pre-release gate function; unreviewable at 415 lines; split into per-lane validators |
+| 218 lines | `build_atlas_g_006_public_rc_graph_reachability_gate()` | `rc/atlas_graph_discipline.py:1111` | HIGH — release-gate function |
+| 209 lines | `validate_public_fetch_p2p_readiness_candidate()` | `sidecars/public_fetch_p2p_readiness.py:283` | MED |
+| 199 lines | `build_source_allowlist_export_rehearsal()` | `rc/source_allowlist_export_rehearsal.py:136` | MED — directly used by Phase 1333 |
+| 198 lines | `_build_parser()` | `cli/main.py:910` | LOW — argparse builder; split into subcommand groups or add to EXCLUDE_PATHS |
+| 185 lines / **28 args** | `build_transport_principal_admission_decision()` | `sidecars/transport_principal_admission.py:249` | HIGH — 28 positional args is a structural issue; introduce a dataclass/params struct |
+| 183 lines | `_normalize_claimability_proof()` | `sidecars/claimability_receipt_verifier.py:770` | MED |
+| 182 lines | `validate_transport_principal_public_path_preflight()` | `network/d2d/transport_principal_public_path_preflight.py:316` | MED |
+| 168 lines | `_normalize_conversion_receipt()` | `sidecars/claimability_receipt_verifier.py:600` | MED |
+| 164 lines | `validate_sidecar_public_path_preflight()` | `graph/sidecar_public_path_preflight.py:435` | MED |
+| 162 lines | `route()` | `network/d2d/spectral_routing_runtime.py:90` | MED |
+| nesting 7 | `build_gossip_cover_policy_decision()` | `sidecars/confidential_coordination_gossip_policy.py:532` | MED — CCSS-004; split decision chain into helpers |
+| 19 args | `build_value_path_activation_boundary_preflight_packet()` | `sidecars/value_path_activation_boundary_preflight.py:176` | MED — introduce params struct |
+| 17 args | `build_public_fetch_p2p_readiness_candidate()` | `sidecars/public_fetch_p2p_readiness.py:146` | MED |
+| 17 args | `build_wallet_action_semantics_preflight_packet()` | `sidecars/wallet_action_semantics_preflight.py:157` | MED |
+| 16 args | `build_transport_principal_public_path_preflight()` | `network/d2d/transport_principal_public_path_preflight.py:180` | MED |
+| 311 lines | `class ConsensusEngine` | `consensus/engine.py:129` | LOW — 11 lines over limit; split one method out |
+
+#### Suggested routing for code health
+
+1. **Resolved before Phase 1332:** `ilc_core/sim/` is now in `EXCLUDE_DIRS` in `test_code_health.py`, so simulation-only harness bulk no longer dominates the code-health report.
+2. **Fix4 (alongside network hardening):** Address `build_transport_principal_admission_decision()` 28-arg issue (introduce `TransportPrincipalAdmissionParams` dataclass). Address `_validate_package_profile_integrity()` 415-line split.
+3. **Phase 1332 disposition:** Record remaining code-health violations with file:line and assign fix-before-1333 or carry-forward per item. The two release-gate functions (`build_atlas_g_006_*` and `build_source_allowlist_export_rehearsal`) should be fixed before Phase 1333 since Phase 1332 is auditing exactly those code paths.
+
+```text
+deferred_issues_register_recorded_window_1330_1342_2026_05_14
+code_health_test_sim_exclusion_required_before_phase_1332
+code_health_test_sim_exclusion_resolved_phase_1332
+code_health_refactor_candidates_recorded_window_1330_1342
+reputation_py_rewrite_deferred_window_1343_plus
+fix4_private_address_denial_cbor_size_cap_required_before_phase_1333
+```
+
 ## 10. Graph Delta
 
 ```text
