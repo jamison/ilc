@@ -19,9 +19,11 @@ CDL_028_DEPENDENCY = "cdl_028_fee_burn_split_ratified_phase_274.v0.1"
 PHASE_1345_EMISSION_RUNTIME_DEPENDENCY = EPOCH_EMISSION_RUNTIME_VERSION
 CDL_028_FEE_BURN_SPLIT_RUNTIME_TOKEN = "cdl_028_fee_burn_split_runtime_phase_1346.v0.1"
 FEE_BURN_10_PERCENT_GENESIS_POOL_TOKEN = "fee_burn_10_percent_genesis_pool_phase_1346"
-PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN = "production_fee_collection_not_activated_phase_1346"
+PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN = "fee_burn_not_activated_phase_1346"
 NO_DIRECT_FEE_BURN_STUB_FOUND_TOKEN = "no_direct_fee_burn_stub_found_phase_1346"
-FEE_COLLECTION_ACTIVATION_TOKEN = "phase_1366_soft_rc_eligible_true_fee_collection_activation_required"
+PRODUCTION_FEE_BURN_ACTIVATION_TOKEN = (
+    "phase_1366_soft_rc_eligible_true_value_path_activation_required"
+)
 
 FEE_BURN_RATIO = Decimal("0.10")
 GENESIS_BURN_POOL_LABEL = "genesis_burn_pool"
@@ -41,7 +43,7 @@ class EpochFeeBurnSplitQuote:
     remaining_fee_pool_ilc: Decimal
     genesis_burn_pool_label: str
     remaining_fee_pool_label: str
-    production_fee_collection_activated: bool
+    production_fee_burn_activated: bool
     decision_token: str
 
     def to_canonical_record(self) -> dict[str, Any]:
@@ -53,7 +55,7 @@ class EpochFeeBurnSplitQuote:
             "genesis_burn_pool_label": self.genesis_burn_pool_label,
             "issuance_epoch": self.issuance_epoch,
             "issuance_epoch_duration": self.issuance_epoch_duration,
-            "production_fee_collection_activated": self.production_fee_collection_activated,
+            "production_fee_burn_activated": self.production_fee_burn_activated,
             "remaining_fee_pool_ilc": _decimal_to_string(self.remaining_fee_pool_ilc),
             "remaining_fee_pool_label": self.remaining_fee_pool_label,
             "runtime_version": self.runtime_version,
@@ -124,15 +126,15 @@ def build_fee_burn_split_quote(
         remaining_fee_pool_ilc=remaining_fee_pool,
         genesis_burn_pool_label=GENESIS_BURN_POOL_LABEL,
         remaining_fee_pool_label=POST_CDL_028_REMAINING_FEE_POOL_LABEL,
-        production_fee_collection_activated=False,
-        decision_token=PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN,
+        production_fee_burn_activated=False,
+        decision_token=PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN,
     )
 
 
-def require_production_fee_collection_activation(activation_token: str | None = None) -> None:
-    if activation_token != FEE_COLLECTION_ACTIVATION_TOKEN:
-        raise ValueError(PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN)
-    raise ValueError("production_fee_collection_activation_not_implemented_phase_1346")
+def require_production_fee_burn_activation(activation_token: str | None = None) -> None:
+    if activation_token != PRODUCTION_FEE_BURN_ACTIVATION_TOKEN:
+        raise ValueError(PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN)
+    raise ValueError("production_fee_burn_activation_not_implemented_phase_1346")
 
 
 __all__ = [
@@ -141,14 +143,14 @@ __all__ = [
     "FEE_BURN_10_PERCENT_GENESIS_POOL_TOKEN",
     "FEE_BURN_RATIO",
     "FEE_BURN_SPLIT_RUNTIME_VERSION",
-    "FEE_COLLECTION_ACTIVATION_TOKEN",
     "GENESIS_BURN_POOL_LABEL",
     "NO_DIRECT_FEE_BURN_STUB_FOUND_TOKEN",
     "POST_CDL_028_REMAINING_FEE_POOL_LABEL",
     "PHASE_1345_EMISSION_RUNTIME_DEPENDENCY",
-    "PRODUCTION_FEE_COLLECTION_NOT_ACTIVATED_TOKEN",
+    "PRODUCTION_FEE_BURN_ACTIVATION_TOKEN",
+    "PRODUCTION_FEE_BURN_NOT_ACTIVATED_TOKEN",
     "EpochFeeBurnSplitQuote",
     "build_fee_burn_split_quote",
     "require_cdl_028_fee_burn_ratio",
-    "require_production_fee_collection_activation",
+    "require_production_fee_burn_activation",
 ]
