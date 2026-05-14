@@ -500,7 +500,8 @@ contains the full Rust DAG-BFT crate with 4-validator M-009 testnet config.
 HIGH-002 fixed (Phase 842). CDL-067 ratified (Phase 709). Option B selected
 (Phase 814). Remaining: `ilc_core/` production gRPC/QUIC bridge (~1 phase);
 HIGH-001 two-layer defense (~1 phase); multi-operator non-loopback testnet
-(~1 phase); SEC-007a/b updates; CDL-053/CDL-057 governance ceremony (~1 phase).
+(~1 phase); SEC-007a/b updates; non-CDL-053 blocking-authority vehicle
+selection plus CDL-057 activation review (~1 phase).
 SEC-004 live rotation wiring is scaffolded in `fast_path.rs` and gates on
 CDL-017 (already Phase 1353).
 
@@ -520,6 +521,10 @@ window_1343_1368_sequence_lock_committed
 context_capsule_v5_56_window_1343_sequence_lock_phase_1343.v0.1
 phase_1344_issuance_stack_scoping_next
 cdl_053_vehicle_collision_recorded_phase_1343
+issuance_stack_scoping_phase_1344.v0.1
+cdl_053_vehicle_collision_resolved_or_rerouted_phase_1344
+blocking_authority_vehicle_must_not_be_cdl_053_phase_1344
+phase_1345_emission_engine_next
 ```
 
 **Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
@@ -529,6 +534,17 @@ status, but also recorded a vehicle collision: this plan's Phase 1362 currently
 uses CDL-053 for blocking-authority activation, while older canon reserves
 CDL-053 for Werner-credit architecture. Phase 1344 must resolve or reroute that
 vehicle before any Phase 1362 prompt is executable.
+
+**Phase 1344 execution addendum:** Phase 1344 published
+`docs/specs/ilc_issuance_stack_scoping_window_1343_1368_v0.1.md` and records
+`issuance_stack_scoping_phase_1344.v0.1`,
+`cdl_053_vehicle_collision_resolved_or_rerouted_phase_1344`, and
+`blocking_authority_vehicle_must_not_be_cdl_053_phase_1344`. Phase 1344 resolves
+the vehicle collision by rerouting blocking-authority vehicle selection away
+from CDL-053. Phase 1362 must choose or open a non-CDL-053 vehicle if blocking
+authority is still desired. Phase 1344 also binds Phase 1345 to the Phase 267
+CDL-025 evidence, Phase 273/275/298/600 `C_max` chain, and Phase 276 CDL-027
+halving evidence, while preserving `production_minting_not_authorized_phase_1344`.
 
 ### Three-window post-1342 structure
 
@@ -561,7 +577,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | Phase | Scope | CDL/ADR closed | Notes |
 |-------|-------|----------------|-------|
 | 1343 | Sequence lock + capsule v5.56 | — | SENSITIVE gate; explicit `GO Phase 1343` required |
-| 1344 | Issuance stack scoping: production architecture for CDL-025/026/027/028/029 emission engine; design document before any implementation | CDL-025/026/027 design | NON-SENSITIVE doc after sequence lock |
+| 1344 | Issuance stack scoping: production architecture for CDL-025/026/027/028/029 emission engine; design document before any implementation; CDL-053 collision rerouted away from blocking authority | CDL-025/026/027 design | COMPLETE; records `issuance_stack_scoping_phase_1344.v0.1`; no implementation or production minting authority |
 | 1345 | Production epoch emission engine: CDL-025/026/027 halving schedule runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | SENSITIVE; first production minting code |
 | 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | SENSITIVE; economic surface |
 | 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | SENSITIVE; economic surface |
@@ -579,7 +595,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1359 | HIGH-001 two-layer defense: log-redaction runtime (replace plaintext AgentID in validator logs); transfer mixing/k-anonymity framework; required before any sender-privacy claim | M-022 HIGH-001 | SENSITIVE; security surface; moves from Window 1391+ |
 | 1360 | Multi-operator non-loopback Mysticeti testnet: run 4-validator testnet across geographically distinct VPSs (M-009 was loopback-only); SEC-007a/b dependency updates (tonic 0.13+ upgrade resolving `protoc-bin-vendored` and `rand 0.8.6` Dependabot alerts) | ADR-0028, M-022 | SENSITIVE |
 | 1361 | CDL-043/044 adaptive pruning completion: adaptive threshold logic per CDL-043 SIM-003 calibration anchors; CDL-044 `retention_epochs` as constitutionally-bound constant (not caller parameter); LMDB graph-level pruning path; CDL-071 Tier-2 epoch-scope enforcement | CDL-043, CDL-044 | SENSITIVE; moves from Window 1391+ |
-| 1362 | Blocking-authority vehicle opening: Phase 1343 records a CDL-053 vehicle collision because older canon reserves CDL-053 for Werner-credit architecture; Phase 1344 must reroute or explicitly resolve before this prompt is executable | TBD vehicle, CDL-057 | SENSITIVE; explicit `GO Phase 1362` required; CDL mutation; moves from Window 1391+ |
+| 1362 | Blocking-authority vehicle opening: Phase 1344 rerouted this away from CDL-053; select or open a non-CDL-053 vehicle if blocking authority remains desired | non-CDL-053 vehicle, CDL-057 | SENSITIVE; explicit `GO Phase 1362` required; CDL mutation; moves from Window 1391+ |
 | 1363 | Blocking-authority deliberation/prelock: resolve open questions from Phase 1362; lock blocking-authority scope and any CDL-055/CDL-030 interaction clauses | TBD vehicle, CDL-057 | SENSITIVE |
 | 1364 | Blocking-authority ratification + CDL-057 activation: ratify the selected vehicle; flip `BLOCKING_AUTHORITY_DEFERRED = True` -> `False` in `epoch_boundary_witness_runtime.py`; epoch-boundary witness lane becomes a blocking lane | TBD vehicle, CDL-057 | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
 | 1365 | Capsule refresh (v5.57) + coherence report | — | NON-SENSITIVE after sequence lock |
