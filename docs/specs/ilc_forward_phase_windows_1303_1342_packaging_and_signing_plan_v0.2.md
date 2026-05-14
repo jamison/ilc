@@ -544,6 +544,10 @@ genesis_overhead_cap_blocked_guard_phase_1347_fix1
 genesis_overhead_cap_blocked_dust_routing_deferred
 cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor
 split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1
+cdl_054_validator_reward_pool_routing_runtime_phase_1349.v0.1
+cdl_047_treasury_dependency_phase_1349
+validator_reward_distribution_not_activated_phase_1349
+no_direct_validator_reward_stub_found_phase_1349
 ```
 
 **Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
@@ -614,6 +618,18 @@ CDL-029 allocation quotes: 80% routes to `performer_reward_pool`, 15% routes to
 rounding residual routes to genesis overhead to preserve total balance, and
 production distribution remains inactive.
 
+**Phase 1349 execution addendum:** Phase 1349 added
+`ilc_core/epoch/validator_reward_pool_routing_runtime.py` and records
+`cdl_054_validator_reward_pool_routing_runtime_phase_1349.v0.1`,
+`cdl_047_treasury_dependency_phase_1349`,
+`validator_reward_distribution_not_activated_phase_1349`,
+`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
+`no_direct_validator_reward_stub_found_phase_1349`. The runtime computes
+Decimal-only CDL-054 validator reward-pool routing quotes: a `Decimal("0.02")`
+SIM-010 validator reward fraction routes from the write-fee-burn pool through
+the existing CDL-047 treasury cap/floor/velocity framework, and production
+reward distribution remains inactive.
+
 ### Three-window post-1342 structure
 
 ```
@@ -651,7 +667,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | COMPLETE; records `production_distribution_not_activated_phase_1347`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production distribution or ledger write |
 | 1347 Fix1 | Runtime-only theta-hard guard: clarify allocator as split quote, add Decimal `THETA_HARD_ILC`, fail closed when caller reports Genesis overhead cap-blocked | CDL-029 implementation guard | COMPLETE; records `genesis_overhead_cap_blocked_dust_routing_deferred`; no CDL mutation; post-theta_hard routing policy deferred to Phase 1351a |
 | 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, 0.91 velocity alert floor monitoring) | CDL-047 | COMPLETE; records `treasury_not_activated_phase_1348`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no treasury activation or ledger write |
-| 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | SENSITIVE; economic surface |
+| 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | COMPLETE; records `validator_reward_distribution_not_activated_phase_1349`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production reward distribution or ledger write |
 | 1350 | CDL-083 ejected stake treasury distribution: close `NotImplementedError` in `epoch_attribution_settle_runtime.py`; H-CON-02 quorum guard required | CDL-083 | SENSITIVE; economic surface |
 | 1351 | CDL-030 ECU price clamp runtime (P_min/P_max bounds derived from CDL-027 schedule) | CDL-030 | SENSITIVE; economic surface |
 | 1351a | CDL-029 post-theta_hard residual routing policy: verify CDL-V7 upheld-refutation recipient semantics, design Decimal-only cap-block signal, ratify or carry forward recipient/fallback rule | CDL-029/CDL-V7 interaction | SENSITIVE governance phase before Phase 1352; Phase 1347a prompt remains DRAFT until respecified |
@@ -687,6 +703,14 @@ and `split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1`.
 This repair is runtime-only. It does not mutate CDL-029, import the float-based
 Genesis accrual governor, or implement the post-theta_hard recipient/fallback
 policy now routed to Phase 1351a.
+
+Phase 1349 execution addendum: `cdl_054_validator_reward_pool_routing_runtime_phase_1349.v0.1`,
+`cdl_047_treasury_dependency_phase_1349`,
+`validator_reward_distribution_not_activated_phase_1349`,
+`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
+`no_direct_validator_reward_stub_found_phase_1349`. This phase is runtime-only
+and default-off. It does not mutate CDL-054, activate reward distribution, or
+write ledger state.
 
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
