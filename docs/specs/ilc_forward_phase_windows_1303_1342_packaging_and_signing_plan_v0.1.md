@@ -458,6 +458,22 @@ agents, or local ILC identities are Genesis-rooted unless a prior identity
 bootstrap ADR/CDL or equivalent spec has defined and rehearsed the required
 agent birth attestation or equivalent Genesis-rooted identity-origin proof.
 
+Phase 1338 executed on 2026-05-14 and selected no-activation carry-forward:
+
+```text
+wallet_ecu_ilc_activation_or_carry_forward_gate_phase_1338.v0.1
+wallet_ecu_ilc_activation_or_carry_forward_gate_verdict=carry_forward_no_activation
+phase_1338_status=complete_carry_forward_no_activation
+phase_1339_atlas_g_mutation_regeneration_finalization_next
+public_rc_remains_blocked_after_phase_1338
+```
+
+The carry-forward preserves the future wallet/ECU/ILC lane without implying any
+current wallet-facing withdrawal/transfer/spend request, wallet-provider
+signing, wallet-provider ledger-write, wallet write, withdrawal runtime, ECU
+minting, ILC settlement, settlement-root publication, public claim endpoint, or
+value-path activation.
+
 ## 5. Window 1343+ — Public Claimability, Identity Bootstrap, and Post-RC Lanes
 
 **Recorded:** 2026-05-14. Planning-only guidance. No window is open until a
@@ -584,7 +600,7 @@ launch picture:
 
 | Lane | Notes |
 |------|-------|
-| Wallet/ECU/ILC full activation (Phase 1338 carry-forward) | Requires Phase 1355 public claimability pass + wallet provider integration; route to a dedicated window after Window 1343+ closes |
+| Wallet/ECU/ILC full activation (Phase 1338 no-activation carry-forward) | Requires Phase 1355 public claimability pass + wallet provider integration; route to a dedicated window after Window 1343+ closes |
 | Public P2P/sidecar serving (Phase 1337 first-RC exclusion) | Requires Rust public-P2P substrate ADR (M-5) and TransportPrincipal activation; route to a dedicated window |
 | ATLAS-G-007/008 unsigned v0.2+ candidate and non-excisability review | Route to Phase 1339 (Window 1330-1342) if not already closed; if carried forward from 1342, route to Window 1357+ |
 | ATLAS-G-009/010 v0.2 signing ceremony | Route to Phase 1340 if not carried; otherwise Window 1357+; requires `GO Phase 1340: authorize v0.2 signing ceremony` |
