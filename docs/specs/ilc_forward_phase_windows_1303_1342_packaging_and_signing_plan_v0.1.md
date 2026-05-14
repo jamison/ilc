@@ -435,6 +435,21 @@ exclusion of public sidecar serving while keeping local/private sidecar suite
 operation. Public sidecar serving must not be inferred from successful local
 OpenClaw droplet tests.
 
+Phase 1337 executed on 2026-05-14 and selected explicit first-RC exclusion:
+
+```text
+public_path_sidecar_activation_or_exclusion_gate_phase_1337.v0.1
+public_path_sidecar_activation_or_exclusion_gate_verdict=excluded_from_first_rc
+phase_1337_status=complete_excluded_from_first_rc
+phase_1338_wallet_ecu_ilc_activation_gate_next
+public_rc_remains_blocked_after_phase_1337
+```
+
+The exclusion preserves the future public serving lane without implying any
+current public TransportPrincipal path, public P2P/fetch, public sidecar
+projection serving, public listener, peer discovery, non-loopback bind, or
+public confidential coordination serving.
+
 Phase 1341 must not imply a public confidential messaging or coordination
 product unless Phase 1337 explicitly selected and passed that scope.
 
@@ -570,12 +585,12 @@ launch picture:
 | Lane | Notes |
 |------|-------|
 | Wallet/ECU/ILC full activation (Phase 1338 carry-forward) | Requires Phase 1355 public claimability pass + wallet provider integration; route to a dedicated window after Window 1343+ closes |
-| Public P2P/sidecar serving (Phase 1337 carry-forward) | Requires Rust public-P2P substrate ADR (M-5) and TransportPrincipal activation; route to a dedicated window |
+| Public P2P/sidecar serving (Phase 1337 first-RC exclusion) | Requires Rust public-P2P substrate ADR (M-5) and TransportPrincipal activation; route to a dedicated window |
 | ATLAS-G-007/008 unsigned v0.2+ candidate and non-excisability review | Route to Phase 1339 (Window 1330-1342) if not already closed; if carried forward from 1342, route to Window 1357+ |
 | ATLAS-G-009/010 v0.2 signing ceremony | Route to Phase 1340 if not carried; otherwise Window 1357+; requires `GO Phase 1340: authorize v0.2 signing ceremony` |
 | Counsel/publication full clearance (CLA, trademark, IP filing) | Post-claimability; route to post-RC lane |
 | `reputation.py` Decimal/version-token/governance rewrite (H11) | Requires governance/CDL pass; route to Window 1357+ or a dedicated governance window |
-| CCSS public serving activation (Phase 1337 carry-forward) | Route to post-claimability if selected; private/local CCSS evidence is not public authority |
+| CCSS public serving activation (Phase 1337 first-RC exclusion) | Route to post-claimability if selected; private/local CCSS evidence is not public authority |
 
 ```text
 wallet_ecu_ilc_full_activation_deferred_window_1357_plus

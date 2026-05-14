@@ -498,6 +498,40 @@ Atlas mutation/signing, or v0.2 signing.
 Phase 1337 is now the next sensitive gate and requires explicit future
 `GO Phase 1337`.
 
+## 9.4 Phase 1337 Execution Addendum
+
+Phase 1337 executed after explicit `GO Phase 1337` and closed the public path,
+sidecar, P2P, and confidential coordination serving activation-or-exclusion gate
+as explicit first-RC exclusion:
+
+```text
+public_path_sidecar_activation_or_exclusion_gate_phase_1337.v0.1
+transport_principal_public_path_requires_explicit_authority_phase_1337
+public_sidecar_projection_serving_requires_explicit_authority_phase_1337
+public_confidential_coordination_serving_requires_explicit_authority_phase_1337
+phase_1338_wallet_ecu_ilc_activation_gate_next
+public_rc_remains_blocked_after_phase_1337
+```
+
+Gate result: `excluded_from_first_rc`; binary verdict:
+`public_path_sidecar_activation_or_exclusion_gate_verdict=excluded_from_first_rc`;
+status token: `phase_1337_status=complete_excluded_from_first_rc`. The gate
+confirmed TransportPrincipal public path remains local-only, public P2P/fetch
+remains default-off, non-loopback bind/public listener/peer discovery remain not
+enabled, sidecar projection serving remains local-only, sidecar registry public-
+serving flags remain false, and CCSS private droplet evidence remains private/
+local evidence only.
+
+Phase 1337 did not activate TransportPrincipal public path, public P2P, public
+fetch serving, public listener, peer discovery, non-loopback bind, public
+sidecar/projection serving, public confidential coordination serving, public
+claimability/API, wallet value paths, source publication, package publication,
+release signing, public RC claim, identity bootstrap, CDL mutation, CDL-088
+opening, Genesis/Atlas mutation/signing, or v0.2 signing.
+
+Phase 1338 is now the next sensitive gate and requires explicit future
+`GO Phase 1338`.
+
 ## 10. Graph Delta
 
 ```text
@@ -521,4 +555,7 @@ graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1342_g
 graph_delta=support_only:docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json,docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.md -> planning/frontier
 graph_delta=support_tests_added:tests/test_phase_1336_public_claimability_api_activation_or_carry_forward_gate.py -> validation
 graph_delta=support_only:docs/phases/phase_1336_public_claimability_api_activation_or_carry_forward_gate_walkthrough.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json,docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.md -> planning/frontier
+graph_delta=support_tests_added:tests/test_phase_1337_public_path_sidecar_activation_or_exclusion_gate.py -> validation
+graph_delta=support_only:docs/phases/phase_1337_public_path_sidecar_activation_or_exclusion_gate_walkthrough.md -> planning/frontier
 ```

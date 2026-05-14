@@ -1,0 +1,205 @@
+{
+  "authority_decision": {
+    "activation_decision": "exclude_from_first_rc",
+    "explicit_public_path_activation_authority_present": false,
+    "gate_execution_authorized_by_go_phase_1337": true,
+    "phase_go_token": "GO Phase 1337",
+    "public_confidential_coordination_serving_requires_explicit_authority": true,
+    "public_sidecar_projection_serving_requires_explicit_authority": true,
+    "transport_principal_public_path_requires_explicit_authority": true
+  },
+  "blockers": [
+    {
+      "blocker_id": "explicit_public_path_authority_missing",
+      "carry_forward_route": "post_phase_1342_public_transport_sidecar_serving_window",
+      "evidence": "Phase 1337 GO authorizes gate execution only; no explicit public-path activation authority, host, bind, listener, auth, or rollback scope was supplied.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "rust_public_p2p_substrate_gate_not_satisfied",
+      "carry_forward_route": "public_p2p_sidecar_serving_deferred_window_1357_plus_pending_rust_p2p_adr",
+      "evidence": "Phase 1313 records gate_required_not_satisfied and rust_public_p2p_substrate_gate_still_required_phase_1313.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "transport_principal_public_path_not_authorized",
+      "carry_forward_route": "future_public_transport_principal_activation_lane",
+      "evidence": "Phase 1309 records transport_principal_public_path_not_activated_phase_1309 and Phase 1310 records hostile_network_public_path_still_blocked_phase_1310.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_bind_listener_peer_discovery_not_authorized",
+      "carry_forward_route": "future_public_bind_listener_peer_discovery_authority_gate",
+      "evidence": "Phase 1298 records non_loopback_bind_not_enabled_phase_1298, public_listener_not_enabled_phase_1298, and peer_discovery_not_enabled_phase_1298.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_sidecar_projection_serving_not_authorized",
+      "carry_forward_route": "future_public_sidecar_projection_serving_gate",
+      "evidence": "Phase 1311/1312 projection substrate remains local-only with public_sidecar_projection_serving_not_enabled_phase_1312.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_confidential_coordination_serving_not_selected",
+      "carry_forward_route": "post_claimability_or_dedicated_ccss_public_serving_window_if_selected",
+      "evidence": "CCSS forward plan states private/local CCSS evidence is not public authority; Phase 1328 droplet dry run is private-only.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "atlas_g_signing_publication_preconditions_not_closed",
+      "carry_forward_route": "phase_1339_1341_atlas_g_signing_publication_gates",
+      "evidence": "Phase 1337 prompt requires exclusion/carry-forward if public serving would precede Atlas-G tail/signing and publication gates.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "source_publication_release_public_rc_claim_not_authorized",
+      "carry_forward_route": "phase_1341_public_rc_publication_claim_gate_or_carry_forward",
+      "evidence": "Phase 1333/1334/1335 produced local evidence and unsigned metadata only; source publication, package publication, release signing, and public RC claim remain blocked.",
+      "status": "open"
+    }
+  ],
+  "claim_table": [
+    {
+      "claim": "Phase 1337 prompt is executable and validates against the antigravity schema.",
+      "file_or_symbol_checked": "docs/antigravity_tasks/antigravity_prompt__phase_1337_g8_public_path_sidecar_activation_or_exclusion_gate.md; tools/validate_phase_prompt.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Public P2P and public fetch serving remain default-off.",
+      "file_or_symbol_checked": "docs/specs/ilc_public_fetch_p2p_activation_candidate_default_off_1313_v0.1.md; ilc_core/sidecars/public_fetch_p2p_readiness.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "TransportPrincipal public path remains local-only and not activated.",
+      "file_or_symbol_checked": "docs/specs/ilc_transport_principal_admission_sidecar_lifecycle_1309_v0.1.md; docs/specs/ilc_revocation_replay_admission_ban_tests_1310_v0.1.md; ilc_core/sidecars/transport_principal_admission.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Sidecar projection serving remains local-only and no public listener/bind/peer discovery authority is active.",
+      "file_or_symbol_checked": "docs/specs/ilc_projection_privacy_field_filtering_tests_1312_v0.1.md; docs/specs/ilc_sidecar_bind_listener_peer_discovery_authority_preflight_1298_v0.1.md; ilc_core/sidecars/local_graph_memory_projection.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "CCSS private droplet success is private evidence only and not public confidential coordination serving authority.",
+      "file_or_symbol_checked": "docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md; CCSS-001 through CCSS-005 specs and registry flags",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Sidecar registry records public-serving flags as false for current sidecar profiles.",
+      "file_or_symbol_checked": "ilc_core/sidecars/registry_manifest.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Phase 1336 left public claimability/API unactivated and Phase 1338 is the next wallet/ECU/ILC gate after Phase 1337.",
+      "file_or_symbol_checked": "docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json; Phase 1337 prompt",
+      "result": "confirmed"
+    }
+  ],
+  "discovery": {
+    "known_token_audit_result": "required tokens existed only in the Phase 1337 prompt before this report and are now recorded here",
+    "mempalace_result": "advisory tier_b_planning query returned older transport-planning hits but no current canon superseding direct repo reads",
+    "source_expansion_result": "direct-read Phase 1296, 1298, 1309, 1310, 1312, 1313, 1328, 1336, graph-native sidecar architecture, CCSS forward plan, registry/code surfaces, planning index, STATUS, and capsule v5.55",
+    "unknown_unknown_discovery_token": "unknown_unknown_discovery_required_before_phase_execution"
+  },
+  "graph_delta": "graph_delta=support_only:docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json -> planning/frontier",
+  "manifest_hash": "2793dc586bbe70e75bbd01389664b13421f0a8f64b4b1662a13223113ccd9941",
+  "mode": "public_path_sidecar_activation_or_exclusion_gate",
+  "next_phase": "phase_1338_wallet_ecu_ilc_activation_gate_next",
+  "non_authorization_floor": {
+    "cdl_088_opening_authorized": false,
+    "cdl_mutation_authorized": false,
+    "ecu_minting_authorized": false,
+    "genesis_atlas_mutation_or_signing_authorized": false,
+    "identity_artifact_creation_authorized": false,
+    "identity_bootstrap_authorized": false,
+    "ilc_settlement_authorized": false,
+    "non_loopback_bind_authorized": false,
+    "peer_discovery_authorized": false,
+    "public_claimability_api_activation_authorized": false,
+    "public_confidential_coordination_serving_authorized": false,
+    "public_fetch_serving_authorized": false,
+    "public_listener_authorized": false,
+    "public_p2p_authorized": false,
+    "public_package_publication_authorized": false,
+    "public_projection_endpoint_serving_authorized": false,
+    "public_rc_publication_claim_authorized": false,
+    "public_repository_publication_authorized": false,
+    "public_sidecar_projection_serving_authorized": false,
+    "release_artifact_production_authorized": false,
+    "release_envelope_production_authorized": false,
+    "release_key_generation_authorized": false,
+    "release_signature_production_authorized": false,
+    "release_signing_authorized": false,
+    "source_publication_authorized": false,
+    "transport_principal_public_path_authorized": false,
+    "v0_2_signing_authorized": false,
+    "wallet_ledger_write_authorized": false,
+    "wallet_signing_authorized": false,
+    "wallet_spend_request_authorized": false,
+    "wallet_transfer_request_authorized": false,
+    "wallet_withdrawal_request_authorized": false
+  },
+  "phase": 1337,
+  "public_path_decision_table": [
+    {
+      "public_serving_enabled": false,
+      "reason": "transport_principal_public_path_requires_explicit_authority_phase_1337",
+      "status": "excluded_from_first_rc",
+      "surface": "transport_principal_public_path"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "rust_public_p2p_substrate_gate_still_required_phase_1313",
+      "status": "excluded_from_first_rc",
+      "surface": "public_p2p"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "public_fetch_serving_default_off_phase_1313",
+      "status": "excluded_from_first_rc",
+      "surface": "public_fetch_serving"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "public_sidecar_projection_serving_requires_explicit_authority_phase_1337",
+      "status": "excluded_from_first_rc",
+      "surface": "public_sidecar_projection_serving"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "public_confidential_coordination_serving_requires_explicit_authority_phase_1337",
+      "status": "excluded_from_first_rc",
+      "surface": "public_confidential_coordination_serving"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "public_listener_not_enabled_phase_1298",
+      "status": "excluded_from_first_rc",
+      "surface": "public_listener"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "peer_discovery_not_enabled_phase_1298",
+      "status": "excluded_from_first_rc",
+      "surface": "peer_discovery"
+    },
+    {
+      "public_serving_enabled": false,
+      "reason": "non_loopback_bind_not_enabled_phase_1298",
+      "status": "excluded_from_first_rc",
+      "surface": "non_loopback_bind"
+    }
+  ],
+  "public_path_sidecar_activation_or_exclusion_gate_verdict": "public_path_sidecar_activation_or_exclusion_gate_verdict=excluded_from_first_rc",
+  "public_rc_remains_blocked": true,
+  "required_tokens": [
+    "public_path_sidecar_activation_or_exclusion_gate_phase_1337.v0.1",
+    "transport_principal_public_path_requires_explicit_authority_phase_1337",
+    "public_sidecar_projection_serving_requires_explicit_authority_phase_1337",
+    "public_confidential_coordination_serving_requires_explicit_authority_phase_1337",
+    "phase_1338_wallet_ecu_ilc_activation_gate_next",
+    "public_rc_remains_blocked_after_phase_1337"
+  ],
+  "result": "excluded_from_first_rc",
+  "schema_version": "public_path_sidecar_activation_or_exclusion_gate_phase_1337.v0.1"
+}
