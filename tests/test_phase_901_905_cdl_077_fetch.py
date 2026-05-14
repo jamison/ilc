@@ -21,6 +21,7 @@ import subprocess
 import time
 import urllib.request
 import ssl
+import collections
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
@@ -174,6 +175,17 @@ def test_rate_limiter_identities_are_independent():
     # agent-x is blocked, agent-y is not
     assert limiter.check_and_consume("agent-x") is False
     assert limiter.check_and_consume("agent-y") is True
+
+
+def test_rate_limiter_caps_bucket_count_with_fifo_eviction():
+    limiter = FetchRateLimiter(limit_per_minute=1, max_buckets=3)
+    assert isinstance(limiter._buckets, collections.OrderedDict)
+    assert limiter.check_and_consume("agent-a") is True
+    assert limiter.check_and_consume("agent-b") is True
+    assert limiter.check_and_consume("agent-c") is True
+    assert limiter.check_and_consume("agent-d") is True
+    assert len(limiter._buckets) == 3
+    assert "agent-a" not in limiter._buckets
 
 
 # ---------------------------------------------------------------------------

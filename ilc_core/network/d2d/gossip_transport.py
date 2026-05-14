@@ -21,6 +21,7 @@ CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "cdl_060_gossip_runtime_548.v0.1"
 GOSSIP_URL_PREFIX = "/ilc/gossip/"
 HOP_COUNT_SINGLE = 1
+MAX_GOSSIP_TYPE_BYTES = 128
 REQUIRED_HEADERS = frozenset({
     "ILC-Gossip-Type",
     "ILC-Channel",
@@ -72,6 +73,16 @@ def _require_non_empty_string(value: Any, error_token: str) -> str:
     return normalized
 
 
+def _require_gossip_type(value: Any) -> str:
+    normalized = _require_non_empty_string(
+        value,
+        "gossip_message_type_must_be_non_empty_string",
+    )
+    if len(normalized.encode("utf-8")) > MAX_GOSSIP_TYPE_BYTES:
+        raise ValueError("gossip_message_type_too_long")
+    return normalized
+
+
 def _require_non_negative_int(value: Any, error_token: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ValueError(error_token)
@@ -109,10 +120,7 @@ def _validated_epoch_header(value: Any) -> int:
 
 
 def gossip_request_path(message_type: str) -> str:
-    normalized = _require_non_empty_string(
-        message_type,
-        "gossip_message_type_must_be_non_empty_string",
-    )
+    normalized = _require_gossip_type(message_type)
     return f"{GOSSIP_URL_PREFIX}{normalized}"
 
 
@@ -124,10 +132,7 @@ def build_gossip_headers(
     signature: str,
     content_type: str = "application/cbor",
 ) -> dict[str, str]:
-    normalized_type = _require_non_empty_string(
-        gossip_type,
-        "gossip_message_type_must_be_non_empty_string",
-    )
+    normalized_type = _require_gossip_type(gossip_type)
     normalized_channel = _validated_channel(channel)
     normalized_epoch = _require_non_negative_int(epoch, "epoch_must_be_non_negative")
     normalized_hop_count = _require_non_negative_int(
@@ -170,10 +175,7 @@ def validate_gossip_headers(headers: dict[str, str]) -> bool:
 
     _validated_channel(headers["ILC-Channel"])
     _validated_content_type(headers["Content-Type"])
-    _require_non_empty_string(
-        headers["ILC-Gossip-Type"],
-        "gossip_message_type_must_be_non_empty_string",
-    )
+    _require_gossip_type(headers["ILC-Gossip-Type"])
     _require_non_empty_string(
         headers["ILC-Signature"],
         "gossip_signature_must_be_non_empty_string",

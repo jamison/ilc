@@ -38,6 +38,7 @@ PAYLOAD_TOO_LARGE_TOKEN = "gossip_payload_too_large"
 PAYLOAD_READ_TIMEOUT_TOKEN = "gossip_payload_read_timeout"
 PAYLOAD_INCOMPLETE_TOKEN = "gossip_payload_incomplete"
 CONTENT_LENGTH_INVALID_TOKEN = "gossip_content_length_invalid"
+TRANSFER_ENCODING_UNSUPPORTED_TOKEN = "gossip_transfer_encoding_not_supported"
 _EVENT_LOG_MAX = 10_000
 
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != GOSSIP_TRANSPORT_DEPENDENCY:
@@ -260,6 +261,18 @@ class HttpGossipTransportRuntime:
         class _Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:  # noqa: N802
                 headers = {key: value for key, value in self.headers.items()}
+                transfer_encoding = self.headers.get("Transfer-Encoding")
+                if transfer_encoding is not None:
+                    runtime._record(
+                        "incoming_envelope_rejected",
+                        token=TRANSFER_ENCODING_UNSUPPORTED_TOKEN,
+                        transfer_encoding=str(transfer_encoding),
+                    )
+                    runtime.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    self.close_connection = True
+                    self.send_response(gossip_transport.HTTP_STATUS_ENVELOPE_ERROR)
+                    self.end_headers()
+                    return
                 try:
                     content_length = runtime._validated_content_length(
                         self.headers.get("Content-Length")
