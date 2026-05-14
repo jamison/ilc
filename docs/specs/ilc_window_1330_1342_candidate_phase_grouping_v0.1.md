@@ -465,6 +465,39 @@ CDL-088 opening.
 Phase 1336 is now the next sensitive gate and requires explicit future
 `GO Phase 1336`.
 
+## 9.3 Phase 1336 Execution Addendum
+
+Phase 1336 executed after explicit `GO Phase 1336` and closed the public
+claimability/API activation-or-carry-forward gate as an explicit no-claim
+carry-forward:
+
+```text
+public_claimability_api_activation_or_carry_forward_gate_phase_1336.v0.1
+public_claimability_requires_explicit_authority_phase_1336
+claimability_replay_nullifier_policy_checked_phase_1336
+wallet_value_actions_still_separate_gate_phase_1336
+phase_1337_public_path_sidecar_activation_or_exclusion_gate_next
+public_rc_remains_blocked_after_phase_1336
+```
+
+Gate result: `no_claim_carry_forward`; binary verdict:
+`public_claimability_api_activation_or_carry_forward_gate_verdict=no_claim_carry_forward`;
+status token: `phase_1336_status=complete_no_claim_carry_forward`. The gate
+confirmed the local claimability verifier remains local-only, replay/nullifier
+and duplicate-claim policy remain gated, CDL-088 is not opened, identity
+bootstrap and Genesis-rooted agent birth attestation remain unspecified,
+legacy `/v1/public/*` FastAPI routes remain a cleanup blocker, and public
+verifier API counsel clearance is not recorded.
+
+Phase 1336 did not activate a public claimability API, public verifier service,
+public claim endpoint, public route, non-loopback bind, wallet value path, ECU
+mint, ILC settlement, source publication, package publication, release signing,
+public RC claim, identity bootstrap, CDL mutation, CDL-088 opening, Genesis/
+Atlas mutation/signing, or v0.2 signing.
+
+Phase 1337 is now the next sensitive gate and requires explicit future
+`GO Phase 1337`.
+
 ## 10. Graph Delta
 
 ```text
@@ -485,4 +518,7 @@ graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1339_g
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1340_g8_v0_2_signing_ceremony_gate.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1341_g8_public_rc_publication_claim_gate.md -> planning/frontier
 graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1342_g8_window_1330_1342_closure_handoff.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json,docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.md -> planning/frontier
+graph_delta=support_tests_added:tests/test_phase_1336_public_claimability_api_activation_or_carry_forward_gate.py -> validation
+graph_delta=support_only:docs/phases/phase_1336_public_claimability_api_activation_or_carry_forward_gate_walkthrough.md -> planning/frontier
 ```
