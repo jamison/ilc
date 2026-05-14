@@ -563,9 +563,10 @@ claim endpoint, value-path activation, source publication, package publication,
 release signing, public RC claim, identity bootstrap, CDL mutation, CDL-088
 opening, Genesis/Atlas mutation/signing, or v0.2 signing.
 
-Phase 1339 executed after explicit `GO Phase 1339`; Phase 1340 is now the next
-sensitive gate and requires explicit future
-`GO Phase 1340: authorize v0.2 signing ceremony`.
+Phase 1339 executed after explicit `GO Phase 1339`; Phase 1340 later executed
+after exact authority phrase `GO Phase 1340: authorize v0.2 signing ceremony`.
+Phase 1341 is now the next sensitive gate and requires explicit future
+`GO Phase 1341: authorize public RC publication/claim`.
 
 ## 9.6 Phase 1339 Execution Addendum
 
@@ -597,6 +598,40 @@ Phase 1339 did not execute Genesis v0.2 signing, release signing, signature
 production, public RC claim, public launch claim, public activation, wallet
 value-path activation, CDL mutation, CDL-088 opening, counsel approval, patent
 filing, trademark-policy publication, or legal conclusion.
+
+## 9.7 Phase 1340 Execution Addendum
+
+Phase 1340 executed after exact authority phrase
+`GO Phase 1340: authorize v0.2 signing ceremony` and completed the v0.2 signing
+ceremony gate:
+
+```text
+v0_2_signing_ceremony_gate_phase_1340.v0.1
+v0_2_signing_requires_explicit_authority_phase_1340
+atlas_g_009_root_envelope_prep_checked_phase_1340
+atlas_g_010_signing_ceremony_checked_phase_1340
+atlas_g_009_signing_root_envelope_prep_required_no_signing
+atlas_g_010_v0_2_signing_only_if_explicitly_authorized
+phase_1341_public_rc_publication_claim_gate_next
+public_rc_remains_blocked_after_phase_1340
+```
+
+Gate result: `v0_2_signed`; binary verdict:
+`v0_2_signing_ceremony_gate_verdict=pass`. The gate prepared the ATLAS-G-009
+signing root envelope, signed the canonical Genesis Atlas v0.2 root envelope
+through the Phase 1335 operator-local release-key boundary, and verified the
+signature against the Phase 1335 public key. The root envelope hash is
+`sha256:a636a373d194d19f735683ad826b856458d9328acbeb02f82267efb530ebb36a`;
+the signature hash is
+`sha256:3bce9ce494529aaf2f2f2c8856cea4d5702a142ba9690fd2d021fb9adc5c80d2`;
+verification result is `signature_verified`.
+
+Phase 1340 does not authorize release signing, public RC publication/claim,
+source publication, public repository publication, public package publication,
+public launch claim, public activation, identity bootstrap, wallet value-path
+activation, CDL mutation, CDL-088 opening, counsel approval, patent filing,
+trademark-policy publication, or legal conclusion. Phase 1341 remains a
+separate explicit gate.
 
 ## 10. Graph Delta
 
@@ -632,4 +667,9 @@ graph_delta=load_bearing_artifact_added:docs/specs/ilc_atlas_g_tail_finalization
 graph_delta=support_tests_added:tests/test_phase_1339_atlas_g_tail_finalization.py -> validation
 graph_delta=support_only:docs/phases/phase_1339_atlas_g_mutation_regeneration_finalization_walkthrough.md -> planning/frontier
 graph_delta=support_only:docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md -> planning/frontier
+graph_delta=load_bearing_artifact_added:out/genesis_atlas_v0_2_signing_root_envelope_phase_1340.json,out/genesis_atlas_v0_2_signing_root_envelope_phase_1340.sig -> genesis_atlas_v0_2_signed_release_candidate
+graph_delta=load_bearing_code_added:ilc_core/rc/genesis_v0_2_signing_ceremony_gate.py -> rc/genesis-v0-2-signing-ceremony-gate
+graph_delta=load_bearing_artifact_added:docs/specs/ilc_v0_2_signing_ceremony_gate_1340_v0.1.json,docs/specs/ilc_v0_2_signing_ceremony_gate_1340_v0.1.md -> genesis-atlas-v0-2-signing-evidence
+graph_delta=support_tests_added:tests/test_phase_1340_v0_2_signing_ceremony_gate.py -> validation
+graph_delta=support_only:docs/phases/phase_1340_v0_2_signing_ceremony_gate_walkthrough.md -> planning/frontier
 ```
