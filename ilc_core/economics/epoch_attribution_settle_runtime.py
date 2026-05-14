@@ -14,7 +14,7 @@ with geometric decay ECU payout.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from typing import TYPE_CHECKING, Optional
 
 from ilc_core.types import (
@@ -42,6 +42,32 @@ HCON02_VOTE_THRESHOLD_NUMERATOR = 2         # Q2: exact 2/3 — integer arithmet
 HCON02_VOTE_THRESHOLD_DENOMINATOR = 3       # Q2: exact 2/3 — integer arithmetic only
 
 _ZERO = Decimal("0")
+_PAYOUT_QUANTUM = Decimal("0.000000001")
+
+
+def _quantize_payout(amount: Decimal) -> Decimal:
+    return amount.quantize(_PAYOUT_QUANTUM, rounding=ROUND_DOWN)
+
+
+def _stake_proportional_payouts(
+    total_amount: Decimal,
+    members: dict[str, Decimal],
+    total_stake: Decimal,
+) -> list[tuple[str, Decimal]]:
+    """Allocate a proportional Decimal amount with deterministic residual handling."""
+    if not members or total_stake == _ZERO:
+        return []
+    running_total = _ZERO
+    ordered_members = sorted(members.items(), key=lambda item: item[0])
+    payouts: list[tuple[str, Decimal]] = []
+    for index, (agent_id, stake) in enumerate(ordered_members):
+        if index == len(ordered_members) - 1:
+            share = total_amount - running_total
+        else:
+            share = _quantize_payout(total_amount * (stake / total_stake))
+            running_total += share
+        payouts.append((agent_id, share))
+    return payouts
 
 
 def _require_non_empty_string(value: object, error_token: str) -> str:
@@ -154,11 +180,7 @@ def evaluate_ejected_stake_vote(
     if total_stake == _ZERO:
         return (True, [])
 
-    payouts: list[tuple[str, Decimal]] = []
-    for agent_id, stake in members.items():
-        share = ejected_stake * (stake / total_stake)
-        payouts.append((agent_id, share))
-    return (True, payouts)
+    return (True, _stake_proportional_payouts(ejected_stake, members, total_stake))
 
 
 @dataclass(frozen=True)
@@ -241,10 +263,13 @@ def settle_attribution_batch(
             if total_stake == _ZERO:
                 # Pathological: members present but all zero stakes — safe skip.
                 continue
-            for member_id, member_stake in members.items():
-                fraction = member_stake / total_stake
-                payout = REUSE_ATTRIBUTION_RATE * fraction
-                payouts.append((member_id, payout))
+            payouts.extend(
+                _stake_proportional_payouts(
+                    REUSE_ATTRIBUTION_RATE,
+                    members,
+                    total_stake,
+                )
+            )
 
         elif attr_event.edge_type == EdgeType.REFUTATION:
             # §5.4 CDL-083: caller-filter guarantees only upheld REFUTATION
@@ -288,7 +313,7 @@ def settle_attribution_batch(
                     continue
                 # Q2: geometric decay — alpha^(hop+1), where hop_index 0 = hop 1.
                 decay = PROVENANCE_DECAY_ALPHA ** (hop_index + 1)
-                payout = REUSE_ATTRIBUTION_RATE * decay
+                payout = _quantize_payout(REUSE_ATTRIBUTION_RATE * decay)
                 payouts.append((creator_id, payout))
             provenance_events_processed += 1
 

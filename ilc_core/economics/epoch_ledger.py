@@ -44,7 +44,11 @@ class SimpleEpochLedger:
             agg.rewards_paid += stats.rewards_paid
         return agg
 
-    def clearing_price(self, epoch: int | None = None, eps: Decimal = Decimal("1e-9")) -> float:
+    def clearing_price(
+        self,
+        epoch: int | None = None,
+        eps: Decimal = Decimal("0.000000001"),
+    ) -> Decimal:
         """
         If epoch is None -> use aggregate across all epochs.
         Otherwise -> use that epoch's stats.
@@ -57,16 +61,14 @@ class SimpleEpochLedger:
             stats = self.get_epoch_stats(epoch)
 
         if stats.ecu_spent <= Decimal("0"):
-            return 0.0
-        # Price signal only: balances remain Decimal, but the sandbox exposes
-        # this derived ratio as float for existing plotting/telemetry callers.
-        return float(stats.rewards_paid / max(eps, stats.ecu_spent))
+            return Decimal("0")
+        return stats.rewards_paid / max(eps, stats.ecu_spent)
 
 
 def _coerce_decimal(value: object, token: str) -> Decimal:
-    if isinstance(value, bool):
+    if isinstance(value, (bool, float)):
         raise ValueError(token)
-    if not isinstance(value, (Decimal, int, float, str)):
+    if not isinstance(value, (Decimal, int, str)):
         raise ValueError(token)
     try:
         amount = value if isinstance(value, Decimal) else Decimal(str(value))

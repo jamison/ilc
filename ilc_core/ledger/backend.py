@@ -8,7 +8,7 @@ Phase 70B: In-memory only, no persistence, snapshot-based distribution + stub fa
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from typing import Literal, Optional, TypeAlias, TypedDict, cast
 
 try:
@@ -277,12 +277,21 @@ class InMemoryLedgerBackend(LedgerBackend):
         if snapshot.total_stake <= ZERO:
             return
 
-        for agent_id, stake in snapshot.stakes.items():
-            share = (stake / snapshot.total_stake) * total_rewards
+        running_total = ZERO
+        stake_items = sorted(snapshot.stakes.items(), key=lambda item: item[0])
+        for index, (agent_id, stake) in enumerate(stake_items):
+            if index == len(stake_items) - 1:
+                share = total_rewards - running_total
+            else:
+                share = ((stake / snapshot.total_stake) * total_rewards).quantize(
+                    Decimal("0.000000001"),
+                    rounding=ROUND_DOWN,
+                )
+                running_total += share
             current = self.balances.get(agent_id, ZERO)
             self._set_balance(agent_id, current + share)
 
-    def _set_balance(self, agent_id: str, new_balance: Decimal | int | float | str) -> None:
+    def _set_balance(self, agent_id: str, new_balance: Decimal | int | str) -> None:
         """Set an agent's balance."""
         self.balances[agent_id] = to_decimal(
             new_balance,

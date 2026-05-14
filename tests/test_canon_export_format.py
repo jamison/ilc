@@ -1,5 +1,6 @@
 import pytest
 from datetime import datetime
+from decimal import Decimal
 from ilc_core.ledger.canon_export_format import export_canon_format_v0_1
 
 class TestCanonExportFormat:
@@ -36,8 +37,8 @@ class TestCanonExportFormat:
             "computed_hash": "hash_abc_comp",
             "canon_export_version": "v0.0.1",
             "epochs": [{"epoch_id": "e1"}],
-            "snapshots": [{"epoch_id": "e1", "balances": {"a": 1.25}}],
-            "balances": {"a": 100.0, "b": 200.0},
+            "snapshots": [{"epoch_id": "e1", "balances": {"a": Decimal("1.25")}}],
+            "balances": {"a": Decimal("100"), "b": Decimal("200")},
         }
         
         export = export_canon_format_v0_1(canon_state)

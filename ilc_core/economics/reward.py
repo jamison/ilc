@@ -3,7 +3,7 @@ Reward helpers for the ILC economics sandbox.
 
 This module defines simple_claim_reward(...), which turns ECU-like stake_spent,
 hardware potential, and an entropy-weighted learning signal (optional success_rate)
-into a single float reward. It is used in simulations to explore incentives and
+into a single Decimal reward. It is used in simulations to explore incentives and
 does not yet define the final L1 protocol reward schedule.
 
 For how this is used in the economics sandbox and how it might map to future
@@ -19,7 +19,7 @@ from .entropy import entropy_weight
 def simple_claim_reward(
     stake_spent: Decimal,
     potential: Decimal = Decimal("0"),
-    success_rate: float | None = None,
+    success_rate: object | None = None,
 ) -> Decimal:
     """
     Compute an entropy-weighted reward for a single claim in the economics sandbox.
@@ -57,15 +57,15 @@ def simple_claim_reward(
     # 3. Optional Entropy Weighting (Phase 10)
     if success_rate is not None:
         w = entropy_weight(success_rate)
-        total *= Decimal(str(w))
+        total *= w
         
     return total
 
 
 def _reward_decimal(value: object, token: str) -> Decimal:
-    if isinstance(value, bool):
+    if isinstance(value, (bool, float)):
         raise ValueError(token)
-    if not isinstance(value, (Decimal, int, float, str)):
+    if not isinstance(value, (Decimal, int, str)):
         raise ValueError(token)
     try:
         amount = value if isinstance(value, Decimal) else Decimal(str(value))

@@ -5,6 +5,7 @@ import csv
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, Any
+from decimal import Decimal
 
 from ilc_core.ledger.backend import LedgerBackend, InMemoryLedgerBackend
 from ilc_core.ledger.ledger_export import (
@@ -26,7 +27,7 @@ def test_ledger_export_in_memory(tmp_path):
          "epoch_index": 1,
          "epoch_id": "ns:0001",
          "status": "settled",
-         "summary": {"tasks": 10, "reward": 50.0},
+         "summary": {"tasks": 10, "reward": "50"},
          "checksums": {"state": "abc"}
     }
     
@@ -44,16 +45,16 @@ def test_ledger_export_in_memory(tmp_path):
         ledger.balances = {} # type: ignore
         
     ledger.epoch_records["ns:0001"] = record_1
-    ledger.balances["agent_alice"] = 100.0
-    ledger.balances["agent_bob"] = 50.0
+    ledger.balances["agent_alice"] = Decimal("100")
+    ledger.balances["agent_bob"] = Decimal("50")
     
     # Snapshot
     snap = StakeSnapshot(
         epoch_id="ns:0001",
         epoch_index=1,
         namespace_id="ns",
-        stakes={"agent_alice": 1.0},
-        total_stake=1.0,
+        stakes={"agent_alice": Decimal("1")},
+        total_stake=Decimal("1"),
         created_at="2026-01-01T00:00:00Z"
     )
     ledger.stake_snapshots["ns:0001"] = snap
@@ -98,9 +99,9 @@ def test_export_ledger_distribution_checks_csv(tmp_path):
         {
             "epoch_id": "ns:0001",
             "ok": True,
-            "total_delta": 100.0,
-            "expected_total": 100.0,
-            "max_agent_error": 0.0,
+            "total_delta": "100",
+            "expected_total": "100",
+            "max_agent_error": "0",
             "top_errors": ["alice:0.000000", "bob:0.000001"],
             "input_hash": "deadbeef",
         }

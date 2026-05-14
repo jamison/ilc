@@ -13,19 +13,19 @@
             "id": "axiom:math:01",
             "claim": "1 + 1 = 2",
             "domain": "Arithmetic",
-            "weight": 1.0
+            "weight": "1.0"
         },
         {
             "id": "axiom:physics:01",
             "claim": "Entropy increases in an isolated system (2nd Law)",
             "domain": "Thermodynamics",
-            "weight": 1.0
+            "weight": "1.0"
         },
         {
             "id": "axiom:logic:01",
             "claim": "A thing is identical to itself (Law of Identity)",
             "domain": "Logic",
-            "weight": 1.0
+            "weight": "1.0"
         }
     ]
 }

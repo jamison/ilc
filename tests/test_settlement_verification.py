@@ -1,5 +1,6 @@
 
 import pytest
+from decimal import Decimal
 from ilc_core.ledger.settlement_verification import verify_stake_distribution
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 
@@ -9,19 +10,19 @@ def test_verify_stake_distribution_ok():
     """
     epoch_record = {
         "distribution_status": "distributed",
-        "summary": {"reward_total": 100.0}
+        "summary": {"reward_total": "100"}
     }
     
     snapshot = StakeSnapshot(
         epoch_id="test", epoch_index=1, namespace_id="ns",
-        stakes={"a": 10.0, "b": 30.0},
-        total_stake=40.0,
+        stakes={"a": Decimal("10"), "b": Decimal("30")},
+        total_stake=Decimal("40"),
         created_at="now"
     )
     
     # Expected: a gets 25, b gets 75
-    balances_before = {"a": 0.0, "b": 0.0}
-    balances_after = {"a": 25.0, "b": 75.0} # 100 total
+    balances_before = {"a": "0", "b": "0"}
+    balances_after = {"a": "25", "b": "75"} # 100 total
     
     result = verify_stake_distribution(epoch_record, snapshot, balances_before, balances_after)
     
@@ -37,13 +38,13 @@ def test_verify_stub_ok():
     """
     epoch_record = {
         "distribution_status": "stub_no_snapshot",
-        "summary": {"reward_total": 100.0}
+        "summary": {"reward_total": "100"}
     }
     # Snapshot might be None or irrelevant
     # Verification should handle None snapshot if stub status
     
-    balances_before = {"a": 10.0}
-    balances_after = {"a": 10.0}
+    balances_before = {"a": "10"}
+    balances_after = {"a": "10"}
     
     result = verify_stake_distribution(epoch_record, None, balances_before, balances_after)
     
@@ -57,18 +58,18 @@ def test_verify_mismatch():
     """
     epoch_record = {
         "distribution_status": "distributed",
-        "summary": {"reward_total": 100.0}
+        "summary": {"reward_total": "100"}
     }
     snapshot = StakeSnapshot(
         epoch_id="test", epoch_index=1, namespace_id="ns",
-        stakes={"a": 1.0},
-        total_stake=1.0,
+        stakes={"a": Decimal("1")},
+        total_stake=Decimal("1"),
         created_at="now"
     )
     
     # Expected: 100. Actual: 90
-    balances_before = {"a": 0.0}
-    balances_after = {"a": 90.0}
+    balances_before = {"a": "0"}
+    balances_after = {"a": "90"}
     
     result = verify_stake_distribution(epoch_record, snapshot, balances_before, balances_after)
     
@@ -84,18 +85,18 @@ def test_verify_extra_agent_leak():
     """
     epoch_record = {
         "distribution_status": "distributed",
-        "summary": {"reward_total": 10.0}
+        "summary": {"reward_total": "10"}
     }
     snapshot = StakeSnapshot(
         epoch_id="test", epoch_index=1, namespace_id="ns",
-        stakes={"a": 1.0},
-        total_stake=1.0,
+        stakes={"a": Decimal("1")},
+        total_stake=Decimal("1"),
         created_at="now"
     )
     
     # 'a' gets correct 10. But 'b' gets 5 from nowhere.
-    balances_before = {"a": 0.0, "b": 0.0}
-    balances_after = {"a": 10.0, "b": 5.0}
+    balances_before = {"a": "0", "b": "0"}
+    balances_after = {"a": "10", "b": "5"}
     
     result = verify_stake_distribution(epoch_record, snapshot, balances_before, balances_after)
     
@@ -108,10 +109,10 @@ def test_verify_distributed_without_snapshot_fails():
     """
     epoch_record = {
         "distribution_status": "distributed",
-        "summary": {"reward_total": 10.0}
+        "summary": {"reward_total": "10"}
     }
-    balances_before = {"a": 0.0}
-    balances_after = {"a": 10.0}
+    balances_before = {"a": "0"}
+    balances_after = {"a": "10"}
 
     result = verify_stake_distribution(epoch_record, None, balances_before, balances_after)
 
@@ -125,11 +126,11 @@ def test_verify_distributed_no_snapshot():
     """
     epoch_record = {
         "distribution_status": "distributed",
-        "summary": {"reward_total": 100.0}
+        "summary": {"reward_total": "100"}
     }
     # No snapshot
-    balances_before = {"a": 0.0}
-    balances_after = {"a": 10.0}
+    balances_before = {"a": "0"}
+    balances_after = {"a": "10"}
     
     result = verify_stake_distribution(epoch_record, None, balances_before, balances_after)
     

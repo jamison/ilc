@@ -4,6 +4,7 @@ import json
 import tempfile
 from pathlib import Path
 from dataclasses import asdict
+from decimal import Decimal
 
 from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.canon_export import export_canon_state_json
@@ -14,7 +15,7 @@ from ilc_core.ledger.canon_loader import (
 # Helper to generate a valid canon file
 def create_valid_canon(tmpdir, filename="canon.json"):
     ledger = InMemoryLedgerBackend()
-    ledger.balances = {"alice": 100.0}
+    ledger.balances = {"alice": Decimal("100")}
     path = Path(tmpdir) / filename
     return export_canon_state_json(ledger, path)
 
@@ -24,7 +25,7 @@ def test_load_valid_canon():
         
         # 1. Create valid export using actual export code
         ledger = InMemoryLedgerBackend()
-        ledger.balances = {"alice": 100.0}
+        ledger.balances = {"alice": Decimal("100")}
         export_canon_state_json(ledger, path)
         
         # 2. Load
