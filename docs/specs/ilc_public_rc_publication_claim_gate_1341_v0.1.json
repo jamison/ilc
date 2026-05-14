@@ -1,0 +1,404 @@
+{
+  "authority_decision": {
+    "authority_token": "explicit_phase_1341_public_rc_publication_claim_authority",
+    "explicit_authority_present": true,
+    "required_authority_phrase": "GO Phase 1341: authorize public RC publication/claim"
+  },
+  "blockers": [
+    {
+      "blocker_id": "publication_target_or_tag_not_selected",
+      "carry_forward_route": "future_phase_1341_retry_or_window_1342_handoff",
+      "evidence": "No public repository/package destination and immutable public RC tag were supplied.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "counsel_publication_clearance_missing",
+      "carry_forward_route": "window_1369_1390_counsel_public_api_and_publication_clearance",
+      "evidence": "Phase 1300 is inventory-only/no-publication; CDL-086 counsel disposition is provisional and not counsel-approved; LICENSING remains subject to later counsel review.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "release_artifact_not_release_signed",
+      "carry_forward_route": "future_release_signing_gate_before_public_distribution",
+      "evidence": "result=artifacts_produced_unsigned; artifact=out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz; hash=sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47; signing_status=unsigned",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_claimability_api_not_activated",
+      "carry_forward_route": "window_1369_1390_public_claimability_activation_lane",
+      "evidence": "result=no_claim_carry_forward; blockers=8",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_path_p2p_sidecar_serving_not_activated",
+      "carry_forward_route": "future_public_path_sidecar_serving_lane",
+      "evidence": "result=excluded_from_first_rc; blockers=8",
+      "status": "open"
+    },
+    {
+      "blocker_id": "wallet_ecu_ilc_value_path_not_activated",
+      "carry_forward_route": "window_1343_1368_issuance_value_path_prerequisites",
+      "evidence": "result=carry_forward_no_activation; blockers=12",
+      "status": "open"
+    }
+  ],
+  "claim_matrix": [
+    {
+      "claim_id": "clean_materialized_source_tree_exists",
+      "evidence": "result=executed_clean_export; files=329; tree_hash=f22fbfae7f2360c46b73c34978df9cccf21812f831a9bd7fcb30d90ecac3a1b3; marker_hits=0; dependency_hits=0",
+      "status": "closed"
+    },
+    {
+      "claim_id": "unsigned_release_artifact_exists",
+      "evidence": "result=artifacts_produced_unsigned; artifact=out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz; hash=sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47; signing_status=unsigned",
+      "status": "closed"
+    },
+    {
+      "claim_id": "release_key_envelope_metadata_exists",
+      "evidence": "result=keys_envelopes_generated; envelope_hash=sha256:4b26d11a5ee9008d41ad8449907b359f241f8d8a7863940694aef639222ed135; signing_status=unsigned",
+      "status": "closed"
+    },
+    {
+      "claim_id": "genesis_atlas_v0_2_root_envelope_signed",
+      "evidence": "gate_result=v0_2_signed; envelope_hash=sha256:a636a373d194d19f735683ad826b856458d9328acbeb02f82267efb530ebb36a; signature_hash=sha256:3bce9ce494529aaf2f2f2c8856cea4d5702a142ba9690fd2d021fb9adc5c80d2; verification=signature_verified",
+      "status": "closed"
+    },
+    {
+      "claim_id": "public_rc_publication_claim",
+      "evidence": "Phase 1341 fail-closed unless all selected blockers are closed.",
+      "status": "blocked"
+    }
+  ],
+  "dependency_chain": {
+    "counsel_publication_clearance": {
+      "evidence": "Phase 1300 is inventory-only/no-publication; CDL-086 counsel disposition is provisional and not counsel-approved; LICENSING remains subject to later counsel review.",
+      "paths": [
+        "docs/specs/ilc_counsel_ip_publication_clearance_inventory_1300_v0.1.md",
+        "docs/specs/ilc_cdl_086_counsel_disposition_1220_v0.1.md",
+        "LICENSING.md"
+      ],
+      "status": "open"
+    },
+    "phase_1333_source_export": {
+      "evidence": "result=executed_clean_export; files=329; tree_hash=f22fbfae7f2360c46b73c34978df9cccf21812f831a9bd7fcb30d90ecac3a1b3; marker_hits=0; dependency_hits=0",
+      "path": "docs/specs/ilc_source_allowlist_export_execution_gate_1333_v0.1.json",
+      "status": "closed"
+    },
+    "phase_1334_release_artifact": {
+      "artifact_hash": "sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "artifact_path": "out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz",
+      "artifact_status": "unsigned",
+      "evidence": "result=artifacts_produced_unsigned; artifact=out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz; hash=sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47; signing_status=unsigned",
+      "path": "docs/specs/ilc_release_artifact_production_gate_1334_v0.1.json",
+      "release_signing_closed": false,
+      "status": "closed",
+      "unsigned_policy": {
+        "all_artifacts_unsigned": true,
+        "keys_generated": false,
+        "release_envelopes_produced": false,
+        "result": "pass",
+        "signatures_produced": false,
+        "token": "release_artifacts_unsigned_by_default_phase_1334"
+      }
+    },
+    "phase_1335_release_key_envelope": {
+      "evidence": "result=keys_envelopes_generated; envelope_hash=sha256:4b26d11a5ee9008d41ad8449907b359f241f8d8a7863940694aef639222ed135; signing_status=unsigned",
+      "path": "docs/specs/ilc_release_keys_envelopes_generation_gate_1335_v0.1.json",
+      "release_envelope_hash": "sha256:4b26d11a5ee9008d41ad8449907b359f241f8d8a7863940694aef639222ed135",
+      "release_envelope_status": "unsigned",
+      "status": "closed"
+    },
+    "phase_1336_claimability": {
+      "blockers": [
+        {
+          "blocker_id": "explicit_public_claimability_authority_missing",
+          "carry_forward_route": "phase_1355_public_claimability_api_activation_retry_gate_after_window_1343_plus_predecessors",
+          "evidence": "Phase 1283 records public_claimability_authority_verdict_phase_1283=no_activation_no_public_api; Phase 1336 GO authorized gate execution, not public activation.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "replay_nullifier_policy_not_activated",
+          "carry_forward_route": "phase_1352_replay_nullifier_duplicate_claim_policy",
+          "evidence": "Phase 1306 records replay_nullifier_duplicate_claim_policy_still_gated_phase_1306 and Phase 1305 accepted-local blockers include replay_nullifier_policy_not_activated_phase_1305.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "duplicate_claim_registry_not_activated",
+          "carry_forward_route": "phase_1352_replay_nullifier_duplicate_claim_policy",
+          "evidence": "Phase 1305 accepted-local blockers include duplicate_claim_registry_not_activated_phase_1305.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "cdl_088_not_opened_or_ratified",
+          "carry_forward_route": "phase_1349_to_1351_cdl_088_open_deliberate_ratify",
+          "evidence": "CDL register lists CDL-087 as ratified and states CDL-088 remains separately gated; no CDL-088 row exists.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "genesis_rooted_agent_birth_attestation_unspecified",
+          "carry_forward_route": "phase_1345_agent_birth_attestation_adr",
+          "evidence": "Identity bootstrap remains blocked until a Genesis-rooted agent birth attestation or equivalent identity-origin proof is specified.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "identity_bootstrap_adr_cdl_not_ratified",
+          "carry_forward_route": "phase_1346_to_1348_identity_bootstrap_cdl",
+          "evidence": "CDL-069 runtime commitment formula is repaired, but no identity-bootstrap ceremony CDL/ADR has authorized identity artifacts, seeds, mnemonics, or secret-store writes.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "legacy_v1_public_fastapi_routes_not_cleaned",
+          "carry_forward_route": "phase_1353_legacy_fastapi_public_routes_cleanup",
+          "evidence": "Phase 1301 records legacy_public_labeled_fastapi_routes_carry_forward_phase_1301; ilc_core/server.py still contains /v1/public/* routes.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "public_verifier_api_counsel_clearance_missing",
+          "carry_forward_route": "phase_1354_public_verifier_api_counsel_clearance",
+          "evidence": "Layered license posture is provisional; counsel clearance for the specific public verifier API surface is not recorded.",
+          "status": "open"
+        }
+      ],
+      "evidence": "result=no_claim_carry_forward; blockers=8",
+      "path": "docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json",
+      "status": "open"
+    },
+    "phase_1337_public_path": {
+      "blockers": [
+        {
+          "blocker_id": "explicit_public_path_authority_missing",
+          "carry_forward_route": "post_phase_1342_public_transport_sidecar_serving_window",
+          "evidence": "Phase 1337 GO authorizes gate execution only; no explicit public-path activation authority, host, bind, listener, auth, or rollback scope was supplied.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "rust_public_p2p_substrate_gate_not_satisfied",
+          "carry_forward_route": "public_p2p_sidecar_serving_deferred_window_1357_plus_pending_rust_p2p_adr",
+          "evidence": "Phase 1313 records gate_required_not_satisfied and rust_public_p2p_substrate_gate_still_required_phase_1313.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "transport_principal_public_path_not_authorized",
+          "carry_forward_route": "future_public_transport_principal_activation_lane",
+          "evidence": "Phase 1309 records transport_principal_public_path_not_activated_phase_1309 and Phase 1310 records hostile_network_public_path_still_blocked_phase_1310.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "public_bind_listener_peer_discovery_not_authorized",
+          "carry_forward_route": "future_public_bind_listener_peer_discovery_authority_gate",
+          "evidence": "Phase 1298 records non_loopback_bind_not_enabled_phase_1298, public_listener_not_enabled_phase_1298, and peer_discovery_not_enabled_phase_1298.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "public_sidecar_projection_serving_not_authorized",
+          "carry_forward_route": "future_public_sidecar_projection_serving_gate",
+          "evidence": "Phase 1311/1312 projection substrate remains local-only with public_sidecar_projection_serving_not_enabled_phase_1312.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "public_confidential_coordination_serving_not_selected",
+          "carry_forward_route": "post_claimability_or_dedicated_ccss_public_serving_window_if_selected",
+          "evidence": "CCSS forward plan states private/local CCSS evidence is not public authority; Phase 1328 droplet dry run is private-only.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "atlas_g_signing_publication_preconditions_not_closed",
+          "carry_forward_route": "phase_1339_1341_atlas_g_signing_publication_gates",
+          "evidence": "Phase 1337 prompt requires exclusion/carry-forward if public serving would precede Atlas-G tail/signing and publication gates.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "source_publication_release_public_rc_claim_not_authorized",
+          "carry_forward_route": "phase_1341_public_rc_publication_claim_gate_or_carry_forward",
+          "evidence": "Phase 1333/1334/1335 produced local evidence and unsigned metadata only; source publication, package publication, release signing, and public RC claim remain blocked.",
+          "status": "open"
+        }
+      ],
+      "evidence": "result=excluded_from_first_rc; blockers=8",
+      "path": "docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json",
+      "status": "open"
+    },
+    "phase_1338_value_path": {
+      "blockers": [
+        {
+          "blocker_id": "explicit_value_path_activation_authority_missing",
+          "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+          "evidence": "Phase 1338 GO authorizes gate execution only; no explicit value-path activation authority, wallet-provider signing authority, ledger-write authority, ECU mint authority, or ILC settlement authority was supplied.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "public_claimability_api_not_activated",
+          "carry_forward_route": "phase_1355_public_claimability_api_revised_gate_after_window_1343_predecessors",
+          "evidence": "Phase 1336 recorded no_claim_carry_forward and no public verifier service, public claim endpoint, or public claimability API activation.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "replay_nullifier_duplicate_claim_policy_not_activated",
+          "carry_forward_route": "phase_1352_replay_nullifier_duplicate_claim_policy",
+          "evidence": "Phase 1336 records replay/nullifier and duplicate-claim policy as gated carry-forward blockers.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "cdl_088_not_opened_or_ratified",
+          "carry_forward_route": "phase_1349_to_1351_cdl_088_open_deliberate_ratify",
+          "evidence": "CDL-088 remains unopened; Phase 1338 did not authorize CDL mutation or CDL-088 opening.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "wallet_provider_signing_payload_contract_missing",
+          "carry_forward_route": "dedicated_wallet_provider_adapter_and_signing_intent_lane",
+          "evidence": "Phase 1314 and Phase 1315 list wallet signing key lifecycle, payload contract, and ledger-write replay policy as required-before-activation items.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "wallet_ledger_write_authority_and_replay_policy_missing",
+          "carry_forward_route": "dedicated_wallet_provider_adapter_and_signing_intent_lane",
+          "evidence": "Phase 1314 and Phase 1315 record wallet-provider ledger-write as not authorized and require replay policy before activation.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "ecu_mint_policy_and_supply_invariant_missing",
+          "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+          "evidence": "Phase 1315 requires ECU mint policy and supply invariant before ECU minting activation.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "ilc_settlement_authority_replay_policy_missing",
+          "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+          "evidence": "Phase 1315 requires ILC settlement authority and replay policy before ILC settlement activation.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "settlement_root_namespace_binding_contract_missing",
+          "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+          "evidence": "Phase 1315 requires a settlement root namespace and binding contract before settlement-root publication.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "withdrawal_runtime_contract_missing",
+          "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+          "evidence": "Phase 1315 requires a withdrawal runtime contract before withdrawal runtime or endpoint activation.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "atlas_g_signing_publication_preconditions_not_closed",
+          "carry_forward_route": "phase_1339_1341_atlas_g_signing_publication_gates",
+          "evidence": "Phase 1338 prompt requires carry-forward or review if value paths would be exposed before Atlas-G tail/signing and publication gates are closed.",
+          "status": "open"
+        },
+        {
+          "blocker_id": "public_rc_publication_claim_not_authorized",
+          "carry_forward_route": "phase_1341_public_rc_publication_claim_gate_or_carry_forward",
+          "evidence": "Phase 1338 does not authorize source publication, package publication, release signing, or public RC publication/claim.",
+          "status": "open"
+        }
+      ],
+      "evidence": "result=carry_forward_no_activation; blockers=12",
+      "path": "docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json",
+      "status": "open"
+    },
+    "phase_1340_v0_2_signing": {
+      "evidence": "gate_result=v0_2_signed; envelope_hash=sha256:a636a373d194d19f735683ad826b856458d9328acbeb02f82267efb530ebb36a; signature_hash=sha256:3bce9ce494529aaf2f2f2c8856cea4d5702a142ba9690fd2d021fb9adc5c80d2; verification=signature_verified",
+      "path": "docs/specs/ilc_v0_2_signing_ceremony_gate_1340_v0.1.json",
+      "status": "closed"
+    }
+  },
+  "discovery": {
+    "section_0a": "required tokens searched and anchored in report",
+    "section_0b": "searched public RC, publication, repository, package, release, claim, launch, license, counsel, CLA, trademark, patent, OpenClaw, ClawHub, claimability, P2P, sidecar, wallet, ECU, settlement, signing, and Genesis",
+    "section_0c": "searched blocked, deferred, not authorized, public rc remains blocked, do not publish, counsel review, patent, not installable, no public, and carry-forward",
+    "section_0d": "direct-read current reports and counsel/publication evidence; MemPalace used as advisory recall only"
+  },
+  "gate_result": "blocked_with_findings",
+  "graph_delta": "graph_delta=deferred:phase_1341_public_rc_publication_claim_blocked",
+  "manifest_hash": "sha256:eb9e044c906780b643748e4abfac4c43d9dda02d75c939ddc63722ef7d4d3a04",
+  "mode": "public_rc_publication_claim_gate",
+  "next_phase": "phase_1342_window_1330_1342_closure_next",
+  "non_authorization_floor": {
+    "cdl_088_opening_authorized": false,
+    "cdl_mutation_authorized": false,
+    "counsel_approval_authorized_or_recorded": false,
+    "identity_bootstrap_authorized": false,
+    "openclaw_clawhub_listing_authorized": false,
+    "package_publication_authorized_or_performed": false,
+    "patent_filing_authorized_or_performed": false,
+    "public_claimability_api_authorized": false,
+    "public_confidential_coordination_serving_authorized": false,
+    "public_p2p_fetch_sidecar_serving_authorized": false,
+    "public_rc_publication_claim_authority_present": true,
+    "public_rc_publication_claim_performed": false,
+    "public_repository_publication_performed": false,
+    "release_signing_authorized_or_performed": false,
+    "source_publication_performed": false,
+    "trademark_policy_publication_authorized_or_performed": false,
+    "wallet_ecu_ilc_activation_authorized": false
+  },
+  "non_claim_matrix": [
+    {
+      "claim_id": "public_claimability_api_activation",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "public_p2p_fetch_sidecar_serving_activation",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "public_confidential_coordination_serving",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "wallet_ecu_ilc_value_path_activation",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "identity_bootstrap_or_agent_birth_attestation",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "release_signing",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "counsel_legal_clearance",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "openclaw_clawhub_public_listing_or_installability",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    },
+    {
+      "claim_id": "cdl_mutation_or_cdl_088_opening",
+      "evidence": "Not selected or still blocked by prior gate reports.",
+      "status": "not_claimed"
+    }
+  ],
+  "phase": 1341,
+  "public_rc_publication_claim_gate_verdict": "public_rc_publication_claim_gate_verdict=blocked_with_findings",
+  "public_rc_remains_blocked": true,
+  "publication_action": {
+    "openclaw_clawhub_listing_performed": false,
+    "public_package_upload_performed": false,
+    "public_repository_push_performed": false,
+    "publication_performed": false,
+    "publication_tag": "not_selected",
+    "publication_target": "not_selected",
+    "source_publication_performed": false
+  },
+  "required_tokens": [
+    "public_rc_publication_claim_gate_phase_1341.v0.1",
+    "public_rc_publication_requires_explicit_authority_phase_1341",
+    "all_selected_public_rc_blockers_checked_phase_1341",
+    "unselected_public_claims_not_implied_phase_1341",
+    "phase_1342_window_1330_1342_closure_next",
+    "public_rc_publication_verdict_recorded_phase_1341"
+  ],
+  "schema_version": "public_rc_publication_claim_gate_phase_1341.v0.1"
+}
