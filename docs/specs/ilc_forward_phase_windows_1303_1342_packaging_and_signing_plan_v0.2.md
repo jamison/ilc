@@ -531,6 +531,10 @@ cdl_027_epoch_length_runtime_phase_1345.v0.1
 c_max_enforcement_runtime_phase_1345
 devnet_production_transition_gate_recorded_phase_1345
 production_minting_not_activated_phase_1345
+cdl_028_fee_burn_split_runtime_phase_1346.v0.1
+fee_burn_10_percent_genesis_pool_phase_1346
+production_fee_collection_not_activated_phase_1346
+no_direct_fee_burn_stub_found_phase_1346
 ```
 
 **Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
@@ -574,6 +578,17 @@ private soft-RC runtime gate only if Phase 1366 records `soft_rc_eligible=true`
 and Phase 1367 records `phase_1366_blockers_addressed_or_clean_pass_phase_1367`;
 otherwise it must record `production_minting_activation_deferred_phase_1368`.
 
+**Phase 1346 execution addendum:** Phase 1346 added
+`ilc_core/epoch/fee_burn_split_runtime.py` and records
+`cdl_028_fee_burn_split_runtime_phase_1346.v0.1`,
+`fee_burn_10_percent_genesis_pool_phase_1346`,
+`production_fee_collection_not_activated_phase_1346`, and
+`no_direct_fee_burn_stub_found_phase_1346`. The runtime computes Decimal-only
+CDL-028 fee-burn quotes: 10% of quantized per-epoch fees routes to
+`genesis_burn_pool`, the remaining 90% remains in
+`post_cdl_028_remaining_fee_pool`, and production fee collection remains
+inactive.
+
 ### Three-window post-1342 structure
 
 ```
@@ -607,7 +622,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1343 | Sequence lock + capsule v5.56 | — | SENSITIVE gate; explicit `GO Phase 1343` required |
 | 1344 | Issuance stack scoping: production architecture for CDL-025/026/027/028/029 emission engine; design document before any implementation; CDL-053 collision rerouted away from blocking authority | CDL-025/026/027 design | COMPLETE; records `issuance_stack_scoping_phase_1344.v0.1`; no implementation or production minting authority |
 | 1345 | Production epoch emission engine: CDL-025/026/027 non-activating quote runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | COMPLETE; records `production_minting_not_activated_phase_1345`; no ledger write or mint activation |
-| 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | SENSITIVE; economic surface |
+| 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | COMPLETE; records `production_fee_collection_not_activated_phase_1346`; no production fee collection or ledger write |
 | 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | SENSITIVE; economic surface |
 | 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, velocity alert trigger) | CDL-047 | SENSITIVE; economic surface |
 | 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | SENSITIVE; economic surface |
