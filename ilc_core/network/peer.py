@@ -8,6 +8,8 @@ import requests
 from pydantic import BaseModel
 from typing import Any, Callable, Set
 
+from ilc_core.network.d2d.gossip_peer_registry import reject_private_address_literal
+
 logger = logging.getLogger(__name__)
 
 PeerTimeout = tuple[float, float]
@@ -29,6 +31,7 @@ class PeerManager:
         connect_timeout_s: float = 2.0,
         read_timeout_s: float = 30.0,
         sender: PeerSender | None = None,
+        allow_private_peer_endpoints_for_tests: bool = False,
     ):
         if request_timeout_s is not None:
             connect_timeout_s = request_timeout_s
@@ -38,11 +41,14 @@ class PeerManager:
         self.request_timeout_s = request_timeout_s
         self.connect_timeout_s = connect_timeout_s
         self.read_timeout_s = read_timeout_s
+        self.allow_private_peer_endpoints_for_tests = allow_private_peer_endpoints_for_tests
         self.peers: Set[str] = set() # Set of "host:port" strings
         self.banned: Set[str] = set()
         self._sender = sender or _default_sender
 
     def add_peer(self, host: str, port: int):
+        if not self.allow_private_peer_endpoints_for_tests:
+            reject_private_address_literal(host)
         address = f"{host}:{port}"
         if address not in self.banned and address != f"127.0.0.1:{self.local_port}":
             self.peers.add(address)

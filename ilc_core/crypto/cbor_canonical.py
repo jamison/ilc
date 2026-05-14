@@ -14,6 +14,8 @@ from typing import Any
 
 import cbor2
 
+MAX_CANONICAL_CBOR_INPUT_BYTES = 1_048_576
+
 
 def cbor_dumps_canonical(obj: Any) -> bytes:
     """Encode object to canonical CBOR bytes.
@@ -44,6 +46,10 @@ def cbor_loads(data: bytes) -> Any:
     Raises:
         cbor2.CBORDecodeError: If data is malformed.
     """
+    if not isinstance(data, (bytes, bytearray)):
+        raise TypeError("CBOR data must be bytes")
+    if len(data) > MAX_CANONICAL_CBOR_INPUT_BYTES:
+        raise ValueError("cbor_input_exceeds_max_bytes_phase_1332_fix4")
     return cbor2.loads(data)
 
 
