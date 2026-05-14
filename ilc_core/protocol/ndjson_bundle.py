@@ -34,6 +34,7 @@ from ..encoding.cidv1 import parse_nodeid_strict
 
 DEFAULT_MAX_LINE_BYTES = 1_048_576  # 1 MiB
 DEFAULT_MAX_RECORDS_PER_BUNDLE = 100_000
+DEFAULT_MAX_MATERIALIZED_RECORDS_PER_BUNDLE = 10_000
 DEFAULT_MAX_TOTAL_BYTES_PER_BUNDLE = 64 * 1024 * 1024  # 64 MiB
 
 BUNDLE_VERSION = 1
@@ -533,9 +534,15 @@ def read_bundle(
     validate_footer: bool = True,
     max_line_bytes: int = DEFAULT_MAX_LINE_BYTES,
     max_records: int = DEFAULT_MAX_RECORDS_PER_BUNDLE,
+    max_materialized_records: int = DEFAULT_MAX_MATERIALIZED_RECORDS_PER_BUNDLE,
     max_total_bytes: int = DEFAULT_MAX_TOTAL_BYTES_PER_BUNDLE,
 ) -> dict:
-    """Read entire bundle into memory.
+    """Read a bounded bundle into memory.
+
+    Use iter_bundle() for large or remote/untrusted bundles.  This helper
+    materializes records into a list and therefore enforces a stricter
+    materialized-record cap in addition to the streaming parser's byte and
+    record limits.
     
     Returns:
         {
@@ -544,6 +551,13 @@ def read_bundle(
             "footer": footer_dict or None
         }
     """
+    if (
+        not isinstance(max_materialized_records, int)
+        or isinstance(max_materialized_records, bool)
+        or max_materialized_records < 0
+    ):
+        raise ValueError("max_materialized_records must be a non-negative integer")
+
     result: dict[str, Any] = {"header": None, "records": [], "footer": None}
     
     for event_type, obj in iter_bundle(
@@ -557,6 +571,12 @@ def read_bundle(
         if event_type == "header":
             result["header"] = obj
         elif event_type == "record":
+            if len(result["records"]) >= max_materialized_records:
+                raise ValueError(
+                    "NDJSON bundle exceeded max_materialized_records "
+                    f"({len(result['records']) + 1} records > "
+                    f"{max_materialized_records} limit)"
+                )
             result["records"].append(obj)
         elif event_type == "footer":
             result["footer"] = obj
