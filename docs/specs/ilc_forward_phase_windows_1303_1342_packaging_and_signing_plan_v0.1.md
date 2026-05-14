@@ -443,7 +443,149 @@ agents, or local ILC identities are Genesis-rooted unless a prior identity
 bootstrap ADR/CDL or equivalent spec has defined and rehearsed the required
 agent birth attestation or equivalent Genesis-rooted identity-origin proof.
 
-## 5. Non-Claims
+## 5. Window 1343+ — Public Claimability, Identity Bootstrap, and Post-RC Lanes
+
+**Recorded:** 2026-05-14. Planning-only guidance. No window is open until a
+Phase 1343 sequence lock is executed with explicit `GO Phase 1343`.
+
+```text
+forward_phase_windows_1343_plus_public_claimability_identity_bootstrap_plan_recorded
+window_1343_plus_not_open_until_sequence_lock
+cdl_088_opening_routed_window_1343_plus
+identity_bootstrap_adr_cdl_routed_window_1343_plus
+agent_birth_attestation_spec_routed_window_1343_plus
+replay_nullifier_duplicate_claim_policy_routed_window_1343_plus
+legacy_fastapi_public_routes_cleanup_routed_window_1343_plus
+public_claimability_api_revised_gate_routed_window_1343_plus
+public_rc_remains_blocked_until_window_1343_plus_blockers_closed
+```
+
+### Background and carry-forward basis
+
+Phase 1336 (Window 1330-1342) recorded an explicit no-claim carry-forward
+verdict:
+
+```text
+public_claimability_api_activation_or_carry_forward_gate_verdict=no_claim_carry_forward
+phase_1336_status=complete_no_claim_carry_forward
+```
+
+The following blockers are confirmed open as of Phase 1336 and have no closure
+phase assignment inside Window 1330-1342:
+
+| Blocker | Carry-forward source |
+|---------|---------------------|
+| CDL-088 not opened (constitutional gate for public claimability) | CDL register; Phase 1336 carry-forward |
+| Genesis-rooted agent birth attestation spec does not exist | Phase 1323 report; Window 1317-1329 handoff §7 |
+| Identity bootstrap ADR/CDL not drafted | CDL-069 note; Phase 1323 Fix3; forward plan §3 |
+| Replay/nullifier + duplicate-claim registry policy unwritten | Phase 1306; carried through Phase 1329 |
+| Legacy `/v1/public/*` FastAPI routes not cleaned up | Phase 1301 (`legacy_public_labeled_fastapi_routes_carry_forward_phase_1301`) |
+| Counsel clearance for public verifier API surface | Provisional only; CDL-086 C1–C5 instruments pending |
+
+The FastAPI route cleanup (Phase 1353) is a mechanical fix, but all governance
+blockers (CDL-088, agent birth attestation ADR, identity bootstrap CDL, replay/
+nullifier policy, counsel clearance) require governance decisions, new specs, or
+counsel engagement before activation is possible. Window 1343+ is the correct
+venue for all of them.
+
+### Window 1343 — Identity Bootstrap and CDL-088 Governance
+
+**Estimated phase count:** 8–12 phases.
+**Sensitivity:** All phases are SENSITIVE. CDL opening and ratification phases
+require explicit `GO <phase>` before execution. CDL mutation phases require
+`ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<N>`.
+
+| Phase | Scope | Blocker addressed | Notes |
+|-------|-------|-------------------|-------|
+| 1343 | Sequence lock for identity bootstrap and CDL-088 governance | Opens no identity artifact creation or CDL mutation authority by itself | High-authority gate; explicit `GO Phase 1343` required |
+| 1344 | Capsule refresh (v5.56) | Freezes blocker map before governance work | NON-SENSITIVE after sequence lock |
+| 1345 | Agent birth attestation ADR | Defines Genesis-rooted identity-origin proof: `agent_id` bound to signed Genesis/Atlas lineage anchor, optional private/local node commitments, non-custodial default, no private graph content as entropy | Prerequisite for identity bootstrap CDL; no identity artifact created |
+| 1346 | Identity bootstrap CDL opening | Opens a new CDL for non-custodial identity-seed path, ceremony modes (interactive + agent-mode), secure output target, no-stdout-fallback rule, and Genesis-rooted birth attestation linkage | SENSITIVE CDL opening; requires explicit `GO Phase 1346` |
+| 1347 | Identity bootstrap CDL deliberation and prelock | Deliberation record; resolves open questions from Phase 1346; locks parameters before ratification | SENSITIVE |
+| 1348 | Identity bootstrap CDL ratification | Ratifies the identity bootstrap CDL | SENSITIVE; requires `ILC_CDL_MUTATION_AUTHORIZED=1` |
+| 1349 | CDL-088 opening | Opens CDL-088 (public claimability authority, reciprocal scoring if included, ECU-escrow admission if included) | SENSITIVE; explicit `GO Phase 1349` required; scope must be bounded before opening |
+| 1350 | CDL-088 deliberation and prelock | Deliberation record; resolves open questions from Phase 1349 | SENSITIVE |
+| 1351 | CDL-088 ratification | Ratifies CDL-088 | SENSITIVE; requires `ILC_CDL_MUTATION_AUTHORIZED=1` |
+| 1352 | Replay/nullifier and duplicate-claim registry policy CDL or ADR | Defines: what counts as a replay, how duplicate claims are rejected at the public API layer, nullifier construction and storage, epoch-bounded expiry | SENSITIVE; required before any live claim endpoint |
+| 1353 | Legacy `/v1/public/*` FastAPI route cleanup | Removes or replaces the routes flagged in Phase 1301; proves no public-labeled route exists outside the authorized public verifier surface | Mechanical fix phase; SENSITIVE because it touches the public-facing server surface |
+| 1354 | Counsel clearance for public verifier API surface | Explicit counsel sign-off on the specific public claimability verifier API surface (narrower than full publication clearance) | SENSITIVE; blocks Phase 1355 |
+| 1355 | Public claimability/API activation retry gate | Re-executes the Phase 1336 gate with all predecessor blockers confirmed closed | SENSITIVE; requires explicit `GO Phase 1355`; fails closed if any predecessor is open |
+| 1356 | Window 1343+ closure handoff | Honest closure; carries forward anything still open | SENSITIVE |
+
+**Stop conditions for any phase in this window:**
+
+- Identity bootstrap CDL is not ratified and a phase attempts to create identity
+  artifacts, genesis records, seed commitments, mnemonics, private keys, or
+  secret-store writes.
+- CDL-088 is not ratified and a phase attempts to activate the public
+  claimability API or claim endpoint.
+- Replay/nullifier policy CDL/ADR is not closed and a phase attempts to activate
+  a live claim endpoint.
+- Any phase implies "public claimability is now active" without Phase 1355
+  producing an explicit `result=public_claimability_activated`.
+
+### Gate dependencies
+
+The strict dependency order within Window 1343+:
+
+```
+Phase 1343 sequence lock
+    → Phase 1344 capsule refresh
+        → Phase 1345 agent birth attestation ADR
+            → Phase 1346 identity bootstrap CDL opening
+                → Phase 1347 identity bootstrap CDL deliberation/prelock
+                    → Phase 1348 identity bootstrap CDL ratification
+        → Phase 1349 CDL-088 opening  (may be prepared in parallel but executes in phase order)
+            → Phase 1350 CDL-088 deliberation/prelock
+                → Phase 1351 CDL-088 ratification
+        → Phase 1352 replay/nullifier policy (may run after 1348, before 1354)
+        → Phase 1353 legacy FastAPI route cleanup
+        → Phase 1354 counsel clearance
+            → Phase 1355 public claimability activation retry gate
+                → Phase 1356 closure
+```
+
+CDL-088 scope drafting may be prepared in parallel with Phases 1346–1348
+(identity bootstrap CDL), but execution remains phase-ordered. If CDL-088 scope
+includes identity escrow or birth-attestation-gated claimability, Phase 1349
+must sequence after Phase 1348 ratification.
+
+### Non-authorization boundary for Window 1343+ plan
+
+This plan does not authorize Window 1343+ execution, CDL mutation, identity
+artifact creation, genesis record creation, seed commitment creation,
+`identity_seed_commitment` creation, dummy Agent Birth artifact creation,
+identity-seed generation, mnemonic generation, private-key generation,
+secret-store write, public claimability API activation, public claim endpoint
+activation, public verifier service activation, ECU minting, ILC settlement, or
+value-path activation. Each of those actions remains gated on the explicit phase
+authority that authorizes it.
+
+### Later post-RC lanes (Window 1357+)
+
+The following items are intentionally deferred beyond Window 1343+. They are
+not blockers on public claimability activation but are part of the full public
+launch picture:
+
+| Lane | Notes |
+|------|-------|
+| Wallet/ECU/ILC full activation (Phase 1338 carry-forward) | Requires Phase 1355 public claimability pass + wallet provider integration; route to a dedicated window after Window 1343+ closes |
+| Public P2P/sidecar serving (Phase 1337 carry-forward) | Requires Rust public-P2P substrate ADR (M-5) and TransportPrincipal activation; route to a dedicated window |
+| ATLAS-G-007/008 unsigned v0.2+ candidate and non-excisability review | Route to Phase 1339 (Window 1330-1342) if not already closed; if carried forward from 1342, route to Window 1357+ |
+| ATLAS-G-009/010 v0.2 signing ceremony | Route to Phase 1340 if not carried; otherwise Window 1357+; requires `GO Phase 1340: authorize v0.2 signing ceremony` |
+| Counsel/publication full clearance (CLA, trademark, IP filing) | Post-claimability; route to post-RC lane |
+| `reputation.py` Decimal/version-token/governance rewrite (H11) | Requires governance/CDL pass; route to Window 1357+ or a dedicated governance window |
+| CCSS public serving activation (Phase 1337 carry-forward) | Route to post-claimability if selected; private/local CCSS evidence is not public authority |
+
+```text
+wallet_ecu_ilc_full_activation_deferred_window_1357_plus
+public_p2p_sidecar_serving_deferred_window_1357_plus_pending_rust_p2p_adr
+atlas_g_tail_route_phase_1339_1340_or_window_1357_plus
+reputation_py_rewrite_deferred_window_1357_plus
+counsel_publication_full_clearance_deferred_post_rc
+```
+
+## 6. Non-Claims
 
 This plan does not authorize:
 
