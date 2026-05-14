@@ -532,6 +532,40 @@ opening, Genesis/Atlas mutation/signing, or v0.2 signing.
 Phase 1338 is now the next sensitive gate and requires explicit future
 `GO Phase 1338`.
 
+## 9.5 Phase 1338 Execution Addendum
+
+Phase 1338 executed after explicit `GO Phase 1338` and closed the wallet/ECU/
+ILC activation-or-carry-forward gate as no-activation carry-forward:
+
+```text
+wallet_ecu_ilc_activation_or_carry_forward_gate_phase_1338.v0.1
+wallet_provider_adapter_boundary_preserved_phase_1338
+ecu_minting_requires_explicit_authority_phase_1338
+ilc_settlement_requires_explicit_authority_phase_1338
+phase_1339_atlas_g_mutation_regeneration_finalization_next
+public_rc_remains_blocked_after_phase_1338
+```
+
+Gate result: `carry_forward_no_activation`; binary verdict:
+`wallet_ecu_ilc_activation_or_carry_forward_gate_verdict=carry_forward_no_activation`;
+status token: `phase_1338_status=complete_carry_forward_no_activation`. The gate
+confirmed wallet-facing withdrawal/transfer/spend semantics remain preflight-
+only, wallets remain provider adapters around ledger-truth objects, ECU minting
+and ILC settlement remain preflight-only and blocked, public wallet runtime
+exposes read/status/export/summary-style methods only, claimability verifier
+activation flags remain false, and the exact-numeric boundary rejects float and
+non-finite Decimal inputs.
+
+Phase 1338 did not activate wallet-facing requests, wallet-provider signing,
+wallet-provider ledger-write, wallet writes, withdrawal runtime, ECU minting,
+ECU creation, ILC settlement, ILC transfer, settlement-root publication, public
+claim endpoint, value-path activation, source publication, package publication,
+release signing, public RC claim, identity bootstrap, CDL mutation, CDL-088
+opening, Genesis/Atlas mutation/signing, or v0.2 signing.
+
+Phase 1339 is now the next sensitive gate and requires explicit future
+`GO Phase 1339`.
+
 ## 10. Graph Delta
 
 ```text
@@ -558,4 +592,7 @@ graph_delta=support_only:docs/phases/phase_1336_public_claimability_api_activati
 graph_delta=support_only:docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json,docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.md -> planning/frontier
 graph_delta=support_tests_added:tests/test_phase_1337_public_path_sidecar_activation_or_exclusion_gate.py -> validation
 graph_delta=support_only:docs/phases/phase_1337_public_path_sidecar_activation_or_exclusion_gate_walkthrough.md -> planning/frontier
+graph_delta=support_only:docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json,docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.md -> planning/frontier
+graph_delta=support_tests_added:tests/test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate.py -> validation
+graph_delta=support_only:docs/phases/phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate_walkthrough.md -> planning/frontier
 ```
