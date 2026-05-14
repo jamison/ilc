@@ -548,6 +548,10 @@ cdl_054_validator_reward_pool_routing_runtime_phase_1349.v0.1
 cdl_047_treasury_dependency_phase_1349
 validator_reward_distribution_not_activated_phase_1349
 no_direct_validator_reward_stub_found_phase_1349
+cdl_083_ejected_stake_treasury_distribution_phase_1350.v0.1
+h_con_02_quorum_guard_phase_1350
+epoch_attribution_settle_runtime_not_implemented_closed_phase_1350
+ejected_stake_distribution_not_activated_phase_1350
 ```
 
 **Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
@@ -630,6 +634,19 @@ SIM-010 validator reward fraction routes from the write-fee-burn pool through
 the existing CDL-047 treasury cap/floor/velocity framework, and production
 reward distribution remains inactive.
 
+**Phase 1350 execution addendum:** Phase 1350 updated
+`ilc_core/economics/epoch_attribution_settle_runtime.py`, repaired stale
+`ilc_core/types.py` comments, and records
+`cdl_083_ejected_stake_treasury_distribution_phase_1350.v0.1`,
+`h_con_02_quorum_guard_phase_1350`,
+`epoch_attribution_settle_runtime_not_implemented_closed_phase_1350`,
+`ejected_stake_distribution_not_activated_phase_1350`, and
+`phase_1366_soft_rc_eligible_true_value_path_activation_required`. Phase 1344
+and current Phase 1350 discovery found no live CDL-083 `NotImplementedError`;
+Phase 1350 therefore adds a default-off production quote boundary around the
+already-ratified H-CON-02 evaluator. Production stake distribution remains
+inactive.
+
 ### Three-window post-1342 structure
 
 ```
@@ -668,7 +685,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1347 Fix1 | Runtime-only theta-hard guard: clarify allocator as split quote, add Decimal `THETA_HARD_ILC`, fail closed when caller reports Genesis overhead cap-blocked | CDL-029 implementation guard | COMPLETE; records `genesis_overhead_cap_blocked_dust_routing_deferred`; no CDL mutation; post-theta_hard routing policy deferred to Phase 1351a |
 | 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, 0.91 velocity alert floor monitoring) | CDL-047 | COMPLETE; records `treasury_not_activated_phase_1348`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no treasury activation or ledger write |
 | 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | COMPLETE; records `validator_reward_distribution_not_activated_phase_1349`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production reward distribution or ledger write |
-| 1350 | CDL-083 ejected stake treasury distribution: close `NotImplementedError` in `epoch_attribution_settle_runtime.py`; H-CON-02 quorum guard required | CDL-083 | SENSITIVE; economic surface |
+| 1350 | CDL-083 ejected stake treasury distribution: default-off production boundary around existing H-CON-02 evaluator; stale `NotImplementedError` comments repaired | CDL-083 | COMPLETE; records `ejected_stake_distribution_not_activated_phase_1350`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production stake distribution or ledger write |
 | 1351 | CDL-030 ECU price clamp runtime (P_min/P_max bounds derived from CDL-027 schedule) | CDL-030 | SENSITIVE; economic surface |
 | 1351a | CDL-029 post-theta_hard residual routing policy: verify CDL-V7 upheld-refutation recipient semantics, design Decimal-only cap-block signal, ratify or carry forward recipient/fallback rule | CDL-029/CDL-V7 interaction | SENSITIVE governance phase before Phase 1352; Phase 1347a prompt remains DRAFT until respecified |
 | 1352 | Issuance economics integration gate: CDL-025–031/047/054/083 stack end-to-end, double-entry ledger invariant, epoch-boundary test | Integration gate | SENSITIVE gate; explicit `GO Phase 1352` required |
@@ -711,6 +728,14 @@ Phase 1349 execution addendum: `cdl_054_validator_reward_pool_routing_runtime_ph
 `no_direct_validator_reward_stub_found_phase_1349`. This phase is runtime-only
 and default-off. It does not mutate CDL-054, activate reward distribution, or
 write ledger state.
+
+Phase 1350 execution addendum: `cdl_083_ejected_stake_treasury_distribution_phase_1350.v0.1`,
+`h_con_02_quorum_guard_phase_1350`,
+`epoch_attribution_settle_runtime_not_implemented_closed_phase_1350`,
+`ejected_stake_distribution_not_activated_phase_1350`, and
+`phase_1366_soft_rc_eligible_true_value_path_activation_required`. This phase is
+runtime-only and default-off. It does not mutate CDL-083, activate stake
+distribution, or write ledger state.
 
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
