@@ -1,0 +1,292 @@
+{
+  "authority_decision": {
+    "activation_decision": "carry_forward_no_activation",
+    "explicit_value_path_activation_authority_present": false,
+    "gate_execution_authorized_by_go_phase_1338": true,
+    "phase_go_token": "GO Phase 1338",
+    "wallet_provider_adapter_boundary_preserved": true
+  },
+  "blockers": [
+    {
+      "blocker_id": "explicit_value_path_activation_authority_missing",
+      "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+      "evidence": "Phase 1338 GO authorizes gate execution only; no explicit value-path activation authority, wallet-provider signing authority, ledger-write authority, ECU mint authority, or ILC settlement authority was supplied.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_claimability_api_not_activated",
+      "carry_forward_route": "phase_1355_public_claimability_api_revised_gate_after_window_1343_predecessors",
+      "evidence": "Phase 1336 recorded no_claim_carry_forward and no public verifier service, public claim endpoint, or public claimability API activation.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "replay_nullifier_duplicate_claim_policy_not_activated",
+      "carry_forward_route": "phase_1352_replay_nullifier_duplicate_claim_policy",
+      "evidence": "Phase 1336 records replay/nullifier and duplicate-claim policy as gated carry-forward blockers.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "cdl_088_not_opened_or_ratified",
+      "carry_forward_route": "phase_1349_to_1351_cdl_088_open_deliberate_ratify",
+      "evidence": "CDL-088 remains unopened; Phase 1338 did not authorize CDL mutation or CDL-088 opening.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "wallet_provider_signing_payload_contract_missing",
+      "carry_forward_route": "dedicated_wallet_provider_adapter_and_signing_intent_lane",
+      "evidence": "Phase 1314 and Phase 1315 list wallet signing key lifecycle, payload contract, and ledger-write replay policy as required-before-activation items.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "wallet_ledger_write_authority_and_replay_policy_missing",
+      "carry_forward_route": "dedicated_wallet_provider_adapter_and_signing_intent_lane",
+      "evidence": "Phase 1314 and Phase 1315 record wallet-provider ledger-write as not authorized and require replay policy before activation.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "ecu_mint_policy_and_supply_invariant_missing",
+      "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+      "evidence": "Phase 1315 requires ECU mint policy and supply invariant before ECU minting activation.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "ilc_settlement_authority_replay_policy_missing",
+      "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+      "evidence": "Phase 1315 requires ILC settlement authority and replay policy before ILC settlement activation.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "settlement_root_namespace_binding_contract_missing",
+      "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+      "evidence": "Phase 1315 requires a settlement root namespace and binding contract before settlement-root publication.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "withdrawal_runtime_contract_missing",
+      "carry_forward_route": "wallet_ecu_ilc_full_activation_deferred_window_1357_plus",
+      "evidence": "Phase 1315 requires a withdrawal runtime contract before withdrawal runtime or endpoint activation.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "atlas_g_signing_publication_preconditions_not_closed",
+      "carry_forward_route": "phase_1339_1341_atlas_g_signing_publication_gates",
+      "evidence": "Phase 1338 prompt requires carry-forward or review if value paths would be exposed before Atlas-G tail/signing and publication gates are closed.",
+      "status": "open"
+    },
+    {
+      "blocker_id": "public_rc_publication_claim_not_authorized",
+      "carry_forward_route": "phase_1341_public_rc_publication_claim_gate_or_carry_forward",
+      "evidence": "Phase 1338 does not authorize source publication, package publication, release signing, or public RC publication/claim.",
+      "status": "open"
+    }
+  ],
+  "claim_table": [
+    {
+      "claim": "Phase 1338 prompt is executable and validates against the antigravity schema.",
+      "file_or_symbol_checked": "docs/antigravity_tasks/antigravity_prompt__phase_1338_g8_wallet_ecu_ilc_activation_or_carry_forward_gate.md; tools/validate_phase_prompt.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Wallet-facing withdrawal, transfer, and spend semantics are preflight-only and not activated.",
+      "file_or_symbol_checked": "docs/specs/ilc_wallet_withdrawal_transfer_spend_semantics_preflight_1314_v0.1.md; ilc_core/sidecars/wallet_action_semantics_preflight.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Wallets remain provider adapters around ledger-truth objects, not independent truth sources.",
+      "file_or_symbol_checked": "docs/specs/ilc_wallet_withdrawal_transfer_spend_semantics_preflight_1314_v0.1.md; docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+      "result": "confirmed"
+    },
+    {
+      "claim": "ECU minting, ILC settlement, withdrawal runtime, wallet write, and value-path activation remain preflight-only and blocked.",
+      "file_or_symbol_checked": "docs/specs/ilc_ecu_minting_ilc_settlement_boundary_preflight_1315_v0.1.md; ilc_core/sidecars/value_path_activation_boundary_preflight.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Public wallet runtime exposes read/status/export/summary-style surfaces only and no withdrawal, transfer, spend, signing, or ledger-write method.",
+      "file_or_symbol_checked": "ilc_core/protocol/public_wallet_runtime.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Claimability verifier keeps wallet, ECU mint, ILC settlement, and public API activation fields false.",
+      "file_or_symbol_checked": "ilc_core/sidecars/claimability_receipt_verifier.py",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Exact numeric hardening rejects float and non-finite Decimal values at runtime boundaries relevant to value-path activation.",
+      "file_or_symbol_checked": "ilc_core/ledger/exact_numeric.py; Phase 1331 Fix2 evidence",
+      "result": "confirmed"
+    },
+    {
+      "claim": "Phase 1339 is the next Atlas-G mutation/regeneration finalization gate after Phase 1338.",
+      "file_or_symbol_checked": "docs/antigravity_tasks/antigravity_prompt__phase_1338_g8_wallet_ecu_ilc_activation_or_carry_forward_gate.md; docs/specs/ilc_window_1330_1342_candidate_phase_grouping_v0.1.md",
+      "result": "confirmed"
+    }
+  ],
+  "discovery": {
+    "known_token_audit_result": "required tokens existed only in the Phase 1338 prompt before this report and are now recorded here",
+    "mempalace_result": "advisory tier_b_planning query returned older research/planning hits but no current canon superseding direct repo reads",
+    "source_expansion_result": "direct-read Phase 1314, Phase 1315, Phase 1336, Phase 1337, capsule v5.55, graph-native sidecar architecture, registry/code surfaces, public wallet runtime, lifecycle runtime, exact numeric guard, planning index, and STATUS",
+    "unknown_unknown_discovery_token": "unknown_unknown_discovery_required_before_phase_execution"
+  },
+  "exact_numeric_safety_checks": {
+    "float_economics_introduced_by_phase_1338": false,
+    "non_finite_decimal_allowed_by_exact_numeric_boundary": false,
+    "runtime_code_changed": false,
+    "source_evidence": [
+      "ilc_core/ledger/exact_numeric.py rejects bool, float, and non-finite Decimal inputs",
+      "Phase 1331 Fix2 converted the scoped economics float chain to Decimal",
+      "Phase 1338 performed no runtime activation and no economic arithmetic changes"
+    ]
+  },
+  "graph_delta": "graph_delta=support_only:docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json -> planning/frontier",
+  "manifest_hash": "d91168c7f57cfba958cbbe55e6aac56c6c2f930a960a6a513c28cb36880251de",
+  "mode": "wallet_ecu_ilc_activation_or_carry_forward_gate",
+  "next_phase": "phase_1339_atlas_g_mutation_regeneration_finalization_next",
+  "non_authorization_floor": {
+    "cdl_088_opening_authorized": false,
+    "cdl_mutation_authorized": false,
+    "ecu_creation_authorized": false,
+    "ecu_mint_policy_mutation_authorized": false,
+    "ecu_minting_authorized": false,
+    "external_chain_bridge_authorized": false,
+    "genesis_atlas_mutation_or_signing_authorized": false,
+    "identity_artifact_creation_authorized": false,
+    "identity_bootstrap_authorized": false,
+    "ilc_settlement_authorized": false,
+    "ilc_settlement_root_publication_authorized": false,
+    "ilc_transfer_authorized": false,
+    "public_claim_endpoint_authorized": false,
+    "public_claimability_api_activation_authorized": false,
+    "public_confidential_coordination_serving_authorized": false,
+    "public_fetch_serving_authorized": false,
+    "public_listener_authorized": false,
+    "public_p2p_authorized": false,
+    "public_package_publication_authorized": false,
+    "public_projection_endpoint_serving_authorized": false,
+    "public_rc_publication_claim_authorized": false,
+    "public_repository_publication_authorized": false,
+    "public_sidecar_projection_serving_authorized": false,
+    "release_artifact_production_authorized": false,
+    "release_envelope_production_authorized": false,
+    "release_key_generation_authorized": false,
+    "release_signature_production_authorized": false,
+    "release_signing_authorized": false,
+    "settlement_root_namespace_activation_authorized": false,
+    "source_publication_authorized": false,
+    "v0_2_signing_authorized": false,
+    "value_path_activation_authorized": false,
+    "wallet_ledger_write_authorized": false,
+    "wallet_provider_custody_integration_authorized": false,
+    "wallet_signing_authorized": false,
+    "wallet_spend_request_authorized": false,
+    "wallet_transfer_request_authorized": false,
+    "wallet_withdrawal_request_authorized": false,
+    "wallet_write_authorized": false,
+    "withdrawal_runtime_authorized": false
+  },
+  "phase": 1338,
+  "public_rc_remains_blocked": true,
+  "required_tokens": [
+    "wallet_ecu_ilc_activation_or_carry_forward_gate_phase_1338.v0.1",
+    "wallet_provider_adapter_boundary_preserved_phase_1338",
+    "ecu_minting_requires_explicit_authority_phase_1338",
+    "ilc_settlement_requires_explicit_authority_phase_1338",
+    "phase_1339_atlas_g_mutation_regeneration_finalization_next",
+    "public_rc_remains_blocked_after_phase_1338"
+  ],
+  "result": "carry_forward_no_activation",
+  "schema_version": "wallet_ecu_ilc_activation_or_carry_forward_gate_phase_1338.v0.1",
+  "subpath_decision_table": [
+    {
+      "authorized": false,
+      "reason": "wallet_provider_adapter_boundary_preserved_phase_1338",
+      "status": "carry_forward_no_activation",
+      "subpath": "wallet_facing_withdrawal_request"
+    },
+    {
+      "authorized": false,
+      "reason": "wallet_provider_adapter_boundary_preserved_phase_1338",
+      "status": "carry_forward_no_activation",
+      "subpath": "wallet_facing_transfer_request"
+    },
+    {
+      "authorized": false,
+      "reason": "wallet_provider_adapter_boundary_preserved_phase_1338",
+      "status": "carry_forward_no_activation",
+      "subpath": "wallet_facing_spend_request"
+    },
+    {
+      "authorized": false,
+      "reason": "wallet_provider_signing_payload_contract_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "wallet_provider_signing_request"
+    },
+    {
+      "authorized": false,
+      "reason": "wallet_ledger_write_authority_and_replay_policy_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "wallet_provider_ledger_write"
+    },
+    {
+      "authorized": false,
+      "reason": "wallet_ledger_write_authority_and_replay_policy_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "wallet_write"
+    },
+    {
+      "authorized": false,
+      "reason": "withdrawal_runtime_contract_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "withdrawal_runtime"
+    },
+    {
+      "authorized": false,
+      "reason": "ecu_minting_requires_explicit_authority_phase_1338",
+      "status": "carry_forward_no_activation",
+      "subpath": "ecu_minting"
+    },
+    {
+      "authorized": false,
+      "reason": "ecu_mint_policy_and_supply_invariant_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "ecu_creation"
+    },
+    {
+      "authorized": false,
+      "reason": "ecu_mint_policy_and_supply_invariant_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "ecu_supply_policy_mutation"
+    },
+    {
+      "authorized": false,
+      "reason": "ilc_settlement_requires_explicit_authority_phase_1338",
+      "status": "carry_forward_no_activation",
+      "subpath": "ilc_settlement"
+    },
+    {
+      "authorized": false,
+      "reason": "ilc_settlement_authority_replay_policy_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "ilc_transfer"
+    },
+    {
+      "authorized": false,
+      "reason": "settlement_root_namespace_binding_contract_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "settlement_root_publication"
+    },
+    {
+      "authorized": false,
+      "reason": "public_claimability_api_not_activated",
+      "status": "carry_forward_no_activation",
+      "subpath": "public_claim_endpoint_dependency"
+    },
+    {
+      "authorized": false,
+      "reason": "explicit_value_path_activation_authority_missing",
+      "status": "carry_forward_no_activation",
+      "subpath": "value_path_activation"
+    }
+  ],
+  "wallet_ecu_ilc_activation_or_carry_forward_gate_verdict": "wallet_ecu_ilc_activation_or_carry_forward_gate_verdict=carry_forward_no_activation"
+}
