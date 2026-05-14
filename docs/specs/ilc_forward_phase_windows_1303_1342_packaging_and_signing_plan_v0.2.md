@@ -694,9 +694,10 @@ Phase 1339 added the minimum pre-signing nodes and constants:
 Residual basis-reachability gaps are explicitly classified as compiler-coverage
 debt, not an ATLAS-G-007/008 signing blocker. Phase 1340 later executed after
 exact authority phrase `GO Phase 1340: authorize v0.2 signing ceremony` and
-recorded `v0_2_signed`. **Phase 1341 remains blocked until explicit public
-RC publication/claim authority is provided and must not execute without
-`GO Phase 1341: authorize public RC publication/claim`.**
+recorded `v0_2_signed`. Phase 1341 later executed after exact authority phrase
+`GO Phase 1341: authorize public RC publication/claim` and recorded
+`blocked_with_findings`. **No public RC publication/claim occurred.** Phase
+1342 is now the next closure handoff gate.
 
 ```text
 genesis_manifest_compile_verdict_partial_with_structural_gaps_after_phase_1339
@@ -704,8 +705,9 @@ atlas_g_007_executed_phase_1339
 atlas_g_008_executed_phase_1339
 phase_1339_atlas_g_tail_finalized
 phase_1340_v0_2_signed
-phase_1341_public_rc_publication_claim_gate_next
-public_rc_remains_blocked_after_phase_1340
+phase_1341_publication_blocked_with_findings
+public_rc_remains_blocked_after_phase_1341
+phase_1342_window_1330_1342_closure_next
 adr_0037_added_to_genesis_manifest_phase_1339
 cdl_v_series_added_to_genesis_manifest_phase_1339
 ```
