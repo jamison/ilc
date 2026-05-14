@@ -3,11 +3,17 @@
 **Version:** v1.1
 **Produced:** 2026-05-08
 **Phase:** 1242
-**Status:** CURRENT controlling public-RC roadmap after Phase 1242
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1342 closure addendum
 **Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
 
 `launch_roadmap_v1_1_published_phase_1242`
 `roadmap_v1_1_controlling_public_rc_roadmap_phase_1242`
+`window_1330_1342_closed_phase_1342`
+`window_1330_1342_closure_gate_verdict=pass_or_blocked_with_carry_forward`
+`phase_1342_window_1330_1342_closure_complete`
+`window_1343_plus_sequence_lock_required_before_next_phase_assignment`
+`final_rc_publication_and_signing_blockers_classified_phase_1342`
+`public_rc_final_status_recorded_phase_1342`
 
 ---
 
@@ -34,12 +40,12 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1317-1329 is CLOSED / PASS with carry-forward through Phase 1329; closure handoff is `docs/specs/ilc_window_1317_1329_handoff_1329_v0.1.md`; sequence lock `docs/specs/ilc_phase_1317_1329_sequence_lock_v0.1.md` and guidance `docs/specs/ilc_window_1317_1329_candidate_phase_grouping_v0.1.md` are closed references; no next phase is assigned; `window_1330_plus_sequence_lock_required_before_next_phase_assignment`; no public RC, public activation, publication, source allowlist export execution, clean materialized public tree production, release artifact production, release-key generation, release envelope production, release signing material, Genesis Atlas mutation/regeneration/signing, `ATLAS-G-007` through `ATLAS-G-010`, CDL-088, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, or v0.2 signing authorization is granted |
-| Capsule | v5.54 current; supersedes v5.53 and is updated through Phase 1329 |
+| Window frontier | Window 1330-1342 is CLOSED / PASS with carry-forward through Phase 1342; closure handoff is `docs/specs/ilc_window_1330_1342_handoff_1342_v0.1.md`; no next phase is assigned; `window_1343_plus_sequence_lock_required_before_next_phase_assignment`; public RC final status is `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL-088, identity bootstrap, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, counsel approval, or legal conclusion is granted |
+| Capsule | v5.55 release-candidate freeze snapshot; supersedes v5.54 and is updated through Phase 1331; superseded as the current frontier by `docs/specs/ilc_window_1330_1342_handoff_1342_v0.1.md` |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
-| v0.2 signing | Deferred; explicit signing authorization absent |
+| v0.2 signing | Genesis Atlas v0.2 root envelope signed and verified in Phase 1340; root envelope hash `sha256:a636a373d194d19f735683ad826b856458d9328acbeb02f82267efb530ebb36a`; signature hash `sha256:3bce9ce494529aaf2f2f2c8856cea4d5702a142ba9690fd2d021fb9adc5c80d2`; release artifact signing, release distribution, and public RC publication remain blocked |
 | Tier-3 runtime linkage | **IMPLEMENTED** in Phase 1201 (`tier3_runtime_linkage_runtime_1201.v0.1`) |
 | Persistent fetch rate limiter backend | **IMPLEMENTED** in Phase 1202 (`persistent_fetch_rate_limiter_runtime_1202.v0.1`) |
 | Persistent limiter HTTP wiring | **WIRED** in Phase 1212 (`persistent_rate_limiter_transport_wiring_committed_phase_1212`) |
@@ -47,6 +53,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | L3 sidecar query runtime | Local/read-only runtime complete; Phase 1268 records loopback/subprocess-only boundary with no new listener and Phase 1278 adds an internal public-path preflight helper while keeping public/non-loopback projection serving blocked |
 | TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1309 adds the local admission sidecar substrate; Phase 1310 hardens revocation, replay, admission, ban, rate-limit, and privacy negative paths; Phase 1313 records a default-off public fetch/P2P readiness packet and Rust substrate gate status; no public P2P, public fetch serving, public listener, peer discovery, public revocation registry, public replay cache, public rate-limit state, or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; consumed into CDL-087 ratification by Phase 1278 Fix1 |
+
+Window 1343+ sequence lock required before next phase assignment.
 
 Latest closed handoff and current window artifacts:
 
