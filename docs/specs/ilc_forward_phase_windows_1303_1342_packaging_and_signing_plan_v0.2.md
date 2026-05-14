@@ -540,6 +540,10 @@ cdl_029_allocation_distributor_runtime_phase_1347.v0.1
 allocation_80_15_5_routing_phase_1347
 production_distribution_not_activated_phase_1347
 no_direct_allocation_stub_found_phase_1347
+genesis_overhead_cap_blocked_guard_phase_1347_fix1
+genesis_overhead_cap_blocked_dust_routing_deferred
+cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor
+split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1
 ```
 
 **Phase 1343 execution addendum:** Phase 1343 opened Window 1343-1368 through
@@ -645,10 +649,12 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1345 | Production epoch emission engine: CDL-025/026/027 non-activating quote runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | COMPLETE; records `production_minting_not_activated_phase_1345`; no ledger write or mint activation |
 | 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | COMPLETE; records `fee_burn_not_activated_phase_1346`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production fee collection or ledger write |
 | 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | COMPLETE; records `production_distribution_not_activated_phase_1347`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no production distribution or ledger write |
+| 1347 Fix1 | Runtime-only theta-hard guard: clarify allocator as split quote, add Decimal `THETA_HARD_ILC`, fail closed when caller reports Genesis overhead cap-blocked | CDL-029 implementation guard | COMPLETE; records `genesis_overhead_cap_blocked_dust_routing_deferred`; no CDL mutation; post-theta_hard routing policy deferred to Phase 1351a |
 | 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, 0.91 velocity alert floor monitoring) | CDL-047 | COMPLETE; records `treasury_not_activated_phase_1348`; gates future activation behind `phase_1366_soft_rc_eligible_true_value_path_activation_required`; no treasury activation or ledger write |
 | 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | SENSITIVE; economic surface |
 | 1350 | CDL-083 ejected stake treasury distribution: close `NotImplementedError` in `epoch_attribution_settle_runtime.py`; H-CON-02 quorum guard required | CDL-083 | SENSITIVE; economic surface |
 | 1351 | CDL-030 ECU price clamp runtime (P_min/P_max bounds derived from CDL-027 schedule) | CDL-030 | SENSITIVE; economic surface |
+| 1351a | CDL-029 post-theta_hard residual routing policy: verify CDL-V7 upheld-refutation recipient semantics, design Decimal-only cap-block signal, ratify or carry forward recipient/fallback rule | CDL-029/CDL-V7 interaction | SENSITIVE governance phase before Phase 1352; Phase 1347a prompt remains DRAFT until respecified |
 | 1352 | Issuance economics integration gate: CDL-025–031/047/054/083 stack end-to-end, double-entry ledger invariant, epoch-boundary test | Integration gate | SENSITIVE gate; explicit `GO Phase 1352` required |
 | 1353 | CDL-017 validator admission/ejection: `admit_validator`, `eject_validator` production implementation; SEC-004 TransferCertificate epoch binding and live validator-set rotation wiring in `fast_path.rs` (scaffolded; gated here on CDL-017) | CDL-017, SEC-004 | SENSITIVE; validator governance |
 | 1354 | CDL-068 topology shuffle VRF runtime: VRF-based per-epoch shuffle rotation, `shuffle_cadence_epochs=1`, k-regular sizing, ≥10-validator VRF upgrade trigger | CDL-068 | SENSITIVE; consensus surface |
@@ -673,6 +679,14 @@ Phase 1348 execution addendum: `cdl_047_treasury_governance_runtime_phase_1348.v
 `treasury_not_activated_phase_1348`,
 `phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
 `no_direct_treasury_stub_found_phase_1348`.
+
+Phase 1347 Fix1 execution addendum: `genesis_overhead_cap_blocked_guard_phase_1347_fix1`,
+`genesis_overhead_cap_blocked_dust_routing_deferred`,
+`cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor`,
+and `split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1`.
+This repair is runtime-only. It does not mutate CDL-029, import the float-based
+Genesis accrual governor, or implement the post-theta_hard recipient/fallback
+policy now routed to Phase 1351a.
 
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
