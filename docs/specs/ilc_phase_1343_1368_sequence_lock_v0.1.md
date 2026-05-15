@@ -106,7 +106,7 @@ mutation environment authority in addition to human GO:
 | 1352 | Issuance economics integration gate | SENSITIVE; future explicit GO required. |
 | 1353 | CDL-017 validator admission/ejection + SEC-004 live rotation | SENSITIVE; future explicit GO required. |
 | 1354 | CDL-068 topology shuffle VRF runtime | SENSITIVE; future explicit GO required. |
-| 1355 | CDL-V6 genesis intervention enforcement | SENSITIVE; future explicit GO required. |
+| 1355 | CDL-V6 / Phase-597 genesis intervention enforcement | COMPLETE; executed after explicit `GO Phase 1355`; records audit-only runtime, Phase-597 bounds, no brake fire, no CDL mutation. |
 | 1356 | CDL-013 governance weight live integration | SENSITIVE; future explicit GO required. |
 | 1357 | `reputation.py` H11 rewrite | SENSITIVE; future explicit GO required. |
 | 1358 | `ilc_core/` to `ilc_consensus/` production bridge | SENSITIVE; future explicit GO required. |
