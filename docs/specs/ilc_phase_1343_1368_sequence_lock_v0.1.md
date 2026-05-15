@@ -111,8 +111,8 @@ mutation environment authority in addition to human GO:
 | 1357 | `reputation.py` H11 rewrite | COMPLETE; executed after explicit `GO Phase 1357`; records Decimal governance-weight/reputation/temporal-decay rewrite, Phase 1356 precision/test carry-forward closure, routing-reputation/CDL-060 Decimal deferral, and no production reputation or governance activation. |
 | 1358 | `ilc_core/` to `ilc_consensus/` production bridge | COMPLETE; executed after explicit `GO Phase 1358`; records secure-channel gRPC read adapter, default-off QUIC ECU transfer submission boundary, and no live ECU transfer activation. |
 | 1359 | HIGH-001 two-layer defense | COMPLETE; executed after explicit `GO Phase 1359`; records Python AgentID log-redaction runtime, default-off transfer-mixing/k-anonymity activation facade, Rust validator redaction reverified, no production mixing activation, and no sender-privacy claim authorization. |
-| 1360 | Multi-operator non-loopback Mysticeti testnet + SEC-007a/b updates | SENSITIVE; future explicit GO required. |
-| 1361 | CDL-043/044 adaptive pruning completion | SENSITIVE; future explicit GO required. |
+| 1360 | Multi-operator non-loopback Mysticeti testnet + SEC-007a/b updates | COMPLETE_WITH_CARRY_FORWARD; executed after explicit `GO Phase 1360`; records SEC-007a/b cleanup, three VPS plus local control host startup evidence, live Python-to-Rust gRPC proof over private Tailscale, no public P2P, no production ECU transfer activation, and full four-validator epoch finalization not proven. |
+| 1361 | CDL-043/044 adaptive pruning completion | SENSITIVE; future explicit GO required; next planned phase. |
 | 1362 | Blocking-authority vehicle opening currently proposed as CDL-053 | SENSITIVE; blocked on Phase 1344 vehicle disposition and future explicit GO. |
 | 1363 | Blocking-authority deliberation/prelock | SENSITIVE; future explicit GO required. |
 | 1364 | Blocking-authority ratification + CDL-057 activation | SENSITIVE; future explicit GO and CDL mutation authority required. |
