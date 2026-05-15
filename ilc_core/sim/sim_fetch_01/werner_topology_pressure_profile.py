@@ -78,7 +78,7 @@ def _normalize_topology_pressure_model(model: str) -> str:
 
 
 def build_werner_topology_pressure_profile_config(
-    base_config: Mapping[str, Any],
+    base_config: Mapping[str, object],
     *,
     topology_pressure_model: str = TOPOLOGY_PRESSURE_MODEL_WERNER_V1,
 ) -> dict[str, Any]:
@@ -108,7 +108,7 @@ def build_werner_topology_pressure_profile_config(
 
 
 def run_werner_topology_pressure_profile(
-    base_config: Mapping[str, Any],
+    base_config: Mapping[str, object],
     *,
     topology_pressure_model: str = TOPOLOGY_PRESSURE_MODEL_WERNER_V1,
 ) -> dict[str, Any]:
@@ -172,7 +172,7 @@ def run_werner_topology_pressure_profile(
 
 
 def export_werner_topology_pressure_profile_json(
-    payload: Mapping[str, Any],
+    payload: Mapping[str, object],
     *,
     max_bytes: int = DEFAULT_WERNER_PROFILE_MAX_BYTES,
 ) -> str:
