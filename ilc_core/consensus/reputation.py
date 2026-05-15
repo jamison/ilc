@@ -126,6 +126,11 @@ def apply_atrophy(agent_state: Mapping[str, object], current_epoch: int) -> dict
 
     if inactive_epochs > ATROPHY_GRACE_EPOCHS:
         decay = _decay_multiplier(inactive_epochs)
+        # Only accuracy and precision are decayed. potential is intentionally excluded:
+        # it represents latent capacity, not earned epistemic reliability. However,
+        # potential cannot resurrect voting power on its own — it is a multiplier on
+        # epistemic_score (accuracy × 0.7 + precision × 0.3), so if both decay to zero,
+        # voting power is zero regardless of potential.
         for key, token in (
             ("accuracy", "reputation_accuracy_must_be_non_negative_decimal_phase_1357"),
             ("precision", "reputation_precision_must_be_non_negative_decimal_phase_1357"),

@@ -82,6 +82,15 @@ def test_apply_atrophy_decay() -> None:
     assert new_state["trust_vector"]["precision"] == Decimal("0.500000000000")
 
 
+def test_calculate_voting_power_missing_potential_defaults_to_zero() -> None:
+    # potential is optional; absent key defaults to ZERO via trust_vector.get("potential", ZERO)
+    stake = Decimal("100")
+    trust_vector = {"accuracy": Decimal("1"), "precision": Decimal("1")}
+    result = calculate_voting_power(stake, trust_vector)
+    # efficiency_multiplier = 1 + 0 * 0.5 = 1; epistemic_score = 0.7 + 0.3 = 1
+    assert result == Decimal("100")
+
+
 def test_reputation_runtime_tokens_and_default_off_guard() -> None:
     assert REPUTATION_RUNTIME_VERSION == "reputation_runtime_h11_float_kill_1357.v0.1"
     with pytest.raises(ValueError, match=PRODUCTION_REPUTATION_SCORING_NOT_ACTIVATED_TOKEN):
