@@ -508,6 +508,10 @@ class ILCConsensusGrpcReadAdapter:
             "get_epoch_chain_from_epoch_invalid_phase_1358",
         )
         end = _require_uint64_int(to_epoch, "get_epoch_chain_to_epoch_invalid_phase_1358")
+        # Rust app_interface.rs treats epoch 0 as a range sentinel:
+        # from_epoch=0 starts at history epoch 1, and to_epoch=0 means current
+        # epoch. The Phase 1358 default-off bridge rejects those sentinels until
+        # Phase 1360 proves the live Python-to-Rust gRPC path end-to-end.
         if start == 0 or end == 0 or end < start:
             raise ValueError("get_epoch_chain_range_invalid_phase_1358")
         requested_count = end - start + 1
