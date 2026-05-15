@@ -1,3 +1,9 @@
+> **SUPERSEDED.** This is v0.1. The canonical version is
+> `ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md`.
+> The §5 post-1342 plan was revised 2026-05-14 to a 3-window structure
+> (Windows 1343-1360 / 1361-1376 / 1377+). Do not use the old single-Window-1343
+> section from this file — it is superseded.
+
 # ILC Forward Phase Windows 1303-1342 Packaging and Signing Plan v0.1
 
 **Status:** Planning-only candidate guidance.
@@ -474,10 +480,194 @@ signing, wallet-provider ledger-write, wallet write, withdrawal runtime, ECU
 minting, ILC settlement, settlement-root publication, public claim endpoint, or
 value-path activation.
 
-## 5. Window 1343+ — Public Claimability, Identity Bootstrap, and Post-RC Lanes
+## 5. Post-1342 Phase Windows — Comprehensive Gap Closure Plan
 
-**Recorded:** 2026-05-14. Planning-only guidance. No window is open until a
-Phase 1343 sequence lock is executed with explicit `GO Phase 1343`.
+**Recorded:** 2026-05-14 (revised same day after CDL/ADR gap audit and Genesis
+manifest completeness assessment). Planning-only guidance. This section supersedes
+the earlier draft that covered only Window 1343–1356 (public claimability
+governance). That earlier draft was incomplete: it did not address the production
+issuance economics stack (CDL-025–031), validator admission/ejection, topology
+shuffle VRF, CDL-V6 constitutional enforcement, or sovereign substrate gaps,
+all of which are prerequisites to a meaningful public RC. The public claimability
+governance window is preserved but renumbered and correctly sequenced after the
+production economics window.
+
+No window in this section is open until its own sequence lock phase executes
+with explicit `GO Phase NNNN`.
+
+```text
+forward_phase_windows_post_1342_comprehensive_gap_closure_plan_recorded_phase_1336
+window_1343_1360_issuance_economics_validator_governance_cdl_v6_enforcement
+window_1361_1376_public_claimability_governance_revised_from_earlier_1343_1356_draft
+window_1377_plus_sovereign_substrate_constitutional_hardening_long_range
+phase_1340_signing_blocked_pending_phase_1339_atlas_g_007_008_manifest_resolution
+genesis_manifest_compile_verdict_fail_core_inadequate_as_of_phase_1336
+atlas_g_007_not_executed_as_of_phase_1338
+atlas_g_008_not_executed_as_of_phase_1338
+```
+
+### Three-window post-1342 structure
+
+```
+Window 1343–1360  →  production issuance economics + validator governance + CDL-V6 enforcement
+                      closes soft RC blockers; enables private VPS mining
+Window 1361–1376  →  public claimability governance
+                      CDL-088, identity bootstrap, activation gate — full public RC milestone
+Window 1377+      →  sovereign substrate, constitutional hardening, long-range lanes
+                      Mysticeti, ADR-0015/0016/0017, CDL-006/009/021/031, etc.
+```
+
+---
+
+### Window 1343–1360 — Production Issuance Economics, Validator Governance, and CDL-V6 Enforcement
+
+**Purpose:** Close the soft RC blockers. After this window, ILC can be minted and
+distributed on private VPSs according to the CDL-025 through CDL-031 schedule
+constants. Validator admission/ejection and topology shuffle VRF are live. The
+CDL-V6 Genesis intervention enforcement runtime exists (GOV-B → GOV-A).
+
+**Sensitivity:** All phases are SENSITIVE. CDL mutation phases require
+`ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<N>`.
+
+| Phase | Scope | CDL/ADR closed | Notes |
+|-------|-------|----------------|-------|
+| 1343 | Sequence lock + capsule v5.56 | — | SENSITIVE gate; explicit `GO Phase 1343` required |
+| 1344 | Issuance stack scoping: production architecture for CDL-025/026/027/028/029 emission engine; design document before any implementation | CDL-025/026/027 design | NON-SENSITIVE doc after sequence lock |
+| 1345 | Production epoch emission engine: CDL-025/026/027 halving schedule runtime, C_max enforcement, devnet→production transition gate | CDL-025, CDL-026, CDL-027 | SENSITIVE; first production minting code |
+| 1346 | CDL-028 fee-burn split runtime (10% of per-epoch fees → genesis/burn) | CDL-028 | SENSITIVE; economic surface |
+| 1347 | CDL-029 80/15/5 allocation distributor (per-epoch performer/auditor/genesis routing engine) | CDL-029 | SENSITIVE; economic surface |
+| 1348 | CDL-047 treasury governance runtime (0.15×B_e bounty cap, 0.05 burn floor, velocity alert trigger) | CDL-047 | SENSITIVE; economic surface |
+| 1349 | CDL-054 validator reward-pool routing runtime (governed routing through CDL-047 treasury framework) | CDL-054 | SENSITIVE; economic surface |
+| 1350 | CDL-083 ejected stake treasury distribution: close `NotImplementedError` in `epoch_attribution_settle_runtime.py`; H-CON-02 quorum guard required | CDL-083 | SENSITIVE; economic surface |
+| 1351 | CDL-030 ECU price clamp runtime (P_min/P_max bounds derived from CDL-027 schedule) | CDL-030 | SENSITIVE; economic surface |
+| 1352 | Issuance economics integration gate: CDL-025–031/047/054/083 stack end-to-end, double-entry ledger invariant, epoch-boundary test | Integration gate | SENSITIVE gate; explicit `GO Phase 1352` required |
+| 1353 | CDL-017 validator admission/ejection: `admit_validator`, `eject_validator` production implementation; SEC-004 TransferCertificate epoch binding; historical validator-set resolution | CDL-017 | SENSITIVE; validator governance |
+| 1354 | CDL-068 topology shuffle VRF runtime: VRF-based per-epoch shuffle rotation, `shuffle_cadence_epochs=1`, k-regular sizing, ≥10-validator VRF upgrade trigger | CDL-068 | SENSITIVE; consensus surface |
+| 1355 | CDL-V6 genesis intervention enforcement: `genesis_intervention_runtime.py`, persistent invocation counter (max 3 lifetime, append-only log), epoch ceiling enforcer, audit record writer; converts CDL-V6 from GOV-B to GOV-A | CDL-V6 | SENSITIVE; Genesis authority surface |
+| 1356 | CDL-013 governance weight live integration: connect `governance_weight.py` output to live governance decision surfaces | CDL-013 | SENSITIVE; governance surface |
+| 1357 | Capsule refresh (v5.57) + coherence report | — | NON-SENSITIVE after sequence lock |
+| 1358 | Soft RC readiness gate: all issuance + validator + CDL-V6 items must pass; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; explicit `GO Phase 1358` required |
+| 1359–1360 | Reserved for pre-gate fix passes | — | SENSITIVE |
+
+**Stop conditions for any phase in this window:**
+- Phase 1345 produces production-minted ILC without explicit activation authorization
+- Phase 1352 or 1358 passes without all prior phases landed
+- Phase 1355 fires the genesis intervention brake more than once in any test context
+- Any phase implies "soft RC mining is now live" without Phase 1358 recording `soft_rc_eligible=true`
+
+---
+
+### Window 1361–1376 — Public Claimability Governance
+
+**Purpose:** Close the full public RC blockers. Phase 1375 is the first realistic
+phase where `result=public_claimability_activated` can legally appear. All carry-
+forward blockers from Phase 1336 must be confirmed closed before Phase 1375 passes.
+
+This window revises and supersedes the earlier draft plan labeled Window 1343–1356.
+Phase numbers are renumbered; scope is preserved and expanded with ADR-0031 and
+CDL-048 activation.
+
+**Sensitivity:** All phases SENSITIVE. CDL mutation phases require
+`ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<N>`.
+
+| Phase | Scope | Blocker addressed | Notes |
+|-------|-------|-------------------|-------|
+| 1361 | Sequence lock + capsule v5.58 | — | SENSITIVE gate; explicit `GO Phase 1361` required |
+| 1362 | Agent birth attestation ADR: Genesis-rooted identity-origin proof; `agent_id` bound to signed Genesis/Atlas lineage anchor; non-custodial default; no private graph content as entropy | Genesis-rooted agent birth attestation | Prerequisite for identity bootstrap CDL |
+| 1363 | Identity bootstrap CDL opening: non-custodial identity-seed path, ceremony modes (interactive + agent-mode), secure output target, no-stdout-fallback rule, Genesis-rooted birth attestation linkage | Identity bootstrap CDL | SENSITIVE CDL opening |
+| 1364 | Identity bootstrap CDL deliberation/prelock: resolves open questions from Phase 1363; locks parameters | Identity bootstrap CDL | SENSITIVE |
+| 1365 | Identity bootstrap CDL ratification | Identity bootstrap CDL | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
+| 1366 | CDL-088 opening: public claimability authority; bounded scope; reciprocal scoring if included; ECU-escrow admission if included | CDL-088 not opened | SENSITIVE; explicit `GO Phase 1366` required |
+| 1367 | CDL-088 deliberation/prelock: resolves open questions from Phase 1366 | CDL-088 | SENSITIVE |
+| 1368 | CDL-088 ratification | CDL-088 | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
+| 1369 | Replay/nullifier + duplicate-claim registry policy CDL or ADR: what counts as a replay; nullifier construction and storage; epoch-bounded expiry; duplicate-claim rejection at public API layer | Replay/nullifier policy | SENSITIVE; required before any live claim endpoint |
+| 1370 | Legacy `/v1/public/*` FastAPI route cleanup: remove or replace all routes flagged Phase 1301; prove no public-labeled route exists outside authorized public verifier surface | Legacy FastAPI routes | Mechanical fix; SENSITIVE because it touches public-facing server |
+| 1371 | ADR-0031 sidecar query runtime completeness: close `NotImplementedError` for all query types required by graph-native sidecar suite in `sidecar_query_runtime.py` | ADR-0031 partial | SENSITIVE; required for sidecar completeness |
+| 1372 | CDL-048 public ECU-to-ILC conversion path activation: unlock the sweeper runtime now that CDL-088 and identity bootstrap are ratified; first live value-path activation | CDL-048 public path | SENSITIVE; first production value-path code |
+| 1373 | ADR-0028 Mysticeti scope definition: architecture and design document only; define Option B implementation plan, module boundaries, Rust crate structure, and test requirements; no implementation in this phase | ADR-0028 architecture | NON-SENSITIVE scope doc; implementation in Window 1377+ |
+| 1374 | Counsel clearance for public verifier API surface: explicit sign-off on the specific public claimability verifier API surface | Counsel clearance | SENSITIVE; blocks Phase 1375 |
+| 1375 | **Public claimability/API activation gate** — re-executes Phase 1336 gate with all six blockers confirmed closed; `result=public_claimability_activated` is the full public RC milestone | All six Phase 1336 blockers | SENSITIVE; explicit `GO Phase 1375` required; fails closed if any predecessor open |
+| 1376 | Window closure handoff | — | SENSITIVE |
+
+**Strict dependency order:**
+```
+Phase 1361 sequence lock
+    → Phase 1362 agent birth attestation ADR
+        → Phase 1363 identity bootstrap CDL opening
+            → Phase 1364 deliberation/prelock
+                → Phase 1365 ratification
+    → Phase 1366 CDL-088 opening  (scope drafting may begin in parallel; execution phase-ordered)
+        → Phase 1367 deliberation/prelock
+            → Phase 1368 ratification
+    → Phase 1369 replay/nullifier policy
+    → Phase 1370 FastAPI cleanup
+    → Phase 1371 ADR-0031 sidecar query
+    → Phase 1372 CDL-048 activation  (requires 1365 + 1368)
+    → Phase 1373 ADR-0028 scope
+    → Phase 1374 counsel clearance
+        → Phase 1375 public claimability activation gate
+            → Phase 1376 closure
+```
+
+**Stop conditions for any phase in this window:**
+- Identity bootstrap CDL not ratified and a phase creates identity artifacts, seed commitments, mnemonics, private keys, or secret-store writes
+- CDL-088 not ratified and a phase activates the public claimability API or claim endpoint
+- Replay/nullifier policy not closed and a phase activates a live claim endpoint
+- Any phase implies "public claimability is now active" without Phase 1375 producing explicit `result=public_claimability_activated`
+
+---
+
+### Window 1377+ — Sovereign Substrate, Constitutional Hardening, and Long-Range Lanes
+
+**Purpose:** Post-public-RC completion. These items are not blockers on Phase 1375
+public claimability activation but are required for a production-hardened, complete
+public ILC. Phase assignments will be made when Window 1376 closure handoff is done.
+
+| Lane | CDL/ADR | Description | Notes |
+|------|---------|-------------|-------|
+| ADR-0028 Option B: Mysticeti/BFT sovereign substrate | ADR-0028, CDL-067 | Full implementation of Option B consensus backend; Python HTTP transport is devnet-class only; required for public hostile-network P2P | Scoped Phase 1373; implementation is a multi-window track (~20-30 phases minimum) |
+| CDL-021 Rust kernel port ratification | CDL-021 (open, not ratified) | Ratify "milestone-triggered Rust port" once Mysticeti clears first milestone gate | After ADR-0028 first implementation gate |
+| CDL-006 challenge node spec and audit path | CDL-006 (GOV-C; spec unbuilt) | Implement challenge node specification and formal audit path for multi-body governance checks | After public RC |
+| CDL-009 fork legitimacy client UX | CDL-009 (GOV-C; UX unbuilt) | Client-facing fork-signaling surface (signature-badge + eligibility rules) | After public RC |
+| CDL-031 dynamic ranking policy runtime | CDL-031 (deferred until CDL-019 closed) | CDL-019 invariant floor runtime must be completed first; then reopen CDL-031 for dynamic ranking implementation | After CDL-019 runtime complete |
+| CDL-043/044 full adaptive pruning | CDL-043/044 (partial) | Complete adaptive pruning per CDL-043 semantics; production retention epoch binding per CDL-044 | After public RC |
+| CDL-057 blocking authority activation | CDL-057 (`BLOCKING_AUTHORITY_DEFERRED=True`) | Convert epoch-boundary witness from audit-only to actual blocking authority | Requires governance decision |
+| ADR-0015 node transfer economics | ADR-0015 (amended-accept; deferred) | Transfer tax, cooling period, leasehold/reversion runtime after calibration simulation | After public RC |
+| ADR-0016/0017 productive ECU expansion + post-issuance | ADR-0016, ADR-0017 | Productive credit creation runtime (Gap 12) and post-issuance economic transition | Long-range; requires public RC data |
+| `reputation.py` Decimal/version-token/governance rewrite (H11) | CDL-013 (partial) | Full float elimination, version token, governance-weight wiring | After Window 1343-1360 CDL-013 phase |
+
+---
+
+### Genesis Manifest / v0.2 Signing Dependency
+
+The Genesis compile verdict as of Phase 1338 is `FAIL_CORE_INADEQUATE`:
+19 of 36 core nodes are basis-unreachable; ADR-0037 is absent as a Genesis node;
+CDL-V1/V2/V3/V7 are absent as CDL artifact nodes; 4 edges have unresolved
+`atlas_proposal_pending_ADR` status; ATLAS-G-007 and ATLAS-G-008 have not been
+executed.
+
+**Phase 1340 (v0.2 signing ceremony) must not proceed until Phase 1339 resolves
+these gaps.** Phase 1339 must:
+
+1. Execute ATLAS-G-007: regenerate v0.2 candidate from hardened compiler output
+2. Execute ATLAS-G-008: produce non-excisability review packet
+3. Classify each gap: add-before-signing / explicitly-defer-with-authority / not-required-by-schema
+4. Minimum additions recommended before signing (per ADR-0037 §6 runtime-binding traceability):
+   - ADR-0037 itself as a Genesis node (governs the signing lineage contract)
+   - CDL-V1, CDL-V2, CDL-V3, CDL-V7 as CDL artifact nodes
+   - `REUSE_ATTRIBUTION_RATE=0.20` and `EDGE_MINT_PHI_BOUND=0.60` as `policy_constant` nodes
+   - Resolve 4 edges with missing decomposition recipes
+   - Confirm or close all 19 basis-unreachable core nodes
+
+```text
+genesis_manifest_compile_verdict_fail_core_inadequate_as_of_phase_1338
+atlas_g_007_not_executed_as_of_phase_1338
+atlas_g_008_not_executed_as_of_phase_1338
+phase_1339_must_resolve_manifest_gaps_before_phase_1340
+phase_1340_signing_blocked_until_phase_1339_pass
+adl_0037_absent_from_genesis_manifest_as_of_phase_1338
+cdl_v_series_absent_from_genesis_manifest_as_of_phase_1338
+```
 
 ```text
 forward_phase_windows_1343_plus_public_claimability_identity_bootstrap_plan_recorded
