@@ -1,9 +1,18 @@
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, List, TypedDict
+from typing import List, TypedDict
+
+
+CDL_043_ADAPTIVE_PRUNING_VERSION = "cdl_043_adaptive_pruning_threshold_runtime_phase_1361.v0.1"
+CDL_044_RETENTION_EPOCHS_CONSTANT_TOKEN = "cdl_044_retention_epochs_constitutional_constant_phase_1361"
+CDL_044_RETENTION_EPOCHS = 1
+CDL_044_EPOCH_SCOPE = "issuance_epoch"
+CDL_043_ECU_SCORE_FLOOR = Decimal("0.5")
+CDL_043_SNAPSHOT_INTERVAL_EPOCHS = 50
 
 
 _EPOCH_DIR_PATTERN = re.compile(r"^epoch_(\d{4,})$")
@@ -23,6 +32,96 @@ class EventLogRetentionApplyResult(TypedDict):
     deleted: int
     kept: int
     pruned_dirs: List[str]
+
+
+class AdaptivePruningThreshold(TypedDict):
+    version: str
+    epoch_scope: str
+    current_issuance_epoch: int
+    eligible_before_or_at_epoch: int
+    retention_epochs: int
+    ecu_score_floor: str
+    snapshot_interval_epochs: int
+    minting_confirmed: bool
+
+
+class AdaptiveEventLogRetentionPlan(EventLogRetentionPlan):
+    threshold: AdaptivePruningThreshold
+    ecu_score: str
+    pruning_enabled: bool
+
+
+def _require_uint_epoch(value: int, *, token: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(token)
+    return value
+
+
+def _require_finite_decimal(value: Decimal | int | str, *, token: str) -> Decimal:
+    if isinstance(value, bool) or isinstance(value, float):
+        raise ValueError(token)
+    try:
+        number = Decimal(value)
+    except (InvalidOperation, ValueError, TypeError) as exc:
+        raise ValueError(token) from exc
+    if not number.is_finite():
+        raise ValueError(token)
+    return number
+
+
+def _reject_retention_override(retention_epochs: int | None) -> None:
+    if retention_epochs is not None:
+        raise ValueError("retention_epochs_is_constitutional_constant")
+
+
+def _decimal_to_string(value: Decimal) -> str:
+    return format(value.normalize(), "f")
+
+
+def compute_adaptive_pruning_threshold(
+    *,
+    current_issuance_epoch: int,
+    minting_confirmed: bool,
+    retention_epochs: int | None = None,
+) -> AdaptivePruningThreshold:
+    """Build the CDL-043/044 issuance-epoch pruning threshold.
+
+    The threshold deliberately returns epoch eligibility only. ECU-score
+    eligibility is record-specific and must be checked with
+    ``is_below_adaptive_pruning_floor`` so high-score graph data is retained.
+    """
+    _reject_retention_override(retention_epochs)
+    current_epoch = _require_uint_epoch(
+        current_issuance_epoch,
+        token="current_issuance_epoch_invalid_phase_1361",
+    )
+    if not isinstance(minting_confirmed, bool):
+        raise ValueError("minting_confirmed_invalid_phase_1361")
+
+    eligible_before_or_at = 0
+    if minting_confirmed and current_epoch >= CDL_044_RETENTION_EPOCHS:
+        eligible_before_or_at = current_epoch - CDL_044_RETENTION_EPOCHS
+
+    return {
+        "version": CDL_043_ADAPTIVE_PRUNING_VERSION,
+        "epoch_scope": CDL_044_EPOCH_SCOPE,
+        "current_issuance_epoch": current_epoch,
+        "eligible_before_or_at_epoch": eligible_before_or_at,
+        "retention_epochs": CDL_044_RETENTION_EPOCHS,
+        "ecu_score_floor": _decimal_to_string(CDL_043_ECU_SCORE_FLOOR),
+        "snapshot_interval_epochs": CDL_043_SNAPSHOT_INTERVAL_EPOCHS,
+        "minting_confirmed": minting_confirmed,
+    }
+
+
+def is_below_adaptive_pruning_floor(ecu_score: Decimal | int | str) -> bool:
+    score = _require_finite_decimal(
+        ecu_score,
+        token="ecu_score_invalid_phase_1361",
+    )
+    if score < Decimal("0"):
+        raise ValueError("ecu_score_invalid_phase_1361")
+    return score < CDL_043_ECU_SCORE_FLOOR
 
 
 def _epoch_index_from_name(name: str) -> int | None:
@@ -72,6 +171,52 @@ def build_event_log_retention_plan(
         "discovered": [str(path) for path in discovered],
         "keep": [str(path) for path in keep_paths],
         "prune": [str(path) for path in prune_paths],
+    }
+
+
+def build_adaptive_event_log_retention_plan(
+    root: str | Path,
+    *,
+    current_issuance_epoch: int,
+    ecu_score: Decimal | int | str,
+    minting_confirmed: bool,
+    retention_epochs: int | None = None,
+) -> AdaptiveEventLogRetentionPlan:
+    _reject_retention_override(retention_epochs)
+    threshold = compute_adaptive_pruning_threshold(
+        current_issuance_epoch=current_issuance_epoch,
+        minting_confirmed=minting_confirmed,
+    )
+    score = _require_finite_decimal(ecu_score, token="ecu_score_invalid_phase_1361")
+    if score < Decimal("0"):
+        raise ValueError("ecu_score_invalid_phase_1361")
+
+    root_path = Path(root)
+    discovered = discover_epoch_event_dirs(root_path)
+    eligible_epoch = threshold["eligible_before_or_at_epoch"]
+    pruning_enabled = minting_confirmed and score < CDL_043_ECU_SCORE_FLOOR and eligible_epoch > 0
+
+    keep_paths: List[Path] = []
+    prune_paths: List[Path] = []
+    for path in discovered:
+        epoch_index = _epoch_index_from_name(path.name)
+        if epoch_index is None:
+            keep_paths.append(path)
+            continue
+        if pruning_enabled and epoch_index <= eligible_epoch:
+            prune_paths.append(path)
+        else:
+            keep_paths.append(path)
+
+    return {
+        "root": str(root_path),
+        "keep_last": CDL_044_RETENTION_EPOCHS,
+        "discovered": [str(path) for path in discovered],
+        "keep": [str(path) for path in keep_paths],
+        "prune": [str(path) for path in prune_paths],
+        "threshold": threshold,
+        "ecu_score": _decimal_to_string(score),
+        "pruning_enabled": pruning_enabled,
     }
 
 
