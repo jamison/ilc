@@ -18,20 +18,39 @@ FIX1_PROMPT = (
     / "antigravity_tasks"
     / "antigravity_prompt__phase_1360_g8_four_validator_epoch_finalization_fix1.md"
 )
+FIX2_PROMPT = (
+    ROOT
+    / "docs"
+    / "antigravity_tasks"
+    / "antigravity_prompt__phase_1360_g8_four_validator_epoch_finalization_fix2.md"
+)
 FIX1_WALKTHROUGH = (
     ROOT
     / "docs"
     / "phases"
     / "phase_1360_fix1_four_validator_epoch_finalization_walkthrough.md"
 )
+FIX2_WALKTHROUGH = (
+    ROOT
+    / "docs"
+    / "phases"
+    / "phase_1360_fix2_four_validator_epoch_finalization_walkthrough.md"
+)
 STATUS = ROOT / "docs" / "phases" / "STATUS.md"
 
+# Fix2: validator 1 reassigned from macOS (100.111.172.103) to ilc-node-2 (100.112.32.42:50155).
+# Validators 2/3/4 retain their original Tailscale IPs and ports.
 CURRENT_TAILSCALE_IPS = {
-    1: "100.111.172.103",
+    1: "100.111.172.103",  # original macOS Tailscale IP (retained in genesis.json)
     2: "100.112.32.42",
     3: "100.91.33.46",
     4: "100.72.17.38",
 }
+
+# Fix2 topology: validator 1 binds on ilc-node-2's IP at port 50155 (not 50151).
+FIX2_VALIDATOR_1_BIND_HOST = "100.112.32.42"
+FIX2_VALIDATOR_1_QUIC_PORT = 50155
+FIX2_VALIDATOR_1_GRPC_ADDR = "100.112.32.42:50165"
 
 STALE_PHASE_779_IPS = {
     "100.109.27.59",
@@ -59,6 +78,8 @@ def test_phase_1360_topology_is_three_vps_plus_local_control_host() -> None:
 
 
 def test_phase_1360_current_tailscale_ips_are_wired_into_configs() -> None:
+    # Fix2: validator 1 is reassigned to ilc-node-2; its bind_host/port/listen_addr differ from original.
+    # Genesis.json tailscale_ip for validator 1 remains the original macOS IP (it is the identity key anchor).
     genesis = _read_json(CONFIG_DIR / "genesis.json")
     by_validator = {
         item["validator_id"]: item for item in genesis["validators"]
@@ -68,7 +89,18 @@ def test_phase_1360_current_tailscale_ips_are_wired_into_configs() -> None:
     for validator_id, ip in CURRENT_TAILSCALE_IPS.items():
         assert by_validator[validator_id]["tailscale_ip"] == ip
 
-    for validator_id, ip in CURRENT_TAILSCALE_IPS.items():
+    # Fix2: validator 1 bind_host is now ilc-node-2's IP (100.112.32.42), not macOS IP.
+    v1_config = _read_json(CONFIG_DIR / "validator_1_config.json")
+    assert v1_config["bind_host"] == FIX2_VALIDATOR_1_BIND_HOST
+    assert v1_config["bind_port"] == FIX2_VALIDATOR_1_QUIC_PORT
+    assert v1_config["tailscale_advertise_ip"] == FIX2_VALIDATOR_1_BIND_HOST
+    assert v1_config["listen_addr"] == f"{FIX2_VALIDATOR_1_BIND_HOST}:{FIX2_VALIDATOR_1_QUIC_PORT}"
+    assert v1_config["settlement_path"] == "none"
+    assert v1_config["is_testnet"] is True
+
+    # Validators 2/3/4 retain their original topology.
+    for validator_id in (2, 3, 4):
+        ip = CURRENT_TAILSCALE_IPS[validator_id]
         config = _read_json(CONFIG_DIR / f"validator_{validator_id}_config.json")
         assert config["bind_host"] == ip
         assert config["tailscale_advertise_ip"] == ip
@@ -76,25 +108,27 @@ def test_phase_1360_current_tailscale_ips_are_wired_into_configs() -> None:
         assert config["settlement_path"] == "none"
         assert config["is_testnet"] is True
 
+    # Peer addresses for validators 2/3/4 must point to validator 1's new Fix2 address.
+    for validator_id in (2, 3, 4):
+        config = _read_json(CONFIG_DIR / f"validator_{validator_id}_config.json")
         peer_addrs = {peer["addr"] for peer in config["peers"]}
-        expected_peer_addrs = {
-            f"{peer_ip}:{50150 + peer_id}"
-            for peer_id, peer_ip in CURRENT_TAILSCALE_IPS.items()
-            if peer_id != validator_id
-        }
-        assert peer_addrs == expected_peer_addrs
+        # Validator 1 peer address is now the Fix2 reassigned address.
+        assert f"{FIX2_VALIDATOR_1_BIND_HOST}:{FIX2_VALIDATOR_1_QUIC_PORT}" in peer_addrs
+        # Old macOS address must not appear.
+        assert f"100.111.172.103:50151" not in peer_addrs
 
 
 def test_phase_1360_remote_grpc_proof_listener_is_tailscale_only() -> None:
+    # Fix2: validator 1 gRPC is now on ilc-node-2's Tailscale IP (100.112.32.42:50165).
+    validator_1 = _read_json(CONFIG_DIR / "validator_1_config.json")
+    assert validator_1["grpc_listen_addr"] == FIX2_VALIDATOR_1_GRPC_ADDR
+
     validator_2 = _read_json(CONFIG_DIR / "validator_2_config.json")
     assert validator_2["grpc_listen_addr"] == "100.112.32.42:50162"
 
-    for validator_id in (1, 3, 4):
+    for validator_id in (3, 4):
         config = _read_json(CONFIG_DIR / f"validator_{validator_id}_config.json")
-        if validator_id == 1:
-            assert config["grpc_listen_addr"] == "127.0.0.1:50161"
-        else:
-            assert "grpc_listen_addr" not in config
+        assert "grpc_listen_addr" not in config
 
 
 def test_phase_1360_sec_007_dependency_cleanup_is_manifested() -> None:
@@ -159,3 +193,25 @@ def test_phase_1360_fix1_records_blocked_verdict_without_proven_token() -> None:
     assert "phase_1360_fix1_four_validator_epoch_finalization_proven" not in status
     assert "public_p2p_not_activated_phase_1360_fix1" in walkthrough
     assert "production_ecu_transfers_not_activated_testnet_phase_1360_fix1" in walkthrough
+
+
+def test_phase_1360_fix2_prompt_is_schema_valid() -> None:
+    assert FIX2_PROMPT.exists()
+    assert validate(FIX2_PROMPT) == []
+
+
+def test_phase_1360_fix2_records_proven_verdict() -> None:
+    walkthrough = FIX2_WALKTHROUGH.read_text()
+    status = STATUS.read_text()
+
+    assert "phase_1360_fix2_four_validator_epoch_finalization_proven" in walkthrough
+    assert "phase_1360_fix2_four_validator_epoch_finalization_proven" in status
+    assert "phase_1360_fix2_validator_1_quic_diagnosis_documented" in walkthrough
+    assert "public_p2p_not_activated_phase_1360_fix2" in walkthrough
+    assert "production_ecu_transfers_not_activated_testnet_phase_1360_fix2" in walkthrough
+    # Verify all four validators are mentioned as having committed epoch 1.
+    assert "epoch_record_committed:epoch=1" in walkthrough
+    assert "validator_id=1" in walkthrough
+    assert "validator_id=2" in walkthrough
+    assert "validator_id=3" in walkthrough
+    assert "validator_id=4" in walkthrough
