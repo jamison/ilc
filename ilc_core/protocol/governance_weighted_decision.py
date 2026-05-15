@@ -41,15 +41,21 @@ PRODUCTION_GOVERNANCE_DECISION_ACTIVATION_TOKEN = (
 LEGACY_FLOAT_CONVERSION_GUARD_TOKEN = (
     "legacy_governance_weight_float_conversion_guard_phase_1356"
 )
-GOVERNANCE_WEIGHT_FLOAT_REWRITE_DEFERRED_TOKEN = (
-    "governance_weight_float_rewrite_deferred_phase_1357"
+GOVERNANCE_WEIGHT_DECIMAL_REWRITE_CLOSED_TOKEN = (
+    "governance_weight_vote_share_precision_gap_closed_phase_1357"
+)
+NONFINITE_FLOAT_INF_NEGATIVE_INF_REGRESSION_TOKEN = (
+    "nonfinite_float_inf_negative_inf_regression_phase_1357"
+)
+EMPTY_GOVERNANCE_PARTICIPANT_SET_REGRESSION_TOKEN = (
+    "empty_governance_participant_set_regression_phase_1357"
 )
 
 VOTE_APPROVE = "approve"
 VOTE_REJECT = "reject"
 VOTE_ABSTAIN = "abstain"
 VALID_VOTES = frozenset({VOTE_APPROVE, VOTE_REJECT, VOTE_ABSTAIN})
-HEX64_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+HEX64_PATTERN = re.compile(r"[a-f0-9]{64}")
 ZERO = Decimal("0")
 
 
@@ -77,7 +83,7 @@ class GovernanceWeightedDecisionQuote:
     decision_surface_token: str
     compute_call_token: str
     legacy_float_conversion_guard_token: str
-    phase_1357_float_rewrite_deferred_token: str
+    phase_1357_decimal_rewrite_token: str
     proposal_id: str
     decision_epoch: int
     participants: tuple[GovernanceWeightedParticipant, ...]
@@ -114,8 +120,8 @@ class GovernanceWeightedDecisionQuote:
                 participant.to_canonical_record()
                 for participant in self.participants
             ],
-            "phase_1357_float_rewrite_deferred_token": (
-                self.phase_1357_float_rewrite_deferred_token
+            "phase_1357_decimal_rewrite_token": (
+                self.phase_1357_decimal_rewrite_token
             ),
             "production_governance_decisions_activated": (
                 self.production_governance_decisions_activated
@@ -163,6 +169,8 @@ def _legacy_weight_to_decimal(value: object, field_name: str) -> Decimal:
         raise ValueError(f"{field_name}_must_be_exact_numeric_phase_1356")
     if isinstance(value, float) and not math.isfinite(value):
         raise ValueError(f"{field_name}_must_be_finite_phase_1356")
+    if isinstance(value, float):
+        raise ValueError(f"{field_name}_must_be_exact_numeric_phase_1356")
     if isinstance(value, Decimal):
         amount = value
     else:
@@ -302,9 +310,7 @@ def build_governance_weighted_decision_quote(
         decision_surface_token=GOVERNANCE_WEIGHT_OUTPUT_WIRED_DECISION_SURFACES_TOKEN,
         compute_call_token=COMPUTE_GOVERNANCE_WEIGHTS_IN_CALL_PATH_TOKEN,
         legacy_float_conversion_guard_token=LEGACY_FLOAT_CONVERSION_GUARD_TOKEN,
-        phase_1357_float_rewrite_deferred_token=(
-            GOVERNANCE_WEIGHT_FLOAT_REWRITE_DEFERRED_TOKEN
-        ),
+        phase_1357_decimal_rewrite_token=GOVERNANCE_WEIGHT_DECIMAL_REWRITE_CLOSED_TOKEN,
         proposal_id=proposal,
         decision_epoch=epoch,
         participants=ordered_participants,

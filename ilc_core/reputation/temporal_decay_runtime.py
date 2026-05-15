@@ -1,15 +1,22 @@
 """CDL-V1 temporal decay runtime.
 
 The runtime enforces issuance-epoch-scoped decay helpers using deterministic
-math and tokenized validation failures.
+Decimal arithmetic and tokenized validation failures.
 """
 
 from __future__ import annotations
 
-import math
+from decimal import Decimal, InvalidOperation, localcontext
+from typing import TypeAlias
 
 CDL_V1_RUNTIME_VERSION = "cdl_v1_temporal_decay_runtime_388.v0.1"
 CDL_V1_DEPENDENCY = "cdl_v1_temporal_decay_388.v0.1"
+CDL_V1_DECIMAL_REWRITE_TOKEN = "temporal_decay_no_float_arithmetic_phase_1357"
+
+ExactNumberish: TypeAlias = Decimal | int | str
+ZERO = Decimal("0")
+ONE = Decimal("1")
+TWELVE_PLACES = Decimal("0.000000000001")
 
 
 class TemporalDecayValidationError(ValueError):
@@ -20,67 +27,89 @@ class TemporalDecayValidationError(ValueError):
         self.token = token
 
 
-def _require_numeric(name: str, value: float) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+def _require_numeric(name: str, value: object) -> Decimal:
+    if isinstance(value, bool):
         raise TemporalDecayValidationError(
             "cdl_v1_temporal_decay_invalid_numeric",
-            f"{name} must be a numeric value",
+            f"{name} must be an exact finite numeric value",
         )
-    number = float(value)
-    if not math.isfinite(number):
+    if isinstance(value, Decimal):
+        number = value
+    elif isinstance(value, int):
+        number = Decimal(value)
+    elif isinstance(value, str):
+        try:
+            number = Decimal(value)
+        except InvalidOperation as exc:
+            raise TemporalDecayValidationError(
+                "cdl_v1_temporal_decay_invalid_numeric",
+                f"{name} must be an exact finite numeric value",
+            ) from exc
+    else:
+        raise TemporalDecayValidationError(
+            "cdl_v1_temporal_decay_invalid_numeric",
+            f"{name} must be an exact finite numeric value",
+        )
+    if not number.is_finite():
         raise TemporalDecayValidationError(
             "cdl_v1_temporal_decay_invalid_numeric",
             f"{name} must be a finite numeric value",
         )
-    return number
+    return ZERO if number.is_signed() and number == ZERO else number
+
+
+def _quantize_twelve_places(value: Decimal) -> Decimal:
+    return value.quantize(TWELVE_PLACES)
 
 
 def compute_decay_multiplier(
     *,
-    elapsed_issuance_epochs: float,
-    half_life_epochs: float,
-    floor_multiplier: float,
-) -> float:
+    elapsed_issuance_epochs: ExactNumberish,
+    half_life_epochs: ExactNumberish,
+    floor_multiplier: ExactNumberish,
+) -> Decimal:
     """Compute exponential temporal-decay multiplier with floor enforcement."""
 
     elapsed = _require_numeric("elapsed_issuance_epochs", elapsed_issuance_epochs)
     half_life = _require_numeric("half_life_epochs", half_life_epochs)
     floor = _require_numeric("floor_multiplier", floor_multiplier)
 
-    if elapsed < 0.0:
+    if elapsed < ZERO:
         raise TemporalDecayValidationError(
             "cdl_v1_temporal_decay_negative_elapsed",
             "elapsed_issuance_epochs must be >= 0",
         )
-    if half_life <= 0.0:
+    if half_life <= ZERO:
         raise TemporalDecayValidationError(
             "cdl_v1_temporal_decay_half_life_non_positive",
             "half_life_epochs must be > 0",
         )
-    if floor < 0.0 or floor > 1.0:
+    if floor < ZERO or floor > ONE:
         raise TemporalDecayValidationError(
             "cdl_v1_temporal_decay_floor_out_of_range",
             "floor_multiplier must be in [0, 1]",
         )
 
-    raw = math.exp(-math.log(2.0) * (elapsed / half_life))
-    multiplier = max(floor, min(1.0, raw))
-    return round(multiplier, 12)
+    with localcontext() as ctx:
+        ctx.prec = 50
+        raw = (-(Decimal("2").ln() * (elapsed / half_life))).exp()
+    multiplier = max(floor, min(ONE, raw))
+    return _quantize_twelve_places(multiplier)
 
 
 def apply_temporal_decay(
     *,
-    base_ecu_score: float,
-    elapsed_issuance_epochs: float,
-    half_life_epochs: float,
-    floor_multiplier: float,
+    base_ecu_score: ExactNumberish,
+    elapsed_issuance_epochs: ExactNumberish,
+    half_life_epochs: ExactNumberish,
+    floor_multiplier: ExactNumberish,
     epoch_type: str = "issuance_epoch",
-) -> float:
+) -> Decimal:
     """Apply temporal decay to base score under issuance-epoch scope."""
 
     base = _require_numeric("base_ecu_score", base_ecu_score)
 
-    if base < 0.0:
+    if base < ZERO:
         raise TemporalDecayValidationError(
             "cdl_v1_temporal_decay_negative_base_score",
             "base_ecu_score must be >= 0",
@@ -96,4 +125,4 @@ def apply_temporal_decay(
         half_life_epochs=half_life_epochs,
         floor_multiplier=floor_multiplier,
     )
-    return round(base * multiplier, 12)
+    return _quantize_twelve_places(base * multiplier)

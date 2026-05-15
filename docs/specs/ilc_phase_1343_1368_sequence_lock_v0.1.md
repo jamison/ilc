@@ -108,7 +108,7 @@ mutation environment authority in addition to human GO:
 | 1354 | CDL-068 topology shuffle VRF runtime | SENSITIVE; future explicit GO required. |
 | 1355 | CDL-V6 / Phase-597 genesis intervention enforcement | COMPLETE; executed after explicit `GO Phase 1355`; records audit-only runtime, Phase-597 bounds, no brake fire, no CDL mutation. |
 | 1356 | CDL-013 governance weight live integration | COMPLETE; executed after explicit `GO Phase 1356`; records default-off protocol decision quote runtime, stale `ilc_core/reputation/governance_weight.py` path correction, legacy float conversion guard, and no production governance decision activation. |
-| 1357 | `reputation.py` H11 rewrite | SENSITIVE; future explicit GO required; unblocked by Phase 1356 and responsible for governance-weight/reputation float elimination. |
+| 1357 | `reputation.py` H11 rewrite | COMPLETE; executed after explicit `GO Phase 1357`; records Decimal governance-weight/reputation/temporal-decay rewrite, Phase 1356 precision/test carry-forward closure, routing-reputation/CDL-060 Decimal deferral, and no production reputation or governance activation. |
 | 1358 | `ilc_core/` to `ilc_consensus/` production bridge | SENSITIVE; future explicit GO required. |
 | 1359 | HIGH-001 two-layer defense | SENSITIVE; future explicit GO required. |
 | 1360 | Multi-operator non-loopback Mysticeti testnet + SEC-007a/b updates | SENSITIVE; future explicit GO required. |
