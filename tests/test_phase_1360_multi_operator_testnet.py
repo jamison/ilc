@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from tools.validate_phase_prompt import validate
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_DIR = ROOT / "config" / "mysticeti_testnet_multiop_1360"
@@ -10,6 +12,19 @@ PROMPT = (
     / "antigravity_tasks"
     / "antigravity_prompt__phase_1360_g8_multi_operator_mysticeti_testnet.md"
 )
+FIX1_PROMPT = (
+    ROOT
+    / "docs"
+    / "antigravity_tasks"
+    / "antigravity_prompt__phase_1360_g8_four_validator_epoch_finalization_fix1.md"
+)
+FIX1_WALKTHROUGH = (
+    ROOT
+    / "docs"
+    / "phases"
+    / "phase_1360_fix1_four_validator_epoch_finalization_walkthrough.md"
+)
+STATUS = ROOT / "docs" / "phases" / "STATUS.md"
 
 CURRENT_TAILSCALE_IPS = {
     1: "100.111.172.103",
@@ -119,3 +134,28 @@ def test_phase_1360_proto_agent_id_comment_matches_rust_length() -> None:
 
     assert "bytes agent_id = 1; // 48 bytes AgentID lookup target" in proto
     assert "AGENT_ID_LENGTH_BYTES = 48" in bridge
+
+
+def test_phase_1360_fix1_prompt_is_schema_valid() -> None:
+    assert FIX1_PROMPT.exists()
+    assert validate(FIX1_PROMPT) == []
+
+
+def test_phase_1360_fix1_control_script_hardens_restart_and_epoch_sync() -> None:
+    script = (ROOT / "tools" / "testbed" / "phase1360_multiop_control.sh").read_text()
+
+    assert 'EPOCH_SYNC_INTERVAL_SECS="${PHASE1360_EPOCH_SYNC_INTERVAL_SECS:-30}"' in script
+    assert "sleep 2" in script
+    assert "EPOCH_SYNC_INTERVAL_SECS=2" not in script
+
+
+def test_phase_1360_fix1_records_blocked_verdict_without_proven_token() -> None:
+    walkthrough = FIX1_WALKTHROUGH.read_text()
+    status = STATUS.read_text()
+
+    assert "phase_1360_fix1_epoch_finalization_still_blocked" in walkthrough
+    assert "phase_1360_fix1_epoch_finalization_still_blocked" in status
+    assert "phase_1360_fix1_four_validator_epoch_finalization_proven" not in walkthrough
+    assert "phase_1360_fix1_four_validator_epoch_finalization_proven" not in status
+    assert "public_p2p_not_activated_phase_1360_fix1" in walkthrough
+    assert "production_ecu_transfers_not_activated_testnet_phase_1360_fix1" in walkthrough
