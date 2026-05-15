@@ -29,6 +29,14 @@ from ilc_core.privacy.monitor import (
     FillMonitor,
     make_degraded_notifications,
 )
+from ilc_core.privacy.transfer_mixing_framework import (
+    ACTIVATION_GATE_REQUIRED,
+    MIXING_FRAMEWORK_NOT_ACTIVATED_PRODUCTION_TOKEN,
+    TRANSFER_MIXING_K_ANONYMITY_FRAMEWORK_TOKEN,
+    TransferMixingFrameworkQuote,
+    build_transfer_mixing_framework_quote,
+    route_transfer_through_mixing_framework,
+)
 
 PRIVACY_LANE_VERSION = "privacy_lane_831.v0.1"
 
@@ -41,6 +49,9 @@ __all__ = [
     "SIM_LEAKAGE_03_BOUND_A",
     "SIM_LEAKAGE_03_BOUND_B",
     "SIM_LEAKAGE_03_BOUND_C",
+    "ACTIVATION_GATE_REQUIRED",
+    "MIXING_FRAMEWORK_NOT_ACTIVATED_PRODUCTION_TOKEN",
+    "TRANSFER_MIXING_K_ANONYMITY_FRAMEWORK_TOKEN",
     "DegradedAnonymityNotification",
     "EpochMetrics",
     "FillAlert",
@@ -51,5 +62,8 @@ __all__ = [
     "PrivacyLane",
     "PrivacyLaneConfig",
     "ReleaseGroup",
+    "TransferMixingFrameworkQuote",
+    "build_transfer_mixing_framework_quote",
     "make_degraded_notifications",
+    "route_transfer_through_mixing_framework",
 ]
