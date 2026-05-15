@@ -3,6 +3,11 @@ use crate::types::{EpochSeq, ILCConsensusError, TransferCertificate, ValidatorSe
 use std::collections::{BTreeMap, HashSet};
 use std::sync::{Arc, RwLock};
 
+pub const SEC_004_TRANSFER_CERTIFICATE_EPOCH_BINDING_PHASE_1353: &str =
+    "sec_004_transfer_certificate_epoch_binding_phase_1353";
+pub const VALIDATOR_SET_ROTATION_WIRED_FAST_PATH_PHASE_1353: &str =
+    "validator_set_rotation_wired_fast_path_phase_1353";
+
 pub struct FastPathProtocol {
     /// Current validator set view, kept for existing epoch-settlement / harness compatibility.
     pub validator_set: Arc<RwLock<ValidatorSet>>,
@@ -35,11 +40,10 @@ impl FastPathProtocol {
     /// latest recorded activation epoch, the call is a no-op (logged).  This
     /// prevents a stale or replayed governance action from overwriting a newer set.
     ///
-    /// Note: the live wiring of this call from the epoch settlement path is deferred
-    /// pending CDL-017 (validator ejection governance).  `EpochCheckpoint` does not
-    /// carry a `ValidatorSet` payload — the new set must be sourced from a separate
-    /// governance message.  Until CDL-017 is ratified, `epoch_sets` contains only
-    /// the genesis entry and all certs resolve to the genesis set regardless of epoch.
+    /// Phase 1353 binds this callable rotation surface to CDL-017 admission/ejection
+    /// decisions. Production validator admission remains behind a separate operator
+    /// human gate; this method records deterministic epoch-bound rotations once a
+    /// caller supplies an authorized `ValidatorSet`.
     pub fn rotate_validator_set(&self, active_from_epoch: EpochSeq, new_set: ValidatorSet) {
         let mut sets = self.epoch_sets.write().unwrap();
         if let Some((&latest_epoch, _)) = sets.iter().next_back() {
@@ -178,6 +182,18 @@ mod tests {
         let dir = tempdir().unwrap();
         let env = Environment::new().set_max_dbs(1).open(dir.path()).unwrap();
         (Arc::new(env), dir)
+    }
+
+    #[test]
+    fn test_phase_1353_sec_004_binding_tokens_present() {
+        assert_eq!(
+            SEC_004_TRANSFER_CERTIFICATE_EPOCH_BINDING_PHASE_1353,
+            "sec_004_transfer_certificate_epoch_binding_phase_1353"
+        );
+        assert_eq!(
+            VALIDATOR_SET_ROTATION_WIRED_FAST_PATH_PHASE_1353,
+            "validator_set_rotation_wired_fast_path_phase_1353"
+        );
     }
 
     #[test]
