@@ -162,6 +162,8 @@ def _redact_log_args(args: Any, pairs: tuple[tuple[str, str], ...]) -> Any:
         return args
     if isinstance(args, str):
         return _redact_string_with_pairs(args, pairs)
+    if isinstance(args, (bytes, bytearray, memoryview)):
+        return _redact_string_with_pairs(bytes(args).hex(), pairs)
     if isinstance(args, tuple):
         return tuple(_redact_log_args(item, pairs) for item in args)
     if isinstance(args, Mapping):
