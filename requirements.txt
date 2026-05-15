@@ -9,6 +9,7 @@ numpy>=1.24.0
 # COSE Sign1 attestation (Phase 66B)
 cbor2>=5.0.0
 cryptography>=41.0.0
+grpcio>=1.80.0
 
 # MCP schema validation (Phase 66D)
 jsonschema>=4.0.0
