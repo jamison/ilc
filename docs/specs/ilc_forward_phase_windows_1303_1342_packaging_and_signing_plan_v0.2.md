@@ -639,6 +639,16 @@ SIM-010 validator reward fraction routes from the write-fee-burn pool through
 the existing CDL-047 treasury cap/floor/velocity framework, and production
 reward distribution remains inactive.
 
+Runtime audit carry-forward for Phase 1366:
+`treasury_epoch_budget_ilc` is caller-supplied in the Phase 1349 quote runtime.
+This is acceptable while the runtime remains quote-only, but before any
+soft-RC/value-path activation the Phase 1366 gate must verify
+`phase_1366_treasury_epoch_budget_binding_verified`: the budget input must be
+derived from the real epoch emission / treasury budget and must not be
+caller-inflatable in a way that bypasses the CDL-047 `0.15 × B_e` bounty cap.
+If unverified, Phase 1366 must fail closed with
+`phase_1366_treasury_epoch_budget_binding_unverified`.
+
 **Phase 1350 execution addendum:** Phase 1350 updated
 `ilc_core/economics/epoch_attribution_settle_runtime.py`, repaired stale
 `ilc_core/types.py` comments, and records
@@ -736,7 +746,7 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1363 | Blocking-authority deliberation/prelock: resolve open questions from Phase 1362; lock blocking-authority scope and any CDL-055/CDL-030 interaction clauses | TBD vehicle, CDL-057 | SENSITIVE |
 | 1364 | Blocking-authority ratification + CDL-057 activation: ratify the selected vehicle; flip `BLOCKING_AUTHORITY_DEFERRED = True` -> `False` in `epoch_boundary_witness_runtime.py`; epoch-boundary witness lane becomes a blocking lane | TBD vehicle, CDL-057 | SENSITIVE; `ILC_CDL_MUTATION_AUTHORIZED=1` |
 | 1365 | Capsule refresh (v5.57) + coherence report | — | NON-SENSITIVE after sequence lock |
-| 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; explicit `GO Phase 1366` required |
+| 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; verifies CDL-054/CDL-047 treasury budget binding; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; explicit `GO Phase 1366` required; must record `phase_1366_treasury_epoch_budget_binding_verified` or blocker `phase_1366_treasury_epoch_budget_binding_unverified` |
 | 1367 | Reserved for pre-gate fix pass | — | SENSITIVE |
 | 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | SENSITIVE; must record exactly one of `production_minting_activated_phase_1368` or `production_minting_activation_deferred_phase_1368` |
 
@@ -907,6 +917,14 @@ ILC settlement residual routing policy (CDL-083 caller-filtered upheld-refutatio
 performer pool fallback). It does not activate CDL-052 settlement semantics or govern local
 ECU refutation incentives. This window completes the production path for settlement-grade cases.
 
+Runtime audit carry-forward: in the Phase 1351a allocator, the post-theta_hard
+recipient path records `rounding_residual_to_upheld_refutation_recipients_ilc`
+as a distinct quote field rather than consolidating it into performer, auditor,
+or Genesis pools. Conservation is explicit only if downstream settlement
+consumers include this field in the settlement identity. Window 1391-1398 must
+therefore define the settlement consumer contract for this residual field before
+activating any settlement-grade refutation reward path.
+
 #### Ordering conditional
 
 Default: this window opens after Window 1390 closure. Exception: if Phase 1389 public RC
@@ -1032,6 +1050,9 @@ HCON02_QUORUM_MINIMUM_VOTERS = 2
 - Do not activate public settlement-grade refutation reward claim paths without the applicable
   Phase 1389 / Window 1391-1398 gate; do not use this section to alter Phase 1366/1368
   ordinary production-minting activation boundaries
+- Do not consume `rounding_residual_to_upheld_refutation_recipients_ilc` without an
+  explicit settlement consumer contract that preserves conservation across the separate
+  upheld-refutation residual field
 
 ---
 
