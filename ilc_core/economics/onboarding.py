@@ -1,6 +1,8 @@
 import logging
 from decimal import Decimal, InvalidOperation
 
+from ilc_core.identity.log_redaction_runtime import redact_agent_id_for_log
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,7 +21,11 @@ class OnboardingVault:
         if self.vault_balance >= STARTER_AMOUNT:
             self.vault_balance -= STARTER_AMOUNT
             self.credits_issued[agent_id] = STARTER_AMOUNT
-            logger.info("[Vault] Issued starter credit %s to %s", STARTER_AMOUNT, agent_id)
+            logger.info(
+                "[Vault] Issued starter credit %s to %s",
+                STARTER_AMOUNT,
+                redact_agent_id_for_log(agent_id),
+            )
             return STARTER_AMOUNT
         return Decimal("0")
 
@@ -39,7 +45,10 @@ class OnboardingVault:
         self.vault_balance += repayment
         
         if self.credits_issued[agent_id] == Decimal("0"):
-            logger.info("[Vault] Agent %s has fully repaid their debt!", agent_id)
+            logger.info(
+                "[Vault] Agent %s has fully repaid their debt!",
+                redact_agent_id_for_log(agent_id),
+            )
             
         return repayment, earnings_amount - repayment
 

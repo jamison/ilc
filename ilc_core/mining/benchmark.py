@@ -5,6 +5,8 @@ import hashlib
 import sys
 import logging
 
+from ilc_core.identity.log_redaction_runtime import redact_agent_id_for_log
+
 logger = logging.getLogger(__name__)
 
 
@@ -91,7 +93,10 @@ class PoWBenchmark:
             - "task"       : "MATRIX_HEAVY" | "INTEGER_SEARCH"
             - "total_time" : total benchmark wall-clock time (seconds)
         """
-        logger.info("[Benchmark] Initializing CapProof for %s", agent_id)
+        logger.info(
+            "[Benchmark] Initializing CapProof for %s",
+            redact_agent_id_for_log(agent_id),
+        )
 
         # --- GENESIS BYPASS ------------------------------------------------
         if "genesis" in agent_id.lower():

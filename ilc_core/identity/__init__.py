@@ -18,6 +18,14 @@ from .agent_id_runtime import (
     derive_agent_id,
     verify_agent_id,
 )
+from .log_redaction_runtime import (
+    AGENT_ID_PLAINTEXT_REDACTED_VALIDATOR_LOGS_TOKEN,
+    HIGH_001_LOG_REDACTION_RUNTIME_VERSION,
+    SENDER_PRIVACY_CLAIM_BLOCKER_CLEARED_TOKEN,
+    AgentIDLogRedactionFilter,
+    redact_agent_id_for_log,
+    redact_agent_ids_in_log_message,
+)
 
 __all__ = [
     "CDL_V2_RUNTIME_VERSION",
@@ -34,4 +42,10 @@ __all__ = [
     "AgentIdentityError",
     "derive_agent_id",
     "verify_agent_id",
+    "AGENT_ID_PLAINTEXT_REDACTED_VALIDATOR_LOGS_TOKEN",
+    "HIGH_001_LOG_REDACTION_RUNTIME_VERSION",
+    "SENDER_PRIVACY_CLAIM_BLOCKER_CLEARED_TOKEN",
+    "AgentIDLogRedactionFilter",
+    "redact_agent_id_for_log",
+    "redact_agent_ids_in_log_message",
 ]

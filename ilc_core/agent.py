@@ -7,6 +7,7 @@ from .exceptions import InsufficientStakeError
 from .consensus.engine import ConsensusEngine
 from .mining.benchmark import PoWBenchmark
 from .economics.onboarding import OnboardingVault
+from .identity.log_redaction_runtime import redact_agent_id_for_log
 import time
 
 logger = logging.getLogger(__name__)
@@ -100,7 +101,7 @@ class EveAgent:
         self.trust_vector["tier"] = result["tier"]
         logger.info(
             "agent_hardware_verified agent=%s device=%s tier=%s",
-            self.id,
+            redact_agent_id_for_log(self.id),
             result["device"],
             result["tier"],
         )
@@ -122,7 +123,7 @@ class EveAgent:
         if chosen_stake <= Decimal("0") or self.wallet_balance < chosen_stake:
             logger.warning(
                 "agent_stake_insufficient_funds agent=%s wallet=%s chosen=%s",
-                self.id,
+                redact_agent_id_for_log(self.id),
                 self.wallet_balance,
                 chosen_stake,
             )
@@ -149,12 +150,16 @@ class EveAgent:
             self.wallet_balance += chosen_stake
             logger.warning(
                 "agent_stake_rejected_by_consensus agent=%s chosen=%s",
-                self.id,
+                redact_agent_id_for_log(self.id),
                 chosen_stake,
             )
             return None
 
-        logger.info("agent_claim_minted agent=%s node=%s", self.id, node.id[:8])
+        logger.info(
+            "agent_claim_minted agent=%s node=%s",
+            redact_agent_id_for_log(self.id),
+            node.id[:8],
+        )
         return node
 
     def auto_mine_claim(self, content: str, parent_id: str) -> Optional[Node]:
@@ -202,7 +207,7 @@ class EveAgent:
         if chosen <= Decimal("0") or self.wallet_balance < chosen:
             logger.warning(
                 "agent_auto_mine_aborted agent=%s wallet=%s chosen=%s",
-                self.id,
+                redact_agent_id_for_log(self.id),
                 self.wallet_balance,
                 chosen,
             )
@@ -222,7 +227,7 @@ class EveAgent:
             if repayment > Decimal("0"):
                 logger.info(
                     "agent_reward_repayment agent=%s repaid=%s net=%s",
-                    self.id,
+                    redact_agent_id_for_log(self.id),
                     repayment,
                     net,
                 )
@@ -235,7 +240,7 @@ class EveAgent:
         if self.wallet_balance < stake_amount:
             logger.warning(
                 "agent_refute_insufficient_balance agent=%s target=%s wallet=%s stake=%s",
-                self.id,
+                redact_agent_id_for_log(self.id),
                 target_id,
                 self.wallet_balance,
                 stake_amount,
