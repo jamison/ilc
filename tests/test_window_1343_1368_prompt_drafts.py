@@ -33,6 +33,7 @@ PHASE_PROMPTS = (
     "antigravity_prompt__phase_1358_g8_ilc_core_ilc_consensus_production_bridge.md",
     "antigravity_prompt__phase_1359_g8_high_001_two_layer_defense.md",
     "antigravity_prompt__phase_1360_g8_multi_operator_mysticeti_testnet.md",
+    "antigravity_prompt__phase_1360_g8_four_validator_epoch_finalization_fix1.md",
     "antigravity_prompt__phase_1361_g8_cdl_043_044_adaptive_pruning_completion.md",
     "antigravity_prompt__phase_1362_g8_blocking_authority_vehicle_opening.md",
     "antigravity_prompt__phase_1363_g8_blocking_authority_deliberation_prelock.md",
@@ -46,6 +47,7 @@ PHASE_PROMPTS = (
 # Prompts that are NON-SENSITIVE — no additional GO token needed beyond prompt approval.
 NON_SENSITIVE_PROMPTS = {
     "antigravity_prompt__phase_1344_g8_issuance_stack_scoping.md",
+    "antigravity_prompt__phase_1360_g8_four_validator_epoch_finalization_fix1.md",
     "antigravity_prompt__phase_1365_g8_capsule_v5_57_coherence_report.md",
 }
 
