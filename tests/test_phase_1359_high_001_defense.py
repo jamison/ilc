@@ -87,6 +87,27 @@ def test_redaction_filter_fires_before_log_write() -> None:
     assert "[agent_id:redacted:v1:epoch=1359:sha256=" in output
 
 
+def test_redaction_filter_redacts_binary_agent_id_args_before_log_write() -> None:
+    binary_id = bytes.fromhex("ab" * 48)
+    stream = io.StringIO()
+    handler = logging.StreamHandler(stream)
+    handler.addFilter(AgentIDLogRedactionFilter([binary_id], protocol_epoch=1359))
+
+    logger = logging.getLogger("phase_1359_high_001_binary_test")
+    logger.handlers = []
+    logger.propagate = False
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
+
+    logger.info("validator accepted binary_agent_id=%s", binary_id)
+    handler.flush()
+
+    output = stream.getvalue()
+    assert binary_id.hex() not in output
+    assert str(binary_id) not in output
+    assert "[agent_id:redacted:v1:epoch=1359:sha256=" in output
+
+
 def test_log_message_redaction_replaces_string_and_bytes_forms() -> None:
     binary_id = bytes.fromhex("ab" * 48)
     message = f"string={AGENT_ID} bytes={binary_id.hex()}"
