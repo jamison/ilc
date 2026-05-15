@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import math
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
 from ilc_core.reputation.temporal_decay_runtime import (
+    CDL_V1_DECIMAL_REWRITE_TOKEN,
     CDL_V1_DEPENDENCY,
     CDL_V1_RUNTIME_VERSION,
     TemporalDecayValidationError,
@@ -103,52 +104,52 @@ def test_runtime_paths_and_constants_exist() -> None:
     assert RUNTIME_PATH.exists()
     assert CDL_V1_RUNTIME_VERSION == "cdl_v1_temporal_decay_runtime_388.v0.1"
     assert CDL_V1_DEPENDENCY == "cdl_v1_temporal_decay_388.v0.1"
+    assert CDL_V1_DECIMAL_REWRITE_TOKEN == "temporal_decay_no_float_arithmetic_phase_1357"
 
 
 def test_decay_multiplier_zero_elapsed_is_one() -> None:
     assert compute_decay_multiplier(
-        elapsed_issuance_epochs=0,
-        half_life_epochs=4,
-        floor_multiplier=0.2,
-    ) == 1.0
+        elapsed_issuance_epochs=Decimal("0"),
+        half_life_epochs=Decimal("4"),
+        floor_multiplier=Decimal("0.2"),
+    ) == Decimal("1")
 
 
 def test_decay_multiplier_half_life_boundary() -> None:
     actual = compute_decay_multiplier(
-        elapsed_issuance_epochs=8,
-        half_life_epochs=8,
-        floor_multiplier=0.0,
+        elapsed_issuance_epochs=Decimal("8"),
+        half_life_epochs=Decimal("8"),
+        floor_multiplier=Decimal("0"),
     )
-    assert actual == pytest.approx(0.5, rel=0, abs=1e-12)
+    assert actual == Decimal("0.500000000000")
 
 
 def test_decay_multiplier_floor_enforcement() -> None:
     actual = compute_decay_multiplier(
-        elapsed_issuance_epochs=100,
-        half_life_epochs=2,
-        floor_multiplier=0.31,
+        elapsed_issuance_epochs=Decimal("100"),
+        half_life_epochs=Decimal("2"),
+        floor_multiplier=Decimal("0.31"),
     )
-    assert actual == 0.31
+    assert actual == Decimal("0.310000000000")
 
 
 def test_apply_temporal_decay_nominal_case() -> None:
     decayed = apply_temporal_decay(
-        base_ecu_score=10.0,
-        elapsed_issuance_epochs=4,
-        half_life_epochs=8,
-        floor_multiplier=0.0,
+        base_ecu_score=Decimal("10"),
+        elapsed_issuance_epochs=Decimal("4"),
+        half_life_epochs=Decimal("8"),
+        floor_multiplier=Decimal("0"),
     )
-    expected = round(10.0 * math.exp(-math.log(2.0) * (4 / 8)), 12)
-    assert decayed == pytest.approx(expected, rel=0, abs=1e-11)
+    assert decayed == Decimal("7.071067811870")
 
 
 def test_apply_temporal_decay_issuance_epoch_guard() -> None:
     with pytest.raises(TemporalDecayValidationError) as exc:
         apply_temporal_decay(
-            base_ecu_score=10.0,
-            elapsed_issuance_epochs=1,
-            half_life_epochs=8,
-            floor_multiplier=0.0,
+            base_ecu_score=Decimal("10"),
+            elapsed_issuance_epochs=Decimal("1"),
+            half_life_epochs=Decimal("8"),
+            floor_multiplier=Decimal("0"),
             epoch_type="validation_epoch",
         )
     assert exc.value.token == "cdl_v1_temporal_decay_epoch_context_invalid"
@@ -157,9 +158,9 @@ def test_apply_temporal_decay_issuance_epoch_guard() -> None:
 def test_half_life_must_be_positive() -> None:
     with pytest.raises(TemporalDecayValidationError) as exc:
         compute_decay_multiplier(
-            elapsed_issuance_epochs=1,
-            half_life_epochs=0,
-            floor_multiplier=0.0,
+            elapsed_issuance_epochs=Decimal("1"),
+            half_life_epochs=Decimal("0"),
+            floor_multiplier=Decimal("0"),
         )
     assert exc.value.token == "cdl_v1_temporal_decay_half_life_non_positive"
 
@@ -167,39 +168,41 @@ def test_half_life_must_be_positive() -> None:
 def test_floor_must_be_within_unit_interval() -> None:
     with pytest.raises(TemporalDecayValidationError) as exc:
         compute_decay_multiplier(
-            elapsed_issuance_epochs=1,
-            half_life_epochs=8,
-            floor_multiplier=1.2,
+            elapsed_issuance_epochs=Decimal("1"),
+            half_life_epochs=Decimal("8"),
+            floor_multiplier=Decimal("1.2"),
         )
     assert exc.value.token == "cdl_v1_temporal_decay_floor_out_of_range"
 
 
 def test_non_finite_numeric_inputs_raise_tokenized_error() -> None:
-    with pytest.raises(TemporalDecayValidationError) as exc:
-        compute_decay_multiplier(
-            elapsed_issuance_epochs=float("nan"),
-            half_life_epochs=8,
-            floor_multiplier=0.2,
-        )
-    assert exc.value.token == "cdl_v1_temporal_decay_invalid_numeric"
+    for invalid in (Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")):
+        with pytest.raises(TemporalDecayValidationError) as exc:
+            compute_decay_multiplier(
+                elapsed_issuance_epochs=invalid,
+                half_life_epochs=Decimal("8"),
+                floor_multiplier=Decimal("0.2"),
+            )
+        assert exc.value.token == "cdl_v1_temporal_decay_invalid_numeric"
 
-    with pytest.raises(TemporalDecayValidationError) as exc_inf:
-        apply_temporal_decay(
-            base_ecu_score=10.0,
-            elapsed_issuance_epochs=1,
-            half_life_epochs=float("inf"),
-            floor_multiplier=0.2,
-        )
-    assert exc_inf.value.token == "cdl_v1_temporal_decay_invalid_numeric"
+    for invalid in (float("nan"), float("inf"), float("-inf")):
+        with pytest.raises(TemporalDecayValidationError) as exc:
+            apply_temporal_decay(
+                base_ecu_score=Decimal("10"),
+                elapsed_issuance_epochs=Decimal("1"),
+                half_life_epochs=invalid,
+                floor_multiplier=Decimal("0.2"),
+            )
+        assert exc.value.token == "cdl_v1_temporal_decay_invalid_numeric"
 
 
 def test_base_score_must_be_non_negative() -> None:
     with pytest.raises(TemporalDecayValidationError) as exc:
         apply_temporal_decay(
-            base_ecu_score=-1.0,
-            elapsed_issuance_epochs=1,
-            half_life_epochs=8,
-            floor_multiplier=0.0,
+            base_ecu_score=Decimal("-1"),
+            elapsed_issuance_epochs=Decimal("1"),
+            half_life_epochs=Decimal("8"),
+            floor_multiplier=Decimal("0"),
         )
     assert exc.value.token == "cdl_v1_temporal_decay_negative_base_score"
 
