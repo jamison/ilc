@@ -37,6 +37,24 @@ FIX2_WALKTHROUGH = (
     / "phase_1360_fix2_four_validator_epoch_finalization_walkthrough.md"
 )
 STATUS = ROOT / "docs" / "phases" / "STATUS.md"
+FORWARD_PLAN = (
+    ROOT
+    / "docs"
+    / "specs"
+    / "ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md"
+)
+SEQUENCE_LOCK = (
+    ROOT
+    / "docs"
+    / "specs"
+    / "ilc_phase_1343_1368_sequence_lock_v0.1.md"
+)
+CONNECTIVITY_NOTE = (
+    ROOT
+    / "docs"
+    / "research"
+    / "ilc_validator_connectivity_production_model_v0.1.md"
+)
 
 # Fix2: validator 1 reassigned from macOS (100.111.172.103) to ilc-node-2 (100.112.32.42:50155).
 # Validators 2/3/4 retain their original Tailscale IPs and ports.
@@ -215,3 +233,65 @@ def test_phase_1360_fix2_records_proven_verdict() -> None:
     assert "validator_id=2" in walkthrough
     assert "validator_id=3" in walkthrough
     assert "validator_id=4" in walkthrough
+
+    committed_count = walkthrough.count("epoch_record_committed:epoch=1")
+    assert committed_count >= 4, (
+        f"Expected at least 4 epoch_record_committed:epoch=1 excerpts, "
+        f"found {committed_count}"
+    )
+
+
+def test_phase_1360_fix2a_narrows_fix2_proof_scope() -> None:
+    walkthrough = FIX2_WALKTHROUGH.read_text()
+    status = STATUS.read_text()
+
+    for text in (walkthrough, status):
+        assert "phase_1360_fix2a_proof_scope_narrowed_injected_checkpoint_only" in text
+        assert "directly-injected" in text or "direct injected" in text
+        assert "not a durable peer-to-peer BFT round" in text
+        assert "handle_epoch_checkpoint_msg" in text
+
+    assert "consistent with a macOS Tailscale/QUIC routing issue" in walkthrough
+    assert "exact WireGuard-layer cause" in walkthrough
+    assert "confirmed: the macOS Tailscale QUIC/UDP routing layer blocked" not in status
+    assert "genesis identity-anchor vs. live endpoint" in status
+    assert "identity anchor" in walkthrough
+
+
+def test_phase_1360_fix2a_routes_durable_connectivity_to_1386b_1386c() -> None:
+    forward_plan = FORWARD_PLAN.read_text()
+    sequence_lock = SEQUENCE_LOCK.read_text()
+
+    assert "| 1360 Fix2a |" in forward_plan
+    assert "| 1360 Fix2a |" in sequence_lock
+    assert "phase_1360_fix2a_proof_scope_narrowed_injected_checkpoint_only" in forward_plan
+    assert "| 1386b | Validator endpoint registry ADR" in forward_plan
+    assert "| 1386c | Persistent validator QUIC connectivity proof" in forward_plan
+    assert "QUIC_ENDPOINT" in forward_plan
+    assert "projection/cache" in forward_plan
+    assert "never allowed to acquire its own write path" in forward_plan
+    assert "persistent_validator_quic_sessions_proven_phase_1386c" in forward_plan
+    assert "hardcoded peer list remains in any production activation path" in forward_plan
+
+
+def test_phase_1360_fix2a_research_note_locks_projection_contract() -> None:
+    text = CONNECTIVITY_NOTE.read_text()
+
+    for phrase in (
+        "Direct QUIC peer-to-peer",
+        "CDL-078 relay pass-through fallback",
+        "Validator endpoint registry as `QUIC_ENDPOINT` edge class",
+        "Persistent per-topology-epoch sessions",
+        "derived from signed graph edges only",
+        "read-only",
+        "bounded to the current topology epoch",
+        "invalidated and rebuilt on each CDL-068 topology shuffle",
+        "must never acquire its own write path",
+        "set_*",
+        "update_*",
+        "insert_*",
+        "delete_*",
+        "stale projection cannot outlive its topology epoch",
+        "Relay endpoints are selected from signed `QUIC_ENDPOINT` edge payloads",
+    ):
+        assert phrase in text, f"connectivity research note missing phrase: {phrase}"
