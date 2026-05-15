@@ -42,7 +42,7 @@ GOV-A with a missing component is a gap.
 | Node schema & lifecycle | CDL-034–038, 046 | All | — |
 | Transport & P2P | CDL-039, 061, 076, 077, 078, 079, 080 | All | — |
 | Bootstrap & genesis | CDL-022, 040, 073, 079 | All | — |
-| Reputation & decay | CDL-V1, CDL-013 | CDL-V1 | CDL-013 weight integration absent |
+| Reputation & decay | CDL-V1, CDL-013 | CDL-V1, CDL-013 | H11 Decimal rewrite complete; production governance/reputation activation remains gated |
 | Storage & schema | CDL-020, 023, 043, 044, 064, 071 | 020, 023, 064, 071 | CDL-043/044 partial |
 | Claimability & conversion | CDL-048, CDL-088 | Partial (CDL-048 skeleton) | CDL-088 not opened |
 | Release & packaging | CDL-086, 087 | Partial | Public serving gated |
@@ -178,7 +178,7 @@ GOV-A with a missing component is a gap.
 | CDL | Topic | Status | Runtime file(s) | Key notes |
 |-----|-------|--------|-----------------|-----------|
 | CDL-V1 | Temporal decay | **FULL** | `ilc_core/reputation/temporal_decay_runtime.py` | `CDL_V1_RUNTIME_VERSION = "cdl_v1_temporal_decay_runtime_388.v0.1"` |
-| CDL-013 | Decay-non-genesis-only governance weight | **PARTIAL** | `ilc_core/analysis/governance_weight.py` | Weight computation implemented. Integration of reputation-weighted governance into live decision surfaces is not connected. |
+| CDL-013 | Decay-non-genesis-only governance weight | **FULL** | `ilc_core/analysis/governance_weight.py`; `ilc_core/protocol/governance_weighted_decision.py` | Decimal weight computation implemented and wired into default-off governance decision quotes; production execution remains inactive. |
 
 ### Claimability & ECU Conversion
 
@@ -212,7 +212,7 @@ GOV-A with a missing component is a gap.
 | CDL-010 | Pseudonymity/accountability balance (`pseudonymous attestations`) | Ph 993 | **GOV-C** | A: CDL-V2 `sybil_resistance_runtime.py` and `agent_id_runtime.py` (key-derived IDs without identity disclosure) are the code expressions. B: Communications policy and incident-response policy are governance docs/process. |
 | CDL-011 | Balanced composite node value | Ph 215 | **FULL** | `ilc_core/analysis/node_value_kernel.py` |
 | CDL-012 | Usage + freshness utility flow | Ph 215 | **FULL** | `ilc_core/analysis/utility_flow_rewards.py` |
-| CDL-013 | Governance weight (see Reputation section) | Ph 215 | **PARTIAL** | `ilc_core/analysis/governance_weight.py` — weight computation present; live governance-decision integration absent |
+| CDL-013 | Governance weight (see Reputation section) | Ph 215 | **FULL** | `ilc_core/analysis/governance_weight.py`; `ilc_core/protocol/governance_weighted_decision.py` — Decimal weight computation wired into default-off governance decision quotes; production execution inactive |
 | CDL-014 | Counterfactual path-lift | Ph 215 | **FULL** | `ilc_core/analysis/path_lift_counterfactual.py` |
 | CDL-015 | Strict phase gate | Ph 215 | **GOV-A** | A: `tools/check_sensitive_runtime_coding_taboos.py`, pre-commit hooks (`tools/pre-commit`), code health tests (`tests/test_code_health.py`), and all phase gate scripts in `tools/` are the direct code expressions of this decision. These are tooling, not `ilc_core/` modules, but they are real enforced code. |
 | CDL-016 | *(unassigned — number not in register)* | — | — | — |
