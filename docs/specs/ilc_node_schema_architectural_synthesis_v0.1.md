@@ -193,23 +193,36 @@ Canonical field: `node.scope.visibility`
 visibility: enum
   - public        → on-graph, globally propagated, Popperian gate applies
   - semi-private  → limited propagation, community-of-practice channel
-  - private       → off-chain or shard-local, shadow economics only
+  - private       → off-chain or shard-local, operator-local advisory scoring only
+                    (no protocol ECU, no public reputation, no settlement rights)
 ```
 
-Private nodes contribute to local/shard economic activity but do not count toward public-graph corroboration. Promotion from private → public is a deliberate, signed event — not automatic.
+> **Terminology clarification (recorded 2026-05-16):** The phrase "shadow economics"
+> previously appearing in this section and §5.3–§5.4 is historical synthesis shorthand
+> from pre-CDL archive material. It does NOT mean private nodes generate protocol ECU.
+> No CDL ratifies ECU generation for private or semi-private nodes. "Shadow economics"
+> means operator-local advisory scoring only — local salience estimates, potential-value
+> hints, decision-support for whether to promote — none of which are protocol ECU, public
+> reputation, or public settlement rights. The authoritative rule is ADR-0022 §2–§3
+> (accepted Phase 1158): ECU generation, public reputation, corroboration, and settlement
+> rights arise exclusively from public-graph events. Private nodes have zero protocol
+> economic effect until explicit public promotion. Phase 1387a will produce the definitive
+> accepted ADR/CDL coverage matrix and public-only economics admission firewall.
+
+Private nodes have no protocol economic effect and do not count toward public-graph corroboration. Promotion from private → public is a deliberate, signed event — not automatic.
 
 ### 5.3 Gate control nodes
 
 `node.gate.control` is a special node type that governs access to a shard or community-of-practice cluster. It controls:
 - Who can read/write to the sub-graph
 - Under what conditions private nodes can be nominated for public promotion
-- Whether a shadow-economics shard links back to public graph attribution
+- Whether a private shard exposes a public anchor linking to public graph attribution
 
 ### 5.4 Company / off-chain extension
 
 The design supports:
 - Companies expanding sections of the epistemological graph off-chain in `lab.*` shards
-- Private graph work contributing to public-graph shadow attribution (the economic incentive for eventually promoting)
+- Private graph work accumulating operator-local advisory scores (the incentive for eventually promoting — not protocol ECU)
 - Public promotion requiring a deliberate promotion event with provenance continuity
 
 **Key invariant**: Private shards do not inherit public-graph corroboration status. A node must separately pass public-graph gate processes after promotion. This prevents private-laundering of uncorroborated claims.
