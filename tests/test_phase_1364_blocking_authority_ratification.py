@@ -142,7 +142,8 @@ def test_phase_1364_status_walkthrough_and_planning_surfaces_are_current() -> No
         "5a32b19b,37440146 | blocking authority ratified and active; "
         "BLOCKING_AUTHORITY_DEFERRED=False; two-commit pattern confirmed |"
     ) in status
-    assert "Window 1343-1368 is OPEN through Phase 1364" in planning
+    assert "Window 1343-1368 is CLOSED through Phase 1368" in planning
+    assert "blocking_authority_ratified_phase_1364.v0.1" in planning
     assert "| 1364 | Blocking-authority ratification + CDL-057 activation | COMPLETE" in sequence_lock
     assert "COMPLETE; CDL-089 ratified in `5a32b19b`" in forward_plan
     assert "BLOCKING_AUTHORITY_DEFERRED = False" in implementation_map

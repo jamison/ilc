@@ -305,7 +305,9 @@ def test_window_1343_1368_planning_index_registers_window() -> None:
     text = _text(PLANNING_INDEX)
 
     for phrase in (
-        "Window 1343-1368 is OPEN",
+        "Window 1343-1368 is CLOSED through Phase 1368",
+        "window_1343_1368_closed_phase_1368.v0.1",
+        "go_phase_1369_required_next",
         "Phase 1351a",
         "cdl_029_amendment_phase_1351a",
         # Phase 1352 gate result token will be present after Phase 1352 executes.
