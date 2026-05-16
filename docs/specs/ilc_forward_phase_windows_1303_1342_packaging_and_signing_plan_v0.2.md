@@ -752,55 +752,6 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1367 | Reserved for pre-gate fix pass | — | COMPLETE; SENSITIVE; records `pre_gate_fix_pass_phase_1367.v0.1`, `phase_1366_blockers_addressed_or_clean_pass_phase_1367`, `no_new_scope_introduced_phase_1367`, and `phase_1366_treasury_epoch_budget_binding_verified`; addresses the Phase 1366 treasury-budget binding blocker; no CDL mutation, value-path activation, public activation, production minting, or full soft-RC re-gate |
 | 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | COMPLETE; records `window_1343_1368_closed_phase_1368.v0.1`, `soft_rc_eligible_final_status_recorded_phase_1368`, `production_minting_activation_deferred_phase_1368`, `window_1369_not_open_phase_1368`, and `go_phase_1369_required_next`; no runtime file modified; no production minting or public activation |
 
-Phase 1368 closure addendum: Window 1343-1368 is CLOSED with carry-forward.
-Phase 1368 records `window_1343_1368_closure_verdict_recorded_phase_1368` and
-`window_1369_1390_entry_criteria_recorded_phase_1368`. The soft-RC final status
-remains the inherited Phase 1366 verdict
-`soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`.
-Phase 1367 fixed that named blocker, but did not re-run the full gate and did
-not record `soft_rc_eligible=true`. Production minting remains deferred via
-`production_minting_activation_deferred_phase_1368`. Window 1369-1390 is not
-open until explicit `GO Phase 1369`.
-
-Phase 1348 execution addendum: `cdl_047_treasury_governance_runtime_phase_1348.v0.1`,
-`bounty_cap_0_15_b_e_runtime_phase_1348`, `burn_floor_0_05_runtime_phase_1348`,
-`velocity_alert_trigger_runtime_phase_1348`, `velocity_alert_floor_0_91_runtime_phase_1348`,
-`treasury_not_activated_phase_1348`,
-`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
-`no_direct_treasury_stub_found_phase_1348`.
-
-Phase 1347 Fix1 execution addendum: `genesis_overhead_cap_blocked_guard_phase_1347_fix1`,
-`genesis_overhead_cap_blocked_dust_routing_deferred`,
-`cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor`,
-and `split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1`.
-This repair is runtime-only. It does not mutate CDL-029, import the float-based
-Genesis accrual governor, or implement the post-theta_hard recipient/fallback
-policy now routed to Phase 1351a.
-
-Phase 1349 execution addendum: `cdl_054_validator_reward_pool_routing_runtime_phase_1349.v0.1`,
-`cdl_047_treasury_dependency_phase_1349`,
-`validator_reward_distribution_not_activated_phase_1349`,
-`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
-`no_direct_validator_reward_stub_found_phase_1349`. This phase is runtime-only
-and default-off. It does not mutate CDL-054, activate reward distribution, or
-write ledger state.
-
-Phase 1350 execution addendum: `cdl_083_ejected_stake_treasury_distribution_phase_1350.v0.1`,
-`h_con_02_quorum_guard_phase_1350`,
-`epoch_attribution_settle_runtime_not_implemented_closed_phase_1350`,
-`ejected_stake_distribution_not_activated_phase_1350`, and
-`phase_1366_soft_rc_eligible_true_value_path_activation_required`. This phase is
-runtime-only and default-off. It does not mutate CDL-083, activate stake
-distribution, or write ledger state.
-
-Phase 1351 execution addendum: `cdl_030_ecu_price_clamp_runtime_phase_1351.v0.1`,
-`p_min_p_max_bounds_cdl_027_derived_phase_1351`,
-`live_price_adjustment_not_activated_phase_1351`,
-`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
-`no_direct_price_clamp_stub_found_phase_1351`. This phase is runtime-only and
-default-off. It does not mutate CDL-030, activate live price adjustment, or write
-ledger state.
-
 Phase 1351a execution addendum: `cdl_029_post_theta_hard_dust_routing_amendment_phase_1351a.v0.1`,
 `cdl_029_amendment_phase_1351a`,
 `cdl_083_upheld_refutation_recipients_primary_dust_route_phase_1351a`,
@@ -821,6 +772,16 @@ production distribution, or write ledger state.
 - `fix2a_doc_test_hardening_phase_1360.v0.1` and `phase_1360_fix2a_proof_scope_narrowed_injected_checkpoint_only` record the Fix2a proof-scope correction across the walkthrough, STATUS, forward plan, and tests. Durable production connectivity (direct QUIC + CDL-078 relay fallback + `QUIC_ENDPOINT` edge registry + persistent per-topology-epoch sessions) is scoped to phases 1386b and 1386c. See `docs/research/ilc_validator_connectivity_production_model_v0.1.md`.
 - Epoch-0 sentinel reconciliation (`get_epoch_chain` from_epoch=0 / to_epoch=0 Rust vs. Python divergence) is still open from Phase 1358 Fix1 — routed to the production TLS/live-transfer hardening phase that exercises the TLS-configured Rust endpoint, not satisfied by Phase 1360 Fix1.
 
+Phase 1368 closure addendum: Window 1343-1368 is CLOSED with carry-forward.
+Phase 1368 records `window_1343_1368_closure_verdict_recorded_phase_1368` and
+`window_1369_1390_entry_criteria_recorded_phase_1368`. The soft-RC final status
+remains the inherited Phase 1366 verdict
+`soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`.
+Phase 1367 fixed that named blocker, but did not re-run the full gate and did
+not record `soft_rc_eligible=true`. Production minting remains deferred via
+`production_minting_activation_deferred_phase_1368`. Window 1369-1390 is not
+open until explicit `GO Phase 1369`.
+
 **Stop conditions for any phase in this window:**
 - Phase 1345 produces production-minted ILC without explicit activation authorization
 - Phase 1352 or 1366 passes without all prior phases landed
@@ -829,6 +790,23 @@ production distribution, or write ledger state.
 - Any phase implies "soft RC mining is now live" without Phase 1366 recording `soft_rc_eligible=true`
 - Phase 1368 records production minting activation without both Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass evidence
 - HIGH-001 log-redaction not complete and a phase makes any sender-privacy claim
+
+**Runtime hardening carry-forward (recorded 2026-05-16 — joint Codex + Claude Code audit):**
+
+No production activation was found accidentally opened. Minting, fee burn, allocation, treasury, validator rewards, pruning, topology shuffle, transfer mixing, governance execution, and production bridge writes remain default-off/fail-closed. All canonical JSON surfaces use `sort_keys=True` and `allow_nan=False`. No float contamination, no bare `assert` in production paths, no PRNG, no missing timeouts. Eight implementation hardening items are carried forward into Window 1369:
+
+| Sev | Finding | Location |
+|-----|---------|----------|
+| M | Huge but finite `Decimal` values (e.g. `Decimal("1e100")`) escape tokenized validation as raw `decimal.InvalidOperation` during `_quantize_*()` calls; input boundary rejects floats and non-finite values but does not cap magnitude/exponent | `fee_burn_split_runtime.py` line 87; `allocation_distributor_runtime.py` line 197; `treasury_governance_runtime.py` line 107; `ecu_price_clamp_runtime.py` line 105; `validator_reward_pool_routing_runtime.py` line 168; `epoch_attribution_settle_runtime.py` line 61 |
+| M | Genesis intervention counter TOCTOU: read/evaluate/write is not atomic; concurrent accepted calls could push `lifetime_invocations` past 3; blast radius limited to extra audit log entries (execution is still unconditionally blocked by `require_genesis_intervention_execution_authorization()`) | `genesis_intervention_runtime.py` line 427 |
+| M | Governance weight accepts unbounded `quality_score`, `base_weight`, `contribution_bonus`, and `genesis_baseline_weight`; one malformed or hostile input can dominate normalized shares; contract unclear: if pre-normalized trusted inputs, document it; if operator-supplied, add bounds (at minimum `quality_score <= 1`) | `governance_weight.py` lines 73, 109, 198 |
+| L/M | Genesis intervention audit log append is non-atomic; concurrent writers can interleave log lines; pair the fix with the counter-lock fix above | `genesis_intervention_runtime.py` line 321 |
+| L/M | LMDB adaptive pruning batch cap applies to total cursor entries scanned, not eligible tier-2 records; a large prefix of non-prunable records starves pruning indefinitely unless caller repeatedly resumes with a cursor/key | `lmdb_graph_pruning_runtime.py` line 154 |
+| L | LMDB pruning opens a write transaction even when `dry_run=True`; no data is written (transaction is aborted), but an exclusive write lock is acquired unnecessarily | `lmdb_graph_pruning_runtime.py` line 154 |
+| L | `get_epoch_chain()` materializes `records = list(...)` before bounding by `max_epoch_chain_records`; gRPC already decoded the response so this is not the primary memory boundary, but a receive-size/channel limit should be added for production use | `production_bridge.py` line 526 |
+| L | `_decimal_to_string()` dead branch: both branches return the same expression; no behavioral impact | Seven epoch/economic runtimes |
+
+**Recommended fix sequencing for Window 1369:** Decimal magnitude hardening first (6 economic runtimes), then Genesis counter race (constitutional invariant, add file-lock wrapper around full read/evaluate/write in `record_genesis_intervention_guardrail_invocation`; audit log shares same lock), then governance input bounds/contract decision. LMDB improvements and `_decimal_to_string` cleanup can be bundled into a single low-risk cleanup phase. `get_epoch_chain` channel limits pair naturally with Phase 1386a (production TLS gRPC proof). None of these block opening Phase 1369; all should be recorded in the Phase 1369 sequence lock as carry-forward hardening.
 
 ---
 
@@ -842,6 +820,12 @@ unbuilt) and CDL-009 (fork legitimacy UX — policy ratified Phase 993, UX unbui
 are included here as governance completeness prerequisites for a trustworthy public
 RC. The external security audit (M-022 open item #6) and multi-operator genesis key
 ceremony (M-022 open item #7) are also gated before Phase 1389.
+The accepted ADR/CDL coverage audit and public-only economics admission firewall
+are added as Phase 1387a: public RC must not proceed if any accepted ADR/CDL
+functionality remains unrouted or if private/semi-private graph work can construct
+public ECU, reputation, settlement, corroboration, or claimability events. Historical
+"shadow economics" phrasing is operator-local advisory scoring only, not protocol
+ECU generation.
 
 This window supersedes the earlier draft labeled Window 1361–1376, renumbered
 to accommodate the Mysticeti/CDL-043/044/057/H11 phases added to Window 1343–1368,
@@ -852,7 +836,7 @@ and expanded with CDL-006/009, external audit, TLA+ disposition, and key ceremon
 
 | Phase | Scope | Blocker addressed | Notes |
 |-------|-------|-------------------|-------|
-| 1369 | Sequence lock + capsule v5.58 | — | SENSITIVE gate; explicit `GO Phase 1369` required |
+| 1369 | Sequence lock + capsule v5.58 | — | SENSITIVE gate; explicit `GO Phase 1369` required; must record the 8 Window 1343-1368 runtime hardening carry-forward items (see preceding window section) as explicitly scheduled or deferred with authority before closing the sequence lock |
 | 1370 | Agent birth attestation ADR: Genesis-rooted identity-origin proof; `agent_id` bound to signed Genesis/Atlas lineage anchor; non-custodial default; no private graph content as entropy | Genesis-rooted agent birth attestation | Prerequisite for identity bootstrap CDL |
 | 1371 | Identity bootstrap CDL opening: non-custodial identity-seed path, ceremony modes (interactive + agent-mode), secure output target, no-stdout-fallback rule, Genesis-rooted birth attestation linkage | Identity bootstrap CDL | SENSITIVE CDL opening |
 | 1372 | Identity bootstrap CDL deliberation/prelock | Identity bootstrap CDL | SENSITIVE |
@@ -871,11 +855,12 @@ and expanded with CDL-006/009, external audit, TLA+ disposition, and key ceremon
 | 1385 | TLA+ SafetyNoDualCert disposition: either complete formal proof or record explicit governance decision to defer with rationale and bounded carry-forward authority (empirical M-019 confirmation is current coverage) | M-022 open item #1 | NON-SENSITIVE disposition doc |
 | 1386 | Multi-operator genesis key ceremony: distribute genesis validator keys across ≥2 operators; production ceremony record; required before any production genesis-signed artifact | M-022 open item #7 | SENSITIVE; Genesis authority surface |
 | 1386a | Production TLS gRPC path proof: configure testnet validators with self-signed TLS certificates; run `build_secure_grpc_read_stub` from `ilc_core/consensus/production_bridge.py` with `tls_root_certificates` against the TLS-enabled validator endpoint; record `production_tls_grpc_path_proven_phase_1386a`; also verify epoch-0 sentinel reconciliation (Rust `from_epoch=0` / `to_epoch=0` semantics vs. Python bridge rejection) before any live ECU transfer activation | ADR-0028; Phase 1358 carry-forward | NON-SENSITIVE; testnet infrastructure only; no production activation; must land before Phase 1387 hardening gate |
-| 1386b | Validator endpoint registry ADR: define `QUIC_ENDPOINT` as an epoch-scoped signed edge on existing `agent_id` nodes; specify direct endpoint form and CDL-078 relay endpoint form; bind epoch scoping to CDL-068 topology shuffle; define update propagation without genesis restart; require a bounded read-only projection/cache derived from signed graph edges only, limited to the current topology epoch's validator set, invalidated and rebuilt on each topology shuffle, and never allowed to acquire its own write path | Durable validator connectivity prerequisite | NON-SENSITIVE ADR; CDL-068 covers topology selection and CDL-017 covers admission/ejection, but neither covers live endpoint discovery; CDL-088 is prerequisite for public signing of endpoint claims; no CDL mutation in this phase; see `docs/research/ilc_validator_connectivity_production_model_v0.1.md` |
-| 1386c | Persistent validator QUIC connectivity proof: implement/prove persistent per-topology-epoch QUIC sessions in `ilc_consensus/`; direct QUIC peer-to-peer first, macOS socket-binding/source-address fix included if still needed; CDL-078 relay pass-through fallback second; no hardcoded peer list in activation path; validator addresses read from the 1386b registry projection; record `persistent_validator_quic_sessions_proven_phase_1386c` | Durable validator connectivity proof | SENSITIVE; `ilc_consensus/` Rust source change; requires 1386b ADR ratified and CDL-088 live for signed endpoint claims; acceptance must reject any projection type with write/update/set/insert/delete methods outside full rebuild from signed graph edges |
+| 1386b | Validator endpoint registry ADR: define `QUIC_ENDPOINT` as an epoch-scoped signed edge on existing `agent_id` nodes; specify direct endpoint form and CDL-078 relay endpoint form; bind epoch scoping to CDL-068 topology shuffle; define update propagation without genesis restart; require a bounded read-only projection/cache derived from signed graph edges only, limited to the current topology epoch's validator set, invalidated and rebuilt on each topology shuffle, and never allowed to acquire its own write path | Durable validator connectivity prerequisite | NON-SENSITIVE ADR; CDL-068 covers topology selection and CDL-017 covers admission/ejection, but neither covers live endpoint discovery; ADR-0038 and CDL-090 supply the identity authority for public signing of endpoint claims; CDL-088 governs public claimability, not endpoint identity signing; no CDL mutation in this phase; see `docs/research/ilc_validator_connectivity_production_model_v0.1.md` |
+| 1386c | Persistent validator QUIC connectivity proof: implement/prove persistent per-topology-epoch QUIC sessions in `ilc_consensus/`; direct QUIC peer-to-peer first, macOS socket-binding/source-address fix included if still needed; CDL-078 relay pass-through fallback second; no hardcoded peer list in activation path; validator addresses read from the 1386b registry projection; record `persistent_validator_quic_sessions_proven_phase_1386c` | Durable validator connectivity proof | SENSITIVE; `ilc_consensus/` Rust source change; requires 1386b ADR ratified and ADR-0038/CDL-090 identity bootstrap live for signed endpoint claims; acceptance must reject any projection type with write/update/set/insert/delete methods outside full rebuild from signed graph edges |
 | 1387 | Pre-activation hardening gate: requires signed audit report or risk-acceptance letter for all HIGH-severity audit findings (from Phase 1384 engagement); confirms HIGH-001 defense verified in non-loopback deployment; confirms production TLS gRPC path proven (Phase 1386a); confirms 1386b endpoint-registry ADR ratified and 1386c persistent sessions proven, or each explicitly deferred with authority and bounded carry-forward scope; records any remaining audit items as explicitly deferred with authority | Pre-activation gate | SENSITIVE gate; blocks on signed audit report for HIGH findings; cannot pass if a hardcoded peer list remains in any production activation path |
-| 1388 | CDL-048 public ECU-to-ILC conversion path activation + counsel clearance: unlock sweeper runtime (first live value-path activation) after Phase 1387 hardening gate passes; simultaneous counsel sign-off on public verifier API surface | CDL-048 activation, Counsel clearance | SENSITIVE; first production value-path activation; blocks Phase 1389 |
-| 1389 | **Public claimability/API activation gate** — re-executes Phase 1336 gate with all six blockers confirmed closed; `result=public_claimability_activated` is the full public RC milestone | All six Phase 1336 blockers | SENSITIVE; explicit `GO Phase 1389` required; fails closed if any predecessor open |
+| 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall: produce repo-derived matrix classifying every accepted ADR and ratified CDL as implemented, covered before public RC, documentation/governance-only, explicitly deferred outside public RC, or `gap_blocks_public_rc`; implement/prove fail-closed admission guard so public ECU/reputation/settlement/claimability events require public node visibility, public graph admission evidence, eligible public evaluation/promotion state, and zero private promotion carry-forward; clarify historical "shadow economics" phrasing as operator-local advisory scoring only, not protocol ECU generation | Accepted-functionality coverage; private-shard economics gap | SENSITIVE; blocks 1388/1389; required tokens include `accepted_adr_cdl_runtime_coverage_matrix_phase_1387a`, `public_economics_requires_public_node_admission_verified_phase_1387a`, and `no_unrouted_accepted_cdl_adr_functionality_before_public_rc_phase_1387a` |
+| 1388 | CDL-048 public ECU-to-ILC conversion path activation + counsel clearance: unlock sweeper runtime (first live value-path activation) after Phase 1387 and Phase 1387a pass; simultaneous counsel sign-off on public verifier API surface | CDL-048 activation, Counsel clearance | SENSITIVE; first production value-path activation; blocks Phase 1389 |
+| 1389 | **Public claimability/API activation gate** — re-executes Phase 1336 gate with all six blockers confirmed closed plus Phase 1387a accepted-functionality/public-economics proof; `result=public_claimability_activated` is the full public RC milestone | All six Phase 1336 blockers + accepted-functionality coverage | SENSITIVE; explicit `GO Phase 1389` required; fails closed if any predecessor open |
 | 1390 | Window closure handoff | — | SENSITIVE |
 
 **Strict dependency order:**
@@ -902,9 +887,10 @@ Phase 1369 sequence lock
             → Phase 1386b validator endpoint registry ADR
                 → Phase 1386c persistent QUIC connectivity proof
                     → Phase 1387 pre-activation hardening gate  (requires signed audit report for HIGH findings plus 1386a/1386b/1386c, or explicit defer-with-authority)
-                        → Phase 1388 CDL-048 activation + counsel clearance  (first live value-path)
-                            → Phase 1389 public claimability activation gate
-                                → Phase 1390 closure
+                        → Phase 1387a accepted ADR/CDL coverage + public-economics admission firewall
+                            → Phase 1388 CDL-048 activation + counsel clearance  (first live value-path)
+                                → Phase 1389 public claimability activation gate
+                                    → Phase 1390 closure
 ```
 
 **Stop conditions for any phase in this window:**
@@ -912,6 +898,10 @@ Phase 1369 sequence lock
 - CDL-088 not ratified and a phase activates the public claimability API or claim endpoint
 - Replay/nullifier policy not closed and a phase activates a live claim endpoint
 - Any phase implies "public claimability is now active" without Phase 1389 producing explicit `result=public_claimability_activated`
+- Any phase activates public ECU, reputation, settlement, or claimability paths before
+  Phase 1387a proves private/semi-private nodes cannot construct public economic events
+  and every accepted ADR/CDL public-RC obligation is either implemented, routed, or
+  explicitly deferred outside the public-RC claim
 
 ---
 
@@ -1097,7 +1087,7 @@ concrete phases in Windows 1343–1368 or 1369–1390. Phase assignments for Win
 | CDL-031 dynamic ranking runtime | CDL-031 (ratified deferred, Phase 288) | CDL-019 invariant floor runtime must be built (Phase 1356 unlocks the prerequisite); then SIM re-run; then dynamic ranking policy runtime implementation | After Phase 1356 CDL-013/019 integration; 6+ phases |
 | ADR-0015 node transfer economics | ADR-0015 (disposition Phase 721; no CDL, no runtime) | Transfer-tax rate + cooling-period epoch calibration SIM; CDL opening; transfer-tax and cooling-period runtimes; leasehold/reversion SIM-dependent | After public RC; requires live network data for rate calibration |
 | ADR-0016/0017 productive ECU expansion + post-issuance | ADR-0016, ADR-0017 (roadmap entries only; no spec, no sim) | Productive credit creation runtime (bounties, conditional ECU issuance, funding requests, Popperian gate as loan-officer) + post-issuance economic transition (fee-burn adaptation, velocity control) | Long-range; genuinely requires public RC data; no ADR spec or sim exists yet |
-| Voice sidecar CDL — authenticated pseudonymous audio relay | New CDL (unopened; no number assigned) | **Recommended v1 stack:** Opus 20ms frames; QUIC streams (already in `ilc_consensus/`); Noise_XX / X25519 ECDH for session key agreement using agent keypairs; ChaCha20-Poly1305 for per-frame authenticated encryption (relay sees opaque ciphertext, not audio); ILC `agent_id` as pseudonymous session auth (no central server, no phone number); CDL-078 L5 relay for IP indirection (1 or 2 hops; relay earns CDL-078 credit). **Explicitly not used:** RTP, SRTP, STUN/TURN, SIP, WebRTC, Signal X3DH. HIGH-001 mixing is incompatible (deliberate delay destroys voice); the relay hop is IP indirection only, not mixing anonymity. Audio traffic type in CDL-078 may require CDL amendment or sibling CDL. Full research note: `docs/research/ilc_voice_sidecar_pseudonymous_audio_relay_v0.1.md`. | Prerequisites: Public RC (Phase 1389), CDL-078 L5 relay live in production, sidecar manifest/SDK stable, CDL-088 identity activated, HIGH-001 landed. Phase assignment Window 1399+. |
+| Voice sidecar CDL — authenticated pseudonymous audio relay | New CDL (unopened; no number assigned) | **Recommended v1 stack:** Opus 20ms frames; QUIC streams (already in `ilc_consensus/`); Noise_XX / X25519 ECDH for session key agreement using agent keypairs; ChaCha20-Poly1305 for per-frame authenticated encryption (relay sees opaque ciphertext, not audio); ILC `agent_id` as pseudonymous session auth (no central server, no phone number); CDL-078 L5 relay for IP indirection (1 or 2 hops; relay earns CDL-078 credit). **Explicitly not used:** RTP, SRTP, STUN/TURN, SIP, WebRTC, Signal X3DH. HIGH-001 mixing is incompatible (deliberate delay destroys voice); the relay hop is IP indirection only, not mixing anonymity. Audio traffic type in CDL-078 may require CDL amendment or sibling CDL. Full research note: `docs/research/ilc_voice_sidecar_pseudonymous_audio_relay_v0.1.md`. | Prerequisites: Public RC (Phase 1389), CDL-078 L5 relay live in production, sidecar manifest/SDK stable, ADR-0038/CDL-090 identity bootstrap live, HIGH-001 landed. Phase assignment Window 1399+. |
 
 ---
 
