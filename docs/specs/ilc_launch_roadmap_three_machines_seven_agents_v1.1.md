@@ -3,7 +3,7 @@
 **Version:** v1.1
 **Produced:** 2026-05-08
 **Phase:** 1242
-**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1367 pre-gate fix addendum
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1368 window-closure addendum
 **Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
 
 `launch_roadmap_v1_1_published_phase_1242`
@@ -32,6 +32,13 @@
 `phase_1366_treasury_epoch_budget_binding_verified`
 `production_minting_not_activated_phase_1366`
 `public_activation_not_authorized_phase_1366`
+`window_1343_1368_closed_phase_1368.v0.1`
+`window_1343_1368_closure_verdict_recorded_phase_1368`
+`soft_rc_eligible_final_status_recorded_phase_1368`
+`window_1369_1390_entry_criteria_recorded_phase_1368`
+`window_1369_not_open_phase_1368`
+`go_phase_1369_required_next`
+`production_minting_activation_deferred_phase_1368`
 
 ---
 
@@ -58,7 +65,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1343-1368 is OPEN through Phase 1367; active sequence lock is `docs/specs/ilc_phase_1343_1368_sequence_lock_v0.1.md`; Phase 1366 recorded `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; Phase 1367 addressed that named blocker via `phase_1366_treasury_epoch_budget_binding_verified` but did not re-run the full gate or record `soft_rc_eligible=true`; Phase 1368 is the next planned SENSITIVE closure handoff; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL-088, identity bootstrap, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production mining, soft-RC eligibility true verdict, counsel approval, or legal conclusion is granted |
+| Window frontier | Window 1343-1368 is CLOSED through Phase 1368; active handoff is `docs/specs/ilc_window_1343_1368_handoff_1368_v0.1.md`; Phase 1366 recorded `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; Phase 1367 addressed that named blocker via `phase_1366_treasury_epoch_budget_binding_verified` but did not re-run the full gate or record `soft_rc_eligible=true`; Phase 1368 records `production_minting_activation_deferred_phase_1368`, `window_1369_not_open_phase_1368`, and `go_phase_1369_required_next`; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL-088, identity bootstrap, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production mining, production minting, soft-RC eligibility true verdict, counsel approval, or legal conclusion is granted |
 | Capsule and gate report | v5.57 current capsule remains the baseline snapshot through Phase 1365; Phase 1366 gate report is `docs/specs/ilc_soft_rc_readiness_gate_report_phase_1366_v0.1.md` and records the historical treasury-budget binding blocker; Phase 1367 walkthrough records its targeted blocker resolution |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -72,9 +79,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1309 adds the local admission sidecar substrate; Phase 1310 hardens revocation, replay, admission, ban, rate-limit, and privacy negative paths; Phase 1313 records a default-off public fetch/P2P readiness packet and Rust substrate gate status; no public P2P, public fetch serving, public listener, peer discovery, public revocation registry, public replay cache, public rate-limit state, or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; consumed into CDL-087 ratification by Phase 1278 Fix1 |
 
-Window 1343-1368 is OPEN through Phase 1343. Phase 1344 is the next planned
-scoping phase and must resolve the recorded `CDL-053` vehicle collision before
-later blocking-authority prompts rely on that vehicle.
+Window 1343-1368 is CLOSED through Phase 1368. Window 1369-1390 is not open
+and requires explicit `GO Phase 1369` before sequence-lock execution.
 
 Latest closed handoff and current window artifacts:
 

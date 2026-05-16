@@ -750,7 +750,17 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1365 | Capsule refresh (v5.57) + coherence report | — | COMPLETE; NON-SENSITIVE; records `context_capsule_v5_57_window_1343_coherence_snapshot_phase_1365.v0.1`, `capsule_v5_57_supersedes_v5_56`, `coherence_report_phases_1343_1364_phase_1365`, and `phase_1366_soft_rc_gate_next`; no runtime, CDL, or value-path activation |
 | 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; verifies CDL-054/CDL-047 treasury budget binding; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | COMPLETE; records `soft_rc_readiness_gate_phase_1366.v0.1` and `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; 13 prerequisite lanes confirmed, but treasury-budget binding unverified; no production minting or public activation |
 | 1367 | Reserved for pre-gate fix pass | — | COMPLETE; SENSITIVE; records `pre_gate_fix_pass_phase_1367.v0.1`, `phase_1366_blockers_addressed_or_clean_pass_phase_1367`, `no_new_scope_introduced_phase_1367`, and `phase_1366_treasury_epoch_budget_binding_verified`; addresses the Phase 1366 treasury-budget binding blocker; no CDL mutation, value-path activation, public activation, production minting, or full soft-RC re-gate |
-| 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | SENSITIVE; must record exactly one of `production_minting_activated_phase_1368` or `production_minting_activation_deferred_phase_1368` |
+| 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | COMPLETE; records `window_1343_1368_closed_phase_1368.v0.1`, `soft_rc_eligible_final_status_recorded_phase_1368`, `production_minting_activation_deferred_phase_1368`, `window_1369_not_open_phase_1368`, and `go_phase_1369_required_next`; no runtime file modified; no production minting or public activation |
+
+Phase 1368 closure addendum: Window 1343-1368 is CLOSED with carry-forward.
+Phase 1368 records `window_1343_1368_closure_verdict_recorded_phase_1368` and
+`window_1369_1390_entry_criteria_recorded_phase_1368`. The soft-RC final status
+remains the inherited Phase 1366 verdict
+`soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`.
+Phase 1367 fixed that named blocker, but did not re-run the full gate and did
+not record `soft_rc_eligible=true`. Production minting remains deferred via
+`production_minting_activation_deferred_phase_1368`. Window 1369-1390 is not
+open until explicit `GO Phase 1369`.
 
 Phase 1348 execution addendum: `cdl_047_treasury_governance_runtime_phase_1348.v0.1`,
 `bounty_cap_0_15_b_e_runtime_phase_1348`, `burn_floor_0_05_runtime_phase_1348`,

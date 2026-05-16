@@ -55,11 +55,11 @@ def test_phase_1343_opens_window_only_through_1343() -> None:
     capsule = read(CAPSULE)
     planning = read(PLANNING)
 
-    assert "Window 1343-1368 is OPEN through Phase 1343 only" in lock
+    assert "Window 1343-1368 is CLOSED through Phase 1368" in lock
     assert "Window 1343-1368 is OPEN through Phase 1343" in capsule
     assert "Window 1343-1368" in planning
-    assert "Execution stops after Phase 1343" in lock
-    assert "Phase 1344 is the next planned phase" in lock
+    assert "Phase 1368 closes the window" in lock
+    assert "Phase 1344" in capsule
     assert "Phase 1344 was not executed" in read(WALKTHROUGH)
 
     for phase in range(1343, 1369):
@@ -71,11 +71,12 @@ def test_phase_1343_capsule_supersedes_v5_55_in_session_canon() -> None:
     planning = read(PLANNING)
 
     assert f"**Supersedes:** `{OLD_CAPSULE}`" in capsule
-    assert "| **Capsule v5.56** <- CURRENT |" in planning
-    assert "| **Context Capsule v5.56** <- CURRENT |" in planning
+    assert "| **Capsule v5.56** (superseded) |" in planning
+    assert "| **Context Capsule v5.56** (superseded) |" in planning
     assert "| **Capsule v5.55** (superseded) |" in planning
     assert "| **Context Capsule v5.55** (superseded) |" in planning
     assert "| **Capsule v5.55** <- CURRENT |" not in planning
+    assert "| **Capsule v5.57** |" in planning
 
 
 def test_phase_1343_records_cdl_053_collision_without_opening_it() -> None:
@@ -120,9 +121,9 @@ def test_phase_1343_preserves_blocking_authority_deferred_state() -> None:
     lock = read(SEQUENCE_LOCK)
 
     assert "BLOCKING_AUTHORITY_DEFERRED" in witness
-    assert "`BLOCKING_AUTHORITY_DEFERRED` remains true" in lock
+    assert "`BLOCKING_AUTHORITY_DEFERRED=False`" in lock
     assert "CDL-057 activation" in lock
-    assert "future explicit GO and CDL mutation authority required" in lock
+    assert "executed after explicit `GO Phase 1364` and CDL mutation authority" in lock
 
 
 def test_phase_1343_preserves_non_authorization_boundary() -> None:
@@ -164,7 +165,7 @@ def test_phase_1343_updates_forward_plan_and_roadmap_frontier() -> None:
         assert phrase in roadmap
 
     assert "Phase 1344 is the next planned phase" in forward
-    assert "Window 1343-1368 is OPEN through Phase 1343" in roadmap
+    assert "Window 1343-1368 is CLOSED through Phase 1368" in roadmap
 
 
 def test_phase_1343_walkthrough_records_discovery_and_graph_delta() -> None:
