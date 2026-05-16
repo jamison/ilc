@@ -53,11 +53,14 @@ def _resolve_phase_516_commit_ref() -> str:
 
 def test_module_imports() -> None:
     module = importlib.import_module('ilc_core.epoch.epoch_boundary_witness_runtime')
-    assert module.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION == 'epoch_boundary_witness_runtime_516.v0.1'
+    assert module.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION == 'epoch_boundary_witness_blocking_active_phase_1364.v0.1'
 
 
 def test_runtime_version_constant_value() -> None:
-    assert epoch_boundary_witness_runtime.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION == 'epoch_boundary_witness_runtime_516.v0.1'
+    assert (
+        epoch_boundary_witness_runtime.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION
+        == 'epoch_boundary_witness_blocking_active_phase_1364.v0.1'
+    )
 
 
 def test_cdl_057_dependency_constant_value() -> None:
@@ -71,12 +74,12 @@ def test_cdl_055_staking_dependency_chain() -> None:
     )
 
 
-def test_blocking_authority_deferred_is_true() -> None:
-    assert epoch_boundary_witness_runtime.BLOCKING_AUTHORITY_DEFERRED is True
+def test_blocking_authority_deferred_is_false_after_phase_1364() -> None:
+    assert epoch_boundary_witness_runtime.BLOCKING_AUTHORITY_DEFERRED is False
 
 
-def test_is_blocking_authority_active_is_false() -> None:
-    assert epoch_boundary_witness_runtime.is_blocking_authority_active() is False
+def test_is_blocking_authority_active_is_true_after_phase_1364() -> None:
+    assert epoch_boundary_witness_runtime.is_blocking_authority_active() is True
 
 
 def test_record_epoch_boundary_witness_returns_expected_payload() -> None:
@@ -145,8 +148,10 @@ def test_phase_516_main_commit_respects_scope_and_cdl_log() -> None:
 
 
 def test_epoch_package_re_exports_witness_runtime_surface() -> None:
-    assert epoch_pkg.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION == 'epoch_boundary_witness_runtime_516.v0.1'
+    assert epoch_pkg.EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION == 'epoch_boundary_witness_blocking_active_phase_1364.v0.1'
     assert epoch_pkg.CDL_057_DEPENDENCY == 'cdl_057_ratified_511.v0.1'
+    assert epoch_pkg.BLOCKING_AUTHORITY_DEFERRED is False
+    assert epoch_pkg.is_blocking_authority_active() is True
     assert epoch_pkg.record_epoch_boundary_witness('validator-1', '42', 'cid-1') == {
         'status': 'witnessed',
         'batch_cid': 'cid-1',
