@@ -639,15 +639,14 @@ SIM-010 validator reward fraction routes from the write-fee-burn pool through
 the existing CDL-047 treasury cap/floor/velocity framework, and production
 reward distribution remains inactive.
 
-Runtime audit carry-forward for Phase 1366:
+Runtime audit carry-forward resolved by Phase 1366 gate:
 `treasury_epoch_budget_ilc` is caller-supplied in the Phase 1349 quote runtime.
-This is acceptable while the runtime remains quote-only, but before any
-soft-RC/value-path activation the Phase 1366 gate must verify
-`phase_1366_treasury_epoch_budget_binding_verified`: the budget input must be
-derived from the real epoch emission / treasury budget and must not be
-caller-inflatable in a way that bypasses the CDL-047 `0.15 × B_e` bounty cap.
-If unverified, Phase 1366 must fail closed with
-`phase_1366_treasury_epoch_budget_binding_unverified`.
+This remains acceptable while the runtime remains quote-only, but Phase 1366
+did not find a binding implementation or pre-activation binding plan proving
+that the budget input is derived from the real epoch emission / treasury budget.
+Phase 1366 therefore failed closed with
+`phase_1366_treasury_epoch_budget_binding_unverified`. Phase 1367 must address
+or explicitly route this blocker before any later true soft-RC verdict.
 
 **Phase 1350 execution addendum:** Phase 1350 updated
 `ilc_core/economics/epoch_attribution_settle_runtime.py`, repaired stale
@@ -749,8 +748,8 @@ ceremony is complete; reputation.py H11 float-kill is done.
 | 1363 | Blocking-authority deliberation/prelock: CDL-089 prelock resolves Phase 1362 carry-forward questions; locks blocking-authority scope and CDL-055/CDL-030 interaction clauses | CDL-089, CDL-057 | COMPLETE; CDL-089 remains open and not ratified; `BLOCKING_AUTHORITY_DEFERRED` remains True; no runtime activation |
 | 1364 | Blocking-authority ratification + CDL-057 activation: ratify the selected vehicle; flip `BLOCKING_AUTHORITY_DEFERRED = True` -> `False` in `epoch_boundary_witness_runtime.py`; epoch-boundary witness lane becomes a blocking lane | CDL-089, CDL-057 | COMPLETE; CDL-089 ratified in `5a32b19b`; runtime flag flipped in `37440146`; records `blocking_authority_ratified_phase_1364.v0.1`, `blocking_authority_deferred_false_epoch_boundary_witness_phase_1364`, `cdl_057_blocking_authority_active_phase_1364`, and `cdl_doc_and_runtime_separate_commits_phase_1364`; no public or production infrastructure activation |
 | 1365 | Capsule refresh (v5.57) + coherence report | — | COMPLETE; NON-SENSITIVE; records `context_capsule_v5_57_window_1343_coherence_snapshot_phase_1365.v0.1`, `capsule_v5_57_supersedes_v5_56`, `coherence_report_phases_1343_1364_phase_1365`, and `phase_1366_soft_rc_gate_next`; no runtime, CDL, or value-path activation |
-| 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; verifies CDL-054/CDL-047 treasury budget binding; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | SENSITIVE gate; next planned phase; explicit `GO Phase 1366` required; must record `phase_1366_treasury_epoch_budget_binding_verified` or blocker `phase_1366_treasury_epoch_budget_binding_unverified` |
-| 1367 | Reserved for pre-gate fix pass | — | SENSITIVE |
+| 1366 | Soft RC readiness gate: all issuance + validator + CDL-V6 + Mysticeti wire-up + CDL-043/044 + CDL-057 items must pass; verifies CDL-054/CDL-047 treasury budget binding; records `soft_rc_eligible=true` or explicit blockers | Readiness gate | COMPLETE; records `soft_rc_readiness_gate_phase_1366.v0.1` and `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; 13 prerequisite lanes confirmed, but treasury-budget binding unverified; no production minting or public activation |
+| 1367 | Reserved for pre-gate fix pass | — | SENSITIVE; next planned phase; must address or explicitly route `phase_1366_treasury_epoch_budget_binding_unverified` |
 | 1368 | Window 1343–1368 closure handoff: honest closure; records soft RC eligible status; conditionally implements the private soft-RC production minting runtime gate only after Phase 1366 `soft_rc_eligible=true` and Phase 1367 clean pass; otherwise records deferred activation | — | SENSITIVE; must record exactly one of `production_minting_activated_phase_1368` or `production_minting_activation_deferred_phase_1368` |
 
 Phase 1348 execution addendum: `cdl_047_treasury_governance_runtime_phase_1348.v0.1`,
