@@ -3,7 +3,7 @@
 **Version:** v1.1
 **Produced:** 2026-05-08
 **Phase:** 1242
-**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1365 coherence addendum
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1366 soft RC gate addendum
 **Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
 
 `launch_roadmap_v1_1_published_phase_1242`
@@ -24,6 +24,10 @@
 `capsule_v5_57_supersedes_v5_56`
 `coherence_report_phases_1343_1364_phase_1365`
 `phase_1366_soft_rc_gate_next`
+`soft_rc_readiness_gate_phase_1366.v0.1`
+`soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`
+`production_minting_not_activated_phase_1366`
+`public_activation_not_authorized_phase_1366`
 
 ---
 
@@ -50,8 +54,8 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1343-1368 is OPEN through Phase 1365; active sequence lock is `docs/specs/ilc_phase_1343_1368_sequence_lock_v0.1.md`; Phase 1366 is the next planned SENSITIVE soft RC readiness gate and requires explicit `GO Phase 1366`; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL-088, identity bootstrap, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production mining, soft-RC eligibility verdict, counsel approval, or legal conclusion is granted |
-| Capsule | v5.57 current capsule; supersedes v5.56 and is updated through Phase 1365; records `context_capsule_v5_57_window_1343_coherence_snapshot_phase_1365.v0.1`, `capsule_v5_57_supersedes_v5_56`, `coherence_report_phases_1343_1364_phase_1365`, and `phase_1366_soft_rc_gate_next` |
+| Window frontier | Window 1343-1368 is OPEN through Phase 1366; active sequence lock is `docs/specs/ilc_phase_1343_1368_sequence_lock_v0.1.md`; Phase 1366 recorded `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; Phase 1367 is the next planned SENSITIVE pre-gate fix pass; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL-088, identity bootstrap, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production mining, soft-RC eligibility true verdict, counsel approval, or legal conclusion is granted |
+| Capsule and gate report | v5.57 current capsule remains the baseline snapshot through Phase 1365; Phase 1366 gate report is `docs/specs/ilc_soft_rc_readiness_gate_report_phase_1366_v0.1.md` and records the treasury-budget binding blocker |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
