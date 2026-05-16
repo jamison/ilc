@@ -1,6 +1,6 @@
 # ILC Phase 1343 Window 1343-1368 Sequence Lock v0.1
 
-**Status:** PASS - Window 1343-1368 is OPEN through Phase 1343 only.
+**Status:** PASS - Window 1343-1368 is CLOSED through Phase 1368.
 **Recorded:** 2026-05-14.
 **Human authorization:** `GO Phase 1343`.
 **Authority:** Sequence-lock and capsule phase only. This artifact does not
@@ -20,16 +20,22 @@ window_1343_1368_no_public_activation_or_value_path_authority
 soft_rc_gate_routed_phase_1366
 public_rc_remains_blocked_after_phase_1343
 cdl_053_vehicle_collision_recorded_phase_1343
+window_1343_1368_closed_phase_1368.v0.1
+window_1343_1368_closure_verdict_recorded_phase_1368
+soft_rc_eligible_final_status_recorded_phase_1368
+window_1369_1390_entry_criteria_recorded_phase_1368
+window_1369_not_open_phase_1368
+go_phase_1369_required_next
+production_minting_activation_deferred_phase_1368
 ```
 
 ## 1. Verdict
 
-Window 1343-1368 is opened as a candidate window for production issuance
+Window 1343-1368 was opened as a candidate window for production issuance
 economics, validator governance, CDL-V6 enforcement, Mysticeti production
 wire-up, adaptive pruning, blocking-authority scoping, and soft-RC readiness.
-Execution stops after Phase 1343. Phase 1344 is the next planned phase and is a
-NON-SENSITIVE architecture/scoping phase unless later discovery finds authority
-ambiguity requiring escalation. Phase 1344 is not executed by this lock.
+Phase 1368 closes the window with carry-forward items recorded in
+`docs/specs/ilc_window_1343_1368_handoff_1368_v0.1.md`.
 
 Phases 1345 through 1368 remain SENSITIVE and require explicit future
 `GO Phase <phase>` authorization. CDL mutation phases require explicit CDL
@@ -94,18 +100,18 @@ mutation environment authority in addition to human GO:
 | Phase | Scope | Authority after Phase 1343 |
 |-------|-------|----------------------------|
 | 1343 | Sequence lock + Capsule v5.56 | Executed by this artifact only. |
-| 1344 | Issuance stack scoping for CDL-025/026/027/028/029 and Phase 1362 vehicle-risk disposition | Next planned phase; NON-SENSITIVE scoping; not executed by this lock. |
-| 1345 | Production epoch emission engine | SENSITIVE; future explicit GO required. |
-| 1346 | CDL-028 fee-burn split runtime | SENSITIVE; future explicit GO required. |
-| 1347 | CDL-029 80/15/5 allocation distributor | SENSITIVE; future explicit GO required. |
-| 1348 | CDL-047 treasury governance runtime | SENSITIVE; future explicit GO required. |
-| 1349 | CDL-054 validator reward-pool routing runtime | SENSITIVE; future explicit GO required. |
-| 1350 | CDL-083 ejected-stake treasury distribution | SENSITIVE; future explicit GO required. |
-| 1351 | CDL-030 ECU price clamp runtime | SENSITIVE; future explicit GO required. |
-| 1351a | CDL-029 post-theta_hard sub-quantum residual routing policy: amend CDL-029; use caller-supplied `genesis_overhead_cap_blocked=True`; route settlement residual first to CDL-083 Q4 caller-filtered upheld-refutation recipients when a deterministic non-empty list is supplied, otherwise to performer pool; fail closed for non-zero full Genesis base tranche routing | SENSITIVE governance phase; must land before Phase 1352; supersedes Phase 1347a draft; CDL-V7 is admissibility-only and CDL-083 Q4 is the attribution interface. |
-| 1352 | Issuance economics integration gate | SENSITIVE; future explicit GO required. |
-| 1353 | CDL-017 validator admission/ejection + SEC-004 live rotation | SENSITIVE; future explicit GO required. |
-| 1354 | CDL-068 topology shuffle VRF runtime | SENSITIVE; future explicit GO required. |
+| 1344 | Issuance stack scoping for CDL-025/026/027/028/029 and Phase 1362 vehicle-risk disposition | COMPLETE; NON-SENSITIVE scoping; resolved issuance-stack inputs and blocking-authority vehicle selection. |
+| 1345 | Production epoch emission engine | COMPLETE; executed after authorization; records `production_minting_not_activated_phase_1345`; no ledger write or mint activation. |
+| 1346 | CDL-028 fee-burn split runtime | COMPLETE; executed after explicit GO; records default-off fee-burn quote runtime; no production fee collection. |
+| 1347 | CDL-029 80/15/5 allocation distributor | COMPLETE; executed after explicit GO; records default-off allocation quote runtime; no production distribution. |
+| 1348 | CDL-047 treasury governance runtime | COMPLETE; executed after explicit GO; records default-off treasury governance quote runtime; no treasury activation. |
+| 1349 | CDL-054 validator reward-pool routing runtime | COMPLETE; executed after explicit GO; records default-off validator reward-pool routing quote runtime; later Phase 1367 bound budget source to Phase 1345 emission quote. |
+| 1350 | CDL-083 ejected-stake treasury distribution | COMPLETE; executed after explicit GO; records default-off ejected-stake distribution boundary; no production stake distribution. |
+| 1351 | CDL-030 ECU price clamp runtime | COMPLETE; executed after explicit GO; records default-off price-clamp quote runtime; no live price adjustment. |
+| 1351a | CDL-029 post-theta_hard sub-quantum residual routing policy: amend CDL-029; use caller-supplied `genesis_overhead_cap_blocked=True`; route settlement residual first to CDL-083 Q4 caller-filtered upheld-refutation recipients when a deterministic non-empty list is supplied, otherwise to performer pool; fail closed for non-zero full Genesis base tranche routing | COMPLETE; governance phase executed after explicit GO and CDL mutation authority; supersedes Phase 1347a draft; no production distribution. |
+| 1352 | Issuance economics integration gate | COMPLETE; executed after explicit GO; records quote-level double-entry conservation and no live ledger settlement. |
+| 1353 | CDL-017 validator admission/ejection + SEC-004 live rotation | COMPLETE; executed after explicit GO; records default-off validator admission/ejection boundary; no production validator deployment. |
+| 1354 | CDL-068 topology shuffle VRF runtime | COMPLETE; executed after explicit GO; records deterministic topology shuffle quote runtime and VRF upgrade trigger; no production topology shuffle activation. |
 | 1355 | CDL-V6 / Phase-597 genesis intervention enforcement | COMPLETE; executed after explicit `GO Phase 1355`; records audit-only runtime, Phase-597 bounds, no brake fire, no CDL mutation. |
 | 1356 | CDL-013 governance weight live integration | COMPLETE; executed after explicit `GO Phase 1356`; records default-off protocol decision quote runtime, stale `ilc_core/reputation/governance_weight.py` path correction, legacy float conversion guard, and no production governance decision activation. |
 | 1357 | `reputation.py` H11 rewrite | COMPLETE; executed after explicit `GO Phase 1357`; records Decimal governance-weight/reputation/temporal-decay rewrite, Phase 1356 precision/test carry-forward closure, routing-reputation/CDL-060 Decimal deferral, and no production reputation or governance activation. |
@@ -122,7 +128,7 @@ mutation environment authority in addition to human GO:
 | 1365 | Capsule refresh v5.57 + coherence report | COMPLETE; NON-SENSITIVE; published Capsule v5.57 and Phase 1343-1364 coherence report; records `phase_1366_soft_rc_gate_next`; no runtime, CDL, or value-path activation. |
 | 1366 | Soft RC readiness gate | COMPLETE; executed after explicit `GO Phase 1366`; records `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; no production minting or public activation. |
 | 1367 | Reserved pre-gate fix pass | COMPLETE; executed after explicit `GO Phase 1367`; records `pre_gate_fix_pass_phase_1367.v0.1`, `phase_1366_blockers_addressed_or_clean_pass_phase_1367`, `no_new_scope_introduced_phase_1367`, and `phase_1366_treasury_epoch_budget_binding_verified`; addresses the Phase 1366 treasury-budget binding blocker; no CDL mutation, value-path activation, public activation, production minting, or full soft-RC re-gate. |
-| 1368 | Window closure handoff | SENSITIVE; future explicit GO required. |
+| 1368 | Window closure handoff | COMPLETE; executed after explicit `GO Phase 1368`; records `window_1343_1368_closed_phase_1368.v0.1`, `soft_rc_eligible_final_status_recorded_phase_1368`, `production_minting_activation_deferred_phase_1368`, `window_1369_not_open_phase_1368`, and `go_phase_1369_required_next`; no runtime file modified and no public, value-path, CDL-088, or production minting activation. |
 
 ## 6. Phase 1344 Scoping Obligations
 
