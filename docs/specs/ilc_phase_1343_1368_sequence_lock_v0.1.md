@@ -120,8 +120,8 @@ mutation environment authority in addition to human GO:
 | 1363 | Blocking-authority deliberation/prelock | COMPLETE; executed after explicit `GO Phase 1363` and CDL mutation authority; prelocked CDL-089; scope and CDL-055/CDL-030 interaction clauses locked; `BLOCKING_AUTHORITY_DEFERRED` still True. |
 | 1364 | Blocking-authority ratification + CDL-057 activation | COMPLETE; executed after explicit `GO Phase 1364` and CDL mutation authority; CDL-089 ratified in `5a32b19b`; runtime activated in `37440146`; `BLOCKING_AUTHORITY_DEFERRED=False`; no public or production infrastructure activation. |
 | 1365 | Capsule refresh v5.57 + coherence report | COMPLETE; NON-SENSITIVE; published Capsule v5.57 and Phase 1343-1364 coherence report; records `phase_1366_soft_rc_gate_next`; no runtime, CDL, or value-path activation. |
-| 1366 | Soft RC readiness gate | SENSITIVE; next planned phase; future explicit `GO Phase 1366` required. |
-| 1367 | Reserved pre-gate fix pass | SENSITIVE; future explicit GO required. |
+| 1366 | Soft RC readiness gate | COMPLETE; executed after explicit `GO Phase 1366`; records `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; no production minting or public activation. |
+| 1367 | Reserved pre-gate fix pass | SENSITIVE; next planned phase; must address or explicitly route the Phase 1366 treasury-budget binding blocker before any later true soft-RC verdict. |
 | 1368 | Window closure handoff | SENSITIVE; future explicit GO required. |
 
 ## 6. Phase 1344 Scoping Obligations
