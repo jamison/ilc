@@ -115,7 +115,67 @@ Triage reference:
 | CDL-085 | CDL-084 / ADR-0037 §3.2 / SIM-SPECTRAL-05 / runtime-binding slice / economic-flow slice | Werner φ-bound provenance equivalence limit — ratifies the provenance-equivalent derivation path bound for deciding when edge-mint / provenance-attribution claims are canonical productive work rather than Sybil-amplified or non-canonical derivation branches; SIM gate lifted by Phase 1171 `sim_spectral_05_gate_pass`; prelock committed Phase 1177; runtime-binding and economic-flow activation gates cleared in Phases 1179-1180 | ratified | ratify `EDGE_MINT_PHI_BOUND = Decimal("0.60")` for provenance-equivalent derivation paths; reject activation without runtime-binding and economic-flow observer-slice pass evidence | Werner φ-bound ratified with exact Decimal value; runtime activation routed to Phase 1185 Commit 2 via `CDL_085_DEPENDENCY = "cdl_085_werner_phi_bound_ratified_1185.v0.1"` | docs/specs/ilc_cdl_085_werner_phi_bound_opening_1172_v0.1.md, docs/specs/ilc_cdl_085_prelock_spec_1177_v0.1.md, docs/specs/ilc_cdl_085_ratification_evidence_1185_v0.1.md, docs/sims/sim_spectral_05/disposition_1171_v0.1.md, docs/sims/sim_spectral_05/runtime_binding_slice_disposition_1179_v0.1.md, docs/sims/sim_spectral_05/economic_flow_slice_disposition_1180_v0.1.md, docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md | opened_phase: 1172 | opened_date: 2026-05-04 | ratified_phase: 1185 | ratified_date: 2026-05-04 | gate_token: cdl_085_sim_gate_lifted_phase_1172_sim_spectral_05_gate_pass | prelock_token: cdl_085_prelock_committed_phase_1177 | ratification_token: cdl_085_ratified_phase_1185 | dependency_token: cdl_085_werner_phi_bound_ratified_1185.v0.1 |
 | CDL-086 | Phase 1188 scoping / Roadmap v1.0 / CDL-001 / ADR-0036 / ADR-0037 / CDL-085 | Public-launch packaging blocker — constitutional lane defining release artifacts, public-launch triggers, RC boundary, release packaging/distribution governance, release-key and lineage dependencies, and counsel-track/publication conditions before any public launch claim or public release artifact distribution | ratified | Q1: release artifact scope; Q2: public launch trigger; Q3: RC2/RC3/public-launch relationship; Q4: packaging governance; Q5: counsel-track dependency; counsel disposition C1-C5 recorded as Genesis-authorized provisional dispositions, not counsel-approved legal conclusions | ratification satisfies the governance precondition only; no public launch, public repository publication, public release artifact distribution, public RC announcement, external contributor onboarding, or external operator bootstrap is authorized until separate constitutional act(s) satisfy the recorded carry-forward obligations | docs/specs/ilc_cdl_086_public_launch_packaging_blocker_opening_1194_v0.1.md, docs/specs/ilc_cdl_086_deliberation_1203_v0.1.md, docs/specs/ilc_cdl_086_prelock_spec_1204_v0.1.md, docs/specs/ilc_cdl_086_counsel_disposition_1220_v0.1.md, docs/specs/ilc_cdl_086_ratification_evidence_1220_v0.1.md, docs/specs/ilc_release_artifact_manifest_schema_1213_v0.1.md, docs/specs/ilc_distribution_channel_integrity_checklist_1213_v0.1.md, docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md, docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md, docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md | opened_phase: 1194 | opened_date: 2026-05-05 | opening_token: cdl_086_public_launch_packaging_blocker_opened_phase_1194 | prelock_phase: 1204 | prelock_token: cdl_086_prelock_committed_phase_1204 | ratified_phase: 1220 | ratified_date: 2026-05-06 | ratification_token: cdl_086_ratified_phase_1220 |
 | CDL-087 | CDL-077 / CDL-086 / ADR-0037 / Phase 1222 §8 / SIM-FETCH-01 / Phase 1258-1260 / Phase 1276-1278 | Canonical fetch distribution policy — constitutional lane defining canonical content reads as public verifiable infrastructure, high-centrality caching/mirroring, Genesis-rooted snapshot distribution, observability prerequisites, and local circuit-breaker boundaries before any future fetch admission CDL | ratified | Q1: high-centrality canonical infrastructure tier; Q2: caching/staleness guarantees; Q3: minimum verified snapshot format; Q4: observability signals before future fetch admission ratification; Q5: CDL-077 supplement vs amendment; Q6: fetch-incentive projection evidence | Canonical fetch distribution policy ratified with Tier A/B/C infrastructure classification, content-hash plus Genesis-lineage validity, Genesis-verifiable bootstrap snapshots, aggregate privacy-minimized observability, active CDL-077 circuit breakers, and projection-level serving-peer incentive evidence; reciprocal scoring, ECU-escrow admission, public fetch serving, public sidecar/projection serving, and CDL-088 remain separately gated | docs/specs/ilc_cdl_087_canonical_fetch_distribution_policy_opening_1227_v0.1.md, docs/specs/ilc_cdl_087_prelock_spec_1228_v0.1.md, docs/sims/sim_fetch_01/sim_fetch_01_cdl_087_evidence_matrix_1238i_v0.1.md, docs/sims/sim_fetch_01/sim_fetch_01_cdl_087_robustness_suite_1238j_v0.1.md, docs/specs/ilc_cdl_087_production_candidate_evidence_readiness_1258_v0.1.md, docs/specs/ilc_cdl_087_serving_peer_evidence_slice_1259_v0.1.md, docs/specs/ilc_cdl_087_observability_and_limiter_regression_1260_v0.1.md, docs/specs/ilc_cdl_087_sensitive_ratification_review_1266_v0.1.md, docs/specs/ilc_cdl087_ratification_authorization_preflight_1276_v0.1.md, docs/specs/ilc_transport_principal_public_path_adr_runtime_preflight_1277_v0.1.md, docs/specs/ilc_sidecar_non_loopback_public_path_preflight_1278_v0.1.md, docs/specs/ilc_cdl_087_ratification_evidence_1278_fix1_v0.1.md | opened_phase: 1227 | opened_date: 2026-05-06 | opening_token: cdl_087_canonical_fetch_distribution_policy_opened_phase_1227 | historical_non_ratification_token: cdl_087_not_ratified_phase_1227 | prelock_phase: 1228 | prelock_token: cdl_087_prelock_committed_phase_1228 | ratified_phase: 1278 Fix1 | ratified_date: 2026-05-09 | ratification_token: cdl087_ratified_phase_1278_fix1 | register_mutation_token: cdl087_register_mutated_phase_1278_fix1 | evidence_document: docs/specs/ilc_cdl_087_ratification_evidence_1278_fix1_v0.1.md | public_fetch_serving_status: not_enabled | public_sidecar_projection_status: blocked_pending_separate_authorization |
-| CDL-089 | CDL-057 / Phase 1344 blocking-authority vehicle selection / Phase 508 CDL-053 protection | Blocking-authority activation vehicle for the CDL-057 epoch-boundary witness lane; governs any future transition from `BLOCKING_AUTHORITY_DEFERRED = True` to `False` | open | keep CDL-057 provenance-only indefinitely, use CDL-053 despite Werner-credit reservation, use CDL-088 despite public-claimability reservation, open a new non-CDL-053 vehicle | open CDL-089 as the Phase-1344-selected non-CDL-053 vehicle; no prelock, ratification, runtime activation, or `BLOCKING_AUTHORITY_DEFERRED` change in Phase 1362 | docs/specs/ilc_blocking_authority_vehicle_selection_phase_1344_v0.1.md, docs/antigravity_tasks/antigravity_prompt__phase_1362_g8_blocking_authority_vehicle_opening.md, docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md | opened_phase: 1362 | opened_date: 2026-05-16 | opening_token: cdl_057_activation_vehicle_open_phase_1362 | collision_resolution_token: cdl_053_vehicle_collision_resolved_phase_1362 | non_ratification_token: blocking_authority_not_ratified_phase_1362 |
+| CDL-089 | CDL-057 / Phase 1344 blocking-authority vehicle selection / Phase 508 CDL-053 protection / CDL-055 / CDL-030 | Blocking-authority activation vehicle for the CDL-057 epoch-boundary witness lane; governs any future transition from `BLOCKING_AUTHORITY_DEFERRED = True` to `False` | open | keep CDL-057 provenance-only indefinitely, use CDL-053 despite Werner-credit reservation, use CDL-088 despite public-claimability reservation, open a new non-CDL-053 vehicle | prelock CDL-089 as the Phase-1344-selected non-CDL-053 vehicle; scope locked to CDL-057 epoch-boundary witness conditions for ECU-to-ILC conversion batches; CDL-055 and CDL-030 interaction clauses locked; no ratification, runtime activation, or `BLOCKING_AUTHORITY_DEFERRED` change in Phase 1363 | docs/specs/ilc_blocking_authority_vehicle_selection_phase_1344_v0.1.md, docs/antigravity_tasks/antigravity_prompt__phase_1362_g8_blocking_authority_vehicle_opening.md, docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md, docs/antigravity_tasks/antigravity_prompt__phase_1363_g8_blocking_authority_deliberation_prelock.md, docs/phases/phase_1363_blocking_authority_deliberation_prelock_walkthrough.md | opened_phase: 1362 | opened_date: 2026-05-16 | opening_token: cdl_057_activation_vehicle_open_phase_1362 | collision_resolution_token: cdl_053_vehicle_collision_resolved_phase_1362 | prelock_phase: 1363 | prelock_date: 2026-05-16 | prelock_token: blocking_authority_deliberation_prelock_phase_1363.v0.1 | scope_token: blocking_authority_scope_locked_phase_1363 | interaction_token: cdl_055_cdl_030_interaction_clauses_locked_phase_1363 | non_ratification_token: blocking_authority_not_ratified_phase_1363 |
+
+## Scoped Prelock Record (Phase 1363: CDL-089)
+
+CDL-089 remains open and unratified after this prelock. Phase 1363 locks the
+deliberation parameters required before any future Phase 1364 ratification or
+runtime activation decision.
+
+```text
+blocking_authority_deliberation_prelock_phase_1363.v0.1
+blocking_authority_scope_locked_phase_1363
+cdl_055_cdl_030_interaction_clauses_locked_phase_1363
+blocking_authority_not_ratified_phase_1363
+```
+
+### Phase 1362 Open-Question Resolution
+
+Phase 1362 recorded carry-forward items rather than a literal open-question
+section. Phase 1363 treats those carry-forward items, plus the unresolved
+activation options in the CDL-089 opening row, as the complete deliberation
+agenda.
+
+| Question | Disposition |
+|---|---|
+| Which vehicle governs blocking-authority activation after CDL-053 collision resolution? | RESOLVED: CDL-089 remains the selected non-CDL-053 vehicle. CDL-053 remains reserved for Werner-credit architecture. |
+| Does CDL-089 disturb CDL-088 public-claimability authority? | RESOLVED: no. CDL-088 remains unopened and reserved for public-claimability authority. |
+| What does blocking authority cover? | RESOLVED: scope is locked to the CDL-057 epoch-boundary witness lane for ECU-to-ILC conversion batches, with the locked text below. |
+| How does blocking authority interact with CDL-055 validator participation stake? | RESOLVED: CDL-055 remains unchanged; the locked interaction clause below forbids automatic stake/liveness/equivocation consequences from a witness-lane block. |
+| How does blocking authority interact with CDL-030 ECU price clamp? | RESOLVED: CDL-030 remains unchanged; the locked interaction clause below forbids clamp recomputation, bypass, widening, narrowing, or price-adjustment activation. |
+| Is CDL-089 ratified by this prelock? | EXPLICITLY DEFERRED: no. Ratification is Phase 1364 only after the Phase 1363 prelock record is committed. |
+| May `BLOCKING_AUTHORITY_DEFERRED` flip in Phase 1363? | EXPLICITLY DEFERRED: no. Any runtime flip from `True` to `False` is Phase 1364 only after ratification authority. |
+
+### Locked Blocking-Authority Scope
+
+After CDL-089 ratification and a separately authorized runtime change, blocking
+authority is limited to the CDL-057 epoch-boundary witness lane for ECU-to-ILC
+conversion batches. The lane may block advancement of an affected conversion
+batch across the epoch boundary when the required validator witness record for
+that batch is absent, invalid, or non-canonical. This authority does not create
+validator witness veto power, settlement veto power, wallet authority, minting
+authority, public-serving authority, public-claimability authority, or authority
+over any non-CDL-057 blocking mechanism.
+
+### Locked CDL-055 Interaction Clause
+
+CDL-089 does not amend CDL-055. A CDL-057 witness-lane block is not itself a
+CDL-055 liveness miss, liveness penalty, equivocation slash, stake reduction, or
+re-admission event. Validator participation stake remains anchored to
+`GENESIS_STAKE_AMOUNT = 400`, `LIVENESS_MISS_THRESHOLD = 8`,
+`LIVENESS_PENALTY_FRACTION = 0.25`, and `EQUIVOCATION_FULL_SLASH = 1` under
+CDL-055 and `staking_liveness_runtime.py`. Only independently proven CDL-055
+liveness or equivocation conditions may trigger CDL-055 stake consequences.
+
+### Locked CDL-030 Interaction Clause
+
+CDL-089 does not amend CDL-030. The ECU price clamp remains
+`P_min = 0.75`, `P_max = 1.30`, anchored to the CDL-027 schedule. A CDL-057
+witness-lane block may block the affected conversion batch at the epoch
+boundary, but it must not recompute, widen, narrow, override, or bypass the ECU
+price clamp, must not emit live price adjustment, and must not authorize
+settlement, wallet, minting, or value-path activation.
 
 ## Scoped Ratification Record (Phase 993)
 
