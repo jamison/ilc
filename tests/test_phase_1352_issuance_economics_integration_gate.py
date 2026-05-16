@@ -103,6 +103,8 @@ def test_phase_1352_gate_runtime_does_not_call_production_activation_functions()
 
     assert "production_minting_not_activated_phase_1352" in runtime
     assert "phase_1352_quote_level_double_entry_conservation_not_live_ledger_settlement" in runtime
+    assert "validator_treasury_budget" not in runtime
+    assert "TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN" in runtime
 
 
 def test_phase_1352_docs_record_gate_verdict_and_non_activation() -> None:
