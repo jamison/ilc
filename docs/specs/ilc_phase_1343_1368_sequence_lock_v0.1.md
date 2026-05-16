@@ -117,8 +117,8 @@ mutation environment authority in addition to human GO:
 | 1360 Fix2a | Fix2 proof-scope and production connectivity planning hardening | COMPLETE; NON-SENSITIVE; records `fix2a_doc_test_hardening_phase_1360.v0.1` and `phase_1360_fix2a_proof_scope_narrowed_injected_checkpoint_only`; routes durable validator connectivity to Window 1369-1390 phases 1386b and 1386c; no runtime source change, no CDL mutation, no production activation. |
 | 1361 | CDL-043/044 adaptive pruning completion | COMPLETE; executed after explicit `GO Phase 1361`; records adaptive threshold runtime, constitutional `retention_epochs=1 issuance_epoch`, LMDB Tier-2 graph pruning path, production pruning gate, and no production pruning activation. |
 | 1362 | Blocking-authority vehicle opening | COMPLETE; executed after explicit `GO Phase 1362` and CDL mutation authority; opened CDL-089; CDL-053 and CDL-088 preserved; `BLOCKING_AUTHORITY_DEFERRED` still True. |
-| 1363 | Blocking-authority deliberation/prelock | SENSITIVE; future explicit GO required; next planned phase. |
-| 1364 | Blocking-authority ratification + CDL-057 activation | SENSITIVE; future explicit GO and CDL mutation authority required. |
+| 1363 | Blocking-authority deliberation/prelock | COMPLETE; executed after explicit `GO Phase 1363` and CDL mutation authority; prelocked CDL-089; scope and CDL-055/CDL-030 interaction clauses locked; `BLOCKING_AUTHORITY_DEFERRED` still True. |
+| 1364 | Blocking-authority ratification + CDL-057 activation | SENSITIVE; future explicit GO and CDL mutation authority required; next planned phase. |
 | 1365 | Capsule refresh v5.57 + coherence report | NON-SENSITIVE after prior gates; future explicit GO if required by operator policy. |
 | 1366 | Soft RC readiness gate | SENSITIVE; future explicit GO required. |
 | 1367 | Reserved pre-gate fix pass | SENSITIVE; future explicit GO required. |
