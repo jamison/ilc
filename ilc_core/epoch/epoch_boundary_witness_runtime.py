@@ -1,14 +1,14 @@
-"""Phase 516 epoch-boundary witness runtime."""
+"""Epoch-boundary witness runtime."""
 
 from __future__ import annotations
 
 from ilc_core.validator import staking_liveness_runtime
 
 
-EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = "epoch_boundary_witness_runtime_516.v0.1"
+EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = "epoch_boundary_witness_blocking_active_phase_1364.v0.1"
 CDL_057_DEPENDENCY = "cdl_057_ratified_511.v0.1"
 CDL_055_STAKING_DEPENDENCY = staking_liveness_runtime.STAKING_LIVENESS_RUNTIME_VERSION
-BLOCKING_AUTHORITY_DEFERRED = True
+BLOCKING_AUTHORITY_DEFERRED = False
 
 
 def _require_non_empty_string(value: str, field_name: str) -> str:
@@ -36,14 +36,14 @@ def record_epoch_boundary_witness(validator_id: str, epoch_id: int | str, batch_
     batch = _require_non_empty_string(batch_cid, "batch_cid")
     return {
         "status": "witnessed",
-        # Keep the witness tied to a specific conversion batch without widening into blocking authority.
+        # Blocking scope remains tied to the specific conversion batch.
         "batch_cid": batch,
         "provenance_tag": f"{validator}@epoch_{epoch}",
     }
 
 
 def is_blocking_authority_active() -> bool:
-    return False
+    return not BLOCKING_AUTHORITY_DEFERRED
 
 
 __all__ = [

@@ -43,29 +43,35 @@ def test_phase_1362_resolution_doc_selects_cdl_089_unambiguously() -> None:
 
 def test_phase_1362_opens_cdl_089_only_and_preserves_cdl_053_088_boundaries() -> None:
     rows = _decision_rows()
+    walkthrough = _read(WALKTHROUGH)
 
     assert "CDL-089" in rows
     assert "| CDL-089 |" in rows["CDL-089"]
-    assert "| open |" in rows["CDL-089"]
+    assert "| ratified |" in rows["CDL-089"]
+    assert "| open |" in walkthrough
     assert "opened_phase: 1362" in rows["CDL-089"]
     assert "opened_date: 2026-05-16" in rows["CDL-089"]
     assert "cdl_057_activation_vehicle_open_phase_1362" in rows["CDL-089"]
     assert "cdl_053_vehicle_collision_resolved_phase_1362" in rows["CDL-089"]
-    assert "blocking_authority_not_ratified_phase_1362" in rows["CDL-089"]
+    assert "blocking_authority_not_ratified_phase_1362" in walkthrough
     assert "docs/specs/ilc_blocking_authority_vehicle_selection_phase_1344_v0.1.md" in rows["CDL-089"]
 
     assert "CDL-053" not in rows
     assert "CDL-088" not in rows
 
 
-def test_phase_1362_runtime_stays_deferred_and_unmodified_in_scope() -> None:
+def test_phase_1362_runtime_deferral_record_is_historical_after_phase_1364() -> None:
     runtime = _read(RUNTIME)
+    walkthrough = _read(WALKTHROUGH)
 
-    assert 'EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = "epoch_boundary_witness_runtime_516.v0.1"' in runtime
+    assert "Phase 1362 did not modify `ilc_core/`" in walkthrough
+    assert "BLOCKING_AUTHORITY_DEFERRED = True" in walkthrough
+    assert "`is_blocking_authority_active()` still returns `False`" in walkthrough
+
+    assert 'EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = "epoch_boundary_witness_blocking_active_phase_1364.v0.1"' in runtime
     assert 'CDL_057_DEPENDENCY = "cdl_057_ratified_511.v0.1"' in runtime
-    assert "BLOCKING_AUTHORITY_DEFERRED = True" in runtime
-    assert "return False" in runtime
-    assert "BLOCKING_AUTHORITY_DEFERRED = False" not in runtime
+    assert "BLOCKING_AUTHORITY_DEFERRED = False" in runtime
+    assert "return not BLOCKING_AUTHORITY_DEFERRED" in runtime
 
 
 def test_phase_1362_walkthrough_records_required_tokens_and_hard_gate() -> None:
@@ -97,13 +103,13 @@ def test_phase_1362_status_and_planning_surfaces_advance_to_1363() -> None:
     assert "CDL vehicle opened (CDL-089)" in status
     assert "BLOCKING_AUTHORITY_DEFERRED still True" in status
 
-    assert "Window 1343-1368 is OPEN through Phase 1362" in planning
-    assert "Phase 1363 is the next planned phase" in planning
+    assert "Phase 1362 addendum" in planning
+    assert "Phase 1363 was subsequently executed" in planning
     assert "CDL-089" in planning
 
     assert "| 1362 | Blocking-authority vehicle opening | COMPLETE" in sequence_lock
-    assert "| 1363 | Blocking-authority deliberation/prelock | SENSITIVE; future explicit GO required; next planned phase." in sequence_lock
+    assert "| 1363 | Blocking-authority deliberation/prelock | COMPLETE" in sequence_lock
 
     assert "| 1362 | Blocking-authority vehicle opening: open CDL-089" in forward_plan
-    assert "| 1363 | Blocking-authority deliberation/prelock: resolve open questions from Phase 1362" in forward_plan
+    assert "| 1363 | Blocking-authority deliberation/prelock: CDL-089 prelock" in forward_plan
     assert "| CDL-089, CDL-057 |" in forward_plan

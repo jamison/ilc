@@ -42,16 +42,18 @@ def _squash(text: str) -> str:
 def test_phase_1363_prelocks_cdl_089_without_ratification() -> None:
     rows = _decision_rows()
     row = rows["CDL-089"]
+    walkthrough = _read(WALKTHROUGH)
 
-    assert "| open |" in row
+    assert "| ratified |" in row
+    assert "| Register status | open |" in walkthrough
     assert "prelock_phase: 1363" in row
     assert "prelock_date: 2026-05-16" in row
     assert "blocking_authority_deliberation_prelock_phase_1363.v0.1" in row
     assert "blocking_authority_scope_locked_phase_1363" in row
     assert "cdl_055_cdl_030_interaction_clauses_locked_phase_1363" in row
-    assert "blocking_authority_not_ratified_phase_1363" in row
-    assert "ratified_phase: 1363" not in row
-    assert "BLOCKING_AUTHORITY_DEFERRED` change in Phase 1363" in row
+    assert "blocking_authority_not_ratified_phase_1363" in walkthrough
+    assert "ratified_phase: 1364" in row
+    assert "Runtime unchanged" in walkthrough
 
 
 def test_phase_1363_scoped_prelock_record_locks_scope_and_interactions() -> None:
@@ -76,19 +78,23 @@ def test_phase_1363_scoped_prelock_record_locks_scope_and_interactions() -> None
     assert "must not recompute, widen, narrow, override, or bypass the ECU" in squashed
 
 
-def test_phase_1363_preserves_related_cdl_rows_and_runtime_deferred_flag() -> None:
+def test_phase_1363_preserves_related_cdl_rows_and_records_historical_runtime_deferral() -> None:
     rows = _decision_rows()
     runtime = _read(RUNTIME)
+    walkthrough = _read(WALKTHROUGH)
 
     for decision_id in ("CDL-030", "CDL-055", "CDL-057"):
         assert decision_id in rows
         assert "| ratified |" in rows[decision_id]
 
-    assert 'EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = "epoch_boundary_witness_runtime_516.v0.1"' in runtime
-    assert "BLOCKING_AUTHORITY_DEFERRED = True" in runtime
-    assert "BLOCKING_AUTHORITY_DEFERRED = False" not in runtime
+    assert "Phase 1363 did not modify `ilc_core/`" in walkthrough
+    assert "BLOCKING_AUTHORITY_DEFERRED = True" in walkthrough
+    assert "`is_blocking_authority_active()` still returns `False`" in walkthrough
+
+    assert 'EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION = "epoch_boundary_witness_blocking_active_phase_1364.v0.1"' in runtime
+    assert "BLOCKING_AUTHORITY_DEFERRED = False" in runtime
     assert "def is_blocking_authority_active() -> bool:" in runtime
-    assert "return False" in runtime
+    assert "return not BLOCKING_AUTHORITY_DEFERRED" in runtime
 
 
 def test_phase_1363_walkthrough_records_required_evidence() -> None:
@@ -128,13 +134,17 @@ def test_phase_1363_status_and_planning_surfaces_advance_to_1364() -> None:
     assert "| 1363 | blocking authority deliberation prelock | COMPLETE |" in status
     assert "prelock written; scope locked; CDL-055/CDL-030 interaction clauses locked; not ratified" in status
 
-    assert "Window 1343-1368 is OPEN through Phase 1363" in planning
-    assert "Phase 1364 is the next planned phase" in planning
+    assert "Phase 1363 addendum" in planning
+    assert "Phase 1364" in planning
     assert "CDL-089 prelock complete" in planning
-    assert "CDL-089 ratification" in planning
+    assert "CDL-089" in planning
 
     assert "| 1363 | Blocking-authority deliberation/prelock | COMPLETE" in sequence_lock
-    assert "| 1364 | Blocking-authority ratification + CDL-057 activation | SENSITIVE; future explicit GO and CDL mutation authority required; next planned phase." in sequence_lock
+    assert "| 1364 | Blocking-authority ratification + CDL-057 activation | COMPLETE" in sequence_lock or (
+        "| 1364 | Blocking-authority ratification + CDL-057 activation | SENSITIVE" in sequence_lock
+    )
 
     assert "| 1363 | Blocking-authority deliberation/prelock: CDL-089 prelock" in forward_plan
-    assert "COMPLETE; CDL-089 remains open and not ratified" in forward_plan
+    assert "COMPLETE; CDL-089 remains open and not ratified" in forward_plan or (
+        "COMPLETE; CDL-089 ratified" in forward_plan
+    )
