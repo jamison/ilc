@@ -118,8 +118,8 @@ mutation environment authority in addition to human GO:
 | 1361 | CDL-043/044 adaptive pruning completion | COMPLETE; executed after explicit `GO Phase 1361`; records adaptive threshold runtime, constitutional `retention_epochs=1 issuance_epoch`, LMDB Tier-2 graph pruning path, production pruning gate, and no production pruning activation. |
 | 1362 | Blocking-authority vehicle opening | COMPLETE; executed after explicit `GO Phase 1362` and CDL mutation authority; opened CDL-089; CDL-053 and CDL-088 preserved; `BLOCKING_AUTHORITY_DEFERRED` still True. |
 | 1363 | Blocking-authority deliberation/prelock | COMPLETE; executed after explicit `GO Phase 1363` and CDL mutation authority; prelocked CDL-089; scope and CDL-055/CDL-030 interaction clauses locked; `BLOCKING_AUTHORITY_DEFERRED` still True. |
-| 1364 | Blocking-authority ratification + CDL-057 activation | SENSITIVE; future explicit GO and CDL mutation authority required; next planned phase. |
-| 1365 | Capsule refresh v5.57 + coherence report | NON-SENSITIVE after prior gates; future explicit GO if required by operator policy. |
+| 1364 | Blocking-authority ratification + CDL-057 activation | COMPLETE; executed after explicit `GO Phase 1364` and CDL mutation authority; CDL-089 ratified in `5a32b19b`; runtime activated in `37440146`; `BLOCKING_AUTHORITY_DEFERRED=False`; no public or production infrastructure activation. |
+| 1365 | Capsule refresh v5.57 + coherence report | NON-SENSITIVE after prior gates; next planned phase. |
 | 1366 | Soft RC readiness gate | SENSITIVE; future explicit GO required. |
 | 1367 | Reserved pre-gate fix pass | SENSITIVE; future explicit GO required. |
 | 1368 | Window closure handoff | SENSITIVE; future explicit GO required. |

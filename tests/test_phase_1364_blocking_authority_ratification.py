@@ -10,6 +10,12 @@ from ilc_core.epoch import epoch_boundary_witness_runtime
 ROOT = Path(__file__).resolve().parents[1]
 CDL_REGISTER = ROOT / "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 RUNTIME = ROOT / "ilc_core/epoch/epoch_boundary_witness_runtime.py"
+WALKTHROUGH = ROOT / "docs/phases/phase_1364_blocking_authority_ratification_cdl_057_activation_walkthrough.md"
+STATUS = ROOT / "docs/phases/STATUS.md"
+PLANNING_INDEX = ROOT / "docs/PLANNING_INDEX.md"
+SEQUENCE_LOCK = ROOT / "docs/specs/ilc_phase_1343_1368_sequence_lock_v0.1.md"
+FORWARD_PLAN = ROOT / "docs/specs/ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md"
+IMPLEMENTATION_MAP = ROOT / "docs/architecture/ilc_cdl_adr_implementation_map_v0.1.md"
 
 CDL_COMMIT_SUBJECT = "phase 1364 blocking authority cdl ratification"
 RUNTIME_COMMIT_SUBJECT = "phase 1364 flip blocking authority deferred false"
@@ -111,3 +117,32 @@ def test_phase_1364_cdl_and_runtime_commits_are_separate_when_present() -> None:
     runtime_paths = _changed_paths_for_commit(runtime_commit)
     assert "docs/specs/ilc_constitutional_decision_log_v0.1.md" not in runtime_paths
     assert "ilc_core/epoch/epoch_boundary_witness_runtime.py" in runtime_paths
+
+
+def test_phase_1364_status_walkthrough_and_planning_surfaces_are_current() -> None:
+    walkthrough = _read(WALKTHROUGH)
+    status = _read(STATUS)
+    planning = _read(PLANNING_INDEX)
+    sequence_lock = _read(SEQUENCE_LOCK)
+    forward_plan = _read(FORWARD_PLAN)
+    implementation_map = _read(IMPLEMENTATION_MAP)
+
+    required_tokens = (
+        "blocking_authority_ratified_phase_1364.v0.1",
+        "blocking_authority_deferred_false_epoch_boundary_witness_phase_1364",
+        "cdl_057_blocking_authority_active_phase_1364",
+        "cdl_doc_and_runtime_separate_commits_phase_1364",
+    )
+    for token in required_tokens:
+        assert token in walkthrough
+        assert token in planning or token in forward_plan
+
+    assert (
+        "| 1364 | blocking authority ratification + CDL-057 activation | COMPLETE | "
+        "5a32b19b,37440146 | blocking authority ratified and active; "
+        "BLOCKING_AUTHORITY_DEFERRED=False; two-commit pattern confirmed |"
+    ) in status
+    assert "Window 1343-1368 is OPEN through Phase 1364" in planning
+    assert "| 1364 | Blocking-authority ratification + CDL-057 activation | COMPLETE" in sequence_lock
+    assert "COMPLETE; CDL-089 ratified in `5a32b19b`" in forward_plan
+    assert "BLOCKING_AUTHORITY_DEFERRED = False" in implementation_map
