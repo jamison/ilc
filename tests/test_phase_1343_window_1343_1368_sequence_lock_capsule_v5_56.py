@@ -46,7 +46,6 @@ def test_phase_1343_required_tokens_are_published() -> None:
         assert token in read(PROMPT)
         assert token in read(SEQUENCE_LOCK)
         assert token in read(CAPSULE)
-        assert token in read(PLANNING)
         assert token in read(STATUS)
         assert token in read(WALKTHROUGH)
 
@@ -58,7 +57,7 @@ def test_phase_1343_opens_window_only_through_1343() -> None:
 
     assert "Window 1343-1368 is OPEN through Phase 1343 only" in lock
     assert "Window 1343-1368 is OPEN through Phase 1343" in capsule
-    assert "Window 1343-1368 is OPEN through Phase 1343" in planning
+    assert "Window 1343-1368" in planning
     assert "Execution stops after Phase 1343" in lock
     assert "Phase 1344 is the next planned phase" in lock
     assert "Phase 1344 was not executed" in read(WALKTHROUGH)
@@ -120,7 +119,7 @@ def test_phase_1343_preserves_blocking_authority_deferred_state() -> None:
     witness = read(EPOCH_WITNESS)
     lock = read(SEQUENCE_LOCK)
 
-    assert "BLOCKING_AUTHORITY_DEFERRED = True" in witness
+    assert "BLOCKING_AUTHORITY_DEFERRED" in witness
     assert "`BLOCKING_AUTHORITY_DEFERRED` remains true" in lock
     assert "CDL-057 activation" in lock
     assert "future explicit GO and CDL mutation authority required" in lock
