@@ -243,8 +243,16 @@ Expected properties:
 
 - gated or shard-local participation,
 - community-local or operator-local evaluation,
-- possible local pricing or shadow economics,
+- possible local pricing or operator-local advisory scoring (not protocol ECU — see clarification below),
 - no automatic inheritance of public corroboration.
+
+> **Clarification (recorded 2026-05-16):** "Shadow economics" or "local pricing" in this
+> section means operator-local advisory scoring and decision-support only. It does not
+> mean protocol ECU generation for private or semi-private nodes. No CDL ratifies ECU
+> generation outside public-graph events. ADR-0022 §2 is the governing rule: private/
+> shard-local pressure does not create public corroboration, public protocol reputation,
+> public epistemic status, or public settlement rights. Private nodes have zero protocol
+> economic effect until explicit promotion into the public graph.
 
 ### C. Public/shared graph boundary
 
