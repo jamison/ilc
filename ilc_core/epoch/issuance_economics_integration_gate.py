@@ -44,12 +44,14 @@ from .fee_burn_split_runtime import (
     build_fee_burn_split_quote,
 )
 from .treasury_governance_runtime import (
+    BURN_FLOOR_FRACTION,
     CDL_047_TREASURY_GOVERNANCE_RUNTIME_TOKEN,
     PRODUCTION_TREASURY_NOT_ACTIVATED_TOKEN,
     build_treasury_governance_quote,
 )
 from .validator_reward_pool_routing_runtime import (
     CDL_054_VALIDATOR_REWARD_POOL_ROUTING_RUNTIME_TOKEN,
+    TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN,
     VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
     build_validator_reward_pool_routing_quote,
 )
@@ -270,8 +272,6 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "treasury_burn": Decimal("10"),
             "velocity": Decimal("0.92"),
             "write_fee_burn": Decimal("20"),
-            "validator_treasury_budget": Decimal("100"),
-            "validator_treasury_burn": Decimal("5"),
             "ejected_stake": Decimal("9.000000001"),
             "member_stakes": {
                 "agent:alpha": Decimal("10"),
@@ -294,8 +294,6 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "treasury_burn": Decimal("0.000000005"),
             "velocity": Decimal("0.90"),
             "write_fee_burn": Decimal("0.000000050"),
-            "validator_treasury_budget": Decimal("0.000000100"),
-            "validator_treasury_burn": Decimal("0.000000005"),
             "ejected_stake": Decimal("0.000000009"),
             "member_stakes": {
                 "agent:alpha": Decimal("1"),
@@ -317,9 +315,7 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "treasury_bounty": Decimal("25"),
             "treasury_burn": Decimal("30"),
             "velocity": Decimal("0.95"),
-            "write_fee_burn": Decimal("70"),
-            "validator_treasury_budget": Decimal("200"),
-            "validator_treasury_burn": Decimal("20"),
+            "write_fee_burn": Decimal("0.000000500"),
             "ejected_stake": Decimal("30"),
             "member_stakes": {
                 "agent:alpha": Decimal("2"),
@@ -410,10 +406,20 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
         validator_quote = build_validator_reward_pool_routing_quote(
             epoch,
             scenario["write_fee_burn"],
-            scenario["validator_treasury_budget"],
-            scenario["validator_treasury_burn"],
+            scenario["cumulative"],
+            emission_quote.capped_epoch_budget_ilc * BURN_FLOOR_FRACTION,
             scenario["velocity"],
         )
+        validator_decision_token = (
+            validator_quote.decision_token
+            + "|"
+            + validator_quote.treasury_epoch_budget_binding_token
+        )
+        if (
+            validator_quote.treasury_epoch_budget_binding_token
+            != TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN
+        ):
+            raise ValueError("treasury_epoch_budget_binding_missing_phase_1367")
         results.append(
             _conservation_result(
                 epoch,
@@ -422,7 +428,7 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
                 validator_quote.validator_reward_pool_ilc
                 + validator_quote.treasury_planned_burn_ilc
                 + validator_quote.treasury_remaining_budget_ilc,
-                validator_quote.decision_token,
+                validator_decision_token,
             )
         )
 

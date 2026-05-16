@@ -6,7 +6,13 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from typing import Any
 
-from .epoch_emission_runtime import ILC_QUANTUM, ISSUANCE_EPOCH_DURATION, VALIDATION_EPOCH_SECONDS
+from .epoch_emission_runtime import (
+    EPOCH_EMISSION_RUNTIME_VERSION,
+    ILC_QUANTUM,
+    ISSUANCE_EPOCH_DURATION,
+    VALIDATION_EPOCH_SECONDS,
+    build_epoch_emission_quote,
+)
 from .treasury_governance_runtime import (
     BOUNTY_CAP_FRACTION_OF_EPOCH_BUDGET,
     BURN_FLOOR_FRACTION,
@@ -19,7 +25,7 @@ from .treasury_governance_runtime import (
 
 
 VALIDATOR_REWARD_POOL_ROUTING_RUNTIME_VERSION = (
-    "validator_reward_pool_routing_runtime_1349.v0.1"
+    "validator_reward_pool_routing_runtime_1367.v0.2"
 )
 CDL_054_DEPENDENCY = (
     "cdl_054_validator_economic_incentive_framework_ratified_phase_491.v0.1"
@@ -37,6 +43,10 @@ PRODUCTION_VALIDATOR_REWARD_DISTRIBUTION_ACTIVATION_TOKEN = (
 NO_DIRECT_VALIDATOR_REWARD_STUB_FOUND_TOKEN = (
     "no_direct_validator_reward_stub_found_phase_1349"
 )
+TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN = (
+    "phase_1366_treasury_epoch_budget_binding_verified"
+)
+TREASURY_EPOCH_BUDGET_SOURCE_LABEL = "phase_1345_capped_epoch_emission_budget_ilc"
 
 EXPECTED_CDL_047_TREASURY_RUNTIME_TOKEN = (
     "cdl_047_treasury_governance_runtime_phase_1348.v0.1"
@@ -56,11 +66,15 @@ class EpochValidatorRewardPoolRoutingQuote:
     issuance_epoch: int
     issuance_epoch_duration: str
     validation_epoch_seconds: int
+    cumulative_issued_before_epoch_ilc: Decimal
     write_fee_burn_pool_ilc: Decimal
     validator_reward_fraction_of_write_fee_burn: Decimal
     validator_reward_pool_ilc: Decimal
     validator_reward_pool_label: str
     write_fee_burn_pool_label: str
+    treasury_epoch_budget_binding_token: str
+    treasury_epoch_budget_source_label: str
+    treasury_epoch_budget_source_runtime_version: str
     treasury_epoch_budget_ilc: Decimal
     treasury_bounty_cap_fraction: Decimal
     treasury_bounty_cap_ilc: Decimal
@@ -81,6 +95,9 @@ class EpochValidatorRewardPoolRoutingQuote:
             "cdl_047_treasury_runtime_token": self.cdl_047_treasury_runtime_token,
             "cdl_047_treasury_runtime_version": self.cdl_047_treasury_runtime_version,
             "cdl_054_dependency": self.cdl_054_dependency,
+            "cumulative_issued_before_epoch_ilc": _decimal_to_string(
+                self.cumulative_issued_before_epoch_ilc
+            ),
             "decision_token": self.decision_token,
             "issuance_epoch": self.issuance_epoch,
             "issuance_epoch_duration": self.issuance_epoch_duration,
@@ -98,7 +115,12 @@ class EpochValidatorRewardPoolRoutingQuote:
             ),
             "treasury_burn_floor_ilc": _decimal_to_string(self.treasury_burn_floor_ilc),
             "treasury_decision_token": self.treasury_decision_token,
+            "treasury_epoch_budget_binding_token": self.treasury_epoch_budget_binding_token,
             "treasury_epoch_budget_ilc": _decimal_to_string(self.treasury_epoch_budget_ilc),
+            "treasury_epoch_budget_source_label": self.treasury_epoch_budget_source_label,
+            "treasury_epoch_budget_source_runtime_version": (
+                self.treasury_epoch_budget_source_runtime_version
+            ),
             "treasury_planned_burn_ilc": _decimal_to_string(self.treasury_planned_burn_ilc),
             "treasury_remaining_budget_ilc": _decimal_to_string(
                 self.treasury_remaining_budget_ilc
@@ -171,7 +193,7 @@ def require_cdl_054_validator_reward_fraction(
 def build_validator_reward_pool_routing_quote(
     issuance_epoch: int,
     write_fee_burn_pool_ilc: Decimal | int | str,
-    treasury_epoch_budget_ilc: Decimal | int | str,
+    cumulative_issued_before_epoch_ilc: Decimal | int | str,
     treasury_planned_burn_ilc: Decimal | int | str,
     observed_velocity: Decimal | int | str,
     *,
@@ -182,9 +204,11 @@ def build_validator_reward_pool_routing_quote(
     write_fee_burn_pool = _quantize_ilc(
         _require_decimal_amount(write_fee_burn_pool_ilc, "write_fee_burn_pool_ilc")
     )
-    treasury_epoch_budget = _quantize_ilc(
-        _require_decimal_amount(treasury_epoch_budget_ilc, "treasury_epoch_budget_ilc")
+    emission_quote = build_epoch_emission_quote(
+        epoch,
+        cumulative_issued_before_epoch_ilc,
     )
+    treasury_epoch_budget = emission_quote.capped_epoch_budget_ilc
     treasury_planned_burn = _quantize_ilc(
         _require_decimal_amount(treasury_planned_burn_ilc, "treasury_planned_burn_ilc")
     )
@@ -208,11 +232,15 @@ def build_validator_reward_pool_routing_quote(
         issuance_epoch=epoch,
         issuance_epoch_duration=ISSUANCE_EPOCH_DURATION,
         validation_epoch_seconds=VALIDATION_EPOCH_SECONDS,
+        cumulative_issued_before_epoch_ilc=emission_quote.cumulative_issued_before_epoch_ilc,
         write_fee_burn_pool_ilc=write_fee_burn_pool,
         validator_reward_fraction_of_write_fee_burn=fraction,
         validator_reward_pool_ilc=validator_reward_pool,
         validator_reward_pool_label=VALIDATOR_REWARD_POOL_LABEL,
         write_fee_burn_pool_label=WRITE_FEE_BURN_POOL_LABEL,
+        treasury_epoch_budget_binding_token=TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN,
+        treasury_epoch_budget_source_label=TREASURY_EPOCH_BUDGET_SOURCE_LABEL,
+        treasury_epoch_budget_source_runtime_version=EPOCH_EMISSION_RUNTIME_VERSION,
         treasury_epoch_budget_ilc=treasury_quote.epoch_budget_ilc,
         treasury_bounty_cap_fraction=BOUNTY_CAP_FRACTION_OF_EPOCH_BUDGET,
         treasury_bounty_cap_ilc=treasury_quote.bounty_cap_ilc,
@@ -247,6 +275,8 @@ __all__ = [
     "EXPECTED_CDL_047_TREASURY_RUNTIME_TOKEN",
     "NO_DIRECT_VALIDATOR_REWARD_STUB_FOUND_TOKEN",
     "PRODUCTION_VALIDATOR_REWARD_DISTRIBUTION_ACTIVATION_TOKEN",
+    "TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN",
+    "TREASURY_EPOCH_BUDGET_SOURCE_LABEL",
     "VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN",
     "VALIDATOR_REWARD_FRACTION_OF_WRITE_FEE_BURN",
     "VALIDATOR_REWARD_POOL_LABEL",
