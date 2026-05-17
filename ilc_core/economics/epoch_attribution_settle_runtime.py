@@ -56,9 +56,13 @@ HCON02_VOTE_THRESHOLD_DENOMINATOR = 3       # Q2: exact 2/3 — integer arithmet
 
 _ZERO = Decimal("0")
 _PAYOUT_QUANTUM = Decimal("0.000000001")
+MAX_PAYOUT_QUANTIZE_ADJUSTED_EXPONENT = 18
+INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
 
 def _quantize_payout(amount: Decimal) -> Decimal:
+    if amount.adjusted() > MAX_PAYOUT_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount.quantize(_PAYOUT_QUANTUM, rounding=ROUND_DOWN)
 
 
@@ -142,10 +146,7 @@ class EjectedStakeTreasuryDistributionQuote:
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def _require_non_negative_int(value: object, error_token: str) -> int:
@@ -174,6 +175,8 @@ def _require_decimal_amount(
         raise ValueError(f"{field_name}_must_be_positive")
     if not positive and amount < _ZERO:
         raise ValueError(f"{field_name}_must_be_non_negative")
+    if amount.adjusted() > MAX_PAYOUT_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
 
 
@@ -364,6 +367,8 @@ def evaluate_ejected_stake_vote(
         or ejected_stake <= _ZERO
     ):
         raise ValueError("ejected_stake_must_be_positive_finite_decimal")
+    if ejected_stake.adjusted() > MAX_PAYOUT_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
 
     members = _normalize_member_stakes(remaining_member_stakes)
 

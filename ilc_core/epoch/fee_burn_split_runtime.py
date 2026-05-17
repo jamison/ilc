@@ -28,6 +28,8 @@ PRODUCTION_FEE_BURN_ACTIVATION_TOKEN = (
 FEE_BURN_RATIO = Decimal("0.10")
 GENESIS_BURN_POOL_LABEL = "genesis_burn_pool"
 POST_CDL_028_REMAINING_FEE_POOL_LABEL = "post_cdl_028_remaining_fee_pool"
+MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
+INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
 
 @dataclass(frozen=True)
@@ -81,18 +83,19 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
         raise ValueError(f"{field_name}_must_be_finite")
     if amount < Decimal("0"):
         raise ValueError(f"{field_name}_must_be_non_negative")
+    if amount.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
 
 
 def _quantize_ilc(value: Decimal) -> Decimal:
+    if value.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return value.quantize(ILC_QUANTUM, rounding=ROUND_DOWN)
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def require_cdl_028_fee_burn_ratio(value: Decimal | int | str = FEE_BURN_RATIO) -> Decimal:
