@@ -97,10 +97,7 @@ def _quantize_ilc(value: Decimal) -> Decimal:
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def halving_decay_ratio() -> Decimal:

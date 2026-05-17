@@ -34,6 +34,8 @@ BOUNTY_CAP_FRACTION_OF_EPOCH_BUDGET = Decimal("0.15")
 BURN_FLOOR_FRACTION = Decimal("0.05")
 VELOCITY_ALERT_FLOOR = Decimal("0.91")
 TREASURY_FRACTION_TOTAL_LIMIT = Decimal("1.00")
+MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
+INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
 
 @dataclass(frozen=True)
@@ -101,18 +103,19 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
         raise ValueError(f"{field_name}_must_be_finite")
     if amount < Decimal("0"):
         raise ValueError(f"{field_name}_must_be_non_negative")
+    if amount.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
 
 
 def _quantize_ilc(value: Decimal) -> Decimal:
+    if value.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return value.quantize(ILC_QUANTUM, rounding=ROUND_DOWN)
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def require_cdl_047_treasury_fractions(

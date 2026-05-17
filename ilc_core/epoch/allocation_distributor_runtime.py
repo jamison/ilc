@@ -77,6 +77,8 @@ GENESIS_OVERHEAD_POOL_LABEL = "genesis_overhead_pool"
 UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE = "upheld_refutation_recipients"
 PERFORMER_POOL_RESIDUAL_ROUTE = "performer_pool"
 GENESIS_RESIDUAL_ROUTE = "genesis"
+MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
+INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
 
 @dataclass(frozen=True)
@@ -172,6 +174,8 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
         raise ValueError(f"{field_name}_must_be_finite")
     if amount < Decimal("0"):
         raise ValueError(f"{field_name}_must_be_non_negative")
+    if amount.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
 
 
@@ -195,14 +199,13 @@ def _normalize_upheld_refutation_recipients(
 
 
 def _quantize_ilc(value: Decimal) -> Decimal:
+    if value.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return value.quantize(ILC_QUANTUM, rounding=ROUND_DOWN)
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def require_cdl_029_allocation_fractions(

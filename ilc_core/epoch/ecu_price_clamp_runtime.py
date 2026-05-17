@@ -38,6 +38,8 @@ EXPECTED_CDL_027_ISSUANCE_EPOCH_DURATION = "1_month"
 P_MIN = Decimal("0.75")
 P_MAX = Decimal("1.30")
 PRICE_CLAMP_WIDTH = Decimal("0.55")
+MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
+INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
 
 @dataclass(frozen=True)
@@ -99,18 +101,19 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
         raise ValueError("invalid_amount_non_finite")
     if amount <= Decimal("0"):
         raise ValueError(f"{field_name}_must_be_positive")
+    if amount.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
 
 
 def _quantize_price(value: Decimal) -> Decimal:
+    if value.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return value.quantize(ILC_QUANTUM, rounding=ROUND_DOWN)
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def require_cdl_027_schedule_dependency(

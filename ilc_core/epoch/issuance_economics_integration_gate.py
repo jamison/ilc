@@ -158,10 +158,7 @@ class IssuanceEconomicsIntegrationGateReport:
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def _conservation_result(

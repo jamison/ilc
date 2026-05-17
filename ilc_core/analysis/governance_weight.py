@@ -21,6 +21,7 @@ GOVERNANCE_WEIGHT_VOTE_SHARE_PRECISION_GAP_CLOSED_TOKEN = (
 ZERO = Decimal("0")
 ONE = Decimal("1")
 VOTE_SHARE_QUANTUM = Decimal("0.0000000000000000000000000001")
+QUALITY_SCORE_MAX = ONE
 
 
 class GovernanceWeightPolicy(TypedDict):
@@ -73,6 +74,13 @@ def _to_decimal(value: object, token: str) -> Decimal:
 def _to_non_negative_decimal(value: object, token: str) -> Decimal:
     number = _to_decimal(value, token)
     if number < ZERO:
+        raise GovernanceWeightError(token)
+    return number
+
+
+def _to_unit_interval_decimal(value: object, token: str) -> Decimal:
+    number = _to_non_negative_decimal(value, token)
+    if number > QUALITY_SCORE_MAX:
         raise GovernanceWeightError(token)
     return number
 
@@ -142,7 +150,7 @@ def _validate_input_row(row: Mapping[str, object]) -> GovernanceWeightInput:
             base_weight,
             "governance_weight_invalid_base_weight",
         ),
-        "quality_score": _to_non_negative_decimal(
+        "quality_score": _to_unit_interval_decimal(
             quality_score,
             "governance_weight_invalid_quality_score",
         ),
