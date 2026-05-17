@@ -48,3 +48,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0031](ADR_0031_Subgraph_Homomorphism_Query_Contract.md) | Subgraph Homomorphism Query Contract (gRPC EdgeRecord — pre-M-018 gate) | Accepted |
 | [ADR-0032](ADR_0032_Temporal_Hypergraph_Epoch_Stamped_Incidence.md) | Temporal Hypergraph Epoch-Stamped Incidence | Accepted |
 | [ADR-0033](ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md) | Star Map Homoiconic Epistemiological Entity | Accepted |
+| [ADR-0038](ADR_0038_Agent_Birth_Attestation.md) | Agent Birth Attestation | Accepted |
