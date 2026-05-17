@@ -16,10 +16,13 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import fcntl
+import threading
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Iterator, Mapping
 
 
 GENESIS_INTERVENTION_RUNTIME_VERSION = "genesis_intervention_runtime_1355.v0.1"
@@ -89,6 +92,8 @@ CDL_V6_EXTRAORDINARY_TRIGGER_TYPES = (
 )
 
 INTERVENTION_BRAKE_FIRE_COUNT = 0
+GENESIS_INTERVENTION_GUARDRAIL_LOCK_FILENAME = ".genesis_intervention_guardrail.lock"
+GENESIS_INTERVENTION_GUARDRAIL_THREAD_LOCK = threading.Lock()
 
 
 @dataclass(frozen=True)
@@ -321,6 +326,22 @@ def _append_invocation_audit_record(
     with path.open("a", encoding="utf-8") as handle:
         handle.write(audit_record.to_canonical_json())
         handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+@contextmanager
+def _genesis_intervention_guardrail_lock(counter_path: str | Path) -> Iterator[None]:
+    path = Path(counter_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = path.parent / GENESIS_INTERVENTION_GUARDRAIL_LOCK_FILENAME
+    with GENESIS_INTERVENTION_GUARDRAIL_THREAD_LOCK:
+        with lock_path.open("a", encoding="utf-8") as lock_handle:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 
 
 def _diagnostic_timestamp(value: str | None) -> str:
@@ -424,19 +445,20 @@ def record_genesis_intervention_guardrail_invocation(
     audit_log_path: str | Path,
     diagnostic_timestamp: str | None = None,
 ) -> GenesisInterventionAuditRecord:
-    state = read_genesis_intervention_counter(counter_path)
-    audit_record = build_genesis_intervention_audit_record(
-        request=request,
-        state=state,
-        diagnostic_timestamp=diagnostic_timestamp,
-    )
-    if audit_record.accepted:
-        next_state = _build_counter_state_after_acceptance(state, request)
-        write_genesis_intervention_counter_atomic(counter_path, next_state)
-        _append_invocation_audit_record(audit_log_path, audit_record)
-        return audit_record
+    with _genesis_intervention_guardrail_lock(counter_path):
+        state = read_genesis_intervention_counter(counter_path)
+        audit_record = build_genesis_intervention_audit_record(
+            request=request,
+            state=state,
+            diagnostic_timestamp=diagnostic_timestamp,
+        )
+        if audit_record.accepted:
+            next_state = _build_counter_state_after_acceptance(state, request)
+            write_genesis_intervention_counter_atomic(counter_path, next_state)
+            _append_invocation_audit_record(audit_log_path, audit_record)
+            return audit_record
 
-    _append_invocation_audit_record(audit_log_path, audit_record)
+        _append_invocation_audit_record(audit_log_path, audit_record)
     raise ValueError(audit_record.outcome_token)
 
 

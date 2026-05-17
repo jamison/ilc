@@ -151,10 +151,10 @@ def prune_lmdb_graph_tier_2_records(
     stopped_at_batch_cap = False
     planned_prune_keys: list[str] = []
 
-    with env.begin(write=True, db=db) as txn:
+    with env.begin(write=not dry_run, db=db) as txn:
         cursor = txn.cursor()
         for key, value in cursor:
-            if scanned >= batch_cap:
+            if planned_prune >= batch_cap:
                 stopped_at_batch_cap = True
                 break
 

@@ -54,6 +54,8 @@ EXPECTED_CDL_047_TREASURY_RUNTIME_TOKEN = (
 VALIDATOR_REWARD_FRACTION_OF_WRITE_FEE_BURN = Decimal("0.02")
 VALIDATOR_REWARD_POOL_LABEL = "validator_reward_pool"
 WRITE_FEE_BURN_POOL_LABEL = "write_fee_burn_pool"
+MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
+INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
 
 @dataclass(frozen=True)
@@ -162,18 +164,19 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
         raise ValueError("invalid_amount_non_finite")
     if amount < Decimal("0"):
         raise ValueError(f"{field_name}_must_be_non_negative")
+    if amount.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
 
 
 def _quantize_ilc(value: Decimal) -> Decimal:
+    if value.adjusted() > MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT:
+        raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return value.quantize(ILC_QUANTUM, rounding=ROUND_DOWN)
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    normalized = value.normalize()
-    if normalized == normalized.to_integral():
-        return format(normalized, "f")
-    return format(normalized, "f")
+    return format(value.normalize(), "f")
 
 
 def require_cdl_054_validator_reward_fraction(

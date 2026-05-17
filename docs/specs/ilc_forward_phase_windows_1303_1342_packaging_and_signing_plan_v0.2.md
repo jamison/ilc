@@ -661,6 +661,18 @@ Phase 1350 therefore adds a default-off production quote boundary around the
 already-ratified H-CON-02 evaluator. Production stake distribution remains
 inactive.
 
+**Phase 1348 execution token carry-forward:** Phase 1348 added
+`ilc_core/epoch/treasury_governance_runtime.py` and records
+`cdl_047_treasury_governance_runtime_phase_1348.v0.1`,
+`bounty_cap_0_15_b_e_runtime_phase_1348`,
+`burn_floor_0_05_runtime_phase_1348`,
+`velocity_alert_trigger_runtime_phase_1348`,
+`velocity_alert_floor_0_91_runtime_phase_1348`,
+`treasury_not_activated_phase_1348`,
+`phase_1366_soft_rc_eligible_true_value_path_activation_required`, and
+`no_direct_treasury_stub_found_phase_1348`. Production treasury behavior remains
+inactive.
+
 **Phase 1351 execution addendum:** Phase 1351 added
 `ilc_core/epoch/ecu_price_clamp_runtime.py` and records
 `cdl_030_ecu_price_clamp_runtime_phase_1351.v0.1`,
