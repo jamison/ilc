@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386a.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386b.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -105,6 +105,12 @@ gRPC server now uses tonic TLS identity, Python `build_secure_grpc_read_stub()` 
 TLS roots plus a receive-size channel cap, `GetEpochChain(0,0)` is reconciled at genesis,
 and hardening item 7 is closed by `get_epoch_chain_channel_limit_added_phase_1386a`.
 
+Phase 1386b addendum: ADR-0039 defines the validator endpoint registry. `QUIC_ENDPOINT`
+is an epoch-scoped signed edge on existing `agent_id` nodes; direct and CDL-078 relay
+forms are specified; endpoint validity is bound to CDL-068 topology epochs; and the
+read-only projection contract prohibits hardcoded production peer lists and independent
+write/update/set/insert/delete endpoint mutation paths.
+
 ## 5. Locked Phase Order
 
 | Order | Phase | Scope | Authority after Phase 1369 |
@@ -130,7 +136,7 @@ and hardening item 7 is closed by `get_epoch_chain_channel_limit_added_phase_138
 | 18a | 1385a | Spec D epoch-checkpoint SafetyNoDualCert (Strike Force) | COMPLETE; `safetynodualcert_spec_d_proven_epoch_checkpoint`; TLC 67M states exhaustive, no violations; closes Phase 1385 deferral. |
 | 19 | 1386 | Genesis validator bootstrap exception record | COMPLETE; SENSITIVE Genesis authority surface; records `genesis_validator_bootstrap_record_committed_phase_1386`, `genesis_controlled_single_custodian_bootstrap_exception_phase_1386`, `single_operator_compromise_resistance_not_confirmed_phase_1386`, and `production_split_custody_ceremony_required_before_mainnet_launch`; no split-custody claim, no private key material, no activation. |
 | 20 | 1386a | Production TLS gRPC path proof | COMPLETE; records `production_tls_grpc_path_proven_phase_1386a`, `epoch_0_sentinel_reconciliation_verified_phase_1386a`, and `get_epoch_chain_channel_limit_added_phase_1386a`; no production activation. |
-| 21 | 1386b | Validator endpoint registry ADR | NON-SENSITIVE ADR/spec; defines epoch-scoped `QUIC_ENDPOINT` graph edges and projection contract. |
+| 21 | 1386b | Validator endpoint registry ADR | COMPLETE; records `validator_endpoint_registry_adr_ratified_phase_1386b`, `quic_endpoint_epoch_scoped_signed_edge_defined`, `read_only_projection_contract_defined_phase_1386b`, and `no_hardcoded_peer_list_production_activation_path_phase_1386b`; no runtime or CDL mutation. |
 | 22 | 1386c | Persistent QUIC connectivity proof | SENSITIVE consensus connectivity proof with direct + relay fallback. |
 | 23 | 1387 | Pre-activation hardening gate | SENSITIVE gate; fails closed if audit/key/connectivity/hardening prerequisites are incomplete. |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | SENSITIVE gate/runtime phase; blocks Phase 1388/1389 unless public-only economics and accepted-functionality coverage are proven. |
@@ -194,6 +200,7 @@ following is discovered:
 - A phase treats private, semi-private, or operator-local advisory scores as protocol ECU, public reputation, public settlement, public corroboration, or public claimability.
 - A phase treats Phase 1360 Fix2 as durable peer-to-peer BFT proof rather than injected-checkpoint/local-commit proof.
 - A phase treats public gRPC serving or production validator deployment as activated by Phase 1386a.
+- A phase introduces a hardcoded peer list or mutable endpoint registry in a production activation path after ADR-0039.
 - A phase opens production minting, production mining, live ECU transfer routing, public RC publication, release signing, public source publication, or value-path activation without a later explicit gate.
 - A phase claims `soft_rc_eligible=true` without re-running and passing the full gate after Phase 1367 evidence.
 - A phase treats a commercial signed audit report as required after Phase 1384 rather than the project-authority security disposition gate.

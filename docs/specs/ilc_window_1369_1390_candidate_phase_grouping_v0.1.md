@@ -61,9 +61,9 @@ external audit, and full public RC activation window**. Its primary obligations 
     via insecure channel; Phase 1386a proves the TLS `build_secure_grpc_read_stub()`
     path against a TLS-configured validator endpoint, verifies epoch-0 sentinel
     reconciliation, and closes hardening item 7.
-14. **Validator endpoint registry ADR (Phase 1386b)** and **persistent QUIC connectivity
-    proof (Phase 1386c)** — carried forward from Phase 1360 Fix2a; durable per-topology-
-    epoch sessions not yet proven.
+14. **Validator endpoint registry ADR (Phase 1386b)** — COMPLETE by ADR-0039.
+    **Persistent QUIC connectivity proof (Phase 1386c)** remains next; durable
+    per-topology-epoch sessions are not yet proven.
 15. **Phase 1369 Fix1 — numeric hardening pass** — 8 runtime hardening items from the
     Window 1343-1368 joint audit are carried forward. Items 1-6 and 8 (Decimal magnitude
     escape, genesis counter TOCTOU, governance weight bounds, audit log non-atomic,
@@ -329,7 +329,7 @@ Notes:
 | 18 | 1385 | TLA+ SafetyNoDualCert disposition | Governance review | COMPLETE: defer-with-authority; owned-object Spec B proof preserved, epoch-checkpoint/shared-object proof deferred; closed by Phase 1385a Spec D |
 | 19 | 1386 | Genesis validator bootstrap exception record | Constitutional | COMPLETE; Genesis-controlled single-custodian pre-RC/testnet exception; single-operator-compromise resistance is not confirmed |
 | 20 | 1386a | Production TLS gRPC path proof | Runtime | COMPLETE; TLS path proven; epoch-0 sentinel reconciled; channel receive limit added |
-| 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | NON-SENSITIVE |
+| 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | COMPLETE; ADR-0039 accepted; endpoint registry/projection contract defined |
 | 22 | 1386c | Persistent QUIC connectivity proof | Runtime | **SENSITIVE** |
 | 23 | 1387 | Pre-activation hardening gate | Gate | **SENSITIVE** |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | **SENSITIVE** |
@@ -754,6 +754,11 @@ Commit subject: `phase 1386a production tls grpc path proof`
 
 **NON-SENSITIVE** — ADR document only; no CDL mutation.
 
+Status: COMPLETE. ADR-0039 records `validator_endpoint_registry_adr_ratified_phase_1386b`,
+`quic_endpoint_epoch_scoped_signed_edge_defined`,
+`read_only_projection_contract_defined_phase_1386b`, and
+`no_hardcoded_peer_list_production_activation_path_phase_1386b`.
+
 Deliverables: ADR document defining:
 - `QUIC_ENDPOINT` as an epoch-scoped signed edge on existing `agent_id` nodes
 - Direct endpoint form and CDL-078 relay endpoint form
@@ -923,7 +928,7 @@ Phase 1369 sequence lock
     → Phase 1385 TLA+ disposition  [complete; deferral closed by Phase 1385a Spec D]
     → Phase 1386 bootstrap exception record
         → Phase 1386a production TLS gRPC  [complete]
-            → Phase 1386b endpoint registry ADR
+            → Phase 1386b endpoint registry ADR  [complete]
                 → Phase 1386c persistent QUIC
                     → Phase 1387 hardening gate
                         → Phase 1387a accepted ADR/CDL coverage + public-economics firewall
