@@ -70,37 +70,45 @@ class Governance:
         }
 
         # --- Backlog / hotspot pricing parameters -----------------------
+        # MEDIUM-011 fix: all economic parameters stored as Decimal, not float.
+        # Float intermediate arithmetic accumulates IEEE 754 drift before the
+        # final Decimal conversion in fee computation; violates ILC §3 coding standard.
         backlog_cfg = cfg.get("backlog_hotspot_pricing", {}) or {}
         # Enable/disable congestion pricing at this layer.
         self.backlog_enabled: bool = bool(backlog_cfg.get("enabled", True))
 
         # How strongly backlog length increases price (per unit of normalized
         # backlog). This is a soft gain, not a hard cap.
-        self.backlog_gain: float = float(backlog_cfg.get("backlog_gain", 0.05))
+        self.backlog_gain: Decimal = _to_decimal(
+            backlog_cfg.get("backlog_gain", "0.05"), "governance_backlog_gain_invalid"
+        )
 
-        # How strongly recent volume volatility affects price. Kept, but for
-        # the MVP we treat this as a mild secondary factor.
-        self.vol_price_gain: float = float(backlog_cfg.get("vol_price_gain", 0.2))
+        # How strongly recent volume volatility affects price.
+        self.vol_price_gain: Decimal = _to_decimal(
+            backlog_cfg.get("vol_price_gain", "0.2"), "governance_vol_price_gain_invalid"
+        )
 
         # Maximum congestion multiplier (e.g. 1.5 = at most +50% over base).
-        self.price_max: float = float(backlog_cfg.get("price_max", 1.5))
+        self.price_max: Decimal = _to_decimal(
+            backlog_cfg.get("price_max", "1.5"), "governance_price_max_invalid"
+        )
 
         # How quickly congestion decays per finalized task.
-        self.decay_per_finalized: float = float(backlog_cfg.get("decay_per_finalized", 0.5))
+        self.decay_per_finalized: Decimal = _to_decimal(
+            backlog_cfg.get("decay_per_finalized", "0.5"), "governance_decay_per_finalized_invalid"
+        )
 
         # --- Hardware capability baseline -------------------------------
-        # "Genesis" median benchmark potential. This anchors the hardware
-        # scaling factor. If the network becomes 10x faster, we *reduce* the
-        # ECU-per-task baseline so that real-world cost stays roughly stable.
         hw_cfg = cfg.get("hardware", {})
-        self.genesis_median_potential: float = float(hw_cfg.get("genesis_median_potential", 0.1))
-        self.current_median_potential: float = self.genesis_median_potential
+        self.genesis_median_potential: Decimal = _to_decimal(
+            hw_cfg.get("genesis_median_potential", "0.1"),
+            "governance_genesis_median_potential_invalid",
+        )
+        self.current_median_potential: Decimal = self.genesis_median_potential
 
         # --- Internal state for congestion ------------------------------
-        # We keep a smoothed congestion score per epoch.
-        self._congestion_score: float = 0.0
-        # Simple EMA smoothing factor for congestion.
-        self._congestion_alpha: float = 0.5
+        self._congestion_score: Decimal = Decimal("0")
+        self._congestion_alpha: Decimal = Decimal("0.5")
 
     # ------------------------------------------------------------------
     # Hardware / benchmark updates
@@ -129,10 +137,10 @@ class Governance:
         if m <= 0:
             return
 
-        self.current_median_potential = float(m)
+        self.current_median_potential = _to_decimal(str(m), "governance_median_potential_invalid")
 
     @property
-    def hardware_scale(self) -> float:
+    def hardware_scale(self) -> Decimal:
         """
         Returns a scaling factor in [0.25, 4.0] that adjusts ECU base cost
         downward when hardware improves.
@@ -140,11 +148,12 @@ class Governance:
         If the network becomes 4x faster (median_potential 4x genesis),
         hardware_scale will be ~1/4, making base ECU per task cheaper.
         """
-        ratio = self.current_median_potential / max(1e-9, self.genesis_median_potential)
+        _epsilon = Decimal("1E-9")
+        ratio = self.current_median_potential / max(_epsilon, self.genesis_median_potential)
         # Invert: faster hardware -> smaller ECU cost.
-        inv = 1.0 / max(ratio, 1e-9)
+        inv = Decimal("1") / max(ratio, _epsilon)
         # Clamp to avoid wild swings.
-        return max(0.25, min(inv, 4.0))
+        return max(Decimal("0.25"), min(inv, Decimal("4.0")))
 
     # ------------------------------------------------------------------
     # Backlog / congestion updates
@@ -161,19 +170,19 @@ class Governance:
         - Longer backlog => higher congestion.
         - More tasks finalized => reduces congestion.
         """
-        backlog_term = float(metrics.backlog_len)
-        relief_term = float(metrics.finalized_last_epoch) * self.decay_per_finalized
+        backlog_term = Decimal(metrics.backlog_len)
+        relief_term = Decimal(metrics.finalized_last_epoch) * self.decay_per_finalized
 
-        raw_score = max(0.0, backlog_term - relief_term)
+        raw_score = max(Decimal("0"), backlog_term - relief_term)
 
         # EMA smoothing.
         self._congestion_score = (
             self._congestion_alpha * raw_score
-            + (1.0 - self._congestion_alpha) * self._congestion_score
+            + (Decimal("1") - self._congestion_alpha) * self._congestion_score
         )
 
     @property
-    def congestion_multiplier(self) -> float:
+    def congestion_multiplier(self) -> Decimal:
         """
         Convert internal congestion score into a multiplicative price factor.
 
@@ -186,10 +195,10 @@ class Governance:
         """
         score = self._congestion_score
         # Soft normalization: treat score directly, but cap it.
-        normalized = min(score, 10.0)
-        raw_factor = 1.0 + self.backlog_gain * normalized
+        normalized = min(score, Decimal("10"))
+        raw_factor = Decimal("1") + self.backlog_gain * normalized
         # Final cap.
-        return max(1.0, min(raw_factor, self.price_max))
+        return max(Decimal("1"), min(raw_factor, self.price_max))
 
     # ------------------------------------------------------------------
     # Fee computation
@@ -218,11 +227,12 @@ class Governance:
         base = self.ecu_base_costs.get(task_type, Decimal("0.01"))
 
         # Apply hardware scaling: faster hardware => smaller base.
-        scaled = base * Decimal(str(self.hardware_scale))
+        # hardware_scale and congestion_multiplier now return Decimal directly.
+        scaled = base * self.hardware_scale
 
         # Apply congestion multiplier if enabled.
         if self.backlog_enabled:
-            scaled *= Decimal(str(self.congestion_multiplier))
+            scaled *= self.congestion_multiplier
 
         # Round to a stable number of decimals for on-chain friendliness.
         return scaled.quantize(Decimal("0.00000001"))
