@@ -3,7 +3,7 @@
 **Version:** v1.1
 **Produced:** 2026-05-08
 **Phase:** 1242
-**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1383 addendum
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1384 addendum
 **Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
 
 `launch_roadmap_v1_1_published_phase_1242`
@@ -53,6 +53,9 @@
 `cdl_009_fork_legitimacy_ux_phase_1383.v0.1`
 `cdl_009_signature_badge_schema_implemented`
 `cdl_009_eligibility_rules_contract_committed`
+`security_review_scope_recorded_phase_1384`
+`audit_scope_bft_safety_economic_surfaces_high_001`
+`phase_1387_requires_project_authority_security_disposition`
 
 ---
 
@@ -3118,6 +3121,34 @@ public confidential messaging, or public confidential coordination serving.
 Phase 1308, Phase 1309, Phase 1310, Phase 1311, Phase 1312, Phase 1313,
 Phase 1314, Phase 1315, and Phase 1316 have now completed. Window 1303-1316 is
 closed with carry-forward.
+
+## 62. Phase 1384 Security Review Scope Addendum
+
+Phase 1384 records the security review scope after explicit `GO Phase 1384`:
+
+```text
+security_review_scope_recorded_phase_1384
+audit_scope_bft_safety_economic_surfaces_high_001
+phase_1387_requires_project_authority_security_disposition
+```
+
+Roadmap impact:
+
+- The current review path is AI-assisted structured security review plus open
+  source community security contributions and internal ILC security review.
+- Commercial external audit firm engagement is not required and is not planned
+  under current funding and anonymity constraints.
+- The Phase 1387 gate requires a project-authority security disposition document
+  for every known HIGH-severity finding in the scoped surfaces.
+- The scoped surfaces are `ilc_consensus/` BFT safety, `ilc_core/` economic
+  surfaces, and HIGH-001 defense review.
+- The Phase 1384 scope record is not a Phase 1387 pass condition by itself.
+
+Phase 1384 does not conduct the AI-assisted review, close any HIGH-severity
+finding, engage a commercial audit firm, mutate runtime source, mutate CDLs,
+activate public serving, activate public claimability, activate wallet/ECU/ILC
+value paths, publish a public RC, sign release artifacts, approve counsel/legal
+conclusions, or claim sender privacy.
 
 ## 62. Phase 1316 Window 1303-1316 Closure Implementation Audit Addendum
 
