@@ -331,7 +331,7 @@ Notes:
 | 20 | 1386a | Production TLS gRPC path proof | Runtime | COMPLETE; TLS path proven; epoch-0 sentinel reconciled; channel receive limit added |
 | 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | COMPLETE; ADR-0039 accepted; endpoint registry/projection contract defined |
 | 22 | 1386c | Persistent QUIC connectivity proof | Runtime | COMPLETE; projection-backed persistent sessions implemented in `ilc_consensus/`; direct QUIC and CDL-078 relay fallback proven; activation path requires `endpoint_projection_path` instead of hardcoded config peers |
-| 23 | 1387 | Pre-activation hardening gate | Gate | **SENSITIVE** |
+| 23 | 1387 | Pre-activation hardening gate | Gate | COMPLETE: FAILED CLOSED; missing project-authority HIGH-finding disposition |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | **SENSITIVE** |
 | 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | **SENSITIVE** |
 | 26 | 1389 | Public claimability / API activation gate | Gate | **SENSITIVE** |
@@ -816,7 +816,10 @@ Gate passes only if ALL of the following are confirmed:
 Gate fails closed if any predecessor phase is incomplete or if any known HIGH-severity
 finding is missing a project-authority security disposition.
 
-Record: `pre_activation_hardening_gate_pass_phase_1387` (or explicitly `gate_blocked_reason=...`)
+Phase 1387 result: `pre_activation_hardening_gate_failed_phase_1387`;
+`gate_failed_reason=project_authority_security_disposition_missing`. Phase 1388
+must not proceed until a remediation phase creates the missing project-authority
+security disposition artifact and the gate is re-run or superseded with a pass.
 
 Commit subject: `phase 1387 pre-activation hardening gate`
 
