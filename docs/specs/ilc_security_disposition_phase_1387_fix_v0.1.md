@@ -1,11 +1,11 @@
-# ILC Project-Authority Security Disposition — Phase 1387 Fix v0.2
+# ILC Project-Authority Security Disposition — Phase 1387 Fix v0.3
 
 **Phase:** 1387-Fix  
 **Date:** 2026-05-18  
-**Status:** DISPOSITION COMPLETE (v0.2 — extended to cover network.rs and node.rs)  
+**Status:** DISPOSITION COMPLETE (v0.3 — extended to engine.py, governance.py, ledger_export.py, config.rs, epoch_snapshot_runtime.py, canon_export_format.py; anti-equivocation design reviewed)  
 **Authority:** Project-authority AI-assisted structured security review + direct code audit  
 **Review method:** Deterministic direct-read audit of every named source file; no memory-only claims  
-**Supersedes:** v0.1 (committed `4ebf12f5`) — extended with full network.rs and node.rs audit  
+**Supersedes:** v0.2 (committed `fd99b5be`)  
 **Disposition token:** `project_authority_security_disposition_complete_phase_1387_fix`
 
 ---
@@ -20,6 +20,12 @@ medium_003_disposition_accepted_with_carry_forward
 medium_004_disposition_accepted_with_carry_forward
 medium_005_disposition_accepted_with_carry_forward
 medium_006_disposition_accepted_with_carry_forward
+medium_007_disposition_accepted_with_carry_forward
+medium_008_disposition_accepted_with_carry_forward
+medium_009_disposition_accepted_with_carry_forward
+medium_010_disposition_accepted_with_carry_forward
+medium_011_disposition_accepted_with_carry_forward
+medium_012_disposition_accepted_with_carry_forward
 all_known_high_findings_dispositioned_phase_1387_fix
 ```
 
@@ -54,6 +60,12 @@ Every known HIGH-severity finding is explicitly dispositioned below as closed, a
 | `ilc_core/epoch/epoch_boundary_witness_runtime.py` | 56 | blocking authority state |
 | `ilc_core/ledger/cdl048_conversion_sweeper_runtime.py` | 1107 | ECU-to-ILC dry-run conservation, activation flags |
 | `ilc_core/ledger/claimability_proof_binding_runtime.py` | 670 | proof-binding integrity, activation flags |
+| `ilc_consensus/src/config.rs` | ~420 | cert filename parsing, ValidatorID mapping |
+| `ilc_core/consensus/engine.py` | ~180 | slash application, stake arithmetic |
+| `ilc_core/consensus/governance.py` | ~240 | fee computation, congestion pricing parameters |
+| `ilc_core/ledger/ledger_export.py` | ~130 | ledger JSON export, atomic write |
+| `ilc_core/epoch/epoch_snapshot_runtime.py` | ~150 | snapshot hashing, JSON determinism |
+| `ilc_core/ledger/canon_export_format.py` | ~80 | canon export value normalization |
 | `docs/phases/phase_1359_high_001_two_layer_defense_walkthrough.md` | 151 | HIGH-001 defense evidence |
 
 ---
@@ -298,6 +310,71 @@ The `handle_missing_cert_sync` message handler returns `Ok(())` without performi
 
 **Disposition:** LOW-006 — accepted. Carry-forward: must be implemented before a network that includes heterogeneous or unreliable validators can be operated safely.
 
+### 4.10 Anti-Equivocation Design Analysis (node.rs — owned-object fast path)
+
+**Source:** `ilc_consensus/src/node.rs` lines 548–560, 702–708, 299–320
+
+The owned-object conflict detection in `handle_broadcast_honest` (lines 549–560) checks whether the `in_flight` table already has an entry for the same `object_ref`. If the existing entry differs in `to`, `amount_micro_ecu`, or `transfer_class`, the second transfer is dropped with a log line. This is the **ephemeral early-rejection cache**.
+
+However:
+1. After a certificate is assembled and broadcast (quorum reached), the `in_flight` entry is immediately removed at line 706.
+2. The TTL sweep (line 311) evicts uncertified entries after 60 seconds.
+3. After a restart, the `in_flight` table is empty.
+
+In all three cases, a subsequently submitted conflicting transfer (same `object_ref.version`, different `to` or `amount`) will be accepted into `in_flight` and acked by honest validators who have evicted or never seen the first cert.
+
+The code comment at lines 702–705 explicitly documents this design:
+> "The LMDB version lock is the durable equivocation barrier; in_flight is an ephemeral early-rejection cache only and must not retain entries after settlement."
+
+When a second conflicting cert is assembled and reaches `balance_store::execute_transfer`, the LMDB version lock catches it: `sender_bal.version != version_attempt` → `ConflictingTransfer`. Execution-level double-spend is prevented.
+
+**Severity assessment:** Codex classifies this as HIGH. This review assesses it as MEDIUM, with explicit rationale for the disagreement:
+- **Why Codex says HIGH:** After TTL/restart, a Byzantine sender can cause honest validators to assemble a second conflicting cert. In classical owned-object BFT, the goal is that no two conflicting *certs* can both achieve quorum — not just that no two conflicting *executions* succeed. ILC currently provides only execution-level (not cert-level) equivocation resistance.
+- **Why this review assesses MEDIUM:** The code design is explicitly documented and intentional. Execution-level safety (no double-spend) is maintained by LMDB. The consequence of a second cert being assembled is a `ConflictingTransfer` error at every execution site — noisy but not a safety failure. Cert-level equivocation resistance would require persisting conflict records across restarts (e.g., writing a "conflict tombstone" to LMDB).
+
+**Disposition:** MEDIUM-007 — accepted with carry-forward. Carry-forward: before dynamic validator admission or adversarial testnet exposure, add LMDB-persisted conflict tombstones for each `object_ref.version` that has been signed. This upgrades the guarantee from execution-level to cert-level equivocation resistance. Does not block Phase 1388 under static genesis network and gated activation constraints.
+
+---
+
+### 4.11 config.rs, engine.py, governance.py, ledger_export.py, epoch_snapshot_runtime.py, canon_export_format.py
+
+**Source:** Direct reads of each file (see §2 table).
+
+**config.rs — hardcoded ValidatorID mapping (MEDIUM-009):**
+`parse_validator_cert_filename` at line 396:
+```rust
+if name == "client_cert.der" {
+    return Some(5);
+}
+```
+Any cert file named `client_cert.der` in the validator cert directory is mapped to ValidatorID 5, bypassing the `validator_{id}_cert.der` naming convention enforced for all other validators. This is either a test artifact (should be removed) or a deliberate special case (should be documented and protected with an explicit access policy). As-is, an operator can claim ValidatorID 5 slot by placing any cert under the name `client_cert.der` without using the standard naming scheme.
+
+**engine.py — slash underflow (MEDIUM-010):**
+`_engine_apply_slash` at lines 94–98:
+```python
+current = _engine_coerce_decimal(node_stakes.get(target_id, Decimal("0")), ...)
+new_balance = current - stake_amount
+node_stakes[target_id] = new_balance
+```
+If `target_id` is not in `node_stakes`, `current = Decimal("0")` and `new_balance = -stake_amount`. If `current < stake_amount`, `new_balance` is negative. There is no `max(Decimal("0"), ...)` floor guard. The coerce call validates type but not bounds. Negative stake balances can propagate to downstream reads of `node_stakes`.
+
+**governance.py — float economic parameters (MEDIUM-011):**
+Lines 79–89 define `backlog_gain`, `vol_price_gain`, `price_max`, `decay_per_finalized`, `genesis_median_potential`, `current_median_potential`, `_congestion_score`, and `_congestion_alpha` all as Python `float`. These feed fee computation at line 221: `scaled *= Decimal(str(self.congestion_multiplier))`. The float-to-str-to-Decimal conversion avoids direct float arithmetic in the final fee result, but the intermediate float arithmetic (e.g., EMA smoothing: `alpha * new + (1-alpha) * old`) may accumulate IEEE 754 drift before the Decimal conversion step. This violates ILC coding security standard §3 (Float Ban for ECU/Balance/Reward values).
+
+**ledger_export.py — in-place record mutation and non-atomic write (MEDIUM-012):**
+Line 104: `record["distribution_check"] = normalize_json_scalars(check_result)` mutates the `epoch_records` dict entry in-place. If `record` is shared state, this mutation is visible to concurrent readers before the file write completes. Line 109: `json.dump(data, f, ...)` writes directly to the target file without a tempfile + `os.replace()` atomic pattern. A crash mid-write produces a corrupt output file. Additionally, `json.dump` here lacks `allow_nan=False` — if any value in `data` is a Python `float` NaN or Infinity, it will be serialized as a bare `NaN` / `Infinity` literal (technically invalid JSON, and non-deterministic across parsers). The `normalize_json_scalars` helper may sanitize this, but it is not the json.dump boundary.
+
+**epoch_snapshot_runtime.py — _stable_json lacks allow_nan=False (LOW-009):**
+`_stable_json` at line 71:
+```python
+def _stable_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+```
+Used in `_stable_sha256` for snapshot hash computation. No `allow_nan=False`. If a NaN or Infinity value reaches this path (e.g., from a float field in the snapshot), Python's `json.dumps` serializes it as a bare `NaN` literal (technically invalid JSON). This makes the SHA-256 hash non-portable: some JSON parsers will refuse to parse the input, and the canonical hash value would depend on whether the data was pre-sanitized upstream.
+
+**canon_export_format.py — finite float pass-through (LOW confirmed):**
+`_normalize_export_value` at line 40 accepts finite `float` values via `exact_to_canonical_string`. Non-finite floats raise `LedgerExportContractError`. Finite float pass-through is consistent with LOW-001 context but worth recording explicitly: float values in the canon export are permitted if finite, which means float precision drift could affect canonical hash outputs. This is the same root cause as governance.py (MEDIUM-011) and ecu_active_layer_runtime.py (LOW-001 / MEDIUM upgrade).
+
 ---
 
 ## 5. Medium-Severity Findings — Disposition
@@ -344,6 +421,49 @@ The `handle_missing_cert_sync` message handler returns `Ok(())` without performi
 **Mitigating factors:** Internal rotation paths use `rebuild_with`. Genesis init supplies f from governed genesis config. No attacker-controlled call path to `::new` exists in current code.  
 **Disposition:** **ACCEPTED** with carry-forward. `ValidatorSet::new` should enforce `f == (n-1)/3` or reject values where `f < (n-1)/3`. Hardening required before dynamic admission.
 
+### MEDIUM-007: Anti-equivocation in node.rs is ephemeral (cert-level, not execution-level)
+
+**Surface:** `ilc_consensus/src/node.rs` lines 548–560, 702–708, 299–320  
+**Finding:** See §4.10. The `in_flight` conflict cache is cleared after cert assembly and by 60s TTL. After eviction or restart, honest validators will re-accept and re-ack a conflicting transfer for the same `object_ref.version`, potentially assembling a second conflicting cert. Execution-level double-spend is prevented by LMDB version lock. Cert-level equivocation resistance is absent.  
+**Codex classification:** HIGH. This review classifies as MEDIUM — see §4.10 for full rationale.  
+**Mitigating factors:** LMDB version lock is the durable barrier. Code explicitly documents this design. Genesis network has controlled validator set and low adversarial exposure.  
+**Disposition:** **ACCEPTED** with carry-forward. Carry-forward: add LMDB-persisted conflict tombstones (per `object_ref.version`) to upgrade to cert-level equivocation resistance before adversarial testnet or dynamic admission.
+
+### MEDIUM-008: persistent_quic.rs endpoint edge validation is structural only — no cryptographic verification
+
+**Surface:** `ilc_consensus/src/persistent_quic.rs::validate_signed_endpoint_edge` lines 164–194  
+**Finding:** Validates `topology_epoch` match, and non-empty `protocol_version`, `server_name`, `signer_agent_id`, `signature_ref` fields — string presence checks only. No cryptographic verification that `signature_ref` was actually produced by the key corresponding to `signer_agent_id`, or that `signer_agent_id` is a member of the active ValidatorSet. A party able to inject or write an endpoint projection document can supply fabricated validator endpoints with arbitrary `signer_agent_id` and `signature_ref` values.  
+**Mitigating factors:** Endpoint projection documents are loaded from the local filesystem, not from the network directly. An attacker would need filesystem write access to the validator host to inject a malicious projection file.  
+**Disposition:** **ACCEPTED** with carry-forward. Full cryptographic verification of endpoint edge signatures (verifying `signature_ref` against `signer_agent_id`'s public key and confirming active ValidatorSet membership) must be implemented before endpoint projection data is accepted from any external source.
+
+### MEDIUM-009: config.rs hardcodes client_cert.der → ValidatorID(5)
+
+**Surface:** `ilc_consensus/src/config.rs::parse_validator_cert_filename` line 396  
+**Finding:** See §4.11. `"client_cert.der"` is unconditionally mapped to `ValidatorID(5)`, bypassing the `validator_{id}_cert.der` naming convention. An operator placing any cert under this name claims the ValidatorID 5 slot without using the standard naming scheme.  
+**Mitigating factors:** This is almost certainly a test artifact from genesis config setup. The genesis validator set is fixed and operator-controlled; no external party has filesystem access.  
+**Disposition:** **ACCEPTED** with carry-forward. This hardcoded mapping should be removed before public validator software distribution. If a `client_cert.der` file is needed for testing, it should use the `validator_5_cert.der` naming scheme like all other validators.
+
+### MEDIUM-010: engine.py _engine_apply_slash allows negative stake balances
+
+**Surface:** `ilc_core/consensus/engine.py::_engine_apply_slash` lines 94–98  
+**Finding:** See §4.11. `new_balance = current - stake_amount` has no floor guard. Produces negative stake balances when `current < stake_amount`.  
+**Mitigating factors:** `engine.py` is the legacy Python consensus engine, not the active Rust BFT path. It is not wired to any production settlement or ECU-issuance output in the current gated state.  
+**Disposition:** **ACCEPTED** with carry-forward. Fix: `new_balance = max(Decimal("0"), current - stake_amount)`. Required before legacy engine output is connected to any economic settlement path.
+
+### MEDIUM-011: governance.py stores economic parameters as Python float
+
+**Surface:** `ilc_core/consensus/governance.py` lines 79–103  
+**Finding:** See §4.11. `backlog_gain`, `vol_price_gain`, `price_max`, `decay_per_finalized`, `genesis_median_potential`, `_congestion_score`, `_congestion_alpha` all stored as `float`. Float intermediate arithmetic accumulates IEEE 754 drift before the final `Decimal(str(...))` conversion in fee computation. Violates ILC coding security standard §3.  
+**Mitigating factors:** governance.py is the legacy Python governance module, not connected to protocol ECU or ILC settlement in the current gated state.  
+**Disposition:** **ACCEPTED** with carry-forward. All economic parameters must be migrated to `Decimal` before governance fee output feeds any production settlement path.
+
+### MEDIUM-012: ledger_export.py writes non-atomically and lacks allow_nan=False
+
+**Surface:** `ilc_core/ledger/ledger_export.py` lines 96–109  
+**Finding:** See §4.11. Mutates `record["distribution_check"]` in-place, then writes directly to target path with `json.dump` without atomic rename and without `allow_nan=False`. Violates ILC coding security standards §3 (float NaN) and §9 (atomic writes).  
+**Mitigating factors:** `ledger_export.py` produces diagnostic/reporting output, not protocol-canonical artifacts. The `normalize_json_scalars` helper may sanitize floats upstream.  
+**Disposition:** **ACCEPTED** with carry-forward. Fix: (1) use `tempfile.mkstemp` + `os.replace` pattern; (2) add `allow_nan=False` to `json.dump`; (3) avoid mutating input records in-place (build a new output dict). Required before any export artifact is treated as a canonical protocol output.
+
 ---
 
 ## 6. Low-Severity Observations
@@ -357,6 +477,9 @@ The `handle_missing_cert_sync` message handler returns `Ok(())` without performi
 | LOW-005 | `node.rs` row-5 eprintln! leaks TransferClass | `eprintln!("[row5_privacy_lane] ... {}", routing_token)` logs the full routing token including `Contribution`/`Payment`/`Payment_Express` TransferClass. AgentID is correctly redacted; TransferClass is not. | ACCEPTED. eprintln! is stderr-only; production operators typically isolate this. Carry-forward: redact or remove before public validator distribution, consistent with HIGH-001 log policy. |
 | LOW-006 | `node.rs` MissingCertSync is a scaffold stub | `handle_missing_cert_sync` returns `Ok(())` without recovery. SEC-003 offline cert recovery deferred to M-011. | ACCEPTED. Liveness concern only, not safety. Carry-forward: must implement before operating with heterogeneous or unreliable validator sets. |
 | LOW-007 | `ecu_active_layer_runtime.py` earmark expiry boundary inconsistency | `earmark_accept` and `earmark_deliver` use `int(epoch) > record.expiry_epoch` (allow at expiry epoch); `process_epoch_boundary` uses `int(commit_epoch) >= record.expiry_epoch` (expire at boundary epoch). An earmark that is accepted at its expiry epoch is immediately swept by the boundary processor in the same epoch. | ACCEPTED. The accept→immediate-expiry sequence still does not create value from nothing: the earmark is created, accepted, and swept in one epoch. No double-spend path identified. Carry-forward: normalize both comparisons to `>=` for predictability. |
+| LOW-008 | `epoch_settlement.rs::list_committed_epochs` unbounded Vec | Full LMDB epoch cursor materialized into a `Vec<u64>` on every call. Used by M-015 epoch sync protocol. For a long-running network with many committed epochs, this allocation is proportional to total epoch history. | ACCEPTED. Not a safety concern; a liveness/resource concern. Carry-forward: cap output or use streaming response for M-015 sync before exposing to external peers. |
+| LOW-009 | `epoch_snapshot_runtime.py::_stable_json` lacks `allow_nan=False` | `json.dumps(value, sort_keys=True, separators=(",", ":"))` — no `allow_nan=False`. If a NaN or Infinity reaches this path, Python serializes it as a bare `NaN` literal (invalid JSON), making SHA-256 hashes non-portable across JSON parsers. | ACCEPTED. Snapshot inputs should not contain floats (all values normalized upstream); this is a defense-in-depth gap. Carry-forward: add `allow_nan=False` to all `json.dumps` producing hash inputs. |
+| LOW-001 (upgraded) | `ecu_active_layer_runtime.py::_to_decimal` float acceptance | Originally classified LOW. Codex re-classifies as MEDIUM given ILC coding security standard §3 (Float Ban). The `_to_decimal` function at line 62 accepts `float` via `Decimal(str(value))`, while `exact_numeric.to_decimal` rejects float entirely. Same root cause as governance.py MEDIUM-011 and canon_export_format.py float pass-through. | ACCEPTED with MEDIUM-class carry-forward per MEDIUM-011 disposition. Float-accepting input paths should be hardened to reject float before any production settlement path is activated. |
 
 ---
 
@@ -401,11 +524,14 @@ The following surfaces within the Phase 1384 scope were not directly read in thi
 - `ilc_core/economics/reward.py`, `entropy.py` — reward distribution internals
 - `ilc_core/epoch/treasury_governance_runtime.py` — treasury P_e governor
 
-Note: `ilc_consensus/src/network.rs` (684 lines) and `ilc_consensus/src/node.rs` (1491 lines) were fully audited in v0.2 (see §§4.8–4.9). They were listed as unaudited in v0.1.
+Note: `ilc_consensus/src/network.rs`, `ilc_consensus/src/node.rs`, `ilc_consensus/src/config.rs`, `ilc_consensus/src/persistent_quic.rs`, `ilc_core/consensus/engine.py`, `ilc_core/consensus/governance.py`, `ilc_core/ledger/ledger_export.py`, `ilc_core/epoch/epoch_snapshot_runtime.py`, and `ilc_core/ledger/canon_export_format.py` were fully audited in v0.2/v0.3 (see §§4.8–4.11).
 
-**Disposition for remaining unaudited surfaces:** These surfaces are bounded by the gate conditions already verified in the Phase 1384–1387 series (TLS gRPC, endpoint ADR, persistent QUIC, no hardcoded peer list). The production value path (ECU mint, ILC settlement, wallet activation) remains gated off via `production_minting_activated=False`, `public_claimability_activated=False`, and `ledger_write_authorized=False` across all economic surfaces. The unaudited surfaces do not have a path to activate any value-path output in the current gated state.
+**Remaining unaudited surfaces:**
+- `ilc_core/governance/` — governance weight computation
+- `ilc_core/economics/reward.py`, `entropy.py` — reward distribution internals
+- `ilc_core/epoch/treasury_governance_runtime.py` — treasury P_e governor
 
-A future pre-mainnet review should extend direct audit coverage to the governance, reward, and treasury modules before any production value-path activation.
+**Disposition for remaining unaudited surfaces:** The production value path (ECU mint, ILC settlement, wallet activation) remains gated off via `production_minting_activated=False`, `public_claimability_activated=False`, and `ledger_write_authorized=False`. A future pre-mainnet review should extend coverage to governance weight, reward, and treasury modules before any production value-path activation.
 
 ---
 
@@ -427,10 +553,18 @@ All known MEDIUM-severity findings are accepted with bounded carry-forward autho
 - MEDIUM-004: NodeRunner.f stale after ValidatorSet rotation (FIXME(M-5)) — accepted, must resolve before dynamic admission enabled
 - MEDIUM-005: certs[0] no bounds check in authenticate_peer_tls — accepted, should harden before production deployment
 - MEDIUM-006: ValidatorSet::new accepts undersafe caller-supplied f — accepted, must harden before dynamic admission enabled
+- MEDIUM-007: Anti-equivocation is ephemeral (cert-level, not execution-level) — accepted; LMDB version lock provides execution safety; cert-level tombstones required before adversarial testnet
+- MEDIUM-008: persistent_quic.rs endpoint edge validation is structural only (no crypto verification) — accepted; full crypto verification required before endpoint projection data accepted from external sources
+- MEDIUM-009: config.rs hardcodes client_cert.der → ValidatorID(5) — test artifact; must remove before public validator distribution
+- MEDIUM-010: engine.py slash underflow allows negative stake — accepted; legacy path; floor guard required before production connection
+- MEDIUM-011: governance.py float economic parameters — accepted; legacy path; Decimal migration required before production connection
+- MEDIUM-012: ledger_export.py non-atomic write + no allow_nan=False — accepted; requires atomic write pattern + allow_nan before treated as canonical output
 
-All LOW findings (LOW-001 through LOW-007) are accepted with bounded carry-forward as documented in §6.
+All LOW findings (LOW-001/upgraded, LOW-002 through LOW-009) are accepted with bounded carry-forward as documented in §6.
 
-The codebase reviewed does not contain any unaddressed HIGH-severity finding that blocks Phase 1388 or Phase 1389 proceeding under their existing gate conditions. The newly identified MEDIUM-004, MEDIUM-005, and MEDIUM-006 findings are accepted with carry-forward; none blocks Phase 1388 under the static genesis network and gated activation constraints currently in force.
+The codebase reviewed does not contain any unaddressed HIGH-severity finding that blocks Phase 1388 or Phase 1389 proceeding under their existing gate conditions. All MEDIUM findings are accepted with carry-forward; none blocks Phase 1388 under the static genesis network, legacy-path isolation, and gated activation constraints currently in force.
+
+**Disagreement record:** Codex classifies MEDIUM-007 (anti-equivocation) as HIGH. This review classifies it as MEDIUM because: (a) execution-level double-spend safety is maintained by LMDB version lock; (b) the code explicitly documents this design; (c) cert-level equivocation under the static genesis network requires coordinated validator restart or TTL timing, not a simple broadcast attack. The disagreement is recorded and the carry-forward is the same regardless of classification: LMDB tombstone persistence required before adversarial exposure.
 
 ---
 
@@ -446,4 +580,5 @@ Phase 1387 can be re-run or superseded by a passing gate after this document is 
 
 **Revision log:**
 - v0.1 (`4ebf12f5`): Initial disposition — HIGH-001, HIGH-002, MEDIUM-001–003, LOW-001–003. Listed network.rs and node.rs as unaudited.
-- v0.2 (this commit): Extended to full audit of network.rs (684 lines) and node.rs (1491 lines). Added MEDIUM-004 (NodeRunner.f stale), MEDIUM-005 (certs[0] bounds), MEDIUM-006 (ValidatorSet::new undersafe f), LOW-004 (cert epoch timing), LOW-005 (routing_token TransferClass leak), LOW-006 (MissingCertSync stub), LOW-007 (earmark expiry boundary). All new findings accepted with carry-forward. HIGH/MEDIUM-001–003 dispositions unchanged.
+- v0.2 (`fd99b5be`): Extended to full audit of network.rs (684 lines) and node.rs (1491 lines). Added MEDIUM-004 (NodeRunner.f stale), MEDIUM-005 (certs[0] bounds), MEDIUM-006 (ValidatorSet::new undersafe f), LOW-004 (cert epoch timing), LOW-005 (routing_token TransferClass leak), LOW-006 (MissingCertSync stub), LOW-007 (earmark expiry boundary).
+- v0.3 (this commit): Extended to config.rs, engine.py, governance.py, ledger_export.py, epoch_snapshot_runtime.py, canon_export_format.py, persistent_quic.rs anti-equivocation design. Added MEDIUM-007 (ephemeral anti-equivocation; Codex HIGH, this review MEDIUM — disagreement recorded), MEDIUM-008 (endpoint edge no crypto verification), MEDIUM-009 (hardcoded ValidatorID 5), MEDIUM-010 (slash underflow), MEDIUM-011 (governance float), MEDIUM-012 (non-atomic ledger export), LOW-008 (unbounded epoch Vec), LOW-009 (allow_nan=False gap in snapshot hash), LOW-001 upgraded to MEDIUM-class carry-forward.
