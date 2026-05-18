@@ -51,12 +51,12 @@ external audit, and full public RC activation window**. Its primary obligations 
     is required at Phase 1387 for every known HIGH finding.
 11. **TLA+ SafetyNoDualCert disposition** — M-022 open item #1. Phase 1385
     records `tla_plus_safetynodualcert_disposed_phase_1385` and
-    `safetynodualcert_deferred_with_authority_phase_1385`: owned-object Spec B
-    remains bounded TLC evidence, while epoch-checkpoint/shared-object dual-cert
-    safety remains deferred to Spec D or equivalent future formal-methods work.
-12. **Multi-operator genesis key ceremony** — M-022 open item #7. Distribute genesis
-    validator keys across at least two operators. Required before any production
-    genesis-signed artifact.
+    `safetynodualcert_deferred_with_authority_phase_1385`; Phase 1385a closes the
+    deferral with Spec D and `safetynodualcert_spec_d_proven_epoch_checkpoint`.
+12. **Genesis validator bootstrap record** — M-022 open item #7. Phase 1386 records
+    a Genesis-controlled single-custodian pre-RC/testnet exception. Production
+    split custody remains required before mainnet launch, not before public RC in
+    Window 1369-1390.
 13. **Production TLS gRPC proof (Phase 1386a)** — Phase 1360 proved gRPC via insecure
     channel. TLS-configured validator path not yet exercised. Required before Phase 1387.
 14. **Validator endpoint registry ADR (Phase 1386b)** and **persistent QUIC connectivity
@@ -180,11 +180,11 @@ No tail-slot conditional phases follow Phase 1390.
   documentation/governance-only, explicitly deferred outside public RC, or a blocker
 - `public_rc_gate_phase_1389_required_all_six_blockers_closed` — Phase 1389 re-executes Phase 1336 gate
 
-### 3.2 Deferred governance (scheduled this window, not constitutionally obligated but blocking Phase 1387/1389)
+### 3.2 Deferred governance (scheduled this window; some items feed Phase 1387/1389)
 
 - Security review scope record — Phase 1384; project-authority security disposition required at Phase 1387
 - TLA+ SafetyNoDualCert disposition — Phase 1385
-- Multi-operator genesis key ceremony — Phase 1386
+- Genesis validator bootstrap exception record — Phase 1386; production split custody is a mainnet-launch carry-forward
 - Production TLS gRPC path proof — Phase 1386a; also verifies epoch-0 sentinel reconciliation
 - Validator endpoint registry ADR — Phase 1386b
 - Persistent QUIC connectivity proof — Phase 1386c
@@ -324,8 +324,8 @@ Notes:
 | 15 | 1382 | CDL-006 challenge node runtime + tests | Constitutional / Runtime | **SENSITIVE** |
 | 16 | 1383 | CDL-009 fork legitimacy UX | Constitutional / Runtime | **SENSITIVE** |
 | 17 | 1384 | External security audit engagement | Governance review | NON-SENSITIVE |
-| 18 | 1385 | TLA+ SafetyNoDualCert disposition | Governance review | COMPLETE: defer-with-authority; owned-object Spec B proof preserved, epoch-checkpoint/shared-object proof deferred |
-| 19 | 1386 | Multi-operator genesis key ceremony | Constitutional | **SENSITIVE** |
+| 18 | 1385 | TLA+ SafetyNoDualCert disposition | Governance review | COMPLETE: defer-with-authority; owned-object Spec B proof preserved, epoch-checkpoint/shared-object proof deferred; closed by Phase 1385a Spec D |
+| 19 | 1386 | Genesis validator bootstrap exception record | Constitutional | COMPLETE; Genesis-controlled single-custodian pre-RC/testnet exception; single-operator-compromise resistance is not confirmed |
 | 20 | 1386a | Production TLS gRPC path proof | Runtime | NON-SENSITIVE |
 | 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | NON-SENSITIVE |
 | 22 | 1386c | Persistent QUIC connectivity proof | Runtime | **SENSITIVE** |
@@ -377,7 +377,7 @@ precondition from Phase 1387a. It fails closed if any of the following is not co
 - **Phase 1381** — CDL-006 challenge node spec; governance completeness spec on constitutional surface
 - **Phase 1382** — CDL-006 challenge node runtime + tests; production governance runtime
 - **Phase 1383** — CDL-009 fork legitimacy UX; production governance UX surface
-- **Phase 1386** — multi-operator genesis key ceremony; Genesis authority surface
+- **Phase 1386** — genesis validator bootstrap exception record; Genesis authority surface
 - **Phase 1386c** — persistent QUIC connectivity proof; `ilc_consensus/` Rust source change
 - **Phase 1387** — pre-activation hardening gate; always SENSITIVE
 - **Phase 1387a** — accepted ADR/CDL coverage audit and public-economics firewall; always SENSITIVE
@@ -708,23 +708,24 @@ Record: `safetynodualcert_deferred_with_authority_phase_1385`
 
 Commit subject: `phase 1385 tla+ safetynodualcert disposition`
 
-### Phase 1386 — Multi-operator genesis key ceremony
+### Phase 1386 — Genesis validator bootstrap record
 
 **SENSITIVE** — requires `GO Phase 1386`.
 
 Deliverables:
-- Genesis validator keys distributed across at least 2 operators
-- Production ceremony record at `docs/specs/ilc_genesis_key_ceremony_1386_v0.1.md`
+- Genesis-controlled single-custodian pre-RC/testnet exception recorded
+- Bootstrap record at `docs/specs/ilc_genesis_validator_bootstrap_record_1386_v0.1.md`
 
-Ceremony record must include: number of operators, ceremony mode, key distribution
-verification evidence, and confirmation that no single-operator compromise recovers
-the full genesis validator key set.
+Record must state that split custody is not claimed, single-operator-compromise
+resistance is not confirmed, no private key material is committed, and production
+split custody remains required before mainnet launch.
 
-This addresses M-022 open item #7. Required before any production genesis-signed artifact.
+This addresses M-022 open item #7 for the current public-RC window. It does not
+authorize production genesis-signed artifacts.
 
-Record: `multi_operator_genesis_key_ceremony_complete_phase_1386`
+Record: `genesis_validator_bootstrap_record_committed_phase_1386`
 
-Commit subject: `phase 1386 multi-operator genesis key ceremony`
+Commit subject: `phase 1386 genesis validator bootstrap record`
 
 ### Phase 1386a — Production TLS gRPC path proof
 
@@ -913,8 +914,8 @@ Phase 1369 sequence lock
         → Phase 1382 CDL-006 runtime
     → Phase 1383 CDL-009 UX  [complete; CLI/operator only]
     → Phase 1384 security review scope  [parallel; disposition gate required at 1387]
-    → Phase 1385 TLA+ disposition  [complete; epoch-checkpoint/shared-object proof deferred with authority]
-    → Phase 1386 key ceremony
+    → Phase 1385 TLA+ disposition  [complete; deferral closed by Phase 1385a Spec D]
+    → Phase 1386 bootstrap exception record
         → Phase 1386a production TLS gRPC
             → Phase 1386b endpoint registry ADR
                 → Phase 1386c persistent QUIC
