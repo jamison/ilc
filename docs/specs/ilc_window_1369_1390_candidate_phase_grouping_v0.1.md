@@ -49,8 +49,11 @@ external audit, and full public RC activation window**. Its primary obligations 
     engagement is not required. Covers `ilc_consensus/` BFT safety, `ilc_core/`
     economic surfaces, and HIGH-001 defense review. Project-authority security disposition
     is required at Phase 1387 for every known HIGH finding.
-11. **TLA+ SafetyNoDualCert disposition** — M-022 open item #1. Empirical M-019
-    confirmation is current coverage. Must be formally disposed before Phase 1389.
+11. **TLA+ SafetyNoDualCert disposition** — M-022 open item #1. Phase 1385
+    records `tla_plus_safetynodualcert_disposed_phase_1385` and
+    `safetynodualcert_deferred_with_authority_phase_1385`: owned-object Spec B
+    remains bounded TLC evidence, while epoch-checkpoint/shared-object dual-cert
+    safety remains deferred to Spec D or equivalent future formal-methods work.
 12. **Multi-operator genesis key ceremony** — M-022 open item #7. Distribute genesis
     validator keys across at least two operators. Required before any production
     genesis-signed artifact.
@@ -321,7 +324,7 @@ Notes:
 | 15 | 1382 | CDL-006 challenge node runtime + tests | Constitutional / Runtime | **SENSITIVE** |
 | 16 | 1383 | CDL-009 fork legitimacy UX | Constitutional / Runtime | **SENSITIVE** |
 | 17 | 1384 | External security audit engagement | Governance review | NON-SENSITIVE |
-| 18 | 1385 | TLA+ SafetyNoDualCert disposition | Governance review | NON-SENSITIVE |
+| 18 | 1385 | TLA+ SafetyNoDualCert disposition | Governance review | COMPLETE: defer-with-authority; owned-object Spec B proof preserved, epoch-checkpoint/shared-object proof deferred |
 | 19 | 1386 | Multi-operator genesis key ceremony | Constitutional | **SENSITIVE** |
 | 20 | 1386a | Production TLS gRPC path proof | Runtime | NON-SENSITIVE |
 | 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | NON-SENSITIVE |
@@ -695,12 +698,13 @@ Commit subject: `phase 1384 security review scope record`
 
 Deliverables: disposition document at `docs/specs/ilc_tla_plus_safetynodualcert_disposition_1385_v0.1.md`.
 
-The document must record one of:
-- (a) Formal `SafetyNoDualCert` proof completed, with proof artifact path
-- (b) Explicit governance decision to defer, with rationale, bounded carry-forward authority,
-  and record that M-019 empirical confirmation is current coverage and its scope limitations
+Status: COMPLETE. Phase 1385 selects explicit governance deferral with rationale,
+bounded carry-forward authority, M-019 empirical coverage limitations, and a scope split:
+owned-object Spec B `SafetyNoDualCert` has bounded TLC evidence; epoch-checkpoint/shared-object
+dual-cert safety remains deferred to Spec D or equivalent future formal-methods work.
 
 Record: `tla_plus_safetynodualcert_disposed_phase_1385`
+Record: `safetynodualcert_deferred_with_authority_phase_1385`
 
 Commit subject: `phase 1385 tla+ safetynodualcert disposition`
 
@@ -909,7 +913,7 @@ Phase 1369 sequence lock
         → Phase 1382 CDL-006 runtime
     → Phase 1383 CDL-009 UX  [complete; CLI/operator only]
     → Phase 1384 security review scope  [parallel; disposition gate required at 1387]
-    → Phase 1385 TLA+ disposition
+    → Phase 1385 TLA+ disposition  [complete; epoch-checkpoint/shared-object proof deferred with authority]
     → Phase 1386 key ceremony
         → Phase 1386a production TLS gRPC
             → Phase 1386b endpoint registry ADR
