@@ -23,7 +23,8 @@ GOV-A with a missing component is a gap.
 
 > **WARNING — living document:** This map was generated from a point-in-time scan.
 > Update it when new CDL/ADR phases ratify, or when runtime implementations land.
-> Do not treat it as authoritative for phases beyond 1336 without re-verifying.
+> Phase 1380 updated the CDL-048/CDL-088 and ADR-0031 rows only; other rows
+> should still be re-verified before use.
 
 ---
 
@@ -44,10 +45,10 @@ GOV-A with a missing component is a gap.
 | Bootstrap & genesis | CDL-022, 040, 073, 079 | All | — |
 | Reputation & decay | CDL-V1, CDL-013 | CDL-V1, CDL-013 | H11 Decimal rewrite complete; production governance/reputation activation remains gated |
 | Storage & schema | CDL-020, 023, 043, 044, 064, 071 | 020, 023, 064, 071 | CDL-043/044 partial |
-| Claimability & conversion | CDL-048, CDL-088 | Partial (CDL-048 skeleton) | CDL-088 not opened |
+| Claimability & conversion | CDL-048, CDL-088 | Partial (CDL-048 skeleton + Phase 1380 dry-run quote) | CDL-088 ratified; public claimability and live value-path activation still gated |
 | Release & packaging | CDL-086, 087 | Partial | Public serving gated |
 | Sovereign substrate | ADR-0028 | `ilc_consensus/` (M-series Rust crate) | **PARTIAL** — M-series complete; `ilc_core/` production bridge missing (Phases 1358–1360) |
-| Sidecar query | ADR-0031 | Partial | Many query types NotImplementedError |
+| Sidecar query | ADR-0031 | Locked local query types complete | No mutation authority or public serving |
 | **V-series (constitutional cluster)** | CDL-V1 through CDL-V7 | V1, V2, V3, V7 full; V5 GOV-A | V4=GOV-B (intentional, procedural); **V6=GOV-B (gap — no enforcement code for 3-lifetime cap)** |
 | **Founder/governance cluster** | CDL-003, 004, 005, 006, 008, 009, 010, 015 | GOV-A or GOV-C (partial) | CDL-006 challenge node spec unbuilt; CDL-009 fork UX unbuilt; CDL-005 preconditions CDL-025–031 which are all NONE |
 
@@ -184,8 +185,8 @@ GOV-A with a missing component is a gap.
 
 | CDL | Topic | Status | Runtime file(s) | Key notes |
 |-----|-------|--------|-----------------|-----------|
-| CDL-048 | ECU mandatory conversion deadline | **PARTIAL** | `ilc_core/ledger/cdl048_conversion_sweeper_runtime.py` | Conversion skeleton + lot accounting implemented. Public claimability activation explicitly blocked. Full public path blocked until CDL-088 ratified. |
-| CDL-088 | Public claimability authority | **NOT OPENED** | — | CDL-088 has not been opened. Phase 1349 in Window 1343+ is the opening phase. `no_cdl_088_opening` enforced in release gates. |
+| CDL-048 | ECU mandatory conversion deadline | **PARTIAL** | `ilc_core/ledger/cdl048_conversion_sweeper_runtime.py` | Conversion skeleton + lot accounting implemented; Phase 1380 adds gate-closed dry-run quote wiring with exact Decimal `P_e` conversion and wire-level double-entry conservation proof. Public claimability and live value-path activation remain blocked. Tokens: `cdl_048_dry_run_wiring_phase_1380`, `cdl_048_not_activated_phase_1380`, `gate_closed_state_confirmed_phase_1380`, `double_entry_conservation_proven_wire_level_phase_1380`. |
+| CDL-088 | Public claimability authority | **GOV-B / RATIFIED** | `docs/specs/ilc_cdl_088_ratification_evidence_1376_v0.1.md` | Ratified Phase 1376 as authority only. Public claimability, verifier API, claim endpoint, wallet actions, ECU minting, ILC settlement, and value-path behavior remain disabled until later activation gates. |
 
 ### Early Foundations (CDL-001 through CDL-033)
 

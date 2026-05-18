@@ -443,8 +443,9 @@ ecu_credit_creation_must_be_consensus_epoch_settled_not_wallet_mutation
 ### Gap 13 - ECU-to-ILC Settlement Execution Runtime and Claimability
 
 **Status:** Open; Phase 1274 conversion-sweeper runtime skeleton, Phase 1275
-local proof binding, and Phase 1305 offline/local verifier sidecar substrate
-recorded. Public-RC claimability API/verifier serving authority remains open.
+local proof binding, Phase 1305 offline/local verifier sidecar substrate, and
+Phase 1380 gate-closed dry-run quote wiring recorded. Public-RC claimability
+API/verifier serving authority remains open.
 
 Internal conversion runtime and public claimability substrate are distinct.
 Final public RC requires public claimability for the selected OpenClaw/NemoClaw
@@ -467,6 +468,10 @@ cdl048_conversion_sweeper_runtime_skeleton_phase_1274.v0.1
 conversion_sweeper_no_public_claimability_activation_phase_1274
 ecu_lot_deadline_epoch_enforcement_recorded_phase_1274
 wallet_withdrawal_transfer_spend_still_blocked_phase_1274
+cdl_048_dry_run_wiring_phase_1380
+cdl_048_not_activated_phase_1380
+gate_closed_state_confirmed_phase_1380
+double_entry_conservation_proven_wire_level_phase_1380
 claimability_proof_binding_runtime_boundary_phase_1275.v0.1
 settled_root_wallet_root_receipt_binding_recorded_phase_1275
 non_loopback_claimability_api_still_blocked_phase_1275
@@ -1024,6 +1029,30 @@ Roadmap impact:
   routed to Phase 1275 and later.
 - Public claimability runtime, wallet withdrawal/transfer/spend, ECU minting,
   and ILC settlement remain blocked.
+
+## 19a. Phase 1380 CDL-048 Dry-Run Wiring Addendum
+
+Phase 1380 recorded the gate-closed CDL-048 ECU-to-ILC dry-run quote path:
+
+```text
+cdl_048_dry_run_wiring_phase_1380
+cdl_048_not_activated_phase_1380
+gate_closed_state_confirmed_phase_1380
+double_entry_conservation_proven_wire_level_phase_1380
+```
+
+Roadmap impact:
+
+- The internal public-RC-excluded conversion sweeper helper now has a dry-run
+  quote path for open ECU lots.
+- The quote binds the Phase 1351 CDL-030 `P_e` clamp runtime, computes exact
+  Decimal ECU debit and ILC credit legs, and proves zero conservation delta at
+  wire level.
+- The quote does not mutate sweeper state: before/after state roots remain
+  identical.
+- Live conversion activation, public claimability, wallet withdrawal, wallet
+  transfer, wallet spend, ECU minting, ILC settlement, and value-path activation
+  remain blocked until later gates.
 
 Public RC remains blocked after Phase 1274:
 
