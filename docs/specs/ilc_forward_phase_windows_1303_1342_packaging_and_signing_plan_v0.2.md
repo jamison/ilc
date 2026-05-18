@@ -857,7 +857,7 @@ and expanded with CDL-006/009, external audit, TLA+ disposition, and key ceremon
 | 1375 | CDL-088 deliberation/prelock: bounded public claimability condition, proof bundle, reciprocal identity/proof interlock, reciprocal formula deferral, ECU-escrow boundary, public-only economics claimability boundary, public verifier API prerequisites, and ratification-vs-activation split | CDL-088 | COMPLETE: phase-close commit `287cbcf5`; records `cdl_088_prelock_committed_phase_1375`, `cdl_088_not_ratified_phase_1375`, and `cdl_088_scope_constants_locked_phase_1375`; CDL-088 remains open/not ratified; no CDL register mutation, runtime change, public claimability, public verifier API, or claim endpoint activation |
 | 1376 | CDL-088 ratification: ratify bounded public claimability authority, proof bundle, reciprocal identity/proof interlock, reciprocal formula deferral, conditional ECU-escrow boundary, public-only economics claimability boundary, public verifier API prerequisites, ratification-vs-activation split, and default-closed claim endpoint rule | CDL-088 | COMPLETE: CDL-only register commit `3d8ce11e`; records `cdl_088_ratified_phase_1376`, `cdl_088_public_claimability_ratification_evidence_committed`, and `cdl_088_historical_hardening_phase_1374_ref_asserted`; no runtime change; no public claimability, public verifier API, claim endpoint, wallet, ECU, ILC, value-path, public RC, or public launch activation; Phase 1377 next; Phase 1380 requires 1373+1376 both complete before dry-run wiring; Phase 1389 remains the first possible public claimability activation gate |
 | 1377 | Replay/nullifier + duplicate-claim registry policy: defines replay as active public claim material reuse; defines `claim_nullifier_v1`, `claim_nullifier_registry_v1`, issuance-epoch expiry, and duplicate-claim rejection at public API admission before verifier or economic processing | Replay/nullifier policy | COMPLETE: phase-close commit `4f9715c6`; records `replay_nullifier_policy_committed_phase_1377`, `nullifier_epoch_bounded_expiry_policy_defined`, `duplicate_claim_rejection_policy_defined`, and `claim_endpoint_not_activated_phase_1377`; policy-only, no runtime change, no CDL mutation, no claim endpoint or public claimability activation; Phase 1378 next; Phase 1389 must still verify implementation/registry evidence before activation |
-| 1378 | Legacy `/v1/public/*` FastAPI route cleanup: remove or replace all routes flagged Phase 1301; prove no public-labeled route exists outside authorized public verifier surface | Legacy FastAPI routes | Mechanical fix; SENSITIVE because public-facing server |
+| 1378 | Legacy `/v1/public/*` FastAPI route cleanup: removed all Phase 1301 flagged `/v1/public/*` route handlers from `ilc_core/server.py`; underlying local runtimes remain local substrates only; default FastAPI app registers no `/v1/public/*` routes | Legacy FastAPI routes | COMPLETE: phase-close commit pending; records `legacy_public_labeled_fastapi_routes_cleaned_phase_1378` and `no_unauthorized_public_labeled_route_exists_phase_1378`; no public claimability, public verifier API, claim endpoint, wallet, ECU, ILC, value-path, public RC, or public launch activation; Phase 1379 next |
 | 1379 | ADR-0031 sidecar query runtime completeness: close `NotImplementedError` for all query types in `sidecar_query_runtime.py` | ADR-0031 partial | SENSITIVE; required for sidecar completeness |
 | 1380 | CDL-048 ECU-to-ILC conversion path dry-run wiring: wire sweeper runtime in gate-closed state (no live activation); prove ECU→ILC flow semantics and double-entry correctness; actual value-path activation gated behind Phase 1387 hardening gate and Phase 1388 | CDL-048 dry-run | SENSITIVE; no live value-path activation in this phase |
 | 1381 | CDL-006 challenge node spec: challenge record schema, multi-body (3-body) quorum logic, audit path writer, spec document (`challenge_node_runtime.py` stub) | CDL-006 (spec unbuilt) | SENSITIVE; governance completeness; moves from prior 1391+ long-range bucket |
@@ -1208,14 +1208,16 @@ phase assignment inside Window 1330-1342:
 | Genesis-rooted agent birth attestation spec does not exist | Phase 1323 report; Window 1317-1329 handoff §7 |
 | Identity bootstrap ADR/CDL not drafted | CDL-069 note; Phase 1323 Fix3; forward plan §3 |
 | Replay/nullifier + duplicate-claim registry policy unwritten | Phase 1306; carried through Phase 1329 |
-| Legacy `/v1/public/*` FastAPI routes not cleaned up | Phase 1301 (`legacy_public_labeled_fastapi_routes_carry_forward_phase_1301`) |
+| Legacy `/v1/public/*` FastAPI routes not cleaned up | CLOSED in Phase 1378 (`legacy_public_labeled_fastapi_routes_cleaned_phase_1378`) |
 | Counsel clearance for public verifier API surface | Provisional only; CDL-086 C1–C5 instruments pending |
 
-The FastAPI route cleanup (Phase 1378) is a mechanical fix, but all governance
-blockers (CDL-088, agent birth attestation ADR, identity bootstrap CDL, replay/
-nullifier policy, counsel clearance) require governance decisions, new specs, or
-counsel engagement before activation is possible. Window 1369+ is the correct
-venue for all of them.
+The FastAPI route cleanup (Phase 1378) is complete. Remaining pre-Phase-1389
+blockers include counsel clearance for the public verifier API surface,
+Phase 1387/1387a hardening and accepted ADR/CDL/public-economics coverage,
+implementation or registry evidence for replay/nullifier and duplicate-claim
+enforcement, and the explicit Phase 1389 activation gate. Phase 1378 does not
+authorize public claimability, public endpoint activation, value-path
+activation, public RC publication, or public launch.
 
 ## 6. Non-Claims
 

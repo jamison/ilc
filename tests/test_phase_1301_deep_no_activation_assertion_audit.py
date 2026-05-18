@@ -76,11 +76,12 @@ def test_phase_1301_discovered_legacy_public_routes_are_recorded_as_blockers() -
         '@router.get("/v1/public/receipts")',
         '@router.get("/v1/public/wallet/{agent_id}/status")',
     ):
-        assert route in server
+        assert route not in server
 
     assert "app = create_app()" in asgi
     assert "exclude, replace, or explicitly gate" in spec
     assert "not as public-RC activation authority" in spec
+    assert "legacy_public_labeled_fastapi_routes_cleaned_phase_1378" in read(STATUS)
 
 
 def test_phase_1301_runtime_helpers_remain_internal_or_declarative() -> None:
@@ -148,28 +149,31 @@ def test_phase_1301_records_no_activation_boundary() -> None:
             assert phrase in compact
 
 
-def test_phase_1301_frontier_docs_advance_to_1302_without_public_rc_authority() -> None:
+def test_phase_1301_no_activation_record_survives_current_frontier_advance() -> None:
     planning = read(PLANNING)
     capsule = read(CAPSULE)
     roadmap = read(ROADMAP)
     status = read(STATUS)
 
-    assert "Window 1289-1302 is OPEN through Phase 1301" in planning
-    assert "Window 1289-1302 is open through Phase 1301" in capsule
-    assert "Window 1289-1302 OPEN through Phase 1301" in roadmap
-    assert "Phase 1302 is sensitive" in planning
-    assert "Phase 1302 is sensitive" in capsule
-    assert "Phase 1302 is sensitive" in roadmap
+    assert "Window 1369-1390 is OPEN through Phase 1378" in planning
+    assert "Window 1289-1302 is closed through Phase 1302" in capsule
+    assert "public_rc_final_status_recorded_phase_1342" in roadmap
+    assert "public_rc_final_status=not_published_blocked_with_findings" in planning
+    assert "legacy_public_labeled_fastapi_routes_cleaned_phase_1378" in planning
+    assert "public claimability activation" in planning
     assert "## Phase 1301" in status
     assert "Phase 1302 - Window 1289-1302 closure gate" in status
 
 
-def test_phase_1301_does_not_mutate_cdl_register_or_open_cdl088() -> None:
+def test_phase_1301_did_not_mutate_cdl_register_or_open_cdl088() -> None:
     cdl = read(CDL_REGISTER)
     spec = read(SPEC)
+    cdl_088_rows = [line for line in cdl.splitlines() if line.startswith("| CDL-088 |")]
 
     assert "deep_no_activation_assertion_audit_phase_1301.v0.1" not in cdl
-    assert "| CDL-088 |" not in cdl
+    assert cdl_088_rows
+    assert all("phase 1301" not in row.lower() for row in cdl_088_rows)
+    assert all("Phase 1301" not in row for row in cdl_088_rows)
     assert "CDL mutation" in spec
     assert "CDL-088 opening" in spec
 

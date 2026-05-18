@@ -4,7 +4,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
 from ilc_core.server import create_app
@@ -130,26 +129,24 @@ def test_runtime_doc_exists_and_contains_required_headings_and_tokens() -> None:
         assert token in text
 
 
-def test_wallet_operations_are_live_and_get_only() -> None:
+def test_wallet_operations_remain_available_as_local_runtime_only() -> None:
     app = create_app()
-    route_map = {
-        route.path: route.methods
-        for route in app.routes
-        if isinstance(route, APIRoute) and route.path.startswith("/v1/public/wallet/")
-    }
-    assert set(route_map) == EXPECTED_ROUTE_PATHS
-    for methods in route_map.values():
-        assert methods == {"GET"}
+    with TestClient(app):
+        assert app.state.public_wallet_runtime is not None
+    server_text = _read(SERVER_PATH)
+    for route_path in EXPECTED_ROUTE_PATHS:
+        assert route_path not in server_text
 
 
 def test_wallet_status_history_export_and_ledger_summary_are_read_only_and_accounting_only() -> None:
     with TestClient(create_app()) as client:
         seeded = _seed_wallet_runtime(client)
         agent_id = seeded["agent_id"]
-        status_payload = client.get(f"/v1/public/wallet/{agent_id}/status").json()
-        history_payload = client.get(f"/v1/public/wallet/{agent_id}/history").json()
-        export_payload = client.get(f"/v1/public/wallet/{agent_id}/export").json()
-        summary_payload = client.get(f"/v1/public/wallet/{agent_id}/ledger-summary").json()
+        runtime = client.app.state.public_wallet_runtime
+        status_payload = runtime.wallet_status(agent_id=agent_id)
+        history_payload = runtime.wallet_history(agent_id=agent_id)
+        export_payload = runtime.wallet_export(agent_id=agent_id)
+        summary_payload = runtime.ledger_summary(agent_id=agent_id)
 
         assert status_payload["token"] == "wallet_status_found"
         assert history_payload["token"] == "wallet_history_found"
@@ -176,10 +173,11 @@ def test_wallet_status_history_export_and_ledger_summary_are_read_only_and_accou
 def test_history_and_export_are_bound_to_same_settled_runtime_root_and_receipt_linkage() -> None:
     with TestClient(create_app()) as client:
         agent_id = _seed_wallet_runtime(client)["agent_id"]
-        status = client.get(f"/v1/public/wallet/{agent_id}/status").json()["data"]
-        history = client.get(f"/v1/public/wallet/{agent_id}/history").json()["data"]
-        export = client.get(f"/v1/public/wallet/{agent_id}/export").json()["data"]
-        summary = client.get(f"/v1/public/wallet/{agent_id}/ledger-summary").json()["data"]
+        runtime = client.app.state.public_wallet_runtime
+        status = runtime.wallet_status(agent_id=agent_id)["data"]
+        history = runtime.wallet_history(agent_id=agent_id)["data"]
+        export = runtime.wallet_export(agent_id=agent_id)["data"]
+        summary = runtime.ledger_summary(agent_id=agent_id)["data"]
 
         settled_root = status["settled_runtime_root_ref"]
         receipt_ref = status["latest_balance_receipt_ref"]
@@ -197,7 +195,8 @@ def test_history_and_export_are_bound_to_same_settled_runtime_root_and_receipt_l
 def test_settled_runtime_root_ref_changes_when_settled_state_changes() -> None:
     with TestClient(create_app()) as client:
         agent_id = _seed_wallet_runtime(client)["agent_id"]
-        first_status = client.get(f"/v1/public/wallet/{agent_id}/status").json()["data"]
+        runtime = client.app.state.public_wallet_runtime
+        first_status = runtime.wallet_status(agent_id=agent_id)["data"]
         first_ref = first_status["settled_runtime_root_ref"]
 
         client.app.state.public_lifecycle_runtime.commit_settled_epoch(
@@ -205,7 +204,7 @@ def test_settled_runtime_root_ref_changes_when_settled_state_changes() -> None:
             epoch_id="epoch-002",
             reward_delta_ilc="2",
         )
-        second_status = client.get(f"/v1/public/wallet/{agent_id}/status").json()["data"]
+        second_status = runtime.wallet_status(agent_id=agent_id)["data"]
         assert second_status["settled_runtime_root_ref"] != first_ref
 
 
@@ -228,10 +227,12 @@ def test_ledger_summary_uses_one_lifecycle_snapshot_read(monkeypatch: pytest.Mon
         assert calls == 1
 
 
-def test_post_is_not_allowed_and_no_prohibited_wallet_operations_are_introduced() -> None:
+def test_phase_1378_closes_public_wallet_http_routes_and_no_prohibited_operations_are_introduced() -> None:
     with TestClient(create_app()) as client:
-        response = client.post("/v1/public/wallet/agent-alpha/status", json={})
-        assert response.status_code == 405
+        for route_path in EXPECTED_ROUTE_PATHS:
+            concrete_path = route_path.replace("{agent_id}", "agent-alpha")
+            assert client.get(concrete_path).status_code == 404
+        assert client.post("/v1/public/wallet/agent-alpha/status", json={}).status_code == 404
     server_text = _read(SERVER_PATH)
     assert "/v1/public/wallet/{agent_id}/withdraw" not in server_text
     assert "/v1/public/wallet/{agent_id}/transfer" not in server_text
