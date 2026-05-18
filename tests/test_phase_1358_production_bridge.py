@@ -207,9 +207,14 @@ def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeyp
             return "tls-creds"
 
         @staticmethod
-        def secure_channel(target: str, credentials: str) -> FakeChannel:
+        def secure_channel(
+            target: str,
+            credentials: str,
+            options: tuple[tuple[str, int], ...] = (),
+        ) -> FakeChannel:
             calls["target"] = target
             calls["credentials"] = credentials
+            calls["options"] = options
             return FakeChannel()
 
     monkeypatch.setitem(sys.modules, "grpc", FakeGrpcModule)
@@ -224,6 +229,7 @@ def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeyp
     assert calls["roots"] == b"root-ca"
     assert calls["target"] == "validator.example:443"
     assert calls["credentials"] == "tls-creds"
+    assert ("grpc.max_receive_message_length", 1_048_576) in calls["options"]
     assert "/ilc_app.ILCAppReadService/GetBalance" in calls["paths"]  # type: ignore[operator]
     assert not hasattr(FakeGrpcModule, "insecure_channel")
 
@@ -238,5 +244,6 @@ def test_ilc_core_does_not_import_testbed_generated_grpc_stubs() -> None:
 
     source = Path("ilc_core/consensus/production_bridge.py").read_text(encoding="utf-8")
     assert "insecure_channel" not in source
+    assert "records = list(" not in source
     assert "import random" not in source
     assert "assert " not in source
