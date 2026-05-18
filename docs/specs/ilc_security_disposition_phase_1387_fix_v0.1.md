@@ -1,10 +1,11 @@
-# ILC Project-Authority Security Disposition — Phase 1387 Fix v0.1
+# ILC Project-Authority Security Disposition — Phase 1387 Fix v0.2
 
 **Phase:** 1387-Fix  
 **Date:** 2026-05-18  
-**Status:** DISPOSITION COMPLETE  
+**Status:** DISPOSITION COMPLETE (v0.2 — extended to cover network.rs and node.rs)  
 **Authority:** Project-authority AI-assisted structured security review + direct code audit  
 **Review method:** Deterministic direct-read audit of every named source file; no memory-only claims  
+**Supersedes:** v0.1 (committed `4ebf12f5`) — extended with full network.rs and node.rs audit  
 **Disposition token:** `project_authority_security_disposition_complete_phase_1387_fix`
 
 ---
@@ -16,6 +17,9 @@ high_002_disposition_closed_bls_threshold_fix_verified
 medium_001_disposition_accepted_with_carry_forward
 medium_002_disposition_accepted_with_carry_forward
 medium_003_disposition_accepted_with_carry_forward
+medium_004_disposition_accepted_with_carry_forward
+medium_005_disposition_accepted_with_carry_forward
+medium_006_disposition_accepted_with_carry_forward
 all_known_high_findings_dispositioned_phase_1387_fix
 ```
 
@@ -42,8 +46,10 @@ Every known HIGH-severity finding is explicitly dispositioned below as closed, a
 | `ilc_consensus/src/types.rs` | 494 | type safety, G2 subgroup checks, AgentID/AggSig deserialization |
 | `ilc_consensus/src/fast_path.rs` | 890 | certificate execution, sender sig verification ordering, historical ValidatorSet resolution |
 | `ilc_consensus/src/balance_store.rs` | 378 | transfer atomicity, version-lock, overflow guards, attribution replay guard |
+| `ilc_consensus/src/network.rs` | 684 | QUIC transport, mTLS peer verification, OOM guards, frame size ceiling, timeout enforcement |
+| `ilc_consensus/src/node.rs` | 1491 | NodeRunner main loop, quorum assembly, epoch stamping, privacy log paths, stub handlers |
 | `ilc_core/ledger/exact_numeric.py` | 103 | float ban, non-finite rejection, canonical serialization |
-| `ilc_core/ledger/ecu_active_layer_runtime.py` | 359 | earmark reserve accounting, oversubscription checks |
+| `ilc_core/ledger/ecu_active_layer_runtime.py` | 359 | earmark reserve accounting, oversubscription checks, expiry boundary |
 | `ilc_core/epoch/epoch_emission_runtime.py` | 194 | C_MAX enforcement, production minting gate |
 | `ilc_core/epoch/epoch_boundary_witness_runtime.py` | 56 | blocking authority state |
 | `ilc_core/ledger/cdl048_conversion_sweeper_runtime.py` | 1107 | ECU-to-ILC dry-run conservation, activation flags |
@@ -200,6 +206,98 @@ Attribution replay guard: `batch.epoch.0 <= agent_bal.epoch.0` for existing agen
 
 **Disposition:** MEDIUM-001 — accepted with carry-forward (see §5).
 
+### 4.8 Network Transport Audit (network.rs)
+
+**Source:** `ilc_consensus/src/network.rs` (684 lines)
+
+**PinnedCertVerifier mTLS (CORRECT):**
+Server and client both use `PinnedCertVerifier`. TLS 1.2 is explicitly rejected via `rustls::ClientConfig::builder().with_protocol_versions(&[&rustls::version::TLS13])`. The `dangerous()` call in the client builder is used solely to supply `PinnedCertVerifier` — it does not disable TLS verification. On each handshake, `PinnedCertVerifier::verify_server_cert` checks the presented certificate against the pinned set.
+
+**IO timeout enforcement (SEC-FIX-03, CORRECT):**
+`IO_TIMEOUT_MS = 1500`. Every QUIC await (`accept_bi`, `open_bi`, `read_to_end`, `write_all`, `finish`) is wrapped in `tokio::time::timeout(Duration::from_millis(IO_TIMEOUT_MS), ...)`. Slowloris / tarpit DoS is bounded.
+
+**OOM guards (CORRECT):**
+- 10MB frame ceiling: `if target_len > 10 * 1024 * 1024 { return Err(...) }` before any heap allocation for a received frame.
+- `MissingEpochResponse` capped at 64 records at the serialization boundary.
+- `MissingCertResponse` capped at 64 certs.
+
+**MEDIUM-005 — certs[0] bounds check missing in authenticate_peer_tls (line 309):**
+```rust
+let peer_cert_der = certs[0].as_ref();
+```
+The `ok_or_else` earlier on the same path only guards against `None` from `downcast_ref::<Vec<CertificateDer>>()`. If the downcast succeeds but returns an empty `Vec`, indexing `[0]` panics. An adversary who can negotiate a TLS handshake that presents zero certificates could trigger a panic in the authentication path.
+
+**Mitigating factors:** The peer cert chain is established by rustls during TLS negotiation, which requires at least one certificate before a handshake completes. However, the code relies on this implicit rustls guarantee with no explicit guard. A future rustls version change or a crafted downcast type mismatch could change this behaviour.
+
+**Disposition:** MEDIUM-005 — accepted with carry-forward. Should be hardened to `certs.first().ok_or(...)` before production deployment.
+
+---
+
+### 4.9 NodeRunner Audit (node.rs)
+
+**Source:** `ilc_consensus/src/node.rs` (1491 lines)
+
+**BroadcastHonest → AckFor → Certificate → execute_certificate loop (CORRECT):**
+Sender signature is verified before quorum assembly. Certificate epoch is set at ack-quorum time. `in_flight` TTL sweep (60s) prevents zombie entries from consuming memory indefinitely.
+
+**EpochSettlementTx dispatch gating (CORRECT):**
+`handle_epoch_settlement_tx` is explicitly `#[cfg(feature = "testnet_fault_sim")]` on the dispatch arm in the NodeRunner message loop (lines 789–809). CRIT-001 is correctly gated at the dispatch level, not just in a code comment.
+
+**MEDIUM-004 — NodeRunner.f is stale after ValidatorSet rotation (FIXME(M-5), lines 648–652):**
+```rust
+// FIXME(M-5): self.f is captured at NodeRunner::new() and is NOT updated
+// when validators are admitted or ejected at runtime. For the current
+// genesis network (static 4-validator set) this is safe, but dynamic
+// membership requires reading f from self.fast_path.validator_set at
+// quorum-check time instead.
+let quorum = 2 * self.f + 1;
+```
+This is an acknowledged bug in the code itself. After `rotate_validator_set` adds or ejects validators, `self.f` (captured at construction) is no longer the correct fault-tolerance threshold. NodeRunner assembles certificates using the stale quorum value. If `f` should be higher after a rotation (more validators added), NodeRunner under-counts required acks and may finalize a certificate at a threshold below the BFT-safe floor for the new validator set.
+
+**Mitigating factors:** The FIXME comment explicitly identifies the fix. The Genesis network uses a static 4-validator set. Dynamic membership is not yet activated. The risk is real only when `admit_validator` / `eject_validator` are exercised.
+
+**Disposition:** MEDIUM-004 — accepted with carry-forward. The code comment documents the fix: read `f` from `self.fast_path.validator_set` at quorum-check time. Must be resolved before dynamic validator admission is enabled in production. Does not block Phase 1388 under the static genesis network constraint.
+
+**LOW-004 — Cert epoch stamped at ack-quorum time, not signature-collection time (line 689):**
+```rust
+let cert_epoch = crate::types::EpochSeq(self.epoch_store.get_current_epoch()?.max(1));
+```
+The certificate epoch is set from the current epoch at the moment acks reach quorum, not from the epoch when the transfer was originally signed. In a partition scenario where acks are delayed across an epoch boundary, the certificate epoch may not match the epoch used by the historical ValidatorSet resolution in `fast_path.rs`. This creates a theoretical window where a cert epoch and the ValidatorSet selected for it are from different governance periods.
+
+**Mitigating factors:** `fast_path.rs`'s `execute_certificate` uses `epoch_sets.range(..=cert.epoch).next_back()` for historical resolution, which tolerates cert epochs that are slightly ahead of the commit epoch in practice. The genesis network has infrequent epoch transitions. The practical attack surface is narrow.
+
+**Disposition:** LOW-004 — accepted. Carry-forward: document the invariant assumption (cert epoch = epoch at quorum time ≈ epoch at signature time for normal latency paths) in the fast_path.rs comment block.
+
+**MEDIUM-006 — ValidatorSet::new accepts caller-supplied f below BFT-safe floor:**
+
+`ValidatorSet::new(validators, f)` takes f as a parameter and enforces only `N > 3F` (not `f == floor((N-1)/3)`). A caller supplying `f=0` for a 10-validator set passes the `N > 3F` check (10 > 0) and creates a ValidatorSet that would allow quorum of 1. `rebuild_with` always computes `f = len.saturating_sub(1) / 3`, but direct construction via `::new` can supply an undersafe value.
+
+**Mitigating factors:** The internal call sites in `fast_path.rs::rotate_validator_set` use `rebuild_with`, not `::new` directly for rotation. `ValidatorSet::new` is only called at genesis init with a hardcoded genesis set, where f is supplied from the governance genesis config. Exploiting this requires controlling the genesis configuration.
+
+**Disposition:** MEDIUM-006 — accepted with carry-forward. The API surface is a correctness hazard for future callers. `ValidatorSet::new` should enforce `f == (n - 1) / 3` or at minimum check `f >= (n - 1) / 3` and reject undersafe values. Should be hardened before dynamic admission is enabled.
+
+**LOW-005 — Row-5 routing_token leaks TransferClass in validator eprintln! (line 537):**
+```rust
+eprintln!(
+    "[row5_privacy_lane] validator_id={} obj_ref={} {}",
+    self.validator_id.0,
+    fmt_object_ref(&transfer.object_ref),
+    routing_token,
+);
+```
+`routing_token` includes the transfer class (`Contribution`, `Payment`, or `Payment_Express`). While `AgentID` is correctly redacted via `fmt_object_ref`, the TransferClass is directly revealed in this log line. An observer with access to validator stderr logs can determine whether any given transfer is a contribution, a payment, or an express payment — partially recovering the structural metadata that the row-5 privacy lane is intended to protect.
+
+**Mitigating factors:** `eprintln!` writes to stderr, not to the structured log pipeline. Production deployments typically discard stderr or route it to an operator-only stream. The transfer mixing framework (not yet activated) addresses this at a structural level.
+
+**Disposition:** LOW-005 — accepted. Carry-forward: this eprintln! should be removed or redacted to `routing_class=[redacted]` before validator software is distributed publicly, consistent with HIGH-001 log-layer policy.
+
+**LOW-006 — MissingCertSync handler is a scaffold stub (SEC-003 deferred):**
+The `handle_missing_cert_sync` message handler returns `Ok(())` without performing any cert recovery. The M-011 deferral note in the code confirms this is intentional scaffolding. Offline validator recovery (SEC-003) is not implemented.
+
+**Mitigating factors:** Missing cert recovery is a liveness concern, not a safety concern. A validator that misses certs cannot diverge the ledger — it simply falls behind. The genesis network has a static 4-validator set with reliable connectivity assumptions.
+
+**Disposition:** LOW-006 — accepted. Carry-forward: must be implemented before a network that includes heterogeneous or unreliable validators can be operated safely.
+
 ---
 
 ## 5. Medium-Severity Findings — Disposition
@@ -225,6 +323,27 @@ Attribution replay guard: `batch.epoch.0 <= agent_bal.epoch.0` for existing agen
 **Mitigating factors:** This is a dry-run quote only — no ledger mutation occurs. The gate is `gate_closed=True`, `quote_only=True`, `ledger_write_authorized=False`. The conservation proof token is Phase 1380 internal only and not published as an external security guarantee.  
 **Disposition:** **ACCEPTED** with carry-forward. Phase 1388 (CDL-048 activation) must implement genuine double-entry verification where debit and credit legs are computed independently before the assertion. The tautological form in Phase 1380 dry-run wiring is acceptable as a scaffolding placeholder but must not be carried into the activation path.
 
+### MEDIUM-004: NodeRunner.f stale after ValidatorSet rotation
+
+**Surface:** `ilc_consensus/src/node.rs` lines 648–652 (FIXME(M-5) comment in code)  
+**Finding:** See §4.9. `self.f` captured at `NodeRunner::new()` is never updated when validators are admitted or ejected. After a `rotate_validator_set` call, certificate quorum assembly uses the stale fault-tolerance value. If the validator set grows, `self.f` may be lower than the BFT-safe floor for the new set size.  
+**Mitigating factors:** Genesis network is a static 4-validator set. Dynamic admission not yet enabled. FIXME comment correctly documents the fix.  
+**Disposition:** **ACCEPTED** with carry-forward. Must be resolved before dynamic validator admission is enabled.
+
+### MEDIUM-005: certs[0] index access without bounds check in authenticate_peer_tls
+
+**Surface:** `ilc_consensus/src/network.rs` line 309  
+**Finding:** See §4.8. `certs[0].as_ref()` panics if the cert chain is empty. The preceding downcast guard only checks for `None`, not for empty vec.  
+**Mitigating factors:** rustls implicitly requires at least one certificate to complete a TLS handshake; the practical path to an empty vec is narrow.  
+**Disposition:** **ACCEPTED** with carry-forward. Should be hardened to `certs.first().ok_or(ILCConsensusError::Auth("empty_cert_chain"))` before production deployment.
+
+### MEDIUM-006: ValidatorSet::new accepts caller-supplied f below BFT-safe floor
+
+**Surface:** `ilc_consensus/src/validator.rs::ValidatorSet::new`  
+**Finding:** See §4.9. Direct construction via `::new` accepts any caller-supplied `f` that satisfies `N > 3F`, which includes `f=0` for any `N≥1`. `rebuild_with` correctly computes `f = (N-1)/3`, but `::new` does not enforce this.  
+**Mitigating factors:** Internal rotation paths use `rebuild_with`. Genesis init supplies f from governed genesis config. No attacker-controlled call path to `::new` exists in current code.  
+**Disposition:** **ACCEPTED** with carry-forward. `ValidatorSet::new` should enforce `f == (n-1)/3` or reject values where `f < (n-1)/3`. Hardening required before dynamic admission.
+
 ---
 
 ## 6. Low-Severity Observations
@@ -234,6 +353,10 @@ Attribution replay guard: `batch.epoch.0 <= agent_bal.epoch.0` for existing agen
 | LOW-001 | `ecu_active_layer_runtime.py::_to_decimal` | Accepts `float` via `Decimal(str(value))`. The canonical `exact_numeric.to_decimal` does not accept float. Slight permissiveness at runtime input boundary. | ACCEPTED. Float→str conversion produces the decimal representation of the float literal, not the IEEE 754 mantissa. Acceptable for UI input normalization. Canonical economic protocol values use `Decimal`/`str`. |
 | LOW-002 | `balance_store.rs::commit_epoch_record` sentinel update | After record write, sentinel update uses `stored.record.epoch.0 <= current` to skip non-advancing epochs. This means a testnet injection at epoch 3 when sentinel is 5 silently leaves sentinel at 5. Harmless for testnet path. | ACCEPTED. Testnet-only path. Sentinel represents "latest" — leaving it at a higher value is correct. |
 | LOW-003 | `pq_keygen_main.rs` prints public key material | `println!("  agent_id: ...")` is intentional keygen output. Not a validator log path. | ACCEPTED. Publication review required if CLI tool is included in a public release package. No code change before Phase 1388. |
+| LOW-004 | `node.rs` cert epoch stamped at ack-quorum time | `cert_epoch = get_current_epoch()` at the moment acks reach quorum, not at signature collection. In a delayed-quorum scenario spanning an epoch boundary, cert epoch may not match the epoch of the ValidatorSet used to collect acks. | ACCEPTED. Genesis network has infrequent epoch transitions and low latency. Carry-forward: document the invariant assumption in fast_path.rs. |
+| LOW-005 | `node.rs` row-5 eprintln! leaks TransferClass | `eprintln!("[row5_privacy_lane] ... {}", routing_token)` logs the full routing token including `Contribution`/`Payment`/`Payment_Express` TransferClass. AgentID is correctly redacted; TransferClass is not. | ACCEPTED. eprintln! is stderr-only; production operators typically isolate this. Carry-forward: redact or remove before public validator distribution, consistent with HIGH-001 log policy. |
+| LOW-006 | `node.rs` MissingCertSync is a scaffold stub | `handle_missing_cert_sync` returns `Ok(())` without recovery. SEC-003 offline cert recovery deferred to M-011. | ACCEPTED. Liveness concern only, not safety. Carry-forward: must implement before operating with heterogeneous or unreliable validator sets. |
+| LOW-007 | `ecu_active_layer_runtime.py` earmark expiry boundary inconsistency | `earmark_accept` and `earmark_deliver` use `int(epoch) > record.expiry_epoch` (allow at expiry epoch); `process_epoch_boundary` uses `int(commit_epoch) >= record.expiry_epoch` (expire at boundary epoch). An earmark that is accepted at its expiry epoch is immediately swept by the boundary processor in the same epoch. | ACCEPTED. The accept→immediate-expiry sequence still does not create value from nothing: the earmark is created, accepted, and swept in one epoch. No double-spend path identified. Carry-forward: normalize both comparisons to `>=` for predictability. |
 
 ---
 
@@ -269,20 +392,20 @@ The following boundaries are explicitly NOT claimed as closed by this review or 
 
 ---
 
-## 9. Surfaces Not Audited in This Review
+## 9. Surfaces Not Fully Audited in This Review
 
 The following surfaces within the Phase 1384 scope were not directly read in this review:
 
-- `ilc_consensus/src/network.rs` — QUIC transport layer, gossip, peer discovery
-- `ilc_consensus/src/node.rs` — NodeRunner, main consensus loop, epoch triggering
 - `ilc_consensus/src/persistent_quic.rs` — persistent QUIC sessions (reviewed in Phase 1386c)
 - `ilc_core/governance/` — governance weight computation
 - `ilc_core/economics/reward.py`, `entropy.py` — reward distribution internals
 - `ilc_core/epoch/treasury_governance_runtime.py` — treasury P_e governor
 
-**Disposition for unaudited surfaces:** These surfaces are bounded by the gate conditions already verified in Phase 1384–1387 series (TLS gRPC, endpoint ADR, persistent QUIC, no hardcoded peer list). The production value path (ECU mint, ILC settlement, wallet activation) remains gated off via `production_minting_activated=False`, `public_claimability_activated=False`, and `ledger_write_authorized=False` across all economic surfaces. The unaudited surfaces do not have a path to activate any value-path output in the current gated state.
+Note: `ilc_consensus/src/network.rs` (684 lines) and `ilc_consensus/src/node.rs` (1491 lines) were fully audited in v0.2 (see §§4.8–4.9). They were listed as unaudited in v0.1.
 
-A future pre-mainnet review should extend direct audit coverage to the governance, reward, and network transport modules before any production value-path activation.
+**Disposition for remaining unaudited surfaces:** These surfaces are bounded by the gate conditions already verified in the Phase 1384–1387 series (TLS gRPC, endpoint ADR, persistent QUIC, no hardcoded peer list). The production value path (ECU mint, ILC settlement, wallet activation) remains gated off via `production_minting_activated=False`, `public_claimability_activated=False`, and `ledger_write_authorized=False` across all economic surfaces. The unaudited surfaces do not have a path to activate any value-path output in the current gated state.
+
+A future pre-mainnet review should extend direct audit coverage to the governance, reward, and treasury modules before any production value-path activation.
 
 ---
 
@@ -301,8 +424,13 @@ All known MEDIUM-severity findings are accepted with bounded carry-forward autho
 - MEDIUM-001: testnet_fault_sim gate is caller-documented, not function-guarded — carry-forward hardening, does not block Phase 1388
 - MEDIUM-002: f=0 warn-only — accepted, operator guidance carry-forward
 - MEDIUM-003: CDL-048 dry-run conservation delta tautological — must be fixed in Phase 1388 activation path before any ledger write is authorized
+- MEDIUM-004: NodeRunner.f stale after ValidatorSet rotation (FIXME(M-5)) — accepted, must resolve before dynamic admission enabled
+- MEDIUM-005: certs[0] no bounds check in authenticate_peer_tls — accepted, should harden before production deployment
+- MEDIUM-006: ValidatorSet::new accepts undersafe caller-supplied f — accepted, must harden before dynamic admission enabled
 
-The codebase reviewed does not contain any unaddressed HIGH-severity finding that blocks Phase 1388 or Phase 1389 proceeding under their existing gate conditions.
+All LOW findings (LOW-001 through LOW-007) are accepted with bounded carry-forward as documented in §6.
+
+The codebase reviewed does not contain any unaddressed HIGH-severity finding that blocks Phase 1388 or Phase 1389 proceeding under their existing gate conditions. The newly identified MEDIUM-004, MEDIUM-005, and MEDIUM-006 findings are accepted with carry-forward; none blocks Phase 1388 under the static genesis network and gated activation constraints currently in force.
 
 ---
 
@@ -314,4 +442,8 @@ Phase 1387 can be re-run or superseded by a passing gate after this document is 
 
 ## 12. Graph Delta
 
-`graph_delta=load_bearing_artifact_added:docs/specs/ilc_security_disposition_phase_1387_fix_v0.1.md -> project-authority/security-disposition`
+`graph_delta=load_bearing_artifact_updated:docs/specs/ilc_security_disposition_phase_1387_fix_v0.1.md -> project-authority/security-disposition`
+
+**Revision log:**
+- v0.1 (`4ebf12f5`): Initial disposition — HIGH-001, HIGH-002, MEDIUM-001–003, LOW-001–003. Listed network.rs and node.rs as unaudited.
+- v0.2 (this commit): Extended to full audit of network.rs (684 lines) and node.rs (1491 lines). Added MEDIUM-004 (NodeRunner.f stale), MEDIUM-005 (certs[0] bounds), MEDIUM-006 (ValidatorSet::new undersafe f), LOW-004 (cert epoch timing), LOW-005 (routing_token TransferClass leak), LOW-006 (MissingCertSync stub), LOW-007 (earmark expiry boundary). All new findings accepted with carry-forward. HIGH/MEDIUM-001–003 dispositions unchanged.
