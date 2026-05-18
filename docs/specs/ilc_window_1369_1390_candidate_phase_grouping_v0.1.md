@@ -314,7 +314,7 @@ Notes:
 | 10 | 1377 | Replay/nullifier + duplicate-claim registry policy ADR | Constitutional / Spec | **SENSITIVE** |
 | 11 | 1378 | Legacy `/v1/public/*` FastAPI route cleanup | Runtime | **SENSITIVE** |
 | 12 | 1379 | ADR-0031 sidecar query runtime completeness | Runtime | **SENSITIVE** |
-| 13 | 1380 | CDL-048 ECU-to-ILC dry-run wiring | Runtime | **SENSITIVE** |
+| 13 | 1380 | CDL-048 ECU-to-ILC dry-run wiring | Runtime | COMPLETE |
 | 14 | 1381 | CDL-006 challenge node spec + stub | Constitutional / Runtime-prep | **SENSITIVE** |
 | 15 | 1382 | CDL-006 challenge node runtime + tests | Constitutional / Runtime | **SENSITIVE** |
 | 16 | 1383 | CDL-009 fork legitimacy UX | Constitutional / Runtime | **SENSITIVE** |
@@ -593,10 +593,13 @@ and Phase 1376 (CDL-088 ratified) must both be complete.
 Deliverables: sweeper runtime wired in gate-closed state. No live activation.
 Tests proving ECU-to-ILC flow semantics and double-entry correctness at the wire level.
 
-CDL-048 was ratified at Phase 459. Read the CDL-048 ratification entry before drafting
+CDL-048 was ratified at Phase 419. Read the CDL-048 ratification entry before drafting
 to confirm the ECU-to-ILC conversion constants and constraints.
 
-Record: `cdl_048_dry_run_wiring_phase_1380` (gate-closed state)
+Record: `cdl_048_dry_run_wiring_phase_1380` (gate-closed state).
+Phase 1380 also records `cdl_048_not_activated_phase_1380`,
+`gate_closed_state_confirmed_phase_1380`, and
+`double_entry_conservation_proven_wire_level_phase_1380`.
 No activation record — activation is Phase 1388 only.
 
 Commit subject: `phase 1380 cdl-048 ecu-to-ilc dry-run wiring`
@@ -1032,7 +1035,7 @@ This window does NOT:
 | Window closure handoff schema | `docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md` | Phase 1390 must follow exactly |
 | CDL-006 register entry | `docs/specs/ilc_constitutional_decision_log_v0.1.md` line 34 | CDL-006 multi-body check ratified Phase 993 |
 | CDL-009 register entry | `docs/specs/ilc_constitutional_decision_log_v0.1.md` line 37 | CDL-009 signature-badge+eligibility ratified Phase 993 |
-| CDL-048 ratification evidence | (confirmed ratified Phase 459) | Phase 1380 CDL-048 dry-run prerequisite |
+| CDL-048 ratification evidence | (confirmed ratified Phase 419) | Phase 1380 CDL-048 dry-run prerequisite |
 | For closure gate (Phase 1390): all Phase 1369-1389 test files and artifacts | — | Required for closure gate verification |
 
 ---
