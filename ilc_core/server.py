@@ -25,19 +25,7 @@ from ilc_core.protocol.mapper import (
 )
 from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
 from ilc_core.genesis.schema import load_epistemic_work_task_schema
-from ilc_core.protocol.public_init_admission_runtime import (
-    PublicInitAdmissionRuntimeError,
-    issue_public_init_admission_receipt,
-)
-from ilc_core.protocol.public_receipt_runtime import (
-    PublicReceiptRuntimeError,
-    issue_public_receipt,
-    query_public_receipts,
-)
-from ilc_core.protocol.public_wallet_runtime import (
-    PublicWalletRuntime,
-    PublicWalletRuntimeError,
-)
+from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntime
 from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore, LmdbWalletStore
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
@@ -337,122 +325,6 @@ def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
     )
     return {"task_outcome": proto}
 
-
-@router.post("/v1/public/init/admission")
-def submit_public_init_admission(payload: dict, request: Request):
-    state = _state(request)
-    epoch_id = f"public-init-admission::{state.consensus.epoch_index}"
-    try:
-        result = issue_public_init_admission_receipt(
-            payload=payload,
-            epoch_id=epoch_id,
-            store=state.public_admission_store,
-        )
-    except PublicInitAdmissionRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.post("/v1/public/receipt")
-def submit_public_receipt(payload: dict, request: Request):
-    state = _state(request)
-    try:
-        result = issue_public_receipt(
-            payload=payload,
-            store=state.public_receipt_store,
-        )
-    except PublicReceiptRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/receipt/{receipt_id}")
-def query_public_receipt_by_id(receipt_id: str, request: Request):
-    state = _state(request)
-    try:
-        result = query_public_receipts(
-            store=state.public_receipt_store,
-            receipt_id=receipt_id,
-        )
-    except PublicReceiptRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/receipts")
-def query_public_receipt_collection(
-    request: Request,
-    signer_agent_id: str | None = None,
-    artifact_kind: str | None = None,
-    epoch_id: str | None = None,
-):
-    state = _state(request)
-    try:
-        result = query_public_receipts(
-            store=state.public_receipt_store,
-            signer_agent_id=signer_agent_id,
-            artifact_kind=artifact_kind,
-            epoch_id=epoch_id,
-        )
-    except PublicReceiptRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/lifecycle/coupling-invariants")
-def get_coupling_invariants_diagnostic(request: Request):
-    state = _state(request)
-    result = state.public_lifecycle_runtime.coupling_invariants_diagnostic(
-        graph_node_count=len(state.graph.nodes),
-    )
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/lifecycle/{agent_id}")
-def get_public_lifecycle_status(agent_id: str, request: Request):
-    state = _state(request)
-    result = state.public_lifecycle_runtime.lifecycle_status(agent_id=agent_id)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/wallet/{agent_id}/status")
-def get_public_wallet_status(agent_id: str, request: Request):
-    state = _state(request)
-    try:
-        result = state.public_wallet_runtime.wallet_status(agent_id=agent_id)
-    except PublicWalletRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/wallet/{agent_id}/history")
-def get_public_wallet_history(agent_id: str, request: Request):
-    state = _state(request)
-    try:
-        result = state.public_wallet_runtime.wallet_history(agent_id=agent_id)
-    except PublicWalletRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/wallet/{agent_id}/export")
-def get_public_wallet_export(agent_id: str, request: Request):
-    state = _state(request)
-    try:
-        result = state.public_wallet_runtime.wallet_export(agent_id=agent_id)
-    except PublicWalletRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
-
-
-@router.get("/v1/public/wallet/{agent_id}/ledger-summary")
-def get_public_wallet_ledger_summary(agent_id: str, request: Request):
-    state = _state(request)
-    try:
-        result = state.public_wallet_runtime.ledger_summary(agent_id=agent_id)
-    except PublicWalletRuntimeError as exc:
-        return JSONResponse({"ok": False, "token": exc.token}, status_code=400)
-    return JSONResponse(result, status_code=200)
 
 @router.get("/v1/protocol/ep_task_schema")
 def get_ep_task_schema():

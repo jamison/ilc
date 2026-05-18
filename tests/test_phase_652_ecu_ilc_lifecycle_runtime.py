@@ -90,11 +90,9 @@ def test_runtime_doc_contains_required_tokens() -> None:
 
 def test_visible_ecu_surface_is_read_only() -> None:
     app = create_app()
-    with TestClient(app) as client:
+    with TestClient(app):
         app.state.ecu_active_layer_runtime.set_accrued_ecu("agent-a", "10.5")
-        response = client.get("/v1/public/lifecycle/agent-a")
-        assert response.status_code == 200
-        payload = response.json()["data"]
+        payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")["data"]
         assert payload["balance_ecu"] == "10.5"
         assert payload["balance_ilc"] == "0"
         for forbidden_field in (
@@ -108,10 +106,9 @@ def test_visible_ecu_surface_is_read_only() -> None:
 
 def test_delayed_visible_ilc_appears_only_after_epoch_commit() -> None:
     app = create_app()
-    with TestClient(app) as client:
+    with TestClient(app):
         app.state.ecu_active_layer_runtime.set_accrued_ecu("agent-a", "4")
-        before = client.get("/v1/public/lifecycle/agent-a")
-        before_payload = before.json()["data"]
+        before_payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")["data"]
         assert before_payload["balance_ilc"] == "0"
         assert before_payload["last_settled_epoch_id"] is None
         assert before_payload["latest_balance_receipt"] is None
@@ -123,8 +120,7 @@ def test_delayed_visible_ilc_appears_only_after_epoch_commit() -> None:
         )
         assert commit_result["token"] == "lifecycle_epoch_commit_applied"
 
-        after = client.get("/v1/public/lifecycle/agent-a")
-        after_payload = after.json()["data"]
+        after_payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")["data"]
         assert after_payload["balance_ilc"] == "3.25"
         assert after_payload["last_settled_epoch_id"] == "epoch-001"
         assert after_payload["latest_balance_receipt"]["settlement_status"] == "applied"
@@ -162,14 +158,21 @@ def test_same_epoch_same_delta_is_idempotent_and_conflicting_replay_fails_closed
 
 def test_coupling_invariants_diagnostic_surface_is_present_and_read_only() -> None:
     app = create_app()
-    with TestClient(app) as client:
-        response = client.get("/v1/public/lifecycle/coupling-invariants")
-        assert response.status_code == 200
-        payload = response.json()["data"]
+    with TestClient(app):
+        payload = app.state.public_lifecycle_runtime.coupling_invariants_diagnostic(
+            graph_node_count=len(app.state.graph.nodes),
+        )["data"]
         assert payload["graph_truth_upstream"] is True
         assert payload["delayed_ilc_requires_epoch_commit"] is True
         assert payload["diagnostic_only"] is True
         assert payload["governance_lock_closed"] is False
+
+
+def test_phase_1378_closes_public_lifecycle_http_routes() -> None:
+    app = create_app()
+    with TestClient(app) as client:
+        assert client.get("/v1/public/lifecycle/agent-a").status_code == 404
+        assert client.get("/v1/public/lifecycle/coupling-invariants").status_code == 404
 
 
 def test_claimability_remains_deferred_and_non_finite_inputs_fail_closed() -> None:

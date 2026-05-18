@@ -7,6 +7,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from ilc_core.identity.agent_id_runtime import derive_agent_id
+from ilc_core.protocol.public_init_admission_runtime import (
+    PublicInitAdmissionRuntimeError,
+    issue_public_init_admission_receipt,
+)
 from ilc_core.server import create_app
 
 DOC_PATH = Path("docs/specs/ilc_public_init_admission_runtime_650_v0.1.md")
@@ -88,6 +92,14 @@ def _valid_payload() -> dict[str, str | None]:
     }
 
 
+def _issue_receipt(app) -> dict:
+    return issue_public_init_admission_receipt(
+        payload=_valid_payload(),
+        epoch_id=f"public-init-admission::{app.state.consensus.epoch_index}",
+        store=app.state.public_admission_store,
+    )
+
+
 def test_runtime_doc_exists_and_contains_required_headings() -> None:
     text = _read(DOC_PATH)
     for heading in REQUIRED_HEADINGS:
@@ -102,10 +114,8 @@ def test_runtime_doc_contains_required_tokens() -> None:
 
 def test_init_admission_runtime_requires_canonical_key_derived_identity_and_persists_receipt() -> None:
     app = create_app()
-    with TestClient(app) as client:
-        response = client.post("/v1/public/init/admission", json=_valid_payload())
-        assert response.status_code == 200
-        payload = response.json()
+    with TestClient(app):
+        payload = _issue_receipt(app)
         assert payload["ok"] is True
         assert payload["token"] == "admission_receipt_issued"
         assert payload["persisted"] is True
@@ -120,17 +130,15 @@ def test_init_admission_runtime_requires_canonical_key_derived_identity_and_pers
 
 def test_same_epoch_same_payload_produces_deterministic_receipt_id() -> None:
     app = create_app()
-    with TestClient(app) as client:
-        first = client.post("/v1/public/init/admission", json=_valid_payload())
-        second = client.post("/v1/public/init/admission", json=_valid_payload())
-        assert first.status_code == 200
-        assert second.status_code == 200
-        assert first.json()["receipt"]["receipt_id"] == second.json()["receipt"]["receipt_id"]
+    with TestClient(app):
+        first = _issue_receipt(app)
+        second = _issue_receipt(app)
+        assert first["receipt"]["receipt_id"] == second["receipt"]["receipt_id"]
 
 
 def test_missing_lineage_scope_and_attestation_fail_closed_with_machine_tokens() -> None:
     app = create_app()
-    with TestClient(app) as client:
+    with TestClient(app):
         base = _valid_payload()
         for field_name, expected_token in (
             ("lineage_ref", "missing_lineage"),
@@ -139,26 +147,33 @@ def test_missing_lineage_scope_and_attestation_fail_closed_with_machine_tokens()
         ):
             payload = dict(base)
             payload[field_name] = ""
-            response = client.post("/v1/public/init/admission", json=payload)
-            assert response.status_code == 400
-            assert response.json() == {"ok": False, "token": expected_token}
+            with pytest.raises(PublicInitAdmissionRuntimeError) as exc_info:
+                issue_public_init_admission_receipt(
+                    payload=payload,
+                    epoch_id=f"public-init-admission::{app.state.consensus.epoch_index}",
+                    store=app.state.public_admission_store,
+                )
+            assert exc_info.value.token == expected_token
 
 
 def test_canonical_root_key_mismatch_fails_closed() -> None:
     app = create_app()
-    with TestClient(app) as client:
+    with TestClient(app):
         payload = _valid_payload()
         payload["canonical_root_key_hex"] = "ffeeddccbbaa99887766554433221100"
-        response = client.post("/v1/public/init/admission", json=payload)
-        assert response.status_code == 400
-        assert response.json() == {"ok": False, "token": "canonical_agent_id_mismatch"}
+        with pytest.raises(PublicInitAdmissionRuntimeError) as exc_info:
+            issue_public_init_admission_receipt(
+                payload=payload,
+                epoch_id=f"public-init-admission::{app.state.consensus.epoch_index}",
+                store=app.state.public_admission_store,
+            )
+        assert exc_info.value.token == "canonical_agent_id_mismatch"
 
 
 def test_wallet_boundary_is_preserved_in_receipt_surface() -> None:
     app = create_app()
-    with TestClient(app) as client:
-        response = client.post("/v1/public/init/admission", json=_valid_payload())
-        receipt = response.json()["receipt"]
+    with TestClient(app):
+        receipt = _issue_receipt(app)["receipt"]
         for forbidden_field in (
             "spend_authority",
             "withdrawal_authority",
@@ -170,12 +185,23 @@ def test_wallet_boundary_is_preserved_in_receipt_surface() -> None:
 
 def test_forbidden_scope_fails_closed() -> None:
     app = create_app()
-    with TestClient(app) as client:
+    with TestClient(app):
         payload = _valid_payload()
         payload["authority_scope"] = "permissionless_admission"
-        response = client.post("/v1/public/init/admission", json=payload)
-        assert response.status_code == 400
-        assert response.json() == {"ok": False, "token": "authority_scope_forbidden"}
+        with pytest.raises(PublicInitAdmissionRuntimeError) as exc_info:
+            issue_public_init_admission_receipt(
+                payload=payload,
+                epoch_id=f"public-init-admission::{app.state.consensus.epoch_index}",
+                store=app.state.public_admission_store,
+            )
+        assert exc_info.value.token == "authority_scope_forbidden"
+
+
+def test_phase_1378_closes_public_init_admission_http_route() -> None:
+    app = create_app()
+    with TestClient(app) as client:
+        response = client.post("/v1/public/init/admission", json=_valid_payload())
+    assert response.status_code == 404
 
 
 def test_main_commit_touches_expected_runtime_scope_without_decision_log_mutation() -> None:
