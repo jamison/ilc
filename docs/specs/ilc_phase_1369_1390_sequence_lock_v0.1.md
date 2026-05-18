@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1385.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1385a.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -87,8 +87,12 @@ for the identity bootstrap lane.
 
 Phase 1385 addendum: SafetyNoDualCert wording now has an explicit scope split. The owned-object
 fast-path Spec B invariant has bounded TLC evidence. The epoch-checkpoint/shared-object dual-cert
-property is deferred with authority to Spec D or equivalent future formal-methods work by
-`safetynodualcert_deferred_with_authority_phase_1385`.
+property was initially deferred with authority by `safetynodualcert_deferred_with_authority_phase_1385`.
+
+Phase 1385a addendum (Strike Force, same session): The Phase 1385 deferral is CLOSED. Spec D
+(`docs/specs/tla/ilc_epoch_checkpoint_safety.tla`) delivers a TLA+ model of the epoch-checkpoint
+BFT round and was verified by TLC to full state-space exhaustion (67M states, 0 left on queue,
+no violations). Token `safetynodualcert_spec_d_proven_epoch_checkpoint` supersedes the deferral.
 
 ## 5. Locked Phase Order
 
@@ -111,7 +115,8 @@ property is deferred with authority to Spec D or equivalent future formal-method
 | 15 | 1382 | CDL-006 challenge node runtime + tests | COMPLETE; records `cdl_006_challenge_node_runtime_phase_1382.v0.1`, `cdl_006_3_body_quorum_verification_implemented`, and `cdl_006_audit_path_record_writer_implemented`; no challenge triggering, governance decision execution, graph state write, CDL mutation, public serving, or public activation. |
 | 16 | 1383 | CDL-009 fork legitimacy UX | COMPLETE; records `cdl_009_fork_legitimacy_ux_phase_1383.v0.1`, `cdl_009_signature_badge_schema_implemented`, and `cdl_009_eligibility_rules_contract_committed`; CLI/operator-only inspection helper, no public API, graph write, CDL mutation, public serving, or governance activation. |
 | 17 | 1384 | Security review scope record | COMPLETE; records `security_review_scope_recorded_phase_1384`, `audit_scope_bft_safety_economic_surfaces_high_001`, and `phase_1387_requires_project_authority_security_disposition`; commercial audit firm engagement is not required; Phase 1387 still requires project-authority disposition for every known HIGH finding. |
-| 18 | 1385 | TLA+ SafetyNoDualCert disposition | COMPLETE; records `tla_plus_safetynodualcert_disposed_phase_1385`, `safetynodualcert_deferred_with_authority_phase_1385`, and `phase_1385_epoch_checkpoint_safetynodualcert_deferred_to_spec_d`; owned-object Spec B remains bounded TLC evidence, epoch-checkpoint/shared-object proof remains deferred to Spec D or equivalent. |
+| 18 | 1385 | TLA+ SafetyNoDualCert disposition | COMPLETE; records `tla_plus_safetynodualcert_disposed_phase_1385`, `safetynodualcert_deferred_with_authority_phase_1385`, and `phase_1385_epoch_checkpoint_safetynodualcert_deferred_to_spec_d`; owned-object Spec B remains bounded TLC evidence, epoch-checkpoint/shared-object proof deferred — DEFERRAL CLOSED by Phase 1385a. |
+| 18a | 1385a | Spec D epoch-checkpoint SafetyNoDualCert (Strike Force) | COMPLETE; `safetynodualcert_spec_d_proven_epoch_checkpoint`; TLC 67M states exhaustive, no violations; closes Phase 1385 deferral. |
 | 19 | 1386 | Multi-operator genesis key ceremony | SENSITIVE Genesis authority surface. |
 | 20 | 1386a | Production TLS gRPC path proof | NON-SENSITIVE proof/testnet hardening; also owns `get_epoch_chain()` receive-size/channel limit. |
 | 21 | 1386b | Validator endpoint registry ADR | NON-SENSITIVE ADR/spec; defines epoch-scoped `QUIC_ENDPOINT` graph edges and projection contract. |
