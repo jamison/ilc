@@ -71,6 +71,7 @@ struct RawNodeConfig {
     lmdb_path: String,
     validator_consensus_key_path: String,
     grpc_listen_addr: Option<String>,
+    endpoint_projection_path: Option<String>,
     /// settlement_path — controls live ECU settlement routing.
     /// Omitting or setting "none" preserves the current non-activation posture.
     /// Set to "mysticeti_fast_path" only after separate human authorization
@@ -135,6 +136,8 @@ pub struct NodeConfig {
     pub grpc_listen_addr: Option<std::net::SocketAddr>,
     /// Settlement path posture. Default = `SettlementPath::None` (non-activation).
     pub settlement_path: SettlementPath,
+    /// Optional ADR-0039 endpoint projection file. Required for production activation path.
+    pub endpoint_projection_path: Option<PathBuf>,
 }
 
 // ---------------------------------------------------------------------------
@@ -289,6 +292,7 @@ pub fn load_node_config(
         validator_sk,
         grpc_listen_addr,
         settlement_path,
+        endpoint_projection_path: cfg.endpoint_projection_path.map(PathBuf::from),
     })
 }
 

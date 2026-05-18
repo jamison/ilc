@@ -28,7 +28,7 @@ rustls = { version = "0.23", features = ["ring"] }
 fips204 = { version = "0.4", features = ["ml-dsa-65"] }
 fips205 = { version = "0.4", features = ["slh_dsa_sha2_128s"] }
 bip39 = "2"
-rand_core = "0.6"
+rand_core = { version = "0.6", features = ["std"] }
 secret-sharing-rs = "0.5.1"
 
 [dev-dependencies]

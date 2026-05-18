@@ -43,6 +43,7 @@ use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
 use crate::fast_path::FastPathProtocol;
 use crate::network::{GossipEnvelope, GossipMessage, PeerNetwork};
+use crate::persistent_quic::PersistentQuicSessionManager;
 use crate::types::{ECUTransfer, ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID};
 use crate::validator::sign_message;
 
@@ -167,6 +168,8 @@ pub struct NodeRunner {
     in_flight: Arc<Mutex<HashMap<ObjectRef, InFlight>>>,
     /// Outbound connection pool: one QUIC connection per peer, reused across messages.
     pub outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
+    /// ADR-0039 projection-backed persistent session manager for production activation path.
+    pub persistent_sessions: Option<Arc<PersistentQuicSessionManager>>,
     #[cfg(feature = "testnet_fault_sim")]
     pub censor_validator: Option<u32>,
     #[cfg(feature = "testnet_fault_sim")]
@@ -201,6 +204,7 @@ impl NodeRunner {
             peer_addrs,
             in_flight: Arc::new(Mutex::new(HashMap::new())),
             outbound_pool: Arc::new(Mutex::new(HashMap::new())),
+            persistent_sessions: None,
             #[cfg(feature = "testnet_fault_sim")]
             censor_validator: std::env::var("CENSOR_VALIDATOR")
                 .ok()
@@ -218,6 +222,14 @@ impl NodeRunner {
             #[cfg(feature = "testnet_fault_sim")]
             delay_ms: std::env::var("DELAY_MS").ok().and_then(|v| v.parse().ok()),
         }
+    }
+
+    pub fn with_persistent_sessions(
+        mut self,
+        persistent_sessions: Arc<PersistentQuicSessionManager>,
+    ) -> Self {
+        self.persistent_sessions = Some(persistent_sessions);
+        self
     }
 
     /// Main accept loop: accept inbound QUIC connections and dispatch each in its own task.
@@ -902,7 +914,7 @@ impl NodeRunner {
         &self,
         cert: TransferCertificate,
     ) -> Result<(), ILCConsensusError> {
-        for (peer_id, addr) in &self.peer_addrs {
+        for (peer_id, _addr) in &self.peer_addrs {
             #[cfg(feature = "testnet_fault_sim")]
             if self.partition_block_peers.contains(&peer_id.0) {
                 eprintln!(
@@ -911,12 +923,10 @@ impl NodeRunner {
                 );
                 continue;
             }
-            let env = GossipEnvelope {
-                frame_type: 0x00,
-                peer_id: self.validator_id,
-                payload: GossipMessage::Certificate(cert.clone()),
-            };
-            if let Err(e) = self.send_envelope_to_addr(*addr, env).await {
+            if let Err(e) = self
+                .send_to_peer(*peer_id, GossipMessage::Certificate(cert.clone()))
+                .await
+            {
                 eprintln!(
                     "[m010_node] validator_id={} broadcast_certificate: failed to send to peer={}: {}",
                     self.validator_id.0, peer_id.0, e
@@ -952,6 +962,10 @@ impl NodeRunner {
             peer_id: self.validator_id,
             payload: msg,
         };
+        if let Some(manager) = &self.persistent_sessions {
+            manager.transmit_persistent(peer_id, env).await?;
+            return Ok(());
+        }
         self.send_envelope_to_addr(addr, env).await
     }
 
