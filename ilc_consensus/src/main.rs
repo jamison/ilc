@@ -26,6 +26,7 @@ use ilc_consensus::{
     fast_path::FastPathProtocol,
     network::PeerNetwork,
     node::NodeRunner,
+    persistent_quic::{load_endpoint_projection_from_path, PersistentQuicSessionManager},
     types::{ILCConsensusError, ValidatorID},
 };
 use tonic::transport::{Identity, ServerTlsConfig};
@@ -254,11 +255,34 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 7. Build peer address list for outbound connections
     // -----------------------------------------------------------------------
-    let peer_addrs: Vec<(ValidatorID, std::net::SocketAddr)> = cfg
-        .peers
-        .iter()
-        .map(|p| (ValidatorID(p.validator_id), p.addr))
-        .collect();
+    let mut persistent_sessions: Option<Arc<PersistentQuicSessionManager>> = None;
+    let peer_addrs: Vec<(ValidatorID, std::net::SocketAddr)> = match cfg.settlement_path {
+        SettlementPath::MysticetiFastPath => {
+            let projection_path = cfg.endpoint_projection_path.as_ref().ok_or_else(|| {
+                ILCConsensusError::Other(
+                    "settlement_path=mysticeti_fast_path requires endpoint_projection_path; \
+                     legacy config peers are testnet-only and not valid activation authority"
+                        .into(),
+                )
+            })?;
+            let projection = load_endpoint_projection_from_path(projection_path)?;
+            let peer_addrs = projection
+                .preferred_peer_addrs()
+                .into_iter()
+                .filter(|(id, _)| *id != ValidatorID(cfg.validator_id))
+                .collect();
+            persistent_sessions = Some(Arc::new(PersistentQuicSessionManager::new(
+                Arc::clone(&network),
+                projection,
+            )));
+            peer_addrs
+        }
+        SettlementPath::None => cfg
+            .peers
+            .iter()
+            .map(|p| (ValidatorID(p.validator_id), p.addr))
+            .collect(),
+    };
 
     // -----------------------------------------------------------------------
     // 8. Optional: gRPC AppReadService
@@ -283,7 +307,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 9. Start node control plane
     // -----------------------------------------------------------------------
-    let runner = Arc::new(NodeRunner::new(
+    let mut runner = NodeRunner::new(
         ValidatorID(cfg.validator_id),
         genesis_network_id,
         f_for_gate,
@@ -293,7 +317,11 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         balance_store,
         epoch_store,
         peer_addrs,
-    ));
+    );
+    if let Some(manager) = persistent_sessions {
+        runner = runner.with_persistent_sessions(manager);
+    }
+    let runner = Arc::new(runner);
 
     eprintln!(
         "[m010_harness] m010_harness_startup_complete validator_id={}",

@@ -330,7 +330,7 @@ Notes:
 | 19 | 1386 | Genesis validator bootstrap exception record | Constitutional | COMPLETE; Genesis-controlled single-custodian pre-RC/testnet exception; single-operator-compromise resistance is not confirmed |
 | 20 | 1386a | Production TLS gRPC path proof | Runtime | COMPLETE; TLS path proven; epoch-0 sentinel reconciled; channel receive limit added |
 | 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | COMPLETE; ADR-0039 accepted; endpoint registry/projection contract defined |
-| 22 | 1386c | Persistent QUIC connectivity proof | Runtime | **SENSITIVE** |
+| 22 | 1386c | Persistent QUIC connectivity proof | Runtime | COMPLETE; projection-backed persistent sessions implemented in `ilc_consensus/`; direct QUIC and CDL-078 relay fallback proven; activation path requires `endpoint_projection_path` instead of hardcoded config peers |
 | 23 | 1387 | Pre-activation hardening gate | Gate | **SENSITIVE** |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | **SENSITIVE** |
 | 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | **SENSITIVE** |
@@ -786,6 +786,13 @@ Deliverables:
 - No hardcoded peer list in activation path; addresses read from Phase 1386b registry projection
 - Acceptance test: reject any projection type with write/update/set/insert/delete methods
   outside full rebuild from signed graph edges
+
+Status: COMPLETE. Phase 1386c records `persistent_validator_quic_sessions_proven_phase_1386c`,
+`direct_quic_path_proven_phase_1386c`, `cdl_078_relay_fallback_implemented_phase_1386c`,
+`no_hardcoded_peer_list_activation_path_confirmed_phase_1386c`, and
+`write_path_projection_rejected_phase_1386c`. It adds `ilc_consensus/src/persistent_quic.rs`,
+requires `endpoint_projection_path` for `settlement_path=mysticeti_fast_path`, and keeps
+legacy config peers scoped to `settlement_path=none` non-activation/testnet posture.
 
 Record: `persistent_validator_quic_sessions_proven_phase_1386c`
 
