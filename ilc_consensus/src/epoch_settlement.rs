@@ -46,6 +46,12 @@ impl EpochStore {
     /// `process_epoch_checkpoint` which performs full BLS AggSig verification before writing.
     /// Enforces the same monotonicity constraint as EpochSettlementProtocol: returns InvalidEpoch
     /// if the epoch has already been committed.
+    // MEDIUM-001 fix: gate the function itself (not just its caller) to testnet_fault_sim.
+    // This makes the compile-time invariant explicit: commit_epoch_record (BLS-bypass path)
+    // cannot be called from production code because the symbol does not exist outside the
+    // testnet_fault_sim feature. The caller (handle_epoch_settlement_tx) is already gated;
+    // this adds defense-in-depth at the function level.
+    #[cfg(feature = "testnet_fault_sim")]
     pub fn commit_epoch_record(
         &self,
         record: EpochSettlementRecord,

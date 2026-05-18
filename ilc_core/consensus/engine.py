@@ -95,7 +95,8 @@ def _engine_apply_slash(
         node_stakes.get(target_id, Decimal("0")),
         "consensus_stake_balance_invalid",
     )
-    new_balance = current - stake_amount
+    # MEDIUM-010 fix: floor at zero — stake balance cannot go negative.
+    new_balance = max(Decimal("0"), current - stake_amount)
     node_stakes[target_id] = new_balance
 
     logger.info(

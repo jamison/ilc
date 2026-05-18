@@ -69,7 +69,10 @@ class EpochSnapshotValidationError(ValueError):
 
 
 def _stable_json(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    # LOW-009 fix: allow_nan=False ensures NaN/Infinity raises ValueError rather than
+    # producing a bare NaN literal (invalid JSON) that would make the SHA-256 hash
+    # non-portable across parsers and Python versions.
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def _stable_sha256(value: Any) -> str:
