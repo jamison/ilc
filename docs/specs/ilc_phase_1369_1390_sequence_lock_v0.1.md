@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1383.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1384.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -24,7 +24,7 @@ production_minting_activation_deferred_phase_1368
 
 Window 1343-1368 is closed by Phase 1368. Window 1369-1390 is now opened and
 sequence-locked for public claimability governance, CDL-006/CDL-009 completeness,
-external audit engagement, production connectivity proofing, accepted ADR/CDL
+security review scope and disposition planning, production connectivity proofing, accepted ADR/CDL
 coverage review, and the eventual public-claimability gate.
 
 The lock preserves the inherited Phase 1366 soft-RC verdict:
@@ -105,7 +105,7 @@ for the identity bootstrap lane.
 | 14 | 1381 | CDL-006 challenge node spec + stub | COMPLETE; records `cdl_006_challenge_node_spec_phase_1381`, `cdl_006_challenge_node_runtime_stub_phase_1381`, and `cdl_006_multi_body_3_body_quorum_spec_committed`; no production quorum verification, audit-path write, CDL mutation, or public activation. |
 | 15 | 1382 | CDL-006 challenge node runtime + tests | COMPLETE; records `cdl_006_challenge_node_runtime_phase_1382.v0.1`, `cdl_006_3_body_quorum_verification_implemented`, and `cdl_006_audit_path_record_writer_implemented`; no challenge triggering, governance decision execution, graph state write, CDL mutation, public serving, or public activation. |
 | 16 | 1383 | CDL-009 fork legitimacy UX | COMPLETE; records `cdl_009_fork_legitimacy_ux_phase_1383.v0.1`, `cdl_009_signature_badge_schema_implemented`, and `cdl_009_eligibility_rules_contract_committed`; CLI/operator-only inspection helper, no public API, graph write, CDL mutation, public serving, or governance activation. |
-| 17 | 1384 | External security audit engagement | NON-SENSITIVE external process start; signed report or risk-acceptance required before Phase 1387 can pass. |
+| 17 | 1384 | Security review scope record | COMPLETE; records `security_review_scope_recorded_phase_1384`, `audit_scope_bft_safety_economic_surfaces_high_001`, and `phase_1387_requires_project_authority_security_disposition`; commercial audit firm engagement is not required; Phase 1387 still requires project-authority disposition for every known HIGH finding. |
 | 18 | 1385 | TLA+ SafetyNoDualCert disposition | NON-SENSITIVE governance disposition. |
 | 19 | 1386 | Multi-operator genesis key ceremony | SENSITIVE Genesis authority surface. |
 | 20 | 1386a | Production TLS gRPC path proof | NON-SENSITIVE proof/testnet hardening; also owns `get_epoch_chain()` receive-size/channel limit. |
@@ -175,6 +175,8 @@ following is discovered:
 - A phase treats the production TLS gRPC path as proven before Phase 1386a.
 - A phase opens production minting, production mining, live ECU transfer routing, public RC publication, release signing, public source publication, or value-path activation without a later explicit gate.
 - A phase claims `soft_rc_eligible=true` without re-running and passing the full gate after Phase 1367 evidence.
+- A phase treats a commercial signed audit report as required after Phase 1384 rather than the project-authority security disposition gate.
+- A phase treats the Phase 1384 scope record as satisfying the Phase 1387 disposition requirement.
 - A phase finds any accepted ADR or ratified CDL public-RC obligation without implementation, explicit public-RC deferral authority, or a routed phase before Phase 1389.
 
 ## 10. Non-Authorization Floor

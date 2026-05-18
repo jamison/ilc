@@ -44,9 +44,11 @@ external audit, and full public RC activation window**. Its primary obligations 
 9. **CDL-009 fork legitimacy UX** — CDL-009 policy ratified Phase 993,
    signature-badge+eligibility-rules selected, but UX surface was never built.
    Governance completeness prerequisite.
-10. **External security audit engagement** — M-022 open item #6. Trail of Bits, Sigma
-    Prime, or Zellic. Covers `ilc_consensus/` BFT safety, `ilc_core/` economic surfaces,
-    HIGH-001 defense review. Signed report or risk-acceptance letter required at Phase 1387.
+10. **Security review scope record** — M-022 open item #6. Records AI-assisted
+    structured review plus open source community contribution path; commercial audit firm
+    engagement is not required. Covers `ilc_consensus/` BFT safety, `ilc_core/`
+    economic surfaces, and HIGH-001 defense review. Project-authority security disposition
+    is required at Phase 1387 for every known HIGH finding.
 11. **TLA+ SafetyNoDualCert disposition** — M-022 open item #1. Empirical M-019
     confirmation is current coverage. Must be formally disposed before Phase 1389.
 12. **Multi-operator genesis key ceremony** — M-022 open item #7. Distribute genesis
@@ -177,7 +179,7 @@ No tail-slot conditional phases follow Phase 1390.
 
 ### 3.2 Deferred governance (scheduled this window, not constitutionally obligated but blocking Phase 1387/1389)
 
-- External security audit engagement — Phase 1384; signed report or risk-acceptance required at Phase 1387
+- Security review scope record — Phase 1384; project-authority security disposition required at Phase 1387
 - TLA+ SafetyNoDualCert disposition — Phase 1385
 - Multi-operator genesis key ceremony — Phase 1386
 - Production TLS gRPC path proof — Phase 1386a; also verifies epoch-0 sentinel reconciliation
@@ -384,7 +386,7 @@ precondition from Phase 1387a. It fails closed if any of the following is not co
 
 - **Phase 1369 Fix1** — numeric hardening only; no CDL mutation; no value-path or public surface activation; no protocol semantic change; bundled low-risk cleanup
 - **Phase 1370** — ADR-0038 agent birth attestation; spec/ADR document only; no CDL mutation; no runtime activation
-- **Phase 1384** — external audit engagement initiation; initiates and funds engagement; no runtime or CDL change
+- **Phase 1384** — security review scope record; AI-assisted and community path; no runtime or CDL change
 - **Phase 1385** — TLA+ SafetyNoDualCert disposition; governance disposition document only
 - **Phase 1386a** — production TLS gRPC path proof; testnet infrastructure only; no production activation; no CDL mutation
 - **Phase 1386b** — validator endpoint registry ADR; spec/ADR document only; no CDL mutation
@@ -667,23 +669,25 @@ Record: `cdl_009_fork_legitimacy_ux_phase_1383.v0.1`
 
 Commit subject: `phase 1383 cdl-009 fork legitimacy ux`
 
-### Phase 1384 — External security audit engagement
+### Phase 1384 — Security review scope record
 
 **NON-SENSITIVE** to initiate.
 
 Deliverables:
-- Engagement scope document at `docs/specs/ilc_external_security_audit_engagement_1384_v0.1.md`
-  recording: audit firm (Trail of Bits, Sigma Prime, or Zellic), scope (`ilc_consensus/`
-  BFT safety + `ilc_core/` economic surfaces + HIGH-001 defense review), engagement terms,
-  and initiation evidence
+- Security review scope document at `docs/specs/ilc_security_review_scope_1384_v0.1.md`
+  recording: review path (AI-assisted structured review plus open source community security
+  contributions), rationale for no commercial audit firm requirement, scope (`ilc_consensus/`
+  BFT safety + `ilc_core/` economic surfaces + HIGH-001 defense review), and Phase 1387
+  project-authority disposition requirement.
 
-Phase 1387 cannot pass without either: (a) a signed audit report with no unaddressed
-HIGH-severity findings, or (b) for each HIGH-severity finding, a signed risk-acceptance
-letter from the appropriate authority.
+Phase 1387 cannot pass without a project-authority security disposition document for every
+known HIGH-severity finding in the scoped surfaces. The disposition may close, accept, or
+defer the finding, but it must record rationale and bounded authority. The Phase 1384 scope
+record alone is not sufficient to satisfy that gate.
 
-Record: `external_security_audit_engaged_phase_1384`
+Record: `security_review_scope_recorded_phase_1384`
 
-Commit subject: `phase 1384 external security audit engagement`
+Commit subject: `phase 1384 security review scope record`
 
 ### Phase 1385 — TLA+ SafetyNoDualCert disposition
 
@@ -776,9 +780,8 @@ Commit subject: `phase 1386c persistent quic connectivity proof`
 **SENSITIVE** — requires `GO Phase 1387`.
 
 Gate passes only if ALL of the following are confirmed:
-1. Signed audit report (from Phase 1384 engagement) or signed risk-acceptance letter for
-   every HIGH-severity finding in `ilc_consensus/` BFT safety, `ilc_core/` economic surfaces,
-   or HIGH-001 defense
+1. Project-authority security disposition document for every known HIGH-severity finding in
+   `ilc_consensus/` BFT safety, `ilc_core/` economic surfaces, or HIGH-001 defense
 2. HIGH-001 defense verified in a non-loopback deployment
 3. `production_tls_grpc_path_proven_phase_1386a` recorded
 4. Phase 1386b endpoint-registry ADR ratified and `persistent_validator_quic_sessions_proven_phase_1386c`
@@ -787,8 +790,8 @@ Gate passes only if ALL of the following are confirmed:
    deferred with authority and bounded carry-forward scope
 6. No hardcoded peer list exists in any production activation path
 
-Gate fails closed if any predecessor phase is incomplete or if any HIGH-severity audit
-finding is unaddressed without a signed risk-acceptance letter.
+Gate fails closed if any predecessor phase is incomplete or if any known HIGH-severity
+finding is missing a project-authority security disposition.
 
 Record: `pre_activation_hardening_gate_pass_phase_1387` (or explicitly `gate_blocked_reason=...`)
 
@@ -905,7 +908,7 @@ Phase 1369 sequence lock
     → Phase 1381 CDL-006 spec
         → Phase 1382 CDL-006 runtime
     → Phase 1383 CDL-009 UX  [complete; CLI/operator only]
-    → Phase 1384 external audit  [parallel; findings required at 1387]
+    → Phase 1384 security review scope  [parallel; disposition gate required at 1387]
     → Phase 1385 TLA+ disposition
     → Phase 1386 key ceremony
         → Phase 1386a production TLS gRPC
@@ -925,8 +928,9 @@ Phase 1369 sequence lock
    any open questions from Phase 1371 opening.
 2. **Does Phase 1380 require CDL-088 ratification as a hard prerequisite?** — Yes. Phase 1380
    must not execute before both CDL-090 (Phase 1373) and CDL-088 (Phase 1376) are ratified.
-3. **Phase 1384 audit firm selection** — the human reviewer must authorize the specific firm
-   before Phase 1384 commits. The Phase 1384 prompt records the selection.
+3. **Phase 1384 review path selection** — the Phase 1384 prompt records that the review path is
+   AI-assisted structured review plus open source community security contributions; commercial
+   audit firm engagement is not required under current funding and anonymity constraints.
 4. **Phase 1374 CDL-088 scope** — exact contents (reciprocal scoring, ECU-escrow admission)
    are deliberated at Phase 1375. Phase 1374 opens the CDL with candidate scope only.
 
