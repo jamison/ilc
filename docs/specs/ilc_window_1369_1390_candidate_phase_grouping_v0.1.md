@@ -57,8 +57,10 @@ external audit, and full public RC activation window**. Its primary obligations 
     a Genesis-controlled single-custodian pre-RC/testnet exception. Production
     split custody remains required before mainnet launch, not before public RC in
     Window 1369-1390.
-13. **Production TLS gRPC proof (Phase 1386a)** — Phase 1360 proved gRPC via insecure
-    channel. TLS-configured validator path not yet exercised. Required before Phase 1387.
+13. **Production TLS gRPC proof (Phase 1386a)** — COMPLETE. Phase 1360 proved gRPC
+    via insecure channel; Phase 1386a proves the TLS `build_secure_grpc_read_stub()`
+    path against a TLS-configured validator endpoint, verifies epoch-0 sentinel
+    reconciliation, and closes hardening item 7.
 14. **Validator endpoint registry ADR (Phase 1386b)** and **persistent QUIC connectivity
     proof (Phase 1386c)** — carried forward from Phase 1360 Fix2a; durable per-topology-
     epoch sessions not yet proven.
@@ -151,7 +153,7 @@ No tail-slot conditional phases follow Phase 1390.
 | `production_minting_activation_deferred_phase_1368` | Phase 1368 | Record disposition in Phase 1369 sequence lock; no activation this window unless Phase 1389 passes and authorizes |
 | `soft_rc_eligible=false_with_blockers` | Phase 1366 | Inherited status; not re-gated in Phase 1369; re-gate is Phase 1389 |
 | `legacy_public_labeled_fastapi_routes_carry_forward_phase_1301` | Phase 1301 | Phase 1378 removes or replaces all flagged routes |
-| `grpc_end_to_end_python_to_rust_proven_phase_1360` scope qualifier | Phase 1360 Fix2a | Production TLS path not exercised; route to Phase 1386a |
+| `grpc_end_to_end_python_to_rust_proven_phase_1360` scope qualifier | Phase 1360 Fix2a | Production TLS path now closed by Phase 1386a; Phase 1360 remains plaintext/insecure-channel evidence only |
 | `phase_1360_fix2a_proof_scope_narrowed_injected_checkpoint_only` | Phase 1360 Fix2a | Durable peer-to-peer sessions route to Phase 1386c |
 | 8 runtime hardening items (joint audit) | Window 1343-1368 audit | Phase 1369 Fix1 (items 1-6, 8); Phase 1386a (item 7) — see §4 |
 | `public_only_economics_rule_verified_in_canon_not_enforced_at_event_construction_boundary` | ADR-0022 / node schema audit | Phase 1387a produces accepted ADR/CDL coverage matrix and public-economics admission firewall |
@@ -185,7 +187,7 @@ No tail-slot conditional phases follow Phase 1390.
 - Security review scope record — Phase 1384; project-authority security disposition required at Phase 1387
 - TLA+ SafetyNoDualCert disposition — Phase 1385
 - Genesis validator bootstrap exception record — Phase 1386; production split custody is a mainnet-launch carry-forward
-- Production TLS gRPC path proof — Phase 1386a; also verifies epoch-0 sentinel reconciliation
+- Production TLS gRPC path proof — COMPLETE Phase 1386a; also verifies epoch-0 sentinel reconciliation
 - Validator endpoint registry ADR — Phase 1386b
 - Persistent QUIC connectivity proof — Phase 1386c
 - Accepted ADR/CDL public-RC coverage audit and public-economics admission firewall — Phase 1387a
@@ -210,7 +212,7 @@ closes the sequence lock.
 | L/M | Genesis audit log append non-atomic; concurrent writers can interleave log lines | `genesis_intervention_runtime.py:321` | **Phase 1369 Fix1** — pair with counter-lock fix; shared lock covers both |
 | L/M | LMDB pruning batch cap applies to total cursor entries scanned, not eligible tier-2 records; a large prefix of non-prunable records starves pruning | `lmdb_graph_pruning_runtime.py:154` | **Phase 1369 Fix1** — low priority; adjust cap semantics or add prunable-record counter |
 | L | LMDB pruning opens write transaction even when `dry_run=True`; no data written but exclusive write lock acquired unnecessarily | `lmdb_graph_pruning_runtime.py:154` | **Phase 1369 Fix1** — trivial: open read transaction when `dry_run=True` |
-| L | `get_epoch_chain()` materializes `records = list(...)` before bounding by `max_epoch_chain_records`; receive-size/channel limit should be added for production | `production_bridge.py:526` | **Phase 1386a** — pairs naturally with production TLS gRPC proof; add channel receive-size limit |
+| L | `get_epoch_chain()` materializes `records = list(...)` before bounding by `max_epoch_chain_records`; receive-size/channel limit should be added for production | `production_bridge.py:526` | **CLOSED Phase 1386a** — added channel receive-size limit and bounded response iteration |
 | L | `_decimal_to_string()` dead branch: both branches return the same expression; no behavioral impact | Seven epoch/economic runtimes | **Phase 1369 Fix1** — trivial cleanup; bundle with other hardening |
 
 ### 4.1 Public-Only Economics Admission Gap
@@ -326,7 +328,7 @@ Notes:
 | 17 | 1384 | External security audit engagement | Governance review | NON-SENSITIVE |
 | 18 | 1385 | TLA+ SafetyNoDualCert disposition | Governance review | COMPLETE: defer-with-authority; owned-object Spec B proof preserved, epoch-checkpoint/shared-object proof deferred; closed by Phase 1385a Spec D |
 | 19 | 1386 | Genesis validator bootstrap exception record | Constitutional | COMPLETE; Genesis-controlled single-custodian pre-RC/testnet exception; single-operator-compromise resistance is not confirmed |
-| 20 | 1386a | Production TLS gRPC path proof | Runtime | NON-SENSITIVE |
+| 20 | 1386a | Production TLS gRPC path proof | Runtime | COMPLETE; TLS path proven; epoch-0 sentinel reconciled; channel receive limit added |
 | 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | NON-SENSITIVE |
 | 22 | 1386c | Persistent QUIC connectivity proof | Runtime | **SENSITIVE** |
 | 23 | 1387 | Pre-activation hardening gate | Gate | **SENSITIVE** |
@@ -731,14 +733,18 @@ Commit subject: `phase 1386 genesis validator bootstrap record`
 
 **NON-SENSITIVE** — testnet infrastructure only; no production activation.
 
+Status: COMPLETE. Phase 1386a records `production_tls_grpc_path_proven_phase_1386a`,
+`epoch_0_sentinel_reconciliation_verified_phase_1386a`, and
+`get_epoch_chain_channel_limit_added_phase_1386a`.
+
 Deliverables:
-- Configure testnet validators with self-signed TLS certificates
-- Run `build_secure_grpc_read_stub` from `ilc_core/consensus/production_bridge.py` with
+- Rust optional gRPC server now uses tonic `ServerTlsConfig`
+- `build_secure_grpc_read_stub` from `ilc_core/consensus/production_bridge.py` was run with
   `tls_root_certificates` against a TLS-enabled validator endpoint
-- Verify epoch-0 sentinel reconciliation: confirm Rust `from_epoch=0` / `to_epoch=0`
-  semantics vs. Python bridge behavior
-- Add channel receive-size limit to `get_epoch_chain()` (item 7 from hardening carry-forward)
-- Document findings and proof at `docs/specs/ilc_production_tls_grpc_proof_1386a_v0.1.md`
+- Epoch-0 sentinel reconciliation is verified: `GetEpochChain(0,0)` returns an empty
+  complete chain at genesis
+- Channel receive-size limit and bounded response iteration were added to `get_epoch_chain()`
+- Findings and proof are recorded at `docs/specs/ilc_production_tls_grpc_proof_1386a_v0.1.md`
 
 Record: `production_tls_grpc_path_proven_phase_1386a`
 
@@ -916,7 +922,7 @@ Phase 1369 sequence lock
     → Phase 1384 security review scope  [parallel; disposition gate required at 1387]
     → Phase 1385 TLA+ disposition  [complete; deferral closed by Phase 1385a Spec D]
     → Phase 1386 bootstrap exception record
-        → Phase 1386a production TLS gRPC
+        → Phase 1386a production TLS gRPC  [complete]
             → Phase 1386b endpoint registry ADR
                 → Phase 1386c persistent QUIC
                     → Phase 1387 hardening gate
