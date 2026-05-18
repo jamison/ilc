@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1385a.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -94,6 +94,12 @@ Phase 1385a addendum (Strike Force, same session): The Phase 1385 deferral is CL
 BFT round and was verified by TLC to full state-space exhaustion (67M states, 0 left on queue,
 no violations). Token `safetynodualcert_spec_d_proven_epoch_checkpoint` supersedes the deferral.
 
+Phase 1386 addendum: The old multi-operator ceremony slot was executed as a Genesis validator
+bootstrap exception record after explicit `GO Phase 1386` and human acceptance of the exception.
+`genesis_controlled_single_custodian_bootstrap_exception_phase_1386` is recorded, single-operator-compromise resistance is not confirmed, and
+`production_split_custody_ceremony_required_before_mainnet_launch` is carried forward to
+mainnet launch planning rather than inserted as a new Phase 1387/1388/1389 public-RC gate.
+
 ## 5. Locked Phase Order
 
 | Order | Phase | Scope | Authority after Phase 1369 |
@@ -117,7 +123,7 @@ no violations). Token `safetynodualcert_spec_d_proven_epoch_checkpoint` supersed
 | 17 | 1384 | Security review scope record | COMPLETE; records `security_review_scope_recorded_phase_1384`, `audit_scope_bft_safety_economic_surfaces_high_001`, and `phase_1387_requires_project_authority_security_disposition`; commercial audit firm engagement is not required; Phase 1387 still requires project-authority disposition for every known HIGH finding. |
 | 18 | 1385 | TLA+ SafetyNoDualCert disposition | COMPLETE; records `tla_plus_safetynodualcert_disposed_phase_1385`, `safetynodualcert_deferred_with_authority_phase_1385`, and `phase_1385_epoch_checkpoint_safetynodualcert_deferred_to_spec_d`; owned-object Spec B remains bounded TLC evidence, epoch-checkpoint/shared-object proof deferred — DEFERRAL CLOSED by Phase 1385a. |
 | 18a | 1385a | Spec D epoch-checkpoint SafetyNoDualCert (Strike Force) | COMPLETE; `safetynodualcert_spec_d_proven_epoch_checkpoint`; TLC 67M states exhaustive, no violations; closes Phase 1385 deferral. |
-| 19 | 1386 | Multi-operator genesis key ceremony | SENSITIVE Genesis authority surface. |
+| 19 | 1386 | Genesis validator bootstrap exception record | COMPLETE; SENSITIVE Genesis authority surface; records `genesis_validator_bootstrap_record_committed_phase_1386`, `genesis_controlled_single_custodian_bootstrap_exception_phase_1386`, `single_operator_compromise_resistance_not_confirmed_phase_1386`, and `production_split_custody_ceremony_required_before_mainnet_launch`; no split-custody claim, no private key material, no activation. |
 | 20 | 1386a | Production TLS gRPC path proof | NON-SENSITIVE proof/testnet hardening; also owns `get_epoch_chain()` receive-size/channel limit. |
 | 21 | 1386b | Validator endpoint registry ADR | NON-SENSITIVE ADR/spec; defines epoch-scoped `QUIC_ENDPOINT` graph edges and projection contract. |
 | 22 | 1386c | Persistent QUIC connectivity proof | SENSITIVE consensus connectivity proof with direct + relay fallback. |
