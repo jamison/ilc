@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386b.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386c.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -111,6 +111,12 @@ forms are specified; endpoint validity is bound to CDL-068 topology epochs; and 
 read-only projection contract prohibits hardcoded production peer lists and independent
 write/update/set/insert/delete endpoint mutation paths.
 
+Phase 1386c addendum: persistent QUIC connectivity is implemented in `ilc_consensus/`
+with projection-backed per-topology-epoch sessions. Direct QUIC is proven first;
+CDL-078 relay fallback is proven second; `settlement_path=mysticeti_fast_path` now
+requires `endpoint_projection_path`; and projection write-path methods are rejected
+by acceptance test.
+
 ## 5. Locked Phase Order
 
 | Order | Phase | Scope | Authority after Phase 1369 |
@@ -137,7 +143,7 @@ write/update/set/insert/delete endpoint mutation paths.
 | 19 | 1386 | Genesis validator bootstrap exception record | COMPLETE; SENSITIVE Genesis authority surface; records `genesis_validator_bootstrap_record_committed_phase_1386`, `genesis_controlled_single_custodian_bootstrap_exception_phase_1386`, `single_operator_compromise_resistance_not_confirmed_phase_1386`, and `production_split_custody_ceremony_required_before_mainnet_launch`; no split-custody claim, no private key material, no activation. |
 | 20 | 1386a | Production TLS gRPC path proof | COMPLETE; records `production_tls_grpc_path_proven_phase_1386a`, `epoch_0_sentinel_reconciliation_verified_phase_1386a`, and `get_epoch_chain_channel_limit_added_phase_1386a`; no production activation. |
 | 21 | 1386b | Validator endpoint registry ADR | COMPLETE; records `validator_endpoint_registry_adr_ratified_phase_1386b`, `quic_endpoint_epoch_scoped_signed_edge_defined`, `read_only_projection_contract_defined_phase_1386b`, and `no_hardcoded_peer_list_production_activation_path_phase_1386b`; no runtime or CDL mutation. |
-| 22 | 1386c | Persistent QUIC connectivity proof | SENSITIVE consensus connectivity proof with direct + relay fallback. |
+| 22 | 1386c | Persistent QUIC connectivity proof | COMPLETE; records `persistent_validator_quic_sessions_proven_phase_1386c`, `direct_quic_path_proven_phase_1386c`, `cdl_078_relay_fallback_implemented_phase_1386c`, `no_hardcoded_peer_list_activation_path_confirmed_phase_1386c`, and `write_path_projection_rejected_phase_1386c`; no CDL mutation, `ilc_core/` mutation, public P2P, production validator deployment, relay service activation, value-path activation, or public RC claim. |
 | 23 | 1387 | Pre-activation hardening gate | SENSITIVE gate; fails closed if audit/key/connectivity/hardening prerequisites are incomplete. |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | SENSITIVE gate/runtime phase; blocks Phase 1388/1389 unless public-only economics and accepted-functionality coverage are proven. |
 | 25 | 1388 | CDL-048 activation + counsel clearance | SENSITIVE value-path/counsel phase; fails closed without Phase 1387a pass. |
