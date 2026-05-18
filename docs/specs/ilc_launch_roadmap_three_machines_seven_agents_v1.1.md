@@ -346,15 +346,20 @@ public_repository_publication_not_authorized_phase_1255
 Includes multi-hop centrality attribution CDL, cross-epoch compaction,
 CDL-070 PQ ceremony, reputation/centrality float migration, dynamic epistemic
 traversal engine, and later TLA+/TLAPS work. The immediate pre-RC TLA item is
-now closed as informal refinement notes. Post-launch Spec D, TLAPS, and
-economic specs remain deferred. Spec A must not be described as a clean
-completed `MaxRound=12` gate; Phase 816 was memory-bound without a discovered
-counterexample before heap exhaustion.
+now closed as informal refinement notes. Phase 1385 records
+`tla_plus_safetynodualcert_disposed_phase_1385` and
+`safetynodualcert_deferred_with_authority_phase_1385`: owned-object Spec B
+`SafetyNoDualCert` remains bounded TLC evidence, while the epoch-checkpoint/
+shared-object dual-cert proof remains deferred to Spec D or equivalent. Spec A
+must not be described as a clean completed `MaxRound=12` gate; Phase 816 was
+memory-bound without a discovered counterexample before heap exhaustion.
 
 ```text
 tla_refinement_notes_pre_rc_window_1241_plus_candidate
 tla_refinement_notes_pre_rc_closed_phase_1255
 phase_1255_tla_allowlist_export_complete
+tla_plus_safetynodualcert_disposed_phase_1385
+safetynodualcert_deferred_with_authority_phase_1385
 ```
 
 ### Gap 9 - Sidecar Projection Endpoint
