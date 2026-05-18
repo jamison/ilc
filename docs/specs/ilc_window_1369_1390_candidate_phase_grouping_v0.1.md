@@ -1026,7 +1026,7 @@ This window does NOT:
 | Validator connectivity production model | `docs/research/ilc_validator_connectivity_production_model_v0.1.md` | 1386b/1386c architecture |
 | ADR-0037 Genesis canonical lineage contract | `docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md` | ADR-0038 predecessor |
 | PLANNING_INDEX | `docs/PLANNING_INDEX.md` | §0 must be updated at Phase 1369 and Phase 1390 |
-| Sidecar query runtime | `ilc_core/graph/sidecar_query_runtime.py` | Phase 1379 target; `NotImplementedError` at line 115 |
+| Sidecar query runtime | `ilc_core/graph/sidecar_query_runtime.py` | Phase 1379 target; Phase 1379 removes the residual `NotImplementedError` fallback and confirms all locked read-only query types dispatch |
 | Production bridge | `ilc_core/consensus/production_bridge.py` | Phase 1386a TLS target; `get_epoch_chain` channel limit |
 | Phase 1343-1368 sequence lock | `docs/specs/ilc_phase_1343_1368_sequence_lock_v0.1.md` | Format reference for Phase 1369 sequence lock |
 | Window closure handoff schema | `docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md` | Phase 1390 must follow exactly |

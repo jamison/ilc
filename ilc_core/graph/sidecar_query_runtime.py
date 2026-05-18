@@ -20,6 +20,7 @@ from ilc_core.graph.agent_graph_projection_runtime import (
 
 
 SIDECAR_QUERY_RUNTIME_VERSION = "sidecar_query_runtime_1237.v0.1"
+SIDECAR_QUERY_COMPLETENESS_TOKEN = "adr_0031_sidecar_query_runtime_completeness_phase_1379"
 SIDECAR_PROJECTION_DEPENDENCY = AGENT_GRAPH_PROJECTION_RUNTIME_VERSION
 DEFAULT_SIDECAR_EXPORT_MAX_BYTES = 10_000_000
 DEFAULT_SIDECAR_EXPORT_MAX_RESULTS = 1_000
@@ -112,7 +113,7 @@ def execute_sidecar_query(
             bounds=active_bounds,
         )
 
-    raise NotImplementedError(f"sidecar_query_{query_type}_not_yet_implemented")
+    raise ValueError("sidecar_query_dispatch_incomplete")
 
 
 def export_sidecar_query_json(
