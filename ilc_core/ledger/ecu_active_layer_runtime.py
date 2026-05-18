@@ -159,7 +159,8 @@ class EcuActiveLayerRuntime:
                 expected_performing_agent_id=record.performing_agent_id,
                 performing_agent_id=performing_agent_id,
             )
-        if int(acceptance_epoch) > record.expiry_epoch:
+        # LOW-007 fix: use >= for consistency with process_epoch_boundary expiry sweep.
+        if int(acceptance_epoch) >= record.expiry_epoch:
             return self._failure(
                 "earmark_past_expiry",
                 earmark_id=earmark_id,
@@ -199,7 +200,8 @@ class EcuActiveLayerRuntime:
                 expected_performing_agent_id=record.performing_agent_id,
                 performing_agent_id=performing_agent_id,
             )
-        if int(delivery_epoch) > record.expiry_epoch:
+        # LOW-007 fix: use >= for consistency with process_epoch_boundary expiry sweep.
+        if int(delivery_epoch) >= record.expiry_epoch:
             return self._failure(
                 "earmark_past_expiry",
                 earmark_id=earmark_id,

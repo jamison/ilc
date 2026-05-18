@@ -164,6 +164,9 @@ def test_only_named_performing_agent_can_accept_or_deliver() -> None:
 
 
 def test_accept_and_deliver_reject_epochs_past_expiry() -> None:
+    # LOW-007 fix: earmark_accept and earmark_deliver use >= for expiry check,
+    # consistent with process_epoch_boundary. expiry_epoch = proposal_epoch + 5 = 15.
+    # The last valid acceptance/delivery epoch is 14; epoch 15 is the expiry epoch itself.
     runtime = EcuActiveLayerRuntime(fixed_expiry_validation_epochs=5)
     runtime.set_accrued_ecu("agent-a", 10.0)
     proposed = runtime.earmark_propose(
@@ -177,6 +180,16 @@ def test_accept_and_deliver_reject_epochs_past_expiry() -> None:
     )
     assert proposed["ok"] is True
 
+    # Accept at expiry epoch (15) is now rejected — consistent with process_epoch_boundary.
+    at_expiry_accept = runtime.earmark_accept(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        acceptance_epoch=15,
+    )
+    assert at_expiry_accept["ok"] is False
+    assert at_expiry_accept["token"] == "earmark_past_expiry"
+
+    # Accept past expiry also rejected.
     late_accept = runtime.earmark_accept(
         earmark_id="e-1",
         performing_agent_id="agent-b",
@@ -185,13 +198,25 @@ def test_accept_and_deliver_reject_epochs_past_expiry() -> None:
     assert late_accept["ok"] is False
     assert late_accept["token"] == "earmark_past_expiry"
 
+    # Accept before expiry epoch succeeds.
     accepted = runtime.earmark_accept(
         earmark_id="e-1",
         performing_agent_id="agent-b",
-        acceptance_epoch=15,
+        acceptance_epoch=14,
     )
     assert accepted["ok"] is True
 
+    # Deliver at expiry epoch (15) is also rejected.
+    at_expiry_deliver = runtime.earmark_deliver(
+        earmark_id="e-1",
+        performing_agent_id="agent-b",
+        contribution_id="contrib-1",
+        delivery_epoch=15,
+    )
+    assert at_expiry_deliver["ok"] is False
+    assert at_expiry_deliver["token"] == "earmark_past_expiry"
+
+    # Deliver past expiry is also rejected.
     late_deliver = runtime.earmark_deliver(
         earmark_id="e-1",
         performing_agent_id="agent-b",

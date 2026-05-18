@@ -648,12 +648,14 @@ impl NodeRunner {
         sig: crate::types::ValidatorSig,
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
-        // FIXME(M-5): self.f is captured at NodeRunner::new() and is NOT updated
-        // when validators are admitted or ejected at runtime. For the current
-        // genesis network (static 4-validator set) this is safe, but dynamic
-        // membership requires reading f from self.fast_path.validator_set at
-        // quorum-check time instead.
-        let quorum = 2 * self.f + 1;
+        // MEDIUM-004 fix: read f from the live ValidatorSet instead of using
+        // self.f (captured at NodeRunner::new()). This ensures that after a
+        // rotate_validator_set call the quorum threshold reflects the current
+        // membership, not the genesis value.
+        let quorum = {
+            let vs = self.fast_path.validator_set.read().unwrap();
+            2 * vs.f + 1
+        };
         let mut to_certify: Option<(ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> =
             None;
 
