@@ -4,8 +4,6 @@ import inspect
 import json
 from pathlib import Path
 
-import pytest
-
 from ilc_core.governance import challenge_node_runtime as runtime
 
 
@@ -26,7 +24,8 @@ def test_phase_1381_required_tokens_and_public_rc_exclude_marker() -> None:
         assert token in spec
         assert token in runtime_source
 
-    assert "PUBLIC_RC_EXCLUDE: cdl_006_challenge_node_runtime_stub_phase_1381" in runtime_source
+    assert "cdl_006_challenge_node_runtime_phase_1382.v0.1" in runtime_source
+    assert "PUBLIC_RC_EXCLUDE: cdl_006_challenge_node_runtime_phase_1382.v0.1" in runtime_source
 
 
 def test_cdl_006_register_row_ratifies_multi_body_checks_only() -> None:
@@ -73,7 +72,7 @@ def test_schema_template_json_is_canonical_and_sorted() -> None:
     )
 
 
-def test_production_functions_are_signature_locked_and_deferred() -> None:
+def test_production_functions_are_signature_locked_and_implemented() -> None:
     verify_signature = inspect.signature(runtime.verify_challenge_quorum)
     write_signature = inspect.signature(runtime.write_challenge_audit_path_record)
 
@@ -93,10 +92,59 @@ def test_production_functions_are_signature_locked_and_deferred() -> None:
         inspect.Parameter.KEYWORD_ONLY
     )
 
-    with pytest.raises(ValueError, match=runtime.CDL006_PRODUCTION_RUNTIME_DEFERRED_TOKEN):
-        runtime.verify_challenge_quorum({})
-    with pytest.raises(ValueError, match=runtime.CDL006_PRODUCTION_RUNTIME_DEFERRED_TOKEN):
-        runtime.write_challenge_audit_path_record({}, {})
+    challenge_record = {
+        "audit_path_ref": "sha256:challenge-audit-genesis",
+        "body_attestations": [
+            {
+                "attestation_ref": "sha256:constitutional-attestation",
+                "body_id": "constitutional-body",
+                "body_role": "constitutional",
+                "epoch": 1382,
+                "signer_agent_id": "agent:constitutional",
+                "signature_ref": "sha256:constitutional-signature",
+                "verdict": "approve_challenge",
+            },
+            {
+                "attestation_ref": "sha256:technical-attestation",
+                "body_id": "technical-body",
+                "body_role": "technical",
+                "epoch": 1382,
+                "signer_agent_id": "agent:technical",
+                "signature_ref": "sha256:technical-signature",
+                "verdict": "approve_challenge",
+            },
+            {
+                "attestation_ref": "sha256:affected-party-attestation",
+                "body_id": "affected-party-body",
+                "body_role": "affected_party",
+                "epoch": 1382,
+                "signer_agent_id": "agent:affected-party",
+                "signature_ref": "sha256:affected-party-signature",
+                "verdict": "approve_challenge",
+            },
+        ],
+        "challenge_id": "challenge:phase-1382",
+        "challenged_action_ref": "sha256:action",
+        "created_epoch": 1382,
+        "creator_agent_id": "agent:creator",
+        "evidence_refs": ["sha256:evidence"],
+        "governance_basis_ref": "CDL-006",
+        "remedy_requested": "reopen",
+        "schema_version": runtime.CHALLENGE_RECORD_SCHEMA_VERSION,
+        "status": "under_review",
+    }
+
+    assert runtime.verify_challenge_quorum(challenge_record) is True
+    audit_entry = runtime.write_challenge_audit_path_record(
+        challenge_record,
+        {
+            "entry_epoch": 1382,
+            "entry_type": "quorum_evaluated",
+            "payload_ref": "sha256:payload",
+            "writer_agent_id": "agent:writer",
+        },
+    )
+    assert audit_entry["audit_entry_id"].startswith("sha256:")
 
 
 def test_spec_rejects_single_and_dual_body_shortcuts() -> None:

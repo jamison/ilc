@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1369 only.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1382.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -103,7 +103,7 @@ for the identity bootstrap lane.
 | 12 | 1379 | ADR-0031 sidecar query runtime completeness | SENSITIVE public-query runtime completion. |
 | 13 | 1380 | CDL-048 ECU-to-ILC dry-run wiring | COMPLETE; gate-closed value-path dry-run wiring; records `cdl_048_dry_run_wiring_phase_1380`, `cdl_048_not_activated_phase_1380`, `gate_closed_state_confirmed_phase_1380`, and `double_entry_conservation_proven_wire_level_phase_1380`; no live activation. |
 | 14 | 1381 | CDL-006 challenge node spec + stub | COMPLETE; records `cdl_006_challenge_node_spec_phase_1381`, `cdl_006_challenge_node_runtime_stub_phase_1381`, and `cdl_006_multi_body_3_body_quorum_spec_committed`; no production quorum verification, audit-path write, CDL mutation, or public activation. |
-| 15 | 1382 | CDL-006 challenge node runtime + tests | SENSITIVE governance runtime; production implementation remains required. |
+| 15 | 1382 | CDL-006 challenge node runtime + tests | COMPLETE; records `cdl_006_challenge_node_runtime_phase_1382.v0.1`, `cdl_006_3_body_quorum_verification_implemented`, and `cdl_006_audit_path_record_writer_implemented`; no challenge triggering, governance decision execution, graph state write, CDL mutation, public serving, or public activation. |
 | 16 | 1383 | CDL-009 fork legitimacy UX | SENSITIVE governance UX/runtime surface. |
 | 17 | 1384 | External security audit engagement | NON-SENSITIVE external process start; signed report or risk-acceptance required before Phase 1387 can pass. |
 | 18 | 1385 | TLA+ SafetyNoDualCert disposition | NON-SENSITIVE governance disposition. |

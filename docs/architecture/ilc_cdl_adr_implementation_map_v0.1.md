@@ -23,7 +23,7 @@ GOV-A with a missing component is a gap.
 
 > **WARNING — living document:** This map was generated from a point-in-time scan.
 > Update it when new CDL/ADR phases ratify, or when runtime implementations land.
-> Phase 1380 updated the CDL-048/CDL-088 and ADR-0031 rows only; other rows
+> Phase 1382 updated the CDL-006, CDL-048/CDL-088, and ADR-0031 rows only; other rows
 > should still be re-verified before use.
 
 ---
@@ -50,7 +50,7 @@ GOV-A with a missing component is a gap.
 | Sovereign substrate | ADR-0028 | `ilc_consensus/` (M-series Rust crate) | **PARTIAL** — M-series complete; `ilc_core/` production bridge missing (Phases 1358–1360) |
 | Sidecar query | ADR-0031 | Locked local query types complete | No mutation authority or public serving |
 | **V-series (constitutional cluster)** | CDL-V1 through CDL-V7 | V1, V2, V3, V7 full; V5 GOV-A | V4=GOV-B (intentional, procedural); **V6=GOV-B (gap — no enforcement code for 3-lifetime cap)** |
-| **Founder/governance cluster** | CDL-003, 004, 005, 006, 008, 009, 010, 015 | GOV-A or GOV-C (partial) | CDL-006 challenge-node spec/stub complete in Phase 1381 but production runtime remains Phase 1382; CDL-009 fork UX unbuilt; CDL-005 preconditions CDL-025–031 which are all NONE |
+| **Founder/governance cluster** | CDL-003, 004, 005, 006, 008, 009, 010, 015 | GOV-A or GOV-C (partial) | CDL-006 challenge-node spec/runtime helper complete through Phase 1382; public governance activation remains gated; CDL-009 fork UX unbuilt; CDL-005 preconditions CDL-025–031 which are all NONE |
 
 ---
 
@@ -206,7 +206,7 @@ GOV-A with a missing component is a gap.
 | CDL-003 | Founder fade-out mechanics (`trigger-based sunset`) | Ph 993 | **GOV-C** | A: `genesis_accrual_governor.py` (`THETA_HARD`, `cap_blocked` flag) is the runtime expression of the founder accumulation cap; CDL-V6 sunset semantics bound the override authority. B: The specific trigger conditions (what fires the sunset) are in governance docs only — no enforcement code. |
 | CDL-004 | Founder operational caps (`hard caps + reporting`) | Ph 993 | **GOV-C** | A: `genesis_accrual_governor.py` (`THETA_HARD=0.05`, `cap_blocked` stop flag) enforces the hard cap; CDL-055/056 enforce non-genesis validator caps. B: "Public reporting" obligation is governance/docs-only, no reporting runtime. |
 | CDL-005 | Issuance/cap constitutional wording (`cap+trajectory+guardrails`) | Ph 993 | **GOV-C** | A: This CDL is the constitutional precondition for CDL-025 through CDL-031; its wording mandates `cap+trajectory+guardrails` which those CDLs operationalise. `commit_epoch_emission_runtime.py` is the structural placeholder. B: The production emission engine (CDL-025–031) does not yet exist — so the "guardrails" are spec-only. |
-| CDL-006 | Governance override/challenge process (`multi-body checks`) | Ph 993 | **GOV-C** | A: CDL-V3 `diversity_floor_runtime.py` is the code expression of multi-body quorum; CDL-045 `circuit_breaker_interface.py` requires CDL-V3 quorum to assemble a challenge request. B: Phase 1381 adds the formal challenge-node spec `docs/specs/ilc_cdl_006_challenge_node_spec_1381_v0.1.md` and public-RC-excluded schema/signature stub `ilc_core/governance/challenge_node_runtime.py`; production quorum verification and audit-path writing remain Phase 1382. |
+| CDL-006 | Governance override/challenge process (`multi-body checks`) | Ph 993 | **GOV-C** | A: CDL-V3 `diversity_floor_runtime.py` is the broader code expression of multi-body quorum; CDL-045 `circuit_breaker_interface.py` requires CDL-V3 quorum to assemble a challenge request. Phase 1381 added the formal challenge-node spec `docs/specs/ilc_cdl_006_challenge_node_spec_1381_v0.1.md`; Phase 1382 implemented public-RC-excluded helper `ilc_core/governance/challenge_node_runtime.py` with challenge record validation, exact 3-body affirmative quorum verification, and deterministic audit-path record construction. B: challenge triggering, graph write integration, public serving, and governance decision execution remain separately gated. |
 | CDL-007 | Rollback resistance baseline | Ph 251 | **FULL** | `ilc_core/security/rollback_resistance_runtime.py` |
 | CDL-008 | Layer boundary: fixed core vs policy-loaded layers (`split-by-domain`) | Ph 993 | **GOV-C** | A: The entire `ilc_core/` module structure is the primary code expression; `ilc_core/rc/package_profiles.py` + ADR-0026 enforce the protocol/harness/policy split; `PUBLIC_RC_EXCLUDE` marker system enforces the public/private layer boundary. B: Architecture narrative in `docs/architecture/`. |
 | CDL-009 | Fork legitimacy/user signaling (`signature-badge+eligibility rules`) | Ph 993 | **GOV-C** | A: `bootstrap_fetch_runtime.py` ML-DSA-65 signature verification is the "signature-badge" enforcement; CDL-073 homoiconic bootstrap + Genesis lineage integrity is the "eligibility rules" expression. B: Client-facing fork-signaling UX is not yet built. |

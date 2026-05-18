@@ -22,7 +22,7 @@ external audit, and full public RC activation window**. Its primary obligations 
    public identity-creation or claim-seed flow.
 2. **Agent birth attestation ADR (ADR-0038)** — Genesis-rooted identity-origin proof;
    `agent_id` bound to signed Genesis/Atlas lineage anchor; non-custodial default; no
-   private graph content as entropy. Prerequisite for CDL-090 deliberation.
+  private graph content as entropy. Prerequisite for CDL-090 deliberation.
 3. **CDL-088 opening, deliberation, and ratification** — CDL-088 is pre-reserved for
    public claimability authority. It governs bounded public claimability, reciprocal
    scoring (if included), and ECU-escrow admission (if included). Must NOT be opened
@@ -40,7 +40,7 @@ external audit, and full public RC activation window**. Its primary obligations 
    gate (Phase 1388).
 8. **CDL-006 challenge node spec and runtime** — CDL-006 policy ratified Phase 993,
    multi-body check selected. Phase 1381 completed the spec and stub; Phase 1382
-   still owns production runtime and tests.
+   completed the runtime helper and tests without public activation.
 9. **CDL-009 fork legitimacy UX** — CDL-009 policy ratified Phase 993,
    signature-badge+eligibility-rules selected, but UX surface was never built.
    Governance completeness prerequisite.
@@ -639,6 +639,14 @@ Deliverables:
 - Audit-path record tests
 
 Record: `cdl_006_challenge_node_runtime_phase_1382.v0.1`
+
+Phase 1382 is COMPLETE. It also records
+`cdl_006_3_body_quorum_verification_implemented` and
+`cdl_006_audit_path_record_writer_implemented`. The runtime helper validates
+challenge records, enforces the exact 3-body affirmative quorum model, and emits
+deterministic audit-path records with graph-commitment patches. No challenge
+triggering, governance decision execution, graph write integration, CDL
+mutation, public serving, or public activation occurred.
 
 Commit subject: `phase 1382 cdl-006 challenge node runtime tests`
 
