@@ -652,13 +652,13 @@ Commit subject: `phase 1382 cdl-006 challenge node runtime tests`
 
 ### Phase 1383 — CDL-009 fork legitimacy UX
 
-**SENSITIVE** — requires `GO Phase 1383`.
+**COMPLETE** — executed after explicit `GO Phase 1383`.
 
 Deliverables:
-- Badge schema definition (signature-badge + eligibility rules)
-- Eligibility rules contract document
-- CLI/operator surface for fork-signal inspection
-- Tests for badge schema and eligibility verification
+- Badge schema definition (signature-badge + eligibility rules) — COMPLETE
+- Eligibility rules contract document — COMPLETE
+- CLI/operator surface for fork-signal inspection — COMPLETE
+- Tests for badge schema and eligibility verification — COMPLETE
 
 CDL-009 ratified signature-badge+eligibility-rules at Phase 993. Read CDL register
 line for CDL-009 before drafting to confirm ratified scope.
@@ -904,7 +904,7 @@ Phase 1369 sequence lock
     → Phase 1380 CDL-048 dry-run wiring  [requires 1373 + 1376]
     → Phase 1381 CDL-006 spec
         → Phase 1382 CDL-006 runtime
-    → Phase 1383 CDL-009 UX
+    → Phase 1383 CDL-009 UX  [complete; CLI/operator only]
     → Phase 1384 external audit  [parallel; findings required at 1387]
     → Phase 1385 TLA+ disposition
     → Phase 1386 key ceremony
@@ -976,7 +976,7 @@ Multiple `ilc_core/` runtime files are mutation targets in this window:
 - Phase 1378: FastAPI route files (location to be confirmed by Phase 1378 §0c search)
 - Phase 1380: sweeper/conversion runtime (CDL-048 related)
 - Phase 1381/1382: `ilc_core/governance/challenge_node_runtime.py` (new file)
-- Phase 1383: UX surface files (location to be confirmed)
+- Phase 1383: `ilc_core/governance/fork_legitimacy_runtime.py`
 - Phase 1387a: public economics admission/event-construction boundary files (location to
   be confirmed by §0 discovery; likely touches attribution, passive ECU, claimability,
   node admission, or promotion-continuity runtime surfaces)
