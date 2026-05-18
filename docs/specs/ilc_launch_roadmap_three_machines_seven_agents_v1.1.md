@@ -3,7 +3,7 @@
 **Version:** v1.1
 **Produced:** 2026-05-08
 **Phase:** 1242
-**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1369 sequence-lock addendum
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1381 addendum
 **Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
 
 `launch_roadmap_v1_1_published_phase_1242`
@@ -44,6 +44,9 @@
 `phase_1369_fix1_authorized_numeric_hardening`
 `go_phase_1374_required_cdl_088_opening`
 `go_phase_1389_required_public_claimability_gate`
+`cdl_006_challenge_node_spec_phase_1381`
+`cdl_006_challenge_node_runtime_stub_phase_1381`
+`cdl_006_multi_body_3_body_quorum_spec_committed`
 
 ---
 
@@ -70,7 +73,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1369-1390 is OPEN through Phase 1369 only; active sequence lock is `docs/specs/ilc_phase_1369_1390_sequence_lock_v0.1.md`; Phase 1366 recorded `soft_rc_eligible=false_with_blockers: [phase_1366_treasury_epoch_budget_binding_unverified]`; Phase 1367 addressed that named blocker via `phase_1366_treasury_epoch_budget_binding_verified` but did not re-run the full gate or record `soft_rc_eligible=true`; Phase 1368 records `production_minting_activation_deferred_phase_1368`; Phase 1369 records `phase_1369_fix1_authorized_numeric_hardening`, `go_phase_1374_required_cdl_088_opening`, and `go_phase_1389_required_public_claimability_gate`; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL-088 opening, CDL-090 opening, identity bootstrap, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production mining, production minting, soft-RC eligibility true verdict, counsel approval, or legal conclusion is granted |
+| Window frontier | Window 1369-1390 is OPEN through Phase 1381; active sequence lock is `docs/specs/ilc_phase_1369_1390_sequence_lock_v0.1.md`; Phase 1381 records CDL-006 challenge-node spec/stub completion through `cdl_006_challenge_node_spec_phase_1381`, `cdl_006_challenge_node_runtime_stub_phase_1381`, and `cdl_006_multi_body_3_body_quorum_spec_committed`; Phase 1382 remains required for production challenge-node runtime; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL mutation, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production governance decision execution, production mining, production minting, soft-RC eligibility true verdict, counsel approval, or legal conclusion is granted |
 | Capsule and gate report | v5.58 is the current capsule through Phase 1369; Phase 1366 gate report is `docs/specs/ilc_soft_rc_readiness_gate_report_phase_1366_v0.1.md` and records the historical treasury-budget binding blocker; Phase 1367 walkthrough records its targeted blocker resolution; Phase 1369 Fix1 is the next scheduled hardening sub-phase |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
@@ -85,7 +88,7 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; consumed into CDL-087 ratification by Phase 1278 Fix1 |
 
 Window 1343-1368 is CLOSED through Phase 1368. Window 1369-1390 is OPEN
-through Phase 1369 only under
+through Phase 1381 under
 `docs/specs/ilc_phase_1369_1390_sequence_lock_v0.1.md`.
 
 Latest closed handoff and current window artifacts:
@@ -1053,6 +1056,28 @@ Roadmap impact:
 - Live conversion activation, public claimability, wallet withdrawal, wallet
   transfer, wallet spend, ECU minting, ILC settlement, and value-path activation
   remain blocked until later gates.
+
+## 19b. Phase 1381 CDL-006 Challenge Node Spec Addendum
+
+Phase 1381 recorded the CDL-006 challenge-node spec and runtime stub:
+
+```text
+cdl_006_challenge_node_spec_phase_1381
+cdl_006_challenge_node_runtime_stub_phase_1381
+cdl_006_multi_body_3_body_quorum_spec_committed
+```
+
+Roadmap impact:
+
+- CDL-006 no longer lacks a formal challenge-node spec surface.
+- `docs/specs/ilc_cdl_006_challenge_node_spec_1381_v0.1.md` defines the
+  challenge record schema, 3-body quorum contract, body attestation schema, and
+  audit-path writer specification.
+- `ilc_core/governance/challenge_node_runtime.py` is a public-RC-excluded
+  schema/signature stub only.
+- Production quorum verification, audit-path writing, public governance
+  activation, public serving, and governance decision execution remain blocked
+  pending Phase 1382 and later gates.
 
 Public RC remains blocked after Phase 1274:
 
