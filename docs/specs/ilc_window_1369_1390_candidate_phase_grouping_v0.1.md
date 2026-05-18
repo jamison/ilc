@@ -39,8 +39,8 @@ external audit, and full public RC activation window**. Its primary obligations 
    in gate-closed state (Phase 1380), then live activation after Phase 1387 hardening
    gate (Phase 1388).
 8. **CDL-006 challenge node spec and runtime** — CDL-006 policy ratified Phase 993,
-   multi-body check selected, but spec and runtime were never built. Governance
-   completeness prerequisite.
+   multi-body check selected. Phase 1381 completed the spec and stub; Phase 1382
+   still owns production runtime and tests.
 9. **CDL-009 fork legitimacy UX** — CDL-009 policy ratified Phase 993,
    signature-badge+eligibility-rules selected, but UX surface was never built.
    Governance completeness prerequisite.
@@ -164,7 +164,7 @@ No tail-slot conditional phases follow Phase 1390.
 - `legacy_public_labeled_fastapi_routes_carry_forward_phase_1301` — Phase 1378 removes/replaces
 - `adr_0031_sidecar_query_completeness_required` — Phase 1379 closes all `NotImplementedError`
 - `cdl_048_ecl_to_ilc_dry_run_wiring_required` — Phase 1380 wires in gate-closed state; Phase 1388 activates
-- `cdl_006_challenge_node_spec_unbuilt_phase_993` — Phase 1381 (spec + stub), Phase 1382 (runtime + tests)
+- `cdl_006_challenge_node_spec_phase_1381` — Phase 1381 completed spec + stub; Phase 1382 still owns production runtime + tests
 - `cdl_009_fork_legitimacy_ux_unbuilt_phase_993` — Phase 1383 delivers badge schema + eligibility + CLI surface
 - `cdl_048_activation_and_counsel_clearance_required_before_phase_1389` — Phase 1388
 - `public_economics_requires_public_node_admission_verified_phase_1387a` — Phase 1387a
@@ -618,6 +618,12 @@ CDL-006 ratified multi-body checks at Phase 993. Read CDL register line for CDL-
 before drafting to confirm ratified scope.
 
 Record: `cdl_006_challenge_node_spec_phase_1381`
+
+Phase 1381 is COMPLETE. It also records
+`cdl_006_challenge_node_runtime_stub_phase_1381` and
+`cdl_006_multi_body_3_body_quorum_spec_committed`. The runtime file is a
+schema/signature stub only; production quorum verification and audit-path
+writing remain Phase 1382 scope.
 
 Commit subject: `phase 1381 cdl-006 challenge node spec`
 
