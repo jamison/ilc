@@ -473,6 +473,18 @@ impl ValidatorSet {
                 3 * f
             )));
         }
+        // MEDIUM-006 fix: enforce that f equals the BFT-safe floor (n-1)/3.
+        // ValidatorSet::new must not accept an undersafe f that would allow
+        // a caller to create a set where NodeRunner quorum (2f+1) is below
+        // the minimum required for Byzantine fault tolerance.
+        let safe_f = n.saturating_sub(1) / 3;
+        if f != safe_f {
+            return Err(ILCConsensusError::Other(format!(
+                "Invalid ValidatorSet: f ({}) must equal BFT floor (n-1)/3 = {} for N={}; \
+                 use ValidatorSet::rebuild_with to compute f automatically",
+                f, safe_f, n
+            )));
+        }
         let mut map: HashMap<ValidatorID, ValidatorKey> = HashMap::with_capacity(n);
         for (id, key) in validators {
             if map.contains_key(&id) {
