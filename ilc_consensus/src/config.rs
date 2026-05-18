@@ -392,10 +392,9 @@ fn load_peer_cert_dir(dir: &str, my_validator_id: u32) -> Result<HashMap<u32, Ve
 }
 
 /// Parse `validator_{id}_cert.der` → Some(id), or None if the name doesn't match.
+// MEDIUM-009 fix: removed hard-coded client_cert.der → ValidatorID(5) mapping.
+// All validator certs must use the standard validator_{id}_cert.der naming scheme.
 fn parse_validator_cert_filename(name: &str) -> Option<u32> {
-    if name == "client_cert.der" {
-        return Some(5);
-    }
     let stripped = name.strip_prefix("validator_")?.strip_suffix("_cert.der")?;
     stripped.parse().ok()
 }
