@@ -299,7 +299,7 @@ GOV-A with a missing component is a gap.
 | ADR-0028 | Settlement substrate graduation and governance route (Option B: Mysticeti) | **PARTIAL** | `ilc_consensus/` (Rust crate — M-series complete) | M-001–M-022 complete. `ilc_consensus/` contains full ILC-native DAG-BFT crate (BLS12-381, QUIC, LMDB). 4-validator M-009 testnet config exists. HIGH-002 fixed (Phase 842). CDL-067 ratified (Phase 709). Option B selected (Phase 814). Gap: `ilc_core/` has no production gRPC/QUIC bridge to `ilc_consensus/` (only `tools/testbed/` stubs). HIGH-001 sender-identity leakage open. Multi-operator key ceremony not done. External audit not engaged. Production wiring routed to Window 1343–1368 Phases 1358–1360. |
 | ADR-0029 | Hypergraph substrate | **FULL** | `ilc_core/graph/` suite | |
 | ADR-0030 | Node embedding substrate and content typing | **PARTIAL** | `ilc_core/graph/`, encoding modules | |
-| ADR-0031 | Subgraph homomorphism query contract | **PARTIAL** | `ilc_core/graph/sidecar_query_runtime.py` | Many query types raise `NotImplementedError`. Required for graph-native sidecar suite completeness. |
+| ADR-0031 | Subgraph homomorphism query contract | **FULL** | `ilc_core/graph/sidecar_query_runtime.py`; `ilc_consensus/proto/ilc_app.proto` | Proto contract accepted in Phase 746; Phase 1237 Fix1-Fix5 implemented locked read-only query types; Phase 1379 removes residual sidecar query `NotImplementedError` fallback and records no mutation/public-serving authority. |
 | ADR-0032 | Temporal hypergraph epoch-stamped incidence | **FULL** | `ilc_core/graph/` temporal epoch stamping | |
 | ADR-0033 | Star Map homoiconic epistemological entity | **FULL** | `ilc_core/network/star_map/route_index.py` + homoiconic node integration | |
 | ADR-0034 | D2d sealed sender mechanism | **FULL** | `ilc_core/network/d2d/spectral_beacon.py` (`H013_SEALED_SPECTRAL_BEACON_VERSION`) | |
@@ -345,8 +345,8 @@ All soft RC items plus:
 11. **Identity bootstrap CDL** — must be ratified (Window 1343+, Phases 1346-1348)
 12. **Replay/nullifier policy** — must be closed (Window 1343+, Phase 1352)
 13. **Legacy `/v1/public/*` FastAPI cleanup** — Phase 1353
-14. **Counsel clearance** — Phase 1354
-15. **ADR-0031 sidecar query completeness** — many `NotImplementedError` query types
+14. **Counsel clearance** — public verifier/API and publication clearance remain open
+15. **Phase 1387/1387a public-RC hardening and accepted ADR/CDL coverage** — final hardening, coverage matrix, and public-only economics firewall remain open
 
 ### Post-Launch (can defer)
 - ADR-0035 homoiconic type definition system (CDL required first)
