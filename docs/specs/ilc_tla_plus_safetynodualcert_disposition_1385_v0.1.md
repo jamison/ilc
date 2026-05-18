@@ -1,15 +1,23 @@
 # ILC TLA+ SafetyNoDualCert Disposition 1385 v0.1
 
-Status: governance disposition
+Status: governance disposition — DEFERRAL CLOSED by Phase 1385a Strike Force
 Phase: 1385
 Date: 2026-05-18
 Owner lane: G8 formal-methods / public-RC gate preparation
 Disposition selected: defer-with-authority
 
+> **DEFERRAL CLOSED.** Phase 1385a Strike Force (2026-05-18) delivered Spec D
+> (`docs/specs/tla/ilc_epoch_checkpoint_safety.tla`) and ran TLC exhaustively
+> (67M states, no violations). Token `safetynodualcert_spec_d_proven_epoch_checkpoint`
+> supersedes the deferral. See:
+> `docs/specs/ilc_epoch_checkpoint_safety_tlc_evidence_1385a_v0.1.md`
+
 ```text
 tla_plus_safetynodualcert_disposed_phase_1385
 safetynodualcert_deferred_with_authority_phase_1385
 phase_1385_epoch_checkpoint_safetynodualcert_deferred_to_spec_d
+safetynodualcert_deferred_with_authority_phase_1385_closed_1385a
+safetynodualcert_spec_d_proven_epoch_checkpoint
 ```
 
 ## 1. Verdict
