@@ -306,7 +306,11 @@ impl PeerNetwork {
             .downcast_ref::<Vec<CertificateDer<'static>>>()
             .ok_or_else(|| ILCConsensusError::Other("Invalid certificate hierarchy".into()))?;
 
-        let peer_cert_der = certs[0].as_ref();
+        // MEDIUM-005 fix: check for empty cert chain before indexing.
+        let peer_cert_der = certs
+            .first()
+            .ok_or_else(|| ILCConsensusError::Other("Empty TLS cert chain".into()))?
+            .as_ref();
 
         for (id, der) in self.peer_certs.iter() {
             if der == peer_cert_der {

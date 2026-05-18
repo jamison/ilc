@@ -1,5 +1,7 @@
 import json
 import csv
+import os
+import tempfile
 from os import PathLike
 from pathlib import Path
 from dataclasses import asdict
@@ -100,14 +102,28 @@ def export_ledger_state_json(
                  balances_before=balances_before,
                  balances_after=balances # current balances are 'after'
              )
-             # Attach to record in output
-             record["distribution_check"] = normalize_json_scalars(check_result)
-             # Update data ref just in case it wasn't by ref (it is)
-             data["epoch_records"][target_epoch_id] = normalize_json_scalars(record)
+             # MEDIUM-012 fix: build a new output record rather than mutating the
+             # shared epoch_records dict entry in-place, avoiding races on concurrent readers.
+             annotated_record = dict(normalize_json_scalars(record))
+             annotated_record["distribution_check"] = normalize_json_scalars(check_result)
+             data["epoch_records"][target_epoch_id] = annotated_record
 
-    with p.open("w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, sort_keys=True)
-        
+    # MEDIUM-012 fix: write atomically (tempfile + os.replace) so a crash mid-write
+    # cannot produce a partial/corrupt output file.  allow_nan=False ensures float NaN
+    # or Infinity raises ValueError rather than producing invalid JSON.
+    p.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=p.parent, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, sort_keys=True, allow_nan=False)
+        os.replace(tmp_path, p)
+    except BaseException:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
     return check_result
 
 def export_ledger_state_csv(ledger: LedgerBackend, path: PathLike) -> None:

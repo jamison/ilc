@@ -534,11 +534,14 @@ impl NodeRunner {
                     "privacy_lane_routing:class=payment_default"
                 }
             };
+            // LOW-005 fix: do not log routing_token directly — it reveals TransferClass
+            // (Contribution / Payment / Payment_Express) even when AgentID is redacted.
+            // Log only that a routing decision was made, not which class was selected.
+            let _ = routing_token;
             eprintln!(
-                "[row5_privacy_lane] validator_id={} obj_ref={} {}",
+                "[row5_privacy_lane] validator_id={} obj_ref={} routing_decision=recorded",
                 self.validator_id.0,
                 fmt_object_ref(&transfer.object_ref),
-                routing_token,
             );
         }
 
