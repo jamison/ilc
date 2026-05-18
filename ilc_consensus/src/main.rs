@@ -28,6 +28,7 @@ use ilc_consensus::{
     node::NodeRunner,
     types::{ILCConsensusError, ValidatorID},
 };
+use tonic::transport::{Identity, ServerTlsConfig};
 
 mod args {
     pub struct Args {
@@ -231,8 +232,8 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     let network = Arc::new(PeerNetwork::new_server(
         cfg.bind_addr,
         cfg.peer_certs,
-        cfg.my_cert_der,
-        cfg.my_key_der,
+        cfg.my_cert_der.clone(),
+        cfg.my_key_der.clone(),
     )?);
 
     eprintln!(
@@ -266,9 +267,12 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         let app_iface =
             ApplicationInterface::new(Arc::clone(&balance_store), Arc::clone(&epoch_store));
         let svc = ilc_app_read_service_server::IlcAppReadServiceServer::new(app_iface);
+        let grpc_tls_identity = Identity::from_pem(cfg.my_cert_pem.clone(), cfg.my_key_pem.clone());
         tokio::spawn(async move {
-            eprintln!("[m018] gRPC server listening on {}", grpc_addr);
+            eprintln!("[m018] TLS gRPC server listening on {}", grpc_addr);
             tonic::transport::Server::builder()
+                .tls_config(ServerTlsConfig::new().identity(grpc_tls_identity))
+                .expect("[m018] TLS gRPC server config failed")
                 .add_service(svc)
                 .serve(grpc_addr)
                 .await

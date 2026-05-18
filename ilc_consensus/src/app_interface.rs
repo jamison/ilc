@@ -120,25 +120,28 @@ impl IlcAppReadService for ApplicationInterface {
         };
 
         let mut records = Vec::new();
-        for ep in from..=to {
-            match self.epoch_store.get_checkpoint(ep) {
-                Ok(Some(stored)) => {
-                    let mut state_root = [0u8; 36];
-                    state_root[..32].copy_from_slice(&stored.record.state_root.p1);
-                    state_root[32..].copy_from_slice(&stored.record.state_root.p2);
-                    records.push(GetEpochRecordResponse {
-                        epoch: stored.record.epoch.0,
-                        state_root: state_root.to_vec(),
-                        agg_sig: stored.agg_sig_bytes,
-                        found: true,
-                    });
+        if from <= to {
+            for ep in from..=to {
+                match self.epoch_store.get_checkpoint(ep) {
+                    Ok(Some(stored)) => {
+                        let mut state_root = [0u8; 36];
+                        state_root[..32].copy_from_slice(&stored.record.state_root.p1);
+                        state_root[32..].copy_from_slice(&stored.record.state_root.p2);
+                        records.push(GetEpochRecordResponse {
+                            epoch: stored.record.epoch.0,
+                            state_root: state_root.to_vec(),
+                            agg_sig: stored.agg_sig_bytes,
+                            found: true,
+                        });
+                    }
+                    Ok(None) => break,
+                    Err(e) => return Err(Status::internal(format!("{:?}", e))),
                 }
-                Ok(None) => break,
-                Err(e) => return Err(Status::internal(format!("{:?}", e))),
             }
         }
 
-        let chain_complete = records.len() as u64 == (to - from + 1);
+        let expected_count = if from <= to { to - from + 1 } else { 0 };
+        let chain_complete = records.len() as u64 == expected_count;
         Ok(Response::new(GetEpochChainResponse {
             chain_complete,
             records,
@@ -270,6 +273,26 @@ mod tests {
         let req2 = Request::new(GetEpochRequest {});
         let resp2 = app.get_epoch(req2).await.unwrap().into_inner();
         assert_eq!(resp2.current_epoch, 3);
+    }
+
+    #[tokio::test]
+    async fn test_get_epoch_chain_zero_sentinel_at_genesis_returns_empty_complete() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let app = ApplicationInterface::new(balance_store, epoch_store);
+
+        let req = Request::new(GetEpochChainRequest {
+            from_epoch: 0,
+            to_epoch: 0,
+            include_edges: false,
+        });
+        let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
+
+        assert!(resp.chain_complete);
+        assert!(resp.records.is_empty());
+        assert!(resp.edges.is_empty());
+        assert!(resp.hyperedges.is_empty());
     }
 
     #[tokio::test]

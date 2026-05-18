@@ -31,6 +31,7 @@ ADR_0028_PRODUCTION_BRIDGE_PARTIAL_TOKEN = "adr_0028_production_bridge_partial_p
 PRODUCTION_BRIDGE_ACTIVE = False
 DEFAULT_GRPC_TIMEOUT_SECONDS = 5
 MAX_EPOCH_CHAIN_RECORDS = 1024
+MAX_EPOCH_CHAIN_RECEIVE_BYTES = 1_048_576
 MICRO_ECU_PER_ECU = Decimal("1000000")
 UINT64_MAX = Decimal("18446744073709551615")
 AGENT_ID_LENGTH_BYTES = 48
@@ -52,6 +53,7 @@ class ConsensusBridgeConfig:
     target: str
     grpc_timeout_seconds: int = DEFAULT_GRPC_TIMEOUT_SECONDS
     max_epoch_chain_records: int = MAX_EPOCH_CHAIN_RECORDS
+    max_epoch_chain_receive_bytes: int = MAX_EPOCH_CHAIN_RECEIVE_BYTES
     tls_root_certificates: bytes | None = None
 
     def __post_init__(self) -> None:
@@ -69,6 +71,12 @@ class ConsensusBridgeConfig:
             raise ValueError("consensus_bridge_max_records_invalid_phase_1358")
         if self.max_epoch_chain_records <= 0:
             raise ValueError("consensus_bridge_max_records_invalid_phase_1358")
+        if isinstance(self.max_epoch_chain_receive_bytes, bool) or not isinstance(
+            self.max_epoch_chain_receive_bytes, int
+        ):
+            raise ValueError("consensus_bridge_max_receive_bytes_invalid_phase_1386a")
+        if self.max_epoch_chain_receive_bytes <= 0:
+            raise ValueError("consensus_bridge_max_receive_bytes_invalid_phase_1386a")
         if self.tls_root_certificates is not None and not isinstance(
             self.tls_root_certificates, bytes
         ):
@@ -426,7 +434,16 @@ def build_secure_grpc_read_stub(
     credentials = grpc_module.ssl_channel_credentials(
         root_certificates=config.tls_root_certificates
     )
-    channel = grpc_module.secure_channel(config.target, credentials)
+    channel = grpc_module.secure_channel(
+        config.target,
+        credentials,
+        options=(
+            (
+                "grpc.max_receive_message_length",
+                config.max_epoch_chain_receive_bytes,
+            ),
+        ),
+    )
     return _DynamicILCAppReadServiceStub(channel, messages or _build_message_types())
 
 
@@ -510,22 +527,24 @@ class ILCConsensusGrpcReadAdapter:
         end = _require_uint64_int(to_epoch, "get_epoch_chain_to_epoch_invalid_phase_1358")
         # Rust app_interface.rs treats epoch 0 as a range sentinel:
         # from_epoch=0 starts at history epoch 1, and to_epoch=0 means current
-        # epoch. The Phase 1358 default-off bridge rejects those sentinels until
-        # Phase 1360 proves the live Python-to-Rust gRPC path end-to-end.
-        if start == 0 or end == 0 or end < start:
+        # epoch. Phase 1386a reconciles that contract over the TLS gRPC path.
+        if start != 0 and end != 0 and end < start:
             raise ValueError("get_epoch_chain_range_invalid_phase_1358")
-        requested_count = end - start + 1
-        if requested_count > self.config.max_epoch_chain_records:
-            raise ValueError("get_epoch_chain_max_records_exceeded_phase_1358")
+        if start != 0 and end != 0:
+            requested_count = end - start + 1
+            if requested_count > self.config.max_epoch_chain_records:
+                raise ValueError("get_epoch_chain_max_records_exceeded_phase_1358")
         request = self.messages.GetEpochChainRequest(
             from_epoch=start,
             to_epoch=end,
             include_edges=False,
         )
         response = self._call("GetEpochChain", request)
-        records = list(getattr(response, "records", ()))
-        if len(records) > self.config.max_epoch_chain_records:
-            raise ValueError("get_epoch_chain_max_records_exceeded_phase_1358")
+        records = []
+        for record in getattr(response, "records", ()):
+            if len(records) >= self.config.max_epoch_chain_records:
+                raise ValueError("get_epoch_chain_max_records_exceeded_phase_1358")
+            records.append(record)
         normalized_records = tuple(
             _normalize_epoch_record_response(
                 record,
@@ -607,6 +626,7 @@ __all__ = [
     "ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION",
     "LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN",
     "MAX_EPOCH_CHAIN_RECORDS",
+    "MAX_EPOCH_CHAIN_RECEIVE_BYTES",
     "PRODUCTION_BRIDGE_ACTIVE",
     "QUIC_ECU_TRANSFER_SUBMISSION_PATH_TOKEN",
     "QuicEcuTransferSubmissionPath",

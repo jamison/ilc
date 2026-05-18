@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1386a.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -100,6 +100,11 @@ bootstrap exception record after explicit `GO Phase 1386` and human acceptance o
 `production_split_custody_ceremony_required_before_mainnet_launch` is carried forward to
 mainnet launch planning rather than inserted as a new Phase 1387/1388/1389 public-RC gate.
 
+Phase 1386a addendum: The production TLS gRPC path proof is complete. The Rust optional
+gRPC server now uses tonic TLS identity, Python `build_secure_grpc_read_stub()` uses
+TLS roots plus a receive-size channel cap, `GetEpochChain(0,0)` is reconciled at genesis,
+and hardening item 7 is closed by `get_epoch_chain_channel_limit_added_phase_1386a`.
+
 ## 5. Locked Phase Order
 
 | Order | Phase | Scope | Authority after Phase 1369 |
@@ -124,7 +129,7 @@ mainnet launch planning rather than inserted as a new Phase 1387/1388/1389 publi
 | 18 | 1385 | TLA+ SafetyNoDualCert disposition | COMPLETE; records `tla_plus_safetynodualcert_disposed_phase_1385`, `safetynodualcert_deferred_with_authority_phase_1385`, and `phase_1385_epoch_checkpoint_safetynodualcert_deferred_to_spec_d`; owned-object Spec B remains bounded TLC evidence, epoch-checkpoint/shared-object proof deferred — DEFERRAL CLOSED by Phase 1385a. |
 | 18a | 1385a | Spec D epoch-checkpoint SafetyNoDualCert (Strike Force) | COMPLETE; `safetynodualcert_spec_d_proven_epoch_checkpoint`; TLC 67M states exhaustive, no violations; closes Phase 1385 deferral. |
 | 19 | 1386 | Genesis validator bootstrap exception record | COMPLETE; SENSITIVE Genesis authority surface; records `genesis_validator_bootstrap_record_committed_phase_1386`, `genesis_controlled_single_custodian_bootstrap_exception_phase_1386`, `single_operator_compromise_resistance_not_confirmed_phase_1386`, and `production_split_custody_ceremony_required_before_mainnet_launch`; no split-custody claim, no private key material, no activation. |
-| 20 | 1386a | Production TLS gRPC path proof | NON-SENSITIVE proof/testnet hardening; also owns `get_epoch_chain()` receive-size/channel limit. |
+| 20 | 1386a | Production TLS gRPC path proof | COMPLETE; records `production_tls_grpc_path_proven_phase_1386a`, `epoch_0_sentinel_reconciliation_verified_phase_1386a`, and `get_epoch_chain_channel_limit_added_phase_1386a`; no production activation. |
 | 21 | 1386b | Validator endpoint registry ADR | NON-SENSITIVE ADR/spec; defines epoch-scoped `QUIC_ENDPOINT` graph edges and projection contract. |
 | 22 | 1386c | Persistent QUIC connectivity proof | SENSITIVE consensus connectivity proof with direct + relay fallback. |
 | 23 | 1387 | Pre-activation hardening gate | SENSITIVE gate; fails closed if audit/key/connectivity/hardening prerequisites are incomplete. |
@@ -148,7 +153,7 @@ phase_1369_fix1_authorized_numeric_hardening
 | L/M | Genesis intervention audit log append is non-atomic | `genesis_intervention_runtime.py:321` | Phase 1369 Fix1; pair with counter lock so audit append cannot interleave. |
 | L/M | LMDB pruning batch cap counts total scanned cursor entries instead of eligible tier-2 records | `lmdb_graph_pruning_runtime.py:154` | Phase 1369 Fix1; adjust cap semantics or add prunable-record counter. |
 | L | LMDB pruning opens a write transaction in `dry_run=True` | `lmdb_graph_pruning_runtime.py:154` | Phase 1369 Fix1; use read transaction for dry run. |
-| L | `get_epoch_chain()` materializes response records before enforcing `max_epoch_chain_records` | `production_bridge.py:526` | Phase 1386a; add receive-size/channel limit during production TLS gRPC proof. |
+| L | `get_epoch_chain()` materializes response records before enforcing `max_epoch_chain_records` | `production_bridge.py:526` | CLOSED by Phase 1386a; added gRPC receive-size channel limit and bounded response iteration. |
 | L | `_decimal_to_string()` contains identical return branches in seven epoch/economic runtimes | Seven epoch/economic runtimes | Phase 1369 Fix1; clean up as behavior-preserving maintenance. |
 
 ## 7. Public-Only Economics and Private-Shard Boundary
@@ -188,7 +193,7 @@ following is discovered:
 - A phase attempts public claimability activation before Phase 1389 or without explicit `GO Phase 1389`.
 - A phase treats private, semi-private, or operator-local advisory scores as protocol ECU, public reputation, public settlement, public corroboration, or public claimability.
 - A phase treats Phase 1360 Fix2 as durable peer-to-peer BFT proof rather than injected-checkpoint/local-commit proof.
-- A phase treats the production TLS gRPC path as proven before Phase 1386a.
+- A phase treats public gRPC serving or production validator deployment as activated by Phase 1386a.
 - A phase opens production minting, production mining, live ECU transfer routing, public RC publication, release signing, public source publication, or value-path activation without a later explicit gate.
 - A phase claims `soft_rc_eligible=true` without re-running and passing the full gate after Phase 1367 evidence.
 - A phase treats a commercial signed audit report as required after Phase 1384 rather than the project-authority security disposition gate.

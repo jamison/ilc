@@ -123,6 +123,10 @@ pub struct NodeConfig {
     pub my_cert_der: Vec<u8>,
     /// Own TLS private key in DER encoding.
     pub my_key_der: Vec<u8>,
+    /// Own TLS certificate PEM bytes for the optional tonic gRPC listener.
+    pub my_cert_pem: Vec<u8>,
+    /// Own TLS private key PEM bytes for the optional tonic gRPC listener.
+    pub my_key_pem: Vec<u8>,
     /// Peer certs keyed by validator_id, DER encoding.
     pub peer_certs: HashMap<u32, Vec<u8>>,
     /// Persistent consensus secret key mapping cleanly over dynamic network quorum limits.
@@ -226,6 +230,10 @@ pub fn load_node_config(
         .map_err(|e| ILCConsensusError::Other(format!("tls_cert_path: {}", e)))?;
     let my_key_der = load_pem_as_der(&cfg.tls_key_path)
         .map_err(|e| ILCConsensusError::Other(format!("tls_key_path: {}", e)))?;
+    let my_cert_pem = fs::read(&cfg.tls_cert_path)
+        .map_err(|e| ILCConsensusError::Other(format!("tls_cert_path: {}", e)))?;
+    let my_key_pem = fs::read(&cfg.tls_key_path)
+        .map_err(|e| ILCConsensusError::Other(format!("tls_key_path: {}", e)))?;
 
     let peer_certs = load_peer_cert_dir(&cfg.peer_cert_dir, cfg.validator_id)
         .map_err(|e| ILCConsensusError::Other(format!("peer_cert_dir: {}", e)))?;
@@ -275,6 +283,8 @@ pub fn load_node_config(
         lmdb_path: PathBuf::from(&cfg.lmdb_path),
         my_cert_der,
         my_key_der,
+        my_cert_pem,
+        my_key_pem,
         peer_certs,
         validator_sk,
         grpc_listen_addr,
