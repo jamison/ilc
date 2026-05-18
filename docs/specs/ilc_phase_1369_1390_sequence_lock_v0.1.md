@@ -101,7 +101,7 @@ for the identity bootstrap lane.
 | 10 | 1377 | Replay/nullifier + duplicate-claim registry policy ADR | SENSITIVE claim-endpoint policy. |
 | 11 | 1378 | Legacy `/v1/public/*` FastAPI route cleanup | SENSITIVE public-surface runtime cleanup. |
 | 12 | 1379 | ADR-0031 sidecar query runtime completeness | SENSITIVE public-query runtime completion. |
-| 13 | 1380 | CDL-048 ECU-to-ILC dry-run wiring | SENSITIVE gate-closed value-path wiring. |
+| 13 | 1380 | CDL-048 ECU-to-ILC dry-run wiring | COMPLETE; gate-closed value-path dry-run wiring; records `cdl_048_dry_run_wiring_phase_1380`, `cdl_048_not_activated_phase_1380`, `gate_closed_state_confirmed_phase_1380`, and `double_entry_conservation_proven_wire_level_phase_1380`; no live activation. |
 | 14 | 1381 | CDL-006 challenge node spec + stub | SENSITIVE governance-completeness spec/runtime-prep. |
 | 15 | 1382 | CDL-006 challenge node runtime + tests | SENSITIVE governance runtime. |
 | 16 | 1383 | CDL-009 fork legitimacy UX | SENSITIVE governance UX/runtime surface. |
