@@ -14,7 +14,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 
+# Signed v0.1 baseline — restored to Phase 1142s state (Option A hygiene, Phase 1387j).
+# Properties added by Phase 1387c/e/f/g/h live in the candidate files below.
 DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.1.json"
+DIAGNOSTIC_JSON_CANDIDATE = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.3_candidate.json"
 CANDIDATES_JSON = ROOT / "out" / "genesis_node_candidates_v0.2_candidate.json"
 WALKTHROUGH = ROOT / "docs" / "phases" / "phase_1387b_sim_genesis_compile_02_walkthrough.md"
 ADR_DIR = ROOT / "docs" / "adr"
@@ -28,16 +31,28 @@ BOOTSTRAP_AXIOM_NODES = {
 
 
 def test_diagnostic_basis_reachable_count() -> None:
-    # Phase 1387b recorded basis_reachable=17/32 (PARTIAL_WITH_STRUCTURAL_GAPS).
-    # Phase 1387c expanded the transition basis and closed the gap to 32/32.
-    # Phase 1387e expanded the star map from 32 to 54 nodes; all remain reachable.
+    # Signed v0.1 baseline (Phase 1142s): 17/32 basis-reachable, PARTIAL_WITH_STRUCTURAL_GAPS.
+    # The v0.3_candidate state (Phase 1387c/e) reaches 54/54 — tested via candidate file.
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     cc = data["compile_coverage"]
+    assert cc["core_nodes_total"] == 32, (
+        f"Signed v0.1 baseline should have 32 core nodes, got {cc['core_nodes_total']}"
+    )
+    assert cc["basis_reachable_core_nodes"] == 17, (
+        f"Signed v0.1 baseline should have 17 basis-reachable, got {cc['basis_reachable_core_nodes']}"
+    )
+
+
+def test_candidate_basis_reachable_count() -> None:
+    # v0.3_candidate: Phase 1387c expanded transition basis; Phase 1387e expanded star map.
+    # All 54 core nodes are now authority-reachable in the candidate state.
+    data = json.loads(DIAGNOSTIC_JSON_CANDIDATE.read_text())
+    cc = data["compile_coverage"]
     assert cc["core_nodes_total"] == 54, (
-        f"Expected 54 core nodes after Phase 1387e expansion, got {cc['core_nodes_total']}"
+        f"Expected 54 core nodes in v0.3_candidate, got {cc['core_nodes_total']}"
     )
     assert cc["basis_reachable_core_nodes"] == cc["core_nodes_total"], (
-        f"Expected all {cc['core_nodes_total']} core nodes reachable after Phase 1387c/e; "
+        f"Expected all {cc['core_nodes_total']} core nodes reachable in v0.3_candidate; "
         f"got {cc['basis_reachable_core_nodes']}"
     )
 
@@ -49,33 +64,52 @@ def test_diagnostic_verdict_not_fail() -> None:
     assert data["verdict"] != "FAIL_CORE_INADEQUATE", "Diagnostic must not be a failure verdict"
 
 
-def test_authority_traceable_count_53() -> None:
-    # Phase 1387b recorded 31 authority-traceable.
-    # Phase 1387e expanded to 54 nodes; 53 are authority-traceable (attestation root
-    # cannot trace back to itself — correct by construction).
+def test_authority_traceable_count_baseline() -> None:
+    # Signed v0.1 baseline: 31 authority-traceable of 32 core nodes.
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     at = data["authority_traceability"]
-    assert at["authority_traceable_core_nodes"] == 53, (
-        f"Expected 53 after Phase 1387e expansion, got {at['authority_traceable_core_nodes']}"
+    assert at["authority_traceable_core_nodes"] == 31, (
+        f"Signed v0.1 baseline should have 31 authority-traceable, got {at['authority_traceable_core_nodes']}"
     )
 
 
-def test_basis_unreachable_empty_after_1387c() -> None:
-    # Phase 1387b identified 15 unreachable nodes; Phase 1387c closed that gap.
+def test_authority_traceable_count_53_candidate() -> None:
+    # v0.3_candidate: 54 nodes; 53 authority-traceable (attestation root cannot
+    # trace back to itself — correct by construction).
+    data = json.loads(DIAGNOSTIC_JSON_CANDIDATE.read_text())
+    at = data["authority_traceability"]
+    assert at["authority_traceable_core_nodes"] == 53, (
+        f"Expected 53 in v0.3_candidate, got {at['authority_traceable_core_nodes']}"
+    )
+
+
+def test_basis_unreachable_15_in_baseline() -> None:
+    # Signed v0.1 baseline: 15 unreachable nodes (identified in Phase 1387b).
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     unreachable = data["gaps"]["basis_unreachable_core_nodes"]
+    assert len(unreachable) == 15, (
+        f"Signed v0.1 baseline should have 15 unreachable nodes; got {len(unreachable)}"
+    )
+
+
+def test_basis_unreachable_empty_in_candidate() -> None:
+    # v0.3_candidate: Phase 1387c added Category A bootstrap axioms to transition
+    # basis; gap is now closed.
+    data = json.loads(DIAGNOSTIC_JSON_CANDIDATE.read_text())
+    unreachable = data["gaps"]["basis_unreachable_core_nodes"]
     assert unreachable == [], (
-        f"Expected empty unreachable list after Phase 1387c; got {[n['candidate_id'] for n in unreachable]}"
+        f"Expected empty unreachable list in v0.3_candidate; got {[n['candidate_id'] for n in unreachable]}"
     )
 
 
 def test_bootstrap_axiom_category_a_nodes_now_in_basis() -> None:
-    """The 3 bootstrap-axiom nodes identified in Phase 1387b are now basis-reachable."""
-    data = json.loads(DIAGNOSTIC_JSON.read_text())
+    """The 3 bootstrap-axiom nodes identified in Phase 1387b are now in the
+    v0.3_candidate genesis-derivable tier."""
+    data = json.loads(DIAGNOSTIC_JSON_CANDIDATE.read_text())
     genesis_derivable = set(data["tier_analysis"]["genesis_derivable_node_ids"])
     for node_id in BOOTSTRAP_AXIOM_NODES:
         assert node_id in genesis_derivable, (
-            f"Bootstrap axiom node {node_id!r} should now be genesis-derivable"
+            f"Bootstrap axiom node {node_id!r} should now be genesis-derivable in v0.3_candidate"
         )
 
 

@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.1.json"
+DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.3_candidate.json"
 
 
 def _data() -> dict:
@@ -120,5 +120,5 @@ def test_orphan_nodes_are_basis_reachable() -> None:
 
 
 def test_phase_1387f_token_in_compiler() -> None:
-    compiler = (ROOT / "tools" / "genesis_compile_coverage_diagnostic.py").read_text()
-    assert "Phase 1387f" in compiler, "Phase 1387f annotation not found in compiler"
+    compiler = (ROOT / "tools" / "genesis_compile_coverage_diagnostic_v0.3_candidate.py").read_text()
+    assert "Phase 1387f" in compiler, "Phase 1387f annotation not found in candidate compiler"
