@@ -100,11 +100,15 @@ def test_adr_0035_candidate_node_present_in_manifest() -> None:
     )
 
 
-def test_adr_0035_spec_doc_does_not_exist() -> None:
-    """ADR-0035 is formally deferred — no spec doc should exist."""
+def test_adr_0035_formal_adr_exists() -> None:
+    """ADR-0035 formal ADR written in Phase 1387d — doc should now exist."""
     matches = list(ADR_DIR.glob("ADR_0035*.md"))
-    assert matches == [], (
-        f"ADR-0035 spec doc found (should be formally deferred): {matches}"
+    assert len(matches) == 1, (
+        f"Expected exactly one ADR-0035 file in docs/adr/; found: {matches}"
+    )
+    text = matches[0].read_text()
+    assert "adr_0035_homoiconic_type_definition_system_direction_accepted" in text, (
+        "ADR-0035 missing direction-accepted token"
     )
 
 
