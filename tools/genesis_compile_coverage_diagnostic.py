@@ -81,6 +81,14 @@ def _basis_roots(star_map: dict[str, Any]) -> set[str]:
             "axiom:math:01",
             "axiom:physics:01",
             "genesis_agent:01",
+            # Phase 1387c: Category A bootstrap axioms added to transition basis.
+            # These are circular-by-construction (the attestation root cannot derive
+            # itself from below) and must be treated as axiomatic starting points.
+            # The attestation root has GOVERNS edges to the full governance spine,
+            # so its inclusion closes the basis-reachability gap to 100%.
+            "artifact:genesis_intent_attestation_init_authority_map",
+            "artifact:genesis_agent1_pubkey_record_838a",
+            "ceremony:genesis_agent1_keygen_838a",
         }
     )
     return roots & core_ids
@@ -217,8 +225,31 @@ def run(
     ]
 
     edge_analysis = _edge_recipe_analysis(star_map)
+
+    # Two-tier classification (Phase 1387c):
+    # Tier 1 — genesis-derivable: reachable from the expanded transition basis.
+    # Tier 2 — governance-extended: authority-traceable but not basis-reachable;
+    #           these are post-genesis governance decisions correctly outside
+    #           the genesis derivation chain.
+    genesis_derivable = basis_reachable & core_ids
+    governance_extended = (authority_traceable - basis_reachable) & core_ids
+    basis_unreachable_count = len(core_ids - basis_reachable)
+
+    tier_analysis = {
+        "genesis_derivable_node_count": len(genesis_derivable),
+        "genesis_derivable_node_ids": sorted(genesis_derivable),
+        "genesis_derivable_ratio": _ratio(len(genesis_derivable), len(core_ids)),
+        "governance_extended_node_count": len(governance_extended),
+        "governance_extended_node_ids": sorted(governance_extended),
+        "governance_extended_ratio": _ratio(len(governance_extended), len(core_ids)),
+        "basis_unreachable_count": basis_unreachable_count,
+    }
+
     if edge_analysis["missing_decomposition_recipe_count"] == 0 and len(core_sources) >= len(sources) * 3 // 4:
         verdict = "COMPLETE_ENOUGH_FOR_PHASE_1136"
+    elif edge_analysis["missing_decomposition_recipe_count"] == 0 and basis_unreachable_count == 0 and core_sources:
+        # All core nodes are genesis-derivable; remaining gap is source-file coverage only.
+        verdict = "GENESIS_CORE_COMPLETE_SOURCE_COVERAGE_PARTIAL"
     elif edge_analysis["missing_decomposition_recipe_count"] == 0 and core_sources:
         verdict = "PARTIAL_WITH_STRUCTURAL_GAPS"
     else:
@@ -244,6 +275,7 @@ def run(
             "support_only_sources_with_core_link": len(support_only_sources),
         },
         "edge_recipe_analysis": edge_analysis,
+        "tier_analysis": tier_analysis,
         "authority_traceability": {
             "attestation_root": GENESIS_ATTESTATION_ROOT,
             "authority_traceable_core_nodes": len(authority_traceable),
@@ -326,6 +358,7 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
     coverage = payload["compile_coverage"]
     edge_analysis = payload["edge_recipe_analysis"]
     authority = payload["authority_traceability"]
+    tier = payload["tier_analysis"]
     lines = [
         "# GENESIS-COMPILE-01 Compile Coverage Diagnostic v0.1",
         "",
@@ -334,6 +367,12 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
         "## Verdict",
         "",
         f"`{payload['verdict']}`",
+        "",
+        "## Two-Tier Core Node Analysis (Phase 1387c)",
+        "",
+        f"- Genesis-derivable nodes: `{tier['genesis_derivable_node_count']}` / `{coverage['core_nodes_total']}` (`{tier['genesis_derivable_ratio']}`)",
+        f"- Governance-extended nodes: `{tier['governance_extended_node_count']}` / `{coverage['core_nodes_total']}` (`{tier['governance_extended_ratio']}`)",
+        f"- Basis-unreachable (gap): `{tier['basis_unreachable_count']}`",
         "",
         "## Coverage",
         "",
