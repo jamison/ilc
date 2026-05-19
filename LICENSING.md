@@ -1,7 +1,6 @@
 # ILC Layered Licensing and Rights Posture
 
-Status: current project posture, subject to later counsel review and explicit
-project amendment
+Status: current project posture, subject to explicit project amendment
 
 ```text
 ilc_layered_license_posture_v0.1
@@ -11,7 +10,7 @@ genesis_canonical_identity_license_zone
 public_docs_cc_by_4_0_zone
 patent_pending_all_rights_reserved_zone
 trademark_identity_not_granted_by_code_license
-counsel_review_future_modification_expected
+self_counsel_governance_review_future_modification_expected
 ```
 
 ## 1. Purpose
@@ -24,9 +23,9 @@ network identity marks.
 A blanket MIT license is not the current project posture. The root `LICENSE`
 file is a layered notice, and this file is the repository zone table.
 
-This is not legal advice. The project expects future outside counsel review, but
-the current repository should not continue to present itself as blanket MIT in
-the meantime.
+This is a Genesis-authority self-counsel governance posture, not external legal
+advice. The current repository should not continue to present itself as blanket
+MIT.
 
 ## 2. Zone Table
 
@@ -85,10 +84,10 @@ license sunset may be required after network maturity.
 Until that policy exists, external contributor intake is not authorized by this
 file.
 
-## 7. Counsel Review
+## 7. Self-Counsel and Governance Review
 
 This file implements the current project posture so the repository no longer
-appears to be blanket MIT. Future outside counsel review may modify:
+appears to be blanket MIT. Future Genesis governance review may modify:
 
 - exact SPDX expressions;
 - per-file or per-directory license notices;
@@ -99,3 +98,19 @@ appears to be blanket MIT. Future outside counsel review may modify:
 
 Such later review may amend this file, but it does not change the current need
 to avoid blanket MIT exposure.
+
+## 8. Phase 1388a CDL-048 Pre-Production Activation Scope
+
+Phase 1388a records a Genesis-authority self-counsel decision for the narrow
+CDL-048 pre-production/testnet activation surface:
+
+```text
+counsel_clearance_cdl_048_activation_phase_1388a
+self_counsel_decision_not_external_legal_opinion_phase_1388a
+```
+
+That decision is final for the project's internal CDL-048 conversion-path
+plumbing activation purposes in the current closed-network/testnet context. It
+is not an external legal opinion and does not by itself authorize public
+claimability, public repository publication, external contributor onboarding,
+mainnet launch, or public token distribution/offering/listing surfaces.

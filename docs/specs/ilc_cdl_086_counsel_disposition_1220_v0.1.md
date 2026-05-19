@@ -25,6 +25,30 @@ any launch-adjacent act.
 
 ---
 
+## 1a. Phase 1388a Scoped Self-Counsel Addendum
+
+Phase 1388a records a Genesis-authority self-counsel decision for the narrow
+CDL-048 pre-production/testnet activation surface:
+
+```text
+counsel_clearance_cdl_048_activation_phase_1388a
+self_counsel_decision_not_external_legal_opinion_phase_1388a
+```
+
+For this narrow surface only, the CDL-048 activation-relevant legal/governance
+posture is no longer provisional for internal pre-production/testnet activation
+purposes. The Phase 1388a decision is a Genesis-authority decision final for
+that purpose.
+
+This addendum does not convert the Phase 1220 counsel disposition into an
+external counsel opinion. It does not authorize mainnet launch, public
+repository publication, public release artifact distribution, public
+claimability, external contributor onboarding, public conversions with
+real-world economic value, or inviting external parties to use the conversion
+path.
+
+---
+
 ## 2. Disposition Record
 
 ### C1 — License Terms
