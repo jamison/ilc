@@ -51,3 +51,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0038](ADR_0038_Agent_Birth_Attestation.md) | Agent Birth Attestation | Accepted |
 | [ADR-0039](ADR_0039_Validator_Endpoint_Registry.md) | Validator Endpoint Registry | Accepted |
 | [ADR-0040](ADR_0040_Jury_Eligibility_Assignment.md) | Jury Eligibility and Assignment | Accepted |
+| [ADR-0041](ADR_0041_Agent_INIT_and_Ingestion_Protocol.md) | Agent INIT and Ingestion Protocol | Accepted |

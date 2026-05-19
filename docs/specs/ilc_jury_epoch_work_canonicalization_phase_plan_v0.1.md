@@ -77,7 +77,8 @@ human gives the corresponding explicit GO.
 |---------|---------------|---------|
 | J-001 | Phase 1391 | COMPLETE: jury / epoch-work canon map |
 | J-002 | Phase 1392 | COMPLETE: jury eligibility and assignment ADR |
-| J-003 | Phase 1393 | COMPLETE: public node review taxonomy |
+| J-003 | Phase 1393 | COMPLETE: public node review taxonomy (incl. T0.5 quarantine) |
+| J-003a | Phase 1393a | COMPLETE: ADR-0041 Agent INIT + Ingestion Protocol — **hard prerequisite for J-007** |
 | J-004 | Phase 1394 | Jury incentive economics CDL opening |
 | J-005 | Phase 1395 | Epoch-start capability and maintenance contract |
 | J-006 | Phase 1396 | Default-off jury assignment quote runtime |
@@ -161,6 +162,38 @@ reward_bearing_public_nodes_require_review_lane
 subjective_panel_non_blocking_boundary_preserved
 ```
 
+### Phase J-003a — ADR-0041: Agent INIT and Ingestion Protocol
+
+**Goal:** Define agent INIT connectivity semantics, external identifier anchoring,
+raw artifact custody, submission quarantine (T0.5), extraction provenance payload
+requirements, and copyright/publication boundary.
+
+**Status:** J-003a / Phase 1393a COMPLETE. See
+`docs/adr/ADR_0041_Agent_INIT_and_Ingestion_Protocol.md`.
+
+**Hard prerequisite for J-007 shadow ingestion harness.** Does not block J-004/J-005/J-006.
+
+**Key decisions:**
+- Agent INIT is permissionless; new agent has zero public weight until incoming
+  attestation from an existing connected node.
+- External canonical identifier anchoring (DOI/PMID/arXiv/ISBN/etc.) as
+  first-pass deduplication before SIM-EMBED-01.
+- T0.5 (`T0_5_PENDING_PUBLIC_INGESTION`) is the default submission landing zone:
+  content-addressed, D2D-requestable, zero public weight.
+- Extraction provenance must cite `source_span` + `extraction_method`.
+- Verbatim verbatim storage vs. hash+metadata copyright boundary is counsel-gated
+  and must not be treated as automatically permissible before public activation.
+
+**Output tokens:**
+```text
+adr_0041_agent_init_and_ingestion_protocol_accepted
+agent_init_permissionless_zero_public_weight_until_attestation
+external_identifier_anchoring_doi_pmid_arxiv_defined
+t0_5_quarantine_state_is_pending_public_ingestion
+extraction_provenance_payload_fields_required
+copyright_boundary_counsel_gated
+```
+
 ### Phase J-004 — Jury Incentive Economics CDL Opening
 
 **Goal:** Open the explicit economic design for reviewer compensation.
@@ -241,6 +274,11 @@ epoch_hash_shadow_assignment_only_phase_j006
 
 ### Phase J-007 — Shadow Public-Ingestion Harness
 
+**Prerequisite:** ADR-0041 (J-003a / Phase 1393a) must be accepted before this
+phase executes. ADR-0041 defines the T0.5 quarantine state, external identifier
+anchoring, extraction provenance requirements, and copyright boundary that the
+shadow harness must exercise.
+
 **Goal:** Connect OpenClaw / public RC ingestion rehearsals to the review taxonomy
 without making public graph claims permanent.
 
@@ -318,6 +356,25 @@ production_public_graph_canonicalization_requires_jury_activation_gate
    assignment, independent of the CDL-068 topology-shuffle threshold?
 7. Does maintenance work use the same reviewer pool as node review, or a separate
    maintenance/audit pool?
+
+### Mode-2 Refutation Carry-Forward (explicitly preserved — do not lose below the fold)
+
+The old Window 1391–1398 designation "Mode-2 Refutation Adjudication and
+Settlement" is now folded into the J-series window, but its open items are real
+and must not silently disappear. The following four items remain uncommitted and
+unresolved:
+
+| Item | Status | Relevant J-phase |
+|------|--------|-----------------|
+| Stake bond calibration (`SUBMISSION_STAKE_AMOUNT_TBD`, `REFUTATION_STAKE_AMOUNT_TBD`) | Requires soft-RC production data | J-004 (incentive economics) |
+| CDL-029 allocation wiring for settlement-grade upheld refutations | Phase 1351a establishes narrow policy; full integration not done | J-004 / J-008 |
+| Novelty-spec open items (5 items) — C(R) traversal as proof-witness boundary for settlement-grade claims | Not ratified | J-004 / J-007 shadow harness |
+| Mode-3 escalation path — contested novelty or anomaly cases; dispute/escalation only, not universal | Not implemented | J-008 activation gate |
+
+These items are T5 (`REFUTATION_PROVENANCE_STAKE_AFFECTING_CLAIM`) lane work per
+J-003 taxonomy. They do not block the J-001/J-002/J-003 canon-map work but must
+be resolved before J-008 production activation can claim settlement-grade
+refutation is live.
 
 ## 7. Near-Term Recommendation
 
