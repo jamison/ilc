@@ -1,7 +1,7 @@
 # ILC Jury and Epoch-Work Canonicalization Phase Plan v0.1
 
 **Date:** 2026-05-19
-**Status:** planning-only; Phase J-001 / 1391 and Phase J-002 / 1392 complete
+**Status:** planning-only; Phase J-001 / 1391, Phase J-002 / 1392, and Phase J-003 / 1393 complete
 **Scope:** jury/panel selection, subjective/objective review lanes, beginning-of-epoch capability work, maintenance tasks, and incentive routing
 
 ## 1. Purpose
@@ -15,6 +15,11 @@ unless separately authorized. Phase J-002 / 1392 now complete; it publishes
 `docs/adr/ADR_0040_Jury_Eligibility_Assignment.md` and locks the opt-in,
 eligibility, deterministic shadow-assignment, VRF boundary, diversity,
 outsider-seat, and non-response rules for later J-series phases.
+Phase J-003 / 1393 now complete; it publishes
+`docs/specs/ilc_public_node_review_taxonomy_v0.1.md` and locks the review lane
+taxonomy for private drafts, public metadata, reward-bearing objective nodes,
+contested objective nodes, subjective / aesthetic nodes, refutation /
+provenance claims, and validator / consensus claims.
 
 The core principle is:
 
@@ -72,7 +77,7 @@ human gives the corresponding explicit GO.
 |---------|---------------|---------|
 | J-001 | Phase 1391 | COMPLETE: jury / epoch-work canon map |
 | J-002 | Phase 1392 | COMPLETE: jury eligibility and assignment ADR |
-| J-003 | Phase 1393 | Public node review taxonomy |
+| J-003 | Phase 1393 | COMPLETE: public node review taxonomy |
 | J-004 | Phase 1394 | Jury incentive economics CDL opening |
 | J-005 | Phase 1395 | Epoch-start capability and maintenance contract |
 | J-006 | Phase 1396 | Default-off jury assignment quote runtime |
@@ -131,6 +136,9 @@ non_opt_in_agents_not_forced_into_jury_service
 ### Phase J-003 — Public Node Review Taxonomy
 
 **Goal:** Define which graph submissions require which review lane.
+
+**Status:** J-003 / 1393 now complete. See
+`docs/specs/ilc_public_node_review_taxonomy_v0.1.md`.
 
 **Proposed taxonomy:**
 - private/local draft: no jury required
