@@ -978,12 +978,38 @@ CDL-078/Phase 1386c route transport-principal resolution to the D2D/admission
 layer. Replay/nullifier and duplicate-claim registry blockers remain runtime
 carry-forward.
 
-Phase 1389b is SENSITIVE runtime work and is deferred until after Phase 1397a
-per current human routing. Phase 1389a does not mutate `ilc_core/`, remove
-`_PUBLIC_MODE_BLOCKERS`, activate public claimability, open a public API, or
-rerun Phase 1389.
+Phase 1389a did not mutate `ilc_core/`, remove `_PUBLIC_MODE_BLOCKERS`,
+activate public claimability, open a public API, or rerun Phase 1389. The later
+"after Phase 1397a" phrase was corrected by the user as a fat-finger; Phase
+1389b subsequently executed after Phase 1389a under explicit authorization.
 
 Commit subject: `phase 1389a claimability public mode governance decisions`
+
+### Phase 1389b — Claimability public-mode runtime
+
+**SENSITIVE** — executed after explicit `GO Phase 1389b`.
+
+Implements the two runtime blockers preserved by Phase 1389a. Runtime commit
+`aed33474` adds `claim_nullifier_registry_v1`, wires optional registry-backed
+admission into the claimability verifier, rejects active replay nullifiers,
+rejects duplicate claim material at admission, rejects premature and closed
+claim windows by issuance epoch, and empties `_PUBLIC_MODE_BLOCKERS`.
+
+Record:
+
+```text
+claimability_public_mode_runtime_phase_1389b
+claim_nullifier_registry_v1_active_phase_1389b
+duplicate_claim_registry_active_phase_1389b
+claimability_verifier_public_mode_ready_phase_1389b
+public_mode_blockers_empty_phase_1389b
+```
+
+Non-authorization: no Phase 1389 rerun, public claimability activation, public
+verifier API serving, claim endpoint serving, wallet action, ECU minting, ILC
+settlement, CDL mutation, public RC publication, or mainnet launch.
+
+Commit subject: `phase 1389b claimability nullifier registry runtime`
 
 ### Phase 1390 — Window closure handoff
 
@@ -1032,7 +1058,8 @@ Phase 1369 sequence lock
                             → Phase 1388 CDL-048 activation + counsel
                                 → Phase 1389 public claimability gate
                                     → Phase 1389a public-mode governance decisions
-                                        → Phase 1390 closure
+                                        → Phase 1389b public-mode runtime
+                                            → Phase 1390 closure
 ```
 
 ### Must-resolve at Phase 1369 entry
