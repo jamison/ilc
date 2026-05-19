@@ -15,8 +15,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-STAR_MAP = ROOT / "out" / "genesis_core_star_map_v0.1.json"
-DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.1.json"
+STAR_MAP = ROOT / "out" / "genesis_core_star_map_v0.3_candidate.json"
+DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.3_candidate.json"
 
 # The 17 promoted nodes from v0.2_candidate
 PROMOTED_V2_NODES = {

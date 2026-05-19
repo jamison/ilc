@@ -13,8 +13,8 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.1.json"
-COMPILER = ROOT / "tools" / "genesis_compile_coverage_diagnostic.py"
+DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.3_candidate.json"
+COMPILER = ROOT / "tools" / "genesis_compile_coverage_diagnostic_v0.3_candidate.py"
 
 CATEGORY_A_NODES = {
     "artifact:genesis_intent_attestation_init_authority_map",

@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.1.json"
+DIAGNOSTIC_JSON = ROOT / "out" / "genesis_compile_coverage_diagnostic_v0.3_candidate.json"
 
 
 def _ela() -> dict:
@@ -90,5 +90,5 @@ def test_leverage_type_distribution() -> None:
 
 
 def test_phase_1387g_token_in_compiler() -> None:
-    compiler = (ROOT / "tools" / "genesis_compile_coverage_diagnostic.py").read_text()
-    assert "Phase 1387g" in compiler, "Phase 1387g annotation not found in compiler"
+    compiler = (ROOT / "tools" / "genesis_compile_coverage_diagnostic_v0.3_candidate.py").read_text()
+    assert "Phase 1387g" in compiler, "Phase 1387g annotation not found in candidate compiler"
