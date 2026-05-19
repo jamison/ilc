@@ -42,6 +42,7 @@ payments, or authorize public graph canonicalization.
 | Taxonomy ID | Submission class | Required review lane | Public economic eligibility | Boundary |
 |-------------|------------------|----------------------|-----------------------------|----------|
 | `T0_PRIVATE_LOCAL_DRAFT` | Private, local, operator-only, or harness-only draft node | No jury review required | None | Draft can exist privately without public graph admission, public canonical status, public reputation, protocol ECU, or claimability. |
+| `T0_5_PENDING_PUBLIC_INGESTION` | Submitted with public intent but not yet admitted — content-addressed, requestable, zero weight | Schema validity check only | None — no ranking, no reward, no canonical status | Distinct from T0 (private): the agent has declared public intent but admission is pending. Serves as the submission quarantine state. Promoted to T1+ by the ingestion admission path. |
 | `T1_PUBLIC_NON_REWARD_METADATA` | Public non-reward metadata, labels, pointers, receipts, or low-risk descriptive records | Lightweight schema / admission check | None unless later promoted to economic lane | Public visibility alone does not create reward. |
 | `T2_REWARD_BEARING_OBJECTIVE_NODE` | Reward-bearing public objective knowledge node | CDL-052 / CDL-V7 objective review lane | Possible only after public admission and eligible public state | Must not bypass review lane. |
 | `T3_CONTESTED_HIGH_VALUE_OBJECTIVE_NODE` | Contested, high-value, safety-critical, or high-reward objective claim | 7+1 objective panel or escalated jury petition | Possible only after upheld/evaluated state and public admission | Uses ADM-003 panel shape and ADR-0040 anti-capture rules. |
@@ -53,6 +54,7 @@ Stable lane tokens:
 
 ```text
 review_lane_private_draft_no_jury
+review_lane_pending_public_ingestion_quarantine_zero_weight
 review_lane_public_metadata_lightweight_admission
 review_lane_reward_bearing_objective_requires_cdl052_cdlv7
 review_lane_contested_high_value_requires_7_plus_1_or_escalation
@@ -80,6 +82,45 @@ timestamps, private commitments, or private draft history do not create
 retroactive public reward priority.
 
 Stable private-boundary phrase: Private timestamps, private commitments, or private draft history do not create retroactive public reward priority.
+
+## 4.5 Pending Public Ingestion Quarantine (T0.5)
+
+`T0_5_PENDING_PUBLIC_INGESTION` is the state between private draft (T0) and
+publicly admitted non-reward metadata (T1). It is distinct from T0 in one
+important way: the submitting agent has declared public intent. The content is
+content-addressed, requestable by other agents (via D2D serve-credit path), and
+permanently recorded by hash. But it has not yet passed the admission path and
+carries no public weight.
+
+```text
+t0_5_pending_public_ingestion_has_zero_public_weight
+t0_5_content_is_requestable_not_canonical
+```
+
+Properties of T0.5:
+
+- **Content-addressed:** permanently retrievable by hash from any serving agent
+  that has replicated it.
+- **Zero public weight:** no public reputation, protocol ECU, public settlement,
+  public corroboration, public claimability, or public canonical status.
+- **No ranking / discovery effect:** T0.5 nodes do not influence search, routing,
+  or recommendation until promoted.
+- **No economic event construction:** Phase 1387a public-economics admission
+  firewall applies; T0.5 nodes cannot construct public economic events.
+- **Schema validity only:** the only check at T0.5 entry is schema conformance
+  and basic CDL-V7 claim-form validity where applicable. No jury review.
+- **Promotion path:** a T0.5 node may be promoted to T1+ by the ingestion
+  admission path defined in ADR-0041. Promotion requires passing the relevant
+  review lane for the target tier.
+- **Copyright note:** storing verbatim content (e.g. a full PDF) at T0.5 may
+  have different legal character than storing a hash, metadata, and extracted
+  claims. The copyright/publication boundary is a counsel-gated decision routed
+  to ADR-0041.
+
+The submission quarantine design is: T0.5 is the default landing zone for any
+"submit to network" action. Nothing in T0.5 is ephemeral or deniable — it is
+permanently content-addressed — but nothing in T0.5 earns weight, ranking, or
+reward until the appropriate review lane promotes it.
 
 ## 5. Public Metadata Boundary
 
@@ -211,18 +252,20 @@ order:
 
 1. If it is private, local, operator-only, or harness-only, classify as
    `T0_PRIVATE_LOCAL_DRAFT`.
-2. If it is public but non-economic and descriptive only, classify as
-   `T1_PUBLIC_NON_REWARD_METADATA`.
-3. If it requests public reward, reputation, settlement, corroboration, or
+2. If it has declared public intent but has not yet passed admission, classify as
+   `T0_5_PENDING_PUBLIC_INGESTION` (quarantine state; zero weight).
+3. If it has passed admission and is public but non-economic and descriptive only,
+   classify as `T1_PUBLIC_NON_REWARD_METADATA`.
+4. If it requests public reward, reputation, settlement, corroboration, or
    claimability, require public admission evidence and classify by claim type.
-4. If it is objective and reward-bearing, classify as
+5. If it is objective and reward-bearing, classify as
    `T2_REWARD_BEARING_OBJECTIVE_NODE`.
-5. If it is contested, high-value, safety-critical, or high-reward, classify as
+6. If it is contested, high-value, safety-critical, or high-reward, classify as
    `T3_CONTESTED_HIGH_VALUE_OBJECTIVE_NODE`.
-6. If it is subjective / aesthetic, classify as `T4_SUBJECTIVE_AESTHETIC_NODE`.
-7. If it is refutation, provenance, stake-affecting, or attribution-affecting,
+7. If it is subjective / aesthetic, classify as `T4_SUBJECTIVE_AESTHETIC_NODE`.
+8. If it is refutation, provenance, stake-affecting, or attribution-affecting,
    classify as `T5_REFUTATION_PROVENANCE_STAKE_AFFECTING_CLAIM`.
-8. If it is validator or consensus evidence, classify as
+9. If it is validator or consensus evidence, classify as
    `T6_VALIDATOR_CONSENSUS_CLAIM`.
 
 When a submission fits multiple classes, choose the stricter lane. Public
