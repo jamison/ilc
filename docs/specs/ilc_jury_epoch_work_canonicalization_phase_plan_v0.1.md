@@ -1,7 +1,7 @@
 # ILC Jury and Epoch-Work Canonicalization Phase Plan v0.1
 
 **Date:** 2026-05-19
-**Status:** planning-only
+**Status:** planning-only; Phase J-001 / 1391 complete
 **Scope:** jury/panel selection, subjective/objective review lanes, beginning-of-epoch capability work, maintenance tasks, and incentive routing
 
 ## 1. Purpose
@@ -9,7 +9,9 @@
 This document consolidates the recovered jury / panel / epoch-work design into a
 concrete future phase plan. It does not ratify new constitutional rules, mutate
 runtime code, activate public RC, activate production economics, or require jury
-participation from every connected agent.
+participation from every connected agent. Phase J-001 / 1391 has now executed as
+a non-sensitive canon-map phase; the rest of the J-series remains future work
+unless separately authorized.
 
 The core principle is:
 
@@ -65,7 +67,7 @@ human gives the corresponding explicit GO.
 
 | J phase | Numeric draft | Purpose |
 |---------|---------------|---------|
-| J-001 | Phase 1391 | Jury / epoch-work canon map |
+| J-001 | Phase 1391 | COMPLETE: jury / epoch-work canon map |
 | J-002 | Phase 1392 | Jury eligibility and assignment ADR |
 | J-003 | Phase 1393 | Public node review taxonomy |
 | J-004 | Phase 1394 | Jury incentive economics CDL opening |
@@ -275,7 +277,7 @@ Recommended placement:
 
 | Timing | Work |
 |--------|------|
-| Before public RC if time permits | J-001 canon map; J-002 assignment ADR draft; J-003 review taxonomy |
+| Before public RC if time permits | J-001 canon map complete; J-002 assignment ADR draft; J-003 review taxonomy |
 | Public RC shadow period | J-005 epoch-start / maintenance contract; J-006 quote runtime; J-007 shadow harness |
 | Before production mainnet launch | J-004 incentive economics CDL; J-008 production activation gate; VRF production randomness decision |
 
@@ -305,8 +307,10 @@ production_public_graph_canonicalization_requires_jury_activation_gate
 
 ## 7. Near-Term Recommendation
 
-The next concrete phase should be J-001. It is low-risk, planning-only, and
-creates the source-of-truth map needed before opening ADR/CDL decisions.
+J-001 is complete. The next concrete phase should be J-002, the jury eligibility
+and assignment ADR. It should be treated as non-activating ADR work: no public
+ingestion, production jury assignment, production graph canonicalization, or
+reviewer payment activation.
 
 J-001 should explicitly preserve this boundary:
 
