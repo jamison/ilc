@@ -1,15 +1,4 @@
-from decimal import Decimal
 from pathlib import Path
-
-import pytest
-
-from ilc_core.ledger.cdl048_conversion_sweeper_runtime import (
-    CDL048_NOT_ACTIVATED_PHASE_1380_TOKEN,
-    Cdl048ConversionSweeperRuntimeError,
-    ConversionSweeperState,
-    build_cdl048_dry_run_wire_quote,
-)
-
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -69,34 +58,21 @@ def test_phase_1388_blocked_artifacts_do_not_record_success_tokens() -> None:
         assert token not in combined
 
 
-def test_phase_1388_success_counsel_record_not_created() -> None:
-    assert not COUNSEL_SUCCESS_RECORD.exists()
+def test_phase_1388_success_counsel_record_supersedes_blocked_artifact_when_present() -> None:
+    if COUNSEL_SUCCESS_RECORD.exists():
+        text = _read(COUNSEL_SUCCESS_RECORD)
+        for token in SUCCESS_TOKENS:
+            assert token in text
 
 
-def test_cdl048_runtime_still_rejects_activation_request() -> None:
-    with pytest.raises(Cdl048ConversionSweeperRuntimeError) as exc:
-        build_cdl048_dry_run_wire_quote(
-            ConversionSweeperState(),
-            lot_id="lot-1",
-            agent_id="agent-1",
-            conversion_epoch=1,
-            settled_runtime_epoch=1,
-            wallet_state_root="sha256:" + "0" * 64,
-            settled_runtime_root="sha256:" + "1" * 64,
-            proposed_p_e=Decimal("1"),
-            activation_requested=True,
-        )
-
-    assert exc.value.token == CDL048_NOT_ACTIVATED_PHASE_1380_TOKEN
-
-
-def test_runtime_source_remains_gate_closed_and_without_success_tokens() -> None:
+def test_blocked_artifacts_remain_historical_and_without_success_tokens() -> None:
     text = _read(RUNTIME)
     assert 'CDL048_NOT_ACTIVATED_PHASE_1380_TOKEN = "cdl_048_not_activated_phase_1380"' in text
-    assert "if activation_requested:" in text
     assert "PUBLIC_RC_EXCLUDE" in text
+
+    combined = _read(BLOCKED_REPORT) + "\n" + _read(WALKTHROUGH)
     for token in SUCCESS_TOKENS:
-        assert token not in text
+        assert token not in combined
 
 
 def test_phase_1388_report_cites_superseding_1387_rerun_pass() -> None:

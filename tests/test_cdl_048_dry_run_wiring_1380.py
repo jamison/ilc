@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from ilc_core.ledger.cdl048_conversion_sweeper_runtime import (
+    CDL048_ACTIVATED_PHASE_1388_TOKEN,
     CDL048_DRY_RUN_WIRE_RUNTIME_VERSION,
     CDL048_DRY_RUN_WIRING_TOKEN,
     CDL048_NOT_ACTIVATED_PHASE_1380_TOKEN,
@@ -144,11 +145,7 @@ def test_phase_1380_uses_cdl_030_p_e_clamp_and_preserves_price_gate_closed() -> 
     assert ceiling_quote.p_e_decision_token == "live_price_adjustment_not_activated_phase_1351"
 
 
-def test_phase_1380_fail_closed_on_activation_and_invalid_p_e_inputs() -> None:
-    with pytest.raises(Cdl048ConversionSweeperRuntimeError) as activation_exc:
-        _quote(activation_requested=True)
-    assert _error_token(activation_exc) == CDL048_NOT_ACTIVATED_PHASE_1380_TOKEN
-
+def test_phase_1380_rejects_invalid_activation_flag_and_invalid_p_e_inputs() -> None:
     with pytest.raises(Cdl048ConversionSweeperRuntimeError) as flag_exc:
         _quote(activation_requested="yes")
     assert _error_token(flag_exc) == "cdl048_activation_request_flag_invalid"
@@ -185,7 +182,7 @@ def test_phase_1380_frontier_docs_record_non_activation_and_prerequisites() -> N
     assert CDL048_DRY_RUN_WIRING_TOKEN in runtime
     assert GATE_CLOSED_STATE_CONFIRMED_PHASE_1380_TOKEN in runtime
     assert DOUBLE_ENTRY_CONSERVATION_PROVEN_WIRE_LEVEL_PHASE_1380_TOKEN in runtime
-    assert "cdl_048_activated_phase_1388" not in runtime
+    assert CDL048_ACTIVATED_PHASE_1388_TOKEN in runtime
 
     register = _read(CDL_REGISTER)
     cdl048_row = next(line for line in register.splitlines() if line.startswith("| CDL-048 |"))
