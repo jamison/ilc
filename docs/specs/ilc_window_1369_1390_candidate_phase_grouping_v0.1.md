@@ -956,6 +956,35 @@ Record: `gate_failed_reason=claimability_runtime_public_mode_blockers_still_acti
 
 Commit subject: `phase 1389 public claimability api activation gate`
 
+### Phase 1389a — Claimability public-mode governance decisions
+
+**NON-SENSITIVE** — governance/disposition only; no runtime activation.
+
+Closes the three Phase 1305 public-mode blockers that can be resolved by
+committed governance authority:
+
+```text
+claimability_public_mode_governance_decisions_phase_1389a
+cdl_088_is_public_claimability_api_authority_phase_1389a
+public_safe_disclosure_schema_final_cdl_088_scope_phase_1389a
+transport_principal_resolved_at_d2d_layer_adr_0039_cdl_078_phase_1389a
+claimability_runtime_registry_blockers_remain_phase_1389a
+```
+
+Disposition: CDL-088 is the ratified public claimability API authority; Phase
+1291 plus CDL-088 and the verifier expected-key sets define the public-safe
+claimability disclosure schema; ADR-0039 signed `QUIC_ENDPOINT` edges plus
+CDL-078/Phase 1386c route transport-principal resolution to the D2D/admission
+layer. Replay/nullifier and duplicate-claim registry blockers remain runtime
+carry-forward.
+
+Phase 1389b is SENSITIVE runtime work and is deferred until after Phase 1397a
+per current human routing. Phase 1389a does not mutate `ilc_core/`, remove
+`_PUBLIC_MODE_BLOCKERS`, activate public claimability, open a public API, or
+rerun Phase 1389.
+
+Commit subject: `phase 1389a claimability public mode governance decisions`
+
 ### Phase 1390 — Window closure handoff
 
 **SENSITIVE** — requires `GO Phase 1390`.
@@ -1002,7 +1031,8 @@ Phase 1369 sequence lock
                         → Phase 1387a accepted ADR/CDL coverage + public-economics firewall
                             → Phase 1388 CDL-048 activation + counsel
                                 → Phase 1389 public claimability gate
-                                    → Phase 1390 closure
+                                    → Phase 1389a public-mode governance decisions
+                                        → Phase 1390 closure
 ```
 
 ### Must-resolve at Phase 1369 entry
