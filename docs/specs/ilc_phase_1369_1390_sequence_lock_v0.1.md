@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1387; Phase 1387 failed closed and Phase 1388 is blocked until remediation.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1387 re-run; Phase 1387 now passes and Phase 1387a is next.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -117,12 +117,15 @@ CDL-078 relay fallback is proven second; `settlement_path=mysticeti_fast_path` n
 requires `endpoint_projection_path`; and projection write-path methods are rejected
 by acceptance test.
 
-Phase 1387 addendum: the pre-activation hardening gate executed and failed closed.
-The missing row is the required project-authority security disposition artifact
-for every known HIGH-severity finding in the Phase 1384 scope:
-`gate_failed_reason=project_authority_security_disposition_missing`. Phase 1388
-must not proceed until a remediation phase creates the missing disposition and
-the gate is re-run or superseded with a pass.
+Phase 1387 addendum: the pre-activation hardening gate initially executed and
+failed closed because the required project-authority security disposition
+artifact was missing.
+
+Phase 1387 re-run addendum: after the Phase 1387-Fix remediation chain committed
+`docs/specs/ilc_security_disposition_phase_1387_fix_v0.1.md`, the gate was
+re-run and passed. The routing token is
+`pre_activation_hardening_gate_pass_phase_1387`. Phase 1387a is now next; Phase
+1388 and Phase 1389 remain blocked until Phase 1387a records its own pass.
 
 ## 5. Locked Phase Order
 
@@ -151,7 +154,7 @@ the gate is re-run or superseded with a pass.
 | 20 | 1386a | Production TLS gRPC path proof | COMPLETE; records `production_tls_grpc_path_proven_phase_1386a`, `epoch_0_sentinel_reconciliation_verified_phase_1386a`, and `get_epoch_chain_channel_limit_added_phase_1386a`; no production activation. |
 | 21 | 1386b | Validator endpoint registry ADR | COMPLETE; records `validator_endpoint_registry_adr_ratified_phase_1386b`, `quic_endpoint_epoch_scoped_signed_edge_defined`, `read_only_projection_contract_defined_phase_1386b`, and `no_hardcoded_peer_list_production_activation_path_phase_1386b`; no runtime or CDL mutation. |
 | 22 | 1386c | Persistent QUIC connectivity proof | COMPLETE; records `persistent_validator_quic_sessions_proven_phase_1386c`, `direct_quic_path_proven_phase_1386c`, `cdl_078_relay_fallback_implemented_phase_1386c`, `no_hardcoded_peer_list_activation_path_confirmed_phase_1386c`, and `write_path_projection_rejected_phase_1386c`; no CDL mutation, `ilc_core/` mutation, public P2P, production validator deployment, relay service activation, value-path activation, or public RC claim. |
-| 23 | 1387 | Pre-activation hardening gate | COMPLETE: FAILED CLOSED; records `pre_activation_hardening_gate_phase_1387_executed`, `pre_activation_hardening_gate_failed_phase_1387`, and `gate_failed_reason=project_authority_security_disposition_missing`; Phase 1388 blocked until remediation and gate pass. |
+| 23 | 1387 | Pre-activation hardening gate | COMPLETE: RE-RUN PASS; original v0.1 report failed closed with `gate_failed_reason=project_authority_security_disposition_missing`; superseding v0.2 re-run report records `pre_activation_hardening_gate_pass_phase_1387` after Phase 1387-Fix disposition; Phase 1387a next. |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | SENSITIVE gate/runtime phase; blocks Phase 1388/1389 unless public-only economics and accepted-functionality coverage are proven. |
 | 25 | 1388 | CDL-048 activation + counsel clearance | SENSITIVE value-path/counsel phase; fails closed without Phase 1387a pass. |
 | 26 | 1389 | Public claimability / API activation gate | SENSITIVE public-RC gate; requires explicit `GO Phase 1389`; `result=public_claimability_activated` may first appear here only if all blockers close. |
