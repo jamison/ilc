@@ -30,14 +30,14 @@ BOOTSTRAP_AXIOM_NODES = {
 def test_diagnostic_basis_reachable_count() -> None:
     # Phase 1387b recorded basis_reachable=17/32 (PARTIAL_WITH_STRUCTURAL_GAPS).
     # Phase 1387c expanded the transition basis and closed the gap to 32/32.
-    # This test now asserts the post-1387c state: all core nodes reachable.
+    # Phase 1387e expanded the star map from 32 to 54 nodes; all remain reachable.
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     cc = data["compile_coverage"]
-    assert cc["core_nodes_total"] == 32, (
-        f"Expected 32 core nodes, got {cc['core_nodes_total']}"
+    assert cc["core_nodes_total"] == 54, (
+        f"Expected 54 core nodes after Phase 1387e expansion, got {cc['core_nodes_total']}"
     )
     assert cc["basis_reachable_core_nodes"] == cc["core_nodes_total"], (
-        f"Expected all {cc['core_nodes_total']} core nodes reachable after Phase 1387c; "
+        f"Expected all {cc['core_nodes_total']} core nodes reachable after Phase 1387c/e; "
         f"got {cc['basis_reachable_core_nodes']}"
     )
 
@@ -49,11 +49,14 @@ def test_diagnostic_verdict_not_fail() -> None:
     assert data["verdict"] != "FAIL_CORE_INADEQUATE", "Diagnostic must not be a failure verdict"
 
 
-def test_authority_traceable_count_31() -> None:
+def test_authority_traceable_count_53() -> None:
+    # Phase 1387b recorded 31 authority-traceable.
+    # Phase 1387e expanded to 54 nodes; 53 are authority-traceable (attestation root
+    # cannot trace back to itself — correct by construction).
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     at = data["authority_traceability"]
-    assert at["authority_traceable_core_nodes"] == 31, (
-        f"Expected 31, got {at['authority_traceable_core_nodes']}"
+    assert at["authority_traceable_core_nodes"] == 53, (
+        f"Expected 53 after Phase 1387e expansion, got {at['authority_traceable_core_nodes']}"
     )
 
 
