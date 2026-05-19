@@ -27,20 +27,26 @@ BOOTSTRAP_AXIOM_NODES = {
 }
 
 
-def test_diagnostic_basis_reachable_count_17() -> None:
+def test_diagnostic_basis_reachable_count() -> None:
+    # Phase 1387b recorded basis_reachable=17/32 (PARTIAL_WITH_STRUCTURAL_GAPS).
+    # Phase 1387c expanded the transition basis and closed the gap to 32/32.
+    # This test now asserts the post-1387c state: all core nodes reachable.
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     cc = data["compile_coverage"]
-    assert cc["basis_reachable_core_nodes"] == 17, (
-        f"Expected 17, got {cc['basis_reachable_core_nodes']}"
-    )
     assert cc["core_nodes_total"] == 32, (
-        f"Expected 32, got {cc['core_nodes_total']}"
+        f"Expected 32 core nodes, got {cc['core_nodes_total']}"
+    )
+    assert cc["basis_reachable_core_nodes"] == cc["core_nodes_total"], (
+        f"Expected all {cc['core_nodes_total']} core nodes reachable after Phase 1387c; "
+        f"got {cc['basis_reachable_core_nodes']}"
     )
 
 
-def test_diagnostic_verdict_partial_with_structural_gaps() -> None:
+def test_diagnostic_verdict_not_fail() -> None:
+    # Phase 1387c supersedes the PARTIAL_WITH_STRUCTURAL_GAPS verdict by expanding
+    # the transition basis; the verdict is now GENESIS_CORE_COMPLETE_SOURCE_COVERAGE_PARTIAL.
     data = json.loads(DIAGNOSTIC_JSON.read_text())
-    assert data["verdict"] == "PARTIAL_WITH_STRUCTURAL_GAPS"
+    assert data["verdict"] != "FAIL_CORE_INADEQUATE", "Diagnostic must not be a failure verdict"
 
 
 def test_authority_traceable_count_31() -> None:
@@ -51,21 +57,22 @@ def test_authority_traceable_count_31() -> None:
     )
 
 
-def test_basis_unreachable_exactly_15_nodes() -> None:
+def test_basis_unreachable_empty_after_1387c() -> None:
+    # Phase 1387b identified 15 unreachable nodes; Phase 1387c closed that gap.
     data = json.loads(DIAGNOSTIC_JSON.read_text())
     unreachable = data["gaps"]["basis_unreachable_core_nodes"]
-    assert len(unreachable) == 15, (
-        f"Expected 15 basis-unreachable nodes, got {len(unreachable)}"
+    assert unreachable == [], (
+        f"Expected empty unreachable list after Phase 1387c; got {[n['candidate_id'] for n in unreachable]}"
     )
 
 
-def test_bootstrap_axiom_category_a_nodes_identified() -> None:
-    """The 3 bootstrap-axiom nodes are in the unreachable list (Category A)."""
+def test_bootstrap_axiom_category_a_nodes_now_in_basis() -> None:
+    """The 3 bootstrap-axiom nodes identified in Phase 1387b are now basis-reachable."""
     data = json.loads(DIAGNOSTIC_JSON.read_text())
-    unreachable_ids = {n["candidate_id"] for n in data["gaps"]["basis_unreachable_core_nodes"]}
+    genesis_derivable = set(data["tier_analysis"]["genesis_derivable_node_ids"])
     for node_id in BOOTSTRAP_AXIOM_NODES:
-        assert node_id in unreachable_ids, (
-            f"Bootstrap axiom node {node_id!r} not found in basis-unreachable list"
+        assert node_id in genesis_derivable, (
+            f"Bootstrap axiom node {node_id!r} should now be genesis-derivable"
         )
 
 
