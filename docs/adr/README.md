@@ -50,3 +50,4 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0033](ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md) | Star Map Homoiconic Epistemiological Entity | Accepted |
 | [ADR-0038](ADR_0038_Agent_Birth_Attestation.md) | Agent Birth Attestation | Accepted |
 | [ADR-0039](ADR_0039_Validator_Endpoint_Registry.md) | Validator Endpoint Registry | Accepted |
+| [ADR-0040](ADR_0040_Jury_Eligibility_Assignment.md) | Jury Eligibility and Assignment | Accepted |

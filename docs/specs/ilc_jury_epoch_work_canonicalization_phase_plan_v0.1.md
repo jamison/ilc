@@ -1,7 +1,7 @@
 # ILC Jury and Epoch-Work Canonicalization Phase Plan v0.1
 
 **Date:** 2026-05-19
-**Status:** planning-only; Phase J-001 / 1391 complete
+**Status:** planning-only; Phase J-001 / 1391 and Phase J-002 / 1392 complete
 **Scope:** jury/panel selection, subjective/objective review lanes, beginning-of-epoch capability work, maintenance tasks, and incentive routing
 
 ## 1. Purpose
@@ -11,7 +11,10 @@ concrete future phase plan. It does not ratify new constitutional rules, mutate
 runtime code, activate public RC, activate production economics, or require jury
 participation from every connected agent. Phase J-001 / 1391 has now executed as
 a non-sensitive canon-map phase; the rest of the J-series remains future work
-unless separately authorized.
+unless separately authorized. Phase J-002 / 1392 now complete; it publishes
+`docs/adr/ADR_0040_Jury_Eligibility_Assignment.md` and locks the opt-in,
+eligibility, deterministic shadow-assignment, VRF boundary, diversity,
+outsider-seat, and non-response rules for later J-series phases.
 
 The core principle is:
 
@@ -68,7 +71,7 @@ human gives the corresponding explicit GO.
 | J phase | Numeric draft | Purpose |
 |---------|---------------|---------|
 | J-001 | Phase 1391 | COMPLETE: jury / epoch-work canon map |
-| J-002 | Phase 1392 | Jury eligibility and assignment ADR |
+| J-002 | Phase 1392 | COMPLETE: jury eligibility and assignment ADR |
 | J-003 | Phase 1393 | Public node review taxonomy |
 | J-004 | Phase 1394 | Jury incentive economics CDL opening |
 | J-005 | Phase 1395 | Epoch-start capability and maintenance contract |
@@ -99,6 +102,9 @@ activation, no production rewards.
 ### Phase J-002 — Jury Eligibility and Assignment ADR
 
 **Goal:** Define who can be selected for review work and how randomization works.
+
+**Status:** J-002 / 1392 now complete. See
+`docs/adr/ADR_0040_Jury_Eligibility_Assignment.md`.
 
 **Decisions to lock:**
 - eligible reviewer classes: worker agent, reviewer agent, validator-agent,
