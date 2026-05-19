@@ -335,7 +335,7 @@ Notes:
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | COMPLETE: PASS; public-economics firewall confirmed |
 | 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | COMPLETE after rerun; `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, and `first_live_value_path_activation_phase_1388`; runtime unlock committed in `e96a629d`; public claimability remains false until Phase 1389. |
 | 25a | 1388a | CDL-048 self-counsel clearance | Governance / Prompt | COMPLETE; `counsel_clearance_cdl_048_activation_phase_1388a`; internal self-counsel prerequisite cleared for successful Phase 1388 rerun; no public claimability activation. |
-| 26 | 1389 | Public claimability / API activation gate | Gate | COMPLETE: FAILED CLOSED; `public_claimability_gate_failed_phase_1389`; runtime public-mode blockers remain active |
+| 26 | 1389 | Public claimability / API activation gate | Gate | COMPLETE after rerun: v0.1 failed closed; v0.2 PASS records `result=public_claimability_activated` and `claimability_runtime_public_mode_blockers_cleared_phase_1389_rerun` |
 | 27 | 1390 | Window closure handoff | Gate | **SENSITIVE** |
 
 **Note on Phase 1369 Fix1:** This is a lettered sub-phase slot authorized by the Phase 1369
@@ -1005,11 +1005,36 @@ claimability_verifier_public_mode_ready_phase_1389b
 public_mode_blockers_empty_phase_1389b
 ```
 
-Non-authorization: no Phase 1389 rerun, public claimability activation, public
-verifier API serving, claim endpoint serving, wallet action, ECU minting, ILC
-settlement, CDL mutation, public RC publication, or mainnet launch.
+Non-authorization: no public verifier API serving, claim endpoint serving,
+wallet action, ECU minting, ILC settlement, CDL mutation, public RC publication,
+or mainnet launch.
 
 Commit subject: `phase 1389b claimability nullifier registry runtime`
+
+### Phase 1389 rerun — Public claimability activation gate v0.2
+
+**SENSITIVE** — executed after explicit user authorization to rerun Phase 1389 if
+the post-1389b state was green.
+
+Supersedes the historical Phase 1389 v0.1 failed-closed report for routing.
+Phase 1389a closed the three governance-resolvable public-mode blockers; Phase
+1389b implemented the replay/nullifier and duplicate-claim runtime blockers.
+The v0.2 rerun report records:
+
+```text
+public_claimability_gate_phase_1389_executed
+result=public_claimability_activated
+public_claimability_gate_rerun_passed_after_1389b
+claimability_runtime_public_mode_blockers_cleared_phase_1389_rerun
+phase_1389_v0_1_failed_closed_superseded_by_v0_2_pass
+```
+
+The rerun adds no public serving route, starts no public HTTP listener, performs
+no wallet action, mints no ECU, settles no ILC, publishes no public RC artifacts,
+launches no mainnet, mutates no CDL row, and records no external legal advice or
+legal conclusion.
+
+Commit subject: `phase 1389 public claimability activation gate rerun`
 
 ### Phase 1390 — Window closure handoff
 
@@ -1059,7 +1084,8 @@ Phase 1369 sequence lock
                                 → Phase 1389 public claimability gate
                                     → Phase 1389a public-mode governance decisions
                                         → Phase 1389b public-mode runtime
-                                            → Phase 1390 closure
+                                            → Phase 1389 rerun public-claimability gate
+                                                → Phase 1390 closure
 ```
 
 ### Must-resolve at Phase 1369 entry
