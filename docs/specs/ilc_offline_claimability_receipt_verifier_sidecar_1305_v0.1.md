@@ -105,7 +105,7 @@ Every decision includes:
 - `ilc_settlement_authorized=false`;
 - `canonical_decision_sha256`.
 
-Accepted local decisions still carry public-mode blockers:
+Historical Phase 1305 decisions carried public-mode blockers:
 
 ```text
 public_claimability_api_authority_missing_phase_1305
@@ -117,6 +117,19 @@ transport_principal_public_path_not_activated_phase_1305
 
 This means a locally valid receipt is not a public claimability activation
 event.
+
+Phase 1389b supersession: runtime commit `aed33474` implements the replay
+nullifier registry and duplicate-claim admission checks, wires Phase 1389a
+governance tokens, and changes current produced decisions to carry:
+
+```text
+public_mode_blockers=[]
+public_mode_blockers_empty_phase_1389b
+claimability_verifier_public_mode_ready_phase_1389b
+```
+
+The local verifier still does not create public serving, wallet action, ECU
+minting, or ILC settlement authority.
 
 ## 5. Public-RC Impact
 

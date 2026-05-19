@@ -2,7 +2,7 @@
 
 **Phase:** 1377
 **Date:** 2026-05-18
-**Status:** POLICY COMMITTED / NO RUNTIME ACTIVATION
+**Status:** POLICY COMMITTED; RUNTIME IMPLEMENTED BY PHASE 1389b
 **Authority basis:** CDL-088 ratification, CDL-090 ratification, CDL-027 issuance epoch cadence, Phase 1275 proof-binding boundary, Phase 1305 local verifier boundary
 
 ```text
@@ -28,6 +28,11 @@ ECU, does not settle ILC, and does not modify `ilc_core/`.
 The policy may be consumed by a later implementation phase, but a later
 implementation must still receive explicit activation authority before any
 non-loopback or public serving path can accept public claim presentations.
+
+Phase 1389b supersession: runtime commit `aed33474` implements the in-process
+`claim_nullifier_registry_v1`, active replay rejection, duplicate-claim
+admission rejection, and issuance-epoch claim-window checks. This does not open
+a public claim endpoint or public verifier API.
 
 ---
 

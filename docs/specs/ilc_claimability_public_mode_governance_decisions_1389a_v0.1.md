@@ -169,9 +169,9 @@ The required runtime follow-up is therefore:
 ## 7. Phase 1389b Routing
 
 Phase 1389b remains SENSITIVE runtime work. It must not be inferred from this
-document and is not executed by this phase. Per current human routing, Phase
-1389b should wait until the separately planned Phase 1397a work is complete and
-then run only under the sensitive-runtime authorization lane.
+document and is not executed by this phase. The later "after Phase 1397a"
+phrase was corrected by the user as a fat-finger; Phase 1389b subsequently
+executed after Phase 1389a under explicit `GO Phase 1389b` authorization.
 
 ## 8. Non-Authorizations
 
