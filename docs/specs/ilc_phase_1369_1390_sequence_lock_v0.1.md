@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1389b; Phase 1389 failed closed, Phase 1389a closed three governance blockers, and Phase 1389b implemented the runtime blockers without public serving activation.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1389 rerun; Phase 1389 v0.2 records `result=public_claimability_activated` after Phase 1389a/1389b cleared all public-mode blockers. Phase 1390 window closure is next.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -178,6 +178,19 @@ windows are rejected at admission. No public claimability serving, public API,
 claim endpoint, wallet action, ECU minting, ILC settlement, CDL mutation, public
 RC publication, or mainnet launch occurred.
 
+Phase 1389 rerun addendum: public claimability gate is COMPLETE: PASS.
+`docs/specs/ilc_public_claimability_activation_gate_report_1389_rerun_v0.2.md`
+supersedes the historical v0.1 failed-closed report for routing and records
+`public_claimability_gate_phase_1389_executed`,
+`result=public_claimability_activated`,
+`public_claimability_gate_rerun_passed_after_1389b`,
+`claimability_runtime_public_mode_blockers_cleared_phase_1389_rerun`, and
+`phase_1389_v0_1_failed_closed_superseded_by_v0_2_pass`. The rerun starts no
+public HTTP server, adds no public claim endpoint, performs no wallet action,
+mints no ECU, settles no ILC, publishes no public RC artifacts, launches no
+mainnet, mutates no CDL row, and records no external legal advice or legal
+conclusion. Phase 1390 window closure is next.
+
 ## 5. Locked Phase Order
 
 | Order | Phase | Scope | Authority after Phase 1369 |
@@ -209,7 +222,7 @@ RC publication, or mainnet launch occurred.
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | COMPLETE: PASS; records `accepted_adr_cdl_runtime_coverage_matrix_phase_1387a`, `public_economics_requires_public_node_admission_verified_phase_1387a`, `private_visibility_excluded_from_public_economics_phase_1387a`, and `no_unrouted_accepted_cdl_adr_functionality_before_public_rc_phase_1387a`. |
 | 25 | 1388 | CDL-048 activation + counsel clearance | COMPLETE after rerun; historical first execution failed closed, then Phase 1388a supplied self-counsel clearance; rerun records `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, and `first_live_value_path_activation_phase_1388`; runtime commit `e96a629d` opens the activation-request path while preserving `public_claimability_activated=False`. |
 | 25a | 1388a | CDL-048 self-counsel clearance | COMPLETE; records `counsel_clearance_cdl_048_activation_phase_1388a`, `self_counsel_decision_not_external_legal_opinion_phase_1388a`; cleared internal self-counsel prerequisite for the successful Phase 1388 rerun; no public claimability activation. |
-| 26 | 1389 | Public claimability / API activation gate | COMPLETE: FAILED CLOSED; records `public_claimability_gate_phase_1389_executed`, `public_claimability_gate_failed_phase_1389`, `gate_failed_reason=claimability_runtime_public_mode_blockers_still_active`, and `claimability_runtime_public_mode_blockers_still_active_phase_1389`; no public claimability activation. |
+| 26 | 1389 | Public claimability / API activation gate | COMPLETE after rerun: v0.1 failed closed; v0.2 PASS records `public_claimability_gate_phase_1389_executed`, `result=public_claimability_activated`, `public_claimability_gate_rerun_passed_after_1389b`, `claimability_runtime_public_mode_blockers_cleared_phase_1389_rerun`, and `phase_1389_v0_1_failed_closed_superseded_by_v0_2_pass`. |
 | 26a | 1389a | Claimability public-mode governance decisions | COMPLETE; records `claimability_public_mode_governance_decisions_phase_1389a`, `cdl_088_is_public_claimability_api_authority_phase_1389a`, `public_safe_disclosure_schema_final_cdl_088_scope_phase_1389a`, `transport_principal_resolved_at_d2d_layer_adr_0039_cdl_078_phase_1389a`, and `claimability_runtime_registry_blockers_remain_phase_1389a`; no runtime mutation or public activation. |
 | 26b | 1389b | Claimability public-mode runtime | COMPLETE; records `claimability_public_mode_runtime_phase_1389b`, `claim_nullifier_registry_v1_active_phase_1389b`, `duplicate_claim_registry_active_phase_1389b`, `claimability_verifier_public_mode_ready_phase_1389b`, and `public_mode_blockers_empty_phase_1389b`; runtime admission blockers implemented, no public serving activation. |
 | 27 | 1390 | Window closure handoff | SENSITIVE closure handoff; records final window verdict. |
@@ -255,10 +268,10 @@ go_phase_1389_required_public_claimability_gate
 Phase 1374 requires an explicit future `GO Phase 1374` even though this sequence
 lock schedules it. CDL-088 must not open in any earlier phase.
 
-Phase 1389 requires an explicit future `GO Phase 1389`. The token
-`result=public_claimability_activated` may first appear in Phase 1389 only, and
-only if all predecessor blockers and Phase 1387a public-economics/coverage tokens
-are confirmed.
+Phase 1389 required explicit `GO Phase 1389` and later rerun authorization. The
+superseding v0.2 rerun report records `result=public_claimability_activated`
+after confirming all predecessor blockers and Phase 1387a
+public-economics/coverage tokens.
 
 ## 9. Stop Conditions
 
