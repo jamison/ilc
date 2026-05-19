@@ -236,6 +236,97 @@ def _graph_structure_analysis(  # Phase 1387f
     }
 
 
+def _epistemic_leverage_analysis(  # Phase 1387g
+    star_map: dict[str, Any],
+    basis_reachable: set[str],
+    roots: set[str],
+) -> dict[str, Any]:
+    """Phase 1387g — SIM-GRAPHOPT-02: per-node epistemic leverage ranking.
+
+    Epistemic leverage of node N = number of other basis-reachable nodes that
+    become unreachable when N is removed from the star map (edges intact, but N
+    removed from the reachable set so its out-edges are severed).
+
+    High-leverage nodes are structural keystones; orphan nodes (leverage=0, not
+    in roots) are candidates for demotion or consolidation.
+    """
+    core_ids = {node["candidate_id"] for node in star_map["nodes"]}
+
+    # Build forward adjacency over all edge types
+    adjacency: dict[str, set[str]] = defaultdict(set)
+    for edge in star_map["edges"]:
+        adjacency[edge["source"]].add(edge["target"])
+
+    def reachable_from(start_nodes: set[str], exclude: str | None = None) -> set[str]:
+        visited: set[str] = set()
+        q: deque[str] = deque(sorted(start_nodes - ({exclude} if exclude else set())))
+        while q:
+            current = q.popleft()
+            if current == exclude:
+                continue
+            for target in sorted(adjacency.get(current, ())):
+                if target not in visited and target != exclude:
+                    visited.add(target)
+                    q.append(target)
+        return visited
+
+    baseline_reachable = basis_reachable & core_ids
+    baseline_count = len(baseline_reachable)
+
+    leverage_scores: list[dict[str, Any]] = []
+    for node_id in sorted(baseline_reachable):
+        if node_id in roots:
+            # Root nodes are axiomatic — their "removal" is not meaningful,
+            # but record them with leverage=None to distinguish
+            leverage_scores.append({
+                "node_id": node_id,
+                "leverage": None,
+                "leverage_type": "axiomatic_root",
+                "reachable_after_removal": None,
+            })
+            continue
+        # Remove node and recompute reachability from adjusted roots
+        adjusted_roots = roots - {node_id}
+        after = reachable_from(adjusted_roots, exclude=node_id) & core_ids
+        # Subtract 1: node_id is excluded from `after` but included in baseline_count.
+        # Leverage = number of OTHER nodes that become unreachable.
+        lost = (baseline_count - 1) - len(after)
+        leverage_scores.append({
+            "node_id": node_id,
+            "leverage": lost,
+            "leverage_type": (
+                "keystone" if lost >= 5
+                else "high" if lost >= 2
+                else "normal" if lost >= 1
+                else "orphan"
+            ),
+            "reachable_after_removal": len(after),
+        })
+
+    # Sort by leverage descending (None / axiomatic roots last)
+    scored = sorted(
+        leverage_scores,
+        key=lambda x: (x["leverage"] is None, -(x["leverage"] or 0), x["node_id"]),
+    )
+
+    keystones = [s for s in scored if s["leverage_type"] == "keystone"]
+    high_leverage = [s for s in scored if s["leverage_type"] == "high"]
+    orphan_candidates = [s for s in scored if s["leverage_type"] == "orphan"]
+    axiomatic_roots = [s for s in scored if s["leverage_type"] == "axiomatic_root"]
+
+    return {
+        "leverage_scores": scored,
+        "keystone_nodes": keystones,
+        "keystone_count": len(keystones),
+        "high_leverage_nodes": high_leverage,
+        "high_leverage_count": len(high_leverage),
+        "orphan_candidates": orphan_candidates,
+        "orphan_candidate_count": len(orphan_candidates),
+        "axiomatic_root_count": len(axiomatic_roots),
+        "baseline_reachable_count": baseline_count,
+    }
+
+
 def _edge_recipe_analysis(star_map: dict[str, Any]) -> dict[str, Any]:
     proposed_edges = [
         edge
@@ -343,6 +434,7 @@ def run(
     }
 
     graph_structure = _graph_structure_analysis(star_map, basis_reachable, GENESIS_ATTESTATION_ROOT)
+    leverage = _epistemic_leverage_analysis(star_map, basis_reachable, roots)
 
     if edge_analysis["missing_decomposition_recipe_count"] == 0 and len(core_sources) >= len(sources) * 3 // 4:
         verdict = "COMPLETE_ENOUGH_FOR_PHASE_1136"
@@ -374,6 +466,7 @@ def run(
             "support_only_sources_with_core_link": len(support_only_sources),
         },
         "edge_recipe_analysis": edge_analysis,
+        "epistemic_leverage_analysis": leverage,
         "graph_structure_analysis": graph_structure,
         "tier_analysis": tier_analysis,
         "authority_traceability": {
@@ -459,9 +552,10 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
     edge_analysis = payload["edge_recipe_analysis"]
     authority = payload["authority_traceability"]
     tier = payload["tier_analysis"]
+    ela = payload["epistemic_leverage_analysis"]
     gsa = payload["graph_structure_analysis"]
     depth_info = gsa["authority_trace_depth"]
-    lines = [  # noqa: depth_info used in report lines below
+    lines = [
         "# GENESIS-COMPILE-01 Compile Coverage Diagnostic v0.1",
         "",
         "Status: deterministic atlas diagnostic — research input, not protocol canon",
@@ -503,6 +597,21 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
         f"- Edges missing decomposition_recipe: `{gsa['edges_missing_recipe_count']}` "
         f"(`{gsa['edges_missing_recipe_by_type']}`)",
         f"- Orphan nodes (basis-reachable, no outgoing edges): `{gsa['orphan_node_count']}`",
+        "",
+        "## Epistemic Leverage Analysis (Phase 1387g)",
+        "",
+        f"- Baseline reachable core nodes: `{ela['baseline_reachable_count']}`",
+        f"- Keystone nodes (removal loses ≥5 nodes): `{ela['keystone_count']}`",
+        f"- High-leverage nodes (removal loses 2–4 nodes): `{ela['high_leverage_count']}`",
+        f"- Orphan candidates (leverage=0, not root): `{ela['orphan_candidate_count']}`",
+        f"- Axiomatic roots (leverage not applicable): `{ela['axiomatic_root_count']}`",
+        "",
+        "### Keystone Nodes",
+        "",
+    ] + [
+        f"- `{k['node_id']}` — removes `{k['leverage']}` nodes on deletion"
+        for k in ela["keystone_nodes"]
+    ] + [
         "",
         "## Interpretation",
         "",
