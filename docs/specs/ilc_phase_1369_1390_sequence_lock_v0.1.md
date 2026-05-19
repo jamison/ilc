@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1388a; Phase 1388a records self-counsel clearance for a future Phase 1388 rerun and Phase 1389 remains blocked.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1389; Phase 1389 failed closed and Phase 1390 window closure is next.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -187,7 +187,7 @@ counsel, or legal conclusion occurred. Phase 1389 remains blocked.
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | COMPLETE: PASS; records `accepted_adr_cdl_runtime_coverage_matrix_phase_1387a`, `public_economics_requires_public_node_admission_verified_phase_1387a`, `private_visibility_excluded_from_public_economics_phase_1387a`, and `no_unrouted_accepted_cdl_adr_functionality_before_public_rc_phase_1387a`. |
 | 25 | 1388 | CDL-048 activation + counsel clearance | COMPLETE after rerun; historical first execution failed closed, then Phase 1388a supplied self-counsel clearance; rerun records `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, and `first_live_value_path_activation_phase_1388`; runtime commit `e96a629d` opens the activation-request path while preserving `public_claimability_activated=False`. |
 | 25a | 1388a | CDL-048 self-counsel clearance | COMPLETE; records `counsel_clearance_cdl_048_activation_phase_1388a`, `self_counsel_decision_not_external_legal_opinion_phase_1388a`; cleared internal self-counsel prerequisite for the successful Phase 1388 rerun; no public claimability activation. |
-| 26 | 1389 | Public claimability / API activation gate | SENSITIVE public-RC gate; requires explicit `GO Phase 1389`; `result=public_claimability_activated` may first appear here only if all blockers close. |
+| 26 | 1389 | Public claimability / API activation gate | COMPLETE: FAILED CLOSED; records `public_claimability_gate_phase_1389_executed`, `public_claimability_gate_failed_phase_1389`, `gate_failed_reason=claimability_runtime_public_mode_blockers_still_active`, and `claimability_runtime_public_mode_blockers_still_active_phase_1389`; no public claimability activation. |
 | 27 | 1390 | Window closure handoff | SENSITIVE closure handoff; records final window verdict. |
 
 ## 6. Runtime Hardening Carry-Forward Disposition
