@@ -335,7 +335,7 @@ Notes:
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | COMPLETE: PASS; public-economics firewall confirmed |
 | 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | COMPLETE after rerun; `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, and `first_live_value_path_activation_phase_1388`; runtime unlock committed in `e96a629d`; public claimability remains false until Phase 1389. |
 | 25a | 1388a | CDL-048 self-counsel clearance | Governance / Prompt | COMPLETE; `counsel_clearance_cdl_048_activation_phase_1388a`; internal self-counsel prerequisite cleared for successful Phase 1388 rerun; no public claimability activation. |
-| 26 | 1389 | Public claimability / API activation gate | Gate | **SENSITIVE** |
+| 26 | 1389 | Public claimability / API activation gate | Gate | COMPLETE: FAILED CLOSED; `public_claimability_gate_failed_phase_1389`; runtime public-mode blockers remain active |
 | 27 | 1390 | Window closure handoff | Gate | **SENSITIVE** |
 
 **Note on Phase 1369 Fix1:** This is a lettered sub-phase slot authorized by the Phase 1369
@@ -930,7 +930,7 @@ Commit subject: `phase 1388a cdl-048 self-counsel clearance`
 
 ### Phase 1389 — Public claimability/API activation gate
 
-**SENSITIVE** — requires explicit `GO Phase 1389`.
+**SENSITIVE** — executed after explicit `GO Phase 1389` and failed closed.
 
 Re-executes the Phase 1336 gate with all six blockers confirmed closed:
 
@@ -944,12 +944,15 @@ Re-executes the Phase 1336 gate with all six blockers confirmed closed:
 | Counsel clearance for public verifier API surface | Phase 1388 | `counsel_clearance_public_verifier_api_phase_1388` token present |
 | Accepted ADR/CDL coverage and public-only economics admission | Phase 1387a | `no_unrouted_accepted_cdl_adr_functionality_before_public_rc_phase_1387a` and `public_economics_requires_public_node_admission_verified_phase_1387a` tokens present |
 
-If ALL six blockers are confirmed closed: record `result=public_claimability_activated`.
-This is the full public RC milestone.
+Result: `public_claimability_gate_failed_phase_1389`.
 
-Gate fails closed if ANY blocker is not confirmed.
+The six governance/document blockers and Phase 1387/1387a/1388 prerequisites
+were direct-read. The gate failed because `ilc_core/sidecars/claimability_receipt_verifier.py`
+still carries public-mode blockers for public claimability API authority,
+replay/nullifier activation, duplicate-claim registry activation, public-safe
+disclosure schema finality, and public transport-principal activation.
 
-Record: `result=public_claimability_activated` OR explicit `gate_failed_reason=...`
+Record: `gate_failed_reason=claimability_runtime_public_mode_blockers_still_active`
 
 Commit subject: `phase 1389 public claimability api activation gate`
 
