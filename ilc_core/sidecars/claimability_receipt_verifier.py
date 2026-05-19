@@ -13,6 +13,15 @@ from collections.abc import Mapping
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from ilc_core.sidecars.claim_nullifier_registry_v1 import (
+    CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN,
+    CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN,
+    DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN,
+    ClaimNullifierRecord,
+    ClaimNullifierRegistry,
+    ClaimNullifierRegistryError,
+)
+
 
 OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION = (
     "offline_claimability_receipt_verifier_sidecar_phase_1305.v0.1"
@@ -27,6 +36,18 @@ PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN = (
 )
 PHASE_1306_NEXT_TOKEN = "phase_1306_proof_binding_canonical_hash_negative_path_tests_next"
 PUBLIC_RC_REMAINS_BLOCKED_TOKEN = "public_rc_remains_blocked_after_phase_1305"
+CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN = (
+    "claimability_public_mode_governance_decisions_phase_1389a"
+)
+CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN = (
+    "cdl_088_is_public_claimability_api_authority_phase_1389a"
+)
+PUBLIC_SAFE_DISCLOSURE_SCHEMA_FINAL_TOKEN = (
+    "public_safe_disclosure_schema_final_cdl_088_scope_phase_1389a"
+)
+TRANSPORT_PRINCIPAL_D2D_RESOLVED_TOKEN = (
+    "transport_principal_resolved_at_d2d_layer_adr_0039_cdl_078_phase_1389a"
+)
 
 ACCEPTED_LOCAL_ONLY_DECISION = "accepted_local_only_no_public_serving_phase_1305"
 REJECTED_DECISION = "rejected_fail_closed_phase_1305"
@@ -228,13 +249,7 @@ _DECISION_FALSE_FIELDS = (
     "wallet_withdrawal_enabled",
 )
 
-_PUBLIC_MODE_BLOCKERS = (
-    "public_claimability_api_authority_missing_phase_1305",
-    "replay_nullifier_policy_not_activated_phase_1305",
-    "duplicate_claim_registry_not_activated_phase_1305",
-    "public_safe_disclosure_schema_not_final_phase_1305",
-    "transport_principal_public_path_not_activated_phase_1305",
-)
+_PUBLIC_MODE_BLOCKERS: tuple[str, ...] = ()
 
 
 class ClaimabilityReceiptVerifierError(ValueError):
@@ -253,6 +268,13 @@ def claimability_receipt_verifier_tokens() -> list[str]:
         PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN,
         PHASE_1306_NEXT_TOKEN,
         PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
+        CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN,
+        CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN,
+        PUBLIC_SAFE_DISCLOSURE_SCHEMA_FINAL_TOKEN,
+        TRANSPORT_PRINCIPAL_D2D_RESOLVED_TOKEN,
+        CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN,
+        DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN,
+        CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN,
     ]
 
 
@@ -363,12 +385,36 @@ def build_claimability_verifier_presentation(
     return _normalize_presentation(presentation)
 
 
-def verify_claimability_receipt_presentation(presentation: Mapping[str, Any]) -> dict[str, Any]:
+def verify_claimability_receipt_presentation(
+    presentation: Mapping[str, Any],
+    *,
+    claim_registry: ClaimNullifierRegistry | None = None,
+    current_issuance_epoch: int | None = None,
+) -> dict[str, Any]:
     """Verify a claimability presentation locally and return a canonical decision."""
+
+    reserved_record: ClaimNullifierRecord | None = None
+    if claim_registry is not None:
+        try:
+            reserved_record = claim_registry.reserve_presentation(
+                presentation,
+                current_issuance_epoch=current_issuance_epoch,
+            )
+        except ClaimNullifierRegistryError as exc:
+            return _build_decision(
+                decision=REJECTED_DECISION,
+                presentation_id=_safe_presentation_id(presentation),
+                claimability_proof_ref=None,
+                latest_balance_receipt_ref=None,
+                conversion_receipt_sha256=None,
+                rejection_reasons=[exc.token],
+            )
 
     try:
         normalized = _normalize_presentation(presentation)
     except ClaimabilityReceiptVerifierError as exc:
+        if claim_registry is not None and reserved_record is not None:
+            claim_registry.mark_rejected_nonblocking(reserved_record.claim_nullifier_ref)
         return _build_decision(
             decision=REJECTED_DECISION,
             presentation_id=_safe_presentation_id(presentation),
@@ -378,7 +424,7 @@ def verify_claimability_receipt_presentation(presentation: Mapping[str, Any]) ->
             rejection_reasons=[exc.token],
         )
 
-    return _build_decision(
+    decision = _build_decision(
         decision=ACCEPTED_LOCAL_ONLY_DECISION,
         presentation_id=normalized["presentation_id"],
         claimability_proof_ref=normalized["claimability_proof_ref"],
@@ -386,6 +432,12 @@ def verify_claimability_receipt_presentation(presentation: Mapping[str, Any]) ->
         conversion_receipt_sha256=normalized["conversion_receipt_sha256"],
         rejection_reasons=[],
     )
+    if claim_registry is not None and reserved_record is not None:
+        claim_registry.mark_accepted(
+            reserved_record.claim_nullifier_ref,
+            decision_ref=f"claimability_decision_sha256:{decision['canonical_decision_sha256']}",
+        )
+    return decision
 
 
 def canonical_decision_json(decision: Mapping[str, Any]) -> str:
@@ -1384,12 +1436,19 @@ def _require_decimal_bounds(value: Decimal, *, token: str) -> None:
 __all__ = [
     "ACCEPTED_LOCAL_ONLY_DECISION",
     "CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN",
+    "CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN",
+    "CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN",
+    "CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN",
+    "CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN",
+    "DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN",
     "OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION",
     "PHASE_1306_NEXT_TOKEN",
     "PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN",
     "PUBLIC_RC_REMAINS_BLOCKED_TOKEN",
+    "PUBLIC_SAFE_DISCLOSURE_SCHEMA_FINAL_TOKEN",
     "RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN",
     "REJECTED_DECISION",
+    "TRANSPORT_PRINCIPAL_D2D_RESOLVED_TOKEN",
     "ClaimabilityReceiptVerifierError",
     "build_claimability_verifier_presentation",
     "canonical_decision_json",

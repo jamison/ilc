@@ -77,12 +77,12 @@ def test_phase_1389a_does_not_claim_runtime_activation() -> None:
         assert phrase not in text
 
 
-def test_verifier_runtime_public_mode_blockers_are_unchanged() -> None:
+def test_verifier_runtime_public_mode_blockers_are_resolved_after_1389b() -> None:
     text = _text(VERIFIER)
     for blocker in GOVERNANCE_CLOSED_BLOCKERS | RUNTIME_BLOCKERS:
-        assert blocker in text
-    assert "_PUBLIC_MODE_BLOCKERS = (" in text
-    assert "claimability_verifier_public_mode_ready_phase_1389b" not in text
+        assert blocker not in text
+    assert "_PUBLIC_MODE_BLOCKERS: tuple[str, ...] = ()" in text
+    assert "CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN" in text
 
 
 def test_verifier_still_requires_canonical_blocker_list() -> None:

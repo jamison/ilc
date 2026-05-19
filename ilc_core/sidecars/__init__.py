@@ -1,6 +1,7 @@
 """Graph-native sidecar substrates."""
 
 __all__ = [
+    "claim_nullifier_registry_v1",
     "claimability_receipt_verifier",
     "confidential_coordination_capability",
     "confidential_coordination_gossip_policy",

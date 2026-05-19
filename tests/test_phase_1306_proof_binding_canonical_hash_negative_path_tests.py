@@ -296,12 +296,7 @@ def test_phase_1306_replay_nullifier_and_duplicate_claim_policy_remain_gated() -
     decision = verify_claimability_receipt_presentation(_valid_presentation())
 
     assert decision["decision"] == ACCEPTED_LOCAL_ONLY_DECISION
-    assert "replay_nullifier_policy_not_activated_phase_1305" in decision[
-        "public_mode_blockers"
-    ]
-    assert "duplicate_claim_registry_not_activated_phase_1305" in decision[
-        "public_mode_blockers"
-    ]
+    assert decision["public_mode_blockers"] == []
     assert decision["public_claimability_activated"] is False
     assert decision["receipt_verifier_public_serving_enabled"] is False
 
