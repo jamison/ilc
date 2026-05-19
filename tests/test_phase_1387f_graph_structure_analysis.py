@@ -91,22 +91,13 @@ def test_governs_constrains_share_recipe() -> None:
     assert found, "GOVERNS/CONSTRAINS duplicate-recipe group not found"
 
 
-def test_edges_missing_recipe_count() -> None:
+def test_edges_missing_recipe_count_zero_after_1387h() -> None:
+    # Phase 1387f found 30 edges (17 ATTESTATION + 13 PROVENANCE) missing recipes.
+    # Phase 1387h canonicalized all 30; the gap is now closed.
     gsa = _gsa()
-    # 30 edges (17 ATTESTATION + 13 PROVENANCE) lack decomposition_recipe
-    assert gsa["edges_missing_recipe_count"] == 30, (
-        f"Expected 30 edges missing recipe; got {gsa['edges_missing_recipe_count']}"
+    assert gsa["edges_missing_recipe_count"] == 0, (
+        f"Expected 0 edges missing recipe after Phase 1387h; got {gsa['edges_missing_recipe_count']}"
     )
-
-
-def test_missing_recipe_edge_types_are_attestation_and_provenance() -> None:
-    gsa = _gsa()
-    by_type = gsa["edges_missing_recipe_by_type"]
-    assert set(by_type.keys()) == {"ATTESTATION", "PROVENANCE"}, (
-        f"Expected only ATTESTATION and PROVENANCE missing recipes; got {set(by_type.keys())}"
-    )
-    assert by_type["ATTESTATION"] == 17, f"Expected 17 ATTESTATION missing; got {by_type['ATTESTATION']}"
-    assert by_type["PROVENANCE"] == 13, f"Expected 13 PROVENANCE missing; got {by_type['PROVENANCE']}"
 
 
 def test_orphan_node_count_positive() -> None:
