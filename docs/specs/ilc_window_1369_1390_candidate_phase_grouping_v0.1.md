@@ -331,9 +331,9 @@ Notes:
 | 20 | 1386a | Production TLS gRPC path proof | Runtime | COMPLETE; TLS path proven; epoch-0 sentinel reconciled; channel receive limit added |
 | 21 | 1386b | Validator endpoint registry ADR | Spec / ADR | COMPLETE; ADR-0039 accepted; endpoint registry/projection contract defined |
 | 22 | 1386c | Persistent QUIC connectivity proof | Runtime | COMPLETE; projection-backed persistent sessions implemented in `ilc_consensus/`; direct QUIC and CDL-078 relay fallback proven; activation path requires `endpoint_projection_path` instead of hardcoded config peers |
-| 23 | 1387 | Pre-activation hardening gate | Gate | COMPLETE: FAILED CLOSED; missing project-authority HIGH-finding disposition |
-| 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | **SENSITIVE** |
-| 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | **SENSITIVE** |
+| 23 | 1387 | Pre-activation hardening gate | Gate | COMPLETE: RE-RUN PASS; v0.2 supersedes original failed-closed v0.1 report |
+| 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | COMPLETE: PASS; public-economics firewall confirmed |
+| 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | EXECUTED: FAILED CLOSED; `phase_1388_cdl_048_activation_failed_closed`; counsel clearance missing; no runtime unlock; Phase 1389 blocked |
 | 26 | 1389 | Public claimability / API activation gate | Gate | **SENSITIVE** |
 | 27 | 1390 | Window closure handoff | Gate | **SENSITIVE** |
 
@@ -837,7 +837,7 @@ Status: COMPLETE. Phase 1387a publishes
 `public_economics_requires_public_node_admission_verified_phase_1387a`,
 `private_visibility_excluded_from_public_economics_phase_1387a`, and
 `no_unrouted_accepted_cdl_adr_functionality_before_public_rc_phase_1387a`.
-Phase 1388 is next and requires explicit `GO Phase 1388`.
+Phase 1388 subsequently executed and failed closed on missing counsel clearance.
 
 Deliverables:
 - Accepted ADR/CDL coverage matrix at
@@ -870,20 +870,30 @@ Commit subject: `phase 1387a adr cdl coverage public economics firewall`
 
 ### Phase 1388 — CDL-048 activation + counsel clearance
 
-**SENSITIVE** — requires `GO Phase 1388`. Prerequisite: Phase 1387 gate pass and
-Phase 1387a accepted-functionality/public-economics firewall pass.
+**SENSITIVE** — executed after `GO Phase 1388` and failed closed.
 
-Deliverables:
-- Unlock sweeper runtime: first live value-path activation (ECU-to-ILC conversion path)
-- Counsel sign-off on public verifier API surface
-- Counsel clearance record at `docs/specs/ilc_counsel_clearance_1388_v0.1.md`
+Prerequisites checked:
+- Phase 1387 gate PASS is confirmed through the superseding v0.2 rerun report,
+  not the original v0.1 failed-closed report named by the stale prompt input.
+- Phase 1387a accepted-functionality/public-economics firewall PASS is confirmed.
+- Counsel sign-off on the public verifier API surface is missing.
 
-This is the first production value-path activation in the project. The runtime unlock
-must be in a separate commit from any CDL or documentation changes.
+Disposition:
+- `docs/specs/ilc_phase_1388_cdl_048_activation_counsel_clearance_blocked_v0.1.md`
+  records `phase_1388_cdl_048_activation_failed_closed`,
+  `cdl_048_activation_not_performed_phase_1388`,
+  `counsel_clearance_public_verifier_api_missing_phase_1388`,
+  `first_live_value_path_activation_not_performed_phase_1388`,
+  `phase_1388_prompt_v0_1_gate_reference_superseded_by_v0_2_pass`, and
+  `phase_1389_not_opened_phase_1388`.
+- CDL-048 sweeper runtime remains gate-closed.
+- No counsel clearance record was created.
+- No live value-path activation occurred.
 
-Record: `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`
+Phase 1389 remains blocked until a future Phase 1388 rerun or successor phase
+records a real runtime unlock and counsel clearance.
 
-Commit subject: `phase 1388 cdl-048 activation counsel clearance`
+Commit subject: `phase 1388 cdl-048 activation counsel clearance failed closed`
 
 ### Phase 1389 — Public claimability/API activation gate
 
