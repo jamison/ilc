@@ -336,7 +336,7 @@ Notes:
 | 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | COMPLETE after rerun; `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, and `first_live_value_path_activation_phase_1388`; runtime unlock committed in `e96a629d`; public claimability remains false until Phase 1389. |
 | 25a | 1388a | CDL-048 self-counsel clearance | Governance / Prompt | COMPLETE; `counsel_clearance_cdl_048_activation_phase_1388a`; internal self-counsel prerequisite cleared for successful Phase 1388 rerun; no public claimability activation. |
 | 26 | 1389 | Public claimability / API activation gate | Gate | COMPLETE after rerun: v0.1 failed closed; v0.2 PASS records `result=public_claimability_activated` and `claimability_runtime_public_mode_blockers_cleared_phase_1389_rerun` |
-| 27 | 1390 | Window closure handoff | Gate | **SENSITIVE** |
+| 27 | 1390 | Window closure handoff | Gate | COMPLETE; `window_1369_1390_closed_phase_1390.v0.1`; Window 1391+ requires explicit GO |
 
 **Note on Phase 1369 Fix1:** This is a lettered sub-phase slot authorized by the Phase 1369
 sequence lock. It is NON-SENSITIVE (no CDL mutation, no value-path activation, no public surface
@@ -1038,7 +1038,7 @@ Commit subject: `phase 1389 public claimability activation gate rerun`
 
 ### Phase 1390 — Window closure handoff
 
-**SENSITIVE** — requires `GO Phase 1390`.
+**SENSITIVE** — complete after explicit `GO Phase 1390`.
 
 Deliverables:
 - `docs/specs/ilc_window_1369_1390_handoff_1390_v0.1.md` — follows
@@ -1046,7 +1046,15 @@ Deliverables:
 - Must record MemPalace refresh disposition
 - Must record honest closure verdict: landed phases, open/incomplete phases, carry-forward
 
-Record: `window_1369_1390_closed_phase_1390.v0.1`
+Record:
+
+```text
+window_1369_1390_closed_phase_1390.v0.1
+window_1369_1390_closure_verdict_recorded_phase_1390
+mempalace_refresh_disposition_recorded_phase_1390
+window_1391_not_open_phase_1390
+go_window_1391_required_next
+```
 
 Commit subject: `phase 1390 window 1369-1390 closure handoff`
 
