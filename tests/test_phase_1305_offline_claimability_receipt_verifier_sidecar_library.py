@@ -131,9 +131,7 @@ def test_local_verifier_accepts_canonical_presentation_without_public_serving() 
     assert decision["wallet_spend_enabled"] is False
     assert decision["ecu_mint_authorized"] is False
     assert decision["ilc_settlement_authorized"] is False
-    assert "replay_nullifier_policy_not_activated_phase_1305" in decision[
-        "public_mode_blockers"
-    ]
+    assert decision["public_mode_blockers"] == []
     assert canonical_decision_json(decision).startswith('{"canonical_decision_sha256"')
 
 
@@ -193,7 +191,8 @@ def test_local_verifier_manifest_and_source_have_no_public_serving_surface() -> 
     assert manifest["public_api_enabled"] is False
     assert manifest["receipt_verifier_public_serving_enabled"] is False
     assert manifest["non_loopback_claimability_api_enabled"] is False
-    assert manifest["tokens"] == REQUIRED_TOKENS
+    assert manifest["tokens"][: len(REQUIRED_TOKENS)] == REQUIRED_TOKENS
+    assert "claimability_verifier_public_mode_ready_phase_1389b" in manifest["tokens"]
     for forbidden in (
         "from fastapi",
         "FastAPI(",
