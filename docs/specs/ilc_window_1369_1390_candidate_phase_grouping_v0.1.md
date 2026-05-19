@@ -816,10 +816,12 @@ Gate passes only if ALL of the following are confirmed:
 Gate fails closed if any predecessor phase is incomplete or if any known HIGH-severity
 finding is missing a project-authority security disposition.
 
-Phase 1387 result: `pre_activation_hardening_gate_failed_phase_1387`;
-`gate_failed_reason=project_authority_security_disposition_missing`. Phase 1388
-must not proceed until a remediation phase creates the missing project-authority
-security disposition artifact and the gate is re-run or superseded with a pass.
+Phase 1387 result: original v0.1 gate report recorded
+`pre_activation_hardening_gate_failed_phase_1387` with
+`gate_failed_reason=project_authority_security_disposition_missing`. Phase 1387
+was re-run after Phase 1387-Fix committed the missing disposition and now records
+`pre_activation_hardening_gate_pass_phase_1387` in the v0.2 re-run report. Phase
+1387a is next. Phase 1388 must not proceed until Phase 1387a records its own pass.
 
 Commit subject: `phase 1387 pre-activation hardening gate`
 
