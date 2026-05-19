@@ -70,10 +70,16 @@ def test_phase_1389_report_does_not_record_activation_result_token() -> None:
     assert activation_result_token not in text
 
 
-def test_claimability_verifier_still_has_public_mode_blockers() -> None:
-    text = _read(VERIFIER)
+def test_phase_1389_report_records_historical_public_mode_blockers() -> None:
+    text = _read(REPORT)
     for token in PUBLIC_MODE_BLOCKERS:
         assert token in text
+
+
+def test_claimability_verifier_public_mode_blockers_resolved_after_1389b() -> None:
+    text = _read(VERIFIER)
+    assert "_PUBLIC_MODE_BLOCKERS: tuple[str, ...] = ()" in text
+    assert "CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN" in text
 
 
 def test_phase_1377_policy_is_policy_only_not_runtime_activation() -> None:
