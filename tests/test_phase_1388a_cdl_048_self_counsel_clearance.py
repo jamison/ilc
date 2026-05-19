@@ -83,12 +83,11 @@ def test_clearance_artifact_does_not_activate_phase_1388_success_tokens() -> Non
         assert token not in text
 
 
-def test_runtime_remains_gate_closed() -> None:
+def test_runtime_preserves_phase_1380_token_and_records_phase_1388_activation() -> None:
     text = _read(RUNTIME)
     assert "CDL048_NOT_ACTIVATED_PHASE_1380_TOKEN" in text
-    assert "if activation_requested:" in text
     for token in PHASE_1388_SUCCESS_TOKENS:
-        assert token not in text
+        assert token in text
 
 
 def test_licensing_records_scoped_phase_1388a_note_without_claiming_external_opinion() -> None:
@@ -135,9 +134,10 @@ def test_phase_1388a_prompt_exists_and_declares_non_sensitive_scope() -> None:
         assert token in text
 
 
-def test_planning_surfaces_record_phase_1388a_without_opening_phase_1389() -> None:
+def test_planning_surfaces_record_phase_1388a_without_public_claimability_activation() -> None:
     for path in (STATUS, PLANNING_INDEX, SEQUENCE_LOCK, WINDOW_GROUPING):
         text = _read(path)
         for token in REQUIRED_TOKENS:
             assert token in text, path
-        assert "Phase 1389 remains blocked" in text, path
+        assert "Phase 1389" in text, path
+        assert "GO Phase 1389" in text, path
