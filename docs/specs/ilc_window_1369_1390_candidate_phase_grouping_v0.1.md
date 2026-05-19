@@ -333,7 +333,8 @@ Notes:
 | 22 | 1386c | Persistent QUIC connectivity proof | Runtime | COMPLETE; projection-backed persistent sessions implemented in `ilc_consensus/`; direct QUIC and CDL-078 relay fallback proven; activation path requires `endpoint_projection_path` instead of hardcoded config peers |
 | 23 | 1387 | Pre-activation hardening gate | Gate | COMPLETE: RE-RUN PASS; v0.2 supersedes original failed-closed v0.1 report |
 | 24 | 1387a | Accepted ADR/CDL coverage audit + public-economics admission firewall | Runtime / Gate | COMPLETE: PASS; public-economics firewall confirmed |
-| 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | EXECUTED: FAILED CLOSED; `phase_1388_cdl_048_activation_failed_closed`; counsel clearance missing; no runtime unlock; Phase 1389 blocked |
+| 25 | 1388 | CDL-048 activation + counsel clearance | Constitutional / Runtime | EXECUTED: FAILED CLOSED; `phase_1388_cdl_048_activation_failed_closed`; counsel clearance was missing at execution time; no runtime unlock; Phase 1389 blocked |
+| 25a | 1388a | CDL-048 self-counsel clearance | Governance / Prompt | COMPLETE; `counsel_clearance_cdl_048_activation_phase_1388a`; internal self-counsel prerequisite cleared for future Phase 1388 rerun only; no runtime unlock; Phase 1389 blocked |
 | 26 | 1389 | Public claimability / API activation gate | Gate | **SENSITIVE** |
 | 27 | 1390 | Window closure handoff | Gate | **SENSITIVE** |
 
@@ -876,7 +877,7 @@ Prerequisites checked:
 - Phase 1387 gate PASS is confirmed through the superseding v0.2 rerun report,
   not the original v0.1 failed-closed report named by the stale prompt input.
 - Phase 1387a accepted-functionality/public-economics firewall PASS is confirmed.
-- Counsel sign-off on the public verifier API surface is missing.
+- Counsel sign-off on the public verifier API surface was missing at execution time.
 
 Disposition:
 - `docs/specs/ilc_phase_1388_cdl_048_activation_counsel_clearance_blocked_v0.1.md`
@@ -890,10 +891,31 @@ Disposition:
 - No counsel clearance record was created.
 - No live value-path activation occurred.
 
-Phase 1389 remains blocked until a future Phase 1388 rerun or successor phase
-records a real runtime unlock and counsel clearance.
+Phase 1388a subsequently records the narrow internal self-counsel clearance
+artifact for pre-production/testnet activation, but Phase 1389 remains blocked
+until a future Phase 1388 rerun records a real runtime unlock.
 
 Commit subject: `phase 1388 cdl-048 activation counsel clearance failed closed`
+
+### Phase 1388a — CDL-048 self-counsel clearance
+
+**NON-SENSITIVE** — documentation and prompt hardening only.
+
+Status: COMPLETE. Phase 1388a publishes
+`docs/specs/ilc_counsel_clearance_cdl_048_activation_1388a_v0.1.md`, adds a
+scoped Phase 1388a note to `LICENSING.md`, adds a scoped addendum to
+`docs/specs/ilc_cdl_086_counsel_disposition_1220_v0.1.md`, and hardens the
+Phase 1388 prompt.
+
+Record: `counsel_clearance_cdl_048_activation_phase_1388a` and
+`self_counsel_decision_not_external_legal_opinion_phase_1388a`.
+
+Scope: internal Genesis-authority self-counsel decision for the narrow CDL-048
+pre-production/testnet activation surface only. It is not external legal advice,
+does not authorize mainnet, does not authorize public conversions with
+real-world economic value, does not unlock runtime, and does not open Phase 1389.
+
+Commit subject: `phase 1388a cdl-048 self-counsel clearance`
 
 ### Phase 1389 — Public claimability/API activation gate
 
