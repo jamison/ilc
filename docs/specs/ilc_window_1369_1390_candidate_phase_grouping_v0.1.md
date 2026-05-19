@@ -829,6 +829,16 @@ Commit subject: `phase 1387 pre-activation hardening gate`
 
 **SENSITIVE** — requires `GO Phase 1387a`. Prerequisite: Phase 1387 gate pass.
 
+Status: COMPLETE. Phase 1387a publishes
+`docs/specs/ilc_accepted_adr_cdl_public_rc_coverage_matrix_1387a_v0.1.md`,
+`docs/specs/ilc_public_economics_admission_firewall_1387a_v0.1.md`, and
+`ilc_core/ledger/public_economics_admission_firewall.py`; it records
+`accepted_adr_cdl_runtime_coverage_matrix_phase_1387a`,
+`public_economics_requires_public_node_admission_verified_phase_1387a`,
+`private_visibility_excluded_from_public_economics_phase_1387a`, and
+`no_unrouted_accepted_cdl_adr_functionality_before_public_rc_phase_1387a`.
+Phase 1388 is next and requires explicit `GO Phase 1388`.
+
 Deliverables:
 - Accepted ADR/CDL coverage matrix at
   `docs/specs/ilc_accepted_adr_cdl_public_rc_coverage_matrix_1387a_v0.1.md`
