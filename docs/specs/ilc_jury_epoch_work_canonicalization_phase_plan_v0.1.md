@@ -79,7 +79,7 @@ human gives the corresponding explicit GO.
 | J-002 | Phase 1392 | COMPLETE: jury eligibility and assignment ADR |
 | J-003 | Phase 1393 | COMPLETE: public node review taxonomy (incl. T0.5 quarantine) |
 | J-003a | Phase 1393a | COMPLETE: ADR-0041 Agent INIT + Ingestion Protocol — **hard prerequisite for J-007** |
-| J-004 | Phase 1394 | Jury incentive economics CDL opening |
+| J-004 | Phase 1394 | COMPLETE: jury incentive economics CDL opening |
 | J-005 | Phase 1395 | Epoch-start capability and maintenance contract |
 | J-006 | Phase 1396 | Default-off jury assignment quote runtime |
 | J-007 | Phase 1397 | Shadow public-ingestion jury harness |
@@ -196,6 +196,9 @@ copyright_boundary_counsel_gated
 
 ### Phase J-004 — Jury Incentive Economics CDL Opening
 
+**Status:** J-004 / Phase 1394 COMPLETE. See
+`docs/specs/ilc_cdl_jury_incentive_economics_opening_v0.1.md`.
+
 **Goal:** Open the explicit economic design for reviewer compensation.
 
 **Decisions to evaluate:**
@@ -221,7 +224,18 @@ for completed work plus delayed accuracy / survival / appeal-outcome component.
 jury_incentive_economics_cdl_opened_phase_j004
 approval_volume_bias_risk_recorded
 fixed_plus_accuracy_weighted_panel_compensation_recommended
+reviewer_payment_not_activated_phase_j004
 ```
+
+**Disposition:** approval-only reviewer payment is rejected. The recommended
+opening design is a fixed base review fee for completed valid review work plus
+a delayed accuracy-weighted component tied to later survival, appeal outcome,
+refutation outcome, or other ratified long-run quality metrics.
+
+**Non-authorizations:** no runtime mutation, CDL register mutation, ledger
+mutation, reviewer payment activation, public economics activation, production
+jury activation, public graph admission activation, public RC claim, counsel
+approval, or legal conclusion occurred.
 
 ### Phase J-005 — Epoch-Start Capability and Maintenance Work Contract
 
