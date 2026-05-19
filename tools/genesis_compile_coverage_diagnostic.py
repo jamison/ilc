@@ -141,6 +141,101 @@ def _sample(items: list[dict[str, Any]], limit: int = 25) -> list[dict[str, Any]
     return sorted(items, key=lambda item: json.dumps(item, allow_nan=False, sort_keys=True))[:limit]
 
 
+def _graph_structure_analysis(  # Phase 1387f
+    star_map: dict[str, Any],
+    basis_reachable: set[str],
+    attestation_node_id: str,
+) -> dict[str, Any]:
+    """Phase 1387f — SIM-GRAPHOPT-01: depth distribution, duplicate recipes, orphan nodes."""
+    core_ids = {node["candidate_id"] for node in star_map["nodes"]}
+
+    # --- Authority-trace depth (BFS from attestation root via GOVERNS/ATTESTATION) ---
+    governs_adj: dict[str, set[str]] = defaultdict(set)
+    for edge in star_map["edges"]:
+        if edge["edge_type"] in {"GOVERNS", "ATTESTATION"}:
+            governs_adj[edge["source"]].add(edge["target"])
+
+    depth_by_node: dict[str, int] = {}
+    queue: deque[tuple[str, int]] = deque([(attestation_node_id, 0)])
+    visited: set[str] = {attestation_node_id}
+    while queue:
+        current, depth = queue.popleft()
+        depth_by_node[current] = depth
+        for target in sorted(governs_adj.get(current, ())):
+            if target not in visited:
+                visited.add(target)
+                queue.append((target, depth + 1))
+
+    core_depths = {nid: depth_by_node[nid] for nid in core_ids if nid in depth_by_node}
+    depth_histogram: dict[str, int] = {}
+    for d in sorted(set(core_depths.values())):
+        depth_histogram[str(d)] = sum(1 for v in core_depths.values() if v == d)
+
+    depths_list = list(core_depths.values())
+    mean_depth_str = _ratio(sum(depths_list), len(depths_list)) if depths_list else "0.000000"
+
+    authority_not_traceable = sorted(core_ids - set(depth_by_node.keys()))
+
+    # --- Duplicate decomposition recipes across edge types ---
+    # Group edge types by their canonical primitive-set signature.
+    recipe_by_type: dict[str, list[str]] = defaultdict(list)
+    for edge in star_map["edges"]:
+        dr = edge.get("decomposition_recipe")
+        if dr and not dr.get("irreducible", False):
+            prims = tuple(sorted(dr.get("primitives", [])))
+            if prims:
+                recipe_by_type[str(prims)].append(edge["edge_type"])
+
+    duplicate_recipe_groups: list[dict[str, Any]] = []
+    for sig, types in recipe_by_type.items():
+        unique_types = sorted(set(types))
+        if len(unique_types) > 1:
+            duplicate_recipe_groups.append({
+                "primitive_signature": sig,
+                "edge_types_sharing_recipe": unique_types,
+                "merge_candidate": True,
+                "recommendation": (
+                    "Review for unification with a distinguishing `scope` parameter "
+                    "per ADR-0035 §4.3 compositional basis rule"
+                ),
+            })
+
+    # --- Edges missing decomposition_recipe (ALL edges, not just proposed) ---
+    edges_missing_recipe = [
+        {"edge_id": e["edge_id"], "edge_type": e["edge_type"]}
+        for e in star_map["edges"]
+        if not e.get("decomposition_recipe")
+    ]
+    missing_by_type: dict[str, int] = {}
+    for item in edges_missing_recipe:
+        missing_by_type[item["edge_type"]] = missing_by_type.get(item["edge_type"], 0) + 1
+
+    # --- Orphan nodes (basis-reachable core nodes with no outgoing edges in star map) ---
+    has_outgoing: set[str] = {e["source"] for e in star_map["edges"]}
+    orphan_nodes = sorted(
+        nid for nid in basis_reachable & core_ids if nid not in has_outgoing
+    )
+
+    return {
+        "authority_trace_depth": {
+            "depth_by_node": dict(sorted(core_depths.items())),
+            "depth_histogram": depth_histogram,
+            "max_depth": max(depths_list, default=0),
+            "mean_depth": mean_depth_str,
+            "nodes_not_authority_traceable": authority_not_traceable,
+            "nodes_not_authority_traceable_count": len(authority_not_traceable),
+            "traced_core_node_count": len(core_depths),
+        },
+        "duplicate_recipe_groups": duplicate_recipe_groups,
+        "duplicate_recipe_group_count": len(duplicate_recipe_groups),
+        "edges_missing_recipe_by_type": missing_by_type,
+        "edges_missing_recipe_count": len(edges_missing_recipe),
+        "edges_missing_recipe_total": edges_missing_recipe,
+        "orphan_nodes": orphan_nodes,
+        "orphan_node_count": len(orphan_nodes),
+    }
+
+
 def _edge_recipe_analysis(star_map: dict[str, Any]) -> dict[str, Any]:
     proposed_edges = [
         edge
@@ -225,6 +320,8 @@ def run(
     ]
 
     edge_analysis = _edge_recipe_analysis(star_map)
+    # graph_structure_analysis wired after basis_reachable is computed
+    # (called below after tier_analysis is available)
 
     # Two-tier classification (Phase 1387c):
     # Tier 1 — genesis-derivable: reachable from the expanded transition basis.
@@ -244,6 +341,8 @@ def run(
         "governance_extended_ratio": _ratio(len(governance_extended), len(core_ids)),
         "basis_unreachable_count": basis_unreachable_count,
     }
+
+    graph_structure = _graph_structure_analysis(star_map, basis_reachable, GENESIS_ATTESTATION_ROOT)
 
     if edge_analysis["missing_decomposition_recipe_count"] == 0 and len(core_sources) >= len(sources) * 3 // 4:
         verdict = "COMPLETE_ENOUGH_FOR_PHASE_1136"
@@ -275,6 +374,7 @@ def run(
             "support_only_sources_with_core_link": len(support_only_sources),
         },
         "edge_recipe_analysis": edge_analysis,
+        "graph_structure_analysis": graph_structure,
         "tier_analysis": tier_analysis,
         "authority_traceability": {
             "attestation_root": GENESIS_ATTESTATION_ROOT,
@@ -359,7 +459,9 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
     edge_analysis = payload["edge_recipe_analysis"]
     authority = payload["authority_traceability"]
     tier = payload["tier_analysis"]
-    lines = [
+    gsa = payload["graph_structure_analysis"]
+    depth_info = gsa["authority_trace_depth"]
+    lines = [  # noqa: depth_info used in report lines below
         "# GENESIS-COMPILE-01 Compile Coverage Diagnostic v0.1",
         "",
         "Status: deterministic atlas diagnostic — research input, not protocol canon",
@@ -390,6 +492,17 @@ def _write_report(path: Path, payload: dict[str, Any]) -> None:
         f"- Proposed edge instances: `{edge_analysis['proposed_edge_count']}`",
         f"- Missing decomposition recipes: `{edge_analysis['missing_decomposition_recipe_count']}`",
         f"- Proposed edge type counts: `{edge_analysis['proposed_edge_type_counts']}`",
+        "",
+        "## Graph Structure Analysis (Phase 1387f)",
+        "",
+        f"- Authority-trace max depth: `{depth_info['max_depth']}`",
+        f"- Authority-trace mean depth: `{depth_info['mean_depth']}`",
+        f"- Depth histogram: `{depth_info['depth_histogram']}`",
+        f"- Nodes not authority-traceable: `{depth_info['nodes_not_authority_traceable_count']}`",
+        f"- Duplicate recipe groups (merge candidates): `{gsa['duplicate_recipe_group_count']}`",
+        f"- Edges missing decomposition_recipe: `{gsa['edges_missing_recipe_count']}` "
+        f"(`{gsa['edges_missing_recipe_by_type']}`)",
+        f"- Orphan nodes (basis-reachable, no outgoing edges): `{gsa['orphan_node_count']}`",
         "",
         "## Interpretation",
         "",
