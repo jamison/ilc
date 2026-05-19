@@ -887,8 +887,10 @@ and expanded with CDL-006/009, external audit, TLA+ disposition, and key ceremon
 | 1387g | SIM-GRAPHOPT-02: epistemic leverage analysis — add `_epistemic_leverage_analysis()` to compiler; for each non-root node remove it and recompute reachability from attestation root, count other nodes lost; result: 0 keystone nodes, all 39 non-root core nodes leverage=1 (removal isolates only self), 15 axiomatic roots leverage=undefined; hub-and-spoke confirmed maximally resilient | SIM-GRAPHOPT-01; ATLAS-G compiler | COMPLETE: NON-SENSITIVE Strike Force phase; commit `3ed04fed`; 9 new tests; 67 tests passing across 1387b–g |
 | 1387h | SIM-GRAPHOPT-03: edge recipe canonicalization — patch all 30 ATTESTATION (17) and PROVENANCE (13) edges with canonical `decomposition_recipe`; ATTESTATION: `assert.truth ∘ link.claim`, scope=`agent_signing_endorsement`; PROVENANCE: `assert.truth ∘ link.claim`, scope=`derivation_origin_chain`; result: 0 of 77 edges missing recipe; second duplicate group surfaces (ATTESTATION/PRIMITIVE_INVOCATION/PROVENANCE — scope-distinguished, valid); GOVERNS/CONSTRAINS remain primary merge candidate | SIM-GRAPHOPT-01; star map canonicalization | COMPLETE: NON-SENSITIVE Strike Force phase; commit `afb46c44`; 11 new tests; 78 tests passing across 1387b–h |
 | 1387i | SIM-GRAPHOPT-01 synthesis report — produce `docs/sims/sim_spectral_02/genesis_graphopt_01_synthesis_report_v0.1.md`; document all 1387f/g/h findings; record GOVERNS/CONSTRAINS merge CDL as forward obligation; record ATTESTATION/PROVENANCE scope-distinction as valid (no action required); record 37 orphan leaf nodes as architecturally expected; close SIM-GRAPHOPT-01 series | SIM-GRAPHOPT-01 synthesis | COMPLETE: NON-SENSITIVE Strike Force phase; commit `976ae6e9`; token `sim_graphopt_01_synthesis_complete_phase_1387i`; 9 new tests; 85 tests passing across 1387b–i |
-| 1388 | CDL-048 public ECU-to-ILC conversion path activation + counsel clearance: unlock sweeper runtime (first live value-path activation) after Phase 1387 and Phase 1387a pass; simultaneous counsel sign-off on public verifier API surface | CDL-048 activation, Counsel clearance | EXECUTED: FAILED CLOSED; records `phase_1388_cdl_048_activation_failed_closed`, `cdl_048_activation_not_performed_phase_1388`, `counsel_clearance_public_verifier_api_missing_phase_1388`, `first_live_value_path_activation_not_performed_phase_1388`, `phase_1388_prompt_v0_1_gate_reference_superseded_by_v0_2_pass`, and `phase_1389_not_opened_phase_1388`; counsel clearance missing; no runtime unlock; Phase 1389 remains blocked |
-| 1389 | **Public claimability/API activation gate** — re-executes Phase 1336 gate with all six blockers confirmed closed plus Phase 1387a accepted-functionality/public-economics proof; `result=public_claimability_activated` is the full public RC milestone | All six Phase 1336 blockers + accepted-functionality coverage | SENSITIVE; explicit `GO Phase 1389` required; fails closed if any predecessor open |
+| 1387j | Signed artifact hygiene: restore three Phase 1142s manifest-covered files (`out/genesis_core_star_map_v0.1.json`, `out/genesis_compile_coverage_diagnostic_v0.1.json`, `tools/genesis_compile_coverage_diagnostic.py`) to their Phase 1142s signed state; promote expanded 1387c/e/f/g/h work to `v0.3_candidate` designation; add traversal-note comment on `basis_reachable_core_nodes` semantic change | Signed artifact hygiene; v0.3_candidate promotion | COMPLETE: NON-SENSITIVE hygiene phase; commit `4750b00b`; all three manifest SHA-256 hashes restored and verified; v0.3_candidate files created; 88 tests passing; forward obligation: v0.3_candidate signing ceremony before Phase 1389 can claim signed 54-node coverage |
+| 1388a | Self-counsel CDL-048 clearance: produce `docs/specs/ilc_counsel_clearance_cdl_048_activation_1388a_v0.1.md` as Genesis-authority internal decision covering CDL-048 token classification position in closed pre-production/testnet context and scope of Phase 1388 activation; prerequisite for Phase 1388 rerun | Self-counsel; CDL-048 activation prerequisite | COMPLETE: NON-SENSITIVE self-counsel doc phase; records `counsel_clearance_cdl_048_activation_phase_1388a`, `self_counsel_decision_not_external_legal_opinion_phase_1388a`; does not authorize mainnet, public real-value conversion, or Phase 1389 |
+| 1388 | CDL-048 public ECU-to-ILC conversion path activation + counsel clearance: unlock sweeper runtime (first live value-path activation) after Phase 1387 and Phase 1387a pass; self-counsel clearance via Phase 1388a | CDL-048 activation, Counsel clearance | COMPLETE: SENSITIVE; commits `e96a629d` (runtime) + `17b844a6` (counsel clearance doc) + `208d2447` (status hash); records `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, `first_live_value_path_activation_phase_1388`; CDL-048 activation-request path open: `gate_closed=False`, `quote_only=False`, `ledger_write_authorized=True`, `wallet_write_authorized=True`; `public_claimability_activated=False`; 32 tests passing; historical failed-closed run preserved as evidence superseded by this rerun |
+| 1389 | **Public claimability/API activation gate** — re-executes Phase 1336 gate with all six blockers confirmed closed plus Phase 1387a accepted-functionality/public-economics proof; `result=public_claimability_activated` is the full public RC milestone | All six Phase 1336 blockers + accepted-functionality coverage | COMPLETE: SENSITIVE; commits `449f0e95` + `65896516`; v0.2 gate report records `result=public_claimability_activated`; v0.1 failed-closed report retained as historical evidence; 31 tests passing; no public HTTP serving, public RC artifact publication, release signing, wallet action, ECU mint, ILC settlement, mainnet launch, CDL mutation, or external legal advice |
 | 1390 | Window closure handoff | — | SENSITIVE |
 
 **Strict dependency order:**
@@ -920,9 +922,15 @@ Phase 1369 sequence lock
                             → Phase 1387c compiler basis expansion  [complete; Strike Force]
                                 → Phase 1387d ADR-0035 formal spec  [complete; Strike Force]
                                     → Phase 1387e star map v0.1 expansion 32→54 nodes  [complete; Strike Force]
-                        → Phase 1388 CDL-048 activation + counsel clearance  (first live value-path; requires GO Phase 1388)
-                            → Phase 1389 public claimability activation gate
-                                → Phase 1390 closure
+                                        → Phase 1387f SIM-GRAPHOPT-01 graph structure analysis  [complete; Strike Force]
+                                            → Phase 1387g SIM-GRAPHOPT-02 epistemic leverage  [complete; Strike Force]
+                                                → Phase 1387h SIM-GRAPHOPT-03 edge recipe canonicalization  [complete; Strike Force]
+                                                    → Phase 1387i SIM-GRAPHOPT-01 synthesis report  [complete; Strike Force]
+                                        → Phase 1387j signed artifact hygiene / v0.3_candidate promotion  [complete; parallel hygiene branch]
+                        → Phase 1388a self-counsel CDL-048 clearance  [complete; NON-SENSITIVE]
+                            → Phase 1388 CDL-048 activation + counsel clearance  [complete; SENSITIVE; first live value-path activation]
+                                → Phase 1389 public claimability activation gate  [complete; SENSITIVE; result=public_claimability_activated]
+                                    → Phase 1390 closure
 ```
 
 **Stop conditions for any phase in this window:**
@@ -950,14 +958,15 @@ activation-gate boundary work. It is no longer the primary label for the whole
 
 | J phase | Numeric phase | Current routing |
 |---------|---------------|-----------------|
-| J-001 | 1391 | COMPLETE: jury / epoch-work canon map; no runtime, CDL, public ingestion, production jury, or reviewer-payment activation. |
-| J-002 | 1392 | Jury eligibility, opt-in, randomized assignment, outsider-seat, diversity, and anti-capture ADR. |
-| J-003 | 1393 | Public node review taxonomy, including the relationship between objective panels, subjective/aesthetic panels, structural submissions, and refutation/provenance claims. |
-| J-004 | 1394 | Jury incentive economics CDL opening; must preserve approval-volume-bias controls and no reviewer-payment activation. |
-| J-005 | 1395 | Epoch-start capability and maintenance-work contract. |
-| J-006 | 1396 | Default-off jury assignment quote runtime, if still authorized by the J-series sequence. |
-| J-007 | 1397 | Shadow public-ingestion jury harness; no public graph permanence or production rewards. |
-| J-008 | 1398 | Production jury activation gate definition; reviewer payments and public canonical-node review remain later-gated. |
+| J-001 | 1391 | COMPLETE: jury / epoch-work canon map; no runtime, CDL, public ingestion, production jury, or reviewer-payment activation. Records `jury_epoch_work_canon_map_phase_j001`, `jury_participation_incentivized_not_obligatory_recorded`, `objective_subjective_panel_split_confirmed`. |
+| J-002 | 1392 | COMPLETE: jury eligibility and assignment ADR (`ADR_0040_Jury_Eligibility_Assignment.md`). Records `jury_eligibility_assignment_adr_accepted_phase_j002`, `randomized_jury_assignment_opt_in_boundary_defined`, `non_opt_in_agents_not_forced_into_jury_service`, `graph_connection_alone_does_not_create_jury_service_obligation`. |
+| J-003 | 1393 | COMPLETE: public node review taxonomy (`ilc_public_node_review_taxonomy_v0.1.md`), T0–T6 tiers defined. Records `public_node_review_taxonomy_phase_j003`, `private_draft_nodes_do_not_require_jury`, `reward_bearing_public_nodes_require_review_lane`, `subjective_panel_non_blocking_boundary_preserved`. |
+| J-003a | 1393a | COMPLETE: ADR-0041 Agent INIT and Ingestion Protocol; T0.5 quarantine added to J-003 taxonomy; Mode-2 refutation carry-forward surfaced in J-series plan §6. Records `adr_0041_agent_init_and_ingestion_protocol_accepted`, `agent_init_permissionless_zero_public_weight_until_attestation`, `external_identifier_anchoring_doi_pmid_arxiv_defined`, `t0_5_quarantine_state_is_pending_public_ingestion`, `extraction_provenance_payload_fields_required`, `copyright_boundary_counsel_gated`. Blocks J-007; does not block J-005/J-006. |
+| J-004 | 1394 | COMPLETE: jury incentive economics CDL opening (`ilc_cdl_jury_incentive_economics_opening_v0.1.md`). Records `jury_incentive_economics_cdl_opened_phase_j004`, `approval_volume_bias_risk_recorded`, `fixed_plus_accuracy_weighted_panel_compensation_recommended`, `reviewer_payment_not_activated_phase_j004`. Approval-only reviewer payment rejected; no runtime, CDL register, or reviewer payment activation. |
+| J-005 | 1395 | COMPLETE: Epoch-start capability and maintenance-work contract (`epoch_start_runtime.py`, `maintenance_work_contract_runtime.py`). Records `epoch_start_capability_and_maintenance_work_contract_phase_j005`, `epoch_sequence_lock_enforced`, `maintenance_task_lifecycle_proposed_claimed_completed_audited_rewarded`. 24 tests. |
+| J-006 | 1396 | COMPLETE: Default-off jury assignment quote runtime (`jury_assignment_runtime.py`). Records `default_off_jury_assignment_quote_runtime_phase_j006`, `jury_assignment_no_public_activation_phase_j006`, `epoch_hash_shadow_assignment_only_phase_j006`. `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=True`. Panel shape 7+1 (ADM-003), `independence_k=3`. `vrf_required_for_production_high_value_assignment` boundary preserved. 33 tests. |
+| J-007 | 1397 | COMPLETE: Shadow public-ingestion jury harness (`ingestion_shadow_harness.py`). Records `shadow_public_ingestion_harness_phase_j007`, `j007_t0_5_quarantine_exercised`, `j007_maintenance_task_lifecycle_exercised`, `j007_no_production_activation`. T0–T6 taxonomy decision procedure implemented. `PRODUCTION_INGESTION_NOT_ACTIVATED=True`. 55 tests. |
+| J-008 | 1398 | COMPLETE: Production jury activation gate (`jury_activation_gate.py`). Records `production_jury_activation_gate_defined_phase_j008`, `j008_gate_verdict_incomplete`. Verdict: INCOMPLETE — 3/10 MET, 7/10 NOT_MET blocking. `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=True`. Gate will auto-flip to PASS when all 7 blocking conditions met. 51 tests. J-series total: 163 tests. |
 
 #### Preserved Mode-2 Refutation Carry-Forward Context
 
@@ -1122,6 +1131,202 @@ HCON02_QUORUM_MINIMUM_VOTERS = 2
 - Do not consume `rounding_residual_to_upheld_refutation_recipients_ilc` without an
   explicit settlement consumer contract that preserves conservation across the separate
   upheld-refutation residual field
+
+---
+
+### Window 1399–1428 — Jury Economy Production Enablement + Private Soft-RC Readiness (J-008 Gate Resolution)
+
+**Purpose:** Two parallel tracks in one window:
+1. Resolve all 7 blocking conditions identified by the J-008 jury activation gate (Phase 1398
+   verdict INCOMPLETE). When all 7 are MET, `evaluate_jury_activation_gate()` will return
+   `verdict="PASS"` and a production GO can be issued for live reviewer payments, CapProof
+   pricing, and maintenance lottery distribution.
+2. Produce the Launch Readiness Manifest schema and private soft-RC rehearsal entry criteria
+   so that private bootstrap testing can begin in parallel with or immediately after the jury
+   economy track.
+
+**Entry criteria:** Window 1391-1398 (J-series) COMPLETE; J-008 gate verdict recorded.
+
+**What this window does NOT do:** Does not activate production jury assignment, production
+reviewer payments, or public canonical-node review admission. Does not start the private
+soft-RC rehearsal — it defines its entry criteria and topology plan. The gate re-run phase
+(1427) evaluates conditions; a separate production GO is required to activate. The base value
+path (CDL-048 Phase 1388, public claimability Phase 1389) is already live and unaffected.
+
+#### Phase Table
+
+| Phase | Topic | Character | Sensitivity | Blocking condition resolved |
+|-------|-------|-----------|-------------|----------------------------|
+| 1399 | J-004 CDL jury incentive economics — deliberation and prelock | CDL prelock | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` (partial) |
+| 1400 | J-004 CDL jury incentive economics — ratification | CDL ratification | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` |
+| 1401 | J-004 jury incentive economics runtime stub | Runtime | NON-SENSITIVE | Wires ratified CDL into module; `reviewer_payment_not_activated` boundary preserved |
+| 1402 | CapProof CDL — opening and scope definition | CDL opening | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (opens track) |
+| 1403 | CapProof CDL — deliberation; probe content-addressing, CV signing, ±15% band | CDL deliberation | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
+| 1404 | CapProof CDL — prelock | CDL prelock | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
+| 1405 | CapProof CDL — ratification | CDL ratification | SENSITIVE | `CAPPROOF_CDL_RATIFIED` |
+| 1406 | Maintenance lottery pool CDL — opening and scope | CDL opening | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (opens track) |
+| 1407 | Maintenance lottery pool CDL — deliberation and prelock | CDL prelock | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (partial) |
+| 1408 | Maintenance lottery pool CDL — ratification | CDL ratification | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` |
+| 1409 | Maintenance lottery pool runtime stub | Runtime | NON-SENSITIVE | Wires ratified CDL; `lottery_not_activated` boundary preserved |
+| 1410 | VRF proof verifier specification and ADR | Spec / ADR | NON-SENSITIVE | `VRF_VERIFIER_IMPLEMENTED` (specifies; no impl) |
+| 1411 | VRF proof verifier implementation | Runtime | NON-SENSITIVE | `VRF_VERIFIER_IMPLEMENTED` — `vrf_proof_verifier_implemented_phase_1411` token required |
+| 1412 | VRF integration with `jury_assignment_runtime.py` | Runtime | NON-SENSITIVE | `VRF_VERIFIER_IMPLEMENTED` fully MET; replaces epoch-hash shadow assignment for high-value slots |
+| 1413 | VRF integration tests and security review | Testing | NON-SENSITIVE | Completes VRF track; no PRNG (`import random` ban §2 ICSS) |
+| 1414 | Review lane wiring — T0.5→T1+ admission runtime design and ADR | Spec / ADR | NON-SENSITIVE | `REVIEW_LANE_WIRING_COMPLETE` (specifies) |
+| 1415 | Review lane wiring — T0.5→T1+ admission runtime implementation | Runtime | NON-SENSITIVE | `REVIEW_LANE_WIRING_COMPLETE` (partial) |
+| 1416 | Review lane wiring — dedup enforcement and reviewer-payment settlement stub | Runtime | NON-SENSITIVE | `REVIEW_LANE_WIRING_COMPLETE` (partial); reviewer payment remains gated |
+| 1417 | Review lane wiring — integration tests; `REVIEW_LANE_WIRING_COMPLETE` token | Testing | NON-SENSITIVE | `REVIEW_LANE_WIRING_COMPLETE` fully MET |
+| 1418 | Anti-capture diversity — production jury assignment CDL-V3 + VRF wiring design | Spec | NON-SENSITIVE | `ANTI_CAPTURE_DIVERSITY_VERIFIED` (specifies) |
+| 1419 | Anti-capture diversity — production verification pass; `anti_capture_diversity_verified_phase_1419` token | Runtime/Audit | NON-SENSITIVE | `ANTI_CAPTURE_DIVERSITY_VERIFIED` fully MET |
+| 1420 | Copyright counsel disposition — ADR-0041 §5 legal memo or Genesis-authority self-counsel | Governance | SENSITIVE | `COPYRIGHT_COUNSEL_DISPOSITION` fully MET |
+| 1421 | Window coherence and capsule update | Governance | NON-SENSITIVE | — |
+| 1422 | Launch Readiness Manifest schema — aggregate gate verdicts (Phase 1387/1389/J-008) into Genesis-signable manifest; define `public_rc_launch_readiness_manifest_v1` structure | Spec | NON-SENSITIVE | Prereq for clean public RC activation event; no activation |
+| 1423 | Private soft-RC rehearsal entry criteria — 3-machine / 7-agent topology plan; VPS agent identity init via ADR-0038 + ADR-0041; test dataset selection (small synthetic corpus + Lean Mathlib subset design); wipe/reset rights policy; scripted-agent behavioral specification (deterministic, no live LLM calls) | Spec | NON-SENSITIVE | Defines the private rehearsal before any VPS work begins |
+| 1424 | Public RC activation certificate design — `activation_certificate_v1` structure, Genesis signing ceremony, epoch 0→1 transition trigger; `hello_world_public_rc_node` design as post-activation provenance record (does NOT trigger epoch start) | Spec | NON-SENSITIVE | Completes launch readiness design track |
+| 1425 | Pre-gate re-run verification — confirm all 7 blocking conditions MET | Verification | NON-SENSITIVE | — |
+| 1426 | Soft RC gate re-run — record `soft_rc_eligible=true` (deferred from Phase 1367) | Gate | SENSITIVE | Forward obligation from 1367; required before public RC claim |
+| 1427 | J-008 gate re-run — `evaluate_jury_activation_gate()` expecting `verdict="PASS"` | Gate | SENSITIVE | All 7 blocking conditions MET; `production_jury_activation_gate_pass_phase_1427` |
+| 1428 | Window 1399–1428 closure gate | Gate | SENSITIVE | Requires `GO Phase 1428` |
+
+#### CDL Number Assignments (reserved)
+
+| CDL | Scope |
+|-----|-------|
+| J-004 CDL (number TBD at prelock) | Jury incentive economics — fixed + accuracy-weighted panel compensation; approval-volume bias controls |
+| CapProof CDL (number TBD at opening) | CapProof content-addressing, CV signing chain, ±15% pricing band |
+| Maintenance Lottery CDL (number TBD at opening) | Maintenance lottery pool distribution rules |
+
+CDL numbers are assigned from the open end of the register at opening time per standing policy.
+
+#### Dependency Tree
+
+```
+Phase 1399 (J-004 CDL prelock)
+  └─ Phase 1400 (J-004 CDL ratification)  ──► JURY_INCENTIVE_CDL_RATIFIED MET
+       └─ Phase 1401 (runtime stub)
+
+Phase 1402 (CapProof CDL opening)
+  └─ Phase 1403 (deliberation)
+       └─ Phase 1404 (prelock)
+            └─ Phase 1405 (ratification)  ──► CAPPROOF_CDL_RATIFIED MET
+
+Phase 1406 (Maintenance CDL opening)
+  └─ Phase 1407 (prelock)
+       └─ Phase 1408 (ratification)  ──► MAINTENANCE_LOTTERY_CDL_RATIFIED MET
+            └─ Phase 1409 (runtime stub)
+
+Phase 1410 (VRF ADR)
+  └─ Phase 1411 (VRF implementation)
+       └─ Phase 1412 (VRF + jury_assignment_runtime.py integration)
+            └─ Phase 1413 (tests)  ──► VRF_VERIFIER_IMPLEMENTED MET
+
+Phase 1414 (Review lane ADR)
+  └─ Phase 1415 (T0.5→T1+ admission runtime)
+       └─ Phase 1416 (dedup + payment settlement stub)
+            └─ Phase 1417 (tests)  ──► REVIEW_LANE_WIRING_COMPLETE MET
+
+  Phase 1412 (VRF) + Phase 1417 (review lane)
+       └─ Phase 1418 (anti-capture design)
+            └─ Phase 1419 (verification pass)  ──► ANTI_CAPTURE_DIVERSITY_VERIFIED MET
+
+Phase 1420 (copyright counsel)  ──► COPYRIGHT_COUNSEL_DISPOSITION MET
+
+All 7 blocking conditions MET
+  └─ Phase 1421 (coherence + capsule)
+       │
+       ├─ Phase 1422 (Launch Readiness Manifest schema)  ─┐
+       ├─ Phase 1423 (private soft-RC entry criteria)     ├─ (independent, can run concurrently)
+       └─ Phase 1424 (activation certificate design)     ─┘
+            │
+            └─ Phase 1425 (pre-gate verification)
+                 └─ Phase 1426 (soft RC re-run)
+                      └─ Phase 1427 (J-008 gate re-run → verdict PASS)
+                           └─ Phase 1428 (window closure gate)
+```
+
+#### Ordering Notes
+
+- Phases 1399–1409 (CDL tracks) and Phases 1410–1419 (VRF + review lane + anti-capture) are
+  mostly independent and can be executed in parallel windows or interleaved if authorized.
+- Phase 1420 (copyright counsel) has no technical prerequisite — it can be executed at any
+  point in the window after J-008 completes.
+- Phases 1422–1424 (manifest schema, rehearsal plan, activation certificate) can run
+  concurrently with each other after Phase 1421; none depend on the jury economy track.
+- Phase 1427 gate re-run requires ALL 7 blocking conditions MET. Confirm each token is present
+  before executing.
+- Phase 1426 (soft RC re-run) is a forward obligation from Phase 1367 and is a hard prerequisite
+  for any public RC claim, but does not block the jury activation gate itself.
+- Phase numbers 1399–1428 are reserved for this window. If a CDL track takes fewer phases,
+  remaining numbers are left unused and the window closes at the gate phase.
+- The private soft-RC rehearsal itself (actual VPS provisioning, agent key generation, network
+  bring-up, test execution) is an operational task authorized by Phase 1423 entry criteria —
+  it is NOT itself a numbered phase in this window. It may happen concurrently with or
+  immediately after Phase 1428 closure.
+
+#### Private Soft-RC Rehearsal Design Decisions (recorded for Phase 1423)
+
+**Topology:** Mirror the launch roadmap v1.1 topology — 3 machines, 7 agents distributed
+across them. Use the actual CDL-078 relay topology and CDL-042 agent identity rules. Do not
+rehearse with an ad-hoc topology and switch later.
+
+**Agent identity init:** Each VPS generates its own keypair locally via the ADR-0038 +
+ADR-0041 INIT path. Public identity bundles are exported to Genesis for inclusion in the
+private soft-RC bootstrap manifest. Genesis does NOT generate and distribute private keys for
+VPS agents. This practices the correct operational path even during private rehearsal.
+
+**What persists through wipe/reinit (do NOT wipe):**
+- Genesis Agent 01 identity
+- All committed ADR/CDL/spec/phase documents and ratification evidence
+- Genesis manifest and v0.2 signed root envelope (commit `a636a373...`)
+- TLA+ proofs, hardening gate records, claimability gate records
+
+**What has wipe rights (operational state, non-canonical):**
+- LMDB state on each VPS (epoch records, local graph DB)
+- Nullifier registries and claim registries
+- Peer registries and topology caches
+- Test agent graph content (submitted nodes, review outputs, jury votes)
+- Test economic balances (ECU, rehearsal ILC)
+- Jury harness outputs from rehearsal sessions
+
+**Test dataset:** Start with a small synthetic hand-curated corpus (~50–100 nodes) of
+mathematical nodes with known provenance relationships — axioms, lemmas, theorems, corollaries.
+This exercises graph structure, content-addressing, and T0.5→T2 taxonomy classification without
+the complexity of bulk import. A Lean Mathlib subset (Terence Tao/PFR project provenance chain
+or Mathlib axiom graph) is an ideal second-phase dataset after basic QUIC networking and
+economic machinery is confirmed working. Lean Mathlib is Apache 2.0 licensed; no copyright
+concern for internal rehearsal use. Rationale for deferring Lean import to second phase: bulk
+import complexity would obscure infrastructure failures; a hand-curated small corpus gives
+deterministic expected outcomes suitable for automated verification.
+
+**Agent behavioral mode during private rehearsal:** Deterministic scripted agents only — no
+live LLM API calls during the infrastructure validation phase. Each agent follows a
+pre-scripted behavioral specification (submit defined nodes, cast defined jury votes, perform
+defined reviews). Rationale: LLM API calls introduce non-determinism, external latency, cost,
+and dependency on third-party services into what is fundamentally an infrastructure test. If
+output is non-deterministic, debugging is much harder. LLM-driven content generation is the
+intended production mode, but is a separate capability layer tested after infrastructure
+stability is confirmed.
+
+**LLM integration sequencing:** OpenClaw agent-to-LLM wiring (Claude/Gemini/Codex API) is
+reserved for a post-rehearsal phase after: (a) multi-machine QUIC networking is confirmed,
+(b) basic epoch cycling and economic machinery is confirmed, (c) T0.5 ingestion path and
+review lane are exercised with scripted agents. At that point, live LLM API calls can be
+introduced gradually, one agent at a time, with deterministic scripted agents as the baseline
+for comparison. This also avoids rehearsal content being sent to third-party LLM APIs during
+a non-public test phase.
+
+**Key open question for Phase 1423:** whether the 7 rehearsal agent identities carry over
+to public RC (preserved across soft-RC wipe) or whether public RC starts with fresh identities.
+This is a governance/launch-narrative question, not a technical one.
+
+#### Non-Goals
+
+- Does NOT activate production reviewer payments (requires production GO after gate PASS)
+- Does NOT activate production jury assignment for high-value nodes
+- Does NOT complete Mode-2 settlement-grade refutation path (separate Mode-2 carry-forward track)
+- Does NOT constitute a public RC publication event
+- Does NOT start the private soft-RC rehearsal (Phase 1423 defines entry criteria; operational
+  execution is authorized separately)
 
 ---
 
