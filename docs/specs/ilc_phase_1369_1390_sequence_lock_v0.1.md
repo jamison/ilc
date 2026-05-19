@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1389 rerun; Phase 1389 v0.2 records `result=public_claimability_activated` after Phase 1389a/1389b cleared all public-mode blockers. Phase 1390 window closure is next.
+**Status:** CLOSED - Window 1369-1390 is closed by Phase 1390; Phase 1389 v0.2 records `result=public_claimability_activated`; Window 1391+ requires explicit future GO.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -189,7 +189,15 @@ supersedes the historical v0.1 failed-closed report for routing and records
 public HTTP server, adds no public claim endpoint, performs no wallet action,
 mints no ECU, settles no ILC, publishes no public RC artifacts, launches no
 mainnet, mutates no CDL row, and records no external legal advice or legal
-conclusion. Phase 1390 window closure is next.
+conclusion. Phase 1390 later closed this window.
+
+Phase 1390 addendum: Window 1369-1390 closure handoff is COMPLETE.
+`docs/specs/ilc_window_1369_1390_handoff_1390_v0.1.md` records
+`window_1369_1390_closed_phase_1390.v0.1`,
+`window_1369_1390_closure_verdict_recorded_phase_1390`,
+`mempalace_refresh_disposition_recorded_phase_1390`,
+`window_1391_not_open_phase_1390`, and `go_window_1391_required_next`.
+Window 1391+ is not opened by Phase 1390.
 
 ## 5. Locked Phase Order
 
@@ -225,7 +233,7 @@ conclusion. Phase 1390 window closure is next.
 | 26 | 1389 | Public claimability / API activation gate | COMPLETE after rerun: v0.1 failed closed; v0.2 PASS records `public_claimability_gate_phase_1389_executed`, `result=public_claimability_activated`, `public_claimability_gate_rerun_passed_after_1389b`, `claimability_runtime_public_mode_blockers_cleared_phase_1389_rerun`, and `phase_1389_v0_1_failed_closed_superseded_by_v0_2_pass`. |
 | 26a | 1389a | Claimability public-mode governance decisions | COMPLETE; records `claimability_public_mode_governance_decisions_phase_1389a`, `cdl_088_is_public_claimability_api_authority_phase_1389a`, `public_safe_disclosure_schema_final_cdl_088_scope_phase_1389a`, `transport_principal_resolved_at_d2d_layer_adr_0039_cdl_078_phase_1389a`, and `claimability_runtime_registry_blockers_remain_phase_1389a`; no runtime mutation or public activation. |
 | 26b | 1389b | Claimability public-mode runtime | COMPLETE; records `claimability_public_mode_runtime_phase_1389b`, `claim_nullifier_registry_v1_active_phase_1389b`, `duplicate_claim_registry_active_phase_1389b`, `claimability_verifier_public_mode_ready_phase_1389b`, and `public_mode_blockers_empty_phase_1389b`; runtime admission blockers implemented, no public serving activation. |
-| 27 | 1390 | Window closure handoff | SENSITIVE closure handoff; records final window verdict. |
+| 27 | 1390 | Window closure handoff | COMPLETE; records `window_1369_1390_closed_phase_1390.v0.1`, `window_1369_1390_closure_verdict_recorded_phase_1390`, `mempalace_refresh_disposition_recorded_phase_1390`, `window_1391_not_open_phase_1390`, and `go_window_1391_required_next`. |
 
 ## 6. Runtime Hardening Carry-Forward Disposition
 

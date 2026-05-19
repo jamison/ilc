@@ -3,7 +3,7 @@
 **Version:** v1.1
 **Produced:** 2026-05-08
 **Phase:** 1242
-**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1384 addendum
+**Status:** CURRENT controlling public-RC roadmap after Phase 1242, with Phase 1390 closure addendum
 **Supersedes:** `docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.0.md`
 
 `launch_roadmap_v1_1_published_phase_1242`
@@ -56,6 +56,9 @@
 `security_review_scope_recorded_phase_1384`
 `audit_scope_bft_safety_economic_surfaces_high_001`
 `phase_1387_requires_project_authority_security_disposition`
+`result=public_claimability_activated`
+`window_1369_1390_closed_phase_1390.v0.1`
+`go_window_1391_required_next`
 
 ---
 
@@ -80,10 +83,17 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 
 ## 2. Current Canon Baseline
 
+Phase 1390 addendum: Window 1369-1390 is closed by
+`docs/specs/ilc_window_1369_1390_handoff_1390_v0.1.md`. Phase 1389 rerun
+records `result=public_claimability_activated`, but public RC publication,
+release signing, source/package publication, public HTTP claimability serving,
+public P2P/fetch/sidecar serving, production minting, ILC settlement, mainnet
+launch, and external legal advice remain unclaimed unless separately authorized.
+
 | Surface | Current status |
 |---------|----------------|
-| Window frontier | Window 1369-1390 is OPEN through Phase 1383; active sequence lock is `docs/specs/ilc_phase_1369_1390_sequence_lock_v0.1.md`; Phase 1381 records CDL-006 challenge-node spec/stub completion, Phase 1382 records CDL-006 challenge-node runtime/test completion through `cdl_006_challenge_node_runtime_phase_1382.v0.1`, `cdl_006_3_body_quorum_verification_implemented`, and `cdl_006_audit_path_record_writer_implemented`, and Phase 1383 records CDL-009 fork-legitimacy UX completion through `cdl_009_fork_legitimacy_ux_phase_1383.v0.1`, `cdl_009_signature_badge_schema_implemented`, and `cdl_009_eligibility_rules_contract_committed`; public RC final status remains `public_rc_final_status=not_published_blocked_with_findings`; final open publication blockers are `publication_target_or_tag_not_selected`, `counsel_publication_clearance_missing`, `release_artifact_not_release_signed`, `public_claimability_api_not_activated`, `public_path_p2p_sidecar_serving_not_activated`, and `wallet_ecu_ilc_value_path_not_activated`; no public RC, public activation, publication, source publication, release signing, public claimability/API, public P2P/fetch/sidecar serving, CDL mutation, wallet-facing action activation, ECU minting activation, ILC settlement activation, withdrawal runtime, final value-path activation authority, production governance decision execution, production mining, production minting, soft-RC eligibility true verdict, counsel approval, or legal conclusion is granted |
-| Capsule and gate report | v5.58 is the current capsule through Phase 1369; Phase 1366 gate report is `docs/specs/ilc_soft_rc_readiness_gate_report_phase_1366_v0.1.md` and records the historical treasury-budget binding blocker; Phase 1367 walkthrough records its targeted blocker resolution; Phase 1369 Fix1 is the next scheduled hardening sub-phase |
+| Window frontier | Window 1369-1390 is CLOSED through Phase 1390; handoff is `docs/specs/ilc_window_1369_1390_handoff_1390_v0.1.md`; Phase 1389 rerun records `result=public_claimability_activated`; public RC remains not published; remaining publication/release blockers include publication target or tag selection, release artifact signing, public HTTP/P2P/sidecar serving activation, and any future wallet/value operations beyond the recorded Phase 1388 pre-production path; no public RC publication, source publication, release signing, public HTTP claimability serving, public P2P/fetch/sidecar serving, CDL mutation, ECU minting activation, ILC settlement activation, production mining, production minting, soft-RC eligibility true verdict, counsel approval by external counsel, or external legal opinion is granted |
+| Capsule and gate report | v5.58 remains the active capsule reference; Phase 1366 gate report records the historical treasury-budget binding blocker; Phase 1367 walkthrough records its targeted blocker resolution; Phase 1390 handoff records Window 1369-1390 closure and Window 1391+ explicit-GO routing |
 | Prior closure | Window 1233-1240 CLOSED / PASS at Phase 1240 |
 | CDL-086 | **RATIFIED** in Phase 1220 (`cdl_086_ratified_phase_1220`) |
 | CDL-087 | **RATIFIED** in Phase 1278 Fix1 (`cdl087_ratified_phase_1278_fix1`); public fetch serving, public sidecar/projection serving, CDL-088, and public RC remain separately gated |
@@ -96,9 +106,9 @@ gap_14_package_modularity_executes_before_gap_10_public_p2p
 | TransportPrincipal runtime identity | Phase 1267 pre-public helper implemented for authenticated credential key derivation; Phase 1309 adds the local admission sidecar substrate; Phase 1310 hardens revocation, replay, admission, ban, rate-limit, and privacy negative paths; Phase 1313 records a default-off public fetch/P2P readiness packet and Rust substrate gate status; no public P2P, public fetch serving, public listener, peer discovery, public revocation registry, public replay cache, public rate-limit state, or non-loopback serving activation |
 | SIM-FETCH-01 | Evidence complete through Fix10 robustness suite; consumed into CDL-087 ratification by Phase 1278 Fix1 |
 
-Window 1343-1368 is CLOSED through Phase 1368. Window 1369-1390 is OPEN
-through Phase 1383 under
-`docs/specs/ilc_phase_1369_1390_sequence_lock_v0.1.md`.
+Window 1343-1368 is CLOSED through Phase 1368. Window 1369-1390 is CLOSED
+through Phase 1390 under
+`docs/specs/ilc_window_1369_1390_handoff_1390_v0.1.md`.
 
 Latest closed handoff and current window artifacts:
 
