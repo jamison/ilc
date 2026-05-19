@@ -1,6 +1,6 @@
 # ILC Phase 1369 Window 1369-1390 Sequence Lock v0.1
 
-**Status:** PASS - Window 1369-1390 is OPEN through Phase 1389; Phase 1389 failed closed and Phase 1390 window closure is next.
+**Status:** PASS - Window 1369-1390 is OPEN through Phase 1389a; Phase 1389 failed closed, Phase 1389a closed three governance blockers, and runtime follow-up is deferred.
 **Recorded:** 2026-05-16.
 **Human authorization:** `GO Phase 1369`.
 **Authority:** Sequence-lock and capsule phase only. This artifact authorizes the
@@ -156,6 +156,17 @@ mainnet authorization, public real-value conversion authorization, public
 claimability activation, external legal opinion, counsel approval by external
 counsel, or legal conclusion occurred. Phase 1389 remains blocked.
 
+Phase 1389a addendum: claimability public-mode governance decisions are COMPLETE.
+Phase 1389a records `claimability_public_mode_governance_decisions_phase_1389a`,
+`cdl_088_is_public_claimability_api_authority_phase_1389a`,
+`public_safe_disclosure_schema_final_cdl_088_scope_phase_1389a`,
+`transport_principal_resolved_at_d2d_layer_adr_0039_cdl_078_phase_1389a`, and
+`claimability_runtime_registry_blockers_remain_phase_1389a`. Three
+governance-resolvable Phase 1305 public-mode blockers are closed; replay
+nullifier and duplicate-claim registry runtime blockers remain open. Phase
+1389b is SENSITIVE runtime work and is deferred until after Phase 1397a per
+current human routing.
+
 ## 5. Locked Phase Order
 
 | Order | Phase | Scope | Authority after Phase 1369 |
@@ -188,6 +199,7 @@ counsel, or legal conclusion occurred. Phase 1389 remains blocked.
 | 25 | 1388 | CDL-048 activation + counsel clearance | COMPLETE after rerun; historical first execution failed closed, then Phase 1388a supplied self-counsel clearance; rerun records `cdl_048_activated_phase_1388`, `counsel_clearance_public_verifier_api_phase_1388`, and `first_live_value_path_activation_phase_1388`; runtime commit `e96a629d` opens the activation-request path while preserving `public_claimability_activated=False`. |
 | 25a | 1388a | CDL-048 self-counsel clearance | COMPLETE; records `counsel_clearance_cdl_048_activation_phase_1388a`, `self_counsel_decision_not_external_legal_opinion_phase_1388a`; cleared internal self-counsel prerequisite for the successful Phase 1388 rerun; no public claimability activation. |
 | 26 | 1389 | Public claimability / API activation gate | COMPLETE: FAILED CLOSED; records `public_claimability_gate_phase_1389_executed`, `public_claimability_gate_failed_phase_1389`, `gate_failed_reason=claimability_runtime_public_mode_blockers_still_active`, and `claimability_runtime_public_mode_blockers_still_active_phase_1389`; no public claimability activation. |
+| 26a | 1389a | Claimability public-mode governance decisions | COMPLETE; records `claimability_public_mode_governance_decisions_phase_1389a`, `cdl_088_is_public_claimability_api_authority_phase_1389a`, `public_safe_disclosure_schema_final_cdl_088_scope_phase_1389a`, `transport_principal_resolved_at_d2d_layer_adr_0039_cdl_078_phase_1389a`, and `claimability_runtime_registry_blockers_remain_phase_1389a`; no runtime mutation or public activation. |
 | 27 | 1390 | Window closure handoff | SENSITIVE closure handoff; records final window verdict. |
 
 ## 6. Runtime Hardening Carry-Forward Disposition
