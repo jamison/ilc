@@ -103,7 +103,7 @@ Main locked sequence:
 | 1389 | Public claimability/API activation gate | v0.1 failed closed; v0.2 rerun pass | v0.1 `7cd16204`; rerun `449f0e95`; backfill `65896516` |
 | 1389a | Claimability public-mode governance decisions | complete | `2f48c1fc`; backfill `cabe2616` |
 | 1389b | Claimability public-mode runtime | complete | runtime `aed33474`; docs `dcdb9543`; backfill `fdda9b7a` |
-| 1390 | Window closure handoff | complete by this artifact | `PENDING_HASH` |
+| 1390 | Window closure handoff | complete by this artifact | `43401835` |
 
 Additional support-lane work observed inside the same frontier:
 
