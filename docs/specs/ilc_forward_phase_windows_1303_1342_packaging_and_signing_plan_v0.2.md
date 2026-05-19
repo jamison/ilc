@@ -3,6 +3,7 @@
 **Status:** Planning-only candidate guidance.
 **Recorded:** 2026-05-10.
 **Revised:** 2026-05-14 — comprehensive §5 rewrite (3-window post-1342 structure: issuance economics / public claimability governance / long-range); removed superseded single-Window-1343 section.
+**Alignment addendum:** 2026-05-19 — Window 1391-1398 routing aligned to the J-series jury / epoch-work canonicalization prompts; the older Mode-2 refutation settlement section is preserved as a scoped input to the J-series, not the primary window label.
 **Authority:** This document records forward planning only. It does not open
 Window 1303+, assign an active sequence lock, execute source export, publish a repository or package, produce release artifacts, generate release keys or envelopes, mutate Genesis Atlas, sign v0.2, activate public claimability, activate public P2P/fetch/sidecar serving, or authorize wallet/ECU/ILC economics.
 
@@ -507,13 +508,18 @@ CDL-017 (already Phase 1353).
 
 Window 1343-1368 opened through Phase 1343 after explicit `GO Phase 1343`.
 Later windows in this section remain closed until their own sequence-lock phases
-execute with explicit `GO Phase NNNN`.
+execute with explicit `GO Phase NNNN`, except where a later prompt explicitly
+allows human `GO` for a non-sensitive planning-only phase. Phase 1391 / J-001
+was executed under that narrower planning-only authority and did not open the
+rest of Window 1391-1398.
 
 ```text
 forward_phase_windows_post_1342_comprehensive_gap_closure_plan_revised_2026_05_14_v2
 window_1343_1368_issuance_economics_validator_governance_cdl_v6_mysticeti_wiring
 window_1369_1390_public_claimability_governance_cdl_006_009_external_audit
 window_1391_1398_mode_2_refutation_adjudication_and_settlement
+window_1391_1398_jury_epoch_work_canonicalization
+window_1391_1398_mode_2_refutation_scope_preserved_inside_j_series
 window_1399_plus_sovereign_substrate_long_range_genuine_deferrals_only
 phase_1366_soft_rc_gate_replaces_earlier_phase_1358
 phase_1389_public_claimability_activation_gate_replaces_earlier_phase_1375
@@ -705,10 +711,12 @@ Window 1343–1368  →  issuance economics + validator governance + CDL-V6
                       → closes soft RC blockers; enables private VPS mining with BFT consensus
 Window 1369–1390  →  public claimability governance + CDL-006/009 + external audit
                       CDL-088, identity bootstrap, activation gate — full public RC milestone (Phase 1389)
-Window 1391-1398  →  Mode-2 refutation adjudication and settlement (opt-in CDL-052 path only:
-                      local ECU incentive calibration, verdict/adjudication runtime, settlement-grade
-                      recognition for cross-shard/ILC-facing refutations, epoch/ILC integration,
-                      public-claim gate if RC claims active refutation rewards)
+Window 1391-1398  →  J-series jury / epoch-work canonicalization:
+                      canon map, jury eligibility/assignment, public node review taxonomy,
+                      jury incentive economics opening, epoch-start capability/maintenance contract,
+                      default-off assignment quote runtime, shadow ingestion harness, activation gate.
+                      The older Mode-2 refutation settlement scope remains preserved as input
+                      to the taxonomy, incentive-economics, and activation-gate lanes.
 Window 1399+      →  sovereign substrate, long-range (CDL-021, CDL-031, ADR-0015, ADR-0016/0017)
                       genuine deferrals only — all items require live network data or post-soft-RC milestone
 ```
@@ -925,7 +933,29 @@ Phase 1369 sequence lock
 
 ---
 
-### Window 1391-1398 — Mode-2 Refutation Adjudication and Settlement
+### Window 1391-1398 — J-Series Jury / Epoch-Work Canonicalization
+
+**2026-05-19 alignment addendum:** The committed J-series plan now assigns
+Phases 1391-1398 to jury / panel / public-node-review / epoch-work
+canonicalization. Phase 1391 / J-001 is complete and published
+`docs/specs/ilc_jury_epoch_work_canon_map_v0.1.md`. The older Mode-2 refutation
+adjudication section below is preserved as scoped carry-forward context for
+J-003 public node review taxonomy, J-004 jury incentive economics, and J-008
+activation-gate boundary work. It is no longer the primary label for the whole
+1391-1398 window.
+
+| J phase | Numeric phase | Current routing |
+|---------|---------------|-----------------|
+| J-001 | 1391 | COMPLETE: jury / epoch-work canon map; no runtime, CDL, public ingestion, production jury, or reviewer-payment activation. |
+| J-002 | 1392 | Jury eligibility, opt-in, randomized assignment, outsider-seat, diversity, and anti-capture ADR. |
+| J-003 | 1393 | Public node review taxonomy, including the relationship between objective panels, subjective/aesthetic panels, structural submissions, and refutation/provenance claims. |
+| J-004 | 1394 | Jury incentive economics CDL opening; must preserve approval-volume-bias controls and no reviewer-payment activation. |
+| J-005 | 1395 | Epoch-start capability and maintenance-work contract. |
+| J-006 | 1396 | Default-off jury assignment quote runtime, if still authorized by the J-series sequence. |
+| J-007 | 1397 | Shadow public-ingestion jury harness; no public graph permanence or production rewards. |
+| J-008 | 1398 | Production jury activation gate definition; reviewer payments and public canonical-node review remain later-gated. |
+
+#### Preserved Mode-2 Refutation Carry-Forward Context
 
 **Purpose:** Complete the opt-in CDL-052 Mode-2 Popperian evaluation path for settlement-grade
 use. CDL-052 is ratified (Phase 466) and a runtime skeleton exists
@@ -1180,13 +1210,17 @@ The final Phase 1341 publication blockers are:
 
 At Phase 1342 closure, Window 1343+ was not yet open and required a sequence
 lock before the next phase assignment. Window 1343-1368 later opened via Phase
-1343; later windows remain closed until their own sequence-lock phases execute.
+1343. Phase 1391 / J-001 later executed as a non-sensitive planning-only direct
+GO exception; it did not open the remainder of Window 1391-1398. Later windows
+otherwise remain closed until their own sequence-lock phases execute.
 
 ```text
 forward_phase_windows_post_1342_three_window_structure_finalized_2026_05_14
 window_1343_1368_soft_rc_gate_phase_1366
 window_1369_1390_public_claimability_gate_phase_1389
 window_1391_1398_mode_2_refutation_adjudication_and_settlement
+window_1391_1398_jury_epoch_work_canonicalization
+window_1391_1398_mode_2_refutation_scope_preserved_inside_j_series
 window_1399_plus_genuine_deferrals_only
 cdl_088_opening_routed_window_1369_1390_phase_1374
 identity_bootstrap_adr_cdl_routed_window_1369_1390_phases_1370_1373
