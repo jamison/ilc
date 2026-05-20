@@ -38,7 +38,7 @@ pricing activation, production probe execution, direct ILC reward, or J-008 gate
 verdict change occurred. Phase 1404 CDL-092 prelock is next and NON-SENSITIVE.
 
 **Phase 1404 completion addendum:** CDL-092 CapProof prelock committed as
-`PENDING_COMMIT_HASH`. The Phase 1403 content-address carry-forward is resolved
+`608096a3`. The Phase 1403 content-address carry-forward is resolved
 to the accepted ADR-0001 NodeID profile
 `adr_0001_nodeid_cidv1_dag_cbor_sha2_256_multihash`. CDL-092 remains open and
 unratified. No CDL mutation, CapProof pricing activation, production probe
