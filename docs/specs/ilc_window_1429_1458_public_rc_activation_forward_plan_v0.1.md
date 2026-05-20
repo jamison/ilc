@@ -475,44 +475,55 @@ must not be forgotten between context sessions.
 
 ### 11.1 Genesis authority sunset and three-mode governance architecture
 
-**Status:** Architecture described; no standalone spec; no ratified sunset schedule.
+**Status:** Architecture exists in historical corpus (Oct 2025 design conversations); no standalone spec; not implemented; SUBSTANTIVE gap recorded against CDL-004 in `docs/specs/ilc_constitutional_context_audit_v0.1.md`.
 
-**Background:** The Phase 590 spec (`ilc_genesis_authority_sunset_and_fork_legitimacy_coherence_lock_590_v0.1.md`) locks the recession boundary — Genesis authority must recede through ratified mechanisms, not by founder discretion. The recession mechanics are distributed across CDL-003 (fade-out), CDL-004 (caps), CDL-013 (normalized voting), CDL-V4 (reopening protocol), CDL-V6 (extraordinary Genesis intervention), and CDL-045 (emergency sunset). No standalone document names the three-mode governance architecture or the observable triggers for Genesis authority recession.
+**Background:** The historical corpus (raw-012616, raw-012646, raw-012647, raw-012660
+from Oct 2025 design conversations) contains a specific three-branch governance architecture
+— the **court/house/executive model** — that was deliberately deferred from CDL-004
+ratification. `docs/specs/ilc_constitutional_context_audit_v0.1.md` records this as a
+SUBSTANTIVE gap and recommends adding a forward pointer so future implementers know the
+design reasoning exists.
 
-**Three-mode governance architecture (to be formalized):**
+The Phase 590 spec (`ilc_genesis_authority_sunset_and_fork_legitimacy_coherence_lock_590_v0.1.md`)
+locks the recession boundary: Genesis authority must recede through ratified mechanisms.
+The `genesis_authority_must_recede_through_ratified_mechanisms` invariant establishes this.
 
-The three operational governance modes map as follows:
+**Court/house/executive model (from raw-012616, raw-012646, raw-012647):**
 
-| Mode | Mechanism | Analog |
-|------|-----------|--------|
-| Ordinary CDL ratification | Community deliberation + ratification quorum | Legislative |
-| CDL-V4 reopening protocol | Jury-style appeal mechanism without Genesis intervention | Judicial/appellate |
-| CDL-V6 Genesis extraordinary intervention | Bootstrap-necessity override during pre-sunset phase | Executive (time-limited) |
+| Branch | Mechanism | Key constraints |
+|--------|-----------|-----------------|
+| Court (judicial) | VRF-selected 8-member panel (7+1 outsider seat); k-by-sponsor_cluster | Must certify each Executive proposal; proposals that aren't objective + bounded never reach activation |
+| House (legislative) | CDL ratification with seat majority + cluster majority (≥⅔ sponsor_clusters) | Independent majorities required; popularity alone cannot bypass |
+| Executive | Bounded by CDL-004 procedural constraints; checked by Court | Genesis authority is the bootstrap executive; must sunset |
 
-CDL-V6 (Genesis extraordinary intervention) is a bootstrap necessity, not a permanent
-founder right. The `genesis_authority_must_recede_through_ratified_mechanisms` invariant
-(Phase 590) establishes that V6-class authority must have explicit sunset or dilution.
-CDL-V4 (reopening) provides the community-appeal path that makes V6 less necessary over time.
+This architecture is NOT implemented. The jury system (J-series, CDL-091) provides
+the operational foundation for the Court branch. The ordinary CDL ratification cycle
+provides the House branch foundation. The Executive branch remains Genesis-controlled
+during the bootstrap phase.
 
 **Named obligation:** A post-public-RC window must produce a standalone spec that:
 
-1. Names the three-mode governance architecture explicitly.
-2. States the observable triggers for Genesis authority recession:
+1. Formalizes the court/house/executive model explicitly, citing raw-012616/646/647.
+2. Maps the existing ratified mechanisms to each branch:
+   - Court: CDL-V4 (reopening), CDL-V7 (Popperian gate), CDL-091 (jury incentives), J-series activation
+   - House: CDL-004 (procedural governance), ordinary CDL ratification cycle
+   - Executive: CDL-003 (fade-out), CDL-004 (caps), CDL-013 (normalized voting), CDL-V6 (Genesis sunset), CDL-045 (emergency sunset)
+3. States observable triggers for Genesis (executive) authority recession:
    - Participation threshold (proposed: ≥10,000 registered operators with non-Genesis
      stake weight); exact number requires SIM evidence.
    - Genesis ECU share threshold (proposed: ≤5% of active ECU balance at Genesis agent);
      exact number requires SIM evidence.
-3. Maps each of CDL-003/004/013/V4/V6/045 to the mode it implements and the post-sunset
-   disposition of that mode.
-4. Addresses the `ilc_epistemological_foundations_canonical_v0.1.md` `TODO-P585-02`
-   (Genesis governance dilution closure).
-5. Routes through a SENSITIVE CDL phase when ready — this is a constitutional surface.
+4. Closes the CDL-004 SUBSTANTIVE gap noted in the constitutional context audit by
+   adding a forward pointer to the corpus sources.
+5. Addresses `TODO-P585-02` (Genesis governance dilution closure) from
+   `ilc_epistemological_foundations_canonical_v0.1.md`.
+6. Routes through a SENSITIVE CDL phase when ready — this is a constitutional surface.
 
-**Why recorded here:** The MemPalace lookup found no standalone "three branches of
-government" document despite this being a named design intention. The concept exists
-only as a pattern distributed across Phase 590, Phase 708 governance minimization
-taxonomy, and the epistemological foundations. Formalizing it into a named spec is
-a precondition for any community governance transition.
+**Why recorded here:** MemPalace lookup located the architecture in
+`docs/specs/ilc_constitutional_context_audit_v0.1.md` (CDL-004 SUBSTANTIVE gap entry)
+and `docs/specs/ilc_governance_conflict_set_ratification_v0.1.md` (raw-012660 "tri-branch
+checks"). No standalone spec exists. Formalizing it is a precondition for any community
+governance transition.
 
 ---
 
