@@ -46,7 +46,7 @@ execution, direct ILC reward, or J-008 gate verdict change occurred. Phase 1405
 CDL-092 ratification is next and SENSITIVE.
 
 **Phase 1405 completion addendum:** CDL-092 CapProof ratification evidence C1
-committed as `PENDING_C1`; CDL register mutation C2 committed as `PENDING_C2`.
+committed as `046045b6`; CDL register mutation C2 committed as `e97d9e4b`.
 CDL-092 is now `ratified`. CapProof pricing, production probe execution, direct
 ILC reward, runtime activation, and J-008 gate verdict changes remain
 unauthorized. Phase 1406 CDL-093 maintenance lottery pool opening is next and
