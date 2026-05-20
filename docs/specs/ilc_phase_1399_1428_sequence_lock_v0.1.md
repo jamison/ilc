@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1406 CDL-093 opening complete, Phase 1407 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1407 CDL-093 prelock complete, Phase 1408 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -57,6 +57,15 @@ committed as `67a14d0d`; CDL register opening C2 committed as `15992abe`.
 CDL-093 is now `open` and unratified. Maintenance lottery distribution, live
 draws, ECU settlement, runtime activation, and J-008 gate verdict changes remain
 unauthorized. Phase 1407 CDL-093 deliberation/prelock is next and NON-SENSITIVE.
+
+**Phase 1407 completion addendum:** CDL-093 maintenance lottery pool
+deliberation/prelock committed as `PENDING_COMMIT`. Production draw requires VRF
+or a later-ratified randomness source; epoch-hash is shadow quote only. Funding
+source is the CDL-047 treasury-governance quote family, but nonzero funding
+fraction is SIM-pending and the live fraction defaults to `Decimal("0.00")`.
+CDL-093 remains open and unratified. No CDL mutation, maintenance lottery
+distribution, live draw, ECU settlement, runtime activation, or J-008 gate
+verdict change occurred. Phase 1408 CDL-093 ratification is next and SENSITIVE.
 
 ---
 
