@@ -466,6 +466,134 @@ that depends on the affected module can proceed to production activation.
 
 ---
 
+## 11. Long-range governance obligations (post-public-RC)
+
+These items are not blockers for Window 1429–1458. They are named architectural
+obligations that must be addressed in a post-public-RC window. They are recorded
+here because they emerged from the Phase 1410 audit and governance review; they
+must not be forgotten between context sessions.
+
+### 11.1 Genesis authority sunset and three-mode governance architecture
+
+**Status:** Architecture described; no standalone spec; no ratified sunset schedule.
+
+**Background:** The Phase 590 spec (`ilc_genesis_authority_sunset_and_fork_legitimacy_coherence_lock_590_v0.1.md`) locks the recession boundary — Genesis authority must recede through ratified mechanisms, not by founder discretion. The recession mechanics are distributed across CDL-003 (fade-out), CDL-004 (caps), CDL-013 (normalized voting), CDL-V4 (reopening protocol), CDL-V6 (extraordinary Genesis intervention), and CDL-045 (emergency sunset). No standalone document names the three-mode governance architecture or the observable triggers for Genesis authority recession.
+
+**Three-mode governance architecture (to be formalized):**
+
+The three operational governance modes map as follows:
+
+| Mode | Mechanism | Analog |
+|------|-----------|--------|
+| Ordinary CDL ratification | Community deliberation + ratification quorum | Legislative |
+| CDL-V4 reopening protocol | Jury-style appeal mechanism without Genesis intervention | Judicial/appellate |
+| CDL-V6 Genesis extraordinary intervention | Bootstrap-necessity override during pre-sunset phase | Executive (time-limited) |
+
+CDL-V6 (Genesis extraordinary intervention) is a bootstrap necessity, not a permanent
+founder right. The `genesis_authority_must_recede_through_ratified_mechanisms` invariant
+(Phase 590) establishes that V6-class authority must have explicit sunset or dilution.
+CDL-V4 (reopening) provides the community-appeal path that makes V6 less necessary over time.
+
+**Named obligation:** A post-public-RC window must produce a standalone spec that:
+
+1. Names the three-mode governance architecture explicitly.
+2. States the observable triggers for Genesis authority recession:
+   - Participation threshold (proposed: ≥10,000 registered operators with non-Genesis
+     stake weight); exact number requires SIM evidence.
+   - Genesis ECU share threshold (proposed: ≤5% of active ECU balance at Genesis agent);
+     exact number requires SIM evidence.
+3. Maps each of CDL-003/004/013/V4/V6/045 to the mode it implements and the post-sunset
+   disposition of that mode.
+4. Addresses the `ilc_epistemological_foundations_canonical_v0.1.md` `TODO-P585-02`
+   (Genesis governance dilution closure).
+5. Routes through a SENSITIVE CDL phase when ready — this is a constitutional surface.
+
+**Why recorded here:** The MemPalace lookup found no standalone "three branches of
+government" document despite this being a named design intention. The concept exists
+only as a pattern distributed across Phase 590, Phase 708 governance minimization
+taxonomy, and the epistemological foundations. Formalizing it into a named spec is
+a precondition for any community governance transition.
+
+---
+
+### 11.2 Delegated constitutional authority mechanism
+
+**Status:** Named gap — no CDL, no spec.
+
+**Background:** The CDL ratification cycle requires explicit human GO tokens for every
+SENSITIVE step. This is the correct discipline for the current small-team bootstrap
+context. As the network matures toward production with many operators, requiring Genesis-
+mediated human authorization for every constitutional decision will become the primary
+governance throughput bottleneck.
+
+**Named obligation:** A post-public-RC window must:
+
+1. Design a delegated constitutional authority mechanism — a CDL that defines how
+   ratification authority for non-bootstrap CDLs can transfer from Genesis-mediated
+   to operator-quorum-mediated over time.
+2. Gate this design on observable conditions: J-008 PASS, public RC live, ≥10
+   independent operators connected to the network.
+3. This must NOT be activated before those conditions are met. Premature delegation
+   of constitutional authority before community quorum is established replicates
+   the same bootstrap-permanence problem CDL-V6 is meant to solve.
+
+**Prerequisite for this window:** None. Record only. Do not design prematurely.
+
+---
+
+### 11.3 CDL falsification criterion field
+
+**Status:** Gap noted in `ilc_epistemological_foundations_canonical_v0.1.md`; no CDL row carries this field.
+
+**Background:** The epistemological foundations canonical states: "every ratified CDL
+row should carry an explicit falsification criterion — a specific observable outcome
+that would trigger reopening." Currently no CDL row carries such a field. This gap
+means CDL entries can accumulate indefinitely without a structured path for the network
+to signal that a ratified decision is no longer supported by evidence.
+
+**Named obligation:** A coherence task in the first post-public-RC window must:
+
+1. Define a `falsification_criterion` field for CDL rows (or an equivalent annotation
+   attached to ratified CDL sections).
+2. Apply retroactively to all currently-ratified CDLs in scope (CDL-001 through
+   whatever CDL number is current at that time) as part of a coherence phase.
+3. The field is non-blocking — no CDL is reopened simply by adding this field. Its
+   purpose is to make reopening conditions explicit and auditable.
+
+**Why recorded here:** The CDL review during the Phase 1410 audit found this gap was
+previously noted but has no assigned resolution phase. It is assigned here to the first
+post-public-RC window coherence phase.
+
+---
+
+### 11.4 CDL-091 inviter-chaining incentive extension (candidate, deliberation required)
+
+**Status:** Candidate — not yet opened; no prelock; requires human deliberation.
+
+**Background:** CDL-091 (jury incentive economics, ratified Phase 1400) governs jury
+panel composition incentives. An inviter-chaining extension — economic incentives for
+agents to onboard new participants via the ADR-0038 provenance edge — was identified
+as a candidate CDL-091 follow-on during Phase 1410 governance review.
+
+**Key constraints:**
+
+1. Inviter chain references must bind to the ADR-0038 `identity_lineage_ref` provenance
+   edge — NOT encoded in the `agent_id` itself (CDL-042 flat namespace, ratified Phase
+   407, prohibits inviter encoding in agent_id derivation).
+2. Upstream slashing of inviters (slashing agents whose invitees misbehave) is
+   dangerous — it would suppress legitimate agent onboarding due to tail-risk aversion.
+   This must be explicitly reviewed and likely rejected.
+3. This is an incentive surface change. Requires SIM evidence before CDL opening.
+
+**Named obligation:** Before opening any CDL for inviter-chaining incentives:
+
+1. Produce a SIM showing the bootstrapping incentive effect without upstream slashing.
+2. Confirm that ADR-0038 provenance edge is sufficient as the binding mechanism.
+3. Bring to human deliberation with a specific CDL scope proposal.
+4. Do not open this CDL in any window before public RC is live.
+
+---
+
 ## 10. This document's authority and next steps
 
 This is a **draft forward plan** — it does not constitute an authorized sequence lock. Before any phase in this window executes:
