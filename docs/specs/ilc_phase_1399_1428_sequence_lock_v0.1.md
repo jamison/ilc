@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1407 CDL-093 prelock complete, Phase 1408 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1407-Fix0 CDL-053 opening complete, Phase 1407-Fix1 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -66,6 +66,15 @@ fraction is SIM-pending and the live fraction defaults to `Decimal("0.00")`.
 CDL-093 remains open and unratified. No CDL mutation, maintenance lottery
 distribution, live draw, ECU settlement, runtime activation, or J-008 gate
 verdict change occurred. Phase 1408 CDL-093 ratification is next and SENSITIVE.
+
+**Phase 1407-Fix0 completion addendum:** CDL-053 Werner local productive-credit
+opening document/tests C1 committed as `b5c638bc`; CDL register opening mutation
+C2 committed as `36d3b698` with
+`ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1407_fix0`. CDL-053 is now
+`open` and unratified. The opened scope is maintenance-equivalent reviewed
+productive work only, local non-settlement credit eligibility only, with Phase
+1263 direct-Werner-ECU rejection preserved. Phase 1407-Fix1 CDL-053 prelock is
+next and NON-SENSITIVE.
 
 ---
 
