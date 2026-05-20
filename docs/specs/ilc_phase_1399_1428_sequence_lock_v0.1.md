@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1410-Fix1 pre-VRF hardening complete, Phase 1411 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1411 VRF proof verifier implementation complete, Phase 1412 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -146,6 +146,18 @@ trace accuracy. ADR-0042 now records
 PyNaCl low-level Ed25519 binding use against RFC 9381 Appendix B.4 before any
 integration claim. No CDL mutation, VRF implementation, production activation,
 or J-008 gate verdict change occurred. Phase 1411 remains next and
+NON-SENSITIVE.
+
+**Phase 1411 completion addendum:** VRF proof verifier implementation committed
+in this phase. `ilc_core/epistemic/vrf_proof_verifier.py` records
+`vrf_proof_verifier_implemented_phase_1411`,
+`vrf_proof_verifier_phase_1411.v0.1`, and
+`vrf_proof_verifier_not_activated_phase_1410`; `PyNaCl==1.6.2` is pinned in
+dependency files. Official RFC 9381 Appendix B.4 examples 19, 20, and 21 verify
+successfully, including hash-to-curve `H` and `beta` output checks. No proof
+generation, jury-assignment integration, production activation, J-008 gate
+verdict change, ledger/treasury/wallet mutation, graph mutation, or CDL
+mutation occurred. Phase 1412 VRF jury-assignment integration is next and
 NON-SENSITIVE.
 
 ---
