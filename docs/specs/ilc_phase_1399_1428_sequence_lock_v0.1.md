@@ -59,7 +59,7 @@ draws, ECU settlement, runtime activation, and J-008 gate verdict changes remain
 unauthorized. Phase 1407 CDL-093 deliberation/prelock is next and NON-SENSITIVE.
 
 **Phase 1407 completion addendum:** CDL-093 maintenance lottery pool
-deliberation/prelock committed as `PENDING_COMMIT`. Production draw requires VRF
+deliberation/prelock committed as `9eaffd74`. Production draw requires VRF
 or a later-ratified randomness source; epoch-hash is shadow quote only. Funding
 source is the CDL-047 treasury-governance quote family, but nonzero funding
 fraction is SIM-pending and the live fraction defaults to `Decimal("0.00")`.
