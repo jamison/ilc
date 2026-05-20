@@ -148,6 +148,86 @@ def test_malformed_inputs_raise_stable_errors() -> None:
         )
 
 
+def test_alpha_at_exactly_max_length_is_accepted() -> None:
+    """alpha == MAX_ALPHA_LENGTH is valid; only MAX+1 raises."""
+    public_key, _alpha, pi, _beta = _vector_bytes(RFC_9381_APPENDIX_B4_VECTORS[0])
+    # A 4096-byte alpha won't produce a valid proof against this pi, but it must
+    # not raise VRFVerificationError for the length check — it should return False.
+    result = verifier.verify_vrf_proof(
+        pi=pi, public_key=public_key, alpha=b"x" * verifier.MAX_ALPHA_LENGTH
+    )
+    assert result is False  # proof mismatch, not a length error
+
+
+def test_pi_as_bytearray_raises_type_error() -> None:
+    public_key, alpha, pi, _beta = _vector_bytes(RFC_9381_APPENDIX_B4_VECTORS[0])
+    with pytest.raises(verifier.VRFVerificationError, match="vrf_pi_must_be_bytes"):
+        verifier.verify_vrf_proof(
+            pi=bytearray(pi), public_key=public_key, alpha=alpha
+        )
+
+
+def test_public_key_as_bytearray_raises_type_error() -> None:
+    public_key, alpha, pi, _beta = _vector_bytes(RFC_9381_APPENDIX_B4_VECTORS[0])
+    with pytest.raises(
+        verifier.VRFVerificationError, match="vrf_public_key_must_be_bytes"
+    ):
+        verifier.verify_vrf_proof(
+            pi=pi, public_key=bytearray(public_key), alpha=alpha
+        )
+
+
+def test_tampered_gamma_fails_verification() -> None:
+    """Flipping a bit in the Gamma portion (pi bytes 0-31) must not return True.
+
+    A tampered gamma encoding may either:
+    - Produce an invalid point (no square root) → VRFVerificationError raised, or
+    - Decode to a valid but wrong point → challenge mismatch → returns False.
+    Both are correct rejections per ADR-0042 API contract.
+    """
+    public_key, alpha, pi, _beta = _vector_bytes(RFC_9381_APPENDIX_B4_VECTORS[2])
+    tampered = bytearray(pi)
+    tampered[0] ^= 1  # corrupt first byte of gamma
+
+    try:
+        result = verifier.verify_vrf_proof(
+            pi=bytes(tampered), public_key=public_key, alpha=alpha
+        )
+        assert result is False
+    except verifier.VRFVerificationError:
+        pass  # invalid point encoding is also a correct rejection
+
+
+def test_tampered_scalar_fails_verification() -> None:
+    """Flipping a bit in the scalar portion (pi bytes 48-79) must fail."""
+    public_key, alpha, pi, _beta = _vector_bytes(RFC_9381_APPENDIX_B4_VECTORS[1])
+    tampered = bytearray(pi)
+    tampered[48] ^= 1  # corrupt first byte of scalar
+
+    assert (
+        verifier.verify_vrf_proof(
+            pi=bytes(tampered), public_key=public_key, alpha=alpha
+        )
+        is False
+    )
+
+
+def test_scalar_at_group_order_raises_stable_error() -> None:
+    """pi with scalar == group_order must raise VRFVerificationError (out of range)."""
+    public_key, alpha, pi, _beta = _vector_bytes(RFC_9381_APPENDIX_B4_VECTORS[0])
+    # Build a pi with scalar = group_order in bytes 48-80 (little-endian)
+    q = 2**252 + 27742317777372353535851937790883648493
+    tampered = bytearray(pi)
+    tampered[48:] = q.to_bytes(32, "little")
+
+    with pytest.raises(
+        verifier.VRFVerificationError, match="vrf_scalar_out_of_range"
+    ):
+        verifier.verify_vrf_proof(
+            pi=bytes(tampered), public_key=public_key, alpha=alpha
+        )
+
+
 def test_pynacl_1_6_2_low_level_bindings_are_available() -> None:
     import nacl
 
