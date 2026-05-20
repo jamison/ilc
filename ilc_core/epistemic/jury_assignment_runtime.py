@@ -6,8 +6,9 @@ selection (ADR-0040 §Assignment Source).  This is a *quote-only* primitive:
   - no ledger writes
   - no graph writes
   - no production reward activation
-  - no VRF proof
-  - epoch-hash shadow assignment only (epoch_hash_shadow_assignment_only_phase_j006)
+  - no VRF proof generation
+  - epoch-hash shadow assignment remains available
+    (epoch_hash_shadow_assignment_only_phase_j006)
 
 For production high-value assignment:
   vrf_required_for_production_high_value_assignment (ADR-0040 §Assignment Source)
@@ -16,6 +17,7 @@ Required phase tokens:
   default_off_jury_assignment_quote_runtime_phase_j006
   jury_assignment_no_public_activation_phase_j006
   epoch_hash_shadow_assignment_only_phase_j006
+  vrf_verifier_integrated_jury_assignment_phase_1412
 """
 
 from __future__ import annotations
@@ -23,7 +25,9 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import Any, List, Mapping, Optional
+
+from ilc_core.epistemic.vrf_proof_verifier import VRFVerificationError, vrf_beta_from_proof
 
 JURY_ASSIGNMENT_RUNTIME_VERSION = "jury_assignment_runtime_phase_j006.v0.1"
 ADR_0040_DEPENDENCY = "jury_eligibility_assignment_adr_accepted_phase_j002"
@@ -32,8 +36,10 @@ ADR_0040_DEPENDENCY = "jury_eligibility_assignment_adr_accepted_phase_j002"
 _TOKEN_DEFAULT_OFF = "default_off_jury_assignment_quote_runtime_phase_j006"
 _TOKEN_NO_ACTIVATION = "jury_assignment_no_public_activation_phase_j006"
 _TOKEN_SHADOW_ONLY = "epoch_hash_shadow_assignment_only_phase_j006"
+_TOKEN_VRF_INTEGRATED = "vrf_verifier_integrated_jury_assignment_phase_1412"
 
 _DOMAIN_SEPARATOR = "ilc_jury_assignment_v1"
+_VRF_DOMAIN_SEPARATOR = "ilc.vrf.jury_assignment.v1"
 
 # Panel shape (ADM-003 via ADR-0040)
 _PANEL_REGULAR: int = 7
@@ -80,10 +86,12 @@ class JuryAssignmentQuote:
     panel_size: int             # always _PANEL_SIZE
     reviewer_quorum_k: int      # always _REVIEWER_QUORUM_K
     independence_k: int         # always _INDEPENDENCE_K
-    assignment_mode: str        # always "epoch_hash_shadow"
+    assignment_mode: str        # "epoch_hash_shadow" or "vrf_verified"
     runtime_version: str
     phase_tokens: List[str]
     production_activated: bool  # always False — never flip without J-008 gate
+    vrf_excluded_agents: List[str] = field(default_factory=list)
+    vrf_exclusion_reasons: dict[str, str] = field(default_factory=dict)
 
 
 class JuryAssignmentError(Exception):
@@ -119,6 +127,98 @@ def _agent_score(
     return hashlib.sha256(payload.encode("utf-8")).digest()
 
 
+def _canonical_vrf_alpha(
+    *,
+    review_epoch: int,
+    review_lane: str,
+    claim_or_task_id: str,
+    assignment_nonce: str,
+    agent: EligibleAgent,
+) -> bytes:
+    """Canonical ADR-0042 alpha bytes for candidate-specific VRF verification."""
+    payload = json.dumps(
+        {
+            "assignment_nonce": assignment_nonce,
+            "capability_tier_or_lane_score": agent.capability_tier_or_lane_score,
+            "claim_or_task_id": claim_or_task_id,
+            "cluster_id": agent.cluster_id,
+            "domain_separator": _VRF_DOMAIN_SEPARATOR,
+            "eligible_agent_id": agent.agent_id,
+            "identity_lineage_ref": agent.identity_lineage_ref,
+            "outsider_candidate_flag": agent.outsider_candidate_flag,
+            "review_epoch": review_epoch,
+            "review_lane": review_lane,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return payload.encode("utf-8")
+
+
+def _decode_b64u_unpadded(value: str) -> bytes:
+    import base64
+    import binascii
+
+    if not isinstance(value, str) or not value:
+        raise JuryAssignmentError("vrf_b64u_value_must_be_non_empty_string")
+
+    padding = "=" * (-len(value) % 4)
+    try:
+        return base64.b64decode(value + padding, altchars=b"-_", validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise JuryAssignmentError("vrf_b64u_decode_failed_for_candidate") from exc
+
+
+def _proof_bytes_from_record(
+    agent_id: str,
+    vrf_proofs: Mapping[str, Mapping[str, Any]],
+) -> tuple[bytes, bytes]:
+    record = vrf_proofs.get(agent_id)
+    if record is None:
+        raise JuryAssignmentError("vrf_proof_missing_for_candidate")
+
+    if "public_key" in record:
+        public_key = record["public_key"]
+    elif "public_key_b64u" in record:
+        public_key = _decode_b64u_unpadded(record["public_key_b64u"])
+    else:
+        raise JuryAssignmentError("vrf_public_key_missing_for_candidate")
+
+    if "pi" in record:
+        pi = record["pi"]
+    elif "pi_b64u" in record:
+        pi = _decode_b64u_unpadded(record["pi_b64u"])
+    else:
+        raise JuryAssignmentError("vrf_pi_missing_for_candidate")
+
+    if type(public_key) is not bytes:
+        raise JuryAssignmentError("vrf_public_key_must_be_bytes_for_candidate")
+    if type(pi) is not bytes:
+        raise JuryAssignmentError("vrf_pi_must_be_bytes_for_candidate")
+    return public_key, pi
+
+
+def _agent_score_vrf(
+    *,
+    review_epoch: int,
+    review_lane: str,
+    claim_or_task_id: str,
+    assignment_nonce: str,
+    agent: EligibleAgent,
+    vrf_proofs: Mapping[str, Mapping[str, Any]],
+) -> bytes:
+    public_key, pi = _proof_bytes_from_record(agent.agent_id, vrf_proofs)
+    alpha = _canonical_vrf_alpha(
+        review_epoch=review_epoch,
+        review_lane=review_lane,
+        claim_or_task_id=claim_or_task_id,
+        assignment_nonce=assignment_nonce,
+        agent=agent,
+    )
+    return vrf_beta_from_proof(pi=pi, public_key=public_key, alpha=alpha)
+
+
 def _select_regular_panel(
     candidates: List[EligibleAgent],
     scores: dict,
@@ -131,7 +231,7 @@ def _select_regular_panel(
       - no more than max_per_operator_domain agents from any single operator_domain
         (implements independence_k guarantee via same_operator_domain_not_independent)
     """
-    sorted_candidates = sorted(candidates, key=lambda a: scores[a.agent_id])
+    sorted_candidates = sorted(candidates, key=lambda a: (scores[a.agent_id], a.agent_id))
     domain_counts: dict = {}
     panel: List[str] = []
     for agent in sorted_candidates:
@@ -178,7 +278,7 @@ def _select_outsider(
     if not pool:
         return []
 
-    sorted_pool = sorted(pool, key=lambda a: scores[a.agent_id])
+    sorted_pool = sorted(pool, key=lambda a: (scores[a.agent_id], a.agent_id))
     return [sorted_pool[0].agent_id]
 
 
@@ -190,6 +290,10 @@ def quote_jury_assignment(
     author_agent_id: str,
     author_operator_domain: str,
     eligible_agents: List[EligibleAgent],
+    is_high_value_slot: bool = False,
+    assignment_nonce: Optional[str] = None,
+    vrf_proofs: Optional[Mapping[str, Mapping[str, Any]]] = None,
+    _audit_only: bool = False,
 ) -> JuryAssignmentQuote:
     """Compute a deterministic panel quote for a given review request.
 
@@ -200,6 +304,10 @@ def quote_jury_assignment(
         author_agent_id:      Agent ID of the claim/task author — excluded from panel.
         author_operator_domain: Operator domain of the author — excluded from panel.
         eligible_agents:      Pool of agents satisfying eligibility gates for this lane.
+        is_high_value_slot:   True only for VRF-required high-value audit/production slots.
+        assignment_nonce:     Caller-supplied ratified nonce for ADR-0042 alpha bytes.
+        vrf_proofs:           Externally supplied proof material keyed by agent_id.
+        _audit_only:          Test/audit bypass for non-activated high-value quotes.
 
     Returns:
         JuryAssignmentQuote with regular_panel (7) + outsider_panel (1).
@@ -214,6 +322,18 @@ def quote_jury_assignment(
         raise ValueError("review_lane must be a non-empty string")
     if not claim_or_task_id:
         raise ValueError("claim_or_task_id must be a non-empty string")
+    if is_high_value_slot:
+        if PRODUCTION_ASSIGNMENT_NOT_ACTIVATED and not _audit_only:
+            raise JuryAssignmentError(
+                "production_assignment_not_activated: "
+                "must not call high_value_slot=True in non-production"
+            )
+        if not isinstance(assignment_nonce, str) or not assignment_nonce:
+            raise ValueError(
+                "assignment_nonce must be a non-empty string for high-value VRF assignment"
+            )
+        if vrf_proofs is None:
+            raise JuryAssignmentError("vrf_proofs_required_for_high_value_slot")
 
     seen_ids: set[str] = set()
     duplicate_ids: List[str] = []
@@ -227,22 +347,41 @@ def quote_jury_assignment(
             f"duplicate agent_id(s) in eligible_agents: {sorted(set(duplicate_ids))}"
         )
 
-    # Step 1 — compute per-agent scores (deterministic, domain-separated)
-    scores = {
-        agent.agent_id: _agent_score(review_epoch, review_lane, claim_or_task_id, agent)
-        for agent in eligible_agents
-    }
-
-    # Step 2 — filter: remove conflicted agents (author, same operator domain as author)
+    # Step 1 — filter: remove conflicted agents (author, same operator domain as author)
     non_conflicted = [
         a for a in eligible_agents
         if a.agent_id != author_agent_id
         and a.operator_domain != author_operator_domain
     ]
 
+    # Step 2 — compute per-agent scores. In VRF mode, candidates with missing
+    # or invalid proof material are excluded and surfaced in the quote.
+    scores: dict[str, bytes] = {}
+    scored_candidates: List[EligibleAgent] = []
+    vrf_exclusion_reasons: dict[str, str] = {}
+    for agent in non_conflicted:
+        try:
+            if is_high_value_slot:
+                scores[agent.agent_id] = _agent_score_vrf(
+                    review_epoch=review_epoch,
+                    review_lane=review_lane,
+                    claim_or_task_id=claim_or_task_id,
+                    assignment_nonce=assignment_nonce or "",
+                    agent=agent,
+                    vrf_proofs=vrf_proofs or {},
+                )
+            else:
+                scores[agent.agent_id] = _agent_score(
+                    review_epoch, review_lane, claim_or_task_id, agent
+                )
+        except (JuryAssignmentError, VRFVerificationError) as exc:
+            vrf_exclusion_reasons[agent.agent_id] = str(exc)
+            continue
+        scored_candidates.append(agent)
+
     # Step 3 — split: regular candidates vs. outsider candidates
-    regular_candidates = [a for a in non_conflicted if not a.outsider_candidate_flag]
-    outsider_candidates = [a for a in non_conflicted if a.outsider_candidate_flag]
+    regular_candidates = [a for a in scored_candidates if not a.outsider_candidate_flag]
+    outsider_candidates = [a for a in scored_candidates if a.outsider_candidate_flag]
 
     # Step 4 — build regular panel
     regular_panel = _select_regular_panel(
@@ -289,8 +428,15 @@ def quote_jury_assignment(
         panel_size=_PANEL_SIZE,
         reviewer_quorum_k=_REVIEWER_QUORUM_K,
         independence_k=_INDEPENDENCE_K,
-        assignment_mode="epoch_hash_shadow",
+        assignment_mode="vrf_verified" if is_high_value_slot else "epoch_hash_shadow",
         runtime_version=JURY_ASSIGNMENT_RUNTIME_VERSION,
-        phase_tokens=[_TOKEN_DEFAULT_OFF, _TOKEN_NO_ACTIVATION, _TOKEN_SHADOW_ONLY],
+        phase_tokens=[
+            _TOKEN_DEFAULT_OFF,
+            _TOKEN_NO_ACTIVATION,
+            _TOKEN_SHADOW_ONLY,
+            *([_TOKEN_VRF_INTEGRATED] if is_high_value_slot else []),
+        ],
         production_activated=False,
+        vrf_excluded_agents=sorted(vrf_exclusion_reasons),
+        vrf_exclusion_reasons=vrf_exclusion_reasons,
     )
