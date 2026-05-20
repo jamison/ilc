@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1401 complete, Phase 1402 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1402 complete, Phase 1403 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -24,6 +24,12 @@ is next and NON-SENSITIVE.
 **Phase 1401 completion addendum:** CDL-091 runtime stub committed as
 `9bd4918f`. Reviewer payment remains inactive. Phase 1402
 CDL-092 CapProof opening is next and SENSITIVE.
+
+**Phase 1402 completion addendum:** CDL-092 CapProof opening scope C1 committed
+as `79675d68`; CDL register opening C2 committed as `5d3ef87d`. CDL-092 is now
+`open` and unratified. CapProof pricing, production probe execution, direct ILC
+reward, and J-008 gate verdict changes remain unauthorized. Phase 1403 CDL-092
+deliberation is next and NON-SENSITIVE.
 
 ---
 

@@ -100,9 +100,16 @@ class TestCdlRegisterGap:
         assert "CDL-091" in text, "CDL-091 should now be ratified after Phase 1400 C2"
         assert "ratification_token: cdl_091_ratified_phase_1400" in text
 
-    def test_cdl_092_absent_from_register(self) -> None:
+    def test_cdl_092_open_after_phase_1402_c2(self) -> None:
         text = _cdl_text()
-        assert "CDL-092" not in text, "CDL-092 is already registered; update sequence lock §7"
+        rows = [line for line in text.splitlines() if line.startswith("| CDL-092 |")]
+        assert len(rows) == 1, f"expected exactly one CDL-092 register row, found {len(rows)}"
+        row = rows[0]
+        assert "| open |" in row
+        assert "opened_phase: 1402" in row
+        assert "opening_token: cdl_092_capproof_opened_phase_1402" in row
+        assert "historical_non_ratification_token: cdl_092_not_ratified_phase_1402" in row
+        assert "ratification_status: not_ratified_pending_phase_1405" in row
 
     def test_cdl_093_absent_from_register(self) -> None:
         text = _cdl_text()
