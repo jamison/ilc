@@ -188,7 +188,9 @@ def build_treasury_governance_quote(
         velocity_alert_floor=velocity_floor,
         observed_velocity=observed,
         velocity_alert_triggered=observed < velocity_floor,
-        treasury_remaining_budget_ilc=epoch_budget - requested_bounty - planned_burn,
+        treasury_remaining_budget_ilc=_quantize_ilc(
+            epoch_budget - requested_bounty - planned_burn
+        ),
         production_treasury_activated=False,
         decision_token=PRODUCTION_TREASURY_NOT_ACTIVATED_TOKEN,
     )

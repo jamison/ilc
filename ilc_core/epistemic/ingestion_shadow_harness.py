@@ -338,12 +338,13 @@ def exercise_task_lifecycle(
             ))
             continue
 
-        allowed_next = _TASK_STATE_TRANSITIONS.get(current_state, set())
+        from_state = current_state
+        allowed_next = _TASK_STATE_TRANSITIONS.get(from_state, set())
         valid = target_state in allowed_next
 
         if not valid:
             failure_token = (
-                f"task_lifecycle_invalid_transition_{current_state}_to_{target_state}"
+                f"task_lifecycle_invalid_transition_{from_state}_to_{target_state}"
             )
         else:
             failure_token = None
@@ -352,7 +353,7 @@ def exercise_task_lifecycle(
                 terminal = True
 
         steps.append(TaskLifecycleStep(
-            from_state=steps[-1].to_state if steps else task.task_state,
+            from_state=from_state,
             to_state=target_state,
             valid=valid,
             failure_token=failure_token,
