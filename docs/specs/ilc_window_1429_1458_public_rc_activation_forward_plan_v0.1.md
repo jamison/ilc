@@ -443,12 +443,35 @@ These items are real obligations but require external action or long-range archi
 
 ---
 
-## 9. This document's authority and next steps
+## 9. Deferred code audit findings — resolution routing
+
+The Phase 1410 code audit produced 15 findings. Six are fixed by Phase 1410-Fix1.
+The remaining nine are deferred and must be resolved before or during the phases
+listed below. They are **not optional** — each must be closed before the phase
+that depends on the affected module can proceed to production activation.
+
+| Finding | Severity | File | Issue summary | Resolution phase | Rationale |
+|---------|----------|------|---------------|-----------------|-----------|
+| FINDING-1 | MEDIUM | `epoch/allocation_distributor_runtime.py` | `rounding_residual` unrouted when `cap_blocked=True` with refutation recipients — recorded in conservation check but has no delivery path | **Phase 1440** (claimability integration tests + security review) | Must be resolved before CDL-029 allocation distributor is connected to any live settlement path; Phase 1440 is the pre-activation integration gate |
+| FINDING-3 | LOW | `epoch/ecu_price_clamp_runtime.py` | `PRICE_CLAMP_WIDTH = Decimal("0.55")` hardcoded instead of derived from `P_MAX - P_MIN` | **Phase 1440** | Cosmetic but must not persist into the live price-clamp activation path; bundle with security review |
+| FINDING-5 | LOW | `economics/epoch_attribution_settle_runtime.py` | Dead `total_members == 0` branch in quorum check (already handled earlier in the function) | **Phase 1456** (window coherence) | Harmless dead code; no activation dependency; bundle with coherence cleanup |
+| FINDING-7 | LOW | `epistemic/jury_assignment_runtime.py` | `_select_outsider` operator-domain filter is O(n) over full eligible pool; should use a set | **Phase 1413** (VRF integration tests + security review) | Jury assignment is on the production path; O(n) filter must be fixed before production activation; Phase 1413 is the integration-level review of this module |
+| FINDING-9 | LOW | `identity/agent_id_runtime.py` | v1 and v2 domain separators are identical bytes (`b"ilc-agent-id-v1:"`); defense-in-depth requires distinct values | **Phase 1431** (rehearsal agent identity ceremony) | Identity code is live at Phase 1431; domain separator collision is defense-in-depth but must be audited before protocol identities are created for rehearsal |
+| FINDING-11 | LOW | `sidecars/claim_nullifier_registry_v1.py` | No `expire_stale_records()` method — expired entries accumulate in memory indefinitely | **Phase 1440** (claimability integration tests + security review) | Memory growth would occur under long-running public RC serving; must have a cleanup path before Phase 1439 activates the public verifier API |
+| FINDING-13 | LOW | `sidecars/claimability_receipt_verifier.py` | `_reject_unsafe_json_tree` rejects negative integers — implicit constraint that all integer payload values must be non-negative is undocumented | **Phase 1440** | Documentation-only fix; bundle with the claimability security review gate |
+| FINDING-14 | MEDIUM | `protocol/event_log_retention.py` | `apply_event_log_retention_plan` uses `shutil.rmtree` without verifying the plan was produced by the trusted internal builder (not from deserialized external input) | **Phase 1440** | MEDIUM pre-activation; `_is_within_root` provides partial mitigation, but provenance guard must be added before any public-facing path can trigger pruning |
+| FINDING-15 | LOW | `protocol/event_log_retention.py` | `discover_epoch_event_dirs` has no `MAX_RECORDS` cap over local filesystem entries | **Phase 1456** (window coherence) | Local filesystem only; no network data; low risk; bundle with coherence cleanup |
+
+**Execution rule:** Each finding in this table must be fixed (code change + regression test) in the phase listed, or in a Fix sub-phase committed immediately before it. A finding may not be deferred past the phase listed here without explicit human authorization and a new deferral record in PLANNING_INDEX.
+
+---
+
+## 10. This document's authority and next steps
 
 This is a **draft forward plan** — it does not constitute an authorized sequence lock. Before any phase in this window executes:
 
-1. Human reviews this document and approves the overall structure.
+1. Human reviews this document (including §9 deferred findings routing table) and approves the overall structure.
 2. A formal **Window 1429–1458 sequence lock** is produced (following the schema at `docs/specs/ilc_window_guidance_doc_schema_v0.1.md`) as the authoritative execution contract.
-3. Phase prompts are drafted per the approved sequence lock.
+3. Phase prompts are drafted per the approved sequence lock. Phase prompts for Phase 1413, 1431, 1440, and 1456 must explicitly include the deferred findings assigned to them.
 
 `window_1429_1458_public_rc_activation_forward_plan_v0.1`
