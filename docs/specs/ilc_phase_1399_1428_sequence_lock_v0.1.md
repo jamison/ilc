@@ -1,0 +1,189 @@
+# ILC Phase 1399-1428 Sequence Lock v0.1
+
+**Status:** Active sequence lock — Window 1399-1428 is OPEN through Phase 1399
+**Date:** 2026-05-20
+**Owner lane:** G8 Jury Economy / Launch Readiness
+**GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
+
+```text
+window_1399_1428_sequence_lock_committed_phase_1399_entry
+go_window_1399_1428_authorized_2026_05_20
+phase_1399_is_first_phase
+```
+
+---
+
+## 1. Window Identity and Scope
+
+Window 1399-1428 closes all 7 blocking conditions from the J-008 production jury
+activation gate (Phase 1398 verdict INCOMPLETE) and produces the architectural
+specifications required for the private soft-RC rehearsal and public RC activation.
+
+**Baseline at lock time:**
+- Window 1391-1398 (J-series) COMPLETE; 163 tests passing
+- J-008 gate verdict: INCOMPLETE — 7 of 10 blocking conditions NOT_MET
+- Last ratified CDL: CDL-090 (Phase 1373)
+- Active capsule: v5.58
+- Current commit: `ec475d48`
+
+**Three tracks:**
+1. **Jury Economy CDL track (Phases 1399-1420):** CDL-091/092/093 opening and ratification,
+   VRF verifier, review lane wiring, anti-capture verification, copyright counsel disposition.
+2. **Launch Readiness Design track (Phases 1422-1424):** Launch Readiness Manifest schema,
+   private soft-RC rehearsal entry criteria, public RC activation certificate design.
+3. **Gate closure tail (Phases 1425-1428):** Pre-gate verification, soft RC re-run, J-008
+   gate re-run expecting `verdict="PASS"`, window closure.
+
+---
+
+## 2. Inputs and Closure Inheritance
+
+Inherited from Window 1391-1398 (J-series):
+
+| Item | State |
+|------|-------|
+| `jury_activation_gate_phase_j008.v0.1` | Active gate module; 7 blocking conditions NOT_MET |
+| `ingestion_shadow_harness_phase_j007.v0.1` | MET (J007_HARNESS_PASS) |
+| `public_economics_firewall_condition_met_phase_j008` | MET (PUBLIC_ECONOMICS_FIREWALL) |
+| `epoch_hash_shadow_assignment_only_phase_j006` | MET (NO_EPOCH_HASH_PRODUCTION_PRIVACY_CLAIM) |
+| CDL-090 | Ratified Phase 1373 (last ratified CDL) |
+| CDL-091 | Lane opened Phase 1394 (J-004 spec); NOT yet registered in CDL log |
+| CDL-092, CDL-093 | Not yet opened |
+| Window 1369-1390 closure | `43401835` |
+
+---
+
+## 3. Locked Phase Table (1399-1428)
+
+| Order | Phase | Scope | Character | Sensitivity |
+|-------|-------|-------|-----------|-------------|
+| 1 | 1399 | CDL-091 jury incentive economics — register opening + prelock | Constitutional | **SENSITIVE** |
+| 2 | 1400 | CDL-091 ratification | Constitutional | **SENSITIVE** |
+| 3 | 1401 | CDL-091 jury incentive runtime stub | Runtime | NON-SENSITIVE |
+| 4 | 1402 | CDL-092 CapProof — opening | Constitutional | **SENSITIVE** |
+| 5 | 1403 | CDL-092 CapProof — deliberation | Spec | NON-SENSITIVE |
+| 6 | 1404 | CDL-092 CapProof — prelock | Constitutional | NON-SENSITIVE |
+| 7 | 1405 | CDL-092 CapProof — ratification | Constitutional | **SENSITIVE** |
+| 8 | 1406 | CDL-093 maintenance lottery pool — opening | Constitutional | **SENSITIVE** |
+| 9 | 1407 | CDL-093 maintenance lottery pool — deliberation/prelock | Constitutional | NON-SENSITIVE |
+| 10 | 1408 | CDL-093 maintenance lottery pool — ratification | Constitutional | **SENSITIVE** |
+| 11 | 1409 | CDL-093 maintenance lottery pool runtime stub | Runtime | NON-SENSITIVE |
+| 12 | 1410 | VRF proof verifier ADR | Spec/ADR | NON-SENSITIVE |
+| 13 | 1411 | VRF proof verifier implementation | Runtime | NON-SENSITIVE |
+| 14 | 1412 | VRF integration with jury_assignment_runtime.py | Runtime | NON-SENSITIVE |
+| 15 | 1413 | VRF integration tests and security review | Testing | NON-SENSITIVE |
+| 16 | 1414 | Review lane wiring — T0.5→T1+ ADR | Spec/ADR | NON-SENSITIVE |
+| 17 | 1415 | Review lane wiring — admission runtime | Runtime | NON-SENSITIVE |
+| 18 | 1416 | Review lane wiring — dedup + payment settlement stub | Runtime | NON-SENSITIVE |
+| 19 | 1417 | Review lane wiring — integration tests; `REVIEW_LANE_WIRING_COMPLETE` token | Testing | NON-SENSITIVE |
+| 20 | 1418 | Anti-capture diversity — CDL-V3 + VRF wiring design | Spec | NON-SENSITIVE |
+| 21 | 1419 | Anti-capture diversity — production verification | Audit | NON-SENSITIVE |
+| 22 | 1420 | Copyright counsel disposition — ADR-0041 §5 | Governance | **SENSITIVE** |
+| 23 | 1421 | Window coherence and capsule update | Synthesis | NON-SENSITIVE |
+| 24 | 1422 | Launch Readiness Manifest schema | Spec | NON-SENSITIVE |
+| 25 | 1423 | Private soft-RC rehearsal entry criteria | Spec | NON-SENSITIVE |
+| 26 | 1424 | Public RC activation certificate design | Spec | NON-SENSITIVE |
+| 27 | 1425 | Pre-gate re-run verification | Gate prep | NON-SENSITIVE |
+| 28 | 1426 | Soft RC gate re-run — `soft_rc_eligible=true` | Gate | **SENSITIVE** |
+| 29 | 1427 | J-008 gate re-run — `verdict="PASS"` | Gate | **SENSITIVE** |
+| 30 | 1428 | Window 1399-1428 closure gate | Gate | **SENSITIVE** |
+
+---
+
+## 4. Sequencing Constraints
+
+| Constraint | Rule |
+|-----------|------|
+| 1400 requires 1399 C1 complete | Historical hardening references Phase 1399 register-opening commit |
+| 1405 requires 1402-1404 complete | CDL-092 must be prelocked before ratification |
+| 1408 requires 1406-1407 complete | CDL-093 must be prelocked before ratification |
+| 1412 requires 1411 complete | VRF integration requires verifier implementation |
+| 1415-1416 require 1414 ADR accepted | Admission runtime builds on ADR-defined contract |
+| 1419 requires 1412 AND 1417 complete | Anti-capture needs both VRF and review lane |
+| 1425 must clear all 7 blocking conditions before 1427 | Gate re-run cannot proceed with known NOT_MET |
+| 1426 must precede 1427 | `soft_rc_eligible=true` is an input to the Phase 1427 gate aggregate |
+| 1427 must precede 1428 | Closure gate requires gate PASS recorded |
+
+CDL-091/092/093 tracks are largely independent and may be interleaved at Codex's
+discretion within their intra-track ordering constraints.
+
+---
+
+## 5. CDL Register Gap — Phase 1399
+
+Phase 1394 (J-004) produced `docs/specs/ilc_cdl_jury_incentive_economics_opening_v0.1.md`
+but did NOT add a CDL-091 row to `docs/specs/ilc_constitutional_decision_log_v0.1.md`.
+CDL-090 is the last registered CDL at this sequence lock.
+
+Phase 1399 therefore has two commits:
+- **C1 (CDL mutation):** Adds CDL-091 row with `status: open`, `opened_phase: 1399`,
+  `opening_token: cdl_091_jury_incentive_economics_opened_phase_1399`.
+  Requires `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1399`.
+- **C2 (prelock):** Adds `docs/specs/ilc_cdl_091_jury_incentive_economics_prelock_1399_v0.1.md`
+  and tests. No CDL mutation env required.
+
+Phase 1400 historical hardening must reference the Phase 1399 C1 commit hash, not Phase 1394.
+
+---
+
+## 6. Gate Module Static-Status Note
+
+`ilc_core/epistemic/jury_activation_gate.py` encodes Phase 1398 NOT_MET conditions as
+hardcoded literals. The gate does not dynamically detect new completion evidence.
+
+Phase 1425 must verify whether the gate module needs source changes before Phase 1427 can
+produce `verdict="PASS"`. If updates are required, Phase 1425a gates the Phase 1427 re-run.
+
+---
+
+## 7. CDL Number Assignments
+
+| CDL | Scope | Register opening | Ratification |
+|-----|-------|-----------------|--------------|
+| CDL-091 | Jury incentive economics | Phase 1399 C1 | Phase 1400 |
+| CDL-092 | CapProof content-addressing, CV signing, ±15% band | Phase 1402 | Phase 1405 |
+| CDL-093 | Maintenance lottery pool distribution | Phase 1406 | Phase 1408 |
+
+Next fresh CDL number after this window: **CDL-094**
+
+---
+
+## 8. Non-Authorizations
+
+This sequence lock does not authorize:
+
+- Reviewer payment activation or live ECU distribution via jury/maintenance lane
+- Production jury assignment activation
+- VRF production deployment
+- Review lane production serving
+- Maintenance lottery live distribution
+- Public RC publication or release signing
+- Any CDL mutation beyond those enumerated in §7
+- Production minting, ILC settlement, public claimability activation
+- Soft-RC rehearsal start (requires separate operational GO)
+
+---
+
+## 9. Canonical Anchors
+
+- `docs/specs/ilc_window_1399_1428_candidate_phase_grouping_v0.1.md` — guidance doc (`ec475d48`)
+- `docs/specs/ilc_production_jury_activation_gate_j008_v0.1.md` — J-008 gate spec
+- `ilc_core/epistemic/jury_activation_gate.py` — gate source (7 hardcoded NOT_MET conditions)
+- `docs/specs/ilc_cdl_jury_incentive_economics_opening_v0.1.md` — CDL-091 lane opening (Phase 1394)
+- `docs/specs/ilc_epoch_start_capability_maintenance_contract_v0.1.md` — CDL-092/093 design basis
+- `docs/adr/ADR_0040_Jury_Eligibility_Assignment.md` — VRF production boundary
+- `docs/adr/ADR_0041_Agent_INIT_and_Ingestion_Protocol.md` — copyright boundary (§5), T0.5 review lane
+- `docs/specs/ilc_antigravity_context_capsule_v5.58.md` — active capsule
+
+---
+
+## 10. Prompt Files Available
+
+| Phase | Prompt file | Status |
+|-------|-------------|--------|
+| 1399 | `docs/antigravity_tasks/antigravity_prompt__phase_1399_g8_cdl_091_jury_incentive_economics_prelock.md` | Committed `5e5043ea` |
+| 1400 | `docs/antigravity_tasks/antigravity_prompt__phase_1400_g8_cdl_091_jury_incentive_economics_ratification.md` | Committed `5e5043ea` |
+| 1401 | `docs/antigravity_tasks/antigravity_prompt__phase_1401_g8_cdl_091_jury_incentive_runtime_stub.md` | Committed `5e5043ea` |
+| 1402 | `docs/antigravity_tasks/antigravity_prompt__phase_1402_g8_cdl_092_capproof_opening.md` | Committed `5e5043ea` |
+| 1403 | `docs/antigravity_tasks/antigravity_prompt__phase_1403_g8_cdl_092_capproof_deliberation.md` | Committed `5e5043ea` |
+| 1404-1428 | Pending — to be drafted per window progress | Not yet committed |
