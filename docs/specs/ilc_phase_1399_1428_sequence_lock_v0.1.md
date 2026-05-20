@@ -95,7 +95,7 @@ change occurred. Phase 1407-Fix3 CDL-093 prelock amendment and Q2 SIM is next
 and NON-SENSITIVE.
 
 **Phase 1407-Fix3 completion addendum:** CDL-093 prelock amendment and Q2 SIM
-committed in the current phase. The Q2 source is amended from CDL-047 treasury
+committed as `33cf09da`. The Q2 source is amended from CDL-047 treasury
 candidate to ratified CDL-053 Werner local productive credit; distribution path
 is amended to the CDL-053 default-off runtime-stub path; SIM pending is resolved
 to `false`; and the recommended funding fraction is `Decimal("0.10")`. CDL-093
