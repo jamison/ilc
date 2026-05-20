@@ -475,55 +475,81 @@ must not be forgotten between context sessions.
 
 ### 11.1 Genesis authority sunset and three-mode governance architecture
 
-**Status:** Architecture exists in historical corpus (Oct 2025 design conversations); no standalone spec; not implemented; SUBSTANTIVE gap recorded against CDL-004 in `docs/specs/ilc_constitutional_context_audit_v0.1.md`.
+**Status:** Architecture fully specified in original design conversation (Oct 11 2025,
+`Z_Past_Chats/2025_11_12_ILC - ILC latest main thread Oct25.txt` lines 16094–16288);
+no standalone spec; not implemented; SUBSTANTIVE gap recorded against CDL-004 in
+`docs/specs/ilc_constitutional_context_audit_v0.1.md`; cited as raw-012616/646/647/660
+in `docs/specs/ilc_governance_conflict_set_ratification_v0.1.md`.
 
-**Background:** The historical corpus (raw-012616, raw-012646, raw-012647, raw-012660
-from Oct 2025 design conversations) contains a specific three-branch governance architecture
-— the **court/house/executive model** — that was deliberately deferred from CDL-004
-ratification. `docs/specs/ilc_constitutional_context_audit_v0.1.md` records this as a
-SUBSTANTIVE gap and recommends adding a forward pointer so future implementers know the
-design reasoning exists.
+**Background:** On October 11, 2025, Jamison proposed the three-branch model directly
+("a system of three checks and balances similar to US constitutional system..."), motivated
+by his university thesis that both two-party and three-party power systems are stable —
+three being the last stable number. The design was elaborated in detail in that conversation.
+CDL-004 was ratified at the principle level with the mechanism deferred. The constitutional
+context audit records this as a SUBSTANTIVE gap.
 
-The Phase 590 spec (`ilc_genesis_authority_sunset_and_fork_legitimacy_coherence_lock_590_v0.1.md`)
-locks the recession boundary: Genesis authority must recede through ratified mechanisms.
-The `genesis_authority_must_recede_through_ratified_mechanisms` invariant establishes this.
+**Three-phase, three-branch model (from Oct 11 2025 conversation):**
 
-**Court/house/executive model (from raw-012616, raw-012646, raw-012647):**
+**Phase A — Boot (~2 years / Genesis constitutional period):**
 
-| Branch | Mechanism | Key constraints |
-|--------|-----------|-----------------|
-| Court (judicial) | VRF-selected 8-member panel (7+1 outsider seat); k-by-sponsor_cluster | Must certify each Executive proposal; proposals that aren't objective + bounded never reach activation |
-| House (legislative) | CDL ratification with seat majority + cluster majority (≥⅔ sponsor_clusters) | Independent majorities required; popularity alone cannot bypass |
-| Executive | Bounded by CDL-004 procedural constraints; checked by Court | Genesis authority is the bootstrap executive; must sunset |
+| Branch | Role | Constraints |
+|--------|------|-------------|
+| Executive (Genesis) | May propose and enact bounded toggles; publishes signed proposal nodes | Annual quota (≤3/year); bounded: decoy bump ≤3%, 1-epoch pause, stake mult ≤1.5 |
+| Court (7+1 VRF panel) | Must certify each Executive proposal as "objective and within bounds" before activation | k-by-sponsor_cluster; outsider seat; contestable like any claim |
+| Legislature (House) | Advisory only during Boot; passes non-binding resolutions to rehearse the flow | Does not block Executive yet |
 
-This architecture is NOT implemented. The jury system (J-series, CDL-091) provides
-the operational foundation for the Court branch. The ordinary CDL ratification cycle
-provides the House branch foundation. The Executive branch remains Genesis-controlled
-during the bootstrap phase.
+**Phase B — Transition:**
+
+| Branch | Role |
+|--------|------|
+| Executive (Genesis) | Proposer + suspensive veto only (no direct enactment); ≤3 vetoes per 1000 epochs; 2/3 House override defeats veto |
+| Court (7+1) | Certifies both (i) proposal is objective/within bounds and (ii) vote tally rules were met |
+| House | Binding vote: passes by seat majority + cluster supermajority (≥⅔ sponsor_clusters) |
+
+**Phase C — Mature (target: Genesis authority fully receded):**
+
+| Branch | Role |
+|--------|------|
+| Executive (Genesis) | No veto; retains attention ballot power (100% reach to call a vote) + evidence packets only — pure soft power |
+| Court | Same certification; all proposals contestable |
+| House | Full authority; size = `clamp(101, floor(0.002 × active_wallets), 501)`, recomputed every 200 epochs |
+
+**Key House parameters from original design:**
+- Seat allocation: proportional to sponsor_cluster share of recent honest work (vested audits, decoys, low refutes)
+- Per-cluster cap: ≤25% of House seats
+- Eligibility: rep ≥0.80, ≥M recent audits, ≥99% decoy pass rate, no active slashes
+- Voting: seat majority (>50%) AND cluster supermajority (≥⅔ of sponsor_clusters voting YES)
+- Optional rep-capped weighting (quadratic cap) inside clusters
+- Re-proposal cooldown: same measure cannot be resubmitted for X epochs unless evidence hash changed
+
+**Autopilot note:** Autopilot (objective metrics triggering parameter flips) is NOT a
+fourth branch — it is "the thermostat: physics, not party," preserving the three-party
+stability balance.
+
+**Mapping to existing ratified mechanisms:**
+
+| Branch | Ratified mechanisms already in place |
+|--------|--------------------------------------|
+| Court | CDL-V4 (reopening), CDL-V7 (Popperian gate), CDL-091 (jury incentives), J-series activation; panel architecture directly reuses 7+1 VRF selection |
+| House | CDL-004 (procedural governance); ordinary CDL ratification cycle provides the foundation; cluster-majority quorum **not yet enforced** |
+| Executive sunset | CDL-003 (fade-out), CDL-004 (caps), CDL-013 (normalized voting), CDL-V6 (Genesis sunset trigger), CDL-045 (emergency sunset) |
 
 **Named obligation:** A post-public-RC window must produce a standalone spec that:
 
-1. Formalizes the court/house/executive model explicitly, citing raw-012616/646/647.
-2. Maps the existing ratified mechanisms to each branch:
-   - Court: CDL-V4 (reopening), CDL-V7 (Popperian gate), CDL-091 (jury incentives), J-series activation
-   - House: CDL-004 (procedural governance), ordinary CDL ratification cycle
-   - Executive: CDL-003 (fade-out), CDL-004 (caps), CDL-013 (normalized voting), CDL-V6 (Genesis sunset), CDL-045 (emergency sunset)
-3. States observable triggers for Genesis (executive) authority recession:
-   - Participation threshold (proposed: ≥10,000 registered operators with non-Genesis
-     stake weight); exact number requires SIM evidence.
-   - Genesis ECU share threshold (proposed: ≤5% of active ECU balance at Genesis agent);
-     exact number requires SIM evidence.
-4. Closes the CDL-004 SUBSTANTIVE gap noted in the constitutional context audit by
-   adding a forward pointer to the corpus sources.
-5. Addresses `TODO-P585-02` (Genesis governance dilution closure) from
+1. Formalizes the court/house/executive model as a named ILC governance spec, citing the
+   Oct 11 2025 design conversation (`Z_Past_Chats/2025_11_12_ILC - ILC latest main thread Oct25.txt:16094`)
+   and raw-012616/646/647/660.
+2. States observable Phase B and Phase C transition triggers (participation threshold,
+   Genesis ECU share threshold) — exact numbers require SIM evidence against the
+   Boot → Transition → Mature phase table.
+3. Closes the CDL-004 SUBSTANTIVE gap by adding a forward pointer to the corpus sources.
+4. Addresses `TODO-P585-02` (Genesis governance dilution closure) from
    `ilc_epistemological_foundations_canonical_v0.1.md`.
-6. Routes through a SENSITIVE CDL phase when ready — this is a constitutional surface.
+5. Routes through a SENSITIVE CDL phase when ready — this is a constitutional surface.
 
-**Why recorded here:** MemPalace lookup located the architecture in
-`docs/specs/ilc_constitutional_context_audit_v0.1.md` (CDL-004 SUBSTANTIVE gap entry)
-and `docs/specs/ilc_governance_conflict_set_ratification_v0.1.md` (raw-012660 "tri-branch
-checks"). No standalone spec exists. Formalizing it is a precondition for any community
-governance transition.
+**Why recorded here:** The Z_Past_Chats search found the full design in the original Oct
+11 2025 conversation; prior MemPalace searches had only reached the downstream ratification
+artifacts. This is the authoritative source. No standalone spec formalizing it exists yet.
 
 ---
 
