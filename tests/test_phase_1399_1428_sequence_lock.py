@@ -100,16 +100,37 @@ class TestCdlRegisterGap:
         assert "CDL-091" in text, "CDL-091 should now be ratified after Phase 1400 C2"
         assert "ratification_token: cdl_091_ratified_phase_1400" in text
 
-    def test_cdl_092_open_after_phase_1402_c2(self) -> None:
-        text = _cdl_text()
-        rows = [line for line in text.splitlines() if line.startswith("| CDL-092 |")]
-        assert len(rows) == 1, f"expected exactly one CDL-092 register row, found {len(rows)}"
+    def test_cdl_092_historically_open_after_phase_1402_c2(self) -> None:
+        import subprocess
+
+        result = subprocess.run(
+            ["git", "show", "5d3ef87d:docs/specs/ilc_constitutional_decision_log_v0.1.md"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        rows = [line for line in result.stdout.splitlines() if line.startswith("| CDL-092 |")]
+        assert len(rows) == 1, f"expected exactly one historical CDL-092 row, found {len(rows)}"
         row = rows[0]
         assert "| open |" in row
         assert "opened_phase: 1402" in row
         assert "opening_token: cdl_092_capproof_opened_phase_1402" in row
         assert "historical_non_ratification_token: cdl_092_not_ratified_phase_1402" in row
-        assert "ratification_status: not_ratified_pending_phase_1405" in row
+        assert "ratification_token: cdl_092_ratified_phase_1405" not in row
+
+    def test_cdl_092_ratified_after_phase_1405_c2(self) -> None:
+        text = _cdl_text()
+        rows = [line for line in text.splitlines() if line.startswith("| CDL-092 |")]
+        assert len(rows) == 1, f"expected exactly one CDL-092 register row, found {len(rows)}"
+        row = rows[0]
+        assert "| ratified |" in row
+        assert "opened_phase: 1402" in row
+        assert "opening_token: cdl_092_capproof_opened_phase_1402" in row
+        assert "historical_non_ratification_token: cdl_092_not_ratified_phase_1402" in row
+        assert "ratified_phase: 1405" in row
+        assert "ratification_token: cdl_092_ratified_phase_1405" in row
+        assert "capproof_pricing_activation_status: not_authorized" in row
 
     def test_cdl_093_absent_from_register(self) -> None:
         text = _cdl_text()
