@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1403 complete, Phase 1404 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1404 complete, Phase 1405 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -36,6 +36,14 @@ deliberation is next and NON-SENSITIVE.
 Phase 1404. CDL-092 remains open and unratified. No CDL mutation, CapProof
 pricing activation, production probe execution, direct ILC reward, or J-008 gate
 verdict change occurred. Phase 1404 CDL-092 prelock is next and NON-SENSITIVE.
+
+**Phase 1404 completion addendum:** CDL-092 CapProof prelock committed as
+`PENDING_COMMIT_HASH`. The Phase 1403 content-address carry-forward is resolved
+to the accepted ADR-0001 NodeID profile
+`adr_0001_nodeid_cidv1_dag_cbor_sha2_256_multihash`. CDL-092 remains open and
+unratified. No CDL mutation, CapProof pricing activation, production probe
+execution, direct ILC reward, or J-008 gate verdict change occurred. Phase 1405
+CDL-092 ratification is next and SENSITIVE.
 
 ---
 
