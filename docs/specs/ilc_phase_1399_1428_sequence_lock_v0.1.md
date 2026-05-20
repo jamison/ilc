@@ -12,7 +12,7 @@ phase_1399_is_first_phase
 ```
 
 **Phase 1399 completion addendum:** CDL-091 formal opening C1 committed as
-`06993864`; prelock C2 committed as `PENDING_C2_HASH`. CDL-091 is now `open`
+`06993864`; prelock C2 committed as `d2b4181d`. CDL-091 is now `open`
 and prelocked, not ratified. Phase 1400 is the next phase and remains
 SENSITIVE.
 
@@ -126,7 +126,7 @@ Phase 1399 therefore has two commits:
   Requires `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1399`.
   Completed in commit `06993864`.
 - **C2 (prelock):** Adds `docs/specs/ilc_cdl_091_jury_incentive_economics_prelock_1399_v0.1.md`
-  and tests. No CDL mutation env required. Completed in commit `PENDING_C2_HASH`.
+  and tests. No CDL mutation env required. Completed in commit `d2b4181d`.
 
 Phase 1400 historical hardening must reference the Phase 1399 C1 commit hash, not Phase 1394.
 
