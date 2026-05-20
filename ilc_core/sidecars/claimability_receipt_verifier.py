@@ -1225,10 +1225,13 @@ def _require_non_negative_int(value: object, *, token: str) -> int:
     if (
         isinstance(value, bool)
         or not isinstance(value, int)
-        or value < 1
+        or value < 0
         or value > _MAX_PROTOCOL_INT
     ):
-        raise ClaimabilityReceiptVerifierError(token, "required positive bounded integer")
+        raise ClaimabilityReceiptVerifierError(
+            token,
+            "required non-negative bounded integer",
+        )
     return value
 
 

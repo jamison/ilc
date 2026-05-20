@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1410 VRF proof verifier ADR complete, Phase 1411 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1410-Fix1 pre-VRF hardening complete, Phase 1411 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -135,6 +135,18 @@ verification API, and Phase 1412 integration contract. No VRF runtime,
 assignment runtime mutation, proof generation, production activation, or J-008
 gate verdict change occurred. Phase 1411 VRF proof verifier implementation is
 next and NON-SENSITIVE.
+
+**Phase 1410-Fix1 completion addendum:** Pre-VRF hardening committed in this
+phase. The phase fixes six Phase 1410 audit findings: epoch-zero claimability
+validation, duplicate eligible-agent rejection in jury assignment, typed claim
+nullifier canonical-JSON errors, ejected-stake residual quantization,
+treasury remaining-budget quantization, and ingestion lifecycle `from_state`
+trace accuracy. ADR-0042 now records
+`vrf_pynacl_api_gap_documented_phase_1410_fix1`, requiring Phase 1411 to validate
+PyNaCl low-level Ed25519 binding use against RFC 9381 Appendix B.4 before any
+integration claim. No CDL mutation, VRF implementation, production activation,
+or J-008 gate verdict change occurred. Phase 1411 remains next and
+NON-SENSITIVE.
 
 ---
 
