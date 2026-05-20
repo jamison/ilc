@@ -466,14 +466,14 @@ that depends on the affected module can proceed to production activation.
 
 ---
 
-## 11. Long-range governance obligations (post-public-RC)
+## 10. Long-range governance obligations (post-public-RC)
 
 These items are not blockers for Window 1429–1458. They are named architectural
 obligations that must be addressed in a post-public-RC window. They are recorded
 here because they emerged from the Phase 1410 audit and governance review; they
 must not be forgotten between context sessions.
 
-### 11.1 Genesis authority sunset and three-mode governance architecture
+### 10.1 Genesis authority sunset and three-mode governance architecture
 
 **Status:** Architecture fully specified in original design conversation (Oct 11 2025,
 `Z_Past_Chats/2025_11_12_ILC - ILC latest main thread Oct25.txt` lines 16094–16288);
@@ -553,7 +553,7 @@ artifacts. This is the authoritative source. No standalone spec formalizing it e
 
 ---
 
-### 11.2 Delegated constitutional authority mechanism
+### 10.2 Delegated constitutional authority mechanism
 
 **Status:** Named gap — no CDL, no spec.
 
@@ -578,7 +578,7 @@ governance throughput bottleneck.
 
 ---
 
-### 11.3 CDL falsification criterion field
+### 10.3 CDL falsification criterion field
 
 **Status:** Gap noted in `ilc_epistemological_foundations_canonical_v0.1.md`; no CDL row carries this field.
 
@@ -603,7 +603,7 @@ post-public-RC window coherence phase.
 
 ---
 
-### 11.4 CDL-091 inviter-chaining incentive extension (candidate, deliberation required)
+### 10.4 CDL-091 inviter-chaining incentive extension (candidate, deliberation required)
 
 **Status:** Candidate — not yet opened; no prelock; requires human deliberation.
 
@@ -631,11 +631,11 @@ as a candidate CDL-091 follow-on during Phase 1410 governance review.
 
 ---
 
-## 10. This document's authority and next steps
+## 11. This document's authority and next steps
 
 This is a **draft forward plan** — it does not constitute an authorized sequence lock. Before any phase in this window executes:
 
-1. Human reviews this document (including §9 deferred findings routing table) and approves the overall structure.
+1. Human reviews this document (including §9 deferred findings routing table and §10 long-range governance obligations) and approves the overall structure.
 2. A formal **Window 1429–1458 sequence lock** is produced (following the schema at `docs/specs/ilc_window_guidance_doc_schema_v0.1.md`) as the authoritative execution contract.
 3. Phase prompts are drafted per the approved sequence lock. Phase prompts for Phase 1413, 1431, 1440, and 1456 must explicitly include the deferred findings assigned to them.
 
