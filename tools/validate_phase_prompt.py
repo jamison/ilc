@@ -15,9 +15,9 @@ from pathlib import Path
 
 
 FILENAME_RE = re.compile(
-    r"^antigravity_prompt__phase_(?P<phase>\d+[a-z]?)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
+    r"^antigravity_prompt__phase_(?P<phase>\d+[a-z]?(?:_fix\d+)?)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
 )
-H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+[a-z]?)-G(?P<group>\d+)\b", re.IGNORECASE)
+H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+[a-z]?(?:[_-]Fix\d+)?)-G(?P<group>\d+)\b", re.IGNORECASE)
 HEADING_RE = re.compile(r"^#{2,3}\s+(.+?)\s*$")
 UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR = 1249
 UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
@@ -87,7 +87,7 @@ def validate(path: Path) -> list[str]:
         if not h1_m:
             errors.append("invalid_h1_pattern")
         else:
-            if h1_m.group("phase") != expected_phase:
+            if h1_m.group("phase").replace("-", "_").lower() != expected_phase.lower():
                 errors.append(
                     f"h1_phase_mismatch: expected={expected_phase} got={h1_m.group('phase')}"
                 )
