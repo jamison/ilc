@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1411 VRF proof verifier implementation complete, Phase 1412 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1412 VRF jury-assignment integration complete, Phase 1413 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -158,6 +158,20 @@ successfully, including hash-to-curve `H` and `beta` output checks. No proof
 generation, jury-assignment integration, production activation, J-008 gate
 verdict change, ledger/treasury/wallet mutation, graph mutation, or CDL
 mutation occurred. Phase 1412 VRF jury-assignment integration is next and
+NON-SENSITIVE.
+
+**Phase 1412 completion addendum:** VRF jury-assignment integration committed in
+this phase. `ilc_core/epistemic/jury_assignment_runtime.py` records
+`vrf_verifier_integrated_jury_assignment_phase_1412` and adds a high-value
+audit-only VRF ordering path using externally supplied proof material verified
+by the Phase 1411 verifier. Epoch-hash shadow assignment remains the default
+non-high-value path; candidate ordering for high-value audit quotes is
+`(beta_bytes, agent_id)` ascending; missing or invalid proof material excludes
+the candidate with visible audit reasons. `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED`
+remains `True`; non-audit high-value assignment fails closed, and no proof
+generation, private-key handling, production activation, J-008 gate verdict
+change, ledger/treasury/wallet mutation, graph mutation, or CDL mutation
+occurred. Phase 1413 VRF integration tests and security review is next and
 NON-SENSITIVE.
 
 ---
