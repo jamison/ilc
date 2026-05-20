@@ -132,9 +132,29 @@ class TestCdlRegisterGap:
         assert "ratification_token: cdl_092_ratified_phase_1405" in row
         assert "capproof_pricing_activation_status: not_authorized" in row
 
-    def test_cdl_093_absent_from_register(self) -> None:
+    def test_cdl_093_historically_absent_before_phase_1406(self) -> None:
+        import subprocess
+
+        result = subprocess.run(
+            ["git", "show", "608096a3:docs/specs/ilc_constitutional_decision_log_v0.1.md"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        assert "| CDL-093 |" not in result.stdout
+
+    def test_cdl_093_open_after_phase_1406_c2(self) -> None:
         text = _cdl_text()
-        assert "CDL-093" not in text, "CDL-093 is already registered; update sequence lock §7"
+        rows = [line for line in text.splitlines() if line.startswith("| CDL-093 |")]
+        assert len(rows) == 1, f"expected exactly one CDL-093 register row, found {len(rows)}"
+        row = rows[0]
+        assert "| open |" in row
+        assert "opened_phase: 1406" in row
+        assert "opening_token: cdl_093_maintenance_lottery_pool_opened_phase_1406" in row
+        assert "historical_non_ratification_token: cdl_093_not_ratified_phase_1406" in row
+        assert "ratification_status: not_ratified_pending_phase_1408" in row
 
 
 class TestGateStaticStatus:
