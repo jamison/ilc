@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1408 CDL-093 ratification complete, Phase 1409 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1409 CDL-093 runtime stub complete, Phase 1410 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -112,6 +112,18 @@ committed as `86e84c9f` with
 lottery distribution, live draws, ECU settlement, runtime activation, wallet
 behavior, and J-008 gate verdict changes remain unauthorized. Phase 1409
 CDL-093 maintenance lottery runtime stub is next and NON-SENSITIVE.
+
+**Phase 1409 completion addendum:** CDL-093 maintenance lottery runtime stub
+committed in this phase. `ilc_core/epistemic/maintenance_lottery_runtime.py`
+records `maintenance_lottery_runtime_stub_committed_phase_1409`,
+`maintenance_lottery_not_activated_phase_1409`, and
+`MAINTENANCE_LOTTERY_CDL_RATIFIED_TOKEN = "cdl_093_ratified_phase_1408"`.
+The stub wires the ratified Werner source and
+`MAINTENANCE_LOTTERY_POOL_FUNDING_FRACTION = Decimal("0.10")` while keeping
+`MAINTENANCE_LOTTERY_NOT_ACTIVATED = True`. No live draw, ECU distribution,
+ledger write, treasury write, wallet behavior, runtime activation, or J-008
+gate verdict change occurred. Phase 1410 VRF proof verifier ADR is next and
+NON-SENSITIVE.
 
 ---
 
