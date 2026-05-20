@@ -1157,18 +1157,18 @@ path (CDL-048 Phase 1388, public claimability Phase 1389) is already live and un
 
 #### Phase Table
 
-| Phase | Topic | Character | Sensitivity | Blocking condition resolved |
+| Phase | Topic | Character | Sensitivity | Status / Blocking condition |
 |-------|-------|-----------|-------------|----------------------------|
-| 1399 | CDL-091 jury incentive economics — formal register opening (Phase 1394 gap fix, C1 CDL mutation) + prelock (C2) | CDL opening + prelock | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` (partial) |
-| 1400 | CDL-091 jury incentive economics — ratification | CDL ratification | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` |
-| 1401 | CDL-091 jury incentive economics runtime stub | Runtime | NON-SENSITIVE | Wires ratified CDL into module; `reviewer_payment_not_activated` boundary preserved |
-| 1402 | CDL-092 CapProof — opening and scope definition | CDL opening | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (opens track) |
-| 1403 | CDL-092 CapProof — deliberation; probe content-addressing, CV signing, ±15% band | CDL deliberation | NON-SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
-| 1404 | CDL-092 CapProof — prelock | CDL prelock | NON-SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
-| 1405 | CapProof CDL — ratification | CDL ratification | SENSITIVE | `CAPPROOF_CDL_RATIFIED` |
-| 1406 | Maintenance lottery pool CDL — opening and scope | CDL opening | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (opens track) |
-| 1407 | Maintenance lottery pool CDL — deliberation and prelock | CDL prelock | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (partial) |
-| 1408 | Maintenance lottery pool CDL — ratification | CDL ratification | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` |
+| 1399 | CDL-091 jury incentive economics — formal register opening (Phase 1394 gap fix, C1 CDL mutation) + prelock (C2) | CDL opening + prelock | SENSITIVE | COMPLETE: C1 `06993864` (register opening); C2 `d2b4181d` (prelock). Tokens: `cdl_091_jury_incentive_economics_opened_phase_1399`, `cdl_091_prelock_committed_phase_1399`. CDL-091 open and prelocked, not ratified. |
+| 1400 | CDL-091 jury incentive economics — ratification | CDL ratification | SENSITIVE | COMPLETE: C1 `577c8ad5` (evidence + tests); C2 `694d7779` (CDL mutation). CDL-091 ratified. Token: `cdl_091_ratified_phase_1400`. Reviewer payment inactive. Resolves `JURY_INCENTIVE_CDL_RATIFIED`. |
+| 1401 | CDL-091 jury incentive economics runtime stub | Runtime | NON-SENSITIVE | COMPLETE: `9bd4918f`. `jury_incentive_runtime.py` stub; `REVIEWER_PAYMENT_NOT_ACTIVATED=True`. Token: `jury_incentive_runtime_stub_committed_phase_1401`. |
+| 1402 | CDL-092 CapProof — opening and scope definition | CDL opening | SENSITIVE | COMPLETE: C1 `79675d68` (opening doc + tests); C2 `5d3ef87d` (CDL mutation). CDL-092 opened. Token: `cdl_092_capproof_opened_phase_1402`. `CAPPROOF_CDL_RATIFIED` opens track. |
+| 1403 | CDL-092 CapProof — deliberation; probe content-addressing, CV signing, ±15% band | CDL deliberation | NON-SENSITIVE | COMPLETE: `e3a5a0a9`. Q1-Q4 resolved; 17 candidate prelock constants recorded. Token: `cdl_092_deliberation_complete_phase_1403`. Carry-forward: content-address output format (resolved Phase 1404). |
+| 1404 | CDL-092 CapProof — prelock | CDL prelock | NON-SENSITIVE | COMPLETE: `608096a3`. CDL-092 prelocked; content-address carry-forward resolved to `adr_0001_nodeid_cidv1_dag_cbor_sha2_256_multihash`. Token: `cdl_092_prelock_committed_phase_1404`. |
+| 1405 | CDL-092 CapProof — ratification | CDL ratification | SENSITIVE | COMPLETE: C1 `046045b6` (evidence + tests); C2 `e97d9e4b` (CDL mutation). CDL-092 ratified. Token: `cdl_092_ratified_phase_1405`. CapProof pricing, probe execution, direct ILC reward, and runtime activation remain unauthorized. Resolves `CAPPROOF_CDL_RATIFIED`. |
+| 1406 | CDL-093 maintenance lottery pool — opening and scope | CDL opening | SENSITIVE | COMPLETE: C1 `67a14d0d` (opening doc + tests); C2 `15992abe` (CDL mutation). CDL-093 opened; Q1-Q5 deliberation questions recorded. Token: `cdl_093_maintenance_lottery_pool_opened_phase_1406`. `MAINTENANCE_LOTTERY_CDL_RATIFIED` opens track. |
+| 1407 | CDL-093 maintenance lottery pool — deliberation and prelock | CDL prelock | NON-SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (partial) |
+| 1408 | CDL-093 maintenance lottery pool — ratification | CDL ratification | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` |
 | 1409 | Maintenance lottery pool runtime stub | Runtime | NON-SENSITIVE | Wires ratified CDL; `lottery_not_activated` boundary preserved |
 | 1410 | VRF proof verifier specification and ADR | Spec / ADR | NON-SENSITIVE | `VRF_VERIFIER_IMPLEMENTED` (specifies; no impl) |
 | 1411 | VRF proof verifier implementation | Runtime | NON-SENSITIVE | `VRF_VERIFIER_IMPLEMENTED` — `vrf_proof_verifier_implemented_phase_1411` token required |
