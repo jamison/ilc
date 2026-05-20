@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1409 CDL-093 runtime stub complete, Phase 1410 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1410 VRF proof verifier ADR complete, Phase 1411 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -124,6 +124,17 @@ The stub wires the ratified Werner source and
 ledger write, treasury write, wallet behavior, runtime activation, or J-008
 gate verdict change occurred. Phase 1410 VRF proof verifier ADR is next and
 NON-SENSITIVE.
+
+**Phase 1410 completion addendum:** ADR-0042 VRF proof verifier specification
+committed in this phase. `docs/adr/ADR_0042_VRF_Proof_Verifier.md` records
+`vrf_proof_verifier_adr_accepted_phase_1410` and
+`vrf_proof_verifier_not_activated_phase_1410`, selects RFC 9381
+`ECVRF-EDWARDS25519-SHA512-ELL2`, pins `PyNaCl==1.6.2` as the support library
+for Phase 1411, and defines the proof format, alpha canonicalization,
+verification API, and Phase 1412 integration contract. No VRF runtime,
+assignment runtime mutation, proof generation, production activation, or J-008
+gate verdict change occurred. Phase 1411 VRF proof verifier implementation is
+next and NON-SENSITIVE.
 
 ---
 
