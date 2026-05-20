@@ -291,6 +291,11 @@ def _encode_point(point: tuple[int, int]) -> bytes:
 
 
 def _point_add(point_a: tuple[int, int], point_b: tuple[int, int]) -> tuple[int, int]:
+    # Complete twisted Edwards addition formula. The denominators (1 ± d·x1·x2·y1·y2)
+    # are never zero over GF(p) because d = -121665/121666 is a non-square mod p.
+    # A zero denominator would require d·x1·x2·y1·y2 = ±1, i.e. d = (x1·x2·y1·y2)^{-1},
+    # meaning d is a square — contradiction. This guarantees the formula is complete
+    # (no exceptional inputs) for all valid Edwards25519 points.
     x1, y1 = point_a
     x2, y2 = point_b
     product = x1 * x2 * y1 * y2 % _FIELD_PRIME
