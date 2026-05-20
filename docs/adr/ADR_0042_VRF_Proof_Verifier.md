@@ -203,6 +203,47 @@ This ADR does not:
 - distribute ECU;
 - mutate ledger, treasury, wallet, graph, or CDL state.
 
+## Phase 1411 Implementation Guidance — PyNaCl API Gap
+
+RFC 9381 ECVRF-EDWARDS25519-SHA512-ELL2 verification requires:
+
+1. Compressed Ed25519 point decompression (32 bytes to group element)
+2. Scalar multiplication on Edwards25519
+3. Point addition on Edwards25519
+4. Hash-to-curve using Elligator2 (RFC 9380 Section 6.7.1 for Ed25519)
+5. Challenge hash computation (SHA-512 over concatenated points)
+
+PyNaCl 1.6.2 exposes Ed25519 signature primitives at the opaque level through
+`nacl.signing` and `nacl.bindings.crypto_sign_*`. Since PyNaCl 1.6.0 it also
+exposes low-level Ed25519 group arithmetic through `nacl.bindings`:
+`crypto_core_ed25519_add`, `crypto_core_ed25519_sub`,
+`crypto_core_ed25519_from_uniform`, `crypto_scalarmult_ed25519_noclamp`, and
+related functions. These map to libsodium 1.0.18 or newer symbols and may be
+sufficient for the point decompression, scalar multiplication, and point
+addition required by RFC 9381 verification.
+
+Hash-to-curve Elligator2 (RFC 9380 Section 6.7.1 for Ed25519) maps to
+`crypto_core_ed25519_from_uniform`, which libsodium implements. Phase 1411 must
+verify this mapping against RFC 9380 Section 6.7.1 before relying on it.
+
+Required path for Phase 1411:
+
+1. Attempt to implement RFC 9381 ECVRF-EDWARDS25519-SHA512-ELL2 verification
+   using `nacl.bindings` low-level Ed25519 group operations where they map to
+   the required RFC operations.
+2. Validate the implementation against RFC 9381 Appendix B.4 test vectors
+   (ECVRF-EDWARDS25519-SHA512-ELL2) before any integration claim. If
+   `nacl.bindings` operations produce incorrect results on the Appendix B.4
+   vectors, fall back to a pure-Python Edwards25519 implementation derived from
+   the RFC 9381 reference.
+3. Do not skip the test-vector validation step under any circumstance.
+
+PyNaCl==1.6.2 remains the pinned dependency as selected in this ADR; this note
+clarifies the scope of what it provides and the validation gate Phase 1411 must
+pass.
+
+`vrf_pynacl_api_gap_documented_phase_1410_fix1`
+
 ## Consequences
 
 Phase 1411 has a concrete algorithm/library/proof-format contract to implement.

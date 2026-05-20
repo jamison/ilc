@@ -215,6 +215,18 @@ def quote_jury_assignment(
     if not claim_or_task_id:
         raise ValueError("claim_or_task_id must be a non-empty string")
 
+    seen_ids: set[str] = set()
+    duplicate_ids: List[str] = []
+    for agent in eligible_agents:
+        if agent.agent_id in seen_ids:
+            duplicate_ids.append(agent.agent_id)
+        seen_ids.add(agent.agent_id)
+    if duplicate_ids:
+        raise JuryAssignmentError(
+            "jury_eligible_agents_duplicate_agent_id: "
+            f"duplicate agent_id(s) in eligible_agents: {sorted(set(duplicate_ids))}"
+        )
+
     # Step 1 — compute per-agent scores (deterministic, domain-separated)
     scores = {
         agent.agent_id: _agent_score(review_epoch, review_lane, claim_or_task_id, agent)

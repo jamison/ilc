@@ -329,7 +329,18 @@ def build_claim_nullifier_record(
 
 
 def _sha256_canonical(payload: Any) -> str:
-    rendered = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    try:
+        rendered = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+    except (TypeError, ValueError) as exc:
+        raise ClaimNullifierRegistryError(
+            "claim_nullifier_canonical_serialization_failed_phase_1410_fix1",
+            f"payload is not JSON-serializable: {exc}",
+        ) from exc
     return hashlib.sha256(rendered.encode("utf-8")).hexdigest()
 
 

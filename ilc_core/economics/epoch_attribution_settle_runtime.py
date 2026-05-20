@@ -79,7 +79,12 @@ def _stake_proportional_payouts(
     payouts: list[tuple[str, Decimal]] = []
     for index, (agent_id, stake) in enumerate(ordered_members):
         if index == len(ordered_members) - 1:
-            share = total_amount - running_total
+            residual = total_amount - running_total
+            if residual < _ZERO:
+                raise ValueError(
+                    "stake_proportional_payouts_negative_residual_conservation_violation"
+                )
+            share = _quantize_payout(residual)
         else:
             share = _quantize_payout(total_amount * (stake / total_stake))
             running_total += share
