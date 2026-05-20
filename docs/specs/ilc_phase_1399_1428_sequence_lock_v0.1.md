@@ -22,7 +22,7 @@ as `577c8ad5`; CDL register mutation C2 committed as `694d7779`. CDL-091 is now
 is next and NON-SENSITIVE.
 
 **Phase 1401 completion addendum:** CDL-091 runtime stub committed as
-`PENDING_PHASE_1401_HASH`. Reviewer payment remains inactive. Phase 1402
+`9bd4918f`. Reviewer payment remains inactive. Phase 1402
 CDL-092 CapProof opening is next and SENSITIVE.
 
 ---
