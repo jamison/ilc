@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1399 complete, Phase 1400 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1400 complete, Phase 1401 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -15,6 +15,11 @@ phase_1399_is_first_phase
 `06993864`; prelock C2 committed as `d2b4181d`. CDL-091 is now `open`
 and prelocked, not ratified. Phase 1400 is the next phase and remains
 SENSITIVE.
+
+**Phase 1400 completion addendum:** CDL-091 ratification evidence C1 committed
+as `577c8ad5`; CDL register mutation C2 committed as `694d7779`. CDL-091 is now
+`ratified`. Reviewer payment remains inactive. Phase 1401 CDL-091 runtime stub
+is next and NON-SENSITIVE.
 
 ---
 
