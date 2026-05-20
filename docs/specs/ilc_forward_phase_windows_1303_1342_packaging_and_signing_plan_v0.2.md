@@ -4,6 +4,7 @@
 **Recorded:** 2026-05-10.
 **Revised:** 2026-05-14 — comprehensive §5 rewrite (3-window post-1342 structure: issuance economics / public claimability governance / long-range); removed superseded single-Window-1343 section.
 **Alignment addendum:** 2026-05-19 — Window 1391-1398 routing aligned to the J-series jury / epoch-work canonicalization prompts; the older Mode-2 refutation settlement section is preserved as a scoped input to the J-series, not the primary window label.
+**Correction addendum:** 2026-05-20 — Six stale items corrected: (1) J-008 gate auto-flip claim removed — gate has hardcoded NOT_MET statuses; Phase 1425 must verify/patch source before Phase 1427 re-run. (2) CDL numbers updated from TBD to assigned values: CDL-091 (jury incentive), CDL-092 (CapProof), CDL-093 (maintenance lottery). (3) Phase 1399 description corrected — Phase 1394 (J-004) did not add CDL-091 to the register; Phase 1399 performed the formal register opening (C1 CDL mutation) + prelock (C2). (4) Phases 1403 and 1404 sensitivity corrected from SENSITIVE to NON-SENSITIVE. (5) Dependency tree Phase 1399 label updated. Authoritative completion records: `docs/specs/ilc_phase_1399_1428_sequence_lock_v0.1.md` and `docs/phases/STATUS.md`.
 **Authority:** This document records forward planning only. It does not open
 Window 1303+, assign an active sequence lock, execute source export, publish a repository or package, produce release artifacts, generate release keys or envelopes, mutate Genesis Atlas, sign v0.2, activate public claimability, activate public P2P/fetch/sidecar serving, or authorize wallet/ECU/ILC economics.
 
@@ -966,7 +967,7 @@ activation-gate boundary work. It is no longer the primary label for the whole
 | J-005 | 1395 | COMPLETE: Epoch-start capability and maintenance-work contract (`epoch_start_runtime.py`, `maintenance_work_contract_runtime.py`). Records `epoch_start_capability_and_maintenance_work_contract_phase_j005`, `epoch_sequence_lock_enforced`, `maintenance_task_lifecycle_proposed_claimed_completed_audited_rewarded`. 24 tests. |
 | J-006 | 1396 | COMPLETE: Default-off jury assignment quote runtime (`jury_assignment_runtime.py`). Records `default_off_jury_assignment_quote_runtime_phase_j006`, `jury_assignment_no_public_activation_phase_j006`, `epoch_hash_shadow_assignment_only_phase_j006`. `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=True`. Panel shape 7+1 (ADM-003), `independence_k=3`. `vrf_required_for_production_high_value_assignment` boundary preserved. 33 tests. |
 | J-007 | 1397 | COMPLETE: Shadow public-ingestion jury harness (`ingestion_shadow_harness.py`). Records `shadow_public_ingestion_harness_phase_j007`, `j007_t0_5_quarantine_exercised`, `j007_maintenance_task_lifecycle_exercised`, `j007_no_production_activation`. T0–T6 taxonomy decision procedure implemented. `PRODUCTION_INGESTION_NOT_ACTIVATED=True`. 55 tests. |
-| J-008 | 1398 | COMPLETE: Production jury activation gate (`jury_activation_gate.py`). Records `production_jury_activation_gate_defined_phase_j008`, `j008_gate_verdict_incomplete`. Verdict: INCOMPLETE — 3/10 MET, 7/10 NOT_MET blocking. `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=True`. Gate will auto-flip to PASS when all 7 blocking conditions met. 51 tests. J-series total: 163 tests. |
+| J-008 | 1398 | COMPLETE: Production jury activation gate (`jury_activation_gate.py`). Records `production_jury_activation_gate_defined_phase_j008`, `j008_gate_verdict_incomplete`. Verdict: INCOMPLETE — 3/10 MET, 7/10 NOT_MET blocking. `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=True`. Gate has hardcoded NOT_MET statuses (does NOT auto-flip); Phase 1425 must verify whether source changes are required before Phase 1427 re-run. 51 tests. J-series total: 163 tests. |
 
 #### Preserved Mode-2 Refutation Carry-Forward Context
 
@@ -1138,9 +1139,10 @@ HCON02_QUORUM_MINIMUM_VOTERS = 2
 
 **Purpose:** Two parallel tracks in one window:
 1. Resolve all 7 blocking conditions identified by the J-008 jury activation gate (Phase 1398
-   verdict INCOMPLETE). When all 7 are MET, `evaluate_jury_activation_gate()` will return
-   `verdict="PASS"` and a production GO can be issued for live reviewer payments, CapProof
-   pricing, and maintenance lottery distribution.
+   verdict INCOMPLETE). The gate has hardcoded NOT_MET statuses and does not auto-flip; Phase
+   1425 must verify whether source changes are required before Phase 1427 can produce
+   `verdict="PASS"`. After Phase 1427 PASS, a production GO can be issued for live reviewer
+   payments, CapProof pricing, and maintenance lottery distribution.
 2. Produce the Launch Readiness Manifest schema and private soft-RC rehearsal entry criteria
    so that private bootstrap testing can begin in parallel with or immediately after the jury
    economy track.
@@ -1157,12 +1159,12 @@ path (CDL-048 Phase 1388, public claimability Phase 1389) is already live and un
 
 | Phase | Topic | Character | Sensitivity | Blocking condition resolved |
 |-------|-------|-----------|-------------|----------------------------|
-| 1399 | J-004 CDL jury incentive economics — deliberation and prelock | CDL prelock | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` (partial) |
-| 1400 | J-004 CDL jury incentive economics — ratification | CDL ratification | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` |
-| 1401 | J-004 jury incentive economics runtime stub | Runtime | NON-SENSITIVE | Wires ratified CDL into module; `reviewer_payment_not_activated` boundary preserved |
-| 1402 | CapProof CDL — opening and scope definition | CDL opening | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (opens track) |
-| 1403 | CapProof CDL — deliberation; probe content-addressing, CV signing, ±15% band | CDL deliberation | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
-| 1404 | CapProof CDL — prelock | CDL prelock | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
+| 1399 | CDL-091 jury incentive economics — formal register opening (Phase 1394 gap fix, C1 CDL mutation) + prelock (C2) | CDL opening + prelock | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` (partial) |
+| 1400 | CDL-091 jury incentive economics — ratification | CDL ratification | SENSITIVE | `JURY_INCENTIVE_CDL_RATIFIED` |
+| 1401 | CDL-091 jury incentive economics runtime stub | Runtime | NON-SENSITIVE | Wires ratified CDL into module; `reviewer_payment_not_activated` boundary preserved |
+| 1402 | CDL-092 CapProof — opening and scope definition | CDL opening | SENSITIVE | `CAPPROOF_CDL_RATIFIED` (opens track) |
+| 1403 | CDL-092 CapProof — deliberation; probe content-addressing, CV signing, ±15% band | CDL deliberation | NON-SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
+| 1404 | CDL-092 CapProof — prelock | CDL prelock | NON-SENSITIVE | `CAPPROOF_CDL_RATIFIED` (partial) |
 | 1405 | CapProof CDL — ratification | CDL ratification | SENSITIVE | `CAPPROOF_CDL_RATIFIED` |
 | 1406 | Maintenance lottery pool CDL — opening and scope | CDL opening | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (opens track) |
 | 1407 | Maintenance lottery pool CDL — deliberation and prelock | CDL prelock | SENSITIVE | `MAINTENANCE_LOTTERY_CDL_RATIFIED` (partial) |
@@ -1192,23 +1194,23 @@ path (CDL-048 Phase 1388, public claimability Phase 1389) is already live and un
 
 | CDL | Scope |
 |-----|-------|
-| J-004 CDL (number TBD at prelock) | Jury incentive economics — fixed + accuracy-weighted panel compensation; approval-volume bias controls |
-| CapProof CDL (number TBD at opening) | CapProof content-addressing, CV signing chain, ±15% pricing band |
-| Maintenance Lottery CDL (number TBD at opening) | Maintenance lottery pool distribution rules |
+| CDL-091 | Jury incentive economics — fixed + accuracy-weighted panel compensation; approval-volume bias controls |
+| CDL-092 | CapProof content-addressing, CV signing chain, ±15% pricing band |
+| CDL-093 | Maintenance lottery pool distribution rules |
 
 CDL numbers are assigned from the open end of the register at opening time per standing policy.
 
 #### Dependency Tree
 
 ```
-Phase 1399 (J-004 CDL prelock)
-  └─ Phase 1400 (J-004 CDL ratification)  ──► JURY_INCENTIVE_CDL_RATIFIED MET
+Phase 1399 (CDL-091 register opening + prelock)
+  └─ Phase 1400 (CDL-091 ratification)  ──► JURY_INCENTIVE_CDL_RATIFIED MET
        └─ Phase 1401 (runtime stub)
 
-Phase 1402 (CapProof CDL opening)
-  └─ Phase 1403 (deliberation)
-       └─ Phase 1404 (prelock)
-            └─ Phase 1405 (ratification)  ──► CAPPROOF_CDL_RATIFIED MET
+Phase 1402 (CDL-092 CapProof opening)
+  └─ Phase 1403 (CDL-092 deliberation)
+       └─ Phase 1404 (CDL-092 prelock)
+            └─ Phase 1405 (CDL-092 ratification)  ──► CAPPROOF_CDL_RATIFIED MET
 
 Phase 1406 (Maintenance CDL opening)
   └─ Phase 1407 (prelock)
