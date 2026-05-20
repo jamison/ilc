@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1407-Fix1 CDL-053 prelock complete, Phase 1407-Fix2 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1407-Fix2 CDL-053 ratification complete, Phase 1407-Fix3 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -84,6 +84,15 @@ edge-mint outputs, and no direct Werner ECU creation. CDL-053 remains open and
 unratified. No CDL mutation, CDL-093 mutation, runtime activation, settlement,
 wallet behavior, live distribution, or J-008 gate verdict change occurred.
 Phase 1407-Fix2 CDL-053 ratification is next and SENSITIVE.
+
+**Phase 1407-Fix2 completion addendum:** CDL-053 ratification evidence C1
+committed as `aa8e7e9a`; CDL register mutation C2 committed as `f654bacc` with
+`ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1407_fix2`. CDL-053 is now
+`ratified`. The ratified scope is narrow Werner local productive credit for
+review-lane-passed maintenance work only; no direct Werner ECU creation, runtime
+activation, wallet mutation, settlement, live distribution, or J-008 gate verdict
+change occurred. Phase 1407-Fix3 CDL-093 prelock amendment and Q2 SIM is next
+and NON-SENSITIVE.
 
 ---
 
