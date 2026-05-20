@@ -32,7 +32,7 @@ reward, and J-008 gate verdict changes remain unauthorized. Phase 1403 CDL-092
 deliberation is next and NON-SENSITIVE.
 
 **Phase 1403 completion addendum:** CDL-092 CapProof deliberation committed as
-`PENDING_COMMIT_HASH`. Q1-Q4 are resolved into candidate prelock constants for
+`e3a5a0a9`. Q1-Q4 are resolved into candidate prelock constants for
 Phase 1404. CDL-092 remains open and unratified. No CDL mutation, CapProof
 pricing activation, production probe execution, direct ILC reward, or J-008 gate
 verdict change occurred. Phase 1404 CDL-092 prelock is next and NON-SENSITIVE.
