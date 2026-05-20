@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN through Phase 1399
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1399 complete, Phase 1400 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -10,6 +10,11 @@ window_1399_1428_sequence_lock_committed_phase_1399_entry
 go_window_1399_1428_authorized_2026_05_20
 phase_1399_is_first_phase
 ```
+
+**Phase 1399 completion addendum:** CDL-091 formal opening C1 committed as
+`06993864`; prelock C2 committed as `PENDING_C2_HASH`. CDL-091 is now `open`
+and prelocked, not ratified. Phase 1400 is the next phase and remains
+SENSITIVE.
 
 ---
 
@@ -119,8 +124,9 @@ Phase 1399 therefore has two commits:
 - **C1 (CDL mutation):** Adds CDL-091 row with `status: open`, `opened_phase: 1399`,
   `opening_token: cdl_091_jury_incentive_economics_opened_phase_1399`.
   Requires `ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=1399`.
+  Completed in commit `06993864`.
 - **C2 (prelock):** Adds `docs/specs/ilc_cdl_091_jury_incentive_economics_prelock_1399_v0.1.md`
-  and tests. No CDL mutation env required.
+  and tests. No CDL mutation env required. Completed in commit `PENDING_C2_HASH`.
 
 Phase 1400 historical hardening must reference the Phase 1399 C1 commit hash, not Phase 1394.
 
