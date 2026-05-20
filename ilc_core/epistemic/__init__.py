@@ -52,6 +52,12 @@ from .maintenance_lottery_runtime import (
     MAINTENANCE_LOTTERY_RUNTIME_VERSION,
     request_maintenance_lottery_entry_stub,
 )
+from .vrf_proof_verifier import (
+    VRF_PROOF_VERIFIER_VERSION,
+    VRFVerificationError,
+    verify_vrf_proof,
+    vrf_beta_from_proof,
+)
 from .node_submission_runtime import (
     CDL_052_DEPENDENCY,
     EPISTEMIC_RUNTIME_PART1_VERSION,
@@ -125,6 +131,8 @@ __all__ = [
     "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED",
     "REVIEWER_PAYMENT_NOT_ACTIVATED",
     "REVIEWER_PAYMENT_NOT_ACTIVATED_TOKEN",
+    "VRF_PROOF_VERIFIER_VERSION",
+    "VRFVerificationError",
     "check_novelty",
     "process_refutation_submission",
     "queue_reviewer_payment_stub",
@@ -136,4 +144,6 @@ __all__ = [
     "validate_epistemic_node_submission",
     "validate_epistemic_refutation_submission",
     "validate_epistemic_reuse_centrality_query",
+    "verify_vrf_proof",
+    "vrf_beta_from_proof",
 ]
