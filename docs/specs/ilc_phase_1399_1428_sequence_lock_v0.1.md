@@ -77,8 +77,8 @@ productive work only, local non-settlement credit eligibility only, with Phase
 next and NON-SENSITIVE.
 
 **Phase 1407-Fix1 completion addendum:** CDL-053 Werner local productive-credit
-prelock committed in the current phase. Scope constants lock productive credit
-to review-lane-passed maintenance tasks only, local non-settlement/non-wallet
+prelock committed as `d302544b`. Scope constants lock productive credit to
+review-lane-passed maintenance tasks only, local non-settlement/non-wallet
 credit only, CDL-085 phi-bound inheritance only for provenance-equivalent
 edge-mint outputs, and no direct Werner ECU creation. CDL-053 remains open and
 unratified. No CDL mutation, CDL-093 mutation, runtime activation, settlement,
