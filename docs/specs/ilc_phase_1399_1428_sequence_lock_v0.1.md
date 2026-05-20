@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1405 CDL-092 ratification complete, Phase 1406 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1406 CDL-093 opening complete, Phase 1407 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -51,6 +51,12 @@ CDL-092 is now `ratified`. CapProof pricing, production probe execution, direct
 ILC reward, runtime activation, and J-008 gate verdict changes remain
 unauthorized. Phase 1406 CDL-093 maintenance lottery pool opening is next and
 SENSITIVE.
+
+**Phase 1406 completion addendum:** CDL-093 maintenance lottery pool opening C1
+committed as `PENDING_C1`; CDL register opening C2 committed as `PENDING_C2`.
+CDL-093 is now `open` and unratified. Maintenance lottery distribution, live
+draws, ECU settlement, runtime activation, and J-008 gate verdict changes remain
+unauthorized. Phase 1407 CDL-093 deliberation/prelock is next and NON-SENSITIVE.
 
 ---
 
