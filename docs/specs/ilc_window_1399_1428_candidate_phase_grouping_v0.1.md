@@ -37,9 +37,10 @@ Three parallel tracks:
 3. **Gate closure tail (Phases 1425–1428):** Pre-gate verification, soft RC re-run (forward
    obligation from Phase 1367), J-008 gate re-run expecting `verdict="PASS"`, window closure.
 
-The J-008 `evaluate_jury_activation_gate()` function will flip automatically to `verdict="PASS"`
-when all 7 blocking condition tokens are met; no source changes to the gate module are needed
-for the re-run phase.
+The J-008 `evaluate_jury_activation_gate()` function is currently static and records the
+Phase 1398 point-in-time NOT_MET conditions. Phase 1425 must verify whether source changes
+are required for the gate module to recognize the new completion evidence; if needed, insert
+a Phase 1425a gate-detector update before the Phase 1427 re-run.
 
 **Tail-slot policy:** No conditional tail slots. All CDL tracks are required by J-008 gate
 conditions and are pre-authorized by the Phase 1398 gate verdict. Phase numbers 1399–1428 are
@@ -430,13 +431,16 @@ authorization is required beyond the sequence lock GO.
 | 29 | 1427 | J-008 gate re-run — `evaluate_jury_activation_gate()` expecting `verdict="PASS"` | Gate | **SENSITIVE** |
 | 30 | 1428 | Window 1399–1428 closure gate | Gate | **SENSITIVE** |
 
-### Note on Phase 1399 (CDL-091 prelock)
+### Note on Phase 1399 (CDL-091 formal opening + prelock)
 
-CDL-091 was opened in Phase 1394 (J-004) with opening spec
-`docs/specs/ilc_cdl_jury_incentive_economics_opening_v0.1.md`. Phase 1399 is the prelock, not
-a re-opening. The deliberation questions from the Phase 1394 spec must be resolved in the
-prelock document. Historical hardening test must assert CDL-091 at `status: open` at the
-Phase 1394 opening commit ref.
+Phase 1394 (J-004) opened the jury incentive economics lane with opening spec
+`docs/specs/ilc_cdl_jury_incentive_economics_opening_v0.1.md`, but it did not
+mutate `docs/specs/ilc_constitutional_decision_log_v0.1.md`. CDL-090 remains the last
+registered CDL at the time this guidance doc is drafted. Phase 1399 therefore has a
+two-part responsibility: first formally register CDL-091 as `status: open`, then commit
+the prelock document resolving the deliberation questions from the Phase 1394 opening
+spec. Historical hardening for Phase 1400 must assert CDL-091 at `status: open` at the
+Phase 1399 register-opening commit ref, not at the Phase 1394 J-004 commit ref.
 
 ### Note on Phase 1405 / 1408 runtime mutation pattern
 
@@ -448,13 +452,12 @@ require two-commit pattern: Commit 1 = runtime/tests (if any), Commit 2 = CDL do
 
 ### Note on Phase 1427 gate re-run
 
-`evaluate_jury_activation_gate()` in `ilc_core/epistemic/jury_activation_gate.py` evaluates
-conditions dynamically by checking for token presence or module-level flags. For conditions
-that require checking external modules or files, the gate module must be confirmed (via Phase
-1425 pre-gate verification) to correctly detect the new tokens before Phase 1427 executes.
-If the gate module's condition checks are token-string-based (checking a hardcoded token list),
-the condition-checking functions may need to be updated in a Phase 1425a to accept the new
-completion tokens. This must be verified in Phase 1425.
+`evaluate_jury_activation_gate()` in `ilc_core/epistemic/jury_activation_gate.py` currently
+encodes the Phase 1398 NOT_MET conditions directly. It must be confirmed (via Phase 1425
+pre-gate verification) that the gate module can detect the new completion evidence before
+Phase 1427 executes. If it still relies on hardcoded NOT_MET rows, the condition-checking
+functions must be updated in a Phase 1425a to accept the new completion tokens. This must be
+verified in Phase 1425.
 
 ---
 
@@ -462,8 +465,9 @@ completion tokens. This must be verified in Phase 1425.
 
 ### SENSITIVE phases (require explicit GO token)
 
-- **Phase 1399** — CDL-091 prelock: CDL is open; prelock hardens but does not mutate register.
-  SENSITIVE because it is a constitutional prelock authorizing future ratification GO.
+- **Phase 1399** — CDL-091 formal opening + prelock: registers CDL-091 as `status: open`,
+  then prelocks the scope. SENSITIVE because it mutates the CDL register and authorizes
+  future ratification GO. The register-opening commit requires `ILC_CDL_MUTATION_AUTHORIZED=1`.
 - **Phase 1400** — CDL-091 ratification: CDL register mutation (`ILC_CDL_MUTATION_AUTHORIZED=1`).
 - **Phase 1402** — CDL-092 opening: CDL register mutation (`ILC_CDL_MUTATION_AUTHORIZED=1`).
 - **Phase 1405** — CDL-092 ratification: CDL register mutation (`ILC_CDL_MUTATION_AUTHORIZED=1`).
@@ -485,27 +489,32 @@ CDL register mutations require:
 ```
 ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<phase>
 ```
-Required for: Phases 1400, 1402, 1405, 1406, 1408.
+Required for: **Phases 1399** (C1 register opening), 1400, 1402, 1405, 1406, 1408.
 
-CDL prelock phases (1399, 1403-1404, 1407) do NOT mutate the register; no hook required.
+CDL prelock-only phases (1403-1404, 1407) do NOT mutate the register; no hook required for
+their prelock commits. Phase 1399 is a combined opening + prelock: C1 requires the hook,
+C2 (prelock spec) does not.
 
 ---
 
 ## 15. Scope Notes for Fixed Phases
 
-### Phase 1399 — CDL-091 jury incentive economics prelock
+### Phase 1399 — CDL-091 jury incentive economics formal opening + prelock
 **SENSITIVE.** Requires explicit `GO Phase 1399` before executing.
 
 **Deliverables:**
+- CDL register mutation: CDL-091 row added with `status: open`
 - `docs/specs/ilc_cdl_091_jury_incentive_economics_prelock_1399_v0.1.md`
-- `tests/test_phase_1399_cdl_091_prelock.py` — historical hardening (assert CDL-091 `status: open` at Phase 1394 commit)
+- `tests/test_phase_1399_cdl_091_prelock.py` — assert CDL-091 `status: open` after the register-opening commit and assert CDL-091 remains unratified
 
 **Required prelock content:**
 - Resolved deliberation questions: funding source, bonus calculation formula, bias mitigation mechanism
 - Locked governance constants: base fee (Decimal, ECU), accuracy-weight bonus formula, panel size factor
 - Explicit non-ratification statement: "CDL-091 remains open and unratified after Phase 1399"
 
-**Commit subject:** `const(1399): CDL-091 jury incentive economics prelock`
+**Commit pattern:** 2 commits — Commit 1: CDL register mutation; Commit 2: prelock spec + tests.
+**Commit subject (C1):** `const(1399): CDL-091 jury incentive economics opening`
+**Commit subject (C2):** `const(1399): CDL-091 jury incentive economics prelock`
 
 ---
 
@@ -670,7 +679,7 @@ track (1418-1419) are mostly independent and may be interleaved or parallelized.
 
 Each ratification phase (1400, 1405, 1408) must harden the corresponding prelock test to
 assert the CDL is at `status: open` at the historical opening commit ref:
-- Phase 1400: assert CDL-091 at Phase 1394 opening commit (`4d7aa833`)
+- Phase 1400: assert CDL-091 at Phase 1399 register-opening commit (TBD)
 - Phase 1405: assert CDL-092 at Phase 1402 opening commit (TBD)
 - Phase 1408: assert CDL-093 at Phase 1406 opening commit (TBD)
 
