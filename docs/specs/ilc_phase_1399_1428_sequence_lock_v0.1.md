@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1424 public RC activation certificate design complete; Phase 1425 pre-gate re-run verification is next and NON-SENSITIVE
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1425 pre-gate verification complete; Phase 1426 soft-RC gate re-run is next and SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -335,6 +335,25 @@ distribution, wallet/ledger/treasury/registry mutation, CDL mutation, or J-008
 gate flip occurred. Phase 1424 public RC activation certificate design is next
 and NON-SENSITIVE, but execution is paused for human feedback per user
 instruction.
+
+**Phase 1425 completion addendum:** Pre-gate verification committed in this
+phase. `ilc_core/epistemic/jury_activation_gate.py` patched: all 7 J-008
+blocking conditions changed from `NOT_MET` to `MET` with updated
+`evidence_ref` and `routing="ALREADY MET -- evidence: <token>"`. Historical
+NOT_MET tokens (`vrf_verifier_required_not_implemented_phase_j008`,
+`capproof_cdl_not_opened_phase_j008`,
+`maintenance_lottery_cdl_not_opened_phase_j008`,
+`jury_incentive_cdl_not_ratified_phase_j008`, `j008_gate_verdict_incomplete`)
+are retained in `phase_tokens` as archived evidence.
+`PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED` remains `True`.
+`evaluate_jury_activation_gate()` now returns `verdict="PASS"` and
+`blocking_not_met=[]` dynamically. Token
+`j008_gate_verdict_still_incomplete_pending_production_go_phase_1425` is
+recorded: the dynamic PASS reflects all-conditions-MET pre-gate state, not
+a production authorization. 64 new tests (Phase 1425) + 61 updated tests
+(Phase 1398) = 125 combined PASS. No production activation, CDL mutation,
+graph/ledger/treasury/wallet mutation occurred. Phase 1426 soft-RC gate
+re-run is next and SENSITIVE.
 
 **Phase 1424 completion addendum:** Public RC activation certificate design
 committed in this phase. `docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md`
