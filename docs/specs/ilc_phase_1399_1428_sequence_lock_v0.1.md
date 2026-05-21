@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1417 review lane integration tests complete, Phase 1418 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1418 anti-capture diversity design complete, Phase 1419 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -239,6 +239,20 @@ still reports `REVIEW_LANE_WIRING_COMPLETE` as `NOT_MET`. No runtime source
 mutation, J-008 gate verdict change, public serving, reviewer payment execution,
 ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
 Phase 1418 anti-capture diversity design is next and NON-SENSITIVE.
+
+**Phase 1418 completion addendum:** Anti-capture diversity ADR committed in this
+phase. `docs/adr/ADR_0044_Anti_Capture_Diversity_Verification.md` records
+`anti_capture_diversity_adr_accepted_phase_1418`,
+`cdl_v3_jury_assignment_wiring_defined_phase_1418`,
+`vrf_outsider_selection_contract_defined_phase_1418`, and
+`anti_capture_diversity_not_verified_phase_1418`. The ADR distinguishes
+already-wired operator-domain independence and high-value audit VRF ordering
+from the remaining CDL-V3 selected-panel cluster-diversity wiring required in
+Phase 1419. No runtime source mutation, J-008 gate verdict change, production
+jury activation, public graph admission activation, reviewer payment, ECU
+distribution, ledger/treasury/wallet mutation, graph mutation, or CDL mutation
+occurred. Phase 1419 anti-capture diversity verification is next and
+NON-SENSITIVE.
 
 ---
 
