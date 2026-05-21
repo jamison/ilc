@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1423 private soft-RC rehearsal criteria complete, Phase 1424 next and NON-SENSITIVE but paused for human feedback
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1424 public RC activation certificate design complete; Phase 1425 pre-gate re-run verification is next and NON-SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -335,6 +335,23 @@ distribution, wallet/ledger/treasury/registry mutation, CDL mutation, or J-008
 gate flip occurred. Phase 1424 public RC activation certificate design is next
 and NON-SENSITIVE, but execution is paused for human feedback per user
 instruction.
+
+**Phase 1424 completion addendum:** Public RC activation certificate design
+committed in this phase. `docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md`
+records `activation_certificate_v1_schema_defined_phase_1424`,
+`genesis_signing_ceremony_procedure_defined_phase_1424`,
+`epoch_0_to_1_transition_trigger_defined_phase_1424`,
+`artifact_hello_world_design_defined_phase_1424`, and
+`public_rc_not_activated_phase_1424`. The design defines the 8-field
+`activation_certificate_v1` schema, signing ceremony procedure (prerequisite
+checklist, ADR-0036 key custody, two-person rule, ceremony transcript format,
+environment controls), epoch 0->1 trigger statement (certificate signature is
+the sole authorized trigger), and `artifact:hello_world` design
+(T1_PUBLIC_NON_REWARD_METADATA, Genesis Agent 01 author, verbatim content fixed
+by human decision, does NOT trigger epoch start). 60 tests pass. No signing
+ceremony execution, no public RC activation, no `ilc_core/` mutation, no CDL
+mutation, no graph/ledger/treasury/wallet/registry mutation, and no J-008 gate
+flip occurred. Phase 1425 pre-gate re-run verification is next and NON-SENSITIVE.
 
 ---
 
