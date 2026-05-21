@@ -46,6 +46,8 @@ REVIEW_LANE_MIN_ASSIGNED_REVIEWERS = 5
 REVIEW_LANE_APPROVAL_QUORUM = 5
 REVIEW_LANE_OUTSIDER_REVIEWERS_REQUIRED_FOR_HIGH_VALUE = 1
 MAX_DEDUP_LOOKUP_RECORDS = 10_000
+_SHA256_PREFIX = "sha256:"
+_HEX = frozenset("0123456789abcdef")
 
 DEDUP_NO_DUPLICATE_FOUND = "no_duplicate_found"
 DEDUP_ATTESTATION_TO_EXISTING = "attestation_to_existing"
@@ -131,6 +133,7 @@ class ReviewLaneAdmissionDecision:
     current_taxonomy_class: str
     target_taxonomy_class: str
     submission_id: str
+    submission_content_hash: str
     review_epoch: int
     review_lane: str
     reviewer_count: int
@@ -184,6 +187,20 @@ def _require_non_empty_string(value: str | None, token: str) -> None:
         raise ValueError(token)
 
 
+def _require_sha256_content_hash(value: str | None, token: str) -> str:
+    _require_non_empty_string(value, token)
+    if not isinstance(value, str):
+        raise ValueError(token)
+    digest = value[len(_SHA256_PREFIX) :] if value.startswith(_SHA256_PREFIX) else ""
+    if (
+        not value.startswith(_SHA256_PREFIX)
+        or len(digest) != 64
+        or any(char not in _HEX for char in digest)
+    ):
+        raise ValueError(token)
+    return value
+
+
 def _require_protocol_epoch(value: int) -> None:
     if not isinstance(value, int) or isinstance(value, bool) or value < 0:
         raise ValueError("review_lane_invalid_review_epoch")
@@ -197,8 +214,10 @@ def _validate_request_shape(request: ReviewLaneAdmissionRequest) -> tuple[str, s
         request.submission_content_hash,
         "review_lane_invalid_submission_content_hash",
     )
-    if not request.submission_content_hash.startswith("sha256:"):
-        raise ValueError("review_lane_invalid_submission_content_hash")
+    _require_sha256_content_hash(
+        request.submission_content_hash,
+        "review_lane_invalid_submission_content_hash",
+    )
     _require_non_empty_string(request.submitter_agent_id, "review_lane_invalid_submitter_agent_id")
     _require_non_empty_string(request.review_lane, "review_lane_invalid_review_lane")
     _require_protocol_epoch(request.review_epoch)
@@ -220,6 +239,8 @@ def _validate_request_shape(request: ReviewLaneAdmissionRequest) -> tuple[str, s
 def _reviewer_counts(attestations: Sequence[ReviewerAttestation]) -> tuple[int, int, int, bool, bool]:
     if not isinstance(attestations, Sequence) or isinstance(attestations, (str, bytes)):
         raise ValueError("review_lane_invalid_reviewer_attestations")
+    if len(attestations) > REVIEW_LANE_PANEL_SIZE:
+        return (len(attestations), 0, 0, False, True)
     reviewer_ids: set[str] = set()
     duplicate_found = False
     approval_ids: set[str] = set()
@@ -307,6 +328,7 @@ def quote_review_lane_admission(
         current_taxonomy_class=current_taxonomy,
         target_taxonomy_class=target_taxonomy,
         submission_id=request.submission_id,
+        submission_content_hash=request.submission_content_hash,
         review_epoch=request.review_epoch,
         review_lane=request.review_lane,
         reviewer_count=reviewer_count,
@@ -345,9 +367,10 @@ def resolve_review_lane_dedup(
 ) -> ReviewLaneDedupEvidence:
     """Resolve read-only dedup evidence without writing graph or registry state."""
 
-    _require_non_empty_string(submission_content_hash, "review_lane_invalid_submission_content_hash")
-    if not submission_content_hash.startswith("sha256:"):
-        raise ValueError("review_lane_invalid_submission_content_hash")
+    _require_sha256_content_hash(
+        submission_content_hash,
+        "review_lane_invalid_submission_content_hash",
+    )
     if canonical_external_id is not None:
         _require_non_empty_string(
             canonical_external_id,
@@ -391,6 +414,7 @@ def quote_review_lane_admission_with_stubs(
 ) -> ReviewLaneSettlementStubQuote:
     """Quote admission plus default-off reviewer-payment stubs."""
 
+    _validate_request_shape(request)
     dedup_evidence = resolve_review_lane_dedup(
         canonical_external_id=request.canonical_external_id,
         submission_content_hash=request.submission_content_hash,
@@ -463,6 +487,7 @@ def review_lane_decision_canonical_json(decision: ReviewLaneAdmissionDecision) -
         "reviewer_payment_authorized": decision.reviewer_payment_authorized,
         "runtime_version": decision.runtime_version,
         "submission_id": decision.submission_id,
+        "submission_content_hash": decision.submission_content_hash,
         "target_taxonomy_class": decision.target_taxonomy_class,
     }
     return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)

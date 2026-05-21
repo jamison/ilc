@@ -278,7 +278,8 @@ def validate_t0_5_quarantine(
         descriptor.extraction_method in {"automated-rule"}
         and not descriptor.source_span_present
     ):
-        warnings.append("automated_extractor_missing_source_span_advisory")
+        failure_token = failure_token or "automated_extractor_missing_source_span"
+        valid = False
 
     # claim_form sanity
     if descriptor.claim_form == "consensus":
@@ -396,16 +397,33 @@ def run_shadow_ingestion_harness(
         HarnessReport with PASS or FAIL verdict (shadow mode only).
         PASS requires: ≥1 T0.5 submission processed; ≥1 task reached audited state.
     """
-    if not isinstance(review_epoch, int) or review_epoch < 0:
+    if isinstance(review_epoch, bool) or not isinstance(review_epoch, int) or review_epoch < 0:
         raise IngestionHarnessError("review_epoch must be a non-negative integer")
 
     if harness_id is None:
-        # Deterministic harness ID from epoch and submission count
+        # Deterministic harness ID from the actual shadow inputs, not just counts.
         harness_id = hashlib.sha256(
             json.dumps(
-                {"epoch": review_epoch, "n_submissions": len(submissions)},
+                {
+                    "epoch": review_epoch,
+                    "submissions": [
+                        {
+                            "submission_content_hash": item.submission_content_hash,
+                            "submission_id": item.submission_id,
+                        }
+                        for item in submissions
+                    ],
+                    "tasks": [
+                        {
+                            "task_id": task.task_id,
+                            "transitions": list(transition_sequence),
+                        }
+                        for task, transition_sequence in tasks_with_transitions
+                    ],
+                },
                 sort_keys=True,
                 separators=(",", ":"),
+                allow_nan=False,
             ).encode("utf-8")
         ).hexdigest()[:16]
 

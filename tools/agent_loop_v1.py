@@ -591,13 +591,16 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
     confidence_score = _require_float("confidence_score", panel.get("confidence_score"))
     agreement_score = _require_float("agreement_score", panel.get("agreement_score"))
     ecu_estimate = _require_float("ecu_estimate", task.get("ecu_estimate"))
+    confidence_decimal = Decimal(str(confidence_score))
+    agreement_decimal = Decimal(str(agreement_score))
+    ecu_estimate_decimal = Decimal(str(ecu_estimate))
     base_reward = Decimal(
         str(
             round(
                 simple_claim_reward(
-                    stake_spent=ecu_estimate,
-                    potential=confidence_score,
-                    success_rate=agreement_score,
+                    stake_spent=ecu_estimate_decimal,
+                    potential=confidence_decimal,
+                    success_rate=agreement_decimal,
                 ),
                 12,
             )
@@ -655,14 +658,14 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
 
     ledger = SimpleEpochLedger()
     total_reward = round(sum((claim.amount for claim in claims), Decimal("0")), 12)
-    ledger.record_task(int(task["epoch"]), ecu_estimate, total_reward)
+    ledger.record_task(int(task["epoch"]), ecu_estimate_decimal, total_reward)
 
     outcomes = OutcomeLogger()
     outcomes.log(
         TaskOutcome(
             task_type="claim.submit",
             domain=str(task["task_class"]),
-            stake_spent=ecu_estimate,
+            stake_spent=ecu_estimate_decimal,
             reward_paid=total_reward,
             success=True,
         )
@@ -681,7 +684,9 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
             "rewards_paid": decimal_to_canonical_string(
                 ledger.get_epoch_stats(int(task["epoch"])).rewards_paid
             ),
-            "clearing_price": ledger.clearing_price(int(task["epoch"])),
+            "clearing_price": decimal_to_canonical_string(
+                ledger.clearing_price(int(task["epoch"]))
+            ),
         },
         "outcome_summary": {
             "count": outcome_summary["count"],

@@ -8,7 +8,8 @@ Proves:
 - Historical NOT_MET tokens are still present in phase_tokens (archived evidence)
 - Gate module version token reflects Phase 1425
 - No import random in gate source
-- production_activated is True after Phase 1427
+- gate_authorized is True after Phase 1427
+- production_activated remains False until concrete execution surfaces activate
 """
 
 from __future__ import annotations
@@ -113,9 +114,10 @@ def test_blocking_not_met_length_zero(report):
     assert len(report.blocking_not_met) == 0
 
 
-def test_production_activated_true_after_phase_1427(report):
-    """production_activated is true only after PASS and Phase 1427 production GO."""
-    assert report.production_activated is True
+def test_gate_authorized_true_but_production_surfaces_default_off_after_phase_1427(report):
+    assert report.gate_authorized is True
+    assert report.production_activated is False
+    assert report.execution_surfaces_activated is False
 
 
 # ---------------------------------------------------------------------------

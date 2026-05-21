@@ -119,8 +119,10 @@ def test_verdict_is_pass(report):
     assert report.verdict == "PASS"
 
 
-def test_production_activated_true_after_phase_1427(report):
-    assert report.production_activated is True
+def test_gate_authorized_after_phase_1427_but_execution_surfaces_default_off(report):
+    assert report.gate_authorized is True
+    assert report.production_activated is False
+    assert report.execution_surfaces_activated is False
 
 
 def test_phase_tokens_in_report(report):
