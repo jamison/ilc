@@ -191,6 +191,22 @@ def test_distinct_cluster_floor_failure_fails_closed() -> None:
         quote_jury_assignment(**_quote_kwargs(pool))
 
 
+def test_two_cluster_pool_fails_closed() -> None:
+    pool = [
+        _make_agent("r1", cluster_id="c1", operator_domain="op-a"),
+        _make_agent("r2", cluster_id="c1", operator_domain="op-b"),
+        _make_agent("r3", cluster_id="c1", operator_domain="op-c"),
+        _make_agent("r4", cluster_id="c1", operator_domain="op-d"),
+        _make_agent("r5", cluster_id="c2", operator_domain="op-e"),
+        _make_agent("r6", cluster_id="c2", operator_domain="op-f"),
+        _make_agent("r7", cluster_id="c2", operator_domain="op-g"),
+        _make_agent("o1", cluster_id="c2", operator_domain="op-out", outsider=True),
+    ]
+
+    with pytest.raises(JuryAssignmentError, match="jury_cluster_diversity_floor_not_met"):
+        quote_jury_assignment(**_quote_kwargs(pool))
+
+
 def test_max_cluster_share_ceiling_failure_fails_closed() -> None:
     pool = [
         _make_agent("r1", cluster_id="c1", operator_domain="op-a"),
