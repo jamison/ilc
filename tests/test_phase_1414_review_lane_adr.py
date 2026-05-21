@@ -89,11 +89,11 @@ def test_adr_non_activation_section_forbids_runtime_and_gate_flip() -> None:
     assert "mutate ledger, treasury, wallet, graph, or CDL state" in text
 
 
-def test_j008_review_lane_condition_remains_not_met_in_phase_1414() -> None:
+def test_j008_review_lane_condition_is_met_after_phase_1425_and_1427() -> None:
     report = evaluate_jury_activation_gate()
     condition_by_id = {condition.condition_id: condition for condition in report.conditions}
 
     condition = condition_by_id["REVIEW_LANE_WIRING_COMPLETE"]
-    assert condition.status is GateConditionStatus.NOT_MET
-    assert "REVIEW_LANE_WIRING_COMPLETE" in report.blocking_not_met
-    assert report.verdict == "INCOMPLETE"
+    assert condition.status is GateConditionStatus.MET
+    assert "REVIEW_LANE_WIRING_COMPLETE" not in report.blocking_not_met
+    assert report.verdict == "PASS"

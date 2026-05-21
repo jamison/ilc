@@ -203,11 +203,11 @@ def test_source_hygiene_for_review_lane_stack() -> None:
     assert not [node for node in ast.walk(tree) if isinstance(node, ast.Assert)]
 
 
-def test_j008_review_lane_condition_evidence_recorded_but_gate_not_patched() -> None:
+def test_j008_review_lane_condition_met_after_phase_1425_and_1427() -> None:
     report = evaluate_jury_activation_gate()
     condition_by_id = {condition.condition_id: condition for condition in report.conditions}
 
     condition = condition_by_id["REVIEW_LANE_WIRING_COMPLETE"]
-    assert condition.status is GateConditionStatus.NOT_MET
-    assert "REVIEW_LANE_WIRING_COMPLETE" in report.blocking_not_met
-    assert report.verdict == "INCOMPLETE"
+    assert condition.status is GateConditionStatus.MET
+    assert "REVIEW_LANE_WIRING_COMPLETE" not in report.blocking_not_met
+    assert report.verdict == "PASS"

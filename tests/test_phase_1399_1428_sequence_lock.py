@@ -145,10 +145,18 @@ class TestCdlRegisterGap:
 
         assert "| CDL-093 |" not in result.stdout
 
-    def test_cdl_093_open_after_phase_1406_c2(self) -> None:
-        text = _cdl_text()
-        rows = [line for line in text.splitlines() if line.startswith("| CDL-093 |")]
-        assert len(rows) == 1, f"expected exactly one CDL-093 register row, found {len(rows)}"
+    def test_cdl_093_historically_open_after_phase_1406_c2(self) -> None:
+        import subprocess
+
+        result = subprocess.run(
+            ["git", "show", "15992abe:docs/specs/ilc_constitutional_decision_log_v0.1.md"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        rows = [line for line in result.stdout.splitlines() if line.startswith("| CDL-093 |")]
+        assert len(rows) == 1, f"expected exactly one historical CDL-093 row, found {len(rows)}"
         row = rows[0]
         assert "| open |" in row
         assert "opened_phase: 1406" in row
@@ -156,44 +164,44 @@ class TestCdlRegisterGap:
         assert "historical_non_ratification_token: cdl_093_not_ratified_phase_1406" in row
         assert "ratification_status: not_ratified_pending_phase_1408" in row
 
+    def test_cdl_093_ratified_after_phase_1408_c2(self) -> None:
+        text = _cdl_text()
+        rows = [line for line in text.splitlines() if line.startswith("| CDL-093 |")]
+        assert len(rows) == 1, f"expected exactly one CDL-093 register row, found {len(rows)}"
+        row = rows[0]
+        assert "| ratified |" in row
+        assert "opened_phase: 1406" in row
+        assert "opening_token: cdl_093_maintenance_lottery_pool_opened_phase_1406" in row
+        assert "historical_non_ratification_token: cdl_093_not_ratified_phase_1406" in row
+        assert "ratified_phase: 1408" in row
+        assert "ratification_token: cdl_093_ratified_phase_1408" in row
+
 
 class TestGateStaticStatus:
-    """Assert gate is static and not yet showing PASS."""
+    """Assert gate reflects the current Phase 1427 PASS state."""
 
     def test_gate_module_exists(self) -> None:
         assert GATE_SOURCE.exists(), f"Gate module not found at {GATE_SOURCE}"
 
     def test_gate_has_not_met_conditions(self) -> None:
         text = _gate_text()
-        assert "NOT_MET" in text, "Gate must still have NOT_MET conditions"
+        assert "NOT_MET" in text, "Historical NOT_MET enum and tokens must remain archived"
 
     def test_gate_verdict_not_pass(self) -> None:
         from ilc_core.epistemic.jury_activation_gate import evaluate_jury_activation_gate
         report = evaluate_jury_activation_gate()
-        assert report.verdict == "INCOMPLETE", (
-            f"Gate verdict is '{report.verdict}' — expected INCOMPLETE at sequence lock time. "
-            "Phase 1427 re-run will flip this after all conditions are MET."
-        )
+        assert report.verdict == "PASS"
 
     def test_gate_seven_blocking_conditions_not_met(self) -> None:
-        from ilc_core.epistemic.jury_activation_gate import (
-            evaluate_jury_activation_gate,
-            GateConditionStatus,
-        )
+        from ilc_core.epistemic.jury_activation_gate import evaluate_jury_activation_gate
         report = evaluate_jury_activation_gate()
-        blocking_not_met = [
-            c.condition_id for c in report.conditions
-            if c.blocking and c.status == GateConditionStatus.NOT_MET
-        ]
-        assert len(blocking_not_met) == 7, (
-            f"Expected 7 blocking NOT_MET conditions at sequence lock time, "
-            f"found {len(blocking_not_met)}: {blocking_not_met}"
-        )
+        assert report.blocking_not_met == []
+        assert all(c.status.value == "MET" for c in report.conditions)
 
     def test_gate_production_not_activated(self) -> None:
         from ilc_core.epistemic.jury_activation_gate import evaluate_jury_activation_gate
         report = evaluate_jury_activation_gate()
-        assert report.production_activated is False
+        assert report.production_activated is True
 
 
 class TestPromptFilesPresent:

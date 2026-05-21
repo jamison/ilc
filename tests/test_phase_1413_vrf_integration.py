@@ -270,14 +270,14 @@ def test_invalid_candidate_proof_is_excluded_from_vrf_ordering(
     assert "r8" not in quote.regular_panel
 
 
-def test_j008_vrf_condition_remains_not_met_until_phase_1425_gate_update() -> None:
+def test_j008_vrf_condition_is_met_after_phase_1425_and_authorized_after_1427() -> None:
     report = evaluate_jury_activation_gate()
     condition_by_id = {condition.condition_id: condition for condition in report.conditions}
 
-    assert condition_by_id["VRF_VERIFIER_IMPLEMENTED"].status is GateConditionStatus.NOT_MET
-    assert "VRF_VERIFIER_IMPLEMENTED" in report.blocking_not_met
-    assert report.verdict == "INCOMPLETE"
-    assert report.production_activated is False
+    assert condition_by_id["VRF_VERIFIER_IMPLEMENTED"].status is GateConditionStatus.MET
+    assert "VRF_VERIFIER_IMPLEMENTED" not in report.blocking_not_met
+    assert report.verdict == "PASS"
+    assert report.production_activated is True
 
 
 def test_no_private_key_or_local_proof_generation_paths_in_phase_1411_to_1413_files() -> None:

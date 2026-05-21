@@ -3,12 +3,12 @@
 Proves:
 - All 7 blocking conditions are now GateConditionStatus.MET
 - evaluate_jury_activation_gate() returns verdict="PASS" and blocking_not_met=[]
-- PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED remains True
+- PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is False after Phase 1427
 - All 7 Phase 1425 evidence tokens are present in the gate source
 - Historical NOT_MET tokens are still present in phase_tokens (archived evidence)
 - Gate module version token reflects Phase 1425
 - No import random in gate source
-- production_activated is False
+- production_activated is True after Phase 1427
 """
 
 from __future__ import annotations
@@ -71,9 +71,9 @@ def test_module_contains_phase_1425_token(token):
 # ---------------------------------------------------------------------------
 
 
-def test_production_not_authorized_constant_still_true():
-    """PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED must remain True until Phase 1427."""
-    assert PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is True
+def test_production_not_authorized_constant_flipped_by_phase_1427():
+    """PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED was flipped by Phase 1427."""
+    assert PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is False
 
 
 def test_version_token_reflects_phase_1425():
@@ -113,9 +113,9 @@ def test_blocking_not_met_length_zero(report):
     assert len(report.blocking_not_met) == 0
 
 
-def test_production_activated_false(report):
-    """production_activated must be False regardless of verdict."""
-    assert report.production_activated is False
+def test_production_activated_true_after_phase_1427(report):
+    """production_activated is true only after PASS and Phase 1427 production GO."""
+    assert report.production_activated is True
 
 
 # ---------------------------------------------------------------------------
