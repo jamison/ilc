@@ -18,15 +18,21 @@ Required phase tokens:
   jury_assignment_no_public_activation_phase_j006
   epoch_hash_shadow_assignment_only_phase_j006
   vrf_verifier_integrated_jury_assignment_phase_1412
+  anti_capture_diversity_verified_phase_1419
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any, List, Mapping, Optional
 
+from ilc_core.consensus.diversity_floor_runtime import (
+    compute_max_cluster_share,
+    meets_max_cluster_share_ceiling,
+)
 from ilc_core.epistemic.vrf_proof_verifier import VRFVerificationError, vrf_beta_from_proof
 
 JURY_ASSIGNMENT_RUNTIME_VERSION = "jury_assignment_runtime_phase_j006.v0.1"
@@ -37,6 +43,15 @@ _TOKEN_DEFAULT_OFF = "default_off_jury_assignment_quote_runtime_phase_j006"
 _TOKEN_NO_ACTIVATION = "jury_assignment_no_public_activation_phase_j006"
 _TOKEN_SHADOW_ONLY = "epoch_hash_shadow_assignment_only_phase_j006"
 _TOKEN_VRF_INTEGRATED = "vrf_verifier_integrated_jury_assignment_phase_1412"
+_TOKEN_ANTI_CAPTURE_VERIFIED = "anti_capture_diversity_verified_phase_1419"
+_TOKEN_CDL_V3_CLUSTER_WIRED = "cdl_v3_cluster_diversity_wired_jury_assignment_phase_1419"
+_TOKEN_VRF_OUTSIDER_VERIFIED = "vrf_outsider_selection_verified_phase_1419"
+_TOKEN_OPERATOR_INDEPENDENCE_VERIFIED = (
+    "same_operator_domain_independence_verified_phase_1419"
+)
+_TOKEN_ANTI_CAPTURE_PRODUCTION_NOT_ACTIVATED = (
+    "anti_capture_production_not_activated_phase_1419"
+)
 
 _DOMAIN_SEPARATOR = "ilc_jury_assignment_v1"
 _VRF_DOMAIN_SEPARATOR = "ilc.vrf.jury_assignment.v1"
@@ -52,6 +67,8 @@ _INDEPENDENCE_K: int = 3     # at least 3 reviewers must be from distinct operat
 # independence_k=3 means at most (_PANEL_REGULAR - _INDEPENDENCE_K) = 4 per domain,
 # guaranteeing at least 3 come from different domains.
 _MAX_PER_OPERATOR_DOMAIN: int = _PANEL_REGULAR - _INDEPENDENCE_K
+JURY_CLUSTER_DIVERSITY_FLOOR: int = 4
+JURY_MAX_CLUSTER_SHARE_CEILING: float = 0.40
 
 # Safety gate: this flag must remain True until J-008 production activation gate passes.
 PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = True
@@ -90,12 +107,32 @@ class JuryAssignmentQuote:
     runtime_version: str
     phase_tokens: List[str]
     production_activated: bool  # always False — never flip without J-008 gate
+    cluster_diversity_distinct_clusters: int
+    cluster_diversity_largest_cluster_slots: int
+    cluster_diversity_total_panel_slots: int
+    cluster_diversity_max_cluster_share: float
+    cluster_diversity_floor: int
+    cluster_diversity_max_cluster_share_ceiling: float
+    cluster_diversity_verified: bool
     vrf_excluded_agents: List[str] = field(default_factory=list)
     vrf_exclusion_reasons: dict[str, str] = field(default_factory=dict)
 
 
 class JuryAssignmentError(Exception):
     """Raised when panel construction fails due to insufficient eligible agents."""
+
+
+@dataclass(frozen=True)
+class ClusterDiversityEvidence:
+    """Selected-panel CDL-V3 diversity evidence for Phase 1419."""
+
+    distinct_clusters: int
+    largest_cluster_slots: int
+    total_panel_slots: int
+    max_cluster_share: float
+    cluster_diversity_floor: int
+    max_cluster_share_ceiling: float
+    verified: bool
 
 
 def _agent_score(
@@ -282,6 +319,59 @@ def _select_outsider(
     return [sorted_pool[0].agent_id]
 
 
+def _cluster_diversity_evidence(
+    *,
+    selected_agent_ids: List[str],
+    agents_by_id: Mapping[str, EligibleAgent],
+) -> ClusterDiversityEvidence:
+    """Evaluate CDL-V3 selected-panel cluster diversity for Phase 1419."""
+    if len(selected_agent_ids) != _PANEL_SIZE:
+        raise JuryAssignmentError("jury_cluster_diversity_panel_size_mismatch")
+
+    cluster_ids: List[str] = []
+    for agent_id in selected_agent_ids:
+        agent = agents_by_id.get(agent_id)
+        if agent is None:
+            raise JuryAssignmentError("jury_cluster_diversity_agent_lookup_missing")
+        if not isinstance(agent.cluster_id, str) or not agent.cluster_id.strip():
+            raise JuryAssignmentError("jury_cluster_diversity_cluster_id_invalid")
+        cluster_ids.append(agent.cluster_id)
+
+    counts = Counter(cluster_ids)
+    distinct_clusters = len(counts)
+    if distinct_clusters < JURY_CLUSTER_DIVERSITY_FLOOR:
+        raise JuryAssignmentError(
+            "jury_cluster_diversity_floor_not_met: "
+            f"distinct_clusters={distinct_clusters}, "
+            f"required={JURY_CLUSTER_DIVERSITY_FLOOR}"
+        )
+
+    largest_cluster_slots = max(counts.values())
+    max_cluster_share = compute_max_cluster_share(
+        largest_cluster_slots=largest_cluster_slots,
+        total_panel_slots=len(selected_agent_ids),
+    )
+    if not meets_max_cluster_share_ceiling(
+        max_cluster_share=max_cluster_share,
+        max_cluster_share_ceiling=JURY_MAX_CLUSTER_SHARE_CEILING,
+    ):
+        raise JuryAssignmentError(
+            "jury_max_cluster_share_ceiling_exceeded: "
+            f"max_cluster_share={max_cluster_share}, "
+            f"ceiling={JURY_MAX_CLUSTER_SHARE_CEILING}"
+        )
+
+    return ClusterDiversityEvidence(
+        distinct_clusters=distinct_clusters,
+        largest_cluster_slots=largest_cluster_slots,
+        total_panel_slots=len(selected_agent_ids),
+        max_cluster_share=max_cluster_share,
+        cluster_diversity_floor=JURY_CLUSTER_DIVERSITY_FLOOR,
+        max_cluster_share_ceiling=JURY_MAX_CLUSTER_SHARE_CEILING,
+        verified=True,
+    )
+
+
 def quote_jury_assignment(
     *,
     review_epoch: int,
@@ -419,6 +509,28 @@ def quote_jury_assignment(
             "outsider seat is required (ADM-003 7+1 panel shape)"
         )
 
+    cluster_evidence = _cluster_diversity_evidence(
+        selected_agent_ids=regular_panel + outsider_panel,
+        agents_by_id={agent.agent_id: agent for agent in scored_candidates},
+    )
+
+    phase_tokens = [
+        _TOKEN_DEFAULT_OFF,
+        _TOKEN_NO_ACTIVATION,
+        _TOKEN_SHADOW_ONLY,
+        _TOKEN_CDL_V3_CLUSTER_WIRED,
+        _TOKEN_OPERATOR_INDEPENDENCE_VERIFIED,
+        _TOKEN_ANTI_CAPTURE_PRODUCTION_NOT_ACTIVATED,
+    ]
+    if is_high_value_slot:
+        phase_tokens.extend(
+            [
+                _TOKEN_VRF_INTEGRATED,
+                _TOKEN_VRF_OUTSIDER_VERIFIED,
+                _TOKEN_ANTI_CAPTURE_VERIFIED,
+            ]
+        )
+
     return JuryAssignmentQuote(
         review_epoch=review_epoch,
         review_lane=review_lane,
@@ -430,13 +542,15 @@ def quote_jury_assignment(
         independence_k=_INDEPENDENCE_K,
         assignment_mode="vrf_verified" if is_high_value_slot else "epoch_hash_shadow",
         runtime_version=JURY_ASSIGNMENT_RUNTIME_VERSION,
-        phase_tokens=[
-            _TOKEN_DEFAULT_OFF,
-            _TOKEN_NO_ACTIVATION,
-            _TOKEN_SHADOW_ONLY,
-            *([_TOKEN_VRF_INTEGRATED] if is_high_value_slot else []),
-        ],
+        phase_tokens=phase_tokens,
         production_activated=False,
+        cluster_diversity_distinct_clusters=cluster_evidence.distinct_clusters,
+        cluster_diversity_largest_cluster_slots=cluster_evidence.largest_cluster_slots,
+        cluster_diversity_total_panel_slots=cluster_evidence.total_panel_slots,
+        cluster_diversity_max_cluster_share=cluster_evidence.max_cluster_share,
+        cluster_diversity_floor=cluster_evidence.cluster_diversity_floor,
+        cluster_diversity_max_cluster_share_ceiling=cluster_evidence.max_cluster_share_ceiling,
+        cluster_diversity_verified=cluster_evidence.verified,
         vrf_excluded_agents=sorted(vrf_exclusion_reasons),
         vrf_exclusion_reasons=vrf_exclusion_reasons,
     )

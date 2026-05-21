@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1418 anti-capture diversity design complete, Phase 1419 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1419 anti-capture diversity verification complete, Phase 1420 next and SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -253,6 +253,22 @@ jury activation, public graph admission activation, reviewer payment, ECU
 distribution, ledger/treasury/wallet mutation, graph mutation, or CDL mutation
 occurred. Phase 1419 anti-capture diversity verification is next and
 NON-SENSITIVE.
+
+**Phase 1419 completion addendum:** Anti-capture diversity verification
+committed in this phase. `ilc_core/epistemic/jury_assignment_runtime.py` now
+records `anti_capture_diversity_verified_phase_1419`,
+`cdl_v3_cluster_diversity_wired_jury_assignment_phase_1419`,
+`vrf_outsider_selection_verified_phase_1419`,
+`same_operator_domain_independence_verified_phase_1419`, and
+`anti_capture_production_not_activated_phase_1419`. Selected panels now expose
+CDL-V3 cluster-diversity evidence and fail closed if fewer than four clusters
+are selected or if one cluster exceeds the `0.40` max-share ceiling.
+`PRODUCTION_ASSIGNMENT_NOT_ACTIVATED` remains `True`; `jury_activation_gate.py`
+was not patched and still reports `ANTI_CAPTURE_DIVERSITY_VERIFIED` as
+`NOT_MET` until Phase 1425. No production jury activation, public graph
+admission activation, reviewer payment, ECU distribution,
+ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
+Phase 1420 copyright counsel disposition is next and SENSITIVE.
 
 ---
 
