@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1421 window coherence and capsule update complete, Phase 1422 next and NON-SENSITIVE
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1422 launch readiness manifest schema complete, Phase 1423 next and NON-SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -304,6 +304,22 @@ verification/patch. The report explicitly does not claim the static
 mutation, J-008 gate flip, public activation, graph/registry/ledger/treasury/
 wallet mutation, or CDL mutation occurred. Phase 1422 launch readiness manifest
 schema is next and NON-SENSITIVE.
+
+**Phase 1422 completion addendum:** Launch readiness manifest schema committed
+in this phase. `docs/specs/ilc_launch_readiness_manifest_schema_1422_v0.1.md`
+records `launch_readiness_manifest_schema_defined_phase_1422`,
+`public_rc_launch_readiness_manifest_v1`,
+`launch_readiness_manifest_not_signed_phase_1422`, and
+`public_rc_not_activated_phase_1422`. The schema defines the future
+Genesis-signable aggregate manifest, including Phase 1387, Phase 1389, Phase
+1427, and Phase 1426 verdict fields; Genesis signing authority reference;
+epoch 0->1 authorization; protocol activation epoch; canonical content hash;
+and signature envelope. The unsigned template keeps
+`epoch_0_to_1_transition_authorized=false`, `manifest_content_hash=null`, and
+`manifest_signature=null`. No manifest signing, public RC activation, epoch
+transition authorization, runtime source mutation, J-008 gate flip,
+graph/registry/ledger/treasury/wallet mutation, or CDL mutation occurred. Phase
+1423 private soft-RC rehearsal entry criteria is next and NON-SENSITIVE.
 
 ---
 
