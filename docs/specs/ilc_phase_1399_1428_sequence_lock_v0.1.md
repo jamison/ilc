@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1425 pre-gate verification complete; Phase 1426 soft-RC gate re-run is next and SENSITIVE
+**Status:** Active sequence lock - Window 1399-1428 is OPEN; Phase 1426 soft-RC gate re-run complete; Phase 1427 J-008 gate re-run is next and SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -354,6 +354,21 @@ a production authorization. 64 new tests (Phase 1425) + 61 updated tests
 (Phase 1398) = 125 combined PASS. No production activation, CDL mutation,
 graph/ledger/treasury/wallet mutation occurred. Phase 1426 soft-RC gate
 re-run is next and SENSITIVE.
+
+**Phase 1426 completion addendum:** Soft RC gate re-run committed in this
+phase. `docs/specs/ilc_soft_rc_gate_rerun_1426_v0.1.md` records
+`soft_rc_gate_rerun_phase_1426`, `soft_rc_eligible=true_phase_1426`,
+`phase_1366_soft_rc_deferred_gate_now_closed_phase_1426`, and
+`soft_rc_eligible_true_not_public_rc_activated_phase_1426`. The current
+soft-RC routing verdict is now `soft_rc_eligible=true`. The Phase 1366
+historical false-with-one-blocker report remains unchanged; Phase 1426 confirms
+the blocker closed through Phase 1367 evidence
+`phase_1366_treasury_epoch_budget_binding_verified`. No public RC publication,
+release signing, activation-certificate signing, epoch 0-to-1 transition,
+production jury activation, graph/ledger/treasury/wallet/registry mutation,
+CDL mutation, Genesis signing, production minting, production mining, or
+production validator deployment occurred. Phase 1427 J-008 gate re-run is next
+and SENSITIVE.
 
 **Phase 1424 completion addendum:** Public RC activation certificate design
 committed in this phase. `docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md`
