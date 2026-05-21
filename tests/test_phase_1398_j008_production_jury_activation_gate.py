@@ -2,19 +2,20 @@
 
 Proves:
 - module and gate spec document exist
-- required phase tokens present in module source
+- required phase tokens present in module source (including historical NOT_MET tokens)
 - required tokens present in gate spec document
 - evaluate_jury_activation_gate() returns a report
-- gate verdict is INCOMPLETE (multiple blocking conditions NOT_MET)
 - all expected condition IDs are present
-- J007_HARNESS_PASS and firewall conditions are MET
-- all other blocking conditions are NOT_MET
-- blocking_not_met list names exactly the unmet blocking conditions
+- all 10 conditions are MET after Phase 1425 pre-gate verification patch
+- blocking_not_met is empty after Phase 1425 patch (verdict="PASS")
 - production_activated is False in all reports
 - PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is True
 - no import random in source
 - gate spec records non-authorizations
 - package exports
+
+Note: Phase 1425 patched all 7 previously NOT_MET blocking conditions to MET.
+Historical NOT_MET tokens remain in phase_tokens as archived evidence.
 """
 
 from __future__ import annotations
@@ -107,9 +108,15 @@ def test_report_is_gate_report(report):
     assert isinstance(report, JuryActivationGateReport)
 
 
-def test_verdict_is_incomplete(report):
-    """Gate must be INCOMPLETE — multiple blocking conditions are NOT_MET."""
-    assert report.verdict == "INCOMPLETE"
+def test_verdict_is_pass(report):
+    """After Phase 1425 patch: all blocking conditions are MET, verdict is PASS.
+
+    Phase 1398 established the gate with verdict=INCOMPLETE (7 blocking NOT_MET).
+    Phase 1425 patched all 7 conditions to MET after verifying evidence from
+    Phases 1400-1420. PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED remains True;
+    the production GO is Phase 1427.
+    """
+    assert report.verdict == "PASS"
 
 
 def test_production_activated_false(report):
@@ -156,12 +163,20 @@ def test_ten_conditions(report):
 
 _EXPECTED_MET = {
     "J007_HARNESS_PASS",
+    "VRF_VERIFIER_IMPLEMENTED",
+    "CAPPROOF_CDL_RATIFIED",
+    "MAINTENANCE_LOTTERY_CDL_RATIFIED",
+    "JURY_INCENTIVE_CDL_RATIFIED",
+    "REVIEW_LANE_WIRING_COMPLETE",
+    "ANTI_CAPTURE_DIVERSITY_VERIFIED",
+    "COPYRIGHT_COUNSEL_DISPOSITION",
     "PUBLIC_ECONOMICS_FIREWALL",
     "NO_EPOCH_HASH_PRODUCTION_PRIVACY_CLAIM",
 }
 
 
 def test_met_conditions(report):
+    """After Phase 1425 patch: all 10 conditions are MET."""
     actual_met = {c.condition_id for c in report.conditions if c.status == GateConditionStatus.MET}
     assert actual_met == _EXPECTED_MET
 
@@ -170,23 +185,14 @@ def test_met_conditions(report):
 # NOT_MET / blocking conditions
 # ---------------------------------------------------------------------------
 
-_EXPECTED_BLOCKING_NOT_MET = {
-    "VRF_VERIFIER_IMPLEMENTED",
-    "CAPPROOF_CDL_RATIFIED",
-    "MAINTENANCE_LOTTERY_CDL_RATIFIED",
-    "JURY_INCENTIVE_CDL_RATIFIED",
-    "REVIEW_LANE_WIRING_COMPLETE",
-    "ANTI_CAPTURE_DIVERSITY_VERIFIED",
-    "COPYRIGHT_COUNSEL_DISPOSITION",
-}
+def test_blocking_not_met_empty(report):
+    """After Phase 1425 patch: no blocking conditions remain NOT_MET."""
+    assert report.blocking_not_met == []
 
 
-def test_blocking_not_met_set(report):
-    assert set(report.blocking_not_met) == _EXPECTED_BLOCKING_NOT_MET
-
-
-def test_seven_blocking_not_met(report):
-    assert len(report.blocking_not_met) == 7
+def test_zero_blocking_not_met(report):
+    """After Phase 1425 patch: blocking_not_met count is zero."""
+    assert len(report.blocking_not_met) == 0
 
 
 def test_non_blocking_conditions_not_in_blocking_not_met(report):
@@ -195,46 +201,81 @@ def test_non_blocking_conditions_not_in_blocking_not_met(report):
     assert "NO_EPOCH_HASH_PRODUCTION_PRIVACY_CLAIM" not in report.blocking_not_met
 
 
-def test_vrf_condition_not_met(report):
+def test_vrf_condition_met(report):
+    """After Phase 1425 patch: VRF_VERIFIER_IMPLEMENTED is MET (Phase 1411/1412)."""
     cond = next(c for c in report.conditions if c.condition_id == "VRF_VERIFIER_IMPLEMENTED")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
 
 
-def test_capproof_condition_not_met(report):
+def test_capproof_condition_met(report):
+    """After Phase 1425 patch: CAPPROOF_CDL_RATIFIED is MET (CDL-092 Phase 1405)."""
     cond = next(c for c in report.conditions if c.condition_id == "CAPPROOF_CDL_RATIFIED")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
 
 
-def test_maintenance_lottery_condition_not_met(report):
+def test_maintenance_lottery_condition_met(report):
+    """After Phase 1425 patch: MAINTENANCE_LOTTERY_CDL_RATIFIED is MET (CDL-093 Phase 1408)."""
     cond = next(c for c in report.conditions if c.condition_id == "MAINTENANCE_LOTTERY_CDL_RATIFIED")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
 
 
-def test_jury_incentive_condition_not_met(report):
+def test_jury_incentive_condition_met(report):
+    """After Phase 1425 patch: JURY_INCENTIVE_CDL_RATIFIED is MET (CDL-091 Phase 1400)."""
     cond = next(c for c in report.conditions if c.condition_id == "JURY_INCENTIVE_CDL_RATIFIED")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
 
 
-def test_review_lane_wiring_not_met(report):
+def test_review_lane_wiring_met(report):
+    """After Phase 1425 patch: REVIEW_LANE_WIRING_COMPLETE is MET (Phase 1415/1416/1417)."""
     cond = next(c for c in report.conditions if c.condition_id == "REVIEW_LANE_WIRING_COMPLETE")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
 
 
-def test_anti_capture_not_met(report):
+def test_anti_capture_met(report):
+    """After Phase 1425 patch: ANTI_CAPTURE_DIVERSITY_VERIFIED is MET (Phase 1419)."""
     cond = next(c for c in report.conditions if c.condition_id == "ANTI_CAPTURE_DIVERSITY_VERIFIED")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
 
 
-def test_copyright_counsel_not_met(report):
+def test_copyright_counsel_met(report):
+    """After Phase 1425 patch: COPYRIGHT_COUNSEL_DISPOSITION is MET (Phase 1420)."""
     cond = next(c for c in report.conditions if c.condition_id == "COPYRIGHT_COUNSEL_DISPOSITION")
-    assert cond.status == GateConditionStatus.NOT_MET
+    assert cond.status == GateConditionStatus.MET
     assert cond.blocking is True
+
+
+# ---------------------------------------------------------------------------
+# Historical NOT_MET tokens must still be present in phase_tokens
+# ---------------------------------------------------------------------------
+
+_HISTORICAL_NOT_MET_TOKENS = [
+    "vrf_verifier_required_not_implemented_phase_j008",
+    "capproof_cdl_not_opened_phase_j008",
+    "maintenance_lottery_cdl_not_opened_phase_j008",
+    "jury_incentive_cdl_not_ratified_phase_j008",
+    "j008_gate_verdict_incomplete",
+]
+
+
+@pytest.mark.parametrize("token", _HISTORICAL_NOT_MET_TOKENS)
+def test_historical_not_met_tokens_still_present_in_phase_tokens(token, report):
+    """Historical NOT_MET tokens must remain in phase_tokens as archived evidence."""
+    assert token in report.phase_tokens, (
+        f"historical token must be retained in phase_tokens: {token}"
+    )
+
+
+@pytest.mark.parametrize("token", _HISTORICAL_NOT_MET_TOKENS)
+def test_historical_not_met_tokens_in_module_source(token):
+    """Historical NOT_MET tokens must remain in module source."""
+    src = GATE_MODULE.read_text(encoding="utf-8")
+    assert token in src, f"historical token must remain in source: {token}"
 
 
 # ---------------------------------------------------------------------------
