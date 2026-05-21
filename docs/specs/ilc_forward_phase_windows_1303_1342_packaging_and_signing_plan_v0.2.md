@@ -6,6 +6,7 @@
 **Alignment addendum:** 2026-05-19 — Window 1391-1398 routing aligned to the J-series jury / epoch-work canonicalization prompts; the older Mode-2 refutation settlement section is preserved as a scoped input to the J-series, not the primary window label.
 **Correction addendum:** 2026-05-20 — Six stale items corrected: (1) J-008 gate auto-flip claim removed — gate has hardcoded NOT_MET statuses; Phase 1425 must verify/patch source before Phase 1427 re-run. (2) CDL numbers updated from TBD to assigned values: CDL-091 (jury incentive), CDL-092 (CapProof), CDL-093 (maintenance lottery). (3) Phase 1399 description corrected — Phase 1394 (J-004) did not add CDL-091 to the register; Phase 1399 performed the formal register opening (C1 CDL mutation) + prelock (C2). (4) Phases 1403 and 1404 sensitivity corrected from SENSITIVE to NON-SENSITIVE. (5) Dependency tree Phase 1399 label updated. Authoritative completion records: `docs/specs/ilc_phase_1399_1428_sequence_lock_v0.1.md` and `docs/phases/STATUS.md`.
 **Reconciliation addendum:** 2026-05-21 — ADR-0009 protocol-native bundle work is reconciled with the Window 1429-1458 forward plan §10.4 agent-init service-chain attribution lane. Phase 1423 remains a private soft-RC rehearsal/identity-init specification only; public or rewardable peer serving of protocol bundles, Genesis state, epoch snapshots, or live wire-bootstrap material remains post-public-RC work and must follow the §10.4 delayed-attribution constraints.
+**Sequence-lock conversion addendum:** 2026-05-21 — Post-1428 execution is routed through `docs/specs/ilc_window_1429_1458_public_rc_activation_forward_plan_v0.1.md`. That document is a draft forward plan, not an active sequence lock. After Phase 1428 closes Window 1399-1428, the next human follow-up step is to convert the 1429-1458 forward plan into a formal Window 1429-1458 sequence lock, expected path `docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md`, before any Phase 1429+ execution.
 **Authority:** This document records forward planning only. It does not open
 Window 1303+, assign an active sequence lock, execute source export, publish a repository or package, produce release artifacts, generate release keys or envelopes, mutate Genesis Atlas, sign v0.2, activate public claimability, activate public P2P/fetch/sidecar serving, or authorize wallet/ECU/ILC economics.
 
@@ -1353,6 +1354,49 @@ This reconciles the plans as follows:
 Until the ADR-0009 layers are implemented and independently verifiable, Python remains
 the reference implementation and any agent-init serving evidence is best-effort mirror
 or rehearsal support, not completed protocol-native self-compilation.
+
+#### Window 1429-1458 Sequence-Lock Conversion Carry-Forward
+
+The post-1428 window is currently represented by:
+
+```text
+docs/specs/ilc_window_1429_1458_public_rc_activation_forward_plan_v0.1.md
+```
+
+That artifact is planning guidance only. It does not authorize Phase 1429,
+activate public RC, publish source or packages, sign launch artifacts, or flip any
+production runtime guard.
+
+When Phase 1428 closes Window 1399-1428, the human follow-up conversion should:
+
+1. Create the formal active lock at the expected path:
+   `docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md`.
+2. Inherit the Phase 1428 closure verdict, Phase 1426 `soft_rc_eligible=true`
+   record, and Phase 1427 J-008 gate verdict as explicit entry criteria.
+3. Preserve the track map from the forward plan:
+   Track A 1429-1430, Track B 1431-1433, Track C 1434-1437,
+   Track D 1438-1441, Track E 1442-1444, Track F 1445-1447,
+   Track G 1448-1452, Track H 1453-1455, and Track Z 1456-1458.
+4. Re-state every SENSITIVE gate and its required human `GO` token before any
+   execution prompt is drafted.
+5. Carry forward the forward plan §9 deferred audit findings routing table and
+   §10 long-range obligations. If any row points to an already-closed phase, the
+   sequence lock must reroute that work to an open future phase instead of
+   preserving the stale phase number.
+6. Preserve the forward plan §11 authority boundary: the forward plan is not an
+   active sequence lock, and no Phase 1429+ work may execute until the formal
+   sequence lock is committed and approved.
+
+Human review checklist before conversion:
+
+- Confirm whether the 1429-1458 track ordering still reflects the desired launch
+  path after Phase 1428 closure evidence.
+- Confirm whether Track H Werner flow-governor work remains conditional or moves
+  to Window 1459+.
+- Confirm whether §10.4 agent-init service-chain / ADR-0009 bundle work remains
+  post-public-RC or receives a pre-RC diagnostic-only phase.
+- Confirm whether §10.5 provenance depth / hub relay remains Window 1459+ / Track
+  I candidate only.
 
 **Key open question for Phase 1423:** whether the 7 rehearsal agent identities carry over
 to public RC (preserved across soft-RC wipe) or whether public RC starts with fresh identities.
