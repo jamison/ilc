@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock - Window 1399-1428 is OPEN; Phase 1427 J-008 gate re-run complete; Phase 1428 window closure gate is next and SENSITIVE
+**Status:** CLOSED by Phase 1428; Window 1429 is not open and requires explicit GO plus a formal sequence lock
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -384,6 +384,20 @@ epoch 0-to-1 transition, CDL mutation, Genesis signing, production minting,
 production mining, or production validator deployment. Phase 1428 window
 closure gate is next and SENSITIVE.
 
+**Phase 1428 completion addendum:** Window closure gate committed in this phase.
+`docs/specs/ilc_window_1399_1428_handoff_1428_v0.1.md` records
+`window_1399_1428_closed_phase_1428`,
+`window_1399_1428_closure_verdict_recorded_phase_1428`,
+`mempalace_refresh_disposition_recorded_phase_1428`,
+`window_1429_not_open_phase_1428`, and `go_window_1429_required_next`.
+Closure verdict is `closed_pass_with_carry_forward`. All 30 locked
+phase-table entries are accounted for, all 29 pre-closure walkthroughs are
+present, `soft_rc_eligible=true`, and J-008 gate is `PASS`. The Phase 1428
+prompt was patched from stale "28 planned phases" wording to the actual
+sequence-lock count. Window 1429 is not open; the Window 1429-1458 draft
+forward plan must be reviewed and converted into a formal sequence lock before
+Phase 1429+ execution.
+
 **Phase 1424 completion addendum:** Public RC activation certificate design
 committed in this phase. `docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md`
 records `activation_certificate_v1_schema_defined_phase_1424`,
@@ -519,11 +533,12 @@ Phase 1400 historical hardening must reference the Phase 1399 C1 commit hash, no
 
 ## 6. Gate Module Static-Status Note
 
-`ilc_core/epistemic/jury_activation_gate.py` encodes Phase 1398 NOT_MET conditions as
-hardcoded literals. The gate does not dynamically detect new completion evidence.
+`ilc_core/epistemic/jury_activation_gate.py` originally encoded Phase 1398
+NOT_MET conditions as hardcoded literals. Phase 1425 patched all 7 formerly
+blocking conditions to MET after direct evidence verification, and Phase 1427
+then recorded `verdict="PASS"` with `production_activated=True`.
 
-Phase 1425 must verify whether the gate module needs source changes before Phase 1427 can
-produce `verdict="PASS"`. If updates are required, Phase 1425a gates the Phase 1427 re-run.
+No Phase 1425a was required.
 
 ---
 
@@ -544,7 +559,7 @@ Next fresh CDL number after this window: **CDL-094**
 This sequence lock does not authorize:
 
 - Reviewer payment activation or live ECU distribution via jury/maintenance lane
-- Production jury assignment activation
+- Production jury assignment execution beyond the Phase 1427 gate boundary
 - VRF production deployment
 - Review lane production serving
 - Maintenance lottery live distribution
@@ -559,12 +574,12 @@ This sequence lock does not authorize:
 
 - `docs/specs/ilc_window_1399_1428_candidate_phase_grouping_v0.1.md` — guidance doc (`ec475d48`)
 - `docs/specs/ilc_production_jury_activation_gate_j008_v0.1.md` — J-008 gate spec
-- `ilc_core/epistemic/jury_activation_gate.py` — gate source (7 hardcoded NOT_MET conditions)
+- `ilc_core/epistemic/jury_activation_gate.py` — gate source (all 10 conditions MET after Phase 1425; production gate PASS after Phase 1427)
 - `docs/specs/ilc_cdl_jury_incentive_economics_opening_v0.1.md` — CDL-091 lane opening (Phase 1394)
 - `docs/specs/ilc_epoch_start_capability_maintenance_contract_v0.1.md` — CDL-092/093 design basis
 - `docs/adr/ADR_0040_Jury_Eligibility_Assignment.md` — VRF production boundary
 - `docs/adr/ADR_0041_Agent_INIT_and_Ingestion_Protocol.md` — copyright boundary (§5), T0.5 review lane
-- `docs/specs/ilc_antigravity_context_capsule_v5.58.md` — active capsule
+- `docs/specs/ilc_antigravity_context_capsule_v5.59.md` — active capsule through Phase 1421; Phase 1422-1428 frontier recorded by STATUS and this closure
 
 ---
 
@@ -577,4 +592,22 @@ This sequence lock does not authorize:
 | 1401 | `docs/antigravity_tasks/antigravity_prompt__phase_1401_g8_cdl_091_jury_incentive_runtime_stub.md` | Committed `5e5043ea` |
 | 1402 | `docs/antigravity_tasks/antigravity_prompt__phase_1402_g8_cdl_092_capproof_opening.md` | Committed `5e5043ea` |
 | 1403 | `docs/antigravity_tasks/antigravity_prompt__phase_1403_g8_cdl_092_capproof_deliberation.md` | Committed `5e5043ea` |
-| 1404-1428 | Pending — to be drafted per window progress | Not yet committed |
+| 1404-1428 | Drafted and executed during window progress | Complete through Phase 1428 closure |
+
+---
+
+## 11. Final Closure Routing
+
+Window 1399-1428 is closed by:
+
+```text
+docs/specs/ilc_window_1399_1428_handoff_1428_v0.1.md
+window_1399_1428_closed_phase_1428
+window_1399_1428_closure_verdict_recorded_phase_1428
+mempalace_refresh_disposition_recorded_phase_1428
+window_1429_not_open_phase_1428
+go_window_1429_required_next
+```
+
+No phase after 1428 is authorized by this sequence lock. Window 1429 requires a
+new formal sequence lock and explicit human GO.
