@@ -22,12 +22,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from simulations.sim_provenance_02_depth_sensitivity import (
     DUST_THRESHOLD,
     GENESIS_CAP_FRACTION,
+    HUB_MAINTENANCE_CAP,
+    HUB_PARASITIC_THRESHOLD,
+    HUB_PASS_THROUGH_FRACTION,
+    HUB_RELAY_HOP_DEPTHS,
+    HUB_RETAIN_RATE,
+    ONE,
     PROVENANCE_DECAY_ALPHA,
     PROVENANCE_MAX_DEPTH_CURRENT,
     REUSE_ATTRIBUTION_RATE,
     ZERO,
     ChainNode,
+    HubRelayNode,
     _hop_payout,
+    _hub_relay_chain,
     _infinite_geometric_total,
     _q9,
     _region_fractions,
@@ -37,12 +45,14 @@ from simulations.sim_provenance_02_depth_sensitivity import (
     run_all_sims,
     settle_chain_depth_cap,
     settle_chain_top_k,
+    settle_hub_relay,
     sim_anti_circular_flow,
     sim_branch_skew,
     sim_convergence_accumulation,
     sim_depth_cap_comparison,
     sim_dust_aggregation,
     sim_genesis_skew,
+    sim_hub_relay_variant,
     sim_lost_middle,
     sim_top_k_selection,
 )
@@ -409,10 +419,199 @@ class TestDustAggregation:
 # Test 9: run_all_sims integration
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Test 10: Hub relay variant (SIM 9)
+# ---------------------------------------------------------------------------
+
+class TestHubRelayVariant:
+    """SIM case 9: hub relay pass-through variant — architectural evaluation."""
+
+    def test_hub_relay_chain_has_hubs_at_correct_depths(self):
+        """_hub_relay_chain marks exactly the specified depths as hubs."""
+        chain = _hub_relay_chain(50, HUB_RELAY_HOP_DEPTHS)
+        hub_positions = {i + 1 for i, n in enumerate(chain) if n.is_hub}
+        assert hub_positions == set(HUB_RELAY_HOP_DEPTHS), (
+            f"hub positions {hub_positions} != expected {set(HUB_RELAY_HOP_DEPTHS)}"
+        )
+
+    def test_hub_relay_reduces_upstream_payout_via_multiplier(self):
+        """Nodes beyond a hub receive a reduced payout due to relay multiplier."""
+        # 10-node chain with one hub at depth 3
+        chain = _hub_relay_chain(10, (3,))
+        r_hub = settle_hub_relay(chain, HUB_PASS_THROUGH_FRACTION)
+        r_flat = settle_chain_depth_cap(
+            [ChainNode(n.node_id, n.creator_id, n.is_genesis, 10 - i)
+             for i, n in enumerate(chain)],
+            None,
+        )
+        # Node at depth 5 (beyond hub at depth 3) must receive less under hub relay
+        creator_d5 = chain[4].creator_id
+        hub_payout_d5 = Decimal(r_hub["payouts_by_creator"].get(creator_d5, "0"))
+        flat_payout_d5 = Decimal(r_flat["payouts_by_creator"].get(creator_d5, "0"))
+        assert hub_payout_d5 < flat_payout_d5, (
+            "hub relay must reduce payout to nodes beyond the hub"
+        )
+
+    def test_hub_retains_correct_fraction(self):
+        """Hub node retains min(maintenance_cap, inflow * retain_rate) of its inflow."""
+        chain = _hub_relay_chain(10, (3,))
+        r = settle_hub_relay(chain, HUB_PASS_THROUGH_FRACTION)
+        hub_creator = chain[2].creator_id  # depth 3, index 2
+        inflow = Decimal(r["hub_inflow_ecu"].get(hub_creator, "0"))
+        retained = Decimal(r["hub_retention_ecu"].get(hub_creator, "0"))
+        outflow = Decimal(r["hub_outflow_ecu"].get(hub_creator, "0"))
+        if inflow > ZERO:
+            expected_retain = _q9(min(HUB_MAINTENANCE_CAP, _q9(inflow * HUB_RETAIN_RATE)))
+            expected_outflow = _q9(inflow - expected_retain)
+            assert abs(retained - expected_retain) < Decimal("0.000000002"), (
+                f"hub retained {retained} but expected {expected_retain}"
+            )
+            assert abs(outflow - expected_outflow) < Decimal("0.000000002"), (
+                f"hub outflow {outflow} but expected {expected_outflow}"
+            )
+
+    def test_parasitic_hub_flagged_at_full_retain_rate(self):
+        """A hub with retain_rate=1.0 (keeps everything, passes nothing) is flagged as parasitic."""
+        chain = _hub_relay_chain(50, HUB_RELAY_HOP_DEPTHS)
+        # retain_rate=ONE means hub retains 100% of inflow — fully parasitic
+        r = settle_hub_relay(chain, Decimal("0.0"), retain_rate=ONE)
+        assert len(r["parasitic_hub_flags"]) > 0, (
+            "at least one hub must be flagged when retain_rate=1.0"
+        )
+        # All hubs with nonzero inflow must be flagged
+        for creator_id, inflow_str in r["hub_inflow_ecu"].items():
+            if Decimal(inflow_str) > ZERO:
+                assert creator_id in r["parasitic_hub_flags"], (
+                    f"hub {creator_id} with retain_rate=1.0 must be flagged as parasitic"
+                )
+
+    def test_normal_hub_not_flagged_at_standard_retain_rate(self):
+        """A hub with retain_rate=0.15 (passes 85% upstream) is not flagged as parasitic."""
+        chain = _hub_relay_chain(50, HUB_RELAY_HOP_DEPTHS)
+        r = settle_hub_relay(chain, HUB_PASS_THROUGH_FRACTION)
+        assert r["parasitic_hub_flags"] == [], (
+            f"no hub should be flagged at retain_rate={HUB_RETAIN_RATE}; "
+            f"got {r['parasitic_hub_flags']}"
+        )
+
+    def test_depth3_truncation_reaches_neither_depth12_nor_depth28(self):
+        """Depth-3 cap pays nothing to ancestors at depths 12 or 28."""
+        chain_plain = [
+            ChainNode(
+                node_id=f"node_{i+1:03d}",
+                creator_id=f"creator_{i+1:03d}",
+                is_genesis=(i == 49),
+                downstream_reuse_count=50 - i,
+            )
+            for i in range(50)
+        ]
+        r = settle_chain_depth_cap(chain_plain, 3)
+        assert Decimal(r["payouts_by_creator"].get("creator_012", "0")) == ZERO
+        assert Decimal(r["payouts_by_creator"].get("creator_028", "0")) == ZERO
+
+    def test_sim9_structure_complete(self):
+        """sim_hub_relay_variant returns all required sub-scenario keys."""
+        result = sim_hub_relay_variant()
+        required_keys = {
+            "sub_9a_ancestor_reach_comparison",
+            "sub_9b_parasitic_hub_test",
+            "sub_9c_cross_cluster_filter",
+            "conclusion",
+        }
+        missing = required_keys - set(result.keys())
+        if missing:
+            raise ValueError(f"sim_9_missing_keys: {missing}")
+
+    def test_sim9_sub9a_has_four_strategies(self):
+        """Sub-9a compares exactly four strategies."""
+        result = sim_hub_relay_variant()
+        strategies = result["sub_9a_ancestor_reach_comparison"]["strategies"]
+        names = {s["strategy"] for s in strategies}
+        assert names == {
+            "depth_3_truncation",
+            "depth_13_flat",
+            "full_geometric_tail",
+            "hub_relay_retain_0.15",
+        }, f"unexpected strategy names: {names}"
+
+    def test_sim9_sub9b_parasitic_correctly_detected(self):
+        """Sub-9b: parasitic hub (retain_rate=1.0) is flagged; normal hub is not."""
+        result = sim_hub_relay_variant()
+        b = result["sub_9b_parasitic_hub_test"]
+        assert b["parasitic_retain_rate_1_0"]["flagged_as_parasitic"] is True
+        assert b["normal_retain_rate_0_15"]["flagged_as_parasitic"] is False
+
+    def test_sim9_sub9c_filter_distinguishes_hubs(self):
+        """Sub-9c: cross-cluster filter score exceeds same-cluster-only score."""
+        result = sim_hub_relay_variant()
+        c = result["sub_9c_cross_cluster_filter"]
+        genuine = Decimal(c["genuine_hub_weighted_score"])
+        manufactured = Decimal(c["manufactured_hub_weighted_score"])
+        assert genuine > manufactured, (
+            f"cross-cluster filter must score genuine hub higher; "
+            f"genuine={genuine}, manufactured={manufactured}"
+        )
+
+    def test_conservation_invariant_hub_does_not_mint_ecu(self):
+        """Hub relay must not mint new ECU: sum(all_recipients) <= original_attribution_budget."""
+        chain = _hub_relay_chain(50, HUB_RELAY_HOP_DEPTHS)
+        # Build an equivalent plain chain to get the original budget (no hubs)
+        chain_plain = [
+            ChainNode(
+                node_id=n.node_id,
+                creator_id=n.creator_id,
+                is_genesis=n.is_genesis,
+                downstream_reuse_count=50 - i,
+            )
+            for i, n in enumerate(chain)
+        ]
+        original_budget = Decimal(settle_chain_depth_cap(chain_plain, None)["total_paid_ecu"])
+
+        # Hub relay at standard retain_rate
+        r_normal = settle_hub_relay(chain, HUB_PASS_THROUGH_FRACTION)
+        total_normal = sum(Decimal(v) for v in r_normal["payouts_by_creator"].values())
+        assert total_normal <= original_budget + Decimal("0.000000002"), (
+            f"conservation invariant violated: hub relay total {total_normal} "
+            f"> original budget {original_budget}"
+        )
+        assert r_normal["conservation_invariant_holds"] is True
+
+        # Conservation invariant also holds for fully parasitic hub (retain_rate=1.0)
+        r_parasitic = settle_hub_relay(chain, Decimal("0.0"), retain_rate=ONE)
+        total_parasitic = sum(Decimal(v) for v in r_parasitic["payouts_by_creator"].values())
+        assert total_parasitic <= original_budget + Decimal("0.000000002"), (
+            f"conservation invariant violated for parasitic hub: {total_parasitic} "
+            f"> original budget {original_budget}"
+        )
+        assert r_parasitic["conservation_invariant_holds"] is True
+
+    def test_sim9_conclusion_present_and_non_empty(self):
+        """Conclusion block has an architectural_verdict string."""
+        result = sim_hub_relay_variant()
+        verdict = result["conclusion"].get("architectural_verdict", "")
+        assert len(verdict) > 50, "architectural_verdict must be a substantive string"
+
+    def test_sim9_conclusion_conservation_invariant_enforced(self):
+        """Conclusion block records conservation_invariant_enforced=True."""
+        result = sim_hub_relay_variant()
+        assert result["conclusion"]["conservation_invariant_enforced"] is True
+
+    def test_sim9_sub9b_both_cases_conservation_holds(self):
+        """Sub-9b: conservation invariant holds for both parasitic and normal hubs."""
+        result = sim_hub_relay_variant()
+        b = result["sub_9b_parasitic_hub_test"]
+        assert b["parasitic_retain_rate_1_0"]["conservation_invariant_holds"] is True
+        assert b["normal_retain_rate_0_15"]["conservation_invariant_holds"] is True
+
+
+# ---------------------------------------------------------------------------
+# Test 11: run_all_sims integration (updated for 9 sims)
+# ---------------------------------------------------------------------------
+
 class TestRunAllSims:
     """Integration test: run_all_sims produces well-formed output."""
 
-    def test_run_all_sims_returns_all_8_sims(self):
+    def test_run_all_sims_returns_all_9_sims(self):
         results = run_all_sims()
         expected_keys = {
             "sim_1_depth_cap_comparison",
@@ -423,6 +622,7 @@ class TestRunAllSims:
             "sim_6_branch_skew",
             "sim_7_anti_circular_flow",
             "sim_8_dust_aggregation",
+            "sim_9_hub_relay_variant",
         }
         missing = expected_keys - set(results.keys())
         if missing:
@@ -439,3 +639,8 @@ class TestRunAllSims:
         params = results["params"]
         assert params["provenance_max_depth_current"] == 3
         assert params["provenance_decay_alpha"] == "0.45"
+        assert params["hub_relay_chain_length"] == 50
+        # retain_rate=0.15 (hub keeps 15%), pass_through=0.85 (hub passes 85% upstream)
+        assert params["hub_relay_retain_rate"] == "0.15"
+        assert params["hub_relay_pass_through_fraction"] == "0.85"
+        assert params["hub_relay_maintenance_cap"] == "0.05"
