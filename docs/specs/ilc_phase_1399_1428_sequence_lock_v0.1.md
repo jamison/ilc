@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1420 copyright counsel disposition complete, Phase 1421 next and NON-SENSITIVE
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1421 window coherence and capsule update complete, Phase 1422 next and NON-SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -289,6 +289,21 @@ authorization. `COPYRIGHT_COUNSEL_DISPOSITION` evidence is recorded, but
 serving, ECU distribution, ledger/treasury/wallet mutation, graph mutation,
 registry mutation, CDL mutation, or J-008 gate flip occurred. Phase 1421 window
 coherence and capsule update is next and NON-SENSITIVE.
+
+**Phase 1421 completion addendum:** Window coherence and capsule update
+committed in this phase. `docs/specs/ilc_window_1399_1428_coherence_report_phase_1421_v0.1.md`
+records `window_1399_1428_coherence_report_phase_1421`, and
+`docs/specs/ilc_antigravity_context_capsule_v5.59.md` records
+`context_capsule_updated_phase_1421` and supersedes v5.58. The coherence report
+confirms CDL-091, CDL-092, CDL-053, and CDL-093 ratifications; delivered
+default-off and audit-only runtime surfaces; accepted ADR-0042, ADR-0043, and
+ADR-0044; and J-008 evidence recorded for Phase 1425 static source
+verification/patch. The report explicitly does not claim the static
+`jury_activation_gate.py` source reports those evidence-backed conditions as
+`MET`; the source remains unpatched until Phase 1425. No runtime source
+mutation, J-008 gate flip, public activation, graph/registry/ledger/treasury/
+wallet mutation, or CDL mutation occurred. Phase 1422 launch readiness manifest
+schema is next and NON-SENSITIVE.
 
 ---
 
