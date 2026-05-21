@@ -5,6 +5,7 @@
 **Revised:** 2026-05-14 — comprehensive §5 rewrite (3-window post-1342 structure: issuance economics / public claimability governance / long-range); removed superseded single-Window-1343 section.
 **Alignment addendum:** 2026-05-19 — Window 1391-1398 routing aligned to the J-series jury / epoch-work canonicalization prompts; the older Mode-2 refutation settlement section is preserved as a scoped input to the J-series, not the primary window label.
 **Correction addendum:** 2026-05-20 — Six stale items corrected: (1) J-008 gate auto-flip claim removed — gate has hardcoded NOT_MET statuses; Phase 1425 must verify/patch source before Phase 1427 re-run. (2) CDL numbers updated from TBD to assigned values: CDL-091 (jury incentive), CDL-092 (CapProof), CDL-093 (maintenance lottery). (3) Phase 1399 description corrected — Phase 1394 (J-004) did not add CDL-091 to the register; Phase 1399 performed the formal register opening (C1 CDL mutation) + prelock (C2). (4) Phases 1403 and 1404 sensitivity corrected from SENSITIVE to NON-SENSITIVE. (5) Dependency tree Phase 1399 label updated. Authoritative completion records: `docs/specs/ilc_phase_1399_1428_sequence_lock_v0.1.md` and `docs/phases/STATUS.md`.
+**Reconciliation addendum:** 2026-05-21 — ADR-0009 protocol-native bundle work is reconciled with the Window 1429-1458 forward plan §10.4 agent-init service-chain attribution lane. Phase 1423 remains a private soft-RC rehearsal/identity-init specification only; public or rewardable peer serving of protocol bundles, Genesis state, epoch snapshots, or live wire-bootstrap material remains post-public-RC work and must follow the §10.4 delayed-attribution constraints.
 **Authority:** This document records forward planning only. It does not open
 Window 1303+, assign an active sequence lock, execute source export, publish a repository or package, produce release artifacts, generate release keys or envelopes, mutate Genesis Atlas, sign v0.2, activate public claimability, activate public P2P/fetch/sidecar serving, or authorize wallet/ECU/ILC economics.
 
@@ -1316,6 +1317,42 @@ review lane are exercised with scripted agents. At that point, live LLM API call
 introduced gradually, one agent at a time, with deterministic scripted agents as the baseline
 for comparison. This also avoids rehearsal content being sent to third-party LLM APIs during
 a non-public test phase.
+
+#### ADR-0009 / Window 1429-1458 §10.4 Reconciliation
+
+Phase 1423's private rehearsal identity-init path is not the full distributed agent-init
+serving architecture. It practices local key generation and ADR-0038/ADR-0041 identity
+init, but the public, censorship-resistant bootstrap surface requires the ADR-0009
+four-layer protocol-native bundle model:
+
+1. Layer 0 protocol rules bundle.
+2. Layer 1 Genesis state bundle.
+3. Layer 2 epoch state snapshots.
+4. Layer 3 live wire messages.
+
+The Window 1429-1458 forward plan §10.4 is the current routing location for turning
+that bundle architecture into a future rewardable service chain. The intended future
+agent-init path is: a serving peer provides content-addressed protocol-bundle and
+snapshot material; the downstream agent verifies hashes/signatures back to Genesis;
+the downstream agent initializes through ADR-0038/ADR-0041; only later accepted,
+non-refuted downstream work can create delayed backward attribution to the serving
+agent. Raw download counts, invitations, wallet creation, or unsigned "I served this"
+claims remain non-evidence.
+
+This reconciles the plans as follows:
+
+- **Window 1399-1428 / Phase 1423:** private rehearsal only; identity bundles may be
+  exported to Genesis for the private bootstrap manifest; no public serving or reward.
+- **Window 1429-1458 §10.4:** preserve the candidate architecture and required SIM
+  obligations for delayed downstream-work attribution over agent-init service chains.
+- **Window 1459+ candidate:** implement the ADR-0009 completion track required before
+  serving peers can earn protocol-native attribution: deterministic Layer 0 generator,
+  independent verifier, Layer 1 Genesis state bundle, Layer 2 epoch snapshot schema,
+  Layer 3 D2D fetch/verify binding, and cross-implementation vectors.
+
+Until the ADR-0009 layers are implemented and independently verifiable, Python remains
+the reference implementation and any agent-init serving evidence is best-effort mirror
+or rehearsal support, not completed protocol-native self-compilation.
 
 **Key open question for Phase 1423:** whether the 7 rehearsal agent identities carry over
 to public RC (preserved across soft-RC wipe) or whether public RC starts with fresh identities.
