@@ -17,7 +17,6 @@ from ilc_core.sidecars.claim_nullifier_registry_v1 import (
     CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN,
     CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN,
     DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN,
-    REJECTED_NONBLOCKING,
     ClaimNullifierRegistry,
 )
 from ilc_core.sidecars.claimability_receipt_verifier import (
@@ -164,7 +163,7 @@ def test_phase_1389b_invalid_reserved_presentation_does_not_block_later_valid_cl
         claim_registry=registry,
         current_issuance_epoch=12,
     )
-    assert [record.status for record in registry.records()] == [REJECTED_NONBLOCKING]
+    assert registry.records() == ()
 
     accepted = verify_claimability_receipt_presentation(
         valid,
@@ -179,6 +178,46 @@ def test_phase_1389b_invalid_reserved_presentation_does_not_block_later_valid_cl
     assert accepted["decision"] == ACCEPTED_LOCAL_ONLY_DECISION
     statuses = [record.status for record in registry.records()]
     assert ACCEPTED in statuses
+
+
+def test_phase_1389b_registry_record_limit_fails_closed() -> None:
+    registry = ClaimNullifierRegistry(max_records=1)
+    first = verify_claimability_receipt_presentation(
+        _valid_presentation(lot_id="lot-phase-1389b-limit-1"),
+        claim_registry=registry,
+        current_issuance_epoch=12,
+    )
+    second = verify_claimability_receipt_presentation(
+        _valid_presentation(lot_id="lot-phase-1389b-limit-2"),
+        claim_registry=registry,
+        current_issuance_epoch=12,
+    )
+
+    assert first["decision"] == ACCEPTED_LOCAL_ONLY_DECISION
+    assert second["decision"] == REJECTED_DECISION
+    assert second["rejection_reasons"] == [
+        "claim_nullifier_registry_record_limit_exceeded_phase_1428_audit_fix"
+    ]
+
+
+def test_phase_1389b_registry_expire_stale_records_prunes_indexes() -> None:
+    registry = ClaimNullifierRegistry(max_records=1)
+    first = verify_claimability_receipt_presentation(
+        _valid_presentation(lot_id="lot-phase-1389b-expire-1"),
+        claim_registry=registry,
+        current_issuance_epoch=12,
+    )
+    expired = registry.expire_stale_records(20)
+    second = verify_claimability_receipt_presentation(
+        _valid_presentation(lot_id="lot-phase-1389b-expire-2"),
+        claim_registry=registry,
+        current_issuance_epoch=12,
+    )
+
+    assert first["decision"] == ACCEPTED_LOCAL_ONLY_DECISION
+    assert expired == 1
+    assert second["decision"] == ACCEPTED_LOCAL_ONLY_DECISION
+    assert len(registry.records()) == 1
 
 
 def test_phase_1389b_registry_rejects_closed_or_premature_claim_window() -> None:

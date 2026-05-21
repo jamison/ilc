@@ -394,27 +394,9 @@ def verify_claimability_receipt_presentation(
     """Verify a claimability presentation locally and return a canonical decision."""
 
     reserved_record: ClaimNullifierRecord | None = None
-    if claim_registry is not None:
-        try:
-            reserved_record = claim_registry.reserve_presentation(
-                presentation,
-                current_issuance_epoch=current_issuance_epoch,
-            )
-        except ClaimNullifierRegistryError as exc:
-            return _build_decision(
-                decision=REJECTED_DECISION,
-                presentation_id=_safe_presentation_id(presentation),
-                claimability_proof_ref=None,
-                latest_balance_receipt_ref=None,
-                conversion_receipt_sha256=None,
-                rejection_reasons=[exc.token],
-            )
-
     try:
         normalized = _normalize_presentation(presentation)
     except ClaimabilityReceiptVerifierError as exc:
-        if claim_registry is not None and reserved_record is not None:
-            claim_registry.mark_rejected_nonblocking(reserved_record.claim_nullifier_ref)
         return _build_decision(
             decision=REJECTED_DECISION,
             presentation_id=_safe_presentation_id(presentation),
@@ -423,6 +405,22 @@ def verify_claimability_receipt_presentation(
             conversion_receipt_sha256=None,
             rejection_reasons=[exc.token],
         )
+
+    if claim_registry is not None:
+        try:
+            reserved_record = claim_registry.reserve_presentation(
+                normalized,
+                current_issuance_epoch=current_issuance_epoch,
+            )
+        except ClaimNullifierRegistryError as exc:
+            return _build_decision(
+                decision=REJECTED_DECISION,
+                presentation_id=normalized["presentation_id"],
+                claimability_proof_ref=None,
+                latest_balance_receipt_ref=None,
+                conversion_receipt_sha256=None,
+                rejection_reasons=[exc.token],
+            )
 
     decision = _build_decision(
         decision=ACCEPTED_LOCAL_ONLY_DECISION,

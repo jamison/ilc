@@ -30,6 +30,12 @@ REJECTED_NONBLOCKING = "rejected_nonblocking"
 EXPIRED = "expired"
 ACTIVE_STATUSES = frozenset({PENDING, ACCEPTED})
 CLAIM_NULLIFIER_POST_WINDOW_RETENTION_EPOCHS = 1
+MAX_CLAIM_NULLIFIER_RECORDS = 100_000
+_MAX_CANONICAL_PAYLOAD_DEPTH = 32
+_MAX_CANONICAL_PAYLOAD_NODES = 100_000
+_MAX_TEXT_LENGTH = 4096
+_MAX_CANONICAL_PAYLOAD_TEXT_BYTES = 1_000_000
+_MAX_PROTOCOL_INT = 2**63 - 1
 
 
 class ClaimNullifierRegistryError(ValueError):
@@ -62,8 +68,14 @@ class ClaimNullifierRecord:
 class ClaimNullifierRegistry:
     """In-process atomic duplicate-claim admission registry."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, max_records: int = MAX_CLAIM_NULLIFIER_RECORDS) -> None:
+        if isinstance(max_records, bool) or not isinstance(max_records, int) or max_records <= 0:
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_registry_max_records_invalid_phase_1428_audit_fix",
+                "max_records must be a positive integer",
+            )
         self._lock = Lock()
+        self._max_records = max_records
         self._records: dict[str, ClaimNullifierRecord] = {}
         self._presentation_ids: dict[str, str] = {}
         self._presentation_canonicals: dict[str, str] = {}
@@ -84,6 +96,12 @@ class ClaimNullifierRegistry:
             current_issuance_epoch=current_issuance_epoch,
         )
         with self._lock:
+            self._expire_stale_records_locked(candidate.first_seen_issuance_epoch)
+            if len(self._records) >= self._max_records:
+                raise ClaimNullifierRegistryError(
+                    "claim_nullifier_registry_record_limit_exceeded_phase_1428_audit_fix",
+                    "claim nullifier registry record limit exceeded",
+                )
             self._reject_active_conflict(candidate)
             self._records[candidate.claim_nullifier_ref] = candidate
             self._presentation_ids[candidate.presentation_id] = candidate.claim_nullifier_ref
@@ -118,6 +136,31 @@ class ClaimNullifierRegistry:
     def records(self) -> tuple[ClaimNullifierRecord, ...]:
         with self._lock:
             return tuple(self._records.values())
+
+    def expire_stale_records(self, current_issuance_epoch: int) -> int:
+        current_epoch = _require_int(current_issuance_epoch, "current_issuance_epoch")
+        with self._lock:
+            return self._expire_stale_records_locked(current_epoch)
+
+    def _expire_stale_records_locked(self, current_issuance_epoch: int) -> int:
+        stale_refs = [
+            ref
+            for ref, record in self._records.items()
+            if record.expires_at_issuance_epoch < current_issuance_epoch
+        ]
+        for ref in stale_refs:
+            self._delete_record_locked(ref)
+        return len(stale_refs)
+
+    def _delete_record_locked(self, claim_nullifier_ref: str) -> None:
+        record = self._records.pop(claim_nullifier_ref, None)
+        if record is None:
+            return
+        self._presentation_ids.pop(record.presentation_id, None)
+        self._presentation_canonicals.pop(record.presentation_canonical_ref, None)
+        self._proof_refs.pop((record.canonical_agent_identity, record.claimability_proof_ref), None)
+        self._conversion_receipts.pop(record.conversion_receipt_sha256, None)
+        self._conversion_lots.pop((record.canonical_agent_identity, record.conversion_lot_id), None)
 
     def _replace_status(
         self,
@@ -231,6 +274,7 @@ def build_claim_nullifier_record(
             "claim_nullifier_presentation_not_object_phase_1389b",
             "presentation must be an object",
         )
+    _reject_unsafe_json_tree(presentation)
     agent = _require_text(presentation.get("canonical_agent_identity"), "canonical_agent_identity")
     presentation_id = _require_text(presentation.get("presentation_id"), "presentation_id")
     proof_ref = _require_text(presentation.get("claimability_proof_ref"), "claimability_proof_ref")
@@ -330,6 +374,7 @@ def build_claim_nullifier_record(
 
 def _sha256_canonical(payload: Any) -> str:
     try:
+        _reject_unsafe_json_tree(payload)
         rendered = json.dumps(
             payload,
             sort_keys=True,
@@ -342,6 +387,121 @@ def _sha256_canonical(payload: Any) -> str:
             f"payload is not JSON-serializable: {exc}",
         ) from exc
     return hashlib.sha256(rendered.encode("utf-8")).hexdigest()
+
+
+def _reject_unsafe_json_tree(
+    value: Any,
+    *,
+    _depth: int = 0,
+    _seen: set[int] | None = None,
+    _counter: list[int] | None = None,
+    _text_counter: list[int] | None = None,
+) -> None:
+    if _depth > _MAX_CANONICAL_PAYLOAD_DEPTH:
+        raise ClaimNullifierRegistryError(
+            "claim_nullifier_payload_too_deep_phase_1428_audit_fix",
+            "canonical payload exceeds maximum traversal depth",
+        )
+    if _seen is None:
+        _seen = set()
+    if _counter is None:
+        _counter = [0]
+    if _text_counter is None:
+        _text_counter = [0]
+    _counter[0] += 1
+    if _counter[0] > _MAX_CANONICAL_PAYLOAD_NODES:
+        raise ClaimNullifierRegistryError(
+            "claim_nullifier_payload_too_large_phase_1428_audit_fix",
+            "canonical payload exceeds maximum traversal size",
+        )
+    if isinstance(value, float):
+        raise ClaimNullifierRegistryError(
+            "claim_nullifier_payload_float_forbidden_phase_1428_audit_fix",
+            "float is forbidden in claim nullifier payloads",
+        )
+    if isinstance(value, bool) or value is None:
+        return
+    if isinstance(value, int):
+        if value < 0 or value > _MAX_PROTOCOL_INT:
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_payload_int_invalid_phase_1428_audit_fix",
+                "canonical payload integer exceeds the registry bound",
+            )
+        return
+    if isinstance(value, str):
+        if len(value) > _MAX_TEXT_LENGTH:
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_payload_text_too_large_phase_1428_audit_fix",
+                "canonical payload string exceeds maximum length",
+            )
+        if any(ord(char) < 0x20 or char == "\x7f" for char in value):
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_payload_text_invalid_phase_1428_audit_fix",
+                "canonical payload string contains a control character",
+            )
+        _text_counter[0] += len(value)
+        if _text_counter[0] > _MAX_CANONICAL_PAYLOAD_TEXT_BYTES:
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_payload_text_too_large_phase_1428_audit_fix",
+                "canonical payload aggregate text exceeds maximum size",
+            )
+        return
+    if isinstance(value, Mapping):
+        object_id = id(value)
+        if object_id in _seen:
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_payload_cycle_forbidden_phase_1428_audit_fix",
+                "canonical payload must not contain cycles",
+            )
+        _seen.add(object_id)
+        try:
+            for key, item in value.items():
+                if not isinstance(key, str):
+                    raise ClaimNullifierRegistryError(
+                        "claim_nullifier_payload_key_invalid_phase_1428_audit_fix",
+                        "canonical payload keys must be strings",
+                    )
+                _reject_unsafe_json_tree(
+                    key,
+                    _depth=_depth + 1,
+                    _seen=_seen,
+                    _counter=_counter,
+                    _text_counter=_text_counter,
+                )
+                _reject_unsafe_json_tree(
+                    item,
+                    _depth=_depth + 1,
+                    _seen=_seen,
+                    _counter=_counter,
+                    _text_counter=_text_counter,
+                )
+        finally:
+            _seen.remove(object_id)
+        return
+    if isinstance(value, list):
+        object_id = id(value)
+        if object_id in _seen:
+            raise ClaimNullifierRegistryError(
+                "claim_nullifier_payload_cycle_forbidden_phase_1428_audit_fix",
+                "canonical payload must not contain cycles",
+            )
+        _seen.add(object_id)
+        try:
+            for item in value:
+                _reject_unsafe_json_tree(
+                    item,
+                    _depth=_depth + 1,
+                    _seen=_seen,
+                    _counter=_counter,
+                    _text_counter=_text_counter,
+                )
+        finally:
+            _seen.remove(object_id)
+        return
+    raise ClaimNullifierRegistryError(
+        "claim_nullifier_canonical_serialization_failed_phase_1410_fix1",
+        "payload is not JSON-serializable",
+    )
 
 
 def _require_text(value: object, field: str) -> str:
@@ -372,6 +532,7 @@ __all__ = [
     "CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN",
     "CLAIM_NULLIFIER_REGISTRY_VERSION",
     "DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN",
+    "MAX_CLAIM_NULLIFIER_RECORDS",
     "PENDING",
     "REJECTED_NONBLOCKING",
     "ClaimNullifierRecord",

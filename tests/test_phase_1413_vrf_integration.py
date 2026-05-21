@@ -277,7 +277,8 @@ def test_j008_vrf_condition_is_met_after_phase_1425_and_authorized_after_1427() 
     assert condition_by_id["VRF_VERIFIER_IMPLEMENTED"].status is GateConditionStatus.MET
     assert "VRF_VERIFIER_IMPLEMENTED" not in report.blocking_not_met
     assert report.verdict == "PASS"
-    assert report.production_activated is True
+    assert report.gate_authorized is True
+    assert report.production_activated is False
 
 
 def test_no_private_key_or_local_proof_generation_paths_in_phase_1411_to_1413_files() -> None:

@@ -201,7 +201,9 @@ class TestGateStaticStatus:
     def test_gate_production_not_activated(self) -> None:
         from ilc_core.epistemic.jury_activation_gate import evaluate_jury_activation_gate
         report = evaluate_jury_activation_gate()
-        assert report.production_activated is True
+        assert report.gate_authorized is True
+        assert report.production_activated is False
+        assert report.execution_surfaces_activated is False
 
 
 class TestPromptFilesPresent:

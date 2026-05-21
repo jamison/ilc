@@ -113,7 +113,9 @@ class JuryActivationGateReport:
     verdict: str                           # "PASS" | "INCOMPLETE"
     blocking_not_met: List[str]            # condition_ids of blocking conditions not yet met
     phase_tokens: List[str]
-    production_activated: bool             # True only after PASS and explicit production GO
+    gate_authorized: bool                  # True after PASS and explicit Phase 1427 GO
+    production_activated: bool             # True only after execution surfaces are flipped live
+    execution_surfaces_activated: bool     # Assignment/payment/ingestion runtime flags are live
     runtime_version: str
 
 
@@ -125,8 +127,10 @@ def evaluate_jury_activation_gate() -> JuryActivationGateReport:
     unmet conditions.
 
     The verdict is INCOMPLETE as long as any blocking condition is NOT_MET.
-    A PASS verdict records all blocking conditions MET. production_activated
+    A PASS verdict records all blocking conditions MET. gate_authorized
     additionally requires the explicit Phase 1427 production GO guard flip.
+    production_activated remains false until later phases flip the concrete
+    assignment, review-lane, payment, ingestion, and value-path runtime flags.
     """
     conditions: List[GateCondition] = [
 
@@ -261,9 +265,9 @@ def evaluate_jury_activation_gate() -> JuryActivationGateReport:
             condition_id="REVIEW_LANE_WIRING_COMPLETE",
             description=(
                 "Production review lane wiring is complete: T0.5 -> T1+ admission path "
-                "is implemented (ADR-0041 §1), reviewer-payment-to-ledger settlement "
-                "path is implemented, and public admission evidence satisfies the "
-                "Phase 1387a public-economics admission firewall."
+                "is implemented (ADR-0041 §1), reviewer-payment settlement stubs are "
+                "wired default-off, and public admission evidence satisfies the Phase "
+                "1387a public-economics admission firewall."
             ),
             status=GateConditionStatus.MET,
             evidence_ref=(
@@ -421,8 +425,8 @@ def evaluate_jury_activation_gate() -> JuryActivationGateReport:
             _TOKEN_PRODUCTION_AUTHORIZED_1427,
             _TOKEN_ALL_TEN_MET_1427,
         ],
-        production_activated=(
-            verdict == "PASS" and not PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED
-        ),
+        gate_authorized=(verdict == "PASS" and not PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED),
+        production_activated=False,
+        execution_surfaces_activated=False,
         runtime_version=JURY_ACTIVATION_GATE_VERSION_1427,
     )

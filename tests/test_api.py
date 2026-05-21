@@ -17,7 +17,7 @@ def _build_gossip_node_payload(content: str, node_id: str) -> dict:
         content=content,
         agent_id="agent:gossip:test",
         signature="sig:gossip:test",
-        net_stake=1.0,
+        net_stake="1.0",
     )
     node.id = node.compute_id()
     return node.model_dump(mode="json")

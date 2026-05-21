@@ -38,7 +38,9 @@ def test_evaluate_jury_activation_gate_passes_after_phase_1427() -> None:
     report = evaluate_jury_activation_gate()
     assert report.verdict == "PASS"
     assert report.blocking_not_met == []
-    assert report.production_activated is True
+    assert report.gate_authorized is True
+    assert report.production_activated is False
+    assert report.execution_surfaces_activated is False
     assert report.runtime_version == JURY_ACTIVATION_GATE_VERSION_1427
 
 
