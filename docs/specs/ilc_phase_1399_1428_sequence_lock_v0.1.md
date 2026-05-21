@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1419 anti-capture diversity verification complete, Phase 1420 next and SENSITIVE
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1420 copyright counsel disposition complete, Phase 1421 next and NON-SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -268,7 +268,27 @@ was not patched and still reports `ANTI_CAPTURE_DIVERSITY_VERIFIED` as
 `NOT_MET` until Phase 1425. No production jury activation, public graph
 admission activation, reviewer payment, ECU distribution,
 ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
-Phase 1420 copyright counsel disposition is next and SENSITIVE.
+Phase 1420 copyright counsel disposition followed as the next SENSITIVE phase.
+
+**Phase 1420 completion addendum:** Copyright counsel disposition committed in
+this phase after explicit `GO Phase 1420`. The committed disposition artifact is
+`docs/specs/ilc_copyright_counsel_disposition_1420_v0.1.md` and records
+`copyright_counsel_disposition_complete_phase_1420`,
+`self_counsel_verbatim_storage_boundary_phase_1420`,
+`self_counsel_d2d_distribution_boundary_phase_1420`,
+`copyright_counsel_not_external_legal_opinion_phase_1420`, and
+`license_not_public_before_repo_authorized_public_phase_1420`. The disposition
+is Genesis-authority self-counsel only, not an external legal opinion, not
+attorney sign-off, and not commercial legal advice. It does not authorize
+default verbatim full-text storage of third-party copyrighted artifacts,
+verbatim D2D distribution of copyrighted material, public repo publication,
+public package publication, or public license publication before repo-public
+authorization. `COPYRIGHT_COUNSEL_DISPOSITION` evidence is recorded, but
+`jury_activation_gate.py` remains unpatched and still reports the condition as
+`NOT_MET` until Phase 1425. No production activation, public ingestion, public
+serving, ECU distribution, ledger/treasury/wallet mutation, graph mutation,
+registry mutation, CDL mutation, or J-008 gate flip occurred. Phase 1421 window
+coherence and capsule update is next and NON-SENSITIVE.
 
 ---
 
