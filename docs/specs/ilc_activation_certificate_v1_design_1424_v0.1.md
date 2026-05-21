@@ -12,6 +12,10 @@ genesis_signing_ceremony_procedure_defined_phase_1424
 epoch_0_to_1_transition_trigger_defined_phase_1424
 artifact_hello_world_design_defined_phase_1424
 public_rc_not_activated_phase_1424
+activation_certificate_v1_fix1_phase_1424
+public_rc_claim_in_signed_body_confirmed_phase_1424_fix1
+ml_dsa_65_signature_algorithm_defined_phase_1424_fix1
+copyright_note_corrected_phase_1424_fix1
 ```
 
 ---
@@ -45,7 +49,7 @@ set `epoch_0_to_1_transition_authorized=true`, activate public RC, or make any
 | `genesis_signing_epoch` | integer | Protocol epoch at time of signing; must be 0 for initial public RC activation |
 | `epoch_0_to_1_transition_authorized` | boolean | `false` in all unsigned templates; set to `true` only at the signing ceremony |
 | `activation_timestamp_epoch` | integer | Protocol epoch at which activation is effective; value is 0 for initial public RC |
-| `certificate_signature` | object or null | ECDSA/Ed25519 or Genesis-key signature over canonical JSON hash; null in unsigned templates; populated only at ceremony |
+| `certificate_signature` | object or null | ML-DSA-65 signature object over the SHA-256 of the pre-signature canonical JSON; null in unsigned templates; populated only at ceremony. Structure: `{"algorithm": "ML-DSA-65", "key_ref": "genesis_agent1_pubkey_record_838a:mldsa_pk_hex", "signed_payload_hash": "<SHA-256 hex>", "signature_bytes": "<hex-encoded ML-DSA signature>"}`. Backup algorithm: SPHINCS+ (`genesis_agent1_pubkey_record_838a:sphincs_pk_hex`). |
 | `public_rc_claim` | string or null | `"public_rc_activated"` after successful signing; null in unsigned templates |
 
 ### 2.2 Unsigned Template (canonical JSON)
@@ -63,6 +67,17 @@ set `epoch_0_to_1_transition_authorized=true`, activate public RC, or make any
 }
 ```
 
+`certificate_signature` is `null` in all unsigned templates. At the signing ceremony it is populated with a structured object:
+
+```json
+{
+  "algorithm": "ML-DSA-65",
+  "key_ref": "genesis_agent1_pubkey_record_838a:mldsa_pk_hex",
+  "signed_payload_hash": "<SHA-256 of pre-signature canonical JSON>",
+  "signature_bytes": "<hex-encoded ML-DSA signature>"
+}
+```
+
 ### 2.3 Canonical JSON Rule
 
 Before hashing or signing, serialize all JSON with:
@@ -71,10 +86,36 @@ Before hashing or signing, serialize all JSON with:
 json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
 ```
 
-The `certificate_signature` and `public_rc_claim` fields must be set to `null`
-when computing the pre-signature canonical hash. The `launch_readiness_manifest_hash`
-must reference the hash of the already-signed `public_rc_launch_readiness_manifest_v1`
-canonical payload before the certificate hash is computed.
+**Pre-signature payload construction:**
+
+The pre-signature payload is the certificate body with all ceremony values set,
+EXCEPT `certificate_signature` which is `null` during hash computation. Specifically:
+
+- `public_rc_claim` is set to `"public_rc_activated"` in the pre-signature payload.
+  It IS part of the signed body. It must not be null when computing the hash.
+- `certificate_signature` is the ONLY field excluded from the hash (set to `null`
+  during hash computation). This is logically required: a signature cannot include
+  itself.
+- All other fields (`epoch_0_to_1_transition_authorized=true`,
+  `genesis_signing_agent_id`, `genesis_signing_epoch`, `launch_readiness_manifest_hash`,
+  `activation_timestamp_epoch`, `certificate_version`, `public_rc_claim`) take
+  their ceremony values before hashing.
+
+**Signature algorithm:**
+
+The `certificate_signature` object uses:
+- Primary: ML-DSA-65 (`mldsa_pk_hex` from `genesis_agent1_pubkey_record_838a.txt`)
+- Backup: SPHINCS+ (`sphincs_pk_hex` from `genesis_agent1_pubkey_record_838a.txt`)
+
+The `signed_payload_hash` field within the signature object is the SHA-256 of the
+pre-signature canonical JSON string. The `signature_bytes` field is the hex-encoded
+ML-DSA signature over that hash.
+
+**Manifest hash:**
+
+The `launch_readiness_manifest_hash` must reference the SHA-256 of the already-signed
+`public_rc_launch_readiness_manifest_v1` canonical payload before the certificate
+hash is computed.
 
 ### 2.4 Lineage Binding
 
@@ -258,8 +299,10 @@ Any party may verify the epoch transition by:
 2. Confirming `certificate_version == "activation_certificate_v1"`.
 3. Confirming `epoch_0_to_1_transition_authorized == true`.
 4. Confirming `public_rc_claim == "public_rc_activated"`.
-5. Computing the canonical hash of the certificate body (with `certificate_signature`
-   and `public_rc_claim` set to null) using `json.dumps(sort_keys=True, separators=(",",":"), allow_nan=False)`.
+5. Computing the canonical hash of the certificate body with `certificate_signature`
+   set to null and `public_rc_claim` set to `"public_rc_activated"` (per §2.3), using
+   `json.dumps(sort_keys=True, separators=(",",":"), allow_nan=False)`. Only
+   `certificate_signature` is excluded; `public_rc_claim` is part of the signed body.
 6. Verifying the `certificate_signature` against the Genesis Agent 01 public key
    record at `docs/genesis/genesis_agent1_pubkey_record_838a.txt`.
 7. Verifying that `launch_readiness_manifest_hash` matches the SHA-256 of the
@@ -341,10 +384,13 @@ August 1915
 
 ### 6.5 Copyright Note
 
-"The Road Not Taken" was first published in 1916 (Mountain Interval). It is in
-the public domain in the United States (published before 1928) and in most
-jurisdictions worldwide (Frost died 1963; life+60/70 year terms expired). No
-copyright constraint applies under the Phase 1420 self-counsel boundaries.
+"The Road Not Taken" is in the public domain in the United States (published
+1916, before the 1928 public-domain threshold). The project is published by a
+US citizen in the United States; US copyright law governs the publication act.
+Users in life+70 jurisdictions (EU, UK) should note that local copyright
+protection expires January 1, 2034. This assessment is self-counsel analysis
+only, not an external legal opinion (see Phase 1420 copyright counsel
+disposition).
 
 ### 6.6 What `artifact:hello_world` Is Not
 

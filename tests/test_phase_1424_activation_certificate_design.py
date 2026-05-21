@@ -6,6 +6,9 @@ Verifies:
 - canonical-lineage interpretation claims
 - artifact:hello_world non-trigger and non-overclaim invariants
 - canonical JSON serialization rule
+- Fix1: public_rc_claim is in the signed body (not excluded from pre-signature hash)
+- Fix1: certificate_signature is a structured ML-DSA-65 object (not a freeform string)
+- Fix1: copyright note uses scoped US-public-domain language
 
 Phase tokens (must appear in source):
   activation_certificate_v1_schema_defined_phase_1424
@@ -13,6 +16,10 @@ Phase tokens (must appear in source):
   epoch_0_to_1_transition_trigger_defined_phase_1424
   artifact_hello_world_design_defined_phase_1424
   public_rc_not_activated_phase_1424
+  activation_certificate_v1_fix1_phase_1424
+  public_rc_claim_in_signed_body_confirmed_phase_1424_fix1
+  ml_dsa_65_signature_algorithm_defined_phase_1424_fix1
+  copyright_note_corrected_phase_1424_fix1
 """
 
 from __future__ import annotations
@@ -31,6 +38,11 @@ _TOKEN_CEREMONY_DEFINED = "genesis_signing_ceremony_procedure_defined_phase_1424
 _TOKEN_TRIGGER_DEFINED = "epoch_0_to_1_transition_trigger_defined_phase_1424"
 _TOKEN_HELLO_WORLD = "artifact_hello_world_design_defined_phase_1424"
 _TOKEN_NOT_ACTIVATED = "public_rc_not_activated_phase_1424"
+# Fix1 tokens
+_TOKEN_FIX1 = "activation_certificate_v1_fix1_phase_1424"
+_TOKEN_FIX1_PUBLIC_RC_IN_BODY = "public_rc_claim_in_signed_body_confirmed_phase_1424_fix1"
+_TOKEN_FIX1_ML_DSA = "ml_dsa_65_signature_algorithm_defined_phase_1424_fix1"
+_TOKEN_FIX1_COPYRIGHT = "copyright_note_corrected_phase_1424_fix1"
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -90,6 +102,22 @@ class TestDesignDocExists:
     def test_design_doc_contains_not_activated_token(self):
         text = DESIGN_DOC.read_text()
         assert "public_rc_not_activated_phase_1424" in text
+
+    def test_design_doc_contains_fix1_token(self):
+        text = DESIGN_DOC.read_text()
+        assert "activation_certificate_v1_fix1_phase_1424" in text
+
+    def test_design_doc_contains_fix1_public_rc_in_body_token(self):
+        text = DESIGN_DOC.read_text()
+        assert "public_rc_claim_in_signed_body_confirmed_phase_1424_fix1" in text
+
+    def test_design_doc_contains_fix1_ml_dsa_token(self):
+        text = DESIGN_DOC.read_text()
+        assert "ml_dsa_65_signature_algorithm_defined_phase_1424_fix1" in text
+
+    def test_design_doc_contains_fix1_copyright_token(self):
+        text = DESIGN_DOC.read_text()
+        assert "copyright_note_corrected_phase_1424_fix1" in text
 
 
 # ---------------------------------------------------------------------------
@@ -188,26 +216,136 @@ class TestCanonicalJSON:
         h2 = hashlib.sha256(_canonical_json(t2).encode()).hexdigest()
         assert h1 == h2
 
-    def test_pre_signature_hash_excludes_signature_field(self):
-        """Pre-signature hash must be computed with certificate_signature=null."""
+    def test_pre_signature_hash_excludes_only_certificate_signature(self):
+        """Pre-signature hash must be computed with certificate_signature=null.
+
+        Fix1 (HIGH-1): public_rc_claim is NOT excluded from the pre-signature hash.
+        It is set to "public_rc_activated" in the pre-signature body. Only
+        certificate_signature is null during hash computation.
+        """
         base = _unsigned_template()
         base["genesis_signing_agent_id"] = "test_agent_id"
         base["launch_readiness_manifest_hash"] = "abc123"
+        base["epoch_0_to_1_transition_authorized"] = True
 
-        # With null signature
+        # Pre-signature payload: certificate_signature=null, public_rc_claim set
         pre_sig = dict(base)
         pre_sig["certificate_signature"] = None
-        pre_sig["public_rc_claim"] = None
+        pre_sig["public_rc_claim"] = "public_rc_activated"
         h_pre = hashlib.sha256(_canonical_json(pre_sig).encode()).hexdigest()
 
-        # With populated signature (would differ if signature is included)
+        # With populated signature (differs because certificate_signature is included)
         with_sig = dict(base)
-        with_sig["certificate_signature"] = {"sig": "some_sig_value"}
+        with_sig["certificate_signature"] = {
+            "algorithm": "ML-DSA-65",
+            "key_ref": "genesis_agent1_pubkey_record_838a:mldsa_pk_hex",
+            "signed_payload_hash": h_pre,
+            "signature_bytes": "deadbeef",
+        }
         with_sig["public_rc_claim"] = "public_rc_activated"
         h_with = hashlib.sha256(_canonical_json(with_sig).encode()).hexdigest()
 
-        # The pre-signature hash must differ from the with-signature hash
+        # The pre-signature hash must differ from the hash of the fully-signed cert
         assert h_pre != h_with
+
+    def test_pre_signature_public_rc_claim_is_not_null(self):
+        """Fix1 (HIGH-1): public_rc_claim must be in the signed body, not null."""
+        base = _unsigned_template()
+        base["genesis_signing_agent_id"] = "test_agent_id"
+        base["launch_readiness_manifest_hash"] = "abc123"
+        base["epoch_0_to_1_transition_authorized"] = True
+        base["public_rc_claim"] = "public_rc_activated"
+        base["certificate_signature"] = None  # only this is null during hashing
+
+        # Can serialize without error — public_rc_claim is part of the signed payload
+        serialized = _canonical_json(base)
+        assert '"public_rc_activated"' in serialized
+        assert '"certificate_signature":null' in serialized
+
+
+# ---------------------------------------------------------------------------
+# Fix1 HIGH-2: Structured signature object tests (ML-DSA-65)
+# ---------------------------------------------------------------------------
+
+class TestCertificateSignatureStructure:
+    """Fix1 (HIGH-2): certificate_signature must be null (unsigned) or a structured
+    ML-DSA-65 object (signed). It is not a freeform ECDSA/Ed25519 string."""
+
+    _REQUIRED_SIGNATURE_KEYS = {
+        "algorithm",
+        "key_ref",
+        "signed_payload_hash",
+        "signature_bytes",
+    }
+
+    def _example_signed_cert(self) -> dict:
+        """Return an example signed certificate with a populated signature object."""
+        t = _unsigned_template()
+        t["genesis_signing_agent_id"] = "test_agent_id"
+        t["launch_readiness_manifest_hash"] = "abc123"
+        t["epoch_0_to_1_transition_authorized"] = True
+        t["public_rc_claim"] = "public_rc_activated"
+        t["certificate_signature"] = {
+            "algorithm": "ML-DSA-65",
+            "key_ref": "genesis_agent1_pubkey_record_838a:mldsa_pk_hex",
+            "signed_payload_hash": "aabbcc",
+            "signature_bytes": "ddeeff",
+        }
+        return t
+
+    def test_unsigned_template_has_null_signature(self):
+        """Unsigned template: certificate_signature is null."""
+        assert _unsigned_template()["certificate_signature"] is None
+
+    def test_signed_cert_signature_is_dict(self):
+        """Signed certificate: certificate_signature is a dict (not a string, not null)."""
+        cert = self._example_signed_cert()
+        assert isinstance(cert["certificate_signature"], dict)
+
+    def test_signed_cert_signature_has_required_keys(self):
+        """Signed certificate: all required keys present in signature object."""
+        sig = self._example_signed_cert()["certificate_signature"]
+        for key in self._REQUIRED_SIGNATURE_KEYS:
+            assert key in sig, f"Missing required key in certificate_signature: {key}"
+
+    def test_signed_cert_signature_algorithm_is_ml_dsa_65(self):
+        """Primary algorithm must be ML-DSA-65."""
+        sig = self._example_signed_cert()["certificate_signature"]
+        assert sig["algorithm"] == "ML-DSA-65"
+
+    def test_signed_cert_key_ref_matches_genesis_pubkey_record(self):
+        """key_ref must reference the genesis_agent1_pubkey_record_838a mldsa_pk_hex field."""
+        sig = self._example_signed_cert()["certificate_signature"]
+        assert sig["key_ref"] == "genesis_agent1_pubkey_record_838a:mldsa_pk_hex"
+
+    def test_design_doc_specifies_ml_dsa_65(self):
+        """Design doc must specify ML-DSA-65 as the certificate signature algorithm."""
+        text = DESIGN_DOC.read_text()
+        assert "ML-DSA-65" in text
+
+    def test_design_doc_specifies_mldsa_pk_hex_key_ref(self):
+        """Design doc must reference genesis_agent1_pubkey_record_838a:mldsa_pk_hex."""
+        text = DESIGN_DOC.read_text()
+        assert "mldsa_pk_hex" in text
+        assert "genesis_agent1_pubkey_record_838a" in text
+
+    def test_design_doc_specifies_sphincs_backup(self):
+        """Design doc must mention SPHINCS+ as backup algorithm."""
+        text = DESIGN_DOC.read_text()
+        assert "SPHINCS" in text or "sphincs" in text.lower()
+
+    def test_certificate_signature_is_null_or_valid_dict(self):
+        """certificate_signature must be null (unsigned) or a dict with required keys."""
+        # Null case
+        unsigned = _unsigned_template()
+        sig = unsigned["certificate_signature"]
+        assert sig is None
+
+        # Dict case
+        signed = self._example_signed_cert()
+        sig = signed["certificate_signature"]
+        assert isinstance(sig, dict)
+        assert set(sig.keys()) >= self._REQUIRED_SIGNATURE_KEYS
 
 
 # ---------------------------------------------------------------------------
@@ -362,6 +500,16 @@ class TestArtifactHelloWorld:
     def test_design_doc_states_no_threshold_signing(self):
         text = DESIGN_DOC.read_text()
         assert "threshold signing" in text
+
+    def test_design_doc_copyright_note_uses_scoped_language(self):
+        """Fix1 (MEDIUM): copyright note must use scoped US-public-domain language,
+        not overclaim global public-domain status."""
+        text = DESIGN_DOC.read_text()
+        # Must reference US public domain and 1928 threshold
+        assert "public domain in the United States" in text
+        assert "1928" in text
+        # Must acknowledge life+70 jurisdictions
+        assert "life+70" in text or "2034" in text
 
     def test_cdl_053_already_ratified_not_future_only(self):
         """CDL-053 is ratified narrowly — must not be described as unratified."""
