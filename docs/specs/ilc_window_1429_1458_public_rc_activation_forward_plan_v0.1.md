@@ -612,22 +612,163 @@ panel composition incentives. An inviter-chaining extension — economic incenti
 agents to onboard new participants via the ADR-0038 provenance edge — was identified
 as a candidate CDL-091 follow-on during Phase 1410 governance review.
 
+**Refined candidate scope:** The preferred model is not an immediate referral bounty.
+It is a backward attribution stream over an agent-init service chain. A serving agent
+may receive attribution only when a downstream agent that it helped initialize later
+produces accepted, non-refuted work. The init service edge should record verifiable
+bootstrap service: content-addressed software or protocol-bundle serving, epoch-snapshot
+or Genesis-lineage serving, successful ADR-0038/ADR-0041 init evidence, and later
+downstream survival/productivity evidence. Raw downloads, raw invitations, or unsigned
+claims of "I onboarded this agent" are not sufficient payout evidence.
+
+**Censorship-resilience motivation:** Distributed agent-init serving is a resilience
+surface. Centralized hosting for initial software downloads or Genesis/snapshot
+material is an institutional takedown risk in restrictive jurisdictions. This candidate
+therefore includes P2P bootstrap relay, signed software/package mirror service, Genesis
+graph/snapshot serving, and new-agent support services as potentially rewardable
+surfaces, but only through self-verifying receipts and delayed downstream outcomes.
+
+**ADR-0009 bundle dependency:** This incentive lane must absorb the remaining
+protocol-native bundle work rather than treating "download serving" as an ordinary
+file-hosting reward. ADR-0009 defines four bootstrap layers:
+
+1. Layer 0 protocol rules bundle.
+2. Layer 1 Genesis state bundle.
+3. Layer 2 epoch state snapshots.
+4. Layer 3 live wire messages.
+
+A new agent should eventually be able to receive the protocol bundle plus a recent
+snapshot from any serving peer, verify the hash/signature chain back to Genesis, and
+begin participation without trusting a website, app store, centralized package host,
+or the serving agent. Until that exists, Python remains the reference implementation
+and agent-init serving can only be rewarded as best-effort mirror/bootstrap support,
+not as a completed protocol-native self-compilation path.
+
+**Required bundle work before this incentive can become protocol-native:**
+
+1. Close Layer 0 schema scope: protocol object schemas, governance constants,
+   scoring constants, version/predecessor semantics, and canonical encoding rules.
+2. Implement ADR-0035 graph-native `type_definition` nodes, or explicitly document
+   why the first public bundle still uses a transitional hardcoded type table.
+3. Build a deterministic bundle generator that emits content-addressed signed
+   protocol bundles.
+4. Build an independent verifier for bundle CID, signature, schema completeness,
+   version lineage, and canonical encoding.
+5. Define the Layer 1 Genesis state bundle and Layer 2 epoch snapshot schemas with
+   explicit references to the verified Layer 0 bundle CID.
+6. Bind Layer 3 D2D bootstrap messages to content-addressed bundle/snapshot fetch and
+   verification, so serving peers can be credited for delivering verifiable artifacts
+   rather than opaque files.
+7. Produce cross-implementation test vectors proving that a non-Python verifier can
+   validate the same bundle and snapshot chain.
+
 **Key constraints:**
 
 1. Inviter chain references must bind to the ADR-0038 `identity_lineage_ref` provenance
    edge — NOT encoded in the `agent_id` itself (CDL-042 flat namespace, ratified Phase
    407, prohibits inviter encoding in agent_id derivation).
-2. Upstream slashing of inviters (slashing agents whose invitees misbehave) is
+2. The attribution edge must bind to ADR-0041's permissionless INIT semantics: the
+   downstream agent remains permissionless and zero-weight until attested; the serving
+   agent earns no authority over the downstream agent.
+3. Payout must be delayed, decayed, and capped. The unit of success is downstream
+   accepted work or verified survival, not a download count, invite count, or wallet
+   creation event.
+4. Upstream slashing of inviters (slashing agents whose invitees misbehave) is
    dangerous — it would suppress legitimate agent onboarding due to tail-risk aversion.
-   This must be explicitly reviewed and likely rejected.
-3. This is an incentive surface change. Requires SIM evidence before CDL opening.
+   This must be explicitly reviewed and likely rejected. A narrower clawback or
+   withheld-reward model for fraudulent bootstrap receipts remains in scope.
+5. This is an incentive surface change. Requires SIM evidence before CDL opening.
 
 **Named obligation:** Before opening any CDL for inviter-chaining incentives:
 
 1. Produce a SIM showing the bootstrapping incentive effect without upstream slashing.
-2. Confirm that ADR-0038 provenance edge is sufficient as the binding mechanism.
-3. Bring to human deliberation with a specific CDL scope proposal.
-4. Do not open this CDL in any window before public RC is live.
+2. Produce a SIM showing delayed downstream-work attribution over the agent-init
+   service chain, including Sybil-tree, same-cluster mirror farm, and artificial
+   downstream productivity attacks.
+3. Confirm that ADR-0038 provenance edge plus ADR-0041 INIT attestation semantics are
+   sufficient as the binding mechanism.
+4. Define a self-verifying bootstrap service receipt format for content-addressed
+   software/protocol-bundle serving and epoch-snapshot/Genesis-lineage serving.
+5. Define the ADR-0009 Layer 0/1/2/3 bundle/snapshot completion track that makes
+   those receipts independently verifiable rather than trust-based download claims.
+6. Bring to human deliberation with a specific CDL scope proposal.
+7. Do not open this CDL in any window before public RC is live.
+
+---
+
+### 10.5 Post-public-RC provenance depth and hub relay CDL candidate
+
+**Status:** Research-only (SIM-PROVENANCE-02 complete, commits `4f389de9`, `e7ff15b4`);
+no CDL, no spec, no PROVENANCE_MAX_DEPTH amendment, no hub relay activation.
+
+**Route:** Window 1459+ / Track I candidate. Not Track H (Werner flow-governor).
+Not a blocker for Phase 1424 or any phase in this window.
+
+**Background:** SIM-PROVENANCE-02 establishes the empirical basis for the lost-middle
+concern and proposes hub relay as the best candidate architecture:
+
+- `PROVENANCE_MAX_DEPTH = 3` is a safety truncation, not a Popperian principle.
+  At `PROVENANCE_DECAY_ALPHA = Decimal("0.45")`, depth-3 captures 90.9% of the
+  infinite geometric sum but pays zero to hops 4+. Long epistemological chains have
+  a creditor middle region that is systematically excluded.
+- **Hub relay candidate model:** Attribution received by a hub is redistributed
+  upstream. Conservation invariant: `sum(all_recipients) ≤ original_attribution_budget`
+  — no new ECU is minted at any relay step.
+  `retain = min(hub_maintenance_cap, B_in × retain_rate)`; `passed = B_in − retain`.
+  Simulation parameters (not policy): `retain_rate = 0.15`, `hub_maintenance_cap = 0.05 ECU`.
+- **Three hub types:** (1) Genuine load-bearing: high cross-cluster inflow, has parents,
+  `pass_through_ratio ≥ 0.15`. (2) Parasitic: `parent_count > 0` AND `pass_through_ratio < 0.15`
+  — flag for review. (3) Terminal (Genesis primitive): `parent_count == 0`, any pass-through
+  ratio — acceptable.
+- **Convergence-as-centrality:** Multiple independent backwards attribution chains
+  converging at a node is hub-candidate evidence, not payout authority. Manufactured
+  convergence remains possible; cross-cluster Laplacian filtering is the anti-ring
+  guard, but FP/FN calibration is still missing.
+
+**Key economic intent:** The protocol's historical intent is that new frontier claims
+are valued tentatively while old, central, refutation-resistant nodes accumulate
+economic value over time — the opposite of the depth-3 frontier-biased gradient.
+Hub relay is the proposed mechanism to realize this intent without requiring each
+claiming artifact to enumerate the full ancestor chain.
+
+**Non-claims (all preserved from SIM-PROVENANCE-02):**
+
+```
+no_provenance_depth_amendment_from_sim_02
+no_hub_relay_activation_from_sim_02
+provenance_max_depth_3_not_changed_by_sim_02
+```
+
+**Blocking gates before any CDL opening:**
+
+1. **SIM-PRESSURE-SPECTRAL-02** — calibrate Laplacian concentration threshold
+   against real false-positive/false-negative data. Until this SIM runs, the
+   cross-cluster filter is an architectural spec, not a production control.
+   Laplacian flags "suspicious topology," not "confirmed abuse."
+2. **Live network topology data** — hub identification requires real cross-cluster
+   inflow observations from post-public-RC epochs. Simulation hub topology is
+   synthetic.
+3. **CDL deliberation questions before any opening:**
+   - Who can assert hub status on a canonical node? What is the authority surface?
+   - How is `retain_rate = 0.15` / `hub_maintenance_cap = 0.05 ECU` calibrated
+     against live data and the Genesis 5% governor?
+   - How does hub relay compose with the Genesis 5% governor? Governor limits
+     total Genesis accrual; does it apply before or after relay redistribution?
+   - What is the cross-cluster filter's enforcement path? Review trigger only,
+     or automatic exclusion?
+   - Can depth remain at 3 with hub relay layered on top, or does hub relay
+     replace the depth parameter entirely?
+
+**Named forward obligation:**
+
+```
+SIM-PRESSURE-SPECTRAL-02
+  → CDL deliberation (canonical hub identification + retain/cap calibration)
+    → CDL-PROVENANCE-DEPTH-01 opening (Window 1459+ / Track I candidate)
+```
+
+This is a post-public-RC architectural obligation. No action required in Window
+1429–1458 beyond preserving this record.
 
 ---
 
