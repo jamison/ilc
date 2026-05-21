@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1416 review lane dedup and payment stub wiring complete, Phase 1417 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1417 review lane integration tests complete, Phase 1418 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -227,6 +227,18 @@ for successful admissions and approving reviewers. No graph write, registry
 write, reviewer payment execution, public serving, J-008 gate verdict change,
 ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
 Phase 1417 review lane integration tests is next and NON-SENSITIVE.
+
+**Phase 1417 completion addendum:** Review lane integration tests committed in
+this phase. `tests/test_phase_1417_review_lane_integration.py` records
+`review_lane_wiring_complete_phase_1417`,
+`review_lane_integration_tests_complete_phase_1417`,
+`review_lane_production_not_activated_phase_1417`, and
+`j008_review_lane_condition_evidence_phase_1417`. The tests cover the full
+Phase 1415+1416 review-lane stack while confirming `jury_activation_gate.py`
+still reports `REVIEW_LANE_WIRING_COMPLETE` as `NOT_MET`. No runtime source
+mutation, J-008 gate verdict change, public serving, reviewer payment execution,
+ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
+Phase 1418 anti-capture diversity design is next and NON-SENSITIVE.
 
 ---
 
