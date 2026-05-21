@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1422 launch readiness manifest schema complete, Phase 1423 next and NON-SENSITIVE
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1423 private soft-RC rehearsal criteria complete, Phase 1424 next and NON-SENSITIVE but paused for human feedback
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -320,6 +320,21 @@ and signature envelope. The unsigned template keeps
 transition authorization, runtime source mutation, J-008 gate flip,
 graph/registry/ledger/treasury/wallet mutation, or CDL mutation occurred. Phase
 1423 private soft-RC rehearsal entry criteria is next and NON-SENSITIVE.
+
+**Phase 1423 completion addendum:** Private soft-RC rehearsal entry criteria
+committed in this phase. `docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md`
+records `private_soft_rc_rehearsal_entry_criteria_defined_phase_1423`,
+`three_machine_seven_agent_topology_spec_defined_phase_1423`,
+`rehearsal_not_activated_phase_1423`, and
+`no_live_llm_calls_in_rehearsal_spec_phase_1423`. The spec defines entry
+criteria, M1/M2/M3 topology with seven scripted agents, ADR-0038/ADR-0041
+identity init, synthetic and Lean Mathlib dataset constraints, wipe/reset
+rights, and deterministic scripted-agent behavior. No rehearsal activation, VPS
+provisioning, live LLM calls, public serving, production graph writes, ECU
+distribution, wallet/ledger/treasury/registry mutation, CDL mutation, or J-008
+gate flip occurred. Phase 1424 public RC activation certificate design is next
+and NON-SENSITIVE, but execution is paused for human feedback per user
+instruction.
 
 ---
 
