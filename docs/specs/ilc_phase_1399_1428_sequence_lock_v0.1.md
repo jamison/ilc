@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1413 VRF integration tests and security review complete, Phase 1414 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1414 review lane wiring ADR complete, Phase 1415 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -186,6 +186,20 @@ verifier, integration, and focused test layers; no runtime source mutation,
 production activation, J-008 gate verdict change, ledger/treasury/wallet
 mutation, graph mutation, or CDL mutation occurred. Phase 1414 review lane wiring
 ADR is next and NON-SENSITIVE.
+
+**Phase 1414 completion addendum:** Review lane wiring ADR committed in this
+phase. `docs/adr/ADR_0043_Review_Lane_T0_5_To_T1_Promotion.md` records
+`review_lane_wiring_adr_accepted_phase_1414`,
+`t0_5_to_t1_plus_admission_contract_defined_phase_1414`,
+`reviewer_payment_settlement_stub_contract_defined_phase_1414`,
+`review_lane_runtime_not_implemented_phase_1414`, and
+`review_lane_wiring_not_complete_phase_1414`. The ADR defines the Phase 1415
+admission runtime target, gate constants, external-ID-first dedup contract, and
+default-off reviewer-payment settlement-stub contract. No runtime source
+mutation, J-008 gate verdict change, public graph admission activation, reviewer
+payment activation, ECU distribution, ledger/treasury/wallet mutation, graph
+mutation, or CDL mutation occurred. Phase 1415 review lane admission runtime is
+next and NON-SENSITIVE.
 
 ---
 
