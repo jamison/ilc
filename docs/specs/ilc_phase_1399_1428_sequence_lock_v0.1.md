@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1415 review lane admission runtime complete, Phase 1416 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1416 review lane dedup and payment stub wiring complete, Phase 1417 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -214,6 +214,19 @@ write, reviewer payment, public serving, J-008 gate verdict change,
 ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
 Phase 1416 dedup enforcement and reviewer-payment settlement stub is next and
 NON-SENSITIVE.
+
+**Phase 1416 completion addendum:** Review lane dedup and payment-stub wiring
+committed in this phase. `ilc_core/epistemic/review_lane_admission_runtime.py`
+now records `review_lane_dedup_enforcement_stub_phase_1416`,
+`review_lane_payment_settlement_stub_phase_1416`,
+`review_lane_payment_not_activated_phase_1416`, and
+`review_lane_wiring_not_complete_phase_1416`. Dedup resolution is
+canonical-external-ID-first, content-hash fallback only, read-only, and bounded.
+Payment-stub quotes call the Phase 1401 default-off reviewer payment stub only
+for successful admissions and approving reviewers. No graph write, registry
+write, reviewer payment execution, public serving, J-008 gate verdict change,
+ledger/treasury/wallet mutation, graph mutation, or CDL mutation occurred.
+Phase 1417 review lane integration tests is next and NON-SENSITIVE.
 
 ---
 
