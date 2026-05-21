@@ -15,24 +15,37 @@ Required phase tokens:
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Mapping, Sequence
 
 from .ingestion_shadow_harness import TaxonomyClass
+from .jury_incentive_runtime import queue_reviewer_payment_stub
 
 REVIEW_LANE_ADMISSION_VERSION = "review_lane_admission_runtime_phase_1415.v0.1"
 REVIEW_LANE_ADMISSION_RUNTIME_TOKEN = "review_lane_admission_runtime_committed_phase_1415"
+REVIEW_LANE_ADMISSION_IMPLEMENTED_TOKEN = "review_lane_admission_runtime_implemented_phase_1415"
 ADR_0043_DEPENDENCY = "review_lane_wiring_adr_accepted_phase_1414"
 ADR_0043_CONTRACT_TOKEN = "t0_5_to_t1_plus_admission_contract_defined_phase_1414"
 
 REVIEW_LANE_PRODUCTION_NOT_ACTIVATED: bool = True
 REVIEW_LANE_PRODUCTION_NOT_ACTIVATED_TOKEN = "review_lane_production_not_activated_phase_1415"
 REVIEW_LANE_WIRING_NOT_COMPLETE_TOKEN = "review_lane_wiring_not_complete_phase_1415"
+REVIEW_LANE_DEDUP_STUB_TOKEN = "review_lane_dedup_enforcement_stub_phase_1416"
+REVIEW_LANE_DEDUP_IMPLEMENTED_TOKEN = "review_lane_dedup_enforcement_implemented_phase_1416"
+REVIEW_LANE_DEDUP_READ_ONLY_TOKEN = "review_lane_dedup_read_only_phase_1416"
+REVIEW_LANE_PAYMENT_STUB_TOKEN = "review_lane_payment_settlement_stub_phase_1416"
+REVIEW_LANE_PAYMENT_STUB_WIRED_TOKEN = "review_lane_payment_stub_wired_phase_1416"
+REVIEW_LANE_PAYMENT_NOT_ACTIVATED_TOKEN = "review_lane_payment_not_activated_phase_1416"
+REVIEW_LANE_REVIEWER_PAYMENT_NOT_ACTIVATED_TOKEN = (
+    "review_lane_reviewer_payment_not_activated_phase_1416"
+)
+REVIEW_LANE_WIRING_NOT_COMPLETE_PHASE_1416_TOKEN = "review_lane_wiring_not_complete_phase_1416"
 
 REVIEW_LANE_PANEL_SIZE = 8
 REVIEW_LANE_MIN_ASSIGNED_REVIEWERS = 5
 REVIEW_LANE_APPROVAL_QUORUM = 5
 REVIEW_LANE_OUTSIDER_REVIEWERS_REQUIRED_FOR_HIGH_VALUE = 1
+MAX_DEDUP_LOOKUP_RECORDS = 10_000
 
 DEDUP_NO_DUPLICATE_FOUND = "no_duplicate_found"
 DEDUP_ATTESTATION_TO_EXISTING = "attestation_to_existing"
@@ -66,11 +79,23 @@ HIGH_VALUE_TARGETS: frozenset[str] = frozenset(
 
 PHASE_TOKENS: tuple[str, ...] = (
     REVIEW_LANE_ADMISSION_RUNTIME_TOKEN,
+    REVIEW_LANE_ADMISSION_IMPLEMENTED_TOKEN,
     REVIEW_LANE_ADMISSION_VERSION,
     ADR_0043_DEPENDENCY,
     ADR_0043_CONTRACT_TOKEN,
     REVIEW_LANE_PRODUCTION_NOT_ACTIVATED_TOKEN,
     REVIEW_LANE_WIRING_NOT_COMPLETE_TOKEN,
+)
+
+PHASE_1416_TOKENS: tuple[str, ...] = (
+    REVIEW_LANE_DEDUP_STUB_TOKEN,
+    REVIEW_LANE_DEDUP_IMPLEMENTED_TOKEN,
+    REVIEW_LANE_DEDUP_READ_ONLY_TOKEN,
+    REVIEW_LANE_PAYMENT_STUB_TOKEN,
+    REVIEW_LANE_PAYMENT_STUB_WIRED_TOKEN,
+    REVIEW_LANE_PAYMENT_NOT_ACTIVATED_TOKEN,
+    REVIEW_LANE_REVIEWER_PAYMENT_NOT_ACTIVATED_TOKEN,
+    REVIEW_LANE_WIRING_NOT_COMPLETE_PHASE_1416_TOKEN,
 )
 
 
@@ -118,6 +143,31 @@ class ReviewLaneAdmissionDecision:
     graph_write_authorized: bool
     public_economics_authorized: bool
     reviewer_payment_authorized: bool
+    phase_tokens: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ReviewLaneDedupEvidence:
+    dedup_result: str
+    dedup_key_kind: str
+    dedup_key: str
+    existing_node_id: str | None
+    graph_write_authorized: bool
+    registry_write_authorized: bool
+    phase_tokens: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ReviewLaneSettlementStubQuote:
+    admission_decision: ReviewLaneAdmissionDecision
+    dedup_evidence: ReviewLaneDedupEvidence
+    reviewer_payment_stubs: tuple[Mapping[str, object], ...]
+    payment_stub_count: int
+    payment_settlement_authorized: bool
+    ledger_write_authorized: bool
+    treasury_write_authorized: bool
+    wallet_write_authorized: bool
+    ecu_distribution_authorized: bool
     phase_tokens: tuple[str, ...]
 
 
@@ -270,6 +320,122 @@ def quote_review_lane_admission(
         public_economics_authorized=False,
         reviewer_payment_authorized=False,
         phase_tokens=PHASE_TOKENS,
+    )
+
+
+def _validate_lookup(name: str, lookup: Mapping[str, str] | None) -> Mapping[str, str]:
+    if lookup is None:
+        return {}
+    if not isinstance(lookup, Mapping):
+        raise ValueError(f"review_lane_invalid_{name}_lookup")
+    if len(lookup) > MAX_DEDUP_LOOKUP_RECORDS:
+        raise ValueError(f"review_lane_{name}_lookup_too_large")
+    for key, value in lookup.items():
+        _require_non_empty_string(key, f"review_lane_invalid_{name}_lookup_key")
+        _require_non_empty_string(value, f"review_lane_invalid_{name}_lookup_value")
+    return lookup
+
+
+def resolve_review_lane_dedup(
+    *,
+    canonical_external_id: str | None,
+    submission_content_hash: str,
+    known_external_ids: Mapping[str, str] | None = None,
+    known_content_hashes: Mapping[str, str] | None = None,
+) -> ReviewLaneDedupEvidence:
+    """Resolve read-only dedup evidence without writing graph or registry state."""
+
+    _require_non_empty_string(submission_content_hash, "review_lane_invalid_submission_content_hash")
+    if not submission_content_hash.startswith("sha256:"):
+        raise ValueError("review_lane_invalid_submission_content_hash")
+    if canonical_external_id is not None:
+        _require_non_empty_string(
+            canonical_external_id,
+            "review_lane_invalid_canonical_external_id",
+        )
+
+    external_ids = _validate_lookup("external_id", known_external_ids)
+    content_hashes = _validate_lookup("content_hash", known_content_hashes)
+
+    if canonical_external_id is not None:
+        existing_node_id = external_ids.get(canonical_external_id)
+        return ReviewLaneDedupEvidence(
+            dedup_result=(
+                DEDUP_ATTESTATION_TO_EXISTING if existing_node_id else DEDUP_NO_DUPLICATE_FOUND
+            ),
+            dedup_key_kind="canonical_external_id",
+            dedup_key=canonical_external_id,
+            existing_node_id=existing_node_id,
+            graph_write_authorized=False,
+            registry_write_authorized=False,
+            phase_tokens=PHASE_1416_TOKENS,
+        )
+
+    existing_node_id = content_hashes.get(submission_content_hash)
+    return ReviewLaneDedupEvidence(
+        dedup_result=DEDUP_ATTESTATION_TO_EXISTING if existing_node_id else DEDUP_NO_DUPLICATE_FOUND,
+        dedup_key_kind="submission_content_hash",
+        dedup_key=submission_content_hash,
+        existing_node_id=existing_node_id,
+        graph_write_authorized=False,
+        registry_write_authorized=False,
+        phase_tokens=PHASE_1416_TOKENS,
+    )
+
+
+def quote_review_lane_admission_with_stubs(
+    request: ReviewLaneAdmissionRequest,
+    *,
+    known_external_ids: Mapping[str, str] | None = None,
+    known_content_hashes: Mapping[str, str] | None = None,
+) -> ReviewLaneSettlementStubQuote:
+    """Quote admission plus default-off reviewer-payment stubs."""
+
+    dedup_evidence = resolve_review_lane_dedup(
+        canonical_external_id=request.canonical_external_id,
+        submission_content_hash=request.submission_content_hash,
+        known_external_ids=known_external_ids,
+        known_content_hashes=known_content_hashes,
+    )
+    request_with_dedup = replace(
+        request,
+        dedup_result=dedup_evidence.dedup_result,
+        existing_node_id=dedup_evidence.existing_node_id,
+    )
+    decision = quote_review_lane_admission(request_with_dedup)
+
+    payment_stubs: list[Mapping[str, object]] = []
+    if decision.admitted:
+        reviewer_ids = sorted(
+            {
+                attestation.reviewer_agent_id
+                for attestation in request.reviewer_attestations
+                if attestation.verdict == VERDICT_APPROVE
+            }
+        )
+        for reviewer_id in reviewer_ids:
+            stub = dict(
+                queue_reviewer_payment_stub(
+                    reviewer_id=reviewer_id,
+                    task_id=request.submission_id,
+                )
+            )
+            stub["wallet_write_authorized"] = False
+            stub["settlement_authorized"] = False
+            stub["phase_tokens"] = list(stub["phase_tokens"]) + list(PHASE_1416_TOKENS)
+            payment_stubs.append(stub)
+
+    return ReviewLaneSettlementStubQuote(
+        admission_decision=decision,
+        dedup_evidence=dedup_evidence,
+        reviewer_payment_stubs=tuple(payment_stubs),
+        payment_stub_count=len(payment_stubs),
+        payment_settlement_authorized=False,
+        ledger_write_authorized=False,
+        treasury_write_authorized=False,
+        wallet_write_authorized=False,
+        ecu_distribution_authorized=False,
+        phase_tokens=PHASE_TOKENS + PHASE_1416_TOKENS,
     )
 
 
