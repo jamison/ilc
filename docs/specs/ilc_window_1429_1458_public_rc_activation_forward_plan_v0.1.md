@@ -354,39 +354,49 @@ This window does only the internally executable portions. External actions (prov
 
 ## 5. Candidate phase table
 
+**Note:** Updated 2026-05-21 to reflect §8 Q1-Q5 resolutions. Changes from v0.1 draft:
+- Track E (ADR-0035, phases 1442-1444) REMOVED — deferred to Window 1459+
+- Track H restructured: H1 = single Werner diagnostic wiring phase (NON-SENSITIVE); old H2/H3 conditional CDL phases REMOVED — flow-governor CDL deferred to Window 1459+
+- Phase 1437 updated: OpenClaw harness-assisted P2P (not full Rust P2P substrate decision)
+- Gap 14 phases added between C2 and C3 (phases ~1436a-1436b, run parallel with C governance)
+- Phase numbers for D, F, G, Z tracks shift slightly; approximate numbers used
+
 | Order | Phase (approx) | Topic | Character | Sensitivity |
 |-------|----------------|-------|-----------|-------------|
 | A1 | 1429 | Production assignment activation — flip `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = False` | Runtime | **SENSITIVE** |
 | A2 | 1430 | CDL-053 Werner local credit first wire to maintenance lottery stub | Runtime | NON-SENSITIVE |
-| B1 | 1431 | Rehearsal agent identity ceremony (3 machines × 7 agents) | Identity | **SENSITIVE** |
-| B2 | 1432 | Private rehearsal execution — infrastructure validation (scripted agents, Phase 1 dataset) | Rehearsal | NON-SENSITIVE |
-| B3 | 1433 | Private rehearsal verdict + Phase 2 dataset (Lean Mathlib) | Rehearsal | conditional |
-| C1 | 1434 | TransportPrincipal CDL opening (public path governance) | Constitutional | **SENSITIVE** |
+| B1 | 1431 | Rehearsal agent identity ceremony (3 machines × 7 agents, production keypairs, preserved off-machine) | Identity | **SENSITIVE** |
+| B2 | 1432 | Private rehearsal — infrastructure validation (scripted agents, Phase 1 dataset, OpenClaw P2P path tested) | Rehearsal | NON-SENSITIVE |
+| B3 | 1433 | Private rehearsal verdict + Phase 2 dataset (Lean Mathlib); wipe right after PASS | Rehearsal | conditional |
+| C1 | 1434 | TransportPrincipal CDL opening (public path governance, Gap 10) | Constitutional | **SENSITIVE** |
 | C2 | 1435 | TransportPrincipal CDL prelock + ratification | Constitutional | **SENSITIVE** |
-| C3 | 1436 | Non-loopback sidecar/projection + public fetch serving activation | Runtime | NON-SENSITIVE |
-| C4 | 1437 | Rust P2P substrate decision + public P2P activation | Runtime/Constitutional | **conditional SENSITIVE** |
+| G14a | ~1436a | Gap 14 package modularity — Phase 1 (modular package profile definition, parallel with C governance) | Runtime | NON-SENSITIVE |
+| G14b | ~1436b | Gap 14 package modularity — Phase 2 (public RC profile, OpenClaw/NemoClaw hosted profile) | Runtime | NON-SENSITIVE |
+| C3 | 1436 | Non-loopback sidecar/projection + public fetch serving activation (requires Gap 14 complete + Phase 1435) | Runtime | NON-SENSITIVE |
+| C4 | 1437 | OpenClaw harness-assisted P2P activation (CDL-078 relay path; validated in Phase 1432) | Runtime | **conditional SENSITIVE** |
 | D1 | 1438 | ECU-to-ILC conversion runtime + CDL-088 activation | Runtime | **SENSITIVE** |
 | D2 | 1439 | Public verifier API activation | Runtime | NON-SENSITIVE |
 | D3 | 1440 | Claimability integration tests + security review | Testing | NON-SENSITIVE |
 | D4 | 1441 | Gap 13 closure verdict | Gate | NON-SENSITIVE |
-| E1 | 1442 | ADR-0035 CDL opening + prelock (`type_definition` NodeType) | Constitutional | **SENSITIVE** |
-| E2 | 1443 | ADR-0035 CDL ratification | Constitutional | **SENSITIVE** |
-| E3 | 1444 | ADR-0035 runtime implementation | Runtime | NON-SENSITIVE |
-| F1 | 1445 | AGPL license header audit + public-source allowlist execution | Compliance | NON-SENSITIVE |
-| F2 | 1446 | CLA text finalization | Governance | **SENSITIVE** |
-| F3 | 1447 | Gap 7 partial closure + external-action carry-forward record | Gate | NON-SENSITIVE |
-| G1 | 1448 | v0.3 Genesis root envelope signing ceremony | Identity / Release | **SENSITIVE** |
-| G2 | 1449 | Release artifact signing + manifest finalization | Release | **SENSITIVE** |
-| G3 | 1450 | Public repository publication | Publication | **SENSITIVE** |
-| G4 | 1451 | External operator bootstrap guide publication | Documentation | NON-SENSITIVE |
-| G5 | 1452 | Public RC activation certificate + epoch 1 trigger | **Launch** | **SENSITIVE** |
-| H1 | 1453 | Werner flow-governor evidence review (conditional on rehearsal data) | Research | NON-SENSITIVE |
-| H2 | 1454 | CDL-053 amendment / flow-governor CDL opening (conditional) | Constitutional | **conditional SENSITIVE** |
-| H3 | 1455 | Werner flow-governor CDL ratification (conditional) | Constitutional | **conditional SENSITIVE** |
-| Z1 | 1456 | Window coherence + capsule + ADR housekeeping | Synthesis | NON-SENSITIVE |
-| Z2 | 1457 | Window 1429–1458 closure gate | Gate | **SENSITIVE** |
+| H1 | ~1442 | Werner diagnostic wiring — default-off pressure diagnostics (systolic/diastolic/pulse-pressure; review lane only; no CDL, no ECU, no wallet) | Runtime | NON-SENSITIVE |
+| F1 | ~1443 | AGPL license header audit + public-source allowlist execution | Compliance | NON-SENSITIVE |
+| F2 | ~1444 | CLA text finalization | Governance | **SENSITIVE** |
+| F3 | ~1445 | Gap 7 partial closure + external-action carry-forward record | Gate | NON-SENSITIVE |
+| G1 | ~1446 | v0.3 Genesis root envelope signing ceremony | Identity / Release | **SENSITIVE** |
+| G2 | ~1447 | Release artifact signing + manifest finalization | Release | **SENSITIVE** |
+| G3 | ~1448 | Public repository publication | Publication | **SENSITIVE** |
+| G4 | ~1449 | External operator bootstrap guide publication | Documentation | NON-SENSITIVE |
+| G5 | ~1450 | Public RC activation certificate + epoch 1 trigger | **Launch** | **SENSITIVE** |
+| Z1 | ~1451 | Window coherence + capsule + ADR housekeeping | Synthesis | NON-SENSITIVE |
+| Z2 | ~1452 | Window 1429–1458 closure gate | Gate | **SENSITIVE** |
 
-Total: 28 planned phases (phases 1429–1457) plus up to 2 contingency slots (1458 + rehearsal remediation phases 1433a–1433n if needed).
+**Removed from this window:**
+- Track E (ADR-0035): deferred to Window 1459+ per Q4 resolution
+- Track H2 (CDL-053 amendment opening): deferred to Window 1459+ per Q5 resolution
+- Track H3 (Werner flow-governor CDL ratification): deferred to Window 1459+ per Q5 resolution
+- Native Rust P2P substrate phases: deferred to Window 1459+ per Q3 resolution
+
+Total: ~26 planned phases plus up to 2 Gap 14 phases and contingency slots (rehearsal remediation phases 1433a–1433n if needed). Exact phase number assignments finalized in the sequence lock.
 
 ---
 
@@ -396,19 +406,35 @@ Total: 28 planned phases (phases 1429–1457) plus up to 2 contingency slots (14
 Phase 1427 (J-008 PASS) — inherits from Window 1399-1428
   └── 1429 (production assignment activation)
        └── 1430 (CDL-053 local credit wire)
-            └── 1431 (rehearsal identity ceremony)
-                 └── 1432 (rehearsal infra validation)
-                      └── 1433 (rehearsal verdict)
-                           └── C track (TransportPrincipal 1434-1437)
-                           └── D track (claimability 1438-1441)
-                           └── E track (ADR-0035 1442-1444) [parallel]
-                           └── F track (Gap 7 1445-1447) [parallel]
-                                └── 1448 (v0.3 signing) ← ALL tracks must pass
-                                     └── 1449 (release artifact signing)
-                                          └── 1450 (public publication)
-                                               └── 1451 (operator guide)
-                                                    └── 1452 (epoch 1 trigger) ← PUBLIC RC
+            └── 1431 (rehearsal identity ceremony)  [SENSITIVE]
+                 └── 1432 (rehearsal infra validation — OpenClaw P2P path tested)
+                      └── 1433 (rehearsal verdict + wipe right)
+                           ├── C track: 1434 (TransportPrincipal CDL opening)
+                           │            └── 1435 (TransportPrincipal CDL ratification)
+                           │                 ├── [parallel] Gap 14: ~1436a → ~1436b (package modularity)
+                           │                 └── 1436 (sidecar/projection + public fetch serving)  ← requires Gap 14 complete
+                           │                      └── 1437 (OpenClaw harness-assisted P2P)  [conditional SENSITIVE]
+                           ├── D track: 1438 (CDL-088 activation + ECU-to-ILC conversion)
+                           │            └── 1439 (public verifier API)
+                           │                 └── 1440 (claimability integration tests + security review)
+                           │                      └── 1441 (Gap 13 closure)
+                           ├── H1: ~1442 (Werner diagnostic wiring)  [parallel, NON-SENSITIVE, before ~1446]
+                           └── F track: ~1443 (license header audit)
+                                        └── ~1444 (CLA text finalization)
+                                             └── ~1445 (Gap 7 partial closure)
+                                                  └── ALL tracks (C+D+F complete, H1 wired)
+                                                       └── ~1446 (v0.3 signing)  [SENSITIVE]
+                                                            └── ~1447 (release artifact signing)  [SENSITIVE]
+                                                                 └── ~1448 (public repository publication)  [SENSITIVE]
+                                                                      └── ~1449 (operator bootstrap guide)
+                                                                           └── ~1450 (epoch 1 trigger)  ← PUBLIC RC  [SENSITIVE]
+                                                                                └── ~1451 (window coherence)
+                                                                                     └── ~1452 (window closure gate)  [SENSITIVE]
 ```
+
+**Critical path:** A → B (rehearsal) → C (TransportPrincipal + Gap 14) → D (claimability) → F (Gap 7) → G (signing + publication + epoch 1 trigger) → Z (closure)
+
+**Parallel lanes:** H1 (Werner diagnostic, NON-SENSITIVE) runs during D/F execution; Gap 14 runs during C governance (1434-1435)
 
 ---
 
@@ -429,17 +455,52 @@ These items are real obligations but require external action or long-range archi
 
 ---
 
-## 8. Open questions for human review before window GO
+## 8. Open questions — RESOLVED 2026-05-21
 
-1. **Rehearsal identity continuity:** Do the 7 rehearsal agent identities (Phase 1431) carry forward to public RC, or does public RC start with fresh agent identities? This decision must be made at or before Phase 1431.
+All five open questions from the initial draft have been resolved by the human reviewer. Decisions are locked and carried forward to the formal sequence lock (`docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md`).
 
-2. **Gap 14 (package modularity) timing:** The roadmap records `gap_14_package_modularity_executes_before_gap_10_public_p2p`. Is Gap 14 a prerequisite for Track C in this window, or does it run in parallel/after? If Gap 14 is a hard prerequisite, insert it before Phase 1434.
+---
 
-3. **Rust P2P substrate (Phase 1437):** Is public P2P a hard prerequisite for epoch 1 trigger, or is a loopback-accessible public RC acceptable as the first version? If loopback-only is acceptable, Phase 1437 can be deferred past Phase 1452.
+**Q1 — Rehearsal identity continuity: RESOLVED — fresh start with preserved keys**
 
-4. **ADR-0035 priority:** Is ADR-0035 (homoiconic type definition system) a blocking requirement for public RC, or can it run as a parallel non-blocking track? If non-blocking, it can be deferred to post-1452.
+Phase 1431 generates the 7 real production keypairs. Key material is saved off-machine by the human operator. After rehearsal completes and the wipe right is exercised, public RC re-initializes these same 7 agents via fresh ADR-0038/ADR-0041 ceremonies using the preserved keys. The rehearsal state is wiped; the cryptographic identities are continuous. Each agent will subsequently connect their respective LLM harness (OpenClaw, etc.) and operator tooling.
 
-5. **Werner flow-governor track (H):** Given the Phase 1263 decision is preserved, is there a specific SIM result or evidence threshold you want to define before authorizing Phase 1453 evidence review?
+Token locked: `q1_rehearsal_identity_continuity_resolved_keys_preserved_rc_fresh_start`
+
+---
+
+**Q2 — Gap 14 timing: RESOLVED — parallel with Track C governance, required before Phase 1436**
+
+Gap 14 (package modularity) runs in parallel with Track C phases 1434-1435 (TransportPrincipal CDL governance). Gap 14 must be complete before Phase 1436 (non-loopback sidecar/projection + public fetch serving activation). Gap 14 phases are inserted between Phase 1435 and Phase 1436 in the candidate phase table.
+
+Token locked: `q2_gap_14_parallel_with_c_governance_required_before_1436`
+
+---
+
+**Q3 — P2P substrate: RESOLVED — OpenClaw harness-assisted P2P for Phase 1437; native Rust P2P deferred to Window 1459+**
+
+Phase 1437 targets OpenClaw harness-assisted P2P as the public RC connection path. This is mediated P2P via the OpenClaw gateway layer using the existing CDL-078 relay path. Track B rehearsal (Phase 1432-1433) must explicitly test the OpenClaw connection path. Native Rust P2P substrate (PersistentQuicSessionManager completion, CDL-078 relay routing in Rust, peer discovery, Python/Rust cross-stack integration) is deferred to Window 1459+ with concrete phases assigned there.
+
+Token locked: `q3_openclaw_harness_p2p_phase_1437_native_rust_deferred_window_1459_plus`
+
+---
+
+**Q4 — ADR-0035: RESOLVED — fully deferred to Window 1459+**
+
+ADR-0035 (homoiconic type definition system) is not a public RC blocker. Track E is removed from Window 1429-1458 critical path entirely. Concrete assignment in Window 1459+:
+- Phase 1459+1: ADR-0035 CDL opening (type_definition NodeType governance) — SENSITIVE
+- Phase 1459+2: ADR-0035 CDL ratification — SENSITIVE
+- Phase 1459+3: ADR-0035 runtime (migrate hardcoded type strings to graph-native type_definition nodes) — NON-SENSITIVE
+
+Token locked: `q4_adr_0035_deferred_window_1459_plus_not_rc_blocker`
+
+---
+
+**Q5 — Werner flow-governor: RESOLVED — Werner diagnostic wiring in Window 1429-1458 (Track H1), flow-governor CDL deferred to Window 1459+**
+
+Werner diagnostic wiring is a single NON-SENSITIVE phase added to Window 1429-1458 as Track H1. It wires default-off pressure diagnostics (systolic/diastolic/pulse-pressure metrics) for jury/review lane only against existing review-lane evidence. No CDL amendment, no settlement, no ECU, no wallet mutation. This accumulates diagnostic data during rehearsal and early public RC epochs. Werner flow-governor CDL (CDL-053 amendment or successor) is deferred to Window 1459+ pending diagnostic trace data. The old Track H2/H3 conditional CDL phases are removed from this window.
+
+Token locked: `q5_werner_diagnostic_wiring_track_h1_nons_flow_governor_cdl_deferred_1459_plus`
 
 ---
 
