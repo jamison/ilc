@@ -8,14 +8,15 @@ Proves:
 - all expected condition IDs are present
 - all 10 conditions are MET after Phase 1425 pre-gate verification patch
 - blocking_not_met is empty after Phase 1425 patch (verdict="PASS")
-- production_activated is False in all reports
-- PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is True
+- production_activated is True after Phase 1427 authorization
+- PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is False after Phase 1427 authorization
 - no import random in source
 - gate spec records non-authorizations
 - package exports
 
 Note: Phase 1425 patched all 7 previously NOT_MET blocking conditions to MET.
-Historical NOT_MET tokens remain in phase_tokens as archived evidence.
+Phase 1427 then authorized production jury activation. Historical NOT_MET tokens
+remain in phase_tokens as archived evidence.
 """
 
 from __future__ import annotations
@@ -88,7 +89,7 @@ from ilc_core.epistemic.jury_activation_gate import (
 
 
 def test_production_not_authorized_constant():
-    assert PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is True
+    assert PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED is False
 
 
 def test_version_token_present():
@@ -113,14 +114,13 @@ def test_verdict_is_pass(report):
 
     Phase 1398 established the gate with verdict=INCOMPLETE (7 blocking NOT_MET).
     Phase 1425 patched all 7 conditions to MET after verifying evidence from
-    Phases 1400-1420. PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED remains True;
-    the production GO is Phase 1427.
+    Phases 1400-1420. Phase 1427 then issued the production GO.
     """
     assert report.verdict == "PASS"
 
 
-def test_production_activated_false(report):
-    assert report.production_activated is False
+def test_production_activated_true_after_phase_1427(report):
+    assert report.production_activated is True
 
 
 def test_phase_tokens_in_report(report):
@@ -365,4 +365,4 @@ def test_package_exports_gate_condition_status():
 
 def test_package_exports_production_flag():
     from ilc_core.epistemic import PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED as flag
-    assert flag is True
+    assert flag is False

@@ -4,8 +4,10 @@ Defines and evaluates the conditions required before production jury
 assignment, production reviewer payment, production public ingestion, or
 any live ECU distribution via a jury/maintenance lane may be activated.
 
-This is a gate-definition and gate-evaluation module only. It does NOT
-activate production.
+This is a gate-definition and gate-evaluation module. Phase 1427 authorizes
+the production jury activation machinery by flipping the explicit guard, but
+this module does NOT execute jury assignment, reviewer payment, ingestion,
+ledger writes, wallet writes, treasury writes, or graph writes by itself.
 
 Phase 1398 initial tokens (historical — do NOT remove):
   production_jury_activation_gate_defined_phase_j008
@@ -30,9 +32,15 @@ Phase 1425 pre-gate verification tokens (conditions patched to MET):
   all_seven_blocking_conditions_met_verified_phase_1425
   j008_gate_verdict_still_incomplete_pending_production_go_phase_1425
 
-SENSITIVE: This module defines the production activation boundary.
-PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED must remain True until Phase 1427
-issues the explicit production GO and re-runs the gate.
+Phase 1427 gate re-run tokens:
+  production_jury_activation_gate_pass_phase_1427
+  j008_gate_rerun_phase_1427
+  production_jury_activation_authorized_phase_1427
+  all_10_conditions_met_phase_1427
+
+SENSITIVE: This module defines the production activation boundary. Phase 1427
+has issued the explicit production GO and re-run the gate. Public RC
+publication, signing, repository push, and package upload remain separate gates.
 """
 
 from __future__ import annotations
@@ -43,6 +51,7 @@ from typing import List
 
 JURY_ACTIVATION_GATE_VERSION = "jury_activation_gate_phase_j008.v0.1"
 JURY_ACTIVATION_GATE_VERSION_1425 = "jury_activation_gate_phase_1425.v0.1"
+JURY_ACTIVATION_GATE_VERSION_1427 = "jury_activation_gate_phase_1427.v0.1"
 ADR_0040_DEPENDENCY = "jury_eligibility_assignment_adr_accepted_phase_j002"
 J007_DEPENDENCY = "shadow_public_ingestion_harness_phase_j007"
 
@@ -69,8 +78,14 @@ _TOKEN_COPYRIGHT_MET_1425 = "copyright_counsel_disposition_condition_met_verifie
 _TOKEN_ALL_SEVEN_MET = "all_seven_blocking_conditions_met_verified_phase_1425"
 _TOKEN_GATE_STILL_INCOMPLETE = "j008_gate_verdict_still_incomplete_pending_production_go_phase_1425"
 
-# Safety gate: must remain True until ALL blocking conditions are MET.
-PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED: bool = True
+# Phase 1427 tokens - production jury activation boundary authorized
+_TOKEN_GATE_PASS_1427 = "production_jury_activation_gate_pass_phase_1427"
+_TOKEN_GATE_RERUN_1427 = "j008_gate_rerun_phase_1427"
+_TOKEN_PRODUCTION_AUTHORIZED_1427 = "production_jury_activation_authorized_phase_1427"
+_TOKEN_ALL_TEN_MET_1427 = "all_10_conditions_met_phase_1427"
+
+# Safety gate: Phase 1427 flips this only after all blocking conditions are MET.
+PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED: bool = False
 
 
 class GateConditionStatus(str, Enum):
@@ -98,7 +113,7 @@ class JuryActivationGateReport:
     verdict: str                           # "PASS" | "INCOMPLETE"
     blocking_not_met: List[str]            # condition_ids of blocking conditions not yet met
     phase_tokens: List[str]
-    production_activated: bool             # always False until verdict == "PASS"
+    production_activated: bool             # True only after PASS and explicit production GO
     runtime_version: str
 
 
@@ -110,8 +125,8 @@ def evaluate_jury_activation_gate() -> JuryActivationGateReport:
     unmet conditions.
 
     The verdict is INCOMPLETE as long as any blocking condition is NOT_MET.
-    A PASS verdict requires all blocking conditions to be MET AND a production
-    GO token from the project authority.
+    A PASS verdict records all blocking conditions MET. production_activated
+    additionally requires the explicit Phase 1427 production GO guard flip.
     """
     conditions: List[GateCondition] = [
 
@@ -400,7 +415,14 @@ def evaluate_jury_activation_gate() -> JuryActivationGateReport:
             _TOKEN_COPYRIGHT_MET_1425,
             _TOKEN_ALL_SEVEN_MET,
             _TOKEN_GATE_STILL_INCOMPLETE,
+            # Phase 1427 tokens - production jury activation authorized
+            _TOKEN_GATE_PASS_1427,
+            _TOKEN_GATE_RERUN_1427,
+            _TOKEN_PRODUCTION_AUTHORIZED_1427,
+            _TOKEN_ALL_TEN_MET_1427,
         ],
-        production_activated=False,  # never True until verdict == "PASS"
-        runtime_version=JURY_ACTIVATION_GATE_VERSION_1425,
+        production_activated=(
+            verdict == "PASS" and not PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED
+        ),
+        runtime_version=JURY_ACTIVATION_GATE_VERSION_1427,
     )
