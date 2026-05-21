@@ -271,11 +271,11 @@ def test_production_assignment_guard_stays_default_off(
         )
 
 
-def test_j008_gate_source_not_patched_by_phase_1419() -> None:
+def test_j008_anti_capture_condition_met_after_phase_1425_and_1427() -> None:
     report = evaluate_jury_activation_gate()
     condition_by_id = {condition.condition_id: condition for condition in report.conditions}
 
     condition = condition_by_id["ANTI_CAPTURE_DIVERSITY_VERIFIED"]
-    assert condition.status is GateConditionStatus.NOT_MET
-    assert "ANTI_CAPTURE_DIVERSITY_VERIFIED" in report.blocking_not_met
-    assert report.verdict == "INCOMPLETE"
+    assert condition.status is GateConditionStatus.MET
+    assert "ANTI_CAPTURE_DIVERSITY_VERIFIED" not in report.blocking_not_met
+    assert report.verdict == "PASS"

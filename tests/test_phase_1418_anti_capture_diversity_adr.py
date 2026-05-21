@@ -104,11 +104,11 @@ def test_adr_non_activation_section_forbids_runtime_and_gate_flip() -> None:
     assert "mutate ledger, treasury, wallet, graph, or CDL state" in text
 
 
-def test_j008_anti_capture_condition_remains_not_met_in_phase_1418() -> None:
+def test_j008_anti_capture_condition_met_after_phase_1425_and_1427() -> None:
     report = evaluate_jury_activation_gate()
     condition_by_id = {condition.condition_id: condition for condition in report.conditions}
 
     condition = condition_by_id["ANTI_CAPTURE_DIVERSITY_VERIFIED"]
-    assert condition.status is GateConditionStatus.NOT_MET
-    assert "ANTI_CAPTURE_DIVERSITY_VERIFIED" in report.blocking_not_met
-    assert report.verdict == "INCOMPLETE"
+    assert condition.status is GateConditionStatus.MET
+    assert "ANTI_CAPTURE_DIVERSITY_VERIFIED" not in report.blocking_not_met
+    assert report.verdict == "PASS"

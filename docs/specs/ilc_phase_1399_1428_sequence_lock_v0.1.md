@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock - Window 1399-1428 is OPEN; Phase 1426 soft-RC gate re-run complete; Phase 1427 J-008 gate re-run is next and SENSITIVE
+**Status:** Active sequence lock - Window 1399-1428 is OPEN; Phase 1427 J-008 gate re-run complete; Phase 1428 window closure gate is next and SENSITIVE
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -369,6 +369,20 @@ production jury activation, graph/ledger/treasury/wallet/registry mutation,
 CDL mutation, Genesis signing, production minting, production mining, or
 production validator deployment occurred. Phase 1427 J-008 gate re-run is next
 and SENSITIVE.
+
+**Phase 1427 completion addendum:** J-008 gate re-run committed in this phase.
+`docs/specs/ilc_production_jury_activation_gate_pass_1427_v0.1.md` records
+`production_jury_activation_gate_pass_phase_1427`, `j008_gate_rerun_phase_1427`,
+`production_jury_activation_authorized_phase_1427`, and
+`all_10_conditions_met_phase_1427`. `ilc_core/epistemic/jury_activation_gate.py`
+now has `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False`. The gate report
+returns `verdict="PASS"`, `blocking_not_met=[]`, and `production_activated=True`.
+Phase 1427 authorizes production jury activation machinery only; it does not
+execute assignment, reviewer payment, ingestion, ECU distribution, settlement,
+graph/ledger/treasury/wallet/registry writes, public RC publication, signing,
+epoch 0-to-1 transition, CDL mutation, Genesis signing, production minting,
+production mining, or production validator deployment. Phase 1428 window
+closure gate is next and SENSITIVE.
 
 **Phase 1424 completion addendum:** Public RC activation certificate design
 committed in this phase. `docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md`
