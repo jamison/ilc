@@ -280,9 +280,8 @@ def test_t0_5_dedup_hit():
 def test_t0_5_automated_extractor_missing_span_warning():
     desc = _make_desc(extraction_method="automated-rule", source_span_present=False)
     result = validate_t0_5_quarantine(desc, set())
-    # Should produce a warning but still be valid
-    assert result.valid is True
-    assert any("automated_extractor_missing_source_span" in w for w in result.warnings)
+    assert result.valid is False
+    assert result.failure_token == "automated_extractor_missing_source_span"
 
 
 # ---------------------------------------------------------------------------
@@ -443,10 +442,16 @@ def test_harness_invalid_epoch_raises():
             submissions=[],
             tasks_with_transitions=[],
         )
+    with pytest.raises(IngestionHarnessError):
+        run_shadow_ingestion_harness(
+            review_epoch=True,
+            submissions=[],
+            tasks_with_transitions=[],
+        )
 
 
 def test_harness_deterministic_id():
-    """Same epoch + submission count → same harness_id."""
+    """Same epoch and same inputs -> same harness_id."""
     subs = [_make_desc(sid="s1", public_intent=True)]
     task = _make_task(task_state="proposed")
     r1 = run_shadow_ingestion_harness(
@@ -460,6 +465,21 @@ def test_harness_deterministic_id():
         tasks_with_transitions=[(task, ["claimed"])],
     )
     assert r1.harness_id == r2.harness_id
+
+
+def test_harness_default_id_changes_when_same_count_content_changes():
+    task = _make_task(task_state="proposed")
+    r1 = run_shadow_ingestion_harness(
+        review_epoch=42,
+        submissions=[_make_desc(sid="s1", content_hash="sha256:" + "1" * 64, public_intent=True)],
+        tasks_with_transitions=[(task, ["claimed"])],
+    )
+    r2 = run_shadow_ingestion_harness(
+        review_epoch=42,
+        submissions=[_make_desc(sid="s2", content_hash="sha256:" + "2" * 64, public_intent=True)],
+        tasks_with_transitions=[(task, ["claimed"])],
+    )
+    assert r1.harness_id != r2.harness_id
 
 
 def test_harness_custom_id():

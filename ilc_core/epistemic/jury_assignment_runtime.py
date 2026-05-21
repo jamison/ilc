@@ -31,7 +31,6 @@ from typing import Any, List, Mapping, Optional
 
 from ilc_core.consensus.diversity_floor_runtime import (
     compute_max_cluster_share,
-    meets_max_cluster_share_ceiling,
 )
 from ilc_core.epistemic.vrf_proof_verifier import VRFVerificationError, vrf_beta_from_proof
 
@@ -69,6 +68,8 @@ _INDEPENDENCE_K: int = 3     # at least 3 reviewers must be from distinct operat
 _MAX_PER_OPERATOR_DOMAIN: int = _PANEL_REGULAR - _INDEPENDENCE_K
 JURY_CLUSTER_DIVERSITY_FLOOR: int = 4
 JURY_MAX_CLUSTER_SHARE_CEILING: float = 0.40
+JURY_MAX_CLUSTER_SHARE_CEILING_NUMERATOR: int = 2
+JURY_MAX_CLUSTER_SHARE_CEILING_DENOMINATOR: int = 5
 
 # Safety gate: this flag must remain True until J-008 production activation gate passes.
 PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = True
@@ -214,6 +215,8 @@ def _proof_bytes_from_record(
     record = vrf_proofs.get(agent_id)
     if record is None:
         raise JuryAssignmentError("vrf_proof_missing_for_candidate")
+    if not isinstance(record, Mapping):
+        raise JuryAssignmentError("vrf_proof_record_must_be_mapping_for_candidate")
 
     if "public_key" in record:
         public_key = record["public_key"]
@@ -319,6 +322,120 @@ def _select_outsider(
     return [sorted_pool[0].agent_id]
 
 
+def _max_cluster_slots_allowed(total_panel_slots: int) -> int:
+    return (
+        total_panel_slots
+        * JURY_MAX_CLUSTER_SHARE_CEILING_NUMERATOR
+        // JURY_MAX_CLUSTER_SHARE_CEILING_DENOMINATOR
+    )
+
+
+def _cluster_share_within_ceiling(
+    *,
+    largest_cluster_slots: int,
+    total_panel_slots: int,
+) -> bool:
+    return (
+        largest_cluster_slots * JURY_MAX_CLUSTER_SHARE_CEILING_DENOMINATOR
+        <= total_panel_slots * JURY_MAX_CLUSTER_SHARE_CEILING_NUMERATOR
+    )
+
+
+def _operator_domains_for_panel(
+    panel_agent_ids: List[str],
+    agents_by_id: Mapping[str, EligibleAgent],
+) -> set[str]:
+    return {agents_by_id[agent_id].operator_domain for agent_id in panel_agent_ids}
+
+
+def _select_regular_panel_diversity_aware(
+    candidates: List[EligibleAgent],
+    scores: dict[str, bytes],
+    target_size: int,
+    max_per_operator_domain: int,
+) -> List[str]:
+    """Deterministically retry regular selection with cluster limits in the loop."""
+
+    sorted_candidates = sorted(candidates, key=lambda a: (scores[a.agent_id], a.agent_id))
+    selected: List[str] = []
+    selected_set: set[str] = set()
+    domain_counts: Counter[str] = Counter()
+    cluster_counts: Counter[str] = Counter()
+    max_cluster_slots = _max_cluster_slots_allowed(_PANEL_SIZE)
+
+    def can_add(agent: EligibleAgent) -> bool:
+        if agent.agent_id in selected_set:
+            return False
+        if domain_counts[agent.operator_domain] >= max_per_operator_domain:
+            return False
+        if cluster_counts[agent.cluster_id] >= max_cluster_slots:
+            return False
+        return True
+
+    def add(agent: EligibleAgent) -> None:
+        selected.append(agent.agent_id)
+        selected_set.add(agent.agent_id)
+        domain_counts[agent.operator_domain] += 1
+        cluster_counts[agent.cluster_id] += 1
+
+    seen_clusters: set[str] = set()
+    for agent in sorted_candidates:
+        if len(selected) >= target_size:
+            break
+        if len(seen_clusters) >= min(JURY_CLUSTER_DIVERSITY_FLOOR, len({a.cluster_id for a in candidates})):
+            break
+        if agent.cluster_id in seen_clusters:
+            continue
+        if can_add(agent):
+            add(agent)
+            seen_clusters.add(agent.cluster_id)
+
+    for agent in sorted_candidates:
+        if len(selected) >= target_size:
+            break
+        if can_add(agent):
+            add(agent)
+
+    return selected
+
+
+def _select_outsider_for_cluster_diversity(
+    candidates: List[EligibleAgent],
+    scores: dict[str, bytes],
+    regular_panel_agent_ids: List[str],
+    author_operator_domain: str,
+    regular_panel_operator_domains: set[str],
+    agents_by_id: Mapping[str, EligibleAgent],
+) -> List[str]:
+    """Select an outsider that makes the complete 7+1 panel satisfy CDL-V3."""
+
+    regular_set = set(regular_panel_agent_ids)
+    sorted_candidates = sorted(
+        (
+            agent
+            for agent in candidates
+            if agent.agent_id not in regular_set
+            and agent.operator_domain != author_operator_domain
+        ),
+        key=lambda a: (
+            a.operator_domain in regular_panel_operator_domains,
+            scores[a.agent_id],
+            a.agent_id,
+        ),
+    )
+    for agent in sorted_candidates:
+        trial = regular_panel_agent_ids + [agent.agent_id]
+        try:
+            _cluster_diversity_evidence(
+                selected_agent_ids=trial,
+                agents_by_id=agents_by_id,
+            )
+        except JuryAssignmentError:
+            continue
+        return [agent.agent_id]
+    return []
+
+
 def _cluster_diversity_evidence(
     *,
     selected_agent_ids: List[str],
@@ -351,9 +468,9 @@ def _cluster_diversity_evidence(
         largest_cluster_slots=largest_cluster_slots,
         total_panel_slots=len(selected_agent_ids),
     )
-    if not meets_max_cluster_share_ceiling(
-        max_cluster_share=max_cluster_share,
-        max_cluster_share_ceiling=JURY_MAX_CLUSTER_SHARE_CEILING,
+    if not _cluster_share_within_ceiling(
+        largest_cluster_slots=largest_cluster_slots,
+        total_panel_slots=len(selected_agent_ids),
     ):
         raise JuryAssignmentError(
             "jury_max_cluster_share_ceiling_exceeded: "
@@ -472,6 +589,7 @@ def quote_jury_assignment(
     # Step 3 — split: regular candidates vs. outsider candidates
     regular_candidates = [a for a in scored_candidates if not a.outsider_candidate_flag]
     outsider_candidates = [a for a in scored_candidates if a.outsider_candidate_flag]
+    agents_by_id = {agent.agent_id: agent for agent in scored_candidates}
 
     # Step 4 — build regular panel
     regular_panel = _select_regular_panel(
@@ -503,16 +621,57 @@ def quote_jury_assignment(
         regular_panel_operator_domains,
     )
 
+    initial_panel_error: JuryAssignmentError | None = None
+    cluster_evidence: ClusterDiversityEvidence | None = None
+
     if len(outsider_panel) < _PANEL_OUTSIDER:
-        raise JuryAssignmentError(
+        initial_panel_error = JuryAssignmentError(
             "insufficient_outsider_candidates: no eligible outsider candidate found; "
             "outsider seat is required (ADM-003 7+1 panel shape)"
         )
+    else:
+        try:
+            cluster_evidence = _cluster_diversity_evidence(
+                selected_agent_ids=regular_panel + outsider_panel,
+                agents_by_id=agents_by_id,
+            )
+        except JuryAssignmentError as exc:
+            initial_panel_error = exc
 
-    cluster_evidence = _cluster_diversity_evidence(
-        selected_agent_ids=regular_panel + outsider_panel,
-        agents_by_id={agent.agent_id: agent for agent in scored_candidates},
-    )
+    if initial_panel_error is not None:
+        retry_regular_panel = _select_regular_panel_diversity_aware(
+            regular_candidates,
+            scores,
+            _PANEL_REGULAR,
+            _MAX_PER_OPERATOR_DOMAIN,
+        )
+        if len(retry_regular_panel) == _PANEL_REGULAR:
+            retry_domains = _operator_domains_for_panel(retry_regular_panel, agents_by_id)
+            retry_outsider_panel = _select_outsider_for_cluster_diversity(
+                outsider_candidates,
+                scores,
+                retry_regular_panel,
+                author_operator_domain,
+                retry_domains,
+                agents_by_id,
+            )
+            if len(retry_outsider_panel) == _PANEL_OUTSIDER:
+                try:
+                    retry_evidence = _cluster_diversity_evidence(
+                        selected_agent_ids=retry_regular_panel + retry_outsider_panel,
+                        agents_by_id=agents_by_id,
+                    )
+                except JuryAssignmentError:
+                    retry_evidence = None
+                if retry_evidence is not None:
+                    regular_panel = retry_regular_panel
+                    outsider_panel = retry_outsider_panel
+                    cluster_evidence = retry_evidence
+
+    if cluster_evidence is None:
+        if initial_panel_error is None:
+            initial_panel_error = JuryAssignmentError("jury_cluster_diversity_selection_failed")
+        raise initial_panel_error
 
     phase_tokens = [
         _TOKEN_DEFAULT_OFF,
