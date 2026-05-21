@@ -1,6 +1,6 @@
 # ILC Phase 1399-1428 Sequence Lock v0.1
 
-**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1412 VRF jury-assignment integration complete, Phase 1413 next
+**Status:** Active sequence lock — Window 1399-1428 is OPEN; Phase 1413 VRF integration tests and security review complete, Phase 1414 next
 **Date:** 2026-05-20
 **Owner lane:** G8 Jury Economy / Launch Readiness
 **GO authority:** Human reviewer (explicit `GO` received 2026-05-20)
@@ -173,6 +173,19 @@ generation, private-key handling, production activation, J-008 gate verdict
 change, ledger/treasury/wallet mutation, graph mutation, or CDL mutation
 occurred. Phase 1413 VRF integration tests and security review is next and
 NON-SENSITIVE.
+
+**Phase 1413 completion addendum:** VRF integration tests and security review
+committed in this phase. `tests/test_phase_1413_vrf_integration.py` records
+`vrf_integration_tests_complete_phase_1413` and verifies Phase 1411 verifier
+behavior, Phase 1412 audit-only high-value VRF jury ordering, invalid-candidate
+exclusion reporting, unchanged epoch-hash shadow assignment, runtime no-PRNG and
+no-production-assert hygiene, no private-key or proof-generation paths across
+Phase 1411-1413 verifier/integration/test files, and J-008
+`VRF_VERIFIER_IMPLEMENTED` still `NOT_MET`. The VRF track is complete at ADR,
+verifier, integration, and focused test layers; no runtime source mutation,
+production activation, J-008 gate verdict change, ledger/treasury/wallet
+mutation, graph mutation, or CDL mutation occurred. Phase 1414 review lane wiring
+ADR is next and NON-SENSITIVE.
 
 ---
 
