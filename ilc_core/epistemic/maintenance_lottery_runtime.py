@@ -13,14 +13,24 @@ Required phase tokens:
 
 from __future__ import annotations
 
-from decimal import Decimal
+from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from typing import Dict
+
+from .review_lane_admission_runtime import ReviewLaneAdmissionDecision
 
 MAINTENANCE_LOTTERY_RUNTIME_VERSION = "maintenance_lottery_runtime_phase_1409.v0.1"
 MAINTENANCE_LOTTERY_CDL_RATIFIED_TOKEN = "cdl_093_ratified_phase_1408"
 MAINTENANCE_LOTTERY_RUNTIME_STUB_TOKEN = (
     "maintenance_lottery_runtime_stub_committed_phase_1409"
 )
+CDL_053_LOCAL_CREDIT_WIRED_TOKEN = (
+    "cdl_053_local_credit_wired_maintenance_lottery_phase_1430"
+)
+MAINTENANCE_LOTTERY_NOT_ACTIVATED_PHASE_1430_TOKEN = (
+    "maintenance_lottery_not_activated_phase_1430"
+)
+NO_ECU_DISTRIBUTION_PHASE_1430_TOKEN = "no_ecu_distribution_phase_1430"
 
 MAINTENANCE_LOTTERY_NOT_ACTIVATED: bool = True
 MAINTENANCE_LOTTERY_NOT_ACTIVATED_TOKEN = "maintenance_lottery_not_activated_phase_1409"
@@ -71,13 +81,57 @@ MAINTENANCE_LOTTERY_ECU_SETTLEMENT_ALLOWED: bool = False
 MAINTENANCE_LOTTERY_RUNTIME_PHASE = "phase_1409_default_off_stub_only"
 MAINTENANCE_LOTTERY_GATE_FLIP_PHASE = "phase_1427_after_phase_1425_verification"
 
+WERNER_LOCAL_CREDIT_UNIT_DESIGNATION = "local_productive_credit"
+WERNER_LOCAL_CREDIT_IS_SETTLEMENT_GRADE: bool = False
+WERNER_LOCAL_CREDIT_IS_WALLET_VISIBLE: bool = False
+WERNER_LOCAL_CREDIT_IS_TRANSFERABLE: bool = False
+WERNER_LOCAL_CREDIT_UNIT = Decimal("1")
+_ZERO_LOCAL_CREDIT = Decimal("0")
+
 PHASE_TOKENS: frozenset[str] = frozenset(
     {
         MAINTENANCE_LOTTERY_RUNTIME_STUB_TOKEN,
         MAINTENANCE_LOTTERY_CDL_RATIFIED_TOKEN,
         MAINTENANCE_LOTTERY_NOT_ACTIVATED_TOKEN,
+        CDL_053_LOCAL_CREDIT_WIRED_TOKEN,
+        MAINTENANCE_LOTTERY_NOT_ACTIVATED_PHASE_1430_TOKEN,
+        NO_ECU_DISTRIBUTION_PHASE_1430_TOKEN,
     }
 )
+
+
+@dataclass(frozen=True)
+class MaintenanceLocalCreditTaskRecord:
+    agent_id: str
+    task_id: str
+    epoch_id: int
+    task_class: str
+    review_lane_decision: ReviewLaneAdmissionDecision
+
+
+@dataclass(frozen=True)
+class MaintenanceLocalCreditQuote:
+    eligible: bool
+    status: str
+    failure_reasons: tuple[str, ...]
+    agent_id: str
+    task_id: str
+    epoch_id: int
+    task_class: str
+    local_credit_unit: str
+    local_credit_delta: Decimal
+    accumulated_local_credit: Decimal
+    settlement_grade_ecu: bool
+    wallet_visible: bool
+    transferable: bool
+    maintenance_lottery_activated: bool
+    lottery_entry_enqueued: bool
+    draw_authorized: bool
+    ecu_distribution_authorized: bool
+    wallet_write_authorized: bool
+    ledger_write_authorized: bool
+    treasury_write_authorized: bool
+    phase_tokens: tuple[str, ...]
 
 
 def _validate_non_empty_string(value: str, token: str) -> None:
@@ -90,6 +144,51 @@ def _validate_epoch_id(value: int) -> None:
         raise ValueError("invalid_epoch_id")
     if value < 0:
         raise ValueError("invalid_epoch_id")
+
+
+def _validate_non_negative_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool) or isinstance(value, float):
+        raise ValueError(token)
+    try:
+        decimal_value = Decimal(value)  # type: ignore[arg-type]
+    except (InvalidOperation, TypeError, ValueError) as exc:
+        raise ValueError(token) from exc
+    if not decimal_value.is_finite() or decimal_value < _ZERO_LOCAL_CREDIT:
+        raise ValueError(token)
+    return decimal_value
+
+
+def _validate_local_credit_task_record(
+    task_record: MaintenanceLocalCreditTaskRecord,
+) -> None:
+    if not isinstance(task_record, MaintenanceLocalCreditTaskRecord):
+        raise ValueError("invalid_local_credit_task_record")
+    _validate_non_empty_string(task_record.agent_id, "invalid_agent_id")
+    _validate_non_empty_string(task_record.task_id, "invalid_task_id")
+    _validate_epoch_id(task_record.epoch_id)
+    _validate_non_empty_string(task_record.task_class, "invalid_task_class")
+    if not isinstance(task_record.review_lane_decision, ReviewLaneAdmissionDecision):
+        raise ValueError("invalid_review_lane_decision")
+
+
+def _local_credit_failure_reasons(
+    task_record: MaintenanceLocalCreditTaskRecord,
+) -> tuple[str, ...]:
+    decision = task_record.review_lane_decision
+    failure_reasons: list[str] = []
+
+    if task_record.task_class not in MAINTENANCE_LOTTERY_ELIGIBLE_TASK_CLASSES:
+        failure_reasons.append("cdl_053_task_class_not_maintenance_equivalent")
+    if not decision.admitted or decision.failure_reasons:
+        failure_reasons.append("cdl_053_review_lane_not_passed")
+    if decision.submission_id != task_record.task_id:
+        failure_reasons.append("cdl_053_review_lane_task_id_mismatch")
+    if decision.review_epoch != task_record.epoch_id:
+        failure_reasons.append("cdl_053_review_lane_epoch_mismatch")
+    if decision.review_lane != task_record.task_class:
+        failure_reasons.append("cdl_053_review_lane_task_class_mismatch")
+
+    return tuple(failure_reasons)
 
 
 def request_maintenance_lottery_entry_stub(
@@ -114,3 +213,44 @@ def request_maintenance_lottery_entry_stub(
         "treasury_write_authorized": False,
         "phase_tokens": sorted(PHASE_TOKENS),
     }
+
+
+def wire_cdl_053_local_credit_eligibility(
+    task_record: MaintenanceLocalCreditTaskRecord,
+    *,
+    existing_local_credit: Decimal | int | str = _ZERO_LOCAL_CREDIT,
+) -> MaintenanceLocalCreditQuote:
+    """Quote CDL-053 local-credit eligibility without settlement side effects."""
+
+    _validate_local_credit_task_record(task_record)
+    existing_credit = _validate_non_negative_decimal(
+        existing_local_credit,
+        "invalid_existing_local_credit",
+    )
+    failure_reasons = _local_credit_failure_reasons(task_record)
+    eligible = not failure_reasons
+    delta = WERNER_LOCAL_CREDIT_UNIT if eligible else _ZERO_LOCAL_CREDIT
+
+    return MaintenanceLocalCreditQuote(
+        eligible=eligible,
+        status="local_credit_eligible" if eligible else "local_credit_not_eligible",
+        failure_reasons=failure_reasons,
+        agent_id=task_record.agent_id,
+        task_id=task_record.task_id,
+        epoch_id=task_record.epoch_id,
+        task_class=task_record.task_class,
+        local_credit_unit=WERNER_LOCAL_CREDIT_UNIT_DESIGNATION,
+        local_credit_delta=delta,
+        accumulated_local_credit=existing_credit + delta,
+        settlement_grade_ecu=WERNER_LOCAL_CREDIT_IS_SETTLEMENT_GRADE,
+        wallet_visible=WERNER_LOCAL_CREDIT_IS_WALLET_VISIBLE,
+        transferable=WERNER_LOCAL_CREDIT_IS_TRANSFERABLE,
+        maintenance_lottery_activated=not MAINTENANCE_LOTTERY_NOT_ACTIVATED,
+        lottery_entry_enqueued=False,
+        draw_authorized=False,
+        ecu_distribution_authorized=False,
+        wallet_write_authorized=False,
+        ledger_write_authorized=False,
+        treasury_write_authorized=False,
+        phase_tokens=tuple(sorted(PHASE_TOKENS)),
+    )
