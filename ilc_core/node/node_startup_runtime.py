@@ -153,7 +153,18 @@ def _resolve_path(value: str, base_dir: Path) -> str:
     return str((base_dir / path).resolve())
 
 
-def load_static_peer_config(config_path: str | Path) -> dict[str, Any]:
+def _optional_bool(raw: dict[str, Any], key: str, default: bool) -> bool:
+    value = raw.get(key, default)
+    if not isinstance(value, bool):
+        raise ValueError('peer_config_invalid_optional_bool')
+    return value
+
+
+def load_static_peer_config(
+    config_path: str | Path,
+    *,
+    allow_private_peer_endpoints_for_tests: bool = False,
+) -> dict[str, Any]:
     path = Path(config_path)
     raw = _load_json_object(path, 'peer_config_file_not_found', 'peer_config_invalid_json')
     base_dir = path.parent
@@ -173,11 +184,31 @@ def load_static_peer_config(config_path: str | Path) -> dict[str, Any]:
     bind_host = _require_string(transport_raw.get('bind_host'), 'peer_config_missing_required_key')
     tls_cert_path = _require_string(transport_raw.get('tls_cert_path'), 'peer_config_missing_required_key')
     tls_key_path = _require_string(transport_raw.get('tls_key_path'), 'peer_config_missing_required_key')
+    transport_allow_private_peer_endpoints = _optional_bool(
+        transport_raw,
+        'allow_private_peer_endpoints_for_tests',
+        False,
+    )
+    transport_verify_peer_tls = _optional_bool(
+        transport_raw,
+        'verify_peer_tls',
+        True,
+    )
+    effective_allow_private = (
+        allow_private_peer_endpoints_for_tests
+        or transport_allow_private_peer_endpoints
+    )
 
     peers_raw = raw.get('peers')
     if not isinstance(peers_raw, list):
         raise ValueError('peer_config_missing_required_key')
-    normalized_peers = [validate_peer_endpoint(peer) for peer in peers_raw]
+    normalized_peers = [
+        validate_peer_endpoint(
+            peer,
+            allow_private_address_literals=effective_allow_private,
+        )
+        for peer in peers_raw
+    ]
     if len(normalized_peers) != len(set(normalized_peers)):
         raise ValueError('peer_config_duplicate_peer')
 
@@ -189,6 +220,8 @@ def load_static_peer_config(config_path: str | Path) -> dict[str, Any]:
             'bind_port': bind_port,
             'tls_cert_path': _resolve_path(tls_cert_path, base_dir),
             'tls_key_path': _resolve_path(tls_key_path, base_dir),
+            'allow_private_peer_endpoints_for_tests': effective_allow_private,
+            'verify_peer_tls': transport_verify_peer_tls,
         },
         'peers': normalized_peers,
         'config_path': str(path.resolve()),
@@ -227,10 +260,18 @@ def load_genesis_import_reference(reference_path: str | Path) -> dict[str, str]:
 def build_node_startup_context(
     config_path: str | Path,
     reference_path: str | Path,
+    *,
+    allow_private_peer_endpoints_for_tests: bool = False,
 ) -> NodeStartupContext:
-    config = load_static_peer_config(config_path)
+    config = load_static_peer_config(
+        config_path,
+        allow_private_peer_endpoints_for_tests=allow_private_peer_endpoints_for_tests,
+    )
     genesis_reference = load_genesis_import_reference(reference_path)
-    peer_registry = GossipPeerRegistry(config['peers'])
+    peer_registry = GossipPeerRegistry(
+        config['peers'],
+        allow_private_address_literals=config['transport']['allow_private_peer_endpoints_for_tests'],
+    )
     transport = config['transport']
     transport_config = TransportRuntimeConfig(
         transport_kind=transport['kind'],
@@ -238,6 +279,8 @@ def build_node_startup_context(
         bind_port=transport['bind_port'],
         tls_cert_path=transport['tls_cert_path'],
         tls_key_path=transport['tls_key_path'],
+        verify_peer_tls=transport['verify_peer_tls'],
+        allow_private_peer_endpoints_for_tests=transport['allow_private_peer_endpoints_for_tests'],
     )
     return NodeStartupContext(
         node_id=config['node_id'],

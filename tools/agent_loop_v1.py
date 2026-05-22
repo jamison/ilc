@@ -306,6 +306,10 @@ def _transport_bundle(config_path: str | Path) -> tuple[TransportRuntimeConfig, 
             bind_port=int(transport["bind_port"]),
             tls_cert_path=str(transport["tls_cert_path"]),
             tls_key_path=str(transport["tls_key_path"]),
+            verify_peer_tls=bool(transport.get("verify_peer_tls", True)),
+            allow_private_peer_endpoints_for_tests=bool(
+                transport.get("allow_private_peer_endpoints_for_tests", False)
+            ),
         ),
         list(config["peers"]),
     )

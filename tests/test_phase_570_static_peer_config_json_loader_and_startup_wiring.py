@@ -65,6 +65,18 @@ def _write_config(tmp_path: Path, *, peers: list[str] | None = None) -> Path:
     return config_path
 
 
+def _write_testbed_config(tmp_path: Path) -> Path:
+    config_path = _write_config(
+        tmp_path,
+        peers=['https://100.112.32.42:443'],
+    )
+    payload = json.loads(config_path.read_text(encoding='utf-8'))
+    payload['transport']['allow_private_peer_endpoints_for_tests'] = True
+    payload['transport']['verify_peer_tls'] = False
+    config_path.write_text(json.dumps(payload), encoding='utf-8')
+    return config_path
+
+
 def _changed_paths_for_commit(commit_ref: str) -> set[str]:
     result = subprocess.run(
         ['git', 'show', '--name-only', '--pretty=', commit_ref],
@@ -131,6 +143,24 @@ def test_duplicate_peer_entry_fails_with_deterministic_token(tmp_path: Path) -> 
     )
     with pytest.raises(ValueError, match='peer_config_duplicate_peer'):
         runtime.load_static_peer_config(config_path)
+
+
+def test_tailscale_peer_endpoint_requires_explicit_testbed_opt_in(tmp_path: Path) -> None:
+    config_path = _write_config(tmp_path, peers=['https://100.112.32.42:443'])
+
+    with pytest.raises(ValueError, match='peer_endpoint_private_address_forbidden_phase_1332_fix4'):
+        runtime.load_static_peer_config(config_path)
+
+
+def test_testbed_opt_in_allows_tailscale_peer_and_disables_peer_tls_verification(tmp_path: Path) -> None:
+    config_path = _write_testbed_config(tmp_path)
+    reference_path = _write_bundle_and_reference(tmp_path)
+
+    context = runtime.build_node_startup_context(config_path, reference_path)
+
+    assert context.peer_registry.get_peers() == ['https://100.112.32.42:443']
+    assert context.transport_config.allow_private_peer_endpoints_for_tests is True
+    assert context.transport_config.verify_peer_tls is False
 
 
 def test_valid_genesis_import_reference_loads_successfully(tmp_path: Path) -> None:
