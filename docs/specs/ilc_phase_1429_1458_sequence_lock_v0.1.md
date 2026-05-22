@@ -1,6 +1,6 @@
 # ILC Phase 1429-1458 Sequence Lock v0.1
 
-**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1430 is complete; Phase 1431 remains SENSITIVE and requires explicit `GO Phase 1431` before execution
+**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1432 is complete; Phase 1433 private rehearsal verdict is next and conditional
 **Date:** 2026-05-21 (window GO recorded 2026-05-22)
 **Owner lane:** G8 Jury Economy / Launch Readiness / Public RC Activation
 **GO authority:** Human reviewer (`GO Window 1429` recorded 2026-05-22; per-phase GO still required for every SENSITIVE phase)
@@ -302,7 +302,8 @@ execute live jury assignment, reviewer payment, ECU distribution, public serving
 public RC publication, signing, epoch 1 trigger, graph write, ledger write,
 wallet write, treasury write, registry write, or CDL mutation.
 
-Phase 1430 and Phase 1431 are complete. Phase 1432 is next and NON-SENSITIVE.
+Phase 1430, Phase 1431, and Phase 1432 are complete. Phase 1433 is next and
+conditional.
 
 ---
 
@@ -336,8 +337,8 @@ mutate wallets, write graph/ledger/treasury/registry state, activate Werner
 flow-governor policy, authorize direct Werner ECU creation, mutate the CDL
 register, publish public RC artifacts, start public serving, or trigger epoch 1.
 
-Phase 1431 rehearsal agent identity ceremony is complete. Phase 1432 private
-rehearsal infrastructure validation is next and NON-SENSITIVE.
+Phase 1431 rehearsal agent identity ceremony and Phase 1432 private rehearsal
+infrastructure validation are complete. Phase 1433 is next and conditional.
 
 ---
 
@@ -379,12 +380,70 @@ This completion does not activate public identities, public write-path authority
 public claimability, wallet binding, ECU distribution, ILC settlement, public
 serving, public RC publication, signing, or epoch 0-to-1 transition.
 
-Phase 1432 private rehearsal infrastructure validation is next and
-NON-SENSITIVE.
+Phase 1432 private rehearsal infrastructure validation is complete. Phase 1433
+private rehearsal verdict is next and conditional.
 
 ---
 
-## 15. Final Closure Routing (anticipated)
+## 15. Phase 1432 Completion Addendum
+
+Phase 1432 is complete after explicit `GO 1432`.
+
+```text
+rehearsal_infra_validation_complete_phase_1432
+rehearsal_epoch_cycling_confirmed_phase_1432
+rehearsal_review_lane_vrf_panel_confirmed_phase_1432
+openclaw_p2p_path_tested_phase_1432
+no_live_llm_api_phase_1432
+phase_1432_no_public_serving
+phase_1432_no_public_rc_publication
+phase_1432_no_epoch_0_to_1_transition
+phase_1432_no_cdl_mutation
+phase_1432_no_production_graph_write
+phase_1432_no_wallet_write
+phase_1432_no_treasury_write
+phase_1432_native_rust_p2p_not_activated
+phase_1432_openclaw_gateway_not_publicly_activated
+```
+
+Evidence artifacts:
+
+```text
+docs/specs/ilc_rehearsal_infra_validation_evidence_1432_v0.1.md
+docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md
+tests/test_phase_1432_rehearsal_infra_validation.py
+```
+
+Repair commits made before the phase-close evidence:
+
+```text
+0ef61414 fix(testbed): enable private rehearsal transport opt-in
+c91f20ae fix(testbed): declare protobuf runtime dependency
+ddd07a96 fix(testbed): bound remote diagnostics commands
+```
+
+Execution evidence records `three_node_exchange_ok`, rehearsal epoch 574,
+seven scripted agent submissions, panel quorum PASS with 7 yes / 1 no, six
+rehearsal ECU claim records, economic distribution check true, 64 synthetic
+math truth primitives, 64 review-lane decisions, a VRF-integrated audit-mode
+panel quote, and OpenClaw `ilc-local` readiness on the harness node.
+
+Scope correction: current testbed networking evidence confirms the explicit
+private HTTP/HTTPS gossip fallback over Tailscale. Native Rust/QUIC P2P was not
+activated and remains deferred. Public OpenClaw gateway activation remains
+Phase 1437 and SENSITIVE.
+
+This completion does not activate public serving, public RC publication, epoch
+0-to-1 transition, CDL mutation, production graph writes, wallet writes,
+treasury writes, live LLM API calls, native Rust P2P, or a public OpenClaw
+gateway.
+
+Phase 1433 private rehearsal verdict and Phase 2 Lean Mathlib dataset is next
+and conditional.
+
+---
+
+## 16. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
