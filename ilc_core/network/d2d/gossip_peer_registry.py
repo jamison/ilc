@@ -119,11 +119,25 @@ def validate_peer_endpoint(
 class GossipPeerRegistry:
     """Static v1 peer registry — no dynamic discovery."""
 
-    def __init__(self, peers: list[str]) -> None:
-        normalized_peers = list(dict.fromkeys(validate_peer_endpoint(peer) for peer in peers))
+    def __init__(
+        self,
+        peers: list[str],
+        *,
+        allow_private_address_literals: bool = False,
+    ) -> None:
+        normalized_peers = list(
+            dict.fromkeys(
+                validate_peer_endpoint(
+                    peer,
+                    allow_private_address_literals=allow_private_address_literals,
+                )
+                for peer in peers
+            )
+        )
         if len(normalized_peers) > MAX_PEERS:
             raise ValueError('peer_registry_exceeds_max_peers')
         self._peers = normalized_peers
+        self._allow_private_address_literals = allow_private_address_literals
 
     def peer_count(self) -> int:
         return len(self._peers)
@@ -136,6 +150,12 @@ class GossipPeerRegistry:
             raise ValueError('fanout_must_be_positive')
         excluded = set()
         if exclude is not None:
-            excluded = {validate_peer_endpoint(peer) for peer in exclude}
+            excluded = {
+                validate_peer_endpoint(
+                    peer,
+                    allow_private_address_literals=self._allow_private_address_literals,
+                )
+                for peer in exclude
+            }
         available = sorted(peer for peer in self._peers if peer not in excluded)
         return available[:fanout]
