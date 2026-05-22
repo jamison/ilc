@@ -49,9 +49,9 @@ This window may not open until all of the following are confirmed:
 |-----------|------------------|
 | Public RC published | `public_repository_published` token committed |
 | Epoch 1 triggered | `activation_certificate_published` + `epoch_1_transition_authorized` committed |
-| At least one external operator connected | Documented in window 1429-1458 closure gate handoff |
+| At least one external operator connected | `external_operator_identity_ceremony_complete` token committed in window 1429-1458 closure gate handoff |
 | Window 1429-1458 closure gate PASS | `window_1429_1458_closed_phase_<N>` committed |
-| Werner diagnostic trace data available | At least one epoch of pressure-diagnostic data from Track H1 |
+| Werner diagnostic trace data available | At least one epoch of systolic/diastolic/pulse-pressure metrics logged by Track H1 runtime with no false-positive pressure flags recorded |
 
 ---
 
@@ -154,7 +154,7 @@ This window may not open until all of the following are confirmed:
 
 ### Track C — Werner Flow-Governor CDL (Phases 1467-1469, conditional)
 
-**Context:** CDL-053 was ratified with a narrow maintenance-equivalent productive-credit scope. The broader Werner flow-governor architecture (heat/pressure signals → expanded capacity → economic policy) was deferred from Phase 1263 pending SIM evidence. Track H1 in Window 1429-1458 wires default-off diagnostic metrics during rehearsal and early public RC epochs. This track opens only if diagnostic data meets the deliberation threshold.
+**Context:** CDL-053 was ratified with a narrow maintenance-equivalent productive-credit scope. The broader Werner flow-governor architecture (heat/pressure signals -> expanded capacity -> economic policy) was deferred from Phase 1263 pending SIM evidence. Track H1 in Window 1429-1458 wires default-off diagnostic metrics during rehearsal and early public RC epochs. This track opens only if diagnostic data meets the deliberation threshold.
 
 **Entry gate for Track C:** Werner diagnostic trace data from at least 10 epochs of live public RC network operation. Human deliberation required before Phase 1467 authorized.
 
@@ -173,7 +173,7 @@ This window may not open until all of the following are confirmed:
 **Phase 1468 — Werner flow-governor CDL opening (SENSITIVE, conditional on Phase 1467 verdict)**
 
 - If Phase 1467 verdict = conditions met: open the CDL.
-- Scope: Werner heat signal → topology pressure → admission priority (NOT direct ECU minting); must not widen CDL-053 narrow scope without explicit CDL amendment.
+- Scope: Werner heat signal -> topology pressure -> admission priority (NOT direct ECU minting); must not widen CDL-053 narrow scope without explicit CDL amendment.
 - Token: `werner_flow_governor_cdl_opened_phase_1468` (conditional).
 - Required GO token: `GO Phase 1468`.
 - If Phase 1467 verdict = deferred: skip. Record `werner_flow_governor_cdl_deferred_phase_1468`.
@@ -232,7 +232,7 @@ This window may not open until all of the following are confirmed:
 
 - Implement deterministic bundle generator:
   - Emits content-addressed signed protocol bundles from Layer 0 schema
-  - Reproducible across implementations: same schema → same content hash
+  - Reproducible across implementations: same schema -> same content hash
 - Token: `deterministic_bundle_generator_implemented_phase_1473`.
 
 **Phase 1474 — Independent bundle verifier (NON-SENSITIVE)**

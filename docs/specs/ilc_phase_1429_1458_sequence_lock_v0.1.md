@@ -125,7 +125,7 @@ Phase 1427 (J-008 PASS, Window 1399-1428 commit 0876cae8)
                            ├── C track (sequential, on critical path):
                            |    1434 (TransportPrincipal CDL opening)  [SENSITIVE — GO required]
                            |    └── 1435 (TransportPrincipal CDL ratification)  [SENSITIVE — GO required]
-                           |         ├── [parallel] Gap 14: ~1436a → ~1436b  [NON-SENSITIVE]
+                           |         ├── [parallel] Gap 14: ~1436a -> ~1436b  [NON-SENSITIVE]
                            |         └── 1436 (sidecar/projection + public fetch)  ← requires Gap 14 complete
                            |              └── 1437 (OpenClaw P2P)  [conditional SENSITIVE — GO required if CDL needed]
                            |
@@ -139,7 +139,7 @@ Phase 1427 (J-008 PASS, Window 1399-1428 commit 0876cae8)
                            |    Werner diagnostic wiring
                            |
                            └── F track (after rehearsal verdict):
-                                ~1443 (license audit) → ~1444 (CLA) → ~1445 (Gap 7 partial)
+                                ~1443 (license audit) -> ~1444 (CLA) -> ~1445 (Gap 7 partial)
                                      |
                                      └── ALL tracks must complete before Track G:
                                           ~1446 (v0.3 signing)  [SENSITIVE — GO required]
@@ -215,6 +215,7 @@ From Phase 1410 audit (inherited from forward plan §9):
 | Finding | Phase assigned | Rule |
 |---------|---------------|------|
 | FINDING-9 | Before Phase 1431 (identity ceremony) | Must fix domain separator v1/v2 collision before any identity creation |
+| FINDING-7 | Phase 1413 (assigned and closed — retroactive closure record added to Phase 1413 walkthrough) | O(n) filter in `_select_outsider`; set-based implementation confirmed present in `jury_assignment_runtime.py`; formal closure record was absent from Phase 1413 walkthrough; added retroactively |
 | FINDING-1 | Phase ~1440 (claimability integration tests) | Rounding residual unrouted path |
 | FINDING-3 | Phase ~1440 (claimability integration tests) | PRICE_CLAMP_WIDTH hardcoded |
 | FINDING-11 | Phase ~1440 (claimability integration tests) | No expire_stale_records() in claim nullifier registry |
