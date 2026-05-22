@@ -32,6 +32,12 @@ governance_status:
   ratified_activation_gated[1]: CDL-088_public_claimability
   ratified_narrow[1]: CDL-053_local_credit
   deferred_1459_plus[1]: Werner_flow_governor
+contact:
+  jamison_confidential_sidecar: planned_not_live
+  status: local_preview_only_no_public_confidential_messaging
+  current_contact: out_of_band_until_public_confidential_coordination_authorized
+  future_gate[3]: CDL-094_TransportPrincipal,public_sidecar_activation,public_confidential_coordination_authority
+  update_trigger[2]: phase_1434_transport_principal_scope_review,phase_1435_transport_principal_ratification_review
 layers:
   ilc_core: "python>=3.10 — protocol: epistemic,identity,ledger,network,node,consensus,reputation,cli"
   ilc_consensus: "rust stable — BLS12-381,QUIC+TLS1.3,LMDB,Mysticeti,ML-DSA-65 — 8 targets"
@@ -84,4 +90,3 @@ nav[15,]{path,role}:
 deep_read: "docs/PLANNING_INDEX.md — contains current capsule pointer and live frontier"
 state_note: "state block is current as of last phase commit — verify against PLANNING_INDEX.md §0 for live values"
 ```
-
