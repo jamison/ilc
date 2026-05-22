@@ -25,20 +25,24 @@ state:
   production_activated: false
   net_binding: loopback_only
 frontier[2]: docs/PLANNING_INDEX.md,docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md
-authorized[4]: production_jury_assignment,werner_local_credit_narrow,epoch_hash_shadow_audit,loopback_net
+authorized[4]: production_assignment_guard_flipped,werner_local_credit_narrow,epoch_hash_shadow_audit,loopback_net
 blocked[3]: public_net,ECU_to_ILC,activation_cert_sign
-open_cdls[3]: CDL-094_TransportPrincipal,CDL-053_Werner_flow_governor,CDL-088_ECU_to_ILC
+governance_status:
+  assigned_pending_open[1]: CDL-094_TransportPrincipal
+  ratified_activation_gated[1]: CDL-088_public_claimability
+  ratified_narrow[1]: CDL-053_local_credit
+  deferred_1459_plus[1]: Werner_flow_governor
 layers:
   ilc_core: "python>=3.10 — protocol: epistemic,identity,ledger,network,node,consensus,reputation,cli"
   ilc_consensus: "rust stable — BLS12-381,QUIC+TLS1.3,LMDB,Mysticeti,ML-DSA-65 — 8 targets"
   bridge: subprocess_json
   native_ia: "dag-cbor over persistent QUIC (ADR-0039) — pending CDL-094"
 bootstrap:
-  install_rc[3]: "brew install ilc","pip install ilc","pipx install ilc"
-  install_dev[2]: "pip install -e .","cd ilc_consensus && cargo build --release"
-  init: "ilc identity init [--provenance <upstream_agent_CID>]"
-  init_commits[4]: genesis_provenance,agent_pubkey_record,star_map_stub,install_provenance
-  provenance_note: "--provenance commits hub-relay attribution node — upstream agent earns Werner credit"
+  install_current_dev[2]: "pip install -e .","cd ilc_consensus && cargo build --release"
+  install_public_rc_target[3]: "brew install ilc","pip install ilc","pipx install ilc"
+  init_current: "ilc identity init [--lineage-id <id>] [--key-ref <ref>]"
+  init_future_agent_chain: "--provenance <CID> pending post-public-RC CDL and agent_init_service_chain work"
+  init_commits[3]: genesis_provenance,agent_pubkey_record,star_map_stub
   verify: "python -m pytest -q"
   gate_chain[5]: check_cluster_a_replay_proof_release_gate.sh,check_non_replay_domain_exception_migration_guardrails.sh,check_domain_exception_migration_guardrails.sh,check_track1_closure_guardrails.sh,check_runtime_logging_guardrails.sh
 execution_protocol:
@@ -77,6 +81,7 @@ nav[15,]{path,role}:
   tests/,11600_tests_1300_files_all_green_required
   out/genesis_star_map_v0.1.json,homoiconic_authority_graph
   out/mempalace_active_palace/,ChromaDB_BM25_retrieval_corpus
-deep_read: docs/specs/ilc_antigravity_context_capsule_v0.9.md
+deep_read: "docs/PLANNING_INDEX.md — contains current capsule pointer and live frontier"
+state_note: "state block is current as of last phase commit — verify against PLANNING_INDEX.md §0 for live values"
 ```
 
