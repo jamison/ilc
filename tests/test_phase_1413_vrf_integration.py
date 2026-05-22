@@ -22,7 +22,6 @@ from ilc_core.epistemic.jury_activation_gate import (
 )
 from ilc_core.epistemic.jury_assignment_runtime import (
     EligibleAgent,
-    JuryAssignmentError,
     quote_jury_assignment,
 )
 
@@ -144,17 +143,21 @@ def test_no_assert_statements_in_phase_1411_or_1412_runtime_modules() -> None:
         assert not [node for node in ast.walk(tree) if isinstance(node, ast.Assert)]
 
 
-def test_production_assignment_flag_true_and_non_audit_high_value_fails_closed() -> None:
+def test_production_assignment_flag_false_and_non_audit_high_value_uses_vrf(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     agents = _agent_pool()
+    _patch_alpha_to_rfc_vectors(monkeypatch, agents)
 
-    assert jury_runtime.PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is True
-    with pytest.raises(JuryAssignmentError, match="production_assignment_not_activated"):
-        quote_jury_assignment(
-            **_quote_kwargs(agents),
-            is_high_value_slot=True,
-            assignment_nonce="phase-1413-audit-nonce",
-            vrf_proofs=_proofs_for(agents),
-        )
+    assert jury_runtime.PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is False
+    quote = quote_jury_assignment(
+        **_quote_kwargs(agents),
+        is_high_value_slot=True,
+        assignment_nonce="phase-1429-production-nonce",
+        vrf_proofs=_proofs_for(agents),
+    )
+
+    assert quote.assignment_mode == "vrf_verified"
 
 
 def test_valid_rfc_9381_appendix_b4_proof_round_trip() -> None:

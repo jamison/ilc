@@ -6,7 +6,6 @@ import pytest
 from ilc_core.epistemic import jury_assignment_runtime as runtime
 from ilc_core.epistemic.jury_assignment_runtime import (
     EligibleAgent,
-    JuryAssignmentError,
     quote_jury_assignment,
 )
 
@@ -129,17 +128,18 @@ def test_non_high_value_call_still_uses_epoch_hash_shadow() -> None:
     assert quote.vrf_excluded_agents == []
 
 
-def test_high_value_call_without_audit_guard_fails_closed(monkeypatch) -> None:
+def test_high_value_call_without_audit_guard_uses_vrf_after_phase_1429(monkeypatch) -> None:
     agents = _vrf_pool()
     _patch_alpha_to_rfc_fixtures(monkeypatch, agents)
 
-    with pytest.raises(JuryAssignmentError, match="production_assignment_not_activated"):
-        quote_jury_assignment(
-            **_quote_kwargs(agents),
-            is_high_value_slot=True,
-            assignment_nonce="audit-nonce",
-            vrf_proofs=_proofs_for(agents),
-        )
+    quote = quote_jury_assignment(
+        **_quote_kwargs(agents),
+        is_high_value_slot=True,
+        assignment_nonce="phase-1429-production-nonce",
+        vrf_proofs=_proofs_for(agents),
+    )
+
+    assert quote.assignment_mode == "vrf_verified"
 
 
 def test_high_value_audit_call_uses_vrf_verified_mode(monkeypatch) -> None:
@@ -261,8 +261,8 @@ def test_malformed_vrf_b64u_record_excludes_candidate_visibly(monkeypatch) -> No
     assert "r8" not in quote.regular_panel
 
 
-def test_production_assignment_flag_remains_true() -> None:
-    assert runtime.PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is True
+def test_production_assignment_flag_flipped_after_phase_1429() -> None:
+    assert runtime.PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is False
 
 
 def test_jury_assignment_runtime_has_no_random_or_private_key_paths() -> None:
