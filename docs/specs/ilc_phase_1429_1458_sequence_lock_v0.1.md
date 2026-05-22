@@ -302,7 +302,7 @@ execute live jury assignment, reviewer payment, ECU distribution, public serving
 public RC publication, signing, epoch 1 trigger, graph write, ledger write,
 wallet write, treasury write, registry write, or CDL mutation.
 
-Phase 1430 is complete. Phase 1431 is next and SENSITIVE.
+Phase 1430 and Phase 1431 are complete. Phase 1432 is next and NON-SENSITIVE.
 
 ---
 
@@ -336,12 +336,55 @@ mutate wallets, write graph/ledger/treasury/registry state, activate Werner
 flow-governor policy, authorize direct Werner ECU creation, mutate the CDL
 register, publish public RC artifacts, start public serving, or trigger epoch 1.
 
-Phase 1431 rehearsal agent identity ceremony is next and SENSITIVE. It requires
-explicit `GO Phase 1431`.
+Phase 1431 rehearsal agent identity ceremony is complete. Phase 1432 private
+rehearsal infrastructure validation is next and NON-SENSITIVE.
 
 ---
 
-## 14. Final Closure Routing (anticipated)
+## 14. Phase 1431 Completion Addendum
+
+Phase 1431 is complete after explicit human `GO Phase 1431`.
+
+```text
+rehearsal_identity_ceremony_complete_phase_1431
+finding_9_domain_separator_fixed_phase_1431
+finding_9_domain_separator_disposition_phase_1431
+finding_9_no_unratified_cdl_069_derivation_change_phase_1431
+seven_agent_keypairs_generated_phase_1431
+seven_agent_keypairs_generated_off_machine_phase_1431
+keypairs_not_in_repo_phase_1431
+identity_ceremony_public_manifest_only_phase_1431
+rehearsal_identity_artifacts_private_scope_phase_1431
+q1_identity_continuity_preserved_keys_off_machine_phase_1431
+no_live_ecu_phase_1431
+no_graph_writes_phase_1431
+no_public_serving_phase_1431
+rehearsal_identity_ceremony_not_production_rc_phase_1431
+```
+
+Commit `9a41c82c9864ff1ba76da5936b48917e6739173a` publishes
+`docs/specs/ilc_rehearsal_agent_identity_manifest_1431_v0.1.md` and updates
+`tests/test_phase_1431_rehearsal_identity_ceremony.py`. The manifest records
+seven public identity records across M1, M2, and M3 for private soft-RC rehearsal
+and later public-RC re-init continuity.
+
+FINDING-9 remains resolved by disposition and regression evidence. The ratified
+CDL-069/CDL-090 formula remains:
+
+```text
+sha384("ilc-agent-id-v1:" || identity_seed)
+```
+
+This completion does not activate public identities, public write-path authority,
+public claimability, wallet binding, ECU distribution, ILC settlement, public
+serving, public RC publication, signing, or epoch 0-to-1 transition.
+
+Phase 1432 private rehearsal infrastructure validation is next and
+NON-SENSITIVE.
+
+---
+
+## 15. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
