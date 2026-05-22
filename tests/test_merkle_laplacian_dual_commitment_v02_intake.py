@@ -30,6 +30,7 @@ def test_v02_paper_preserves_opus_technical_fixes() -> None:
         "fixed-point quantization",
         f"int64_le( round( {LAMBDA}_i(t) {MULTIPLY} q ) )",
         "challenge-response protocol",
+        "edge-set root",
         "full canonical hyperedge set",
         "Layer separation",
         "M(t) commits to hyperedge declaration records",
