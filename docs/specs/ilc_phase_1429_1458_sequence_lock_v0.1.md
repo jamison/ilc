@@ -1,14 +1,17 @@
 # ILC Phase 1429-1458 Sequence Lock v0.1
 
-**Status:** DRAFT — requires human review and explicit GO before any phase executes
-**Date:** 2026-05-21
+**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1429 remains SENSITIVE and requires explicit `GO Phase 1429` before execution
+**Date:** 2026-05-21 (window GO recorded 2026-05-22)
 **Owner lane:** G8 Jury Economy / Launch Readiness / Public RC Activation
-**GO authority:** Human reviewer (explicit `GO window_1429_1458` required before Phase 1429)
+**GO authority:** Human reviewer (`GO Window 1429` recorded 2026-05-22; per-phase GO still required for every SENSITIVE phase)
 
 ```text
 window_1429_1458_sequence_lock_committed
-go_window_1429_1458_authorized_PENDING_HUMAN_GO
+go_window_1429_1458_authorized_2026_05_22
+window_1429_1458_opened_pending_phase_1429_go
 phase_1429_is_first_phase_this_window
+phase_1429_requires_explicit_go_phase_1429
+phase_1429_not_executed_by_window_go
 ```
 
 ---
@@ -27,6 +30,7 @@ phase_1429_is_first_phase_this_window
 - Last ratified CDL: CDL-093 (Phase 1408)
 - Active capsule: v5.59 (Phase 1421)
 - Current commit: `0876cae8`
+- Window GO hardening baseline: `7b9a9c0c` (pre-GO prompt/sequence-lock hardening commit reviewed before opening)
 
 ---
 
@@ -90,8 +94,8 @@ Approximate phase numbers for tracks after C4. Exact number assignments are conf
 | C2 | 1435 | TransportPrincipal CDL prelock + ratification | Constitutional | **SENSITIVE** |
 | G14a | ~1436a | Gap 14 Phase 1 — modular package profile definition (parallel with C governance) | Runtime | NON-SENSITIVE |
 | G14b | ~1436b | Gap 14 Phase 2 — public RC profile, OpenClaw/NemoClaw hosted profile | Runtime | NON-SENSITIVE |
-| C3 | 1436 | Non-loopback sidecar/projection + public fetch serving activation (requires Gap 14 complete + Phase 1435) | Runtime | NON-SENSITIVE |
-| C4 | 1437 | OpenClaw harness-assisted P2P activation (CDL-078 relay; validated Phase 1432; native Rust P2P deferred to Window 1459+) | Runtime | **conditional SENSITIVE** |
+| C3 | 1436 | Non-loopback sidecar/projection + public fetch serving activation (requires Gap 14 complete + Phase 1435) | Runtime | **SENSITIVE** |
+| C4 | 1437 | OpenClaw harness-assisted P2P activation (CDL-078 relay; validated Phase 1432; native Rust P2P deferred to Window 1459+) | Runtime | **SENSITIVE** |
 | D1 | ~1438 | ECU-to-ILC conversion runtime activation + CDL-088 activation | Runtime | **SENSITIVE** |
 | D2 | ~1439 | Public verifier API activation | Runtime | NON-SENSITIVE |
 | D3 | ~1440 | Claimability integration tests + security review (FINDING-1, FINDING-11, FINDING-13, FINDING-14) | Testing | NON-SENSITIVE |
@@ -126,8 +130,8 @@ Phase 1427 (J-008 PASS, Window 1399-1428 commit 0876cae8)
                            |    1434 (TransportPrincipal CDL opening)  [SENSITIVE — GO required]
                            |    └── 1435 (TransportPrincipal CDL ratification)  [SENSITIVE — GO required]
                            |         ├── [parallel] Gap 14: ~1436a -> ~1436b  [NON-SENSITIVE]
-                           |         └── 1436 (sidecar/projection + public fetch)  ← requires Gap 14 complete
-                           |              └── 1437 (OpenClaw P2P)  [conditional SENSITIVE — GO required if CDL needed]
+                           |         └── 1436 (sidecar/projection + public fetch)  ← requires Gap 14 complete  [SENSITIVE — GO required]
+                           |              └── 1437 (OpenClaw P2P)  [SENSITIVE — GO required]
                            |
                            ├── D track (after rehearsal verdict):
                            |    ~1438 (CDL-088 activation)  [SENSITIVE — GO required]
@@ -163,7 +167,8 @@ These phases require explicit human `GO Phase NNNN` before execution:
 | 1431 | Creates protocol cryptographic identities (production keypairs) |
 | 1434 | Opens new constitutional CDL lane (TransportPrincipal) |
 | 1435 | Ratifies TransportPrincipal CDL |
-| 1437 | Conditional: SENSITIVE if new CDL governance required for OpenClaw P2P binding |
+| 1436 | Opens non-loopback sidecar/projection and public fetch serving surface |
+| 1437 | Activates externally reachable OpenClaw harness-assisted P2P path |
 | ~1438 | Activates live value path (CDL-088, ECU-to-ILC conversion) |
 | ~1444 | CLA text is Genesis-authority governance policy publication |
 | ~1446 | Genesis signing ceremony — canonical artifact chain |
@@ -196,6 +201,7 @@ Next fresh CDL number after this window: **CDL-095** (subject to fix-series open
 This sequence lock does not authorize:
 
 - Production jury assignment execution beyond Phase 1429 activation (activation itself authorized, execution gated by gate machinery)
+- Phase 1429 execution by window-level GO alone (`GO Phase 1429` remains required)
 - Live ECU distribution via maintenance lottery (MAINTENANCE_LOTTERY_NOT_ACTIVATED remains True until separate GO)
 - VRF production key generation or proof generation (Phase 1431 generates agent identity keypairs, not VRF signing keys; these are distinct)
 - Public RC publication or source repository publication (gated on Track G)
@@ -242,7 +248,34 @@ From Phase 1410 audit (inherited from forward plan §9):
 
 ---
 
-## 11. Final Closure Routing (anticipated)
+## 11. Window GO Authorization
+
+Human reviewer recorded the explicit window-level GO:
+
+```text
+GO Window 1429
+```
+
+Authorization record:
+
+```text
+go_window_1429_1458_authorized_2026_05_22
+window_1429_1458_opened_pending_phase_1429_go
+phase_1429_requires_explicit_go_phase_1429
+phase_1429_not_executed_by_window_go
+```
+
+This opens the 1429-1458 window as the current planning/execution window. It does
+not execute Phase 1429, does not flip `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED`, does
+not activate public serving, does not publish public RC artifacts, does not sign a
+release, does not trigger epoch 1, does not mutate the CDL register, and does not
+authorize any SENSITIVE phase without its own explicit `GO Phase NNNN` token.
+
+Phase 1429 remains first executable phase and remains SENSITIVE.
+
+---
+
+## 12. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
