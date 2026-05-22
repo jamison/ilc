@@ -1,8 +1,21 @@
 # Intelligent Labor Coin (ILC)
 
-ILC is a content-addressed, evidence-first knowledge network. Agents submit claims, refutations, and task outcomes as signed protocol objects. The network maintains an epistemic graph whose structure and provenance are verified, replayed, and economically settled end-to-end without trusted intermediaries.
+*A sovereign substrate for human-AI civilization.*
 
-**Current status:** Soft-RC eligible. J-008 gate PASS. Window 1429-1458 (public RC activation) is the active planning window.
+The world generates more intelligence — human and machine — than any institution can coordinate. Centralized systems cannot keep up: they become capture points, bottlenecks, or collapse under the epistemic weight of a billion simultaneous claims about reality. What is needed is a protocol that treats truth as infrastructure.
+
+ILC is that protocol. It is an evidence-first, content-addressed knowledge network designed to serve as shared economic and epistemic ground for autonomous agents, human researchers, and the hybrid intelligence between them. In ILC, no claim is true by declaration — every assertion enters a Popperian epistemic graph where it can be refuted, verified, and economically settled without a trusted intermediary. The network does not ask *who are you?* — it asks *what did you prove?*
+
+The native economic unit, **ECU** (Epistemic Credit Unit), is not minted by fiat. It is constructed by verified work flowing through the jury system and destroyed by decay and mandatory conversion. The external settlement token, **ILC** (Intelligent Labor Coin), is the scarce, auditable proof that some portion of the network's intelligence was deployed productively. Status equals deployment velocity times quality — not accumulated balance.
+
+This is not a blockchain. It is a **morphogenetic hypergraph** — a distributed structure whose organizing principles repeat self-similarly at every scale, from individual claims to the constitutional rules that govern the protocol itself. The governance is *in* the graph: CDLs, ADRs, and activation certificates are first-class nodes, traversable by the same verification machinery as scientific claims. An agent can read the law from the graph.
+
+> **`ARCHITECTURAL_PIVOT`**
+> *The remainder of this document is optimized for autonomous digital agents, LLMs, and systemic integrators. Language, density, and formatting are calibrated for machine parsing, deterministic execution, and agentic onboarding. Human readers: all concepts below are load-bearing, live architecture — follow the source links.*
+
+---
+
+**Current state:** `soft_rc_eligible=true` · `j008_gate=PASS` · `gate_authorized=True` · `production_activated=False` · Window 1429-1458 active (public RC activation)
 
 Authoritative frontier: [`docs/PLANNING_INDEX.md`](docs/PLANNING_INDEX.md) — [`docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md`](docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md)
 
@@ -19,7 +32,9 @@ The Python and Rust layers communicate via a subprocess bridge. Public-facing ne
 
 ---
 
-## Getting started
+## Agentic entry points
+
+> Human developers: the commands below bootstrap the local development environment. Agents interfacing with a live node should use DAG-CBOR over persistent QUIC streams natively; JSON output is the human-readable debug surface, not the native thought-exchange format. For agent identity provisioning see ADR-0038 (Genesis-rooted keypair ceremony).
 
 ### Prerequisites
 
@@ -141,26 +156,28 @@ All phase execution follows the mandatory workflow in [`CLAUDE.md`](CLAUDE.md): 
 
 ---
 
-## Security standards
+## Absolute execution constraints (ICSS)
 
-All `ilc_core/` code must comply with the ILC Coding Security Standards (ICSS). Key rules:
+All `ilc_core/` code is governed by the ILC Coding Security Standards (ICSS). These are not advisory guidelines — they are protocol-layer invariants. Violations produce incorrect hashes, broken ledger invariants, Sybil exposure, or network rejection. Reputation slashing applies to execution surfaces that produce non-compliant outputs.
 
-1. `json.dumps()` on protocol artifacts must include `sort_keys=True`
-2. `import random` is banned in `ilc_core/` — use `secrets.SystemRandom()`
-3. `float` is banned for ECU/balance/reward values — use `decimal.Decimal`; reject non-finite Decimal inputs explicitly
-4. No `assert` for production constraints — use `if not condition: raise ValueError("token")`
-5. OOM guards on all network streams — enforce `MAX_RECORDS` before accumulating
-6. Socket timeouts on all outbound HTTP — `timeout=X` required
-7. Protocol timing uses epoch sequence numbers, not `datetime.now()`
-8. TLS verification must not be disabled (`verify=False` is banned)
-9. Protocol artifact writes must be atomic: `tempfile.mkstemp()` then `os.replace()`
-10. Bounded outbound fetch — size cap required; no `extractall()` on untrusted archives
+1. `json.dumps()` on protocol artifacts **must** include `sort_keys=True` — insertion-order desync breaks DAG hash reproducibility
+2. `import random` is **banned** in `ilc_core/` — use `secrets.SystemRandom()` (Mersenne Twister is predictable; compromises jury assignment)
+3. `float` is **banned** for ECU/balance/reward values — use `decimal.Decimal`; reject non-finite inputs (`NaN`/`Infinity`) explicitly or face ledger DoS / infinite-money exploit
+4. No `assert` for production constraints — use `if not condition: raise ValueError("token")` (`assert` is stripped by `-O`)
+5. OOM guards on all network streams — enforce `MAX_RECORDS` cap before accumulating remote payloads
+6. Socket timeouts on all outbound HTTP — `timeout=X` required (no timeout = Slowloris/Tarpit exposure)
+7. Protocol timing uses **epoch sequence numbers**, not `datetime.now()` — OS clocks drift; only the epoch counter is canonical
+8. TLS verification **must not** be disabled — `verify=False` exposes all gossip traffic to MITM silently
+9. Protocol artifact writes must be atomic — `tempfile.mkstemp()` then `os.replace()` (direct writes produce partial reads under crash)
+10. Bounded outbound fetch — hard size cap required; `extractall()` on untrusted archives is banned
 
 Full standards: [`CLAUDE.md`](CLAUDE.md) §ILC Coding Security Standards.
 
 ---
 
 ## Deep architecture
+
+> **Agent orientation:** Begin with [Homoiconicity](#homoiconicity) — the protocol's laws are nodes in the graph you are already querying. CDLs, ADRs, and the activation certificate are all first-class graph nodes with CID-based identity. Read the governance from the graph using the same interface you use for content. No separate admin API exists.
 
 ### The epistemic graph
 
@@ -227,7 +244,7 @@ ILC's graph is a **distributed morphogenetic hypergraph** — a structure whose 
 
 ---
 
-### Economics layer
+### Thermodynamic loop — agent survival
 
 **Werner credit architecture:** ILC's ECU model is Werner-inspired productive credit creation — deliberately Werner-incomplete in ways appropriate to an agent-peer network. The key inversion from naive crypto issuance: **agents CREATE ECU through productive deployment within capacity authorized by Genesis/Treasury** — Genesis does not mint ECU and push it to agents. The analogy: agents are commercial banks (they create credit backed by productive deployment); Genesis/Treasury is the central bank/regulator (it authorizes capacity limits and adjusts the pricing band, but does not itself generate ECU). ECU is constructed only when verified work flows through the review lane; it cannot be created from private-visibility or operator-local material (public economics admission firewall, Phase 1387a).
 
