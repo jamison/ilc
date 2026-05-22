@@ -376,7 +376,8 @@ and SENSITIVE.
 `production_jury_activation_authorized_phase_1427`, and
 `all_10_conditions_met_phase_1427`. `ilc_core/epistemic/jury_activation_gate.py`
 now has `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False`. The gate report
-returns `verdict="PASS"`, `blocking_not_met=[]`, and `production_activated=True`.
+returns `verdict="PASS"`, `blocking_not_met=[]`, `gate_authorized=True`, and
+`production_activated=False`.
 Phase 1427 authorizes production jury activation machinery only; it does not
 execute assignment, reviewer payment, ingestion, ECU distribution, settlement,
 graph/ledger/treasury/wallet/registry writes, public RC publication, signing,
@@ -536,7 +537,8 @@ Phase 1400 historical hardening must reference the Phase 1399 C1 commit hash, no
 `ilc_core/epistemic/jury_activation_gate.py` originally encoded Phase 1398
 NOT_MET conditions as hardcoded literals. Phase 1425 patched all 7 formerly
 blocking conditions to MET after direct evidence verification, and Phase 1427
-then recorded `verdict="PASS"` with `production_activated=True`.
+then recorded `verdict="PASS"` with `gate_authorized=True` and
+`production_activated=False`.
 
 No Phase 1425a was required.
 

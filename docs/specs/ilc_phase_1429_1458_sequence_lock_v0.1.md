@@ -240,7 +240,7 @@ From Phase 1410 audit (inherited from forward plan §9):
 - `docs/specs/ilc_window_1399_1428_handoff_1428_v0.1.md` — prior window handoff
 - `docs/specs/ilc_phase_1399_1428_sequence_lock_v0.1.md` — prior sequence lock
 - `ilc_core/epistemic/jury_activation_gate.py` — J-008 gate (PASS, `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False`)
-- `ilc_core/epistemic/jury_assignment_runtime.py` — `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=True` until Phase 1429
+- `ilc_core/epistemic/jury_assignment_runtime.py` — `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=False` after Phase 1429
 - `docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md` — rehearsal entry criteria
 - `docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md` — epoch 1 trigger design
 - `docs/specs/ilc_launch_readiness_manifest_schema_1422_v0.1.md` — launch readiness manifest schema
@@ -275,7 +275,38 @@ Phase 1429 remains first executable phase and remains SENSITIVE.
 
 ---
 
-## 12. Final Closure Routing (anticipated)
+## 12. Phase 1429 Completion Addendum
+
+Phase 1429 is complete after explicit human `GO Phase 1429`.
+
+```text
+production_assignment_activated_phase_1429
+production_assignment_not_activated_flag_flipped_phase_1429
+j008_gate_still_pass_after_activation_phase_1429
+window_1429_1458_first_phase
+public_rc_not_activated_phase_1429
+```
+
+Current runtime state:
+
+```text
+PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=False
+evaluate_jury_activation_gate().verdict="PASS"
+evaluate_jury_activation_gate().gate_authorized=True
+evaluate_jury_activation_gate().production_activated=False
+evaluate_jury_activation_gate().blocking_not_met=[]
+```
+
+This completion activates the jury assignment machinery flag only. It does not
+execute live jury assignment, reviewer payment, ECU distribution, public serving,
+public RC publication, signing, epoch 1 trigger, graph write, ledger write,
+wallet write, treasury write, registry write, or CDL mutation.
+
+Phase 1430 is next and NON-SENSITIVE.
+
+---
+
+## 13. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 

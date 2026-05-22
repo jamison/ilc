@@ -11,7 +11,7 @@ Proves:
 - same-operator-domain agents are not counted as independent (capped correctly)
 - author and author's operator domain are excluded
 - independence_k constraint: no single operator_domain dominates the regular panel
-- PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is True (never flip without J-008)
+- PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is False after Phase 1429 production assignment activation
 - assignment_mode is "epoch_hash_shadow"
 - production_activated is False in every quote
 - JuryAssignmentError raised when pool is too small
@@ -76,9 +76,9 @@ from ilc_core.epistemic.jury_assignment_runtime import (
 )
 
 
-def test_production_not_activated():
-    """Safety gate must never be False until J-008."""
-    assert PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is True
+def test_production_assignment_activation_guard_flipped_after_phase_1429():
+    """Phase 1429 flips the assignment guard after J-008 PASS."""
+    assert PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is False
 
 
 def test_version_token_present():
@@ -401,4 +401,4 @@ def test_package_exports_eligible_agent():
 
 def test_package_exports_production_flag():
     from ilc_core.epistemic import PRODUCTION_ASSIGNMENT_NOT_ACTIVATED as flag
-    assert flag is True
+    assert flag is False

@@ -255,20 +255,21 @@ def test_vrf_outsider_selection_and_cluster_evidence_verified(
     assert jury_runtime._TOKEN_ANTI_CAPTURE_VERIFIED in quote.phase_tokens
 
 
-def test_production_assignment_guard_stays_default_off(
+def test_production_assignment_guard_flipped_after_phase_1429_and_high_value_vrf_runs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     agents = _passing_pool()
     _patch_alpha_to_rfc_vectors(monkeypatch, agents)
 
-    assert jury_runtime.PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is True
-    with pytest.raises(JuryAssignmentError, match="production_assignment_not_activated"):
-        quote_jury_assignment(
-            **_quote_kwargs(agents),
-            is_high_value_slot=True,
-            assignment_nonce="phase-1419-audit-nonce",
-            vrf_proofs=_proofs_for(agents),
-        )
+    assert jury_runtime.PRODUCTION_ASSIGNMENT_NOT_ACTIVATED is False
+    quote = quote_jury_assignment(
+        **_quote_kwargs(agents),
+        is_high_value_slot=True,
+        assignment_nonce="phase-1429-production-nonce",
+        vrf_proofs=_proofs_for(agents),
+    )
+
+    assert quote.assignment_mode == "vrf_verified"
 
 
 def test_j008_anti_capture_condition_met_after_phase_1425_and_1427() -> None:

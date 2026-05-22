@@ -19,6 +19,8 @@ Required phase tokens:
   epoch_hash_shadow_assignment_only_phase_j006
   vrf_verifier_integrated_jury_assignment_phase_1412
   anti_capture_diversity_verified_phase_1419
+  production_assignment_activated_phase_1429
+  window_1429_1458_first_phase
 """
 
 from __future__ import annotations
@@ -51,6 +53,8 @@ _TOKEN_OPERATOR_INDEPENDENCE_VERIFIED = (
 _TOKEN_ANTI_CAPTURE_PRODUCTION_NOT_ACTIVATED = (
     "anti_capture_production_not_activated_phase_1419"
 )
+_TOKEN_PRODUCTION_ASSIGNMENT_ACTIVATED = "production_assignment_activated_phase_1429"
+_TOKEN_WINDOW_1429_FIRST_PHASE = "window_1429_1458_first_phase"
 
 _DOMAIN_SEPARATOR = "ilc_jury_assignment_v1"
 _VRF_DOMAIN_SEPARATOR = "ilc.vrf.jury_assignment.v1"
@@ -71,8 +75,8 @@ JURY_MAX_CLUSTER_SHARE_CEILING: float = 0.40
 JURY_MAX_CLUSTER_SHARE_CEILING_NUMERATOR: int = 2
 JURY_MAX_CLUSTER_SHARE_CEILING_DENOMINATOR: int = 5
 
-# Safety gate: this flag must remain True until J-008 production activation gate passes.
-PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = True
+# Safety gate: Phase 1429 flips this after J-008 PASS and explicit GO Phase 1429.
+PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False
 
 
 @dataclass(frozen=True)
@@ -680,6 +684,8 @@ def quote_jury_assignment(
         _TOKEN_CDL_V3_CLUSTER_WIRED,
         _TOKEN_OPERATOR_INDEPENDENCE_VERIFIED,
         _TOKEN_ANTI_CAPTURE_PRODUCTION_NOT_ACTIVATED,
+        _TOKEN_PRODUCTION_ASSIGNMENT_ACTIVATED,
+        _TOKEN_WINDOW_1429_FIRST_PHASE,
     ]
     if is_high_value_slot:
         phase_tokens.extend(
