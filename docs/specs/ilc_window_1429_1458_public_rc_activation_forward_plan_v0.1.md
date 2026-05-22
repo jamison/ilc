@@ -823,15 +823,16 @@ This is a post-public-RC architectural obligation. No action required in Window
 
 ### 10.6 Post-public-RC ADR-0029 Merkle-Laplacian / PoSK hardening lane
 
-**Status:** Research-positive after v0.2 paper intake and first-pass SIM strike force;
-not activated; no CDL; no epoch-commitment mutation; no PoSK admission gate; IP-gated
-and `PUBLIC_RC_EXCLUDE`.
+**Status:** Research-positive after v0.2 paper intake, first-pass SIM strike force,
+and follow-on SIM hardening; not activated; no CDL; no epoch-commitment mutation;
+no PoSK admission gate; IP-gated and `PUBLIC_RC_EXCLUDE`.
 
 **Evidence now in repo:**
 
 - `docs/research/ilc_merkle_laplacian_dual_commitment_paper_draft_v0.2.md`
 - `docs/research/ilc_merkle_laplacian_dual_commitment_v0.2_intake_review_2026_05_22.md`
 - `docs/sims/sim_merkle_laplacian_v02/strike_force_results_2026_05_22_v0.1.md`
+- `docs/sims/sim_merkle_laplacian_v02/followon_results_2026_05_22_v0.1.md`
 - `docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md`
 
 **SIM strike-force tokens:**
@@ -843,6 +844,10 @@ sim_posk_01_copy_attack_blocked=true
 sim_dualcommit_01_layer_separation_confirmed=true
 sim_directed_closure_01_direction_lost_in_s=true
 sim_reuse_stability_01_linear_unsafe_log_capped_preferred=true
+sim_posk_param_02_multiple_nonce_calibration_complete=true
+sim_spectral_crossimpl_02_python_vector_conformance=true
+sim_cospectral_01_bounded_random_k8_distinct_m_collision_found=false
+sim_directed_spectral_02_extension_required=true
 ```
 
 **Key findings to preserve:**
@@ -858,14 +863,21 @@ sim_reuse_stability_01_linear_unsafe_log_capped_preferred=true
    directed spectral extension.
 6. Linear `reuse_count` weighting is unsafe; log/capped-log remains the safer
    candidate family pending CDL.
+7. Follow-on PoSK parameter sweep supports `sample_size=64` and `nonce_count=4`
+   as internal research evidence only; these are not activation constants.
+8. Python-only cross-implementation conformance is positive, but non-Python
+   reproduction remains required before activation.
+9. Bounded random cospectral search found no distinct-content `k=8` collision,
+   but found distinct-content weakness at `k=2` and does not replace formal or
+   curated adversarial cospectral work.
 
 **Named obligation:** Route to Window 1459+ Track G:
 
 ```
 ADR-0029 Merkle-Laplacian hardening
   → canonical vector review
-  → PoSK parameter / ceremony-control SIM scoping
-  → cross-implementation + cospectral SIM scoping
+  → PoSK parameter / ceremony-control review
+  → cross-implementation + cospectral review
   → IP/counsel/publication disposition
   → CDL readiness verdict or explicit deferral
 ```

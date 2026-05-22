@@ -290,6 +290,16 @@ Critical caveats:
 - Linear `reuse_count` weighting is unsafe; log/capped-log remains the candidate family.
 - All artifacts stay `PUBLIC_RC_EXCLUDE` until IP/counsel/publication authorization.
 
+Follow-on internal SIM evidence recorded after the first-pass strike force:
+
+- `sim_posk_param_02_multiple_nonce_calibration_complete=true`
+- `sim_spectral_crossimpl_02_python_vector_conformance=true`
+- `sim_cospectral_01_bounded_random_k8_distinct_m_collision_found=false`
+- `sim_directed_spectral_02_extension_required=true`
+
+These tokens support Track G review but do not close activation gates. They remain
+internal-only and pre-CDL.
+
 **Phase 1478 — Merkle-Laplacian canonical vectors + transcript readiness review (NON-SENSITIVE)**
 
 - Review `docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md`.
@@ -299,21 +309,22 @@ Critical caveats:
 
 **Phase 1479 — PoSK parameter and ceremony-control SIM scoping (NON-SENSITIVE)**
 
-- Commission `SIM-POSK-PARAM-02`:
-  - sample size;
-  - multiple nonce count;
-  - response timeout;
-  - stale-cache probability;
-  - post-challenge fetch control.
-- Output: SIM plan, not activation.
+- Review `SIM-POSK-PARAM-02` evidence:
+  - candidate sample size and multiple nonce count;
+  - stale-cache and partial-graph pass rates;
+  - response timeout / local-storage attestation requirement;
+  - post-challenge full-fetch caveat.
+- Output: parameter-readiness review, not activation.
 - Token: `sim_posk_param_02_scoped_phase_1479`.
 
 **Phase 1480 — Cross-implementation and cospectral SIM scoping (NON-SENSITIVE)**
 
-- Commission:
-  - `SIM-SPECTRAL-CROSSIMPL-02` for q/epsilon/smallest-k byte compatibility;
-  - `SIM-COSPECTRAL-01` for low-k/cospectral adversarial collision search;
-  - `SIM-DIRECTED-SPECTRAL-02` only if directed-flow claims remain in scope.
+- Review:
+  - `SIM-SPECTRAL-CROSSIMPL-02` Python conformance and remaining non-Python port obligation;
+  - `SIM-COSPECTRAL-01` bounded search results and formal/crafted cospectral-work obligation;
+  - `SIM-DIRECTED-SPECTRAL-02` directed-flow extension requirement.
+- Decide whether to commission deeper formal/crafted cospectral examples before
+  any CDL opening proposal.
 - Token: `merkle_laplacian_remaining_sims_scoped_phase_1480`.
 
 **Phase 1481 — IP/counsel/publication disposition (SENSITIVE)**
