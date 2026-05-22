@@ -67,7 +67,8 @@ def test_intake_review_records_remaining_sim_obligations() -> None:
 
     assert "PUBLIC_RC_EXCLUDE" in text
     assert "Intake Verdict" in text
-    assert "Required Follow-On SIM Reruns" in text
+    assert "Strike-Force SIM Status" in text
+    assert "Remaining Publication / Activation Gates" in text
     for sim_token in [
         "SIM-SPECTRAL-01-RERUN",
         "SIM-SPECTRAL-COST-01",
