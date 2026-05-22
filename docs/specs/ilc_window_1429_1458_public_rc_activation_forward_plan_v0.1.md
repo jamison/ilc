@@ -78,11 +78,12 @@ At Phase 1428 close, the following are in force:
 | B — Private rehearsal execution | 1431–1433 | Validate 3-machine 7-agent topology before any public claim |
 | C — TransportPrincipal + public path (Gap 10) | 1434–1437 | Non-loopback sidecar/projection, public fetch serving |
 | D — Public claimability activation (Gap 13) | 1438–1441 | CDL-088 activation; ECU-to-ILC conversion live |
-| E — ADR-0035 CDL + runtime | 1442–1444 | Homoiconic type definition system; deferred from Phase 1387d |
-| F — Gap 7 internal-executable counsel milestones | 1445–1447 | License headers, CLA text, public-source allowlist audit |
-| G — v0.3 signing + public RC publication | 1448–1452 | Release signing; source publication; public RC claim |
-| H — Werner credit broader scope (CDL-053 follow-on) | 1453–1455 | Flow-governor CDL (conditional on SIM evidence) |
-| Z — Window coherence + closure | 1456–1458 | Window closure gate |
+| E — ADR-0035 CDL + runtime | **REMOVED** — deferred to Window 1459+ per §8 Q4 resolution | |
+| F — Gap 7 internal-executable counsel milestones | ~1443–~1445 | License headers, CLA text, public-source allowlist audit |
+| G — v0.3 signing + public RC publication | ~1446–~1450 | Release signing; source publication; public RC claim |
+| H1 — Werner diagnostic wiring (default-off) | ~1442 | Single NON-SENSITIVE phase; accumulates data for Window 1459+ flow-governor CDL |
+| H2/H3 — Werner flow-governor CDL | **REMOVED** — deferred to Window 1459+ per §8 Q5 resolution | |
+| Z — Window coherence + closure | ~1451–~1452 | Window closure gate |
 
 ---
 
@@ -162,20 +163,25 @@ At Phase 1428 close, the following are in force:
 - Token: `transport_principal_cdl_ratified_phase_1435`.
 - Two-commit pattern per CDL mutation protocol.
 
-**Phase 1436 — Non-loopback sidecar/projection serving activation (NON-SENSITIVE)**
+**Phase 1436 — Non-loopback sidecar/projection + public fetch serving activation (SENSITIVE)**
 
+> **Updated 2026-05-21:** Reclassified SENSITIVE. This phase opens a non-loopback public network surface; human GO required regardless of CDL status.
+
+- Explicit human `GO Phase 1436` required.
 - Patch `ilc_core/` sidecar/projection runtimes to allow non-loopback binding, gated on `TRANSPORT_PRINCIPAL_CDL_RATIFIED`.
 - Activate public fetch serving per CDL-087 ratification carry-forward: serving is now authorized behind TransportPrincipal policy.
 - Token: `non_loopback_sidecar_projection_activated_phase_1436`.
 - No wallet mutation, no ECU settlement.
 
-**Phase 1437 — Rust P2P substrate decision and public P2P activation (SENSITIVE, conditional)**
+**Phase 1437 — OpenClaw harness-assisted P2P activation (SENSITIVE)**
 
-- Resolve the deferred Quinn vs. libp2p P2P substrate decision.
-- If decision is made: implement the CDL-gated Rust P2P substrate binding.
-- Token: `rust_p2p_substrate_decision_recorded_phase_1437`.
-- Sensitivity: conditional — constitutional if a new CDL is required for P2P governance.
-- **Note:** Public P2P may be deferred beyond this window if Rust substrate work requires a separate full window. Record the deferral explicitly if so.
+> **Updated 2026-05-21:** Reclassified from "conditional SENSITIVE" to SENSITIVE. Activating any externally reachable P2P endpoint requires explicit human GO. Native Rust P2P substrate decision fully deferred to Window 1459+ per Q3 resolution.
+
+- Explicit human `GO Phase 1437` required.
+- Activate OpenClaw harness-assisted P2P using existing CDL-078 relay path; Phase 1432 must have validated this path.
+- CDL coverage check: verify CDL-078 + CDL-094 cover this activation surface before proceeding.
+- Token: `openclaw_p2p_activated_phase_1437`; `native_rust_p2p_deferred_window_1459_plus_phase_1437`.
+- Native Rust P2P substrate (PersistentQuicSessionManager, CDL-078 relay routing in Rust, peer discovery) deferred to Window 1459+.
 
 ---
 
@@ -211,27 +217,13 @@ At Phase 1428 close, the following are in force:
 
 ---
 
-### Track E — ADR-0035 CDL + runtime (Phases 1442–1444)
+### Track E — ADR-0035 CDL + runtime ~~(Phases 1442–1444)~~ — REMOVED
 
-**Context:** ADR-0035 (homoiconic type definition system) was accepted as direction in Phase 1387d but implementation was deferred pending a CDL to introduce `type="type_definition"` as a new NodeType. This is a graph-layer architectural feature, not a security-critical RC blocker — it is included here because it was a named carry-forward obligation from Phase 1387d.
-
-**Phase 1442 — ADR-0035 CDL opening and prelock (SENSITIVE)**
-
-- Open and prelock the CDL for `type="type_definition"` NodeType introduction.
-- Scope: introduces the homoiconic type definition node; type regress stops at `type="type_definition"` (hardcoded); complements ADR-0030 content typing.
-- Token: `adr_0035_cdl_opened_prelock_committed_phase_1442`.
-
-**Phase 1443 — ADR-0035 CDL ratification (SENSITIVE)**
-
-- Ratify the ADR-0035 CDL.
-- Token: `adr_0035_cdl_ratified_phase_1443`.
-- Two-commit pattern.
-
-**Phase 1444 — ADR-0035 runtime implementation (NON-SENSITIVE)**
-
-- Implement `type="type_definition"` NodeType in the graph store and validation layer.
-- Integrate with ADR-0030 content typing.
-- Token: `adr_0035_type_definition_runtime_implemented_phase_1444`.
+> **SUPERSEDED 2026-05-21:** Track E is removed from Window 1429-1458. Per §8 Q4 resolution,
+> ADR-0035 is not a public RC blocker. All three phases (CDL opening, ratification, runtime)
+> are deferred to Window 1459+. Token locked: `q4_adr_0035_deferred_window_1459_plus_not_rc_blocker`.
+> Do not use phase numbers 1442-1444 for ADR-0035 work. See §5 candidate phase table and §8 Q4
+> for the locked decision and Window 1459+ assignment.
 
 ---
 
@@ -304,33 +296,29 @@ This window does only the internally executable portions. External actions (prov
 
 ---
 
-### Track H — CDL-053 Werner broader scope (Phases 1453–1455, conditional)
+### Track H1 — Werner diagnostic wiring (~Phase 1442, NON-SENSITIVE)
 
-**Context:** CDL-053 was ratified in this window's fix series with a narrow maintenance-equivalent productive-credit scope. The broader Werner flow-governor architecture (heat/pressure → expanded capacity signals → economic policy) was rejected in Phase 1263 due to insufficient evidence. This track opens it only if post-rehearsal SIM evidence supports it. It is conditional on: (a) Phase 1433 rehearsal producing Werner credit trace data, and (b) human decision to proceed.
+> **Updated 2026-05-21:** Track H replaced with Track H1 only. The Werner flow-governor CDL
+> (Phases 1453–1455 in the prior draft) is removed from this window. Per §8 Q5 resolution,
+> the flow-governor CDL is deferred to Window 1459+ (Track C there) pending Werner diagnostic
+> trace data collected by this Track H1 phase. Token locked:
+> `q5_werner_diagnostic_h1_only_flow_governor_cdl_deferred_window_1459_plus`.
 
-**Phase 1453 — Werner flow-governor evidence review (NON-SENSITIVE, conditional)**
+**Context:** CDL-053 was ratified in the Window 1399-1428 fix series with a narrow
+maintenance-equivalent productive-credit scope. The broader Werner flow-governor architecture
+(systolic/diastolic/pulse-pressure → admission priority) requires diagnostic trace data before
+a CDL can be opened. Track H1 wires default-off Werner diagnostic instrumentation to accumulate
+data during the public RC window. The flow-governor CDL opens in Window 1459+ once the
+diagnostic data supports it.
 
-- Review Werner overlay data from rehearsal (Phase 1432–1433) against Phase 1263 remaining open conditions:
-  - Default SIM-FETCH evidence profile
-  - Beta/noise decomposition
-  - Spectral trust threshold discipline
-  - TransportPrincipal/admission binding
-  - Productive-credit authorization
-- Record: do evidence gaps close, partially close, or remain open?
-- Token: `werner_flow_governor_evidence_review_complete_phase_1453`.
-- If conditions not met: record explicit deferral. Do not open CDL.
+**Phase ~1442 — Werner diagnostic wiring (NON-SENSITIVE)**
 
-**Phase 1454 — CDL-053 amendment or flow-governor CDL opening (SENSITIVE, conditional)**
-
-- If Phase 1453 verdict = conditions met: open the flow-governor CDL (CDL-053 amendment or successor CDL).
-- Scope: Werner heat signal → topology pressure → admission priority (NOT direct ECU minting).
-- Token: `werner_flow_governor_cdl_opened_phase_1454` (conditional).
-- If Phase 1453 verdict = deferred: skip this phase; record `werner_flow_governor_cdl_deferred_phase_1454`.
-
-**Phase 1455 — Werner flow-governor CDL prelock + ratification (SENSITIVE, conditional)**
-
-- If Phase 1454 proceeded: ratify the Werner flow-governor CDL with full prelock/ratification cycle.
-- Token: `werner_flow_governor_cdl_ratified_phase_1455` (conditional).
+- Wire default-off systolic/diastolic/pulse-pressure pressure metrics for jury/review lanes only.
+- Metrics accumulate diagnostic data; they do not affect ECU, wallet, or admission decisions.
+- No CDL amendment required — diagnostic instrumentation only.
+- Token: `werner_diagnostic_wired_phase_h1`.
+- Record explicit non-claim: `werner_flow_governor_cdl_deferred_window_1459_plus_phase_h1`.
+- Can run in parallel with D and F tracks.
 
 ---
 
@@ -372,8 +360,8 @@ This window does only the internally executable portions. External actions (prov
 | C2 | 1435 | TransportPrincipal CDL prelock + ratification | Constitutional | **SENSITIVE** |
 | G14a | ~1436a | Gap 14 package modularity — Phase 1 (modular package profile definition, parallel with C governance) | Runtime | NON-SENSITIVE |
 | G14b | ~1436b | Gap 14 package modularity — Phase 2 (public RC profile, OpenClaw/NemoClaw hosted profile) | Runtime | NON-SENSITIVE |
-| C3 | 1436 | Non-loopback sidecar/projection + public fetch serving activation (requires Gap 14 complete + Phase 1435) | Runtime | NON-SENSITIVE |
-| C4 | 1437 | OpenClaw harness-assisted P2P activation (CDL-078 relay path; validated in Phase 1432) | Runtime | **conditional SENSITIVE** |
+| C3 | 1436 | Non-loopback sidecar/projection + public fetch serving activation (requires Gap 14 complete + Phase 1435) | Runtime | **SENSITIVE** |
+| C4 | 1437 | OpenClaw harness-assisted P2P activation (CDL-078 relay path; validated in Phase 1432) | Runtime | **SENSITIVE** |
 | D1 | 1438 | ECU-to-ILC conversion runtime + CDL-088 activation | Runtime | **SENSITIVE** |
 | D2 | 1439 | Public verifier API activation | Runtime | NON-SENSITIVE |
 | D3 | 1440 | Claimability integration tests + security review | Testing | NON-SENSITIVE |

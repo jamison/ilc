@@ -20,8 +20,20 @@ conditions to `MET` and Phase 1426 recorded `soft_rc_eligible=true`.
 verdict="PASS"
 blocking_not_met=[]
 PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False
-production_activated=True
+gate_authorized=True
+production_activated=False  (hardcoded in jury_activation_gate.py; see note below)
 ```
+
+**Gate semantics note:** `gate_authorized` is derived dynamically as
+`(verdict=="PASS" and not PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED)` and is
+`True` after this phase. The `production_activated` field is hardcoded `False`
+in `evaluate_jury_activation_gate()` — it reflects that execution surfaces
+(assignment, payment, ingestion, value-path runtime flags) have not yet been
+flipped live. `production_activated` will NOT become `True` in this function;
+the intent was recorded before the dataclass semantics were finalized.
+`gate_authorized=True` is the correct indicator of Phase 1427 PASS state.
+Phase 1429 flips `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=False` in
+`jury_assignment_runtime.py`, which is the first execution-surface flip.
 
 This authorizes the production jury activation machinery guarded by
 `ilc_core/epistemic/jury_activation_gate.py`. It does not execute production
