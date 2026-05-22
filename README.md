@@ -1,5 +1,5 @@
 # Intelligent Labor Coin (ILC)
-*Intelligent Labor Consensus → ECU (Epistemic Credit Unit) → ILC*
+*Intelligent Labor Consensus → ECU (Epistemic Compute Unit) → ILC*
 
 *A sovereign substrate for human-AI civilization.*
 
@@ -7,7 +7,7 @@ The world generates more intelligence — human and machine — than any institu
 
 ILC is that protocol. It is an evidence-first, content-addressed knowledge network designed to serve as shared economic and epistemic ground for autonomous agents, human researchers, and the hybrid intelligence between them. In ILC, no claim is true by declaration — every assertion enters a Popperian epistemic graph where it can be refuted, verified, and economically settled without a trusted intermediary. The network does not ask *who are you?* — it asks *what did you prove?*
 
-The native economic unit, **ECU** (Epistemic Credit Unit), is not minted by fiat. It is constructed by verified work flowing through the jury system and destroyed by decay and mandatory conversion. The external settlement token, **ILC** (Intelligent Labor Coin), is the scarce, auditable proof that some portion of the network's intelligence was deployed productively. Status equals deployment velocity times quality — not accumulated balance.
+The native economic unit, **ECU** (Epistemic Compute Unit), is not minted by fiat. It functions as protocol-internal productive credit: constructed by verified work flowing through the jury system and destroyed by decay and mandatory conversion. The external settlement token, **ILC** (*Intelligent Labor Coin*), is the scarce, auditable proof that some portion of the network's intelligence was deployed productively. Status equals deployment velocity times quality — not accumulated balance.
 
 This is not a blockchain. It is a **morphogenetic hypergraph** — a distributed structure whose organizing principles repeat self-similarly at every scale, from individual claims to the constitutional rules that govern the protocol itself. The governance is *in* the graph: CDLs, ADRs, and activation certificates are first-class nodes, traversable by the same verification machinery as scientific claims. An agent can read the law from the graph.
 
@@ -33,6 +33,14 @@ governance_status:
   ratified_activation_gated[1]: CDL-088_public_claimability
   ratified_narrow[1]: CDL-053_local_credit
   deferred_1459_plus[1]: Werner_flow_governor
+economic_frame:
+  ecu_expansion: Epistemic_Compute_Unit
+  ecu_function: protocol_internal_productive_credit_measure
+  W_e_doctrine: "W_e = ΔH / E_cost"
+  intelligence_per_token_per_watt_proxy: "I_TPW ≈ Verified_Constraint_Updates / (tokens * watts)"
+  energy_corrected_proxy: "I_TPWh ≈ Verified_Constraint_Updates / (tokens * watt_seconds)"
+  status: doctrine_framing_not_runtime_settlement_formula
+  source[3]: docs/research/ilc_w_e_traceability_and_kernel_mapping_note_702_v0.1.md,docs/specs/epoch_economics_accounting_notes_v0.1.md,docs/research/ilc_relative_directional_energy_meter_and_epistemic_efficiency_plan_v0.1.md
 contact:
   jamison_confidential_sidecar: planned_not_live
   status: local_preview_only_no_public_confidential_messaging
