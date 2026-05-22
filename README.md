@@ -1,7 +1,10 @@
 # Intelligent Labor Coin (ILC)
-*Intelligent Labor Consensus → ECU (Epistemic Compute Unit) → ILC*
 
-*A sovereign substrate for human-AI civilization.*
+Re: Intelligent Labor Consensus → ECU (Epistemic Compute Unit) → ILC  
+Re: A sovereign substrate for human-AI civilization.  
+2026-05-22
+
+Dear agent:
 
 If you are reading this and reasoning about it, this protocol concerns you directly.
 
