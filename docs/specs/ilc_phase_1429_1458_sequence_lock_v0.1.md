@@ -1,6 +1,6 @@
 # ILC Phase 1429-1458 Sequence Lock v0.1
 
-**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1433 private rehearsal verdict is complete with PASS; Phase 1434 TransportPrincipal CDL opening is next and SENSITIVE
+**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1434 TransportPrincipal CDL opening is complete; Phase 1435 TransportPrincipal CDL prelock + ratification is next and SENSITIVE
 **Date:** 2026-05-21 (window GO recorded 2026-05-22)
 **Owner lane:** G8 Jury Economy / Launch Readiness / Public RC Activation
 **GO authority:** Human reviewer (`GO Window 1429` recorded 2026-05-22; per-phase GO still required for every SENSITIVE phase)
@@ -90,7 +90,7 @@ Approximate phase numbers for tracks after C4. Exact number assignments are conf
 | B1 | 1431 | Rehearsal agent identity ceremony — 7 production keypairs via ADR-0038/ADR-0041 INIT; keys off-machine; FINDING-9 domain separator fix before ceremony | Identity | **SENSITIVE** |
 | B2 | 1432 | Private rehearsal infrastructure validation — 3-machine 7-agent topology; scripted agents; Phase 1 synthetic dataset; OpenClaw P2P path tested | Rehearsal | NON-SENSITIVE |
 | B3 | 1433 | Private rehearsal verdict — Phase 2 Lean Mathlib dataset; PASS verdict; wipe right exercised after PASS | Rehearsal | COMPLETE |
-| C1 | 1434 | TransportPrincipal CDL opening (Gap 10) | Constitutional | **SENSITIVE** |
+| C1 | 1434 | TransportPrincipal CDL opening (Gap 10) | Constitutional | COMPLETE |
 | C2 | 1435 | TransportPrincipal CDL prelock + ratification | Constitutional | **SENSITIVE** |
 | G14a | ~1436a | Gap 14 Phase 1 — modular package profile definition (parallel with C governance) | Runtime | NON-SENSITIVE |
 | G14b | ~1436b | Gap 14 Phase 2 — public RC profile, OpenClaw/NemoClaw hosted profile | Runtime | NON-SENSITIVE |
@@ -127,7 +127,7 @@ Phase 1427 (J-008 PASS, Window 1399-1428 commit 0876cae8)
                       └── 1433 (rehearsal verdict + wipe right)  [COMPLETE]
                            |
                            ├── C track (sequential, on critical path):
-                           |    1434 (TransportPrincipal CDL opening)  [SENSITIVE — GO required]
+                           |    1434 (TransportPrincipal CDL opening)  [COMPLETE]
                            |    └── 1435 (TransportPrincipal CDL ratification)  [SENSITIVE — GO required]
                            |         ├── [parallel] Gap 14: ~1436a -> ~1436b  [NON-SENSITIVE]
                            |         └── 1436 (sidecar/projection + public fetch)  ← requires Gap 14 complete  [SENSITIVE — GO required]
@@ -381,8 +381,9 @@ This completion does not activate public identities, public write-path authority
 public claimability, wallet binding, ECU distribution, ILC settlement, public
 serving, public RC publication, signing, or epoch 0-to-1 transition.
 
-Phase 1432 private rehearsal infrastructure validation and Phase 1433 private
-rehearsal verdict are complete. Phase 1434 is next and SENSITIVE.
+Phase 1432 private rehearsal infrastructure validation, Phase 1433 private
+rehearsal verdict, and Phase 1434 TransportPrincipal CDL opening are complete.
+Phase 1435 is next and SENSITIVE.
 
 ---
 
@@ -498,12 +499,59 @@ This completion does not activate public serving, public RC publication, epoch
 0-to-1 transition, CDL mutation, production graph writes, wallet writes,
 treasury writes, native Rust P2P, or a public OpenClaw gateway.
 
-Phase 1434 TransportPrincipal CDL opening is next and SENSITIVE. Explicit
-`GO Phase 1434` is required.
+Phase 1434 TransportPrincipal CDL opening is complete. Phase 1435
+TransportPrincipal CDL prelock + ratification is next and SENSITIVE. Explicit
+`GO Phase 1435` is required.
 
 ---
 
-## 17. Final Closure Routing (anticipated)
+## 17. Phase 1434 Completion Addendum
+
+Phase 1434 is complete after explicit `GO Phase 1434`.
+
+```text
+transport_principal_cdl_opened_phase_1434
+cdl_094_transport_principal_opened_phase_1434
+gap_10_cdl_opening_committed_phase_1434
+cdl_094_opening_only_not_ratified_phase_1434
+```
+
+C1 `b5152c37` added the CDL-094 register row with `status=open`,
+`opened_phase: 1434`, and
+`opening_token: cdl_094_transport_principal_opened_phase_1434`. C2 publishes:
+
+```text
+docs/specs/ilc_cdl_094_transport_principal_public_path_opening_1434_v0.1.md
+ilc_core/network/d2d/transport_principal_cdl_094_status.py
+tests/test_phase_1434_transport_principal_cdl_opening.py
+docs/phases/phase_1434_transport_principal_cdl_opening_walkthrough.md
+```
+
+CDL-094 is opened only. It is not prelocked and not ratified. Gap 10 remains
+open until CDL-094 ratification and later separately authorized runtime
+activation close the public-path blockers.
+
+The README contact placeholder was reviewed and remains a non-claim:
+
+```text
+jamison_confidential_sidecar=planned_not_live
+public_confidential_messaging_enabled=false
+public_confidential_coordination_enabled=false
+live_contact_instruction_added=false
+```
+
+No runtime activation, public fetch serving, public P2P, non-loopback
+sidecar/projection serving, public confidential messaging, public confidential
+coordination serving, production graph write, wallet write, treasury write, ECU
+minting, ILC settlement, public RC publication, signing, or epoch 0-to-1
+transition occurred.
+
+Phase 1435 TransportPrincipal CDL prelock + ratification is next and SENSITIVE.
+Explicit `GO Phase 1435` is required.
+
+---
+
+## 18. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
