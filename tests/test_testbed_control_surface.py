@@ -131,6 +131,8 @@ def test_render_testbed_configs_writes_expected_topology(tmp_path: Path) -> None
     assert node2['node_id'] == 'node-2'
     assert node2['transport']['bind_host'] == '100.109.27.59'
     assert node2['transport']['bind_port'] == 19572
+    assert node2['transport']['allow_private_peer_endpoints_for_tests'] is True
+    assert node2['transport']['verify_peer_tls'] is False
     assert node2['peers'] == [
         'https://100.96.35.87:19571',
         'https://100.108.3.57:19573',
@@ -391,7 +393,7 @@ def test_render_and_verify_bootstrap_distribution_match_curated_inventory(tmp_pa
 def test_home_node_launcher_uses_detached_background_start() -> None:
     script = Path('tools/testbed/home_node_common.sh').read_text(encoding='utf-8')
 
-    assert 'nohup python3 "$TESTBED_DIR/tools/run_ilc_node_service_v1.py" start \\' in script
+    assert 'nohup "$(home_node_python)" "$TESTBED_DIR/tools/run_ilc_node_service_v1.py" start \\' in script
     assert '>"$HOME_LOG" 2>&1 </dev/null &' in script
     assert 'printf \'%s\\n\' "$!" > "$HOME_PID"' in script
 
