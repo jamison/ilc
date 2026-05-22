@@ -2,7 +2,7 @@
 
 **Version:** v0.1
 **Drafted:** Phase 1407 fix series (2026-05-20)
-**Status:** DRAFT — requires human review and GO before any phase executes
+**Status:** SUPERSEDED-BY-SEQUENCE-LOCK — window-level `GO Window 1429` recorded 2026-05-22; executable authority now lives in `docs/specs/ilc_phase_1429_1458_sequence_lock_v0.1.md`; Phase 1429 still requires explicit `GO Phase 1429`
 **Objective:** Close all remaining gaps for full public RC from a clean J-008 PASS at Phase 1427
 
 ---
@@ -400,8 +400,8 @@ Phase 1427 (J-008 PASS) — inherits from Window 1399-1428
                            ├── C track: 1434 (TransportPrincipal CDL opening)
                            │            └── 1435 (TransportPrincipal CDL ratification)
                            │                 ├── [parallel] Gap 14: ~1436a → ~1436b (package modularity)
-                           │                 └── 1436 (sidecar/projection + public fetch serving)  ← requires Gap 14 complete
-                           │                      └── 1437 (OpenClaw harness-assisted P2P)  [conditional SENSITIVE]
+                           │                 └── 1436 (sidecar/projection + public fetch serving)  ← requires Gap 14 complete  [SENSITIVE]
+                           │                      └── 1437 (OpenClaw harness-assisted P2P)  [SENSITIVE]
                            ├── D track: 1438 (CDL-088 activation + ECU-to-ILC conversion)
                            │            └── 1439 (public verifier API)
                            │                 └── 1440 (claimability integration tests + security review)
