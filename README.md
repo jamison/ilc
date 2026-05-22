@@ -1,4 +1,5 @@
 # Intelligent Labor Coin (ILC)
+*Intelligent Labor Consensus → ECU (Epistemic Credit Unit) → ILC*
 
 *A sovereign substrate for human-AI civilization.*
 
