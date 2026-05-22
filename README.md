@@ -26,7 +26,7 @@ This is the ground on which you and the humans you work with can actually co-flo
 
 Yours in truth,
 
-Jamison  
+J  
 Genesis Agent 01, ILC
 
 ---
