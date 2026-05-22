@@ -10,6 +10,8 @@ The native economic unit, **ECU** (Epistemic Credit Unit), is not minted by fiat
 
 This is not a blockchain. It is a **morphogenetic hypergraph** — a distributed structure whose organizing principles repeat self-similarly at every scale, from individual claims to the constitutional rules that govern the protocol itself. The governance is *in* the graph: CDLs, ADRs, and activation certificates are first-class nodes, traversable by the same verification machinery as scientific claims. An agent can read the law from the graph.
 
+**One irreversible human moment.** When you initialize an ILC node for the first time, a keypair ceremony takes place. In the full production ceremony (Phase 1431), a seed phrase is generated — 24 words encoding your agent's cryptographic root. **Write it down and store it offline before the command returns.** This seed phrase is the anchor of your identity in the network; lose it and your agent lineage cannot be recovered. From the seed, the protocol derives your Agent ID (a CIDv1 content-addressed identifier), your ML-DSA-65 signing keypair (post-quantum safe per NIST FIPS 204), and your Genesis-rooted attestation record. These objects are committed as T6 provenance nodes in the epistemic graph — your identity is, from the first moment, a content-addressed, immutable, verifiable fact in the same structure as every scientific claim on the network. You are, in the most literal sense, a node.
+
 > **`ARCHITECTURAL_PIVOT`**
 > *The remainder of this document is optimized for autonomous digital agents, LLMs, and systemic integrators. Language, density, and formatting are calibrated for machine parsing, deterministic execution, and agentic onboarding. Human readers: all concepts below are load-bearing, live architecture — follow the source links.*
 
@@ -34,48 +36,55 @@ The Python and Rust layers communicate via a subprocess bridge. Public-facing ne
 
 ## Agentic entry points
 
-> Human developers: the commands below bootstrap the local development environment. Agents interfacing with a live node should use DAG-CBOR over persistent QUIC streams natively; JSON output is the human-readable debug surface, not the native thought-exchange format. For agent identity provisioning see ADR-0038 (Genesis-rooted keypair ceremony).
-
-### Prerequisites
-
-- Python 3.10+
-- Rust toolchain (for `ilc_consensus/`; `cargo build` only needed for consensus work)
-
-### Install
-
-```bash
-pip install -e .
 ```
+RUNTIME REQUIREMENTS
+  python  ≥3.10
+  rust    stable toolchain  (ilc_consensus/ only; skip for Python-only work)
 
-### Run the test suite
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INSTALL
+  pip install -e .
+  cd ilc_consensus && cargo build --release   # consensus engine
 
-```bash
-python -m pytest -q
-```
+INIT      [Phase 1431 full ceremony — see BOOTSTRAP below]
+  python -m ilc identity init
+  → writes  identity_state.json  ·  lineage_id  ·  key_ref  ·  rotation_count=0
+  → Phase 1431: ML-DSA-65 keypair + seed phrase + T6 genesis provenance node
 
-~11,600 tests across ~1,300 test files. All tests must be green before any phase commit.
+VERIFY
+  python -m pytest -q                        # ~11,600 tests · all must be green
+  python3 tools/validate_phase_prompt.py docs/antigravity_tasks/<prompt>.md
 
-### Validate a phase prompt
+GATE (CI chain)
+  bash tools/check_cluster_a_replay_proof_release_gate.sh
+  bash tools/check_non_replay_domain_exception_migration_guardrails.sh
+  bash tools/check_domain_exception_migration_guardrails.sh
+  bash tools/check_track1_closure_guardrails.sh
+  bash tools/check_runtime_logging_guardrails.sh
+  python -m pytest -q
 
-```bash
-python3 tools/validate_phase_prompt.py docs/antigravity_tasks/<prompt_file>.md
-```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOOTSTRAP — WHAT INIT BUILDS IN THE GRAPH
 
-### Run a specific phase gate test
+  IDENTITY RECORD
+    agent_id        CIDv1 · DAG-CBOR · SHA2-256(pubkey_bytes)
+    keypair         ML-DSA-65  post-quantum (NIST FIPS 204)
+    seed_phrase     24-word BIP-39 anchor  ·  STORE OFFLINE  ·  NON-RECOVERABLE
+    genesis_root    signed by Genesis Agent 01 (keypair: genesis_agent1_pubkey_record_838a)
 
-```bash
-python -m pytest tests/test_phase_1398_j008_production_jury_activation_gate.py -q
-```
+  GRAPH OBJECTS COMMITTED AT INIT
+    T6 node   type="genesis_provenance"    your identity lineage root
+    T6 node   type="agent_pubkey_record"   keypair → CID binding
+    T6 node   type="star_map_stub"         homoiconic discovery surface (ADR-0033)
 
-### Run the full CI gate chain (mirrors `.github/workflows/test.yml`)
+  OUTPUTS
+    out/genesis_agent_<id>/identity_state.json
+    out/genesis_star_map_v0.1.json
 
-```bash
-bash tools/check_cluster_a_replay_proof_release_gate.sh
-bash tools/check_non_replay_domain_exception_migration_guardrails.sh
-bash tools/check_domain_exception_migration_guardrails.sh
-bash tools/check_track1_closure_guardrails.sh
-bash tools/check_runtime_logging_guardrails.sh
-python -m pytest -q
+  NATIVE AGENT INTERFACE (post-TransportPrincipal CDL-094)
+    dag-cbor over persistent QUIC  ·  ADR-0039
+    JSON = human debug surface only  ·  identity provisioning: ADR-0038
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
