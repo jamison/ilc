@@ -29,7 +29,7 @@ Closure basis:
 | Closure schema | `docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md` | followed |
 | Pre-closure walkthrough inventory | `docs/phases/phase_1399_*` through `docs/phases/phase_1427_*` | 29 required pre-closure phase walkthroughs present |
 | Soft-RC gate rerun | `docs/specs/ilc_soft_rc_gate_rerun_1426_v0.1.md` | `soft_rc_eligible=true` |
-| J-008 production jury activation gate rerun | `docs/specs/ilc_production_jury_activation_gate_pass_1427_v0.1.md` | `verdict="PASS"`, `blocking_not_met=[]`, `production_activated=True` |
+| J-008 production jury activation gate rerun | `docs/specs/ilc_production_jury_activation_gate_pass_1427_v0.1.md` | `verdict="PASS"`, `blocking_not_met=[]`, `gate_authorized=True`, `production_activated=False` |
 | Current J-008 gate source | `ilc_core/epistemic/jury_activation_gate.py` | all 10 conditions `MET` |
 | STATUS frontier | `docs/phases/STATUS.md` | confirmed through Phase 1427 before closure |
 
