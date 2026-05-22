@@ -1,5 +1,7 @@
 # ILC Getting Started
 
+> **PRE-PUBLIC-RC PLACEHOLDER.** This guide covers the internal development setup and pre-RC operator surfaces. It will be replaced at Phase ~1449 with the full operator bootstrap guide covering: genesis key ceremony, activation certificate verification, epoch 0→1 transition, external peer connection, and ECU-to-ILC conversion. Do not use this file as the authoritative onboarding guide for post-public-RC operators.
+
 This guide bridges the root `README.md` quickstart and the protocol/spec docs. It is intentionally practical and focuses on what you can run today from a fresh clone.
 
 ## 1) What ILC is

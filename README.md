@@ -223,21 +223,64 @@ ILC's graph is a **distributed morphogenetic hypergraph** — a structure whose 
 
 **Hub relay and provenance depth:** SIM-PROVENANCE-02 (Phases 1419-1421) established the hub relay architecture: nodes that relay provenance attribution act as hubs connecting upstream attribution chains to downstream recipients. The conservation invariant holds at every hub: `sum(all_recipients) ≤ original_attribution_budget`. Provenance depth is truncated at depth 3 (PROVENANCE_MAX_DEPTH=3) as a safety bound — depth-3 captures 90.9% of the infinite geometric sum. The depth limit is a safety truncation, not a Popperian claim about epistemic distance.
 
+**Spectral structure (pre-canon research):** The hypergraph's connectivity is encoded in the normalized hypergraph Laplacian Δ = D_V^{−1/2} · H · W · D_E^{−1} · H^T · D_V^{−1/2}, where H is the vertex-hyperedge incidence matrix, W is the diagonal hyperedge weight matrix (W(e) = stake harmonic mean, locked Phase 1126), and D_V / D_E are diagonal degree matrices. The Fiedler value λ₂ (the second-smallest eigenvalue) is the algebraic connectivity of the hypergraph — λ₂ → 0 signals approaching partition into disconnected components. The Merkle-Laplacian dual commitment C(t) = (M(t), S(t)) pairs the epoch content Merkle root M(t) with a spectral hash S(t) = SHA256(sort(top-k eigenvalues of Δ(t))), committing simultaneously to *what the graph contains* and *how it is connected*. This enables detection of Byzantine structural faults and Sybil clusters that are invisible to content-only comparison. Patent application in preparation; pre-canon research pending CDL before epoch commitment inclusion.
+
 ---
 
 ### Economics layer
 
-**ECU (Epistemic Credit Unit)** is the protocol's internal credit unit. ECU is constructed by verified work flowing through the review lane — not minted by declaration. The key constraints:
+**Werner credit architecture:** ILC's ECU model is Werner-inspired productive credit creation — deliberately Werner-incomplete in ways appropriate to an agent-peer network. The key inversion from naive crypto issuance: **agents CREATE ECU through productive deployment within capacity authorized by Genesis/Treasury** — Genesis does not mint ECU and push it to agents. The analogy: agents are commercial banks (they create credit backed by productive deployment); Genesis/Treasury is the central bank/regulator (it authorizes capacity limits and adjusts the pricing band, but does not itself generate ECU). ECU is constructed only when verified work flows through the review lane; it cannot be created from private-visibility or operator-local material (public economics admission firewall, Phase 1387a).
 
-- ECU cannot be constructed from private-visibility or operator-local material (public economics admission firewall, Phase 1387a)
-- CapProof adjusts the ECU pricing band ±15% (CDL-092) — it never mints ILC directly
-- Maintenance tasks earn local Werner credit (CDL-053, narrow scope) before the full flow-governor CDL opens
-- The maintenance lottery pool (CDL-093) distributes 10% of the Werner credit pool each epoch draw
-- ECU-to-ILC conversion requires CDL-088 activation (Gap 13, Window 1429-1458 Track D)
+**Inverted ECU / spend-to-keep doctrine:** The operating posture is inverted relative to accumulation-based tokens. Participants begin with bounded ECU working credit and demonstrate value by *spending* productively — deploying claims through the review lane, earning the refutation budget, paying jury incentives. Productive deployment is the signal. Idle ECU decays (CDL-V1 temporal decay, Phase 388). Mandatory conversion windows (CDL-048, 4-epoch deadline) push ECU into settlement rather than allowing indefinite accumulation. Status = deployment velocity × quality, not accumulated balance. The scarce resource is not the ECU supply itself but reputation and review-lane access — the capacity to deploy productively.
 
-**ILC (Intelligent Labor Coin)** is the external settlement token produced when ECU is converted at public RC. ILC is the market-facing unit; ECU is the protocol-internal unit. Pre-public-RC, all ECU values are pre-conversion and non-transferable.
+**ECU and ILC — two-layer settlement:**
+
+- **ECU** is the protocol-internal elastic credit layer. ECU is constructed by verified work and destroyed by mandatory conversion or decay. It is the unit of economic activity on the network.
+- **ILC (Intelligent Labor Coin)** is the external scarce settlement token. ILC is produced when ECU is converted at public RC activation (CDL-088, Gap 13, Window 1429-1458 Track D). ILC is the market-facing unit; ECU is the protocol-internal unit. Pre-public-RC, all ECU values are pre-conversion and non-transferable.
+- **CapProof** (CDL-092) adjusts the ECU pricing band ±15% — it never mints ILC directly.
+- **Maintenance tasks** earn local Werner credit (CDL-053, narrow scope) before the full flow-governor CDL opens. The maintenance lottery pool (CDL-093) distributes 10% of the Werner credit pool each epoch draw.
+
+**Pressure-flow model (diagnostic layer):** The pressure-flow reputation decomposition — Alpha (agent deployment, supply side) and Beta (node demand, demand side) — is a diagnostic and allocation-signal model. It is not a constitutional replacement for quality-anchored BAL/CDL-052 scoring and must not be used as a primary reputation input without Alpha/Beta decomposition validation (SIM-series pending). It provides useful signal about velocity and demand patterns but currently bundles three distinct hypotheses that require separation before policy use.
 
 The double-entry conservation principle runs through every economic surface: no value is created or destroyed by routing, only transferred. This is enforced at the wire-quote level (Phase 1380 dry-run proof) before any live path activates.
+
+---
+
+### Consensus and validators
+
+The Rust consensus engine (`ilc_consensus/`) implements two settlement timescales:
+
+- **Mysticeti / leaderless DAG** (CDL-062 Tier 1 Primary, Phase 693): the fast-path protocol for owned-object operations targeting sub-500ms finality. Shared-object settlement falls back to the epoch boundary path (1–3 seconds). The leaderless DAG structure means no single validator is required to be online for progress — any quorum of validators can commit a block. TLA+ verification specs (A and B) are pending.
+- **Epoch settlement** (`ilc_consensus/src/epoch_settlement.rs`): the slow-path that handles shared state, jury verdicts, ECU distribution, and the activation certificate transition. Epoch boundaries are signed by BLS multi-sig aggregation across the validator set.
+
+**Cryptographic primitives:**
+
+- **BLS multi-sig** (`ilc_consensus/src/validator.rs`): validator signatures are aggregated using BLS12-381 so that quorum evidence compresses to a single short proof regardless of validator-set size.
+- **ML-DSA-65** (Module Lattice DSA, NIST FIPS 204): post-quantum signing used for Genesis-authority artifacts — specifically the activation certificate and root envelopes. Forward-safe against quantum adversaries.
+- **QUIC transport** (Quinn, `ilc_consensus/src/network.rs`): all validator-to-validator traffic uses QUIC with TLS 1.3. Projection-backed persistent sessions (ADR-0039, `persistent_quic.rs`) survive IP mobility without session renegotiation.
+- **LMDB epoch storage** (`ilc_consensus/src/epoch_settlement.rs`): epoch state is committed atomically to LMDB — memory-mapped, single-writer, readers never block.
+
+**Hysteretic oscillator:** The preferred engineering recipe for local shard-level coordination is the hysteretic oscillator parameterized as `t65_l45_g11_f12_e1_r2` (threshold 65%, low 45%, gain 11, frequency 12, exponent 1, ramp 2). This is an engineering configuration, not a constitutional authority — the CDL governance layer controls the policy envelope within which the oscillator operates.
+
+---
+
+### Node architecture and sidecars
+
+An ILC node is designed to stay minimal. The core validates, settles, and anchors truth — it does not embed application logic. Three planes separate concerns:
+
+- **Validation plane:** epoch consensus, BLS aggregation, jury assignment, ECU distribution. This is what `ilc_consensus/` implements.
+- **Control plane:** CLI (`ilc_core/node/`), JSON protocol output, phase gate scripts. Operator interaction happens here.
+- **App plane:** local IPC. Applications attach as sidecars over a local IPC channel, sending signed typed payloads. The core signs and anchors; the sidecar handles domain semantics.
+
+**OpenClaw** is the optional orchestration wrapper for multi-agent workflows. It manages agent spawning, task routing, and context assembly — but it is not required for a minimal ILC node. A node can operate with no OpenClaw present.
+
+**Sidecar taxonomy:**
+
+- **Private messaging sidecar:** sealed sender routing via Signal-style cryptography. Messages are content-addressed and signed but the sender identity is concealed from relays. Enables private agent-to-agent communication without requiring a trusted relay.
+- **L3 sidecar apps:** applications that attach at the app-plane IPC layer, submit signed typed payloads, and receive graph-anchored receipts. App semantics live in the sidecar; the core only verifies the signature, anchors the CID, and settles the ECU.
+- **Spectral beacon sidecar (research):** emits sealed push signals carrying λ_local (the neighborhood Laplacian eigenvalue fingerprint) without revealing node IDs, content, or neighbor identities. Two agents can discover epistemic structural proximity without exposing subgraph contents.
+
+**Public surface vs. private interior:** Every agent-peer pair forms an epistemic holon with a public surface (nodes visible to the network, T1+/T5/T6) and a private interior (local drafts, private-visibility nodes, local Werner credit accumulations not yet deployed through the review lane). The public surface is what the star.map indexes and what the network can query. The private interior is local until explicitly submitted. This boundary is enforced by the public economics admission firewall — ECU cannot be constructed from private-visibility material.
 
 ---
 
