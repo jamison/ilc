@@ -1,0 +1,64 @@
+{
+  "PUBLIC_RC_EXCLUDE": "internal_research_patent_sensitive_pre_cdl",
+  "PUBLIC_RC_EXCLUDE_REASON": "Merkle-Laplacian dual commitment remains IP-gated, pre-CDL, and not authorized for public RC export.",
+  "artifact": "ilc_merkle_laplacian_v02_canonical_vectors",
+  "date": "2026-05-22",
+  "encoding": "fixed_point_int64_little_endian_sha256",
+  "public_rc_exclude": true,
+  "q": 1000000,
+  "source_spec": "docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md",
+  "status": "research_pre_cdl_candidate_not_activated",
+  "vectors": [
+    {
+      "expected_hash": "8df8d16ef04b5243b5b6ec8419d01da533a5c1a77b718883b9b6149f626a6b5f",
+      "expected_mu": [
+        0,
+        333333,
+        500000
+      ],
+      "input_eigenvalues": [
+        0.5,
+        0.0,
+        1.25,
+        0.3333333333
+      ],
+      "k": 3,
+      "name": "basic_smallest_k_unsorted"
+    },
+    {
+      "expected_hash": "c6afc7481be624d3368cd0a99998118db92c4174ee0836b102408232fb7a9e49",
+      "expected_mu": [
+        0,
+        333333,
+        500000,
+        1250000
+      ],
+      "input_eigenvalues": [
+        0.0,
+        0.33333333331,
+        0.50000000004,
+        1.25
+      ],
+      "k": 4,
+      "name": "noise_below_half_quantum"
+    },
+    {
+      "expected_hash": "013f21dd7052786e2c338b57f23ec2c7feb0c12f7b3b28fbb5affaca27103f51",
+      "expected_mu": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "input_eigenvalues": [
+        -0.00000049,
+        0.0,
+        0.00000049,
+        0.00000051
+      ],
+      "k": 4,
+      "name": "negative_rounding_guard"
+    }
+  ],
+  "version": "v0.1"
+}

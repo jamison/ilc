@@ -25,9 +25,14 @@ if TYPE_CHECKING:
     from ilc_core.types import WeightParams
 
 
+SPECTRAL_HASH_V02_Q: int = 1_000_000
+INT64_MIN: int = -(2**63)
+INT64_MAX: int = 2**63 - 1
+
+
 def spectral_distance(fingerprint_a: List[float], fingerprint_b: List[float]) -> float:
     """
-    L2 distance between two spectral fingerprints (top-k eigenvalue vectors).
+    L2 distance between two spectral fingerprint vectors.
 
     ||lambda_A - lambda_B||_2
 
@@ -76,19 +81,74 @@ def compute_weight(
     return params.edge_type_coefficient * decayed_stake * (1.0 + reuse_signal)
 
 
-def spectral_hash(eigenvalues: List[float]) -> str:
-    """SHA-256 of the sorted top-k eigenvalue vector — structural fingerprint S(t).
+def quantize_spectral_eigenvalues_fixed_point(
+    eigenvalues: List[float],
+    *,
+    q: int = SPECTRAL_HASH_V02_Q,
+    k: Optional[int] = None,
+) -> List[int]:
+    """Return sorted fixed-point int64 eigenvalue encodings for v0.2 S(t).
 
-    Eigenvalues are quantized to 8-byte IEEE 754 big-endian doubles before
-    hashing. Sorting ensures determinism regardless of eigendecomposition order.
-    Returns a 64-character hex string.
+    Merkle-Laplacian v0.2 commits to the smallest-k eigenvalue sequence after
+    deterministic fixed-point quantization:
 
-    Used for: Merkle-Laplacian dual commitment (spectral half), epoch KPI store.
-    Gate: CDL required before spectral_hash enters the epoch commitment record
-    in Rust (EpochSettlementRecord). Safe to compute and store locally now.
+        mu_i = round(lambda_i * q)
+
+    The returned integers are intended to be serialized as signed int64
+    little-endian bytes before hashing. This helper is research/pre-CDL only;
+    q must be ratified before any consensus commitment uses it.
     """
-    sorted_vals = sorted(eigenvalues)
-    packed = b"".join(struct.pack(">d", v) for v in sorted_vals)
+    if q <= 0:
+        raise ValueError("spectral_hash_q_must_be_positive")
+
+    sorted_values = sorted(float(value) for value in eigenvalues)
+    if k is not None:
+        if k <= 0:
+            raise ValueError("spectral_hash_k_must_be_positive")
+        sorted_values = sorted_values[:k]
+
+    encoded: List[int] = []
+    for value in sorted_values:
+        if not math.isfinite(value):
+            raise ValueError("spectral_hash_eigenvalue_non_finite")
+        mu = int(round(value * q))
+        if mu < INT64_MIN or mu > INT64_MAX:
+            raise ValueError("spectral_hash_eigenvalue_int64_overflow")
+        encoded.append(mu)
+    return encoded
+
+
+def spectral_hash_fixed_point_int64_le(
+    eigenvalues: List[float],
+    *,
+    q: int = SPECTRAL_HASH_V02_Q,
+    k: Optional[int] = None,
+) -> str:
+    """SHA-256 over v0.2 fixed-point int64 little-endian eigenvalue bytes.
+
+    This is the Merkle-Laplacian v0.2 candidate encoding for S(t). It differs
+    intentionally from the legacy spectral_hash() helper below, which remains
+    available only for older beacon/routing tests that used IEEE double bytes.
+    """
+    encoded = quantize_spectral_eigenvalues_fixed_point(eigenvalues, q=q, k=k)
+    packed = b"".join(value.to_bytes(8, "little", signed=True) for value in encoded)
+    return hashlib.sha256(packed).hexdigest()
+
+
+def spectral_hash(eigenvalues: List[float]) -> str:
+    """Legacy SHA-256 over sorted eigenvalues.
+
+    This helper is retained for H-013/H-015 beacon/routing compatibility. It is
+    no longer the Merkle-Laplacian v0.2 epoch-commitment candidate because raw
+    floating-point byte hashing is not reproducible enough for S(t).
+
+    Use spectral_hash_fixed_point_int64_le() for v0.2 research vectors.
+    """
+    sorted_vals = sorted(float(value) for value in eigenvalues)
+    for value in sorted_vals:
+        if not math.isfinite(value):
+            raise ValueError("spectral_hash_eigenvalue_non_finite")
+    packed = b"".join(struct.pack(">d", value) for value in sorted_vals)
     return hashlib.sha256(packed).hexdigest()
 
 
