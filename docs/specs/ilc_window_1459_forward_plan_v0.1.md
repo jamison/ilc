@@ -31,13 +31,14 @@ At Window 1429-1458 close (anticipated), the following are in force:
 
 ## 2. Window Objective
 
-**Primary objective:** Deepen the architectural foundation of the live network — closing the three most consequential deferred architectural items (ADR-0035 type system, Rust P2P substrate, and Werner flow-governor CDL) and hardening the governance model (Genesis authority sunset spec, CDL falsification criterion, CDL-091 inviter-chaining candidate deliberation).
+**Primary objective:** Deepen the architectural foundation of the live network — closing the most consequential deferred architectural items (ADR-0035 type system, Rust P2P substrate, Werner flow-governor CDL readiness, ADR-0009 protocol-native bundles, and ADR-0029 Merkle-Laplacian hardening) and hardening the governance model (Genesis authority sunset spec, CDL falsification criterion, CDL-091 inviter-chaining candidate deliberation).
 
 **What this window does NOT attempt:**
 - Production minting or live ILC settlement (long-range post-public-RC only)
 - CDL-031 dynamic ranking runtime (requires CDL-019 prerequisite chain first)
 - Mainnet split-custody ceremony (multi-party coordination, future window)
 - CDL-091 inviter-chaining CDL opening (requires SIM evidence and ADR-0009 bundle work first)
+- Merkle-Laplacian epoch-commitment activation or PoSK admission activation (requires ADR-0029 CDL, IP/counsel authorization, and additional SIM hardening)
 
 ---
 
@@ -65,7 +66,8 @@ This window may not open until all of the following are confirmed:
 | D — CDL falsification criterion field | ~1470 | Retroactive falsification_criterion annotation on all ratified CDLs |
 | E — Genesis authority sunset spec | ~1471 | Standalone spec formalizing court/house/executive model; closes CDL-004 SUBSTANTIVE gap |
 | F — ADR-0009 protocol-native bundle | 1472–1477 | Layer 0-3 bundle schemas, deterministic generator, independent verifier |
-| Z — Window coherence + closure | 1478–1480 | Window closure gate |
+| G — ADR-0029 Merkle-Laplacian hardening | 1478–1482 | canonical vectors, PoSK transcript controls, remaining SIM scoping, IP/publication disposition |
+| Z — Window coherence + closure | 1483–1485 | Window closure gate |
 
 ---
 
@@ -265,19 +267,86 @@ This window may not open until all of the following are confirmed:
 
 ---
 
+### Track G — ADR-0029 Merkle-Laplacian Hardening (Phases 1478-1482)
+
+**Context:** The Merkle-Laplacian dual commitment v0.2 paper and strike-force SIM
+results are research-positive but remain IP-gated, pre-CDL, and excluded from public
+RC artifacts. Commit `5b98ee66` imported the v0.2 draft; commit `aca6241e` ran the
+first-pass SIM strike force. The strike force produced:
+
+- `sim_spectral_01_rerun_quantized_smallest_k_viable=true`
+- `sim_spectral_cost_01_dense_10k_fast_path_viable=false`
+- `sim_posk_01_copy_attack_blocked=true`
+- `sim_dualcommit_01_layer_separation_confirmed=true`
+- `sim_directed_closure_01_direction_lost_in_s=true`
+- `sim_reuse_stability_01_linear_unsafe_log_capped_preferred=true`
+
+Critical caveats:
+
+- `S(t)` activation still requires a CDL and cross-implementation canonicalization proof.
+- PoSK must bind sampled edge-set root `R_c` plus the challenge spectrum.
+- PoSK still requires response-time or local-storage attestation controls.
+- Undirected closure loses directed-flow information; directed-flow claims need a directed spectral extension.
+- Linear `reuse_count` weighting is unsafe; log/capped-log remains the candidate family.
+- All artifacts stay `PUBLIC_RC_EXCLUDE` until IP/counsel/publication authorization.
+
+**Phase 1478 — Merkle-Laplacian canonical vectors + transcript readiness review (NON-SENSITIVE)**
+
+- Review `docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md`.
+- Confirm fixed-point int64 little-endian vectors reproduce in Python.
+- Confirm legacy `spectral_hash()` is not used for v0.2 epoch commitments.
+- Token: `merkle_laplacian_v02_canonical_vectors_reviewed_phase_1478`.
+
+**Phase 1479 — PoSK parameter and ceremony-control SIM scoping (NON-SENSITIVE)**
+
+- Commission `SIM-POSK-PARAM-02`:
+  - sample size;
+  - multiple nonce count;
+  - response timeout;
+  - stale-cache probability;
+  - post-challenge fetch control.
+- Output: SIM plan, not activation.
+- Token: `sim_posk_param_02_scoped_phase_1479`.
+
+**Phase 1480 — Cross-implementation and cospectral SIM scoping (NON-SENSITIVE)**
+
+- Commission:
+  - `SIM-SPECTRAL-CROSSIMPL-02` for q/epsilon/smallest-k byte compatibility;
+  - `SIM-COSPECTRAL-01` for low-k/cospectral adversarial collision search;
+  - `SIM-DIRECTED-SPECTRAL-02` only if directed-flow claims remain in scope.
+- Token: `merkle_laplacian_remaining_sims_scoped_phase_1480`.
+
+**Phase 1481 — IP/counsel/publication disposition (SENSITIVE)**
+
+- Decide whether the paper can move toward publication, patent filing, or continued internal hold.
+- This phase may not remove `PUBLIC_RC_EXCLUDE` unless explicit IP/counsel/publication authorization is recorded.
+- Token: `merkle_laplacian_ip_publication_disposition_phase_1481`.
+- Required GO token: `GO Phase 1481`.
+
+**Phase 1482 — ADR-0029 Merkle-Laplacian CDL readiness verdict (SENSITIVE if opening proceeds)**
+
+- Review all SIM and IP/counsel evidence.
+- If gates are not met, record explicit deferral.
+- If gates are met, produce a CDL opening proposal for Merkle-Laplacian epoch commitments and/or PoSK admission.
+- Any CDL opening requires explicit human GO and the two-commit CDL mutation discipline.
+- Token if deferred: `adr_0029_merkle_laplacian_cdl_deferred_phase_1482`.
+- Token if opened: `adr_0029_merkle_laplacian_cdl_opened_phase_1482`.
+
+---
+
 ### Track Z — Window Coherence + Closure
 
-**Phase ~1478 — Window coherence, capsule update, ADR housekeeping (NON-SENSITIVE)**
+**Phase ~1483 — Window coherence, capsule update, ADR housekeeping (NON-SENSITIVE)**
 
 - Update context capsule.
 - Review open ADR obligations: ADR-0008 (node usefulness), ADR-0019 (graph-native governance), ADR-0024 (agent skills Tier 3), ADR-0025 (dynamic peer discovery — if Phase 1464 closed this, record closure), ADR-0028 (settlement substrate graduation), ADR-0029 (hypergraph spectral hash epoch commitment).
 - Record CDL-091 inviter-chaining candidate deliberation status (CDL opening requires SIM evidence; record gate conditions still outstanding if applicable).
-- Token: `window_1459_plus_coherence_complete`.
+- Token: `window_1459_plus_coherence_complete_phase_1483`.
 
-**Phase ~1479 — Window closure gate (SENSITIVE)**
+**Phase ~1484 — Window closure gate (SENSITIVE)**
 
 - Closure verdict against window objective.
-- Required GO token: `GO Phase 1479`.
+- Required GO token: `GO Phase 1484`.
 - Token: `window_1459_plus_closed`.
 
 ---
@@ -305,10 +374,15 @@ This window may not open until all of the following are confirmed:
 | F4 | ~1475 | Layer 1 Genesis state bundle schema | Spec | NON-SENSITIVE |
 | F5 | ~1476 | Layer 2 epoch snapshot schema | Spec | NON-SENSITIVE |
 | F6 | ~1477 | Layer 3 D2D wire-message binding | Runtime | NON-SENSITIVE |
-| Z1 | ~1478 | Window coherence + capsule + ADR housekeeping | Synthesis | NON-SENSITIVE |
-| Z2 | ~1479 | Window closure gate | Gate | **SENSITIVE** |
+| G1 | ~1478 | Merkle-Laplacian canonical vectors + transcript readiness review | Research/spec | NON-SENSITIVE |
+| G2 | ~1479 | PoSK parameter and ceremony-control SIM scoping | Research/SIM scoping | NON-SENSITIVE |
+| G3 | ~1480 | Cross-implementation and cospectral SIM scoping | Research/SIM scoping | NON-SENSITIVE |
+| G4 | ~1481 | Merkle-Laplacian IP/counsel/publication disposition | Legal/IP/publication | **SENSITIVE** |
+| G5 | ~1482 | ADR-0029 Merkle-Laplacian CDL readiness verdict/opening decision | Constitutional | **conditional SENSITIVE** |
+| Z1 | ~1483 | Window coherence + capsule + ADR housekeeping | Synthesis | NON-SENSITIVE |
+| Z2 | ~1484 | Window closure gate | Gate | **SENSITIVE** |
 
-Total: ~21 planned phases plus contingency slots. Exact phase number assignments depend on Window 1429-1458 closing phase number.
+Total: ~26 planned phases plus contingency slots. Exact phase number assignments depend on Window 1429-1458 closing phase number.
 
 ---
 
@@ -345,8 +419,17 @@ Window 1429-1458 closure (public RC active, epoch 1 triggered)
                  └── 1475 (Layer 1 schema)
                       └── 1476 (Layer 2 schema)
                            └── 1477 (Layer 3 binding)
-                                └── ~1478 (coherence)
-                                     └── ~1479 (closure gate)  [SENSITIVE]
+  |
+  ├── G track (ADR-0029 Merkle-Laplacian hardening, can run after F or parallel if IP hold permits):
+  |    1478 (canonical vectors + transcript readiness)
+  |    └── 1479 (PoSK parameter SIM scoping)
+  |         └── 1480 (cross-implementation/cospectral SIM scoping)
+  |              └── 1481 (IP/publication disposition)  [SENSITIVE]
+  |                   └── 1482 (CDL readiness/opening decision)  [SENSITIVE if opening proceeds]
+  |
+  └── Z track:
+       ~1483 (coherence)
+       └── ~1484 (closure gate)  [SENSITIVE]
 ```
 
 ---
@@ -358,6 +441,9 @@ Window 1429-1458 closure (public RC active, epoch 1 triggered)
 | CDL-091 inviter-chaining CDL | Requires SIM evidence + ADR-0009 bundle completion (Tracks B5+F6 done) | Post-F-track window |
 | SIM-PRESSURE-SPECTRAL-02 | Requires live network topology data from post-public-RC epochs | Post-public-RC real data |
 | CDL-PROVENANCE-DEPTH-01 (hub relay) | Blocked on SIM-PRESSURE-SPECTRAL-02 + live topology data | Post-SIM |
+| ADR-0029 Merkle-Laplacian epoch commitment activation | Blocked on Track G, cross-implementation vectors, cospectral SIM, PoSK parameter SIM, IP/counsel disposition, and CDL opening/ratification | Post-Track-G and SENSITIVE CDL |
+| PoSK admission-gate activation | Blocked on Track G, PoSK timeout/local-storage attestation design, multiple-nonce/sample-size calibration, and CDL authority | Post-SIM-POSK-PARAM-02 and SENSITIVE CDL |
+| Merkle-Laplacian paper publication or `PUBLIC_RC_EXCLUDE` removal | Blocked on IP/counsel/publication authorization | SENSITIVE publication disposition |
 | Mainnet split-custody ceremony | Requires multi-party coordination | Future |
 | Production minting activation | Post-public-RC; requires separate deliberation | Future |
 | ADR-0008 node usefulness/governance weight | Requires live network data | Post-public-RC data |
@@ -375,6 +461,9 @@ This forward plan does not authorize:
 - Any CDL opening before the Window 1459+ sequence lock is formalized and human-approved
 - Track C (Werner CDL) opening before Phase 1467 diagnostic review verdict
 - ADR-0009 CDL-091 inviter-chaining deliberation (requires Track F completion first)
+- Merkle-Laplacian `S(t)` epoch-commitment activation without a SENSITIVE CDL
+- PoSK admission-gate activation without a SENSITIVE CDL and ceremony-control spec
+- Public release of Merkle-Laplacian paper/SIM artifacts or removal of `PUBLIC_RC_EXCLUDE` without IP/counsel/publication authorization
 
 ---
 

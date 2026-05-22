@@ -821,6 +821,71 @@ This is a post-public-RC architectural obligation. No action required in Window
 
 ---
 
+### 10.6 Post-public-RC ADR-0029 Merkle-Laplacian / PoSK hardening lane
+
+**Status:** Research-positive after v0.2 paper intake and first-pass SIM strike force;
+not activated; no CDL; no epoch-commitment mutation; no PoSK admission gate; IP-gated
+and `PUBLIC_RC_EXCLUDE`.
+
+**Evidence now in repo:**
+
+- `docs/research/ilc_merkle_laplacian_dual_commitment_paper_draft_v0.2.md`
+- `docs/research/ilc_merkle_laplacian_dual_commitment_v0.2_intake_review_2026_05_22.md`
+- `docs/sims/sim_merkle_laplacian_v02/strike_force_results_2026_05_22_v0.1.md`
+- `docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md`
+
+**SIM strike-force tokens:**
+
+```
+sim_spectral_01_rerun_quantized_smallest_k_viable=true
+sim_spectral_cost_01_dense_10k_fast_path_viable=false
+sim_posk_01_copy_attack_blocked=true
+sim_dualcommit_01_layer_separation_confirmed=true
+sim_directed_closure_01_direction_lost_in_s=true
+sim_reuse_stability_01_linear_unsafe_log_capped_preferred=true
+```
+
+**Key findings to preserve:**
+
+1. The candidate `S(t)` encoding is smallest-k eigenvalues, fixed-point int64
+   little-endian, `q=1_000_000` as a research parameter only.
+2. Dense full eigendecomposition is not the 10k-node fast path; sparse/iterative
+   low-end extraction is required.
+3. PoSK must bind sampled edge-set root `R_c` plus challenge-subgraph spectrum;
+   spectrum-only is insufficient against stale/partial graph views.
+4. PoSK still needs challenge timeout or local-storage attestation controls.
+5. Undirected closure loses directed-flow information; directed claims require a
+   directed spectral extension.
+6. Linear `reuse_count` weighting is unsafe; log/capped-log remains the safer
+   candidate family pending CDL.
+
+**Named obligation:** Route to Window 1459+ Track G:
+
+```
+ADR-0029 Merkle-Laplacian hardening
+  → canonical vector review
+  → PoSK parameter / ceremony-control SIM scoping
+  → cross-implementation + cospectral SIM scoping
+  → IP/counsel/publication disposition
+  → CDL readiness verdict or explicit deferral
+```
+
+**Non-claims:**
+
+```
+no_merkle_laplacian_epoch_commitment_activation_from_v0_2
+no_posk_admission_activation_from_v0_2
+no_publication_authorization_from_v0_2
+public_rc_exclude_retained_for_merkle_laplacian_artifacts
+```
+
+This is a post-public-RC architectural obligation. No action required in Window
+1429–1458 beyond preserving this record and ensuring public-RC export profiles
+exclude the paper/SIM artifacts unless later IP/counsel authorization removes
+the exclusion markers.
+
+---
+
 ## 11. This document's authority and next steps
 
 This is a **draft forward plan** — it does not constitute an authorized sequence lock. Before any phase in this window executes:
