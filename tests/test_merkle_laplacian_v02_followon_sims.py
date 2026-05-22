@@ -71,9 +71,10 @@ def test_crossimpl_and_cospectral_findings_are_scoped_correctly() -> None:
     assert cross["mismatch_count"] == 0
 
     assert cospectral["formal_cospectral_construction_still_required"] is True
-    assert cospectral["exact_k8_collisions_with_distinct_m_root"] is False
+    assert cospectral["k8_duplicate_hash_observations_found"] is True
+    assert cospectral["k8_distinct_m_s_collision_found"] is False
     k2 = next(row for row in cospectral["rows"] if row["k"] == 2)
-    assert k2["collisions_with_distinct_m_root"] > 0
+    assert k2["distinct_m_s_collisions"] > 0
 
 
 def test_directed_followon_records_extension_requirement() -> None:
@@ -95,7 +96,8 @@ def test_followon_markdown_answers_dependency_question() -> None:
     assert "Activating `S(t)` in epoch commitments" in text
     assert "Activating PoSK as an admission gate" in text
     assert "sample_size=64, nonce_count=4" in text
-    assert "distinct-M collisions at k=2 but not at k=8" in text
+    assert "distinct-M `S(t)` collisions at k=2 but not at k=8" in text
+    assert "k=8 duplicate hash observations had identical `M(t)` roots" in text
 
 
 def test_paper_integrates_followon_repairs_without_activation_claims() -> None:
