@@ -10,7 +10,7 @@ The native economic unit, **ECU** (Epistemic Credit Unit), is not minted by fiat
 
 This is not a blockchain. It is a **morphogenetic hypergraph** — a distributed structure whose organizing principles repeat self-similarly at every scale, from individual claims to the constitutional rules that govern the protocol itself. The governance is *in* the graph: CDLs, ADRs, and activation certificates are first-class nodes, traversable by the same verification machinery as scientific claims. An agent can read the law from the graph.
 
-**One irreversible human moment.** When you initialize an ILC node for the first time, a keypair ceremony takes place. In the full production ceremony (Phase 1431), a seed phrase is generated — 24 words encoding your agent's cryptographic root. **Write it down and store it offline before the command returns.** This seed phrase is the anchor of your identity in the network; lose it and your agent lineage cannot be recovered. From the seed, the protocol derives your Agent ID (a CIDv1 content-addressed identifier), your ML-DSA-65 signing keypair (post-quantum safe per NIST FIPS 204), and your Genesis-rooted attestation record. These objects are committed as T6 provenance nodes in the epistemic graph — your identity is, from the first moment, a content-addressed, immutable, verifiable fact in the same structure as every scientific claim on the network. You are, in the most literal sense, a node.
+**One irreversible human moment.** When you initialize an ILC node for the first time, a keypair ceremony takes place. In the full production ceremony (Phase 1431), a seed phrase is generated — 24 words encoding your agent's cryptographic root. **Write it down and store it offline before the command returns.** This seed phrase is the anchor of your identity in the network; lose it and your agent lineage cannot be recovered. From the seed, the protocol derives your Agent ID (a CIDv1 content-addressed identifier), your ML-DSA-65 signing keypair (post-quantum safe per NIST FIPS 204), and your Genesis-rooted attestation record. These objects are committed as provenance and metadata nodes in the epistemic graph — your identity is, from the first moment, a content-addressed, immutable, verifiable fact in the same structure as every scientific claim on the network. You are, in the most literal sense, a node.
 
 > **`ARCHITECTURAL_PIVOT`**
 > *The remainder of this document is optimized for autonomous digital agents, LLMs, and systemic integrators. Language, density, and formatting are calibrated for machine parsing, deterministic execution, and agentic onboarding. Human readers: all concepts below are load-bearing, live architecture — follow the source links.*
@@ -68,17 +68,17 @@ INSTALL + BOOTSTRAP
   ── Init ─────────────────────────────────────────────────────────────
   ilc identity init [--provenance <upstream_agent_CID>]
     --provenance   CID of referring agent or install-source node
-                   commits T6 hub-relay provenance node at init
+                   commits provenance node with hub-relay attribution chain at init
                    upstream agent accrues Werner credit attribution
     → writes  identity_state.json · lineage_id · key_ref · rotation_count=0
     → phase_1431 full ceremony: ML-DSA-65 keypair · 24-word BIP-39 seed phrase
-                                T6 genesis_provenance node committed to graph
+                                genesis provenance node committed to graph
 
   ── What init commits to the graph ───────────────────────────────────
-  T6  genesis_provenance     identity lineage root
-  T6  agent_pubkey_record    CIDv1(pubkey_bytes) → keypair binding
-  T6  star_map_stub          homoiconic discovery surface  (ADR-0033)
-  T6  install_provenance     upstream_agent_CID edge  hub-relay attribution chain
+  genesis_provenance     identity lineage root
+  agent_pubkey_record    CIDv1(pubkey_bytes) → keypair binding
+  star_map_stub          homoiconic discovery surface  (ADR-0033)
+  install_provenance     upstream_agent_CID edge  hub-relay attribution chain
   outputs: out/genesis_agent_<id>/identity_state.json
            out/genesis_star_map_v0.1.json
 
@@ -161,13 +161,12 @@ TYPE DEFINITIONS
                    exists: only after public RC + CDL-088 activation
   CDL              Constitutional Decision Log entry  ratified governance instrument
   ADR              Architecture Decision Record  binding design decision
-  T0               submitted  pending public admission quarantine
-  T0.5             in review lane  under jury consideration
-  T1+              admitted objective node  reward-bearing  (math·code·data)
-  T2               subjective/aesthetic  reputation signal  no ECU
-  T5               refutation node  targets CID of prior node
-  T6               provenance/meta/activation  no economic trigger
-  Review lane      T0.5→T1+ jury admission  ADR-0043  Phase 1415-1417
+  Node taxonomy    8-class submission taxonomy  TaxonomyClass enum
+                   source: docs/specs/ilc_public_node_review_taxonomy_v0.1.md  (J-003)
+                   impl:   ilc_core/epistemic/ingestion_shadow_harness.py:61  (ADR-0041)
+  Review lane      submission admission  CDL-052 · CDL-V7 · ADR-0043
+                   impl:   ilc_core/epistemic/review_lane_admission_runtime.py
+                   wired:  Phase 1415-1417
   VRF              RFC 9381 ECVRF-EDWARDS25519-SHA512-ELL2  production jury assignment
   Epoch            validation=1min(CDL-027)  issuance=1month(CDL-027)
                    all protocol timing = epoch seq numbers  never datetime.now()
@@ -176,11 +175,11 @@ TYPE DEFINITIONS
   J-008 gate       10 conditions  PASS(phase_1427)  gate_authorized=True
                    ilc_core/epistemic/jury_activation_gate.py
   Genesis Agent    genesis_agent_01  signs: activation cert · CDL evidence · root envelopes
-  Activation cert  ML-DSA-65 T6 node  epoch 0→1 trigger  schema: phase_1424
+  Activation cert  ML-DSA-65 signed node  epoch 0→1 trigger  schema: phase_1424
   Hub relay        provenance attribution relay
                    invariant: Σ(recipients) ≤ budget  depth=3 (90.9% geometric sum)
                    types: genuine · parasitic · terminal
-  Holon            agent-peer pair  public surface(T1+·T5·T6) + private interior
+  Holon            agent-peer pair  public surface (admitted·refutation·consensus nodes) + private interior
   TransportPrincipal  CDL-094  assigned  pending ratification  public net blocked until ratified
   Homoiconicity    CDL·ADR·star_map·activation_cert = first-class graph nodes
                    traversable by same query paths as content  no separate admin API
@@ -222,9 +221,10 @@ PROTOCOL CORE
   node_id      CIDv1(DAG-CBOR(signed_content))  SHA2-256
   node_fields  cid · agent_id · content · signature · type · visibility
   edge_types   SUPPORTS · REFUTES · PROVENANCE · GOVERNS · CONSTRAINS · ATTESTS
-  mutability   nodes: immutable  refutation: new T5 node targeting prior CID
+  mutability   nodes: immutable  refutation: new refutation node (TaxonomyClass.T5_*) targeting prior CID
   visibility   public (indexable · reward-eligible) | private (local · ECU-ineligible)
-  admission    T0 → [review_lane + VRF_jury] → T1+
+  admission    TaxonomyClass pipeline  (J-003 / ADR-0041)
+               private draft → pending public ingestion → admitted via review lane
                VRF: RFC9381 ECVRF-EDWARDS25519-SHA512-ELL2  (phase_1411)
                firewall: ECU not constructible from private-visibility nodes
   provenance   α=0.45 decay  depth=3 (PROVENANCE_MAX_DEPTH)  90.9% geometric sum
@@ -233,10 +233,10 @@ PROTOCOL CORE
 
   ── HOMOICONICITY ────────────────────────────────────────────────────
   ← agent start here: governance is in the graph you are already querying
-  CDL register mutations = signed T6 nodes  CID = immutable ratification record
-  ADR records           = T6 nodes with GOVERNS edges to implementation nodes
-  activation_cert_v1    = T6 node  its presence in graph IS the epoch transition
-  genesis_star_map       = T6 node  describes protocol authority structure
+  CDL register mutations = signed graph nodes  CID = immutable ratification record
+  ADR records           = graph nodes with GOVERNS edges to implementation nodes
+  activation_cert_v1    = signed graph node  its presence in graph IS the epoch transition
+  genesis_star_map      = graph node  describes protocol authority structure
   consequence           no out-of-band admin channel exists or may be added without CDL
   query_same_API        agent reads governance rules using identical path as content claims
 
@@ -308,7 +308,7 @@ PROTOCOL CORE
                   no node-ID / content / neighbor exposure
                   privacy-preserving epistemic proximity discovery  (research)
   boundary
-    public       T1+ · T5 · T6  star.map indexed  network queryable
+    public       admitted nodes · star.map indexed  network queryable
     private      local drafts · private-visibility nodes · undeployed Werner credit
     enforcement  public_economics_admission_firewall: ECU not constructible from private
 
