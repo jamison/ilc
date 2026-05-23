@@ -797,7 +797,62 @@ and is not part of Phase 1437 activation.
 
 ---
 
-## 22. Final Closure Routing (anticipated)
+## 22. Phase 1441 Completion Addendum
+
+Phase 1441 is complete. Gap 13 is CLOSED with PASS verdict.
+
+Closure tokens:
+
+```text
+gap_13_closed_phase_1441
+gap_13_closure_verdict_pass_phase_1441
+```
+
+Required satisfied evidence tokens:
+
+```text
+public_claimability_activated_phase_1438
+public_verifier_api_activated_phase_1439
+claimability_integration_tests_phase_1440
+security_review_gate_passed_phase_1440
+finding_1_rounding_residual_cap_blocked_resolved_phase_1440
+finding_3_price_clamp_width_derived_resolved_phase_1440
+finding_11_nullifier_expire_stale_public_path_resolved_phase_1440
+finding_13_negative_int_constraint_documented_resolved_phase_1440
+finding_14_event_log_retention_provenance_guard_resolved_phase_1440
+cdl_088_is_public_claimability_api_authority_phase_1389a
+```
+
+Activation summary:
+
+```text
+PUBLIC_CLAIMABILITY_ACTIVATED=True
+public_verifier_api_wired=true
+claimability_integration_tests_passed=true
+security_review_gate_passed=true
+```
+
+Preserved non-activation boundaries:
+
+```text
+ecu_mint_authorized=false
+ilc_settlement_authorized=false
+wallet_ops_authorized=false
+public_rc_activated=false
+native_rust_p2p_activated=false
+epoch_transition_triggered=false
+cdl_mutation=false
+graph_write=false
+wallet_write=false
+treasury_write=false
+```
+
+Phase 1441 is a closure-verdict gate only. It does not activate any new runtime
+surface beyond the Phase 1438-1440 work already committed.
+
+---
+
+## 23. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 

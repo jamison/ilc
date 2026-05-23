@@ -29,6 +29,8 @@ DEFINED_PROFILES: tuple[str, ...] = (
 
 GAP_14_PHASE_2_TOKEN: str = "gap_14_phase_2_public_rc_profile_complete_phase_1436b"
 GAP_14_CLOSED_TOKEN: str = "gap_14_closed_phase_1436b"
+GAP_13_CLOSED_TOKEN: str = "gap_13_closed_phase_1441"
+GAP_13_CLOSURE_VERDICT_PASS_TOKEN: str = "gap_13_closure_verdict_pass_phase_1441"
 
 PHASE_1436_NOT_ACTIVATED: bool = True
 PUBLIC_RC_NOT_ACTIVATED: bool = True
