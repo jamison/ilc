@@ -869,17 +869,24 @@ public_rc_not_published_phase_1443
 Audit result:
 
 ```text
-allowlisted_python_files_audited=281
-allowlisted_python_files_with_header_before_phase=0
-allowlisted_python_files_updated=281
+allowlisted_python_files_audited=310
+initial_phase_1443_files_updated=281
+phase_1443_followup_headers_added=29
+files_missing_header_after_followup=0
 spdx_identifier=SPDX-License-Identifier: AGPL-3.0-or-later
 ```
 
 The Phase 1333 allowlist execution gate was run pre-commit with
 `materialize=False`; as expected, it returned `blocked_with_findings` because
 the newly header-updated included files were dirty before the Phase 1443 commit.
-The Phase 1443 test suite verifies the allowlisted file set and the
-non-publication boundary. Public RC publication remains a later sensitive phase.
+After the Phase 1443 commit, the materialized execution gate was rerun against
+the clean allowlisted tree and returned
+`source_allowlist_export_execution_gate_verdict=pass`. Post-commit
+materialization exposed 29 additional allowlisted Python files in the current
+source tree; the follow-up adds the same SPDX header to those files and verifies
+the 310-file materialized Python tree. The Phase 1443 test suite verifies the
+allowlisted file set and the non-publication boundary. Public RC publication
+remains a later sensitive phase.
 
 Preserved non-activation boundaries:
 

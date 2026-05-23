@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1436 public-path activation gates.
 
 This module does not create listeners. It validates that a caller already has

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1345 non-activating epoch emission quote runtime."""
 
 from __future__ import annotations

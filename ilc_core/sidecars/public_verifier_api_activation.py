@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1439 public claimability verifier API activation constants."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1352 non-activating issuance economics integration gate.
 
 The gate composes the Phase 1345-1351a quote runtimes and verifies quote-level

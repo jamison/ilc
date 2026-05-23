@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1398 / J-008 — Production Jury Activation Gate.
 
 Defines and evaluates the conditions required before production jury
