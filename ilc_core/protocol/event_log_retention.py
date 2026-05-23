@@ -13,12 +13,19 @@ CDL_044_RETENTION_EPOCHS = 1
 CDL_044_EPOCH_SCOPE = "issuance_epoch"
 CDL_043_ECU_SCORE_FLOOR = Decimal("0.5")
 CDL_043_SNAPSHOT_INTERVAL_EPOCHS = 50
+EVENT_LOG_RETENTION_INTERNAL_PLAN_PROVENANCE_TOKEN = (
+    "event_log_retention_internal_plan_builder_phase_1440"
+)
+FINDING_14_EVENT_LOG_RETENTION_PROVENANCE_GUARD_RESOLVED_TOKEN = (
+    "finding_14_event_log_retention_provenance_guard_resolved_phase_1440"
+)
 
 
 _EPOCH_DIR_PATTERN = re.compile(r"^epoch_(\d{4,})$")
 
 
 class EventLogRetentionPlan(TypedDict):
+    plan_provenance_token: str
     root: str
     keep_last: int
     discovered: List[str]
@@ -166,6 +173,7 @@ def build_event_log_retention_plan(
     prune_paths = discovered[:-keep_last] if len(discovered) > keep_last else []
 
     return {
+        "plan_provenance_token": EVENT_LOG_RETENTION_INTERNAL_PLAN_PROVENANCE_TOKEN,
         "root": str(root_path),
         "keep_last": keep_last,
         "discovered": [str(path) for path in discovered],
@@ -209,6 +217,7 @@ def build_adaptive_event_log_retention_plan(
             keep_paths.append(path)
 
     return {
+        "plan_provenance_token": EVENT_LOG_RETENTION_INTERNAL_PLAN_PROVENANCE_TOKEN,
         "root": str(root_path),
         "keep_last": CDL_044_RETENTION_EPOCHS,
         "discovered": [str(path) for path in discovered],
@@ -228,11 +237,17 @@ def _is_within_root(path: Path, root: Path) -> bool:
         return False
 
 
+def _require_internal_plan(plan: EventLogRetentionPlan) -> None:
+    if plan.get("plan_provenance_token") != EVENT_LOG_RETENTION_INTERNAL_PLAN_PROVENANCE_TOKEN:
+        raise ValueError("event_log_retention_plan_provenance_invalid_phase_1440")
+
+
 def apply_event_log_retention_plan(
     plan: EventLogRetentionPlan,
     *,
     dry_run: bool,
 ) -> EventLogRetentionApplyResult:
+    _require_internal_plan(plan)
     root_path = Path(plan["root"])
     prune_paths = [Path(path) for path in plan["prune"]]
 
