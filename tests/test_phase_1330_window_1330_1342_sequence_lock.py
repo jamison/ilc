@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 
 
@@ -23,6 +24,19 @@ REQUIRED_TOKENS = (
 
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
+
+
+def _git_show(commit: str, file_path: str) -> str:
+    """Read a file at a specific git commit without invoking a shell."""
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{file_path}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=10,
+    )
+    return result.stdout
 
 
 def test_phase_1330_required_tokens_are_published() -> None:
@@ -165,7 +179,7 @@ def test_phase_1330_discovery_and_human_escalation_are_recorded() -> None:
 
 
 def test_phase_1330_does_not_open_cdl_088_or_signing_authority() -> None:
-    cdl = read(CDL)
+    cdl = _git_show("e6a56076", CDL)
     lock = read(SEQUENCE_LOCK)
 
     assert "| CDL-088 |" not in cdl
