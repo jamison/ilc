@@ -24,8 +24,10 @@ from ilc_core.sidecars.public_path_activation import (
     EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN,
     GAP_14_COMPLETE_GATE_WIRED_TOKEN,
     NON_LOOPBACK_SIDECAR_PROJECTION_ACTIVATED_TOKEN,
-    OPENCLAW_P2P_NOT_ACTIVATED_TOKEN,
+    OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
+    OPENCLAW_P2P_ACTIVATED_TOKEN,
     PUBLIC_FETCH_SERVING_ACTIVATED_TOKEN,
+    PUBLIC_RC_NOT_ACTIVATED_TOKEN,
     PUBLIC_PATH_ACTIVATION_VERSION,
     TRANSPORT_PRINCIPAL_CDL_RATIFIED_GATE_WIRED_TOKEN,
     authorize_non_loopback_sidecar_projection,
@@ -56,12 +58,14 @@ def test_phase_1436_activation_manifest_tokens_and_non_claims() -> None:
     assert PUBLIC_FETCH_SERVING_ACTIVATED_TOKEN in tokens
     assert TRANSPORT_PRINCIPAL_CDL_RATIFIED_GATE_WIRED_TOKEN in tokens
     assert GAP_14_COMPLETE_GATE_WIRED_TOKEN in tokens
-    assert OPENCLAW_P2P_NOT_ACTIVATED_TOKEN in tokens
+    assert OPENCLAW_P2P_ACTIVATED_TOKEN in tokens
+    assert OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN in tokens
+    assert PUBLIC_RC_NOT_ACTIVATED_TOKEN in tokens
     assert ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN in tokens
     assert EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN in tokens
     assert manifest["public_fetch_serving_activated"] is True
     assert manifest["non_loopback_sidecar_projection_activated"] is True
-    assert manifest["openclaw_p2p_activated"] is False
+    assert manifest["openclaw_p2p_activated"] is True
     assert manifest["public_p2p_activated"] is False
     assert manifest["ecu_distribution_activated"] is False
     assert manifest["epoch_transition_triggered"] is False
@@ -255,6 +259,7 @@ def test_public_fetch_decision_rejected_for_sidecar_export() -> None:
 def test_phase_1436_prompt_tokens_present_in_source() -> None:
     source_paths = (
         Path("ilc_core/sidecars/public_path_activation.py"),
+        Path("ilc_core/network/d2d/openclaw_p2p_relay.py"),
         Path("ilc_core/network/d2d/http_fetch_transport_runtime.py"),
         Path("ilc_core/graph/sidecar_query_runtime.py"),
         Path("ilc_core/graph/agent_graph_projection_runtime.py"),
@@ -266,7 +271,9 @@ def test_phase_1436_prompt_tokens_present_in_source() -> None:
         PUBLIC_FETCH_SERVING_ACTIVATED_TOKEN,
         TRANSPORT_PRINCIPAL_CDL_RATIFIED_GATE_WIRED_TOKEN,
         GAP_14_COMPLETE_GATE_WIRED_TOKEN,
-        OPENCLAW_P2P_NOT_ACTIVATED_TOKEN,
+        OPENCLAW_P2P_ACTIVATED_TOKEN,
+        OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
+        PUBLIC_RC_NOT_ACTIVATED_TOKEN,
         ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
         EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN,
     ):
