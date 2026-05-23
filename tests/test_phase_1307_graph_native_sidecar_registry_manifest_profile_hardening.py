@@ -77,8 +77,11 @@ def test_phase_1307_registry_manifest_is_canonical_local_metadata_only() -> None
     verifier_manifest = manifest["package_profile_integrity"][
         "offline_claimability_verifier_manifest"
     ]
+    assert manifest["package_profile_integrity"][
+        "public_claimability_runtime_activation_authorized"
+    ] is True
     assert verifier_manifest["public_api_enabled"] is False
-    assert verifier_manifest["public_claimability_activated"] is False
+    assert verifier_manifest["public_claimability_activated"] is True
     assert verifier_manifest["receipt_verifier_public_serving_enabled"] is False
     assert exported_once == exported_twice
     assert exported_once == json.dumps(
