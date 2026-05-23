@@ -20,6 +20,7 @@ from ilc_core.ledger.claimability_proof_binding_runtime import (
 from ilc_core.sidecars.claimability_receipt_verifier import (
     ACCEPTED_LOCAL_ONLY_DECISION,
     CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN,
+    CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN,
     OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
     PHASE_1306_NEXT_TOKEN,
     PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN,
@@ -27,16 +28,33 @@ from ilc_core.sidecars.claimability_receipt_verifier import (
     PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
     RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
     REJECTED_DECISION,
+    CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN,
+    CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN,
+    CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN,
     ClaimabilityReceiptVerifierError,
+    DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN,
+    PUBLIC_SAFE_DISCLOSURE_SCHEMA_FINAL_TOKEN,
+    TRANSPORT_PRINCIPAL_D2D_RESOLVED_TOKEN,
     build_claimability_verifier_presentation,
     canonical_decision_json,
     claimability_receipt_verifier_manifest,
     verify_claimability_receipt_presentation,
 )
+from ilc_core.sidecars.public_verifier_api_activation import (
+    CLAIMABILITY_API_SERVING_PATH_WIRED_PHASE_1439_TOKEN,
+    ECU_MINT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    ILC_SETTLEMENT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    PUBLIC_RC_NOT_ACTIVATED_PHASE_1439_TOKEN,
+    PUBLIC_VERIFIER_API_ACTIVATED_PHASE_1439_TOKEN,
+    WALLET_OPS_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "ilc_core/sidecars/claimability_receipt_verifier.py"
+PUBLIC_VERIFIER_ACTIVATION_PATH = (
+    ROOT / "ilc_core/sidecars/public_verifier_api_activation.py"
+)
 SPEC_PATH = (
     ROOT / "docs/specs/ilc_offline_claimability_receipt_verifier_sidecar_1305_v0.1.md"
 )
@@ -50,11 +68,22 @@ CAPSULE_PATH = ROOT / "docs/specs/ilc_antigravity_context_capsule_v5.53.md"
 
 REQUIRED_TOKENS = [
     OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
-    CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN,
-    RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
     PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN,
+    PUBLIC_VERIFIER_API_ACTIVATED_PHASE_1439_TOKEN,
+    CLAIMABILITY_API_SERVING_PATH_WIRED_PHASE_1439_TOKEN,
     PHASE_1306_NEXT_TOKEN,
     PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
+    CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN,
+    CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN,
+    PUBLIC_SAFE_DISCLOSURE_SCHEMA_FINAL_TOKEN,
+    TRANSPORT_PRINCIPAL_D2D_RESOLVED_TOKEN,
+    CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN,
+    DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN,
+    CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN,
+    ECU_MINT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    ILC_SETTLEMENT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    WALLET_OPS_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    PUBLIC_RC_NOT_ACTIVATED_PHASE_1439_TOKEN,
 ]
 
 
@@ -188,12 +217,14 @@ def test_local_verifier_manifest_and_source_have_no_public_serving_surface() -> 
     manifest = claimability_receipt_verifier_manifest()
     source = MODULE_PATH.read_text()
 
-    assert manifest["local_only"] is True
-    assert manifest["public_api_enabled"] is False
-    assert manifest["receipt_verifier_public_serving_enabled"] is False
-    assert manifest["non_loopback_claimability_api_enabled"] is False
+    assert manifest["local_only"] is False
+    assert manifest["public_api_enabled"] is True
+    assert manifest["receipt_verifier_public_serving_enabled"] is True
+    assert manifest["non_loopback_claimability_api_enabled"] is True
     assert manifest["public_claimability_activated"] is True
     assert manifest["tokens"][: len(REQUIRED_TOKENS)] == REQUIRED_TOKENS
+    assert CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN not in manifest["tokens"]
+    assert RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN not in manifest["tokens"]
     assert PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN not in manifest["tokens"]
     assert "claimability_verifier_public_mode_ready_phase_1389b" in manifest["tokens"]
     for forbidden in (
@@ -214,6 +245,7 @@ def test_phase_1305_tokens_and_non_claims_are_recorded() -> None:
         path.read_text()
         for path in (
             MODULE_PATH,
+            PUBLIC_VERIFIER_ACTIVATION_PATH,
             SPEC_PATH,
             WALKTHROUGH_PATH,
             STATUS_PATH,

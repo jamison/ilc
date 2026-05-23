@@ -80,9 +80,13 @@ def test_phase_1307_registry_manifest_is_canonical_local_metadata_only() -> None
     assert manifest["package_profile_integrity"][
         "public_claimability_runtime_activation_authorized"
     ] is True
-    assert verifier_manifest["public_api_enabled"] is False
+    assert verifier_manifest["non_loopback_claimability_api_enabled"] is True
+    assert verifier_manifest["public_api_enabled"] is True
     assert verifier_manifest["public_claimability_activated"] is True
-    assert verifier_manifest["receipt_verifier_public_serving_enabled"] is False
+    assert verifier_manifest["receipt_verifier_public_serving_enabled"] is True
+    assert "no_public_claimability_api_activation" not in manifest["non_authorization_boundary"]
+    assert "no_public_verifier_service" not in manifest["non_authorization_boundary"]
+    assert "no_public_claim_endpoint" not in manifest["non_authorization_boundary"]
     assert exported_once == exported_twice
     assert exported_once == json.dumps(
         json.loads(exported_once),
