@@ -1,6 +1,6 @@
 # ILC Phase 1429-1458 Sequence Lock v0.1
 
-**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1435 TransportPrincipal CDL prelock + ratification is complete; Gap 14 package-profile phases are next before SENSITIVE Phase 1436 public sidecar/fetch activation
+**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Gap 14 package-profile phases 1436a-1436b are complete; Phase 1436 public sidecar/fetch activation is next and SENSITIVE
 **Date:** 2026-05-21 (window GO recorded 2026-05-22)
 **Owner lane:** G8 Jury Economy / Launch Readiness / Public RC Activation
 **GO authority:** Human reviewer (`GO Window 1429` recorded 2026-05-22; per-phase GO still required for every SENSITIVE phase)
@@ -608,7 +608,56 @@ Phase 1436 remains SENSITIVE and requires explicit future GO.
 
 ---
 
-## 19. Final Closure Routing (anticipated)
+## 19. Phase 1436b Completion Addendum
+
+Phase 1436a and Phase 1436b are complete under NON-SENSITIVE continuation
+authorization.
+
+```text
+gap_14_phase_1_package_profile_definition_complete_phase_1436a
+modular_package_profiles_defined_phase_1436a
+pyproject_extras_aligned_to_profiles_phase_1436a
+openclaw_hosted_profile_defined_phase_1436a
+gap_14_phase_2_public_rc_profile_complete_phase_1436b
+gap_14_closed_phase_1436b
+public_rc_distribution_profile_defined_phase_1436b
+openclaw_skill_profile_referenced_phase_1436b
+gap_14_sequence_lock_addendum_recorded_phase_1436b
+phase_1436_not_activated_phase_1436b
+public_rc_not_activated_phase_1436b
+```
+
+Phase 1436a defines the Python package profile taxonomy:
+
+```text
+protocol-core
+operator-node
+openclaw-hosted
+dev
+```
+
+Phase 1436b adds the `public-rc` profile and records it as dependency-equivalent
+to `operator-node`, with separate semantics for external public-RC operators.
+The OpenClaw/NemoClaw hosted profile is documented as the hosted skill target,
+and `/tmp/ilc-skill/SKILL.md` was updated to use:
+
+```text
+pip install 'ilc-core[openclaw-hosted]'
+```
+
+Gap 14 is closed at the package-profile specification level. Phase 1436 is
+unblocked by Gap 14.
+
+Phase 1436 remains SENSITIVE and requires explicit `GO Phase 1436`.
+
+No public fetch serving, public P2P, non-loopback sidecar/projection serving,
+public confidential coordination serving, production graph write, wallet write,
+treasury write, ECU minting, ILC settlement, public RC publication, signing, or
+epoch 0-to-1 transition occurred in Phase 1436a or Phase 1436b.
+
+---
+
+## 20. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
