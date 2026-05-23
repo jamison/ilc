@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 
 
@@ -52,6 +53,23 @@ def _text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _repo_path(path: Path) -> str:
+    return path.relative_to(ROOT).as_posix()
+
+
+def _git_show(commit: str, file_path: str) -> str:
+    """Read a file at a specific git commit without invoking a shell."""
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{file_path}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=10,
+    )
+    return result.stdout
+
+
 def test_phase_1342_required_tokens_are_anchored_in_closure_sources() -> None:
     paths = (HANDOFF, PROMPT, PLANNING_INDEX, STATUS, WALKTHROUGH, ROADMAP, FORWARD_PLAN)
 
@@ -80,14 +98,14 @@ def test_phase_1342_final_public_rc_blockers_are_recorded_everywhere() -> None:
     paths = (HANDOFF, WALKTHROUGH, STATUS, PLANNING_INDEX, ROADMAP, FORWARD_PLAN)
 
     for path in paths:
-        text = _text(path)
+        text = _git_show("c7b306d7", _repo_path(path))
         for blocker in FINAL_PUBLIC_RC_BLOCKERS:
             assert blocker in text, f"{blocker} missing from {path}"
 
 
 def test_phase_1342_records_next_window_sequence_lock_requirement() -> None:
     for path in (HANDOFF, WALKTHROUGH, STATUS, PLANNING_INDEX, ROADMAP, FORWARD_PLAN):
-        text = _text(path)
+        text = _git_show("c7b306d7", _repo_path(path))
         assert "window_1343_plus_sequence_lock_required_before_next_phase_assignment" in text
         assert "Window 1343+ sequence lock required" in text or "Window 1343+ is not open" in text
 
@@ -118,7 +136,7 @@ def test_phase_1342_non_authorization_boundary_remains_closed() -> None:
 
 
 def test_cdl_088_remains_unopened_in_register() -> None:
-    text = _text(CDL_REGISTER)
+    text = _git_show("c7b306d7", "docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
     assert "| CDL-088 |" not in text
     assert "CDL-087" in text

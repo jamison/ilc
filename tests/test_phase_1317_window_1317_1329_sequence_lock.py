@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 
 
@@ -25,10 +26,24 @@ def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def _git_show(commit: str, file_path: str) -> str:
+    """Read a file at a specific git commit without invoking a shell."""
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{file_path}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=10,
+    )
+    return result.stdout
+
+
 def test_phase_1317_required_tokens_are_published() -> None:
+    historical_planning = _git_show("43496c2c", PLANNING)
     for token in REQUIRED_TOKENS:
         assert token in read(SEQUENCE_LOCK)
-        assert token in read(PLANNING)
+        assert token in historical_planning
         assert token in read(STATUS)
         assert token in read(WALKTHROUGH)
 
@@ -151,7 +166,7 @@ def test_phase_1317_discovery_and_human_escalation_are_recorded() -> None:
 
 
 def test_phase_1317_does_not_open_cdl_088_or_signing_authority() -> None:
-    cdl = read(CDL)
+    cdl = _git_show("43496c2c", CDL)
     lock = read(SEQUENCE_LOCK)
 
     assert "| CDL-088 |" not in cdl
