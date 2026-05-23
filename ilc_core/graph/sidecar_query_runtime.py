@@ -17,6 +17,10 @@ from ilc_core.graph.agent_graph_projection_runtime import (
     AGENT_GRAPH_PROJECTION_RUNTIME_VERSION,
     path_to_genesis,
 )
+from ilc_core.sidecars.public_path_activation import (
+    PUBLIC_PATH_SURFACE_SIDECAR_PROJECTION,
+    validate_public_path_activation_decision,
+)
 
 
 SIDECAR_QUERY_RUNTIME_VERSION = "sidecar_query_runtime_1237.v0.1"
@@ -132,6 +136,23 @@ def export_sidecar_query_json(
     if len(payload.encode("utf-8")) > max_bytes:
         raise ValueError("sidecar_export_size_exceeded")
     return payload
+
+
+def export_sidecar_query_json_for_public_path(
+    result: Mapping[str, Any],
+    *,
+    activation_decision: Mapping[str, Any],
+    current_epoch: int,
+    max_bytes: int = DEFAULT_SIDECAR_EXPORT_MAX_BYTES,
+) -> str:
+    """Export a sidecar query only after Phase 1436 public-path authorization."""
+
+    validate_public_path_activation_decision(
+        activation_decision,
+        current_epoch=current_epoch,
+        surface=PUBLIC_PATH_SURFACE_SIDECAR_PROJECTION,
+    )
+    return export_sidecar_query_json(result, max_bytes=max_bytes)
 
 
 def export_sidecar_query_ndjson(

@@ -657,7 +657,89 @@ epoch 0-to-1 transition occurred in Phase 1436a or Phase 1436b.
 
 ---
 
-## 20. Final Closure Routing (anticipated)
+## 20. Phase 1436 Completion Addendum
+
+Phase 1436 is complete after explicit human authorization:
+
+```text
+GO Phase 1436
+```
+
+Runtime activation tokens recorded:
+
+```text
+non_loopback_sidecar_projection_activated_phase_1436
+public_fetch_serving_activated_phase_1436
+transport_principal_cdl_ratified_gate_wired_phase_1436
+gap_14_complete_gate_wired_phase_1436
+openclaw_p2p_not_activated_phase_1436
+ecu_distribution_not_activated_phase_1436
+epoch_transition_not_triggered_phase_1436
+```
+
+Implementation artifacts:
+
+```text
+ilc_core/sidecars/public_path_activation.py
+ilc_core/network/d2d/http_fetch_transport_runtime.py
+ilc_core/graph/agent_graph_projection_runtime.py
+ilc_core/graph/sidecar_query_runtime.py
+tests/test_phase_1436_public_fetch_serving_activation.py
+docs/phases/phase_1436_public_fetch_serving_activation_walkthrough.md
+```
+
+Phase 1436 activates the public-path policy gate for:
+
+```text
+surface=public_fetch
+surface=sidecar_projection
+```
+
+Both surfaces require:
+
+```text
+CDL-094 ratified
+Gap 14 closed
+non-loopback bind host
+validated authenticated TransportPrincipal context
+rate_limit_identity_source=authenticated_transport_principal
+requester_id_fallback_allowed=false
+client_ip_primary_rate_limit_key_allowed=false
+```
+
+The HTTP fetch runtime keeps default loopback behavior unchanged. Non-loopback
+public fetch now requires `public_fetch_serving_enabled=True` and a
+TransportPrincipal context before binding. In public-path mode, WANT-BLOCK rate
+limiting uses the TransportPrincipal-derived `rate_limit_key`, not client IP or
+JSON requester_id.
+
+The Phase 1435 `transport_principal_cdl_094_status.py` scaffold remains a
+governance-only historical `PUBLIC_RC_EXCLUDE` record; it is not the Phase 1436
+runtime activation source.
+
+Not activated by Phase 1436:
+
+```text
+public_p2p_activated=false
+openclaw_p2p_activated=false
+public_confidential_coordination_activated=false
+ecu_distribution_activated=false
+epoch_transition_triggered=false
+cdl_mutation=false
+graph_write=false
+wallet_write=false
+treasury_write=false
+ilc_settlement=false
+public_rc_publication=false
+release_signing=false
+```
+
+Phase 1437 OpenClaw harness-assisted P2P remains SENSITIVE and requires its own
+explicit future `GO Phase 1437`.
+
+---
+
+## 21. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
