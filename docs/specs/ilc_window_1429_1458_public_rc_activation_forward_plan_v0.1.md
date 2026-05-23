@@ -173,17 +173,22 @@ At Phase 1428 close, the following are in force:
 - Activate public fetch serving per CDL-087 ratification carry-forward: serving is now authorized behind TransportPrincipal policy.
 - Token: `non_loopback_sidecar_projection_activated_phase_1436`.
 - Public fetch public-path mode uses TransportPrincipal-derived `rate_limit_key`; requester-id fallback and client-IP identity remain forbidden.
-- No public P2P, OpenClaw P2P, wallet mutation, ECU distribution, ILC settlement, signing, public RC publication, or epoch transition.
+- Phase 1436 did not activate OpenClaw P2P at the time. That boundary is superseded for the OpenClaw harness path only by Phase 1437; native Rust public P2P remains false.
+- No native Rust public P2P, wallet mutation, ECU distribution, ILC settlement, signing, public RC publication, or epoch transition.
 
 **Phase 1437 — OpenClaw harness-assisted P2P activation (SENSITIVE)**
 
 > **Updated 2026-05-21:** Reclassified from "conditional SENSITIVE" to SENSITIVE. Activating any externally reachable P2P endpoint requires explicit human GO. Native Rust P2P substrate decision fully deferred to Window 1459+ per Q3 resolution.
+> **Completed 2026-05-23:** OpenClaw `TransportHarness` relay path activated after explicit `GO Phase 1437`. See `docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md`.
 
 - Explicit human `GO Phase 1437` required.
 - Activate OpenClaw harness-assisted P2P using existing CDL-078 relay path; Phase 1432 must have validated this path.
 - CDL coverage check: verify CDL-078 + CDL-094 cover this activation surface before proceeding.
 - Token: `openclaw_p2p_activated_phase_1437`; `native_rust_p2p_deferred_window_1459_plus_phase_1437`.
 - Native Rust P2P substrate (PersistentQuicSessionManager, CDL-078 relay routing in Rust, peer discovery) deferred to Window 1459+.
+- `PUBLIC_P2P_ACTIVATED` remains `False`; no OpenClaw gateway process/listener is started by this phase.
+
+**Track C status:** complete after Phase 1437. Stale CDL-088 historical-test cleanup is routed to separate NON-SENSITIVE task `phase_1437a_stale_cdl_088_test_cleanup` and is not part of Track C activation.
 
 ---
 
