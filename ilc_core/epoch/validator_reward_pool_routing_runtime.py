@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1349 default-off CDL-054 validator reward-pool routing runtime."""
 
 from __future__ import annotations

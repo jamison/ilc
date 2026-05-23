@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1396 / J-006 — Default-off jury assignment quote runtime.
 
 Implements a deterministic, auditable panel-quoting function using epoch-hash

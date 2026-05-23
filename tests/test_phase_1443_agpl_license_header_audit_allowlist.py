@@ -27,7 +27,7 @@ def _allowlisted_python_paths() -> list[Path]:
 def test_phase_1443_every_allowlisted_python_file_has_agpl_spdx_header() -> None:
     allowlisted = _allowlisted_python_paths()
 
-    assert len(allowlisted) == 281
+    assert len(allowlisted) == 310
     missing = []
     for rel_path in allowlisted:
         repo_text = (ROOT / rel_path).read_text(encoding="utf-8")
@@ -51,14 +51,17 @@ def test_phase_1443_no_allowlisted_file_has_unresolved_include_requires() -> Non
 
 
 def test_phase_1443_allowlist_execution_gate_remains_non_publishing() -> None:
-    manifest = build_source_allowlist_export_execution_gate(materialize=False)
+    manifest = build_source_allowlist_export_execution_gate()
 
     assert manifest["source_publication_authorized"] is False
     assert manifest["public_rc_remains_blocked"] is True
-    assert manifest["source_allowlist_export_execution_gate_verdict"] in {
+    verdict = manifest["source_allowlist_export_execution_gate_verdict"]
+    assert verdict in {
         "source_allowlist_export_execution_gate_verdict=pass",
         "source_allowlist_export_execution_gate_verdict=block",
     }
+    if verdict == "source_allowlist_export_execution_gate_verdict=block":
+        assert manifest["dirty_worktree_policy"]["dirty_included_files"]
 
 
 def test_phase_1443_completion_tokens_are_recorded() -> None:

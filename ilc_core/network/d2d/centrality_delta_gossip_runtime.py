@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-060 centrality-delta gossip runtime.
 
 This v1 runtime implements the ratified single-hop bounded-fanout lane under
