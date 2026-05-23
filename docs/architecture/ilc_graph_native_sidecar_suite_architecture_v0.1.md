@@ -35,6 +35,9 @@ public_claimability_user_action_boundary_recorded_phase_1314
 wallet_provider_agnostic_not_ledger_truth_agnostic_phase_1314
 phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next
 public_rc_remains_blocked_after_phase_1314
+ilc_native_harness_recipe_model_recorded
+harness_function_sets_sidecar_boundaries_recorded
+ilc_harness_hosts_sidecar_suite_not_protocol_substrate
 ```
 
 ## 1. Architecture Correction
@@ -284,7 +287,66 @@ The forward routing should be:
 - Phase 1333+ class: export only a clean materialized source tree whose sidecar
   components have no `PUBLIC_RC_EXCLUDE` markers or stripped-helper imports.
 
-## 6. Non-Claims
+## 6. ILC-Native Harness Recipe Model
+
+The post-OpenClaw direction is not to copy OpenClaw as a monolith. The ILC-native
+harness should be a recipe host over this graph-native sidecar suite:
+
+```text
+ilc-harness
+  recipe_manifest
+  agent_loop_orchestrator
+  provider_runtime_adapters
+  local_workspace_memory
+  operator_consent_queue
+  sidecar_recipe_modules
+```
+
+Each sidecar recipe must declare:
+
+- `recipe_id`
+- required `ilc_core/` surfaces
+- required authority gates
+- public/private/default-off posture
+- storage roots and bounded export paths
+- graph node types it may create locally
+- publication path and consent requirement
+- anti-gaming and duplicate-suppression policy if it can create maintenance work
+
+The initial recipe families should be:
+
+| Recipe family | Modules | Purpose |
+|---------------|---------|---------|
+| Capture | `LocalNodeCapture`, `ConsentGate`, hash-separation tests | Capture raw model/tool outputs as local content-addressed nodes without automatic publication |
+| Provider usage | OpenAI, Anthropic, Gemini/local fallback adapters | Read scheduling signals and local counters without turning quota state into protocol truth |
+| Maintenance | `star.map.embedding`, `contradiction.sweep`, `graph.compression`, `stability.simulation` | Execute review-lane / maintenance-lottery tasks under Werner CDL authority gates |
+| Operator UX | approval inbox, budget/status panel, pending-publication queue, identity status | Give humans control over spend, publication, and identity state |
+| Coordination function sets | task offers, task reservations, result availability, receipt/claimability availability, peer health, sealed/private coordination | Coordinate work and availability without bypassing TransportPrincipal, public P2P, verifier, or CCSS gates |
+| Distribution | recipe-pack verifier, profile conformance tests, installer/update checks | Ship plug-and-play modules without mixing harness code into protocol core |
+
+### Harness coordination function-set boundaries
+
+Harness coordination function sets are sidecar-level operator surfaces. They may
+later use local IPC, private Tailscale wiring, D2D gossip, or another authorized
+transport, but the function set is not itself a transport commitment. These
+function sets are not consensus, not economic proof, and not a replacement for
+review-lane admission.
+
+| Function set | What it may carry | What it must not carry by default |
+|--------------|-------------------|-----------------------------------|
+| `task_offer_coordination` | task_id, task_type, bounded task envelope hash, expiry epoch | private keys, provider quota, automatic credit claim |
+| `task_reservation_coordination` | operator_agent_id, task_id reservation, duplicate-suppression token | public admission claim or settlement-grade proof |
+| `task_result_availability` | result CID/local ref, reviewer fetch hint, consent status | raw private payload unless publication consent exists |
+| `receipt_claimability_availability` | verifier receipt hash, nullifier status ref, claimability proof availability | wallet secrets, transfer/spend authority, settlement activation claim |
+| `peer_health_diagnostics` | bounded diagnostics, reachability, queue capacity | provider quota as protocol truth or reputation score |
+| `sealed_private_coordination` | encrypted/padded announce-pull envelopes | plaintext membership, route history, sender identity leakage |
+
+These recipes make the future first-party ILC harness OpenClaw-style at the user
+layer while preserving the core rule: OpenClaw, NemoClaw, Codex, Claude Code, and
+`ilc-harness` are hosts or operators of the graph-native suite, not protocol
+substrates.
+
+## 7. Non-Claims
 
 This architecture document does not authorize:
 
