@@ -23,6 +23,7 @@ import json
 import socket
 import time
 import threading
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -31,6 +32,10 @@ from typing import Any
 from ilc_core.network.d2d import truth_primitive_fetch_runtime as _fetch_rt
 from ilc_core.network.d2d.persistent_fetch_rate_limiter_runtime import (
     PersistentFetchRateLimiter,
+)
+from ilc_core.sidecars.public_path_activation import (
+    authorize_public_fetch_serving,
+    is_loopback_bind_host,
 )
 
 HTTP_FETCH_TRANSPORT_RUNTIME_VERSION = "http_fetch_transport_runtime_1212.v0.2"
@@ -74,6 +79,8 @@ class FetchTransportConfig:
     rate_limit_window_id: int = 0
     persistent_limiter_path: Path | None = None
     request_timeout_seconds: float = 5.0
+    public_fetch_serving_enabled: bool = False
+    transport_principal_context: Mapping[str, Any] | None = None
     event_log: collections.deque[dict[str, Any]] = field(
         default_factory=lambda: collections.deque(maxlen=_EVENT_LOG_MAX)
     )
@@ -139,6 +146,8 @@ class HttpFetchTransportRuntime:
         self._thread: threading.Thread | None = None
         self._persistent_limiter_path = config.persistent_limiter_path
         self._persistent_rate_limiter: PersistentFetchRateLimiter | None = None
+        self._public_fetch_activation_decision: dict[str, Any] | None = None
+        self._public_fetch_rate_limit_key: str | None = None
         self._rate_limiter = self._build_rate_limiter()
         self._store: Any = None  # opened lazily on start() if store_path is set
 
@@ -179,8 +188,41 @@ class HttpFetchTransportRuntime:
         from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
         return TruthPrimitiveGraphStore(self.config.store_path)
 
+    def _configure_public_fetch_activation(self) -> None:
+        """Gate non-loopback/public fetch serving on TransportPrincipal policy."""
+
+        bind_is_loopback = is_loopback_bind_host(self.config.bind_host)
+        if bind_is_loopback and not self.config.public_fetch_serving_enabled:
+            self._public_fetch_activation_decision = None
+            self._public_fetch_rate_limit_key = None
+            self.state["public_fetch_serving_enabled"] = False
+            self.state["non_loopback_bind"] = False
+            return
+        if bind_is_loopback and self.config.public_fetch_serving_enabled:
+            raise ValueError("public_fetch_non_loopback_bind_required_phase_1436")
+        if not self.config.public_fetch_serving_enabled:
+            raise ValueError("public_fetch_serving_flag_required_for_non_loopback_phase_1436")
+        if self.config.transport_principal_context is None:
+            raise ValueError("public_fetch_transport_principal_context_required_phase_1436")
+
+        decision = authorize_public_fetch_serving(
+            bind_host=self.config.bind_host,
+            current_epoch=self.config.rate_limit_window_id,
+            transport_principal_context=self.config.transport_principal_context,
+        )
+        self._public_fetch_activation_decision = decision
+        self._public_fetch_rate_limit_key = str(decision["rate_limit_key"])
+        self.state["non_loopback_bind"] = True
+        self.state["public_fetch_activation_decision_sha256"] = decision[
+            "activation_decision_sha256"
+        ]
+        self.state["public_fetch_serving_enabled"] = True
+        self.state["rate_limit_identity_source"] = decision["rate_limit_identity_source"]
+        self.state["transport_principal_rate_limit_key"] = self._public_fetch_rate_limit_key
+
     def start(self) -> None:
         """Start the fetch HTTP server on a background thread."""
+        self._configure_public_fetch_activation()
         self._store = self._open_store()
         runtime = self
 
@@ -227,6 +269,7 @@ class HttpFetchTransportRuntime:
                     return
 
                 client_ip = self.client_address[0]
+                effective_transport_rate_key = runtime._public_fetch_rate_limit_key or client_ip
                 path = self.path
                 if path == _fetch_rt.WANT_HAVE_PATH:
                     status, resp_body = _fetch_rt.handle_want_have_request(
@@ -235,7 +278,7 @@ class HttpFetchTransportRuntime:
                 elif path == _fetch_rt.WANT_BLOCK_PATH:
                     status, resp_body = _fetch_rt.handle_want_block_request(
                         body, runtime._store, runtime._rate_limiter,
-                        rate_limit_key=client_ip,
+                        rate_limit_key=effective_transport_rate_key,
                         serve_epoch=runtime.config.rate_limit_window_id,
                     )
                 else:
@@ -269,6 +312,7 @@ class HttpFetchTransportRuntime:
             bind_host=self.config.bind_host,
             bind_port=self.state["bound_port"],
             store_configured=bool(self.config.store_path),
+            transport_principal_bound=bool(self._public_fetch_rate_limit_key),
         )
 
     def stop(self) -> None:
@@ -301,5 +345,6 @@ class HttpFetchTransportRuntime:
             body,
             self._store,
             self._rate_limiter,
+            rate_limit_key=self._public_fetch_rate_limit_key,
             serve_epoch=self.config.rate_limit_window_id,
         )

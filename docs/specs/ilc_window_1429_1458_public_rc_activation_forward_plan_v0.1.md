@@ -166,12 +166,14 @@ At Phase 1428 close, the following are in force:
 **Phase 1436 — Non-loopback sidecar/projection + public fetch serving activation (SENSITIVE)**
 
 > **Updated 2026-05-21:** Reclassified SENSITIVE. This phase opens a non-loopback public network surface; human GO required regardless of CDL status.
+> **Completed 2026-05-23:** Runtime activation gate implemented after explicit `GO Phase 1436`. See `docs/phases/phase_1436_public_fetch_serving_activation_walkthrough.md`.
 
 - Explicit human `GO Phase 1436` required.
 - Patch `ilc_core/` sidecar/projection runtimes to allow non-loopback binding, gated on `TRANSPORT_PRINCIPAL_CDL_RATIFIED`.
 - Activate public fetch serving per CDL-087 ratification carry-forward: serving is now authorized behind TransportPrincipal policy.
 - Token: `non_loopback_sidecar_projection_activated_phase_1436`.
-- No wallet mutation, no ECU settlement.
+- Public fetch public-path mode uses TransportPrincipal-derived `rate_limit_key`; requester-id fallback and client-IP identity remain forbidden.
+- No public P2P, OpenClaw P2P, wallet mutation, ECU distribution, ILC settlement, signing, public RC publication, or epoch transition.
 
 **Phase 1437 — OpenClaw harness-assisted P2P activation (SENSITIVE)**
 
