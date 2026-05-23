@@ -37,7 +37,12 @@ EXPECTED_CDL_027_ISSUANCE_EPOCH_DURATION = "1_month"
 
 P_MIN = Decimal("0.75")
 P_MAX = Decimal("1.30")
-PRICE_CLAMP_WIDTH = Decimal("0.55")
+PRICE_CLAMP_WIDTH = P_MAX - P_MIN
+if PRICE_CLAMP_WIDTH != Decimal("0.55"):
+    raise RuntimeError("price_clamp_width_policy_mismatch_phase_1440")
+FINDING_3_PRICE_CLAMP_WIDTH_DERIVED_RESOLVED_TOKEN = (
+    "finding_3_price_clamp_width_derived_resolved_phase_1440"
+)
 MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
 INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
 
@@ -215,6 +220,7 @@ __all__ = [
     "EXPECTED_CDL_027_ISSUANCE_EPOCH_DURATION",
     "EXPECTED_CDL_027_RUNTIME_TOKEN",
     "EcuPriceClampQuote",
+    "FINDING_3_PRICE_CLAMP_WIDTH_DERIVED_RESOLVED_TOKEN",
     "LIVE_PRICE_ADJUSTMENT_NOT_ACTIVATED_TOKEN",
     "NO_DIRECT_PRICE_CLAMP_STUB_FOUND_TOKEN",
     "P_MAX",

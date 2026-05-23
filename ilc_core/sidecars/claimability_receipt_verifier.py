@@ -2,7 +2,9 @@
 
 The verifier is intentionally an in-process/library boundary. It provides no
 HTTP route, socket listener, bind helper, peer discovery, wallet action, ECU
-mint, or ILC settlement authority.
+mint, or ILC settlement authority. Canonical integer payload values are bounded
+to [0, _MAX_PROTOCOL_INT]; negative integers are invalid under the Phase 1305
+local verifier contract.
 """
 
 from __future__ import annotations
@@ -105,6 +107,9 @@ _MAX_TEXT_LENGTH = 4096
 _MAX_CANONICAL_PAYLOAD_TEXT_BYTES = 1_000_000
 _MAX_CANONICAL_JSON_BYTES = 10_000_000
 MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES = _MAX_CANONICAL_JSON_BYTES
+FINDING_13_NEGATIVE_INT_CONSTRAINT_DOCUMENTED_RESOLVED_TOKEN = (
+    "finding_13_negative_int_constraint_documented_resolved_phase_1440"
+)
 _MAX_PROTOCOL_INT = 1_000_000_000_000
 _MAX_DECIMAL_DIGITS = 128
 _MAX_DECIMAL_SCALE = 128
@@ -1316,6 +1321,13 @@ def _reject_unsafe_json_tree(
     _counter: list[int] | None = None,
     _text_counter: list[int] | None = None,
 ) -> None:
+    """Reject non-canonical JSON trees before canonical hashing.
+
+    Integer payload values must be non-negative and no greater than
+    ``_MAX_PROTOCOL_INT``. Negative integers are rejected as invalid rather than
+    interpreted as signed protocol values.
+    """
+
     if _depth > _MAX_CANONICAL_PAYLOAD_DEPTH:
         raise ClaimabilityReceiptVerifierError(
             "claimability_payload_too_deep_phase_1305",
@@ -1462,6 +1474,7 @@ __all__ = [
     "CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN",
     "CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN",
     "DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN",
+    "FINDING_13_NEGATIVE_INT_CONSTRAINT_DOCUMENTED_RESOLVED_TOKEN",
     "OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION",
     "MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES",
     "PHASE_1306_NEXT_TOKEN",
