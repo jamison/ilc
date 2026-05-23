@@ -72,12 +72,12 @@ def test_historical_hardening_cdl_093_absent_at_phase_1404() -> None:
 def test_current_cdl_register_opens_cdl_093_after_phase_1406_c2() -> None:
     row = _cdl_093_row(_read(CDL_REGISTER))
 
-    assert "| open |" in row
+    assert "| ratified |" in row
     assert "opened_phase: 1406" in row
     assert "opening_token: cdl_093_maintenance_lottery_pool_opened_phase_1406" in row
-    assert "historical_non_ratification_token: cdl_093_not_ratified_phase_1406" in row
-    assert "ratification_status: not_ratified_pending_phase_1408" in row
+    assert "ratification_token: cdl_093_ratified_phase_1408" in row
     assert "distribution_status: not_activated" in row
+    assert "runtime_activation_status: not_authorized" in row
 
 
 def test_opening_preserves_non_activation_boundaries() -> None:
@@ -95,5 +95,6 @@ def test_j008_maintenance_lottery_gate_not_flipped_by_opening() -> None:
     text = _read(GATE_SOURCE)
 
     assert 'condition_id="MAINTENANCE_LOTTERY_CDL_RATIFIED"' in text
-    assert "status=GateConditionStatus.NOT_MET" in text
-    assert "maintenance_lottery_cdl_not_opened_phase_j008" in text
+    assert "status=GateConditionStatus.MET" in text
+    assert "cdl_093_ratified_phase_1408" in text
+    assert "maintenance_lottery_cdl_ratified_condition_met_verified_phase_1425" in text

@@ -102,7 +102,11 @@ def _write_phase_581_root(tmp_path: Path) -> tuple[Path, Path, Path]:
         shutil.rmtree(economic_state_root)
     claims_path = root / "panel" / "ecu_claims.json"
     claims_payload = json.loads(claims_path.read_text(encoding="utf-8"))
-    outcome_summary = {"count": len(claims_payload.get("claims", [])), "total_stake": 4.0, "total_reward": 4.0}
+    outcome_summary = {
+        "count": len(claims_payload.get("claims", [])),
+        "total_stake": "4.0",
+        "total_reward": "4.0",
+    }
     claims_payload.setdefault("outcome_summary", outcome_summary)
     claims_path.write_text(json.dumps(claims_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     panel_path = root / "panel" / "panel_result.json"
