@@ -38,14 +38,14 @@ def test_phase_1438_activation_tokens_are_recorded() -> None:
     assert "epoch_transition_not_triggered_phase_1438" in activation.PHASE_1438_ACTIVATION_TOKENS
 
 
-def test_phase_1438_verifier_manifest_authority_true_serving_false() -> None:
+def test_phase_1438_verifier_manifest_authority_survives_phase_1439_serving_activation() -> None:
     manifest = claimability_receipt_verifier_manifest()
 
     assert manifest["public_claimability_activated"] is True
-    assert manifest["non_loopback_claimability_api_enabled"] is False
-    assert manifest["public_api_enabled"] is False
-    assert manifest["receipt_verifier_public_serving_enabled"] is False
-    assert manifest["local_only"] is True
+    assert manifest["non_loopback_claimability_api_enabled"] is True
+    assert manifest["public_api_enabled"] is True
+    assert manifest["receipt_verifier_public_serving_enabled"] is True
+    assert manifest["local_only"] is False
 
 
 def test_phase_1438_verifier_tokens_replace_not_authorized_boundary() -> None:

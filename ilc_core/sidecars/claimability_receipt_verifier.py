@@ -21,6 +21,14 @@ from ilc_core.sidecars.claim_nullifier_registry_v1 import (
     ClaimNullifierRegistry,
     ClaimNullifierRegistryError,
 )
+from ilc_core.sidecars.public_verifier_api_activation import (
+    CLAIMABILITY_API_SERVING_PATH_WIRED_PHASE_1439_TOKEN,
+    ECU_MINT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    ILC_SETTLEMENT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+    PUBLIC_RC_NOT_ACTIVATED_PHASE_1439_TOKEN,
+    PUBLIC_VERIFIER_API_ACTIVATED_PHASE_1439_TOKEN,
+    WALLET_OPS_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+)
 
 
 OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION = (
@@ -96,6 +104,7 @@ _MAX_CANONICAL_PAYLOAD_NODES = 100_000
 _MAX_TEXT_LENGTH = 4096
 _MAX_CANONICAL_PAYLOAD_TEXT_BYTES = 1_000_000
 _MAX_CANONICAL_JSON_BYTES = 10_000_000
+MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES = _MAX_CANONICAL_JSON_BYTES
 _MAX_PROTOCOL_INT = 1_000_000_000_000
 _MAX_DECIMAL_DIGITS = 128
 _MAX_DECIMAL_SCALE = 128
@@ -266,9 +275,9 @@ class ClaimabilityReceiptVerifierError(ValueError):
 def claimability_receipt_verifier_tokens() -> list[str]:
     return [
         OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
-        CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN,
-        RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
         PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN,
+        PUBLIC_VERIFIER_API_ACTIVATED_PHASE_1439_TOKEN,
+        CLAIMABILITY_API_SERVING_PATH_WIRED_PHASE_1439_TOKEN,
         PHASE_1306_NEXT_TOKEN,
         PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
         CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN,
@@ -278,6 +287,10 @@ def claimability_receipt_verifier_tokens() -> list[str]:
         CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN,
         DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN,
         CLAIMABILITY_VERIFIER_PUBLIC_MODE_READY_TOKEN,
+        ECU_MINT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+        ILC_SETTLEMENT_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+        WALLET_OPS_NOT_AUTHORIZED_PHASE_1439_TOKEN,
+        PUBLIC_RC_NOT_ACTIVATED_PHASE_1439_TOKEN,
     ]
 
 
@@ -289,15 +302,19 @@ def claimability_receipt_verifier_manifest() -> dict[str, Any]:
             "in_process_import",
             "local_cli_subprocess",
             "private_loopback_or_private_overlay_when_authorized_by_harness",
+            "public_transport_principal_http",
         ],
         "contract_version": OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
-        "local_only": True,
-        "non_loopback_claimability_api_enabled": False,
-        "public_api_enabled": False,
+        "ecu_mint_authorized": False,
+        "ilc_settlement_authorized": False,
+        "local_only": False,
+        "non_loopback_claimability_api_enabled": True,
+        "public_api_enabled": True,
         "public_claimability_activated": True,
-        "receipt_verifier_public_serving_enabled": False,
+        "receipt_verifier_public_serving_enabled": True,
         "source_contract_version": PHASE_1291_CONTRACT_VERSION,
         "tokens": claimability_receipt_verifier_tokens(),
+        "wallet_ops_authorized": False,
     }
     _reject_unsafe_json_tree(payload)
     return payload
@@ -1446,6 +1463,7 @@ __all__ = [
     "CDL_088_PUBLIC_CLAIMABILITY_AUTHORITY_TOKEN",
     "DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN",
     "OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION",
+    "MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES",
     "PHASE_1306_NEXT_TOKEN",
     "PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN",
     "PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN",
