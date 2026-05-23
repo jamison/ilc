@@ -67,7 +67,8 @@ This window may not open until all of the following are confirmed:
 | E — Genesis authority sunset spec | ~1471 | Standalone spec formalizing court/house/executive model; closes CDL-004 SUBSTANTIVE gap |
 | F — ADR-0009 protocol-native bundle | 1472–1477 | Layer 0-3 bundle schemas, deterministic generator, independent verifier |
 | G — ADR-0029 Merkle-Laplacian hardening | 1478–1482 | canonical vectors, PoSK transcript controls, remaining SIM scoping, IP/publication disposition |
-| Z — Window coherence + closure | 1483–1485 | Window closure gate |
+| H — ILC Skill / Harness Intelligence Layer | ~1483–1487 | ILC skill architecture spec, ProviderUsageAdapter, LocalNodeCapture + ConsentGate, IdleCapacityScheduler, MaintenanceTaskExecutor + anti-gaming; full crediting conditional on Track C |
+| Z — Window coherence + closure | ~1488–1489 | Window closure gate |
 
 ---
 
@@ -345,19 +346,151 @@ internal-only and pre-CDL.
 
 ---
 
+### Track H — ILC Skill / Harness Intelligence Layer (Phases ~1483-1487)
+
+**Context:** Established during Window 1429-1458 architecture discussions (2026-05-23). The ILC skill interprets LLM turn outputs as ILC graph node submissions via a harness-side interpreter layer — not a protocol fork. The skill consumes stable `ilc_core/` surfaces (CLI commands, structured markers, content-addressed node framing) and adds operator-side intelligence on top.
+
+This track provides the implementation substrate for the idle-capacity contribution mechanism: spare LLM API quota → maintenance lottery tasks → Werner/ECU credit path. Full crediting is conditional on Track C (Werner flow-governor CDL). Phases ~1483–1485 (spec, ProviderUsageAdapter, LocalNodeCapture) can proceed independently; Phases ~1486–1487 (IdleCapacityScheduler, MaintenanceTaskExecutor) depend on Track C ratification for Werner crediting but can be implemented and tested locally before it.
+
+**Design invariants (from boundary doc §10 addendum and Codex review 2026-05-23):**
+- TOON compression applies to outbound context packing only — captured model output preserves raw response bytes; the node envelope is added separately and is not part of the content hash
+- The skill consumes stable `ilc_core/` surfaces; it does not redefine admission semantics or become the sole graph-writing path
+- Provider quota headers are operational scheduling signals only — not protocol truth, economic proof, or inputs to Werner credit calculation
+- Werner crediting is disabled until the Werner flow-governor CDL (Track C) explicitly authorizes the on-ramp; local scheduling and node capture may proceed before Track C
+
+**Non-negotiable testing requirement for Phase ~1485 (LocalNodeCapture):**
+
+Every test suite for LocalNodeCapture must include an explicit hash-separation test:
+
+1. Execute a turn with a TOON-compressed outbound prompt.
+2. Capture the raw model response bytes.
+3. Assert: `content_hash == SHA-256(json.dumps(raw_response_payload, sort_keys=True))`.
+4. Assert: `content_hash != SHA-256(json.dumps(toon_packed_prompt, sort_keys=True))`.
+5. Assert: the node envelope fields (`epoch_id`, `agent_id`, `capture_timestamp_epoch_sequence`) are NOT included in the content hash input.
+
+This prevents the skill from accidentally canonicalizing or compressing the actual claim content before content-addressing. The test must fail if TOON packing touches the captured output in any way.
+
+**Anti-gaming requirements (must be scoped before MaintenanceTaskExecutor activates):**
+- Diversity controls: per-operator slot cap per epoch prevents one operator from supplying all maintenance completions
+- Duplicate suppression: task_id uniqueness enforced; completed task_ids recorded in LMDB
+- Result-quality gate: Werner credit amount weighted by review-lane acceptance score, not raw submission count
+- Attribution: task completion records bind `provider_id`, `operator_agent_id`, `task_id`, `epoch_id`
+
+**Phase ~1483 — ILC skill architecture spec (NON-SENSITIVE)**
+
+- Produce spec: `docs/specs/ilc_skill_harness_intelligence_layer_spec_v0.1.md`
+- Covers: TOON outbound compression, raw response capture, content-addressed node framing, LMDB local store, consent-gated publication path, bootstrap via SOUL.md/AGENTS.md, `runAttempt` hook placement, `registerAgentToolResultMiddleware` capture point
+- Constraint: raw captured output is the hashable content; node envelope (epoch_id, agent_id, capture_timestamp_epoch_sequence) is added separately
+- Token: `ilc_skill_architecture_spec_committed_phase_1483`
+
+**Phase ~1484 — ProviderUsageAdapter implementation (NON-SENSITIVE)**
+
+- Implement `ProviderUsageAdapter` in harness adapter package (not `ilc_core/`):
+  - Anthropic: reads `anthropic-ratelimit-tokens-remaining` + `anthropic-ratelimit-tokens-reset` from every API response header
+  - OpenAI: reads `x-ratelimit-remaining-tokens` + `x-ratelimit-reset-tokens`
+  - Gemini: reads `usage_metadata` from response body (no confirmed remaining-tokens header contract; falls back to local counter + configurable budget)
+  - Local fallback: operator-configured monthly budget with local counter for providers without header-level remaining-quota exposure
+- Constraint: provider quota signals are operational scheduling data only; must not feed into any Werner credit calculation, Werner diagnostic quote, or protocol proof
+- Token: `provider_usage_adapter_implemented_phase_1484`
+
+**Phase ~1485 — LocalNodeCapture + ConsentGate (NON-SENSITIVE)**
+
+- Implement `LocalNodeCapture` via `registerAgentToolResultMiddleware`:
+  - Intercepts tool results; wraps as content-addressed ILC nodes (`SHA-256(json.dumps(payload, sort_keys=True))`)
+  - Writes to LMDB node store using stable `ilc_core/` graph surfaces — does not redefine node admission semantics
+  - Raw response bytes are the hashable content; node envelope (epoch_id, agent_id) appended separately
+- Implement `ConsentGate`:
+  - Local-first: all captures go to LMDB immediately; no publication default
+  - Human opt-in required for publication via `/v1/protocol/claim`
+  - `AUTO_PUBLISH_REQUIRES_EXPLICIT_CONSENT = True` — no automatic public claim without policy flag set
+- Token: `local_node_capture_consent_gate_implemented_phase_1485`
+
+**Phase ~1486 — IdleCapacityScheduler (NON-SENSITIVE)**
+
+- Implement `IdleCapacityScheduler`:
+  - Reads `ProviderUsageAdapter` quota state after each API response
+  - Configurable threshold: `remaining_tokens_threshold` (default: 50,000) and `idle_window_cron` (default: 22:00–06:00 local)
+  - Session idle detection: reads JSONL session transcript last-active timestamp
+  - If idle + above threshold: surfaces maintenance lottery task offer to human operator (does not auto-execute)
+  - Human opt-in required before first task execution per session
+- Crediting path: records completion locally with `werner_credit_pending_track_c_cdl` flag if Track C not yet ratified; no credit is minted until Track C CDL ratified
+- Token: `idle_capacity_scheduler_implemented_phase_1486`
+
+**Phase ~1487 — MaintenanceTaskExecutor + anti-gaming controls (NON-SENSITIVE)**
+
+- Implement `MaintenanceTaskExecutor`:
+  - Task types: `star.map.embedding`, `contradiction.sweep`, `graph.compression`, `stability.simulation` (review-lane / maintenance-lottery tasks only; no protocol mutations)
+  - Each task execution passes through `runAttempt` with TOON-formatted task envelope
+  - Results submitted via `LocalNodeCapture` → `ConsentGate` → Werner credit recording path
+- Implement anti-gaming controls per the requirements above
+- Constraint: `review_lane_only=True` flag from Phase 1442 `WernerDiagnosticQuote` governs all maintenance task completions; `settlement_grade=False` until Track C CDL ratified
+- Token: `maintenance_task_executor_anti_gaming_implemented_phase_1487`
+
+---
+
+### Post-1489 Successor Scope — ILC-Native Harness MVP (Candidate Window 1490+)
+
+**Status:** Planning scope only. This section does not add executable phases to
+Window 1459+ and does not authorize work after Phase ~1489. It records the
+expected next window shape if Track H closes cleanly.
+
+**Goal:** Build a first-party ILC-native harness that is OpenClaw-style in user
+experience but ILC-native in architecture: a plug-and-play sidecar recipe host,
+not a protocol fork and not a monolithic app inside `ilc_core/`.
+
+**Definition:** An ILC-native harness is a local operator runtime that composes
+sidecar recipes over stable `ilc_core/` surfaces:
+
+```text
+human/operator policy
+  -> harness recipe manifest
+  -> agent loop orchestrator
+  -> provider/tool adapters
+  -> sidecar recipe modules
+  -> local graph/LMDB capture
+  -> consent-gated publication / verification
+```
+
+**Candidate Window 1490+ areas:**
+
+| Area | Candidate scope | Sidecar recipe modules | Non-claim |
+|------|-----------------|------------------------|-----------|
+| I — Recipe manifest + loader | Define signed/local `ilc_harness_recipe_manifest` format, dependency isolation, enable/disable policy, and public/private recipe flags | recipe registry, loader, capability policy | Does not make any recipe protocol truth |
+| J — Agent loop runtime | Implement resumable `runAttempt`, task queue, retry/resume, transcript capture, and tool-routing lifecycle | agent loop orchestrator, attempt journal, transcript store | Does not replace review lane or node admission |
+| K — Provider runtime adapters | Normalize model calls, streaming, tool-call responses, cost accounting, timeout/backoff, and provider-specific usage metadata | OpenAI adapter, Anthropic adapter, Gemini/local fallback adapter | Provider usage is scheduling data only |
+| L — Operator UX shell | Provide CLI/TUI/local web panel for budgets, pending captures, consent queue, task history, identity status, earned/pending credit | approval inbox, budget panel, identity panel, publication queue | No automatic publication without consent policy |
+| M — Maintenance workbench | Turn Track H maintenance tasks into operator-visible queues with quality gates and replayable evidence | star-map embedding recipe, contradiction sweep recipe, graph compression recipe, stability simulation recipe | Credit remains gated by Werner CDL authority |
+| N — Goal/function-set coordination recipes | Package harness coordination functions as sidecar recipes with explicit privacy and public-path gates | task offers, task reservations, result availability, receipt/claimability availability, peer health, sealed/private coordination | Does not activate native public Rust P2P or bypass TransportPrincipal |
+| O — Distribution + update path | Package `ilc-harness` for pipx/Homebrew, signed recipe packs, local upgrade checks, and compatibility tests | installer recipe, recipe-pack verifier, conformance pack | No public package/release claim without release authority |
+
+**Goal/function-set taxonomy (must be explicit in future prompts):**
+
+| Function set | Purpose | Default visibility | Required gate |
+|--------------|---------|--------------------|---------------|
+| `task_offer_coordination` | Present available maintenance tasks to opted-in local harnesses | local/private or Tailscale-only | public path requires TransportPrincipal/public P2P authority |
+| `task_reservation_coordination` | Reserve a maintenance task and suppress duplicate execution | local/private | public claim requires anti-gaming + review-lane policy |
+| `task_result_availability` | Record that a local result exists and can be reviewed/fetched | local/private by default | publication requires ConsentGate |
+| `receipt_claimability_availability` | Record verifier receipts, nullifier state, or claimability proof availability | local/private until public verifier authority | public serving requires activated verifier API |
+| `peer_health_diagnostics` | Share bounded diagnostics, capacity, and reachability status | diagnostic only | no economic proof; no provider quota in protocol state |
+| `sealed_private_coordination` | Private coordination payload announce/pull through CCSS recipes | private/gated | CCSS authority and privacy tests |
+
+**Required carry-forward token:** `ilc_native_harness_mvp_successor_scope_recorded_window_1459_forward_plan`.
+
+---
+
 ### Track Z — Window Coherence + Closure
 
-**Phase ~1483 — Window coherence, capsule update, ADR housekeeping (NON-SENSITIVE)**
+**Phase ~1488 — Window coherence, capsule update, ADR housekeeping (NON-SENSITIVE)**
 
 - Update context capsule.
 - Review open ADR obligations: ADR-0008 (node usefulness), ADR-0019 (graph-native governance), ADR-0024 (agent skills Tier 3), ADR-0025 (dynamic peer discovery — if Phase 1464 closed this, record closure), ADR-0028 (settlement substrate graduation), ADR-0029 (hypergraph spectral hash epoch commitment).
 - Record CDL-091 inviter-chaining candidate deliberation status (CDL opening requires SIM evidence; record gate conditions still outstanding if applicable).
-- Token: `window_1459_plus_coherence_complete_phase_1483`.
+- Token: `window_1459_plus_coherence_complete_phase_1488`.
 
-**Phase ~1484 — Window closure gate (SENSITIVE)**
+**Phase ~1489 — Window closure gate (SENSITIVE)**
 
 - Closure verdict against window objective.
-- Required GO token: `GO Phase 1484`.
+- Required GO token: `GO Phase 1489`.
 - Token: `window_1459_plus_closed`.
 
 ---
@@ -390,10 +523,15 @@ internal-only and pre-CDL.
 | G3 | ~1480 | Cross-implementation and cospectral SIM scoping | Research/SIM scoping | NON-SENSITIVE |
 | G4 | ~1481 | Merkle-Laplacian IP/counsel/publication disposition | Legal/IP/publication | **SENSITIVE** |
 | G5 | ~1482 | ADR-0029 Merkle-Laplacian CDL readiness verdict/opening decision | Constitutional | **conditional SENSITIVE** |
-| Z1 | ~1483 | Window coherence + capsule + ADR housekeeping | Synthesis | NON-SENSITIVE |
-| Z2 | ~1484 | Window closure gate | Gate | **SENSITIVE** |
+| H1 | ~1483 | ILC skill architecture spec — TOON, node capture, LMDB, consent gate | Spec | NON-SENSITIVE |
+| H2 | ~1484 | ProviderUsageAdapter — Anthropic/OpenAI/Gemini/local fallback | Runtime (harness) | NON-SENSITIVE |
+| H3 | ~1485 | LocalNodeCapture + ConsentGate — tool result middleware, LMDB write, opt-in publication | Runtime (harness) | NON-SENSITIVE |
+| H4 | ~1486 | IdleCapacityScheduler — quota threshold, idle window, human opt-in | Runtime (harness) | NON-SENSITIVE |
+| H5 | ~1487 | MaintenanceTaskExecutor + anti-gaming controls — diversity cap, dedup, quality gate, attribution | Runtime (harness) | NON-SENSITIVE |
+| Z1 | ~1488 | Window coherence + capsule + ADR housekeeping | Synthesis | NON-SENSITIVE |
+| Z2 | ~1489 | Window closure gate | Gate | **SENSITIVE** |
 
-Total: ~26 planned phases plus contingency slots. Exact phase number assignments depend on Window 1429-1458 closing phase number.
+Total: ~31 planned phases plus contingency slots. Exact phase number assignments depend on Window 1429-1458 closing phase number.
 
 ---
 
@@ -438,9 +576,16 @@ Window 1429-1458 closure (public RC active, epoch 1 triggered)
   |              └── 1481 (IP/publication disposition)  [SENSITIVE]
   |                   └── 1482 (CDL readiness/opening decision)  [SENSITIVE if opening proceeds]
   |
+  ├── H track (ILC Skill / Harness Intelligence Layer, can begin after entry conditions met):
+  |    ~1483 (ILC skill architecture spec)
+  |    └── ~1484 (ProviderUsageAdapter)
+  |         └── ~1485 (LocalNodeCapture + ConsentGate)
+  |              └── ~1486 (IdleCapacityScheduler)  [Werner crediting requires Track C]
+  |                   └── ~1487 (MaintenanceTaskExecutor + anti-gaming)  [Werner crediting requires Track C]
+  |
   └── Z track:
-       ~1483 (coherence)
-       └── ~1484 (closure gate)  [SENSITIVE]
+       ~1488 (coherence)
+       └── ~1489 (closure gate)  [SENSITIVE]
 ```
 
 ---
@@ -461,6 +606,7 @@ Window 1429-1458 closure (public RC active, epoch 1 triggered)
 | ADR-0028 settlement substrate graduation | Requires live network data | Post-public-RC data |
 | Delegated constitutional authority CDL | Gated on J-008 PASS + public RC + 10 independent operators | Window 1480+ |
 | Phase B/C governance transition triggers (exact numbers) | Require SIM evidence against Boot/Transition/Mature phase table | Post-E track |
+| ILC-native harness MVP | Requires Track H closure; should be a successor window, not a late insertion into Window 1459+ | Candidate Window 1490+ sequence lock |
 
 ---
 
@@ -475,6 +621,9 @@ This forward plan does not authorize:
 - Merkle-Laplacian `S(t)` epoch-commitment activation without a SENSITIVE CDL
 - PoSK admission-gate activation without a SENSITIVE CDL and ceremony-control spec
 - Public release of Merkle-Laplacian paper/SIM artifacts or removal of `PUBLIC_RC_EXCLUDE` without IP/counsel/publication authorization
+- Any Window 1490+ ILC-native harness MVP phase execution before a successor sequence lock and explicit human GO
+- Automatic public publication of captured model/tool outputs without ConsentGate policy
+- Public task coordination, public receipt coordination, or native public Rust P2P activation through Track H alone
 
 ---
 
