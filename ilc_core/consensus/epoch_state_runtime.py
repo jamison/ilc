@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase-444 epoch-state and quorum-record runtime surfaces."""
 
 from __future__ import annotations

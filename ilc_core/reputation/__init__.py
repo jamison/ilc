@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-V1 temporal-decay runtime package."""
 
 from .temporal_decay_runtime import (

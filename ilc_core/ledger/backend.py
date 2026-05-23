@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 ILC Ledger Backend: in-memory settlement implementation.
 

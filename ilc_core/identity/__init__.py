@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Identity runtime package."""
 
 from .sybil_resistance_runtime import (

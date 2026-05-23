@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-042 / CDL-069 agent identity namespace runtime.
 
 CDL-042 (ratified Phase 407): key-derived agent_id via SHA-256.

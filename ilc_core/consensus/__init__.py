@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-V3/V7 consensus runtime package."""
 
 from .circuit_breaker_interface import (

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Local OpenClaw/NemoClaw-style skill preview adapter.
 
 This module is a local/private harness seam. It proves that a harness can call

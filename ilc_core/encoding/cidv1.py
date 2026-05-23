@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 CIDv1 generation and parsing for NodeID.
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 946 — H-012 EpochAttributionBatch.settle() runtime.
 
 Implements CDL-081 §§4.1–4.6 attribution settlement logic. Delegates from

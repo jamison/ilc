@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Signing and verification for registry channel files (v0.3+).
 

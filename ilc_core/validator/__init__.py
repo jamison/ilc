@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 from .staking_liveness_runtime import (
     CDL_055_DEPENDENCY,
     EQUIVOCATION_FULL_SLASH,

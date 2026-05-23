@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Local CDL-087 serving-peer evidence helpers.
 
 Phase 1259 records production-candidate evidence for CDL-087 Conditions 2 and

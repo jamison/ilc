@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 NDJSON Bundle Transport for COSE-Signed ILC Artifacts.
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # H-006b Part 2 + Part 4: local lambda2 and Fiedler centrality delta analytics.
 #
 # Gate history:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 ILC Encoding module - Deterministic DAG-CBOR and CIDv1 NodeID.
 

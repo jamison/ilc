@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-V1 temporal decay runtime.
 
 The runtime enforces issuance-epoch-scoped decay helpers using deterministic

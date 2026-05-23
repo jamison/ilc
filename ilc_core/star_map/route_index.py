@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Star Map N-gram Route Index v1 tooling.
 

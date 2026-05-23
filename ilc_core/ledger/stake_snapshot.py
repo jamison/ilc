@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Stake snapshot model for calculating reward distribution shares.
 """

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Validator for ILC Receipt Schema v0.1.
 Enforces schema validity and payment/outcome structure.
