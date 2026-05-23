@@ -903,7 +903,59 @@ cdl_mutation=false
 
 ---
 
-## 24. Final Closure Routing (anticipated)
+## 24. Phase 1444 Completion Addendum
+
+Phase 1444 is complete after explicit human authorization:
+
+```text
+GO Phase 1444
+```
+
+Completion tokens:
+
+```text
+cla_text_finalized_phase_1444
+cla_governance_policy_committed_phase_1444
+cla_not_external_legal_opinion_phase_1444
+gap_7_cla_milestone_complete_phase_1444
+gap_7_provisional_patent_deferred_external_action_phase_1444
+gap_7_trademark_deferred_external_action_phase_1444
+gap_7_not_fully_closed_external_actions_pending_phase_1444
+```
+
+Artifacts:
+
+```text
+docs/specs/ilc_cla_text_v1.md
+ilc_core/rc/cla_governance_status.py
+tests/test_phase_1444_cla_text_finalization.py
+docs/phases/phase_1444_cla_text_finalization_walkthrough.md
+```
+
+Phase 1444 finalizes the CLA text milestone only. The CLA is
+Genesis-authority internal governance policy, not external legal opinion and
+not external counsel approval. Gap 7 is not fully closed: the US provisional
+patent application and trademark registration remain deferred external-action
+items for Phase 1445 carry-forward.
+
+Preserved non-activation boundaries:
+
+```text
+public_rc_published=false
+public_repository_publication_authorized=false
+public_package_publication_authorized=false
+release_artifact_production_authorized=false
+release_signing=false
+runtime_activation=false
+cdl_mutation=false
+ecu_operations=false
+ilc_operations=false
+epoch_transition=false
+```
+
+---
+
+## 25. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
