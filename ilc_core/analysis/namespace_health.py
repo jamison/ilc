@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 from dataclasses import dataclass, asdict
 from typing import List, Dict, Iterable
 from os import PathLike

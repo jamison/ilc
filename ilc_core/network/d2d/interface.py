@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase-380 D2d abstract interface runtime surface."""
 
 from __future__ import annotations

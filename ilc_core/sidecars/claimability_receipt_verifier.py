@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1305 local-only claimability receipt verifier sidecar substrate.
 
 The verifier is intentionally an in-process/library boundary. It provides no

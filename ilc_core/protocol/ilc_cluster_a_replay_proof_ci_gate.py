@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 import logging
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 from pathlib import Path

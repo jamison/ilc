@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 888 — CDL-075 truth primitive read-path query CLI helper.
 
 Wires TruthPrimitiveGraphStore read operations into the ILC CLI `query`

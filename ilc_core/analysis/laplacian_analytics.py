@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # ADR-0029: Hypergraph Laplacian analytics for ILC partition-risk monitoring.
 #
 # Implements the full Laplacian analytics pipeline from SIM-SPECTRAL-01 (H-005).

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase-363 runtime for CDL-037 executable descriptor handling."""
 
 from __future__ import annotations

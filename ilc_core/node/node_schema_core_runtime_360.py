@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase-360 runtime for CDL-034 node schema core envelope handling."""
 
 from __future__ import annotations

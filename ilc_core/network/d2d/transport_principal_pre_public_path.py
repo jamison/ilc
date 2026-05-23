@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1267 TransportPrincipal pre-public runtime identity helpers.
 
 This module does not activate public P2P or non-loopback sidecar/projection

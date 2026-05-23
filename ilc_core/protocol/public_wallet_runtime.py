@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 653 bounded public wallet runtime integration."""
 
 from __future__ import annotations

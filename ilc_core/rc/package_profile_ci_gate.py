@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Deterministic package-profile CI gate for Gap 14 work.
 
 The gate measures selected OpenClaw/NemoClaw package profiles and reuses the

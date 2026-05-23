@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Validator trust-tier runtime.
 
 The consensus-dispute tiebreaker never sorts candidates internally. Callers must provide

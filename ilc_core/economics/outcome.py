@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Outcome logging primitives for the ILC economics sandbox.
 

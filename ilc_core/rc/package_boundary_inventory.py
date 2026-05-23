@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Package import-boundary inventory for public-RC profile work.
 
 This module is an inventory tool, not a package splitter. It gives Window

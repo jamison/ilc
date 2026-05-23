@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # H-015: Greedy spectral descent routing with random-walk fallback.
 #
 # Gate: H-014 positive (SIM-ROUTING-01 verdict=pass).

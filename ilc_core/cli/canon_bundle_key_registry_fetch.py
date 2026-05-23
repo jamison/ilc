@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 CLI for fetching and verifying canon bundle key registry bundles.
 

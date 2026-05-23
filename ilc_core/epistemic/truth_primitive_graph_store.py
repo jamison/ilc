@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-075 truth primitive graph persistence logic.
 
 Defines the canonical node record schema, CIDv1 derivation rule, and

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-V7 Popperian gate runtime.
 
 Deterministic admissibility helpers for agent-decomposition outputs under the

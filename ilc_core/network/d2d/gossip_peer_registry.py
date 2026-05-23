@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 562 static gossip peer registry.
 
 This module provides local static peer configuration only. Dynamic discovery is

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Epoch snapshot runtime package."""
 
 from .allocation_distributor_runtime import (

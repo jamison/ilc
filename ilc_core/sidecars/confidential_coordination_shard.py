@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1324 CCSS-001 private/gated shard contract.
 
 This module records a local-only contract for encrypted coordination-node

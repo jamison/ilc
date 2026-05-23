@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 from dataclasses import dataclass, field as dc_field
 from decimal import Decimal
 from enum import Enum

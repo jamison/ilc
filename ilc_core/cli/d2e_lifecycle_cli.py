@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 421 D2e lifecycle CLI helpers."""
 
 from __future__ import annotations

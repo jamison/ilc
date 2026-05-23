@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase-323 wire transport generator/verifier runtime."""
 
 from __future__ import annotations

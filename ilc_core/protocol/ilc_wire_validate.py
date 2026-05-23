@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Validator for ILC Protocol Wire Format v0.1.
 Validates events against the canonical JSON schema.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, List, Optional, Literal
 from pydantic import BaseModel, Field, ConfigDict, field_serializer, field_validator
