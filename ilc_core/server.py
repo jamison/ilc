@@ -1,4 +1,6 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Request
+import hashlib
+import json
 import logging
 from contextlib import asynccontextmanager
 from decimal import Decimal, InvalidOperation
@@ -29,6 +31,16 @@ from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntime
 from ilc_core.storage.lmdb_public_runtime import LmdbAdmissionStore, LmdbWalletStore
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
+from ilc_core.sidecars.claim_nullifier_registry_v1 import ClaimNullifierRegistry
+from ilc_core.sidecars.claimability_receipt_verifier import (
+    ACCEPTED_LOCAL_ONLY_DECISION,
+    MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES,
+    verify_claimability_receipt_presentation,
+)
+from ilc_core.sidecars.public_verifier_api_activation import (
+    ACCEPTED_PUBLIC_VERIFIER_API_DECISION,
+    PHASE_1439_PUBLIC_VERIFIER_API_TOKENS,
+)
 from ilc_core.work.task_queue import TaskDescriptor
 
 configure_logging()
@@ -52,6 +64,7 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
         wallet_store=public_wallet_store,
         ecu_runtime=ecu_active_layer_runtime,
     )
+    claimability_registry = ClaimNullifierRegistry()
     public_wallet_runtime = PublicWalletRuntime(
         wallet_store=public_wallet_store,
         lifecycle_runtime=public_lifecycle_runtime,
@@ -67,6 +80,7 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.ecu_active_layer_runtime = ecu_active_layer_runtime
     app_obj.state.public_lifecycle_runtime = public_lifecycle_runtime
     app_obj.state.public_wallet_runtime = public_wallet_runtime
+    app_obj.state.claimability_registry = claimability_registry
 
 
 def _close_runtime_state(app_obj: FastAPI) -> None:
@@ -124,6 +138,51 @@ def _parse_decimal_amount(raw: object, error_token: str) -> Decimal:
     if amount < Decimal("0"):
         raise ValueError(f"{error_token}_negative")
     return amount
+
+
+def _require_non_negative_int_or_none(raw: object, error_token: str) -> int | None:
+    if raw is None:
+        return None
+    if isinstance(raw, bool) or not isinstance(raw, int) or raw < 0:
+        raise ValueError(error_token)
+    return raw
+
+
+def _append_unique_tokens(tokens: object, extra_tokens: tuple[str, ...]) -> list[str]:
+    if not isinstance(tokens, list) or not all(isinstance(item, str) for item in tokens):
+        raise ValueError("claimability_public_api_tokens_invalid_phase_1439")
+    merged = list(tokens)
+    for token in extra_tokens:
+        if token not in merged:
+            merged.append(token)
+    return merged
+
+
+def _sha256_payload(payload: dict[str, object]) -> str:
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _public_claimability_decision(decision: dict[str, object]) -> dict[str, object]:
+    body = dict(decision)
+    body.pop("canonical_decision_sha256", None)
+    if body.get("decision") == ACCEPTED_LOCAL_ONLY_DECISION:
+        body["decision"] = ACCEPTED_PUBLIC_VERIFIER_API_DECISION
+    body["non_loopback_claimability_api_enabled"] = True
+    body["public_api_enabled"] = True
+    body["public_claimability_activated"] = True
+    body["receipt_verifier_public_serving_enabled"] = True
+    body["ecu_mint_authorized"] = False
+    body["ilc_settlement_authorized"] = False
+    body["wallet_spend_enabled"] = False
+    body["wallet_transfer_enabled"] = False
+    body["wallet_withdrawal_enabled"] = False
+    body["tokens"] = _append_unique_tokens(
+        body.get("tokens"),
+        PHASE_1439_PUBLIC_VERIFIER_API_TOKENS,
+    )
+    body["canonical_decision_sha256"] = _sha256_payload(body)
+    return body
 
 
 # Request Models
@@ -372,6 +431,69 @@ def submit_ep_task(ep_task: EpistemicWorkTask):
         "ep_task": ep_json,
         "task_descriptor": td_dict,
     }
+
+
+@router.post("/api/v1/claimability/verify")
+async def verify_claimability_public_api(request: Request):
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            declared_size = int(content_length)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail="claimability_public_api_content_length_invalid_phase_1439",
+            ) from exc
+        if declared_size > MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail="claimability_public_api_payload_too_large_phase_1439",
+            )
+
+    body = await request.body()
+    if len(body) > MAX_CLAIMABILITY_VERIFIER_PAYLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail="claimability_public_api_payload_too_large_phase_1439",
+        )
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="claimability_public_api_json_invalid_phase_1439",
+        ) from exc
+    if not isinstance(payload, dict):
+        raise HTTPException(
+            status_code=400,
+            detail="claimability_public_api_payload_not_object_phase_1439",
+        )
+
+    if "presentation" in payload:
+        presentation = payload["presentation"]
+        try:
+            current_epoch = _require_non_negative_int_or_none(
+                payload.get("current_issuance_epoch"),
+                "claimability_public_api_current_epoch_invalid_phase_1439",
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+    else:
+        presentation = payload
+        current_epoch = None
+
+    state = _state(request)
+    registry = getattr(state, "claimability_registry", None)
+    if registry is None:
+        registry = ClaimNullifierRegistry()
+        state.claimability_registry = registry
+
+    decision = verify_claimability_receipt_presentation(
+        presentation,
+        claim_registry=registry,
+        current_issuance_epoch=current_epoch,
+    )
+    return JSONResponse(_public_claimability_decision(decision))
 
 
 def create_app() -> FastAPI:

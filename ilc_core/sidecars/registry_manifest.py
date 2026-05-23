@@ -102,9 +102,6 @@ _NON_AUTHORIZATION_BOUNDARY = (
     "no_release_artifact_production",
     "no_release_key_generation",
     "no_release_envelope_production",
-    "no_public_claimability_api_activation",
-    "no_public_verifier_service",
-    "no_public_claim_endpoint",
     "no_public_p2p_or_fetch_serving",
     "no_public_sidecar_or_projection_serving",
     "no_non_loopback_bind_or_listener",
@@ -846,16 +843,17 @@ def _validate_offline_verifier_manifest(integrity: Mapping[str, Any]) -> None:
     )
     _require_false_keys(
         verifier,
-        (
-            "non_loopback_claimability_api_enabled",
-            "public_api_enabled",
-            "receipt_verifier_public_serving_enabled",
-        ),
+        (),
         token="sidecar_registry_package_profile_integrity_verifier_public_authority_forbidden_phase_1307",
     )
     _require_true_keys(
         verifier,
-        ("public_claimability_activated",),
+        (
+            "non_loopback_claimability_api_enabled",
+            "public_api_enabled",
+            "public_claimability_activated",
+            "receipt_verifier_public_serving_enabled",
+        ),
         token="sidecar_registry_package_profile_integrity_verifier_manifest_invalid_phase_1438",
     )
 
