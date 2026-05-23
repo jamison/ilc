@@ -739,7 +739,65 @@ explicit future `GO Phase 1437`.
 
 ---
 
-## 21. Final Closure Routing (anticipated)
+## 21. Phase 1437 Completion Addendum
+
+Phase 1437 is complete after explicit human authorization:
+
+```text
+GO Phase 1437
+```
+
+Runtime activation tokens recorded:
+
+```text
+openclaw_p2p_activated_phase_1437
+openclaw_harness_p2p_activated_phase_1437
+openclaw_harness_assisted_p2p_active_phase_1437
+cdl_078_relay_wired_openclaw_harness_phase_1437
+transport_harness_interface_wired_phase_1437
+rehearsal_openclaw_path_validated_gate_phase_1437
+phase_1437_p2p_sequence_lock_addendum_recorded
+```
+
+Explicit non-activation and deferral tokens recorded:
+
+```text
+native_rust_p2p_not_activated_phase_1437
+native_rust_p2p_deferred_window_1459_plus_phase_1437
+openclaw_gateway_not_publicly_activated_phase_1437
+ecu_distribution_not_activated_phase_1437
+epoch_transition_not_triggered_phase_1437
+public_rc_not_activated_phase_1437
+```
+
+Implementation artifacts:
+
+```text
+ilc_core/network/d2d/openclaw_p2p_relay.py
+ilc_core/sidecars/public_path_activation.py
+tests/test_phase_1437_openclaw_p2p_activation.py
+docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md
+```
+
+Phase 1437 activates only the OpenClaw harness-assisted P2P relay path through
+the package-boundary `TransportHarness` interface and the ratified CDL-078
+serve-event reputation path. It does not start an OpenClaw gateway process,
+bind a public gateway listener, activate the native Rust QUIC P2P substrate,
+deploy `PersistentQuicSessionManager` as the public P2P substrate, mutate a CDL,
+write graph state, write wallets, distribute ECU, settle ILC, publish public RC,
+sign release artifacts, or trigger epoch 0-to-1 transition.
+
+The Phase 1436 line `openclaw_p2p_activated=false` is superseded for the
+OpenClaw harness path only. `public_p2p_activated=false` remains the live
+native Rust P2P non-activation boundary.
+
+Track C is complete after Phase 1437. The stale CDL-088 historical test cleanup
+is routed to separate NON-SENSITIVE task `phase_1437a_stale_cdl_088_test_cleanup`
+and is not part of Phase 1437 activation.
+
+---
+
+## 22. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 

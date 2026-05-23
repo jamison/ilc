@@ -15,6 +15,18 @@ from collections.abc import Mapping
 from typing import Any
 
 from ilc_core.distribution.package_profiles import GAP_14_CLOSED_TOKEN
+from ilc_core.network.d2d.openclaw_p2p_relay import (
+    ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN as PHASE_1437_ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
+    EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN as PHASE_1437_EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN,
+    NATIVE_RUST_P2P_DEFERRED_WINDOW_1459_PLUS_TOKEN,
+    NATIVE_RUST_P2P_NOT_ACTIVATED_TOKEN,
+    OPENCLAW_GATEWAY_NOT_PUBLICLY_ACTIVATED_TOKEN,
+    OPENCLAW_HARNESS_ASSISTED_P2P_ACTIVE_TOKEN,
+    OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
+    OPENCLAW_P2P_ACTIVATED_TOKEN,
+    PUBLIC_RC_NOT_ACTIVATED_TOKEN,
+    REHEARSAL_OPENCLAW_PATH_VALIDATED_GATE_TOKEN,
+)
 from ilc_core.network.d2d.transport_principal_pre_public_path import (
     validate_transport_principal_context,
 )
@@ -39,7 +51,7 @@ TRANSPORT_PRINCIPAL_CDL_RATIFIED_PHASE_1435_TOKEN = (
 TRANSPORT_PRINCIPAL_CDL_RATIFIED = True
 PUBLIC_FETCH_SERVING_ACTIVATED = True
 NON_LOOPBACK_SIDECAR_PROJECTION_ACTIVATED = True
-OPENCLAW_P2P_ACTIVATED = False
+OPENCLAW_P2P_ACTIVATED = True
 ECU_DISTRIBUTION_ACTIVATED = False
 EPOCH_TRANSITION_TRIGGERED = False
 PUBLIC_P2P_ACTIVATED = False
@@ -70,9 +82,18 @@ _REQUIRED_TOKENS = (
     PUBLIC_FETCH_SERVING_ACTIVATED_TOKEN,
     TRANSPORT_PRINCIPAL_CDL_RATIFIED_GATE_WIRED_TOKEN,
     GAP_14_COMPLETE_GATE_WIRED_TOKEN,
-    OPENCLAW_P2P_NOT_ACTIVATED_TOKEN,
+    OPENCLAW_P2P_ACTIVATED_TOKEN,
+    OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
+    OPENCLAW_HARNESS_ASSISTED_P2P_ACTIVE_TOKEN,
+    NATIVE_RUST_P2P_NOT_ACTIVATED_TOKEN,
+    NATIVE_RUST_P2P_DEFERRED_WINDOW_1459_PLUS_TOKEN,
+    OPENCLAW_GATEWAY_NOT_PUBLICLY_ACTIVATED_TOKEN,
+    REHEARSAL_OPENCLAW_PATH_VALIDATED_GATE_TOKEN,
+    PUBLIC_RC_NOT_ACTIVATED_TOKEN,
     ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
     EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN,
+    PHASE_1437_ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
+    PHASE_1437_EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN,
     TRANSPORT_PRINCIPAL_CDL_RATIFIED_PHASE_1435_TOKEN,
     GAP_14_CLOSED_TOKEN,
 )
@@ -119,7 +140,7 @@ class PublicPathActivationError(ValueError):
 
 
 def public_path_activation_required_tokens() -> tuple[str, ...]:
-    """Return the Phase 1436 activation and non-activation tokens."""
+    """Return current public-path activation and non-activation tokens."""
 
     return _REQUIRED_TOKENS
 
@@ -257,7 +278,7 @@ def build_public_path_activation_decision(
         "non_loopback_sidecar_projection_enabled": (
             active_surface == PUBLIC_PATH_SURFACE_SIDECAR_PROJECTION
         ),
-        "openclaw_p2p_activated": False,
+        "openclaw_p2p_activated": OPENCLAW_P2P_ACTIVATED,
         "principal_id": validated_context["principal_id"],
         "public_confidential_coordination_activated": False,
         "public_fetch_serving_enabled": active_surface == PUBLIC_PATH_SURFACE_PUBLIC_FETCH,
@@ -340,9 +361,9 @@ def validate_public_path_activation_decision(
         payload.get("transport_principal_cdl_ratified"),
         "public_path_activation_cdl_094_gate_invalid_phase_1436",
     )
-    _require_false(
+    _require_true(
         payload.get("openclaw_p2p_activated"),
-        OPENCLAW_P2P_NOT_ACTIVATED_TOKEN,
+        OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
     )
     _require_false(payload.get("public_p2p_activated"), "public_p2p_not_activated_phase_1436")
     _require_false(
@@ -425,7 +446,7 @@ def validate_public_path_activation_decision(
         "gap_14_closed": True,
         "non_loopback_bind": True,
         "non_loopback_sidecar_projection_enabled": sidecar_enabled,
-        "openclaw_p2p_activated": False,
+        "openclaw_p2p_activated": OPENCLAW_P2P_ACTIVATED,
         "principal_id": principal_id,
         "public_confidential_coordination_activated": False,
         "public_fetch_serving_enabled": fetch_enabled,
