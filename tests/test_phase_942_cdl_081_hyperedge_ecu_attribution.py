@@ -124,11 +124,12 @@ def test_07_q6_reuse_attribution_rate_ratified():
 
 
 # ===========================================================================
-# TEST 08 — EDGE_MINT_PHI_BOUND is None (Werner CDL pending)
+# TEST 08 — EDGE_MINT_PHI_BOUND is active after CDL-085 ratification
 # ===========================================================================
-def test_08_edge_mint_phi_bound_none_pending_werner_cdl():
-    """CDL-081 §4: EDGE_MINT_PHI_BOUND stays None until Werner CDL is ratified."""
-    assert EDGE_MINT_PHI_BOUND is None
+def test_08_edge_mint_phi_bound_ratified_by_cdl_085():
+    """CDL-085 ratification locks EDGE_MINT_PHI_BOUND at Decimal("0.60")."""
+    assert EDGE_MINT_PHI_BOUND == Decimal("0.60")
+    assert isinstance(EDGE_MINT_PHI_BOUND, Decimal)
 
 
 # ===========================================================================
@@ -141,7 +142,9 @@ def test_09_provenance_constants_provisional():
         "PROVENANCE_DECAY_ALPHA must be Decimal('0.45') (locked Phase 1126)"
     )
     # Stability criterion: alpha < 1 ensures geometric series converges
-    assert PROVENANCE_DECAY_ALPHA < 1.0, "PROVENANCE_DECAY_ALPHA must be < 1 for convergence"
+    assert PROVENANCE_DECAY_ALPHA < Decimal("1"), (
+        "PROVENANCE_DECAY_ALPHA must be < 1 for convergence"
+    )
 
 
 # ===========================================================================
