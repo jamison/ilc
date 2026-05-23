@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """HIGH-001 AgentID log redaction helpers.
 
 The runtime boundary here is intentionally small: callers redact AgentID values

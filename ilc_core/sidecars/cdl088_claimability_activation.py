@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1438 CDL-088 public claimability authority sidecar.
 
 This module records the public-claimability authority flip only. The HTTP

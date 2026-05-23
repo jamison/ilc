@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1355 default-off Genesis intervention guardrail runtime.
 
 CDL-V6 ratifies documented Genesis extraordinary intervention with sunset,

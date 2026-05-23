@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1348 default-off CDL-047 treasury governance quote runtime."""
 
 from __future__ import annotations
