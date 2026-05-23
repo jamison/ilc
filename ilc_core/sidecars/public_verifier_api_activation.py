@@ -14,6 +14,13 @@ ILC_SETTLEMENT_NOT_AUTHORIZED_PHASE_1439_TOKEN = (
 )
 WALLET_OPS_NOT_AUTHORIZED_PHASE_1439_TOKEN = "wallet_ops_not_authorized_phase_1439"
 PUBLIC_RC_NOT_ACTIVATED_PHASE_1439_TOKEN = "public_rc_not_activated_phase_1439"
+FINDING_11_NULLIFIER_EXPIRE_STALE_PUBLIC_PATH_RESOLVED_TOKEN = (
+    "finding_11_nullifier_expire_stale_public_path_resolved_phase_1440"
+)
+CLAIMABILITY_INTEGRATION_TESTS_PHASE_1440_TOKEN = (
+    "claimability_integration_tests_phase_1440"
+)
+SECURITY_REVIEW_GATE_PASSED_PHASE_1440_TOKEN = "security_review_gate_passed_phase_1440"
 
 ACCEPTED_PUBLIC_VERIFIER_API_DECISION = "accepted_public_verifier_api_phase_1439"
 
@@ -39,6 +46,11 @@ def public_verifier_api_activation_manifest() -> dict[str, object]:
         "public_verifier_api_enabled": True,
         "receipt_verifier_public_serving_enabled": True,
         "route": "/api/v1/claimability/verify",
+        "security_review_tokens": [
+            FINDING_11_NULLIFIER_EXPIRE_STALE_PUBLIC_PATH_RESOLVED_TOKEN,
+            CLAIMABILITY_INTEGRATION_TESTS_PHASE_1440_TOKEN,
+            SECURITY_REVIEW_GATE_PASSED_PHASE_1440_TOKEN,
+        ],
         "tokens": list(PHASE_1439_PUBLIC_VERIFIER_API_TOKENS),
         "wallet_ops_authorized": False,
     }
@@ -47,11 +59,14 @@ def public_verifier_api_activation_manifest() -> dict[str, object]:
 __all__ = [
     "ACCEPTED_PUBLIC_VERIFIER_API_DECISION",
     "CLAIMABILITY_API_SERVING_PATH_WIRED_PHASE_1439_TOKEN",
+    "CLAIMABILITY_INTEGRATION_TESTS_PHASE_1440_TOKEN",
     "ECU_MINT_NOT_AUTHORIZED_PHASE_1439_TOKEN",
+    "FINDING_11_NULLIFIER_EXPIRE_STALE_PUBLIC_PATH_RESOLVED_TOKEN",
     "ILC_SETTLEMENT_NOT_AUTHORIZED_PHASE_1439_TOKEN",
     "PHASE_1439_PUBLIC_VERIFIER_API_TOKENS",
     "PUBLIC_RC_NOT_ACTIVATED_PHASE_1439_TOKEN",
     "PUBLIC_VERIFIER_API_ACTIVATED_PHASE_1439_TOKEN",
+    "SECURITY_REVIEW_GATE_PASSED_PHASE_1440_TOKEN",
     "WALLET_OPS_NOT_AUTHORIZED_PHASE_1439_TOKEN",
     "public_verifier_api_activation_manifest",
 ]

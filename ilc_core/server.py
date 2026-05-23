@@ -39,6 +39,7 @@ from ilc_core.sidecars.claimability_receipt_verifier import (
 )
 from ilc_core.sidecars.public_verifier_api_activation import (
     ACCEPTED_PUBLIC_VERIFIER_API_DECISION,
+    FINDING_11_NULLIFIER_EXPIRE_STALE_PUBLIC_PATH_RESOLVED_TOKEN,
     PHASE_1439_PUBLIC_VERIFIER_API_TOKENS,
 )
 from ilc_core.work.task_queue import TaskDescriptor
@@ -488,6 +489,9 @@ async def verify_claimability_public_api(request: Request):
         registry = ClaimNullifierRegistry()
         state.claimability_registry = registry
 
+    # Phase 1440: each public request passes through ClaimNullifierRegistry;
+    # reserve_presentation() expires stale entries before duplicate checks.
+    _ = FINDING_11_NULLIFIER_EXPIRE_STALE_PUBLIC_PATH_RESOLVED_TOKEN
     decision = verify_claimability_receipt_presentation(
         presentation,
         claim_registry=registry,

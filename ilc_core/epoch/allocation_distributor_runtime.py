@@ -63,6 +63,9 @@ GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN = (
 SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN = (
     "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1"
 )
+FINDING_1_ROUNDING_RESIDUAL_CAP_BLOCKED_RESOLVED_TOKEN = (
+    "finding_1_rounding_residual_cap_blocked_resolved_phase_1440"
+)
 
 PERFORMER_ALLOCATION_FRACTION = Decimal("0.80")
 AUDITOR_ALLOCATION_FRACTION = Decimal("0.15")
@@ -99,6 +102,7 @@ class EpochAllocationDistributionQuote:
     rounding_residual_to_genesis_overhead_ilc: Decimal
     rounding_residual_to_upheld_refutation_recipients_ilc: Decimal
     rounding_residual_to_performer_pool_ilc: Decimal
+    rounding_residual_refutation_recipient_allocations_ilc: tuple[tuple[str, Decimal], ...]
     genesis_overhead_cap_blocked: bool
     residual_route: str
     upheld_refutation_recipients: tuple[str, ...]
@@ -139,6 +143,10 @@ class EpochAllocationDistributionQuote:
             "rounding_residual_to_upheld_refutation_recipients_ilc": _decimal_to_string(
                 self.rounding_residual_to_upheld_refutation_recipients_ilc
             ),
+            "rounding_residual_refutation_recipient_allocations_ilc": [
+                {"recipient": recipient, "amount_ilc": _decimal_to_string(amount)}
+                for recipient, amount in self.rounding_residual_refutation_recipient_allocations_ilc
+            ],
             "runtime_version": self.runtime_version,
             "residual_route": self.residual_route,
             "split_quote_boundary_token": self.split_quote_boundary_token,
@@ -204,6 +212,26 @@ def _quantize_ilc(value: Decimal) -> Decimal:
     return value.quantize(ILC_QUANTUM, rounding=ROUND_DOWN)
 
 
+def _split_residual_among_refutation_recipients(
+    residual: Decimal,
+    recipients: tuple[str, ...],
+) -> tuple[tuple[str, Decimal], ...]:
+    if not recipients:
+        return ()
+    if residual == Decimal("0"):
+        return tuple((recipient, Decimal("0")) for recipient in recipients)
+    quantum_count = int(residual / ILC_QUANTUM)
+    base_quanta, remainder_quanta = divmod(quantum_count, len(recipients))
+    allocations: list[tuple[str, Decimal]] = []
+    for index, recipient in enumerate(recipients):
+        recipient_quanta = base_quanta + (1 if index < remainder_quanta else 0)
+        allocations.append((recipient, ILC_QUANTUM * recipient_quanta))
+    allocated = sum((amount for _, amount in allocations), Decimal("0"))
+    if allocated != residual:
+        raise ValueError("rounding_residual_refutation_allocation_mismatch_phase_1440")
+    return tuple(allocations)
+
+
 def _decimal_to_string(value: Decimal) -> str:
     return format(value.normalize(), "f")
 
@@ -259,6 +287,7 @@ def build_allocation_distribution_quote(
     residual_to_genesis = Decimal("0")
     residual_to_refutation_recipients = Decimal("0")
     residual_to_performer = Decimal("0")
+    residual_refutation_recipient_allocations: tuple[tuple[str, Decimal], ...] = ()
     residual_route = GENESIS_RESIDUAL_ROUTE
     if cap_blocked:
         if genesis_overhead_base != Decimal("0"):
@@ -266,6 +295,12 @@ def build_allocation_distribution_quote(
         genesis_overhead_pool = Decimal("0")
         if refutation_recipients:
             residual_to_refutation_recipients = rounding_residual
+            residual_refutation_recipient_allocations = (
+                _split_residual_among_refutation_recipients(
+                    rounding_residual,
+                    refutation_recipients,
+                )
+            )
             residual_route = UPHELD_REFUTATION_RECIPIENTS_RESIDUAL_ROUTE
         else:
             residual_to_performer = rounding_residual
@@ -292,6 +327,9 @@ def build_allocation_distribution_quote(
         rounding_residual_to_genesis_overhead_ilc=residual_to_genesis,
         rounding_residual_to_upheld_refutation_recipients_ilc=residual_to_refutation_recipients,
         rounding_residual_to_performer_pool_ilc=residual_to_performer,
+        rounding_residual_refutation_recipient_allocations_ilc=(
+            residual_refutation_recipient_allocations
+        ),
         genesis_overhead_cap_blocked=cap_blocked,
         residual_route=residual_route,
         upheld_refutation_recipients=refutation_recipients,
@@ -329,6 +367,7 @@ __all__ = [
     "CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN",
     "CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN",
     "CDL_083_UPHELD_REFUTATION_RECIPIENTS_PRIMARY_DUST_ROUTE_TOKEN",
+    "FINDING_1_ROUNDING_RESIDUAL_CAP_BLOCKED_RESOLVED_TOKEN",
     "GENESIS_OVERHEAD_ALLOCATION_FRACTION",
     "GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN",
     "GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN",
