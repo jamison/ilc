@@ -108,7 +108,33 @@ harnesses will consume.
 The testbed should not be redesigned around a single harness. It should become a
 strong enough substrate that a harness wrapper becomes straightforward.
 
-## 10. Related references
+## 10. Harness Scheduling and Provider Quota Signals (Addendum 2026-05-23)
+
+Harnesses may schedule and package maintenance work on behalf of human operators — including `star.map.embedding`, `contradiction.sweep`, `graph.compression`, and `stability.simulation` tasks. This is a legitimate harness function and does not constitute a protocol fork, provided the harness consumes stable `ilc_core/` surfaces and does not redefine admission semantics (see §6).
+
+Provider quota headers and response body quota fields are **operational scheduling signals** only:
+
+| Provider | Signal |
+|----------|--------|
+| Anthropic | `anthropic-ratelimit-tokens-remaining`, `anthropic-ratelimit-tokens-reset` (response headers) |
+| OpenAI | `x-ratelimit-remaining-tokens`, `x-ratelimit-reset-tokens` (response headers) |
+| Gemini | `usage_metadata` in response body — no confirmed remaining-tokens response-header contract |
+
+These signals inform the harness when spare capacity may be available for maintenance tasks. They are **not**:
+- protocol truth,
+- economic proof,
+- inputs to Werner credit calculations,
+- inputs to any `ilc_core/` protocol surface.
+
+Werner credit for completed maintenance tasks is governed by the Werner flow-governor CDL (Track C, Window 1459+ forward plan). Provider quota state alone does not authorize credit minting. A `ProviderUsageAdapter` implementation must treat Gemini as a local-counter-fallback case rather than assume header-level remaining-quota exposure.
+
+TOON compression applies to outbound/context packing and task envelopes only. Captured model output must preserve raw response bytes as the hashable content; the ILC node envelope (epoch_id, agent_id, metadata) is added separately and must not be included in the content hash.
+
+**Hash-separation invariant:** Tests for any `LocalNodeCapture` implementation must explicitly verify that `content_hash == SHA-256(raw_response_payload)` and that neither TOON-packed prompt metadata nor the node envelope appear in the hash input. A test that only checks the happy-path submission but does not assert this separation is insufficient.
+
+---
+
+## 11. Related references
 
 - `docs/specs/ilc_agent_native_rc0_1_guidance_synthesis_v0.1.md`
 - `docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md`
