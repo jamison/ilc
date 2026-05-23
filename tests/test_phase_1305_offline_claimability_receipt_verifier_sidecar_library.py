@@ -22,6 +22,7 @@ from ilc_core.sidecars.claimability_receipt_verifier import (
     CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN,
     OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
     PHASE_1306_NEXT_TOKEN,
+    PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN,
     PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN,
     PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
     RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
@@ -51,7 +52,7 @@ REQUIRED_TOKENS = [
     OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
     CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN,
     RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
-    PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN,
+    PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN,
     PHASE_1306_NEXT_TOKEN,
     PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
 ]
@@ -191,7 +192,9 @@ def test_local_verifier_manifest_and_source_have_no_public_serving_surface() -> 
     assert manifest["public_api_enabled"] is False
     assert manifest["receipt_verifier_public_serving_enabled"] is False
     assert manifest["non_loopback_claimability_api_enabled"] is False
+    assert manifest["public_claimability_activated"] is True
     assert manifest["tokens"][: len(REQUIRED_TOKENS)] == REQUIRED_TOKENS
+    assert PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN not in manifest["tokens"]
     assert "claimability_verifier_public_mode_ready_phase_1389b" in manifest["tokens"]
     for forbidden in (
         "from fastapi",

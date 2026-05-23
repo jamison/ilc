@@ -427,7 +427,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
             "local_graph_memory_projection_sidecar_manifest": local_graph_memory_projection_sidecar_manifest(),
             "offline_claimability_verifier_manifest": claimability_receipt_verifier_manifest(),
             "openclaw_nemoclaw_are_hosts_not_protocol_substrates": True,
-            "public_claimability_runtime_activation_authorized": False,
+            "public_claimability_runtime_activation_authorized": True,
             "public_fetch_p2p_readiness_candidate_manifest": public_fetch_p2p_readiness_candidate_manifest(),
             "public_p2p_activation_authorized": False,
             "transport_principal_admission_sidecar_manifest": transport_principal_admission_sidecar_manifest(),
@@ -640,13 +640,13 @@ def _validate_package_profile_integrity(value: object) -> None:
             "claimable_profile_requires_offline_verifier",
             "confidential_coordination_profile_is_private_local_only",
             "openclaw_nemoclaw_are_hosts_not_protocol_substrates",
+            "public_claimability_runtime_activation_authorized",
         ),
         token="sidecar_registry_package_profile_integrity_invalid_phase_1307",
     )
     _require_false_keys(
         integrity,
         (
-            "public_claimability_runtime_activation_authorized",
             "public_p2p_activation_authorized",
         ),
         token="sidecar_registry_package_profile_integrity_public_authority_forbidden_phase_1307",
@@ -849,10 +849,14 @@ def _validate_offline_verifier_manifest(integrity: Mapping[str, Any]) -> None:
         (
             "non_loopback_claimability_api_enabled",
             "public_api_enabled",
-            "public_claimability_activated",
             "receipt_verifier_public_serving_enabled",
         ),
         token="sidecar_registry_package_profile_integrity_verifier_public_authority_forbidden_phase_1307",
+    )
+    _require_true_keys(
+        verifier,
+        ("public_claimability_activated",),
+        token="sidecar_registry_package_profile_integrity_verifier_manifest_invalid_phase_1438",
     )
 
 
