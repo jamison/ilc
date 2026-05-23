@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Validator for ILC Governance Record Schema v0.1.
 Enforces schema validity and signature presence.

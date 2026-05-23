@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 570 node startup runtime.
 
 This module turns operator-managed JSON config and a test-grade genesis import

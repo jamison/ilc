@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Testing utilities for governance and protocol verification lanes."""
 
 from .ratification_mutation_scope_guardrail import (

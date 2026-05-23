@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Registry bundle creation and verification for canon bundle key registry.
 

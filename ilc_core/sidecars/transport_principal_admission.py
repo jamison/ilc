@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1309 local TransportPrincipal admission sidecar substrate.
 
 This module materializes a deterministic local admission decision from an

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Network runtime surfaces."""
 
 from .wire_transport_runtime import (

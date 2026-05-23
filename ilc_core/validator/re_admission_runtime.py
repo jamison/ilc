@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 521 validator re-admission runtime."""
 
 from __future__ import annotations

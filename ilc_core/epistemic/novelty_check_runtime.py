@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """CDL-052 novelty-check runtime."""
 
 from __future__ import annotations

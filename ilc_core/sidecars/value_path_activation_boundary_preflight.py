@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1315 ECU/ILC value-path activation boundary preflight.
 
 This module records the ledger-truth boundary for ECU minting, ILC settlement,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 832 Row-5 B-Impl — FillMonitor: obligations 4, 5.
 
 Obligation 4 — Group-fill monitoring and fallback activation:

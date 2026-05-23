@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase-362 runtime for CDL-036 node dissemination handling."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Graph-native sidecar substrates."""
 
 __all__ = [

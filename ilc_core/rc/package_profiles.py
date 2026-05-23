@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Public-RC package profile contracts.
 
 This module defines code-level package profiles for OpenClaw/NemoClaw-first RC

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """
 Economic telemetry façade and RL hook stubs for the ILC economics sandbox.
 

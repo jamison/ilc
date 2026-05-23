@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """D2 schema baseline runtime package."""
 
 from .d2_schema_baseline_runtime import (

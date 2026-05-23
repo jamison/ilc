@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 1236 commit.epoch emission connector.
 
 This module is finality-surface infrastructure, but not production emission

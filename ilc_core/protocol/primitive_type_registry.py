@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Pure primitive-type registry shared by protocol and node runtimes."""
 
 from __future__ import annotations

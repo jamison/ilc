@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Pure harness adapter interfaces for package-boundary injection.
 
 The interfaces in this module are structural contracts only. They do not open

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Phase 902 — CDL-077 fetch HTTP transport runtime.
 
 Exposes WANT-HAVE and WANT-BLOCK fetch endpoints over HTTP, handling exactly

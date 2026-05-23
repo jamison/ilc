@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """LMDB adapter for CDL-075 truth primitive graph persistence."""
 
 from __future__ import annotations

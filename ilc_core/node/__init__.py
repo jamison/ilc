@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 """Node runtime exports."""
 
 from .node_schema_core_runtime_360 import (

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # H-006b Part 3: temporal spectral trajectory analytics.
 #
 # Gate history:
