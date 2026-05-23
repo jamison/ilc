@@ -34,6 +34,9 @@ RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN = (
 PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN = (
     "public_claimability_activation_not_authorized_phase_1305"
 )
+PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN = (
+    "public_claimability_activated_phase_1438"
+)
 PHASE_1306_NEXT_TOKEN = "phase_1306_proof_binding_canonical_hash_negative_path_tests_next"
 PUBLIC_RC_REMAINS_BLOCKED_TOKEN = "public_rc_remains_blocked_after_phase_1305"
 CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN = (
@@ -265,7 +268,7 @@ def claimability_receipt_verifier_tokens() -> list[str]:
         OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION,
         CLAIMABILITY_VERIFIER_LOCAL_ONLY_TOKEN,
         RECEIPT_VERIFIER_PUBLIC_SERVING_NOT_ENABLED_TOKEN,
-        PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN,
+        PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN,
         PHASE_1306_NEXT_TOKEN,
         PUBLIC_RC_REMAINS_BLOCKED_TOKEN,
         CLAIMABILITY_PUBLIC_MODE_GOVERNANCE_DECISIONS_TOKEN,
@@ -279,7 +282,7 @@ def claimability_receipt_verifier_tokens() -> list[str]:
 
 
 def claimability_receipt_verifier_manifest() -> dict[str, Any]:
-    """Return deterministic local-only sidecar metadata."""
+    """Return deterministic claimability sidecar metadata."""
 
     payload = {
         "allowed_binding_modes": [
@@ -291,7 +294,7 @@ def claimability_receipt_verifier_manifest() -> dict[str, Any]:
         "local_only": True,
         "non_loopback_claimability_api_enabled": False,
         "public_api_enabled": False,
-        "public_claimability_activated": False,
+        "public_claimability_activated": True,
         "receipt_verifier_public_serving_enabled": False,
         "source_contract_version": PHASE_1291_CONTRACT_VERSION,
         "tokens": claimability_receipt_verifier_tokens(),
@@ -1444,6 +1447,7 @@ __all__ = [
     "DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN",
     "OFFLINE_CLAIMABILITY_RECEIPT_VERIFIER_VERSION",
     "PHASE_1306_NEXT_TOKEN",
+    "PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN",
     "PUBLIC_CLAIMABILITY_ACTIVATION_NOT_AUTHORIZED_TOKEN",
     "PUBLIC_RC_REMAINS_BLOCKED_TOKEN",
     "PUBLIC_SAFE_DISCLOSURE_SCHEMA_FINAL_TOKEN",
