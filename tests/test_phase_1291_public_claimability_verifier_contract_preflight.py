@@ -159,7 +159,8 @@ def test_phase_1291_updates_frontier_without_breaking_phase_1290_history() -> No
 
     assert "Window 1289-1302 is OPEN through Phase 1291" in planning
     assert "Window 1289-1302 is open through Phase 1291" in capsule
-    assert "Window 1289-1302 OPEN through Phase 1291" in roadmap
+    assert "Phase 1291 Public Claimability Verifier Contract Preflight Addendum" in roadmap
+    assert "public_rc_remains_blocked_after_phase_1291" in roadmap
     assert "Phase 1292 is sensitive" in planning
     assert "Phase 1292 is sensitive" in capsule
 

@@ -69,7 +69,7 @@ def _submission_payload(*, slot: int, node_name: str, cluster_id: str, variant: 
             },
             "output_hash": f"hash-{slot}",
             "output_payload": {"task_id": "task:three-node-seven-agent:cycle-001"},
-            "ep_task": {"output_hash": f"hash-{slot}"},
+            "ep_task": {"ecu_estimate": "0", "output_hash": f"hash-{slot}"},
             "gossip_type": "agent_submission",
             "send_statuses": [
                 {"endpoint": "https://peer-a", "payload_bytes": 10, "payload_sha256": f"sha-{slot}-a", "status_code": 202},
@@ -129,7 +129,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
         "gossip_type": "agent_submission",
         "output_hash": "hash-outsider",
         "output_payload": {"task_id": "task:three-node-seven-agent:cycle-001"},
-        "ep_task": {"output_hash": "hash-outsider"},
+        "ep_task": {"ecu_estimate": "0", "output_hash": "hash-outsider"},
         "profile": {
             "agent_id": outsider_agent_id,
             "cluster_id": "cluster-outsider",
@@ -160,7 +160,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
             "epoch": 574,
             "agent_id": submission_agent_ids[0],
             "claim_kind": "direct",
-            "amount": 3.0,
+            "amount": "3.0",
         },
         {
             "claim_id": "claim-passive",
@@ -168,7 +168,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
             "epoch": 574,
             "agent_id": submission_agent_ids[1],
             "claim_kind": "passive",
-            "amount": 1.0,
+            "amount": "1.0",
         },
     ]
     panel_payload = {
@@ -186,7 +186,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
         },
         "ecu_claim_batch": {
             "claims": claims,
-            "ledger": {"rewards_paid": 4.0},
+            "ledger": {"rewards_paid": "4.0"},
         },
         "outsider_submission": outsider_submission,
     }
@@ -195,7 +195,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
         "marker": "agent_loop_claims_ok",
         "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
         "claims": claims,
-        "ledger": {"rewards_paid": 4.0},
+        "ledger": {"rewards_paid": "4.0"},
     }
     (panel_dir / "ecu_claims.json").write_text(json.dumps(claims_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (panel_dir / "outsider_submission.json").write_text(json.dumps(outsider_submission, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -215,7 +215,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
     }
     (panel_dir / "broadcast_panel_verdict.json").write_text(json.dumps(panel_broadcast, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (panel_dir / "broadcast_ecu_claim_batch.json").write_text(json.dumps(claims_broadcast, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    (economic_dir / "manifest.json").write_text(json.dumps({"scenario_root": str(root), "summary": {"task_id": "task:three-node-seven-agent:cycle-001", "reward_total": 4.0}}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (economic_dir / "manifest.json").write_text(json.dumps({"scenario_root": str(root), "summary": {"task_id": "task:three-node-seven-agent:cycle-001", "reward_total": "4.0"}}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     scenario_manifest = {
         "scenario_path": str(scenario_path),
@@ -239,7 +239,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
         "submission_count": 7,
         "panel_verdict_token": "panel_quorum_passed",
         "claim_count": 2,
-        "reward_total": 4.0,
+        "reward_total": "4.0",
         "economic_manifest_path": str(economic_dir / "manifest.json"),
     }
     (root / "phase_579_cutover_manifest.json").write_text(json.dumps(phase_579_manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -250,7 +250,7 @@ def _write_integration_root(tmp_path: Path) -> tuple[Path, Path]:
         "ecu_claims_match": True,
         "panel_verdict_token": "panel_quorum_passed",
         "ecu_claim_count": 2,
-        "reward_total": 4.0,
+        "reward_total": "4.0",
     }
     replay_manifest = {
         "version": "three_node_seven_agent_replay_v0.1",
@@ -368,7 +368,7 @@ def test_replay_manifest_version_mismatch_fails_with_expected_token(tmp_path: Pa
 
 def test_outsider_boundary_drift_fails_with_expected_token(tmp_path: Path) -> None:
     root, replay_dir = _write_integration_root(tmp_path)
-    outsider_claim = {"claim_id": "outsider-claim", "task_id": "task:three-node-seven-agent:cycle-001", "epoch": 574, "agent_id": "agent-outsider", "claim_kind": "passive", "amount": 1.0}
+    outsider_claim = {"claim_id": "outsider-claim", "task_id": "task:three-node-seven-agent:cycle-001", "epoch": 574, "agent_id": "agent-outsider", "claim_kind": "passive", "amount": "1.0"}
     claims_path = root / "panel" / "ecu_claims.json"
     claims_payload = json.loads(claims_path.read_text(encoding="utf-8"))
     claims_payload["claims"].append(outsider_claim)

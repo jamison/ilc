@@ -45,7 +45,8 @@ def test_phase_1389b_status_and_planning_record_completion() -> None:
     )
     for token in TOKENS:
         assert token in combined
-    assert "Phase 1389 has not been rerun" in combined
+    assert "Phase 1389 has now been rerun" in combined
+    assert "Phase 1389 v0.2 PASS report" in combined
 
 
 def test_phase_1389b_docs_preserve_non_activation_boundary() -> None:

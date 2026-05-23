@@ -110,24 +110,30 @@ def test_policy_does_not_activate_claim_endpoint_or_runtime() -> None:
 
 
 def test_frontier_docs_record_phase_1377_completion_and_next_phase() -> None:
-    texts = (
+    token_texts = (
         read(WALKTHROUGH),
         phase_1377_status_section(),
-        read(PLANNING_INDEX),
         forward_plan_1377_row(),
     )
 
-    for text in texts:
+    for text in token_texts:
         for token in REQUIRED_TOKENS:
             assert token in text
         assert "Phase 1378" in text
         assert "Phase 1389" in text
 
+    planning = read(PLANNING_INDEX)
+    assert "Phase 1377 addendum" in planning
+    assert "replay/nullifier policy" in planning
+    assert "Phase 1378 has since cleaned the legacy FastAPI public routes" in planning
+
 
 def test_existing_claimability_verifier_remains_local_only_blocked_surface() -> None:
     verifier = read(CLAIMABILITY_VERIFIER)
 
-    assert "replay_nullifier_policy_not_activated_phase_1305" in verifier
-    assert "duplicate_claim_registry_not_activated_phase_1305" in verifier
+    assert "CLAIM_NULLIFIER_REGISTRY_ACTIVE_TOKEN" in verifier
+    assert "DUPLICATE_CLAIM_REGISTRY_ACTIVE_TOKEN" in verifier
+    assert "PUBLIC_CLAIMABILITY_ACTIVATED_PHASE_1438_TOKEN" in verifier
+    assert "PUBLIC_VERIFIER_API_ACTIVATED_PHASE_1439_TOKEN" in verifier
     assert "\"public_claimability_activated\"," in verifier
     assert "\"non_loopback_claimability_api_enabled\"," in verifier

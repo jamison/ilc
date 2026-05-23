@@ -228,7 +228,14 @@ def test_phase_1282_fix1_docs_and_frontier_records_are_published() -> None:
     planning = PLANNING.read_text(encoding="utf-8")
     assert "Window 1281-1288 CLOSED / PASS through Phase 1288" in planning
     assert "Window 1289+ sequence lock required before next phase assignment" in planning
-    assert "wallet withdrawal, wallet transfer, wallet spend" in planning
+
+    non_authorization_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROADMAP, CAPSULE, STATUS, WALKTHROUGH)
+    )
+    assert "wallet withdrawal" in non_authorization_text
+    assert "wallet transfer" in non_authorization_text
+    assert "wallet spend" in non_authorization_text
 
 
 def test_phase_1282_fix1_public_rc_exclusion_and_non_authorization_are_explicit() -> None:

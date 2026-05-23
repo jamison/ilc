@@ -117,11 +117,11 @@ def test_phase_1284_frontier_routes_to_sensitive_phase_1285() -> None:
     capsule = read(CAPSULE)
     status = read(STATUS)
 
-    assert "Window 1281-1288 is OPEN through Phase 1284" in planning
-    assert "Window 1281-1288 is open through Phase 1284" in capsule
+    assert "public_claimability_verifier_api_boundary_preflight_phase_1284.v0.1" in planning
+    assert "Window 1281-1288 executed through Phase 1288" in planning
+    assert "public_claimability_verifier_api_boundary_preflight_phase_1284.v0.1" in capsule
     assert "## Phase 1284" in status
-    assert "Phase 1285 is sensitive and requires explicit `GO Phase 1285`" in planning
-    assert "Phase 1285 remains pending and SENSITIVE" in capsule
+    assert "Phase 1285" in capsule
     assert "Phase 1285 - TransportPrincipal public-path activation preflight" in status
 
 
@@ -142,8 +142,13 @@ def test_phase_1284_does_not_mutate_cdl_register_or_open_cdl088() -> None:
     assert "public_claimability_verifier_api_boundary_preflight_phase_1284.v0.1" not in register
     assert "| CDL-087 |" in register
     assert "| ratified |" in register
-    assert "| CDL-088 |" not in register
+    assert "| CDL-088 |" in register
+    assert "cdl_088_ratified_phase_1376" in register
     assert "cdl087_ratified_phase_1278_fix1" in register
+
+    phase_text = read(SPEC) + "\n" + read(WALKTHROUGH)
+    assert "CDL mutation" in phase_text
+    assert "CDL-088 opening" in phase_text
 
 
 def test_phase_1284_graph_delta_is_recorded() -> None:

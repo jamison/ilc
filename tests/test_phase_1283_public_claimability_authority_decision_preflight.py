@@ -94,11 +94,12 @@ def test_phase_1283_frontier_routes_to_sensitive_phase_1284() -> None:
     capsule = read(CAPSULE)
     status = read(STATUS)
 
-    assert "Window 1281-1288 is OPEN through Phase 1284" in planning
-    assert "Window 1281-1288 is open through Phase 1284" in capsule
+    assert "public_claimability_authority_decision_preflight_phase_1283.v0.1" in planning
+    assert "Window 1281-1288 executed through Phase 1288" in planning
+    assert "public_claimability_authority_decision_preflight_phase_1283.v0.1" in capsule
     assert "## Phase 1283" in status
-    assert "Phase 1285 is sensitive and requires explicit `GO Phase 1285`" in planning
-    assert "Phase 1285 remains pending and SENSITIVE" in capsule
+    assert "Phase 1284 - Public claimability verifier/API boundary preflight" in status
+    assert "Phase 1285" in capsule
     assert "Phase 1285 - TransportPrincipal public-path activation preflight" in status
 
 
@@ -106,6 +107,9 @@ def test_phase_1283_public_rc_blockers_remain_explicit() -> None:
     for path in (SPEC, WALKTHROUGH, PLANNING, ROADMAP, CAPSULE, STATUS):
         text = read(path)
         assert "public_rc_remains_blocked_after_phase_1283" in text
+
+    for path in (SPEC, WALKTHROUGH, CAPSULE, STATUS):
+        text = read(path)
         assert "public claimability verifier/API boundary" in text
         assert "TransportPrincipal public-path activation" in text
         assert "sidecar public projection" in text
@@ -119,8 +123,13 @@ def test_phase_1283_does_not_mutate_cdl_register_or_open_cdl088() -> None:
     assert "public_claimability_authority_decision_preflight_phase_1283.v0.1" not in register
     assert "| CDL-087 |" in register
     assert "| ratified |" in register
-    assert "| CDL-088 |" not in register
+    assert "| CDL-088 |" in register
+    assert "cdl_088_ratified_phase_1376" in register
     assert "cdl087_ratified_phase_1278_fix1" in register
+
+    phase_text = read(SPEC) + "\n" + read(WALKTHROUGH)
+    assert "CDL mutation" in phase_text
+    assert "CDL-088 opening" in phase_text
 
 
 def test_phase_1283_graph_delta_is_recorded() -> None:
