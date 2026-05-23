@@ -88,6 +88,37 @@ WERNER_LOCAL_CREDIT_IS_TRANSFERABLE: bool = False
 WERNER_LOCAL_CREDIT_UNIT = Decimal("1")
 _ZERO_LOCAL_CREDIT = Decimal("0")
 
+WERNER_DIAGNOSTIC_WIRED_PHASE_1442_TOKEN = "werner_diagnostic_wired_phase_1442"
+WERNER_SYSTOLIC_METRIC_DEFINED_PHASE_1442_TOKEN = (
+    "werner_systolic_metric_defined_phase_1442"
+)
+WERNER_DIASTOLIC_METRIC_DEFINED_PHASE_1442_TOKEN = (
+    "werner_diastolic_metric_defined_phase_1442"
+)
+WERNER_PULSE_PRESSURE_METRIC_DEFINED_PHASE_1442_TOKEN = (
+    "werner_pulse_pressure_metric_defined_phase_1442"
+)
+WERNER_NO_ECU_DISTRIBUTION_PHASE_1442_TOKEN = "werner_no_ecu_distribution_phase_1442"
+WERNER_NO_FLOW_GOVERNOR_CDL_PHASE_1442_TOKEN = (
+    "werner_no_flow_governor_cdl_phase_1442"
+)
+WERNER_REVIEW_LANE_ONLY_PHASE_1442_TOKEN = "werner_review_lane_only_phase_1442"
+
+WERNER_DIAGNOSTIC_REVIEW_LANE_ONLY: bool = True
+WERNER_DIAGNOSTIC_SETTLEMENT_GRADE: bool = False
+WERNER_DIAGNOSTIC_WALLET_VISIBLE: bool = False
+WERNER_DIAGNOSTIC_TRANSFERABLE: bool = False
+
+WERNER_DIAGNOSTIC_PHASE_1442_TOKENS: tuple[str, ...] = (
+    WERNER_DIAGNOSTIC_WIRED_PHASE_1442_TOKEN,
+    WERNER_SYSTOLIC_METRIC_DEFINED_PHASE_1442_TOKEN,
+    WERNER_DIASTOLIC_METRIC_DEFINED_PHASE_1442_TOKEN,
+    WERNER_PULSE_PRESSURE_METRIC_DEFINED_PHASE_1442_TOKEN,
+    WERNER_NO_ECU_DISTRIBUTION_PHASE_1442_TOKEN,
+    WERNER_NO_FLOW_GOVERNOR_CDL_PHASE_1442_TOKEN,
+    WERNER_REVIEW_LANE_ONLY_PHASE_1442_TOKEN,
+)
+
 PHASE_TOKENS: frozenset[str] = frozenset(
     {
         MAINTENANCE_LOTTERY_RUNTIME_STUB_TOKEN,
@@ -134,6 +165,20 @@ class MaintenanceLocalCreditQuote:
     phase_tokens: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class WernerDiagnosticQuote:
+    systolic_local_credit: Decimal
+    diastolic_local_credit: Decimal
+    pulse_pressure_local_credit: Decimal
+    epoch_id: int
+    agent_id: str
+    review_lane_only: bool = WERNER_DIAGNOSTIC_REVIEW_LANE_ONLY
+    settlement_grade: bool = WERNER_DIAGNOSTIC_SETTLEMENT_GRADE
+    wallet_visible: bool = WERNER_DIAGNOSTIC_WALLET_VISIBLE
+    transferable: bool = WERNER_DIAGNOSTIC_TRANSFERABLE
+    diagnostic_tokens: tuple[str, ...] = WERNER_DIAGNOSTIC_PHASE_1442_TOKENS
+
+
 def _validate_non_empty_string(value: str, token: str) -> None:
     if not isinstance(value, str) or not value:
         raise ValueError(token)
@@ -156,6 +201,18 @@ def _validate_non_negative_decimal(value: object, token: str) -> Decimal:
     if not decimal_value.is_finite() or decimal_value < _ZERO_LOCAL_CREDIT:
         raise ValueError(token)
     return decimal_value
+
+
+def _validate_credit_samples(credit_samples: tuple[object, ...]) -> tuple[Decimal, ...]:
+    if not isinstance(credit_samples, tuple) or not credit_samples:
+        raise ValueError("invalid_werner_diagnostic_credit_samples_phase_1442")
+    return tuple(
+        _validate_non_negative_decimal(
+            sample,
+            "invalid_werner_diagnostic_credit_sample_phase_1442",
+        )
+        for sample in credit_samples
+    )
 
 
 def _validate_local_credit_task_record(
@@ -253,4 +310,31 @@ def wire_cdl_053_local_credit_eligibility(
         ledger_write_authorized=False,
         treasury_write_authorized=False,
         phase_tokens=tuple(sorted(PHASE_TOKENS)),
+    )
+
+
+def build_werner_diagnostic_quote(
+    *,
+    agent_id: str,
+    epoch_id: int,
+    credit_samples: tuple[Decimal, ...],
+) -> WernerDiagnosticQuote:
+    """Build read-only Werner pressure diagnostics for review-lane inspection."""
+
+    _validate_non_empty_string(agent_id, "invalid_werner_diagnostic_agent_id_phase_1442")
+    _validate_epoch_id(epoch_id)
+    samples = _validate_credit_samples(credit_samples)
+    systolic = max(samples)
+    diastolic = min(samples)
+    return WernerDiagnosticQuote(
+        systolic_local_credit=systolic,
+        diastolic_local_credit=diastolic,
+        pulse_pressure_local_credit=systolic - diastolic,
+        epoch_id=epoch_id,
+        agent_id=agent_id,
+        review_lane_only=WERNER_DIAGNOSTIC_REVIEW_LANE_ONLY,
+        settlement_grade=WERNER_DIAGNOSTIC_SETTLEMENT_GRADE,
+        wallet_visible=WERNER_DIAGNOSTIC_WALLET_VISIBLE,
+        transferable=WERNER_DIAGNOSTIC_TRANSFERABLE,
+        diagnostic_tokens=WERNER_DIAGNOSTIC_PHASE_1442_TOKENS,
     )
