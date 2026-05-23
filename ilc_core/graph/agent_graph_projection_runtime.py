@@ -11,6 +11,11 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Iterable, Mapping, Sequence
 
+from ilc_core.sidecars.public_path_activation import (
+    PUBLIC_PATH_SURFACE_SIDECAR_PROJECTION,
+    validate_public_path_activation_decision,
+)
+
 AGENT_GRAPH_PROJECTION_RUNTIME_VERSION = "agent_graph_projection_runtime_1229.v0.1"
 
 FETCH_INCENTIVE_PROJECTION_TOKEN = (
@@ -132,6 +137,23 @@ def export_projection_json(
     if len(payload.encode("utf-8")) > max_bytes:
         raise ValueError("graph_projection_export_size_exceeded")
     return payload
+
+
+def export_projection_json_for_public_path(
+    projection: Mapping[str, Any],
+    *,
+    activation_decision: Mapping[str, Any],
+    current_epoch: int,
+    max_bytes: int = DEFAULT_MAX_BYTES,
+) -> str:
+    """Export a projection only after Phase 1436 public-path authorization."""
+
+    validate_public_path_activation_decision(
+        activation_decision,
+        current_epoch=current_epoch,
+        surface=PUBLIC_PATH_SURFACE_SIDECAR_PROJECTION,
+    )
+    return export_projection_json(projection, max_bytes=max_bytes)
 
 
 def export_projection_ndjson(
