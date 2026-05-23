@@ -110,9 +110,12 @@ def test_status_and_sequence_lock_route_to_phase_1435() -> None:
     assert "Phase 1434 / TransportPrincipal CDL Opening" in status
     assert "transport_principal_cdl_opened_phase_1434" in status
     assert "cdl_094_opening_only_not_ratified_phase_1434" in status
-    assert "Phase 1435 TransportPrincipal CDL prelock + ratification is next" in status
-    assert "Phase 1434 TransportPrincipal CDL opening is complete" in sequence
-    assert "Phase 1435 TransportPrincipal CDL prelock + ratification is next" in sequence
+    assert (
+        "Phase 1435 TransportPrincipal CDL prelock + ratification is complete"
+        in status
+    )
+    assert "Phase 1435 TransportPrincipal CDL prelock + ratification is complete" in sequence
+    assert "Gap 14 package-profile phases are next" in sequence
 
 
 def test_opening_records_no_runtime_activation_or_value_path() -> None:

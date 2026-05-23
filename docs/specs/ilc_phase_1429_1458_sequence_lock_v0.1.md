@@ -1,6 +1,6 @@
 # ILC Phase 1429-1458 Sequence Lock v0.1
 
-**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1434 TransportPrincipal CDL opening is complete; Phase 1435 TransportPrincipal CDL prelock + ratification is next and SENSITIVE
+**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Phase 1435 TransportPrincipal CDL prelock + ratification is complete; Gap 14 package-profile phases are next before SENSITIVE Phase 1436 public sidecar/fetch activation
 **Date:** 2026-05-21 (window GO recorded 2026-05-22)
 **Owner lane:** G8 Jury Economy / Launch Readiness / Public RC Activation
 **GO authority:** Human reviewer (`GO Window 1429` recorded 2026-05-22; per-phase GO still required for every SENSITIVE phase)
@@ -382,8 +382,9 @@ public claimability, wallet binding, ECU distribution, ILC settlement, public
 serving, public RC publication, signing, or epoch 0-to-1 transition.
 
 Phase 1432 private rehearsal infrastructure validation, Phase 1433 private
-rehearsal verdict, and Phase 1434 TransportPrincipal CDL opening are complete.
-Phase 1435 is next and SENSITIVE.
+rehearsal verdict, Phase 1434 TransportPrincipal CDL opening, and Phase 1435
+TransportPrincipal CDL ratification are complete. Gap 14 package-profile phases
+are next before SENSITIVE Phase 1436.
 
 ---
 
@@ -546,12 +547,68 @@ coordination serving, production graph write, wallet write, treasury write, ECU
 minting, ILC settlement, public RC publication, signing, or epoch 0-to-1
 transition occurred.
 
-Phase 1435 TransportPrincipal CDL prelock + ratification is next and SENSITIVE.
-Explicit `GO Phase 1435` is required.
+Phase 1435 TransportPrincipal CDL prelock + ratification is complete. Gap 14
+package-profile phases are next before SENSITIVE Phase 1436.
 
 ---
 
-## 18. Final Closure Routing (anticipated)
+## 18. Phase 1435 Completion Addendum
+
+Phase 1435 is complete after explicit `GO Phase 1435`.
+
+```text
+transport_principal_cdl_ratified_phase_1435
+cdl_094_transport_principal_ratified_phase_1435
+gap_10_cdl_governance_closed_phase_1435
+cdl_094_ratified_governance_only_not_activated_phase_1435
+cdl_094_prelock_committed_phase_1435
+cdl_094_scope_constants_locked_phase_1435
+```
+
+C1 `085194e7` added:
+
+```text
+docs/specs/ilc_cdl_094_transport_principal_prelock_1435_v0.1.md
+docs/specs/ilc_cdl_094_transport_principal_ratification_evidence_1435_v0.1.md
+tests/test_phase_1435_transport_principal_cdl_ratification.py
+```
+
+C2 mutates CDL-094 from `open` to `ratified` with
+`ratified_phase: 1435`, `ratification_token:
+transport_principal_cdl_ratified_phase_1435`, and
+`policy_boundary_constant: TRANSPORT_PRINCIPAL_CDL_RATIFIED`.
+
+Gap 10 is closed at the CDL governance level only. Public fetch serving, public
+P2P, non-loopback sidecar/projection serving, public confidential messaging,
+public confidential coordination serving, production graph writes, wallet
+writes, treasury writes, ECU minting, ILC settlement, public RC publication,
+signing, and epoch 0-to-1 transition remain not activated.
+
+The README contact placeholder remains:
+
+```text
+jamison_confidential_sidecar=planned_not_live
+public_confidential_messaging_enabled=false
+public_confidential_coordination_enabled=false
+live_contact_instruction_added=false
+```
+
+The Phase 1435 prompt was patched to remove stale wording that called Phase
+1436 NON-SENSITIVE. Phase 1436 opens non-loopback public surfaces and remains
+SENSITIVE.
+
+Gap 14 package-profile phases are next before Phase 1436:
+
+```text
+~1436a Gap 14 Phase 1 - package profile definition: NON-SENSITIVE
+~1436b Gap 14 Phase 2 - public RC/OpenClaw hosted profile: NON-SENSITIVE
+```
+
+Phase 1436 remains SENSITIVE and requires explicit future GO.
+
+---
+
+## 19. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
