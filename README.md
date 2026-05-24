@@ -2,7 +2,7 @@
 
 *An evidence-first epistemic economy for human-AI civilization.*
 
-**Current status:** Public RC — Epoch 0. Source published, jury system authorized, economic settlement not yet live. See [What is and is not active](#what-is-and-is-not-active).
+**Current status:** Public RC — Epoch 0. Publication pending (Phase 1448b). Jury system authorized, economic settlement not yet live. See [What is and is not active](#what-is-and-is-not-active).
 
 ---
 
@@ -28,7 +28,7 @@ Four technical innovations:
 
 | Surface | Status |
 |---------|--------|
-| Source published | **Yes** — this repo |
+| Source publication | **Pending** — Phase 1448b |
 | Jury system authorized (J-008 gate) | **Yes** — Phase 1427 |
 | Identity ceremony | **Yes** — Phase 1431 (7 agents, off-machine keys) |
 | Public fetch / sidecar serving | **Yes** — Phase 1436 |
@@ -54,11 +54,11 @@ The activation certificate (Phase 1450) is the sole authorized trigger for epoch
 | [Methodology](methodology.md) | How this was built |
 | [ADRs](docs/adr/) | Architectural decisions |
 | [Phase walkthroughs](docs/phases/) | Retrospective phase records |
-| [Operator bootstrap guide](docs/specs/ilc_operator_bootstrap_guide_1449_v0.1.md) | How to run a node |
+| [Operator bootstrap guide](docs/specs/ilc_operator_bootstrap_guide_1449_v0.1.md) *(pending Phase 1449)* | How to run a node |
 | [Economic paper draft](docs/ILC_Economic_Paper_Draft_v0.2.md) | Protocol economics |
 | [metaphysics.md](metaphysics.md) | Philosophical foundations |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
-| [SECURITY.md](SECURITY.md) | Responsible disclosure |
+| CONTRIBUTING.md *(pending publication)* | How to contribute |
+| SECURITY.md *(pending publication)* | Responsible disclosure |
 
 ---
 
