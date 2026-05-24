@@ -184,6 +184,34 @@ ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<phase>
 
 ---
 
+
+### Phase 1446 addendum — v0.3 Genesis root envelope signing ceremony complete (2026-05-24)
+
+Phase 1446 completed after the exact SENSITIVE authority phrase `GO Phase 1446: authorize v0.3 Genesis root envelope signing ceremony`.
+
+Recorded outputs:
+
+- `docs/specs/ilc_v03_genesis_root_envelope_signing_record_1446_v0.1.md`
+- `ilc_core/rc/signing_ceremony_status.py`
+- `tests/test_phase_1446_v03_genesis_root_signing_ceremony.py`
+- `docs/phases/phase_1446_v03_genesis_root_signing_ceremony_walkthrough.md`
+
+Root envelope payload hash: `sha256:48e39e365f66cd3a3fea95f115034a31354af31f494f94c648eb8eae5a2ad78b`.
+
+Tokens locked:
+
+- `signing_ceremony_pre_conditions_verified_phase_1446`
+- `v0_3_genesis_root_envelope_signed_phase_1446`
+- `v0_3_signing_ceremony_complete_phase_1446`
+- `public_rc_not_published_phase_1446`
+- `epoch_0_to_1_transition_not_authorized_phase_1446`
+- `runtime_flag_activation_not_authorized_phase_1446`
+- `release_artifact_signing_not_performed_phase_1446`
+
+Non-authorizations preserved: no public RC publication, no source repository publication, no package publication, no release artifact signing, no runtime flag activation, no epoch 0-to-1 transition, no CDL mutation, no ECU/ILC operation, no wallet or ledger mutation. Phase 1447 remains SENSITIVE and requires separate explicit GO.
+
+---
+
 ## 7. CDL Number Assignments
 
 | CDL | Scope | Register opening | Ratification |
@@ -955,7 +983,70 @@ epoch_transition=false
 
 ---
 
-## 25. Final Closure Routing (anticipated)
+## 25. Phase 1445 Completion Addendum
+
+Phase 1445 is complete after explicit human authorization:
+
+```text
+GO Phase 1445 and any subsequent non-sensitive phases
+```
+
+Completion tokens:
+
+```text
+gap_7_internal_milestones_complete_phase_1445
+gap_7_partially_closed_phase_1445
+provisional_patent_deferred_external_counsel_required_phase_1445
+trademark_registration_deferred_external_action_required_phase_1445
+gap_7_not_fully_closed_phase_1445
+```
+
+Artifacts:
+
+```text
+docs/specs/ilc_gap_7_partial_closure_record_1445_v0.1.md
+ilc_core/rc/gap_7_closure_status.py
+tests/test_phase_1445_gap_7_partial_closure.py
+docs/phases/phase_1445_gap_7_partial_closure_walkthrough.md
+```
+
+Gap 7 component status at Phase 1445:
+
+| Component | Status |
+|---|---|
+| AGPL license headers and public-source allowlist execution | Complete in Phase 1443 |
+| CLA text finalization | Complete in Phase 1444 |
+| US provisional patent application | Deferred external action; external counsel / filing required |
+| Trademark registration | Deferred external action; external filing / government registration required |
+
+Phase 1445 records partial closure only. Gap 7 is not fully closed because the
+US provisional patent application and trademark registration remain deferred
+external-action obligations.
+
+Preserved non-activation boundaries:
+
+```text
+gap_7_fully_closed=false
+public_rc_published=false
+public_repository_publication_authorized=false
+public_package_publication_authorized=false
+release_artifact_production_authorized=false
+release_signing=false
+runtime_activation=false
+cdl_mutation=false
+ecu_operations=false
+ilc_operations=false
+epoch_transition=false
+```
+
+The older forward-plan prose still describes Track F as Phases 1445-1447 and
+names an older `gap_7_internal_milestones_complete_phase_1447` token. The
+sequence lock and validated Phase 1445 prompt are authoritative for this
+completion record.
+
+---
+
+## 26. Final Closure Routing (anticipated)
 
 Window 1429-1458 will be closed by:
 
