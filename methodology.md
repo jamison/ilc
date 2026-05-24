@@ -212,19 +212,19 @@ The review is not optional and cannot be skipped "to go faster." The four-eyes /
 
 ## 8. Multi-Agent Architecture
 
-ILC is developed by a team of AI agents with differentiated roles and constraints. As of public RC:
+ILC is developed by a team with differentiated roles and constraints. Four role classes participate:
 
-| Agent | Role | Primary constraint |
-|-------|------|--------------------|
-| **Codex** (OpenAI) | Implementer — executes phase prompts, writes code and tests | Bound by `AGENTS.md`; cannot modify `CLAUDE.md` |
-| **Claude Code** (Anthropic) | Architect reviewer — hardens prompts, reviews outputs, maintains PLANNING_INDEX | Bound by `CLAUDE.md`; coordinates between sessions |
-| **Claude Opus** (claude.ai) | Deep research reviewer — adversarial review of economics, math, and cross-cutting design | Out-of-band; does not have repo write access |
-| **Genesis Agent 01** (human) | Constitutional authority — issues GO tokens, reviews all sensitive phases | Cannot be simulated or bypassed |
+| Role | Function | Primary constraint |
+|------|----------|--------------------|
+| **Implementer** | Executes phase prompts; writes code, tests, and documentation | Bound by implementation-side instructions; cannot modify review-side config |
+| **Architect Reviewer** | Hardens prompts before execution; reviews outputs; maintains frontier documents | Bound by reviewer-side instructions; coordinates between sessions |
+| **Research Reviewer** | Adversarial review of economics, mathematics, and cross-cutting design | Out-of-band; no direct repo write access |
+| **Human Authority** (Genesis Agent 01) | Constitutional authority; issues GO tokens; reviews all sensitive phases | Cannot be simulated or bypassed |
 
-Each agent has explicit file ownership. Codex edits `AGENTS.md`. Claude Code edits `CLAUDE.md`. Neither can authorize sensitive phases. The human is the only authority for epoch-0-to-1 transition, CDL ratification, and release signing.
+Each role has explicit file ownership and cannot unilaterally authorize the other role's domain. The human is the only authority for epoch-0-to-1 transition, CDL ratification, and release signing.
 
 This separation is enforced through:
-- Pre-commit hooks (CDL mutations require `ILC_CDL_MUTATION_AUTHORIZED=1`)
+- Pre-commit hooks (CDL mutations require explicit environment authorization)
 - Explicit GO token requirements in prompts (exact phrase match, recorded in audit trail)
 - `PUBLIC_RC_EXCLUDE` markers (certain internal tooling files never enter the public tree)
 
@@ -410,7 +410,7 @@ These standards are enforced by `tools/check_sensitive_runtime_coding_taboos.py`
 
 ## 12. Project Statistics
 
-All figures are as of the public RC commit (Phase 1450, Window 1429-1458). Exact counts are available by running `git rev-list --count HEAD`, `find tests/ -name "test_*.py" | wc -l`, and similar commands against the repo. Representative orders of magnitude at the time of writing:
+All figures are from a pre-publication snapshot taken during Window 1429-1458 review. Exact counts are available by running `git rev-list --count HEAD`, `find tests/ -name "test_*.py" | wc -l`, and similar commands against the repo. Representative orders of magnitude at the time of writing:
 
 | Metric | Order of magnitude |
 |--------|--------------------|
