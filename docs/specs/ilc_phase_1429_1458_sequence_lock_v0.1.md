@@ -106,7 +106,8 @@ Approximate phase numbers for tracks after C4. Exact number assignments are conf
 | F3 | ~1445 | Gap 7 partial closure + external-action carry-forward record | Gate | NON-SENSITIVE |
 | G1 | ~1446 | v0.3 Genesis root envelope signing ceremony | Identity / Release | **SENSITIVE** |
 | G2 | ~1447 | Release artifact signing + manifest finalization | Release | **SENSITIVE** |
-| G3 | ~1448 | Public repository publication | Publication | **SENSITIVE** |
+| G3a | ~1448a | Pre-publication review gate (public tree re-materialization, git history strategy, patent counsel disposition, README review) | Gate | NON-SENSITIVE |
+| G3b | ~1448b | Public repository publication | Publication | **SENSITIVE** |
 | G4 | ~1449 | External operator bootstrap guide publication | Documentation | NON-SENSITIVE |
 | G5 | ~1450 | Public RC activation certificate + epoch 1 trigger | **Launch** | **SENSITIVE** |
 | Z1 | ~1451 | Window coherence + capsule update + ADR housekeeping (FINDING-5, FINDING-15) | Synthesis | NON-SENSITIVE |
@@ -148,8 +149,9 @@ Phase 1427 (J-008 PASS, Window 1399-1428 commit 0876cae8)
                                      └── ALL tracks must complete before Track G:
                                           ~1446 (v0.3 signing)  [SENSITIVE — GO required]
                                           └── ~1447 (release signing)  [SENSITIVE — GO required]
-                                               └── ~1448 (public publication)  [SENSITIVE — GO required]
-                                                    └── ~1449 (operator guide)
+                                               └── ~1448a (pre-publication review gate)  [NON-SENSITIVE]
+                                                    └── ~1448b (public publication)  [SENSITIVE — GO required]
+                                                         └── ~1449 (operator guide)
                                                          └── ~1450 (epoch 1 trigger)  ← PUBLIC RC  [SENSITIVE — GO required]
                                                               └── ~1451 (coherence)
                                                                    └── ~1452 (closure gate)  [SENSITIVE — GO required]
@@ -173,7 +175,7 @@ These phases require explicit human `GO Phase NNNN` before execution:
 | ~1444 | CLA text is Genesis-authority governance policy publication |
 | ~1446 | Genesis signing ceremony — canonical artifact chain |
 | ~1447 | Signs release artifacts against v0.3 root envelope |
-| ~1448 | Public source publication |
+| ~1448b | Public source publication — requires five 1448a gate tokens |
 | ~1450 | Epoch 0-to-1 transition trigger — PUBLIC RC LAUNCH |
 | ~1452 | Window closure gate |
 
@@ -232,7 +234,30 @@ Tokens locked:
 - `public_rc_launch_readiness_manifest_v1_finalized_phase_1447`
 - `public_repository_not_published_phase_1447`
 
-Non-authorizations preserved: no public repository publication, no package publication, no public URL publication, no public RC publication, no manifest activation signature, no runtime flag activation, no epoch 0-to-1 transition, no CDL mutation, no ECU/ILC operation, no wallet/ledger/treasury/registry mutation. Phase 1448 remains SENSITIVE and requires separate explicit GO.
+Non-authorizations preserved: no public repository publication, no package publication, no public URL publication, no public RC publication, no manifest activation signature, no runtime flag activation, no epoch 0-to-1 transition, no CDL mutation, no ECU/ILC operation, no wallet/ledger/treasury/registry mutation. Phase 1448a (pre-publication review gate, NON-SENSITIVE) must produce five gate tokens before Phase 1448b (public source publication, SENSITIVE) may execute.
+
+---
+
+### Phase 1448a addendum — pre-publication review gate formalized (2026-05-24)
+
+Phase 1448a was established as a formal NON-SENSITIVE gate phase (split from the original single Phase 1448) to ensure all pre-publication decisions are committed before any public push executes. No GO token is required for 1448a; it does not push anything to a public repository.
+
+Phase 1448a requires as inputs:
+- `release_artifacts_signed_phase_1447` (from `ilc_core/rc/signing_ceremony_status.py`)
+- `v0_3_signing_ceremony_complete_phase_1446` (from `ilc_core/rc/signing_ceremony_status.py`)
+- `gap_7_internal_milestones_complete_phase_1445` (from `ilc_core/rc/gap_7_closure_status.py`)
+- `agpl_3_or_later_license_header_present_in_all_allowlisted_files_phase_1443` (from `ilc_core/rc/license_header_audit_phase_1443.py`)
+
+Phase 1448a produces five output tokens (written to `ilc_core/rc/prepublication_review_status.py`):
+- `prepublication_review_complete_phase_1448a`
+- `public_history_strategy_decided_phase_1448a`
+- `patent_counsel_disposition_recorded_phase_1448a`
+- `public_tree_rematerialized_phase_1448a`
+- `readme_public_landing_reviewed_phase_1448a`
+
+Phase 1448b (SENSITIVE, requires GO Phase 1448b) must verify all five tokens before executing any public push. Phase 1448b will not execute until Phase 1448a is complete and committed.
+
+Non-authorizations preserved by Phase 1448a: no public repository publication, no package publication, no public URL publication, no CDL mutation, no ECU/ILC operation, no wallet/ledger/treasury/registry mutation, no signing of new artifacts, no runtime activation changes, no epoch 0-to-1 transition.
 
 ---
 
