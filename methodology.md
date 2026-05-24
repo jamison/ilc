@@ -433,13 +433,29 @@ TOON is used in two places visible in the current public codebase:
 - **The README agent hydration block** — the `toon` block at the end of `README.md` is a machine-readable state packet for AI agents and autonomous systems. It encodes the protocol's current state, governance status, economic framing, and navigation index in a compact format that reduces token consumption for agents parsing the document.
 - **The ILC Skill / agentic harness layer** (planned, Window 1459+) — the planned harness architecture uses TOON for outbound prompt compression and task envelope formatting. TOON applies to context packing only; captured model output always preserves raw response bytes as the hashable content, and neither TOON-packed metadata nor node envelopes are included in the content hash. This separation is a hard architectural invariant.
 
-**Why this matters for methodology:** Token cost is a direct function of context size. A ~40% reduction in prompt token volume (achievable with structured TOON packing vs. equivalent plain-prose context) at the scale of this project — tens of thousands of agent turns — translates directly to reduced API cost and faster turn latency. The $950 total inference budget is partly a function of this kind of efficiency discipline: structured formats, tiered context (Tier A constitutional facts before Tier D historical walkthroughs), and MemPalace retrieval-before-full-read all reduce the tokens consumed per turn.
+**Why this matters for methodology:** Token cost is a direct function of context size. Structured TOON packing can reduce prompt token volume substantially compared to equivalent plain-prose context. At the scale of this project — tens of thousands of agent turns — this translates directly to reduced API cost and faster turn latency. The $950 total inference budget is partly a function of this kind of efficiency discipline: structured formats, tiered context (Tier A constitutional facts before Tier D historical walkthroughs), and MemPalace retrieval-before-full-read all reduce the tokens consumed per turn.
 
 TOON is not yet applied to the internal phase prompt and walkthrough workflow (that work is deferred to Window 1459+), but its adoption for public-facing agent interfaces is already live.
 
 ---
 
-## 12. Tooling Overview
+## 12. Graph Delta and Public Artifact Discipline
+
+Every phase that produces a protocol artifact — a CDL row, an ADR, a token sidecar module, a gate record — also updates the epistemic graph. The graph is not a diagram; it is the DAG of content-addressed objects that tracks what exists, what supersedes what, and what each claim depends on.
+
+**Graph discipline rules:**
+
+- **No orphan artifacts.** Every new file produced by a phase must be reachable from the graph root (via the Genesis Atlas, the CDL register, or the closure handoff chain). A deliverable with no graph edge is an invisible claim.
+- **Supersession tombstones.** When a spec, draft, or design document is superseded, a tombstone banner is added to the old file immediately. The banner names the superseding authority and prohibits using the old file's field definitions or parameters without cross-checking against the superseding authority. This is enforced at the closure gate of the window that introduces the supersession.
+- **PUBLIC_RC_EXCLUDE markers.** Files that must not appear in the materialized public tree carry the comment `# PUBLIC_RC_EXCLUDE: <reason>` at the top. The source allowlist export tool enforces zero hits for this marker in the public tree. Internal gate records, economics documents, and private tooling use this marker.
+- **Public artifact discipline.** The public tree (materialized by `tools/rc_dredge_v2.py` and the source allowlist export gate) is a strict subset of the private repo. Only files on the allowlist with no `PUBLIC_RC_EXCLUDE` marker appear in the public tree. No file is added to the public tree without an explicit allowlist entry. The tree is re-materialized after every root-level file change and the resulting `tree_sha256` is recorded in the gate record.
+- **`out/` isolation.** Simulation outputs, diagnostic JSON, and monitoring snapshots in `out/` are not protocol artifacts — they are observational outputs. They are committed for auditability but do not have DAG edges and are not included in the public tree.
+
+This discipline is what makes the construction of the protocol verifiable after the fact: every claim in the codebase traces to a phase, every phase traces to a window, and every window closes with a gate record that can be re-run.
+
+---
+
+## 13. Tooling Overview
 
 The `tools/` directory contains ~130 scripts and programs organized into functional families. A sampling by category:
 
@@ -500,7 +516,7 @@ The simulation results inform CDL prelock constants. For example, SIM-PROVENANCE
 
 ---
 
-## 13. Security and Coding Standards
+## 14. Security and Coding Standards
 
 The ten items below are the **minimum** mandatory standards, not an exhaustive security checklist. They address the most systematic and mechanically enforceable failure modes identified across the project's development. Production deployment will require additional review against the full OWASP taxonomy, protocol-specific threat models (Byzantine fault tolerance, Sybil resistance, economic manipulation vectors), and any findings from community security review. The Phase 1387 security disposition (`docs/specs/ilc_pre_activation_hardening_gate_report_1387_rerun_v0.2.md`) documents the broader security review posture and the project's disposition on every HIGH and MEDIUM finding.
 
@@ -521,7 +537,7 @@ These standards are enforced by `tools/check_sensitive_runtime_coding_taboos.py`
 
 ---
 
-## 14. Project Statistics (as of 2026-05-24)
+## 15. Project Statistics (as of 2026-05-24)
 
 All figures are from a pre-publication snapshot taken during Window 1429-1458 review. Exact counts change with every phase; run `git rev-list --count HEAD`, `find ilc_core/ -name "*.py" | xargs wc -l`, and similar commands against the repo for current values. LOC figures below represent total lines; non-empty LOC (which excludes blank lines) is noted where available from independent audit.
 
@@ -550,11 +566,7 @@ This figure is worth recording as a reference point: a project with ~860,000 non
 
 These figures grow with every window. The canonical source of truth is the repository itself.
 
-> **A note on rising costs:** AI inference pricing is increasing rapidly as major labs revise their billing models. What cost ~$950 to build may cost significantly more to continue at the same pace in subsequent windows. If you find this project valuable and would like to contribute anonymously, the project accepts Bitcoin:
->
-> `1EgWDuCiKR5Yx4AEQ73e8uKsRjmTpZRoWk`
->
-> All proceeds go directly to project inference costs, plus coffee for Genesis Agent 01.
+See [FUNDING.md](FUNDING.md) for information on contributing to project inference costs.
 
 ### Test philosophy
 
@@ -568,7 +580,7 @@ The test suite is structured in layers:
 
 ---
 
-## 15. Methodology Timeline
+## 16. Methodology Timeline
 
 ### 2025 — Foundations
 
@@ -594,7 +606,7 @@ Window 1429-1458 completes the public RC sequence: rehearsal (Phases 1431-1433),
 
 ---
 
-## 16. What We Got Wrong and Fixed
+## 17. What We Got Wrong and Fixed
 
 Honest accounting matters. The following are methodological failures we caught and corrected:
 
