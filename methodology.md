@@ -550,6 +550,12 @@ This figure is worth recording as a reference point: a project with ~860,000 non
 
 These figures grow with every window. The canonical source of truth is the repository itself.
 
+> **A note on rising costs:** AI inference pricing is increasing rapidly as major labs revise their billing models. What cost ~$950 to build may cost significantly more to continue at the same pace in subsequent windows. If you find this project valuable and would like to contribute anonymously, the project accepts Bitcoin:
+>
+> `1EgWDuCiKR5Yx4AEQ73e8uKsRjmTpZRoWk`
+>
+> All proceeds go directly to project inference costs, plus coffee for Genesis Agent 01.
+
 ### Test philosophy
 
 Tests are written to verify token presence and behavioral contracts, not to achieve line coverage. A test that asserts `cdl_084_provenance_chain_attribution_ratified_1113.v0.1` is present in the expected module is more meaningful to us than a test that exercises a code path we wrote to satisfy it.
