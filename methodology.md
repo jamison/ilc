@@ -13,13 +13,15 @@
 5. [The Adversarial Review Cycle](#5-the-adversarial-review-cycle)
 6. [Phase Window Workflow](#6-phase-window-workflow)
 7. [The Four-Eyes / Six-Eyes Principle](#7-the-four-eyes--six-eyes-principle)
-8. [Multi-Agent Architecture](#8-multi-agent-architecture)
-9. [Progress Tracking and Frontier Documents](#9-progress-tracking-and-frontier-documents)
-10. [Knowledge Management: Past Conversation Archive, Dredge, and MemPalace](#10-knowledge-management-past-conversation-archive-dredge-and-mempalace)
-11. [Security and Coding Standards](#11-security-and-coding-standards)
-12. [Project Statistics](#12-project-statistics)
-13. [Methodology Timeline](#13-methodology-timeline)
-14. [What We Got Wrong and Fixed](#14-what-we-got-wrong-and-fixed)
+8. [Managing Known Knowns, Known Unknowns, and Unknown Unknowns](#8-managing-known-knowns-known-unknowns-and-unknown-unknowns)
+9. [Multi-Agent Architecture](#9-multi-agent-architecture)
+10. [Progress Tracking and Frontier Documents](#10-progress-tracking-and-frontier-documents)
+11. [Knowledge Management: Past Conversation Archive, Dredge, and MemPalace](#11-knowledge-management-past-conversation-archive-dredge-and-mempalace)
+12. [Tooling Overview](#12-tooling-overview)
+13. [Security and Coding Standards](#13-security-and-coding-standards)
+14. [Project Statistics](#14-project-statistics)
+15. [Methodology Timeline](#15-methodology-timeline)
+16. [What We Got Wrong and Fixed](#16-what-we-got-wrong-and-fixed)
 
 ---
 
@@ -253,7 +255,48 @@ The review is not optional and cannot be skipped "to go faster." The four-eyes /
 
 ---
 
-## 8. Multi-Agent Architecture
+## 8. Managing Known Knowns, Known Unknowns, and Unknown Unknowns
+
+One of the most underestimated risks in any long-running development project is not what you know you don't know — it is what you don't know you don't know. ILC applies a structured three-tier framework to manage all three categories explicitly.
+
+### Tier 1 — Known knowns: the token audit
+
+Known knowns are facts already confirmed and recorded in the system. The primary mechanism for managing them is the **§0a known-token audit** required in every phase prompt. Before any code is written, the phase must verify:
+
+- **Input tokens** — facts that must already exist (proves prerequisites are met)
+- **Output tokens** — facts that must NOT yet exist (proves this phase's work is new)
+
+Every required token is verified by exact `rg` grep against the live codebase, not from memory. A claim that cannot be traced to a specific file and line is treated as unverified. This discipline prevents the most common failure mode in multi-agent development: an agent asserting something is true because it was true in a prior session, without checking whether it is still true in the current state of the repo.
+
+### Tier 2 — Known unknowns: concept discovery and gap analysis
+
+Known unknowns are gaps that can be named and described but have not yet been resolved. They are managed at two timescales:
+
+**In-phase (§0b and §0c):** Every phase prompt requires a **concept-discovery search** — a broad search over *concepts*, not just named tokens. This means searching for synonyms, old names, adjacent terms, code symbols, phase numbers, and domain vocabulary. The explicit rule: *"Run broad searches over concepts, not only known tokens."* The §0c section then searches specifically for negations and blockers — `deferred`, `blocked`, `not authorized`, `superseded`, `must not`, `does not imply` — to catch dependencies that are known-open.
+
+**Cross-window (dredge and gap analysis):** The dredge pipeline surfaces known unknowns from the conversation archive using G1/G2 gate scoring. Items that pass (mainnet requirement + must-strength) are promoted to the research gap matrix. For the most structurally significant gaps — those visible as named missing CDLs, unimplemented tracks, or constitutional surfaces with no runtime — dedicated gap analysis documents are produced. These enumerate known unknowns with concrete advancement paths: which CDL to open, which simulation would reduce uncertainty, what the blocking question is.
+
+### Tier 3 — Unknown unknowns: structured ignorance management
+
+Unknown unknowns are the hardest category — structural blind spots not in any document, not in any CDL, not visible from inside the current framing. ILC manages them through four practices:
+
+**1. Broad concept-discovery search with MemPalace:** The §0b search is explicitly scoped to *concepts*, not just tokens. Synonyms, old names, neighboring ideas, code symbols, and domain vocabulary are all required search terms. MemPalace (the vector + BM25 index) is queried and returns ranked results — but every returned path must be direct-read before any claim is made. MemPalace surfaces documents that wouldn't appear in a targeted keyword search, which is where unknown unknowns live: in documents the agent didn't know to look for.
+
+**2. §0d source expansion and the hard-requirement clause:** Every phase prompt's §0d section must contain the exact phrase: *"If MemPalace is used, direct-read every returned path."* This is machine-enforced by `tools/validate_phase_prompt.py` — a prompt missing this clause fails validation. The rationale: MemPalace indexes a snapshot, and the document may have been amended or superseded since. The unknown unknown being managed here is the assumption that a retrieved document says what you expect it to say.
+
+**3. Adversarial review by an independent security reviewer:** The security reviewer role exists specifically to surface unknown unknowns that the implementer and architect reviewer miss because they are too close to the design decisions. This is not incidental — the role was established after a concrete example: a JSON key-order coupling bug that produced non-reproducible hashes was invisible to the agents who wrote the code, because they had internalized the assumption that insertion order was consistent. The security reviewer, reading the code cold, saw it immediately.
+
+**4. Formal unknown-unknowns analysis documents:** At major architecture decision points, a dedicated analysis document is produced that explicitly separates **known unknowns** (KU-series: gaps visible in existing documents, with named advancement paths and simulation proposals) from **unknown unknowns** (UU-series: structural blind spots identified through principle-driven analysis). The Phase 354 document (`docs/specs/ilc_open_requirements_and_unknown_unknowns_analysis_354_v0.1.md`) is the canonical example: 6 known unknowns (P2P transport, shard lifecycle, bootstrap cold-start economics, protocol upgrade governance, token issuance runtime, identity namespace at scale) and 11 unknown unknowns (network partition semantics, storage economics, clock synchronization attacks, version negotiation, emergency circuit breakers, micro-agent cost floors, capability heterogeneity, human-agent distinction, agent death semantics, cross-shard consistency, model version drift). Each unknown unknown comes with a simulation proposal that would quantify the risk before a constitutional decision is made.
+
+### The key insight
+
+The framework reflects a core epistemological position: **structured ignorance is as important as structured knowledge.** A project that only tracks what it knows will be blindsided by what it doesn't. A project that tracks the shape of its ignorance — and designs processes to shrink it systematically — is epistemically more robust, even if it moves more slowly.
+
+This is not incidental to ILC's design. It is a direct application of the protocol's own epistemic model: refutations and superseded claims are first-class objects, not deletions. The development process follows the same principle — unknown unknowns are not embarrassments to be hidden, they are a resource to be mined.
+
+---
+
+## 9. Multi-Agent Architecture
 
 ILC is developed by a team with differentiated roles and constraints. Four role classes participate:
 
@@ -275,7 +318,7 @@ This separation is enforced through:
 
 ---
 
-## 9. Progress Tracking and Frontier Documents
+## 10. Progress Tracking and Frontier Documents
 
 ILC uses a layered set of tracking documents that form a coherent state machine. Each layer has a different audience, lifetime, and update frequency.
 
@@ -312,7 +355,7 @@ The **context capsule** (`docs/specs/ilc_antigravity_context_capsule_vN.NN.md`) 
 
 ---
 
-## 10. Knowledge Management: Past Conversation Archive, Dredge, and MemPalace
+## 11. Knowledge Management: Past Conversation Archive, Dredge, and MemPalace
 
 One of the distinctive characteristics of this project is that it predates most of its own tooling. The earliest design conversations happened in raw chat sessions before any formal specification existed. Preserving that raw thinking — and making it retrievable — required building a three-layer knowledge pipeline.
 
@@ -383,7 +426,7 @@ This pipeline means every design decision has a traceable path back to the raw c
 
 ---
 
-## 11. Tooling Overview
+## 12. Tooling Overview
 
 The `tools/` directory contains ~130 scripts and programs organized into functional families. A sampling by category:
 
@@ -444,7 +487,7 @@ The simulation results inform CDL prelock constants. For example, SIM-PROVENANCE
 
 ---
 
-## 11. Security and Coding Standards
+## 13. Security and Coding Standards
 
 The ten items below are the **minimum** mandatory standards, not an exhaustive security checklist. They address the most systematic and mechanically enforceable failure modes identified across the project's development. Production deployment will require additional review against the full OWASP taxonomy, protocol-specific threat models (Byzantine fault tolerance, Sybil resistance, economic manipulation vectors), and any findings from community security review. The Phase 1387 security disposition (`docs/specs/ilc_pre_activation_hardening_gate_report_1387_rerun_v0.2.md`) documents the broader security review posture and the project's disposition on every HIGH and MEDIUM finding.
 
@@ -465,7 +508,7 @@ These standards are enforced by `tools/check_sensitive_runtime_coding_taboos.py`
 
 ---
 
-## 12. Project Statistics
+## 14. Project Statistics
 
 All figures are from a pre-publication snapshot taken during Window 1429-1458 review. Exact counts change with every phase; run `git rev-list --count HEAD`, `find ilc_core/ -name "*.py" | xargs wc -l`, and similar commands against the repo for current values. LOC figures below represent total lines; non-empty LOC (which excludes blank lines) is noted where available from independent audit.
 
@@ -500,7 +543,7 @@ The test suite is structured in layers:
 
 ---
 
-## 13. Methodology Timeline
+## 15. Methodology Timeline
 
 ### 2025 — Foundations
 
@@ -526,7 +569,7 @@ Window 1429-1458 completes the public RC sequence: rehearsal (Phases 1431-1433),
 
 ---
 
-## 14. What We Got Wrong and Fixed
+## 16. What We Got Wrong and Fixed
 
 Honest accounting matters. The following are methodological failures we caught and corrected:
 
