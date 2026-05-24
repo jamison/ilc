@@ -212,6 +212,30 @@ Non-authorizations preserved: no public RC publication, no source repository pub
 
 ---
 
+### Phase 1447 addendum — release artifact signing + manifest finalization complete (2026-05-24)
+
+Phase 1447 completed after the exact SENSITIVE authority phrase `GO Phase 1447: authorize release artifact signing and manifest finalization`.
+
+Recorded outputs:
+
+- `docs/specs/ilc_release_artifact_signing_manifest_1447_v0.1.md`
+- `ilc_core/rc/signing_ceremony_status.py`
+- `tests/test_phase_1447_release_artifact_signing_manifest.py`
+- `docs/phases/phase_1447_release_artifact_signing_manifest_walkthrough.md`
+
+Phase 1446 root envelope payload hash: `sha256:48e39e365f66cd3a3fea95f115034a31354af31f494f94c648eb8eae5a2ad78b`.
+Launch-readiness manifest content hash: `sha256:fb171d78806950de07d6ce1ae7143eca3f7f2a50fef7e06e833c89447ffe5bdf`.
+
+Tokens locked:
+
+- `release_artifacts_signed_phase_1447`
+- `public_rc_launch_readiness_manifest_v1_finalized_phase_1447`
+- `public_repository_not_published_phase_1447`
+
+Non-authorizations preserved: no public repository publication, no package publication, no public URL publication, no public RC publication, no manifest activation signature, no runtime flag activation, no epoch 0-to-1 transition, no CDL mutation, no ECU/ILC operation, no wallet/ledger/treasury/registry mutation. Phase 1448 remains SENSITIVE and requires separate explicit GO.
+
+---
+
 ## 7. CDL Number Assignments
 
 | CDL | Scope | Register opening | Ratification |
