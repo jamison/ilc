@@ -529,6 +529,12 @@ All figures are from a pre-publication snapshot taken during Window 1429-1458 re
 
 The documentation LOC figure (~716,000 total, ~547,000 non-empty) is one of the most distinctive numbers in the project. It reflects the cost of running a multi-agent development process with full audit trails: every phase produces a walkthrough, every window produces a guidance doc and closure handoff, and every CDL and ADR has its own spec document. The documentation is not overhead — it is the epistemic record that makes the protocol's construction verifiable.
 
+### Development cost
+
+The total AI inference budget for the project through public RC is approximately **$950 USD** in API costs, covering all implementer, reviewer, research reviewer, and simulation sessions from April 2025 through Window 1429-1458. This includes the full constitutional governance track, all runtime implementation phases, the security review pass, the signing ceremony, and the pre-publication gate work.
+
+This figure is worth recording as a reference point: a project with ~860,000 non-empty lines of code and documentation, ~110 CDL rows, ~42 ADRs, ~1,460 phase walkthroughs, and ~3,410 commits was designed, governed, implemented, tested, and prepared for public release for less than $1,000 in AI inference costs. The methodology — token-based specification, structured adversarial review, phased windows with full artifact chains — is what made that tractable. Unstructured prompting at the same scale would not have produced a coherent, auditable result at any cost.
+
 These figures grow with every window. The canonical source of truth is the repository itself.
 
 ### Test philosophy
