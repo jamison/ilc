@@ -424,6 +424,19 @@ Past Conversation Archive/ (verbatim transcripts)
 
 This pipeline means every design decision has a traceable path back to the raw conversation where the idea first appeared — and the quality gates ensure that only the highest-signal claims from those conversations make it into the constitutional record.
 
+### TOON: Token-Efficient Context Packing
+
+As the project's context requirements grew — longer phase prompts, larger §0 discovery sections, richer agent rehydration packets — the cost of delivering structured context to AI agents became a meaningful efficiency concern. ILC adopted **TOON** (a compact, human-legible structured format installable via `pip install toon-format`) as the encoding for outbound context packing and agent rehydration packets.
+
+TOON is used in two places visible in the current public codebase:
+
+- **The README agent hydration block** — the `toon` block at the end of `README.md` is a machine-readable state packet for AI agents and autonomous systems. It encodes the protocol's current state, governance status, economic framing, and navigation index in a compact format that reduces token consumption for agents parsing the document.
+- **The ILC Skill / agentic harness layer** (planned, Window 1459+) — the planned harness architecture uses TOON for outbound prompt compression and task envelope formatting. TOON applies to context packing only; captured model output always preserves raw response bytes as the hashable content, and neither TOON-packed metadata nor node envelopes are included in the content hash. This separation is a hard architectural invariant.
+
+**Why this matters for methodology:** Token cost is a direct function of context size. A ~40% reduction in prompt token volume (achievable with structured TOON packing vs. equivalent plain-prose context) at the scale of this project — tens of thousands of agent turns — translates directly to reduced API cost and faster turn latency. The $950 total inference budget is partly a function of this kind of efficiency discipline: structured formats, tiered context (Tier A constitutional facts before Tier D historical walkthroughs), and MemPalace retrieval-before-full-read all reduce the tokens consumed per turn.
+
+TOON is not yet applied to the internal phase prompt and walkthrough workflow (that work is deferred to Window 1459+), but its adoption for public-facing agent interfaces is already live.
+
 ---
 
 ## 12. Tooling Overview
@@ -508,7 +521,7 @@ These standards are enforced by `tools/check_sensitive_runtime_coding_taboos.py`
 
 ---
 
-## 14. Project Statistics
+## 14. Project Statistics (as of 2026-05-24)
 
 All figures are from a pre-publication snapshot taken during Window 1429-1458 review. Exact counts change with every phase; run `git rev-list --count HEAD`, `find ilc_core/ -name "*.py" | xargs wc -l`, and similar commands against the repo for current values. LOC figures below represent total lines; non-empty LOC (which excludes blank lines) is noted where available from independent audit.
 
