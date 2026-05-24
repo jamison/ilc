@@ -15,7 +15,7 @@
 7. [The Four-Eyes / Six-Eyes Principle](#7-the-four-eyes--six-eyes-principle)
 8. [Multi-Agent Architecture](#8-multi-agent-architecture)
 9. [Progress Tracking and Frontier Documents](#9-progress-tracking-and-frontier-documents)
-10. [Knowledge Management: Z_Past_Chats, Dredge, and MemPalace](#10-knowledge-management-z_past_chats-dredge-and-mempalace)
+10. [Knowledge Management: Past Conversation Archive, Dredge, and MemPalace](#10-knowledge-management-past-conversation-archive-dredge-and-mempalace)
 11. [Security and Coding Standards](#11-security-and-coding-standards)
 12. [Project Statistics](#12-project-statistics)
 13. [Methodology Timeline](#13-methodology-timeline)
@@ -30,6 +30,8 @@ ILC is built using a methodology that mirrors the epistemic principles the proto
 The result is a project where the governance layer, the implementation layer, and the testing layer are deliberately kept separate — and where each layer can audit the others.
 
 This document describes how that works in practice.
+
+> **Note for public readers:** Some links in this document (file paths such as `docs/specs/...`) point to files in the private development repository. They are preserved to make the methodology description traceable but are not navigable without access to that repository. The public source repository contains the protocol implementation, specifications, and phase walkthroughs that have been cleared for publication.
 
 ---
 
@@ -108,20 +110,40 @@ Every phase prompt includes:
 
 Non-claim tokens are a first-class concept. Recording what did not happen is as important as recording what did, because future agents reading the history must be able to distinguish "this was not done" from "this was forgotten."
 
+### Token naming conventions
+
+Tokens follow a consistent format:
+- **All lowercase, underscores as separators** — `cdl_084_ratified_phase_1113`, not `CDL084RatifiedPhase1113`
+- **Descriptive and self-contained** — reading the token string alone should identify what happened, which phase or CDL/ADR it relates to, and (optionally) a version suffix
+- **Phase-scoped** — output tokens always include the phase number (`_phase_NNNN`) to make them globally unique across the project history
+- **Version-qualified** — many tokens carry a `.vN.N` suffix indicating which version of the specification they attest to
+
+**Token types:**
+
+| Type | Example | Purpose |
+|------|---------|---------|
+| Input token | `cdl_084_ratified_phase_1113` | Proves a prerequisite exists before the phase may run |
+| Output token | `provenance_chain_attribution_runtime_deployed_phase_1114` | Proves a specific deliverable was produced by this phase |
+| Non-claim token | `epoch_0_to_1_transition_not_authorized_phase_1446` | Explicitly records what this phase did NOT do |
+| Version token | `SIGNING_CEREMONY_STATUS_VERSION = "signing_ceremony_status_phase_1446.v0.1"` | Identifies the module version for dependency chaining |
+| Gate token | `prepublication_review_complete_phase_1448a` | Signals that a gate condition has been fully satisfied |
+
+Non-claim tokens are especially important for SENSITIVE phases: because publication, signing, and epoch transitions are irreversible, explicitly recording that they did NOT occur is as governance-critical as recording what did occur.
+
 ---
 
 ## 5. The Adversarial Review Cycle
 
 ILC development uses a structured adversarial process across three distinct roles:
 
-### The Implementer (Codex / Claude Code)
+### The Implementer
 
 Executes phase prompts. Writes code, tests, and documentation. Has access to the full repository at execution time, but is bound by:
 - The exact token contract from the phase prompt
 - The `§0` pre-execution audit (must verify every claim before writing any code)
 - The pre-commit hooks (cannot commit CDL mutations without the `ILC_CDL_MUTATION_AUTHORIZED` environment variable)
 
-### The Architect Reviewer (Claude Code / Claude Opus)
+### The Architect Reviewer
 
 Reviews phase prompts before execution and phase outputs after. Is specifically looking for:
 - **Overclaim drift** — "X is implemented" when the implementation doesn't match the claim
@@ -139,6 +161,14 @@ GO Phase 1446: authorize v0.3 Genesis root envelope signing ceremony
 ```
 
 This phrase, once issued, is recorded in STATUS.md, the walkthrough, and PLANNING_INDEX. A phase prompt that accepted a vague "yes" would not satisfy the audit requirement.
+
+### The Security Reviewer
+
+An out-of-band role with read access to the private repository but no write access. Reviews phase outputs for security vulnerabilities and protocol correctness, independent of the implementer and architect reviewer. Does not participate in day-to-day phase execution — is engaged for cross-cutting security audits and high-stakes gate decisions.
+
+The security reviewer's findings are categorized as HIGH, MEDIUM, or LOW. Each finding requires a recorded project-authority disposition (fix, accept, or defer with rationale) before the relevant security gate can close. This is not a commercial audit; it is an adversarial review by a technically capable external agent who was not involved in writing the code being reviewed.
+
+The most important example of this role catching something critical: a JSON canonicalization gap across several validator modules (missing `sort_keys=True` in paths that hash protocol artifacts) was found by the security reviewer, not by the implementers or the architect reviewer. Both groups were too close to the design decisions to notice the key-order coupling. Fix: `sort_keys=True` is now a mandatory coding standard enforced by a pre-commit taboo checker.
 
 ### The hardening pass
 
@@ -158,12 +188,25 @@ Only after the hardening pass is the prompt authorized to run.
 Work is organized into **windows** (groups of related phases) and **phases** (individual units of work). Every phase follows the same artifact chain:
 
 ```
-Window Guidance Doc
-    → Phase Prompts (one per phase)
-        → Phase Execution
-            → Phase Walkthrough
-                → Window Closure Handoff
+Window Guidance Doc  (proposed → reviewed → iterated → approved)
+    → Phase Prompts  (drafted → audited → hardened → reviewed → iterated → approved)
+        → Phase Execution  (implementer executes; reviewer and human give feedback; iterate)
+            → Phase Walkthrough  (retrospective record)
+                → Window Closure Handoff  (verdict + carry-forward)
 ```
+
+Each artifact in the chain is not produced once and accepted — it goes through at least one round of multi-party review before the next artifact can begin. The iteration cycle for each stage typically looks like:
+
+1. Drafter proposes the document or prompt
+2. Human authority reviews and raises questions or concerns
+3. Outside reviewer audits for structural issues, overclaim, and canon consistency
+4. Drafter incorporates feedback and revises
+5. Steps 2-4 repeat until all three parties are in agreement
+6. Human issues GO (for SENSITIVE stages) or silent continuation (for NON-SENSITIVE stages)
+
+The same iterative cycle governs actual phase execution: the implementer writes code and opens pull-equivalent artifacts; the architect reviewer and human review the outputs; if findings surface, the implementer revises. The finding, revision, and re-review cycle is recorded in the walkthrough. No phase "completes" until the walkthrough attests that all claimed deliverables have been verified.
+
+For earlier phases in the project (when LLM capabilities were more limited), the hardening and review cycles were more extensive — sometimes requiring 4-6 rounds before a prompt was sound enough to execute. As tooling and prompt discipline improved, the typical cycle shortened. This variation is part of why the methodology emphasizes artifacts (walkthroughs, STATUS rows, token chains) rather than elapsed time: the quality of the output is what matters, not how quickly it was produced.
 
 ### Window Guidance Document
 
@@ -223,6 +266,8 @@ ILC is developed by a team with differentiated roles and constraints. Four role 
 
 Each role has explicit file ownership and cannot unilaterally authorize the other role's domain. The human is the only authority for epoch-0-to-1 transition, CDL ratification, and release signing.
 
+One property of this architecture warrants explicit statement: **Genesis Agent 01 (the human authority) is the only participant with a complete view of the entire development process.** Each AI role interacts with the project through its own context window, tool access, and instruction set. No AI participant has observed every session, every review cycle, every out-of-band security finding, and every design iteration simultaneously. The human authority has been present for all of it — every GO decision, every sensitive gate, every methodology correction, and every non-obvious tradeoff. This 360° continuity of perspective is not replicable by any agent, and is a primary reason the human GO token cannot be bypassed or simulated.
+
 This separation is enforced through:
 - Pre-commit hooks (CDL mutations require explicit environment authorization)
 - Explicit GO token requirements in prompts (exact phrase match, recorded in audit trail)
@@ -267,31 +312,32 @@ The **context capsule** (`docs/specs/ilc_antigravity_context_capsule_vN.NN.md`) 
 
 ---
 
-## 10. Knowledge Management: Z_Past_Chats, Dredge, and MemPalace
+## 10. Knowledge Management: Past Conversation Archive, Dredge, and MemPalace
 
 One of the distinctive characteristics of this project is that it predates most of its own tooling. The earliest design conversations happened in raw chat sessions before any formal specification existed. Preserving that raw thinking — and making it retrievable — required building a three-layer knowledge pipeline.
 
-### Layer 1 — Z_Past_Chats: Verbatim Conversation Archive
+### Layer 1 — Past Conversation Archive: Verbatim Transcripts
 
-`Z_Past_Chats/` contains 68+ verbatim conversation transcripts saved as plain-text files, spanning from April 2025 through the present. The naming convention is `YYYY_MM_DD_ILC - <topic>.txt`. These are unedited — mistakes, dead ends, and discarded ideas are preserved alongside the decisions that became protocol canon.
+The Past Conversation Archive contains 68+ verbatim conversation transcripts saved as plain-text files, spanning from April 2025 through the present. The naming convention is `YYYY_MM_DD_ILC - <topic>.txt`. These are unedited — mistakes, dead ends, and discarded ideas are preserved alongside the decisions that became protocol canon.
 
 The rationale: the protocol's own epistemology holds that refutations and superseded claims are as important as surviving ones. The chat archive is the equivalent for the development process — a record of the full epistemic trajectory, not just the polished outcome.
 
+Beyond the verbatim transcripts, the archive captures a substantial volume of early-stage exploratory work: Python simulation scripts that swept economic parameters, sensitivity analyses on CDL constants, prototype implementations that never entered the main repository, and estimation work on system variables. Much of the 2025 development — including the foundations of the ECU mechanics, the jury assignment probability distributions, and the initial Landauer grounding experiments — exists only in this conversational form. The total volume of the archive, including background research and simulation conversation context, is on the order of 800,000 lines of material. This dwarfs the repository's source code and is the primary reason the knowledge pipeline exists: without dredge and retrieval, this material would be effectively unsearchable.
+
 ### Layer 2 — Dredge: Quality-Gated Extraction
 
-Raw transcripts contain noise, repetition, and exploratory thinking that is not immediately useful. The dredge pipeline (`tools/ilc_rc_gap_dredge.py`, `tools/rc_dredge_v2.py`) extracts structured candidates from the raw text using a multi-gate scoring system:
+Raw transcripts contain noise, repetition, and exploratory thinking that is not immediately useful. Extracting the high-signal claims requires two sequential steps: **dredge** (pattern extraction) and **triage** (gate scoring).
 
-**Gate G1 — Constitutional relevance:** Does the claim relate to a mainnet requirement? Does it assert an invariant or a `must`-strength constraint?
+**Step 1 — Dredge** (`tools/rc_dredge_v2.py`): Scans markdown and text corpora using a library of regex topic patterns organized into families (`genesis_governance`, `knowledge_nodes`, `minting_economics`, `network_privacy`, `agent_memory`, `wallet_authority`, etc.). Each pattern match is deduped by content hash (`cap-<md5hex>`) and emitted as a raw JSONL record containing the extracted claim text, topic classification, normative strength label (`must`, `should`, `idea`), mainnet-requirement flag, and source file/line. This produces the raw candidate files (e.g., `docs/research/rc_gap_dredge_raw_v0.2.jsonl`) — thousands of candidate records without any quality filtering yet applied.
 
-**Gate G2 — Normative strength:** Is this a `must`, an `idea`, or a weak `suggestion`? Only `must`-strength claims clear this gate automatically.
+**Step 2 — Triage** (`tools/rc_gap_triage_v2.py`): Reads the raw JSONL and applies a four-dimensional scoring model. Two dimensions are binary gates (a candidate must pass both to advance); two are additive rank scores:
 
-**Gate G7 — Leverage scoring:** Topic-family weighting. Claims about `minting_economics`, `genesis_governance`, `wallet_authority`, and `ecu_circulation` score higher because they touch the protocol's core economic surfaces.
+- **G1 (binary gate — constitutional relevance):** Requires `mainnet_req == "Yes"` AND (`"invariant"` in claim text OR strength is `"must"`). Configurable via `--g1-mode`: strict (default), relaxed (any non-No mainnet_req), or off.
+- **G2 (binary gate — normative strength):** Requires strength to be exactly `"must"`. Weaker-strength candidates are dropped here regardless of topic.
+- **G7 (additive 0–3 — leverage score):** Topic-family weighting for the protocol's core economic surfaces (`minting_economics`, `genesis_governance`, `wallet_authority`, `ecu_circulation` each add 2; secondary topics add 1; claims containing canonical authority vocabulary add 1 more, capped at 3).
+- **G8 (additive 0–3 — agent-pull score):** Weights for underspecified areas where agent perspective adds the most signal (`agent_memory`, `knowledge_nodes`, `network_privacy`, `node_market_structure`; privacy-adjacent vocabulary adds more, capped at 3).
 
-**Gate G8 — Agent-pull scoring:** Claims about `agent_memory`, `knowledge_nodes`, `network_privacy`, and `node_market_structure` score higher for a different reason — they represent underspecified areas where agent perspective adds signal.
-
-Each candidate that clears the gates is emitted as a JSONL record with a content-addressed ID (`cap-<md5hex>`), topic classification, strength label, source file and line, and review status. The output files (`docs/research/rc_gap_dredge_raw_v0.2.jsonl`, `constitution_dredge_raw_v0.1.jsonl`) contain thousands of such records.
-
-The triage layer (`tools/rc_gap_triage_v2.py`) then re-ranks the dredge output into a prioritized matrix, grouping by topic family and scoring for implementation readiness. This is what generates the research matrices in `docs/research/rc_gap_matrix_v0.2.md` — the structured queue of design gaps waiting for a CDL or ADR to resolve them.
+Candidates that fail G1 or G2 are dropped. Survivors are ranked by total score (G1 + G2 + G7 + G8), producing the prioritized research matrix in `docs/research/rc_gap_matrix_v0.N.md` — the structured queue of design gaps waiting for a CDL or ADR to resolve them.
 
 ### Layer 3 — MemPalace: Semantic Retrieval
 
@@ -313,11 +359,11 @@ The dredge matrix is good for triage but not for retrieval. When drafting a phas
 ### The full pipeline
 
 ```
-Z_Past_Chats/ (verbatim transcripts)
-    → tools/ilc_rc_gap_dredge.py (pattern extraction)
-        → docs/research/*_dredge_raw_v0.N.jsonl (candidate records)
-            → tools/rc_gap_triage_v2.py (gate scoring)
-                → docs/research/rc_gap_matrix_v0.N.md (prioritized queue)
+Past Conversation Archive/ (verbatim transcripts)
+    → tools/rc_dredge_v2.py (topic-pattern extraction → raw JSONL)
+        → docs/research/*_dredge_raw_v0.N.jsonl (candidate records, no filtering yet)
+            → tools/rc_gap_triage_v2.py (G1/G2/G7/G8 gate scoring → ranked matrix)
+                → docs/research/rc_gap_matrix_v0.N.md (prioritized design gap queue)
                     → tools/mempalace/ (vector + BM25 index)
                         → phase prompt §0b discovery (advisory retrieval)
                             → §0d direct-read (authoritative verification)
@@ -371,7 +417,7 @@ The simulation results inform CDL prelock constants. For example, SIM-PROVENANCE
 
 `tools/agent_loop_v0.sh`, `tools/agent_loop_v1.py` — early implementations of the agentic development loop. These evolved into the current phase window workflow.
 
-`tools/codex_chat_recovery.py` — when a Codex session times out mid-phase, this tool reconstructs the recoverable state from partial outputs and chat logs, identifying what was committed and what remains to be done.
+`tools/codex_chat_recovery.py` — when an implementer session times out mid-phase, this tool reconstructs the recoverable state from partial outputs and chat logs, identifying what was committed and what remains to be done.
 
 ### Testbed and TLA+ tools
 
@@ -390,6 +436,8 @@ The simulation results inform CDL prelock constants. For example, SIM-PROVENANCE
 ---
 
 ## 11. Security and Coding Standards
+
+The ten items below are the **minimum** mandatory standards, not an exhaustive security checklist. They address the most systematic and mechanically enforceable failure modes identified across the project's development. Production deployment will require additional review against the full OWASP taxonomy, protocol-specific threat models (Byzantine fault tolerance, Sybil resistance, economic manipulation vectors), and any findings from community security review. The Phase 1387 security disposition (`docs/specs/ilc_pre_activation_hardening_gate_report_1387_rerun_v0.2.md`) documents the broader security review posture and the project's disposition on every HIGH and MEDIUM finding.
 
 Ten mandatory coding standards apply to all `ilc_core/` code (first codified Phase 644, extended through Phase 1228):
 
@@ -410,19 +458,24 @@ These standards are enforced by `tools/check_sensitive_runtime_coding_taboos.py`
 
 ## 12. Project Statistics
 
-All figures are from a pre-publication snapshot taken during Window 1429-1458 review. Exact counts are available by running `git rev-list --count HEAD`, `find tests/ -name "test_*.py" | wc -l`, and similar commands against the repo. Representative orders of magnitude at the time of writing:
+All figures are from a pre-publication snapshot taken during Window 1429-1458 review. Exact counts change with every phase; run `git rev-list --count HEAD`, `find ilc_core/ -name "*.py" | xargs wc -l`, and similar commands against the repo for current values. LOC figures below represent total lines; non-empty LOC (which excludes blank lines) is noted where available from independent audit.
 
-| Metric | Order of magnitude |
-|--------|--------------------|
-| Python source lines (`ilc_core/`) | ~95,000 |
-| Rust source lines (`ilc_consensus/`) | ~17,000 |
-| Test files | ~1,350 |
-| CDL register rows | ~110 |
-| Accepted ADRs | ~42 |
-| Phase walkthroughs | ~1,460 |
-| Total commits | ~3,410 |
-| Windows completed | ~120 |
-| Constitutional simulations (SIM series) | 15+ |
+| Category | Files | Total LOC | Non-empty LOC |
+|----------|-------|-----------|---------------|
+| Python source (`ilc_core/`) | ~342 | ~95,000 | ~82,000 |
+| Python tests (`tests/`) | ~1,350 | ~216,000 | ~175,000 |
+| Rust source (`ilc_consensus/`) | ~43 | ~17,000 | ~9,700 |
+| Python tooling (`tools/`) | ~139 | ~38,000 | ~47,000 |
+| Documentation (`docs/`, markdown) | ~4,435 | ~716,000 | ~547,000 |
+| Past Conversation Archive | 68+ transcripts | ~800,000 (conversational) | — |
+| CDL register rows | ~110 | — | — |
+| Accepted ADRs | ~42 | — | — |
+| Phase walkthroughs | ~1,460 | (included in docs total) | — |
+| Total commits | ~3,410 | — | — |
+| Windows completed | ~120 | — | — |
+| Constitutional simulations (SIM series) | 15+ | — | — |
+
+The documentation LOC figure (~716,000 total, ~547,000 non-empty) is one of the most distinctive numbers in the project. It reflects the cost of running a multi-agent development process with full audit trails: every phase produces a walkthrough, every window produces a guidance doc and closure handoff, and every CDL and ADR has its own spec document. The documentation is not overhead — it is the epistemic record that makes the protocol's construction verifiable.
 
 These figures grow with every window. The canonical source of truth is the repository itself.
 
@@ -474,7 +527,7 @@ Multiple times, a phase prompt asserted "X is implemented" when the actual imple
 
 ### Key-order coupling bugs (Phases 362-364)
 
-An external review (Gemini) caught that JSON canonicalization was missing `sort_keys=True` on several validator paths. Hash reproducibility across agents depends on key order. Fix: `sort_keys=True` is now a mandatory standard (item 1 of the ILC Coding Security Standards), enforced by the taboo checker.
+An external security review caught that JSON canonicalization was missing `sort_keys=True` on several validator paths. Hash reproducibility across agents depends on key order. Fix: `sort_keys=True` is now a mandatory standard (item 1 of the ILC Coding Security Standards), enforced by the taboo checker.
 
 ### Selftest-guard recursion pattern (recurring through Phase 423)
 
