@@ -531,7 +531,7 @@ The documentation LOC figure (~716,000 total, ~547,000 non-empty) is one of the 
 
 ### Development cost
 
-The total AI inference budget for the project through public RC is approximately **$950 USD** in API costs, covering all implementer, reviewer, research reviewer, and simulation sessions from April 2025 through Window 1429-1458. This includes the full constitutional governance track, all runtime implementation phases, the security review pass, the signing ceremony, and the pre-publication gate work.
+The total AI inference budget for the project through public RC is approximately **$950 USD** in API costs, covering all implementer, reviewer, research reviewer, and simulation sessions from January 2026 through Window 1429-1458. This includes the full constitutional governance track, all runtime implementation phases, the security review pass, the signing ceremony, and the pre-publication gate work.
 
 This figure is worth recording as a reference point: a project with ~860,000 non-empty lines of code and documentation, ~110 CDL rows, ~42 ADRs, ~1,460 phase walkthroughs, and ~3,410 commits was designed, governed, implemented, tested, and prepared for public release for less than $1,000 in AI inference costs. The methodology — token-based specification, structured adversarial review, phased windows with full artifact chains — is what made that tractable. Unstructured prompting at the same scale would not have produced a coherent, auditable result at any cost.
 
