@@ -4,6 +4,13 @@
 *Build artifact:* 2026-01-06  
 *Corpus basis (local zip):* `Z_Past_Chats/` transcripts (largest: 2026_01_06 status update, 2025_12_01 energy-aware routing, 2025_06_26 design convo 2, 2025_06_05 AI job impact, 2025_06_02 bitcoin energy/value, 2025_06_05 whitepaper section 2), plus `MANIFESTO.md`, `docs/ILC_Master_Principle_List_v5.1.md`, and MVP schemas (`protocol/ilc_protocol_mvp.json`, `epistemic_work_task_schema_v1.json`).  
 
+*Relation to current framing:* this document is the older academic paper seed.
+The root-level `economics.md` file is the newer aspirational treatise and
+public-facing philosophical frame. Future journal/submission work should treat
+this draft as the technical-paper base and use `economics.md` as updated
+motivation, terminology, and doctrine context; the two documents should
+cross-reference each other, not be merged.
+
 ---
 
 ## Abstract
