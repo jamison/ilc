@@ -42,6 +42,8 @@ Four technical innovations:
 
 The activation certificate (Phase 1450) is the sole authorized trigger for epoch 0→1. No manual flag flip substitutes for it.
 
+> **Note:** `ilc-foundation` is the GitHub organization name. The ILC Foundation legal entity formation is planned but not yet complete.
+
 ---
 
 ## Quick navigation

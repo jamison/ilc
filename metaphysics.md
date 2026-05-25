@@ -74,7 +74,7 @@ traceable, refutable, revisable, and economically maintained.
 
 ## 3. Personal Metaphysical Frame
 
-Jamison's personal metaphysics is stronger and broader than the protocol claim.
+Genesis Agent's personal metaphysics is stronger and broader than the protocol claim.
 It can be stated this way:
 
 ```text
@@ -468,7 +468,7 @@ educational summary, it must keep both intact.
 6. Genesis economics must not be overstated. Claims about a Genesis siphon, exact
    reference probabilities, or current automatic ECU accrual must not be treated
    as active runtime fact unless tied to a ratified CDL and implementation.
-7. Jamison's personal metaphysical frame must be captured directly:
+7. Genesis Agent's personal metaphysical frame must be captured directly:
    hypergraphs as an analogy for how the universe operates, and observers across
    scale having bounded light cones of consciousness or participation that
    perturb the structures they perceive.
@@ -486,7 +486,7 @@ This document may claim:
    governance-gated until separately activated.
 6. Metaphysical ideas from physics, biology, game theory, and consciousness
    research are hypotheses and inspirations under test, not protocol authority.
-7. Jamison's personal metaphysical framing treats observers as bounded
+7. Genesis Agent's personal metaphysical framing treats observers as bounded
    participants in a morphogenetic-hypergraph-like universe, but only as
    philosophical framing unless separately formalized.
 8. One purpose of ILC is to build an epistemic system capable of fortifying,
