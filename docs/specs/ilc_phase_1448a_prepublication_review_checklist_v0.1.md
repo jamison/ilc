@@ -28,16 +28,16 @@ a decision.
 
 What the public will actually receive.
 
-### A1 — Materialized tree verification — BLOCKING
+### A1 — Materialized tree verification — **RESOLVED 2026-05-25**
 
-- [ ] **Re-materialize the Phase 1333 public tree** after all root-level file changes
-  (README.md, methodology.md, metaphysics.md, economics.md) are finalized. The Phase 1448b
-  push publishes the materialized tree, not the live repo root. If root files changed since
-  Phase 1333, the tree must be re-run and a new `tree_sha256` recorded. This must happen
-  before 1448b; the published hash chain must reflect the actual published content.
-- [ ] Run `PUBLIC_RC_EXCLUDE` scan on the re-materialized tree — zero hits required
-- [ ] Run private-material scan (`BEGIN PRIVATE KEY`, `mnemonic`, `recovery_seed`) — zero hits required
-- [ ] Verify new `tree_sha256` and record it in the Phase 1448a gate token
+- [x] **Re-materialize the Phase 1333 public tree** after all root-level file changes
+  (README.md, methodology.md, metaphysics.md, FUNDING.md, CONTRIBUTING.md, SECURITY.md,
+  CODE_OF_CONDUCT.md) are finalized. Gate ran clean: `result: executed_clean_export`.
+- [x] `PUBLIC_RC_EXCLUDE` marker scan — **zero hits** (methodology.md force-included with
+  `marker_status: hit_force_included`; not counted as an exported marker hit)
+- [x] Dependency scan — zero stripped-helper hits
+- [x] Legacy untagged review — zero blocked ambiguities
+- [x] `tree_sha256` recorded: **`925d6399399c7f82f52cf17318687a9d625d7e64ef2b0e2fc6586fd15c036361`**
 
 ### A2 — File list walkthrough
 
@@ -276,16 +276,18 @@ Required inputs for Phase 1448b.
 | B1 | Org creation | PENDING | — |
 | B2 | Repo name | PENDING | — |
 | C3 | "Inverted ECU" terminology in README | PENDING | — |
-| D1 | methodology.md ships? | PENDING | — |
-| D2 | metaphysics.md ships? | PENDING | — |
+| A1 | Public tree re-materialization | RESOLVED — `tree_sha256: 925d6399...` | 2026-05-25 |
+| D1 | methodology.md ships? | RESOLVED — ships; force-included in DEFAULT_FORCE_INCLUDE_PATHS | 2026-05-25 |
+| D2 | metaphysics.md ships? | RESOLVED — ships; "Genesis Agent" pseudonym applied | 2026-05-25 |
+| D3 | FUNDING.md ships? | RESOLVED — ships; added to DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
 | E1 | Patent counsel disposition (Path 1: obtained OR Path 2: deferred with rationale) | PENDING — BLOCKING | — |
-| F1 | CONTRIBUTING.md | PENDING | — |
-| F2 | SECURITY.md | PENDING | — |
-| G | publication_target + publication_tag | PENDING — BLOCKING | — |
+| F1 | CONTRIBUTING.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
+| F2 | SECURITY.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
+| G | publication_target + publication_tag | RESOLVED — `https://github.com/ilc-foundation/ilc`, tag `v0.3-public-rc` | 2026-05-25 |
 
 **Blocking items** (must resolve before Phase 1448b can execute):
-- A1 — public tree re-materialized after root file changes; new tree_sha256 recorded
-- A4 — git history privacy decision (push with history vs. fresh mirror)
-- CDL-095 — jury verdict finality and escalation architecture ratified; token `cdl_095_ratified_phase_1448c` must exist **[RESOLVED — ratified Phase 1448c, 2026-05-25]**
+- A1 — **RESOLVED 2026-05-25** — `tree_sha256: 925d6399399c7f82f52cf17318687a9d625d7e64ef2b0e2fc6586fd15c036361`
+- A4 — `ilc-foundation` GitHub org + empty `ilc` repo must be created; then seed fresh public repo from materialized tree
+- CDL-095 — **RESOLVED 2026-05-25** — `cdl_095_ratified_phase_1448c` token emitted (Phase 1448c)
 - E1 — patent counsel disposition recorded: either Path 1 (obtained, record summary) or Path 2 (explicitly deferred with human-authorized rationale); token `patent_counsel_disposition_recorded_phase_1448a` emitted in both cases
-- G — publication_target and publication_tag confirmed
+- G — **RESOLVED 2026-05-25** — `publication_target: https://github.com/ilc-foundation/ilc`, `publication_tag: v0.3-public-rc`
