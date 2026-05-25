@@ -146,7 +146,7 @@ economic_frame:
   status: doctrine_framing_not_runtime_settlement_formula
   source[3]: docs/research/ilc_w_e_traceability_and_kernel_mapping_note_702_v0.1.md,docs/specs/epoch_economics_accounting_notes_v0.1.md,docs/research/ilc_relative_directional_energy_meter_and_epistemic_efficiency_plan_v0.1.md
 contact:
-  jamison_confidential_sidecar: planned_not_live
+  genesis_agent_01_confidential_sidecar: planned_not_live
   status: local_preview_only_no_public_confidential_messaging
   current_contact: out_of_band_until_public_confidential_coordination_authorized
   future_gate[3]: CDL-094_TransportPrincipal,public_sidecar_activation,public_confidential_coordination_authority
