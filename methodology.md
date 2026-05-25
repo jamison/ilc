@@ -17,11 +17,12 @@
 9. [Multi-Agent Architecture](#9-multi-agent-architecture)
 10. [Progress Tracking and Frontier Documents](#10-progress-tracking-and-frontier-documents)
 11. [Knowledge Management: Past Conversation Archive, Dredge, and MemPalace](#11-knowledge-management-past-conversation-archive-dredge-and-mempalace)
-12. [Tooling Overview](#12-tooling-overview)
-13. [Security and Coding Standards](#13-security-and-coding-standards)
-14. [Project Statistics](#14-project-statistics)
-15. [Methodology Timeline](#15-methodology-timeline)
-16. [What We Got Wrong and Fixed](#16-what-we-got-wrong-and-fixed)
+12. [Graph Delta and Public Artifact Discipline](#12-graph-delta-and-public-artifact-discipline)
+13. [Tooling Overview](#13-tooling-overview)
+14. [Security and Coding Standards](#14-security-and-coding-standards)
+15. [Project Statistics (as of 2026-05-24)](#15-project-statistics-as-of-2026-05-24)
+16. [Methodology Timeline](#16-methodology-timeline)
+17. [What We Got Wrong and Fixed](#17-what-we-got-wrong-and-fixed)
 
 ---
 
@@ -71,7 +72,7 @@ An ADR is a design decision at the architecture or interface layer. It is:
 
 ADRs govern: layer boundaries, module interfaces, data schemas, network protocols, signing formats, and identity derivation procedures.
 
-As of public RC: see the project statistics table in §12 for current counts; the register grows with each window.
+As of public RC: see the project statistics table in §15 for current counts; the register grows with each window.
 
 ---
 
@@ -492,7 +493,7 @@ The simulation results inform CDL prelock constants. For example, SIM-PROVENANCE
 
 ### MemPalace tools
 
-`tools/mempalace/` — described in §10. The full corpus palace build, active working set incremental build, tiered query engine, and retrieval brief renderer.
+`tools/mempalace/` — described in §11. The full corpus palace build, active working set incremental build, tiered query engine, and retrieval brief renderer.
 
 ### Agent loop tools
 
@@ -522,7 +523,7 @@ The ten items below are the **minimum** mandatory standards, not an exhaustive s
 
 Ten mandatory coding standards apply to all `ilc_core/` code (first codified Phase 644, extended through Phase 1228):
 
-1. **Canonical JSON** — `json.dumps()` on protocol artifacts must use `sort_keys=True`
+1. **Canonical JSON** — `json.dumps()` on protocol artifacts must use `sort_keys=True, separators=(',', ':'), allow_nan=False`; compact separators and NaN rejection are required for byte-stable signed and hashed artifacts (omitting either can break hash reproducibility or admit silent Inf/NaN corruption)
 2. **No PRNG** — `import random` is banned; use `secrets.SystemRandom()` for stochastic needs
 3. **No float for ECU/ILC values** — `decimal.Decimal` required; non-finite values explicitly rejected
 4. **No `assert` in production code** — use `if not condition: raise ValueError("token_string")`
@@ -546,7 +547,7 @@ All figures are from a pre-publication snapshot taken during Window 1429-1458 re
 | Python source (`ilc_core/`) | ~342 | ~95,000 | ~82,000 |
 | Python tests (`tests/`) | ~1,350 | ~216,000 | ~175,000 |
 | Rust source (`ilc_consensus/`) | ~43 | ~17,000 | ~9,700 |
-| Python tooling (`tools/`) | ~139 | ~38,000 | ~47,000 |
+| Python tooling (`tools/`) | ~139 | ~38,000 | ~33,000 |
 | Documentation (`docs/`, markdown) | ~4,435 | ~716,000 | ~547,000 |
 | Past Conversation Archive | 68+ transcripts | ~800,000 (conversational) | — |
 | CDL register rows | ~110 | — | — |
