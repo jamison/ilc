@@ -8,9 +8,16 @@
 
 ## Purpose
 
-Every item in this checklist must be reviewed and resolved before `GO Phase 1448:
-authorize public repository publication` is issued. Once the repo is public, it is
-public — no second chance to remove content or correct the first impression.
+Every item in this checklist must be reviewed and resolved before issuing the Phase 1448b
+GO phrase. Once the repo is public, it is public — no second chance to remove content or
+correct the first impression.
+
+**Standard GO phrase (counsel disposition obtained):**
+`GO Phase 1448b: authorize public repository publication`
+
+**Extended GO phrase (counsel disposition explicitly deferred — use only if Section E1
+decision is recorded as deferred with human-authorized rationale):**
+`GO Phase 1448b: authorize public repository publication; patent counsel deferred; human accepts disclosed risk`
 
 Work through each section interactively with Claude Code. Flag any item that needs
 a decision.
@@ -174,11 +181,18 @@ Must occur before public disclosure.
 
 ### E1 — Critical pre-filing decisions
 
-> **Warning — obtain counsel disposition before 1448b.**
+> **Warning — record a patent counsel disposition before 1448b.**
 > Public disclosure may immediately impair patent rights in non-US jurisdictions.
 > The US one-year grace period does not apply globally. This checklist does not
-> constitute legal advice. A qualified patent attorney must review the disclosure
+> constitute legal advice. A qualified patent attorney should review the disclosure
 > plan before the public push executes.
+>
+> Two paths are accepted. Both require a committed record in the 1448a gate document:
+> - **Obtained:** counsel has reviewed and disposition is recorded. Use standard GO phrase.
+> - **Explicitly deferred:** human has reviewed the risk and authorized proceeding without
+>   counsel. Record the rationale. Use the extended GO phrase with the deferred-risk
+>   acknowledgement. The token `patent_counsel_disposition_recorded_phase_1448a` is emitted
+>   in both cases — it records a conscious decision, not that counsel was obtained.
 
 Key candidate mechanisms worth discussing with counsel (not a legal opinion):
 
@@ -191,10 +205,11 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
 - [ ] **Seven truth primitives as an axiomatic basis for a distributed knowledge economy** —
   the specific primitive set and their composition rules.
 
-**Decision required before 1448b:**
-- [ ] Obtain counsel disposition on patent strategy before public disclosure
-- [ ] If provisional filing is indicated, file before 1448b executes (not after)
-- [ ] Record the provisional application number and filing date in `docs/research/patent_pending/`
+**Decision required before 1448b (choose one path):**
+- [ ] **Path 1 — Obtained:** Record counsel disposition summary and any provisional application reference
+- [ ] **Path 2 — Deferred:** Record explicit rationale and human authorization for deferred counsel
+- [ ] If provisional filing is indicated under Path 1, file before 1448b executes (not after)
+- [ ] Record outcome in `docs/specs/ilc_prepublication_review_gate_record_1448a_v0.1.md`
 
 **Note:** The existing `docs/research/patent_pending/` directory contains only
 `LICENSE.txt` and `NOTICE.md`. No actual application has been filed. This is the
