@@ -1,6 +1,6 @@
 # Funding
 
-ILC is an open-source research project built entirely on AI inference budget. There is no foundation, no VC backing, and no paid contributors.
+ILC is an open-source research project built entirely on AI inference budget. The ILC Foundation legal entity formation is planned but not yet complete. There is no VC backing and no paid contributors.
 
 ## Development cost
 
