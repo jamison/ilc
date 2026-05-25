@@ -54,7 +54,7 @@ The activation certificate (Phase 1450) is the sole authorized trigger for epoch
 | [Methodology](methodology.md) | How this was built |
 | [ADRs](docs/adr/) | Architectural decisions |
 | [Phase walkthroughs](docs/phases/) | Retrospective phase records |
-| [Operator bootstrap guide](docs/specs/ilc_operator_bootstrap_guide_1449_v0.1.md) *(pending Phase 1449)* | How to run a node |
+| Operator bootstrap guide *(pending Phase 1449)* | How to run a node |
 | [Economic paper draft](docs/ILC_Economic_Paper_Draft_v0.2.md) | Protocol economics |
 | [metaphysics.md](metaphysics.md) | Philosophical foundations |
 | CONTRIBUTING.md *(pending publication)* | How to contribute |
