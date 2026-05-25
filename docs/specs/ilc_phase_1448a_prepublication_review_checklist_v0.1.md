@@ -277,7 +277,7 @@ Required inputs for Phase 1448b.
 | C3 | "Inverted ECU" terminology in README | PENDING | — |
 | D1 | methodology.md ships? | PENDING | — |
 | D2 | metaphysics.md ships? | PENDING | — |
-| E1 | Provisional patent pre-filing | PENDING — BLOCKING | — |
+| E1 | Patent counsel disposition (Path 1: obtained OR Path 2: deferred with rationale) | PENDING — BLOCKING | — |
 | F1 | CONTRIBUTING.md | PENDING | — |
 | F2 | SECURITY.md | PENDING | — |
 | G | publication_target + publication_tag | PENDING — BLOCKING | — |
@@ -285,5 +285,5 @@ Required inputs for Phase 1448b.
 **Blocking items** (must resolve before Phase 1448b can execute):
 - A1 — public tree re-materialized after root file changes; new tree_sha256 recorded
 - A4 — git history privacy decision (push with history vs. fresh mirror)
-- E1 — counsel disposition on patent strategy obtained before public disclosure
+- E1 — patent counsel disposition recorded: either Path 1 (obtained, record summary) or Path 2 (explicitly deferred with human-authorized rationale); token `patent_counsel_disposition_recorded_phase_1448a` emitted in both cases
 - G — publication_target and publication_tag confirmed
