@@ -259,6 +259,16 @@ Phase 1448b (SENSITIVE, requires GO Phase 1448b) must verify all five tokens bef
 
 Non-authorizations preserved by Phase 1448a: no public repository publication, no package publication, no public URL publication, no CDL mutation, no ECU/ILC operation, no wallet/ledger/treasury/registry mutation, no signing of new artifacts, no runtime activation changes, no epoch 0-to-1 transition.
 
+### Phase 1448c addendum — CDL-095 ratification (2026-05-25)
+
+Phase 1448c ratified CDL-095 (Jury Verdict Finality and Escalation Architecture) as a blocking prerequisite for Phase 1448b. CDL-095 was identified during Phase 1448a pre-publication review as a constitutional gap: the jury assignment machinery is public-RC visible (Phase 1427 PASS) but verdict finality semantics were undefined. Ratification was confirmed by human on Q1–Q6 after four rounds of Codex/Sonnet review.
+
+Token: `cdl_095_ratified_phase_1448c`
+
+Phase 1448b prerequisite status: `cdl_095_ratified_phase_1448c` is required and is now satisfied.
+
+Non-authorizations: Phase 1448c does not activate shard-tier review, global-tier review, claim state advancement, jury finality runtime, or public RC push; does not amend CDL-051, CDL-083, or J-008 Phase 1427 verdict.
+
 ---
 
 ## 7. CDL Number Assignments
@@ -266,8 +276,9 @@ Non-authorizations preserved by Phase 1448a: no public repository publication, n
 | CDL | Scope | Register opening | Ratification |
 |-----|-------|-----------------|--------------|
 | CDL-094 | TransportPrincipal public-path governance (Gap 10) | Phase 1434 | Phase 1435 |
+| CDL-095 | Jury Verdict Finality and Escalation Architecture (Phase 1448b prerequisite) | Phase 1448c | Phase 1448c |
 
-Next fresh CDL number after this window: **CDL-095** (subject to fix-series openings)
+Next fresh CDL number after this window: **CDL-096** (subject to fix-series openings)
 
 **Note:** ADR-0035 CDL was planned as CDL-094 in earlier drafts. That assignment is released; CDL-094 is reassigned to TransportPrincipal governance. ADR-0035 CDL number is assigned in Window 1459+ sequence lock.
 
