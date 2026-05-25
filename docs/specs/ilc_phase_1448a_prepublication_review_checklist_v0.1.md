@@ -272,6 +272,7 @@ Required inputs for Phase 1448b.
 | Section | Item | Decision | Date |
 |---------|------|----------|------|
 | A4 | Git author metadata | PENDING | — |
+| CDL-095 | Jury verdict finality ratification | RESOLVED — ratified Phase 1448c; token `cdl_095_ratified_phase_1448c` | 2026-05-25 |
 | B1 | Org creation | PENDING | — |
 | B2 | Repo name | PENDING | — |
 | C3 | "Inverted ECU" terminology in README | PENDING | — |
@@ -285,5 +286,6 @@ Required inputs for Phase 1448b.
 **Blocking items** (must resolve before Phase 1448b can execute):
 - A1 — public tree re-materialized after root file changes; new tree_sha256 recorded
 - A4 — git history privacy decision (push with history vs. fresh mirror)
+- CDL-095 — jury verdict finality and escalation architecture ratified; token `cdl_095_ratified_phase_1448c` must exist **[RESOLVED — ratified Phase 1448c, 2026-05-25]**
 - E1 — patent counsel disposition recorded: either Path 1 (obtained, record summary) or Path 2 (explicitly deferred with human-authorized rationale); token `patent_counsel_disposition_recorded_phase_1448a` emitted in both cases
 - G — publication_target and publication_tag confirmed
