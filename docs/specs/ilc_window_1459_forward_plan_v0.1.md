@@ -4,6 +4,7 @@
 **Drafted:** 2026-05-21 (based on Q3/Q4/Q5 resolutions from Window 1429-1458 §8)
 **Status:** DRAFT — not an authorized sequence lock; requires human review and GO before any phase executes
 **Context:** This forward plan covers the first post-public-RC window. It assumes Window 1429-1458 closes with `public_rc_activated_epoch_1_triggered`. Entry into this window is conditioned on that closure verdict.
+**Rehydration addendum (2026-05-27):** Patent-sidequest gaps are recorded in `docs/specs/ilc_patent_sidequest_gap_analysis_and_forward_plan_1448x_v0.1.md`. Filing 5 / agentic function endpoint concepts are routed to Track H compatibility constraints and Candidate Window 1490+ successor scope. Three additional sub-phases were added to Track C after repo verification: Phase ~1469a (W_e Decimal conversion — `node_value_kernel.py` float → Decimal, ICSS §3 compliance), Phase ~1469b (Filing 4 anti-gaming invariants wired into settlement dispatch), and Phase ~1469c (dual-unit ECU+ILC settlement CDL, SENSITIVE). None of these authorize Phase 1448a/1448b publication, runtime activation, CDL mutation, or public disclosure before patent filing/counsel disposition.
 
 ---
 
@@ -62,7 +63,7 @@ This window may not open until all of the following are confirmed:
 |-------|----------------|----------------------|
 | A — ADR-0035 homoiconic type definition system | 1459–1461 | type_definition NodeType CDL + runtime |
 | B — Native Rust P2P substrate completion | 1462–1466 | PersistentQuicSessionManager, CDL-078 Rust routing, peer discovery ADR, Python/Rust bridge, end-to-end tests |
-| C — Werner flow-governor CDL | 1467–1469 | CDL-053 amendment / successor CDL (conditional on diagnostic data) |
+| C — Werner flow-governor CDL + ECU pipeline hardening | 1467–1469c | CDL-053 amendment / successor CDL (conditional on diagnostic data); W_e Decimal conversion (~1469a); anti-gaming settlement wiring (~1469b); dual-unit CDL (~1469c, SENSITIVE) |
 | D — CDL falsification criterion field | ~1470 | Retroactive falsification_criterion annotation on all ratified CDLs |
 | E — Genesis authority sunset spec | ~1471 | Standalone spec formalizing court/house/executive model; closes CDL-004 SUBSTANTIVE gap |
 | F — ADR-0009 protocol-native bundle | 1472–1477 | Layer 0-3 bundle schemas, deterministic generator, independent verifier |
@@ -186,6 +187,45 @@ This window may not open until all of the following are confirmed:
 - If Phase 1468 proceeded: full prelock/ratification cycle.
 - Token: `werner_flow_governor_cdl_ratified_phase_1469` (conditional).
 - Required GO token: `GO Phase 1469`.
+
+**Phase ~1469a — W_e Decimal conversion: ECU scoring pipeline (NON-SENSITIVE)**
+
+- **Gap:** `ilc_core/analysis/node_value_kernel.py:109` returns `tuple[float, float, float, float, float]`. All intermediate computation is Python `float`, violating ICSS §3 (Float Ban) for any future settlement-grade use. `spectral_utils.py:59–70` marks `w(e,t)` `PROVISIONAL` and `UNRATIFIED`. Zero settlement-path imports confirmed.
+- **What's needed:**
+  - Port `node_value_kernel.py` weight and score computations to `decimal.Decimal` with `sort_keys=True` canonical serialization where applicable.
+  - Apply `if not d.is_finite(): raise ValueError(...)` guard at all external input boundaries per ICSS §3 edge case.
+  - Update the three analysis callers (`node_value_conformance.py`, `node_value_governance_conformance.py`, `node_value_policy_migration.py`) to accept `Decimal` outputs.
+  - Update conformance tests.
+  - Scope note: this phase makes the analysis module settlement-grade-capable; it does NOT activate settlement or wire the output into the epoch/ledger path (that is Phase ~1469b).
+- **Sensitivity:** NON-SENSITIVE (no CDL mutation, no settlement activation, no ledger write).
+- **Dependency:** May proceed independently of Phases 1467–1469 (does not require Werner CDL). Logically precedes Phase ~1469b.
+- **Token:** `node_value_kernel_decimal_conversion_complete_phase_1469a`.
+
+**Phase ~1469b — Filing 4 settlement dispatch wiring (NON-SENSITIVE)**
+
+- **Gap:** `ilc_core/analysis/utility_flow_rewards.py` (refutation-profitability invariant), `ilc_core/analysis/reuse_diversity_invariants.py` (anti-Sybil weighting), and `ilc_core/analysis/freshness_gate.py` (freshness gate with permanent-axiom exemption) are fully implemented but have **zero imports in any non-analysis `ilc_core/` module** (confirmed grep: no settlement, epoch, or ledger path calls these functions). They are conformance-check tools only.
+- **What's needed:**
+  - Identify the correct settlement dispatch hook point (epoch processor or reward allocation path) in `ilc_core/`.
+  - Import and invoke all three invariant checks before reward allocation is finalized in the epoch path.
+  - Wrap with appropriate `Decimal`-safe guards (after Phase ~1469a Decimal conversion completes).
+  - Add integration tests confirming invariant violations reject reward allocation, not just log a conformance failure.
+  - Scope note: this wires the analysis-layer invariants into the runtime enforcement path; it does NOT alter the invariant logic itself.
+- **Sensitivity:** NON-SENSITIVE (no CDL mutation; invariants already ratified via Filing 4 mechanisms).
+- **Dependency:** Phase ~1469a (Decimal conversion) should precede or run concurrently. Does not require Werner CDL.
+- **Token:** `anti_gaming_settlement_dispatch_wired_phase_1469b`.
+
+**Phase ~1469c — Dual-unit ECU+ILC settlement CDL and pipeline (SENSITIVE)**
+
+- **Gap:** `ilc_core/ledger/ecu_ilc_lifecycle_runtime.py` tracks ECU and ILC as separate `Decimal` values with `ilc_settlement_authorized` as a boolean flag — there is no protocol-committed ECU+ILC pair at epoch boundary. Dual-unit settlement is currently spec-only; the Filing 3 provisional describes it as an embodiment.
+- **What's needed:**
+  - Open a new CDL scoping the paired `(ECU_delta, ILC_delta)` settlement commitment at epoch boundary: what the pair means, under what authority it is committed, and what the accounting invariants are.
+  - Ratification cycle (prelock, two-commit pattern).
+  - Runtime: implement the paired settlement pipeline so `ecu_ilc_lifecycle_runtime.py` produces and records a co-committed `(ECU, ILC)` settlement record rather than two independent entries.
+  - This CDL must explicitly scope the relationship to CDL-047 treasury, CDL-050/051 economic governance, and CDL-088 claimability.
+- **Sensitivity:** SENSITIVE — new CDL mutation; touches settlement economics surface; requires `ILC_CDL_MUTATION_AUTHORIZED=1`.
+- **Dependency:** Phase ~1469a (Decimal pipeline), Phase 1469 (Werner CDL — settlement authority gating). Werner CDL ratification should precede or the dual-unit CDL must explicitly scope its relationship to Werner authority.
+- **Required GO token:** `GO Phase 1469c`.
+- **Token:** `dual_unit_ecu_ilc_settlement_cdl_ratified_phase_1469c`.
 
 ---
 
@@ -358,6 +398,8 @@ This track provides the implementation substrate for the idle-capacity contribut
 - Provider quota headers are operational scheduling signals only — not protocol truth, economic proof, or inputs to Werner credit calculation
 - Werner crediting is disabled until the Werner flow-governor CDL (Track C) explicitly authorizes the on-ramp; local scheduling and node capture may proceed before Track C
 
+**Patent-sidequest compatibility note (2026-05-27):** Filing 5 discussions introduced future agentic-function endpoint concepts: graph-native function endpoints anchored to identity-seed-derived agent identities, query-response artifacts, co-attested inference receipts, processing-capacity tier metadata, model/capability substitution records, agent trust-state neighborhood projections, and invitation/provenance for peer-to-peer protocol bundle distribution. Track H may preserve compatibility with those concepts through local capture, LMDB storage, and consent-gated publication surfaces, but Track H must not implement or imply protocol activation of function endpoints, processing-capacity tiers, inference crediting, invitation economics, or executable graph payloads. These concepts are routed to Candidate Window 1490+ successor scope unless and until a later sequence lock authorizes them.
+
 **Non-negotiable testing requirement for Phase ~1485 (LocalNodeCapture):**
 
 Every test suite for LocalNodeCapture must include an explicit hash-separation test:
@@ -462,6 +504,12 @@ human/operator policy
 | M — Maintenance workbench | Turn Track H maintenance tasks into operator-visible queues with quality gates and replayable evidence | star-map embedding recipe, contradiction sweep recipe, graph compression recipe, stability simulation recipe | Credit remains gated by Werner CDL authority |
 | N — Goal/function-set coordination recipes | Package harness coordination functions as sidecar recipes with explicit privacy and public-path gates | task offers, task reservations, result availability, receipt/claimability availability, peer health, sealed/private coordination | Does not activate native public Rust P2P or bypass TransportPrincipal |
 | O — Distribution + update path | Package `ilc-harness` for pipx/Homebrew, signed recipe packs, local upgrade checks, and compatibility tests | installer recipe, recipe-pack verifier, conformance pack | No public package/release claim without release authority |
+| P — Agentic function endpoint schema | Define sidecar-bounded function endpoint descriptors anchored to identity-seed-derived `agent_id`, with query interface, output schema, side-effect boundary, and provenance binding | function endpoint descriptor, endpoint registry projection, local endpoint verifier | Does not create independent endpoint identities or executable core graph payloads |
+| Q — Query-response + co-attested inference artifacts | Define graph-native artifact schemas for query-response outputs and multi-agent co-attestation receipts | query-response artifact, co-attestation receipt, contributor signature bundle | Does not mint credit or bypass truth-primitive validation/refutation |
+| R — Agent trust-state neighborhood projection | Define a read model where an agent identity is evaluated by its cryptographic root plus attributed graph actions, validations, refutations, substitutions, and artifacts | trust-state projector, identity-neighborhood view, refutation-survival summary | Does not replace `agent_id` derivation or create reputation scoring authority |
+| S — Model/capability substitution continuity | Define recipes for capability updates, model substitution, identity-continuity claims, and identity-fork/refutation paths | substitution event artifact, continuity claim recipe, fork recommendation report | Does not permit silent identity mutation or unratified signer-lineage changes |
+| T — Tier-aware routing and anti-capture simulation | Simulate processing-capacity tier declarations, tier-honesty checks, response novelty gates, and cluster-diverse endpoint routing | tier declaration stub, routing SIM, anti-capture harness | Processing tier is not economic proof or protocol truth before CDL authority |
+| U — Invitation/provenance + protocol bundle serving path | Integrate Track F protocol bundle artifacts with invitation provenance and serving receipts as a prerequisite for any later inviter-attribution economics | bundle serving receipt, invitation provenance chain, ADR-0009 verifier bridge | No public bundle-serving incentive or CDL-091 successor activation in this window |
 
 **Goal/function-set taxonomy (must be explicit in future prompts):**
 
@@ -473,8 +521,13 @@ human/operator policy
 | `receipt_claimability_availability` | Record verifier receipts, nullifier state, or claimability proof availability | local/private until public verifier authority | public serving requires activated verifier API |
 | `peer_health_diagnostics` | Share bounded diagnostics, capacity, and reachability status | diagnostic only | no economic proof; no provider quota in protocol state |
 | `sealed_private_coordination` | Private coordination payload announce/pull through CCSS recipes | private/gated | CCSS authority and privacy tests |
+| `function_endpoint_query` | Route a bounded query to a sidecar-hosted function endpoint and capture a declarative response artifact | local/private by default | public graph artifact requires ConsentGate and later schema authority |
+| `co_attestation_coordination` | Collect multiple agent signatures over a shared output or inference result | local/private until publication | no credit without Werner/ECU authority and review-lane policy |
+| `trust_state_projection` | Compute an advisory identity-neighborhood summary from attributed graph actions and outcomes | local/diagnostic | no protocol reputation score or admission consequence |
+| `identity_continuity_event` | Record capability/model substitution evidence and continuity/fork recommendations | local/diagnostic until schema ratified | no silent `agent_id` mutation |
+| `bundle_invitation_provenance` | Relate protocol bundle serving receipts to invitation provenance chains | local/private until Track F evidence exists | no inviter economics without later CDL authority |
 
-**Required carry-forward token:** `ilc_native_harness_mvp_successor_scope_recorded_window_1459_forward_plan`.
+**Required carry-forward tokens:** `ilc_native_harness_mvp_successor_scope_recorded_window_1459_forward_plan`; `agentic_function_endpoint_successor_scope_recorded_window_1459_forward_plan`; `agent_trust_state_neighborhood_successor_scope_recorded_window_1459_forward_plan`.
 
 ---
 
@@ -510,6 +563,9 @@ human/operator policy
 | C1 | 1467 | Werner diagnostic data review + flow-governor CDL deliberation | Research | NON-SENSITIVE |
 | C2 | 1468 | Werner flow-governor CDL opening (conditional) | Constitutional | **conditional SENSITIVE** |
 | C3 | 1469 | Werner flow-governor CDL ratification (conditional) | Constitutional | **conditional SENSITIVE** |
+| C4 | ~1469a | W_e Decimal conversion — port `node_value_kernel.py` from float to Decimal; ICSS §3 compliance | Runtime | NON-SENSITIVE |
+| C5 | ~1469b | Filing 4 settlement dispatch wiring — import anti-gaming invariants into epoch/reward path | Runtime | NON-SENSITIVE |
+| C6 | ~1469c | Dual-unit ECU+ILC settlement CDL + paired pipeline | Constitutional + Runtime | **SENSITIVE** |
 | D1 | ~1470 | CDL falsification criterion field — retroactive annotation on all ratified CDLs | Coherence | NON-SENSITIVE |
 | E1 | ~1471 | Genesis authority sunset spec — court/house/executive three-branch model | Constitutional | **SENSITIVE** |
 | F1 | ~1472 | ADR-0009 Layer 0 protocol bundle schema | Spec | NON-SENSITIVE |
@@ -607,6 +663,9 @@ Window 1429-1458 closure (public RC active, epoch 1 triggered)
 | Delegated constitutional authority CDL | Gated on J-008 PASS + public RC + 10 independent operators | Window 1480+ |
 | Phase B/C governance transition triggers (exact numbers) | Require SIM evidence against Boot/Transition/Mature phase table | Post-E track |
 | ILC-native harness MVP | Requires Track H closure; should be a successor window, not a late insertion into Window 1459+ | Candidate Window 1490+ sequence lock |
+| Filing 5 agentic function endpoint layer | Requires patent filing/counsel disposition, Track H local capture substrate, sidecar schema design, and successor sequence lock; economic parts also require Werner/ECU authority | Candidate Window 1490+ sequence lock and later CDL/SIM gates |
+| Agent trust-state neighborhood projection | Requires direct schema work and careful separation from protocol reputation/admission authority | Candidate Window 1490+ advisory read-model scope |
+| Invitation/provenance protocol bundle serving economics | Requires ADR-0009 Track F bundle generator/verifier evidence and later CDL-091 successor deliberation | Post-F-track window |
 
 ---
 
@@ -624,6 +683,10 @@ This forward plan does not authorize:
 - Any Window 1490+ ILC-native harness MVP phase execution before a successor sequence lock and explicit human GO
 - Automatic public publication of captured model/tool outputs without ConsentGate policy
 - Public task coordination, public receipt coordination, or native public Rust P2P activation through Track H alone
+- Function endpoint protocol activation, processing-capacity tier authority, co-attested inference crediting, or agent trust-state projection authority through Track H alone
+- Executable payloads in core graph nodes or an eighth truth primitive for agentic coordination
+- Invitation-based economic credit, public protocol bundle serving incentives, or CDL-091 successor activation before ADR-0009 Track F evidence and later CDL authority
+- Public disclosure of patent-derived Filing 5 implementation details before Phase 1448a records patent filing/counsel disposition or explicit human deferral
 
 ---
 
@@ -637,3 +700,5 @@ This is a **draft forward plan** — it does not constitute an authorized sequen
 4. Phase prompts are drafted per the approved sequence lock.
 
 `window_1459_plus_forward_plan_v0.1`
+
+Related internal support record: `docs/specs/ilc_patent_sidequest_gap_analysis_and_forward_plan_1448x_v0.1.md`.
