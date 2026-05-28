@@ -41,35 +41,41 @@ What the public will actually receive.
 
 ### A2 — File list walkthrough
 
-- [ ] Walk through the top-level file list: what does a first-time visitor see?
-- [ ] Confirm `README.md` ships
-- [ ] Confirm `metaphysics.md` ships (or is `PUBLIC_RC_EXCLUDE` — decide)
-- [ ] Confirm `economics.md` ships (has `PUBLIC_RC_EXCLUDE` header — EXCLUDED)
-- [ ] Confirm `methodology.md` ships
-- [ ] Confirm `MANIFESTO.md` ships (or review content before shipping)
-- [ ] Confirm `CONTRIBUTING.md` exists or is explicitly absent with a reason
-- [ ] Confirm `CODE_OF_CONDUCT.md` exists or is explicitly absent
-- [ ] Confirm `SECURITY.md` exists (responsible disclosure process — important before going public)
+- [x] Walk through the top-level file list: decisions recorded below
+- [x] `README.md` — **SHIPS** (corrected: "Werner productive-credit anti-hoarding" replaces "Inverted ECU"; "Genesis Agent" replaces "Genesis Agent 01"; `genesis_agent_confidential_sidecar` replaces `jamison_confidential_sidecar`; nav block updated 2026-05-28)
+- [x] `metaphysics.md` — **SHIPS** ("Genesis Agent" pseudonym applied 2026-05-25)
+- [x] `economics.md` — **EXCLUDED** (`PUBLIC_RC_EXCLUDE` header present). Future intent: scientifically tighten and ship a TOON-format version for digital agents; deferred to a future phase.
+- [x] `methodology.md` — **SHIPS** (force-included in `DEFAULT_FORCE_INCLUDE_PATHS` 2026-05-25)
+- [x] `MANIFESTO.md` — **EXCLUDED** (`PUBLIC_RC_EXCLUDE` marker added 2026-05-28; too hand-wavy for public RC; may be revised and shipped post-RC)
+- [x] `CONTRIBUTING.md` — **SHIPS** (in `DEFAULT_INCLUDE_ROOTS` 2026-05-25)
+- [x] `CODE_OF_CONDUCT.md` — **SHIPS** (in `DEFAULT_INCLUDE_ROOTS` 2026-05-25)
+- [x] `SECURITY.md` — **SHIPS** (in `DEFAULT_INCLUDE_ROOTS` 2026-05-25)
 
-### A3 — Identity manifest check
+### A3 — Identity manifest check — **RESOLVED 2026-05-28**
 
-- [ ] Read `docs/specs/ilc_rehearsal_agent_identity_manifest_1431_v0.1.md`
-- [ ] Confirm it contains public key material only (no private key paths, no personal email,
-  no physical location, no private contact info)
-- [ ] Confirm Genesis Agent 01 entry matches the chosen public identity (protocol pseudonym only)
-- [ ] Decision: does this file ship in the public tree, or should it be `PUBLIC_RC_EXCLUDE`?
+- [x] Read `docs/specs/ilc_rehearsal_agent_identity_manifest_1431_v0.1.md` — header: "public fields only"; no personal email, phone, address, or location hits confirmed by grep
+- [x] Contains seven public identity records (M1: Genesis Agent, Reviewer-1, Reviewer-2; M2: Validator-A1, Validator-A2; M3: Validator-B1, Validator-B2) — public key material only; private key material off-machine
+- [x] **Decision: SHIPS in public tree.** Shipping the manifest is useful for community — it documents the rehearsal ceremony, provides the public identity anchors, and demonstrates the CDL-069 derivation in practice. No private information present.
 
-### A4 — Git commit author metadata
+### A4 — Git commit author metadata — **RESOLVED 2026-05-28**
 
-- [ ] Run `git log --format="%an <%ae>" | sort -u` to see all author names and emails in commit history
-- [ ] Decision: is the author name and email in the commit history acceptable for public exposure?
-  - If not: the public repo may need to be initialized as a fresh mirror (no commit history)
-    rather than a git push of the private repo
-  - If yes: a direct push of the existing repo is fine
+- [x] Run `git log --format="%an <%ae>" | sort -u` — result: **one author: `Genesis Agent <ilcops@proton.me>`** across all commits
+- [x] **Decision: Option A — Fresh mirror.** The public repo (`ILC-Foundation/ilc`) will be seeded from the materialized tree as a single squashed commit authored as `Genesis Agent <ilcops@proton.me>`. The private repo retains the full development history. Personal name and email will NOT appear in the public commit history.
 
-**This is the most important privacy decision in this checklist.** Git commit history
-is permanent and immutable once public. If personal name/email is in the history and
-you do not want it public, the public repo must be a squashed or fresh mirror.
+**Rationale for community/long-term governance:** A fresh mirror is also the better choice for protocol longevity — when Genesis steps back and the community self-governs, the entire visible public commit history is protocol work, not private development iterations linked to the founder's personal email. This is cleaner for external contributors and preserves the pseudonymous Genesis Agent model throughout.
+
+**A4 push instructions (confirmed):**
+```bash
+cd /tmp/ilc-public
+git init
+git config user.name "Genesis Agent"
+git config user.email "ilcops@proton.me"
+cp -r /tmp/ilc_rc_export_<hash>/. .
+git add -A
+git commit -m "ILC v0.3 Public RC — Epoch 0"
+git remote add origin git@github.com:ILC-Foundation/ilc.git
+git push -u origin main
+```
 
 ---
 
@@ -99,12 +105,13 @@ What GitHub shows before anyone opens a file.
 - [ ] Default branch: `main`
 - [ ] Branch protection on `main`: Enable (require PR, no force push)
 
-### B3 — First release tag
+### B3 — First release tag — **RESOLVED 2026-05-28**
 
-- [ ] Release tag name: decide — suggested `v0.3.0-rc1` (public RC) or `v0.3-public-rc`
-- [ ] Release title: suggested "ILC Public RC v0.3 — Epoch 0"
-- [ ] Release notes: should summarize what is and is not yet active (epoch 0 state,
-  not production minting, not mainnet, jury system authorized not yet live)
+- [x] Release tag name: **`v0.3-public-rc`** (confirmed)
+- [x] Release title: **"ILC Public RC v0.3 — Epoch 0"** (confirmed)
+- [x] Release notes: drafted at `docs/specs/ilc_v03_public_rc_release_notes_draft_v0.1.md` — covers epoch 0 state, what is and is not live, ECU analysis-grade note, local run instructions, patent status note. Requires human review before Phase 1448b GO.
+
+**Note on repo "go live" decision point:** The `ILC-Foundation/ilc` repo is currently private. Flipping it to public is the Phase 1448b action — not before. Branch protection on `main` (require PR, no force push) should be configured at the moment of flip, not before, since push of the initial squashed commit requires a direct push to main. Configure branch protection immediately after the initial push completes.
 
 ---
 
@@ -204,6 +211,10 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
   anti-capture scheme combining RFC 9381 VRF with cluster-diversity quorum.
 - [ ] **Seven truth primitives as an axiomatic basis for a distributed knowledge economy** —
   the specific primitive set and their composition rules.
+- [ ] **Agentic function endpoints and graph-native agent trust-state neighborhoods** —
+  identity-seed-derived agent identities instantiating sidecar-bounded function endpoints,
+  query-response/co-attested inference artifacts, processing-capacity tier declarations,
+  and invitation/provenance chains without executable payloads in core graph nodes.
 
 **Decision required before 1448b (choose one path):**
 - [ ] **Path 1 — Obtained:** Record counsel disposition summary and any provisional application reference
@@ -211,9 +222,12 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
 - [ ] If provisional filing is indicated under Path 1, file before 1448b executes (not after)
 - [ ] Record outcome in `docs/specs/ilc_prepublication_review_gate_record_1448a_v0.1.md`
 
-**Note:** The existing `docs/research/patent_pending/` directory contains only
-`LICENSE.txt` and `NOTICE.md`. No actual application has been filed. This is the
-highest-priority blocking item.
+**2026-05-27 rehydration note:** `docs/research/patent_pending/` now contains a
+five-provisional draft package, Filing 5 guidance/spec materials, figure SVGs,
+figure traceability audit, `NOTICE.md`, `LICENSE.txt`, and a five-provisional
+filing checklist. No actual application has been filed by this repo update.
+This remains the highest-priority blocking item before 1448b unless the human
+records explicit deferred-risk authorization.
 
 ### E2 — Trademark
 
@@ -256,8 +270,8 @@ Both should exist before going public.
 
 Required inputs for Phase 1448b.
 
-- [ ] **`publication_target`** (exact repository URL): `https://github.com/ilc-protocol/ilc`
-  (or confirm alternate)
+- [ ] **`publication_target`** (exact repository URL): `https://github.com/ILC-Foundation/ilc`
+  (confirmed — `ILC-Foundation` org created 2026-05-25; repo exists private)
 - [ ] **`publication_tag`** (immutable release tag): e.g., `v0.3-public-rc` (confirm)
 - [ ] **Push method:** direct push of existing repo (with history) vs. fresh mirror (no history)
   — depends on Section A4 privacy decision
@@ -271,11 +285,14 @@ Required inputs for Phase 1448b.
 
 | Section | Item | Decision | Date |
 |---------|------|----------|------|
-| A4 | Git author metadata | PENDING | — |
+| A2 | File list walkthrough | RESOLVED — MANIFESTO.md excluded; economics.md excluded (future TOON rewrite); all others decided | 2026-05-28 |
+| A3 | Identity manifest ships? | RESOLVED — ships; public fields only confirmed | 2026-05-28 |
+| A4 | Git author metadata | RESOLVED — Option A (fresh mirror); `Genesis Agent <ilcops@proton.me>`; no personal name/email in public history | 2026-05-28 |
 | CDL-095 | Jury verdict finality ratification | RESOLVED — ratified Phase 1448c; token `cdl_095_ratified_phase_1448c` | 2026-05-25 |
-| B1 | Org creation | PENDING | — |
-| B2 | Repo name | PENDING | — |
-| C3 | "Inverted ECU" terminology in README | PENDING | — |
+| B1 | Org creation | RESOLVED — `ILC-Foundation` org created; description, topics, issues configured 2026-05-28; website pending domain registration | 2026-05-28 |
+| B2 | Repo name | RESOLVED — `ilc` (clean); private repo `ILC-Foundation/ilc` configured | 2026-05-28 |
+| B3 | Release notes draft | RESOLVED — drafted at `docs/specs/ilc_v03_public_rc_release_notes_draft_v0.1.md`; branch-protection timing noted | 2026-05-28 |
+| C3 | "Inverted ECU" terminology in README | RESOLVED — changed to "Werner productive-credit anti-hoarding" | 2026-05-28 |
 | A1 | Public tree re-materialization | RESOLVED — `tree_sha256: 925d6399...` | 2026-05-25 |
 | D1 | methodology.md ships? | RESOLVED — ships; force-included in DEFAULT_FORCE_INCLUDE_PATHS | 2026-05-25 |
 | D2 | metaphysics.md ships? | RESOLVED — ships; "Genesis Agent" pseudonym applied | 2026-05-25 |
@@ -283,11 +300,13 @@ Required inputs for Phase 1448b.
 | E1 | Patent counsel disposition (Path 1: obtained OR Path 2: deferred with rationale) | PENDING — BLOCKING | — |
 | F1 | CONTRIBUTING.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
 | F2 | SECURITY.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
-| G | publication_target + publication_tag | RESOLVED — `https://github.com/ilc-foundation/ilc`, tag `v0.3-public-rc` | 2026-05-25 |
+| G | publication_target + publication_tag | RESOLVED — `https://github.com/ILC-Foundation/ilc`, tag `v0.3-public-rc` | 2026-05-25 |
 
 **Blocking items** (must resolve before Phase 1448b can execute):
 - A1 — **RESOLVED 2026-05-25** — `tree_sha256: 925d6399399c7f82f52cf17318687a9d625d7e64ef2b0e2fc6586fd15c036361`
-- A4 — `ilc-foundation` GitHub org + empty `ilc` repo must be created; then seed fresh public repo from materialized tree
+- A4 — **RESOLVED 2026-05-28** — Option A (fresh mirror); `Genesis Agent <ilcops@proton.me>`; push instructions recorded above
 - CDL-095 — **RESOLVED 2026-05-25** — `cdl_095_ratified_phase_1448c` token emitted (Phase 1448c)
-- E1 — patent counsel disposition recorded: either Path 1 (obtained, record summary) or Path 2 (explicitly deferred with human-authorized rationale); token `patent_counsel_disposition_recorded_phase_1448a` emitted in both cases
-- G — **RESOLVED 2026-05-25** — `publication_target: https://github.com/ilc-foundation/ilc`, `publication_tag: v0.3-public-rc`
+- E1 — **PENDING — BLOCKING** — patent counsel disposition: file 5 provisionals at USPTO (awaiting id.me / myUSPTO account access) OR record explicit deferred-risk authorization; token `patent_counsel_disposition_recorded_phase_1448a`
+- G — **RESOLVED 2026-05-25** — `publication_target: https://github.com/ILC-Foundation/ilc`, `publication_tag: v0.3-public-rc`
+
+**Summary:** One blocker remains — E1 (patent filing). All other pre-publication review items are resolved.
