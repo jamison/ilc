@@ -1,6 +1,6 @@
 # ILC Phase 1429-1458 Sequence Lock v0.1
 
-**Status:** OPEN — human `GO Window 1429` recorded 2026-05-22; Gap 14 package-profile phases 1436a-1436b are complete; Phase 1436 public sidecar/fetch activation is next and SENSITIVE
+**Status:** CLOSED — public path blocked/private continuation by Phase 1452p (2026-05-30); no public RC launch, no public repository publication, no epoch 1 trigger
 **Date:** 2026-05-21 (window GO recorded 2026-05-22)
 **Owner lane:** G8 Jury Economy / Launch Readiness / Public RC Activation
 **GO authority:** Human reviewer (`GO Window 1429` recorded 2026-05-22; per-phase GO still required for every SENSITIVE phase)
@@ -268,6 +268,80 @@ Token: `cdl_095_ratified_phase_1448c`
 Phase 1448b prerequisite status: `cdl_095_ratified_phase_1448c` is required and is now satisfied.
 
 Non-authorizations: Phase 1448c does not activate shard-tier review, global-tier review, claim state advancement, jury finality runtime, or public RC push; does not amend CDL-051, CDL-083, or J-008 Phase 1427 verdict.
+
+---
+
+### Phase 1448x addendum — soft-RC private continuation route (2026-05-29)
+
+USPTO/ID.me access delay blocks near-term patent filing. The active routing
+correction is recorded in
+`docs/specs/ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md`.
+
+Tokens recorded by that routing plan:
+
+```text
+private_soft_rc_continuation_plan_recorded_phase_1448x
+public_publication_paused_pending_patent_access_phase_1448x
+phase_1448b_publication_blocked_pending_patent_filing_or_disposition
+phase_1450_epoch_trigger_blocked_no_public_rc
+window_1459_forward_plan_entry_conditions_not_met_private_continuation_only
+```
+
+Routing effect:
+
+- Phase 1448b public repository publication is paused.
+- Phase 1449 public operator guide publication is blocked because the public
+  repository is not published.
+- Phase 1450 epoch 1 trigger is blocked because public RC publication and
+  public operator bootstrap evidence are intentionally absent.
+- Phase 1451 and Phase 1452 prompt drafts cannot be executed under their old
+  public-success assumptions.
+- Private soft-RC development may continue under private/local/Tailscale-only
+  boundaries and must not create public access, public installability, public
+  RC claims, or epoch 1 activation.
+
+This addendum does not revoke completed Phases 1446, 1447, or 1448c. It only
+pauses the public-disclosure branch until patent filing/counsel disposition or
+renewed explicit risk authorization is committed.
+
+---
+
+### Phases 1448y, 1449p, 1451p, and 1452p addendum — private-continuation closure (2026-05-30)
+
+Strike Force authorization executed the private-continuation lane in this order:
+
+| Phase | Artifact | Result |
+|-------|----------|--------|
+| 1448y | `docs/specs/ilc_soft_rc_access_boundary_artifact_freeze_1448y_v0.1.md` | private access boundary and frozen artifact anchors recorded |
+| 1449p | `docs/specs/ilc_private_operator_bootstrap_guide_1449p_v0.1.md` | private local-operator bootstrap guide recorded |
+| 1451p | `docs/specs/ilc_private_continuation_coherence_public_path_rebase_1451p_v0.1.md` | public-success assumptions rebased to blocked/private continuation |
+| 1452p | `docs/specs/ilc_window_1429_1458_blocked_private_continuation_handoff_1452p_v0.1.md` | Window 1429-1458 closed as public-path-blocked/private-continuation |
+
+Tokens recorded:
+
+```text
+soft_rc_access_boundary_artifact_freeze_phase_1448y
+private_operator_bootstrap_guide_committed_phase_1449p
+private_coherence_public_path_rebase_phase_1451p
+window_1429_1458_public_path_blocked_private_continuation_phase_1452p
+window_1429_1458_closed_phase_1452p
+window_1429_1458_closure_verdict_recorded_phase_1452p
+public_path_blocked_private_continuation
+go_window_1459p_guidance_required_next
+no_public_repository_publication_phase_1452p
+no_epoch_1_transition_phase_1452p
+```
+
+Closure effect:
+
+- Window 1429-1458 is no longer open for execution under the original public-RC
+  activation assumptions.
+- Phase 1448b, public Phase 1449, and Phase 1450 remain blocked until patent
+  filing/counsel disposition or renewed explicit risk authorization is recorded.
+- No public repository publication, public package publication, public URL,
+  public operator onboarding, public RC claim, or epoch 1 transition occurred.
+- No Window 1459+ or 1459p phase is opened by this closure.
+- The next required planning artifact is a Window 1459p guidance document.
 
 ---
 

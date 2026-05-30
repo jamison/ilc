@@ -5,6 +5,8 @@
 **Status:** DRAFT — not an authorized sequence lock; requires human review and GO before any phase executes
 **Context:** This forward plan covers the first post-public-RC window. It assumes Window 1429-1458 closes with `public_rc_activated_epoch_1_triggered`. Entry into this window is conditioned on that closure verdict.
 **Rehydration addendum (2026-05-27):** Patent-sidequest gaps are recorded in `docs/specs/ilc_patent_sidequest_gap_analysis_and_forward_plan_1448x_v0.1.md`. Filing 5 / agentic function endpoint concepts are routed to Track H compatibility constraints and Candidate Window 1490+ successor scope. Three additional sub-phases were added to Track C after repo verification: Phase ~1469a (W_e Decimal conversion — `node_value_kernel.py` float → Decimal, ICSS §3 compliance), Phase ~1469b (Filing 4 anti-gaming invariants wired into settlement dispatch), and Phase ~1469c (dual-unit ECU+ILC settlement CDL, SENSITIVE). None of these authorize Phase 1448a/1448b publication, runtime activation, CDL mutation, or public disclosure before patent filing/counsel disposition.
+**Soft-RC routing addendum (2026-05-29):** This forward plan's public-RC entry assumptions are not currently met because public publication is paused pending patent filing/counsel disposition or renewed explicit risk authorization. See `docs/specs/ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md`. Any 1459+ work before public RC must be re-scoped as private pre-public architecture work; tracks requiring live public RC data, public operator evidence, or public disclosure remain blocked.
+**Private-continuation closure addendum (2026-05-30):** Window 1429-1458 is closed as `public_path_blocked_private_continuation` by `docs/specs/ilc_window_1429_1458_blocked_private_continuation_handoff_1452p_v0.1.md`. This forward plan remains a public post-RC draft only. It is not an executable sequence lock and does not open Window 1459p. A separate Window 1459p guidance document is required before any private pre-public architecture phase executes.
 
 ---
 
@@ -54,6 +56,8 @@ This window may not open until all of the following are confirmed:
 | At least one external operator connected | `external_operator_identity_ceremony_complete` token committed in window 1429-1458 closure gate handoff |
 | Window 1429-1458 closure gate PASS | `window_1429_1458_closed_phase_<N>` committed |
 | Werner diagnostic trace data available | At least one epoch of systolic/diastolic/pulse-pressure metrics logged by Track H1 runtime with no false-positive pressure flags recorded |
+
+**2026-05-30 status:** these entry conditions are intentionally unmet. Window 1429-1458 closed as public-path-blocked/private-continuation, not public-RC PASS. Do not open Window 1459+ or Window 1459p from this plan without a new guidance document and sequence lock that either restores the public-RC assumptions or explicitly converts selected tracks into private pre-public work.
 
 ---
 
