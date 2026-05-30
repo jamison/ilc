@@ -1,8 +1,10 @@
 # Phase 1448a — Pre-Publication Review Checklist
 
-**Status:** OPEN — work through with human reviewer before authorizing GO Phase 1448b  
-**Sensitivity:** NON-SENSITIVE (review only; no push occurs in this phase)  
+**Status:** OPEN — public publication path paused 2026-05-29 pending patent filing/counsel disposition or renewed risk authorization
+**Sensitivity:** NON-SENSITIVE (review only; no push occurs in this phase)
 **Feeds into:** Phase 1448b (actual public repository push)
+
+**Current routing addendum (2026-05-29):** USPTO/ID.me access delay blocks near-term patent filing. The active route is now `docs/specs/ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md`: continue private soft-RC development, but do not authorize Phase 1448b public publication. The previous deferred-risk path remains historically documented, but it is not the current recommended path.
 
 ---
 
@@ -12,12 +14,11 @@ Every item in this checklist must be reviewed and resolved before issuing the Ph
 GO phrase. Once the repo is public, it is public — no second chance to remove content or
 correct the first impression.
 
-**Standard GO phrase (counsel disposition obtained):**
-`GO Phase 1448b: authorize public repository publication`
-
-**Extended GO phrase (counsel disposition explicitly deferred — use only if Section E1
-decision is recorded as deferred with human-authorized rationale):**
-`GO Phase 1448b: authorize public repository publication; patent counsel deferred; human accepts disclosed risk`
+**GO phrase status:** prior Phase 1448b GO phrase variants are suspended while
+`ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md` is active. A
+future public-path resumption record must restate the exact public-publication
+authorization phrase after patent filing/counsel disposition or renewed risk
+authorization is recorded.
 
 Work through each section interactively with Claude Code. Flag any item that needs
 a decision.
@@ -216,11 +217,16 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
   query-response/co-attested inference artifacts, processing-capacity tier declarations,
   and invitation/provenance chains without executable payloads in core graph nodes.
 
-**Decision required before 1448b (choose one path):**
+**Current decision before 1448b:** public publication is paused. Continue private soft-RC work until patent filing/counsel disposition or renewed human risk authorization is recorded.
+
+**Historical 1448b decision paths (do not execute while the 2026-05-29 pause is active):**
 - [ ] **Path 1 — Obtained:** Record counsel disposition summary and any provisional application reference
 - [ ] **Path 2 — Deferred:** Record explicit rationale and human authorization for deferred counsel
 - [ ] If provisional filing is indicated under Path 1, file before 1448b executes (not after)
 - [ ] Record outcome in `docs/specs/ilc_prepublication_review_gate_record_1448a_v0.1.md`
+
+**Soft-RC continuation path:**
+- [x] **Path 3 — Paused:** no public disclosure, no public repository publication, no Phase 1448b GO, no epoch 1. Continue under `ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md`.
 
 **2026-05-27 rehydration note:** `docs/research/patent_pending/` now contains a
 five-provisional draft package, Filing 5 guidance/spec materials, figure SVGs,
