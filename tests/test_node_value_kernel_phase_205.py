@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 
 from ilc_core.analysis.node_value_kernel import (
     DEFAULT_EW_WEIGHTS,
@@ -56,9 +57,10 @@ def test_compute_node_scores_is_deterministic_and_sorted() -> None:
     )
     assert any(row["node_id"] == "node-a" for row in scores_first)
     node_a = next(row for row in scores_first if row["node_id"] == "node-a")
-    assert node_a["epistemic_weight"] >= 0.0
-    assert node_a["utility_flow"] >= 0.0
-    assert 0.0 <= node_a["reuse_diversity_multiplier"] <= 1.0
+    assert isinstance(node_a["epistemic_weight"], Decimal)
+    assert node_a["epistemic_weight"] >= Decimal("0")
+    assert node_a["utility_flow"] >= Decimal("0")
+    assert Decimal("0") <= node_a["reuse_diversity_multiplier"] <= Decimal("1")
 
 
 def test_validate_weights_requires_expected_keys_and_sum_one() -> None:
@@ -81,7 +83,7 @@ def test_validate_weights_requires_expected_keys_and_sum_one() -> None:
 
 
 def test_utility_flow_gate_contracts() -> None:
-    assert compute_utility_flow(0.5, 2.0, 1.0) == 1.0
+    assert compute_utility_flow(Decimal("0.5"), Decimal("2.0"), Decimal("1.0")) == Decimal("1.000")
 
     with pytest.raises(NodeValueKernelError) as exc_usage:
         compute_utility_flow(0.5, -1.0, 1.0)
@@ -127,8 +129,8 @@ def test_compute_node_scores_consumes_path_lift_witnesses_when_provided() -> Non
         for row in compute_node_scores(_sample_events(), path_witnesses=path_witnesses)
     }
 
-    assert lifted_rows["node-a"]["path_component"] == pytest.approx(1.0)
-    assert lifted_rows["node-b"]["path_component"] == pytest.approx(0.4)
+    assert lifted_rows["node-a"]["path_component"] == Decimal("1")
+    assert lifted_rows["node-b"]["path_component"] == Decimal("0.4")
     assert lifted_rows["node-a"]["path_component"] > baseline_rows["node-a"]["path_component"]
 
 

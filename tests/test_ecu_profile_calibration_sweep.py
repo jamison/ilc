@@ -11,6 +11,7 @@ Kernel:    ilc_core/analysis/node_value_kernel.py
 from __future__ import annotations
 
 import statistics
+from decimal import Decimal
 from typing import NamedTuple
 
 import pytest
@@ -148,12 +149,12 @@ SCENARIOS: list[Scenario] = [
 # Score computation helper
 # ---------------------------------------------------------------------------
 
-def score_scenario(evidence: NodeEvidenceVector, weights: EwWeights) -> float:
+def score_scenario(evidence: NodeEvidenceVector, weights: EwWeights) -> Decimal:
     _, _, _, _, epistemic_weight = compute_epistemic_weight(evidence, weights=weights)
     return epistemic_weight
 
 
-def score_all_profiles(evidence: NodeEvidenceVector) -> dict[str, float]:
+def score_all_profiles(evidence: NodeEvidenceVector) -> dict[str, Decimal]:
     return {
         name: score_scenario(evidence, weights)
         for name, weights in PROFILES.items()
@@ -169,7 +170,7 @@ def test_all_profiles_are_valid_weight_vectors() -> None:
     for name, weights in PROFILES.items():
         validated = validate_ew_weights(weights)
         total = sum(validated.values())
-        assert abs(total - 1.0) < 1e-9, f"{name}: weights do not sum to 1.0 (got {total})"
+        assert abs(total - Decimal("1.0")) < Decimal("0.000000001"), f"{name}: weights do not sum to 1.0 (got {total})"
         assert len(validated) == 4, f"{name}: must have exactly 4 components"
 
 
@@ -247,7 +248,7 @@ def test_profiles_converge_on_average_nodes() -> None:
     min_score = min(scores.values())
 
     # No profile should dominate by more than 50% of min score
-    assert max_score - min_score <= 0.5 * min_score + 0.1, (
+    assert max_score - min_score <= Decimal("0.5") * min_score + Decimal("0.1"), (
         f"Profiles diverge too much on average nodes: {scores}. "
         f"Range: {max_score - min_score:.4f}"
     )
@@ -258,7 +259,7 @@ def test_all_profiles_positive_on_all_scenarios() -> None:
     for scenario in SCENARIOS:
         scores = score_all_profiles(scenario.evidence)
         for profile_name, score in scores.items():
-            assert score >= 0.0, (
+            assert score >= Decimal("0"), (
                 f"{profile_name} produced negative score ({score:.4f}) "
                 f"on scenario '{scenario.name}'"
             )
