@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from decimal import Decimal
 from typing import Mapping, TypedDict
 
 from ilc_core.analysis.node_value_input_canon import NodeValueInputEvent
@@ -30,7 +31,20 @@ class NodeValueChallengeVerification(TypedDict):
 
 
 def compute_score_rows_sha256(score_rows: list[NodeScoreVector]) -> str:
-    payload = json.dumps(score_rows, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    def _stable_decimal_default(value: object) -> str:
+        if isinstance(value, Decimal):
+            if not value.is_finite():
+                raise ValueError("node_value_conformance_non_finite_decimal")
+            return format(value, "f")
+        raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
+
+    payload = json.dumps(
+        score_rows,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+        default=_stable_decimal_default,
+    ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 
 
