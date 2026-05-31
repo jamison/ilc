@@ -4,8 +4,12 @@ PUBLIC_RC_EXCLUDE_REASON: Private local capture consent gate. Does not authorize
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Mapping
+
+from ilc_core.harness.co_attestation_receipt import CoAttestationReceipt
+from ilc_core.harness.local_immutable_store import LocalImmutableStore, build_local_ledger_entry
+from ilc_core.private_json_guardrails import require_sha256_hex
 
 MAX_DECISIONS = 4096
 
@@ -26,10 +30,12 @@ class ConsentGate:
         decisions: list[ConsentDecision] | None = None,
         *,
         max_decisions: int = MAX_DECISIONS,
+        store: LocalImmutableStore | None = None,
     ) -> None:
         if max_decisions < 1 or max_decisions > MAX_DECISIONS:
             raise ValueError("consent_gate_invalid_max_decisions")
         self._max_decisions = max_decisions
+        self._store = store
         self._decisions: dict[tuple[str, str], ConsentDecision] = {}
         for decision in decisions or []:
             self.record(decision)
@@ -80,3 +86,58 @@ class ConsentGate:
         if decision is None or not decision.allowed:
             raise ValueError("consent_gate_denied")
         return decision
+
+    def approve(
+        self,
+        artifact: object,
+        *,
+        subject_id: str,
+        purpose: str,
+        committed_at_epoch: int = 0,
+        receipt: CoAttestationReceipt | None = None,
+        store: LocalImmutableStore | None = None,
+    ) -> CoAttestationReceipt | None:
+        decision = self.require_allowed(subject_id, purpose)
+        artifact_sha256 = _extract_artifact_sha256(artifact)
+        if receipt is not None and receipt.artifact_sha256 != artifact_sha256:
+            raise ValueError("consent_gate_receipt_artifact_mismatch")
+
+        active_store = store if store is not None else self._store
+        if active_store is None:
+            return receipt
+
+        entry = build_local_ledger_entry(
+            artifact_sha256=artifact_sha256,
+            consent_gate_decision_id=decision.decision_id,
+            committed_at_epoch=committed_at_epoch,
+        )
+        entry_id = active_store.write(entry)
+        if receipt is None:
+            return None
+        return replace(receipt, local_ledger_entry_id=entry_id)
+
+    def reject(
+        self,
+        artifact: object | None = None,
+        *,
+        subject_id: str,
+        purpose: str,
+        receipt: CoAttestationReceipt | None = None,
+    ) -> CoAttestationReceipt | None:
+        decision = self.decision_for(subject_id, purpose)
+        if decision is None or decision.allowed:
+            raise ValueError("consent_gate_denied")
+        return receipt
+
+
+def _extract_artifact_sha256(artifact: object) -> str:
+    if isinstance(artifact, Mapping):
+        candidate = artifact.get("sha256", artifact.get("artifact_sha256"))
+    else:
+        candidate = getattr(artifact, "sha256", None)
+        if candidate is None:
+            candidate = getattr(artifact, "artifact_sha256", None)
+    if not isinstance(candidate, str):
+        raise ValueError("consent_gate_artifact_sha256_missing")
+    require_sha256_hex(candidate, "consent_gate_artifact_sha256_invalid")
+    return candidate

@@ -25,6 +25,7 @@ class CoAttestationReceipt:
     canonical_json: str
     receipt_sha256: str
     public_rc_exclude: bool = True
+    local_ledger_entry_id: str | None = None
 
 
 def build_co_attestation_receipt(
