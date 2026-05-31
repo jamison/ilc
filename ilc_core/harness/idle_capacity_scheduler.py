@@ -6,11 +6,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+from typing import TYPE_CHECKING
 
 from ilc_core.harness.provider_usage_adapter import ProviderBudgetSnapshot
 
+if TYPE_CHECKING:
+    from ilc_core.analysis.node_value_kernel import NodeScoreVector
+
 IDLE_CAPACITY_SCHEDULER_NOT_ACTIVATED = True
 MAX_TASKS_PER_WINDOW = 16
+
+# harness_kernel_decimal_integration_complete_phase_1477p
 
 
 def _decimal_from_value(value: object, token: str) -> Decimal:
@@ -25,6 +31,19 @@ def _decimal_from_value(value: object, token: str) -> Decimal:
     return out
 
 
+def _node_score_epistemic_weight(
+    node_score: NodeScoreVector | None,
+) -> Decimal:
+    if node_score is None:
+        return Decimal("0")
+    epistemic_weight = node_score.get("epistemic_weight")
+    if not isinstance(epistemic_weight, Decimal):
+        raise ValueError("harness_kernel_integration_invalid_epistemic_weight")
+    if not epistemic_weight.is_finite():
+        raise ValueError("harness_kernel_integration_non_finite_epistemic_weight")
+    return epistemic_weight
+
+
 @dataclass(frozen=True)
 class MaintenanceTaskCandidate:
     task_id: str
@@ -34,6 +53,7 @@ class MaintenanceTaskCandidate:
     complexity: int
     estimated_tokens: int
     estimated_cost_proxy: Decimal
+    node_score: NodeScoreVector | None = None
 
 
 @dataclass(frozen=True)
@@ -72,11 +92,13 @@ class IdleCapacityScheduler:
         complexity: int,
         estimated_tokens: int,
         estimated_cost_proxy: object,
+        node_score: NodeScoreVector | None = None,
     ) -> MaintenanceTaskCandidate:
         if "" in {task_id, provider_id, requester_agent_id, target_node_id}:
             raise ValueError("idle_scheduler_missing_identifier")
         if complexity < 1 or estimated_tokens < 1:
             raise ValueError("idle_scheduler_invalid_candidate_bounds")
+        _node_score_epistemic_weight(node_score)
         return MaintenanceTaskCandidate(
             task_id=task_id,
             provider_id=provider_id,
@@ -88,6 +110,7 @@ class IdleCapacityScheduler:
                 estimated_cost_proxy,
                 "idle_scheduler_invalid_estimated_cost_proxy",
             ),
+            node_score=node_score,
         )
 
     def schedule(
@@ -103,7 +126,10 @@ class IdleCapacityScheduler:
         scheduled: list[ScheduledMaintenanceTask] = []
         consumed = 0
         seen_requesters: dict[str, int] = {}
-        for candidate in sorted(candidates, key=lambda row: row.task_id):
+        for candidate in sorted(
+            candidates,
+            key=lambda row: (-_node_score_epistemic_weight(row.node_score), row.task_id),
+        ):
             if len(scheduled) >= self._max_tasks_per_window:
                 break
             if candidate.provider_id != budget.provider_id:
