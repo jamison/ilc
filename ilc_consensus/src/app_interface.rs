@@ -363,6 +363,7 @@ mod tests {
         assert_eq!(resp.records.len(), 5);
     }
 
+    #[cfg(feature = "testnet_fault_sim")]
     #[tokio::test]
     async fn test_get_epoch_chain_gap_returns_partial() {
         let (env, _dir) = setup_env();
