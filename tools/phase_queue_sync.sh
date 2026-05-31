@@ -30,7 +30,7 @@ root = Path.cwd()
 queue_path = root / "automation" / "phase_queue.json"
 prompt_dir = root / "docs" / "antigravity_tasks"
 min_phase_sync = int(os.getenv("MIN_PHASE_SYNC", "130"))
-phase_re = re.compile(r"antigravity_prompt__(phase_(\d+)_.*)\.md$")
+phase_re = re.compile(r"antigravity_prompt__(phase_(\d+[a-z]?)_.*)\.md$")
 
 doc = json.loads(queue_path.read_text(encoding="utf-8"))
 items = doc.get("items", [])
@@ -39,13 +39,22 @@ item_by_id = {item.get("phase_id"): item for item in items if item.get("phase_id
 added = 0
 updated = 0
 
+def _phase_sort_key(x):
+    """Sort by numeric phase number; tolerate int or string values."""
+    raw = x.get("phase_number", 10**9)
+    try:
+        return (int(re.sub(r"[a-z]+$", "", str(raw))), str(x.get("phase_id", "")))
+    except (ValueError, TypeError):
+        return (10**9, str(x.get("phase_id", "")))
+
 for prompt_path in sorted(prompt_dir.glob("antigravity_prompt__phase_*.md")):
     match = phase_re.match(prompt_path.name)
     if not match:
         continue
 
     phase_id = match.group(1)
-    phase_number = int(match.group(2))
+    # Store numeric-only phase number (strip any letter suffix) for consistent int sorting.
+    phase_number = int(re.sub(r"[a-z]+$", "", match.group(2)))
     if phase_number < min_phase_sync:
         continue
 
@@ -77,7 +86,7 @@ for prompt_path in sorted(prompt_dir.glob("antigravity_prompt__phase_*.md")):
         existing["phase_number"] = phase_number
         updated += 1
 
-items.sort(key=lambda x: (int(x.get("phase_number", 10**9)), str(x.get("phase_id", ""))))
+items.sort(key=_phase_sort_key)
 doc["items"] = items
 doc["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 queue_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
