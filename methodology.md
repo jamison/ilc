@@ -121,7 +121,7 @@ Tokens follow a consistent format:
 - **Phase-scoped** — output tokens always include the phase number (`_phase_NNNN`) to make them globally unique across the project history
 - **Version-qualified** — many tokens carry a `.vN.N` suffix indicating which version of the specification they attest to
 
-**Token types:**
+**Common token families:**
 
 | Type | Example | Purpose |
 |------|---------|---------|
@@ -130,8 +130,25 @@ Tokens follow a consistent format:
 | Non-claim token | `epoch_0_to_1_transition_not_authorized_phase_1446` | Explicitly records what this phase did NOT do |
 | Version token | `SIGNING_CEREMONY_STATUS_VERSION = "signing_ceremony_status_phase_1446.v0.1"` | Identifies the module version for dependency chaining |
 | Gate token | `prepublication_review_complete_phase_1448a` | Signals that a gate condition has been fully satisfied |
+| Governance state token | `cdl_095_ratified_phase_1448c` | Records an explicit constitutional state transition such as opening, prelock, ratification, activation, or deferral |
+| Runtime feature token | `jury_incentive_runtime_stub_committed_phase_1401` | Records that a code surface, stub, verifier, runtime path, or public interface has been added |
+| Finding/remediation token | `finding_11_nullifier_expire_stale_public_path_resolved_phase_1440` | Records a security, correctness, or review finding and its disposition |
+| Boundary/exclusion token | `public_repository_not_published_phase_1447` | Records publication, activation, exclusion, or privacy boundaries so later agents do not infer that a surface is live |
+| Evidence/provenance token | `phase_1446_root_envelope_hash_verified_phase_1447` | Records that an artifact, hash, manifest, or evidence chain was verified and can be cited later |
+| Carry-forward/deferred token | `global_tier_activation_status: deferred_to_cdl_096` | Records work that is intentionally postponed, blocked, or routed to a later phase |
 
-Non-claim tokens are especially important for SENSITIVE phases: because publication, signing, and epoch transitions are irreversible, explicitly recording that they did NOT occur is as governance-critical as recording what did occur.
+This table is not exhaustive. Tokens are used both as governance logic gates and
+as descriptive audit anchors. Some tokens authorize or block later work; others
+record feature surfaces, finding dispositions, exclusions, evidence checks,
+runtime versions, or deliberate deferrals. The common rule is that a token should
+make later replay less ambiguous: it should let a future reviewer distinguish
+"implemented", "ratified", "verified", "deferred", "excluded", "not activated",
+and "not done" without relying on memory.
+
+Non-claim and boundary tokens are especially important for SENSITIVE phases:
+because publication, signing, and epoch transitions are irreversible, explicitly
+recording that they did NOT occur is as governance-critical as recording what did
+occur.
 
 ---
 
@@ -315,7 +332,7 @@ One property of this architecture warrants explicit statement: **Genesis Agent 0
 This separation is enforced through:
 - Pre-commit hooks (CDL mutations require explicit environment authorization)
 - Explicit GO token requirements in prompts (exact phrase match, recorded in audit trail)
-- `PUBLIC_RC_EXCLUDE` markers (certain internal tooling files never enter the public tree)
+- public-RC exclusion markers (certain internal tooling files never enter the public tree)
 
 ---
 
@@ -427,16 +444,11 @@ This pipeline means every design decision has a traceable path back to the raw c
 
 ### TOON: Token-Efficient Context Packing
 
-As the project's context requirements grew — longer phase prompts, larger §0 discovery sections, richer agent rehydration packets — the cost of delivering structured context to AI agents became a meaningful efficiency concern. ILC adopted **TOON** (a compact, human-legible structured format installable via `pip install toon-format`) as the encoding for outbound context packing and agent rehydration packets.
+As the project's context requirements grew — longer phase prompts, larger §0 discovery sections, richer agent rehydration packets — compact structured context became a practical efficiency concern. ILC has evaluated **TOON** (a compact, human-legible structured format installable via `pip install toon-format`) for outbound context packing and future agent harness work.
 
-TOON is used in two places visible in the current public codebase:
+TOON is not a public-RC protocol semantic and is not part of any content hash by default. The public README does not carry a machine hydration block. In planned Window 1459+ work, an agentic harness may use TOON for outbound prompt compression and task-envelope formatting, but captured model output must preserve raw response bytes as the hashable content, and neither TOON-packed metadata nor node envelopes are included in the content hash unless a later canonical rule explicitly says otherwise.
 
-- **The README agent hydration block** — the `toon` block at the end of `README.md` is a machine-readable state packet for AI agents and autonomous systems. It encodes the protocol's current state, governance status, economic framing, and navigation index in a compact format that reduces token consumption for agents parsing the document.
-- **The ILC Skill / agentic harness layer** (planned, Window 1459+) — the planned harness architecture uses TOON for outbound prompt compression and task envelope formatting. TOON applies to context packing only; captured model output always preserves raw response bytes as the hashable content, and neither TOON-packed metadata nor node envelopes are included in the content hash. This separation is a hard architectural invariant.
-
-**Why this matters for methodology:** Token cost is a direct function of context size. Structured TOON packing can reduce prompt token volume substantially compared to equivalent plain-prose context. At the scale of this project — tens of thousands of agent turns — this translates directly to reduced API cost and faster turn latency. The $950 total inference budget is partly a function of this kind of efficiency discipline: structured formats, tiered context (Tier A constitutional facts before Tier D historical walkthroughs), and MemPalace retrieval-before-full-read all reduce the tokens consumed per turn.
-
-TOON is not yet applied to the internal phase prompt and walkthrough workflow (that work is deferred to Window 1459+), but its adoption for public-facing agent interfaces is already live.
+**Why this matters for methodology:** Token cost is a direct function of context size. Structured packing, tiered context (Tier A constitutional facts before Tier D historical walkthroughs), and MemPalace retrieval-before-full-read reduce the tokens consumed per turn without changing the canonical record. This is an implementation discipline for agent assistance, not a claim that TOON is required for the public protocol.
 
 ---
 
@@ -448,8 +460,9 @@ Every phase that produces a protocol artifact — a CDL row, an ADR, a token sid
 
 - **No orphan artifacts.** Every new file produced by a phase must be reachable from the graph root (via the Genesis Atlas, the CDL register, or the closure handoff chain). A deliverable with no graph edge is an invisible claim.
 - **Supersession tombstones.** When a spec, draft, or design document is superseded, a tombstone banner is added to the old file immediately. The banner names the superseding authority and prohibits using the old file's field definitions or parameters without cross-checking against the superseding authority. This is enforced at the closure gate of the window that introduces the supersession.
-- **PUBLIC_RC_EXCLUDE markers.** Files that must not appear in the materialized public tree carry the comment `# PUBLIC_RC_EXCLUDE: <reason>` at the top. The source allowlist export tool enforces zero hits for this marker in the public tree. Internal gate records, economics documents, and private tooling use this marker.
-- **Public artifact discipline.** The public tree (materialized by `tools/rc_dredge_v2.py` and the source allowlist export gate) is a strict subset of the private repo. Only files on the allowlist with no `PUBLIC_RC_EXCLUDE` marker appear in the public tree. No file is added to the public tree without an explicit allowlist entry. The tree is re-materialized after every root-level file change and the resulting `tree_sha256` is recorded in the gate record.
+- **Public-RC exclusion markers.** Files that must not appear in the materialized public tree carry a stable deny-marker comment at the top. The source allowlist export tool enforces zero deny-marker hits in the public tree. Internal gate records, economics documents, and private tooling use this marker.
+- **Public artifact discipline.** The public tree (materialized by the source allowlist export gate in `ilc_core/rc/`) is a strict subset of the private repo. Only files on the allowlist with no public-RC deny marker appear in the public tree. No file is added to the public tree without an explicit allowlist entry. The tree is re-materialized after every root-level file change and the resulting `tree_sha256` is recorded in the gate record.
+- **Patent and pre-publication boundary.** Patent drafts, filing diagrams, internal gap analyses, raw conversations, and other enabling research materials remain private unless a later gate explicitly promotes them. Public-facing documents should describe project status and safety boundaries without disclosing implementation detail that Phase 1448a or counsel has not cleared.
 - **`out/` isolation.** Simulation outputs, diagnostic JSON, and monitoring snapshots in `out/` are not protocol artifacts — they are observational outputs. They are committed for auditability but do not have DAG edges and are not included in the public tree.
 
 This discipline is what makes the construction of the protocol verifiable after the fact: every claim in the codebase traces to a phase, every phase traces to a window, and every window closes with a gate record that can be re-run.
@@ -457,6 +470,148 @@ This discipline is what makes the construction of the protocol verifiable after 
 ---
 
 ## 13. Tooling Overview
+
+ILC was built on a deliberately modest local workstation setup rather than a
+large internal platform: macOS, 24 GB RAM, an external SSD, local Python/Rust
+toolchains, Git, and a customized VS Code / Google Antigravity agentic IDE stack.
+The human reviewer, implementer, and architect-reviewer roles were mediated
+through separate agentic tool surfaces and plugins rather than a single monolithic
+build system.
+
+That setup was powerful enough, but it exposed a practical lesson: agentic
+development tooling becomes fragile under very long-running, high-intensity
+sessions. The most valuable working memory often lived in long text conversations
+with very large context windows. Keeping sessions open preserved continuity, but
+it also created UI lag, session-index drift, plugin-update breakage, and context
+recovery problems. The project therefore treated the IDE chat surface as useful
+working memory, not as canon.
+
+The operational rule that emerged:
+
+1. Keep long-lived conversations open when they preserve useful working context.
+2. Continuously checkpoint decisions into repo artifacts: `STATUS.md`,
+   `PLANNING_INDEX.md`, phase walkthroughs, context capsules, CDLs, ADRs, and
+   token sidecar modules.
+3. Archive important transcripts into `Z_Past_Chats/` or other private recovery
+   stores before context is lost.
+4. When an IDE, plugin, or session index breaks, recover from repo state and
+   archived transcripts, not from memory.
+
+Git was the most important ordinary tool in that recovery loop. It provided the
+append-only project diary: every phase close, ratification, prompt hardening,
+runtime patch, test change, and public/non-public boundary decision could be
+replayed from commit history. When chat context drifted, the working question was
+not "what do we remember?" but "what did the repo record?" Git also made the
+public-RC split tractable: the private repository can preserve full development
+history while a filtered public mirror can expose only the cleared source tree
+and sanitized author metadata.
+
+Remote continuity mattered as much as raw compute. Much of the project was
+advanced through remote desktop access, voice-to-text input, and a fast mobile
+keyboard workflow. This made it possible for the human reviewer to keep the
+constitutional authority loop active while away from the workstation: reviewing
+phase outputs, issuing or withholding GO tokens, answering deliberation questions,
+and steering prompt hardening without needing to sit at the main machine for
+every agent turn.
+
+That human-intervention cadence became part of the workflow. Some strike-force
+sessions grouped several related tasks into a 4+ hour block. Most individual
+phases, by anecdotal observation, ran for roughly 20-70 minutes between Genesis
+Agent interventions. A small number of simulation phases ran much longer,
+including 6+ hour sweeps. These are not benchmark claims; they are operational
+observations about how the workflow felt in practice.
+
+The raw material for measuring this later exists: chat logs, phase walkthroughs,
+commit timestamps, and execution artifacts all carry timestamps. A future methods
+paper could benchmark intervention cadence, phase duration, re-review count,
+failure/recovery time, and simulation wall-clock time directly from those logs.
+For now, the timing observations in this document should be read as field notes,
+not as statistical claims.
+
+Strike Force mode became important when a group of related tasks shared one risk
+surface and could be moved more safely as a bounded packet than as isolated
+single phases. Strike Force did not mean "skip review"; it meant "pre-authorize
+a coherent tranche, keep the scope narrow, run the same gates repeatedly, and
+close with a synthesis artifact." This pattern was useful for runtime hardening,
+numeric determinism, sidecar infrastructure, graph optimization, and simulation
+campaigns where stopping after every small sub-step would have created more
+context loss than safety.
+
+We also adapted Andrej Karpathy's open-source
+[`karpathy/autoresearch`](https://github.com/karpathy/autoresearch) method for
+ILC's own scientific workflow. AutoResearch is a clear, useful open-source
+pattern: give an agent a small experimental codebase, a fixed evaluation metric,
+and an instruction program; let it modify the experiment, run it, keep or discard
+changes based on the metric, and repeat. We recommend studying it.
+
+In ILC, the adaptation was not limited to ML training. Auto Research meant:
+write a small simulator, define a fixed evaluator before looking at results,
+sweep a large parameter space, generate ranked candidates, then force a written
+disposition that names what failed as well as what worked. This project-specific
+variant is visible in artifacts such as `tools/sim_spectral_04_auto_research.py`,
+the SIM-FETCH-01 fixed-evaluator parameter sweep, and the Merkle-Laplacian v0.2
+strike-force simulations. The important methodological point is the fixed
+evaluator: without it, agentic search can quietly optimize toward the answer the
+team wants. With it, the search can produce a surprising result and force the
+architecture to move.
+
+The observed time curve was not linear. As the protocol frontier grew, each new
+phase had more canon to search, more contradiction checks to run, more tokens to
+verify, and more non-claims to preserve. The overhead felt geometric rather than
+exponential: each new layer increased the number of relationships to check, but
+the phase-window discipline kept the search bounded. Near the end of the public
+RC window, the curve changed again. Once most high-uncertainty architecture had
+been settled, remaining phases became more deterministic: close a gap, re-run a
+gate, update a manifest, record a token. Work slowed as the project approached
+roughly 95% completion, then sped up sharply as the remaining tasks became
+closure mechanics rather than design discovery.
+
+There was one major infrastructure failure during development: the operating
+system became unusable and the primary external SSD plus backup volume showed
+corruption. The recovery path was practical rather than elegant: rebuild a fresh
+OS, repair and recover the corrupted drives, recover the repository and backup
+files, rebuild a fresh Antigravity/agentic setup, then use agents to help restore
+the codebase, backup layout, and prior context artifacts. Some prior agentic
+install state had to be reconstructed from raw files by recreating local JSON
+session/index records rather than relying on the old UI to load them correctly.
+
+The same class of problem appeared at smaller scale at least twice when plugin
+updates or provider-side file-database state changed underneath very large open
+conversation files. The underlying files could be checked against provider APIs
+or raw local state, but the IDE/plugin layer could no longer present them
+reliably. The workaround pattern was the same: recover the raw files, repair or
+recreate the local index/session metadata, and rehydrate context from repository
+artifacts plus transcript archives. This experience is why the methodology treats
+chat state as useful but non-authoritative.
+
+Several local tools exist specifically because the off-the-shelf agentic tooling
+was not reliable enough at this project scale:
+
+- `tools/codex_chat_recovery.py` diagnoses Codex/Antigravity session-index drift
+  and can rebuild a local session index from raw session logs.
+- `tools/patch_codex_resume_override.js` and
+  `tools/reset_antigravity_codex_ui_state.sh` are local recovery/interoperability
+  patches for restoring usable agent sessions after UI or plugin state breaks.
+- `tools/watch_review_markers*.sh` and the `automation/` queue support marker-based
+  review handoffs so Codex, Claude Code, and the human reviewer can coordinate
+  without relying on one fragile UI session.
+- `tools/transcript_dredge.py`, `tools/rc_dredge_v2.py`, and the MemPalace tools
+  recover historical context from transcripts and rank it for later direct-read
+  verification.
+- The walkthrough ellipses checks enforce a simple but important rule: no `...`
+  placeholders in phase walkthroughs or gate records. Earlier LLM outputs, and
+  occasionally later ones, would truncate important text in the middle with
+  ellipses. That is unacceptable for an audit record because it hides the missing
+  claim exactly where future replay needs precision.
+
+These are not protocol features and not part of the public runtime. They are
+operator-side scaffolding: local, legally ordinary customization and recovery
+work around tools we controlled, used to preserve continuity when IDE state,
+plugin state, or chat context became unreliable. The public lesson is not that a
+specific IDE is required. The lesson is that long-context agentic development
+needs explicit recovery rails: transcript capture, repo-native status records,
+session repair tools, and a rule that no chat memory is authoritative until it is
+direct-read back from the repository.
 
 The `tools/` directory contains ~130 scripts and programs organized into functional families. A sampling by category:
 
@@ -587,7 +742,7 @@ The test suite is structured in layers:
 
 The project began as a series of conversations exploring what a fair epistemic economy might look like: what it would mean for an AI agent to "own" a contribution, how to prevent rent extraction on knowledge, and whether the economics of attention could be grounded in something more durable than social consensus.
 
-Key early decisions: the seven truth primitives as the axiomatic foundation; ECU as productive credit (not stored value); ILC as scarce settlement (not fiat); the Landauer grounding (`W_e = ΔH / E_cost`) as the connection between epistemology and physics.
+Key early decisions: the seven truth primitives as the axiomatic foundation; ECU as productive credit (not stored value); ILC as scarce settlement (not fiat); and energy-aware epistemic-efficiency research as a candidate way to reason about the cost of verified work. Specific formulas from research notes are historical design context, not current public-RC settlement rules.
 
 ### Late 2025 — Constitutional cluster
 
@@ -595,7 +750,7 @@ The first CDLs formalized the economic constants and governance mechanics. The c
 
 ### Early 2026 — Implementation push
 
-Windows 863 through 938 delivered the full five-layer delivery stack, truth primitive runtime deployment, and L1/L2/L3/L5 infrastructure. By Phase 938, the testnet emission was live and the first beacon tests were passing.
+Windows 863 through 938 delivered the five-layer delivery stack, truth primitive runtime deployment, and L1/L2/L3/L5 infrastructure. By Phase 938, testnet emission scaffolding and beacon tests were passing in the development record.
 
 ### Mid 2026 — Hardening and public RC preparation
 
@@ -603,7 +758,7 @@ The J-series (Windows 1391-1398) addressed the seven blocking conditions for pro
 
 ### 2026-05 — Public RC
 
-Window 1429-1458 completes the public RC sequence: rehearsal (Phases 1431-1433), TransportPrincipal CDL ratification (Phases 1434-1435), ECU-to-ILC claimability activation (Phases 1438-1441), Gap 7 counsel milestones (Phases 1443-1445), and the signing and publication sequence (Phases 1446-1450).
+Window 1429-1458 is the public-RC preparation sequence: rehearsal (Phases 1431-1433), TransportPrincipal CDL ratification (Phases 1434-1435), staged ECU-to-ILC claimability work (Phases 1438-1441), Gap 7 counsel milestones (Phases 1443-1445), signing work (Phases 1446-1447), and remaining patent/publication gates beginning with Phase 1448a. Public publication and any Epoch 0 to Epoch 1 activation remain gated future actions until their phase records close.
 
 ---
 
