@@ -69,3 +69,17 @@ def test_provider_usage_adapter_enforces_record_cap() -> None:
 
     assert str(exc.value) == "provider_usage_record_cap_exceeded"
     assert MAX_USAGE_RECORDS >= 2
+
+
+def test_provider_usage_adapter_rejects_empty_provider_id_on_record_usage() -> None:
+    adapter = ProviderUsageAdapter()
+
+    with pytest.raises(ValueError) as exc:
+        adapter.record_usage(
+            provider_id="",
+            input_tokens=1,
+            output_tokens=1,
+            cost_proxy="0.01",
+        )
+
+    assert str(exc.value) == "provider_usage_missing_provider_id"

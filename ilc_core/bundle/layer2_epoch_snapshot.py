@@ -5,34 +5,37 @@ PUBLIC_RC_EXCLUDE_REASON: Private ADR-0009 Layer 2 generator/verifier. Does not 
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from typing import Mapping
+
+from ilc_core.private_json_guardrails import canonical_json, reject_float, require_digest_ref, require_sha256_hex
 
 ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION = True
 
 
 def _reject_float(value: object, token: str) -> None:
-    if isinstance(value, float):
-        raise ValueError(token)
-    if isinstance(value, Mapping):
-        for key, nested in value.items():
-            _reject_float(key, token)
-            _reject_float(nested, token)
-        return
-    if isinstance(value, (list, tuple)):
-        for nested in value:
-            _reject_float(nested, token)
+    reject_float(value, token)
 
 
 def _canonical_json(payload: Mapping[str, object]) -> str:
-    _reject_float(payload, "layer2_epoch_snapshot_float_not_allowed")
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return canonical_json(payload, float_token="layer2_epoch_snapshot_float_not_allowed")
 
 
 def _require_non_empty_string(value: str, token: str) -> None:
     if not isinstance(value, str) or value == "":
         raise ValueError(token)
+
+
+def _require_sha256(value: str, missing_token: str, invalid_token: str) -> None:
+    if not isinstance(value, str) or value == "":
+        raise ValueError(missing_token)
+    require_sha256_hex(value, invalid_token)
+
+
+def _require_digest(value: str, missing_token: str, invalid_token: str) -> None:
+    if not isinstance(value, str) or value == "":
+        raise ValueError(missing_token)
+    require_digest_ref(value, invalid_token)
 
 
 def _require_epoch_number(value: int) -> None:
@@ -63,15 +66,34 @@ def generate_layer2_epoch_snapshot(
     active_contract_digest: str,
 ) -> Layer2EpochSnapshot:
     _require_epoch_number(epoch_number)
-    _require_non_empty_string(layer0_sha256, "layer2_epoch_snapshot_missing_layer0_sha256")
-    _require_non_empty_string(graph_state_digest, "layer2_epoch_snapshot_missing_graph_state_digest")
-    _require_non_empty_string(agent_state_digest, "layer2_epoch_snapshot_missing_agent_state_digest")
-    _require_non_empty_string(
+    _require_sha256(
+        layer0_sha256,
+        "layer2_epoch_snapshot_missing_layer0_sha256",
+        "layer2_epoch_snapshot_invalid_layer0_sha256",
+    )
+    _require_digest(
+        graph_state_digest,
+        "layer2_epoch_snapshot_missing_graph_state_digest",
+        "layer2_epoch_snapshot_invalid_graph_state_digest",
+    )
+    _require_digest(
+        agent_state_digest,
+        "layer2_epoch_snapshot_missing_agent_state_digest",
+        "layer2_epoch_snapshot_invalid_agent_state_digest",
+    )
+    _require_digest(
         active_contract_digest,
         "layer2_epoch_snapshot_missing_active_contract_digest",
+        "layer2_epoch_snapshot_invalid_active_contract_digest",
     )
     if epoch_number > 1 and previous_snapshot_sha256 == "":
         raise ValueError("layer2_epoch_snapshot_missing_previous_sha256")
+    if previous_snapshot_sha256 != "":
+        _require_sha256(
+            previous_snapshot_sha256,
+            "layer2_epoch_snapshot_missing_previous_sha256",
+            "layer2_epoch_snapshot_invalid_previous_sha256",
+        )
 
     envelope = {
         "active_contract_digest": active_contract_digest,
