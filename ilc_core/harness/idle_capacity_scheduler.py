@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 IDLE_CAPACITY_SCHEDULER_NOT_ACTIVATED = True
 MAX_TASKS_PER_WINDOW = 16
+MAX_CANDIDATES = 1024
 
 # harness_kernel_decimal_integration_complete_phase_1477p
 
@@ -119,6 +120,8 @@ class IdleCapacityScheduler:
         budget: ProviderBudgetSnapshot,
         candidates: list[MaintenanceTaskCandidate],
     ) -> list[ScheduledMaintenanceTask]:
+        if len(candidates) > MAX_CANDIDATES:
+            raise ValueError("idle_scheduler_candidate_cap_exceeded")
         remaining = budget.remaining_tokens
         if remaining is None or remaining <= 0:
             return []

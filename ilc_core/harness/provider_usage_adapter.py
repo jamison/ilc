@@ -118,6 +118,8 @@ class ProviderUsageAdapter:
         cost_proxy: object,
         quota_headers: Mapping[str, object] | None = None,
     ) -> ProviderUsageRecord:
+        if provider_id == "":
+            raise ValueError("provider_usage_missing_provider_id")
         if len(self._records) >= self._max_records:
             raise ValueError("provider_usage_record_cap_exceeded")
         record = ProviderUsageRecord(

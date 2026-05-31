@@ -5,11 +5,11 @@ PUBLIC_RC_EXCLUDE_REASON: Private local node capture helper. Does not write prod
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from typing import Mapping
 
 from ilc_core.harness.consent_gate import ConsentGate
+from ilc_core.private_json_guardrails import canonical_json as _canonical_json, reject_float
 
 MAX_CAPTURE_FIELDS = 64
 
@@ -47,6 +47,7 @@ class LocalNodeCapture:
             raise ValueError("local_node_capture_missing_identifier")
         if len(payload) > MAX_CAPTURE_FIELDS:
             raise ValueError("local_node_capture_field_cap_exceeded")
+        reject_float(payload, "local_node_capture_float_not_allowed")
 
         self._consent_gate.require_allowed(subject_id, self._purpose)
         envelope = {
@@ -58,12 +59,7 @@ class LocalNodeCapture:
             "purpose": self._purpose,
             "subject_id": subject_id,
         }
-        canonical_json = json.dumps(
-            envelope,
-            sort_keys=True,
-            separators=(",", ":"),
-            allow_nan=False,
-        )
+        canonical_json = _canonical_json(envelope, float_token="local_node_capture_float_not_allowed")
         digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
         return LocalNodeSnapshot(
             capture_id=capture_id,

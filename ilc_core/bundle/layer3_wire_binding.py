@@ -5,34 +5,31 @@ PUBLIC_RC_EXCLUDE_REASON: Private ADR-0009 Layer 3 descriptor/verifier. Does not
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from typing import Mapping
+
+from ilc_core.private_json_guardrails import canonical_json, reject_float, require_digest_ref
 
 ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION = True
 
 
 def _reject_float(value: object, token: str) -> None:
-    if isinstance(value, float):
-        raise ValueError(token)
-    if isinstance(value, Mapping):
-        for key, nested in value.items():
-            _reject_float(key, token)
-            _reject_float(nested, token)
-        return
-    if isinstance(value, (list, tuple)):
-        for nested in value:
-            _reject_float(nested, token)
+    reject_float(value, token)
 
 
 def _canonical_json(payload: Mapping[str, object]) -> str:
-    _reject_float(payload, "layer3_wire_binding_float_not_allowed")
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return canonical_json(payload, float_token="layer3_wire_binding_float_not_allowed")
 
 
 def _require_non_empty_string(value: str, token: str) -> None:
     if not isinstance(value, str) or value == "":
         raise ValueError(token)
+
+
+def _require_digest(value: str, missing_token: str, invalid_token: str) -> None:
+    if not isinstance(value, str) or value == "":
+        raise ValueError(missing_token)
+    require_digest_ref(value, invalid_token)
 
 
 def _require_epoch_number(value: int) -> None:
@@ -66,7 +63,11 @@ def generate_layer3_wire_binding(
     _require_non_empty_string(layer0_schema_ref, "layer3_wire_binding_missing_layer0_schema_ref")
     _require_non_empty_string(sender_agent_id, "layer3_wire_binding_missing_sender_agent_id")
     _require_epoch_number(epoch_number)
-    _require_non_empty_string(payload_digest, "layer3_wire_binding_missing_payload_digest")
+    _require_digest(
+        payload_digest,
+        "layer3_wire_binding_missing_payload_digest",
+        "layer3_wire_binding_invalid_payload_digest",
+    )
     _require_non_empty_string(signature_ref, "layer3_wire_binding_missing_signature_ref")
 
     envelope = {

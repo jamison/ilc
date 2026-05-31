@@ -5,22 +5,23 @@ PUBLIC_RC_EXCLUDE_REASON: Private local co-attestation fixture. Not a public con
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass
 from typing import Mapping
+
+from ilc_core.private_json_guardrails import canonical_json, freeze_json_value, thaw_json_value
 
 MAX_ATTESTATIONS = 16
 
 
 def _canonical_json(payload: Mapping[str, object]) -> str:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return canonical_json(payload, float_token="co_attestation_float_not_allowed")
 
 
 @dataclass(frozen=True)
 class CoAttestationReceipt:
     receipt_id: str
     artifact_sha256: str
-    attestation_signatures: list[dict[str, str]]
+    attestation_signatures: tuple[Mapping[object, object], ...]
     canonical_json: str
     receipt_sha256: str
     public_rc_exclude: bool = True
@@ -60,7 +61,7 @@ def build_co_attestation_receipt(
     return CoAttestationReceipt(
         receipt_id=receipt_id,
         artifact_sha256=artifact_sha256,
-        attestation_signatures=normalized,
+        attestation_signatures=freeze_json_value(normalized),  # type: ignore[arg-type]
         canonical_json=canonical_json,
         receipt_sha256=hashlib.sha256(canonical_json.encode("utf-8")).hexdigest(),
     )
@@ -70,7 +71,7 @@ def verify_co_attestation_receipt(receipt: CoAttestationReceipt) -> bool:
     rebuilt = build_co_attestation_receipt(
         receipt_id=receipt.receipt_id,
         artifact_sha256=receipt.artifact_sha256,
-        attestation_signatures=receipt.attestation_signatures,
+        attestation_signatures=thaw_json_value(receipt.attestation_signatures),  # type: ignore[arg-type]
     )
     return (
         rebuilt.canonical_json == receipt.canonical_json

@@ -7,6 +7,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Mapping
 
+MAX_DECISIONS = 4096
+
 
 @dataclass(frozen=True)
 class ConsentDecision:
@@ -19,29 +21,52 @@ class ConsentDecision:
 class ConsentGate:
     """Deterministic local gate for private capture-to-artifact transitions."""
 
-    def __init__(self, decisions: list[ConsentDecision] | None = None) -> None:
+    def __init__(
+        self,
+        decisions: list[ConsentDecision] | None = None,
+        *,
+        max_decisions: int = MAX_DECISIONS,
+    ) -> None:
+        if max_decisions < 1 or max_decisions > MAX_DECISIONS:
+            raise ValueError("consent_gate_invalid_max_decisions")
+        self._max_decisions = max_decisions
         self._decisions: dict[tuple[str, str], ConsentDecision] = {}
         for decision in decisions or []:
             self.record(decision)
 
     @staticmethod
-    def from_fixture(rows: list[Mapping[str, object]]) -> "ConsentGate":
+    def from_fixture(
+        rows: list[Mapping[str, object]],
+        *,
+        max_decisions: int = MAX_DECISIONS,
+    ) -> "ConsentGate":
         decisions: list[ConsentDecision] = []
         for row in rows:
+            allowed = row.get("allowed", False)
+            if not isinstance(allowed, bool):
+                raise ValueError("consent_gate_fixture_allowed_must_be_bool")
             decisions.append(
                 ConsentDecision(
                     subject_id=str(row.get("subject_id", "")),
                     purpose=str(row.get("purpose", "")),
-                    allowed=bool(row.get("allowed", False)),
+                    allowed=allowed,
                     decision_id=str(row.get("decision_id", "")),
                 )
             )
-        return ConsentGate(decisions)
+        return ConsentGate(decisions, max_decisions=max_decisions)
 
     def record(self, decision: ConsentDecision) -> None:
         if decision.subject_id == "" or decision.purpose == "" or decision.decision_id == "":
             raise ValueError("consent_gate_invalid_decision")
-        self._decisions[(decision.subject_id, decision.purpose)] = decision
+        key = (decision.subject_id, decision.purpose)
+        existing = self._decisions.get(key)
+        if existing is not None:
+            if existing != decision:
+                raise ValueError("consent_gate_duplicate_decision")
+            return
+        if len(self._decisions) >= self._max_decisions:
+            raise ValueError("consent_gate_max_decisions_exceeded")
+        self._decisions[key] = decision
 
     def decision_for(self, subject_id: str, purpose: str) -> ConsentDecision | None:
         return self._decisions.get((subject_id, purpose))

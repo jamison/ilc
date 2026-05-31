@@ -198,6 +198,28 @@ def test_epoch_state_record_generation_and_verification_are_deterministic() -> N
     assert verified["valid"] is True
 
 
+def test_verifiers_report_digest_mismatch_without_trivial_success() -> None:
+    vector = canonical_epoch_state_vectors()[0]
+    quorum_record = generate_quorum_record(copy.deepcopy(vector["quorum_records"][0]))
+    quorum_record["record_digest"] = "malformed"
+    quorum_verified = verify_quorum_record(quorum_record)
+
+    epoch_record = generate_epoch_state_record(copy.deepcopy(vector["epoch_state"]))
+    epoch_record["state_digest"] = "malformed"
+    epoch_verified = verify_epoch_state_record(epoch_record)
+
+    assert quorum_verified["valid"] is False
+    assert quorum_verified["checks"][-1] == {
+        "check_type": "record_digest_matches",
+        "passed": False,
+    }
+    assert epoch_verified["valid"] is False
+    assert epoch_verified["checks"][-1] == {
+        "check_type": "state_digest_matches",
+        "passed": False,
+    }
+
+
 def test_conflict_state_vector_is_preserved_without_fork_resolution_selection() -> None:
     vector = canonical_epoch_state_vectors()[1]
     record = generate_epoch_state_record(copy.deepcopy(vector["epoch_state"]))

@@ -80,6 +80,27 @@ def test_layer2_epoch_2_requires_nonempty_previous_sha256() -> None:
         )
 
 
+def test_layer2_rejects_malformed_digest_refs() -> None:
+    with pytest.raises(ValueError, match="layer2_epoch_snapshot_invalid_layer0_sha256"):
+        generate_layer2_epoch_snapshot(
+            epoch_number=1,
+            previous_snapshot_sha256="",
+            layer0_sha256="not-a-sha",
+            graph_state_digest="graph:" + "1" * 64,
+            agent_state_digest="agent:" + "2" * 64,
+            active_contract_digest="contract:" + "3" * 64,
+        )
+    with pytest.raises(ValueError, match="layer2_epoch_snapshot_invalid_graph_state_digest"):
+        generate_layer2_epoch_snapshot(
+            epoch_number=1,
+            previous_snapshot_sha256="",
+            layer0_sha256="a" * 64,
+            graph_state_digest="graph:not-a-sha",
+            agent_state_digest="agent:" + "2" * 64,
+            active_contract_digest="contract:" + "3" * 64,
+        )
+
+
 def test_layer2_immutability_frozen_dataclass() -> None:
     snapshot = _layer2_fixture()
 
@@ -110,6 +131,18 @@ def test_layer3_missing_message_type_raises() -> None:
             sender_agent_id="agent-a",
             epoch_number=2,
             payload_digest="payload:" + "4" * 64,
+            signature_ref="signature:fixture-a",
+        )
+
+
+def test_layer3_rejects_malformed_payload_digest() -> None:
+    with pytest.raises(ValueError, match="layer3_wire_binding_invalid_payload_digest"):
+        generate_layer3_wire_binding(
+            message_type="claim.submit",
+            layer0_schema_ref="layer0:schema:Node",
+            sender_agent_id="agent-a",
+            epoch_number=2,
+            payload_digest="payload:not-a-sha",
             signature_ref="signature:fixture-a",
         )
 

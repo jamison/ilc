@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from ilc_core.analysis.node_value_kernel import (
     DEFAULT_EW_WEIGHTS,
+    build_node_evidence_vectors,
     compute_node_scores,
     compute_utility_flow,
     validate_ew_weights,
@@ -188,3 +189,45 @@ def test_compute_node_scores_penalizes_low_diversity_reuse() -> None:
 
     assert low["reuse_diversity_multiplier"] < high["reuse_diversity_multiplier"]
     assert low["reuse_component"] < high["reuse_component"]
+
+
+def test_refutors_do_not_inflate_unique_agents_using() -> None:
+    events = [
+        {
+            "kind": "claim",
+            "payload": {
+                "id": "claim-1",
+                "agent_id": "claim-agent",
+                "timestamp": "2026-02-16T00:00:00Z",
+                "net_stake": 4.0,
+                "parent_ids": ["root"],
+                "target_id": "target-node",
+            },
+        },
+        {
+            "kind": "refutation",
+            "payload": {
+                "id": "refute-1",
+                "agent_id": "refuting-agent-1",
+                "timestamp": "2026-02-16T00:01:00Z",
+                "target_id": "target-node",
+                "net_stake": 1.0,
+            },
+        },
+        {
+            "kind": "refutation",
+            "payload": {
+                "id": "refute-2",
+                "agent_id": "refuting-agent-2",
+                "timestamp": "2026-02-16T00:02:00Z",
+                "target_id": "target-node",
+                "net_stake": 1.0,
+            },
+        },
+    ]
+
+    evidence = {row["node_id"]: row for row in build_node_evidence_vectors(events)}
+
+    assert evidence["target-node"]["unique_agents_using"] == Decimal("1")
+    assert evidence["target-node"]["reuse_count"] == Decimal("1")
+    assert evidence["target-node"]["refutation_stake_against"] == Decimal("2")
