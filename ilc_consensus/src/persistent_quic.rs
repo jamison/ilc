@@ -12,10 +12,79 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::path::Path;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 use tokio::sync::Mutex;
 
 pub const PHASE_1386C_CONNECT_TIMEOUT_MS: u64 = 600;
+pub const PERSISTENT_QUIC_FULL_IMPL_PHASE: &str = "phase_1482p";
 pub const MAX_ENDPOINT_PROJECTION_BYTES: u64 = 1024 * 1024;
+pub const DEFAULT_PERSISTENT_QUIC_MAX_SESSIONS: usize = 128;
+pub const DEFAULT_PERSISTENT_QUIC_INITIAL_BACKOFF_MS: u64 = 50;
+pub const DEFAULT_PERSISTENT_QUIC_MAX_BACKOFF_MS: u64 = 400;
+pub const DEFAULT_PERSISTENT_QUIC_BACKOFF_MULTIPLIER: u32 = 2;
+pub const DEFAULT_PERSISTENT_QUIC_MAX_RECONNECT_ATTEMPTS: u32 = 2;
+pub const DEFAULT_PERSISTENT_QUIC_STALE_TIMEOUT_MS: u64 = 30_000;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PersistentQuicSessionPoolConfig {
+    pub max_sessions: usize,
+    pub connect_timeout_ms: u64,
+    pub initial_backoff_ms: u64,
+    pub max_backoff_ms: u64,
+    pub backoff_multiplier: u32,
+    pub max_reconnect_attempts: u32,
+    pub stale_timeout_ms: u64,
+}
+
+impl Default for PersistentQuicSessionPoolConfig {
+    fn default() -> Self {
+        Self {
+            max_sessions: DEFAULT_PERSISTENT_QUIC_MAX_SESSIONS,
+            connect_timeout_ms: PHASE_1386C_CONNECT_TIMEOUT_MS,
+            initial_backoff_ms: DEFAULT_PERSISTENT_QUIC_INITIAL_BACKOFF_MS,
+            max_backoff_ms: DEFAULT_PERSISTENT_QUIC_MAX_BACKOFF_MS,
+            backoff_multiplier: DEFAULT_PERSISTENT_QUIC_BACKOFF_MULTIPLIER,
+            max_reconnect_attempts: DEFAULT_PERSISTENT_QUIC_MAX_RECONNECT_ATTEMPTS,
+            stale_timeout_ms: DEFAULT_PERSISTENT_QUIC_STALE_TIMEOUT_MS,
+        }
+    }
+}
+
+impl PersistentQuicSessionPoolConfig {
+    pub fn validate(&self) -> Result<(), ILCConsensusError> {
+        if self.max_sessions == 0 {
+            return Err(ILCConsensusError::Other(
+                "persistent_quic_max_sessions_must_be_positive_phase_1482p".into(),
+            ));
+        }
+        if self.connect_timeout_ms == 0 {
+            return Err(ILCConsensusError::Other(
+                "persistent_quic_connect_timeout_must_be_positive_phase_1482p".into(),
+            ));
+        }
+        if self.initial_backoff_ms == 0 {
+            return Err(ILCConsensusError::Other(
+                "persistent_quic_initial_backoff_must_be_positive_phase_1482p".into(),
+            ));
+        }
+        if self.max_backoff_ms < self.initial_backoff_ms {
+            return Err(ILCConsensusError::Other(
+                "persistent_quic_max_backoff_below_initial_phase_1482p".into(),
+            ));
+        }
+        if self.backoff_multiplier < 1 {
+            return Err(ILCConsensusError::Other(
+                "persistent_quic_backoff_multiplier_must_be_positive_phase_1482p".into(),
+            ));
+        }
+        if self.max_reconnect_attempts == 0 {
+            return Err(ILCConsensusError::Other(
+                "persistent_quic_reconnect_attempts_must_be_positive_phase_1482p".into(),
+            ));
+        }
+        Ok(())
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -206,12 +275,15 @@ pub struct PersistentQuicSession {
     pub topology_epoch: u64,
     pub path: SessionPath,
     pub connection: Connection,
+    pub last_successful_send: Instant,
+    pub stale: bool,
 }
 
 pub struct PersistentQuicSessionManager {
     network: Arc<PeerNetwork>,
     projection: Arc<EndpointProjection>,
     sessions: Mutex<HashMap<u32, PersistentQuicSession>>,
+    config: PersistentQuicSessionPoolConfig,
 }
 
 impl PersistentQuicSessionManager {
@@ -220,38 +292,111 @@ impl PersistentQuicSessionManager {
             network,
             projection: Arc::new(projection),
             sessions: Mutex::new(HashMap::new()),
+            config: PersistentQuicSessionPoolConfig::default(),
         }
+    }
+
+    pub fn new_with_config(
+        network: Arc<PeerNetwork>,
+        projection: EndpointProjection,
+        config: PersistentQuicSessionPoolConfig,
+    ) -> Result<Self, ILCConsensusError> {
+        config.validate()?;
+        Ok(Self {
+            network,
+            projection: Arc::new(projection),
+            sessions: Mutex::new(HashMap::new()),
+            config,
+        })
     }
 
     pub fn topology_epoch(&self) -> u64 {
         self.projection.topology_epoch()
     }
 
+    pub fn pool_config(&self) -> &PersistentQuicSessionPoolConfig {
+        &self.config
+    }
+
+    pub fn backoff_delay_for_attempt(&self, attempt_index: u32) -> Duration {
+        let mut delay = self.config.initial_backoff_ms;
+        for _ in 0..attempt_index {
+            delay = delay
+                .saturating_mul(u64::from(self.config.backoff_multiplier))
+                .min(self.config.max_backoff_ms);
+        }
+        Duration::from_millis(delay)
+    }
+
+    pub async fn session_count(&self) -> usize {
+        self.sessions.lock().await.len()
+    }
+
+    pub async fn mark_stale(&self, validator_id: ValidatorID) -> bool {
+        let mut sessions = self.sessions.lock().await;
+        if let Some(session) = sessions.get_mut(&validator_id.0) {
+            session.stale = true;
+            return true;
+        }
+        false
+    }
+
+    pub async fn evict_stale(&self) -> usize {
+        let stale_timeout = Duration::from_millis(self.config.stale_timeout_ms);
+        let mut sessions = self.sessions.lock().await;
+        let before = sessions.len();
+        sessions.retain(|_, session| {
+            !session.stale
+                && session.connection.close_reason().is_none()
+                && session.last_successful_send.elapsed() < stale_timeout
+        });
+        before - sessions.len()
+    }
+
     pub async fn ensure_session(
         &self,
         validator_id: ValidatorID,
     ) -> Result<PersistentQuicSession, ILCConsensusError> {
+        self.acquire_session(validator_id).await
+    }
+
+    pub async fn acquire_session(
+        &self,
+        validator_id: ValidatorID,
+    ) -> Result<PersistentQuicSession, ILCConsensusError> {
         {
-            let sessions = self.sessions.lock().await;
+            let mut sessions = self.sessions.lock().await;
             if let Some(session) = sessions.get(&validator_id.0) {
                 if session.topology_epoch == self.projection.topology_epoch()
+                    && !session.stale
                     && session.connection.close_reason().is_none()
+                    && session.last_successful_send.elapsed()
+                        < Duration::from_millis(self.config.stale_timeout_ms)
                 {
                     return Ok(session.clone());
                 }
+            }
+            sessions.remove(&validator_id.0);
+            if sessions.len() >= self.config.max_sessions {
+                return Err(ILCConsensusError::Other(format!(
+                    "persistent_quic_pool_at_capacity_phase_1482p: max_sessions={}",
+                    self.config.max_sessions
+                )));
             }
         }
 
         let mut last_error: Option<ILCConsensusError> = None;
 
         if let Some(edge) = self.projection.direct_endpoint(validator_id) {
-            match self.connect_edge(edge).await {
+            match self.connect_edge_with_backoff(edge).await {
                 Ok(connection) => {
                     let session = PersistentQuicSession {
                         validator_id,
                         topology_epoch: self.projection.topology_epoch(),
                         path: SessionPath::DirectQuic,
                         connection,
+                        last_successful_send: Instant::now(),
+                        stale: false,
                     };
                     self.sessions
                         .lock()
@@ -266,13 +411,15 @@ impl PersistentQuicSessionManager {
         }
 
         if let Some(edge) = self.projection.relay_endpoint(validator_id) {
-            match self.connect_edge(edge).await {
+            match self.connect_edge_with_backoff(edge).await {
                 Ok(connection) => {
                     let session = PersistentQuicSession {
                         validator_id,
                         topology_epoch: self.projection.topology_epoch(),
                         path: SessionPath::Cdl078RelayFallback,
                         connection,
+                        last_successful_send: Instant::now(),
+                        stale: false,
                     };
                     self.sessions
                         .lock()
@@ -313,7 +460,39 @@ impl PersistentQuicSessionManager {
         })?
         .map_err(|e| ILCConsensusError::Other(format!("persistent open_bi error: {}", e)))?;
         self.network.transmit(send, envelope).await?;
+        self.record_success(validator_id).await;
         Ok(session.path)
+    }
+
+    async fn record_success(&self, validator_id: ValidatorID) {
+        let mut sessions = self.sessions.lock().await;
+        if let Some(session) = sessions.get_mut(&validator_id.0) {
+            session.last_successful_send = Instant::now();
+            session.stale = false;
+        }
+    }
+
+    async fn connect_edge_with_backoff(
+        &self,
+        edge: &QuicEndpointEdge,
+    ) -> Result<Connection, ILCConsensusError> {
+        let mut last_error: Option<ILCConsensusError> = None;
+        for attempt in 0..self.config.max_reconnect_attempts {
+            match self.connect_edge(edge).await {
+                Ok(connection) => return Ok(connection),
+                Err(err) => {
+                    last_error = Some(err);
+                    if attempt + 1 < self.config.max_reconnect_attempts {
+                        tokio::time::sleep(self.backoff_delay_for_attempt(attempt)).await;
+                    }
+                }
+            }
+        }
+        Err(last_error.unwrap_or_else(|| {
+            ILCConsensusError::Other(
+                "persistent_quic_connect_attempts_exhausted_phase_1482p".into(),
+            )
+        }))
     }
 
     async fn connect_edge(&self, edge: &QuicEndpointEdge) -> Result<Connection, ILCConsensusError> {
@@ -324,7 +503,7 @@ impl PersistentQuicSessionManager {
             .map_err(|e| ILCConsensusError::Other(format!("QUIC connect error: {}", e)))?;
 
         tokio::time::timeout(
-            tokio::time::Duration::from_millis(PHASE_1386C_CONNECT_TIMEOUT_MS),
+            Duration::from_millis(self.config.connect_timeout_ms),
             connecting,
         )
         .await
