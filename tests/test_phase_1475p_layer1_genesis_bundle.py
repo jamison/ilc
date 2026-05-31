@@ -70,6 +70,10 @@ def test_immutability_frozen_dataclass() -> None:
 
     with pytest.raises(FrozenInstanceError):
         bundle.bundle_id = "mutated"  # type: ignore[misc]
+    with pytest.raises(TypeError):
+        bundle.seed_claims[0]["claim_id"] = "mutated"  # type: ignore[index]
+    with pytest.raises(TypeError):
+        bundle.initial_shard_topology["version"] = "mutated"  # type: ignore[index]
 
 
 def test_canonical_json_sort_keys() -> None:
@@ -110,3 +114,15 @@ def test_public_rc_exclude_flag() -> None:
     bundle = _fixture_bundle()
 
     assert bundle.public_rc_exclude is True
+
+
+def test_layer1_rejects_float_inputs_recursively() -> None:
+    with pytest.raises(ValueError, match="layer1_genesis_bundle_float_not_allowed"):
+        generate_layer1_genesis_bundle(
+            bundle_id="layer1-genesis-private",
+            layer0_sha256="a" * 64,
+            seed_claims=[{"claim_id": "seed-001", "weight": 0.5}],
+            initial_agent_roster=[],
+            initial_shard_topology={"shards": []},
+            genesis_signing_key_refs=[],
+        )

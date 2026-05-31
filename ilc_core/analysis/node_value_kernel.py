@@ -392,16 +392,11 @@ def build_node_evidence_vectors(
                 payload["net_stake"],
                 "node_value_kernel_invalid_refutation_stake_against",
             )
-            target_row["reuse_count"] += ONE
             _apply_freshness_metadata(
                 target_row,
                 age_epochs=_read_optional_age_epochs(payload, "target_age_epochs"),
                 is_genesis=_read_optional_is_genesis(payload, "target_is_genesis"),
             )
-            agent_id = str(payload["agent_id"])
-            agents_per_node.setdefault(target_id, set()).add(agent_id)
-            counts = agent_reuse_counts_by_node.setdefault(target_id, {})
-            counts[agent_id] = counts.get(agent_id, 0) + 1
 
     for node_id, agents in agents_per_node.items():
         row = evidence[node_id]

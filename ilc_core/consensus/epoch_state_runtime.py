@@ -290,12 +290,15 @@ def verify_quorum_record(record: Any) -> dict[str, Any]:
     )
     actual_digest = source.get("record_digest")
     checks = [
-        _check("epoch_index_valid", True),
-        _check("validator_id_present", True),
-        _check("block_hash_present", True),
-        _check("quorum_state_digest_present", True),
-        _check("vote_weight_positive", True),
-        _check("attestation_ref_present", True),
+        _check("epoch_index_valid", normalized["epoch_index"] == source.get("epoch_index")),
+        _check("validator_id_present", normalized["validator_id"] == source.get("validator_id")),
+        _check("block_hash_present", normalized["block_hash"] == source.get("block_hash")),
+        _check(
+            "quorum_state_digest_present",
+            normalized["quorum_state_digest"] == source.get("quorum_state_digest"),
+        ),
+        _check("vote_weight_positive", normalized["vote_weight"] == source.get("vote_weight")),
+        _check("attestation_ref_present", normalized["attestation_ref"] == source.get("attestation_ref")),
         _check("record_digest_matches", actual_digest == normalized["record_digest"]),
     ]
     return {
@@ -320,13 +323,25 @@ def verify_epoch_state_record(record: Any) -> dict[str, Any]:
     )
     actual_digest = source.get("state_digest")
     checks = [
-        _check("epoch_index_valid", True),
-        _check("candidate_block_hash_present", True),
-        _check("quorum_state_digest_present", True),
-        _check("parent_epoch_state_digest_present", True),
-        _check("quorum_threshold_valid", True),
-        _check("quorum_record_digests_non_empty", True),
-        _check("finality_status_supported", True),
+        _check("epoch_index_valid", normalized["epoch_index"] == source.get("epoch_index")),
+        _check(
+            "candidate_block_hash_present",
+            normalized["candidate_block_hash"] == source.get("candidate_block_hash"),
+        ),
+        _check(
+            "quorum_state_digest_present",
+            normalized["quorum_state_digest"] == source.get("quorum_state_digest"),
+        ),
+        _check(
+            "parent_epoch_state_digest_present",
+            normalized["parent_epoch_state_digest"] == source.get("parent_epoch_state_digest"),
+        ),
+        _check("quorum_threshold_valid", normalized["quorum_threshold"] == source.get("quorum_threshold")),
+        _check(
+            "quorum_record_digests_non_empty",
+            normalized["quorum_record_digests"] == sorted(set(source.get("quorum_record_digests", []))),
+        ),
+        _check("finality_status_supported", normalized["finality_status"] == source.get("finality_status")),
         _check("state_digest_matches", actual_digest == normalized["state_digest"]),
     ]
     return {

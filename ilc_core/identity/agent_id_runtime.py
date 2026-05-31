@@ -29,12 +29,15 @@ CDL_042_DEPENDENCY = "cdl_042_ratified_407.v0.1"
 CDL_069_AMENDMENT = "cdl_069_opens_phase_838"
 NODE_SCHEMA_DEPENDENCY = CDL_038_DEPENDENCY
 
+# CDL-042 legacy domain (BLS key bytes input).  Deprecated from Genesis forward.
+_AGENT_ID_DOMAIN_V1: bytes = b"ilc-agent-id-v1:"
+
 # CDL-069 §2a: SHA-384 uniform for all Tier 3 (permanent) data.
 # Domain separator is stable — changing it invalidates all agent_ids.
-_AGENT_ID_DOMAIN_V2: bytes = b"ilc-agent-id-v1:"   # CDL-069 path (identity_seed)
-
-# CDL-042 legacy domain (BLS key bytes input).  Deprecated from Genesis forward.
-_AGENT_ID_DOMAIN_V1: bytes = b"ilc-agent-id-v1:"   # same prefix, different hash + input
+# V2 intentionally aliases the CDL-042 byte prefix; v1/v2 separation is by
+# hash algorithm, input material, output length, and legacy "agent-" prefix,
+# not by domain bytes. Do not change without a migration phase.
+_AGENT_ID_DOMAIN_V2: bytes = _AGENT_ID_DOMAIN_V1
 
 _IDENTITY_SEED_LENGTH: int = 32  # bytes
 _AGENT_ID_LENGTH_V2: int = 96    # hex chars (SHA-384 = 48 bytes)
