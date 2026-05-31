@@ -11,5 +11,6 @@ pub mod fast_path;
 pub mod network;
 pub mod node;
 pub mod persistent_quic;
+pub mod relay_routing_table;
 pub mod types;
 pub mod validator;
