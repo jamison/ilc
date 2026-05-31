@@ -20,12 +20,17 @@ We will acknowledge receipt within 72 hours and provide an initial assessment wi
 
 ## Scope
 
+The repository is still pre-publication and Epoch 0 has not transitioned to a
+production mainnet. Security scope is therefore limited to implemented or staged
+public-RC code surfaces, release tooling, and any component that could affect a
+future public artifact if published.
+
 **In scope:**
 - `ilc_core/` Python protocol implementation
 - `ilc_consensus/` Rust consensus implementation
 - CDL enforcement logic and signing ceremony tooling
 - Cryptographic key handling, BLS signatures, PQ key generation
-- ECU ledger arithmetic and settlement logic
+- ECU/ILC arithmetic, claimability, and any staged settlement logic that could affect future accounting
 - Epoch processor and network transport
 - Any component that could affect settlement correctness, key material security, or consensus safety
 
@@ -34,6 +39,7 @@ We will acknowledge receipt within 72 hours and provide an initial assessment wi
 - The use of provisional algorithms documented as pre-production
 - Protocol behaviors that are the intended result of a ratified CDL
 - Aspirational features described in research documents but not yet implemented
+- Patent-pending research, draft filing text, raw conversations, and internal gap analyses that are not shipped in the public-RC tree
 
 ---
 
@@ -69,4 +75,4 @@ We will not take legal action against good-faith security researchers who follow
 - Mainnet is not active. No real economic value is at risk from protocol-layer vulnerabilities at this stage.
 - The jury system is authorized but not yet live in production.
 - The SIM-SPECTRAL-02 Scenario B Sybil discrimination finding (Phase 1141) is an open advisory. The S3 Sybil discrimination mechanism is unresolved.
-- The directed hyperedge Laplacian extension is a research item; backward attribution is not yet canonical.
+- Spectral graph commitment and directed-hyperedge extensions remain research/IP-gated unless and until shipped in public code; backward attribution is not yet canonical.
