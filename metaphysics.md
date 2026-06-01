@@ -41,9 +41,7 @@ process: claims earn standing by surviving refutation, reuse, validation, and
 epoch settlement under transparent rules.
 ```
 
-This is the useful Bitcoin analogy. Bitcoin made scarcity and history
-cryptographically expensive to fake. ILC tries to make useful epistemic
-contribution and adversarial robustness economically legible.
+Bitcoin made history expensive to fake. ILC makes truth expensive to fake — and unlike hash grinding, the work enriches the world that produced it.
 
 ## 2. ILC as Epistemological Instrument
 
