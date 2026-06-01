@@ -526,3 +526,27 @@ This document must not claim:
 | Landauer | Information processing has thermodynamic cost | Bridge between computation, energy, and entropy |
 | Wheeler | "It from bit" and participatory-universe intuition | Inspiration for observer/information framing |
 | Donald Hoffman | Perception as interface; conscious-agent realism | Inspiration for perceived 3+1D as interface, not proof |
+
+---
+
+> The TOON block below is a compact state summary for agents and integrators.
+> Verify live state against gate records and current phase documents before acting.
+
+```toon
+document_status: educational_genesis_synthesis
+posture: hypotheses_under_test_not_protocol_authority
+canon_boundary: adrs_cdls_glossary_phase_walkthroughs_sequence_locks
+truth_primitives[7]: assert.truth,validate.claim,contradict.assert,refute.claim,revise.assert,link.claim,commit.epoch
+substrate:
+  hypergraph: accepted_adr_0029
+  spectral_commitments: research_or_cdl_sim_gated_not_active
+  star_map: l2_routing_artifact_not_genesis_primitive
+  adr_0035_homoiconic_type_system: deferred_window_1459_plus
+hypotheses_under_test:
+  morphogenetic_hypergraph_universe: active_genesis_metaphysical_frame
+  observer_light_cones_bounded_epistemic_reach: active
+  entropy_as_dispersal_of_accessible_information: active
+  consciousness_agency_as_local_organization_gradient: active
+  universes_evolve_toward_organized_experience: active_hopeful_hypothesis
+not_protocol_claims[5]: no_guarantee_of_objective_truth,no_live_spectral_metrics,no_active_genesis_economic_flows,no_protocol_consciousness_rights,no_physics_proved_consciousness_substrate
+```

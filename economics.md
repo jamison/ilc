@@ -776,6 +776,41 @@ This document must not claim:
 | First-principles mechanism design | Markets can be designed around incentives and constraints | ILC tests epistemic incentives against centralized control |
 | Adversarial mechanism design | Systems must expect gaming | ECU must be treated as a noisy adversarial sensor |
 
+---
+
+> The TOON block below is a compact state summary for agents and integrators.
+> Not investment guidance. Verify live state against gate records and CDL register before acting.
+
+```toon
+document_status: educational_genesis_synthesis
+posture: economic_hypotheses_under_test_not_investment_guidance
+ecu:
+  expansion: epistemic_compute_unit
+  nature: internal_productive_credit_and_unit_of_measure
+  not[3]: transferable_asset,public_token,settlement_coin
+  formula_research: W_e=delta_H/E_cost_not_ratified_runtime_formula
+  current_activation: narrow_local_non_wallet_non_transferable_cdl_053_only
+ilc:
+  nature: hard_settlement_token
+  supply_cap: 25920000
+  status: not_live_before_public_rc_activation
+key_ratified_constants:
+  ecu_temporal_decay: cdl_v1_ratified
+  quorum_diversity_floor: cdl_v3_ratified
+  provenance_decay_alpha: 0.45_cdl_084_ratified
+  epoch_validation: 1_minute_cdl_027
+  epoch_issuance: 1_month_cdl_027
+  treasury_governor: cdl_050_ratified
+activation_status:
+  local_productive_credit: cdl_053_narrow_scope_only
+  werner_flow_governor: deferred_window_1459_plus
+  wallet_transfer: not_activated
+  public_settlement: not_active
+  mainnet: not_active
+  pressure_flow_diagnostics: default_off_review_lane_evidence_only
+non_claims[7]: no_price_guidance,no_investment_product,no_live_ecu_public_token,no_direct_heat_or_topology_to_ecu,no_full_werner_today,no_live_public_settlement,no_guaranteed_returns
+```
+
 ## Appendix: Repo Anchors
 
 - `docs/ILC_Economic_Paper_Draft_v0.2.md`
