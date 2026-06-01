@@ -17,3 +17,26 @@ If you find this project valuable and would like to contribute anonymously, the 
 ```
 
 All proceeds go directly to project inference costs.
+
+---
+
+> The TOON block below is a compact state summary for agents and integrators.
+> Verify live state against gate records and current phase documents before acting.
+
+```toon
+state:
+  ilc_foundation_legal_entity: not_yet_formed
+  vc_backing: none
+  paid_contributors: none
+  inference_budget_through_window_1429_1458: ~950_usd
+  inference_pricing_trend: increasing_as_labs_revise_billing
+settlement:
+  ecu_minting: not_active
+  ilc_settlement: not_active
+  production_economics: not_live
+contributions:
+  method: bitcoin_anonymous
+  address: 1EgWDuCiKR5Yx4AEQ73e8uKsRjmTpZRoWk
+  purpose: project_inference_costs_only
+non_claims[3]: no_returns,no_investment_product,no_foundation_legal_entity_yet
+```

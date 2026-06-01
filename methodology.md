@@ -793,3 +793,34 @@ Historical draft files, superseded spec rows, and stale PLANNING_INDEX `⬅ CURR
 ---
 
 *This document is a living record. The methodology evolved over ~1,460 phases and will continue to evolve as the network grows. Contributions and critiques are welcome through the standard review lane.*
+
+---
+
+> The TOON block below is a compact state summary for agents and integrators.
+> Verify live state against gate records and current phase documents before acting.
+
+```toon
+methodology:
+  artifact_chain[5]: window_guidance_doc,phase_prompts,phase_execution,walkthrough,closure_handoff
+  review_model: four_eyes_minimum_six_eyes_sensitive
+  token_discipline: input_tokens+output_tokens+non_claim_tokens
+  prompt_validation_tool: tools/validate_phase_prompt.py
+  pre_commit_security_tool: tools/check_sensitive_runtime_coding_taboos.py
+  mempalace_rule: direct_read_every_returned_path_mandatory
+roles[4]: implementer,architect_reviewer,security_reviewer,human_authority_genesis_agent
+knowledge_pipeline[3]: past_conversation_archive_68_plus_transcripts,rc_dredge_v2,mempalace_tiered_chroma_bm25
+stats_snapshot_2026_05_24:
+  python_source_loc: ~95000
+  test_loc: ~216000
+  rust_loc: ~17000
+  docs_loc: ~716000
+  cdl_rows: ~110
+  adrs: ~42
+  phase_walkthroughs: ~1460
+  total_commits: ~3410
+  windows_completed: ~120
+  total_inference_cost_usd: ~950
+security_standards: 10_mandatory_taboos_enforced_by_pre_commit
+sensitive_gate_triggers: cdl_ratification+window_closure+release_signing+production_activation
+non_claims[3]: no_phase_skips_four_eyes,no_unverified_token_assertions,no_chat_memory_as_canon
+```
