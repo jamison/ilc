@@ -7,9 +7,25 @@ formal-methods items remain deferred.
 **Earliest implementation:** Pre-RC item closed in Phase 1255; post-launch for
 remainder.
 
+> **Disposition note (Phase 1491p, 2026-06-01):** Spec D
+> (`docs/specs/tla/ilc_epoch_checkpoint_safety.tla`) proved the
+> epoch-checkpoint/shared-object `SafetyNoDualCert` property in Phase 1385a:
+> no two conflicting checkpoints for the same epoch can both be certified. The
+> evidence artifact is
+> `docs/specs/ilc_epoch_checkpoint_safety_tlc_evidence_1385a_v0.1.md`, which
+> records an exhaustive TLC run with 67,020,103 generated states, zero states
+> left on queue, and no invariant violations. The Spec D gate is closed by
+> `safetynodualcert_spec_d_proven_epoch_checkpoint`. Remaining forward TLA+
+> obligations are TLAPS unbounded liveness for Spec A and later economic
+> protocol specs; they remain separately deferred and are not closed by this
+> note.
+>
+> `tla_forward_plan_disposition_recorded_phase_1491p`
+
 ```text
 tla_formal_verification_forward_planning_recorded_phase_1233_1240
 tla_refinement_notes_pre_rc_closed_phase_1255
+tla_forward_plan_disposition_recorded_phase_1491p
 ```
 
 ---
@@ -93,6 +109,16 @@ before public RC.
 
 ### TLA-POST-1 — Spec D: EpochSettlementTx Shared-Object Path
 
+**Status:** CLOSED by Phase 1385a.
+
+Phase 1385a delivered `docs/specs/tla/ilc_epoch_checkpoint_safety.tla`,
+`docs/specs/tla/ilc_epoch_checkpoint_safety.cfg`, TLC output, and
+`docs/specs/ilc_epoch_checkpoint_safety_tlc_evidence_1385a_v0.1.md`.
+The checked epoch-checkpoint/shared-object property was `SafetyNoDualCert`;
+the clean result is recorded by `safetynodualcert_spec_d_proven_epoch_checkpoint`.
+The historical planning text below is retained for traceability, not as an open
+post-launch obligation.
+
 **Token:** `tla_spec_d_epoch_settlement_post_launch`
 **Effort:** Medium (days — new TLA+ spec)
 
@@ -143,7 +169,7 @@ layer is not fully wired to production yet.
 | Phase slot | Topic | Sensitivity | Effort | Token produced |
 |-----------|-------|-------------|--------|----------------|
 | 1255 | TLA+ refinement notes (TLA+ vars → Rust types/functions) | NON-SENSITIVE | Closed | `tla_refinement_notes_pre_rc_closed_phase_1255` |
-| Post-launch | Spec D: EpochSettlementTx shared-object model | SENSITIVE | Days | `tla_spec_d_epoch_settlement_complete` |
+| 1385a | Spec D: Epoch-checkpoint shared-object SafetyNoDualCert | NON-SENSITIVE Strike Force | Closed | `safetynodualcert_spec_d_proven_epoch_checkpoint` |
 | Post-launch | TLAPS unbounded Liveness proof for Spec A | SENSITIVE | Weeks | `tla_tlaps_unbounded_liveness_post_launch` |
 | Post-launch | Economic protocol specs (treasury, ECU governor, node-transfer) | SENSITIVE | Weeks | `tla_economic_protocol_specs_post_launch` |
 
@@ -162,15 +188,17 @@ dedicated window with proper guidance doc and phase prompts.
 - Do not write a new equivocation spec — `SafetyNoDualCert` is already
   formally verified in Spec B (M-019 deferred item 1 is resolved).
 - Do not write Spec C — it already exists and has Phase 818 TLC evidence.
-- Do not schedule Spec D or TLAPS before public RC — empirical M-series
-  workloads are the primary evidence mechanism at this stage.
+- Do not reschedule Spec D as open; the epoch-checkpoint/shared-object
+  SafetyNoDualCert gate is closed by Phase 1385a. TLAPS remains deferred.
+- Do not schedule TLAPS before public RC — empirical M-series workloads are the
+  primary evidence mechanism at this stage.
 
 ---
 
 ## 6. Relationship to Existing Gate Infrastructure
 
 The canonical gate script `tools/run_tlc_m_series_gate.sh` already runs
-Specs A, B, and C. Any new spec (Spec D) should be added to this script
+Specs A, B, C, and D. Any later new spec should be added to this script
 following the same `run_spec "spec_name"` pattern.
 
 TLC output artifacts live in `docs/specs/tla/states/`. Evidence documents

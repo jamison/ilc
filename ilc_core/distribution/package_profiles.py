@@ -33,5 +33,9 @@ GAP_14_CLOSED_TOKEN: str = "gap_14_closed_phase_1436b"
 GAP_13_CLOSED_TOKEN: str = "gap_13_closed_phase_1441"
 GAP_13_CLOSURE_VERDICT_PASS_TOKEN: str = "gap_13_closure_verdict_pass_phase_1441"
 
+# phase_1436_not_activated_disposition_recorded_phase_1491p:
+# intentionally maintained. This distribution-layer constant records that
+# Phase 1436a/1436b package-profile artifacts did not themselves activate the
+# Phase 1436 public path; runtime activation lives in sidecars/public_path_activation.py.
 PHASE_1436_NOT_ACTIVATED: bool = True
 PUBLIC_RC_NOT_ACTIVATED: bool = True
