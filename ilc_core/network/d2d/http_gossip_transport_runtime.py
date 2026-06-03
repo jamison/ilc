@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 568 real HTTP transport wrapper runtime.
 
 This module operationalizes the ratified CDL-061 envelope over real HTTP I/O

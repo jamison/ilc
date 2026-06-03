@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1347 default-off CDL-029 split quote runtime.
 
 This module computes allocation quotes only. It does not implement full

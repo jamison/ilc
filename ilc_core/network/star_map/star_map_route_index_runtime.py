@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 # CDL-080: Star.Map N-Gram Route Index — L3 Routing Layer Runtime
 #
 # Phase 923 — star_map_route_index_runtime.py

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1311 local graph/memory projection sidecar substrate.
 
 This module builds deterministic local-only projection envelopes for graph,

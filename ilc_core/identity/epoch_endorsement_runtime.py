@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-069 epoch endorsement protocol runtime.
 
 Implements the validator-side and agent-side logic for the epoch endorsement

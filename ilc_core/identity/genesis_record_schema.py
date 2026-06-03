@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-069 genesis record schema runtime.
 
 Implements the four-field genesis record structure specified in CDL-069 §2a,

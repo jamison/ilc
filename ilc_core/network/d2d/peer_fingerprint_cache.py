@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """H-013 peer fingerprint cache — Phase 931.
 
 Rolling cache of received peer spectral fingerprints, keyed by peer_endpoint.

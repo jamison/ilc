@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from typing import Dict, List, Literal, Mapping, TypedDict, TypeAlias
 
 # We keep this as a Literal set for now; can be expanded later.

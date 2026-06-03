@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase-445 deterministic finality evaluator and Phase-470 diversity-aware extension."""
 
 from __future__ import annotations

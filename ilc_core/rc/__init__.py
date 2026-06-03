@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from .atlas_graph_discipline import (
     ATLAS_G_004_005_BRIDGE_VERSION,
     ATLAS_G_006_MANIFEST_PROFILE_CONSISTENCY_FIX1_TOKEN,

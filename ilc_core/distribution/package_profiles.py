@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """ILC package profile constants (Gap 14, Phases 1436a-1436b).
 
 These constants define canonical Python package profile names.

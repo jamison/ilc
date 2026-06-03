@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 # ADR-0029: Spectral utility functions for hypergraph analytics.
 #
 # spectral_distance() is the routing metric used by spectral routing (SIM-ROUTING-01).

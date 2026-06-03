@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-074 truth primitive submission runtime.
 
 Validates CDL-073 wire-format submissions for all six agent-issuable truth

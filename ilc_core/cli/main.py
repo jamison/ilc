@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """D2e-03 JSON-first CLI prototype.
 
 This module implements the Phase-264 prototype runtime aligned to the locked

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from typing import Any, Dict, Optional, Union
 
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, exact_to_canonical_string

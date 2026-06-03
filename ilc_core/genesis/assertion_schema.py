@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 858 — HB-001 genesis assertion schema runtime.
 
 Implements the genesis-authority `assert.truth` schema specified in:

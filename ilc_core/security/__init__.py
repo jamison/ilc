@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from .signer_lineage_runtime import (
     ACTIVE,
     RECOVER,

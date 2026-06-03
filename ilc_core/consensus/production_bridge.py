@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1358 production bridge from ilc_core to ilc_consensus.
 
 The bridge exposes the read-only ILCAppReadService gRPC surface and records the

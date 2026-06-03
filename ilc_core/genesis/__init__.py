@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from .genesis_state_bundle_runtime import (
     CEREMONY_REQUIRED_STEPS,
     GENESIS_BUNDLE_RUNTIME_VERSION,

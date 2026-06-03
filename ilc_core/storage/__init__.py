@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from .interfaces import GraphStore, WalletStore
 from .lmdb_graph_pruning_runtime import (
     CDL_071_TIER_2_EPOCH_SCOPE_TOKEN,

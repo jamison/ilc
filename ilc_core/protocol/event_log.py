@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from dataclasses import dataclass, asdict
 from decimal import Decimal, InvalidOperation
 from datetime import datetime, timezone

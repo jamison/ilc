@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1409 / CDL-093 maintenance lottery runtime stub.
 
 This module exposes the CDL-093 ratification evidence to runtime-facing code

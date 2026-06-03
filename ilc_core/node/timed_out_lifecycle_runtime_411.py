@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-046 timed-out lifecycle amendment runtime.
 
 Implements the CDL-035 timed_out amendment: orphan-timeout epoch check and

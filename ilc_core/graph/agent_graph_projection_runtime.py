@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Deterministic graph projection runtime for digital agents.
 
 Phase 1229 implements a read-only projection surface. Callers provide already

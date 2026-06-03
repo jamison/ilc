@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-069 epoch endorsement packet schema.
 
 Implements the concrete field names, required/optional field validation,

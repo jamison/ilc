@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 import json
 from datetime import datetime, timezone
 from typing import TypeAlias, TypedDict

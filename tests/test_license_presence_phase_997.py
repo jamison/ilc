@@ -38,3 +38,18 @@ def test_layered_license_zone_table_exists() -> None:
         "counsel_review_future_modification_expected",
     ):
         assert token in content
+
+
+def test_public_patent_and_third_party_notices_exist() -> None:
+    patents = _repo_root() / "PATENTS.md"
+    third_party = _repo_root() / "THIRD_PARTY_NOTICES.md"
+
+    assert patents.exists()
+    assert third_party.exists()
+
+    patent_text = patents.read_text(encoding="utf-8")
+    third_party_text = third_party.read_text(encoding="utf-8")
+
+    assert "THIRD_PARTY_NOTICES.md" in patent_text
+    assert "third_party_original_licenses_preserved_public_rc_2026_06_03" in third_party_text
+    assert "lmdb_dependency_notice_recorded_public_rc_2026_06_03" in third_party_text

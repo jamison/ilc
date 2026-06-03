@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 894 — CDL-076 truth primitive announcement gossip runtime.
 
 Implements the "soft push-signal" leg of the CDL-036 dissemination contract for

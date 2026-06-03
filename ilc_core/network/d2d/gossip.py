@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase-382 D2d gossip runtime surface.
 
 This module enforces CDL-039 transport invariants: no creator_agent_id in transport headers, opaque channel routing field, and cluster membership non-inferrability.

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 833 Row-5 B-Impl privacy lane sub-package.
 
 Implements the locked Row-5 mechanism:

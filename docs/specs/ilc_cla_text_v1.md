@@ -67,9 +67,8 @@ Contribution with the Project to which it was submitted.
 ## 5. Distribution Terms
 
 You agree that the Project may distribute Your Contributions under the
-AGPL-3.0-or-later license, any later version of that license, and any compatible
-project-governed distribution terms later authorized for the public-source
-allowlist scope.
+AGPL-3.0-only license and any compatible project-governed distribution terms
+later authorized for the public-source allowlist scope.
 
 ## 6. Public-Source Allowlist Scope
 
@@ -92,7 +91,7 @@ By submitting a Contribution, You represent that:
    submit it under this CLA.
 3. You have not included third-party material without appropriate rights.
 4. You understand that accepted Contributions may be distributed under
-   AGPL-3.0-or-later terms.
+   AGPL-3.0-only terms or later project-governed distribution terms.
 
 ## 8. Governance-Authority Declaration
 
