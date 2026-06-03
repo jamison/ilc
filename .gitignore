@@ -134,3 +134,8 @@ tools/tla/
 # Local historical corpus
 # =========================
 Z_Past_Chats/
+
+# =========================
+# Patent-pending material (private until filing/publication gate)
+# =========================
+docs/research/patent_pending/

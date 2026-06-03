@@ -1,0 +1,353 @@
+{
+  "classifications": [
+    "safe_public_agpl",
+    "spec_only",
+    "withhold",
+    "separate_commercial_license"
+  ],
+  "created_date": "2026-06-03",
+  "keystone_surfaces": [
+    {
+      "commercial_license_priority": 1,
+      "default_full_package_posture": "public_agpl_only_after_explicit_dual_license_decision",
+      "filings": [
+        "filing_2"
+      ],
+      "keystone_id": "K-1",
+      "name": "Truth-primitive state-machine kernel",
+      "no_agpl_patent_grant_posture": "withhold_or_move_to_separate_source_available_package",
+      "path_globs": [
+        "ilc_core/epistemic/truth_primitive_submission_runtime.py",
+        "ilc_core/epistemic/truth_primitive_graph_store.py",
+        "ilc_core/storage/truth_primitive_graph_lmdb_adapter.py",
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
+        "ilc_core/network/d2d/truth_primitive_fetch_runtime.py"
+      ],
+      "rationale": "Semantic truth-primitive state-machine substrate likely needed by proprietary implementations of the filing 2 layer."
+    },
+    {
+      "commercial_license_priority": 1,
+      "default_full_package_posture": "public_agpl_only_after_explicit_dual_license_decision",
+      "filings": [
+        "filing_3"
+      ],
+      "keystone_id": "K-2",
+      "name": "Productive-credit and ECU attribution kernel",
+      "no_agpl_patent_grant_posture": "withhold_or_move_to_separate_source_available_package",
+      "path_globs": [
+        "ilc_core/economics/passive_ecu_attribution_runtime.py",
+        "ilc_core/economics/epoch_attribution_settle_runtime.py",
+        "ilc_core/analysis/path_lift_counterfactual.py",
+        "ilc_core/analysis/utility_flow_rewards.py"
+      ],
+      "rationale": "Commercially central value-allocation and productive-credit metering surface."
+    },
+    {
+      "commercial_license_priority": 1,
+      "default_full_package_posture": "public_agpl_only_after_explicit_dual_license_decision",
+      "filings": [
+        "filing_5"
+      ],
+      "keystone_id": "K-3",
+      "name": "Agentic sidecar and co-attested function endpoint kernel",
+      "no_agpl_patent_grant_posture": "withhold_or_move_to_separate_source_available_package",
+      "path_globs": [
+        "ilc_core/graph/sidecar_query_runtime.py",
+        "ilc_core/graph/agent_graph_projection_runtime.py",
+        "ilc_core/sidecars/confidential_coordination_capability.py",
+        "ilc_core/sidecars/confidential_coordination_gossip_policy.py",
+        "ilc_core/sidecars/confidential_coordination_sealed_sender.py",
+        "ilc_core/sidecars/confidential_coordination_shard.py",
+        "ilc_core/harness/co_attestation_receipt.py",
+        "ilc_core/harness/maintenance_task_executor.py"
+      ],
+      "rationale": "Most direct enterprise AI-agent, proprietary integration, hosted-service, and certified deployment surface."
+    },
+    {
+      "commercial_license_priority": 2,
+      "default_full_package_posture": "public_agpl_only_after_explicit_dual_license_decision_or_withhold",
+      "filings": [
+        "filing_1"
+      ],
+      "keystone_id": "K-4",
+      "name": "Spectral/Merkle-Laplacian privacy and routing runtime",
+      "no_agpl_patent_grant_posture": "withhold_or_move_to_separate_source_available_package",
+      "path_globs": [
+        "ilc_core/network/d2d/spectral_beacon.py",
+        "ilc_core/network/d2d/spectral_routing_runtime.py"
+      ],
+      "rationale": "Close fourth keystone: infrastructure/security layer for spectral proof, beacon, and routing embodiments."
+    }
+  ],
+  "policy": {
+    "default_public_code_license": "AGPL-3.0-only",
+    "dual_license_decision_required_classifications": [
+      "separate_commercial_license"
+    ],
+    "hard_public_rc_exclude_classifications": [
+      "withhold"
+    ],
+    "patent_pending_path": "docs/research/patent_pending/",
+    "selected_strategy": "full_public_agpl_package_plus_commercial_alternative_license_for_proprietary_or_non_agpl_use",
+    "spec_publication_gate_classifications": [
+      "spec_only"
+    ]
+  },
+  "schema_version": "ilc_patent_practicing_surface_manifest.v0.1",
+  "source_inventory": "docs/specs/ilc_patent_practicing_surface_inventory_v0.1.md",
+  "surfaces": [
+    {
+      "classification": "spec_only",
+      "filing": "filing_1",
+      "path_globs": [
+        "docs/research/patent_pending/filing_1_*",
+        "docs/research/patent_pending/figures/**"
+      ],
+      "release_action": "keep_private_until_patent_filing_and_publication_gate",
+      "surface_id": "F1-SPEC"
+    },
+    {
+      "classification": "separate_commercial_license",
+      "filing": "filing_1",
+      "path_globs": [
+        "ilc_core/network/d2d/spectral_beacon.py",
+        "ilc_core/network/d2d/spectral_routing_runtime.py"
+      ],
+      "release_action": "explicit_dual_license_decision_or_withhold",
+      "surface_id": "F1-RUNTIME"
+    },
+    {
+      "classification": "separate_commercial_license",
+      "filing": "filing_1",
+      "path_globs": [
+        "ilc_core/analysis/laplacian_analytics.py",
+        "ilc_core/analysis/local_spectral_analytics.py",
+        "ilc_core/analysis/spectral_utils.py",
+        "ilc_core/analysis/spectral_trajectory.py",
+        "tools/sim/sim_merkle_laplacian_v02_*.py",
+        "tools/sim/sim_beacon_01_privacy_calibration.py",
+        "tools/sim/sim_spectral_*.py",
+        "tools/sim_spectral_*.py",
+        "tests/test_merkle_laplacian_*",
+        "tests/test_spectral_*",
+        "tests/test_*spectral*"
+      ],
+      "release_action": "explicit_dual_license_decision_or_withhold",
+      "surface_id": "F1-ANALYSIS-SIM"
+    },
+    {
+      "classification": "spec_only",
+      "filing": "filing_1",
+      "path_globs": [
+        "docs/specs/ilc_merkle_laplacian_v02_*",
+        "docs/specs/ilc_sim_spectral_*",
+        "docs/specs/ilc_sim_beacon_*"
+      ],
+      "release_action": "keep_private_until_patent_filing_and_publication_gate",
+      "surface_id": "F1-DOCS"
+    },
+    {
+      "classification": "spec_only",
+      "filing": "filing_2",
+      "path_globs": [
+        "docs/research/patent_pending/filing_2_*",
+        "docs/research/patent_pending/figures/**"
+      ],
+      "release_action": "keep_private_until_patent_filing_and_publication_gate",
+      "surface_id": "F2-SPEC"
+    },
+    {
+      "classification": "separate_commercial_license",
+      "filing": "filing_2",
+      "path_globs": [
+        "ilc_core/epistemic/truth_primitive_submission_runtime.py",
+        "ilc_core/epistemic/truth_primitive_graph_store.py",
+        "ilc_core/storage/truth_primitive_graph_lmdb_adapter.py",
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
+        "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
+        "ilc_core/consensus/diversity_floor_runtime.py",
+        "ilc_core/identity/sybil_resistance_runtime.py",
+        "ilc_core/epistemic/jury_assignment_runtime.py"
+      ],
+      "release_action": "explicit_dual_license_decision_or_withhold",
+      "surface_id": "F2-RUNTIME"
+    },
+    {
+      "classification": "safe_public_agpl",
+      "filing": "filing_2",
+      "path_globs": [
+        "ilc_core/protocol/commit_epoch_emission_runtime.py",
+        "ilc_core/protocol/event_log.py",
+        "ilc_core/protocol/schemas/commit_epoch_event_schema_v0.1.json"
+      ],
+      "release_action": "include_after_import_graph_review",
+      "surface_id": "F2-EVENT-BOUNDARY"
+    },
+    {
+      "classification": "withhold",
+      "filing": "filing_2",
+      "path_globs": [
+        "ilc_core/epistemic/jury_finality_evaluator.py",
+        "ilc_core/schema/verdict_record_schema.py"
+      ],
+      "release_action": "exclude_until_production_guard_and_license_decision",
+      "surface_id": "F2-JURY-FINALITY"
+    },
+    {
+      "classification": "safe_public_agpl",
+      "filing": "filing_2",
+      "path_globs": [
+        "ilc_core/epistemic/jury_activation_gate.py"
+      ],
+      "release_action": "include_after_import_graph_review",
+      "surface_id": "F2-JURY-ACTIVATION-GATE"
+    },
+    {
+      "classification": "spec_only",
+      "filing": "filing_3",
+      "path_globs": [
+        "docs/research/patent_pending/filing_3_*",
+        "docs/research/patent_pending/figures/**",
+        "docs/specs/ilc_backward_attribution_classification_spec_1492p_v0.1.md",
+        "docs/specs/ilc_hcon_01_hyperedge_ecu_attribution_opening_draft_v0.1.md",
+        "docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_*",
+        "docs/specs/ilc_path_lift_counterfactual_contract_v0.1.md"
+      ],
+      "release_action": "keep_private_until_patent_filing_and_publication_gate",
+      "surface_id": "F3-SPEC"
+    },
+    {
+      "classification": "separate_commercial_license",
+      "filing": "filing_3",
+      "path_globs": [
+        "ilc_core/economics/passive_ecu_attribution_runtime.py",
+        "ilc_core/economics/reward.py",
+        "ilc_core/economics/epoch_attribution_settle_runtime.py",
+        "ilc_core/analysis/path_lift_counterfactual.py",
+        "ilc_core/analysis/utility_flow_rewards.py",
+        "ilc_core/ledger/ecu_active_layer_runtime.py",
+        "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
+        "ilc_core/rc/economic_cycle_runtime.py",
+        "ilc_core/epoch/ecu_price_clamp_runtime.py",
+        "ilc_core/epoch/issuance_economics_integration_gate.py"
+      ],
+      "release_action": "explicit_dual_license_decision_or_withhold",
+      "surface_id": "F3-RUNTIME"
+    },
+    {
+      "classification": "safe_public_agpl",
+      "filing": "filing_3",
+      "path_globs": [
+        "ilc_core/protocol/public_wallet_runtime.py",
+        "ilc_core/sidecars/claimability_receipt_verifier.py",
+        "ilc_core/sidecars/cdl088_claimability_activation.py",
+        "ilc_core/ledger/settlement_verification.py",
+        "ilc_core/ledger/claimability_proof_binding_runtime.py"
+      ],
+      "release_action": "include_after_confirming_no_production_minting_or_settlement_activation",
+      "surface_id": "F3-VERIFICATION-ONLY"
+    },
+    {
+      "classification": "spec_only",
+      "filing": "filing_4",
+      "path_globs": [
+        "docs/research/patent_pending/filing_4_*",
+        "docs/research/patent_pending/figures/**",
+        "docs/specs/ilc_refutation_novelty_requirement_v0.1.md",
+        "docs/specs/ilc_reuse_diversity_anti_sybil_contract_v0.1.md",
+        "docs/specs/ilc_freshness_gate_contract_v0.1.md",
+        "docs/specs/ilc_freshness_gate_provenance_and_genesis_exemption_closure_598_v0.1.md",
+        "docs/specs/ilc_anti_gaming_simulation_findings_v0.1.md"
+      ],
+      "release_action": "keep_private_until_patent_filing_and_publication_gate",
+      "surface_id": "F4-SPEC"
+    },
+    {
+      "classification": "separate_commercial_license",
+      "filing": "filing_4",
+      "path_globs": [
+        "ilc_core/epistemic/refutation_runtime.py",
+        "ilc_core/epistemic/novelty_check_runtime.py",
+        "ilc_core/analysis/reuse_diversity_invariants.py",
+        "ilc_core/analysis/freshness_gate.py"
+      ],
+      "release_action": "explicit_dual_license_decision_or_withhold",
+      "surface_id": "F4-RUNTIME"
+    },
+    {
+      "classification": "withhold",
+      "filing": "filing_4",
+      "path_globs": [
+        "tools/check_refutation_profitability_invariant_phase_212.sh",
+        "tools/check_reuse_diversity_invariants_phase_216.sh",
+        "tools/check_freshness_gate_invariants_phase_217.sh",
+        "tests/test_refutation_profitability_*",
+        "tests/test_reuse_diversity_*",
+        "tests/test_freshness_gate_*"
+      ],
+      "release_action": "exclude_from_public_rc",
+      "surface_id": "F4-TESTS-TOOLS"
+    },
+    {
+      "classification": "spec_only",
+      "filing": "filing_5",
+      "path_globs": [
+        "docs/research/patent_pending/filing_5_*",
+        "docs/research/patent_pending/figures/**",
+        "docs/specs/ilc_invitation_provenance_chain_spec_1493p_v0.1.md",
+        "docs/specs/ilc_private_query_response_artifact_schema_1465p_v0.1.md",
+        "docs/specs/ilc_graph_native_sidecar_registry_manifest_1307_v0.1.md",
+        "docs/specs/ilc_l3_sidecar_infrastructure_spec_1237_v0.1.md",
+        "docs/specs/ilc_ccss_*",
+        "docs/specs/ilc_sidecar_*"
+      ],
+      "release_action": "keep_private_until_patent_filing_and_publication_gate",
+      "surface_id": "F5-SPEC"
+    },
+    {
+      "classification": "separate_commercial_license",
+      "filing": "filing_5",
+      "path_globs": [
+        "ilc_core/graph/sidecar_query_runtime.py",
+        "ilc_core/graph/agent_graph_projection_runtime.py",
+        "ilc_core/graph/sidecar_public_path_preflight.py",
+        "ilc_core/sidecars/local_graph_memory_projection.py",
+        "ilc_core/sidecars/confidential_coordination_capability.py",
+        "ilc_core/sidecars/confidential_coordination_gossip_policy.py",
+        "ilc_core/sidecars/confidential_coordination_sealed_sender.py",
+        "ilc_core/sidecars/confidential_coordination_shard.py",
+        "ilc_core/harness/co_attestation_receipt.py",
+        "ilc_core/harness/maintenance_task_executor.py"
+      ],
+      "release_action": "explicit_dual_license_decision_or_withhold",
+      "surface_id": "F5-RUNTIME"
+    },
+    {
+      "classification": "safe_public_agpl",
+      "filing": "filing_5",
+      "path_globs": [
+        "ilc_core/sidecars/transport_principal_admission.py",
+        "ilc_core/network/d2d/transport_principal_pre_public_path.py",
+        "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+        "ilc_core/network/d2d/transport_principal_cdl_094_status.py",
+        "ilc_core/rc/package_profiles.py",
+        "ilc_core/rc/package_profile_ci_gate.py",
+        "ilc_core/distribution/package_profiles.py",
+        "ilc_core/sidecars/registry_manifest.py"
+      ],
+      "release_action": "include_after_confirming_no_invitation_credit_or_trust_state_crediting",
+      "surface_id": "F5-GUARDS-PACKAGING"
+    },
+    {
+      "classification": "withhold",
+      "filing": "cross_filing",
+      "path_globs": [
+        "docs/research/patent_pending/**",
+        "docs/HUMAN.md",
+        "ilc_core/rc/source_allowlist_export_rehearsal.py"
+      ],
+      "release_action": "exclude_or_rewrite_before_public_rc",
+      "surface_id": "X-PRIVATE-CONTROLS"
+    }
+  ]
+}
