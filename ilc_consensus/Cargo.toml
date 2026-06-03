@@ -2,7 +2,7 @@
 name = "ilc_consensus"
 version = "0.1.0"
 edition = "2021"
-description = "ILC Sovereign Mysticeti consensus substrate"
+description = "ILC high-speed object-sharded DAG consensus substrate"
 license = "AGPL-3.0-only"
 
 [features]

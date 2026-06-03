@@ -4,6 +4,15 @@
 
 **Status:** Private pre-public development. Source publication pending patent filing and counsel disposition. See [docs/HUMAN.md](docs/HUMAN.md) for a full introduction.
 
+## Consensus substrate
+
+`ilc_consensus/` is the ILC-authored high-speed object-sharded DAG substrate.
+It is Mysticeti-style by design: owned ECU balance objects can take a leaderless
+fast path with compact BLS12-381 quorum evidence, while shared settlement
+records use a DAG/epoch path instead of forcing every operation through one
+total-order bottleneck. This is not upstream `mysticeti-core`, and no live
+settlement or mainnet activation is claimed.
+
 ## Quick start (development)
 
 ```bash
