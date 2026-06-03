@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1401 / CDL-091 jury incentive runtime stub.
 
 This module exposes the CDL-091 ratification evidence to runtime-facing code

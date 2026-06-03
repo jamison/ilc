@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-052 epistemic node-submission runtime.
 
 Phase 477 implements the node-submission envelope and mode-routing boundary only.

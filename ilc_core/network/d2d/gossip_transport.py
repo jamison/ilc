@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 558 HTTP gossip transport adapter.
 
 This module implements the CDL-061 prelock envelope surface for D2d gossip.

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 833 Row-5 B-Impl — LeakageMetrics: obligation 6 (SIM-LEAKAGE-03).
 
 Obligation 6 — Live instrumentation for SIM-LEAKAGE-03:

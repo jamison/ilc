@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """H-013 sealed spectral beacon construction.
 
 This module implements the bounded one-relay sealed-sender payload from

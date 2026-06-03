@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1437 OpenClaw harness-assisted P2P relay.
 
 This module wires the package-boundary TransportHarness protocol to the

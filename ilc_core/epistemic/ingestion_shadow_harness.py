@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1397 / J-007 — Shadow Public-Ingestion Jury Harness.
 
 Exercises the T0.5 quarantine state, external-identifier deduplication,

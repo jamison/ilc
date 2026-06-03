@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 Validator for ILC Canonical Transcript Schema v0.1.
 Enforces schema validity and deterministic record ordering.

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 874/882 — CDL-074/075 truth primitive submit CLI helper.
 
 Wires validate_truth_primitive_submission into the ILC CLI `submit` command.

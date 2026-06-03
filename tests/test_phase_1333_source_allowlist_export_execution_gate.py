@@ -54,6 +54,10 @@ def test_phase_1333_current_repo_materializes_clean_export(tmp_path: Path) -> No
 
     tree = Path(manifest["export_materialization"]["tree_path"])
     assert tree.exists()
+    assert (tree / "LICENSE").is_file()
+    assert (tree / "LICENSING.md").is_file()
+    assert (tree / "PATENTS.md").is_file()
+    assert (tree / "THIRD_PARTY_NOTICES.md").is_file()
     assert (tree / "pyproject.toml").is_file()
     assert (tree / "ilc_core").is_dir()
     assert not (tree / "ilc_core/sim").exists()

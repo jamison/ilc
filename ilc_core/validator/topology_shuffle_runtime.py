@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1354 default-off CDL-068 topology shuffle runtime.
 
 CDL-068 ratifies epoch-hash v1 as the production-v1 topology randomness

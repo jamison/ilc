@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-V3 diversity-floor runtime.
 
 Deterministic cluster-diversity helpers with bounded penalty scoring and

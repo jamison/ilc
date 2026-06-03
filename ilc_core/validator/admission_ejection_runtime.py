@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1353 default-off CDL-017 validator admission/ejection runtime.
 
 This module builds deterministic admission/ejection decisions for the

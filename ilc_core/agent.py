@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from typing import Optional
 import logging
 from decimal import Decimal, InvalidOperation

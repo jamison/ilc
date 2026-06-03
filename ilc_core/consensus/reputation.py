@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1357 H11 Decimal reputation runtime.
 
 This module preserves the legacy voting-power and atrophy formulas while

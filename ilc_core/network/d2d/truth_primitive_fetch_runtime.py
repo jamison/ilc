@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 901 — CDL-077 WANT-HAVE/WANT-BLOCK two-phase fetch runtime.
 
 Implements the pull side of the CDL-036 dissemination contract for truth

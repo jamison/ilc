@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1356 default-off CDL-013 governance-weight decision surface.
 
 This module connects the Phase 207 CDL-013 governance-weight computation to a

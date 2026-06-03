@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1415 / review lane admission runtime.
 
 Pure, default-off evaluator for ADR-0043 T0.5 -> T1+ admission decisions.

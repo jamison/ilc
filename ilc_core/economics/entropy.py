@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 # ilc_core/economics/entropy.py
 """
 Entropy-based helpers for shaping rewards in the ILC economics sandbox.
