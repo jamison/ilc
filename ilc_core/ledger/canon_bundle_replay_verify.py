@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from pathlib import Path
 from typing import TypeAlias, TypedDict, cast
 

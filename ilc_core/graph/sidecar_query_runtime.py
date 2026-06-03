@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Read-only sidecar query runtime for graph projections.
 
 Phase 1237 implements deterministic sidecar queries and canonical exports over

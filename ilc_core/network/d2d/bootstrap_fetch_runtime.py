@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 915 — CDL-079 HB-002 bootstrap distribution protocol runtime.
 
 Implements peer-to-peer bootstrap for ILC nodes: a new node with one

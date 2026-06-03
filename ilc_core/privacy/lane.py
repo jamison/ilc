@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 831 Row-5 B-Impl — PrivacyLane: obligations 1, 2, 3.
 
 Obligation 1 — Rolling group construction in submission path:

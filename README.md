@@ -18,7 +18,9 @@ Do not open public issues for vulnerabilities. Follow [SECURITY.md](SECURITY.md)
 
 ## License
 
-See [LICENSE](LICENSE).
+See [LICENSE](LICENSE), [LICENSING.md](LICENSING.md),
+[PATENTS.md](PATENTS.md), and
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ---
 

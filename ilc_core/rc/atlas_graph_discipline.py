@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """ATLAS-G graph-discipline helpers for public-RC package reachability.
 
 This module is intentionally declarative and non-mutating. It validates the

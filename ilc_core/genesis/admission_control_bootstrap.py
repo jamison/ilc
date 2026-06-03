@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Genesis validator bootstrap admission-control runtime."""
 
 from __future__ import annotations

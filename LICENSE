@@ -13,6 +13,12 @@ The ILC repository uses a layered license posture. The authoritative project
 zone table is in LICENSING.md and covers:
 
 - AGPL-3.0-only default for runtime/source code during bootstrap;
+- third-party dependency notices preserved under their original upstream
+  licenses;
+- patent rights reserved except to the extent expressly granted by the
+  applicable open-source license for the licensed contributor version;
+- commercial licensing expected for proprietary, non-AGPL, certified, hosted,
+  indemnified, or otherwise broader use;
 - strict canonical-identity terms for Genesis, lineage, release, and
   authority-bearing canonical artifacts;
 - CC BY 4.0 style terms for explanatory public documentation;
@@ -23,6 +29,9 @@ zone table is in LICENSING.md and covers:
 No license is granted to use ILC names, marks, official network identity, or
 canonical lineage claims except as stated in LICENSING.md or a later explicit
 project policy.
+
+See PATENTS.md for the public patent notice and commercial licensing posture.
+See THIRD_PARTY_NOTICES.md for dependency and upstream-project notice handling.
 
 If this file conflicts with a more specific license notice in a file, directory,
 or release artifact, the more specific notice controls for that material.

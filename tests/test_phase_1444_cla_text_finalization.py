@@ -29,7 +29,7 @@ def test_cla_text_exists_and_records_required_governance_scope() -> None:
     lowered = text.lower()
     assert "Genesis-authority" in text
     assert "not external legal opinion" in lowered
-    assert "AGPL-3.0-or-later" in text
+    assert "AGPL-3.0-only" in text
     assert "patent" in lowered
     assert "public-source allowlist" in lowered
     assert "gap 7" in lowered
@@ -38,7 +38,7 @@ def test_cla_text_exists_and_records_required_governance_scope() -> None:
 
 def test_phase_1444_governance_tokens_are_first_class_constants() -> None:
     source = MODULE_PATH.read_text(encoding="utf-8")
-    assert source.startswith("# SPDX-License-Identifier: AGPL-3.0-or-later")
+    assert source.startswith("# SPDX-License-Identifier: AGPL-3.0-only")
 
     for token in EXPECTED_TOKENS:
         assert token in source

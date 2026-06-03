@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """In-process claim nullifier and duplicate-claim registry for Phase 1389b."""
 
 from __future__ import annotations

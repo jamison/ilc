@@ -3,7 +3,7 @@ name = "ilc_consensus"
 version = "0.1.0"
 edition = "2021"
 description = "ILC Sovereign Mysticeti consensus substrate"
-license = "MIT"
+license = "AGPL-3.0-only"
 
 [features]
 testnet_fault_sim = []

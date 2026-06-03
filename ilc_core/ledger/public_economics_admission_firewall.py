@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1387a public-economics admission firewall.
 
 This module is the explicit construction boundary for public economic events.

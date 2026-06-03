@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Iterable, Mapping, Any

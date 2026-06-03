@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Validator-facing CDL-045 circuit-breaker surface."""
 
 from __future__ import annotations

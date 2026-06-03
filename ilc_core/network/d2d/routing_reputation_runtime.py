@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 908 — CDL-078 relay incentive: routing reputation runtime.
 
 Bridges WANT-BLOCK serve events (CDL-077) to the CDL-060 centrality delta

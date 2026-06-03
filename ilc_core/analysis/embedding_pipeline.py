@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 # H-010: Type-aware, epoch-stamped node embedding pipeline.
 # Embedding is analytics-layer only. Inclusion in epoch commitment records
 # requires a separate CDL (H-007). Do not use embedding vectors as commitment

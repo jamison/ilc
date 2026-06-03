@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 ILC Constitution Cluster A - Replay Proof Package Logic.
 Phase 143.

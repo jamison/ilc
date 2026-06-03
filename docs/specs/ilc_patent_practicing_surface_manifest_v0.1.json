@@ -6,6 +6,24 @@
     "separate_commercial_license"
   ],
   "created_date": "2026-06-03",
+  "dual_license_decision": {
+    "covered_classifications": [
+      "separate_commercial_license"
+    ],
+    "covered_surface_ids": [
+      "F1-ANALYSIS-SIM",
+      "F1-RUNTIME",
+      "F2-RUNTIME",
+      "F3-RUNTIME",
+      "F4-RUNTIME",
+      "F5-RUNTIME"
+    ],
+    "decision_id": "dual_license_decision_recorded_public_rc_2026_06_03",
+    "decision_record": "docs/specs/ilc_public_rc_dual_license_patent_posture_decision_2026_06_03.md",
+    "public_notice": "PATENTS.md",
+    "status": "recorded",
+    "strategy": "full_public_agpl_package_plus_commercial_alternative_license_for_proprietary_or_non_agpl_use"
+  },
   "keystone_surfaces": [
     {
       "commercial_license_priority": 1,
@@ -88,6 +106,12 @@
       "withhold"
     ],
     "patent_pending_path": "docs/research/patent_pending/",
+    "required_public_notice_files": [
+      "LICENSE",
+      "LICENSING.md",
+      "PATENTS.md",
+      "THIRD_PARTY_NOTICES.md"
+    ],
     "selected_strategy": "full_public_agpl_package_plus_commercial_alternative_license_for_proprietary_or_non_agpl_use",
     "spec_publication_gate_classifications": [
       "spec_only"

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1313 default-off public fetch/P2P readiness candidate.
 
 This module records readiness evidence only. It does not create a server,

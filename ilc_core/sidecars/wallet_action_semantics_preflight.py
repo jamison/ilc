@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1314 wallet-facing value-action semantics preflight.
 
 This module records the boundary where any wallet provider could request

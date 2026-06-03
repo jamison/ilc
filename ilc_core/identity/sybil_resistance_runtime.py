@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """CDL-V2 sybil-resistance runtime.
 
 Deterministic heuristic scoring helpers with bounded risk-to-penalty mapping

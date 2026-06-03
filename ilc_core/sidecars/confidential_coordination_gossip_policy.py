@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1327 CCSS-004 gossip announce/pull jitter and cover policy tests.
 
 This module records a private/local contract for bounded gossip announce

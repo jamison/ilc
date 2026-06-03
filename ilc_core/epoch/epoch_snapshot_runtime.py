@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase-314 epoch snapshot generator/verifier runtime."""
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-only
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 from ilc_core.analysis.claim_scores import ClaimInfluenceRow
