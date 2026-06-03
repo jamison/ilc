@@ -93,10 +93,14 @@ License terms for LMDB and the package/crate license terms for the bindings.
 
 ## Mysticeti
 
-ILC references and builds a sovereign consensus substrate inspired by Mysticeti.
-The current repo does not vendor `mysticeti-core`; `ilc_consensus/Cargo.toml`
-contains only a future-path comment for adding such a path dependency when an
-extraction payload is prepared.
+ILC ships an ILC-authored sovereign consensus substrate in `ilc_consensus/`
+whose protocol design is Mysticeti-style/Mysticeti-inspired. This public-RC
+notice should not be read as saying Mysticeti is absent from ILC architecture.
+
+The current repo does not vendor upstream `mysticeti-core` source code and does
+not declare `mysticeti-core` as a Python, Rust, or path package dependency.
+The public ILC consensus crate is licensed as ILC code under the applicable ILC
+license.
 
 If Mysticeti code is ever copied, adapted, or vendored into the public ILC
 source tree, the public package must preserve the applicable upstream notices.
