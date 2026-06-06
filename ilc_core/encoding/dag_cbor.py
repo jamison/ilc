@@ -37,6 +37,10 @@ _SIMPLE_FALSE = 20
 _SIMPLE_TRUE = 21
 _SIMPLE_NULL = 22
 
+# Maximum nesting depth enforced during decoding to prevent recursion exhaustion
+# on adversarially crafted CBOR payloads.
+_MAX_NESTING_DEPTH = 64
+
 
 def _cbor_encode_length_bytes(n: int) -> bytes:
     """Encode a length value as big-endian bytes based on size."""
@@ -225,22 +229,28 @@ def _decode_type_and_len(data: bytes, offset: int) -> tuple[int, int, int]:
     return major, val, 1 + length_bytes
 
 
-def _decode_value(data: bytes, offset: int) -> tuple[Any, int]:
+def _decode_value(data: bytes, offset: int, _depth: int = 0) -> tuple[Any, int]:
     """Decode a single CBOR value, returning (value, bytes_consumed)."""
+    if _depth > _MAX_NESTING_DEPTH:
+        raise ValueError("dag_cbor_max_nesting_depth_exceeded")
+
     major, val, header_len = _decode_type_and_len(data, offset)
     pos = offset + header_len
-    
+
     if major == _MT_UNSIGNED:
         return val, header_len
-    
+
     if major == _MT_NEGATIVE:
-        return -1 - val, header_len
-    
+        n = -1 - val
+        if n < -(2**63):
+            raise ValueError("dag_cbor_integer_out_of_signed_64bit_range")
+        return n, header_len
+
     if major == _MT_BYTES:
         if pos + val > len(data):
             raise ValueError("Truncated CBOR: byte string extends past end")
         return data[pos:pos + val], header_len + val
-    
+
     if major == _MT_TEXT:
         if pos + val > len(data):
             raise ValueError("Truncated CBOR: text string extends past end")
@@ -249,31 +259,31 @@ def _decode_value(data: bytes, offset: int) -> tuple[Any, int]:
         except UnicodeDecodeError as e:
             raise ValueError(f"Invalid UTF-8 in text string: {e}")
         return text, header_len + val
-    
+
     if major == _MT_ARRAY:
         result = []
         total_consumed = header_len
         for _ in range(val):
-            item, consumed = _decode_value(data, offset + total_consumed)
+            item, consumed = _decode_value(data, offset + total_consumed, _depth + 1)
             result.append(item)
             total_consumed += consumed
         return result, total_consumed
-    
+
     if major == _MT_MAP:
         result = {}
         total_consumed = header_len
         for _ in range(val):
-            key, key_consumed = _decode_value(data, offset + total_consumed)
+            key, key_consumed = _decode_value(data, offset + total_consumed, _depth + 1)
             total_consumed += key_consumed
             if not isinstance(key, (str, bytes)):
                 raise ValueError(f"DAG-CBOR map key must be str or bytes, got {type(key)}")
             if key in result:
                 raise ValueError(f"Duplicate map key: {key!r}")
-            value, value_consumed = _decode_value(data, offset + total_consumed)
+            value, value_consumed = _decode_value(data, offset + total_consumed, _depth + 1)
             total_consumed += value_consumed
             result[key] = value
         return result, total_consumed
-    
+
     if major == _MT_SIMPLE:
         if val == _SIMPLE_FALSE:
             return False, header_len
@@ -283,7 +293,7 @@ def _decode_value(data: bytes, offset: int) -> tuple[Any, int]:
             return None, header_len
         else:
             raise ValueError(f"Unsupported simple value: {val}")
-    
+
     # Major type 6 (tags) not supported
     raise ValueError(f"Unsupported CBOR major type: {major}")
 
@@ -380,7 +390,13 @@ def is_ilc_object_keys_str_only(obj: Any) -> bool:
 
 def _validate_encodable_recursive(obj: Any, path: str) -> None:
     """Recursive helper for validate_ilc_object_encodable."""
-    # Check for unsupported container types first
+    if isinstance(obj, float):
+        raise ValueError(
+            f"Unsupported type float at path \"{path}\" "
+            f"(floats are not DAG-CBOR encodable)"
+        )
+
+    # Check for unsupported container types
     if isinstance(obj, (set, frozenset)):
         type_name = type(obj).__name__
         raise ValueError(
