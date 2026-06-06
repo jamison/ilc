@@ -27,7 +27,7 @@ def test_layer0_protocol_bundle_generation_is_deterministic() -> None:
         parameters={"truth_primitives": 7},
     )
 
-    assert ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION is False
     assert bundle_a.sha256 == bundle_b.sha256
     assert verify_layer0_protocol_bundle(bundle_a) is True
     assert bundle_a.public_rc_exclude is True

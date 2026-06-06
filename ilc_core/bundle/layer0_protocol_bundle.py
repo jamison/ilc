@@ -23,7 +23,7 @@ from ilc_core.private_json_guardrails import (
 )
 
 MAX_SCHEMA_COUNT = 64
-ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION = True
+ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION = False  # guard cleared Phase 1520p - ADR-0009 accepted
 
 
 def _canonical_json(payload: Mapping[str, object]) -> str:

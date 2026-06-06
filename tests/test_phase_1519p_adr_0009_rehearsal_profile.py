@@ -6,6 +6,10 @@ from pathlib import Path
 import pytest
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
+from ilc_core.bundle.layer0_protocol_bundle import ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION
+from ilc_core.bundle.layer1_genesis_bundle import ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION
+from ilc_core.bundle.layer2_epoch_snapshot import ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION
+from ilc_core.bundle.layer3_wire_binding import ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION
 from ilc_core.rc.source_allowlist_export_rehearsal import (
     ADR_0009_BUNDLE_CHAIN_VERIFIED_FIELD,
     ADR_0009_PUBLIC_EXPORT_NOT_EXECUTED_TOKEN,
@@ -55,7 +59,35 @@ def test_phase_1519_rehearsal_profile_verifies_valid_bundle_without_public_tree(
     ]
     assert ADR_0009_PUBLIC_EXPORT_NOT_EXECUTED_TOKEN in manifest["phase_1519_tokens"]
     assert ADR_0009_PUBLIC_EXPORT_NOT_EXECUTED_TOKEN in manifest["non_claims"]
+    assert "no_adr_0009_guard_clearance" in manifest["non_claims"]
+    assert "no_adr_0009_public_distribution_authorization" in manifest["non_claims"]
     assert "no_clean_public_tree_materialization" in manifest["non_claims"]
+    assert not (tmp_path / "out").exists()
+
+
+def test_phase_1520_guard_clearance_does_not_clear_publication_gate(tmp_path: Path) -> None:
+    assert ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION is False
+    assert ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION is False
+    assert ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION is False
+    assert ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION is False
+
+    (tmp_path / "README.md").write_text("ILC source rehearsal candidate\n", encoding="utf-8")
+    bundle = _load_fixture("bundle_four_layer_chain_valid.json")
+    manifest = build_adr_0009_source_export_rehearsal_profile(
+        repo_root=tmp_path,
+        include_roots=("README.md",),
+        excluded_roots=(),
+        force_include_paths=(),
+        adr_0009_bundle=bundle,
+        adr_0009_public_keys_by_layer=_public_keys_by_layer(bundle),
+    )
+
+    assert manifest[ADR_0009_BUNDLE_CHAIN_VERIFIED_FIELD] is True
+    assert "no_adr_0009_guard_clearance" in manifest["non_claims"]
+    assert "no_public_source_export" in manifest["non_claims"]
+    assert "no_source_publication" in manifest["non_claims"]
+    assert "no_package_publication" in manifest["non_claims"]
+    assert ADR_0009_PUBLIC_EXPORT_NOT_EXECUTED_TOKEN in manifest["non_claims"]
     assert not (tmp_path / "out").exists()
 
 
