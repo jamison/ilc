@@ -60,7 +60,6 @@ def test_phase_1515p_obl_register_patch_routes_all_ten_rows() -> None:
         "OBL-023": "Block 5 Governance/economic edge specs, phase/window TBD by later sequence lock",
         "OBL-024": "Block 5 Governance/economic edge specs, phase/window TBD by later sequence lock",
         "OBL-025": "Block 3 ADR-0035 homoiconic type-system lane, phase/window TBD by later sequence lock",
-        "OBL-026": "Block 2 Window 1515p-1522p (this window)",
         "OBL-027": "Block 4 Economic Finality, phase/window TBD by later sequence lock",
         "OBL-028": "Block 5 Governance/economic edge specs, phase/window TBD by later sequence lock",
         "OBL-029": "Block 5 Governance/economic edge specs, phase/window TBD by later sequence lock",
@@ -69,6 +68,11 @@ def test_phase_1515p_obl_register_patch_routes_all_ten_rows() -> None:
     for obligation, route in expected_routes.items():
         assert f"| {obligation} |" in register
         assert route in register
+
+    # OBL-026 was routed to Block 2 at Phase 1515p, then closed by Phase 1520p.
+    # The row must exist and carry the closure token.
+    assert "| OBL-026 |" in register
+    assert "obl_026_closed_phase_1520p" in register
 
     for classification in ["activation_missing", "partial_integration_missing", "implemented_guarded"]:
         assert classification in register
