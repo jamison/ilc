@@ -22,7 +22,7 @@ from ilc_core.private_json_guardrails import (
     thaw_json_value,
 )
 
-ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION = True
+ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION = False  # guard cleared Phase 1520p - ADR-0009 accepted
 
 
 def _reject_float(value: object, token: str) -> None:

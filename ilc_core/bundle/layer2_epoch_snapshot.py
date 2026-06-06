@@ -16,7 +16,7 @@ from ilc_core.encoding.cidv1 import node_id_from_bytes
 from ilc_core.encoding.dag_cbor import encode_dag_cbor
 from ilc_core.private_json_guardrails import canonical_json, reject_float, require_digest_ref, require_sha256_hex
 
-ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION = True
+ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION = False  # guard cleared Phase 1520p - ADR-0009 accepted
 
 
 def _reject_float(value: object, token: str) -> None:
