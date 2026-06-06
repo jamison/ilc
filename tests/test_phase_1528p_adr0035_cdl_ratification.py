@@ -123,4 +123,5 @@ def test_phase_1528p_frontier_updates_are_present() -> None:
     assert (
         "Phase 1529p is the next phase and is NON-SENSITIVE" in planning
         or "Phase 1530p is next and requires exact `GO Phase 1530p`" in planning
+        or "go_window_1531p_required_next" in planning
     )
