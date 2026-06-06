@@ -54,7 +54,10 @@ def test_phase_1523p_sequence_lock_records_window_and_sensitive_gates() -> None:
         "requires exact `GO Phase 1526p`" in lock
         or "| 1526p | Type-system CDL opening | SENSITIVE | COMPLETE |" in lock
     )
-    assert "requires exact `GO Phase 1528p`" in lock
+    assert (
+        "requires exact `GO Phase 1528p`" in lock
+        or "| 1528p | Type-system CDL ratification | SENSITIVE | COMPLETE |" in lock
+    )
     assert "requires exact `GO Phase 1530p`" in lock
     assert "must not consume CDL-096" in lock
 
@@ -70,6 +73,10 @@ def test_phase_1523p_obl_025_remains_open_and_routed_to_window() -> None:
     assert (
         "Does not open or ratify type-system CDL" in register
         or "Does not ratify type-system CDL" in register
+        or (
+            "remains open pending default-off runtime scaffold" in register
+            and "Does not implement runtime code" in register
+        )
     )
 
 
@@ -77,12 +84,18 @@ def test_phase_1523p_does_not_mutate_adr_or_cdl_authority() -> None:
     adr = _read("docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md")
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
-    assert "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr
+    assert (
+        "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr
+        or "CDL-097 ratified Phase 1528p; implementation authority in place" in adr
+    )
     assert "adr_0035_implementation_deferred_pending_cdl" in adr
     assert "| CDL-096 |" not in cdl
     if "| CDL-097 |" in cdl:
         assert "cdl_097_type_definition_node_authority_opened_phase_1526p" in cdl
-        assert "ratification_token: cdl_097_ratified_phase_1528p" not in cdl
+        assert (
+            "ratification_token: cdl_097_ratified_phase_1528p" not in cdl
+            or "type_registry_implementation_status: not_authorized" in cdl
+        )
     else:
         assert "type-definition node authority for ADR-0035" not in cdl
 

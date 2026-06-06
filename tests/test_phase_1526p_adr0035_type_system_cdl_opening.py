@@ -34,7 +34,7 @@ def test_cdl097_opening_artifact_records_required_tokens_and_questions() -> None
         assert token in text
 
 
-def test_cdl_register_has_open_cdl097_and_no_cdl096_row() -> None:
+def test_cdl_register_has_cdl097_and_no_cdl096_row() -> None:
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
     assert "| CDL-096 |" not in cdl
@@ -43,17 +43,23 @@ def test_cdl_register_has_open_cdl097_and_no_cdl096_row() -> None:
     assert "cdl_097_type_definition_node_authority_opened_phase_1526p" in cdl
     assert "cdl_097_deliberation_questions_recorded_phase_1526p" in cdl
     assert "cdl_096_status: separate_werner_lane_unaffected" in cdl
-    assert "ratification_token: cdl_097_ratified_phase_1528p" not in cdl
+    if "ratification_token: cdl_097_ratified_phase_1528p" in cdl:
+        assert "type_registry_implementation_status: not_authorized" in cdl
+    else:
+        assert "| open |" in cdl
 
 
 def test_phase_1526p_preserves_adr0035_and_runtime_non_mutation() -> None:
     adr35 = _read("docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md")
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
-    assert "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr35
+    assert (
+        "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr35
+        or "CDL-097 ratified Phase 1528p; implementation authority in place" in adr35
+    )
     assert "adr_0035_implementation_deferred_pending_cdl" in adr35
     assert "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = False" not in cdl
-    assert "type_registry_status: not_authorized" in cdl
+    assert "type_registry_status: not_authorized" in cdl or "type_registry_implementation_status: not_authorized" in cdl
 
 
 def test_phase_1526p_frontier_updates_are_present() -> None:

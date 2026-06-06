@@ -38,10 +38,16 @@ def test_dependency_reconciliation_preserves_non_mutation_state() -> None:
     adr35 = _read("docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md")
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
-    assert "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr35
+    assert (
+        "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr35
+        or "CDL-097 ratified Phase 1528p; implementation authority in place" in adr35
+    )
     assert "adr_0035_implementation_deferred_pending_cdl" in adr35
     assert "| CDL-096 |" not in cdl
-    assert "type-system CDL opening" not in cdl
+    if "cdl_097_ratified_phase_1528p" in cdl:
+        assert "type_registry_implementation_status: not_authorized" in cdl
+    else:
+        assert "type-system CDL opening" not in cdl
 
 
 def test_phase_1524p_frontier_updates_are_present() -> None:

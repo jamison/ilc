@@ -72,7 +72,10 @@ def test_phase_1525p_does_not_mutate_adr_or_cdl_authority() -> None:
     adr = _read("docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md")
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
-    assert "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr
+    assert (
+        "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr
+        or "CDL-097 ratified Phase 1528p; implementation authority in place" in adr
+    )
     assert "adr_0035_implementation_deferred_pending_cdl" in adr
     assert "| CDL-096 |" not in cdl
     assert "type_definition_node_type_mismatch" not in cdl

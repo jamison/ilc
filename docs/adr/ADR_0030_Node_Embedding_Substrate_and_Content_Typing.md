@@ -42,10 +42,15 @@ Defined content type tokens (extensible):
 - `"route_index"` — star.map navigational entry
 - `"hyperedge_entity"` — a star-expanded hyperedge node (see ADR-0029 §2.3)
 - `"genesis"` — axiomatic core node (immutable)
+- `"type_definition"` — a CDL-097 governed definition-node content category
 
 `content_type=None` on existing nodes is valid — it means untyped (legacy). New nodes SHOULD declare a content type.
 
 Content type does not constrain `content` structure at the Python level in this phase — it is metadata for routing, embedding selection, and future schema validation. A separate validation layer (CDL-deferred) will enforce shape per type.
+
+Phase 1528p adds `content_type="type_definition"` as a CDL-097 governed
+extension. CDL-097 governs type-definition authority; this ADR records only the
+content routing and embedding token.
 
 ### 2.2 Embedding substrate
 
@@ -108,6 +113,8 @@ This is NOT implemented in this ADR. The field is declared now so that future qu
 ### Accepted
 - `content_type`, `embedding`, `embedding_model`, `embedding_epoch` added to `Node` — all Optional, zero behavioral change
 - All future node creation paths encouraged (not required) to declare `content_type`
+- `content_type="type_definition"` added by CDL-097 as a governed definition-node
+  content category
 - Embedding-based semantic retrieval becomes possible without further schema changes
 - Type-appropriate embedding model selection becomes possible
 

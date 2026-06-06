@@ -42,15 +42,19 @@ def test_prelock_locks_all_scope_constants() -> None:
     assert "parse support only and is not authority-bearing while the guard remains set" in text
 
 
-def test_cdl_register_remains_open_and_unmutated_by_prelock() -> None:
+def test_cdl_register_preserves_prelock_boundary_after_later_ratification() -> None:
     cdl = read(CDL_REGISTER)
 
     assert "| CDL-097 |" in cdl
-    assert "| open |" in cdl
     assert "cdl_097_type_definition_node_authority_opened_phase_1526p" in cdl
-    assert "cdl_097_prelock_committed_phase_1527p" not in cdl
-    assert "cdl_097_scope_constants_locked_phase_1527p" not in cdl
-    assert "ratification_token: cdl_097_ratified_phase_1528p" not in cdl
+    if "ratification_token: cdl_097_ratified_phase_1528p" in cdl:
+        assert "prelock_token: cdl_097_prelock_committed_phase_1527p" in cdl
+        assert "scope_token: cdl_097_scope_constants_locked_phase_1527p" in cdl
+        assert "| ratified |" in cdl
+    else:
+        assert "| open |" in cdl
+        assert "cdl_097_prelock_committed_phase_1527p" not in cdl
+        assert "cdl_097_scope_constants_locked_phase_1527p" not in cdl
 
 
 def test_frontier_documents_record_phase_1527p_and_obl025_open() -> None:
@@ -69,9 +73,9 @@ def test_frontier_documents_record_phase_1527p_and_obl025_open() -> None:
     assert "| 1527p | CDL deliberation and prelock | NON-SENSITIVE | COMPLETE |" in sequence
     assert "Phase 1527p" in status
     assert "OBL-025 remains open" in status
-    assert "Phase 1528p remains SENSITIVE" in status
+    assert "Phase 1528p remains SENSITIVE" in status or "Phase 1528p - ADR-0035 CDL-097 Ratification" in status
     assert "phase_1527p: complete_cdl097_deliberation_prelock" in agents
-    assert "Phase 1528p is the next phase and is SENSITIVE" in planning
+    assert "Phase 1528p is the next phase and is SENSITIVE" in planning or "Phase 1529p is the next phase and is NON-SENSITIVE" in planning
     assert "⬅ CURRENT" in planning
 
 
