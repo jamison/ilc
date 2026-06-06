@@ -169,6 +169,7 @@ NodeType = Literal[
     "task",             # Proof of Work (Method, Inputs, Artifacts)
     "star_map",         # Navigational Geometry (Vectors, Clusters)
     "proposal",         # Governance (Parameter changes)
+    "type_definition",  # ADR-0035/CDL-097 governed definition-node parse support
     "genesis.schema",   # Meta: Defines new data structures
     "genesis.blob",     # Meta: Raw data adhering to a schema
     "hyperedge_entity", # Star-expanded hyperedge (ADR-0029 §2.3)
