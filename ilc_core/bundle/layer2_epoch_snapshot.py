@@ -12,7 +12,7 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.crypto.cose_sign1 import cose_sign1_sign, cose_sign1_verify
-from ilc_core.encoding.cidv1 import node_id_from_bytes
+from ilc_core.encoding.cidv1 import node_id_from_bytes, parse_nodeid_strict
 from ilc_core.encoding.dag_cbor import encode_dag_cbor
 from ilc_core.private_json_guardrails import canonical_json, reject_float, require_digest_ref, require_sha256_hex
 
@@ -47,6 +47,15 @@ def _require_digest(value: str, missing_token: str, invalid_token: str) -> None:
 def _require_epoch_number(value: int) -> None:
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
         raise ValueError("layer2_epoch_snapshot_invalid_epoch_number")
+
+
+def _require_cidv1_if_provided(value: str, token: str) -> None:
+    if value == "":
+        return
+    try:
+        parse_nodeid_strict(value)
+    except (ValueError, Exception):
+        raise ValueError(token)
 
 
 @dataclass(frozen=True)
@@ -126,6 +135,8 @@ def generate_layer2_epoch_snapshot(
         "layer2_epoch_snapshot_missing_active_contract_digest",
         "layer2_epoch_snapshot_invalid_active_contract_digest",
     )
+    _require_cidv1_if_provided(layer0_cidv1, "layer2_epoch_snapshot_invalid_layer0_cidv1")
+    _require_cidv1_if_provided(layer1_cidv1, "layer2_epoch_snapshot_invalid_layer1_cidv1")
     if epoch_number > 1 and previous_snapshot_sha256 == "":
         raise ValueError("layer2_epoch_snapshot_missing_previous_sha256")
     if previous_snapshot_sha256 != "":
