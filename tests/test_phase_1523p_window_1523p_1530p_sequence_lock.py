@@ -77,6 +77,10 @@ def test_phase_1523p_obl_025_remains_open_and_routed_to_window() -> None:
             "remains open pending default-off runtime scaffold" in register
             and "Does not implement runtime code" in register
         )
+        or (
+            "obl_025_closed_phase_1529p" in register
+            and "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True" in register
+        )
     )
 
 

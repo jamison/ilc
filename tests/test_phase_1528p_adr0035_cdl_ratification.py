@@ -82,15 +82,27 @@ def test_obl025_is_cdl_condition_satisfied_but_not_closed() -> None:
 
     assert "obl_025_cdl_condition_satisfied_phase_1528p" in register
     row = next(line for line in register.splitlines() if line.startswith("| OBL-025 |"))
-    assert "| open |" in row
-    assert "remains open pending default-off runtime scaffold" in row
+    assert (
+        (
+            "| open |" in row
+            and "remains open pending default-off runtime scaffold" in row
+        )
+        or (
+            "| closed |" in row
+            and "obl_025_closed_phase_1529p" in row
+            and "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True" in row
+        )
+    )
     assert "obl_025_closed_phase_1528p" not in register
 
 
 def test_no_phase_1528p_ilc_core_runtime_guard_exists_yet() -> None:
     for path in (ROOT / "ilc_core").rglob("*.py"):
         text = path.read_text(encoding="utf-8")
-        assert "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED" not in text
+        if path.as_posix().endswith("ilc_core/bundle/type_registry.py"):
+            assert "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True" in text
+        else:
+            assert "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED" not in text
 
 
 def test_phase_1528p_frontier_updates_are_present() -> None:
@@ -108,4 +120,7 @@ def test_phase_1528p_frontier_updates_are_present() -> None:
 
     assert "| 1528p | Type-system CDL ratification | SENSITIVE | COMPLETE |" in lock
     assert "phase_1528p: complete_sensitive_cdl097_ratification" in agents
-    assert "Phase 1529p is the next phase and is NON-SENSITIVE" in planning
+    assert (
+        "Phase 1529p is the next phase and is NON-SENSITIVE" in planning
+        or "Phase 1530p is next and requires exact `GO Phase 1530p`" in planning
+    )
