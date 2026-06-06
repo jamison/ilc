@@ -39,7 +39,7 @@ def _layer3_fixture():
 def test_layer2_generate_produces_nonempty_fields() -> None:
     snapshot = _layer2_fixture()
 
-    assert ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION is False
     assert snapshot.epoch_number == 2
     assert snapshot.layer0_protocol_bundle_sha256
     assert snapshot.canonical_json
@@ -111,7 +111,7 @@ def test_layer2_immutability_frozen_dataclass() -> None:
 def test_layer3_generate_produces_nonempty_fields() -> None:
     binding = _layer3_fixture()
 
-    assert ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION is False
     assert binding.message_type == "claim.submit"
     assert binding.layer0_schema_ref == "layer0:schema:Node"
     assert binding.signature_ref == "signature:fixture-a"

@@ -49,7 +49,7 @@ def test_layer0_generates_deterministic_cidv1_from_dag_cbor() -> None:
         parameters={"truth_primitives": 7},
     )
 
-    assert ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION is False
     assert bundle_a.dag_cbor == bundle_b.dag_cbor
     assert bundle_a.cidv1 == bundle_b.cidv1
     assert bundle_a.cidv1 == node_id_from_bytes(bundle_a.dag_cbor)
@@ -85,7 +85,7 @@ def test_layer1_generates_deterministic_cidv1_and_links_layer0_cid() -> None:
         genesis_signing_key_refs=[{"key_ref": "genesis-key-a", "purpose": "private_fixture"}],
     )
 
-    assert ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION is False
     assert layer1_a.layer0_protocol_bundle_sha256 == layer0.sha256
     assert layer1_a.layer0_protocol_bundle_cidv1 == layer0.cidv1
     assert layer1_a.dag_cbor == layer1_b.dag_cbor

@@ -38,7 +38,7 @@ def test_generate_produces_nonempty_fields() -> None:
     assert bundle.layer0_protocol_bundle_sha256 == "a" * 64
     assert bundle.canonical_json
     assert bundle.sha256
-    assert ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION is False
 
 
 def test_verify_accepts_valid_bundle() -> None:

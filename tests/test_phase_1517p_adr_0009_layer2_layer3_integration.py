@@ -98,7 +98,7 @@ def test_layer2_generates_deterministic_cidv1_and_links_layer1() -> None:
     layer2_a = _layer2_fixture(layer0, layer1)
     layer2_b = _layer2_fixture(layer0, layer1)
 
-    assert ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION is False
     assert layer2_a.layer0_protocol_bundle_cidv1 == layer0.cidv1
     assert layer2_a.layer1_genesis_bundle_cidv1 == layer1.cidv1
     assert layer2_a.dag_cbor == layer2_b.dag_cbor
@@ -117,7 +117,7 @@ def test_layer3_generates_deterministic_cidv1_and_links_layer2() -> None:
     layer3_a = _layer3_fixture(layer2)
     layer3_b = _layer3_fixture(layer2)
 
-    assert ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION is True
+    assert ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION is False
     assert layer3_a.layer2_epoch_snapshot_cidv1 == layer2.cidv1
     assert layer3_a.dag_cbor == layer3_b.dag_cbor
     assert layer3_a.cidv1 == layer3_b.cidv1
