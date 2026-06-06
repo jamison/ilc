@@ -24,12 +24,27 @@
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
       "exists": true,
+      "root": "LICENSING.md"
+    },
+    {
+      "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
+      "exists": true,
+      "root": "PATENTS.md"
+    },
+    {
+      "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
+      "exists": true,
       "root": "README.md"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
       "exists": true,
       "root": "SECURITY.md"
+    },
+    {
+      "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
+      "exists": true,
+      "root": "THIRD_PARTY_NOTICES.md"
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
@@ -70,10 +85,10 @@
   "counts": {
     "blocked_ambiguities": 0,
     "dependency_hits": 0,
-    "excluded_files": 33,
-    "included_files": 377,
-    "legacy_untagged_default_excluded": 33,
-    "legacy_untagged_included_reviewed": 377,
+    "excluded_files": 44,
+    "included_files": 381,
+    "legacy_untagged_default_excluded": 44,
+    "legacy_untagged_included_reviewed": 381,
     "legacy_untagged_review_required_blocked": 0,
     "marker_hits": 0
   },
@@ -2378,6 +2393,21 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/distribution/package_profiles.py",
         "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/dynamic_ranking_multiplier_runtime.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/dynamic_ranking_multiplier_runtime.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/dynamic_ranking_multiplier_runtime.py",
+        "target": "typing"
       },
       {
         "edge_type": "python_ast_import",
@@ -9580,7 +9610,21 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
+      "path": "ilc_consensus/src/relay_routing_table.rs",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
       "path": "ilc_core/bundle/__init__.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/bundle/bundle_verifier.py",
       "review_required_before_public_export": true
     },
     {
@@ -9609,6 +9653,13 @@
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
       "path": "ilc_core/bundle/layer3_wire_binding.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/epistemic/jury_finality_evaluator.py",
       "review_required_before_public_export": true
     },
     {
@@ -9678,6 +9729,13 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
+      "path": "ilc_core/harness/local_immutable_store.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
       "path": "ilc_core/harness/local_node_capture.py",
       "review_required_before_public_export": true
     },
@@ -9721,6 +9779,13 @@
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
       "path": "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/network/rust_p2p_bridge.py",
       "review_required_before_public_export": true
     },
     {
@@ -9806,31 +9871,73 @@
       "marker_status": "hit",
       "path": "ilc_core/rc/source_allowlist_export_rehearsal.py",
       "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/schema/petition_node_type.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/schema/verdict_record_schema.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
+      "review_required_before_public_export": true
     }
   ],
   "excluded_roots": [
     {
-      "count": 1179,
+      "count": 1214,
       "reason": "private_phase_prompt_history_default_excluded",
       "root": "docs/antigravity_tasks"
     },
     {
-      "count": 1516,
+      "count": 1554,
       "reason": "private_phase_walkthrough_history_default_excluded",
       "root": "docs/phases"
     },
     {
-      "count": 381,
+      "count": 384,
       "reason": "research_and_patent_sensitive_material_default_excluded",
       "root": "docs/research"
     },
     {
-      "count": 47740,
+      "count": 47748,
       "reason": "generated_mempalace_and_local_output_default_excluded",
       "root": "out"
     },
     {
-      "count": 96,
+      "count": 100,
       "reason": "raw_chat_corpus_default_excluded",
       "root": "Z_Past_Chats"
     },
@@ -9845,12 +9952,12 @@
       "root": "local_monitoring"
     },
     {
-      "count": 34549,
+      "count": 54538,
       "reason": "generated_rust_build_output_default_excluded",
       "root": "ilc_consensus/target"
     },
     {
-      "count": 1410,
+      "count": 1435,
       "reason": "private_phase_regression_tests_default_excluded",
       "root": "tests"
     }
@@ -9874,24 +9981,40 @@
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 1022,
-      "hash_sha256": "796b3318e7928767656b375302cd8272b016400a10110ae99fabc1dc349a31c2",
+      "byte_size": 1724,
+      "hash_sha256": "ab02aca5abd8a566ea57ae41c0c602bff8a775af00d2242d7b36abd1f8c485b0",
       "marker_status": "absent",
       "path": "FUNDING.md",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 1191,
-      "hash_sha256": "51ca7ef7dffeebdd4e9fccc86114a76e31e5062563e9e88517474739f2dd2c0c",
+      "byte_size": 1696,
+      "hash_sha256": "2bf886d6665668e32ef7904ead8c10cf5c5a13a8b94e4ac577b54b7057f976dc",
       "marker_status": "absent",
       "path": "LICENSE",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 13466,
-      "hash_sha256": "2409a40625990f59f70aca996b553500677db164e19185e62a893aa74c12af05",
+      "byte_size": 9720,
+      "hash_sha256": "f2c33dd4969c6e33c3ce79bd46a48da720a9bb6cc23661103b5145c5b9fdadd6",
+      "marker_status": "absent",
+      "path": "LICENSING.md",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
+      "byte_size": 2098,
+      "hash_sha256": "080b81c4f388036c3dd38f6fdb4f3742ee96a7a388f8d676a51b374bb799b961",
+      "marker_status": "absent",
+      "path": "PATENTS.md",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
+      "byte_size": 3190,
+      "hash_sha256": "547ee2214ac9088a6f9ce9c1d1de47cc85bba52dc2f95c6fa40f2b3ae5aabf06",
       "marker_status": "absent",
       "path": "README.md",
       "scanner_status": "included_for_rehearsal_scan"
@@ -9905,9 +10028,17 @@
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
+      "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
+      "byte_size": 3650,
+      "hash_sha256": "c225a5f942ca6754588d2296a42eea6385ae7a4abb5e680d3e6c0e03f3392d49",
+      "marker_status": "absent",
+      "path": "THIRD_PARTY_NOTICES.md",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 1800,
-      "hash_sha256": "7c3acfada210c9f20bdb723abe42479ac62f89e3639b2969b56d209733638ac7",
+      "byte_size": 1914,
+      "hash_sha256": "353d63df6919c7ca1ad348d3179cea9c7fcc2b78f94ceef2d596980890f1e971",
       "marker_status": "absent",
       "path": "ilc_consensus/Cargo.toml",
       "scanner_status": "included_for_rehearsal_scan"
@@ -9978,8 +10109,8 @@
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 379,
-      "hash_sha256": "050b8785539738c8b1bf5f5124a421ab6c373007456dde30f9157aa7ae2dc170",
+      "byte_size": 408,
+      "hash_sha256": "a55400cd1472ed799484c8b7b5fba4b1fb98c257f25f948f30f5075eb811aaed",
       "marker_status": "absent",
       "path": "ilc_consensus/src/lib.rs",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10010,8 +10141,8 @@
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 19813,
-      "hash_sha256": "1c6b0b06e0baf43a98ccd4e01ae3923ab94fd3e6341ab34e7bf6fbd12e39643e",
+      "byte_size": 26614,
+      "hash_sha256": "04be1a553c34962be302e5e85f05e328529e1db291740e7be2e5a40c56088beb",
       "marker_status": "absent",
       "path": "ilc_consensus/src/persistent_quic.rs",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10090,1408 +10221,1416 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 11015,
-      "hash_sha256": "7f0ec2cf7fb59541c95bb50583489a1229cd74255a1d85d198d9e9cb32eba347",
+      "byte_size": 11011,
+      "hash_sha256": "3e127f532920d85257d36663ada08c60f7dd0a79bd920e2dc957d5a71b6020f8",
       "marker_status": "absent",
       "path": "ilc_core/agent.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2816,
-      "hash_sha256": "2c64fab7fcfcf26f2318d7cdc8451aff87854257206e850fdaf85c929dc2aa6b",
+      "byte_size": 2812,
+      "hash_sha256": "0897ffb146f77bb43d672f64b85281e6c58a4bb705b4699236c23b72cbbc48c6",
       "marker_status": "absent",
       "path": "ilc_core/analysis/agent_descriptors.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3661,
-      "hash_sha256": "9993a09a13c3bce7d56216ac454e9dca7eca07d38aeca7462a1435021d3219a3",
+      "byte_size": 3657,
+      "hash_sha256": "43ebf230ef38e165c388298e8d9d1e57ddcc9a091e1c80d91f0fbb874c56f0c2",
       "marker_status": "absent",
       "path": "ilc_core/analysis/agent_dossier_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7065,
-      "hash_sha256": "6e50350cf5f46ba9e15adef340bd15efa73676c88391d8e0d006510ece1f0b1f",
+      "byte_size": 7061,
+      "hash_sha256": "41e3ecd63d71bbf48ae37a06dd81ab1279fcf58e196bbb68229023ba82669e3d",
       "marker_status": "absent",
       "path": "ilc_core/analysis/agent_profiles.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2769,
-      "hash_sha256": "b95c006e30c15e22e982e339ea2c7b38412bb96286c41a329109ae4d973c1344",
+      "byte_size": 2765,
+      "hash_sha256": "9e03679e383827e6e0c1f85cbe754a96a4793edc085ac15e1733d3fcc7c8c818",
       "marker_status": "absent",
       "path": "ilc_core/analysis/claim_scores.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5110,
-      "hash_sha256": "ebc5560e0cc21a78c4a8b49975bfe016bc2114fa2a6b0c2625a4179ea7126130",
+      "byte_size": 5106,
+      "hash_sha256": "a9535834c4e95669abc620f67471656b4bed5a0ccd7faef530c625bd62afaf41",
       "marker_status": "absent",
       "path": "ilc_core/analysis/competency_kpis.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2540,
-      "hash_sha256": "2202007772164b485f4eb5a5fac421131e892e91ff533fd7b7e09dcab2e6dcbe",
+      "byte_size": 2536,
+      "hash_sha256": "7763e938b17af5936585479c1f5599aa0d08d6782d0cb76f2cee9b5d6a110046",
       "marker_status": "absent",
       "path": "ilc_core/analysis/econ_accounting.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6833,
-      "hash_sha256": "832ee76dad41c72202d3efd771a487659a67f265b699a8eaa3526ee056133b8f",
+      "byte_size": 6829,
+      "hash_sha256": "924d4f8561f42c949fceeabbbd5205c3a285a87f8d9695214a875b3d02d12235",
       "marker_status": "absent",
       "path": "ilc_core/analysis/econ_kpis.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17699,
-      "hash_sha256": "0d8a215621ffe24b65c7049a42d9e8b3d8635a4f10b1aa4e526d4cdc9463c873",
+      "byte_size": 17695,
+      "hash_sha256": "1118b9651988fd3b26821ed660f50d63b4f2126df06e07ad8dd045653a3e2af8",
       "marker_status": "absent",
       "path": "ilc_core/analysis/embedding_pipeline.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2114,
-      "hash_sha256": "ba2c7164d83d05b3533af906852e2378a342117be85335544c82b61b1465df74",
+      "byte_size": 2110,
+      "hash_sha256": "200e3634402290929e3c413c4eefd093833e5be6fda049b6688d2e96c6daaf8a",
       "marker_status": "absent",
       "path": "ilc_core/analysis/epistemic_code.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3405,
-      "hash_sha256": "220f67db8df1ef0f3d6312cb2bad746bf01b07665ab233990c818afaf0700512",
+      "byte_size": 3401,
+      "hash_sha256": "ed5eb35c2a0e09adefcc3dec117fe95c98b6ccb4b115193907f0a8a6aeb7edbe",
       "marker_status": "absent",
       "path": "ilc_core/analysis/epoch_report_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 11032,
-      "hash_sha256": "144c475fbdb0583ffed5d95393a8d7d2b594316f1e9cfcf1f68da9eb7b5665c8",
+      "byte_size": 11028,
+      "hash_sha256": "6bc0555479d642e70d02d8c0221b450d983144941558969675788ec85b7bd94e",
       "marker_status": "absent",
       "path": "ilc_core/analysis/fairness_metrics.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3458,
-      "hash_sha256": "9d9a6983886bcffd2420801a78da3f140ad0098b1e5ebd0f4422c96078bca46c",
+      "byte_size": 3454,
+      "hash_sha256": "6092fd5117bb69034f98ece8dd7d72025b3ac2d0cc3a703800dbdda77feecfc7",
       "marker_status": "absent",
       "path": "ilc_core/analysis/freshness_gate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8137,
-      "hash_sha256": "e3e8bb4c2441b67702a3565c1aed2afa636d61e74ffb7111865f718bd48a1526",
+      "byte_size": 8133,
+      "hash_sha256": "98c8070def431d14a5654d2d19314cb81ed0cf7382379bcf97b386e8d251f4e5",
       "marker_status": "absent",
       "path": "ilc_core/analysis/genesis_accrual_governor.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7716,
-      "hash_sha256": "739b95d5c9ba51dd69d0826cfbb121ad3efafc91d9957b643d7ac6a60652488d",
+      "byte_size": 7712,
+      "hash_sha256": "c4db6527114d1bb95f6043dcda43c9d24b99d4ebdac24749b5f3e29c21563164",
       "marker_status": "absent",
       "path": "ilc_core/analysis/governance_weight.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3956,
-      "hash_sha256": "cd34cd43417a74c3437176350a837f0c235bcbbe7bf3562b07d4f72e8fe73ff3",
+      "byte_size": 3952,
+      "hash_sha256": "c13b4b54ad6c7dbd9dd8055f6f4aba9b24b3b709fdad85a4f0d87b65bda91924",
       "marker_status": "absent",
       "path": "ilc_core/analysis/graph_kpis.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14691,
-      "hash_sha256": "296533a7380c2fe14de7afecf0627d44d53a3cd0d9c96d71c757abd567b25b4c",
+      "byte_size": 14687,
+      "hash_sha256": "78e916523144fc9701fbd1895587f34d8c361a98c051f53198516985097d4435",
       "marker_status": "absent",
       "path": "ilc_core/analysis/laplacian_analytics.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4596,
-      "hash_sha256": "d024156d26d9bb0fdfcc57a8d84822b5055766dfcb4ec735e94b20d58556b1fd",
+      "byte_size": 4592,
+      "hash_sha256": "c827fb27b7fb202eb358009311288b5d9194edd2714d610ca11b972d24d809b2",
       "marker_status": "absent",
       "path": "ilc_core/analysis/light_cone_kpis.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5491,
-      "hash_sha256": "023fab2240d0d47d5ac938e06717af235e1edb4eba61c30f72cd1ac16d7ed33e",
+      "byte_size": 5487,
+      "hash_sha256": "10c1c3bacde53ff7690f1924bd44bd8937767bc70777dfae639171306b32dd40",
       "marker_status": "absent",
       "path": "ilc_core/analysis/local_spectral_analytics.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3813,
-      "hash_sha256": "bcf8d375e9dc98b861ae315b059e72550fabfd49d510676d1a794d4e3645b028",
+      "byte_size": 3809,
+      "hash_sha256": "91cd7350967848723b60a5e80d344047191cf7cbd858ab59f69a1abbb35906db",
       "marker_status": "absent",
       "path": "ilc_core/analysis/namespace_health.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3369,
-      "hash_sha256": "f8d08e7f2539457d409461dd686ffca9ea3d682119b4662a6c32db6ade3d39c7",
+      "byte_size": 3365,
+      "hash_sha256": "a57a6ab62358060af00ce825a6ba509ff4f52665eb29d521a990ba13e0104841",
       "marker_status": "absent",
       "path": "ilc_core/analysis/node_value_conformance.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2781,
-      "hash_sha256": "0bb82df6c42c1a5b82dd8228b02678668e7266f53b8e2e3fb41b5a40783bb0cf",
+      "byte_size": 2777,
+      "hash_sha256": "835f43e0131f6cc69c044440fedf67ca12ed1b0a5e50e17c3b551f30764ea145",
       "marker_status": "absent",
       "path": "ilc_core/analysis/node_value_extraction.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9751,
-      "hash_sha256": "8b181b11435fe0ed2221a16b95690aee1920faa331446fb1ac52673dd33b308c",
+      "byte_size": 9747,
+      "hash_sha256": "d271e37b25408132d34ff8fb45f28303a6458d8319f64f46bec0514d29054bdc",
       "marker_status": "absent",
       "path": "ilc_core/analysis/node_value_governance_conformance.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10146,
-      "hash_sha256": "bb320c8a6175ed55ca38c0cecfd42e0bd06a88bc29a407799a2aac39b2d79641",
+      "byte_size": 10142,
+      "hash_sha256": "0574c3ff11093e224b21ae708ae182d3956b096a6bc15387af7d0f63ec3f3030",
       "marker_status": "absent",
       "path": "ilc_core/analysis/node_value_input_canon.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17400,
-      "hash_sha256": "d610c6f6098fb165bc5eb9e8e7d6a5c70a547d280fc37e848f4c0ef732b4c910",
+      "byte_size": 17396,
+      "hash_sha256": "e08f097625ada71727e392a0e61e79dacfb3119bc06c5697b6747bae9866f906",
       "marker_status": "absent",
       "path": "ilc_core/analysis/node_value_kernel.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4755,
-      "hash_sha256": "2b0997e695e2fb8f5159ad190fd2b4d9790b2ce21a1662484ce76929a289c489",
+      "byte_size": 4751,
+      "hash_sha256": "870d1697db1ebd8a1d817d79824b621b72d6c23cded3171fed8283f308edad7b",
       "marker_status": "absent",
       "path": "ilc_core/analysis/node_value_policy_migration.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6744,
-      "hash_sha256": "6965adfcc70dac6b9ab13919e7606c3de73e96322e9343871af2814566c5f7a5",
+      "byte_size": 6740,
+      "hash_sha256": "df6fdc25185a503f67ddeea48ddda3b9a28f26acdceead787763252a5f90005c",
       "marker_status": "absent",
       "path": "ilc_core/analysis/path_lift_counterfactual.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3032,
-      "hash_sha256": "41247f235ba951734222c43c9728468a9af6b4b2695e6bf72ebd06bfbcd6a627",
+      "byte_size": 3028,
+      "hash_sha256": "fb7c177605c54311dd53250fc392333da958eedb0b1bcb94ffe993f8b3572b93",
       "marker_status": "absent",
       "path": "ilc_core/analysis/problem_space_kpis.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5733,
-      "hash_sha256": "33fee3dabd1c043bca79b52128c2363d6d777e7662bd8eb499511cb48b03f78a",
+      "byte_size": 5729,
+      "hash_sha256": "bbe94cc3725d3d62a45b6598110ee38a34e83d2ff43fa131684cc08471fd2b4a",
       "marker_status": "absent",
       "path": "ilc_core/analysis/reuse_diversity_invariants.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7142,
-      "hash_sha256": "4f42cc8a9be1114f95fdfdf33e71203a3025be4b1fa1bc43a259d17f85352899",
+      "byte_size": 7138,
+      "hash_sha256": "e87c13195e051012a8092167b44d81c5ecef21e0787d9fe11cceb9ce4be5db5f",
       "marker_status": "absent",
       "path": "ilc_core/analysis/routed_tasks.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1964,
-      "hash_sha256": "c7aa84f762197847e05501228db9c37e0a42b28e1dad346c5c7b3f3a36d3010f",
+      "byte_size": 1960,
+      "hash_sha256": "f5e5ee324d5b91661c808da5e319a46aae588ea5b18993224fed9268d21bf24d",
       "marker_status": "absent",
       "path": "ilc_core/analysis/routed_tasks_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7437,
-      "hash_sha256": "7542a146d7df5420450777fbe92b18d966f85de81350b3be06196f3499ecf10f",
+      "byte_size": 7433,
+      "hash_sha256": "c54063ea150db00cd5d151690b3924b62c77175ab12002b1ad2e333fd7be71f8",
       "marker_status": "absent",
       "path": "ilc_core/analysis/spectral_trajectory.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7606,
-      "hash_sha256": "2b86384bbc841540892bc97bf0dfbd185e87ca27b13f147249aa1eb2a5fd6d7f",
+      "byte_size": 7602,
+      "hash_sha256": "63c1845ff0686431017a708974c269b600a43f50936078251fc587858282e4c1",
       "marker_status": "absent",
       "path": "ilc_core/analysis/spectral_utils.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3333,
-      "hash_sha256": "6b17ea3aa55f94926e65c4dd7943899d72555b7bceadbfbbf9c5f092292ac02b",
+      "byte_size": 3329,
+      "hash_sha256": "9fd83f6444c9aa70e76d9df6eda3293baa0c0d598ba8f6b1eebcc82731e2a375",
       "marker_status": "absent",
       "path": "ilc_core/analysis/stress_and_cohesion.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4418,
-      "hash_sha256": "0e33cfe4d48902eb289eb08567a0aa277f05f3a45748eeb0a3af4816c3faa53e",
+      "byte_size": 4414,
+      "hash_sha256": "2145733e34561f1f3bbf9ad40465b3f46061be5c31beda9d3ad73246c01defad",
       "marker_status": "absent",
       "path": "ilc_core/analysis/stress_response_kpis.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6316,
-      "hash_sha256": "1f98f1070efc04b1a39aec25c946b15b04e7f96e35bf3fc9c5f273ee91d54617",
+      "byte_size": 6312,
+      "hash_sha256": "527fcffac82511906a4166343bf8913369744bf46c816f0f3bea3338f4d5b440",
       "marker_status": "absent",
       "path": "ilc_core/analysis/task_routing_suggestions.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14773,
-      "hash_sha256": "ee09a54caa126ffcae48f8f6aab236c552086e225ecb7b2d74f13d6cc4cdbea4",
+      "byte_size": 14769,
+      "hash_sha256": "1871e4309c41d8333cc35f083f826977be4ab0f4fe965e4f61cae195d6861e86",
       "marker_status": "absent",
       "path": "ilc_core/analysis/utility_flow_rewards.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 187,
-      "hash_sha256": "6eede841428f95fe0826f8e3615d5ab6173dc9164e4365d6a9054d41003b6b0a",
+      "byte_size": 183,
+      "hash_sha256": "4ad8527b857667206d950922516bccc971b5b69e130a03aae47d73a4561da8b8",
       "marker_status": "absent",
       "path": "ilc_core/asgi.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 888,
-      "hash_sha256": "c08bd75e8403a82398205423a4bba5837c4e5c6da0c6c94e342816ca70c348f7",
+      "byte_size": 884,
+      "hash_sha256": "b998f5f0d56d609cba0f61be7837063490f055b28f9b51fc9ff1d0a58533c186",
       "marker_status": "absent",
       "path": "ilc_core/cli/_cli_error.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 873,
-      "hash_sha256": "f8dd5fd00694fe319e52b2bb6110aaf0b88cfa3a72e3977ae2aeb278f0955a70",
+      "byte_size": 869,
+      "hash_sha256": "05b0db8d431e556379f5a6de8cd289cc2d0a315f11af439f0bf3162b51196505",
       "marker_status": "absent",
       "path": "ilc_core/cli/_key_utils.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12461,
-      "hash_sha256": "ed6b08420972231c0096be3436bca8b5d66a0448e81c59c670a5f03aabd56b00",
+      "byte_size": 12457,
+      "hash_sha256": "a3c8145e9e6a54f919c7e5508a55de2b701ad32ebf826c1ef5bc59d683eeb907",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5753,
-      "hash_sha256": "18a2296eb6169a8119dac3a60f765c3380232f27e9fe6c33b301f222b9ad7c06",
+      "byte_size": 5749,
+      "hash_sha256": "fc976ddb965d78232419b17a03fa8de64ea56360d6ee3fc32282005f69b51efe",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_bundle.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4807,
-      "hash_sha256": "af185dd8fe0f7013108b5228f0c38dbd9f4ac1f0992ceddbf4e5c071725491fa",
+      "byte_size": 4803,
+      "hash_sha256": "6ac9f757ac684a24438f478775464d5a5f99c18d1eb645c638547f2b508997f5",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_channel.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2194,
-      "hash_sha256": "b588819e2cab9e029816bd9eadbf1a1e6ec170d60f1e6adb10078172264d285b",
+      "byte_size": 2190,
+      "hash_sha256": "a54db7486b068d64d4e6a288b6fe31a23473d827bac3b9084fa1024c871f8876",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_channel_sign.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2413,
-      "hash_sha256": "60f8a0609db846aa504b42206d52f50d7b19974f0dd91f3be0adf88e8ce9a0f6",
+      "byte_size": 2409,
+      "hash_sha256": "278c7f98d8ad4997ead37319a2c37c3a45b0b1798dd3de91e32116610a442db8",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_channel_verify.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4110,
-      "hash_sha256": "eec751711a69ba2a9e5bfc8f533a46633e66228c416a544b964b381143d5466f",
+      "byte_size": 4106,
+      "hash_sha256": "25264d5f5b80b81a4a9eae6f5e942d0dccbcc589cd8851f186ad0c392dadafee",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_fetch.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3764,
-      "hash_sha256": "48e5d25efc006f2cce43df039887019c34fa3a4a1e5af6cf1347371ba3619ba5",
+      "byte_size": 3760,
+      "hash_sha256": "2b3922d07a757792ac7727eab8db5997dc5ca75cc7c266ffbc59cbcc76085e33",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_promotion.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9923,
-      "hash_sha256": "405e3cba18185004686b04cccf9b7a4a46d1d9362e16663a4e37e785a14ead23",
+      "byte_size": 9919,
+      "hash_sha256": "d7e3420cdb32af39ff7354483acdc062928a6f098fda2dd69a4075761f12edab",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_key_registry_sync.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8795,
-      "hash_sha256": "0117d117d8801dfa0d3ecd7bfca7768beb8b6805019081986a9f61eecfc1d828",
+      "byte_size": 8791,
+      "hash_sha256": "f637b87a3274bcac76d3ec2b6850c49d5785ca2091c5f1603d2792f3d61f131f",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_pipeline.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3610,
-      "hash_sha256": "d1dec627fd131a6b50c591921d15fc5df678df43e481cd3be0fa9485f628de1b",
+      "byte_size": 3606,
+      "hash_sha256": "1280dfaf2c0ccbb4f3bdd9c8e3b328ac6fa28853ee12ec83c043cc91eae65d5e",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_replay.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1949,
-      "hash_sha256": "affb2158ee63b4e31b9c004bf79b0fa7145a0550e18f96197acd50907d3aef36",
+      "byte_size": 1945,
+      "hash_sha256": "ea9f3330e30a94b642ec99e2c439bbda7856ce842da9d01eaa137e69e770291a",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_sign.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3577,
-      "hash_sha256": "f132a6957f8c49d1cdbaef7b40066330605d1401b3f145b5bfd7bb19c4f14cc7",
+      "byte_size": 3573,
+      "hash_sha256": "5f4fe7aa87a1e77264c46234f0a168c4d27a9a66141bfe4715c51ee6ff9bec59",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_bundle_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1006,
-      "hash_sha256": "1188bd3fa6c60df606efccbd5f7f2d8fc83ca98ca872458c8b704c00475f8e59",
+      "byte_size": 1002,
+      "hash_sha256": "6f4c03b053013beac24dae7562a7a5a318177923d43f30b3791c41a82e18400d",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 23474,
-      "hash_sha256": "5b553980fece08246d1283c9c0e3f065bce4a71d6c694d36dcf384b382633e19",
+      "byte_size": 23470,
+      "hash_sha256": "9aae5d044ff900d9c54d23ab3f6089b626028410372b0b8895927be68034586b",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_cluster_a_replay_proof.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10042,
-      "hash_sha256": "89aeb1696fdf099671e89782047a2e64dc754a9093af9c97e1cc4a1e1b47037a",
+      "byte_size": 10038,
+      "hash_sha256": "9938471b20323f474c29829d3ba339e25b1779c7599b92d147e4a88d72f53b6f",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_consumer.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2936,
-      "hash_sha256": "d6e6e7c410da1b122062a3eb04c911dd643cbc9608f2577c7dd5690301051f0a",
+      "byte_size": 2932,
+      "hash_sha256": "b364050e203f61aca4ac7530ebb1c3a4090d7ae058c104efbc9ed4f51ff5b0e4",
       "marker_status": "absent",
       "path": "ilc_core/cli/canon_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2139,
-      "hash_sha256": "817f65e6fc112fc8e366ccf2e4419a5921e8c33e1f9a7af4fe19739e11bdd2b7",
+      "byte_size": 2135,
+      "hash_sha256": "b8ee392f31b19c36d34e21ad0cb9b5eeac5cae3b53acba2accdc1fd99675d25e",
       "marker_status": "absent",
       "path": "ilc_core/cli/d2e_agent_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4980,
-      "hash_sha256": "ab1bd2a6ba09827a5a9d5ae5dc619217512ee00d833a0aeaee7c2fe34d539a52",
+      "byte_size": 4976,
+      "hash_sha256": "319815fafd56a9880dba90af88089d624da8c2f233a4457fa6ca0ab4aa38242e",
       "marker_status": "absent",
       "path": "ilc_core/cli/d2e_lifecycle_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4476,
-      "hash_sha256": "9273108e63e1664b1a38b3cd9b5d069f5fbe7da32d2a659adaaa9cdcf7589831",
+      "byte_size": 4472,
+      "hash_sha256": "3a00ff2ff954b327e966aaec5ba1bb3d2fef4fbbd6c60d6014beae0f320d4f02",
       "marker_status": "absent",
       "path": "ilc_core/cli/d2e_query_truth_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6371,
-      "hash_sha256": "6c5e2af48d654740c94c8da0e8934fbb53a1055a8d9e9612ef86630209bb591a",
+      "byte_size": 6367,
+      "hash_sha256": "cd9fa4d75ca15baffaf2ba83b03f90a8dd878a215135bb32ccef5bc7cbbbef81",
       "marker_status": "absent",
       "path": "ilc_core/cli/d2e_submit_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6590,
-      "hash_sha256": "1455d79ac1332064271019ed54c737fec6144849b5ef82d441eade497f9e6634",
+      "byte_size": 6586,
+      "hash_sha256": "5e155771a62cd3b19f9b252f16846076a0bffea04720802567637d060adfe49c",
       "marker_status": "absent",
       "path": "ilc_core/cli/ep_task_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 44044,
-      "hash_sha256": "058e3a7aebb89c5d990a6b30a656696a1770c353ec08f2f6c73df05127f69b64",
+      "byte_size": 44040,
+      "hash_sha256": "23bf9877be343fb4358b2d598671ea55012992212b57489efa7f1501a5d0ea06",
       "marker_status": "absent",
       "path": "ilc_core/cli/main.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4210,
-      "hash_sha256": "10618c3200577f53b42c9beefe99d690f312326f63990a573ce89ec9ac4acc7d",
+      "byte_size": 4206,
+      "hash_sha256": "6fd1e3fbc94bd72260a93d484d99c63a06575b8dace2c75e052c6d320774fede",
       "marker_status": "absent",
       "path": "ilc_core/cli/mcp_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2807,
-      "hash_sha256": "f56f3b334099c6adbd2aecc8e4746efc6e77175874930dc3ae83ff35e0e3cf08",
+      "byte_size": 2803,
+      "hash_sha256": "1fc5316b6d71473fad622ba62fa8f0c612e221c54c40467bece94aee0f593484",
       "marker_status": "absent",
       "path": "ilc_core/config.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3557,
-      "hash_sha256": "a1d51a4c543aa39f7ca6c86ec06c8564a22549bfa2a59ef8d7cac9a34c1e42f9",
+      "byte_size": 3553,
+      "hash_sha256": "92de59be635b3e23a2271f6897a47afe98ee083c972c2d640718652292b384b8",
       "marker_status": "absent",
       "path": "ilc_core/consensus/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7408,
-      "hash_sha256": "705f6626520f8a73d1af54cc1854a78954ea205e4e264350f9265837df063cdb",
+      "byte_size": 7404,
+      "hash_sha256": "509efee73ecad13af36280b1345463bde5607f06509bd75cdaec8d9e4bc3d2e7",
       "marker_status": "absent",
       "path": "ilc_core/consensus/circuit_breaker_interface.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1113,
-      "hash_sha256": "8d3c3d90e9cc0994ea13d91106a5ccbbdad93ff45c3a49c51530dd03e35e32fe",
+      "byte_size": 1109,
+      "hash_sha256": "5b3027bd92228c2616a191a2662f81d8d2a8db8c2e2115156add5d7b4d4fa94b",
       "marker_status": "absent",
       "path": "ilc_core/consensus/clustering.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4979,
-      "hash_sha256": "010503483bd171b6c8ad479800c4c6ce4fc4e9d7e39609a572a7d79041ef5405",
+      "byte_size": 4975,
+      "hash_sha256": "d20cbf4309ddd08916cb09d5abafd7c871f323ee6c12c552171d9421996d3f99",
       "marker_status": "absent",
       "path": "ilc_core/consensus/diversity_floor_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 16072,
-      "hash_sha256": "0220a27c888d4f57a78de33b8370c1af65ff89f6f153cc8cd10e8ad6a3bca44b",
+      "byte_size": 16068,
+      "hash_sha256": "16cd523a5da66375eabc0fff723f95dcbf5f14cd02bd3788eadec35bdace4a01",
       "marker_status": "absent",
       "path": "ilc_core/consensus/engine.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13778,
-      "hash_sha256": "0b0e7370c5eff3c02350c6788f3155b5338dd9f0324341ae7fea5a0a2a186388",
+      "byte_size": 13774,
+      "hash_sha256": "9b5b760bacfb4afed60d28870975bdab45b55ed8347e2a6b0d1f766bafe49665",
       "marker_status": "absent",
       "path": "ilc_core/consensus/epoch_state_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17056,
-      "hash_sha256": "7600a8e7316adea5f8735e9a8c1e3beed6057c85052fc385e00b819cafaca246",
+      "byte_size": 17052,
+      "hash_sha256": "8f4358e4ba669c41be2d8c4c9d605b60db0ee92eaa24250a3a30ec69fcda7048",
       "marker_status": "absent",
       "path": "ilc_core/consensus/finality_evaluator.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9884,
-      "hash_sha256": "bfcbc0848a78a7efe6496f21df488aea318ca6ac48a1713a3d7fc11237309892",
+      "byte_size": 9880,
+      "hash_sha256": "05168d575831c41d1a50dde3a0c88c10419dac145faaa1afb0c633861cec4ac1",
       "marker_status": "absent",
       "path": "ilc_core/consensus/governance.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4201,
-      "hash_sha256": "b9ba3b65c024c60b9acd59b0635c6083d7dcd2d5706723af00737852ed78b2a3",
+      "byte_size": 4197,
+      "hash_sha256": "de7b9701b3d422db62f8881a7704f8331fe6849ba1ecff7dfd52a5ef5da356a9",
       "marker_status": "absent",
       "path": "ilc_core/consensus/popperian_gate_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 22210,
-      "hash_sha256": "e79306e7edbd5a7ff38ef0ecb048e45fba64c1b4f0950c46ba71a4169728d100",
+      "byte_size": 22206,
+      "hash_sha256": "343a152da3b7e098a0e528a30a28c11729ec37208081b8a12a167717f33ac3f2",
       "marker_status": "absent",
       "path": "ilc_core/consensus/production_bridge.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5782,
-      "hash_sha256": "0c535015151d358ea70b110d9c5e390db1d689b1921a12c3d06abc40d6ce9552",
+      "byte_size": 5778,
+      "hash_sha256": "7c396230272494e019ce3a7d4ded545ba21558a84ffec958a7819f50d6d62570",
       "marker_status": "absent",
       "path": "ilc_core/consensus/reputation.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1053,
-      "hash_sha256": "ac16f7cc4e9c2a01ad30e3eaddaed4188d31c576b63a9bf38e7679f44c74a387",
+      "byte_size": 1049,
+      "hash_sha256": "2ba29a720d74b7c0a7f0950411f871879b69e2e9c5bcd9e86ccece6f0a2e3703",
       "marker_status": "absent",
       "path": "ilc_core/crypto/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2245,
-      "hash_sha256": "1bc0b0383bb07355247f4b6fb97585bf67f1f0ad8d65ce4bd6ae1bdcb133d1d2",
+      "byte_size": 2241,
+      "hash_sha256": "b54383959a5eded44d772eaf948fd89bf46ec349c5807f95e19c004b97c16f24",
       "marker_status": "absent",
       "path": "ilc_core/crypto/cbor_canonical.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8246,
-      "hash_sha256": "9e305f9aae778b9339682ce24adf4c9e094954a439f6ec57fcdf959bdae30fe9",
+      "byte_size": 8242,
+      "hash_sha256": "021a4adee3d89ef6d95b595959d933df5b96ae4594f2602b9279e1e750415ae2",
       "marker_status": "absent",
       "path": "ilc_core/crypto/cose_sign1.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 176,
-      "hash_sha256": "dbd71034dfeae9a87fec7df7db25a9c4579e419b36264ddd87f222566a56c41d",
+      "byte_size": 172,
+      "hash_sha256": "3b94ed5758e20b545d55000f7c160a08a7049396d353096e3170234e5040a6e3",
       "marker_status": "absent",
       "path": "ilc_core/distribution/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1149,
-      "hash_sha256": "5cc84e707b3896ab48b361f91644ad1fe1d46b93b163daef49ae50459ae58fc4",
+      "byte_size": 1448,
+      "hash_sha256": "a1ebb3ce0f3054a934fcd06ef45421d31776f0b86794a0b6895b4e199bddf240",
       "marker_status": "absent",
       "path": "ilc_core/distribution/package_profiles.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2969,
-      "hash_sha256": "dcbf65be36f5e3f36ab21686fe74a256d6895d0e8e4995734ab4e77c2d088da0",
+      "byte_size": 4309,
+      "hash_sha256": "74e968d8b48a5646f3c819ddbb3db3217b704cf0a4fb94e02b1b437028026246",
+      "marker_status": "absent",
+      "path": "ilc_core/economics/dynamic_ranking_multiplier_runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 2965,
+      "hash_sha256": "eefb4d0f62df9595984a038defdd0fd399e9de896d0a8e244aeb1faed2ea74db",
       "marker_status": "absent",
       "path": "ilc_core/economics/entropy.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 23655,
-      "hash_sha256": "c3c051bf21c49c77ed2b17f4be9a4543a9363fa478bfa88efaf2df533e739735",
+      "byte_size": 23651,
+      "hash_sha256": "495c814a6d08ae5d8e670887a24c6cf0ded6f8a7ba69adab65d8825915de189a",
       "marker_status": "absent",
       "path": "ilc_core/economics/epoch_attribution_settle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2634,
-      "hash_sha256": "950393f1dfcf1606c3675e16c4715c426df05df322fe3ac448d0161bcedec84b",
+      "byte_size": 2630,
+      "hash_sha256": "66462d95d5523cc813bc5631d3fd2f1d982ea8855f7902d2448eb1ac573e0a57",
       "marker_status": "absent",
       "path": "ilc_core/economics/epoch_ledger.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2472,
-      "hash_sha256": "0fbbdfce415176fdfbb925fd10a2ab035c00093c7e2cf16a123d17e8627209b6",
+      "byte_size": 2468,
+      "hash_sha256": "ce90f73d4aa7e4929bd3ef3315c24cd9735fff891f62e7a4e6987b9de8cc33da",
       "marker_status": "absent",
       "path": "ilc_core/economics/onboarding.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2028,
-      "hash_sha256": "147e511d8eef8314092fdf4f92453c63aeaacc4f62765f008d2d219cfa37e134",
+      "byte_size": 2024,
+      "hash_sha256": "e0ae2e4ee86b7383781757c46d8a561ab7cba595bc372ad63de6e5d5cb596d4a",
       "marker_status": "absent",
       "path": "ilc_core/economics/outcome.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3650,
-      "hash_sha256": "179bab218299c25cd797543c6b9c543c48980c47893f8d64b8d15da8c7fa4f7a",
+      "byte_size": 3646,
+      "hash_sha256": "508b064f64813d7c93c44c7df53d6331126772346521c8444d1637211df4d89c",
       "marker_status": "absent",
       "path": "ilc_core/economics/passive_ecu_attribution_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2917,
-      "hash_sha256": "dabc8bab159e2bc1653433c50b603898ff1b86bc62113d5bd418a0b0097e1f7a",
+      "byte_size": 2913,
+      "hash_sha256": "96fae42115c0d4ff9de76098f9dc9a0124de7a1ee3ecaff235d1901dfc9cdf11",
       "marker_status": "absent",
       "path": "ilc_core/economics/reward.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2194,
-      "hash_sha256": "9b6772a4cff73e5e83f4b3b1c3bf1d881b4eb82822779ba35bb3729d4a46ac6c",
+      "byte_size": 2190,
+      "hash_sha256": "d47c6e2dce5f7a1b4e801712bbfd775f922f1a4dcc210e24a94c7ec51d84a1b1",
       "marker_status": "absent",
       "path": "ilc_core/economics/rl_agents.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2745,
-      "hash_sha256": "3d5e5b27bc588862d51eda0ecf81f60ba11c6b4866c22143eb66683a78ed6605",
+      "byte_size": 2741,
+      "hash_sha256": "f9bf96ed96dae3d840be64dcb6518636efe71bc2c8d000782a159bf11ad3b9f1",
       "marker_status": "absent",
       "path": "ilc_core/economics/telemetry.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1133,
-      "hash_sha256": "038901e59ae12cc2543b08762cbd952f8036f4451e7fa1ac968c23411927b3b6",
+      "byte_size": 1129,
+      "hash_sha256": "1960773424f6256dd2c3bb5aa6b715bef827f27fccdd2a692bafe8ee532cc56f",
       "marker_status": "absent",
       "path": "ilc_core/encoding/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8212,
-      "hash_sha256": "32b3ec686d6568dcc6c75cab533f63323e3ecfd3634db2eb1dc27697b125b5fc",
+      "byte_size": 8208,
+      "hash_sha256": "fe63b08cec751ed80617091c9b37fff42b14da2acd8fb643a7a2b38a7489aa27",
       "marker_status": "absent",
       "path": "ilc_core/encoding/cidv1.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15293,
-      "hash_sha256": "660fbd81bdc65974308ab9e561b67d8d4002b088cbbd934df4eb5933cdb8e162",
+      "byte_size": 15289,
+      "hash_sha256": "61fed2b993799b80cc6273e1714bc20ffab52d5e5f99814a89aa6725fafbd4fa",
       "marker_status": "absent",
       "path": "ilc_core/encoding/dag_cbor.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2059,
-      "hash_sha256": "3087bb7a9d701df270e4ec032a8e0f6763b631ce87800656738e1a018b2859dc",
+      "byte_size": 2055,
+      "hash_sha256": "508f6e5bf16d6a5159486f7e50808c70db1e17175b0675c42a60941be6ad85f6",
       "marker_status": "absent",
       "path": "ilc_core/encoding/varint.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7040,
-      "hash_sha256": "ee62b58e7ab179b28e84aa597ef1ef871e4ce232d0dc1295d24f21c3749e5b0f",
+      "byte_size": 7036,
+      "hash_sha256": "8f1ab5fa485b375ac9bb73881f29145f2a0c86463c15294ed29dbac21b8d4c1a",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3654,
-      "hash_sha256": "22dd5807e8e1630c2c8aa6e5728f1bc575a0ac1c6739017e9698ada9a491c93a",
+      "byte_size": 3650,
+      "hash_sha256": "2dc6e3747f5cbf3f2b123b06fbdf3ffaba4bcf97f85783a2aad15468b6b4e15d",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/aesthetic_panel_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 18377,
-      "hash_sha256": "08ebb704f1ac5aa160b97c564a8b4c24d42be1945413151a062552db7607d503",
+      "byte_size": 18373,
+      "hash_sha256": "c9a4c6cacb11e9d75bc022c20badff26e979ebd48440fc4e6e91bd3eeffbe24b",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/ingestion_shadow_harness.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 22048,
-      "hash_sha256": "3291d3c67477dee8eb186594307616e721fddc7aec2a0b0bd61c74dbc24de35b",
+      "byte_size": 22044,
+      "hash_sha256": "c844ba4948c6e94ea34db60cdc3e43aa4284a43c1acafc0a47899b70b45711e3",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/jury_activation_gate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 27121,
-      "hash_sha256": "9766a647b74c4dc95627f8d27453c675cbc40430064296ea74deac17ab6119b0",
+      "byte_size": 27117,
+      "hash_sha256": "fe316b7887db475c1feb4a75cfa61161b6167cf49b105e5b18574a2625b5ac69",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/jury_assignment_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3729,
-      "hash_sha256": "98d178ca79d2f17c92f42eadfff6b469b5461415a9b5b9a76d00d4fccd6a85a3",
+      "byte_size": 3725,
+      "hash_sha256": "dea2fd97fe3e75ac0bdcc6cc1fe470832bce3bcf524b85170b7770a97b259664",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/jury_incentive_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13042,
-      "hash_sha256": "a2795e67fbb7bfb120adb41f58f7a1799466a8a84a9d5c405e1340f9472da353",
+      "byte_size": 13038,
+      "hash_sha256": "b6da76ffaa278f6574496e98d519140ef9cb9cdb5fa7836bea805e505de573cd",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/maintenance_lottery_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4907,
-      "hash_sha256": "011f6ab1c85fc29a6bd999ad2be43dd42111e6bf615af23ac4332a9b406b21b8",
+      "byte_size": 4903,
+      "hash_sha256": "9467f94fab50a66ddcd12dbc390e476c9fa13a8e4129d7d7e86ac5e4d2abcc82",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/node_submission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1628,
-      "hash_sha256": "e36c4fbd2b25917433ffbcb1c3175e4a1a53e11a45f5e3f3e623548f7bcef909",
+      "byte_size": 1624,
+      "hash_sha256": "9c9fa9b9ccb2c6b875cacfe3902b4de6d3464f4e61380174a63a6644a29e38e8",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/novelty_check_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3540,
-      "hash_sha256": "5156b8eaeacc5dd5734e6fb0d2cc7b6268074f4010776017fc50d4cb71e34ba4",
+      "byte_size": 3536,
+      "hash_sha256": "28af1a1450558c1d0d84cf6160cd2bb3c270ff478b6f00620b1ec3f46b692392",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/refutation_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2652,
-      "hash_sha256": "4be65faf73bfd37d0336bf92aa455c6b8fcec2ff05efef9cf58ac7aba5ec1a10",
+      "byte_size": 2648,
+      "hash_sha256": "f6840aee3dc8180e9cf745d77b5dd318ee9a14178a94949d74a5162d9eb20001",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/reuse_centrality_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 20011,
-      "hash_sha256": "09a858ccf82cbeecb3ff3a98f6ab22039d93fc3683b553540db1b7b573cd02d1",
+      "byte_size": 20007,
+      "hash_sha256": "6395fbb98ba814ff49cf8bf2a243eb975c7d775c87b835f9b94eea04b651d109",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/review_lane_admission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9798,
-      "hash_sha256": "5114a00042e4068b7a71d72faaf857205c4d976311eca46f3cd664f8cfb6b7dd",
+      "byte_size": 9794,
+      "hash_sha256": "c4519d2c49233ae444ce25a9524617c7c504a0b148013692a7952cbf583b97f5",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/truth_primitive_graph_store.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 16962,
-      "hash_sha256": "3639f6263eef2d7c7df1ae88a532b3ab27e79ed67e3d353e20dd48d5a227f476",
+      "byte_size": 16958,
+      "hash_sha256": "0d6790fc4060c52b4b08f3e81fde5dcdb25cdcaae1a69a0bc5550703cf1c7349",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/truth_primitive_submission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13647,
-      "hash_sha256": "a7a9e4fe27946615c2fedf487c9ca3b2eb09962c57d525f6a0897056d2678c80",
+      "byte_size": 13643,
+      "hash_sha256": "7f5c910ce6dc1f21c7c4b266f4aed315644f2d726231a914d0fe857eab413a13",
       "marker_status": "absent",
       "path": "ilc_core/epoch/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 18412,
-      "hash_sha256": "f9edb382ea97676d35d5f9d8c2c731286ada08b56f422aced41959c51781e146",
+      "byte_size": 18408,
+      "hash_sha256": "78532d7d9dd5c24b5af5aeccd258635f940471ec0d79aab7b711465fd609110a",
       "marker_status": "absent",
       "path": "ilc_core/epoch/allocation_distributor_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8958,
-      "hash_sha256": "6b791e83d9d0e64b99022521785c300f56d3460c85c0b82af4d0f68c0cd280aa",
+      "byte_size": 8954,
+      "hash_sha256": "1c0e2c64ac8a075b47fd15460a9b3d1992e2b74b1ad24b9191153a35f3fa5cd3",
       "marker_status": "absent",
       "path": "ilc_core/epoch/ecu_price_clamp_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1976,
-      "hash_sha256": "1cec7078174ff994039ba313bbbd4bdd8826e6f786b0c19a800790109d25fe84",
+      "byte_size": 1972,
+      "hash_sha256": "0a599e8402d000f6905c259ef10575cac5d2b2639d7b41cca0a10a3f0a16c771",
       "marker_status": "absent",
       "path": "ilc_core/epoch/epoch_boundary_witness_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7770,
-      "hash_sha256": "f4d7ae0555362818e709c89e3512ff13aaa9903331434ffa558a5e7eaa4264f9",
+      "byte_size": 7766,
+      "hash_sha256": "811ab7904b02788cd84c8817bf0fc7a39a39eaec2a743e3bef05de84875a8de4",
       "marker_status": "absent",
       "path": "ilc_core/epoch/epoch_emission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15928,
-      "hash_sha256": "47f4fcd0a45c58d1d2cfc7fc6794fdf8209e31523ea087442fd6e39e2e8bd278",
+      "byte_size": 15924,
+      "hash_sha256": "95074c77b61aeb2832f5fd56c73f0d98f2390bd129d732f592e741c61e81f489",
       "marker_status": "absent",
       "path": "ilc_core/epoch/epoch_snapshot_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6417,
-      "hash_sha256": "d16d98a6c0b0a65ec887de33044e5914799690aab46efbfc4c5cedd41472e1b4",
+      "byte_size": 6413,
+      "hash_sha256": "dea042a148ecbe2bc0ca7c811850ea8d6a809d785235e67f923fe71c5281a0c6",
       "marker_status": "absent",
       "path": "ilc_core/epoch/fee_burn_split_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 19618,
-      "hash_sha256": "abdc32930db645ae0ae37a8a584db7f92a5514e2b8b7e7cffd5cfaa8b7923574",
+      "byte_size": 19614,
+      "hash_sha256": "9d220efad180d2e52930d3c0c8f2049fe8b0e9eac5bd855cc68fcecfe161e2ac",
       "marker_status": "absent",
       "path": "ilc_core/epoch/issuance_economics_integration_gate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9960,
-      "hash_sha256": "829fda743fa641916d40bd45329bfc521fdb8386547c53315039f4dde58e4193",
+      "byte_size": 9956,
+      "hash_sha256": "5f17ea19770af0c068c35078fb3bb6052fa20b700bd6b2f215d9f1249a9506f5",
       "marker_status": "absent",
       "path": "ilc_core/epoch/treasury_governance_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13142,
-      "hash_sha256": "7e729a5c598e26fdc2e938bfeb015eb8f5d60d8266afcd3869f7fcb0fc220d01",
+      "byte_size": 13138,
+      "hash_sha256": "5cc741fb9c8369d5f307abf8dca2af63ac337f6e55abbf5a906d93f4578f7309",
       "marker_status": "absent",
       "path": "ilc_core/epoch/validator_reward_pool_routing_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 74,
-      "hash_sha256": "ecb3c36e23823ef4e41406bd4a904e1a761f770ed0a64b646c5142f0d231c7cc",
+      "byte_size": 70,
+      "hash_sha256": "cd72646b6e9b14380b12128d1e5b227045cbb464085d087340a489c8ba390168",
       "marker_status": "absent",
       "path": "ilc_core/eve/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6753,
-      "hash_sha256": "e73366419e9f55e448a03f001f10670bc8723a1ef5f4e88a12dc6bd366c9362f",
+      "byte_size": 6749,
+      "hash_sha256": "221db7db3eedf32964dfddf8fe5905db32f5fc53891f5e6d1bb31dbaf80d8c93",
       "marker_status": "absent",
       "path": "ilc_core/eve/capsule.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4036,
-      "hash_sha256": "4f58338fb04a2c69807598461cd9ddbc88671d3c582942a66945ddb3816568c7",
+      "byte_size": 4032,
+      "hash_sha256": "5dae0aeeaa8a8cdbd48b231ddb5b47625bc7dc124592669eed7f872eff69e8b7",
       "marker_status": "absent",
       "path": "ilc_core/eve/capsule_builder.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5636,
-      "hash_sha256": "e47f502c8fc42f3dabd934e5d43360cbd88b3e40000dca832bc4205723da0d40",
+      "byte_size": 5632,
+      "hash_sha256": "233a7c074d23e42ade3c02c4b146a5f737c423876e9a7e24960bfd5d307488b8",
       "marker_status": "absent",
       "path": "ilc_core/exceptions.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3650,
-      "hash_sha256": "4587aabbd1314d01f10997422c7b4d9da4fc44bb204dd29cf1923eeb98b66602",
+      "byte_size": 3646,
+      "hash_sha256": "a2612720a982bc7616aeb122d9ceab1bb6c5f8a142f3cf16f477b2790c529ff8",
       "marker_status": "absent",
       "path": "ilc_core/genesis/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4953,
-      "hash_sha256": "c1bd3f1043d972ec76d91befab9f118459d430001daeace3267dd45e3af4831b",
+      "byte_size": 4949,
+      "hash_sha256": "31c19192a16b0909234cde639586a6de0d5a6f024b93fce5ac882f8590c70a85",
       "marker_status": "absent",
       "path": "ilc_core/genesis/admission_control_bootstrap.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 20031,
-      "hash_sha256": "8a1ff6616949fbc51c02d0a8d4705c120d01aeba1ecfa75284fd9dc888309cba",
+      "byte_size": 20027,
+      "hash_sha256": "dda59e3dd91d1ee1da6a4b6de5cf023fb066ce2fdc3adad1585e6bf3eefbe843",
       "marker_status": "absent",
       "path": "ilc_core/genesis/assertion_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17925,
-      "hash_sha256": "4df93179f5037b24086275467f43e0713075b8e05b1f5a153ffed9d15fefef18",
+      "byte_size": 17921,
+      "hash_sha256": "32f4413a8da889b8d382b2aca77dbe1284e88f9c3d424e2030364f628776e18d",
       "marker_status": "absent",
       "path": "ilc_core/genesis/genesis_intervention_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12187,
-      "hash_sha256": "6464d4f107a917e50b75c9cd0741aea4087284a5033671b1e250cde493d8c939",
+      "byte_size": 12183,
+      "hash_sha256": "5c41346e8cdd5524329283ac5a07a0b1749bc7fd96d5b87011d3b0f1c892f78a",
       "marker_status": "absent",
       "path": "ilc_core/genesis/genesis_state_bundle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1232,
-      "hash_sha256": "0d07932d73aa3736118f98d4aa4d6f11526d56863bd3735aca3b759b75e57613",
+      "byte_size": 1228,
+      "hash_sha256": "42e7b3edffb9ac28e4fde1460dcdec1668053339a766255361c46b550f744357",
       "marker_status": "absent",
       "path": "ilc_core/genesis/schema.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7278,
-      "hash_sha256": "838a40392a47a4e1004bb3f54defa4281ecce48fa3e134d1e93e1e61952f3fe1",
+      "byte_size": 7274,
+      "hash_sha256": "64175bf0a1364ca162ae90713007b577b9bcaa63f9e0bffba97b6c740974e6be",
       "marker_status": "absent",
       "path": "ilc_core/genesis/validator_bootstrap_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2917,
-      "hash_sha256": "141d860a83393ea27e3328426e1bb85fb5ed69813b81c1d5b776064f774294bd",
+      "byte_size": 2913,
+      "hash_sha256": "abe6d255d94f3ebdf2d969c57bc021cc3b890eec4d70d0217381e2ea2c56efc3",
       "marker_status": "absent",
       "path": "ilc_core/genesis/work_task.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8429,
-      "hash_sha256": "580e592e652155588019a7453d17636556773f428661bd676da831e9b1bf4cc9",
+      "byte_size": 8425,
+      "hash_sha256": "1c6ee490c58e543ecec8005579f264bc60a55849cf5771405bb256555dad65a3",
       "marker_status": "absent",
       "path": "ilc_core/graph/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 20117,
-      "hash_sha256": "a23961ec6b7f7db752ff7317a650c7c2e176b5ac9d206f37badeb10b84b3220f",
+      "byte_size": 20113,
+      "hash_sha256": "6656b42f7d36eeba45d8e25e25ab41a64c713314a6125de30a2d0e8add8247ef",
       "marker_status": "absent",
       "path": "ilc_core/graph/agent_graph_projection_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17795,
-      "hash_sha256": "292a381b0c8122e810ae0570eae1f95305826a0d3b533810327ab517f488788b",
+      "byte_size": 17791,
+      "hash_sha256": "f0b07199aaa6e548bac00bab861feb24f80fb03c2ccaab331d5d2365ab48dc33",
       "marker_status": "absent",
       "path": "ilc_core/graph/sidecar_query_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4131,
-      "hash_sha256": "9352b2fce6f454f6f16514230ea419de38e63fafffedea1246abfc14e3ebc141",
+      "byte_size": 4127,
+      "hash_sha256": "708d3a8ae4a1567b393e1862a796ede65ab73218acc140f2f68f5a5f724452db",
       "marker_status": "absent",
       "path": "ilc_core/hardware.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1524,
-      "hash_sha256": "718f8c7eebce159b6a6676799ec9bf2149b3c59dbb8ef821c05f4e7f2feb6214",
+      "byte_size": 1520,
+      "hash_sha256": "8857dc960830e9fcf1e0a0831a7c0429f1eea6ee317a9fa1f831263ec18f183d",
       "marker_status": "absent",
       "path": "ilc_core/identity/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6072,
-      "hash_sha256": "75375ed0fc2b9276fabbfe402bd956401ac9380f676451042da9e667c444c7bc",
+      "byte_size": 6068,
+      "hash_sha256": "9d7f95336af13709d58d940764bae5f112b7acd55ca67475cedba98f8ecf145a",
       "marker_status": "absent",
       "path": "ilc_core/identity/agent_id_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15406,
-      "hash_sha256": "4c46b5dad6b00626e51ecf833b5f52cbe4c1c8dc8009c0f213faa55ddb3c16c8",
+      "byte_size": 15402,
+      "hash_sha256": "47c91b44865a57ec926bf32a64e5a04ab0f1ee55daddf726e1dc3963ddd7fa0f",
       "marker_status": "absent",
       "path": "ilc_core/identity/endorsement_packet_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 24995,
-      "hash_sha256": "c42d5ce521c07354773e9b1db1970eda858a91d5125913a74bab2f1af09e2916",
+      "byte_size": 24991,
+      "hash_sha256": "50c562f9f9bd98ef593f89eac5461806f04af1d401944fbcf4a4b724d7d33cd3",
       "marker_status": "absent",
       "path": "ilc_core/identity/epoch_endorsement_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13759,
-      "hash_sha256": "36abf3c9c2d2f6b28d7134c72463da7b060638e31ac22ae22102e45feada3d4a",
+      "byte_size": 13755,
+      "hash_sha256": "4af581eccab66375222236b160c2bbbd752dc1d804658d5053fa5bf13cdb7256",
       "marker_status": "absent",
       "path": "ilc_core/identity/genesis_record_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6274,
-      "hash_sha256": "efb889f505f1d6c6369a4608ec7b504b20aeebcc2489792e0530da4d913c41a9",
+      "byte_size": 6270,
+      "hash_sha256": "eca744203e802d1a21de2b76a20626434a3608472820c311a3de7cd0ac769b43",
       "marker_status": "absent",
       "path": "ilc_core/identity/log_redaction_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5005,
-      "hash_sha256": "26fabe5fc5c99eb83fe314b38c9cdeabd3ada988cb08321c5b6478f50512097e",
+      "byte_size": 5001,
+      "hash_sha256": "1d0e2490fbaf50330a06a33052aa0480b646b6709b0d4d5e6ad85226a81a64cf",
       "marker_status": "absent",
       "path": "ilc_core/identity/sybil_resistance_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1065,
-      "hash_sha256": "609fbd794fcb716aa45a1b479d84ee04abb0fba304365634dda0bbc1af593c82",
+      "byte_size": 1061,
+      "hash_sha256": "540960e0313fbe8af92bd9a549ff7e5736f3c69e49cb1fa5075383ab3b0ce433",
       "marker_status": "absent",
       "path": "ilc_core/ledger/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 11750,
-      "hash_sha256": "a2072c745a71222ec9340bb336b2d0944000987be1835d863ef3b285f21354ae",
+      "byte_size": 11746,
+      "hash_sha256": "f0e7c942c4fe062e556d513f32f55bd15723fe902fd125cac1f2b095a69d92a9",
       "marker_status": "absent",
       "path": "ilc_core/ledger/backend.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4821,
-      "hash_sha256": "d9508eae4a36ca7d8b1e049ae48acf1d2a4c7b3864b9d6db22ed18b519f31f14",
+      "byte_size": 4817,
+      "hash_sha256": "2fefff2af221075571e9acd43ad18cd8bb0d8d9631da132dfcfb56aa1177e3dd",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_audit_artifact.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 23060,
-      "hash_sha256": "7cfb416f8d0cad592a59a338257f73f3f866f4c3b65d0be43a51d6d010fc242a",
+      "byte_size": 23056,
+      "hash_sha256": "b4f35344de564bee23ddf6f6cd080ff7b66bc96d4f6242c151d421290b54f40e",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10114,
-      "hash_sha256": "e6424cf4cc0ce5e9c7a9c31017a5d1b3dfb43e1ccc90072221c9015eebd89e74",
+      "byte_size": 10110,
+      "hash_sha256": "f4b6bae236754180724fb4735ed2171b8f37d135a9108639c77d8da6167e67ea",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_bundle.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13870,
-      "hash_sha256": "c841cc12352a32df2c6c12fe5be1dc3442acbdadac28a861e6fd4dd1e11867ad",
+      "byte_size": 13866,
+      "hash_sha256": "8f9bb190aa6e679f8440749227bfdb484b093ea0aed49c8ec2144dcbcb5cba3f",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_channel.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8854,
-      "hash_sha256": "d9acfe1672a053496372c2b18cc758ca1b0e77f768e0f1e9887756cb88a82c90",
+      "byte_size": 8850,
+      "hash_sha256": "80d01667c98959bf1c07185732c48b6d9896ddb69ab3ed30cc6ef739e5cd8012",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_channel_signing.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12320,
-      "hash_sha256": "5d9c4dae1e8427653094d8bc28dd0918e04a7f8247ade2fe9bd51e0779f9ef48",
+      "byte_size": 12316,
+      "hash_sha256": "05ef1457c7a3d59438601b62f9fc2317a146d1c0fe0192e092967fa67507cc93",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_fetch.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8846,
-      "hash_sha256": "eec476dcdcdf58b2eeb6db97b21d273231206b05d60d3e901dac043c4458ace9",
+      "byte_size": 8842,
+      "hash_sha256": "da1e4e3580ece68e7f52b3bc86aab6976eaefbc792b4a98121e97a3cc67a6d25",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_promotion.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 31218,
-      "hash_sha256": "3d6cb32bdded2197bf6cdfa8ab6aeb29a32ac29d152f91339c375af5f1090493",
+      "byte_size": 31214,
+      "hash_sha256": "901f11bfafeb4a3082ef9e0551f2616ef7838057d154a4d3a4d1886e4ee01948",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_sync.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2990,
-      "hash_sha256": "2aef6a2f4ebbb2caf4010fcd7cbc755e0033842e7ef276252c88a09bd7970d76",
+      "byte_size": 2986,
+      "hash_sha256": "73804836f2e0be8943076283ee54e7fe49114d623b29495c464dc9f395d04fab",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_sync_state.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2911,
-      "hash_sha256": "eeb765124dbd46bf554d0f1598fee1496d4cd8e424c73e558f578a1e4e3dda96",
+      "byte_size": 2907,
+      "hash_sha256": "6959c70eda9fa7b5dbce5d43d3d9698c8405d65750aeee390d3bf716be5a73c5",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_pipeline_report.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4460,
-      "hash_sha256": "bf878b59f9851b65cc518517582fa0e05c36958ffe03f07dce258c19bcc172ea",
+      "byte_size": 4456,
+      "hash_sha256": "6ce432837193d9cabdb653a8ce4b18d4cf8c0dbe6ec09400a9a394b69393ccb4",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_replay_report.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5558,
-      "hash_sha256": "d87d3509c597c76a779595991f5dee54c1c55fc9e899c53f6a84b02c5584f7f5",
+      "byte_size": 5554,
+      "hash_sha256": "5321344254aafd6de1fb75353eb812aee51ae47586d029776386bdc6d6fffea0",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_replay_verify.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1995,
-      "hash_sha256": "4f64bb34e4e8dd54572550692756cbb633fe608e9566db5c518c0b875a266ce9",
+      "byte_size": 1991,
+      "hash_sha256": "3c1a12118f8b17105fb715ae5643fee2b82086b39114bc2d3deff7d999ac93e5",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_utils.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4254,
-      "hash_sha256": "e052ebd1773c1c2891e2a0c9cde1bd06502235e73cafa4b7e10977c88de0ca88",
+      "byte_size": 4250,
+      "hash_sha256": "2abd96e9573b1675f0a9e73bfa3625c2867285258f7934b32ebf8a94b9d022a7",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4582,
-      "hash_sha256": "99d18bd3af213f8fbfcbb6d0da82b7e119079f51233eb860d105c2a05a26c042",
+      "byte_size": 4578,
+      "hash_sha256": "f9afb84a41506126c90ed895998f36c445d18e1ba0c58ab95e46491a25cd99bb",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_bundle.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1608,
-      "hash_sha256": "026016e443470e426a2d13e395f2db645b72df313d097d3082aade18c440578e",
+      "byte_size": 1604,
+      "hash_sha256": "8842b490eaebb941a2a25e59438cbb065cb14963ec4df027d0473064800515dc",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_bundle_report.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4027,
-      "hash_sha256": "9d042a27a29401f49240ff82fa545e112815f3173a2dc7b8f672985e0d6be91c",
+      "byte_size": 4023,
+      "hash_sha256": "85eada3098f88830760b7611a6e2cd67053014a19cadc98e84eca7d995eb70c3",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_bundle_sign.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7834,
-      "hash_sha256": "4b5fa69b4f302660ad9d315bfce8936e31c1d9c3cfb6fe201d8d414a2884cbeb",
+      "byte_size": 7830,
+      "hash_sha256": "81476fd48d2393f207e40de7bba8a67221423219149b46245f39db490fd3d8be",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_bundle_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3235,
-      "hash_sha256": "1fb88934697d6b56698b2211be8829230671bec18363072bd58bde6797204466",
+      "byte_size": 3231,
+      "hash_sha256": "474f7ed953c72fa89170ebf0f94031ecae14eed4c729da974ebf56f25b9c22cf",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_bundle_verify_sig.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4994,
-      "hash_sha256": "c1b9f27a8f65dae85108b2f0f388fe564ddfc7beb51aaf3f2ba570f6393220e3",
+      "byte_size": 4990,
+      "hash_sha256": "4238f280d5e056e2c8172bab97a78fc04e49e73c9cac69892aad296aa17882ef",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_format.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5432,
-      "hash_sha256": "684d241c0ebe1b465cbc053218f596b3e4cdc9c00c02897b62f9cb67a0f1265f",
+      "byte_size": 5428,
+      "hash_sha256": "d388ac30097b5d96b22547090d74b950de11ccc65a329869e5e3908c5f9e253a",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_export_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9957,
-      "hash_sha256": "4f20e69651d8702622bf3d001fcf38f83a0990575861511cc85a929c3b46ace2",
+      "byte_size": 9953,
+      "hash_sha256": "de29991148d6b0fccb01fae82fc69b349a481b9f77bca5531708f6accdbe35a1",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_loader.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13823,
-      "hash_sha256": "9cec85e73de409dac9dae42a4765395d6e112f55129dac625cf67fc280fa6735",
+      "byte_size": 13819,
+      "hash_sha256": "a762cf51f0be13ba9397663b903dba9c1d5408138be19d8e67e9e51257397e6d",
       "marker_status": "absent",
       "path": "ilc_core/ledger/ecu_active_layer_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7925,
-      "hash_sha256": "9c8e344f0e005129234ef8334bb8d860fadb1d625648a0cb5c9ea4f6bffc44be",
+      "byte_size": 7921,
+      "hash_sha256": "a19c7163b06e47946b694acb0864114f6173f3d17899844d24a4b5affb0129fc",
       "marker_status": "absent",
       "path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2767,
-      "hash_sha256": "7f9f56dd4b727a8f51d66cd43552c8036ea0dc464395cf431f25a43c42d063cd",
+      "byte_size": 2763,
+      "hash_sha256": "29f1ccf20e1516889d27777d14185616551029d36484c9e1a4ad36824d36b99f",
       "marker_status": "absent",
       "path": "ilc_core/ledger/exact_numeric.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7859,
-      "hash_sha256": "d87dd2663eb6bf875e46fab97d0975419d84c87f6b21ec23e207bc368bae1f67",
+      "byte_size": 7855,
+      "hash_sha256": "6723081b60923a41ad849f6f213658521b0bec6e74a29de052988714cd9caaf3",
       "marker_status": "absent",
       "path": "ilc_core/ledger/ledger_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6934,
-      "hash_sha256": "b4015d975138956fb3e67c0a47de5386f481d9b9d1f7bcca2a6ad7f7ce865ec3",
+      "byte_size": 6930,
+      "hash_sha256": "315fbce0f1844a3b7c401a00663d13b437730f55fe1699061e1d3adc6f8350f7",
       "marker_status": "absent",
       "path": "ilc_core/ledger/lmdb_backend.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6903,
-      "hash_sha256": "ea91e0af351d29fe2a0ab450f771865d47c57b02e31c65cd4fd15ef0e1bcf68f",
+      "byte_size": 6899,
+      "hash_sha256": "d1f6217f422b1a2e883f1f82a7810f8a32650af8d3f485c1b4daf07efa827e2f",
       "marker_status": "absent",
       "path": "ilc_core/ledger/persistent_backend.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9548,
-      "hash_sha256": "fd28f78441db0f64e994950077d9b9ff68e95951408eeba6fe0f8f395d1e10f3",
+      "byte_size": 9544,
+      "hash_sha256": "be9ddf5d15f94ab6d4ccc95bff280a4aff04da76c2516e3b646b91aa6f78d83d",
       "marker_status": "absent",
       "path": "ilc_core/ledger/public_economics_admission_firewall.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3126,
-      "hash_sha256": "4d45abda37faa71291c021b359475c8015f486549cb814987e7e30b3171c897e",
+      "byte_size": 3122,
+      "hash_sha256": "8dc2fa5299fb53d00597551cef5e98615b6a50552107d4b041c05ddd557dbd5e",
       "marker_status": "absent",
       "path": "ilc_core/ledger/settlement_metrics.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6428,
-      "hash_sha256": "3977b75839915b96c813f62bf4ce7092e5e9c4d16691b59aec5f0aac15cd7dcb",
+      "byte_size": 6424,
+      "hash_sha256": "007bf60768b6443c871cff9b006145928d4ff30516e007f5b6e568f0fa60f4c9",
       "marker_status": "absent",
       "path": "ilc_core/ledger/settlement_verification.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1776,
-      "hash_sha256": "46d4ff4bfbdc30bad9614883d116ff93fedd2cfaea67224d8cb0be075f411c34",
+      "byte_size": 1772,
+      "hash_sha256": "dcbd63d398ed1304bd1a0c5393589fe9823b4d44a03f97c439952211838545e9",
       "marker_status": "absent",
       "path": "ilc_core/ledger/stake_snapshot.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 570,
-      "hash_sha256": "5312901ef397649628bfc3f0a7552eef5851e0f7f9e0400e9d21ce43a24b843e",
+      "byte_size": 566,
+      "hash_sha256": "791979ad1cd95608c4b6490ca3395685a85217f43262e7f5dc3bbf0ef2fca674",
       "marker_status": "absent",
       "path": "ilc_core/links.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1218,
-      "hash_sha256": "6b1fe11d043d282f5a76f86a870c9a021a8cc715f39939b4c0dd052f6bbdd813",
+      "byte_size": 1214,
+      "hash_sha256": "c0d63f4bea49bed075cc6e15ff379ce9b13066918cac7367f6fbfbbcd14d18c2",
       "marker_status": "absent",
       "path": "ilc_core/logging_config.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11506,32 +11645,32 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 83,
-      "hash_sha256": "3e0ee59d823df82e0f26d6889df957648d76af11fa69fe03d8e384923a117e81",
+      "byte_size": 79,
+      "hash_sha256": "1a1d82e9df523d50cd1cd768e350a7bb2e02099213110472ec007cd647d850c8",
       "marker_status": "absent",
       "path": "ilc_core/mcp/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1228,
-      "hash_sha256": "b490e7480c5e61c8b46e71d69fade67b958a0b911b26a75ad3e6ba7f2dbce19c",
+      "byte_size": 1224,
+      "hash_sha256": "d7704a5cd1f997520e97763a06c1412a1487361fc9c03149f028be8e91267ab9",
       "marker_status": "absent",
       "path": "ilc_core/mcp/node_service.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3317,
-      "hash_sha256": "9393ef56d2b61c2b93051b3b3bc7805b17e81e83de1371d2890d26a0653b453d",
+      "byte_size": 3313,
+      "hash_sha256": "76f3f91396b8c7dc0ce73db2777f1e2325381ca5766e6390cbfefa30fb56eb98",
       "marker_status": "absent",
       "path": "ilc_core/mcp/schema.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 105,
-      "hash_sha256": "06538a9856676f22260c3bc09060554617cb7ff65c16c0015787ce8e036632d7",
+      "byte_size": 101,
+      "hash_sha256": "ed93c331786e17700c23f93b60fc02a7460a9c0cfde2639759f54cc8cf8be177",
       "marker_status": "absent",
       "path": "ilc_core/mcp/schemas/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11554,8 +11693,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13826,
-      "hash_sha256": "f0e5d4a55c920df3524513eb5d70e8e8a9e9d48bb9fd01c1d8491d90eaa2afcc",
+      "byte_size": 13822,
+      "hash_sha256": "9c9972a0be9c729d85dfa833a48a26b97a265d7cbdb47af327d18d3075eff64d",
       "marker_status": "absent",
       "path": "ilc_core/mcp/service.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11570,8 +11709,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10220,
-      "hash_sha256": "2c025f18ca00f5869b4f8296792b6de0a535323f277e6084671b2331fcb48113",
+      "byte_size": 10216,
+      "hash_sha256": "2d707e08a2c4ffd9adba8b9fec380444bb7b2d4b04bb731a43bcc6e89c736eab",
       "marker_status": "absent",
       "path": "ilc_core/mining/benchmark.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11586,352 +11725,352 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 701,
-      "hash_sha256": "2423a883a6734d574d83485e3a267856f24806bad43ad79deecfeb5ae7797e27",
+      "byte_size": 697,
+      "hash_sha256": "7e858dbe50416f5e0230da02c68acf6b4db3de4bbd561bda243ff1d875cd247b",
       "marker_status": "absent",
       "path": "ilc_core/network/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 798,
-      "hash_sha256": "f0fd786be6a781b4e37ded82144bfa1722e3ef9168064141ffe7ccb54ca3deea",
+      "byte_size": 794,
+      "hash_sha256": "80432c2656c5df2f673df8000771f1793122ea92265d7d63bd7b46ccc1ca783e",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8789,
-      "hash_sha256": "696c36ed9e40d030101bfa64b4d000512cd17604d7c2a4790c73fcf8899657bd",
+      "byte_size": 8785,
+      "hash_sha256": "c798e650e285d6ef4ec31af3c0f518b8bec76a55abb7c3e08fb0b9f7709c8512",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/bootstrap_fetch_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8242,
-      "hash_sha256": "4d92b84d0689ab5e829e3773fca38d1b8cf37fc5f702ec3904ae0a1ba9acbf81",
+      "byte_size": 8238,
+      "hash_sha256": "07b71083858ce8e33b99d770f223dcfaa763f5538605896a42a63fb2f21e12c1",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/cdl087_observability.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13659,
-      "hash_sha256": "04d5b55f4a1511a87c12e99458d24d015a7ffd9782e2c7dab50572903ce818a7",
+      "byte_size": 13655,
+      "hash_sha256": "eb1095c5e84f680717a9ad15c55daa9f6543779b23a5c1e391d9a45296d19eb2",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/cdl087_serving_peer_evidence.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8851,
-      "hash_sha256": "8628b8e0ba71e5478443db8f6a6d9c4b0bbed5506bf1d557d8f5260d4553e6a4",
+      "byte_size": 8847,
+      "hash_sha256": "8393f088a3ff70fd7837a0caa15982a5d2cb2980d7cadd8758f019d34378942d",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/centrality_delta_gossip_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8108,
-      "hash_sha256": "da0efb34d8bfea6692b59f25aa5d7d708677c39e2578bd26bf597765b3cf18b5",
+      "byte_size": 8104,
+      "hash_sha256": "8ebc1fdad467b7dffeb7e9cedf6d76ef6a9eab4939fe3e7b62f42f2df1c87577",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/gossip.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5875,
-      "hash_sha256": "6253d440641170faf5661fbcb44bca5ff6a68b0841c9ee01704addf5b030b183",
+      "byte_size": 5871,
+      "hash_sha256": "b9358efcf5569fd52ca86b5a67fa8eb0e3597ef942e2208e63d1302af3c2c7e8",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/gossip_peer_registry.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6317,
-      "hash_sha256": "8e2c3af9f347b3011614dcf9a964fb34e6b4f17ee1b86b8f9505ed194a839c5c",
+      "byte_size": 6313,
+      "hash_sha256": "f6ba38041ce6cf3b99b1d0dd67e1d98a466d96924dfa3f4b49ab6d56060f0443",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/gossip_transport.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14868,
-      "hash_sha256": "9936b781b8018b0bb7eaf6171eba03a6d51edb1d65a6aee4ef0f67004e66abde",
+      "byte_size": 14864,
+      "hash_sha256": "514c63ed8f814c07927408806c1edf410221f597d8b805123103ac3d3c9263ba",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/http_fetch_transport_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17497,
-      "hash_sha256": "3acb423f99f67d715cb370314e315276cb80a568e85ed2300c6fe0606485ac89",
+      "byte_size": 17493,
+      "hash_sha256": "7cbf97be6925fd67248a182eef37997f4318d1144c2bddc5eb8168b163e8b3e4",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7429,
-      "hash_sha256": "a61fd647a3ddd6dca156d6764a418140145be4e786c308aa66da07b512593eeb",
+      "byte_size": 7425,
+      "hash_sha256": "f135007a481f0ec45fe164b2e4d4f050db23914edd44176592226c1cc26ffc52",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/interface.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9077,
-      "hash_sha256": "0d2a31cf63038ab28eb813d9a1ec1cc4ef0ab0a1ee1896a0858c1cc880b651d1",
+      "byte_size": 9073,
+      "hash_sha256": "e8a216ea075c14267e0f65d94dda0c035b3bc097d32718bb19c0ff6b2fd4bea4",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/openclaw_p2p_relay.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4657,
-      "hash_sha256": "7c302c136e7ff46dfc85930f9573505c24c3ac4193f3c47332b21fb9a1af7663",
+      "byte_size": 4653,
+      "hash_sha256": "f501f5dec02b43fd04ada0fb249f8ba83c9e46769e8a7e333e346f14170c3fae",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/peer.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10634,
-      "hash_sha256": "0acff5518543413c81df3fb6837b158c3131e734b2e00ec76772074c4dd717d2",
+      "byte_size": 10630,
+      "hash_sha256": "14adc0832ab6ac350b2d0e47d48c7cf91eeb34bc088f505e2b6aa48bab09e421",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/peer_fingerprint_cache.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8209,
-      "hash_sha256": "e4524d9311a083a9ca11d2e5a620bb64dd487567a1c5ee669f4dc9d1d28f7a61",
+      "byte_size": 8205,
+      "hash_sha256": "d5debcc446c0edd8d855bb32f61023946fc78edfbb69b1e741df4d307c6d0493",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/persistent_fetch_rate_limiter_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6048,
-      "hash_sha256": "515105476f6cf85eee2e2f0a7fc4cf40aff6ac25d8de6b185ebdd4c88a364872",
+      "byte_size": 6044,
+      "hash_sha256": "e633fb52310b57e531294db44a0cdf2aa891b60aab2abea83487ace53176e744",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/routing_reputation_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 28334,
-      "hash_sha256": "2a18f79c38bd3f25202148bda811ccc0b4de7bea0a6c98c8b00929f28bd0f03e",
+      "byte_size": 28330,
+      "hash_sha256": "9e9ce2a0a850a96faa76d54646a9010041f3e85590fe03cbc39d977a7ffd2e78",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/spectral_beacon.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12313,
-      "hash_sha256": "1ebf5af9e0e1848dc1687a85c4a6059562099fe7f80de052650cf2b72874443c",
+      "byte_size": 12309,
+      "hash_sha256": "b2e1b23e27227d3c7f3175aa049ea9d645421622207c64cac27cdfdefad9f7c6",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/spectral_routing_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15388,
-      "hash_sha256": "11677ec86fdca3e9f512fa6f9b54202f8e23ae7d46dfd3e03c1f700471cb4f51",
+      "byte_size": 15384,
+      "hash_sha256": "52a4b6bcf8c73a385219769584a6f75a374353f9670e7a60a18a312075971b5f",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/transport_principal_pre_public_path.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17435,
-      "hash_sha256": "6ca8850f1f6d8227300d17ec75856de9799ea30c9e4cf5ea08d91b94eaaabaa8",
+      "byte_size": 17431,
+      "hash_sha256": "4ce8b0977b0d470120d5eb2908f8bdf1c7fc1c47c70fb3af131b60bbdebfb1d5",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7261,
-      "hash_sha256": "1d6cdea3cb63bd221cd9122dc2caccf3fa13b317b314f5892b6638dc040d2187",
+      "byte_size": 7257,
+      "hash_sha256": "402c39717341cd7d3751c336586e031bdb4169100a4fe9bbf1204cf0e70a8a01",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2662,
-      "hash_sha256": "c47b728fadd59bb48cea72e498a1e2a8f9ac2459602b6dc86100202a2a222ac6",
+      "byte_size": 2658,
+      "hash_sha256": "9a435184977ce6824508f4c15e74460175c0b200e337d785fe701a3ae6350775",
       "marker_status": "absent",
       "path": "ilc_core/network/gossip.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2176,
-      "hash_sha256": "2a203688ae3112b1d14d5a176aefe3926532cc54e4bc943c63f87b80971c035e",
+      "byte_size": 2172,
+      "hash_sha256": "3be5ea9aaf2f5f88849c0ef29c6fa04b9382f14ea2703c1c81f58e26809d7197",
       "marker_status": "absent",
       "path": "ilc_core/network/node_load_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5827,
-      "hash_sha256": "0806bbea6a38377ee7cbbc9942f9efae61249f98e16662d055fca59d4eed8f8c",
+      "byte_size": 5823,
+      "hash_sha256": "c2d36604fedb3618a1d6ede13e130aaf298c57ebdc96d298cf4ebce8e746ff8f",
       "marker_status": "absent",
       "path": "ilc_core/network/peer.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 45,
-      "hash_sha256": "0ed7447a2ff3267526a60f3f472d3e63f896b2f17d689f067b0fd197310ff5c0",
+      "byte_size": 41,
+      "hash_sha256": "fe9dbbb6011b2e725132a30c561aaee713ba155352b16391fe6e5d255117eed0",
       "marker_status": "absent",
       "path": "ilc_core/network/star_map/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14503,
-      "hash_sha256": "bb1cc095dce5d5cf77b1f64524ea39d20c65da70e037bd0559a4e688ab44815e",
+      "byte_size": 14499,
+      "hash_sha256": "c5727362da75996a35914106a8e10935a77c480af93b0e53bf8b94007e606b3c",
       "marker_status": "absent",
       "path": "ilc_core/network/star_map/star_map_route_index_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4536,
-      "hash_sha256": "d856d08bf34e0dadc4acd9896478848695d51273148072becd2e2dd73078dab3",
+      "byte_size": 4532,
+      "hash_sha256": "be920b995aaa2f226749c4cfbb61f37a5cb3dde02a78673335dfe3b3ece6a9d6",
       "marker_status": "absent",
       "path": "ilc_core/network/topology.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12397,
-      "hash_sha256": "3244a74e3ad2b07e8ee6fc10c032c58f82198f1c1c4478f89e086801377aa8b9",
+      "byte_size": 12393,
+      "hash_sha256": "34eabbdfef8de751b975ea02fe5eeab110cf1175ba83a6d45510fdf29b4454f5",
       "marker_status": "absent",
       "path": "ilc_core/network/wire_transport_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3505,
-      "hash_sha256": "1e322228fcae8ef26db542dd16d0ea6b5d5bf5524e227d12be4afb2fa90dca80",
+      "byte_size": 3501,
+      "hash_sha256": "0cb8bb33355c1f52dcd63f3e4771ac99c3cac6aa85b7e64fb05f19da32a1e762",
       "marker_status": "absent",
       "path": "ilc_core/node/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5897,
-      "hash_sha256": "40cf7e692d2611246ec788cd1aa49742a8ee99fc5e42ac8c9d0c39e6d7d0d9d5",
+      "byte_size": 5893,
+      "hash_sha256": "ae7fe2a314264c11573fc2342153f19071cf4b1ed5eae4f2c926177f47cf105f",
       "marker_status": "absent",
       "path": "ilc_core/node/devnet.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15859,
-      "hash_sha256": "e4ccb17ef5943344aa3cf81da877835cd11687a62c2651ad03824abe304d102a",
+      "byte_size": 15855,
+      "hash_sha256": "5772e529e62fb467fcfe5b33306586cbae34e7af21f83abb8c7168a9933affc7",
       "marker_status": "absent",
       "path": "ilc_core/node/executable_descriptor_runtime_363.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 18984,
-      "hash_sha256": "1d47d156c0de731822847ef09587b795efb90e405c66ae236fc52d716d836fb1",
+      "byte_size": 18980,
+      "hash_sha256": "b82c0d27eda2bd620cc7e437215d053154ab17c9dc68f91c27878cbb1262cc13",
       "marker_status": "absent",
       "path": "ilc_core/node/node_dissemination_runtime_362.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15593,
-      "hash_sha256": "cb1f3844e134ee19902ff180086c68c855351d1bd99c56d3121c0b4fe2a9cfdc",
+      "byte_size": 15589,
+      "hash_sha256": "b44a561e82feb8f85f8c0a02a4ba2999089659b89062c23af49151c7862869d2",
       "marker_status": "absent",
       "path": "ilc_core/node/node_schema_core_runtime_360.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 21606,
-      "hash_sha256": "492874c79f1489bfc87b3440d7e1bbc7cafe91bbb76faf48cef09c14737f5a7e",
+      "byte_size": 21602,
+      "hash_sha256": "581241d2e82c610c30eeecaafe1f42117ca60d998b0d7e61006567f92b98be69",
       "marker_status": "absent",
       "path": "ilc_core/node/node_startup_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3745,
-      "hash_sha256": "d36c914ae03f0fd6c4ca54ae47e1a501d4edd479d209c7701008ee87851d94c7",
+      "byte_size": 3741,
+      "hash_sha256": "9418844fe29be73cdf859b41129ad878a4b4d74561531ca4df8647cb4e3e296e",
       "marker_status": "absent",
       "path": "ilc_core/node/node_v0.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17205,
-      "hash_sha256": "00f8955cc2cffb21396c946d030e38fe32a8f8482de087bb58181fb63d4bff4b",
+      "byte_size": 17201,
+      "hash_sha256": "652e7835fc927567eaec58c6d902427de542426d301f0ae0ca9e30a148ccf281",
       "marker_status": "absent",
       "path": "ilc_core/node/promotion_continuity_runtime_364.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4959,
-      "hash_sha256": "a687e6604ef8c61fbd7b9cefdd80ddf7d96b7f86544ac014e100a8882c5534dd",
+      "byte_size": 4955,
+      "hash_sha256": "7cb972353ae768da741d1b72639e6c6af8604d629551e315803be19648a9a47b",
       "marker_status": "absent",
       "path": "ilc_core/node/tier3_runtime_linkage_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2099,
-      "hash_sha256": "361f4246c6bd134f57ef9cdef214630e136c186dcd8ea6dd2b241dd32e5e6eb2",
+      "byte_size": 2095,
+      "hash_sha256": "e3ca9be03f1e35c496228a9897b308bb805941aebffad0853bb529dcf691117d",
       "marker_status": "absent",
       "path": "ilc_core/node/timed_out_lifecycle_runtime_411.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12683,
-      "hash_sha256": "d9fcba3866130469bc2124bc7153d19f2f4144f8d5853ced7128560c1b584030",
+      "byte_size": 12679,
+      "hash_sha256": "7c922355999b865943422f88a7321b8f9c797a4e37202b211ab7a8a91d8a3eae",
       "marker_status": "absent",
       "path": "ilc_core/node/validation_lifecycle_runtime_361.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2167,
-      "hash_sha256": "57dc044d7ff149a60cbde52ed714c377580ab0ef0c2688679ba0654a532d4dcf",
+      "byte_size": 2163,
+      "hash_sha256": "29c409c193721a73ce5d1d7ecddf66d4f610859659837626c8438fc088588c09",
       "marker_status": "absent",
       "path": "ilc_core/privacy/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14418,
-      "hash_sha256": "775ae20a4c8a66549360804f4ccf2a0e7103cf0c15f5da51d7e96e90d331aa51",
+      "byte_size": 14414,
+      "hash_sha256": "d0024aab90a7f311009ddd640e9b4c16585006697ce13ec533d404299d523936",
       "marker_status": "absent",
       "path": "ilc_core/privacy/lane.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 11807,
-      "hash_sha256": "dce86abdfc4c24b8c922a1d9e6b4fd5f5965d424451d86ea4083fa999972d07e",
+      "byte_size": 11803,
+      "hash_sha256": "e7bfbf469d7bf001f10761484a93a554cc199657d2b16bd016b8c7f2ca4e19e1",
       "marker_status": "absent",
       "path": "ilc_core/privacy/metrics.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7220,
-      "hash_sha256": "872d3e21f25a92acb2f6b11576a301ccae89880c5167b7a3d22338788d4b3512",
+      "byte_size": 7216,
+      "hash_sha256": "47dbc07c421c036b7e1423bf63f4db23c55d48faa53d772506d1796a130343cd",
       "marker_status": "absent",
       "path": "ilc_core/privacy/monitor.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11946,256 +12085,256 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3808,
-      "hash_sha256": "138e33b73c0bb76dcc8b79383fd32bd801407735b71a3c8e319c39429d70b100",
+      "byte_size": 3804,
+      "hash_sha256": "a49bd6a6c7d945daf33aa0cfe4e7c8f265e64c324b34a60749518a5a92e71987",
       "marker_status": "absent",
       "path": "ilc_core/protocol/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3679,
-      "hash_sha256": "80617fe71e7f57acb28f00db1a1f16be74d3ac40e1dbc0b1af5c0ea23f19586e",
+      "byte_size": 3675,
+      "hash_sha256": "219bcac8187e28ebb1fcee821f95ea504462017df3964ef3387273e6cdf4bf92",
       "marker_status": "absent",
       "path": "ilc_core/protocol/bundle_verify.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 18447,
-      "hash_sha256": "3e4128393419c226bfca634a53ce52393b5af1a759daa9dff6a48d0c72b3c480",
+      "byte_size": 18443,
+      "hash_sha256": "6d5f05debad7e44c496a3ae2f9a567181523f34bb22d80a2bcc6f77bf3210747",
       "marker_status": "absent",
       "path": "ilc_core/protocol/commit_epoch_emission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6260,
-      "hash_sha256": "f3b35485f03dcb2587807b521d3e434be041a595f70c636899bae6e420bb464b",
+      "byte_size": 6256,
+      "hash_sha256": "9310e2ab13814d63552d18eee4642fe2217b0e8155b451df5c32c89081a74870",
       "marker_status": "absent",
       "path": "ilc_core/protocol/event_export.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 26412,
-      "hash_sha256": "0fba2ce7cdd455e8a67647b39f516065c5c2974041116efc6317375551e1a859",
+      "byte_size": 26408,
+      "hash_sha256": "8a8f7597328a83e8fa794c748019700c9612aa6503c1495f98aafa6e512b6f1b",
       "marker_status": "absent",
       "path": "ilc_core/protocol/event_log.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8788,
-      "hash_sha256": "1fc67b2ffd3361ac8ab13e7234f504a00a5ed75cd56eca5bfb17d2ef8fe0cdfa",
+      "byte_size": 8784,
+      "hash_sha256": "9fb9aa38bafd9d4eddd94fd69a30ee5d638dd5671c5149492cc690fa0f2b86dc",
       "marker_status": "absent",
       "path": "ilc_core/protocol/event_log_retention.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12387,
-      "hash_sha256": "a5951f9a1249378d1aff99b1cc32a428de4ba1b848c35e2482d2c2e00af899a1",
+      "byte_size": 12383,
+      "hash_sha256": "be7a54e22faa3ca9f1188fe149326a16ab880f4fd835cc2e9acdd8c1c351c7fa",
       "marker_status": "absent",
       "path": "ilc_core/protocol/governance_weighted_decision.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4568,
-      "hash_sha256": "add273cfcb796ca233d1c24e01ad3a795961b8f3502969dfe3c7811490a427bf",
+      "byte_size": 4564,
+      "hash_sha256": "92fc53a47a8f2b549e65d5e7b2ce16f4df99b7c57d562b18f851a9428d7713e1",
       "marker_status": "absent",
       "path": "ilc_core/protocol/harness_interfaces.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14906,
-      "hash_sha256": "ec453c60ab46b2628614a7b627a756f00fbcb9ab92fcaf332fb969e6047bbe1d",
+      "byte_size": 14902,
+      "hash_sha256": "016e836288ba742f4b323cde36802de947975d92fd1c160aa3a77a173f7255e3",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_acceptance_evidence.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6140,
-      "hash_sha256": "6549873bef746816802c944b6eba1653681a43df6e2db61bee73be40030b45f9",
+      "byte_size": 6136,
+      "hash_sha256": "754491afa6982cc6cc04d176d82b99ab08866de37c15e9855d82f1c158c1d37a",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_clause_binding.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12243,
-      "hash_sha256": "5a81dbcb621c1b78e1b817aa18437157f08e73231c57414fab0c8ba659b09ae0",
+      "byte_size": 12239,
+      "hash_sha256": "ff7b6cffb85520477c4768ae7d70729305bd075f3414e6c05b2e2805458592fd",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_conformance.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 21500,
-      "hash_sha256": "b367e55854f2395c19862c705bc989928a327848a4582b229f6bdddd8cd75d5b",
+      "byte_size": 21496,
+      "hash_sha256": "1002e8ff25012a59ccf4af2e274afe89f714116de99f31f88177aa8fa3a8ed3f",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_ingest.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6332,
-      "hash_sha256": "b3bd917415c517415f831f7fa89724ae4f70f3677af886e7e142e7f4e02cfb41",
+      "byte_size": 6328,
+      "hash_sha256": "209e03c26523f7686bdb44955bb5955bfbf0fbd59fe5a3ab96350f8388ebc117",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_attestation.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6115,
-      "hash_sha256": "2bd84e6e0cfc71ac1a246c435f9343b1717ab5821c1460c032b6f159c76b974f",
+      "byte_size": 6111,
+      "hash_sha256": "dfa64ab5db70048f13582f1f8583ef1bc4f6d65817b743292cb69009231e44b5",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6473,
-      "hash_sha256": "cf9467ef00eb31fd72fe069adb6154eae3c1073d37a4d627ed16aa61ceae98c0",
+      "byte_size": 6469,
+      "hash_sha256": "d2eb9d7cfde03d9eff8c3b9d6bcc587bc8e95109b27f0dbe3e78f5a70ade6bb6",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3619,
-      "hash_sha256": "f2fe954b30ad0dcbc744df35d33ea3a673771fbbea707ba9a24181d0f8dbb75f",
+      "byte_size": 3615,
+      "hash_sha256": "b76ec0ed4d5f478109636671c2db59522c09f0a46690bd7c13a0c43f6b134d84",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_ops.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 16727,
-      "hash_sha256": "a0c9929296dec301c8e9b8dbbc5fca54e076320ae26fc5f3e9f3dff9ffeedefc",
+      "byte_size": 16723,
+      "hash_sha256": "df2b4c18d292d4b975639556275c14d3f12cf53640f4fcdccb9e8303b0ed6f20",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_proof_ci_gate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10455,
-      "hash_sha256": "ae7212caa10eef281dc3c31733924593ee0dd8f9270047594b11dbb00636c5dc",
+      "byte_size": 10451,
+      "hash_sha256": "c74bb1f5f518d40b32c56fcc7169585df0ccb7c57f92a2f4f2ff885b8ae6e830",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1348,
-      "hash_sha256": "a741f742024ee96ecda4d428048eecdf93b1ec9f8db386d6930f334ca01f099e",
+      "byte_size": 1344,
+      "hash_sha256": "0c6cfbc6e3cf695a1c446b852ebe115d17227c59e3fb5a30be6baffccdb24f56",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_replay_proof_schemas.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3074,
-      "hash_sha256": "ff6fdaa3c9474a361ae645f35ab43cfecdea51ad4a48b1937f8c6cb6c309ac19",
+      "byte_size": 3070,
+      "hash_sha256": "255661c33f14a438296f7aa83f204bfe92a0a621ceb8b7459bbb96ee98e99035",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_governance_record_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2982,
-      "hash_sha256": "d740d6c23f71f08566718eca49c00ef3f3f553a6dfbf6d779a4592d3675f42ef",
+      "byte_size": 2978,
+      "hash_sha256": "9a2b0d423acdf924dfbbc3bfe45c215b727333d9b9d9e45417610f0d7ec59837",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_receipt_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4594,
-      "hash_sha256": "b5e2663ed1ada3062e54f3cb845a87ee86c994c19f6933c67c7043e5048cd5f9",
+      "byte_size": 4590,
+      "hash_sha256": "7f9aaf8fe9cd8be9fe1dca628c26ec493741a1fd0abdf1cd8c769ea36e43cb2d",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_transcript_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3649,
-      "hash_sha256": "4647688cf1319d48c5ee55bac29cee7e165744c8fe9838d5d22cc10031fb418f",
+      "byte_size": 3645,
+      "hash_sha256": "83bfb135b3d559ee903a27a02ff70cd28deee9b4bcad24064bbdf39493112ad6",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_wire_validate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3806,
-      "hash_sha256": "4e980007c443c44b8fdb6a2d561615c61704aad1e12e704d273ff051ce90ab9d",
+      "byte_size": 3802,
+      "hash_sha256": "9f54706d518f7cff5290b2f17d372b20cac5ee7cc43da787cf81167aad666c71",
       "marker_status": "absent",
       "path": "ilc_core/protocol/known_records_migration.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3751,
-      "hash_sha256": "f104bb7d5271cb5404f20e27d763af0f9433b95763f00a119ea7c89027d75c76",
+      "byte_size": 3747,
+      "hash_sha256": "7292d5779648394d52049e64891a9d95d523bbebd1e18401c7c8b4cd429f62d5",
       "marker_status": "absent",
       "path": "ilc_core/protocol/mapper.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 19374,
-      "hash_sha256": "f3231321f11d7c9369da133142effeec9a224606cc13199a82724a7f6bc6e847",
+      "byte_size": 19370,
+      "hash_sha256": "705c433c73de8348e9932f96e2d13b350c4dc8fb7f26502027e46998c69b218c",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ndjson_bundle.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6131,
-      "hash_sha256": "a849fef9445a4ca7d8f25c1a440c1f95e43646ad7aae0243924e337841c98431",
+      "byte_size": 6127,
+      "hash_sha256": "ae7acea7214ca49b431f972054f7918cfdca0c1e4cf8d6bce09affe7ecd2e9e4",
       "marker_status": "absent",
       "path": "ilc_core/protocol/params.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 761,
-      "hash_sha256": "0f1633885f7b98a9fb1e943e7ea631ef0d31d84be52cfb578e34e67af080031d",
+      "byte_size": 757,
+      "hash_sha256": "9ce953447831924e5f071ffa6dbe30e4ac7d885f503d9aa07657fe565a97ad92",
       "marker_status": "absent",
       "path": "ilc_core/protocol/primitive_type_registry.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5133,
-      "hash_sha256": "a6c2bd0ad36e30eeee434c20256608a7a742200580a6dda34655f6ae26e5b4c6",
+      "byte_size": 5129,
+      "hash_sha256": "edd814bd3307097972a6d84b8ae0a43a54d99b83da4025d253733c62d2412fd6",
       "marker_status": "absent",
       "path": "ilc_core/protocol/public_init_admission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8025,
-      "hash_sha256": "d7a638d3e105c48cc90bddb4924fd52a9e333d08ffdf923c25ce9352f5f30287",
+      "byte_size": 8021,
+      "hash_sha256": "26b30b195fd96c543ba7da02d7ec476324c6ce7bbbb6eb2bd749cf99ae1d5234",
       "marker_status": "absent",
       "path": "ilc_core/protocol/public_receipt_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8920,
-      "hash_sha256": "9f8b053beaa833da30f527fdc5e2373c9f52fd1fa44cbee3383d264aace8ed44",
+      "byte_size": 8916,
+      "hash_sha256": "cf0b276fe813c358f76aea4f75191680505067a92e1d67c522f81016d49bae36",
       "marker_status": "absent",
       "path": "ilc_core/protocol/public_wallet_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1178,
-      "hash_sha256": "c978c5064d5bd66ab30a3c803ca40449f0c4201f63bd45a3bdc3b9478f0eff67",
+      "byte_size": 1174,
+      "hash_sha256": "ce382110cf18cf372a1ece36b7f958bd5e0f6d3a21e4de7075c6f0da4d565980",
       "marker_status": "absent",
       "path": "ilc_core/protocol/schema.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12338,280 +12477,280 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3132,
-      "hash_sha256": "00941370aedd0e7cb6597c03ba4e5b49e81431278641b0fd688024d68973f457",
+      "byte_size": 3128,
+      "hash_sha256": "8d90e78a09acbd6b30f7fb577da7bc4fa0dfb9e6ecf1e11ad0c07024f9bcfcca",
       "marker_status": "absent",
       "path": "ilc_core/rc/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 57321,
-      "hash_sha256": "caf62f0127c03dd80d02ce58343cbe5301501c913ff3ef2a564b1f0bef39f4fc",
+      "byte_size": 57317,
+      "hash_sha256": "ce0193c76b92816fc8e4f5343daf9c13d77b0914ed7135dd52e9f06d8751ad75",
       "marker_status": "absent",
       "path": "ilc_core/rc/atlas_graph_discipline.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1699,
-      "hash_sha256": "8997da659f1dab57557792b8363656c3070c72999e30770bb58a66daaf0251bb",
+      "byte_size": 1695,
+      "hash_sha256": "95b9a7d2ec1d927058e12946022472b4688b6870c22da6de0a541f75fbc33a1d",
       "marker_status": "absent",
       "path": "ilc_core/rc/cla_governance_status.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 31141,
-      "hash_sha256": "9352c62d73ca2d2da03fbeaae0a1a61ccc2714d3ca908f41b2d307d6f024745f",
+      "byte_size": 31137,
+      "hash_sha256": "7c3c30d8b0fe010e5073ab4854b2d481c59287411c846ef7f61ecf91483c865b",
       "marker_status": "absent",
       "path": "ilc_core/rc/economic_cycle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2625,
-      "hash_sha256": "d429791628bf0066cf6b329a0372e7d04b7e211d441aa4a194575adc9ce3e233",
+      "byte_size": 2621,
+      "hash_sha256": "00ca85ecba0990a6441dd0146c1007402b41ac0b088ba970dd266421b6920861",
       "marker_status": "absent",
       "path": "ilc_core/rc/gap_7_closure_status.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 856,
-      "hash_sha256": "3366add59186be52c66e65a315d11c05d7380cbc3f30a0b494f94ed3497fccea",
+      "byte_size": 840,
+      "hash_sha256": "259e25e52a0f82867e9ff90501975fc482b5d36cc0d1ab65b6b51fa099cc67c2",
       "marker_status": "absent",
       "path": "ilc_core/rc/license_header_audit_phase_1443.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8113,
-      "hash_sha256": "c857b273a3374da0eea0fcfb98a130933e0b734b50cf015d0f4bf63c539878f7",
+      "byte_size": 8109,
+      "hash_sha256": "89ba5d036c5b500328e4c2d4f88621f76460bfc7c0602b14675ec2e1c8635354",
       "marker_status": "absent",
       "path": "ilc_core/rc/local_skill_preview.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12033,
-      "hash_sha256": "a993576d5fd3280063673e47b29108df236161fe7ac828951685ab9c4ba7ed50",
+      "byte_size": 12029,
+      "hash_sha256": "356c9a693f430d389a1fe87bbdc5ebcb605cfd58f2423bd4df35280128103af1",
       "marker_status": "absent",
       "path": "ilc_core/rc/package_boundary_inventory.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 16966,
-      "hash_sha256": "6ea44b121945f9316db9c775059d4900b81e76371d7fd5e627d1eb5bb387156a",
+      "byte_size": 16962,
+      "hash_sha256": "4343786ccdc43eb674c6d45bfc2324c578b81e90056fdda882dedc927a6683af",
       "marker_status": "absent",
       "path": "ilc_core/rc/package_profile_ci_gate.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17207,
-      "hash_sha256": "4ab88f5a27f44ec9090f474624d2f9a99f455bf2770d30f66ea13a407caaf37c",
+      "byte_size": 17203,
+      "hash_sha256": "acaafc7f201a75818126e1df20cc4ab753028b4921939f2098ce1625a3ee461a",
       "marker_status": "absent",
       "path": "ilc_core/rc/package_profiles.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 508,
-      "hash_sha256": "1ed9e3dcd40cb62c0e991afd38a23421bef8f5007673b5f4377913dedc78f48a",
+      "byte_size": 504,
+      "hash_sha256": "35a7c692cbb321456872339bc48c8b748897feec7c44731c55339271a076b094",
       "marker_status": "absent",
       "path": "ilc_core/reputation/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4411,
-      "hash_sha256": "473f1af02088660fb89405e0ca54bdb634e51f79772504aa6054761fff3afd18",
+      "byte_size": 4407,
+      "hash_sha256": "5d3e6efa7758a93b8f262ddbaef24defa6200d6e92f9a3b32740d8216903155b",
       "marker_status": "absent",
       "path": "ilc_core/reputation/temporal_decay_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 559,
-      "hash_sha256": "00c4321c5ea8dc188ea690e0babfa1d7fb6cd7ffce1139e6702bb76fb040a8fc",
+      "byte_size": 555,
+      "hash_sha256": "093014c040bde847fa81f3fe7484f69d1020bf563b4520cc37a45ef25ec4d84a",
       "marker_status": "absent",
       "path": "ilc_core/schema/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7834,
-      "hash_sha256": "38928fcd54ed3b06fc32e9ad90ca1e9e8cc121543edddde79c9c0a49e5b5a6d9",
+      "byte_size": 7830,
+      "hash_sha256": "58b7f086fb239b085f7b320f68a34535b20d01097836a0639a01d32424622b0b",
       "marker_status": "absent",
       "path": "ilc_core/schema/d2_schema_baseline_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1683,
-      "hash_sha256": "a59ae9642416de92cda056bb5f462c480899abe304fcf64582a5147853ba6d0c",
+      "byte_size": 1679,
+      "hash_sha256": "3641c35c29bb70bb2df8e9ea405566bec8d78afc64611f41392be1d084195045",
       "marker_status": "absent",
       "path": "ilc_core/security/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9165,
-      "hash_sha256": "218ea4a3c6cc6ffaf824e8e6aae189b758391adc0caf49ee9ed7ddac32565109",
+      "byte_size": 9161,
+      "hash_sha256": "7de2753dced59253f47793d21b4eefaa36af0aa0639586d689228875e844b2e8",
       "marker_status": "absent",
       "path": "ilc_core/security/key_compromise_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3864,
-      "hash_sha256": "102efe22e3e53416f610ee1497952fc98e6f823d9f71375411af9a82300de282",
+      "byte_size": 3860,
+      "hash_sha256": "864ec5f4de595c6d22340ee872c21658f8063206e713c321e40286dd571d10c4",
       "marker_status": "absent",
       "path": "ilc_core/security/rollback_resistance_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12089,
-      "hash_sha256": "d8168269cd69dbbb46f63d42a27296e083062368ab32daba2cd10baded474f7d",
+      "byte_size": 12085,
+      "hash_sha256": "da9be2755c01a9e0d53c46719efed7873f54b43f78327d96bce13ae29ef22ac1",
       "marker_status": "absent",
       "path": "ilc_core/security/signer_lineage_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17960,
-      "hash_sha256": "2ef0ad4edb025be2e475e98cf589462148cf3a2ecd50145ec8046695e48c4a11",
+      "byte_size": 17956,
+      "hash_sha256": "31e3d5988c063cd2fe019a93b31a45c5e4ad47d8fe85288ea230dd22d00bb02f",
       "marker_status": "absent",
       "path": "ilc_core/server.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 570,
-      "hash_sha256": "00a741d01d5eeae41f4c56acc67bd8942632380b5f615669b59fe7af0a002eef",
+      "byte_size": 566,
+      "hash_sha256": "3b7c6be873ba998956f012ca42587213673245dae8907be812ecfd662f10945a",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3172,
-      "hash_sha256": "bbbcd4ccbbb296399edbb1e3fed90933b4ef4c572667e8a85bb9286d82860dad",
+      "byte_size": 3168,
+      "hash_sha256": "dc533c3b0082ae245796e3f7b031ba43a2b7372f2136f961d3a8619ed595a023",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/cdl088_claimability_activation.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 21452,
-      "hash_sha256": "f5518b2d719e8bf7f1c353635dbc046e7b6e35cf4f4fc3a882a0ba85e60fac27",
+      "byte_size": 21448,
+      "hash_sha256": "f983cae4bccb4cbb1d595bd01e6946e5cb88dd3fbf75914c26d111b0e136f47b",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/claim_nullifier_registry_v1.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 61159,
-      "hash_sha256": "01d50174b757e0ff82b8a072afddae6497c0ddfe2699524b5c93c1ed1a48cdfb",
+      "byte_size": 61155,
+      "hash_sha256": "0b2ad4397ab32cc953ff577f9bc80b8abdfcd9fbe9268d283d5e17f8b1ca89c2",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/claimability_receipt_verifier.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 56029,
-      "hash_sha256": "e4c8e3e5a0a61dbded1beb494e804630dc7692fc352dcabb314e3e42223b19d0",
+      "byte_size": 56025,
+      "hash_sha256": "5093c8bbabb2e1bd3f403e5d06c5f057943128dc7a62073f879d992415028126",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/confidential_coordination_capability.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 46034,
-      "hash_sha256": "335ad4eda5968480273111792afcd944e80cd6f44e87d2ce270c60e85b3e0fbf",
+      "byte_size": 46030,
+      "hash_sha256": "b5895c3837b8585663e802611ffe119548e09cf4c9d0dbc4166480d121076cf4",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/confidential_coordination_gossip_policy.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 53510,
-      "hash_sha256": "11967fc221e490b297d360cb633ac38861531097950ed3229cf09217dbfddbe2",
+      "byte_size": 53506,
+      "hash_sha256": "1587a49262aad282df0259835129d08e0e7aaeb169b640f198c3136750e5fcd5",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/confidential_coordination_sealed_sender.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 49349,
-      "hash_sha256": "b137c8b6aff911d99581d823650980ada10d49cce74f2ddb99b05f135b0a7abe",
+      "byte_size": 49345,
+      "hash_sha256": "af60ecbcfe84f80aa0be2d911e4f84743402f2558cffab03725d277aa9ddbe85",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/confidential_coordination_shard.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 40922,
-      "hash_sha256": "a85e9a717eb48c1a40cfb48e2cd359cc98682cf1ce14c1c1e5923e56a22ef1fa",
+      "byte_size": 40918,
+      "hash_sha256": "7784a1f421c82c7b9d8df2fb734ee4c46940b0a756dbd5bb62126c93aa6a050f",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/local_graph_memory_projection.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 30168,
-      "hash_sha256": "28c912beb33ebc0d2e05fbc4cb42e3adbc639395ab4efb363c3ef46a490faceb",
+      "byte_size": 30164,
+      "hash_sha256": "34f7d01bd14963be8aa142d10c93199ed035e7dc0250603a233d1ff428f5407d",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/public_fetch_p2p_readiness.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 27288,
-      "hash_sha256": "4f9dbf8c7785946b6611a8d2e0164f97fdf3ee90806c8c75369a545d5644f70e",
+      "byte_size": 27284,
+      "hash_sha256": "a388cea591f55d65f1e58c1665c9c4abc3e4b65b3203572328fabcfac5ab0e39",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/public_path_activation.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3040,
-      "hash_sha256": "ff08fa4cb91dddd7ccc11555816397f20dc2a4fd3f48acf9823327441790eebb",
+      "byte_size": 3036,
+      "hash_sha256": "a4a83718272c57f3a860d14230c4e63accff06af3090469f2212f9dbdadb3d0d",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/public_verifier_api_activation.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 51442,
-      "hash_sha256": "59118891bbe6eb1e32314864f299a716cb1b2e1da2fbb4658ae80af1844156e9",
+      "byte_size": 51438,
+      "hash_sha256": "49b2b628b1505fa8d5012a639ac94ef110876c3c5ba8451cc33769af67f450ed",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/registry_manifest.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 46193,
-      "hash_sha256": "5ae6f3b7f58ea3ca37f754167d202e198fbe9ced0eed72d4fe0ab84888900fb1",
+      "byte_size": 46189,
+      "hash_sha256": "1984e6d1674cb85acc93acc2e0f86783297a19100bf5bd2deece7b4871f07286",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/transport_principal_admission.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 25195,
-      "hash_sha256": "bba8531e3eb1cae42b0a37a33b08cb903c5e9c438a08d4c4fb4d724887ab7b9e",
+      "byte_size": 25191,
+      "hash_sha256": "8e58384f0655e4ca6cce3e512618ae7f9aa10ab7f7fca93f599c6d086e9fb837",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/value_path_activation_boundary_preflight.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 23100,
-      "hash_sha256": "c172ca63b6ec88888d5b4501e2d87b672921fb692a2663003ada3e545a6a4c1e",
+      "byte_size": 23096,
+      "hash_sha256": "40b24f96ea3fbf93eb35ba9e5c39333517f984fbdf4f5fce070a6ef2f9858d99",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/wallet_action_semantics_preflight.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12698,168 +12837,168 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 107,
-      "hash_sha256": "54b7e5b57b738e74016753f3ae1571aa956a4a456da358dd77cb3fe3b7fcb58c",
+      "byte_size": 103,
+      "hash_sha256": "742b73e711df7fcf2396a87683c64b9725b945412daa6ace9930bdee549e82f0",
       "marker_status": "absent",
       "path": "ilc_core/star_map/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5925,
-      "hash_sha256": "5ba3dae34373d541d6eb0e7175bd91dbea10b96d3c070e05110417523cabb5bc",
+      "byte_size": 5921,
+      "hash_sha256": "829e8c8edb3e1b9bb930e33613bf62e58a48c81cfb36cc2eb7e52cd1bc4c2686",
       "marker_status": "absent",
       "path": "ilc_core/star_map/debruijn_harness.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9062,
-      "hash_sha256": "93c842a4c34bb2625b5ed9eefc9c2de82cddc2911923d2a2b78208ba9178d282",
+      "byte_size": 9058,
+      "hash_sha256": "feee78237fb9012507e16ad87197e7579b9405e92ec31d6a2784cb386b06ef7a",
       "marker_status": "absent",
       "path": "ilc_core/star_map/route_index.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1139,
-      "hash_sha256": "472b2b27661cbdf57ed39fdf7153f4b02c5ddb9b11e1bacd940d093348658bc2",
+      "byte_size": 1135,
+      "hash_sha256": "bb9ffb96d148586ed7de5d64f720ffff5059c043e5bc3bc780f66fe12251138a",
       "marker_status": "absent",
       "path": "ilc_core/storage/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1244,
-      "hash_sha256": "3eef69a6cd7ff346ddf31b36dc43b79fe1457a9da0ec2d7ce1e23ebdf9dafc15",
+      "byte_size": 1240,
+      "hash_sha256": "0ebaf6361217b5bd8483f3477dd5b3b15ee3ccad196e791d4139575aaa9ebac9",
       "marker_status": "absent",
       "path": "ilc_core/storage/interfaces.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7166,
-      "hash_sha256": "6fa442b6cbb5ff6a17910f7cc216f16e7280dc7be08682153ae35025e866f8ec",
+      "byte_size": 7162,
+      "hash_sha256": "49eceab16a66b1773cab1d674b41854f723d5e3e595a72a166e10af940690744",
       "marker_status": "absent",
       "path": "ilc_core/storage/lmdb_graph_pruning_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9192,
-      "hash_sha256": "e8251dfa83c8f337291e60d5d39ee35a07925e06587d3afb4970c73b8a5dcb9b",
+      "byte_size": 9188,
+      "hash_sha256": "9455484672f303a43b2cb764f99194f1c4c787eaa78f12cc7b773ca484e9563d",
       "marker_status": "absent",
       "path": "ilc_core/storage/lmdb_public_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3136,
-      "hash_sha256": "e1fd805d0b1f43a627df0d037dde1f351a7dfe33149fe27ce9a078479c5c68d6",
+      "byte_size": 3132,
+      "hash_sha256": "bc248107c047f750054016df3ffe1ae80dbc602e2c16c06777395e45c2a524f4",
       "marker_status": "absent",
       "path": "ilc_core/storage/truth_primitive_graph_lmdb_adapter.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 524,
-      "hash_sha256": "1dcffff362161059195b0610f74cd0f81a5b807756247e7054bc2a28eb289bc2",
+      "byte_size": 520,
+      "hash_sha256": "f5e5f1f7b4b364cf3177d7696d7da17b08cd2753c8b849d275b06c0157334d24",
       "marker_status": "absent",
       "path": "ilc_core/testing/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2077,
-      "hash_sha256": "e370f5d9d610861eeef404ed6dba4fca3937e89bc7086e5673c33b2a077a96ae",
+      "byte_size": 2073,
+      "hash_sha256": "4fb6a058796606328af01d0c7c0554a0ca1801c5802a287bd8371bfe05ecb31e",
       "marker_status": "absent",
       "path": "ilc_core/testing/phase_commit_manifest.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6683,
-      "hash_sha256": "8102a1744ee798dee53406c7bccde1db763a75dd5a11625595f58648d08e79ea",
+      "byte_size": 6679,
+      "hash_sha256": "c9ff2e83228af2452164f14a331cdf75563ba8721e765b3b0938b9e81625317f",
       "marker_status": "absent",
       "path": "ilc_core/testing/ratification_mutation_scope_guardrail.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17630,
-      "hash_sha256": "4c77c0ad700b7cd452690b2ea863dc7f7a33b7ade493f4afd8492d2bb796099c",
+      "byte_size": 17626,
+      "hash_sha256": "9be29773d0cee1756cb4d6d126ff8f38d33eb6662fc9da2c3697ef6f75649dab",
       "marker_status": "absent",
       "path": "ilc_core/types.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4178,
-      "hash_sha256": "2790f39d1d3bbdb5a7bab381966d0bcd631c54071ddb6a69f18b1bf92257f985",
+      "byte_size": 4174,
+      "hash_sha256": "8bd6dbca59c5c3f428bbbc2f2e5f73bac0a46e389d7e2b435afeb5930518a97c",
       "marker_status": "absent",
       "path": "ilc_core/validator/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 16858,
-      "hash_sha256": "12caee73743674a066331a5a0afd9fe742c00809caa6baf059ec7aab32a9dca2",
+      "byte_size": 16854,
+      "hash_sha256": "04e6a04a16ceb1ddc24f41800c161c0c4c38335b3dd86e323eff0f4abe6696b8",
       "marker_status": "absent",
       "path": "ilc_core/validator/admission_ejection_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1927,
-      "hash_sha256": "e128c4295c6436a246d15de7889a8c1fab92d3945b331147399e3a64c561b674",
+      "byte_size": 1923,
+      "hash_sha256": "4957a70e00a92e113271f532afab8eae5364cc1a44ecc21dc78b639814d00429",
       "marker_status": "absent",
       "path": "ilc_core/validator/re_admission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1873,
-      "hash_sha256": "3377b638f97ce9a6f6d46a8171e948c4dfb3df5aa986fd84cb45fc176ae8cea9",
+      "byte_size": 1869,
+      "hash_sha256": "a8e3e4a24dac517b4b7ac012bf39f6ebc25ca3673ff728a550cb715ea7b4c50a",
       "marker_status": "absent",
       "path": "ilc_core/validator/staking_liveness_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 11958,
-      "hash_sha256": "2d83258ac1f40d0478035b13879127bacf112be82dc17db0e1aeeed24557246d",
+      "byte_size": 11954,
+      "hash_sha256": "84735ecf9c58c96da1b25111e6a55e25e713fd6dff7162adcf119e904bb324a7",
       "marker_status": "absent",
       "path": "ilc_core/validator/topology_shuffle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3084,
-      "hash_sha256": "b132ccd630e4475ebb6cab05315336a6e350ae2ea67005843926e6da96581b33",
+      "byte_size": 3080,
+      "hash_sha256": "dc630fc2e1bb3d19b9850c456af5c0458abeb65ff350e709b5e12f3902526d17",
       "marker_status": "absent",
       "path": "ilc_core/validator/trust_tier_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4340,
-      "hash_sha256": "ac680c79838b3b2f78bae9e479462a180eb80b18b12268f6adfb3862091be4d3",
+      "byte_size": 4336,
+      "hash_sha256": "3556d6d11e15901f95e2e78a9e5a0064df3eeb2492e49f5640fa836199172af4",
       "marker_status": "absent",
       "path": "ilc_core/work/task_queue.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 24439,
-      "hash_sha256": "25da912fb71398aafea8d5a8d2ade14e73f402d6a51800effbdd952b6d595b28",
+      "byte_size": 25604,
+      "hash_sha256": "897a5d5ab6c2d6477e15f5496dc3b62280e9d04c6e97e39e411375ade7695c4e",
       "marker_status": "absent",
       "path": "metaphysics.md",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 67021,
-      "hash_sha256": "f091d7c2e0ad47c5be83fd801acdb167df8243ef7a74a65c70b48abb160c4397",
+      "byte_size": 68329,
+      "hash_sha256": "adfc03dc66e9f530192e04e9b92bbf2ff7d8147b408dbbfb7560d9791f368b93",
       "marker_status": "absent",
       "path": "methodology.md",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12877,7 +13016,15 @@
     "ambiguity_count": 0,
     "default_excluded_files": [
       {
+        "path": "ilc_consensus/src/relay_routing_table.rs",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
         "path": "ilc_core/bundle/__init__.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/bundle/bundle_verifier.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
@@ -12894,6 +13041,10 @@
       },
       {
         "path": "ilc_core/bundle/layer3_wire_binding.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/epistemic/jury_finality_evaluator.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
@@ -12933,6 +13084,10 @@
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
+        "path": "ilc_core/harness/local_immutable_store.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
         "path": "ilc_core/harness/local_node_capture.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
@@ -12958,6 +13113,10 @@
       },
       {
         "path": "ilc_core/network/d2d/transport_principal_public_path_preflight.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/network/rust_p2p_bridge.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
@@ -13007,6 +13166,30 @@
       {
         "path": "ilc_core/rc/source_allowlist_export_rehearsal.py",
         "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/schema/petition_node_type.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/schema/verdict_record_schema.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
       }
     ],
     "included_reviewed_files": [
@@ -13027,11 +13210,23 @@
         "reason": "explicitly_reviewed_metadata_phase_1319"
       },
       {
+        "path": "LICENSING.md",
+        "reason": "explicitly_reviewed_metadata_phase_1319"
+      },
+      {
+        "path": "PATENTS.md",
+        "reason": "explicitly_reviewed_metadata_phase_1319"
+      },
+      {
         "path": "README.md",
         "reason": "explicitly_reviewed_metadata_phase_1319"
       },
       {
         "path": "SECURITY.md",
+        "reason": "explicitly_reviewed_metadata_phase_1319"
+      },
+      {
+        "path": "THIRD_PARTY_NOTICES.md",
         "reason": "explicitly_reviewed_metadata_phase_1319"
       },
       {
@@ -13444,6 +13639,10 @@
       },
       {
         "path": "ilc_core/distribution/package_profiles.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/economics/dynamic_ranking_multiplier_runtime.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -14523,7 +14722,7 @@
   },
   "marker_scan": {
     "exact_marker": "PUBLIC_RC_EXCLUDE",
-    "file_count_scanned": 377,
+    "file_count_scanned": 381,
     "hit_count": 0,
     "hits": [],
     "result": "pass",
@@ -14634,7 +14833,7 @@
   "rerun": {
     "command": "./.venv/bin/python -m ilc_core.rc.source_allowlist_export_rehearsal --json-out docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
     "determinism": "manifest_hash_must_match_expected_manifest_hash_on_unchanged_inputs",
-    "expected_manifest_hash": "4bed6b54153484f8fed32ccf3eb9ba3ca916b0e25c2a262edf46b640a4294c80"
+    "expected_manifest_hash": "cd437aa90da87933d98b2507c84be647487eccccc528f899d0802dcfb1cdce92"
   },
   "result": "pass",
   "scanner_limitations": [
