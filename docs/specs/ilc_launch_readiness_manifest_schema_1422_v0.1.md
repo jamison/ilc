@@ -40,6 +40,7 @@ activate the manifest.
 | `j008_jury_activation_gate_verdict` | object | yes | Must cite the Phase 1427 J-008 rerun artifact; expected `verdict="PASS"` before signing |
 | `soft_rc_eligible` | object | yes | Must cite the Phase 1426 soft-RC rerun artifact; expected `true` before signing |
 | `genesis_signing_authority` | object | yes | Must cite `docs/genesis/genesis_agent1_pubkey_record_838a.txt` or a later superseding Genesis signing key record |
+| `adr_0009_bundle_chain_verified` | boolean | yes | Defaults `false`; may be set `true` only when the ADR-0009 independent bundle verifier passes during a rehearsal profile run; does not authorize public distribution |
 | `epoch_0_to_1_transition_authorized` | boolean | yes | Must be `false` in any unsigned manifest template; only a later authorized signing ceremony may set `true` |
 | `activation_timestamp_epoch` | integer | yes | Protocol epoch at which activation becomes effective; unsigned template value is `0` |
 | `manifest_content_hash` | string or null | yes | SHA-256 of canonical JSON payload when instantiated; `null` in unsigned templates |
@@ -62,6 +63,7 @@ certificate design explicitly supersedes this rule.
 ```json
 {
   "activation_timestamp_epoch": 0,
+  "adr_0009_bundle_chain_verified": false,
   "epoch_0_to_1_transition_authorized": false,
   "genesis_signing_authority": {
     "agent_id_ref": "docs/genesis/genesis_agent1_pubkey_record_838a.txt",
@@ -116,6 +118,7 @@ public_rc_not_activated_phase_1422
 This phase does not:
 
 - sign a manifest;
+- authorize ADR-0009 public distribution;
 - create a release artifact;
 - publish public RC;
 - authorize epoch 0->1 transition;
