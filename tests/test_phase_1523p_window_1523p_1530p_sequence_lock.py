@@ -50,7 +50,10 @@ def test_phase_1523p_sequence_lock_records_window_and_sensitive_gates() -> None:
     for phase in ["1523p", "1524p", "1525p", "1526p", "1527p", "1528p", "1529p", "1530p"]:
         assert f"| {phase} |" in lock
 
-    assert "requires exact `GO Phase 1526p`" in lock
+    assert (
+        "requires exact `GO Phase 1526p`" in lock
+        or "| 1526p | Type-system CDL opening | SENSITIVE | COMPLETE |" in lock
+    )
     assert "requires exact `GO Phase 1528p`" in lock
     assert "requires exact `GO Phase 1530p`" in lock
     assert "must not consume CDL-096" in lock
@@ -64,7 +67,10 @@ def test_phase_1523p_obl_025_remains_open_and_routed_to_window() -> None:
     assert "open" in register
     assert "Window 1523p-1530p Block 3 ADR-0035 homoiconic type-system lane" in register
     assert "obl_025_routed_to_window_1523p_phase_1523p" in register
-    assert "Does not open or ratify type-system CDL" in register
+    assert (
+        "Does not open or ratify type-system CDL" in register
+        or "Does not ratify type-system CDL" in register
+    )
 
 
 def test_phase_1523p_does_not_mutate_adr_or_cdl_authority() -> None:
@@ -74,7 +80,11 @@ def test_phase_1523p_does_not_mutate_adr_or_cdl_authority() -> None:
     assert "**Status:** Accepted — direction accepted; implementation deferred to CDL phase" in adr
     assert "adr_0035_implementation_deferred_pending_cdl" in adr
     assert "| CDL-096 |" not in cdl
-    assert "type-definition node authority for ADR-0035" not in cdl
+    if "| CDL-097 |" in cdl:
+        assert "cdl_097_type_definition_node_authority_opened_phase_1526p" in cdl
+        assert "ratification_token: cdl_097_ratified_phase_1528p" not in cdl
+    else:
+        assert "type-definition node authority for ADR-0035" not in cdl
 
 
 def test_phase_1523p_frontier_updates_are_present() -> None:
