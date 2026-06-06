@@ -12,7 +12,7 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.crypto.cose_sign1 import cose_sign1_sign, cose_sign1_verify
-from ilc_core.encoding.cidv1 import node_id_from_bytes
+from ilc_core.encoding.cidv1 import node_id_from_bytes, parse_nodeid_strict
 from ilc_core.encoding.dag_cbor import encode_dag_cbor
 from ilc_core.private_json_guardrails import canonical_json, reject_float, require_digest_ref
 
@@ -41,6 +41,15 @@ def _require_digest(value: str, missing_token: str, invalid_token: str) -> None:
 def _require_epoch_number(value: int) -> None:
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
         raise ValueError("layer3_wire_binding_invalid_epoch_number")
+
+
+def _require_cidv1_if_provided(value: str, token: str) -> None:
+    if value == "":
+        return
+    try:
+        parse_nodeid_strict(value)
+    except (ValueError, Exception):
+        raise ValueError(token)
 
 
 @dataclass(frozen=True)
@@ -105,6 +114,7 @@ def generate_layer3_wire_binding(
         "layer3_wire_binding_invalid_payload_digest",
     )
     _require_non_empty_string(signature_ref, "layer3_wire_binding_missing_signature_ref")
+    _require_cidv1_if_provided(layer2_cidv1, "layer3_wire_binding_invalid_layer2_cidv1")
 
     envelope = _build_layer3_envelope(
         message_type=message_type,

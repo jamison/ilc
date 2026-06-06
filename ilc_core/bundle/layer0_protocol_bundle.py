@@ -158,3 +158,12 @@ def _verify_optional_cose(
     except (InvalidSignature, ValueError):
         return False
     return verified["nodeid"] == bundle.cidv1 and verified["payload"] == bundle.dag_cbor
+
+
+__all__ = [
+    "ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION",
+    "Layer0ProtocolBundle",
+    "MAX_SCHEMA_COUNT",
+    "generate_layer0_protocol_bundle",
+    "verify_layer0_protocol_bundle",
+]
