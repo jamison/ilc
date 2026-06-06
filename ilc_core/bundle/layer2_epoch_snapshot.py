@@ -8,6 +8,12 @@ import hashlib
 from dataclasses import dataclass
 from typing import Mapping
 
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric import ed25519
+
+from ilc_core.crypto.cose_sign1 import cose_sign1_sign, cose_sign1_verify
+from ilc_core.encoding.cidv1 import node_id_from_bytes
+from ilc_core.encoding.dag_cbor import encode_dag_cbor
 from ilc_core.private_json_guardrails import canonical_json, reject_float, require_digest_ref, require_sha256_hex
 
 ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION = True
@@ -48,12 +54,42 @@ class Layer2EpochSnapshot:
     epoch_number: int
     previous_snapshot_sha256: str
     layer0_protocol_bundle_sha256: str
+    layer0_protocol_bundle_cidv1: str
+    layer1_genesis_bundle_cidv1: str
     graph_state_digest: str
     agent_state_digest: str
     active_contract_digest: str
     canonical_json: str
+    dag_cbor: bytes
+    cidv1: str
     sha256: str
+    cose_sign1: bytes = b""
     public_rc_exclude: bool = True
+
+
+def _build_layer2_envelope(
+    *,
+    epoch_number: int,
+    previous_snapshot_sha256: str,
+    layer0_sha256: str,
+    layer0_cidv1: str,
+    layer1_cidv1: str,
+    graph_state_digest: str,
+    agent_state_digest: str,
+    active_contract_digest: str,
+) -> dict[str, object]:
+    return {
+        "active_contract_digest": active_contract_digest,
+        "agent_state_digest": agent_state_digest,
+        "epoch_number": epoch_number,
+        "graph_state_digest": graph_state_digest,
+        "layer": 2,
+        "layer0_protocol_bundle_cidv1": layer0_cidv1,
+        "layer0_protocol_bundle_sha256": layer0_sha256,
+        "layer1_genesis_bundle_cidv1": layer1_cidv1,
+        "previous_snapshot_sha256": previous_snapshot_sha256,
+        "public_rc_exclude": True,
+    }
 
 
 def generate_layer2_epoch_snapshot(
@@ -64,6 +100,10 @@ def generate_layer2_epoch_snapshot(
     graph_state_digest: str,
     agent_state_digest: str,
     active_contract_digest: str,
+    layer0_cidv1: str = "",
+    layer1_cidv1: str = "",
+    signing_private_key: ed25519.Ed25519PrivateKey | None = None,
+    cose_kid: bytes | None = None,
 ) -> Layer2EpochSnapshot:
     _require_epoch_number(epoch_number)
     _require_sha256(
@@ -95,43 +135,79 @@ def generate_layer2_epoch_snapshot(
             "layer2_epoch_snapshot_invalid_previous_sha256",
         )
 
-    envelope = {
-        "active_contract_digest": active_contract_digest,
-        "agent_state_digest": agent_state_digest,
-        "epoch_number": epoch_number,
-        "graph_state_digest": graph_state_digest,
-        "layer": 2,
-        "layer0_protocol_bundle_sha256": layer0_sha256,
-        "previous_snapshot_sha256": previous_snapshot_sha256,
-        "public_rc_exclude": True,
-    }
+    envelope = _build_layer2_envelope(
+        epoch_number=epoch_number,
+        previous_snapshot_sha256=previous_snapshot_sha256,
+        layer0_sha256=layer0_sha256,
+        layer0_cidv1=layer0_cidv1,
+        layer1_cidv1=layer1_cidv1,
+        graph_state_digest=graph_state_digest,
+        agent_state_digest=agent_state_digest,
+        active_contract_digest=active_contract_digest,
+    )
     canonical_json = _canonical_json(envelope)
+    dag_cbor = encode_dag_cbor(envelope)
+    cidv1 = node_id_from_bytes(dag_cbor)
+    cose_sign1 = (
+        cose_sign1_sign(dag_cbor, signing_private_key, kid=cose_kid)
+        if signing_private_key is not None
+        else b""
+    )
     return Layer2EpochSnapshot(
         epoch_number=epoch_number,
         previous_snapshot_sha256=previous_snapshot_sha256,
         layer0_protocol_bundle_sha256=layer0_sha256,
+        layer0_protocol_bundle_cidv1=layer0_cidv1,
+        layer1_genesis_bundle_cidv1=layer1_cidv1,
         graph_state_digest=graph_state_digest,
         agent_state_digest=agent_state_digest,
         active_contract_digest=active_contract_digest,
         canonical_json=canonical_json,
-        sha256=hashlib.sha256(canonical_json.encode("utf-8")).hexdigest(),
+        dag_cbor=dag_cbor,
+        cidv1=cidv1,
+        sha256=hashlib.sha256(dag_cbor).hexdigest(),
+        cose_sign1=cose_sign1,
     )
 
 
-def verify_layer2_epoch_snapshot(snapshot: Layer2EpochSnapshot) -> bool:
+def verify_layer2_epoch_snapshot(
+    snapshot: Layer2EpochSnapshot,
+    *,
+    public_key: ed25519.Ed25519PublicKey | None = None,
+) -> bool:
     rebuilt = generate_layer2_epoch_snapshot(
         epoch_number=snapshot.epoch_number,
         previous_snapshot_sha256=snapshot.previous_snapshot_sha256,
         layer0_sha256=snapshot.layer0_protocol_bundle_sha256,
+        layer0_cidv1=snapshot.layer0_protocol_bundle_cidv1,
+        layer1_cidv1=snapshot.layer1_genesis_bundle_cidv1,
         graph_state_digest=snapshot.graph_state_digest,
         agent_state_digest=snapshot.agent_state_digest,
         active_contract_digest=snapshot.active_contract_digest,
     )
     return (
         rebuilt.canonical_json == snapshot.canonical_json
+        and rebuilt.dag_cbor == snapshot.dag_cbor
+        and rebuilt.cidv1 == snapshot.cidv1
         and rebuilt.sha256 == snapshot.sha256
         and snapshot.public_rc_exclude is True
+        and _verify_optional_cose(snapshot, public_key)
     )
+
+
+def _verify_optional_cose(
+    snapshot: Layer2EpochSnapshot,
+    public_key: ed25519.Ed25519PublicKey | None,
+) -> bool:
+    if snapshot.cose_sign1 == b"":
+        return True
+    if public_key is None:
+        return False
+    try:
+        verified = cose_sign1_verify(snapshot.cose_sign1, public_key)
+    except (InvalidSignature, ValueError):
+        return False
+    return verified["nodeid"] == snapshot.cidv1 and verified["payload"] == snapshot.dag_cbor
 
 
 __all__ = [
