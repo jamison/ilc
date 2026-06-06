@@ -79,6 +79,7 @@ def test_frontier_documents_record_phase_1527p_and_obl025_open() -> None:
         "Phase 1528p is the next phase and is SENSITIVE" in planning
         or "Phase 1529p is the next phase and is NON-SENSITIVE" in planning
         or "Phase 1530p is next and requires exact `GO Phase 1530p`" in planning
+        or "go_window_1531p_required_next" in planning
     )
     assert "⬅ CURRENT" in planning
 
