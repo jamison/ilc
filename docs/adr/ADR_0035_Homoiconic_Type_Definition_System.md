@@ -1,12 +1,13 @@
 # ADR-0035: Homoiconic Type Definition System
 
-**Status:** Accepted — direction accepted; implementation deferred to CDL phase  
+**Status:** Accepted — CDL-097 ratified Phase 1528p; implementation authority in place; runtime scaffold is Phase 1529p work; no production activation authorized.
 **Date:** 2026-04-28  
 **Ratified (direction):** 2026-05-19 (Phase 1387d)  
 **Owner lane:** Architecture / ADR lane
 
 `adr_0035_homoiconic_type_definition_system_direction_accepted`
 `adr_0035_implementation_deferred_pending_cdl`
+`adr_0035_cdl_implementation_authority_in_place_phase_1528p`
 `adr_0035_formal_adr_written_phase_1387d`
 
 ---
@@ -201,12 +202,14 @@ When a definition node is superseded by amendment:
 
 ## 5. What This ADR Does Not Govern
 
-- Any runtime implementation — deferred to CDL phase
-- The specific CDL number for the `type_definition` NodeType introduction
+- Any runtime implementation — CDL-097 authority is now in place, but the
+  default-off runtime scaffold is Phase 1529p work and production activation is
+  not authorized
+- Initial definition-node instances for specific `hyperedge_type` values
 - The ECU formula for type-dispute resolution
 - Jury selection procedure for type disputes (separate ADR or CDL annex)
-- Implementation of `content_type="type_definition"` in ADR-0030's token list
-  (requires the relevant CDL amendment)
+- Production activation of `content_type="type_definition"` beyond the
+  CDL-097-governed ADR-0030 token addition
 
 ---
 
@@ -225,14 +228,15 @@ When a definition node is superseded by amendment:
 
 ## 7. Forward Obligations
 
-1. **CDL for `type="type_definition"` introduction** — required before any runtime
-   implementation; human gate decision required
+1. **CDL for `type="type_definition"` introduction** — satisfied by CDL-097
+   ratification in Phase 1528p; default-off runtime scaffold remains Phase
+   1529p work
 2. **Definition node ratification** — existing `hyperedge_type` values must be
    hardened into CDL-ratified definition nodes; prose drafts are in the working spec
 3. **`HyperEdge.hyperedge_type` field semantics change** — wire format stays `str`
    (node ID); runtime semantics change; migration guide required
-4. **`content_type="type_definition"` token** — must be added to ADR-0030's
-   accepted token list via CDL amendment
+4. **`content_type="type_definition"` token** — satisfied by the CDL-097-governed
+   ADR-0030 token addition in Phase 1528p
 5. **Jury procedure for type disputes** — procedure spec for §3.3 type-dispute
    adjudication (separate ADR or CDL annex)
 
