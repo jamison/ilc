@@ -87,6 +87,19 @@ def test_valid_record_verifies_parses_and_cbor_path_enforces_public_decode_path(
     assert parsed.authority_ref == CDL_097_AUTHORITY_REF
 
 
+def test_type_definition_cbor_path_rejects_noncanonical_encoding() -> None:
+    record = _base_record()
+    canonical = encode_dag_cbor(record)
+    noncanonical = canonical.replace(
+        b"\x72definition_version\x01",
+        b"\x72definition_version\x18\x01",
+        1,
+    )
+
+    with pytest.raises(ValueError, match="Non-canonical ILC DAG-CBOR bytes"):
+        verify_type_definition_record_cbor(noncanonical)
+
+
 def test_phase_1525p_stable_error_tokens_are_implemented() -> None:
     missing = _base_record()
     del missing["target_surface"]

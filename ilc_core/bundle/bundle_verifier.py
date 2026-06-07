@@ -15,6 +15,9 @@ from ilc_core.crypto.cose_sign1 import cose_sign1_verify
 from ilc_core.encoding.cidv1 import node_id_from_bytes, parse_nodeid_strict
 from ilc_core.encoding.dag_cbor import decode_dag_cbor_strict, validate_canonical_ilc_dag_cbor
 
+_MAX_HEX_INPUT_CHARS = MAX_CANONICAL_CBOR_INPUT_BYTES * 2
+_LOWER_HEX = frozenset("0123456789abcdef")
+
 
 @dataclass(frozen=True)
 class VerifiedAdr0009Layer:
@@ -152,6 +155,10 @@ def _require_string(record: Mapping[str, object], key: str, token: str) -> str:
 
 
 def _bytes_from_hex(value: str, token: str) -> bytes:
+    if len(value) > _MAX_HEX_INPUT_CHARS:
+        raise ValueError("adr_0009_bundle_hex_input_exceeds_max_chars")
+    if len(value) % 2 != 0 or any(char not in _LOWER_HEX for char in value):
+        raise ValueError(token)
     try:
         return bytes.fromhex(value)
     except ValueError as exc:

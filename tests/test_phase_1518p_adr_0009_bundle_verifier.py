@@ -92,10 +92,20 @@ def test_wrong_layer3_cid_linkage_rejected() -> None:
         verify_adr_0009_bundle(fixture, public_keys_by_layer=_public_keys_by_layer(fixture))
 
 
-def test_oversized_dag_cbor_rejected_before_parse() -> None:
+def test_oversized_dag_cbor_hex_rejected_before_allocation() -> None:
     fixture = _fixture("bundle_layer0_valid.json")
     oversized_layer = dict(fixture["layer"])
     oversized_layer["dag_cbor_hex"] = "00" * (MAX_CANONICAL_CBOR_INPUT_BYTES + 1)
 
-    with pytest.raises(ValueError, match="adr_0009_bundle_cbor_input_exceeds_max_bytes"):
+    with pytest.raises(ValueError, match="adr_0009_bundle_hex_input_exceeds_max_chars"):
         verify_adr_0009_layer(0, oversized_layer, public_key=_public_key(fixture))
+
+
+@pytest.mark.parametrize("bad_hex", ["0", "AA", "aa aa"])
+def test_dag_cbor_hex_must_be_even_lowercase_contiguous(bad_hex: str) -> None:
+    fixture = _fixture("bundle_layer0_valid.json")
+    bad_layer = dict(fixture["layer"])
+    bad_layer["dag_cbor_hex"] = bad_hex
+
+    with pytest.raises(ValueError, match="adr_0009_bundle_invalid_dag_cbor_hex"):
+        verify_adr_0009_layer(0, bad_layer, public_key=_public_key(fixture))

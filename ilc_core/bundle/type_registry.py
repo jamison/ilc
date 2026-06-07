@@ -11,7 +11,10 @@ from typing import Mapping
 
 from ilc_core.crypto.cbor_canonical import MAX_CANONICAL_CBOR_INPUT_BYTES
 from ilc_core.encoding.cidv1 import node_id_from_obj, parse_nodeid_strict
-from ilc_core.encoding.dag_cbor import decode_dag_cbor_strict
+from ilc_core.encoding.dag_cbor import (
+    decode_dag_cbor_strict,
+    validate_canonical_ilc_dag_cbor,
+)
 from ilc_core.private_json_guardrails import normalize_json_value, reject_float
 
 ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True  # guard retained until production activation phase
@@ -182,6 +185,7 @@ def verify_type_definition_record_cbor(data: bytes) -> None:
     """Verify a canonical DAG-CBOR encoded type-definition candidate record."""
     if len(data) > MAX_CANONICAL_CBOR_INPUT_BYTES:
         raise ValueError("type_definition_cid_mismatch")
+    validate_canonical_ilc_dag_cbor(data)
     decoded = decode_dag_cbor_strict(data)
     if not isinstance(decoded, Mapping):
         raise ValueError("type_definition_required_field_missing")
