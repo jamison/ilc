@@ -55,6 +55,17 @@ def test_phase_1535p_emission_round_trip_replays_byte_identically() -> None:
     assert all(event.production_emission_activated is False for event in events)
     assert all(event.production_emission_activated is False for event in events2)
     assert all(Decimal(event.amount_ilc_str).is_finite() for event in events)
+    assert [event.role for event in events] == [
+        "scheduled_emission_pool",
+        "performer_pool",
+        "auditor_pool",
+        "genesis_overhead_pool",
+        "genesis_burn_pool",
+    ]
+    event_sum = sum((Decimal(event.amount_ilc_str) for event in events), Decimal("0"))
+    assert event_sum == (
+        result.emission_quote.capped_epoch_budget_ilc
+        + result.fee_burn_quote.total_epoch_fees_ilc
+    )
     assert len(root.root_hex) == 64
     assert all(char in _LOWER_HEX for char in root.root_hex)
-

@@ -7,6 +7,9 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.epoch.allocation_distributor_runtime import (
+    MAX_UPHELD_REFUTATION_RECIPIENTS,
+)
 from ilc_core.epoch.epoch_emission_production_path import (
     CDL_EMISSION_AUTHORITY_TOKENS,
     PRODUCTION_EMISSION_NOT_ACTIVATED,
@@ -99,3 +102,28 @@ def test_phase_1532p_canonical_record_contains_no_wallet_ledger_or_treasury_writ
     assert "ledger_write" not in rendered
     assert "wallet_write" not in rendered
     assert "treasury_write" not in rendered
+
+
+def test_phase_1537p_fix1_bounds_upheld_refutation_recipients() -> None:
+    too_many_recipients = [
+        f"agent:refuter:{index}"
+        for index in range(MAX_UPHELD_REFUTATION_RECIPIENTS + 1)
+    ]
+    with pytest.raises(ValueError, match="upheld_refutation_recipients_exceeds_max_count"):
+        compute_epoch_emission_production_path(
+            0,
+            Decimal("0"),
+            Decimal("0.000000001"),
+            genesis_overhead_cap_blocked=True,
+            upheld_refutation_recipients=too_many_recipients,
+        )
+
+    too_long_recipient = "agent:" + ("x" * 260)
+    with pytest.raises(ValueError, match="upheld_refutation_recipient_id_exceeds_max_bytes"):
+        compute_epoch_emission_production_path(
+            0,
+            Decimal("0"),
+            Decimal("0.000000001"),
+            genesis_overhead_cap_blocked=True,
+            upheld_refutation_recipients=[too_long_recipient],
+        )
