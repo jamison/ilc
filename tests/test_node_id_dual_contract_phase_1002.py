@@ -52,5 +52,5 @@ def test_compute_id_rejects_non_dag_cbor_payload() -> None:
         agent_id="agent:test",
         signature="sig",
     )
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         _ = node.compute_id()
