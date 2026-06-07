@@ -83,6 +83,8 @@ PERFORMER_POOL_RESIDUAL_ROUTE = "performer_pool"
 GENESIS_RESIDUAL_ROUTE = "genesis"
 MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
 INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
+MAX_UPHELD_REFUTATION_RECIPIENTS = 128
+MAX_UPHELD_REFUTATION_RECIPIENT_ID_BYTES = 256
 
 
 @dataclass(frozen=True)
@@ -195,11 +197,15 @@ def _normalize_upheld_refutation_recipients(
         return ()
     if not isinstance(upheld_refutation_recipients, list):
         raise ValueError("upheld_refutation_recipients_must_be_list_or_none")
+    if len(upheld_refutation_recipients) > MAX_UPHELD_REFUTATION_RECIPIENTS:
+        raise ValueError("upheld_refutation_recipients_exceeds_max_count")
     normalized: list[str] = []
     seen: set[str] = set()
     for recipient in upheld_refutation_recipients:
         if not isinstance(recipient, str) or not recipient:
             raise ValueError("upheld_refutation_recipient_must_be_non_empty_string")
+        if len(recipient.encode("utf-8")) > MAX_UPHELD_REFUTATION_RECIPIENT_ID_BYTES:
+            raise ValueError("upheld_refutation_recipient_id_exceeds_max_bytes")
         if recipient in seen:
             raise ValueError("upheld_refutation_recipients_must_be_unique")
         seen.add(recipient)
@@ -375,6 +381,8 @@ __all__ = [
     "GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN",
     "GENESIS_OVERHEAD_POOL_LABEL",
     "GENESIS_RESIDUAL_ROUTE",
+    "MAX_UPHELD_REFUTATION_RECIPIENT_ID_BYTES",
+    "MAX_UPHELD_REFUTATION_RECIPIENTS",
     "NO_DIRECT_ALLOCATION_STUB_FOUND_TOKEN",
     "PERFORMER_ALLOCATION_FRACTION",
     "PERFORMER_POOL_FALLBACK_DUST_ROUTE_TOKEN",

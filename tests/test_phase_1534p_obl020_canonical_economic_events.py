@@ -16,6 +16,7 @@ from ilc_core.epoch.canonical_economic_event import (
 )
 from ilc_core.epoch.epoch_emission_production_path import (
     PRODUCTION_EMISSION_NOT_ACTIVATED,
+    build_canonical_economic_event_payloads,
     compute_epoch_emission_production_path,
     compute_settlement_root,
 )
@@ -39,11 +40,11 @@ def test_phase_1534p_emits_expected_standard_roles() -> None:
     events = _events()
 
     assert [event.role for event in events] == [
+        "scheduled_emission_pool",
         "performer_pool",
         "auditor_pool",
         "genesis_overhead_pool",
         "genesis_burn_pool",
-        "rounding_residual",
     ]
 
 
@@ -58,6 +59,7 @@ def test_phase_1534p_amounts_parse_without_precision_loss() -> None:
     events = emit_canonical_economic_event_records(result, root)
     by_role = {event.role: Decimal(event.amount_ilc_str) for event in events}
 
+    assert by_role["scheduled_emission_pool"] == result.emission_quote.capped_epoch_budget_ilc
     assert by_role["performer_pool"] == result.allocation_quote.performer_reward_pool_ilc
     assert by_role["auditor_pool"] == result.allocation_quote.auditor_reward_pool_ilc
     assert (
@@ -65,11 +67,23 @@ def test_phase_1534p_amounts_parse_without_precision_loss() -> None:
         == result.allocation_quote.genesis_overhead_pool_ilc
     )
     assert by_role["genesis_burn_pool"] == result.fee_burn_quote.genesis_burn_pool_ilc
-    assert by_role["rounding_residual"] == (
-        result.allocation_quote.rounding_residual_to_genesis_overhead_ilc
-        + result.allocation_quote.rounding_residual_to_upheld_refutation_recipients_ilc
-        + result.allocation_quote.rounding_residual_to_performer_pool_ilc
+
+
+def test_phase_1537p_fix1_events_are_additively_conservative_with_residual() -> None:
+    result = compute_epoch_emission_production_path(
+        9,
+        Decimal("1000.000000001"),
+        Decimal("250.000000009"),
     )
+    root = compute_settlement_root(result)
+    events = emit_canonical_economic_event_records(result, root)
+
+    event_sum = sum((Decimal(event.amount_ilc_str) for event in events), Decimal("0"))
+    assert event_sum == (
+        result.emission_quote.capped_epoch_budget_ilc
+        + result.fee_burn_quote.total_epoch_fees_ilc
+    )
+    assert "rounding_residual" not in {event.role for event in events}
 
 
 def test_phase_1534p_rejects_float_pool_amount() -> None:
@@ -79,6 +93,20 @@ def test_phase_1534p_rejects_float_pool_amount() -> None:
 
     with pytest.raises(ValueError, match="float_in_canonical_economic_event_rejected"):
         emit_canonical_economic_event_records(bad_result, root)
+
+
+def test_phase_1537p_fix1_event_payload_helper_validates_result_boundary() -> None:
+    result, _root = _result_and_root()
+
+    with pytest.raises(ValueError, match="issuance_epoch_must_be_non_negative_int"):
+        build_canonical_economic_event_payloads(replace(result, issuance_epoch=True))
+    with pytest.raises(
+        ValueError,
+        match="canonical_economic_event_activation_flag_invalid",
+    ):
+        build_canonical_economic_event_payloads(
+            replace(result, production_emission_activated="false")
+        )
 
 
 @pytest.mark.parametrize("bad_amount", [Decimal("NaN"), Decimal("Infinity")])
@@ -99,6 +127,39 @@ def test_phase_1534p_settlement_root_hex_is_injected() -> None:
         assert event.settlement_root_hex == root.root_hex
 
 
+def test_phase_1537p_fix1_settlement_root_commits_to_event_batch() -> None:
+    result, root = _result_and_root()
+    events = emit_canonical_economic_event_records(result, root)
+    root_payload = json.loads(root.canonical_record_json)
+    event_payloads_without_root = [
+        {
+            key: value
+            for key, value in event.to_canonical_record().items()
+            if key != "settlement_root_hex"
+        }
+        for event in events
+    ]
+
+    assert root_payload["economic_event_payloads"] == event_payloads_without_root
+
+
+def test_phase_1537p_fix1_rejects_stale_settlement_root_for_result() -> None:
+    result = compute_epoch_emission_production_path(
+        9,
+        Decimal("1000.000000001"),
+        Decimal("250.000000009"),
+    )
+    stale_result = compute_epoch_emission_production_path(
+        9,
+        Decimal("1000.000000001"),
+        Decimal("250.000000008"),
+    )
+    stale_root = compute_settlement_root(stale_result)
+
+    with pytest.raises(ValueError, match="settlement_root_event_payload_mismatch"):
+        emit_canonical_economic_event_records(result, stale_root)
+
+
 def test_phase_1534p_canonical_json_is_reproducible() -> None:
     event = _events()[0]
 
@@ -114,6 +175,7 @@ def test_phase_1534p_canonical_json_is_reproducible() -> None:
 def test_phase_1534p_cdl_authority_and_schema_version_are_bound() -> None:
     assert CDL_AUTHORITY_TOKENS == [
         "cdl_025_terminal_issuance_model_ratified_phase_267.v0.1",
+        "cdl_026_cmax_lock_ratified_phase_273.v0.1",
         "cdl_027_decay_formulation_ratified_phase_276.v0.1",
         "cdl_028_fee_burn_split_ratified_phase_274.v0.1",
         "cdl_029_allocation_split_ratified_phase_272.v0.1",

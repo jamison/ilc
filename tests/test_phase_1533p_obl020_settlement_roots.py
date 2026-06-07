@@ -88,3 +88,23 @@ def test_phase_1533p_anti_circularity_excludes_settlement_root_hex() -> None:
 
     assert "settlement_root_hex" not in payload
     assert "settlement_root_hex" not in root.canonical_record_json
+
+
+def test_phase_1537p_fix1_root_commits_to_canonical_event_payloads() -> None:
+    result = _result()
+    root = compute_settlement_root(result)
+    payload = json.loads(root.canonical_record_json)
+
+    assert payload["schema_version"] == "epoch_emission_event_batch_root_1537p_fix1.v0.2"
+    assert [event["role"] for event in payload["economic_event_payloads"]] == [
+        "scheduled_emission_pool",
+        "performer_pool",
+        "auditor_pool",
+        "genesis_overhead_pool",
+        "genesis_burn_pool",
+    ]
+    assert payload["rounding_residual_metadata"]["residual_route"] in {
+        "genesis",
+        "performer_pool",
+        "upheld_refutation_recipients",
+    }
