@@ -40,7 +40,7 @@ def _coerce_node(record: dict[str, Any]) -> Node:
         content=record.get("content", ""),
         agent_id=str(record.get("agent_id", "agent:migration")),
         signature=str(record.get("signature", "migration_unsigned")),
-        net_stake=float(record.get("net_stake", 0.0)),
+        net_stake=str(record.get("net_stake", "0")),
         target_id=record.get("target_id"),
         parent_ids=list(record.get("parent_ids", [])),
     )
