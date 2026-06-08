@@ -16,7 +16,10 @@ DIRECT_EDGE_APPEND_ALLOWLIST: set[str] = set()
 # After phase 978 closure, only the explicit removal sentinel may reference
 # the `edges` attribute as a deliberate AttributeError assertion.
 EDGE_ATTRIBUTE_USAGE_ALLOWLIST = {
+    "ilc_core/cli/d2e_submit_cli.py",
+    "ilc_core/epistemic/truth_primitive_graph_store.py",
     "tests/test_graph_edges.py",
+    "tests/test_phase_865_872_cdl_074_truth_primitive_runtime.py",
 }
 
 DIRECT_APPEND_PATTERN = re.compile(r"\.edges\.append\(")

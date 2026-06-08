@@ -15,11 +15,16 @@ settlement or mainnet activation is claimed.
 
 ## Quick start (development)
 
+For operator setup details, see `docs/GETTING_STARTED.md` and
+`config/README.md`.
+
 ```bash
 pip install -e .
 cd ilc_consensus && cargo build --release
 .venv/bin/python -m pytest -q
 ```
+
+`python3 tools/genesis_boot.py` Reads `config/genesis.json` and prints the Genesis hash.
 
 ## Security
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -29,6 +30,11 @@ def _venv_bin(venv_path: Path, executable: str) -> Path:
 
 
 def _run(cmd: list[str], cwd: Path, timeout: int = 120) -> subprocess.CompletedProcess[str]:
+    env = dict(os.environ)
+    cargo_bin = Path.home() / ".cargo" / "bin"
+    if cargo_bin.exists():
+        env["PATH"] = f"{cargo_bin}{os.pathsep}{env.get('PATH', '')}"
+    env["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
     return subprocess.run(
         cmd,
         cwd=cwd,
@@ -36,6 +42,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int = 120) -> subprocess.CompletedP
         capture_output=True,
         text=True,
         timeout=timeout,
+        env=env,
     )
 
 
@@ -129,4 +136,3 @@ def test_phase_225_operator_tooling_scripts_run_successfully() -> None:
     assert demo_walkthrough.returncode == 0, demo_walkthrough.stderr
     assert "DEMO COMPLETE: SYSTEM IS LIVE" in demo_walkthrough.stdout
     assert "!!! DEMO FAILED" not in demo_walkthrough.stdout
-

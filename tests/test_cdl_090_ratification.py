@@ -57,6 +57,12 @@ def cdl_090_row(text: str) -> str:
     return rows[0]
 
 
+def cdl_row(text: str, cdl_id: str) -> str:
+    rows = [line for line in text.splitlines() if line.startswith(f"| {cdl_id} |")]
+    assert len(rows) == 1
+    return rows[0]
+
+
 def historical_register_text() -> str:
     result = subprocess.run(
         [
@@ -117,7 +123,9 @@ def test_03_cdl_090_register_row_is_ratified_with_evidence_refs_and_blocks() -> 
     assert "identity_artifact_creation_status: not_authorized" in row
     assert "runtime_activation_status: not_authorized" in row
     assert "cdl_088_status: unopened_reserved_for_phase_1374" in row
-    assert not any(line.startswith("| CDL-088 |") for line in register.splitlines())
+    cdl_088 = cdl_row(register, "CDL-088")
+    assert "| ratified |" in cdl_088
+    assert "ratified_phase: 1376" in cdl_088
 
 
 def test_04_scope_constants_from_prelock_are_ratified_in_evidence() -> None:

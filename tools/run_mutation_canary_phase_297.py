@@ -49,8 +49,12 @@ _CONTAINMENT_NEW_BODY = "\n    QUARANTINE_LINEAGE,\n    FREEZE_" + "AUTHORITY,"
 # Mutation: changes ratified_phase on CDL-026 from 273 to 277 (phase stamp must be stable).
 _CDL026_ROW_BASE = (
     "| CDL-026 | CDL-005 / CDL-025 | Total supply cap (`C_max`) lock | ratified | "
-    "explicit finite cap, cap-with-tolerance | depends on CDL-025 closure | "
-    "cap lock spec, regression tests | ratified_phase: 27"
+    "explicit finite cap, cap-with-tolerance | explicit finite cap: C_max = "
+    "25,920,000 ILC (Platonic Year × 1,000; binding chain: Phase 273 "
+    "ratification + Phase 275/298/600 canonical runtime inputs; locked as "
+    "`C_MAX_ILC = Decimal(\"25920000\")` in "
+    "`ilc_core/epoch/epoch_emission_runtime.py` Phase 1345) | cap lock spec, "
+    "regression tests | ratified_phase: 27"
 )
 _CDL026_OLD_SUFFIX = "3 |"
 _CDL026_NEW_SUFFIX = "7 |"

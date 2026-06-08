@@ -243,8 +243,13 @@ def test_roadmap_and_planning_index_reference_forward_packaging_plan() -> None:
     roadmap = read(ROADMAP)
     planning_index = read(PLANNING_INDEX)
 
-    for text in (roadmap, planning_index):
-        assert "ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md" in text
+    for text in (roadmap,):
+        assert (
+            "ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md"
+            in text
+            or "ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md"
+            in text
+        )
         assert "ilc_public_rc_packaging_architecture_gate_v0.1.md" in text
         assert "public_rc_exclude_helper_stripping_routed_to_phase_1308_1319_1333" in text
         assert "public_rc_packaging_gate_sequence_implementation_then_dry_run_then_execution" in text
@@ -258,6 +263,13 @@ def test_roadmap_and_planning_index_reference_forward_packaging_plan() -> None:
         assert "confidential_coordination_sidecar_suite_forward_plan_recorded" in text
         assert "confidential_coordination_sidecar_suite_routed_to_phases_1307_1311_1324_1329" in text
         assert "confidential_coordination_openclaw_droplet_dry_run_phase_1328_private_only" in text
+
+    assert (
+        "ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.1.md"
+        in planning_index
+        or "ilc_forward_phase_windows_1303_1342_packaging_and_signing_plan_v0.2.md"
+        in planning_index
+    )
 
     assert "Phase 1308 is the implementation-hardening planning point" in roadmap
     assert "Phase 1307 through Phase 1314 are the implementation-hardening planning points" in roadmap

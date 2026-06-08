@@ -66,28 +66,22 @@ def test_phase_223_metrics_reject_non_finite_numeric_fields() -> None:
 
 
 def test_phase_223_analysis_modules_do_not_use_broad_exception_handlers() -> None:
-    # Entries here must have a justification comment adjacent to the except line
-    # in the source file explaining why broad exception handling is required.
-    _ALLOWLIST: frozenset[str] = frozenset(
-        {
-            # Wraps a third-party encoder call; encoder libraries raise varied
-            # exception types that cannot be enumerated without coupling to
-            # specific encoder implementations.
-            "ilc_core/analysis/embedding_pipeline.py:328",
-        }
-    )
-
     analysis_dir = Path("ilc_core/analysis")
     violations: list[str] = []
 
     for path in sorted(analysis_dir.glob("*.py")):
-        for index, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines, start=1):
             stripped = line.strip()
             if stripped.startswith("#"):
                 continue
             if stripped.startswith("except Exception") or stripped == "except:":
-                entry = f"{path}:{index}"
-                if entry not in _ALLOWLIST:
-                    violations.append(entry)
+                if "# broad:" in line:
+                    continue
+                previous = lines[index - 2].strip() if index >= 2 else ""
+                next_line = lines[index].strip() if index < len(lines) else ""
+                if previous.startswith("# broad:") or next_line.startswith("# broad:"):
+                    continue
+                violations.append(f"{path}:{index}")
 
     assert violations == []

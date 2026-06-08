@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 
 from ilc_core.analysis.node_value_policy_migration import normalize_node_value_policy_bundle
 from ilc_core.exceptions import PolicyMigrationError
@@ -14,8 +15,8 @@ def _canonical_policy_bundle() -> dict[str, object]:
             "path_uplift": 0.20,
         },
         "governance_policy": {
-            "inactivity_decay_lambda": 0.05,
-            "genesis_baseline_weight": 1.0,
+            "inactivity_decay_lambda": Decimal("0.05"),
+            "genesis_baseline_weight": Decimal("1.0"),
             "allow_genesis_bonus": True,
         },
         "reward_policy": {
@@ -54,8 +55,8 @@ def test_legacy_bridge_migrates_alias_fields() -> None:
             "path_uplift": 0.20,
         },
         "governance_weight_policy": {
-            "inactivity_decay_lambda": 0.05,
-            "genesis_baseline_weight": 1.0,
+            "inactivity_decay_lambda": Decimal("0.05"),
+            "genesis_baseline_weight": Decimal("1.0"),
             "allow_genesis_bonus": True,
         },
         "reward_governor_policy": {

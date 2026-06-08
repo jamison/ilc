@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import logging
+import math
+from decimal import Decimal
 from typing import Iterable, Literal, Mapping, TypedDict
 
 from ilc_core.exceptions import RewardGovernorError
@@ -89,6 +91,28 @@ DEFAULT_REWARD_GOVERNOR_POLICY: RewardGovernorPolicy = {
 }
 
 
+def _non_negative_float(value: object, token: str) -> float:
+    if isinstance(value, bool):
+        raise RewardGovernorError(token)
+    if isinstance(value, Decimal):
+        if not value.is_finite() or value < Decimal("0"):
+            raise RewardGovernorError(token)
+        return float(value)
+    if isinstance(value, (int, float)):
+        normalized = float(value)
+        if not math.isfinite(normalized) or normalized < 0.0:
+            raise RewardGovernorError(token)
+        return normalized
+    raise RewardGovernorError(token)
+
+
+def _unit_interval_float(value: object, token: str) -> float:
+    normalized = _non_negative_float(value, token)
+    if normalized > 1.0:
+        raise RewardGovernorError(token)
+    return normalized
+
+
 def get_action_utility_multiplier(action_kind: UtilityFlowActionKind) -> float:
     return float(_ACTION_UTILITY_MULTIPLIERS[action_kind])
 
@@ -106,17 +130,19 @@ def validate_reward_governor_policy(policy: Mapping[str, object]) -> RewardGover
     max_genesis_share = policy["max_genesis_share"]
     min_flow_threshold = policy["min_flow_threshold"]
 
-    if not isinstance(budget, (int, float)) or budget < 0.0:
-        raise RewardGovernorError("reward_governor_invalid_budget")
-    if not isinstance(max_genesis_share, (int, float)) or max_genesis_share < 0.0 or max_genesis_share > 1.0:
-        raise RewardGovernorError("reward_governor_invalid_max_genesis_share")
-    if not isinstance(min_flow_threshold, (int, float)) or min_flow_threshold < 0.0:
-        raise RewardGovernorError("reward_governor_invalid_min_flow_threshold")
-
     return {
-        "epoch_reward_budget": float(budget),
-        "max_genesis_share": float(max_genesis_share),
-        "min_flow_threshold": float(min_flow_threshold),
+        "epoch_reward_budget": _non_negative_float(
+            budget,
+            "reward_governor_invalid_budget",
+        ),
+        "max_genesis_share": _unit_interval_float(
+            max_genesis_share,
+            "reward_governor_invalid_max_genesis_share",
+        ),
+        "min_flow_threshold": _non_negative_float(
+            min_flow_threshold,
+            "reward_governor_invalid_min_flow_threshold",
+        ),
     }
 
 
@@ -135,58 +161,54 @@ def _validate_input_row(row: Mapping[str, object]) -> UtilityFlowRewardInput:
 
     if not isinstance(node_id, str) or node_id == "":
         raise RewardGovernorError("reward_governor_invalid_node_id")
-    if not isinstance(utility_flow, (int, float)) or utility_flow < 0.0:
-        raise RewardGovernorError("reward_governor_invalid_utility_flow")
     if not isinstance(is_genesis, bool):
         raise RewardGovernorError("reward_governor_invalid_is_genesis")
     if action_kind not in _ACTION_UTILITY_MULTIPLIERS:
         raise RewardGovernorError("reward_governor_invalid_action_kind")
-    if not isinstance(stake_spent, (int, float)) or stake_spent < 0.0:
-        raise RewardGovernorError("reward_governor_invalid_stake_spent")
-    if not isinstance(effort_units, (int, float)) or effort_units < 0.0:
-        raise RewardGovernorError("reward_governor_invalid_effort_units")
     if not isinstance(pairing_key, str):
         raise RewardGovernorError("reward_governor_invalid_pairing_key")
+    normalized_utility_flow = _non_negative_float(
+        utility_flow,
+        "reward_governor_invalid_utility_flow",
+    )
+    normalized_stake_spent = _non_negative_float(
+        stake_spent,
+        "reward_governor_invalid_stake_spent",
+    )
+    normalized_effort_units = _non_negative_float(
+        effort_units,
+        "reward_governor_invalid_effort_units",
+    )
     if reuse_diversity_multiplier is not None:
-        if (
-            isinstance(reuse_diversity_multiplier, bool)
-            or not isinstance(reuse_diversity_multiplier, (int, float))
-            or float(reuse_diversity_multiplier) < 0.0
-            or float(reuse_diversity_multiplier) > 1.0
-        ):
-            raise RewardGovernorError("reward_governor_invalid_reuse_diversity_multiplier")
+        normalized_reuse_diversity_multiplier = _unit_interval_float(
+            reuse_diversity_multiplier,
+            "reward_governor_invalid_reuse_diversity_multiplier",
+        )
+    else:
+        normalized_reuse_diversity_multiplier = None
     if not isinstance(diversity_applied_in_scoring, bool):
         raise RewardGovernorError("reward_governor_invalid_diversity_applied_in_scoring")
     if freshness_gate is not None:
-        if (
-            isinstance(freshness_gate, bool)
-            or not isinstance(freshness_gate, (int, float))
-            or float(freshness_gate) < 0.0
-            or float(freshness_gate) > 1.0
-        ):
-            raise RewardGovernorError("reward_governor_invalid_freshness_gate")
+        normalized_freshness_gate = _unit_interval_float(
+            freshness_gate,
+            "reward_governor_invalid_freshness_gate",
+        )
+    else:
+        normalized_freshness_gate = None
     if not isinstance(freshness_applied_in_scoring, bool):
         raise RewardGovernorError("reward_governor_invalid_freshness_applied_in_scoring")
 
     return {
         "node_id": node_id,
-        "utility_flow": float(utility_flow),
+        "utility_flow": normalized_utility_flow,
         "is_genesis": is_genesis,
         "action_kind": action_kind,
-        "stake_spent": float(stake_spent),
-        "effort_units": float(effort_units),
+        "stake_spent": normalized_stake_spent,
+        "effort_units": normalized_effort_units,
         "pairing_key": pairing_key,
-        "reuse_diversity_multiplier": (
-            float(reuse_diversity_multiplier)
-            if reuse_diversity_multiplier is not None
-            else None
-        ),
+        "reuse_diversity_multiplier": normalized_reuse_diversity_multiplier,
         "diversity_applied_in_scoring": diversity_applied_in_scoring,
-        "freshness_gate": (
-            float(freshness_gate)
-            if freshness_gate is not None
-            else None
-        ),
+        "freshness_gate": normalized_freshness_gate,
         "freshness_applied_in_scoring": freshness_applied_in_scoring,
     }
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from decimal import Decimal
 
 from fastapi.testclient import TestClient
 
@@ -18,7 +19,7 @@ def _build_valid_payload(content: str) -> dict:
         content=content,
         agent_id="agent:gossip:contract",
         signature="sig:gossip:contract",
-        net_stake=1.0,
+        net_stake=Decimal("1.0"),
     )
     node.id = node.compute_id()
     return node.model_dump(mode="json")
