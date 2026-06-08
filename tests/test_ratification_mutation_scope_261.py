@@ -35,6 +35,7 @@ def test_guardrail_module_exists() -> None:
 def test_allowed_field_constant_is_exact_required_set() -> None:
     assert ALLOWED_RATIFICATION_MUTATION_FIELDS == {
         "status",
+        "current_candidate",
         "ratified_phase",
         "ratified_date",
         "evidence_document",
@@ -52,12 +53,12 @@ def test_positive_path_allows_only_ratification_fields() -> None:
     assert_only_allowed_row_mutations(old, new, cdl_id="CDL-032")
 
 
-def test_negative_path_rejects_current_candidate_drift() -> None:
+def test_negative_path_rejects_options_drift() -> None:
     old = _mini_register(
         "| CDL-032 | ADM-002 | CLI-first Agent SDK interface contract and command surface | open | single CLI entry point | CLI-first (proposed) — see `ilc_adm_002_cli_first_agent_sdk_v0.1.md` | evidence |"
     )
     new = _mini_register(
-        "| CDL-032 | ADM-002 | CLI-first Agent SDK interface contract and command surface | open | single CLI entry point | CLI-first | evidence |"
+        "| CDL-032 | ADM-002 | CLI-first Agent SDK interface contract and command surface | open | multiple CLI entry points | CLI-first (proposed) — see `ilc_adm_002_cli_first_agent_sdk_v0.1.md` | evidence |"
     )
 
     try:
@@ -66,7 +67,7 @@ def test_negative_path_rejects_current_candidate_drift() -> None:
     except AssertionError as exc:
         message = str(exc)
         assert "CDL-032" in message
-        assert "current_candidate" in message
+        assert "options" in message
 
 
 def test_missing_target_row_fails() -> None:

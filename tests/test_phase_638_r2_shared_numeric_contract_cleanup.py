@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -108,13 +109,22 @@ def test_section_three_records_shared_contract_and_mapper_cleanup() -> None:
 def test_types_no_longer_define_float_bearing_net_stake_on_node_or_claim_record() -> None:
     text = _read(Path("ilc_core/types.py"))
     assert "net_stake: float" not in text
+    with pytest.raises(ValueError, match="invalid_net_stake"):
+        Node(
+            id="node:test",
+            type="claim",
+            content="x",
+            agent_id="agent:test",
+            signature="sig",
+            net_stake=10.0,
+        )
     node = Node(
         id="node:test",
         type="claim",
         content="x",
         agent_id="agent:test",
         signature="sig",
-        net_stake=10.0,
+        net_stake=Decimal("10.0"),
     )
     claim = ClaimRecord(
         id="claim:test",
@@ -147,8 +157,8 @@ def test_mapper_no_longer_uses_float_projection_and_emits_canonical_decimal_stri
         TaskOutcome(
             task_type="claim.submit",
             domain="MEDIUM",
-            stake_spent=0.1,
-            reward_paid=2.0,
+            stake_spent=Decimal("0.1"),
+            reward_paid=Decimal("2.0"),
             success=True,
         ),
         epoch=3,
@@ -159,7 +169,7 @@ def test_mapper_no_longer_uses_float_projection_and_emits_canonical_decimal_stri
         {
             "total_tasks": 10,
             "total_ecu_spent": "1.500",
-            "total_reward_paid": 2.0,
+            "total_reward_paid": Decimal("2.0"),
             "clearing_price_ilc_per_ecu": "1.333300",
         },
     )

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import re
+from decimal import Decimal
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -63,7 +64,7 @@ def test_gossip_receive_invalid_payload_contract_stable() -> None:
         content="runtime_logging_contract_test",
         agent_id="agent:gossip:contract",
         signature="sig:gossip:contract",
-        net_stake=1.0,
+        net_stake=Decimal("1"),
     )
     node.id = node.compute_id()
     payload = node.model_dump(mode="json")

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -183,12 +184,24 @@ def test_target_companion_files_remove_float_scalar_contract_and_reject_non_fini
             "canon_hash": "hash_abc",
             "canon_export_version": "v0.0.1",
             "epochs": [{"epoch_id": "e1"}],
-            "snapshots": [{"epoch_id": "e1", "balances": {"alice": 1.25}}],
-            "balances": {"alice": 1.25},
+            "snapshots": [{"epoch_id": "e1", "balances": {"alice": Decimal("1.25")}}],
+            "balances": {"alice": Decimal("1.25")},
         },
         exported_at="2026-02-05T00:00:00+00:00",
     )
     assert export_payload["snapshots"][0]["balances"]["alice"] == "1.25"
+
+    with pytest.raises(ValueError, match="invalid_numeric_scalar_in_canon_export"):
+        export_canon_format_v0_1(
+            {
+                "canon_hash": "hash_abc",
+                "canon_export_version": "v0.0.1",
+                "epochs": [{"epoch_id": "e1"}],
+                "snapshots": [{"epoch_id": "e1", "balances": {"alice": 1.25}}],
+                "balances": {"alice": Decimal("1.25")},
+            },
+            exported_at="2026-02-05T00:00:00+00:00",
+        )
 
 
 def test_phase_640_main_commit_touches_spec_test_and_bounded_companion_paths_without_decision_log_mutation() -> None:
