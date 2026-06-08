@@ -42,8 +42,17 @@ done
 
 cd "${REPO_ROOT}"
 
+PYTHON_BIN="${PYTHON:-}"
+if [ -z "${PYTHON_BIN}" ]; then
+    if [ -x ".venv/bin/python" ]; then
+        PYTHON_BIN=".venv/bin/python"
+    else
+        PYTHON_BIN="python3"
+    fi
+fi
+
 PYTEST_CMD=(
-    python3 -m pytest
+    "${PYTHON_BIN}" -m pytest
     tests/test_commit_epoch_emission_phase_193.py
     tests/test_epoch_summary_emission_phase_194.py
     tests/test_event_log_envelope_guardrail_phase_195.py

@@ -6,7 +6,7 @@ from typing import Dict, Iterable
 
 
 ALLOWED_RATIFICATION_MUTATION_FIELDS = frozenset(
-    {"status", "ratified_phase", "ratified_date", "evidence_document"}
+    {"status", "current_candidate", "ratified_phase", "ratified_date", "evidence_document"}
 )
 
 

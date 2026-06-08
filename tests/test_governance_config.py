@@ -1,5 +1,7 @@
 import sys
 import os
+from decimal import Decimal
+
 import pytest
 from ilc_core.config import load_governance_config
 from ilc_core.consensus.governance import Governance
@@ -31,10 +33,10 @@ def test_governance_init_with_config():
     gov = Governance(cfg)
     
     # Verify values propagated
-    assert gov.ecu_base_costs["claim.submit"] == 0.05
-    assert gov.genesis_median_potential == 0.1
+    assert gov.ecu_base_costs["claim.submit"] == Decimal("0.05")
+    assert gov.genesis_median_potential == Decimal("0.1")
     assert gov.backlog_enabled is True
-    assert gov.price_max == 1.5
+    assert gov.price_max == Decimal("1.5")
 
 def test_consensus_engine_default_config():
     """
@@ -44,8 +46,8 @@ def test_consensus_engine_default_config():
     engine = ConsensusEngine(graph)
     
     # Should have loaded the default config
-    assert engine.governance.ecu_base_costs["claim.submit"] == 0.05
-    assert engine.governance.genesis_median_potential == 0.1
+    assert engine.governance.ecu_base_costs["claim.submit"] == Decimal("0.05")
+    assert engine.governance.genesis_median_potential == Decimal("0.1")
 
 def test_consensus_engine_custom_config():
     """
@@ -65,5 +67,5 @@ def test_consensus_engine_custom_config():
     graph = EpistemicGraph()
     engine = ConsensusEngine(graph, governance_config=custom_cfg)
     
-    assert engine.governance.ecu_base_costs["claim.submit"] == 0.99
-    assert engine.governance.genesis_median_potential == 0.5
+    assert engine.governance.ecu_base_costs["claim.submit"] == Decimal("0.99")
+    assert engine.governance.genesis_median_potential == Decimal("0.5")

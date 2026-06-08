@@ -11,16 +11,16 @@ def test_hardware_scale_faster_network_cheaper_ecu():
     
     # Case 1: Same as genesis -> scale ~ 1.0
     gov.update_hardware_potential([0.1, 0.1, 0.1])
-    assert abs(gov.hardware_scale - 1.0) < 1e-6
+    assert abs(gov.hardware_scale - Decimal("1.0")) < Decimal("0.000001")
     
     # Case 2: Faster (0.5) -> scale should be 1 / (0.5/0.1) = 1/5 = 0.2
     # But it is clamped to 0.25
     gov.update_hardware_potential([0.4, 0.5, 0.6])
-    assert gov.hardware_scale == 0.25
+    assert gov.hardware_scale == Decimal("0.25")
     
     # Case 3: Moderately faster (0.2) -> scale = 1 / (0.2/0.1) = 0.5
     gov.update_hardware_potential([0.2])
-    assert abs(gov.hardware_scale - 0.5) < 1e-6
+    assert abs(gov.hardware_scale - Decimal("0.5")) < Decimal("0.000001")
 
 def test_hardware_scale_slower_network_more_expensive_ecu():
     """
@@ -31,11 +31,11 @@ def test_hardware_scale_slower_network_more_expensive_ecu():
     
     # Case: Slower (0.05) -> scale = 1 / (0.05/0.1) = 1 / 0.5 = 2.0
     gov.update_hardware_potential([0.05])
-    assert abs(gov.hardware_scale - 2.0) < 1e-6
+    assert abs(gov.hardware_scale - Decimal("2.0")) < Decimal("0.000001")
     
     # Case: Very slow (0.01) -> scale = 1 / 0.1 = 10.0 -> clamped to 4.0
     gov.update_hardware_potential([0.01])
-    assert gov.hardware_scale == 4.0
+    assert gov.hardware_scale == Decimal("4.0")
 
 def test_congestion_multiplier_increases_with_backlog():
     """
@@ -44,7 +44,7 @@ def test_congestion_multiplier_increases_with_backlog():
     gov = Governance()
     
     # Initial state -> 1.0
-    assert gov.congestion_multiplier == 1.0
+    assert gov.congestion_multiplier == Decimal("1.0")
     
     # Add backlog
     # backlog_gain is 0.05 by default
@@ -58,14 +58,14 @@ def test_congestion_multiplier_increases_with_backlog():
     metrics = BacklogMetrics(backlog_len=20, finalized_last_epoch=0)
     gov.update_congestion(metrics)
     
-    assert gov.congestion_multiplier > 1.0
+    assert gov.congestion_multiplier > Decimal("1.0")
     assert gov.congestion_multiplier <= gov.price_max
     
     # Check exact value if we trust the math:
     # score = 10.0
     # normalized = 10.0
     # factor = 1.0 + 0.05 * 10.0 = 1.5
-    assert abs(gov.congestion_multiplier - 1.5) < 1e-6
+    assert abs(gov.congestion_multiplier - Decimal("1.5")) < Decimal("0.000001")
 
 def test_get_task_fee_ecu_combines_hardware_and_congestion():
     """

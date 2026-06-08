@@ -24,6 +24,9 @@ def _venv_bin(venv_path: Path, executable: str) -> Path:
 
 def _run(cmd: list[str], cwd: Path, timeout: int = 600) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
+    cargo_bin = Path.home() / ".cargo" / "bin"
+    if cargo_bin.exists():
+        env["PATH"] = f"{cargo_bin}{os.pathsep}{env.get('PATH', '')}"
     env["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
     return subprocess.run(
         cmd,
@@ -149,4 +152,3 @@ def test_phase_228_provenance_file_shape_and_checksum_tokens() -> None:
     # Verify checksum token format sanity via deterministic digest generation.
     sample = sha256(b"phase-228-checksum-format").hexdigest()
     assert re.fullmatch(r"[a-f0-9]{64}", sample)
-

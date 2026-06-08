@@ -42,14 +42,23 @@ done
 
 cd "${REPO_ROOT}"
 
+PYTHON_BIN="${PYTHON:-}"
+if [ -z "${PYTHON_BIN}" ]; then
+    if [ -x ".venv/bin/python" ]; then
+        PYTHON_BIN=".venv/bin/python"
+    else
+        PYTHON_BIN="python3"
+    fi
+fi
+
 EVIDENCE_CMD=(
-    python3 -m pytest
+    "${PYTHON_BIN}" -m pytest
     tests/test_cdl_011_015_ratification_evidence_phase_215.py
     -q
 )
 
 REGRESSION_CMD=(
-    python3 -m pytest
+    "${PYTHON_BIN}" -m pytest
     tests/test_node_value_kernel_phase_205.py
     tests/test_node_value_conformance_phase_206.py
     tests/test_governance_weight_phase_207.py

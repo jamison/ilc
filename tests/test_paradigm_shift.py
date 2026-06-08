@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+from decimal import Decimal
 from datetime import datetime, timedelta, timezone
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -20,21 +21,21 @@ def test_paradigm_dynamics():
     old_node = Node(
         id="", type="claim", content="Earth is Flat", 
         agent_id="agent:ancient", signature="sig", timestamp=old_time,
-        net_stake=100.0 # High reuse
+        net_stake=Decimal("100.0") # High reuse
     )
     old_node.id = "node_ancient"
     graph.nodes[old_node.id] = old_node
-    engine.node_stakes[old_node.id] = 10.0
+    engine.node_stakes[old_node.id] = Decimal("10.0")
     
     # "New Rumor" - Created now
     new_node = Node(
         id="", type="claim", content="Stock X is up", 
         agent_id="agent:new", signature="sig",
-        net_stake=1.0 # Low reuse
+        net_stake=Decimal("1.0") # Low reuse
     )
     new_node.id = "node_new"
     graph.nodes[new_node.id] = new_node
-    engine.node_stakes[new_node.id] = 10.0
+    engine.node_stakes[new_node.id] = Decimal("10.0")
     
     # 2. Compare Tax (Maintenance)
     tax_old = engine.calculate_maintenance_tax(old_node)

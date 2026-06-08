@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 from fastapi.testclient import TestClient
 
 from ilc_core.server import create_app
@@ -13,7 +15,7 @@ def _build_gossip_payload(content: str) -> dict:
         content=content,
         agent_id="agent:isolation:test",
         signature="sig:isolation:test",
-        net_stake=1.0,
+        net_stake=Decimal("1.0"),
     )
     node.id = node.compute_id()
     return node.model_dump(mode="json")
@@ -48,8 +50,8 @@ def test_phase_199_peer_manager_state_isolation_between_app_instances() -> None:
     client_a.get("/")
     client_b.get("/")
 
-    client_a.post("/peers/add?host=10.10.10.1&port=9001")
-    client_a.post("/peers/add?host=10.10.10.2&port=9002")
+    client_a.post("/peers/add?host=phase-199-a.ilc.example&port=9001")
+    client_a.post("/peers/add?host=phase-199-b.ilc.example&port=9002")
 
     assert len(app_a.state.peer_manager.peers) == 2
     assert len(app_b.state.peer_manager.peers) == 0

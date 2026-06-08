@@ -65,12 +65,12 @@ def test_cdl_088_opening_artifacts_record_required_tokens() -> None:
     assert "phase_1375_cdl_088_deliberation_prelock_next" in opening
 
 
-def test_cdl_088_register_row_is_open_and_not_ratified() -> None:
+def test_cdl_088_register_row_records_opening_and_current_ratification() -> None:
     register = read(REGISTER)
     row = cdl_row(register, "CDL-088")
 
-    assert "| open |" in row
-    assert "| ratified |" not in row
+    assert "| ratified |" in row
+    assert "| open |" not in row
     assert "opened_phase: 1374" in row
     assert "opened_date: 2026-05-18" in row
     assert "opening_token: cdl_088_public_claimability_opened_phase_1374" in row
@@ -79,8 +79,9 @@ def test_cdl_088_register_row_is_open_and_not_ratified() -> None:
         "candidate_scope_token: cdl_088_bounded_claimability_candidate_scope_phase_1374"
         in row
     )
-    assert "prelock_status: deferred_to_phase_1375" in row
-    assert "ratification_status: not_ratified_phase_1374" in row
+    assert "prelock_phase: 1375" in row
+    assert "ratified_phase: 1376" in row
+    assert "ratification_token: cdl_088_ratified_phase_1376" in row
     assert "public_claimability_activation_status: not_enabled" in row
     assert "claim_endpoint_status: not_enabled" in row
     assert "runtime_activation_status: not_authorized" in row
@@ -119,5 +120,5 @@ def test_phase_1374_frontier_docs_route_phase_1375_next() -> None:
         assert "Phase 1375" in text
         assert "deliberation/prelock" in text
 
-    assert "Phase 1374 complete" in read(PLANNING_INDEX)
+    assert "Phase 1374" in read(STATUS)
     assert "CDL-only opening commit `43bcddc0`" in read(FORWARD_PLAN)

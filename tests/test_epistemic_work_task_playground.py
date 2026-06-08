@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from simulations.epistemic_work_task_playground import (
     run_epistemic_work_task_playground,
 )
@@ -16,8 +18,8 @@ def test_epistemic_work_task_playground_runs_and_returns_stats(tmp_path):
 
     for cls, s in stats.items():
         assert s["tasks"] >= 0
-        assert s["stake_spent"] >= 0.0
-        assert s["reward_paid"] >= 0.0
+        assert s["stake_spent"] >= Decimal("0")
+        assert s["reward_paid"] >= Decimal("0")
 
     # Ensure the log file was written and has at least one line
     assert log_file.exists()
@@ -31,4 +33,4 @@ def test_epistemic_work_task_rewards_non_negative(tmp_path):
         log_path=str(log_file),
     )
     for cls, s in stats.items():
-        assert s["reward_paid"] >= 0.0
+        assert s["reward_paid"] >= Decimal("0")

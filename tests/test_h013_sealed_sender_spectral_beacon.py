@@ -216,11 +216,14 @@ def test_terminal_open_requires_explicit_replay_cache() -> None:
 def test_terminal_replay_cache_is_bounded() -> None:
     cache = SpectralBeaconReplayCache(max_entries=2)
 
-    cache.check_and_store("emission:one")
-    cache.check_and_store("emission:two")
-    cache.check_and_store("emission:three")
+    cache.check_and_store("emission:one", epoch=1)
+    cache.check_and_store("emission:two", epoch=1)
+    cache.check_and_store("emission:three", epoch=1)
 
-    assert list(cache.seen_emission_ids) == ["emission:two", "emission:three"]
+    assert list(cache.seen_keys) == [
+        ("emission:two", 1),
+        ("emission:three", 1),
+    ]
 
 
 def test_malformed_terminal_payload_does_not_poison_replay_cache() -> None:
@@ -253,7 +256,7 @@ def test_malformed_terminal_payload_does_not_poison_replay_cache() -> None:
     with pytest.raises(SpectralBeaconValidationError) as exc:
         open_terminal_layer(invalid_relay_result, terminal.private_key, replay_cache=cache)
     assert exc.value.token == "h013_beacon_payload_invalid"
-    assert cache.seen_emission_ids == {}
+    assert cache.seen_keys == {}
 
     valid = build_sealed_spectral_beacon(
         beacon=_beacon(epoch=1, lambda_local=[0.1], noise_sigma=MIN_NOISE_SIGMA),
