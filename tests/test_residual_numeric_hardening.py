@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
+import pytest
+
 from ilc_core.exceptions import EventLogValidationError, LedgerExportContractError
 from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.canon_export_bundle import write_canon_export_bundle
@@ -27,10 +31,20 @@ def test_shared_contract_exact_numeric_stability_and_non_finite_rejection() -> N
         agent_id="agent:test",
         content="x",
         signature="sig",
-        net_stake=2.25,
+        net_stake=Decimal("2.25"),
     )
     assert node.model_dump(mode="json")["net_stake"] == "10.5"
     assert claim.model_dump(mode="json")["net_stake"] == "2.25"
+
+    with pytest.raises(ValueError, match="invalid_net_stake"):
+        ClaimRecord(
+            id="claim:float",
+            type="claim",
+            agent_id="agent:test",
+            content="x",
+            signature="sig",
+            net_stake=2.25,
+        )
 
     try:
         Node(
@@ -57,9 +71,9 @@ def test_protocol_mapping_exact_numeric_stability_uses_string_defaults() -> None
         8,
         {
             "total_tasks": 1,
-            "total_ecu_spent": 1.25,
+            "total_ecu_spent": Decimal("1.25"),
             "total_reward_paid": "2.5",
-            "clearing_price_ilc_per_ecu": 0.3333,
+            "clearing_price_ilc_per_ecu": Decimal("0.3333"),
         },
     )
     assert populated["total_ecu_spent"] == "1.25"
@@ -128,12 +142,24 @@ def test_canon_export_companion_layer_coherence_rejects_non_finite_values(tmp_pa
             "canon_hash": "hash:1",
             "canon_export_version": "v0.1",
             "epochs": [{"epoch_id": "e1"}],
-            "snapshots": [{"epoch_id": "e1", "balances": {"alice": 1.25}}],
-            "balances": {"alice": 1.25},
+            "snapshots": [{"epoch_id": "e1", "balances": {"alice": Decimal("1.25")}}],
+            "balances": {"alice": Decimal("1.25")},
         },
         exported_at="2026-02-05T00:00:00+00:00",
     )
     assert export_payload["snapshots"][0]["balances"]["alice"] == "1.25"
+
+    with pytest.raises(ValueError, match="invalid_numeric_scalar_in_canon_export"):
+        export_canon_format_v0_1(
+            {
+                "canon_hash": "hash:1",
+                "canon_export_version": "v0.1",
+                "epochs": [{"epoch_id": "e1"}],
+                "snapshots": [{"epoch_id": "e1", "balances": {"alice": 1.25}}],
+                "balances": {"alice": Decimal("1.25")},
+            },
+            exported_at="2026-02-05T00:00:00+00:00",
+        )
 
     validation = validate_canon_export_v0_1(
         {

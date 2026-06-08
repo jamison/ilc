@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from simulations.task_queue_reward_flow import run_task_queue_reward_flow
 
 
@@ -17,7 +19,7 @@ def test_task_queue_reward_flow_runs_and_returns_stats():
         "HARD_reward",
     ]:
         assert key in stats
-        assert stats[key] >= 0.0
+        assert stats[key] >= Decimal("0")
 
     # We should have processed exactly `steps` tasks in total.
     total_tasks = (

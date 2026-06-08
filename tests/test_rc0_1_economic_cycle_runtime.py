@@ -49,15 +49,15 @@ def _submission(
                 "solution": "stable-output" if variant != "divergent" else "divergent-output",
                 "claim_form": "falsifiable_positive",
                 "verification_method": "replayable-simulation",
-                "difficulty_factor": 1.0,
+                "difficulty_factor": "1.0",
             },
             "ep_task": {
                 "agent_id": agent_id,
                 "task_id": f"task:test:economic-cycle::{agent_id[:12]}",
                 "task_class": "graph.compression",
                 "task_state": "completed",
-                "difficulty_factor": 1.0,
-                "ecu.estimate": 2.0,
+                "difficulty_factor": "1.0",
+                "ecu.estimate": "2.0",
                 "verification_method": "replayable-simulation",
                 "output_hash": output_hash,
                 "timestamp_created": 1_700_000_100,
@@ -116,9 +116,9 @@ def _scenario_fixture(root: Path) -> Path:
                 "distinct_clusters": 4,
                 "distinct_cluster_floor": 3,
                 "diversity_floor_met": True,
-                "max_cluster_share": 0.25,
-                "agreement_score": 0.75,
-                "reproducibility_threshold": 0.7,
+                "max_cluster_share": "0.25",
+                "agreement_score": "0.75",
+                "reproducibility_threshold": "0.7",
                 "majority_output_hash": "hash-majority",
                 "direct_author_agent_id": "agent-alpha",
                 "verdict_token": "panel_quorum_passed",
@@ -182,8 +182,8 @@ def _scenario_fixture(root: Path) -> Path:
                     "epoch": 12,
                     "agent_id": "agent-alpha",
                     "claim_kind": "direct",
-                    "amount": 3.0,
-                    "basis": {"base_reward": 3.0, "confidence_score": 0.75},
+                    "amount": "3.0",
+                    "basis": {"base_reward": "3.0", "confidence_score": "0.75"},
                 },
                 {
                     "claim_id": "claim::passive",
@@ -191,20 +191,20 @@ def _scenario_fixture(root: Path) -> Path:
                     "epoch": 12,
                     "agent_id": "agent-beta",
                     "claim_kind": "passive",
-                    "amount": 1.0,
-                    "basis": {"base_reward": 3.0, "quality_score": 0.75},
+                    "amount": "1.0",
+                    "basis": {"base_reward": "3.0", "quality_score": "0.75"},
                 },
             ],
             "ledger": {
-                "ecu_spent": 2.0,
-                "clearing_price": 2.0,
-                "rewards_paid": 4.0,
+                "ecu_spent": "2.0",
+                "clearing_price": "2.0",
+                "rewards_paid": "4.0",
                 "tasks": 1,
             },
             "outcome_summary": {
                 "count": 1,
-                "total_reward": 4.0,
-                "total_stake": 2.0,
+                "total_reward": "4.0",
+                "total_stake": "2.0",
             },
         },
     )
@@ -388,7 +388,7 @@ def test_check_economic_state_rejects_reward_total_mismatch(tmp_path: Path) -> N
     materialize_economic_cycle(scenario_root=scenario_root, output_root=output_root)
     manifest_path = output_root / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["summary"]["reward_total"] = 9.0
+    manifest["summary"]["reward_total"] = "9.0"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
     verdict, failures, _summary = check_rc0_1_economic_state.check_economic_state(manifest_path)
@@ -436,9 +436,9 @@ def test_materialize_economic_cycle_rejects_conflicting_reuse_of_output_root(tmp
 
     claims_path = scenario_root / "panel" / "ecu_claims.json"
     claims_payload = json.loads(claims_path.read_text(encoding="utf-8"))
-    claims_payload["claims"][0]["amount"] = 2.5
-    claims_payload["ledger"]["rewards_paid"] = 3.5
-    claims_payload["outcome_summary"]["total_reward"] = 3.5
+    claims_payload["claims"][0]["amount"] = "2.5"
+    claims_payload["ledger"]["rewards_paid"] = "3.5"
+    claims_payload["outcome_summary"]["total_reward"] = "3.5"
     claims_path.write_text(json.dumps(claims_payload, indent=2) + "\n", encoding="utf-8")
 
     with pytest.raises(EconomicCycleRuntimeError, match="economic_runtime_root_conflict"):
