@@ -6,6 +6,8 @@ import time
 
 import requests
 
+REQUEST_TIMEOUT = (2.0, 10.0)
+
 def run_demo():
     print("--- 🚀 STARTING ILC GENESIS DEMO ---")
     
@@ -34,33 +36,36 @@ def run_demo():
         
         # 2. Check Status (The Handshake)
         print("\n1. Checking Node Status...")
-        resp = requests.get(f"{base_url}/")
+        resp = requests.get(f"{base_url}/", timeout=REQUEST_TIMEOUT)
         print(f"   Response: {resp.json()}")
         
         if resp.status_code != 200:
             raise Exception("Node failed to respond")
 
-        # 3. Add a Peer (The Discovery)
-        print("\n2. Adding Bootstrap Peer...")
-        requests.post(f"{base_url}/peers/add?host=10.0.0.1&port=8000")
-        print("   Peer added.")
+        # 3. Local demo boundary. Public/static peer wiring is intentionally
+        # excluded here; mining below should not depend on external peers.
+        print("\n2. Bootstrap peer step skipped for local-only demo.")
 
         # 4. Mine a Claim (The Labor)
         print("\n3. Mining Genesis Claim 'Hello World'...")
         payload = {
             "content": "Hello ILC World",
             "parent_id": "axiom:math:01", # Linking to Genesis Axiom
-            "stake": 2.0
+            "stake": "2.0",
         }
-        mine_resp = requests.post(f"{base_url}/mine", json=payload)
+        mine_resp = requests.post(f"{base_url}/mine", json=payload, timeout=REQUEST_TIMEOUT)
         mining_data = mine_resp.json()
         print(f"   Mining Result: {mining_data}")
+        if mine_resp.status_code != 200:
+            raise Exception(f"Mining failed: {mining_data}")
         
         node_id = mining_data.get("node_id")
+        if not isinstance(node_id, str) or not node_id:
+            raise Exception(f"Mining response missing node_id: {mining_data}")
         
         # 5. Verify the Graph (The Truth)
         print(f"\n4. Verifying Node {node_id[:8]} in Graph...")
-        read_resp = requests.get(f"{base_url}/node/{node_id}")
+        read_resp = requests.get(f"{base_url}/node/{node_id}", timeout=REQUEST_TIMEOUT)
         print(f"   Graph Verification: {read_resp.json()}")
         
         print("\n--- DEMO COMPLETE: SYSTEM IS LIVE ---")

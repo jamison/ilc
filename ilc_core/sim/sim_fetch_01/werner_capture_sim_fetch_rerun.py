@@ -18,6 +18,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Mapping
 
+JsonMapping = Mapping[str, object]
+
 from ilc_core.sim.sim_fetch_01.werner_topology_capture_schema import (
     validate_werner_topology_capture_package,
 )
@@ -70,7 +72,7 @@ def _decimal_ratio(numerator: int, denominator: int) -> str:
     return str((Decimal(numerator) / Decimal(denominator)).quantize(Decimal("0.000000")))
 
 
-def analyze_capture_package(payload: Mapping[str, Any]) -> dict[str, Any]:
+def analyze_capture_package(payload: JsonMapping) -> dict[str, Any]:
     """Return deterministic topology-pressure coverage metrics from capture data."""
 
     summary = validate_werner_topology_capture_package(payload)
@@ -121,7 +123,7 @@ def analyze_capture_package(payload: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def build_sim_fetch_config_from_capture(payload: Mapping[str, Any]) -> dict[str, Any]:
+def build_sim_fetch_config_from_capture(payload: JsonMapping) -> dict[str, Any]:
     """Build a bounded SIM-FETCH Werner replay config from the capture package."""
 
     analysis = analyze_capture_package(payload)
@@ -155,7 +157,7 @@ def build_sim_fetch_config_from_capture(payload: Mapping[str, Any]) -> dict[str,
     }
 
 
-def _evaluate_sim_fetch_result(sim_payload: Mapping[str, Any]) -> dict[str, Any]:
+def _evaluate_sim_fetch_result(sim_payload: JsonMapping) -> dict[str, Any]:
     aggregate = sim_payload["sim_result"]["aggregate_over_epochs"]
     routed_failure = Decimal(str(aggregate["routed_effective_tier_ab_failure_rate"]))
     routed_holder_hit_rate = Decimal(str(aggregate["routed_holder_hit_rate"]))
@@ -235,7 +237,7 @@ def build_phase_1508_rerun_result(
 
 
 def export_phase_1508_rerun_json(
-    payload: Mapping[str, Any],
+    payload: JsonMapping,
     *,
     max_bytes: int = DEFAULT_MAX_BYTES,
 ) -> str:

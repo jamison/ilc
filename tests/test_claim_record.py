@@ -1,4 +1,5 @@
 import pytest
+from decimal import Decimal
 from ilc_core.types import ClaimRecord, node_to_claim_record, claim_record_to_node
 from ilc_core.graph import EpistemicGraph
 
@@ -9,7 +10,7 @@ def test_claim_record_round_trip():
         type="claim",
         agent_id="agent:a",
         content="foo",
-        net_stake=3.0,
+        net_stake=Decimal("3.0"),
         timestamp="2025-01-01T00:00:00",
         parent_ids=["p1", "p2"],
         target_id=None,
@@ -37,7 +38,7 @@ def test_epistemic_graph_add_and_get_claim():
         type="claim",
         agent_id="agent:a",
         content="foo",
-        net_stake=3.0,
+        net_stake=Decimal("3.0"),
         timestamp="2025-01-01T00:00:00",
         parent_ids=[],
         target_id=None,

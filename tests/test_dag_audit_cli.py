@@ -147,9 +147,16 @@ def test_dag_audit_empty_sig_reports_honestly(
     env, db = _open_epoch_db(fixture / "lmdb")
     with env.begin(write=True, db=db) as txn:
         value = txn.get(EPOCH_1_KEY)
+        sig_len = int.from_bytes(
+            value[STORED_CHECKPOINT_RECORD_LEN : STORED_CHECKPOINT_RECORD_LEN + 8],
+            "little",
+        )
+        signers_tail = value[STORED_CHECKPOINT_RECORD_LEN + 8 + sig_len :]
         txn.put(
             EPOCH_1_KEY,
-            value[:STORED_CHECKPOINT_RECORD_LEN] + (0).to_bytes(8, "little"),
+            value[:STORED_CHECKPOINT_RECORD_LEN]
+            + (0).to_bytes(8, "little")
+            + signers_tail,
         )
     env.close()
 
@@ -174,4 +181,5 @@ def test_dag_audit_output_schema(
     assert "epoch_results" in report
     assert "verdict" in report
     assert "high_002_note" in report
-    assert "all-N aggregate" in report["high_002_note"]
+    assert "signers subset" in report["high_002_note"]
+    assert "quorum_threshold(N)" in report["high_002_note"]

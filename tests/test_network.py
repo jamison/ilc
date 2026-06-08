@@ -14,7 +14,13 @@ def test_gossip_protocol():
     client.get("/")
     
     # 1. Populate Peer Table
-    peers = ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5"]
+    peers = [
+        "phase-network-1.ilc.example",
+        "phase-network-2.ilc.example",
+        "phase-network-3.ilc.example",
+        "phase-network-4.ilc.example",
+        "phase-network-5.ilc.example",
+    ]
     peer_manager = app.state.peer_manager
     peer_manager.peers.clear()
     for p in peers:

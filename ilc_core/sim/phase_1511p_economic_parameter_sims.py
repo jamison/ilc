@@ -19,6 +19,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Mapping
 
+JsonMapping = Mapping[str, object]
 
 PHASE_1511P_SIM_BATCH_VERSION = "phase_1511p_economic_parameter_sims.v0.1"
 
@@ -125,7 +126,7 @@ def _prepare_for_export(value: Any) -> Any:
 
 
 def export_phase_1511p_json(
-    payload: Mapping[str, Any],
+    payload: JsonMapping,
     *,
     max_bytes: int = MAX_EXPORT_BYTES,
 ) -> str:
@@ -451,7 +452,7 @@ def _markdown_table(headers: tuple[str, ...], rows: list[tuple[str, ...]]) -> st
     return "\n".join([header, separator, *body])
 
 
-def render_bounty_markdown(payload: Mapping[str, Any]) -> str:
+def render_bounty_markdown(payload: JsonMapping) -> str:
     pressure_rows = [
         (
             str(row["bounty_request_fraction_of_b_e"]),
@@ -549,7 +550,7 @@ runtime behavior.
 """
 
 
-def render_transfer_cooling_markdown(payload: Mapping[str, Any]) -> str:
+def render_transfer_cooling_markdown(payload: JsonMapping) -> str:
     transfer_rows = [
         (
             str(row["base_transfer_tax_rate"]),

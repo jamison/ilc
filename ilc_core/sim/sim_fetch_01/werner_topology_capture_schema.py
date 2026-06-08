@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 from typing import Any, Mapping
 
+JsonMapping = Mapping[str, object]
 
 WERNER_TOPOLOGY_CAPTURE_SCHEMA_VERSION = (
     "werner_topology_capture_schema_phase_1506p.v0.1"
@@ -85,7 +86,7 @@ def _reject_float_tree(value: Any, path: str) -> None:
             _reject_float_tree(item, f"{path}[{index}]")
 
 
-def _require_mapping(value: Any, path: str) -> Mapping[str, Any]:
+def _require_mapping(value: Any, path: str) -> JsonMapping:
     if not isinstance(value, Mapping):
         raise ValueError(f"werner_capture_expected_mapping:{path}")
     return value
@@ -115,7 +116,7 @@ def _require_bool(value: Any, token: str) -> bool:
     return value
 
 
-def _validate_provenance(payload: Mapping[str, Any]) -> None:
+def _validate_provenance(payload: JsonMapping) -> None:
     provenance = _require_mapping(payload.get("provenance"), "provenance")
     for key in (
         "capture_command",
@@ -141,7 +142,7 @@ def _validate_provenance(payload: Mapping[str, Any]) -> None:
             raise ValueError(f"werner_capture_provenance_{key}_must_be_true")
 
 
-def _validate_nodes(payload: Mapping[str, Any]) -> set[str]:
+def _validate_nodes(payload: JsonMapping) -> set[str]:
     nodes = _require_list(payload.get("nodes"), "nodes")
     if len(nodes) < 4:
         raise ValueError("werner_capture_minimum_four_nodes_required")
@@ -219,7 +220,7 @@ def _validate_pressure(pressure_value: Any, node_ids: set[str], path: str) -> No
         raise ValueError("werner_capture_pressure_latency_bucket_unsupported")
 
 
-def _validate_observation_windows(payload: Mapping[str, Any], node_ids: set[str]) -> None:
+def _validate_observation_windows(payload: JsonMapping, node_ids: set[str]) -> None:
     windows = _require_list(payload.get("observation_windows"), "observation_windows")
     if len(windows) < 3:
         raise ValueError("werner_capture_minimum_three_windows_required")
@@ -264,7 +265,7 @@ def _validate_observation_windows(payload: Mapping[str, Any], node_ids: set[str]
             raise ValueError("werner_capture_pressure_node_set_mismatch")
 
 
-def validate_werner_topology_capture_package(payload: Mapping[str, Any]) -> dict[str, Any]:
+def validate_werner_topology_capture_package(payload: JsonMapping) -> dict[str, Any]:
     """Validate a Phase 1506p-compatible Werner topology capture package."""
 
     if not isinstance(payload, Mapping):
@@ -460,7 +461,7 @@ def build_option_b_live_private_testbed_fixture(
 
 
 def export_werner_topology_capture_json(
-    payload: Mapping[str, Any],
+    payload: JsonMapping,
     *,
     max_bytes: int = DEFAULT_WERNER_CAPTURE_MAX_BYTES,
 ) -> str:

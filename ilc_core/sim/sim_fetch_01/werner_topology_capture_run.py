@@ -20,6 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+JsonMapping = Mapping[str, object]
+
 from ilc_core.sim.sim_fetch_01.werner_topology_capture_schema import (
     CAPTURE_MODE_OPTION_B,
     COMMON_REQUIRED_TOKENS,
@@ -112,7 +114,7 @@ def _tailscale_cli() -> str:
     raise ValueError("phase_1507p_tailscale_cli_not_found")
 
 
-def _tailscale_status() -> Mapping[str, Any]:
+def _tailscale_status() -> JsonMapping:
     completed = _run_command(
         [_tailscale_cli(), "status", "--json"],
         timeout_seconds=10,
@@ -122,7 +124,7 @@ def _tailscale_status() -> Mapping[str, Any]:
     return json.loads(completed.stdout)
 
 
-def _first_tailscale_ip(record: Mapping[str, Any], node_id: str) -> str:
+def _first_tailscale_ip(record: JsonMapping, node_id: str) -> str:
     ips = record.get("TailscaleIPs")
     if not isinstance(ips, list) or not ips:
         raise ValueError(f"phase_1507p_tailscale_ip_missing:{node_id}")
@@ -132,7 +134,7 @@ def _first_tailscale_ip(record: Mapping[str, Any], node_id: str) -> str:
     return ip
 
 
-def _resolve_nodes(status: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
+def _resolve_nodes(status: JsonMapping) -> dict[str, dict[str, Any]]:
     self_record = status.get("Self")
     if not isinstance(self_record, Mapping):
         raise ValueError("phase_1507p_tailscale_self_missing")
@@ -153,7 +155,7 @@ def _resolve_nodes(status: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
         }
     }
     for node_id in REMOTE_NODES:
-        matches: list[Mapping[str, Any]] = []
+        matches: list[JsonMapping] = []
         for peer in peers.values():
             if not isinstance(peer, Mapping):
                 continue
@@ -177,7 +179,7 @@ def _resolve_nodes(status: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
     return nodes
 
 
-def _build_known_hosts_file(remote_nodes: Mapping[str, Mapping[str, Any]]) -> str:
+def _build_known_hosts_file(remote_nodes: Mapping[str, JsonMapping]) -> str:
     ips = [str(remote_nodes[node_id]["tailscale_ip"]) for node_id in REMOTE_NODES]
     completed = _run_command(
         ["ssh-keyscan", "-T", "8", *ips],
@@ -214,7 +216,7 @@ def _ssh_args(ip: str, known_hosts_path: str, remote_command: str) -> list[str]:
 
 
 def _verify_remote_hosts(
-    nodes: Mapping[str, Mapping[str, Any]],
+    nodes: Mapping[str, JsonMapping],
     known_hosts_path: str,
 ) -> dict[str, dict[str, str]]:
     evidence: dict[str, dict[str, str]] = {}
@@ -264,7 +266,7 @@ def _bounded_excerpt(stdout: str, stderr: str) -> str:
 def _run_probe(
     source_node_id: str,
     target_node_id: str,
-    nodes: Mapping[str, Mapping[str, Any]],
+    nodes: Mapping[str, JsonMapping],
     known_hosts_path: str,
 ) -> ProbeResult:
     target_ip = str(nodes[target_node_id]["tailscale_ip"])
@@ -291,7 +293,7 @@ def _run_probe(
 
 def _build_observation_window(
     window_index: int,
-    nodes: Mapping[str, Mapping[str, Any]],
+    nodes: Mapping[str, JsonMapping],
     known_hosts_path: str,
 ) -> dict[str, Any]:
     node_ids = list(NODE_ORDER)
