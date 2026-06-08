@@ -52,5 +52,5 @@ def test_compute_id_rejects_non_dag_cbor_payload() -> None:
         agent_id="agent:test",
         signature="sig",
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unsupported type float"):
         _ = node.compute_id()
