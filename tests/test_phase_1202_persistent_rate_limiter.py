@@ -93,9 +93,15 @@ def test_atomic_write(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     limiter.check_and_consume("requester-a", 1)
     limiter.save(state_path)
 
-    assert calls == [(tmp_path / ".limiter.json.tmp", state_path)]
+    assert len(calls) == 1
+    tmp_write_path, final_path = calls[0]
+    assert final_path == state_path
+    assert tmp_write_path.parent == tmp_path
+    assert tmp_write_path.name.startswith(".limiter.")
+    assert tmp_write_path.name.endswith(".tmp")
+    assert tmp_write_path != state_path
     assert state_path.read_text(encoding="utf-8") == "old"
-    assert (tmp_path / ".limiter.json.tmp").exists()
+    assert tmp_write_path.exists()
 
 
 def test_requester_ids_hashed(tmp_path: Path) -> None:

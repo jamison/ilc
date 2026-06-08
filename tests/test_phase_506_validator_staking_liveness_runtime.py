@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import ilc_core.validator as validator_pkg
@@ -99,17 +100,17 @@ def test_penalty_fraction_constants() -> None:
 
 
 def test_active_state_validation() -> None:
-    result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 0, False)
+    result = staking_liveness_runtime.validate_staking_and_liveness_state(Decimal("400"), 0, False)
     assert result == {'status': 'active', 'penalty_fraction': '0'}
 
 
 def test_liveness_penalty_state() -> None:
-    result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 8, False)
+    result = staking_liveness_runtime.validate_staking_and_liveness_state(Decimal("400"), 8, False)
     assert result == {'status': 'liveness_penalty', 'penalty_fraction': '0.25'}
 
 
 def test_equivocation_slash_state() -> None:
-    result = staking_liveness_runtime.validate_staking_and_liveness_state(400.0, 0, True)
+    result = staking_liveness_runtime.validate_staking_and_liveness_state(Decimal("400"), 0, True)
     assert result == {'status': 'equivocation_slash', 'penalty_fraction': '1'}
 
 
@@ -118,8 +119,9 @@ def test_validate_staking_and_liveness_state_rejects_invalid_inputs() -> None:
         ((True, 0, False), 'stake_must_be_positive'),
         (('400', 0, False), 'stake_must_be_positive'),
         ((0.0, 0, False), 'stake_must_be_positive'),
-        ((400.0, -1, False), 'consecutive_missed_epochs_must_be_non_negative_int'),
-        ((400.0, 0, 'no'), 'equivocation_state_must_be_bool'),
+        ((400.0, 0, False), 'stake_must_be_positive'),
+        ((Decimal("400"), -1, False), 'consecutive_missed_epochs_must_be_non_negative_int'),
+        ((Decimal("400"), 0, 'no'), 'equivocation_state_must_be_bool'),
     )
     for args, expected_token in invalid_cases:
         try:

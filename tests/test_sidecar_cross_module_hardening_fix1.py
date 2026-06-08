@@ -191,7 +191,7 @@ def test_sidecar_payload_node_budgets_count_mapping_keys(
 
 def test_sidecar_epoch_zero_is_rejected_on_epoch_surfaces() -> None:
     with pytest.raises(crv.ClaimabilityReceiptVerifierError) as crv_exc:
-        crv._require_non_negative_int(0, token="claimability_conversion_receipt_invalid_phase_1305")
+        crv._require_positive_int(0, token="claimability_conversion_receipt_invalid_phase_1305")
     assert crv_exc.value.token == "claimability_conversion_receipt_invalid_phase_1305"
 
     with pytest.raises(tpa.TransportPrincipalAdmissionSidecarError) as tpa_exc:

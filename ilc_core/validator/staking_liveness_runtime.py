@@ -14,7 +14,7 @@ LIVENESS_PENALTY_FRACTION = Decimal("0.25")
 
 
 def validate_staking_and_liveness_state(
-    stake: Decimal | int | float | str,
+    stake: Decimal | int | str,
     consecutive_missed_epochs: int,
     equivocation_state: bool,
 ) -> dict[str, str]:

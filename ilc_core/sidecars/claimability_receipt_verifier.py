@@ -714,19 +714,19 @@ def _normalize_conversion_receipt(
         token="claimability_conversion_receipt_invalid_phase_1305",
         positive=True,
     )
-    issue_epoch = _require_non_negative_int(
+    issue_epoch = _require_positive_int(
         payload["issue_epoch"],
         token="claimability_conversion_receipt_invalid_phase_1305",
     )
-    deadline_epoch = _require_non_negative_int(
+    deadline_epoch = _require_positive_int(
         payload["deadline_epoch"],
         token="claimability_conversion_receipt_invalid_phase_1305",
     )
-    conversion_epoch = _require_non_negative_int(
+    conversion_epoch = _require_positive_int(
         payload["conversion_epoch"],
         token="claimability_conversion_receipt_invalid_phase_1305",
     )
-    settled_epoch = _require_non_negative_int(
+    settled_epoch = _require_positive_int(
         payload["settled_runtime_epoch"],
         token="claimability_conversion_receipt_invalid_phase_1305",
     )
@@ -1257,6 +1257,16 @@ def _require_non_negative_int(value: object, *, token: str) -> int:
             "required non-negative bounded integer",
         )
     return value
+
+
+def _require_positive_int(value: object, *, token: str) -> int:
+    number = _require_non_negative_int(value, token=token)
+    if number < 1:
+        raise ClaimabilityReceiptVerifierError(
+            token,
+            "required positive bounded integer",
+        )
+    return number
 
 
 def _require_decimal_string(

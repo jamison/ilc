@@ -7,6 +7,7 @@ consume economic telemetry and adapt their behavior (e.g. domain selection).
 """
 from __future__ import annotations
 import secrets
+from decimal import Decimal
 from typing import Dict, List
 
 from .telemetry import RLHook
@@ -27,7 +28,7 @@ class SimpleBanditHook(RLHook):
         self.epsilon = epsilon
         self._rng = secrets.SystemRandom()
         self.counts: Dict[str, int] = {d: 0 for d in domains}
-        self.values: Dict[str, float] = {d: 0.0 for d in domains}
+        self.values: Dict[str, Decimal] = {d: Decimal("0") for d in domains}
 
     def choose_domain(self) -> str:
         """
@@ -59,5 +60,5 @@ class SimpleBanditHook(RLHook):
         old_value = self.values[arm]
         
         # Incremental mean update: Q_n+1 = Q_n + (R - Q_n) / n
-        new_value = old_value + (reward - old_value) / float(n)
+        new_value = old_value + (reward - old_value) / Decimal(n)
         self.values[arm] = new_value

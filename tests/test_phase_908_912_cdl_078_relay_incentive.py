@@ -229,7 +229,12 @@ def test_want_block_success_records_serve_event(mock_store_with_node, rate_limit
     with patch(
         "ilc_core.network.d2d.routing_reputation_runtime.record_serve_event"
     ) as mock_record:
-        status, _ = handle_want_block_request(body, mock_store_with_node, rate_limiter)
+        status, _ = handle_want_block_request(
+            body,
+            mock_store_with_node,
+            rate_limiter,
+            serve_epoch=1,
+        )
 
     assert status == 200
     mock_record.assert_called_once()
