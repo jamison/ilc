@@ -1,6 +1,6 @@
 """Tests for the protocol-governed iterative epistemic refinement sidecar.
 
-Phase: 1546p support — idea-descent rehearsal sidecar
+Phase: support-only addendum — idea-descent rehearsal sidecar
 LOCAL_ONLY: True
 NO_GRAPH_WRITES: True
 NO_ECU_ALLOCATED: True

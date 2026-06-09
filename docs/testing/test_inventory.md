@@ -1,6 +1,6 @@
 # ILC Test Inventory
 
-Status: Phase 1545p-Fix2 support inventory.
+Status: Phase 1545p-Fix3 support inventory.
 
 This document describes the current test suite at a broad operational level. It
 is not a per-test-function catalog. The authoritative executable policy is in
@@ -109,6 +109,22 @@ Run a specific prompt validation with:
 
 These checks validate phase-prompt schema discipline. They are not runtime
 correctness tests; they prevent prompt drift before implementation.
+
+## Idea-Descent Rehearsal Tests
+
+Run:
+
+```bash
+.venv/bin/python -m pytest tests/test_phase_1546p_idea_descent_rehearsal_sidecar.py tests/test_idea_descent_phase_prompt_loop.py tests/test_idea_descent_genesis_star_map_loop.py -q
+```
+
+These tests cover the local-only protocol-governed refinement sidecar, the
+phase-prompt schema demonstration loop, and the Genesis star-map candidate
+refinement loop. The Genesis evaluator checks the v0.3 star-map candidate
+against required Genesis Agent 1 authority nodes, the seven truth primitives,
+edge endpoint closure, decomposition recipes, and signed-candidate hash
+discipline. These tests do not authorize graph writes, signing, public serving,
+Window 1546p opening, or public RC publication.
 
 ## Rust Consensus Tests
 
