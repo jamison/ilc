@@ -5,6 +5,7 @@
     "description": "ILC founding authority",
     "agent_id": "GENESIS_AGENT_ID_PLACEHOLDER",
     "ccss_recipient_pubkey": "GENESIS_AGENT_PUBKEY_HEX_PLACEHOLDER",
-    "ccss_contact_onion": "ONION_ADDRESS_PLACEHOLDER"
+    "ccss_contact_onion": "ONION_ADDRESS_PLACEHOLDER",
+    "ccss_peer_endpoint": "PEER_ENDPOINT_PLACEHOLDER"
   }
 ]
