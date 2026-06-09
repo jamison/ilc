@@ -399,12 +399,12 @@ function renderInbox(inbox) {
   count.textContent = items.length;
 
   if (items.length === 0) {
-    view.innerHTML = \`
+    view.innerHTML = `
       <div class="empty">
         <div class="icon">⬡</div>
         <p>No sealed envelopes received yet.<br>
            Waiting for senders via Tor hidden service.</p>
-      </div>\`;
+      </div>`;
     return;
   }
 
@@ -415,21 +415,21 @@ function renderInbox(inbox) {
     const statusText  = sizeOk
       ? '✓ ' + env.size_bytes + 'B  H013 outer envelope'
       : '⚠ unexpected size: ' + env.size_bytes + 'B (expected 4156)';
-    return \`
-      <div class="envelope \${sizeOk ? '' : 'size-warn'}">
+    return `
+      <div class="envelope ${sizeOk ? '' : 'size-warn'}">
         <div class="env-header">
           <span class="env-badge">sealed</span>
           <span class="env-token">
-            <span class="short">\${env.token_short}</span>
-            <span class="full">\${env.token}</span>
+            <span class="short">${env.token_short}</span>
+            <span class="full">${env.token}</span>
           </span>
         </div>
         <div class="env-meta">
-          <span><strong>Received:</strong> \${dt}</span>
-          <span><strong>File:</strong> \${env.filename}</span>
+          <span><strong>Received:</strong> ${dt}</span>
+          <span><strong>File:</strong> ${env.filename}</span>
         </div>
-        <div class="env-status \${statusClass}">\${statusText}</div>
-      </div>\`;
+        <div class="env-status ${statusClass}">${statusText}</div>
+      </div>`;
   }).join('');
 
   view.innerHTML = '<div class="messages">' + cards + '</div>';
