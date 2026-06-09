@@ -36,7 +36,7 @@ from typing import Any
 
 
 IDEA_DESCENT_REHEARSAL_SIDECAR_VERSION = (
-    "protocol_governed_epistemic_refinement_sidecar_phase_1546p.v0.1"
+    "protocol_governed_epistemic_refinement_sidecar_support.v0.1"
 )
 IDEA_DESCENT_SIDECAR_NOT_PUBLIC_SERVING = True
 IDEA_DESCENT_SIDECAR_NO_GRAPH_WRITES = True
@@ -44,10 +44,10 @@ IDEA_DESCENT_SIDECAR_NO_ECU_ALLOCATED = True
 IDEA_DESCENT_SIDECAR_NO_CDL_ADR_MUTATION = True
 
 IDEA_DESCENT_SIDECAR_LOCAL_ONLY_TOKEN = (
-    "idea_descent_rehearsal_sidecar_local_only_phase_1546p"
+    "idea_descent_rehearsal_sidecar_local_only_support_v0_1"
 )
 IDEA_DESCENT_SIDECAR_NO_ACTIVATION_TOKEN = (
-    "idea_descent_rehearsal_sidecar_no_activation_phase_1546p"
+    "idea_descent_rehearsal_sidecar_no_activation_support_v0_1"
 )
 
 # Evaluator surface identifiers — matches the test_inventory.md evaluator families

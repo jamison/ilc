@@ -12,10 +12,10 @@ Drives one step of a descent loop:
 
 Usage:
   .venv/bin/python tools/idea_descent_runner.py \\
-    --objective docs/specs/ilc_idea_descent_phase_prompt_objective_v0.1.md \\
-    --candidate tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v1.md \\
-    --evaluator tools/evaluators/phase_prompt_evaluator.py \\
-    --trace-out out/idea_descent/phase_prompt_loop_trace.json
+    --objective docs/specs/ilc_idea_descent_genesis_star_map_objective_v0.1.md \\
+    --candidate out/genesis_core_star_map_v0.3_candidate.json \\
+    --evaluator tools/evaluators/genesis_star_map_evaluator.py \\
+    --trace-out out/idea_descent/genesis_star_map_trace.json
 
 Evaluator module contract:
   Each evaluator module must expose:
@@ -46,7 +46,9 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -65,6 +67,7 @@ from ilc_core.sidecars.idea_descent_rehearsal import (
     build_evaluation_result,
     build_refutation_report,
     canonical_descent_trace_json,
+    validate_descent_trace,
 )
 
 
@@ -87,27 +90,37 @@ def _load_existing_steps(trace_path: Path) -> tuple[str, str, list[dict[str, Any
     if not trace_path.exists():
         return trace_path.stem, "", []
     raw = json.loads(trace_path.read_text(encoding="utf-8"))
+    validated = validate_descent_trace(raw)
     return (
-        raw.get("trace_id", trace_path.stem),
-        raw.get("objective", ""),
-        list(raw.get("steps", [])),
+        validated["trace_id"],
+        validated["objective"],
+        list(validated["steps"]),
     )
 
 
 def _auto_revision_plan(refutation_reports: list[dict[str, Any]]) -> str | None:
     if not refutation_reports:
         return None
+    max_len = 3600
     lines = ["Fix the following:"]
-    for r in refutation_reports:
+    for index, r in enumerate(refutation_reports):
         severity = r.get("severity", "minor")
         direction = r.get("correction_direction", "")
         invariant = r.get("failed_invariant", "")
         artifact = r.get("source_artifact", "")
-        lines.append(f"  [{severity.upper()}] {invariant}")
+        next_lines = [f"  [{severity.upper()}] {invariant}"]
         if artifact:
-            lines.append(f"    Source: {artifact}")
+            next_lines.append(f"    Source: {artifact}")
         if direction:
-            lines.append(f"    Fix: {direction}")
+            next_lines.append(f"    Fix: {direction}")
+        candidate = "\n".join(lines + next_lines)
+        if len(candidate) > max_len:
+            remaining = len(refutation_reports) - index
+            lines.append(
+                f"  [{severity.upper()}] {remaining} additional refutation(s) omitted from this summary; see trace refutation_reports."
+            )
+            break
+        lines.extend(next_lines)
     return "\n".join(lines)
 
 
@@ -118,16 +131,16 @@ def _print_revision_brief(
     refutation_reports: list[dict[str, Any]],
     trace_path: Path,
 ) -> None:
-    sep = "─" * 72
+    sep = "-" * 72
     print(sep)
     print(f"Idea Descent Step {step_index}  |  verdict: {verdict.upper()}")
     print(f"Candidate : {candidate_path}")
     print(f"Trace     : {trace_path}")
     print(sep)
     if verdict == VERDICT_ACCEPTED:
-        print("✓ All evaluators passed. Candidate accepted.")
+        print("[PASS] All evaluators passed. Candidate accepted.")
     else:
-        print(f"✗ {len(refutation_reports)} invariant(s) failed:\n")
+        print(f"[FAIL] {len(refutation_reports)} invariant(s) failed:\n")
         for i, r in enumerate(refutation_reports, 1):
             severity = r.get("severity", "minor").upper()
             print(f"  {i}. [{severity}] {r.get('failed_invariant', '')}")
@@ -142,8 +155,32 @@ def _print_revision_brief(
             if replay:
                 print(f"     Replay: {replay}")
             print()
-        print("→ Revise the candidate and re-run with the updated file.")
+        print("-> Revise the candidate and re-run with the updated file.")
     print(sep)
+
+
+def _write_text_atomic(path: Path, text: str) -> None:
+    """Write text with same-directory atomic replace."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=str(path.parent),
+        text=True,
+    )
+    tmp_path = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_path, path)
+    except Exception:
+        try:
+            tmp_path.unlink()
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def run_step(
@@ -246,11 +283,7 @@ def run_step(
     )
 
     # --- Save trace ---
-    trace_path.parent.mkdir(parents=True, exist_ok=True)
-    trace_path.write_text(
-        canonical_descent_trace_json(trace) + "\n",
-        encoding="utf-8",
-    )
+    _write_text_atomic(trace_path, canonical_descent_trace_json(trace) + "\n")
 
     # --- Print revision brief ---
     _print_revision_brief(
