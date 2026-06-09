@@ -16,9 +16,11 @@ from tools.evaluators.blocks.scope_binder import bind_scope
 from tools.evaluators.blocks.evidence_classifier import classify_evidence
 from tools.evaluators.blocks.falsifiability_checker import check_falsifiability
 from tools.evaluators.ilc_decomposition_evaluator import (
+    DEFAULT_PROFILES,
     EVALUATOR_ID,
     EVALUATOR_TYPE,
     decompose_and_evaluate,
+    load_profiles,
     run_evaluation,
 )
 from ilc_core.sidecars.idea_descent_rehearsal import (
@@ -427,5 +429,111 @@ def test_two_step_descent_reduces_failure_count() -> None:
     r1 = run_evaluation(_REFINED_CANDIDATE, "")
     assert r0["failure_count"] > 0, "Step 0 should have failures"
     assert r1["failure_count"] < r0["failure_count"], (
-        f"Step 1 should improve: {r0['failure_count']} → {r1['failure_count']}"
+        f"Step 1 should improve: {r0['failure_count']} -> {r1['failure_count']}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Profile system
+# ---------------------------------------------------------------------------
+
+
+def test_default_profile_is_en_scientific_claims() -> None:
+    assert DEFAULT_PROFILES == ["en_scientific_claims"]
+
+
+def test_load_profiles_returns_modules() -> None:
+    profiles = load_profiles(["en_scientific_claims"])
+    assert len(profiles) == 1
+    assert profiles[0].PROFILE_ID == "en_scientific_claims"
+
+
+def test_load_all_three_profiles() -> None:
+    profiles = load_profiles([
+        "en_scientific_claims",
+        "romer_macro_ai_transition",
+        "ilc_protocol_claims",
+    ])
+    ids = [p.PROFILE_ID for p in profiles]
+    assert "en_scientific_claims" in ids
+    assert "romer_macro_ai_transition" in ids
+    assert "ilc_protocol_claims" in ids
+
+
+def test_load_unknown_profile_raises() -> None:
+    with pytest.raises(ImportError, match="unknown profile"):
+        load_profiles(["nonexistent_profile_xyz"])
+
+
+def test_profile_contract_fields() -> None:
+    """Each profile must declare required metadata fields."""
+    required = [
+        "PROFILE_ID", "LANGUAGE_PROFILE", "DOMAIN_PROFILE",
+        "UNSUPPORTED_LANGUAGE_POLICY", "INPUT_SCHEMA", "OUTPUT_SCHEMA",
+        "AUTHORITY_POSTURE",
+    ]
+    for name in ["en_scientific_claims", "romer_macro_ai_transition", "ilc_protocol_claims"]:
+        profiles = load_profiles([name])
+        mod = profiles[0]
+        for field in required:
+            assert hasattr(mod, field), f"Profile {name} missing field {field}"
+
+
+def test_profile_authority_posture_is_local_only() -> None:
+    for name in ["en_scientific_claims", "romer_macro_ai_transition", "ilc_protocol_claims"]:
+        profiles = load_profiles([name])
+        assert profiles[0].AUTHORITY_POSTURE == "local_only"
+
+
+def test_decompose_with_romer_profile_adds_ai_capital_risk() -> None:
+    """romer_macro_ai_transition profile adds AI-capital scope risks beyond base."""
+    text = (
+        "Diminishing returns to human capital also apply to AI capital, "
+        "because AI workers follow the same production function as human workers."
+    )
+    result = decompose_and_evaluate(text, "test", profiles=["romer_macro_ai_transition"])
+    assert "romer_macro_ai_transition" in result["profile_metadata"]["profiles_loaded"]
+    scope_risk_reports = [
+        r for r in result["reports"]
+        if "scope_risk" in r.get("failed_invariant", "")
+    ]
+    assert len(scope_risk_reports) > 0
+
+
+def test_decompose_with_ilc_protocol_profile_adds_pre_canon_risk() -> None:
+    """ilc_protocol_claims profile adds pre-canon scope risks."""
+    text = (
+        "The Werner flow-governor is ratified law governing all epoch pressure decisions, "
+        "even though it is not yet ratified and is deferred pending CDL."
+    )
+    result = decompose_and_evaluate(text, "test", profiles=["ilc_protocol_claims"])
+    assert "ilc_protocol_claims" in result["profile_metadata"]["profiles_loaded"]
+    scope_risk_reports = [
+        r for r in result["reports"]
+        if "scope_risk" in r.get("failed_invariant", "")
+    ]
+    assert len(scope_risk_reports) > 0
+
+
+def test_run_evaluation_summary_includes_profile_name() -> None:
+    result = run_evaluation(_RAW_CANDIDATE, "")
+    assert "en_scientific_claims" in result["summary"]
+
+
+def test_run_evaluation_objective_profile_directive() -> None:
+    """Profile can be set via 'profiles:' line in objective text."""
+    objective = "profiles: romer_macro_ai_transition\nGoal: evaluate Romer claims."
+    result = run_evaluation(_RAW_CANDIDATE, objective)
+    assert "romer_macro_ai_transition" in result["summary"]
+
+
+def test_objective_file_exists() -> None:
+    """The objective file referenced in REPLAY_COMMAND_TEMPLATE must exist."""
+    from tools.evaluators.ilc_decomposition_evaluator import REPLAY_COMMAND_TEMPLATE
+    import re
+    match = re.search(r"--objective (\S+)", REPLAY_COMMAND_TEMPLATE)
+    assert match, "REPLAY_COMMAND_TEMPLATE must contain --objective <path>"
+    obj_path = Path(match.group(1))
+    assert obj_path.exists(), (
+        f"Objective file referenced in REPLAY_COMMAND_TEMPLATE does not exist: {obj_path}"
     )
