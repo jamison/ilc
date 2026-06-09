@@ -1,0 +1,20 @@
+[Unit]
+Description=CCSS Relay Server — Genesis Agent inbound sealed-envelope endpoint
+Documentation=https://github.com/ILC-Foundation/ilc/blob/main/docs/contact/genesis_agent_contact_protocol_v0.1.md
+After=network.target
+Wants=tor.service
+
+[Service]
+Type=simple
+User=ccss
+Group=ccss
+ExecStart=/usr/bin/python3 /opt/ilc/tools/ccss_relay/ccss_relay_server.py \
+    --inbox /var/lib/ccss/inbox/genesis \
+    --port 8420
+Restart=on-failure
+RestartSec=5
+# Loopback-only; Tor connects locally.  No public port is opened by this service.
+# Tor hidden service config: deploy/tor/torrc.template
+
+[Install]
+WantedBy=multi-user.target

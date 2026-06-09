@@ -1,0 +1,18 @@
+# CCSS Tor hidden service configuration template
+# -----------------------------------------------
+# Deploy by appending to /etc/tor/torrc (or %include /etc/tor/torrc.d/ccss.conf)
+# on ilc-node-2 or ilc-node-3.
+#
+# After `systemctl restart tor`, the generated .onion address appears at:
+#   /var/lib/tor/ccss_hs/hostname
+#
+# Record that address in:
+#   docs/contact/genesis_agent_contact_protocol_v0.1.md  (ONION_ADDRESS_PLACEHOLDER)
+#   SECURITY.md  (ONION_ADDRESS_PLACEHOLDER)
+
+# Genesis Agent CCSS hidden service
+HiddenServiceDir /var/lib/tor/ccss_hs/
+HiddenServicePort 80 127.0.0.1:8420
+
+# v3 onion services only (56-char .onion address, Ed25519-based)
+HiddenServiceVersion 3
