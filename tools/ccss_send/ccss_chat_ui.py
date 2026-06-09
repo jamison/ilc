@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-only
-"""CCSS Epistemic Graph UI — graph-native operator dashboard.
+"""CCSS Epistemic Graph UI — graph-native operator dashboard (human interface).
+
+Transport is selected automatically per-contact via ccss_transport.resolve_transport:
+  DirectTransport (ccss_peer_endpoint host:port) — fastest, no Tor
+  TorTransport    (ccss_contact_onion  .onion)   — anonymous fallback
+  D2dTransport    (agent_id)                      — future ILC peer routing
 
 Graph model:
   - Self (operator) node on the left.
@@ -36,42 +41,20 @@ _DEFAULT_CONTACTS = (
 )
 _DEFAULT_INBOX = Path.home() / ".ccss_inbox" / "genesis"
 _DEFAULT_SENT  = Path.home() / ".ccss_inbox" / "sent"
-_TOR_HOST = "127.0.0.1"
-_TOR_PORT = 9050
 _OUTER_ENVELOPE_BYTES = 4156
 _MAX_MESSAGE_BYTES = 2000
 
 
 # ---------------------------------------------------------------------------
-# Tor / SOCKS5 send
+# Transport (delegates to ccss_transport module)
 # ---------------------------------------------------------------------------
 
-def _socks5_send(onion: str, path: str, body: bytes) -> dict[str, Any]:
-    host_b = onion.encode()
-    with socket.create_connection((_TOR_HOST, _TOR_PORT), timeout=30) as s:
-        s.sendall(b"\x05\x01\x00")
-        if s.recv(2) != b"\x05\x00":
-            raise RuntimeError("SOCKS5 auth negotiation failed")
-        s.sendall(b"\x05\x01\x00\x03" + bytes([len(host_b)]) + host_b + b"\x00\x50")
-        resp = s.recv(10)
-        if resp[1] != 0x00:
-            raise RuntimeError(f"SOCKS5 CONNECT failed: {resp[1]}")
-        req = (
-            f"POST {path} HTTP/1.0\r\nHost: {onion}\r\n"
-            f"Content-Type: application/octet-stream\r\nContent-Length: {len(body)}\r\n\r\n"
-        ).encode() + body
-        s.sendall(req)
-        raw = b""
-        while True:
-            chunk = s.recv(4096)
-            if not chunk:
-                break
-            raw += chunk
-    header, _, resp_body = raw.partition(b"\r\n\r\n")
-    code = int(header.split(b"\r\n")[0].split(b" ")[1])
-    if code not in (200, 202):
-        raise RuntimeError(f"Relay returned HTTP {code}")
-    return json.loads(resp_body)
+def _load_transport():
+    _root = Path(__file__).resolve().parent.parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from tools.ccss_send.ccss_transport import resolve_transport  # type: ignore
+    return resolve_transport
 
 
 def _seal(message: str, pubkey_hex: str) -> bytes:
@@ -133,7 +116,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     @staticmethod
     def _tor_live() -> bool:
         try:
-            with socket.create_connection((_TOR_HOST, _TOR_PORT), timeout=2):
+            with socket.create_connection(("127.0.0.1", 9050), timeout=2):
                 return True
         except OSError:
             return False
@@ -223,12 +206,15 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._json({"ok": False, "error": "contact not found"}, 404)
             return
         pubkey = contact.get("ccss_recipient_pubkey", "")
-        onion  = contact.get("ccss_contact_onion", "")
         if not pubkey or "PLACEHOLDER" in pubkey.upper():
             self._json({"ok": False, "error": "pubkey placeholder not set"}, 400)
             return
-        if not onion or "PLACEHOLDER" in onion.upper():
-            self._json({"ok": False, "error": "onion placeholder not set"}, 400)
+        # Resolve transport (direct peer → tor → d2d stub)
+        try:
+            resolve = _load_transport()
+            transport, endpoint = resolve(contact)
+        except ValueError as exc:
+            self._json({"ok": False, "error": str(exc)}, 400)
             return
         try:
             envelope = _seal(message, pubkey)
@@ -236,13 +222,16 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._json({"ok": False, "error": f"encrypt: {exc}"}, 500)
             return
         try:
-            result = _socks5_send(onion, "/submit", envelope)
+            result = transport.send(envelope, endpoint)
         except Exception as exc:
-            self._json({"ok": False, "error": f"send: {exc}"}, 502)
+            self._json({"ok": False, "error": f"send ({transport.name}): {exc}"}, 502)
             return
         receipt = result.get("receipt_token", hashlib.sha256(envelope).hexdigest())
         ts      = int(time.time())
-        record  = {"ts": ts, "contact_id": contact_id, "message": message, "receipt": receipt}
+        record  = {
+            "ts": ts, "contact_id": contact_id, "message": message,
+            "receipt": receipt, "transport": transport.name,
+        }
         sent_d  = self.sent_dir / contact_id
         sent_d.mkdir(parents=True, exist_ok=True)
         out     = sent_d / f"{ts}_{receipt[:8]}.json"
@@ -250,14 +239,14 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         fd, tmp = tempfile.mkstemp(dir=sent_d)
         try:
             with os.fdopen(fd, "w") as fh:
-                json.dump(record, fh)
+                json.dump(record, fh, sort_keys=True)
             os.replace(tmp, out)
         except Exception:
             try:
                 os.unlink(tmp)
             except OSError:
                 pass
-        self._json({"ok": True, "receipt": receipt})
+        self._json({"ok": True, "receipt": receipt, "transport": transport.name})
 
     def _json(self, data: Any, code: int = 200) -> None:
         body = json.dumps(data, sort_keys=True).encode()
