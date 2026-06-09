@@ -1,10 +1,10 @@
 # Phase 1448a — Pre-Publication Review Checklist
 
-**Status:** OPEN — public publication path paused 2026-05-29 pending patent filing/counsel disposition or renewed risk authorization
+**Status:** OPEN — public publication path paused 2026-05-29; FedEx physical delivery to USPTO recorded 2026-06-09; official filing receipts/application numbers, counsel disposition, or renewed risk authorization still pending
 **Sensitivity:** NON-SENSITIVE (review only; no push occurs in this phase)
 **Feeds into:** Phase 1448b (actual public repository push)
 
-**Current routing addendum (2026-05-29):** USPTO/ID.me access delay blocks near-term patent filing. The active route is now `docs/specs/ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md`: continue private soft-RC development, but do not authorize Phase 1448b public publication. The previous deferred-risk path remains historically documented, but it is not the current recommended path.
+**Current routing addendum (2026-06-09):** FedEx physical delivery of the five reported US provisional packets to the USPTO Patent Customer Service Window is recorded in `docs/specs/ilc_us_provisional_patent_delivery_receipt_1545p_fix4_v0.1.md`. This does not itself supply official USPTO application numbers, filing receipts, counsel disposition, or Phase 1448b public-publication authorization. The active route remains `docs/specs/ilc_soft_rc_private_continuation_plan_1448x_to_1500_v0.1.md`: continue private soft-RC development, but do not authorize Phase 1448b public publication.
 
 ---
 
@@ -217,7 +217,7 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
   query-response/co-attested inference artifacts, processing-capacity tier declarations,
   and invitation/provenance chains without executable payloads in core graph nodes.
 
-**Current decision before 1448b:** public publication is paused. Continue private soft-RC work until patent filing/counsel disposition or renewed human risk authorization is recorded.
+**Current decision before 1448b:** public publication is paused. Continue private soft-RC work until official USPTO filing receipts/application numbers, counsel/publication disposition, or renewed human risk authorization is recorded.
 
 **Historical 1448b decision paths (do not execute while the 2026-05-29 pause is active):**
 - [ ] **Path 1 — Obtained:** Record counsel disposition summary and any provisional application reference
@@ -231,9 +231,19 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
 **2026-05-27 rehydration note:** `docs/research/patent_pending/` now contains a
 five-provisional draft package, Filing 5 guidance/spec materials, figure SVGs,
 figure traceability audit, `NOTICE.md`, `LICENSE.txt`, and a five-provisional
-filing checklist. No actual application has been filed by this repo update.
-This remains the highest-priority blocking item before 1448b unless the human
-records explicit deferred-risk authorization.
+filing checklist. As of that 2026-05-27 repo update, no actual application had
+been filed by that update. This historical note is superseded in part by the
+2026-06-09 physical-delivery evidence update below, but official USPTO filing
+receipts/application numbers remain pending.
+
+**2026-06-09 delivery evidence update:** FedEx screenshots provided by the
+human operator record tracking number `872685541879` as delivered to the USPTO
+Patent Customer Service Window, Knox Building Room 1D80, 501 Dulany St,
+Alexandria, VA 22314 US, on 2026-06-08 at 13:18, signed for by `J.Hederson`.
+The human operator reports that the one delivered FedEx package contained five
+separate US provisional patent packets. This is physical-delivery evidence only:
+official USPTO filing receipts and application numbers remain pending, and the
+public path remains blocked.
 
 ### E2 — Trademark
 
@@ -303,7 +313,8 @@ Required inputs for Phase 1448b.
 | D1 | methodology.md ships? | RESOLVED — ships; force-included in DEFAULT_FORCE_INCLUDE_PATHS | 2026-05-25 |
 | D2 | metaphysics.md ships? | RESOLVED — ships; "Genesis Agent" pseudonym applied | 2026-05-25 |
 | D3 | FUNDING.md ships? | RESOLVED — ships; added to DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
-| E1 | Patent counsel disposition (Path 1: obtained OR Path 2: deferred with rationale) | PENDING — BLOCKING | — |
+| E1 | Patent counsel disposition (Path 1: obtained OR Path 2: deferred with rationale) | PENDING — BLOCKING; physical delivery recorded but official filing receipts/application numbers pending | — |
+| E1a | US provisional packet physical delivery evidence | RECORDED — FedEx delivery to USPTO Customer Service Window on 2026-06-08 at 13:18; tracking `872685541879`; application numbers/filing receipts pending | 2026-06-09 |
 | F1 | CONTRIBUTING.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
 | F2 | SECURITY.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
 | G | publication_target + publication_tag | RESOLVED — `https://github.com/ILC-Foundation/ilc`, tag `v0.3-public-rc` | 2026-05-25 |
@@ -312,7 +323,7 @@ Required inputs for Phase 1448b.
 - A1 — **RESOLVED 2026-05-25** — `tree_sha256: 925d6399399c7f82f52cf17318687a9d625d7e64ef2b0e2fc6586fd15c036361`
 - A4 — **RESOLVED 2026-05-28** — Option A (fresh mirror); `Genesis Agent <ilcops@proton.me>`; push instructions recorded above
 - CDL-095 — **RESOLVED 2026-05-25** — `cdl_095_ratified_phase_1448c` token emitted (Phase 1448c)
-- E1 — **PENDING — BLOCKING** — patent counsel disposition: file 5 provisionals at USPTO (awaiting id.me / myUSPTO account access) OR record explicit deferred-risk authorization; token `patent_counsel_disposition_recorded_phase_1448a`
+- E1 — **PENDING — BLOCKING** — patent/publication disposition: physical FedEx delivery of the five reported US provisional packets is recorded, but official USPTO filing receipts/application numbers are pending. Phase 1448b remains blocked unless official filing references are recorded, counsel/publication disposition is recorded, or explicit renewed risk authorization is recorded.
 - G — **RESOLVED 2026-05-25** — `publication_target: https://github.com/ILC-Foundation/ilc`, `publication_tag: v0.3-public-rc`
 
-**Summary:** One blocker remains — E1 (patent filing). All other pre-publication review items are resolved.
+**Summary:** One blocker remains — E1 (official USPTO filing receipts/application numbers or separate counsel/risk publication disposition). All other pre-publication review items are resolved.
