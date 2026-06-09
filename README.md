@@ -26,9 +26,16 @@ cd ilc_consensus && cargo build --release
 
 `python3 tools/genesis_boot.py` Reads `config/genesis.json` and prints the Genesis hash.
 
+## Contact
+
+Genesis Agent is reachable via the CCSS sealed-sender relay (Tor v3 hidden service).
+See [docs/contact/genesis_agent_contact_protocol_v0.1.md](docs/contact/genesis_agent_contact_protocol_v0.1.md)
+for the endpoint address, envelope format, and submission instructions.
+
 ## Security
 
-Do not open public issues for vulnerabilities. Follow [SECURITY.md](SECURITY.md).
+Do not open public issues for vulnerabilities. The CCSS channel is the preferred
+route for security findings. See [SECURITY.md](SECURITY.md).
 
 ## License
 
