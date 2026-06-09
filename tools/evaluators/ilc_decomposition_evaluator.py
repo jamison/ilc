@@ -24,13 +24,26 @@ Usage (via runner):
 
 Usage (standalone / recipe testing):
   .venv/bin/python tools/evaluators/ilc_decomposition_evaluator.py \\
-    --candidate <path_to_claim_document>
+    --candidate <path_to_claim_document> \\
+    [--profiles en_scientific_claims romer_macro_ai_transition]
 
 Evaluation pipeline (per claim):
-  1. claim_extractor  — segments text into candidate assertion units
-  2. scope_binder     — annotates each claim with domain, regime, assumptions
-  3. evidence_classifier — labels evidence type and evidence-bridge risks
+  1. claim_extractor       — segments text into candidate assertion units
+  2. scope_binder          — annotates each claim with domain, regime, assumptions
+                             (extended by profile SCOPE_RISK_PATTERNS and DOMAIN_PATTERNS)
+  3. evidence_classifier   — labels evidence type and evidence-bridge risks
+                             (extended by profile EVIDENCE_RISK_PATTERNS)
   4. falsifiability_checker — tests operational falsifiability
+
+Profile system:
+  Profiles live in tools/evaluators/profiles/ and provide domain- and language-
+  specific pattern extensions without modifying the base blocks.  The default
+  profile is en_scientific_claims.  Multiple profiles may be composed.
+
+  Available profiles:
+    en_scientific_claims      — English scientific/technical documents (default)
+    romer_macro_ai_transition — Romer/Solow growth models + AI-capital bridge risks
+    ilc_protocol_claims       — ILC protocol specs, ADR/CDL/OBL/runtime claims
 
 Severity mapping:
   CRITICAL    — claim is structurally unfalsifiable AND asserted (blocks ILC submission)
@@ -41,8 +54,10 @@ Severity mapping:
 from __future__ import annotations
 
 import argparse
+import importlib
 import sys
 from pathlib import Path
+from types import ModuleType
 from typing import Any
 
 _ROOT = Path(__file__).resolve().parent.parent.parent
@@ -56,8 +71,8 @@ from ilc_core.sidecars.idea_descent_rehearsal import (
     SEVERITY_SIGNIFICANT,
 )
 from tools.evaluators.blocks.claim_extractor import extract_claims
-from tools.evaluators.blocks.scope_binder import bind_scope
-from tools.evaluators.blocks.evidence_classifier import classify_evidence
+from tools.evaluators.blocks.scope_binder import bind_scope, _HIGH_RISK_SCOPES, _DOMAIN_PATTERNS
+from tools.evaluators.blocks.evidence_classifier import classify_evidence, _BRIDGE_RISKS
 from tools.evaluators.blocks.falsifiability_checker import check_falsifiability
 
 EVALUATOR_ID = "ilc_decomposition_evaluator_v0.1"
@@ -70,15 +85,75 @@ REPLAY_COMMAND_TEMPLATE = (
     "--trace-out out/idea_descent/decomposition_trace.json"
 )
 
+DEFAULT_PROFILES = ["en_scientific_claims"]
+
 # ---------------------------------------------------------------------------
 # Severity thresholds
 # ---------------------------------------------------------------------------
 
-# Number of claims that must be ILC-refutable for the candidate to pass
 _MIN_REFUTABLE_FRACTION = 0.5
-
-# Evidence types that are considered "weak" for a claim that makes causal assertions
 _WEAK_EVIDENCE_FOR_CAUSAL = {"asserted", "descriptive", "definitional"}
+
+# ---------------------------------------------------------------------------
+# Profile loading
+# ---------------------------------------------------------------------------
+
+
+def load_profiles(profile_names: list[str]) -> list[ModuleType]:
+    """Import profile modules by name from tools.evaluators.profiles."""
+    profiles: list[ModuleType] = []
+    for name in profile_names:
+        module_path = f"tools.evaluators.profiles.{name}"
+        try:
+            mod = importlib.import_module(module_path)
+        except ImportError as exc:
+            raise ImportError(
+                f"ilc_decomposition_evaluator: unknown profile '{name}' "
+                f"(expected module at {module_path}): {exc}"
+            ) from exc
+        profiles.append(mod)
+    return profiles
+
+
+def _apply_profiles(profiles: list[ModuleType]) -> None:
+    """Merge profile pattern extensions into the base block pattern lists.
+
+    This mutates the module-level lists in scope_binder and evidence_classifier
+    for the duration of this Python process.  Each call to decompose_and_evaluate
+    with a different profile set should re-apply cleanly — but since we append
+    and don't deduplicate, callers should not mix profile sets in a single process.
+    """
+    seen_scope = {id(p) for p in _HIGH_RISK_SCOPES}
+    seen_evidence = {id(p) for p in _BRIDGE_RISKS}
+    seen_domain = {id(p) for p in _DOMAIN_PATTERNS}
+
+    for profile in profiles:
+        for pattern_triple in getattr(profile, "SCOPE_RISK_PATTERNS", []):
+            if id(pattern_triple) not in seen_scope:
+                _HIGH_RISK_SCOPES.append(pattern_triple)
+                seen_scope.add(id(pattern_triple))
+        for pattern_triple in getattr(profile, "EVIDENCE_RISK_PATTERNS", []):
+            if id(pattern_triple) not in seen_evidence:
+                _BRIDGE_RISKS.append(pattern_triple)
+                seen_evidence.add(id(pattern_triple))
+        for domain_pair in getattr(profile, "DOMAIN_PATTERNS", []):
+            if id(domain_pair) not in seen_domain:
+                _DOMAIN_PATTERNS.append(domain_pair)
+                seen_domain.add(id(domain_pair))
+
+
+def _profile_metadata(profiles: list[ModuleType]) -> dict[str, Any]:
+    return {
+        "profiles_loaded": [getattr(p, "PROFILE_ID", p.__name__) for p in profiles],
+        "language_profiles": list({getattr(p, "LANGUAGE_PROFILE", "en") for p in profiles}),
+        "domain_profiles": [getattr(p, "DOMAIN_PROFILE", "general") for p in profiles],
+        "authority_posture": "local_only",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Report builder
+# ---------------------------------------------------------------------------
 
 
 def _make_report(
@@ -89,9 +164,7 @@ def _make_report(
     severity: str,
     claim_id: str | None = None,
 ) -> dict[str, Any]:
-    artifact = (
-        f"{candidate_path}::{claim_id}" if claim_id else candidate_path
-    )
+    artifact = f"{candidate_path}::{claim_id}" if claim_id else candidate_path
     return {
         "failed_invariant": invariant,
         "source_artifact": artifact,
@@ -102,12 +175,16 @@ def _make_report(
     }
 
 
+# ---------------------------------------------------------------------------
+# Claim evaluation loop
+# ---------------------------------------------------------------------------
+
+
 def _evaluate_claims(
     records: list[dict[str, Any]],
     candidate_path: str,
     reports: list[dict[str, Any]],
 ) -> None:
-    """Walk the fully-annotated claim records and emit refutation reports."""
     n_total = len(records)
     n_refutable = 0
 
@@ -157,7 +234,7 @@ def _evaluate_claims(
                 )
             )
 
-        # SIGNIFICANT: scope-risk warnings
+        # SIGNIFICANT: scope-risk warnings (from base blocks + profiles)
         for w in scope_warnings:
             if "scope_risk" in w:
                 reports.append(
@@ -173,7 +250,7 @@ def _evaluate_claims(
                     )
                 )
 
-        # SIGNIFICANT: evidence-bridge risks
+        # SIGNIFICANT: evidence-bridge risks (from base blocks + profiles)
         for w in evidence_warnings:
             if "evidence_risk" in w:
                 reports.append(
@@ -217,7 +294,7 @@ def _evaluate_claims(
                     )
                 )
 
-    # Global: not enough refutable claims
+    # Global: insufficient refutable claims
     if n_total > 0:
         fraction = n_refutable / n_total
         if fraction < _MIN_REFUTABLE_FRACTION:
@@ -239,36 +316,65 @@ def _evaluate_claims(
                 )
             )
 
+    return n_refutable
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
 
 def decompose_and_evaluate(
     text: str,
     candidate_path: str,
+    profiles: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Run the full four-block pipeline on *text*.
+    """Run the full four-block pipeline on *text* with optional profile extensions.
 
-    Returns a dict with keys: records, reports, n_claims, n_refutable.
-    This function is called by run_evaluation() and is also importable
-    for use in tests and other evaluator recipes.
+    Args:
+        text:           Raw document text.
+        candidate_path: Stable identifier for the source.
+        profiles:       List of profile names to load (default: en_scientific_claims).
+
+    Returns:
+        Dict with keys: records, reports, n_claims, n_refutable, profile_metadata.
     """
+    profile_names = profiles if profiles is not None else DEFAULT_PROFILES
+    loaded = load_profiles(profile_names)
+    _apply_profiles(loaded)
+
     claims = extract_claims(text, source_id=candidate_path)
     scoped = [bind_scope(c) for c in claims]
     evidenced = [classify_evidence(s) for s in scoped]
     full = [check_falsifiability(e) for e in evidenced]
 
     reports: list[dict[str, Any]] = []
-    _evaluate_claims(full, candidate_path, reports)
+    n_refutable = _evaluate_claims(full, candidate_path, reports)
 
-    n_refutable = sum(1 for r in full if r.get("ilc_refutable"))
     return {
         "records": full,
         "reports": reports,
         "n_claims": len(full),
         "n_refutable": n_refutable,
+        "profile_metadata": _profile_metadata(loaded),
     }
 
 
 def run_evaluation(candidate_path: str, objective_text: str) -> dict[str, Any]:
-    """Evaluator contract entry point — called by idea_descent_runner.py."""
+    """Evaluator contract entry point — called by idea_descent_runner.py.
+
+    Profile selection: embed profile names in objective_text as a line:
+      profiles: en_scientific_claims romer_macro_ai_transition
+    If omitted, defaults to en_scientific_claims.
+    """
+    # Parse optional profile directive from objective text
+    profiles = DEFAULT_PROFILES
+    for line in objective_text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("profiles:"):
+            profiles = stripped.split(":", 1)[1].strip().split()
+            break
+
     try:
         text = Path(candidate_path).read_text(encoding="utf-8")
     except Exception as exc:
@@ -287,17 +393,18 @@ def run_evaluation(candidate_path: str, objective_text: str) -> dict[str, Any]:
             "refutation_reports": [report],
         }
 
-    result = decompose_and_evaluate(text, candidate_path)
+    result = decompose_and_evaluate(text, candidate_path, profiles=profiles)
     reports = result["reports"]
     n_claims = result["n_claims"]
     n_refutable = result["n_refutable"]
+    profile_ids = ", ".join(result["profile_metadata"]["profiles_loaded"])
     passed = len(reports) == 0
 
     summary = (
-        f"VALID: {n_claims} claims extracted, "
+        f"VALID [{profile_ids}]: {n_claims} claims extracted, "
         f"{n_refutable}/{n_claims} refutable, 0 invariant failures"
         if passed
-        else f"INVALID: {n_claims} claims extracted, "
+        else f"INVALID [{profile_ids}]: {n_claims} claims extracted, "
              f"{n_refutable}/{n_claims} refutable, "
              f"{len(reports)} invariant failure(s)"
     )
@@ -313,6 +420,8 @@ __all__ = [
     "EVALUATOR_ID",
     "EVALUATOR_TYPE",
     "REPLAY_COMMAND_TEMPLATE",
+    "DEFAULT_PROFILES",
+    "load_profiles",
     "decompose_and_evaluate",
     "run_evaluation",
 ]
@@ -323,10 +432,16 @@ if __name__ == "__main__":
         description="Run ILC decomposition evaluator standalone."
     )
     parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument(
+        "--profiles",
+        nargs="*",
+        default=DEFAULT_PROFILES,
+        help="Profile names to load (default: en_scientific_claims)",
+    )
     args = parser.parse_args()
     result = run_evaluation(str(args.candidate), "")
     print(result["summary"])
     for r in result["refutation_reports"]:
         print(f"  [{r['severity'].upper()}] {r['failed_invariant']}")
-        print(f"     → {r['correction_direction'][:120]}")
+        print(f"     -> {r['correction_direction'][:120]}")
     sys.exit(0 if result["passed"] else 1)
