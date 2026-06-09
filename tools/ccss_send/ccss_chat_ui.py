@@ -2,21 +2,17 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """CCSS Epistemic Graph UI — graph-native operator dashboard.
 
-Agents appear as nodes in an epistemic graph.  Genesis (self) sits at the
-intersection of three overlapping protocol zones.  Contact nodes orbit the
-center.  Click a node to compose a message; inbox envelopes appear as count
-badges on the Genesis node.
+Graph model:
+  - Self (operator) node on the left.
+  - Contact (agent) nodes fanned to the right.
+  - Conversation node sits on the edge midpoint between each pair.
+  - Click a conversation node to compose / view sent history.
 
 Served on 127.0.0.1:8422.  Loopback only.
 
 Usage:
     python tools/ccss_send/ccss_chat_ui.py [--contacts <path>] [--inbox <dir>]
                                             [--sent <dir>] [--port <port>]
-Defaults:
-    --contacts  docs/contact/ccss_contacts.json
-    --inbox     ~/.ccss_inbox/genesis
-    --sent      ~/.ccss_inbox/sent
-    --port      8422
 """
 
 from __future__ import annotations
@@ -45,12 +41,12 @@ _TOR_PORT = 9050
 _OUTER_ENVELOPE_BYTES = 4156
 _MAX_MESSAGE_BYTES = 2000
 
+
 # ---------------------------------------------------------------------------
-# Minimal SOCKS5 + HTTP-over-Tor
+# Tor / SOCKS5 send
 # ---------------------------------------------------------------------------
 
 def _socks5_send(onion: str, path: str, body: bytes) -> dict[str, Any]:
-    """Send body via SOCKS5 → Tor to onion:80/path.  Returns parsed JSON."""
     host_b = onion.encode()
     with socket.create_connection((_TOR_HOST, _TOR_PORT), timeout=30) as s:
         s.sendall(b"\x05\x01\x00")
@@ -59,13 +55,10 @@ def _socks5_send(onion: str, path: str, body: bytes) -> dict[str, Any]:
         s.sendall(b"\x05\x01\x00\x03" + bytes([len(host_b)]) + host_b + b"\x00\x50")
         resp = s.recv(10)
         if resp[1] != 0x00:
-            raise RuntimeError(f"SOCKS5 CONNECT failed: code {resp[1]}")
+            raise RuntimeError(f"SOCKS5 CONNECT failed: {resp[1]}")
         req = (
-            f"POST {path} HTTP/1.0\r\n"
-            f"Host: {onion}\r\n"
-            f"Content-Type: application/octet-stream\r\n"
-            f"Content-Length: {len(body)}\r\n"
-            f"\r\n"
+            f"POST {path} HTTP/1.0\r\nHost: {onion}\r\n"
+            f"Content-Type: application/octet-stream\r\nContent-Length: {len(body)}\r\n\r\n"
         ).encode() + body
         s.sendall(req)
         raw = b""
@@ -75,29 +68,23 @@ def _socks5_send(onion: str, path: str, body: bytes) -> dict[str, Any]:
                 break
             raw += chunk
     header, _, resp_body = raw.partition(b"\r\n\r\n")
-    status_line = header.split(b"\r\n")[0]
-    code = int(status_line.split(b" ")[1])
+    code = int(header.split(b"\r\n")[0].split(b" ")[1])
     if code not in (200, 202):
         raise RuntimeError(f"Relay returned HTTP {code}")
     return json.loads(resp_body)
 
 
-# ---------------------------------------------------------------------------
-# Envelope encryption import
-# ---------------------------------------------------------------------------
-
 def _seal(message: str, pubkey_hex: str) -> bytes:
     try:
         from tools.ccss_send.ccss_encrypt import seal_message
     except ImportError:
-        _root = Path(__file__).resolve().parent.parent.parent
-        sys.path.insert(0, str(_root))
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
         from tools.ccss_send.ccss_encrypt import seal_message  # type: ignore
     return seal_message(message, pubkey_hex)
 
 
 # ---------------------------------------------------------------------------
-# Request handler
+# HTTP handler
 # ---------------------------------------------------------------------------
 
 class _Handler(http.server.BaseHTTPRequestHandler):
@@ -105,23 +92,21 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     inbox_dir:     Path
     sent_dir:      Path
 
-    def log_message(self, fmt: str, *args: Any) -> None:  # suppress access log
+    def log_message(self, fmt: str, *args: Any) -> None:
         pass
-
-    # ── routing ──────────────────────────────────────────────────────────────
 
     def do_GET(self) -> None:
         p = self.path.split("?")[0]
-        if p == "/":
-            self._serve_html()
-        elif p == "/api/status":
-            self._api_status()
-        elif p == "/api/contacts":
-            self._api_contacts()
-        elif p == "/api/inbox":
-            self._api_inbox()
-        elif p == "/api/sent":
-            self._api_sent()
+        dispatch = {
+            "/":             self._serve_html,
+            "/api/status":   self._api_status,
+            "/api/contacts": self._api_contacts,
+            "/api/inbox":    self._api_inbox,
+            "/api/sent":     self._api_sent,
+        }
+        fn = dispatch.get(p)
+        if fn:
+            fn()
         else:
             self.send_error(404)
 
@@ -131,8 +116,6 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         else:
             self.send_error(404)
 
-    # ── HTML page ─────────────────────────────────────────────────────────────
-
     def _serve_html(self) -> None:
         body = _HTML.encode()
         self.send_response(200)
@@ -141,12 +124,11 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    # ── /api/status ───────────────────────────────────────────────────────────
-
     def _api_status(self) -> None:
-        tor_ok = self._tor_live()
-        inbox_count = self._count_inbox()
-        self._json({"tor": tor_ok, "inbox_count": inbox_count})
+        self._json({
+            "tor":         self._tor_live(),
+            "inbox_count": self._count_inbox(),
+        })
 
     @staticmethod
     def _tor_live() -> bool:
@@ -160,19 +142,16 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         d = self.inbox_dir
         if not d.is_dir():
             return 0
-        return len([f for f in d.iterdir() if f.suffix == ".envelope"])
-
-    # ── /api/contacts ─────────────────────────────────────────────────────────
+        return sum(1 for f in d.iterdir() if f.suffix == ".envelope")
 
     def _api_contacts(self) -> None:
         try:
             raw = json.loads(self.contacts_path.read_text())
         except Exception:
             raw = []
-        # Strip pubkey — never sent to JS
         safe = []
         for c in raw:
-            ph = c.get("ccss_recipient_pubkey", "")
+            ph    = c.get("ccss_recipient_pubkey", "")
             onion = c.get("ccss_contact_onion", "")
             configured = (
                 ph and "PLACEHOLDER" not in ph.upper()
@@ -188,51 +167,44 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             })
         self._json(safe)
 
-    # ── /api/inbox ────────────────────────────────────────────────────────────
-
     def _api_inbox(self) -> None:
         d = self.inbox_dir
-        envelopes = []
+        envs = []
         if d.is_dir():
-            for f in sorted(d.iterdir()):
+            for f in d.iterdir():
                 if f.suffix != ".envelope":
                     continue
-                size = f.stat().st_size
-                envelopes.append({
-                    "receipt":   f.stem,
-                    "size":      size,
-                    "size_ok":   size == _OUTER_ENVELOPE_BYTES,
-                    "received":  int(f.stat().st_mtime),
+                sz = f.stat().st_size
+                envs.append({
+                    "receipt":  f.stem,
+                    "size":     sz,
+                    "size_ok":  sz == _OUTER_ENVELOPE_BYTES,
+                    "received": int(f.stat().st_mtime),
                 })
-        self._json(sorted(envelopes, key=lambda e: e["received"], reverse=True)[:50])
-
-    # ── /api/sent ─────────────────────────────────────────────────────────────
+        self._json(sorted(envs, key=lambda e: e["received"], reverse=True)[:50])
 
     def _api_sent(self) -> None:
         from urllib.parse import parse_qs, urlparse
-        qs = parse_qs(urlparse(self.path).query)
-        contact_id = (qs.get("id") or [""])[0]
-        d = self.sent_dir / contact_id
+        qs  = parse_qs(urlparse(self.path).query)
+        cid = (qs.get("id") or [""])[0]
+        d   = self.sent_dir / cid
         msgs = []
         if d.is_dir():
-            for f in sorted(d.iterdir()):
-                if f.suffix != ".json":
-                    continue
-                try:
-                    msgs.append(json.loads(f.read_text()))
-                except Exception:
-                    pass
+            for f in d.iterdir():
+                if f.suffix == ".json":
+                    try:
+                        msgs.append(json.loads(f.read_text()))
+                    except Exception:
+                        pass
         msgs.sort(key=lambda m: m.get("ts", 0))
         self._json(msgs[-50:])
-
-    # ── /api/send ─────────────────────────────────────────────────────────────
 
     def _api_send(self) -> None:
         length = int(self.headers.get("Content-Length", 0))
         if length > 8192:
             self.send_error(400, "payload too large")
             return
-        payload = json.loads(self.rfile.read(length))
+        payload    = json.loads(self.rfile.read(length))
         contact_id = payload.get("contact_id", "")
         message    = payload.get("message", "")
         if not contact_id or not message:
@@ -241,64 +213,51 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         if len(message.encode()) > _MAX_MESSAGE_BYTES:
             self._json({"ok": False, "error": "message too long"}, 400)
             return
-
-        # Look up contact from disk (pubkey never travels to JS)
         try:
             contacts = json.loads(self.contacts_path.read_text())
         except Exception:
             self._json({"ok": False, "error": "contacts unavailable"}, 500)
             return
         contact = next((c for c in contacts if c.get("id") == contact_id), None)
-        if contact is None:
+        if not contact:
             self._json({"ok": False, "error": "contact not found"}, 404)
             return
         pubkey = contact.get("ccss_recipient_pubkey", "")
         onion  = contact.get("ccss_contact_onion", "")
         if not pubkey or "PLACEHOLDER" in pubkey.upper():
-            self._json({"ok": False, "error": "contact not configured: pubkey placeholder"}, 400)
+            self._json({"ok": False, "error": "pubkey placeholder not set"}, 400)
             return
         if not onion or "PLACEHOLDER" in onion.upper():
-            self._json({"ok": False, "error": "contact not configured: onion placeholder"}, 400)
+            self._json({"ok": False, "error": "onion placeholder not set"}, 400)
             return
-
         try:
             envelope = _seal(message, pubkey)
         except Exception as exc:
-            self._json({"ok": False, "error": f"encrypt error: {exc}"}, 500)
+            self._json({"ok": False, "error": f"encrypt: {exc}"}, 500)
             return
-
         try:
             result = _socks5_send(onion, "/submit", envelope)
         except Exception as exc:
-            self._json({"ok": False, "error": f"send error: {exc}"}, 502)
+            self._json({"ok": False, "error": f"send: {exc}"}, 502)
             return
-
         receipt = result.get("receipt_token", hashlib.sha256(envelope).hexdigest())
-        ts = int(time.time())
-        record = {
-            "ts":          ts,
-            "contact_id":  contact_id,
-            "message":     message,
-            "receipt":     receipt,
-        }
-        sent_dir = self.sent_dir / contact_id
-        sent_dir.mkdir(parents=True, exist_ok=True)
-        out_path = sent_dir / f"{ts}_{receipt[:8]}.json"
+        ts      = int(time.time())
+        record  = {"ts": ts, "contact_id": contact_id, "message": message, "receipt": receipt}
+        sent_d  = self.sent_dir / contact_id
+        sent_d.mkdir(parents=True, exist_ok=True)
+        out     = sent_d / f"{ts}_{receipt[:8]}.json"
         import tempfile
-        tmp_fd, tmp_path = tempfile.mkstemp(dir=sent_dir)
+        fd, tmp = tempfile.mkstemp(dir=sent_d)
         try:
-            with os.fdopen(tmp_fd, "w") as fh:
+            with os.fdopen(fd, "w") as fh:
                 json.dump(record, fh)
-            os.replace(tmp_path, out_path)
+            os.replace(tmp, out)
         except Exception:
             try:
-                os.unlink(tmp_path)
+                os.unlink(tmp)
             except OSError:
                 pass
-
         self._json({"ok": True, "receipt": receipt})
-
-    # ── helpers ───────────────────────────────────────────────────────────────
 
     def _json(self, data: Any, code: int = 200) -> None:
         body = json.dumps(data, sort_keys=True).encode()
@@ -310,7 +269,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
 
 
 # ---------------------------------------------------------------------------
-# HTML / CSS / JS
+# UI
 # ---------------------------------------------------------------------------
 
 _HTML = r"""<!DOCTYPE html>
@@ -320,223 +279,282 @@ _HTML = r"""<!DOCTYPE html>
 <title>CCSS — Epistemic Graph</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#080c12;overflow:hidden;font-family:'SF Mono',ui-monospace,monospace;color:#c8d8e8}
+html,body{width:100%;height:100%;background:#07090f;overflow:hidden;
+  font-family:'SF Mono',ui-monospace,monospace;color:#c0d4e4}
 
-/* ── graph canvas ── */
-#canvas{position:absolute;inset:0;overflow:hidden}
-#graph-svg{width:100%;height:100%}
+/* ── canvas ── */
+#canvas{position:absolute;inset:0 0 28px 0;overflow:hidden}
+#graph-svg{width:100%;height:100%;display:block}
 
-/* zone circles */
-.zone{opacity:0.13;filter:blur(48px)}
+/* ── agent nodes (HTML divs positioned over SVG) ── */
+.node{position:absolute;transform:translate(-50%,-50%);pointer-events:all;cursor:default}
 
-/* edges */
-.edge{stroke:#2a5a7a;stroke-width:1.5;stroke-dasharray:6 5;fill:none;opacity:0.5;transition:opacity 0.3s,stroke 0.3s}
-.edge.active{stroke:#4ea8d2;stroke-dasharray:6 5;opacity:0.9}
-
-/* ── nodes ── */
-.node{position:absolute;transform:translate(-50%,-50%);cursor:pointer;user-select:none}
-.node-ring{border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;transition:box-shadow 0.3s,transform 0.2s}
-.node:hover .node-ring{transform:scale(1.1)}
-.node.selected .node-ring{transform:scale(1.12)}
-
-/* Genesis (self) */
-.node-genesis .node-ring{
-  width:72px;height:72px;
-  background:radial-gradient(circle,#3a2a00,#1a1000);
-  border:2px solid #c8910a;
-  box-shadow:0 0 28px 8px rgba(200,145,10,0.35),0 0 0 1px rgba(200,145,10,0.2);
-}
-.node-genesis .node-ring.pulse{animation:genesis-pulse 2.8s ease-in-out infinite}
-@keyframes genesis-pulse{
-  0%,100%{box-shadow:0 0 28px 8px rgba(200,145,10,0.35),0 0 0 1px rgba(200,145,10,0.2)}
-  50%{box-shadow:0 0 44px 14px rgba(200,145,10,0.5),0 0 0 2px rgba(200,145,10,0.3)}
+.agent-ring{
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  position:relative;transition:box-shadow 0.25s,transform 0.2s,border-color 0.25s;
 }
 
-/* Contact nodes */
-.node-contact .node-ring{
-  width:54px;height:54px;
-  background:radial-gradient(circle,#0d1e2e,#060e18);
-  border:2px solid #1e4a68;
-  box-shadow:0 0 16px 4px rgba(30,74,104,0.3);
-  transition:box-shadow 0.3s,border-color 0.3s,transform 0.2s;
+/* Self / operator node */
+.node-self .agent-ring{
+  width:68px;height:68px;
+  background:radial-gradient(circle at 35% 35%,#2a1800,#0e0800);
+  border:2px solid #b87c08;
+  box-shadow:0 0 24px 8px rgba(184,124,8,0.3),inset 0 1px 0 rgba(255,200,60,0.15);
+  animation:self-pulse 3s ease-in-out infinite;
 }
-.node-contact.configured .node-ring{
-  border-color:#1a7a9a;
-  box-shadow:0 0 20px 6px rgba(26,122,154,0.35);
+@keyframes self-pulse{
+  0%,100%{box-shadow:0 0 24px 8px rgba(184,124,8,0.3),inset 0 1px 0 rgba(255,200,60,0.15)}
+  50%{box-shadow:0 0 38px 14px rgba(184,124,8,0.45),inset 0 1px 0 rgba(255,200,60,0.2)}
 }
-.node-contact.selected .node-ring,
-.node-contact:hover .node-ring{
-  border-color:#4ea8d2;
-  box-shadow:0 0 28px 10px rgba(78,168,210,0.45);
+.node-self .agent-avatar{font-size:1.4rem;font-weight:700;color:#e8b840;letter-spacing:-1px}
+.node-self .node-label{color:#906010;font-size:0.6rem}
+
+/* Contact node */
+.node-contact .agent-ring{
+  width:54px;height:54px;cursor:pointer;
+  background:radial-gradient(circle at 35% 35%,#0c1e30,#060e18);
+  border:2px solid #183a56;
+  box-shadow:0 0 14px 4px rgba(24,58,86,0.3);
 }
+.node-contact.configured .agent-ring{
+  border-color:#1472a0;
+  box-shadow:0 0 18px 6px rgba(20,114,160,0.3);
+}
+.node-contact.active .agent-ring,
+.node-contact:hover .agent-ring{
+  border-color:#40a8d8;
+  box-shadow:0 0 28px 10px rgba(64,168,216,0.4);
+  transform:scale(1.08);
+}
+.node-contact .agent-avatar{font-size:1.15rem;font-weight:700;color:#a0c8e0}
+.node-contact.configured .agent-avatar{color:#c0e0f8}
 
-.node-avatar{font-size:1.35rem;font-weight:700;color:#c8d8e8;letter-spacing:0}
-.node-genesis .node-avatar{font-size:1.55rem;color:#e8c060}
+/* status dot */
+.status-dot{
+  position:absolute;bottom:2px;right:2px;
+  width:10px;height:10px;border-radius:50%;border:2px solid #07090f;
+}
+.status-dot.ok{background:#28d87a}
+.status-dot.off{background:#304050}
 
-.node-label{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
-  white-space:nowrap;font-size:0.65rem;color:#7090a8;letter-spacing:0.05em;pointer-events:none}
-.node-genesis .node-label{color:#a08040;font-size:0.68rem}
-.node-contact.configured .node-label{color:#5090b0}
-
-/* status dot on contact node */
-.node-dot{position:absolute;width:10px;height:10px;border-radius:50%;bottom:2px;right:2px;border:2px solid #080c12}
-.node-dot.ok{background:#28c87a}
-.node-dot.off{background:#384858}
-
-/* inbox badge on genesis */
+/* inbox badge on self */
 #inbox-badge{
-  position:absolute;top:-4px;right:-4px;
-  min-width:20px;height:20px;padding:0 5px;
-  background:#d04040;border-radius:10px;
-  font-size:0.62rem;font-weight:700;color:#fff;
+  position:absolute;top:-3px;right:-3px;
+  min-width:18px;height:18px;padding:0 4px;
+  background:#c83030;border-radius:9px;border:2px solid #07090f;
+  font-size:0.6rem;font-weight:700;color:#fff;
   display:none;align-items:center;justify-content:center;
-  border:2px solid #080c12;
 }
+
+/* shared label */
+.node-label{
+  position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:0.6rem;color:#3a6070;letter-spacing:0.04em;
+  pointer-events:none;
+}
+
+/* ── conversation nodes ── */
+.conv-node{
+  position:absolute;transform:translate(-50%,-50%);cursor:pointer;
+  transition:transform 0.2s;
+}
+.conv-node:hover{transform:translate(-50%,-50%) scale(1.15)}
+.conv-node.active{transform:translate(-50%,-50%) scale(1.15)}
+
+.conv-ring{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 35% 35%,#140a28,#080414);
+  border:1.5px solid #3a1870;
+  box-shadow:0 0 12px 3px rgba(58,24,112,0.3);
+  transition:box-shadow 0.25s,border-color 0.25s;
+  position:relative;
+}
+.conv-node.active .conv-ring,
+.conv-node:hover .conv-ring{
+  border-color:#8858e0;
+  box-shadow:0 0 22px 8px rgba(136,88,224,0.5);
+}
+.conv-node.configured .conv-ring{
+  border-color:#5030b0;
+  box-shadow:0 0 14px 4px rgba(80,48,176,0.35);
+}
+
+.conv-icon{font-size:0.8rem;opacity:0.7;user-select:none}
+.conv-node.active .conv-icon,
+.conv-node:hover .conv-icon{opacity:1}
+
+.conv-count{
+  position:absolute;top:-5px;right:-5px;
+  min-width:16px;height:16px;padding:0 3px;
+  background:#5030b0;border-radius:8px;border:1.5px solid #07090f;
+  font-size:0.55rem;font-weight:700;color:#d0b8ff;
+  display:none;align-items:center;justify-content:center;
+}
+.conv-node.has-msgs .conv-count{display:flex}
+
+.conv-label{
+  position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:0.55rem;color:#2a1858;letter-spacing:0.04em;
+  pointer-events:none;
+}
+.conv-node.active .conv-label,
+.conv-node:hover .conv-label{color:#6040a0}
 
 /* ── compose panel ── */
 #panel{
-  position:fixed;top:0;right:0;width:340px;height:100vh;
-  background:#0b1520;border-left:1px solid #162030;
-  display:flex;flex-direction:column;
-  transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.25,0.8,0.25,1);
-  z-index:10;
+  position:fixed;top:0;right:0;bottom:28px;width:340px;
+  background:#080e18;border-left:1px solid #101c2c;
+  display:flex;flex-direction:column;z-index:10;
+  transform:translateX(100%);transition:transform 0.32s cubic-bezier(0.25,0.8,0.25,1);
 }
 #panel.open{transform:translateX(0)}
 
 #panel-header{
-  padding:20px 20px 16px;border-bottom:1px solid #162030;
-  display:flex;align-items:flex-start;gap:12px;
+  padding:18px 18px 14px;border-bottom:1px solid #101c2c;
+  display:flex;align-items:flex-start;gap:10px;flex-shrink:0;
 }
-#panel-avatar{
-  width:40px;height:40px;border-radius:50%;
-  background:radial-gradient(circle,#0d1e2e,#060e18);
-  border:1.5px solid #1a7a9a;
+#panel-av{
+  width:38px;height:38px;border-radius:8px;flex-shrink:0;
+  background:radial-gradient(circle,#140a28,#07090f);
+  border:1.5px solid #5030b0;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;font-weight:700;color:#c8d8e8;flex-shrink:0;
+  font-size:1rem;font-weight:700;color:#c0a8f8;
 }
 #panel-meta{flex:1;min-width:0}
-#panel-name{font-size:0.92rem;color:#c8d8e8;font-weight:600;margin-bottom:3px}
-#panel-agent{font-size:0.6rem;color:#3a6888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
-#panel-onion{font-size:0.58rem;color:#2a5068;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#panel-close{background:none;border:none;color:#3a6888;font-size:1.2rem;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
-#panel-close:hover{color:#c8d8e8}
+#panel-name{font-size:0.88rem;color:#c0d4e4;font-weight:600;margin-bottom:2px}
+#panel-agent{font-size:0.58rem;color:#2a4a6a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#panel-onion{font-size:0.56rem;color:#1e3a52;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+#panel-close{background:none;border:none;color:#2a4a6a;font-size:1.1rem;cursor:pointer;flex-shrink:0;padding:2px}
+#panel-close:hover{color:#c0d4e4}
 
-/* sent thread */
-#thread{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-#thread::-webkit-scrollbar{width:4px}
-#thread::-webkit-scrollbar-track{background:transparent}
-#thread::-webkit-scrollbar-thumb{background:#162030;border-radius:2px}
-.msg-bubble{
-  align-self:flex-end;max-width:88%;
-  background:#0f2a42;border:1px solid #1a4a6a;border-radius:12px 12px 3px 12px;
-  padding:8px 12px;
+#thread{
+  flex:1;overflow-y:auto;padding:14px;
+  display:flex;flex-direction:column;gap:10px;
 }
-.msg-text{font-size:0.78rem;color:#d0e8f8;line-height:1.5;word-break:break-word}
-.msg-meta{margin-top:4px;font-size:0.58rem;color:#3a6888;text-align:right}
-.msg-receipt{font-size:0.55rem;color:#2a4a62;margin-top:1px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.thread-empty{font-size:0.72rem;color:#2a4a62;text-align:center;padding:20px 0;font-style:italic}
+#thread::-webkit-scrollbar{width:3px}
+#thread::-webkit-scrollbar-thumb{background:#101c2c;border-radius:2px}
 
-/* compose */
-#compose{padding:14px;border-top:1px solid #162030}
-#compose-area{
-  width:100%;min-height:72px;max-height:140px;
-  background:#060e18;border:1px solid #1a3a52;border-radius:8px;
-  color:#c8d8e8;font-family:inherit;font-size:0.78rem;
-  padding:10px;resize:vertical;outline:none;line-height:1.5;
+.bubble{
+  align-self:flex-end;max-width:90%;
+  background:#0e2438;border:1px solid #162e48;
+  border-radius:10px 10px 2px 10px;padding:8px 11px;
 }
-#compose-area:focus{border-color:#1a6080}
-#compose-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
-#byte-counter{font-size:0.62rem;color:#3a6888}
-#byte-counter.warn{color:#d08040}
-#byte-counter.over{color:#d04040}
+.bubble-text{font-size:0.76rem;color:#c8e0f8;line-height:1.5;word-break:break-word}
+.bubble-meta{margin-top:4px;font-size:0.56rem;color:#2a4a6a;text-align:right}
+.bubble-receipt{font-size:0.52rem;color:#1e3a52;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thread-empty{font-size:0.7rem;color:#1e3050;text-align:center;padding:24px 0;font-style:italic}
+
+#compose{padding:12px;border-top:1px solid #101c2c;flex-shrink:0}
+#compose-ta{
+  width:100%;min-height:68px;max-height:130px;
+  background:#04080e;border:1px solid #182a3e;border-radius:7px;
+  color:#c0d4e4;font-family:inherit;font-size:0.76rem;
+  padding:9px;resize:vertical;outline:none;line-height:1.5;
+}
+#compose-ta:focus{border-color:#1e5070}
+#compose-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+#byte-ctr{font-size:0.6rem;color:#2a4a6a}
+#byte-ctr.warn{color:#c07830}
+#byte-ctr.over{color:#c03030}
 #send-btn{
-  background:#0f3a5a;border:1px solid #1a6080;border-radius:6px;
-  color:#70c0e8;font-size:0.75rem;font-family:inherit;
-  padding:6px 16px;cursor:pointer;transition:background 0.2s,color 0.2s;
+  background:#0e2e48;border:1px solid #1a5070;border-radius:6px;
+  color:#60b8e0;font-size:0.72rem;font-family:inherit;
+  padding:5px 14px;cursor:pointer;transition:background 0.2s;
 }
-#send-btn:hover:not(:disabled){background:#1a5078;color:#a8d8f8}
-#send-btn:disabled{opacity:0.35;cursor:not-allowed}
-#send-status{font-size:0.62rem;margin-top:6px;min-height:14px;color:#3a8858}
+#send-btn:hover:not(:disabled){background:#163a5a;color:#90d0f0}
+#send-btn:disabled{opacity:0.3;cursor:not-allowed}
+#send-status{font-size:0.6rem;margin-top:5px;min-height:13px;color:#28a060}
 
 /* ── status bar ── */
-#statusbar{
+#sb{
   position:fixed;bottom:0;left:0;right:0;height:28px;
-  background:#060c14;border-top:1px solid #0f1e2c;
-  display:flex;align-items:center;padding:0 16px;gap:16px;
-  font-size:0.6rem;color:#2a4a62;z-index:5;
+  background:#04060c;border-top:1px solid #0c1420;
+  display:flex;align-items:center;padding:0 14px;gap:14px;
+  font-size:0.58rem;color:#1e3050;z-index:15;
 }
-.sb-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
-.sb-dot.ok{background:#28c87a}
-.sb-dot.off{background:#d04040}
-#sb-onion{color:#1a4a62;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.sb-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+.sb-dot.ok{background:#28d87a}
+.sb-dot.off{background:#c03030}
+#sb-onion{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1a3858}
+#sb-inbox-btn{cursor:pointer;margin-left:auto;color:#1e3050}
+#sb-inbox-btn:hover{color:#60a0c8}
 
 /* ── inbox drawer ── */
-#inbox-panel{
-  position:fixed;bottom:28px;left:0;width:300px;
-  background:#0b1520;border-right:1px solid #162030;border-top:1px solid #162030;
-  max-height:50vh;overflow-y:auto;
-  transform:translateY(100%);transition:transform 0.3s;
-  z-index:8;
+#inbox-drawer{
+  position:fixed;bottom:28px;left:0;width:280px;
+  background:#080e18;border-right:1px solid #101c2c;border-top:1px solid #101c2c;
+  max-height:50vh;overflow-y:auto;z-index:12;
+  transform:translateY(100%);transition:transform 0.28s;
 }
-#inbox-panel.open{transform:translateY(0)}
-#inbox-panel::-webkit-scrollbar{width:4px}
-#inbox-panel::-webkit-scrollbar-thumb{background:#162030;border-radius:2px}
-#inbox-header{padding:10px 14px;font-size:0.68rem;color:#5090b0;border-bottom:1px solid #162030;display:flex;justify-content:space-between;align-items:center}
-#inbox-header button{background:none;border:none;color:#3a6888;cursor:pointer;font-size:0.8rem}
-.env-card{padding:10px 14px;border-bottom:1px solid #0f1e2c;font-size:0.62rem}
-.env-receipt{color:#3a6888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.58rem}
-.env-size{font-size:0.58rem;color:#2a5a42;margin-top:2px}
+#inbox-drawer.open{transform:translateY(0)}
+#inbox-drawer::-webkit-scrollbar{width:3px}
+#inbox-drawer::-webkit-scrollbar-thumb{background:#101c2c;border-radius:2px}
+.idh{padding:9px 12px;font-size:0.65rem;color:#3a6888;border-bottom:1px solid #0c1828;
+  display:flex;justify-content:space-between;align-items:center}
+.idh button{background:none;border:none;color:#2a4060;cursor:pointer;font-size:0.8rem}
+.env-row{padding:9px 12px;border-bottom:1px solid #090e18;font-size:0.6rem}
+.env-rct{color:#2a4060;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.env-sz{font-size:0.55rem;margin-top:2px}
 </style>
 </head>
 <body>
 
-<!-- graph canvas -->
+<!-- SVG canvas: zone circles + edges -->
 <div id="canvas">
-  <svg id="graph-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet">
-    <defs>
-      <radialGradient id="zone1" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#0a4a6a" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#0a4a6a" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="zone2" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#3a1a6a" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#3a1a6a" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="zone3" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#1a4a2a" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#1a4a2a" stop-opacity="0"/>
-      </radialGradient>
-      <filter id="soft-blur">
-        <feGaussianBlur stdDeviation="32"/>
-      </filter>
-      <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L6,3 z" fill="#2a5a7a" opacity="0.6"/>
-      </marker>
-    </defs>
-    <!-- zone circles -->
-    <ellipse class="zone" cx="380" cy="310" rx="260" ry="240" fill="url(#zone1)" filter="url(#soft-blur)"/>
-    <ellipse class="zone" cx="620" cy="310" rx="240" ry="230" fill="url(#zone2)" filter="url(#soft-blur)"/>
-    <ellipse class="zone" cx="500" cy="470" rx="250" ry="220" fill="url(#zone3)" filter="url(#soft-blur)"/>
-    <!-- zone ring outlines -->
-    <ellipse cx="380" cy="310" rx="250" ry="232" fill="none" stroke="#0a4a6a" stroke-width="0.8" stroke-dasharray="4 8" opacity="0.25"/>
-    <ellipse cx="620" cy="310" rx="232" ry="222" fill="none" stroke="#3a1a6a" stroke-width="0.8" stroke-dasharray="4 8" opacity="0.2"/>
-    <ellipse cx="500" cy="470" rx="242" ry="212" fill="none" stroke="#1a4a2a" stroke-width="0.8" stroke-dasharray="4 8" opacity="0.22"/>
-    <!-- zone labels -->
-    <text x="195" y="155" font-family="monospace" font-size="9" fill="#0a4a6a" opacity="0.6" letter-spacing="2">PROTOCOL LAYER L0</text>
-    <text x="700" y="148" font-family="monospace" font-size="9" fill="#3a1a6a" opacity="0.5" letter-spacing="2">EPISTEMIC LAYER L3</text>
-    <text x="370" y="665" font-family="monospace" font-size="9" fill="#1a4a2a" opacity="0.5" letter-spacing="2">GENESIS DOMAIN</text>
-    <!-- edge group — populated by JS -->
-    <g id="edges"></g>
-  </svg>
+<svg id="graph-svg" viewBox="0 0 1000 660" preserveAspectRatio="xMidYMid meet">
+<defs>
+  <radialGradient id="zSelf" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#082840" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#082840" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="zConv" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#1a0840" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#1a0840" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="zContact" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#041830" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#041830" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="zblur"><feGaussianBlur stdDeviation="40"/></filter>
+</defs>
+
+<!-- background zone ellipses -->
+<ellipse cx="240" cy="330" rx="240" ry="250" fill="url(#zSelf)"
+         filter="url(#zblur)" opacity="0.55"/>
+<ellipse cx="500" cy="330" rx="200" ry="230" fill="url(#zConv)"
+         filter="url(#zblur)" opacity="0.5"/>
+<ellipse cx="740" cy="330" rx="230" ry="250" fill="url(#zContact)"
+         filter="url(#zblur)" opacity="0.5"/>
+
+<!-- zone outlines -->
+<ellipse cx="240" cy="330" rx="230" ry="242" fill="none"
+         stroke="#082840" stroke-width="0.7" stroke-dasharray="5 10" opacity="0.3"/>
+<ellipse cx="500" cy="330" rx="192" ry="222" fill="none"
+         stroke="#1a0840" stroke-width="0.7" stroke-dasharray="5 10" opacity="0.25"/>
+<ellipse cx="740" cy="330" rx="222" ry="242" fill="none"
+         stroke="#041830" stroke-width="0.7" stroke-dasharray="5 10" opacity="0.25"/>
+
+<!-- zone labels -->
+<text x="90"  y="105" font-family="monospace" font-size="8" fill="#082840"
+      opacity="0.6" letter-spacing="2.5">OPERATOR</text>
+<text x="440" y="108" font-family="monospace" font-size="8" fill="#1a0840"
+      opacity="0.55" letter-spacing="2.5">CONVERSATION</text>
+<text x="635" y="105" font-family="monospace" font-size="8" fill="#082840"
+      opacity="0.5" letter-spacing="2.5">CONTACT AGENTS</text>
+
+<!-- edges + conv nodes drawn by JS -->
+<g id="edges"></g>
+</svg>
 </div>
 
-<!-- node container — positioned over SVG -->
+<!-- node container (HTML positioned over SVG) -->
 <div id="nodes"></div>
 
 <!-- compose panel -->
 <div id="panel">
   <div id="panel-header">
-    <div id="panel-avatar">?</div>
+    <div id="panel-av">?</div>
     <div id="panel-meta">
       <div id="panel-name">—</div>
       <div id="panel-agent"></div>
@@ -546,9 +564,10 @@ html,body{width:100%;height:100%;background:#080c12;overflow:hidden;font-family:
   </div>
   <div id="thread"></div>
   <div id="compose">
-    <textarea id="compose-area" placeholder="Message (max 2000 bytes)…" oninput="onType()" rows="3"></textarea>
-    <div id="compose-footer">
-      <span id="byte-counter">0 / 2000</span>
+    <textarea id="compose-ta" placeholder="Message (max 2000 bytes)…"
+              oninput="onType()" rows="3"></textarea>
+    <div id="compose-foot">
+      <span id="byte-ctr">0 / 2000</span>
       <button id="send-btn" onclick="doSend()" disabled>Send →</button>
     </div>
     <div id="send-status"></div>
@@ -556,8 +575,8 @@ html,body{width:100%;height:100%;background:#080c12;overflow:hidden;font-family:
 </div>
 
 <!-- inbox drawer -->
-<div id="inbox-panel">
-  <div id="inbox-header">
+<div id="inbox-drawer">
+  <div class="idh">
     <span>Sealed Envelopes</span>
     <button onclick="toggleInbox()">✕</button>
   </div>
@@ -565,22 +584,23 @@ html,body{width:100%;height:100%;background:#080c12;overflow:hidden;font-family:
 </div>
 
 <!-- status bar -->
-<div id="statusbar">
-  <span><span class="sb-dot off" id="sb-tor-dot"></span><span id="sb-tor-label">Tor</span></span>
+<div id="sb">
+  <span><span class="sb-dot off" id="sb-tor"></span><span id="sb-tor-lbl">Tor</span></span>
   <span id="sb-onion"></span>
-  <span style="flex:1"></span>
-  <span id="sb-inbox-btn" onclick="toggleInbox()" style="cursor:pointer;color:#3a6888">
-    ▲ Inbox (<span id="sb-inbox-count">0</span>)
+  <span id="sb-inbox-btn" onclick="toggleInbox()">
+    ▲ Inbox (<span id="sb-inbox-n">0</span>)
   </span>
 </div>
 
 <script>
-// ── state ─────────────────────────────────────────────────────────────────
+// ── layout constants (in SVG viewBox 1000 × 660) ─────────────────────────
+const SELF_X = 240, SELF_Y = 330;
+const CONTACT_X = 740;           // contacts' x column
+const V_GAP = 110;               // vertical spacing between contacts
+
 let contacts = [];
-let selected = null;   // contact id
+let active = null;   // contact id currently selected
 let inboxOpen = false;
-const CENTER = {x: 500, y: 360};
-const ORBIT_R = 210;
 
 // ── boot ──────────────────────────────────────────────────────────────────
 async function boot() {
@@ -589,201 +609,256 @@ async function boot() {
   setInterval(pollStatus, 5000);
 }
 
-// ── contacts ──────────────────────────────────────────────────────────────
+// ── contacts & render ─────────────────────────────────────────────────────
 async function loadContacts() {
   const r = await fetch('/api/contacts');
   contacts = await r.json();
-  renderNodes();
+  render();
 }
 
-function renderNodes() {
-  const svg = document.getElementById('edges');
-  const container = document.getElementById('nodes');
-  svg.innerHTML = '';
-  container.innerHTML = '';
+function contactPos(i, n) {
+  const totalH = (n - 1) * V_GAP;
+  const startY  = SELF_Y - totalH / 2;
+  return { x: CONTACT_X, y: startY + i * V_GAP };
+}
 
-  // Genesis node (self)
-  const gEl = makeNode('genesis', 'G', 'Genesis', true, true);
-  gEl.style.left = pct(CENTER.x, 1000) + '%';
-  gEl.style.top  = pct(CENTER.y, 700)  + '%';
-  gEl.classList.add('node-genesis');
-  // inbox badge
-  const badge = document.createElement('div');
-  badge.id = 'inbox-badge';
-  badge.style.cssText = 'position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;background:#d04040;border-radius:10px;font-size:0.62rem;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center;border:2px solid #080c12';
-  badge.id = 'inbox-badge';
-  gEl.querySelector('.node-ring').appendChild(badge);
-  container.appendChild(gEl);
+function convPos(cx, cy) {
+  return { x: (SELF_X + cx) / 2, y: (SELF_Y + cy) / 2 };
+}
 
-  // Contact nodes
+function render() {
+  document.getElementById('edges').innerHTML = '';
+  document.getElementById('nodes').innerHTML  = '';
+
+  // self node
+  placeNode(makeAgentNode('self', 'Y', 'You', true, false, null),
+            SELF_X, SELF_Y, 1000, 660);
+
   const n = contacts.length;
   contacts.forEach((c, i) => {
-    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-    const cx = CENTER.x + ORBIT_R * Math.cos(angle);
-    const cy = CENTER.y + ORBIT_R * Math.sin(angle);
+    const cp  = contactPos(i, n);
+    const mp  = convPos(cp.x, cp.y);
 
-    // SVG edge
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.id = 'edge-' + c.id;
-    line.setAttribute('class', 'edge');
-    line.setAttribute('x1', CENTER.x); line.setAttribute('y1', CENTER.y);
-    line.setAttribute('x2', cx);       line.setAttribute('y2', cy);
-    svg.appendChild(line);
+    // edge
+    const line = svgEl('line', {
+      id: 'edge-' + c.id,
+      class: 'edge',
+      x1: SELF_X, y1: SELF_Y, x2: cp.x, y2: cp.y,
+    });
+    // default edge style inline
+    line.style.stroke = '#182838';
+    line.style.strokeWidth = '1.2';
+    line.style.strokeDasharray = '5 6';
+    line.style.fill = 'none';
+    line.style.opacity = '0.4';
+    line.style.transition = 'stroke 0.3s,opacity 0.3s';
+    document.getElementById('edges').appendChild(line);
 
-    // Node div
-    const letter = (c.name || '?')[0].toUpperCase();
-    const el = makeNode(c.id, letter, c.name, c.configured, false);
-    el.style.left = pct(cx, 1000) + '%';
-    el.style.top  = pct(cy, 700)  + '%';
-    el.classList.add('node-contact');
-    if (c.configured) el.classList.add('configured');
-    el.onclick = () => selectContact(c.id);
-    container.appendChild(el);
+    // contact agent node
+    const el = makeAgentNode(c.id, (c.name||'?')[0].toUpperCase(),
+                              c.name, c.configured, true, c);
+    placeNode(el, cp.x, cp.y, 1000, 660);
+
+    // conversation node
+    const cv = makeConvNode(c.id, c.configured);
+    placeConvNode(cv, mp.x, mp.y, 1000, 660);
   });
 }
 
-function makeNode(id, letter, label, configured, isGenesis) {
-  const el = document.createElement('div');
-  el.className = 'node';
-  el.id = 'node-' + id;
-  const ring = document.createElement('div');
-  ring.className = 'node-ring' + (isGenesis ? ' pulse' : '');
-  const av = document.createElement('div');
-  av.className = 'node-avatar';
+function makeAgentNode(id, letter, label, configured, isContact, contact) {
+  const wrap = div('node ' + (isContact ? 'node-contact' : 'node-self')
+                   + (configured ? ' configured' : ''));
+  wrap.id = 'node-' + id;
+
+  const ring = div('agent-ring');
+  const av   = div('agent-avatar');
   av.textContent = letter;
   ring.appendChild(av);
-  if (!isGenesis) {
-    const dot = document.createElement('div');
-    dot.className = 'node-dot ' + (configured ? 'ok' : 'off');
+
+  if (isContact) {
+    const dot = div('status-dot ' + (configured ? 'ok' : 'off'));
     ring.appendChild(dot);
+    wrap.onclick = () => selectContact(id);
+  } else {
+    // inbox badge on self
+    const badge = div('');
+    badge.id = 'inbox-badge';
+    badge.style.cssText = 'position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;background:#c83030;border-radius:9px;border:2px solid #07090f;font-size:0.6rem;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center';
+    ring.appendChild(badge);
   }
-  el.appendChild(ring);
-  const lbl = document.createElement('div');
-  lbl.className = 'node-label';
+
+  wrap.appendChild(ring);
+  const lbl = div('node-label');
   lbl.textContent = label;
-  el.appendChild(lbl);
-  return el;
+  wrap.appendChild(lbl);
+  return wrap;
 }
 
-function pct(v, total) { return (v / total * 100).toFixed(3); }
+function makeConvNode(contactId, configured) {
+  const wrap = div('conv-node' + (configured ? ' configured' : ''));
+  wrap.id = 'conv-' + contactId;
+  const ring = div('conv-ring');
+  const icon = div('conv-icon');
+  icon.textContent = '◈';
+  ring.appendChild(icon);
+  const cnt = div('conv-count');
+  cnt.id = 'conv-cnt-' + contactId;
+  ring.appendChild(cnt);
+  wrap.appendChild(ring);
+  const lbl = div('conv-label');
+  lbl.textContent = 'conversation';
+  wrap.appendChild(lbl);
+  wrap.onclick = () => selectContact(contactId);
+  return wrap;
+}
 
-// ── select / panel ────────────────────────────────────────────────────────
+function placeNode(el, svgX, svgY, vbW, vbH) {
+  el.style.left = pct(svgX, vbW);
+  el.style.top  = pct(svgY, vbH);
+  document.getElementById('nodes').appendChild(el);
+}
+
+function placeConvNode(el, svgX, svgY, vbW, vbH) {
+  el.style.left = pct(svgX, vbW);
+  el.style.top  = pct(svgY, vbH);
+  document.getElementById('nodes').appendChild(el);
+}
+
+// ── selection ─────────────────────────────────────────────────────────────
 async function selectContact(id) {
-  // deselect old
-  if (selected) {
-    document.getElementById('node-' + selected)?.classList.remove('selected');
-    document.getElementById('edge-' + selected)?.classList.remove('active');
+  // clear previous
+  if (active) {
+    document.getElementById('node-' + active)?.classList.remove('active');
+    document.getElementById('conv-' + active)?.classList.remove('active');
+    const edge = document.getElementById('edge-' + active);
+    if (edge) { edge.style.stroke = '#182838'; edge.style.opacity = '0.4'; }
   }
-  selected = id;
-  document.getElementById('node-' + id)?.classList.add('selected');
-  document.getElementById('edge-' + id)?.classList.add('active');
+  active = id;
+
+  // highlight
+  document.getElementById('node-' + id)?.classList.add('active');
+  document.getElementById('conv-' + id)?.classList.add('active');
+  const edge = document.getElementById('edge-' + id);
+  if (edge) { edge.style.stroke = '#8858e0'; edge.style.opacity = '0.7'; }
 
   const c = contacts.find(x => x.id === id);
   if (!c) return;
 
-  // populate panel
-  document.getElementById('panel-avatar').textContent = (c.name || '?')[0].toUpperCase();
+  // panel header
+  document.getElementById('panel-av').textContent = (c.name||'?')[0].toUpperCase();
   document.getElementById('panel-name').textContent = c.name || id;
   document.getElementById('panel-agent').textContent = c.agent_id || '(agent_id not configured)';
-  document.getElementById('panel-onion').textContent = c.onion  || '(onion not configured)';
+  document.getElementById('panel-onion').textContent = c.onion || '(onion not configured)';
+  document.getElementById('sb-onion').textContent =
+    c.onion ? c.onion.slice(0,44) + '…' : '';
 
-  // update status bar onion
-  document.getElementById('sb-onion').textContent = c.onion ? c.onion.slice(0, 40) + '…' : '';
-
-  // load sent
-  await loadSent(id);
-
-  // open panel
-  document.getElementById('panel').classList.add('open');
-  document.getElementById('compose-area').value = '';
-  onType();
+  document.getElementById('compose-ta').value = '';
   document.getElementById('send-status').textContent = '';
-  document.getElementById('send-btn').disabled = !c.configured;
+  onType();
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled = !c.configured;
   if (!c.configured) {
-    document.getElementById('send-status').style.color = '#806040';
-    document.getElementById('send-status').textContent = 'Contact not configured — placeholders still set';
+    document.getElementById('send-status').style.color = '#806020';
+    document.getElementById('send-status').textContent = 'Contact not configured (placeholders)';
+  } else {
+    document.getElementById('send-status').style.color = '#28a060';
+    document.getElementById('send-status').textContent = '';
   }
+
+  await loadSent(id);
+  document.getElementById('panel').classList.add('open');
 }
 
 function closePanel() {
   document.getElementById('panel').classList.remove('open');
-  if (selected) {
-    document.getElementById('node-' + selected)?.classList.remove('selected');
-    document.getElementById('edge-' + selected)?.classList.remove('active');
+  if (active) {
+    document.getElementById('node-' + active)?.classList.remove('active');
+    document.getElementById('conv-' + active)?.classList.remove('active');
+    const edge = document.getElementById('edge-' + active);
+    if (edge) { edge.style.stroke = '#182838'; edge.style.opacity = '0.4'; }
   }
-  selected = null;
+  active = null;
   document.getElementById('sb-onion').textContent = '';
 }
 
 // ── thread ────────────────────────────────────────────────────────────────
 async function loadSent(id) {
-  const r = await fetch('/api/sent?id=' + encodeURIComponent(id));
+  const r    = await fetch('/api/sent?id=' + encodeURIComponent(id));
   const msgs = await r.json();
-  const thread = document.getElementById('thread');
+  const th   = document.getElementById('thread');
+  // update conv count badge
+  const badge = document.getElementById('conv-cnt-' + id);
+  const node  = document.getElementById('conv-' + id);
+  if (badge) {
+    badge.textContent = msgs.length || '';
+    node?.classList.toggle('has-msgs', msgs.length > 0);
+  }
   if (!msgs.length) {
-    thread.innerHTML = '<div class="thread-empty">No messages sent yet</div>';
+    th.innerHTML = '<div class="thread-empty">No messages sent yet<br>Type below and send →</div>';
     return;
   }
-  thread.innerHTML = msgs.map(m => {
+  th.innerHTML = msgs.map(m => {
     const dt = new Date(m.ts * 1000).toLocaleString();
-    return `<div class="msg-bubble">
-      <div class="msg-text">${esc(m.message)}</div>
-      <div class="msg-meta">${esc(dt)}</div>
-      <div class="msg-receipt">${esc(m.receipt || '')}</div>
+    return `<div class="bubble">
+      <div class="bubble-text">${esc(m.message)}</div>
+      <div class="bubble-meta">${esc(dt)}</div>
+      <div class="bubble-receipt">${esc(m.receipt||'').slice(0,32)}…</div>
     </div>`;
   }).join('');
-  thread.scrollTop = thread.scrollHeight;
+  th.scrollTop = th.scrollHeight;
 }
 
 // ── compose ───────────────────────────────────────────────────────────────
 function onType() {
-  const ta = document.getElementById('compose-area');
+  const ta    = document.getElementById('compose-ta');
   const bytes = new TextEncoder().encode(ta.value).length;
-  const counter = document.getElementById('byte-counter');
-  counter.textContent = bytes + ' / 2000';
-  counter.className = bytes > 2000 ? 'over' : bytes > 1800 ? 'warn' : '';
-  const c = contacts.find(x => x.id === selected);
+  const ctr   = document.getElementById('byte-ctr');
+  ctr.textContent = bytes + ' / 2000';
+  ctr.className = bytes > 2000 ? 'over' : bytes > 1800 ? 'warn' : '';
+  const c = contacts.find(x => x.id === active);
   document.getElementById('send-btn').disabled =
     !ta.value.trim() || bytes > 2000 || !c?.configured;
 }
 
 async function doSend() {
-  const ta = document.getElementById('compose-area');
+  const ta  = document.getElementById('compose-ta');
   const msg = ta.value.trim();
-  if (!msg || !selected) return;
+  if (!msg || !active) return;
   const btn = document.getElementById('send-btn');
-  const status = document.getElementById('send-status');
+  const st  = document.getElementById('send-status');
   btn.disabled = true;
-  status.style.color = '#5090a0';
-  status.textContent = 'Sealing and routing via Tor…';
+  st.style.color = '#4090b0';
+  st.textContent = 'Sealing envelope and routing via Tor…';
 
   try {
-    const r = await fetch('/api/send', {
+    const r    = await fetch('/api/send', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({contact_id: selected, message: msg}),
+      body: JSON.stringify({contact_id: active, message: msg}),
     });
     const data = await r.json();
     if (data.ok) {
-      status.style.color = '#28c87a';
-      status.textContent = 'Delivered — ' + (data.receipt || '').slice(0, 16) + '…';
+      st.style.color = '#28d87a';
+      st.textContent = '✓ Delivered — ' + (data.receipt||'').slice(0,18) + '…';
       ta.value = '';
       onType();
-      // animate edge
-      const edge = document.getElementById('edge-' + selected);
+      // flash edge green
+      const edge = document.getElementById('edge-' + active);
       if (edge) {
-        edge.style.stroke = '#28c87a';
-        setTimeout(() => { edge.style.stroke = ''; }, 1500);
+        const prev = edge.style.stroke;
+        edge.style.stroke = '#28d87a';
+        setTimeout(() => { edge.style.stroke = prev; }, 1400);
       }
-      await loadSent(selected);
+      await loadSent(active);
     } else {
-      status.style.color = '#d06040';
-      status.textContent = 'Error: ' + (data.error || 'unknown');
+      st.style.color = '#c04030';
+      st.textContent = 'Error: ' + (data.error||'unknown');
       btn.disabled = false;
     }
   } catch (e) {
-    status.style.color = '#d06040';
-    status.textContent = 'Network error: ' + e.message;
+    st.style.color = '#c04030';
+    st.textContent = 'Network: ' + e.message;
     btn.disabled = false;
   }
 }
@@ -791,55 +866,60 @@ async function doSend() {
 // ── inbox ─────────────────────────────────────────────────────────────────
 function toggleInbox() {
   inboxOpen = !inboxOpen;
-  document.getElementById('inbox-panel').classList.toggle('open', inboxOpen);
+  document.getElementById('inbox-drawer').classList.toggle('open', inboxOpen);
   if (inboxOpen) loadInbox();
 }
 
 async function loadInbox() {
-  const r = await fetch('/api/inbox');
+  const r    = await fetch('/api/inbox');
   const envs = await r.json();
   const list = document.getElementById('inbox-list');
   if (!envs.length) {
-    list.innerHTML = '<div style="padding:12px 14px;font-size:0.62rem;color:#2a4a62">No envelopes</div>';
+    list.innerHTML = '<div style="padding:10px 12px;font-size:0.6rem;color:#1e3050">No envelopes</div>';
     return;
   }
   list.innerHTML = envs.map(e => {
-    const dt = new Date(e.received * 1000).toLocaleString();
-    const sizeLabel = e.size_ok ? '✓ 4156 B' : '⚠ ' + e.size + ' B';
-    const sizeColor = e.size_ok ? '#2a7a52' : '#8a7030';
-    return `<div class="env-card">
-      <div class="env-receipt">${esc(e.receipt)}</div>
-      <div class="env-size" style="color:${sizeColor}">${sizeLabel} · ${esc(dt)}</div>
+    const dt  = new Date(e.received * 1000).toLocaleString();
+    const col = e.size_ok ? '#1a6040' : '#806020';
+    const sz  = e.size_ok ? '✓ 4156 B' : '⚠ ' + e.size + ' B';
+    return `<div class="env-row">
+      <div class="env-rct">${esc(e.receipt)}</div>
+      <div class="env-sz" style="color:${col}">${sz} · ${esc(dt)}</div>
     </div>`;
   }).join('');
 }
 
-// ── status poll ───────────────────────────────────────────────────────────
+// ── status ────────────────────────────────────────────────────────────────
 async function pollStatus() {
   try {
-    const r = await fetch('/api/status');
-    const d = await r.json();
-
-    const dot = document.getElementById('sb-tor-dot');
+    const d = await (await fetch('/api/status')).json();
+    const dot = document.getElementById('sb-tor');
     dot.className = 'sb-dot ' + (d.tor ? 'ok' : 'off');
-    document.getElementById('sb-tor-label').textContent = d.tor ? 'Tor connected' : 'Tor offline';
-
-    const count = d.inbox_count || 0;
-    document.getElementById('sb-inbox-count').textContent = count;
-
+    document.getElementById('sb-tor-lbl').textContent =
+      d.tor ? 'Tor connected' : 'Tor offline';
+    const n = d.inbox_count || 0;
+    document.getElementById('sb-inbox-n').textContent = n;
     const badge = document.getElementById('inbox-badge');
-    if (badge) {
-      badge.style.display = count > 0 ? 'flex' : 'none';
-      badge.textContent = count;
-    }
+    if (badge) { badge.style.display = n ? 'flex' : 'none'; badge.textContent = n; }
   } catch (_) {}
 }
 
-// ── util ──────────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────
+function div(cls) {
+  const el = document.createElement('div');
+  if (cls) el.className = cls;
+  return el;
+}
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+function pct(v, total) { return (v / total * 100).toFixed(3) + '%'; }
 function esc(s) {
   return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 boot();
@@ -850,21 +930,16 @@ boot();
 
 
 # ---------------------------------------------------------------------------
-# Server bootstrap
+# Server
 # ---------------------------------------------------------------------------
 
-def _make_server(
-    contacts_path: Path,
-    inbox_dir: Path,
-    sent_dir: Path,
-    port: int,
-) -> http.server.HTTPServer:
-    class _BoundHandler(_Handler):
+def _make_server(contacts_path, inbox_dir, sent_dir, port):
+    class H(_Handler):
         pass
-    _BoundHandler.contacts_path = contacts_path
-    _BoundHandler.inbox_dir     = inbox_dir
-    _BoundHandler.sent_dir      = sent_dir
-    return http.server.HTTPServer((_LOOPBACK, port), _BoundHandler)
+    H.contacts_path = contacts_path
+    H.inbox_dir     = inbox_dir
+    H.sent_dir      = sent_dir
+    return http.server.HTTPServer((_LOOPBACK, port), H)
 
 
 def main() -> None:
@@ -878,17 +953,14 @@ def main() -> None:
     contacts_path = Path(args.contacts)
     inbox_dir     = Path(args.inbox)
     sent_dir      = Path(args.sent)
-
     inbox_dir.mkdir(parents=True, exist_ok=True)
     sent_dir.mkdir(parents=True, exist_ok=True)
 
     srv = _make_server(contacts_path, inbox_dir, sent_dir, args.port)
     url = f"http://{_LOOPBACK}:{args.port}/"
     print(f"CCSS Epistemic Graph  →  {url}")
-    print(f"Contacts:  {contacts_path}")
-    print(f"Inbox:     {inbox_dir}")
-    print(f"Sent:      {sent_dir}")
-    print("Ctrl-C to stop.")
+    print(f"Contacts: {contacts_path}")
+    print(f"Ctrl-C to stop.")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
