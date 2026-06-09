@@ -4,9 +4,26 @@
 
 **Do not open a public GitHub issue for security findings.**
 
-Report security vulnerabilities to: `genesis@ilc.foundation`
+### Preferred channel — CCSS (sealed sender, Tor-anonymized)
 
-If that address is not yet active, use: `ilcops@proton.me`
+Submit a sealed envelope to Genesis Agent's CCSS inbound relay:
+
+```
+http://ONION_ADDRESS_PLACEHOLDER/submit
+```
+
+Connect via **Tor Browser** or `torsocks` for network-layer sender anonymization.
+Envelope content is sealed; the relay operator cannot read it.
+See [docs/contact/genesis_agent_contact_protocol_v0.1.md](docs/contact/genesis_agent_contact_protocol_v0.1.md)
+for the full submission protocol, envelope format, and sender SDK reference.
+
+### Email fallback
+
+- `genesis@ilc.foundation` (primary, once active)
+- `ilcops@proton.me` (active now)
+
+Use email for non-confidential correspondence or if CCSS sender tooling is not
+yet available to you.
 
 Include in your report:
 - Description of the vulnerability and affected component
