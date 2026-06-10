@@ -12,9 +12,20 @@ from ilc_core.ccss.runtime import (
     read_envelope,
     send_message,
 )
+from ilc_core.ccss.safe_message import (
+    HeuristicClassifier,
+    MessageSafetyClassifier,
+    SafeCCSSMessage,
+    SafetyVerdict,
+    receive_message,
+)
 
 __all__ = [
     "CCSSRuntimeError",
+    "HeuristicClassifier",
+    "MessageSafetyClassifier",
+    "SafeCCSSMessage",
+    "SafetyVerdict",
     "add_contact",
     "apply_confidential_contact_recipe",
     "generate_identity",
@@ -22,6 +33,7 @@ __all__ = [
     "list_contacts",
     "list_inbox",
     "read_envelope",
+    "receive_message",
     "send_message",
 ]
 
