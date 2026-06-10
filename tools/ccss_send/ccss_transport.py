@@ -171,7 +171,10 @@ class DirectTransport(Transport):
         host, _, port_s = endpoint.rpartition(":")
         if not host or not port_s:
             raise ValueError(f"invalid direct endpoint (expected host:port): {endpoint!r}")
-        port = int(port_s)
+        try:
+            port = int(port_s)
+        except ValueError as exc:
+            raise ValueError("invalid direct endpoint port") from exc
         if port < 1 or port > 65535:
             raise ValueError(f"invalid direct endpoint port: {port}")
 

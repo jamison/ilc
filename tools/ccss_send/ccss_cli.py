@@ -39,12 +39,10 @@ import time
 from pathlib import Path
 from typing import Any
 
-_DEFAULT_CONTACTS = (
-    Path(__file__).resolve().parent.parent.parent
-    / "docs" / "contact" / "ccss_contacts.json"
-)
-_DEFAULT_INBOX = Path.home() / ".ccss_inbox" / "genesis"
-_DEFAULT_SENT  = Path.home() / ".ccss_inbox" / "sent"
+_DEFAULT_HOME = Path.home() / ".ilc" / "ccss"
+_DEFAULT_CONTACTS = _DEFAULT_HOME / "contacts.json"
+_DEFAULT_INBOX = _DEFAULT_HOME / "inbox"
+_DEFAULT_SENT = _DEFAULT_HOME / "sent"
 _TOR_HOST  = "127.0.0.1"
 _TOR_PORT  = 9050
 _RELAY_HOST = "127.0.0.1"

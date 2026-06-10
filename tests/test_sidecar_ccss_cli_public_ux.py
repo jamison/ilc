@@ -5,7 +5,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ilc_core.ccss.runtime import generate_identity, seal_message, unseal_message
+import pytest
+
+from ilc_core.ccss.runtime import (
+    CCSSRuntimeError,
+    build_allow_reply_message,
+    generate_identity,
+    seal_message,
+    unseal_message,
+)
 
 
 def _run_cli(*args: str) -> subprocess.CompletedProcess[str]:
@@ -80,9 +88,31 @@ def test_packaged_ccss_identity_can_unseal_envelope(tmp_path: Path) -> None:
     assert opened["message_bytes"] == len("hello packaged ccss".encode("utf-8"))
 
 
+def test_allow_reply_uses_local_identity_endpoint(tmp_path: Path) -> None:
+    generate_identity(
+        home=tmp_path,
+        contact_id="sender",
+        name="Sender",
+        peer_endpoint="100.111.172.103:9001",
+    )
+
+    payload = json.loads(build_allow_reply_message("hello", home=tmp_path))
+
+    assert payload["msg"] == "hello"
+    assert payload["reply_to"]["endpoint"] == "100.111.172.103:9001"
+    assert payload["reply_to"]["name"] == "Sender"
+    assert len(payload["reply_to"]["pubkey"]) == 64
+
+
+def test_allow_reply_fails_without_local_reply_endpoint(tmp_path: Path) -> None:
+    generate_identity(home=tmp_path, contact_id="sender", name="Sender")
+
+    with pytest.raises(CCSSRuntimeError, match="identity_reply_endpoint_not_configured"):
+        build_allow_reply_message("hello", home=tmp_path)
+
+
 def test_main_py_registers_sidecar_and_ccss_operational_commands() -> None:
     from ilc_core.cli.main import OPERATIONAL_COMMANDS
 
     assert "sidecar" in OPERATIONAL_COMMANDS
     assert "ccss" in OPERATIONAL_COMMANDS
-
