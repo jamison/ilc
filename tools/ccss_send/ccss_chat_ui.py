@@ -8,8 +8,8 @@ Transport is selected automatically per-contact via ccss_transport.resolve_trans
   D2dTransport    (agent_id)                      — future ILC peer routing
 
 Graph model:
-  - Self (operator) node on the left.
-  - Contact (agent) nodes fanned to the right.
+  - Self (operator) node in the center.
+  - Contact (agent) nodes orbit outward.
   - Conversation node sits on the edge midpoint between each pair.
   - Click a conversation node to compose / view sent history.
 
@@ -35,12 +35,10 @@ from typing import Any
 
 _LOOPBACK = "127.0.0.1"
 _DEFAULT_PORT = 8422
-_DEFAULT_CONTACTS = (
-    Path(__file__).resolve().parent.parent.parent
-    / "docs" / "contact" / "ccss_contacts.json"
-)
-_DEFAULT_INBOX = Path.home() / ".ilc" / "ccss" / "inbox"
-_DEFAULT_SENT  = Path.home() / ".ilc" / "ccss" / "sent"
+_DEFAULT_HOME = Path.home() / ".ilc" / "ccss"
+_DEFAULT_CONTACTS = _DEFAULT_HOME / "contacts.json"
+_DEFAULT_INBOX = _DEFAULT_HOME / "inbox"
+_DEFAULT_SENT = _DEFAULT_HOME / "sent"
 _OUTER_ENVELOPE_BYTES = 4156
 _MAX_MESSAGE_BYTES = 2000
 
@@ -64,6 +62,25 @@ def _seal(message: str, pubkey_hex: str) -> bytes:
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
         from tools.ccss_send.ccss_encrypt import seal_message  # type: ignore
     return seal_message(message, pubkey_hex)
+
+
+def _read_envelope_payload(
+    envelope_path: Path,
+    *,
+    receipt: str,
+    home: str | Path | None = None,
+) -> dict[str, Any]:
+    from ilc_core.ccss.runtime import unseal_message
+
+    result = unseal_message(envelope_path.read_bytes(), home=home)
+    return {
+        "flags": list(result.get("flags", [])),
+        "message": result.get("message", ""),
+        "message_bytes": result.get("message_bytes", 0),
+        "ok": True,
+        "receipt": receipt,
+        "safe": bool(result.get("safe", True)),
+    }
 
 
 def _live_contact_value(value: str) -> bool:
@@ -174,12 +191,14 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             _root = Path(__file__).resolve().parent.parent.parent
             if str(_root) not in sys.path:
                 sys.path.insert(0, str(_root))
-            from ilc_core.ccss.runtime import _home  # type: ignore
-            ident = json.loads((_home() / "identity.json").read_text())
+            from ilc_core.ccss.runtime import identity_path  # type: ignore
+            ident = json.loads(identity_path().read_text(encoding="utf-8"))
             self._json({
-                "id":     ident.get("id", ""),
-                "name":   ident.get("name", ""),
+                "endpoint": ident.get("ccss_peer_endpoint", ""),
                 "agent_id": ident.get("agent_id", ""),
+                "id": ident.get("id", ""),
+                "name": ident.get("name", ""),
+                "onion": ident.get("ccss_contact_onion", ""),
                 "pubkey": ident.get("ccss_recipient_pubkey", ""),
             })
         except Exception as exc:
@@ -238,11 +257,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._json({"ok": False, "error": "envelope_not_found"}, 404)
             return
         try:
-            from ilc_core.ccss.runtime import unseal_message
-            result = unseal_message(envelope_path.read_bytes())
-            self._json({"ok": True, "message": result.get("message", ""),
-                        "message_bytes": result.get("message_bytes", 0),
-                        "receipt": receipt})
+            self._json(_read_envelope_payload(envelope_path, receipt=receipt))
         except Exception as exc:
             self._json({"ok": False, "error": str(exc)}, 500)
 
@@ -278,6 +293,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return
         contact_id = payload.get("contact_id", "")
         message    = payload.get("message", "")
+        allow_reply = bool(payload.get("allow_reply", False))
         if not contact_id or not message:
             self._json({"ok": False, "error": "missing fields"}, 400)
             return
@@ -303,6 +319,14 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         if not pubkey or "PLACEHOLDER" in pubkey.upper():
             self._json({"ok": False, "error": "pubkey placeholder not set"}, 400)
             return
+        wire_message = message
+        if allow_reply:
+            try:
+                from ilc_core.ccss.runtime import build_allow_reply_message
+                wire_message = build_allow_reply_message(message)
+            except Exception as exc:
+                self._json({"ok": False, "error": f"allow-reply: {exc}"}, 400)
+                return
         # Resolve transport (direct peer → tor → d2d stub)
         try:
             resolve = _load_transport()
@@ -311,7 +335,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._json({"ok": False, "error": str(exc)}, 400)
             return
         try:
-            envelope = _seal(message, pubkey)
+            envelope = _seal(wire_message, pubkey)
         except Exception as exc:
             self._json({"ok": False, "error": f"encrypt: {exc}"}, 500)
             return
@@ -1174,21 +1198,6 @@ async function doSend() {
   const btn = document.getElementById('send-btn');
   btn.disabled = true;
 
-  // build payload
-  let payload = msg;
-  if (allowReply && selfIdent.pubkey) {
-    const c = contacts.find(x=>x.id===activeId) || {};
-    payload = JSON.stringify({
-      v:1, msg,
-      reply_to:{
-        pubkey:   selfIdent.pubkey,
-        endpoint: c.peer_endpoint || '',
-        name:     selfIdent.name  || '',
-        agent_id: selfIdent.agent_id || '',
-      },
-    });
-  }
-
   // optimistic bubble — use DOM API so sent text is always inert characters
   const now=Date.now(), th=document.getElementById('chat-thread');
   const tmp=div('bubble-sent'); tmp.id='tmp-'+now;
@@ -1205,7 +1214,7 @@ async function doSend() {
   try {
     const r    = await fetch('/api/send',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contact_id:activeId,message:payload}),
+      body:JSON.stringify({allow_reply:!!allowReply,contact_id:activeId,message:msg}),
     });
     const data = await r.json();
     const el   = document.getElementById('tmp-'+now);

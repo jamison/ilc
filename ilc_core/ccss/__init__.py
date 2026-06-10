@@ -5,6 +5,7 @@ from ilc_core.ccss.runtime import (
     CCSSRuntimeError,
     add_contact,
     apply_confidential_contact_recipe,
+    build_allow_reply_message,
     generate_identity,
     import_genesis_contact,
     list_contacts,
@@ -28,6 +29,7 @@ __all__ = [
     "SafetyVerdict",
     "add_contact",
     "apply_confidential_contact_recipe",
+    "build_allow_reply_message",
     "generate_identity",
     "import_genesis_contact",
     "list_contacts",
@@ -36,4 +38,3 @@ __all__ = [
     "receive_message",
     "send_message",
 ]
-

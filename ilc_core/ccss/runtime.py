@@ -328,6 +328,8 @@ def generate_identity(
     agent_id = _agent_id_from_public_key(public_key_hex)
     private_record = {
         "agent_id": agent_id,
+        "ccss_contact_onion": onion,
+        "ccss_peer_endpoint": peer_endpoint,
         "ccss_private_key_hex": private_key_hex,
         "ccss_recipient_pubkey": public_key_hex,
         "description": description,
@@ -357,6 +359,51 @@ def generate_identity(
         "public_key_sha256": hashlib.sha256(bytes.fromhex(public_key_hex)).hexdigest(),
         "version": CCSS_LOCAL_RUNTIME_VERSION,
     }
+
+
+def build_allow_reply_message(message: str, *, home: str | Path | None = None) -> str:
+    """Wrap a plaintext message with local reply metadata.
+
+    The returned string is the sealed payload. It fails closed unless the
+    local identity has a usable reply endpoint; otherwise recipients receive a
+    misleading reply handle that cannot route back to the sender.
+    """
+    _validate_message_content(message)
+    identity = _read_json(identity_path(home), missing_default=None)
+    if not isinstance(identity, dict):
+        raise CCSSRuntimeError("identity_required_for_allow_reply")
+
+    pubkey = _validate_hex_key(
+        str(identity.get("ccss_recipient_pubkey", "")),
+        field="identity_pubkey",
+    )
+    peer_endpoint = str(identity.get("ccss_peer_endpoint", ""))
+    onion = str(identity.get("ccss_contact_onion", ""))
+    if not _live(peer_endpoint) and not _live(onion):
+        raise CCSSRuntimeError("identity_reply_endpoint_not_configured")
+
+    encoded = json.dumps(
+        {
+            "msg": message,
+            "reply_to": {
+                "agent_id": str(identity.get("agent_id", "")),
+                "endpoint": peer_endpoint if _live(peer_endpoint) else "",
+                "name": str(identity.get("name", "")),
+                "onion": onion if _live(onion) else "",
+                "pubkey": pubkey,
+            },
+            "v": 1,
+        },
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    _validate_message_content(encoded)
+    encoded_len = len(encoded.encode("utf-8"))
+    if encoded_len > _MAX_MESSAGE_BYTES:
+        raise CCSSRuntimeError(f"message_too_long:{encoded_len}:{_MAX_MESSAGE_BYTES}")
+    return encoded
 
 
 def _genesis_placeholder_contact() -> dict[str, Any]:
