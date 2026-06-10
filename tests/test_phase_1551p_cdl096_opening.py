@@ -51,7 +51,8 @@ def test_sequence_lock_frontier_advances_to_phase_1552() -> None:
     lock = read(SEQUENCE_LOCK)
     assert "| 1551p | CDL-096 opening after human scope selection | SENSITIVE | COMPLETE - Option A |" in lock
     assert "cdl_096_scope_selection_option_a_phase_1551p" in lock
-    assert "Phase 1552p is the next phase and is NON-SENSITIVE" in lock
+    assert "| 1552p | CDL-096 deliberation and prelock | NON-SENSITIVE | COMPLETE |" in lock
+    assert "Phase 1553p is the next phase and is SENSITIVE" in lock
     assert "Phase 1551p is the next phase" not in lock
 
 
