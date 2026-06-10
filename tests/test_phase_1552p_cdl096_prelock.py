@@ -63,19 +63,20 @@ def test_prelock_locks_global_tier_constants_without_activation() -> None:
     assert "Production selection is deferred" in text
 
 
-def test_cdl_register_remains_open_and_unmutated_by_prelock() -> None:
+def test_cdl_register_records_prelock_status_after_ratification() -> None:
     cdl = read(CDL_REGISTER)
     cdl096_row = next(line for line in cdl.splitlines() if line.startswith("| CDL-096 |"))
 
-    assert "| open |" in cdl096_row
+    assert "| ratified |" in cdl096_row
     assert "opening_token: cdl_096_opened_phase_1551p" in cdl096_row
-    assert "prelock_status: pending_phase_1552p" in cdl096_row
-    assert "ratification_status: not_ratified" in cdl096_row
-    assert "cdl_096_prelock_committed_phase_1552p" not in cdl096_row
+    assert "prelock_status: cdl_096_prelock_committed_phase_1552p" in cdl096_row
+    assert "prelock_status: pending_phase_1552p" not in cdl096_row
+    assert "ratification_status: ratified_phase_1553p" in cdl096_row
+    assert "cdl_096_prelock_committed_phase_1552p" in cdl096_row
     assert "cdl_096_scope_constants_locked_phase_1552p" not in cdl096_row
 
 
-def test_frontier_docs_advance_to_sensitive_phase_1553() -> None:
+def test_frontier_docs_advance_to_phase_1554_after_ratification() -> None:
     combined = "\n".join(
         read(path)
         for path in (SEQUENCE_LOCK, PLANNING_INDEX, STATUS, AGENTS, WALKTHROUGH, OPENING)
@@ -86,6 +87,6 @@ def test_frontier_docs_advance_to_sensitive_phase_1553() -> None:
     assert "cdl_096_scope_constants_locked_phase_1552p" in combined
     assert "cdl_096_runtime_activation_not_authorized_phase_1552p" in combined
     assert "public_path_remains_blocked_phase_1552p" in combined
-    assert "next_phase: phase_1553p_sensitive_cdl096_ratification" in combined
-    assert "Phase 1553p is the next phase and is SENSITIVE" in combined
-    assert "CDL-096 is open and prelocked but not ratified" in combined
+    assert "cdl_096_ratified_phase_1553p" in combined
+    assert "next_phase: phase_1554p_block5_coherence_capsule" in combined
+    assert "Phase 1554p is next and NON-SENSITIVE" in combined
