@@ -29,7 +29,9 @@ def test_phase_1546p_sequence_lock_tokens_and_public_boundary() -> None:
         assert token in text
 
     assert "This window is not the public RC gate" in text
-    assert "Phase 1551p must not execute until the human reviewer selects" in text
+    assert "cdl_096_scope_selection_option_a_phase_1551p" in text
+    assert "| 1551p | CDL-096 opening after human scope selection | SENSITIVE | COMPLETE - Option A |" in text
+    assert "Phase 1552p is the next phase and is NON-SENSITIVE" in text
 
 
 def test_phase_1546p_gap_refresh_records_cdl096_three_options() -> None:
@@ -65,8 +67,10 @@ def test_frontier_docs_point_to_window_1546p() -> None:
     agents = read("AGENTS.md")
 
     assert "Phase 1546p Block 5 sequence lock and gap refresh" in planning
+    assert "Phase 1551p CDL-096 opening with Option A" in planning
     assert "Phase 1550p OBL-029 peer-funded bounty spec" in planning
     assert "Window 1546p-1555p is OPEN" in planning
+    assert "## Phase 1551p - CDL-096 Opening With Option A" in status
     assert "## Phase 1546p - Block 5 Sequence Lock and Gap Refresh" in status
     assert "window: 1546p-1555p" in agents
-    assert "next_phase: phase_1551p_sensitive_scope_selection_required" in agents
+    assert "next_phase: phase_1552p_cdl096_deliberation_prelock" in agents
