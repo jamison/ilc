@@ -1348,6 +1348,10 @@ def main() -> int:
     try:
         payload = _run_top_level_command(command, args, graph_state_path)
         _write_json_payload(payload)
+        # Surface any warnings as human-readable stderr lines so they are
+        # visible to interactive users without breaking JSON stdout for scripts.
+        for w in (payload.get("data") or {}).get("warnings", []):
+            print(f"[ilc warning] {w}", file=sys.stderr)
         return 0
     except QueryCommandError as exc:
         code, payload = _query_error_result(args, exc)
