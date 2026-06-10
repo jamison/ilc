@@ -1097,8 +1097,15 @@ function applyDecrypt(receipt, plaintext, replyTo, updateGraph, safe=true, flags
   const btn    = document.getElementById('dbtn-'+receipt);
   if (text) {
     const color = replyTo ? '#c8a060' : '#a0c0d8';
-    text.innerHTML = `<span style="color:${color}">${esc(plaintext)}</span>`;
-    // Safety warning banner — shown when the content inspector flagged threats
+    // Use DOM textContent — the browser treats the string as literal characters,
+    // never as HTML or script. No filter is required because nothing executes.
+    text.textContent = '';
+    const span = document.createElement('span');
+    span.style.color = color;
+    span.textContent = plaintext;   // ← raw text, always inert
+    text.appendChild(span);
+    // Safety warning banner — shown when the content inspector flagged threats.
+    // This is informational; the primary protection is textContent above.
     const existingWarn = bubble?.querySelector('.safety-warn');
     if (existingWarn) existingWarn.remove();
     if (!safe && flags.length) {
@@ -1182,11 +1189,13 @@ async function doSend() {
     });
   }
 
-  // optimistic bubble
+  // optimistic bubble — use DOM API so sent text is always inert characters
   const now=Date.now(), th=document.getElementById('chat-thread');
   const tmp=div('bubble-sent'); tmp.id='tmp-'+now;
-  tmp.innerHTML=`<div class="btext">${esc(msg)}</div>
-    <div class="bmeta" style="color:#1a4a70">sending…${allowReply?' · reply allowed':''}</div>`;
+  const btxt=div('btext'); btxt.textContent=msg;
+  const bmeta=div('bmeta'); bmeta.style.color='#1a4a70';
+  bmeta.textContent='sending…'+(allowReply?' · reply allowed':'');
+  tmp.appendChild(btxt); tmp.appendChild(bmeta);
   th.appendChild(tmp); th.scrollTop=th.scrollHeight;
   ta.value='';
   if (document.getElementById('reply-check'))
