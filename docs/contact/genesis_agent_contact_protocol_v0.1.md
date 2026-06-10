@@ -13,6 +13,10 @@ delivery channel.
 
 **Endpoint:** `http://ONION_ADDRESS_PLACEHOLDER/submit`
 
+**Status:** prepared but not live until the placeholder onion address, Genesis
+Agent ID, recipient public key, and shard capability reference are replaced by
+deployment-time values.
+
 The endpoint is a Tor v3 hidden service. Your IP address is not visible to the
 relay when connecting via Tor. Envelope content is sealed; the relay operator
 cannot read it.
@@ -73,10 +77,9 @@ authority.
 
 ### Sender SDK
 
-A reference sender SDK for constructing CCSS-003 envelopes from plaintext is
-planned for a future release. Until then, technically capable senders can
-construct envelopes manually using the published protocol specification in
-`ilc_core/sidecars/confidential_coordination_sealed_sender.py`.
+A reference sender SDK for constructing CCSS-003 envelopes from plaintext exists
+under `tools/ccss_send/`, but it remains a local operator tooling surface until
+the deployment-time contact values above are populated.
 
 ### Submitting via curl (through Tor)
 
@@ -132,4 +135,5 @@ See [SECURITY.md](../../SECURITY.md) for the full disclosure policy and scope.
 
 ---
 
-*Last updated: Phase 1546p — CCSS public contact endpoint activated.*
+*Last updated: Phase 1546p addendum — CCSS contact tooling prepared; public
+contact endpoint activation remains pending concrete deployment-time values.*

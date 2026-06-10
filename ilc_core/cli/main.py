@@ -43,6 +43,8 @@ OPERATIONAL_COMMANDS = (
     "config",
     "agent",
     "node",
+    "sidecar",
+    "ccss",
     "submit",
     "version",
 )
@@ -1047,6 +1049,118 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "sidecar":
+            sidecar_parser = subparsers.add_parser(
+                "sidecar",
+                help="Sidecar discovery and recipe commands",
+            )
+            sidecar_subparsers = sidecar_parser.add_subparsers(
+                dest="sidecar_subcommand",
+                required=True,
+            )
+            sidecar_subparsers.add_parser("list", help="List packaged sidecars")
+            p_sidecar_inspect = sidecar_subparsers.add_parser(
+                "inspect",
+                help="Inspect one packaged sidecar",
+            )
+            p_sidecar_inspect.add_argument("sidecar_id")
+
+            recipe_parser = sidecar_subparsers.add_parser(
+                "recipe",
+                help="Sidecar recipe commands",
+            )
+            recipe_subparsers = recipe_parser.add_subparsers(
+                dest="sidecar_recipe_subcommand",
+                required=True,
+            )
+            recipe_subparsers.add_parser("list", help="List sidecar recipes")
+            p_recipe_inspect = recipe_subparsers.add_parser(
+                "inspect",
+                help="Inspect one sidecar recipe",
+            )
+            p_recipe_inspect.add_argument("recipe_id")
+            p_recipe_apply = recipe_subparsers.add_parser(
+                "apply",
+                help="Apply a local sidecar recipe",
+            )
+            p_recipe_apply.add_argument("recipe_id")
+            p_recipe_apply.add_argument("--home", dest="ccss_home", default="")
+            p_recipe_apply.add_argument("--id", default="local-user")
+            p_recipe_apply.add_argument("--name", default="Local ILC User")
+            p_recipe_apply.add_argument("--peer-endpoint", default="")
+            p_recipe_apply.add_argument("--overwrite-identity", action="store_true")
+            continue
+
+        if command == "ccss":
+            ccss_parser = subparsers.add_parser(
+                "ccss",
+                help="Confidential Coordination Sidecar Suite message commands",
+            )
+            ccss_subparsers = ccss_parser.add_subparsers(dest="ccss_subcommand", required=True)
+
+            p_ccss_init = ccss_subparsers.add_parser("init", help="Create local CCSS identity")
+            p_ccss_init.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_init.add_argument("--id", default="local-user")
+            p_ccss_init.add_argument("--name", default="Local ILC User")
+            p_ccss_init.add_argument("--peer-endpoint", default="")
+            p_ccss_init.add_argument("--onion", default="")
+            p_ccss_init.add_argument("--overwrite", action="store_true")
+
+            p_ccss_apply = ccss_subparsers.add_parser(
+                "apply-recipe",
+                help="Apply the confidential-contact recipe",
+            )
+            p_ccss_apply.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_apply.add_argument("--id", default="local-user")
+            p_ccss_apply.add_argument("--name", default="Local ILC User")
+            p_ccss_apply.add_argument("--peer-endpoint", default="")
+            p_ccss_apply.add_argument("--overwrite-identity", action="store_true")
+
+            p_ccss_contacts = ccss_subparsers.add_parser("contacts", help="List CCSS contacts")
+            p_ccss_contacts.add_argument("--home", dest="ccss_home", default="")
+
+            p_ccss_import = ccss_subparsers.add_parser(
+                "import-genesis",
+                help="Import Genesis contact placeholder or published values",
+            )
+            p_ccss_import.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_import.add_argument("--overwrite", action="store_true")
+
+            p_ccss_add = ccss_subparsers.add_parser("add-contact", help="Add a CCSS contact")
+            p_ccss_add.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_add.add_argument("--id", required=True)
+            p_ccss_add.add_argument("--name", required=True)
+            p_ccss_add.add_argument("--pubkey", required=True)
+            p_ccss_add.add_argument("--description", default="")
+            p_ccss_add.add_argument("--peer-endpoint", default="")
+            p_ccss_add.add_argument("--onion", default="")
+            p_ccss_add.add_argument("--agent-id", default="")
+            p_ccss_add.add_argument("--overwrite", action="store_true")
+
+            p_ccss_send = ccss_subparsers.add_parser("send", help="Send a sealed CCSS message")
+            p_ccss_send.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_send.add_argument("contact_id")
+            p_ccss_send.add_argument("message")
+
+            p_ccss_inbox = ccss_subparsers.add_parser("inbox", help="List local CCSS inbox")
+            p_ccss_inbox.add_argument("--home", dest="ccss_home", default="")
+
+            p_ccss_read = ccss_subparsers.add_parser("read", help="Read/decrypt a CCSS envelope")
+            p_ccss_read.add_argument("--home", dest="ccss_home", default="")
+            read_group = p_ccss_read.add_mutually_exclusive_group(required=True)
+            read_group.add_argument("--latest", action="store_true")
+            read_group.add_argument("--envelope", default="")
+            p_ccss_read.add_argument("--redact", action="store_true")
+
+            p_ccss_serve = ccss_subparsers.add_parser(
+                "serve",
+                help="Run a local direct CCSS peer receiver",
+            )
+            p_ccss_serve.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_serve.add_argument("--host", default="127.0.0.1")
+            p_ccss_serve.add_argument("--port", type=int, default=9001)
+            continue
+
         if command == "submit":
             submit_parser = subparsers.add_parser(
                 "submit",
@@ -1126,7 +1240,7 @@ def _run_top_level_command(
     args: argparse.Namespace,
     graph_state_path: Path,
 ) -> dict[str, Any]:
-    if command not in {"query", "verify", "bundle", "agent", "node"}:
+    if command not in {"query", "verify", "bundle", "agent", "node", "sidecar", "ccss"}:
         _ensure_local_graph_state(graph_state_path, command)
 
     if command == "version":
@@ -1152,6 +1266,16 @@ def _run_top_level_command(
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
 
         data = run_node_command(args)
+        return _success_payload(command, data)
+    if command == "sidecar":
+        from ilc_core.cli.sidecar_cli import run_sidecar_command
+
+        data = run_sidecar_command(args)
+        return _success_payload(command, data)
+    if command == "ccss":
+        from ilc_core.cli.ccss_cli import run_ccss_command
+
+        data = run_ccss_command(args)
         return _success_payload(command, data)
     if command == "submit":
         from ilc_core.cli.d2e_submit_cli import handle_submit, SubmitCommandError
