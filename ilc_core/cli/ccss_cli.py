@@ -68,15 +68,53 @@ def run_ccss_command(args: argparse.Namespace) -> dict[str, Any]:
         return result
 
     if subcommand == "send":
-        result = send_message(args.contact_id, args.message, home=home)
+        message = args.message
+        if getattr(args, "allow_reply", False):
+            # Wrap plaintext in allow-reply envelope so recipient can respond.
+            # Import lazily to avoid circular deps.
+            import json as _json
+            from ilc_core.ccss.runtime import _home as _ch
+            import pathlib as _pl
+            _ident_path = _pl.Path(_ch(home)) / "identity.json"
+            try:
+                _ident = _json.loads(_ident_path.read_text())
+            except Exception:
+                _ident = {}
+            message = _json.dumps({
+                "v": 1,
+                "msg": args.message,
+                "reply_to": {
+                    "pubkey":   _ident.get("ccss_recipient_pubkey", ""),
+                    "endpoint": _ident.get("ccss_peer_endpoint", ""),
+                    "name":     _ident.get("name", ""),
+                    "agent_id": _ident.get("agent_id", ""),
+                },
+            }, sort_keys=True)
+        result = send_message(args.contact_id, message, home=home)
+        result["allow_reply"] = getattr(args, "allow_reply", False)
         result["subcommand"] = "send"
         result["version"] = CCSS_CLI_VERSION
         return result
 
     if subcommand == "inbox":
+        envelopes = list_inbox(home=home)
+        if getattr(args, "count", False):
+            # Machine-readable count only — no JSON wrapper, just an integer line.
+            # Agents and shell scripts can consume this directly.
+            return {"_raw": str(len(envelopes))}
         return {
-            "envelopes": list_inbox(home=home),
+            "envelopes": envelopes,
             "subcommand": "inbox",
+            "version": CCSS_CLI_VERSION,
+        }
+
+    if subcommand == "status":
+        envelopes = list_inbox(home=home)
+        n = len(envelopes)
+        return {
+            "inbox_count": n,
+            "has_messages": n > 0,
+            "subcommand": "status",
             "version": CCSS_CLI_VERSION,
         }
 

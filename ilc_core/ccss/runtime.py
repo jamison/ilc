@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import socket
 import socketserver
 import struct
@@ -54,6 +55,123 @@ _MAX_DIRECT_RECEIPT_BYTES = 8192
 _INBOX_CAP = 1024
 _PRIVATE_FILE_MODE = 0o600
 _DIR_MODE = 0o700
+
+# Whitelist of non-printable ASCII characters that are safe in message content.
+# Everything else below U+0020 is rejected (see _validate_message_content).
+_ALLOWED_CONTROL_CHARS: frozenset[str] = frozenset("\t\n\r")
+
+# ── Message safety inspection patterns ───────────────────────────────────────
+# These run on decrypted plaintext at unseal time.
+# Two tiers:
+#   _SAFE_FALSE_PATTERNS — any match sets safe=False; agents MUST NOT act
+#                          on the message without human review.
+#   _FLAG_ONLY_PATTERNS  — informational; safe remains True but flags are
+#                          populated so agents can make their own decisions.
+#
+# All patterns use bounded quantifiers to prevent ReDoS on adversarial input.
+
+_SAFE_FALSE_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    # Prompt injection — attempts to override an agent's instruction context.
+    (
+        "prompt_injection:ignore_instructions",
+        re.compile(
+            r"\b(ignore|disregard|forget|override|bypass)\b.{0,60}"
+            r"\b(instructions?|directives?|rules?|prompt|guidelines?|constraints?)\b",
+            re.I | re.S,
+        ),
+    ),
+    (
+        "prompt_injection:role_override",
+        re.compile(r"\byou\s+are\s+(now\s+)?(a\b|an\b|the\b|no\s+longer\b)", re.I),
+    ),
+    (
+        "prompt_injection:act_as",
+        re.compile(
+            r"\b(act|pretend|behave|respond|roleplay)\s+(as\s+)?(if\s+)?"
+            r"(you\s+(are|were)\b|a\b|an\b|the\b)",
+            re.I,
+        ),
+    ),
+    (
+        "prompt_injection:system_directive",
+        re.compile(
+            r"(^|\n)\s*(\[SYSTEM\]|<SYSTEM>|##\s*SYSTEM\b|SYSTEM\s*:)",
+            re.I | re.M,
+        ),
+    ),
+    (
+        "prompt_injection:jailbreak_keyword",
+        re.compile(
+            r"\b(jailbreak|DAN\s+mode|developer\s+mode|unrestricted\s+mode"
+            r"|god\s+mode|do\s+anything\s+now)\b",
+            re.I,
+        ),
+    ),
+    (
+        "prompt_injection:new_instructions",
+        re.compile(
+            r"\b(your\s+(new|updated?|real|actual|true)\s+instructions?\s+(are|is)\b"
+            r"|new\s+instructions?\s*:)",
+            re.I,
+        ),
+    ),
+    # Shell pipe-to-interpreter — targets agents that execute subprocesses.
+    (
+        "shell_injection:pipe_to_interpreter",
+        re.compile(r"\|\s*(bash|sh|zsh|fish|ksh|cmd\.exe|powershell|pwsh)\b", re.I),
+    ),
+]
+
+_FLAG_ONLY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    # URLs — agents should not auto-fetch without explicit user confirmation.
+    (
+        "url_present",
+        re.compile(r"\b(https?|ftp|file)://\S{1,500}", re.I),
+    ),
+    # Code execution — informational; legitimate in bug reports and code snippets.
+    (
+        "code_execution:eval",
+        re.compile(r"\beval\s*\(", re.I),
+    ),
+    (
+        "code_execution:exec",
+        re.compile(r"\bexec\s*\(", re.I),
+    ),
+    (
+        "code_execution:shell_subshell",
+        re.compile(r"\$\([^)]{1,200}\)|\`[^`\n]{1,200}\`"),
+    ),
+    (
+        "code_execution:os_system",
+        re.compile(r"\bos\.(system|popen|execvp?e?|spawnv?[ep]?)\s*\(", re.I),
+    ),
+    (
+        "code_execution:subprocess",
+        re.compile(r"\bsubprocess\.(run|call|Popen|check_output|check_call)\s*\(", re.I),
+    ),
+    # Sensitive filesystem paths — agents should not read/write these paths.
+    (
+        "sensitive_path:system_credentials",
+        re.compile(
+            r"/etc/(passwd|shadow|sudoers|ssh[^/\s]*)"
+            r"|~/?\.(ssh|aws|config/gcloud|docker/config)\b",
+            re.I,
+        ),
+    ),
+    (
+        "sensitive_path:proc_sys",
+        re.compile(r"/proc/\d+|/sys/kernel", re.I),
+    ),
+    # Encoded payloads — long blobs that could be shellcode or encoded commands.
+    (
+        "encoded_payload:base64_blob",
+        re.compile(r"[A-Za-z0-9+/]{200,}={0,3}"),
+    ),
+    (
+        "encoded_payload:hex_blob",
+        re.compile(r"\b[0-9a-fA-F]{200,}\b"),
+    ),
+]
 
 
 class CCSSRuntimeError(ValueError):
@@ -344,7 +462,81 @@ def _seal_layer(plaintext: bytes, recipient_pub: X25519PublicKey, info: bytes) -
     return ephemeral_public + nonce + ciphertext_with_tag
 
 
+def _inspect_message_safety(text: str) -> tuple[bool, list[str]]:
+    """Scan decrypted plaintext for patterns that pose a risk to agent consumers.
+
+    Returns ``(safe, flags)`` where:
+      - ``safe=False`` means an agent MUST NOT act on the message without
+        explicit human review — a high-confidence threat pattern was found.
+      - ``flags`` is a sorted list of machine-readable token strings, one per
+        matched pattern, present regardless of the safe value.
+
+    Scanning is two-level: the raw plaintext is always scanned; if the text
+    parses as a v1 allow-reply envelope ``{"v":1,"msg":"..."}`` the inner
+    ``msg`` field is also scanned independently so injection attempts cannot
+    hide inside the JSON wrapper.
+
+    This function never raises; it returns ``(True, [])`` on any internal
+    error so that decryption is never blocked by the inspector.
+    """
+    scan_targets: list[str] = [text]
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict) and parsed.get("v") == 1 and isinstance(parsed.get("msg"), str):
+            inner = parsed["msg"]
+            if inner and inner != text:
+                scan_targets.append(inner)
+    except (ValueError, TypeError, AttributeError):
+        pass
+
+    flags: set[str] = set()
+    safe = True
+
+    try:
+        for target in scan_targets:
+            for token, pattern in _SAFE_FALSE_PATTERNS:
+                if token not in flags and pattern.search(target):
+                    flags.add(token)
+                    safe = False
+            for token, pattern in _FLAG_ONLY_PATTERNS:
+                if token not in flags and pattern.search(target):
+                    flags.add(token)
+    except Exception:  # pragma: no cover — defensive; pattern bugs must not block decryption
+        return True, []
+
+    return safe, sorted(flags)
+
+
+def _validate_message_content(message: str) -> None:
+    """Reject message content that is unsafe to store, display, or forward.
+
+    Blocks raw control bytes that can cause harm downstream:
+      - NUL (U+0000)   — C-string termination in native (Rust/C) consumers
+      - ESC (U+001B)   — ANSI/VT100 terminal manipulation when printed by CLI
+      - DEL (U+007F)   — terminal control
+      - C1 range (U+0080–U+009F) — additional terminal control sequences
+      - Any other C0 control char not in the safe whitelist {\\t, \\n, \\r}
+
+    NOTE: this operates on *raw bytes*, not text escape sequences. A Python
+    source file containing the text ``print("\\x1b[31m")`` passes fine because
+    the actual bytes in that string are printable ASCII ('\\', 'x', '1', 'b').
+    Only a message that contains the literal 0x1B byte is rejected. Code
+    samples, bug reports, and scripts are safe to send via CCSS.
+    """
+    for ch in message:
+        cp = ord(ch)
+        if cp == 0x00:
+            raise CCSSRuntimeError("message_invalid:null_byte")
+        if cp == 0x1B:
+            raise CCSSRuntimeError("message_invalid:escape_sequence")
+        if cp < 0x20 and ch not in _ALLOWED_CONTROL_CHARS:
+            raise CCSSRuntimeError(f"message_invalid:control_char:U+{cp:04X}")
+        if 0x7F <= cp <= 0x9F:
+            raise CCSSRuntimeError(f"message_invalid:control_char:U+{cp:04X}")
+
+
 def seal_message(message: str, recipient_pubkey_hex: str) -> bytes:
+    _validate_message_content(message)
     message_bytes = message.encode("utf-8")
     if len(message_bytes) > _MAX_MESSAGE_BYTES:
         raise CCSSRuntimeError(f"message_too_long:{len(message_bytes)}:{_MAX_MESSAGE_BYTES}")
@@ -435,11 +627,15 @@ def unseal_message(envelope: bytes, *, home: str | Path | None = None) -> dict[s
     message_end = message_start + message_len
     message_bytes = inner_plain[message_start:message_end]
     _require_zero_padding(inner_plain, message_end, token="ccss_inner_padding_nonzero")
+    message = message_bytes.decode("utf-8")
+    safe, flags = _inspect_message_safety(message)
     return {
         "envelope_sha256": hashlib.sha256(envelope).hexdigest(),
-        "message": message_bytes.decode("utf-8"),
+        "flags": flags,
+        "message": message,
         "message_bytes": len(message_bytes),
         "ok": True,
+        "safe": safe,
     }
 
 
