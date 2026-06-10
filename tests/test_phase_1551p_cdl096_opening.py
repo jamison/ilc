@@ -55,7 +55,8 @@ def test_sequence_lock_frontier_advances_through_ratification() -> None:
     assert "cdl_096_scope_selection_option_a_phase_1551p" in lock
     assert "| 1552p | CDL-096 deliberation and prelock | NON-SENSITIVE | COMPLETE |" in lock
     assert "| 1553p | CDL-096 ratification | SENSITIVE | COMPLETE |" in lock
-    assert "Phase 1554p is next and NON-SENSITIVE" in lock
+    assert "| 1554p | Block 5 coherence report and capsule update | NON-SENSITIVE | COMPLETE |" in lock
+    assert "Phase 1555p is next" in lock
     assert "Phase 1551p is the next phase" not in lock
 
 

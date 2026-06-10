@@ -88,5 +88,6 @@ def test_frontier_docs_advance_to_phase_1554_after_ratification() -> None:
     assert "cdl_096_runtime_activation_not_authorized_phase_1552p" in combined
     assert "public_path_remains_blocked_phase_1552p" in combined
     assert "cdl_096_ratified_phase_1553p" in combined
-    assert "next_phase: phase_1554p_block5_coherence_capsule" in combined
-    assert "Phase 1554p is next and NON-SENSITIVE" in combined
+    assert "block5_coherence_complete_phase_1554p" in combined
+    assert "next_phase: phase_1555p_sensitive_window_closure_gate" in combined
+    assert "Phase 1555p is next" in combined
