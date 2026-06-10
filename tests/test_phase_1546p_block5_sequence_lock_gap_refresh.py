@@ -33,7 +33,8 @@ def test_phase_1546p_sequence_lock_tokens_and_public_boundary() -> None:
     assert "| 1551p | CDL-096 opening after human scope selection | SENSITIVE | COMPLETE - Option A |" in text
     assert "| 1552p | CDL-096 deliberation and prelock | NON-SENSITIVE | COMPLETE |" in text
     assert "| 1553p | CDL-096 ratification | SENSITIVE | COMPLETE |" in text
-    assert "Phase 1554p is next and NON-SENSITIVE" in text
+    assert "| 1554p | Block 5 coherence report and capsule update | NON-SENSITIVE | COMPLETE |" in text
+    assert "Phase 1555p is next" in text
 
 
 def test_phase_1546p_gap_refresh_records_cdl096_three_options() -> None:
@@ -79,4 +80,5 @@ def test_frontier_docs_point_to_window_1546p() -> None:
     assert "## Phase 1551p - CDL-096 Opening With Option A" in status
     assert "## Phase 1546p - Block 5 Sequence Lock and Gap Refresh" in status
     assert "window: 1546p-1555p" in agents
-    assert "next_phase: phase_1554p_block5_coherence_capsule" in agents
+    assert "phase_1554p: complete_block5_coherence_capsule" in agents
+    assert "next_phase: phase_1555p_sensitive_window_closure_gate" in agents

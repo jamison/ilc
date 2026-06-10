@@ -107,7 +107,8 @@ def test_frontier_docs_advance_to_phase_1554_without_public_activation() -> None
     assert "cdl_096_scope_ratified_phase_1553p" in combined
     assert "cdl_096_runtime_activation_not_authorized_phase_1553p" in combined
     assert "public_path_remains_blocked_phase_1553p" in combined
-    assert "next_phase: phase_1554p_block5_coherence_capsule" in combined
-    assert "Phase 1554p is next and NON-SENSITIVE" in combined
+    assert "block5_coherence_complete_phase_1554p" in combined
+    assert "next_phase: phase_1555p_sensitive_window_closure_gate" in combined
+    assert "Phase 1555p is next" in combined
     assert "no_cdl_096_runtime_activation" in read(AGENTS)
     assert "no_cdl_096_open" not in read(AGENTS)
