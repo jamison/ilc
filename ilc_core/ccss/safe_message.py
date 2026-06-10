@@ -1,19 +1,24 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""L3 architectural isolation layer for CCSS message consumption.
+"""Safe CCSS message consumption — architectural text isolation layer.
 
-The core invariant this module enforces:
+The core principle:
 
-    CCSS message content is USER-GENERATED INPUT, not instructions.
+    Message content is raw text.  It is displayed to a human or passed to
+    an agent as data.  It is never interpreted, executed, or used as
+    instructions.
 
-An agent that passes raw CCSS plaintext directly into its own instruction
-context (system prompt, eval(), exec(), subprocess) is vulnerable to prompt
-injection regardless of what safety filters are applied upstream.  The
-filters in ``_inspect_message_safety`` (runtime.py) catch known patterns,
-but cannot be exhaustive — an attacker who knows the filter can work around
-it in a different language or encoding.
+This is the same principle as a browser's ``textContent`` vs ``innerHTML``:
+no matter what characters are in the string, they are shown as-is and
+nothing runs.  Filters cannot be exhaustive — an attacker who knows the
+filter changes language or encoding — but a display layer that never
+executes content is unconditionally safe.
 
-The only robust defence is architectural: the message content must be
-STRUCTURALLY SEPARATED from the instruction context.  This module provides:
+The heuristic inspector in ``_inspect_message_safety`` (runtime.py) is
+a *secondary* informational layer: it flags known patterns so that human
+reviewers and agents can make an informed decision.  It is not the primary
+defence.
+
+This module provides:
 
 1. ``SafeCCSSMessage`` — a frozen dataclass that makes the content-vs-
    instruction boundary explicit at the type level.  The ``.text`` field
