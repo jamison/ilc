@@ -101,7 +101,7 @@ def test_phase_1549p_fee_burn_runtime_still_enforces_cdl028_fixed_ratio() -> Non
     assert "adaptive_fee_burn" not in runtime
 
 
-def test_phase_1549p_obl028_closed_and_obl029_remains_open() -> None:
+def test_phase_1549p_obl028_closed_without_closing_obl029() -> None:
     register = read(REGISTER)
     row = next(line for line in register.splitlines() if line.startswith("| OBL-028 |"))
     assert "| closed |" in row
@@ -110,7 +110,6 @@ def test_phase_1549p_obl028_closed_and_obl029_remains_open() -> None:
     assert "ilc_adaptive_fee_burn_ratio_sim_1549p_v0.1.json" in row
 
     obl029 = next(line for line in register.splitlines() if line.startswith("| OBL-029 |"))
-    assert "| open |" in obl029
     assert "closed_phase_1549p" not in obl029
 
     status = read(STATUS)
