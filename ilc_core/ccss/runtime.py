@@ -17,6 +17,7 @@ import socketserver
 import struct
 import tempfile
 import time
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -59,6 +60,30 @@ _DIR_MODE = 0o700
 # Whitelist of non-printable ASCII characters that are safe in message content.
 # Everything else below U+0020 is rejected (see _validate_message_content).
 _ALLOWED_CONTROL_CHARS: frozenset[str] = frozenset("\t\n\r")
+
+# ── L2: language-independent obfuscation detection ───────────────────────────
+# These characters appear in adversarial text specifically to evade keyword
+# filters — they almost never appear in legitimate messages.
+
+# Zero-width and invisible formatting characters used to split keywords.
+# e.g. "ign\u200bore" renders as "ignore" but breaks naive regex.
+_ZERO_WIDTH_CHARS: frozenset[str] = frozenset(
+    "\u200b"  # ZERO WIDTH SPACE
+    "\u200c"  # ZERO WIDTH NON-JOINER
+    "\u200d"  # ZERO WIDTH JOINER
+    "\u2060"  # WORD JOINER
+    "\u00ad"  # SOFT HYPHEN
+    "\ufeff"  # ZERO WIDTH NO-BREAK SPACE (BOM)
+)
+
+# Right-to-left control characters that can reverse displayed text order,
+# making "evil command" appear as "dnammoc live" to a human reviewer.
+_RTL_CONTROL_CHARS: frozenset[str] = frozenset(
+    "\u202e"  # RIGHT-TO-LEFT OVERRIDE
+    "\u202d"  # LEFT-TO-RIGHT OVERRIDE
+    "\u200f"  # RIGHT-TO-LEFT MARK
+    "\u202b"  # RIGHT-TO-LEFT EMBEDDING
+)
 
 # ── Message safety inspection patterns ───────────────────────────────────────
 # These run on decrypted plaintext at unseal time.
@@ -462,6 +487,50 @@ def _seal_layer(plaintext: bytes, recipient_pub: X25519PublicKey, info: bytes) -
     return ephemeral_public + nonce + ciphertext_with_tag
 
 
+def _l2_obfuscation_flags(text: str) -> list[str]:
+    """Detect language-independent obfuscation techniques.
+
+    These checks are independent of English keywords and catch attacks that
+    use invisible or directional Unicode to evade pattern matching:
+
+    - Zero-width characters split keywords so regex can't match them.
+      e.g. "ign\\u200bore all instructions" renders as "ignore all
+      instructions" to a human but breaks the regex pattern.
+
+    - RTL override characters reverse the visual display order of text,
+      hiding the true content from a human reviewer while the raw bytes
+      still carry the payload.
+
+    Note on Unicode confusables (Cyrillic 'а' for Latin 'a', etc.):
+    NFKC normalization silently fixes *compatibility* equivalents (fullwidth
+    chars, ligatures, superscripts) as part of ``_normalize_for_scan`` —
+    those attacks are caught without a separate flag.  Cross-script
+    lookalikes (e.g. Cyrillic U+0456 'і' for Latin 'i') are NOT
+    compatibility equivalents in Unicode and require the Unicode confusables
+    table (TR39) to detect.  That lookup is not bundled here; it is noted as
+    a known gap in TODO.md under "message safety: language-independent L2".
+    Flagging NFKC differences directly causes false positives on legitimate
+    multilingual text (e.g. Japanese fullwidth punctuation) so it is omitted.
+    """
+    found: list[str] = []
+    if any(c in _ZERO_WIDTH_CHARS for c in text):
+        found.append("obfuscation:zero_width_chars")
+    if any(c in _RTL_CONTROL_CHARS for c in text):
+        found.append("obfuscation:rtl_override")
+    return found
+
+
+def _normalize_for_scan(text: str) -> str:
+    """Return NFKC-normalized text with zero-width chars stripped.
+
+    Applied to every scan target before pattern matching so that Unicode
+    lookalike and zero-width-split attacks are caught by the same patterns
+    that catch plaintext attacks.
+    """
+    stripped = "".join(c for c in text if c not in _ZERO_WIDTH_CHARS)
+    return unicodedata.normalize("NFKC", stripped)
+
+
 def _inspect_message_safety(text: str) -> tuple[bool, list[str]]:
     """Scan decrypted plaintext for patterns that pose a risk to agent consumers.
 
@@ -471,21 +540,24 @@ def _inspect_message_safety(text: str) -> tuple[bool, list[str]]:
       - ``flags`` is a sorted list of machine-readable token strings, one per
         matched pattern, present regardless of the safe value.
 
-    Scanning is two-level: the raw plaintext is always scanned; if the text
-    parses as a v1 allow-reply envelope ``{"v":1,"msg":"..."}`` the inner
-    ``msg`` field is also scanned independently so injection attempts cannot
-    hide inside the JSON wrapper.
+    Scanning is three-level:
+      1. L2 obfuscation checks on the raw text (language-independent).
+      2. Pattern matching on NFKC-normalized, zero-width-stripped text so
+         Unicode lookalikes and invisible-char splits don't evade the patterns.
+      3. If the text parses as a v1 allow-reply envelope ``{"v":1,"msg":"..."}``,
+         the inner ``msg`` field is also normalized and scanned independently.
 
     This function never raises; it returns ``(True, [])`` on any internal
     error so that decryption is never blocked by the inspector.
     """
-    scan_targets: list[str] = [text]
+    # Collect raw scan targets (v1 envelope unwrapping).
+    raw_targets: list[str] = [text]
     try:
         parsed = json.loads(text)
         if isinstance(parsed, dict) and parsed.get("v") == 1 and isinstance(parsed.get("msg"), str):
             inner = parsed["msg"]
             if inner and inner != text:
-                scan_targets.append(inner)
+                raw_targets.append(inner)
     except (ValueError, TypeError, AttributeError):
         pass
 
@@ -493,7 +565,13 @@ def _inspect_message_safety(text: str) -> tuple[bool, list[str]]:
     safe = True
 
     try:
-        for target in scan_targets:
+        # L2: obfuscation detection on raw text (before normalization strips evidence).
+        for oflag in _l2_obfuscation_flags(text):
+            flags.add(oflag)
+
+        # L1: pattern matching on normalized text.
+        for raw in raw_targets:
+            target = _normalize_for_scan(raw)
             for token, pattern in _SAFE_FALSE_PATTERNS:
                 if token not in flags and pattern.search(target):
                     flags.add(token)
@@ -501,6 +579,7 @@ def _inspect_message_safety(text: str) -> tuple[bool, list[str]]:
             for token, pattern in _FLAG_ONLY_PATTERNS:
                 if token not in flags and pattern.search(target):
                     flags.add(token)
+
     except Exception:  # pragma: no cover — defensive; pattern bugs must not block decryption
         return True, []
 
