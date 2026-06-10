@@ -1139,11 +1139,21 @@ def _build_parser() -> JsonArgumentParser:
 
             p_ccss_send = ccss_subparsers.add_parser("send", help="Send a sealed CCSS message")
             p_ccss_send.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_send.add_argument("--allow-reply", action="store_true",
+                help="Include your pubkey+endpoint in the encrypted payload so the "
+                     "recipient can respond. Once received and decrypted, they have "
+                     "your key permanently.")
             p_ccss_send.add_argument("contact_id")
             p_ccss_send.add_argument("message")
 
             p_ccss_inbox = ccss_subparsers.add_parser("inbox", help="List local CCSS inbox")
             p_ccss_inbox.add_argument("--home", dest="ccss_home", default="")
+            p_ccss_inbox.add_argument("--count", action="store_true",
+                help="Print only the number of envelopes (machine-readable)")
+
+            p_ccss_status = ccss_subparsers.add_parser(
+                "status", help="Print pending inbox count; exits 0 if empty, 1 if messages waiting")
+            p_ccss_status.add_argument("--home", dest="ccss_home", default="")
 
             p_ccss_read = ccss_subparsers.add_parser("read", help="Read/decrypt a CCSS envelope")
             p_ccss_read.add_argument("--home", dest="ccss_home", default="")
@@ -1347,11 +1357,29 @@ def main() -> int:
 
     try:
         payload = _run_top_level_command(command, args, graph_state_path)
+        data = payload.get("data") or {}
+        # Machine-readable raw output — print bare value, no JSON wrapper.
+        # Used by: ilc ccss inbox --count
+        raw_val = data.get("_raw")
+        if raw_val is not None:
+            print(raw_val)
+            return 0
         _write_json_payload(payload)
         # Surface any warnings as human-readable stderr lines so they are
         # visible to interactive users without breaking JSON stdout for scripts.
-        for w in (payload.get("data") or {}).get("warnings", []):
+        for w in data.get("warnings", []):
             print(f"[ilc warning] {w}", file=sys.stderr)
+        # Safety warning for decrypted messages flagged by the content inspector.
+        # Printed to stderr so JSON stdout stays machine-readable.
+        if data.get("subcommand") == "read" and not data.get("safe", True):
+            flags_str = json.dumps(sorted(data.get("flags", [])))
+            print(
+                f"[ccss] SAFETY WARNING: message flagged safe=false flags={flags_str}",
+                file=sys.stderr,
+            )
+        # ilc ccss status exits 1 when messages are waiting (shell-condition friendly).
+        if data.get("subcommand") == "status" and data.get("has_messages"):
+            return 1
         return 0
     except QueryCommandError as exc:
         code, payload = _query_error_result(args, exc)

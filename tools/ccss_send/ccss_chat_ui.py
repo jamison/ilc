@@ -39,8 +39,8 @@ _DEFAULT_CONTACTS = (
     Path(__file__).resolve().parent.parent.parent
     / "docs" / "contact" / "ccss_contacts.json"
 )
-_DEFAULT_INBOX = Path.home() / ".ccss_inbox" / "genesis"
-_DEFAULT_SENT  = Path.home() / ".ccss_inbox" / "sent"
+_DEFAULT_INBOX = Path.home() / ".ilc" / "ccss" / "inbox"
+_DEFAULT_SENT  = Path.home() / ".ilc" / "ccss" / "sent"
 _OUTER_ENVELOPE_BYTES = 4156
 _MAX_MESSAGE_BYTES = 2000
 
@@ -135,11 +135,13 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         p = self.path.split("?")[0]
         dispatch = {
-            "/":             self._serve_html,
-            "/api/status":   self._api_status,
-            "/api/contacts": self._api_contacts,
-            "/api/inbox":    self._api_inbox,
-            "/api/sent":     self._api_sent,
+            "/":              self._serve_html,
+            "/api/status":    self._api_status,
+            "/api/identity":  self._api_identity,
+            "/api/contacts":  self._api_contacts,
+            "/api/inbox":     self._api_inbox,
+            "/api/read":      self._api_read,
+            "/api/sent":      self._api_sent,
         }
         fn = dispatch.get(p)
         if fn:
@@ -166,6 +168,22 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             "tor":         self._tor_live(),
             "inbox_count": self._count_inbox(),
         })
+
+    def _api_identity(self) -> None:
+        try:
+            _root = Path(__file__).resolve().parent.parent.parent
+            if str(_root) not in sys.path:
+                sys.path.insert(0, str(_root))
+            from ilc_core.ccss.runtime import _home  # type: ignore
+            ident = json.loads((_home() / "identity.json").read_text())
+            self._json({
+                "id":     ident.get("id", ""),
+                "name":   ident.get("name", ""),
+                "agent_id": ident.get("agent_id", ""),
+                "pubkey": ident.get("ccss_recipient_pubkey", ""),
+            })
+        except Exception as exc:
+            self._json({"error": str(exc)}, 500)
 
     @staticmethod
     def _tor_live() -> bool:
@@ -207,6 +225,27 @@ class _Handler(http.server.BaseHTTPRequestHandler):
                 })
         self._json(sorted(envs, key=lambda e: e["received"], reverse=True)[:50])
 
+    def _api_read(self) -> None:
+        from urllib.parse import parse_qs, urlparse
+        qs      = parse_qs(urlparse(self.path).query)
+        receipt = (qs.get("receipt") or [""])[0].strip()
+        # basic sanity: hex string, sane length
+        if not receipt or not all(c in "0123456789abcdefABCDEF" for c in receipt):
+            self._json({"ok": False, "error": "invalid receipt"}, 400)
+            return
+        envelope_path = self.inbox_dir / f"{receipt}.envelope"
+        if not envelope_path.is_file():
+            self._json({"ok": False, "error": "envelope_not_found"}, 404)
+            return
+        try:
+            from ilc_core.ccss.runtime import unseal_message
+            result = unseal_message(envelope_path.read_bytes())
+            self._json({"ok": True, "message": result.get("message", ""),
+                        "message_bytes": result.get("message_bytes", 0),
+                        "receipt": receipt})
+        except Exception as exc:
+            self._json({"ok": False, "error": str(exc)}, 500)
+
     def _api_sent(self) -> None:
         from urllib.parse import parse_qs, urlparse
         qs  = parse_qs(urlparse(self.path).query)
@@ -244,6 +283,12 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return
         if len(message.encode()) > _MAX_MESSAGE_BYTES:
             self._json({"ok": False, "error": "message too long"}, 400)
+            return
+        try:
+            from ilc_core.ccss.runtime import _validate_message_content, CCSSRuntimeError as _CCSSRuntimeError
+            _validate_message_content(message)
+        except Exception as _exc:
+            self._json({"ok": False, "error": f"message content rejected: {_exc}"}, 400)
             return
         try:
             contacts = json.loads(self.contacts_path.read_text())
@@ -323,536 +368,778 @@ _HTML = r"""<!DOCTYPE html>
 html,body{width:100%;height:100%;background:#07090f;overflow:hidden;
   font-family:'SF Mono',ui-monospace,monospace;color:#c0d4e4}
 
-/* ── canvas ── */
-#canvas{position:absolute;inset:0 0 28px 0;overflow:hidden}
+/* ══ GRAPH VIEW ══════════════════════════════════════════════════════════ */
+#graph-view{position:absolute;inset:0;transition:opacity 0.3s,transform 0.3s}
+#graph-view.hidden{opacity:0;pointer-events:none;transform:scale(0.97)}
+#canvas{position:absolute;inset:0 0 24px 0;overflow:hidden}
 #graph-svg{width:100%;height:100%;display:block}
+#nodes{position:absolute;inset:0 0 24px 0;pointer-events:none}
+.node{position:absolute;transform:translate(-50%,-50%);pointer-events:all}
 
-/* ── agent nodes (HTML divs positioned over SVG) ── */
-.node{position:absolute;transform:translate(-50%,-50%);pointer-events:all;cursor:default}
-
-.agent-ring{
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  position:relative;transition:box-shadow 0.25s,transform 0.2s,border-color 0.25s;
-}
-
-/* Self / operator node */
+/* self node */
+.node-self{cursor:pointer}
 .node-self .agent-ring{
-  width:68px;height:68px;
-  background:radial-gradient(circle at 35% 35%,#2a1800,#0e0800);
-  border:2px solid #b87c08;
-  box-shadow:0 0 24px 8px rgba(184,124,8,0.3),inset 0 1px 0 rgba(255,200,60,0.15);
-  animation:self-pulse 3s ease-in-out infinite;
+  width:78px;height:78px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:radial-gradient(circle at 38% 35%,#2e1a00,#0e0800);
+  border:2px solid #c88a10;
+  box-shadow:0 0 32px 12px rgba(200,138,16,0.32),inset 0 1px 0 rgba(255,210,70,0.14);
+  transition:box-shadow .25s,border-color .25s,transform .2s;
+  animation:self-pulse 3.5s ease-in-out infinite;
+}
+.node-self:hover .agent-ring,.node-self.menu-open .agent-ring{
+  border-color:#f0b020;transform:scale(1.08);
+  box-shadow:0 0 44px 18px rgba(240,176,32,0.42);animation:none;
 }
 @keyframes self-pulse{
-  0%,100%{box-shadow:0 0 24px 8px rgba(184,124,8,0.3),inset 0 1px 0 rgba(255,200,60,0.15)}
-  50%{box-shadow:0 0 38px 14px rgba(184,124,8,0.45),inset 0 1px 0 rgba(255,200,60,0.2)}
+  0%,100%{box-shadow:0 0 32px 12px rgba(200,138,16,0.32)}
+  50%{box-shadow:0 0 50px 20px rgba(200,138,16,0.48)}
 }
-.node-self .agent-avatar{font-size:1.4rem;font-weight:700;color:#e8b840;letter-spacing:-1px}
-.node-self .node-label{color:#906010;font-size:0.6rem}
+.node-self .agent-avatar{font-size:1.55rem;font-weight:700;color:#f0c040}
+.node-self .node-label{color:#7a5010;font-size:0.62rem}
 
-/* Contact node */
+/* outbound contact node (people you send to) */
 .node-contact .agent-ring{
-  width:54px;height:54px;cursor:pointer;
+  width:56px;height:56px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;position:relative;
   background:radial-gradient(circle at 35% 35%,#0c1e30,#060e18);
-  border:2px solid #183a56;
-  box-shadow:0 0 14px 4px rgba(24,58,86,0.3);
+  border:2px solid #183a56;box-shadow:0 0 14px 4px rgba(24,58,86,0.28);
+  transition:box-shadow .25s,transform .2s,border-color .25s;
 }
-.node-contact.configured .agent-ring{
-  border-color:#1472a0;
-  box-shadow:0 0 18px 6px rgba(20,114,160,0.3);
-}
-.node-contact.active .agent-ring,
-.node-contact:hover .agent-ring{
-  border-color:#40a8d8;
-  box-shadow:0 0 28px 10px rgba(64,168,216,0.4);
-  transform:scale(1.08);
-}
-.node-contact .agent-avatar{font-size:1.15rem;font-weight:700;color:#a0c8e0}
-.node-contact.configured .agent-avatar{color:#c0e0f8}
+.node-contact.configured .agent-ring{border-color:#1472a0;box-shadow:0 0 20px 7px rgba(20,114,160,0.3)}
+.node-contact:hover .agent-ring{border-color:#40a8d8;box-shadow:0 0 30px 12px rgba(64,168,216,0.42);transform:scale(1.1)}
+.node-contact .agent-avatar{font-size:1.2rem;font-weight:700;color:#a0c8e0}
+.node-contact.configured .agent-avatar{color:#c4e4ff}
 
-/* status dot */
-.status-dot{
-  position:absolute;bottom:2px;right:2px;
-  width:10px;height:10px;border-radius:50%;border:2px solid #07090f;
+/* inbound identified sender node (they revealed themselves) */
+.node-inbound .agent-ring{
+  width:52px;height:52px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:radial-gradient(circle at 35% 35%,#1e1408,#0c0804);
+  border:2px solid #3a2808;box-shadow:0 0 14px 4px rgba(80,50,10,0.3);
+  transition:box-shadow .25s,transform .2s,border-color .25s;
 }
-.status-dot.ok{background:#28d87a}
-.status-dot.off{background:#304050}
+.node-inbound:hover .agent-ring{border-color:#c08030;box-shadow:0 0 26px 10px rgba(192,128,48,0.4);transform:scale(1.1)}
+.node-inbound .agent-avatar{font-size:1.1rem;font-weight:700;color:#c8a060}
+.node-inbound .node-label{color:#5a4010}
 
-/* inbox badge on self */
+/* anonymous node */
+.node-anon .agent-ring{
+  width:50px;height:50px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:radial-gradient(circle at 35% 35%,#141820,#08090f);
+  border:1.5px dashed #1e2838;box-shadow:0 0 10px 3px rgba(20,24,32,0.3);
+  transition:box-shadow .25s,transform .2s,border-color .25s;
+}
+.node-anon:hover .agent-ring{border-color:#304858;box-shadow:0 0 20px 8px rgba(48,72,88,0.4);transform:scale(1.08)}
+.node-anon .agent-avatar{font-size:1.15rem;color:#304858}
+.node-anon .node-label{color:#283040;font-size:0.58rem}
+
+/* shared */
+.status-dot{position:absolute;bottom:2px;right:2px;width:10px;height:10px;border-radius:50%;border:2px solid #07090f}
+.status-dot.ok{background:#28d87a}.status-dot.off{background:#304050}
 #inbox-badge{
-  position:absolute;top:-3px;right:-3px;
-  min-width:18px;height:18px;padding:0 4px;
-  background:#c83030;border-radius:9px;border:2px solid #07090f;
+  position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 4px;
+  background:#c83030;border-radius:10px;border:2px solid #07090f;
   font-size:0.6rem;font-weight:700;color:#fff;
-  display:none;align-items:center;justify-content:center;
+  display:none;align-items:center;justify-content:center;z-index:2;
 }
-
-/* shared label */
 .node-label{
-  position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
   white-space:nowrap;font-size:0.6rem;color:#3a6070;letter-spacing:0.04em;
-  pointer-events:none;
+  pointer-events:none;text-align:center;
 }
+.node-self .node-label{color:#7a5010}
 
-/* ── conversation nodes ── */
-.conv-node{
-  position:absolute;transform:translate(-50%,-50%);cursor:pointer;
-  transition:transform 0.2s;
-}
-.conv-node:hover{transform:translate(-50%,-50%) scale(1.15)}
-.conv-node.active{transform:translate(-50%,-50%) scale(1.15)}
-
+/* conversation node */
+.conv-node{position:absolute;transform:translate(-50%,-50%);cursor:pointer;transition:transform .2s}
+.conv-node:hover{transform:translate(-50%,-50%) scale(1.18)}
 .conv-ring{
-  width:36px;height:36px;border-radius:8px;
+  width:34px;height:34px;border-radius:8px;position:relative;
   display:flex;align-items:center;justify-content:center;
   background:radial-gradient(circle at 35% 35%,#140a28,#080414);
-  border:1.5px solid #3a1870;
-  box-shadow:0 0 12px 3px rgba(58,24,112,0.3);
-  transition:box-shadow 0.25s,border-color 0.25s;
-  position:relative;
+  border:1.5px solid #3a1870;box-shadow:0 0 12px 3px rgba(58,24,112,0.28);
+  transition:box-shadow .25s,border-color .25s;
 }
-.conv-node.active .conv-ring,
-.conv-node:hover .conv-ring{
-  border-color:#8858e0;
-  box-shadow:0 0 22px 8px rgba(136,88,224,0.5);
-}
-.conv-node.configured .conv-ring{
-  border-color:#5030b0;
-  box-shadow:0 0 14px 4px rgba(80,48,176,0.35);
-}
-
-.conv-icon{font-size:0.8rem;opacity:0.7;user-select:none}
-.conv-node.active .conv-icon,
+.conv-node.configured .conv-ring{border-color:#5030b0;box-shadow:0 0 14px 5px rgba(80,48,176,0.35)}
+.conv-node:hover .conv-ring{border-color:#8858e0;box-shadow:0 0 22px 9px rgba(136,88,224,0.5)}
+.conv-icon{font-size:0.8rem;opacity:0.65;user-select:none}
 .conv-node:hover .conv-icon{opacity:1}
-
-.conv-count{
-  position:absolute;top:-5px;right:-5px;
-  min-width:16px;height:16px;padding:0 3px;
+.conv-badge{
+  position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 3px;
   background:#5030b0;border-radius:8px;border:1.5px solid #07090f;
   font-size:0.55rem;font-weight:700;color:#d0b8ff;
   display:none;align-items:center;justify-content:center;
 }
-.conv-node.has-msgs .conv-count{display:flex}
-
+.conv-node.has-badge .conv-badge{display:flex}
+/* anon conv node is a different color */
+.conv-node.anon-conv .conv-ring{border-color:#1e2838}
+.conv-node.anon-conv:hover .conv-ring{border-color:#406080;box-shadow:0 0 18px 7px rgba(40,80,120,0.4)}
+.conv-node.anon-conv .conv-badge{background:#284060}
 .conv-label{
-  position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);
-  white-space:nowrap;font-size:0.55rem;color:#2a1858;letter-spacing:0.04em;
-  pointer-events:none;
+  position:absolute;top:calc(100%+5px);left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:0.55rem;color:#2a1858;pointer-events:none;
 }
-.conv-node.active .conv-label,
+.conv-node.anon-conv .conv-label{color:#1e2838}
 .conv-node:hover .conv-label{color:#6040a0}
+.conv-node.anon-conv:hover .conv-label{color:#406080}
 
-/* ── compose panel ── */
-#panel{
-  position:fixed;top:0;right:0;bottom:28px;width:340px;
-  background:#080e18;border-left:1px solid #101c2c;
-  display:flex;flex-direction:column;z-index:10;
-  transform:translateX(100%);transition:transform 0.32s cubic-bezier(0.25,0.8,0.25,1);
+/* self popup menu */
+#self-menu{
+  position:absolute;transform:translate(-50%,calc(-100% - 22px));
+  background:#070d18;border:1px solid #1e3a58;border-radius:12px;
+  padding:0;z-index:30;min-width:230px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.7);
+  display:none;pointer-events:all;
 }
-#panel.open{transform:translateX(0)}
+#self-menu.open{display:block}
+.sm-head{padding:14px 16px 10px;border-bottom:1px solid #0e2030;display:flex;align-items:flex-start;gap:10px}
+.sm-av{width:34px;height:34px;border-radius:8px;flex-shrink:0;
+  background:radial-gradient(circle,#2e1a00,#07090f);border:1.5px solid #c88a10;
+  display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:#f0c040}
+.sm-meta{flex:1;min-width:0}
+.sm-name{font-size:0.82rem;font-weight:700;color:#f0c040}
+.sm-you{font-size:0.6rem;color:#7a5010;margin-top:1px}
+.sm-id{font-size:0.52rem;color:#1e3858;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace}
+.sm-close{background:none;border:none;color:#2a4060;cursor:pointer;font-size:1rem;padding:2px;flex-shrink:0}
+.sm-close:hover{color:#c0d4e4}
+.sm-items{padding:6px 0 8px}
+.sm-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:0.72rem;color:#4a7090;transition:background .15s,color .15s}
+.sm-item:hover{background:#0a1828;color:#90c8e8}
+.sm-item-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.sm-item-badge{background:#c83030;border-radius:8px;padding:1px 6px;font-size:0.58rem;font-weight:700;color:#fff}
+.sm-item-badge.zero{background:#1e3040;color:#3a6070}
+.sm-sep{height:1px;background:#0a1828;margin:4px 0}
 
-#panel-header{
-  padding:18px 18px 14px;border-bottom:1px solid #101c2c;
-  display:flex;align-items:flex-start;gap:10px;flex-shrink:0;
+/* status bar */
+#sb{position:fixed;bottom:0;left:0;right:0;height:24px;background:#04060c;border-top:1px solid #0a1018;
+  display:flex;align-items:center;padding:0 12px;gap:12px;font-size:0.56rem;color:#1e3050;z-index:5}
+.sb-dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:3px}
+.sb-dot.ok{background:#28d87a}.sb-dot.off{background:#c03030}
+
+/* ══ CHAT VIEW ════════════════════════════════════════════════════════════ */
+#chat-view{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s,transform 0.3s;transform:translateY(18px);
 }
-#panel-av{
-  width:38px;height:38px;border-radius:8px;flex-shrink:0;
-  background:radial-gradient(circle,#140a28,#07090f);
-  border:1.5px solid #5030b0;
+#chat-view.open{opacity:1;pointer-events:all;transform:translateY(0)}
+#chat-header{
+  display:flex;align-items:center;gap:12px;
+  padding:0 16px;height:56px;flex-shrink:0;
+  background:#070d18;border-bottom:1px solid #0e2030;z-index:2;
+}
+#chat-back{background:none;border:none;color:#3a7090;cursor:pointer;font-size:1.2rem;padding:4px 8px 4px 0;transition:color .15s}
+#chat-back:hover{color:#80c8e8}
+#chat-av{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:1rem;font-weight:700;color:#c0a8f8;
+  font-size:1rem;font-weight:700;
 }
-#panel-meta{flex:1;min-width:0}
-#panel-name{font-size:0.88rem;color:#c0d4e4;font-weight:600;margin-bottom:2px}
-#panel-agent{font-size:0.58rem;color:#2a4a6a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#panel-onion{font-size:0.56rem;color:#1e3a52;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
-#panel-close{background:none;border:none;color:#2a4a6a;font-size:1.1rem;cursor:pointer;flex-shrink:0;padding:2px}
-#panel-close:hover{color:#c0d4e4}
-
-#thread{
-  flex:1;overflow-y:auto;padding:14px;
-  display:flex;flex-direction:column;gap:10px;
+#chat-av.type-contact{background:radial-gradient(circle at 35%35%,#0c1e30,#060e18);border:2px solid #1472a0;color:#c4e4ff}
+#chat-av.type-inbound{background:radial-gradient(circle at 35%35%,#1e1408,#0c0804);border:2px solid #c08030;color:#c8a060}
+#chat-av.type-anon{background:radial-gradient(circle at 35%35%,#141820,#08090f);border:1.5px dashed #304858;color:#304858;font-size:1.3rem}
+#chat-meta{flex:1;min-width:0}
+#chat-name{font-size:0.86rem;font-weight:600;color:#c0d4e4}
+#chat-sub{font-size:0.56rem;color:#2a4a6a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+#chat-thread{
+  flex:1;overflow-y:auto;padding:16px 14px 8px;
+  display:flex;flex-direction:column;gap:6px;background:#07090f;
 }
-#thread::-webkit-scrollbar{width:3px}
-#thread::-webkit-scrollbar-thumb{background:#101c2c;border-radius:2px}
-
-.bubble{
-  align-self:flex-end;max-width:90%;
-  background:#0e2438;border:1px solid #162e48;
-  border-radius:10px 10px 2px 10px;padding:8px 11px;
+#chat-thread::-webkit-scrollbar{width:3px}
+#chat-thread::-webkit-scrollbar-thumb{background:#101c2c;border-radius:2px}
+.bubble-sent{
+  align-self:flex-end;max-width:72%;
+  background:#0d2e4a;border:1px solid #163c5a;
+  border-radius:14px 14px 3px 14px;padding:9px 13px;
 }
-.bubble-text{font-size:0.76rem;color:#c8e0f8;line-height:1.5;word-break:break-word}
-.bubble-meta{margin-top:4px;font-size:0.56rem;color:#2a4a6a;text-align:right}
-.bubble-receipt{font-size:0.52rem;color:#1e3a52;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.thread-empty{font-size:0.7rem;color:#1e3050;text-align:center;padding:24px 0;font-style:italic}
-
-#compose{padding:12px;border-top:1px solid #101c2c;flex-shrink:0}
+.bubble-sent .btext{font-size:0.76rem;color:#c8e0f8;line-height:1.55;word-break:break-word}
+.bubble-sent .bmeta{margin-top:4px;font-size:0.54rem;color:#2a5070;text-align:right}
+.bubble-recv{
+  align-self:flex-start;max-width:72%;
+  background:#0c1a26;border:1px solid #102030;
+  border-radius:14px 14px 14px 3px;padding:9px 13px;
+}
+.bubble-recv.identified{background:#1a1006;border-color:#2a1c08}
+.bubble-recv .btext{font-size:0.76rem;color:#7a9aaa;line-height:1.55;word-break:break-word;font-style:italic}
+.bubble-recv.revealed .btext{color:#a0c0d8;font-style:normal}
+.bubble-recv.identified.revealed .btext{color:#c8a060;font-style:normal}
+.safety-warn{margin-top:6px;padding:5px 8px;border-radius:5px;background:#2a0a08;border:1px solid #7a2018;color:#e08070;font-size:0.62rem;line-height:1.5}
+.safety-warn code{background:#1a0604;border-radius:3px;padding:1px 4px;color:#e09080;font-size:0.6rem}
+.bubble-recv .bmeta{margin-top:4px;font-size:0.54rem;color:#1e3a52;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.decrypt-btn{
+  background:#081828;border:1px solid #1a4060;border-radius:4px;
+  color:#3a80b0;font-size:0.56rem;padding:2px 8px;cursor:pointer;font-family:inherit;
+}
+.decrypt-btn:hover{background:#0c2438;color:#60a8d0}
+.reply-btn{
+  background:#1a1008;border:1px solid #3a2408;border-radius:4px;
+  color:#c08030;font-size:0.56rem;padding:2px 8px;cursor:pointer;font-family:inherit;
+}
+.reply-btn:hover{background:#221408;color:#e0a050}
+.day-sep{
+  align-self:center;font-size:0.56rem;color:#1e3050;
+  padding:2px 10px;background:#0a1020;border-radius:8px;margin:6px 0;
+}
+/* compose */
+#chat-compose{flex-shrink:0;background:#070d18;border-top:1px solid #0e2030}
+#reply-row{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 14px 0;
+}
+#reply-check{width:13px;height:13px;cursor:pointer;accent-color:#1472a0;flex-shrink:0}
+#reply-label{font-size:0.6rem;color:#2a5070;cursor:pointer;user-select:none}
+#reply-label:hover{color:#4a90b8}
+.info-icon{font-size:0.65rem;color:#1a3858;cursor:help;position:relative}
+.info-icon .tip{
+  display:none;position:absolute;bottom:calc(100%+8px);left:50%;transform:translateX(-50%);
+  width:260px;background:#060d18;border:1px solid #1e3a58;border-radius:8px;
+  padding:10px 12px;font-size:0.62rem;color:#5a90b8;line-height:1.6;
+  box-shadow:0 6px 24px rgba(0,0,0,0.7);pointer-events:none;z-index:50;white-space:normal;
+}
+.info-icon .tip b{color:#7ab8e0}
+.info-icon .tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:#1e3a58}
+.info-icon:hover .tip{display:block}
+#compose-row{display:flex;align-items:flex-end;gap:10px;padding:8px 14px 12px}
 #compose-ta{
-  width:100%;min-height:68px;max-height:130px;
-  background:#04080e;border:1px solid #182a3e;border-radius:7px;
+  flex:1;min-height:40px;max-height:120px;
+  background:#04080e;border:1px solid #182a3e;border-radius:20px;
   color:#c0d4e4;font-family:inherit;font-size:0.76rem;
-  padding:9px;resize:vertical;outline:none;line-height:1.5;
+  padding:9px 14px;resize:none;outline:none;line-height:1.5;overflow-y:auto;
 }
 #compose-ta:focus{border-color:#1e5070}
-#compose-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
-#byte-ctr{font-size:0.6rem;color:#2a4a6a}
+#compose-ta::placeholder{color:#1e3050}
+#send-btn{
+  width:38px;height:38px;flex-shrink:0;border-radius:50%;
+  background:#0e2e48;border:1.5px solid #1a5070;
+  color:#60b8e0;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,transform .15s;
+}
+#send-btn:hover:not(:disabled){background:#163a5a;color:#90d0f0;transform:scale(1.08)}
+#send-btn:disabled{opacity:0.25;cursor:not-allowed}
+#byte-ctr{font-size:0.54rem;color:#1e3050;align-self:center;min-width:56px;text-align:right}
 #byte-ctr.warn{color:#c07830}
 #byte-ctr.over{color:#c03030}
-#send-btn{
-  background:#0e2e48;border:1px solid #1a5070;border-radius:6px;
-  color:#60b8e0;font-size:0.72rem;font-family:inherit;
-  padding:5px 14px;cursor:pointer;transition:background 0.2s;
-}
-#send-btn:hover:not(:disabled){background:#163a5a;color:#90d0f0}
-#send-btn:disabled{opacity:0.3;cursor:not-allowed}
-#send-status{font-size:0.6rem;margin-top:5px;min-height:13px;color:#28a060}
-
-/* ── status bar ── */
-#sb{
-  position:fixed;bottom:0;left:0;right:0;height:28px;
-  background:#04060c;border-top:1px solid #0c1420;
-  display:flex;align-items:center;padding:0 14px;gap:14px;
-  font-size:0.58rem;color:#1e3050;z-index:15;
-}
-.sb-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
-.sb-dot.ok{background:#28d87a}
-.sb-dot.off{background:#c03030}
-#sb-onion{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1a3858}
-#sb-inbox-btn{cursor:pointer;margin-left:auto;color:#1e3050}
-#sb-inbox-btn:hover{color:#60a0c8}
-
-/* ── inbox drawer ── */
-#inbox-drawer{
-  position:fixed;bottom:28px;left:0;width:280px;
-  background:#080e18;border-right:1px solid #101c2c;border-top:1px solid #101c2c;
-  max-height:50vh;overflow-y:auto;z-index:12;
-  transform:translateY(100%);transition:transform 0.28s;
-}
-#inbox-drawer.open{transform:translateY(0)}
-#inbox-drawer::-webkit-scrollbar{width:3px}
-#inbox-drawer::-webkit-scrollbar-thumb{background:#101c2c;border-radius:2px}
-.idh{padding:9px 12px;font-size:0.65rem;color:#3a6888;border-bottom:1px solid #0c1828;
-  display:flex;justify-content:space-between;align-items:center}
-.idh button{background:none;border:none;color:#2a4060;cursor:pointer;font-size:0.8rem}
-.env-row{padding:9px 12px;border-bottom:1px solid #090e18;font-size:0.6rem}
-.env-rct{color:#2a4060;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.env-sz{font-size:0.55rem;margin-top:2px}
 </style>
 </head>
 <body>
 
-<!-- SVG canvas: zone circles + edges -->
-<div id="canvas">
-<svg id="graph-svg" viewBox="0 0 1000 660" preserveAspectRatio="xMidYMid meet">
-<defs>
-  <radialGradient id="zSelf" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#082840" stop-opacity="1"/>
-    <stop offset="100%" stop-color="#082840" stop-opacity="0"/>
-  </radialGradient>
-  <radialGradient id="zConv" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#1a0840" stop-opacity="1"/>
-    <stop offset="100%" stop-color="#1a0840" stop-opacity="0"/>
-  </radialGradient>
-  <radialGradient id="zContact" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#041830" stop-opacity="1"/>
-    <stop offset="100%" stop-color="#041830" stop-opacity="0"/>
-  </radialGradient>
-  <filter id="zblur"><feGaussianBlur stdDeviation="40"/></filter>
-</defs>
-
-<!-- background zone ellipses -->
-<ellipse cx="240" cy="330" rx="240" ry="250" fill="url(#zSelf)"
-         filter="url(#zblur)" opacity="0.55"/>
-<ellipse cx="500" cy="330" rx="200" ry="230" fill="url(#zConv)"
-         filter="url(#zblur)" opacity="0.5"/>
-<ellipse cx="740" cy="330" rx="230" ry="250" fill="url(#zContact)"
-         filter="url(#zblur)" opacity="0.5"/>
-
-<!-- zone outlines -->
-<ellipse cx="240" cy="330" rx="230" ry="242" fill="none"
-         stroke="#082840" stroke-width="0.7" stroke-dasharray="5 10" opacity="0.3"/>
-<ellipse cx="500" cy="330" rx="192" ry="222" fill="none"
-         stroke="#1a0840" stroke-width="0.7" stroke-dasharray="5 10" opacity="0.25"/>
-<ellipse cx="740" cy="330" rx="222" ry="242" fill="none"
-         stroke="#041830" stroke-width="0.7" stroke-dasharray="5 10" opacity="0.25"/>
-
-<!-- zone labels -->
-<text x="90"  y="105" font-family="monospace" font-size="8" fill="#082840"
-      opacity="0.6" letter-spacing="2.5">OPERATOR</text>
-<text x="440" y="108" font-family="monospace" font-size="8" fill="#1a0840"
-      opacity="0.55" letter-spacing="2.5">CONVERSATION</text>
-<text x="635" y="105" font-family="monospace" font-size="8" fill="#082840"
-      opacity="0.5" letter-spacing="2.5">CONTACT AGENTS</text>
-
-<!-- edges + conv nodes drawn by JS -->
-<g id="edges"></g>
-</svg>
-</div>
-
-<!-- node container (HTML positioned over SVG) -->
-<div id="nodes"></div>
-
-<!-- compose panel -->
-<div id="panel">
-  <div id="panel-header">
-    <div id="panel-av">?</div>
-    <div id="panel-meta">
-      <div id="panel-name">—</div>
-      <div id="panel-agent"></div>
-      <div id="panel-onion"></div>
-    </div>
-    <button id="panel-close" onclick="closePanel()">✕</button>
+<!-- ══ GRAPH VIEW ══════════════════════════════════════════════════════════ -->
+<div id="graph-view">
+  <div id="canvas">
+  <svg id="graph-svg" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <radialGradient id="gSelf" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a0e00" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#1a0e00" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gOuter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#050e1e" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#050e1e" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur40"><feGaussianBlur stdDeviation="40"/></filter>
+  </defs>
+  <circle cx="500" cy="340" r="200" fill="url(#gSelf)" filter="url(#blur40)" opacity="0.8"/>
+  <circle cx="500" cy="340" r="380" fill="url(#gOuter)" filter="url(#blur40)" opacity="0.5"/>
+  <circle cx="500" cy="340" r="260" fill="none" stroke="#0e2030"
+          stroke-width="0.8" stroke-dasharray="4 9" opacity="0.35"/>
+  <g id="edges"></g>
+  </svg>
   </div>
-  <div id="thread"></div>
-  <div id="compose">
-    <textarea id="compose-ta" placeholder="Message (max 2000 bytes)…"
-              oninput="onType()" rows="3"></textarea>
-    <div id="compose-foot">
-      <span id="byte-ctr">0 / 2000</span>
-      <button id="send-btn" onclick="doSend()" disabled>Send →</button>
+  <div id="nodes"></div>
+  <div id="self-menu">
+    <div class="sm-head">
+      <div class="sm-av" id="sm-av">?</div>
+      <div class="sm-meta">
+        <div class="sm-name" id="sm-name">—</div>
+        <div class="sm-you">(you)</div>
+        <div class="sm-id" id="sm-id"></div>
+      </div>
+      <button class="sm-close" onclick="closeSelfMenu()">✕</button>
     </div>
-    <div id="send-status"></div>
+    <div class="sm-items">
+      <div class="sm-item" onclick="openChat('__anon__')">
+        <span class="sm-item-icon">👤</span>
+        <span class="sm-item-label">Anonymous messages</span>
+        <span class="sm-item-badge zero" id="sm-inbox-badge">0</span>
+      </div>
+      <div class="sm-sep"></div>
+      <div class="sm-item" style="cursor:default;opacity:0.4">
+        <span class="sm-item-icon">🔑</span>
+        <span class="sm-item-label" id="sm-pubkey" style="font-size:0.56rem;font-family:monospace;color:#1a3050">—</span>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- inbox drawer -->
-<div id="inbox-drawer">
-  <div class="idh">
-    <span>Sealed Envelopes</span>
-    <button onclick="toggleInbox()">✕</button>
+<!-- ══ CHAT VIEW ══════════════════════════════════════════════════════════ -->
+<div id="chat-view">
+  <div id="chat-header">
+    <button id="chat-back" onclick="closeChat()">←</button>
+    <div id="chat-av" class="type-contact">?</div>
+    <div id="chat-meta">
+      <div id="chat-name">—</div>
+      <div id="chat-sub"></div>
+    </div>
   </div>
-  <div id="inbox-list"></div>
+  <div id="chat-thread"></div>
+  <div id="chat-compose">
+    <div id="reply-row">
+      <input type="checkbox" id="reply-check">
+      <label id="reply-label" for="reply-check">Allow reply to this message</label>
+      <span class="info-icon">ⓘ
+        <span class="tip">By default all messages are sealed and the recipient
+cannot identify you or respond. Checking <b>Allow reply</b> includes your
+public key and endpoint inside this encrypted message only, so the recipient
+can write back.<br><br>
+<b>Note:</b> once a recipient has received your key in any message, they have
+it permanently — sending anonymously later does not un-share it with them.</span>
+      </span>
+    </div>
+    <div id="compose-row">
+      <textarea id="compose-ta" placeholder="Message…" rows="1"
+                oninput="onType()" onkeydown="onKey(event)"></textarea>
+      <span id="byte-ctr"></span>
+      <button id="send-btn" onclick="doSend()" disabled>↑</button>
+    </div>
+  </div>
 </div>
 
 <!-- status bar -->
 <div id="sb">
-  <span><span class="sb-dot off" id="sb-tor"></span><span id="sb-tor-lbl">Tor</span></span>
-  <span id="sb-onion"></span>
-  <span id="sb-inbox-btn" onclick="toggleInbox()">
-    ▲ Inbox (<span id="sb-inbox-n">0</span>)
-  </span>
+  <span><span class="sb-dot off" id="sb-tor"></span><span id="sb-tor-lbl">Tor offline</span></span>
 </div>
 
 <script>
-// ── layout constants (in SVG viewBox 1000 × 660) ─────────────────────────
-const SELF_X = 240, SELF_Y = 330;
-const CONTACT_X = 740;           // contacts' x column
-const V_GAP = 110;               // vertical spacing between contacts
+const VBW = 1000, VBH = 680, SELF_X = 500, SELF_Y = 340, ORBIT_R = 260;
+const ANON_ID = '__anon__';
 
-let contacts = [];
-let active = null;   // contact id currently selected
-let inboxOpen = false;
+let contacts        = [];   // outbound contacts from /api/contacts
+let selfIdent       = {};   // our own identity
+let inboundSenders  = {};   // { senderId: { replyTo, receipts:Set } } — revealed this session
+let decryptCache    = {};   // { receipt: { plaintext, replyTo } }
+let inboxEnvelopes  = [];   // latest /api/inbox result
+let activeId        = null;
+let selfMenuOpen    = false;
 
 // ── boot ──────────────────────────────────────────────────────────────────
 async function boot() {
-  await loadContacts();
+  await Promise.all([loadContacts(), loadIdentity(), refreshInbox()]);
   pollStatus();
-  setInterval(pollStatus, 5000);
+  setInterval(pollStatus, 6000);
+  setInterval(refreshInbox, 8000);
 }
 
-// ── contacts & render ─────────────────────────────────────────────────────
+async function loadIdentity() {
+  try {
+    const r = await fetch('/api/identity');
+    selfIdent = await r.json();
+    const lbl = document.getElementById('self-label');
+    if (lbl) lbl.textContent = (selfIdent.name||selfIdent.id||'you') + ' (you)';
+    const av = document.getElementById('self-avatar');
+    if (av) av.textContent = (selfIdent.name||'Y')[0].toUpperCase();
+  } catch(_) {}
+}
+
+async function refreshInbox() {
+  try {
+    const r = await fetch('/api/inbox');
+    inboxEnvelopes = await r.json();
+    updateAnonBadge();
+  } catch(_) {}
+}
+
+// ── graph render ──────────────────────────────────────────────────────────
 async function loadContacts() {
-  const r = await fetch('/api/contacts');
+  const r  = await fetch('/api/contacts');
   contacts = await r.json();
-  render();
+  renderGraph();
 }
 
-function contactPos(i, n) {
-  const totalH = (n - 1) * V_GAP;
-  const startY  = SELF_Y - totalH / 2;
-  return { x: CONTACT_X, y: startY + i * V_GAP };
+function allGraphNodes() {
+  // outbound contacts + inbound identified senders + anonymous node
+  const inbound = Object.entries(inboundSenders).map(([id, s]) => ({
+    _type: 'inbound', id, name: s.replyTo.name || id.slice(0,12)+'…',
+    replyTo: s.replyTo, receipts: s.receipts,
+    configured: !!(s.replyTo.pubkey && s.replyTo.endpoint),
+  }));
+  const anon = { _type:'anon', id: ANON_ID, name:'Anonymous', configured: false };
+  return [...contacts.map(c => ({...c, _type:'contact'})), ...inbound, anon];
 }
 
-function convPos(cx, cy) {
-  return { x: (SELF_X + cx) / 2, y: (SELF_Y + cy) / 2 };
+function nodePos(i, total) {
+  const angle = (i * (2*Math.PI/total)) - Math.PI/2;
+  return { x: SELF_X + ORBIT_R*Math.cos(angle), y: SELF_Y + ORBIT_R*Math.sin(angle) };
 }
+function midpoint(cx, cy) { return { x:(SELF_X+cx)/2, y:(SELF_Y+cy)/2 }; }
 
-function render() {
+function renderGraph() {
   document.getElementById('edges').innerHTML = '';
   document.getElementById('nodes').innerHTML  = '';
 
-  // self node
-  placeNode(makeAgentNode('self', 'Y', 'You', true, false, null),
-            SELF_X, SELF_Y, 1000, 660);
+  placeEl(makeSelfNode(), SELF_X, SELF_Y);
 
-  const n = contacts.length;
-  contacts.forEach((c, i) => {
-    const cp  = contactPos(i, n);
-    const mp  = convPos(cp.x, cp.y);
+  const nodes = allGraphNodes();
+  nodes.forEach((n, i) => {
+    const cp = nodePos(i, nodes.length);
+    const mp = midpoint(cp.x, cp.y);
 
     // edge
-    const line = svgEl('line', {
-      id: 'edge-' + c.id,
-      class: 'edge',
-      x1: SELF_X, y1: SELF_Y, x2: cp.x, y2: cp.y,
-    });
-    // default edge style inline
-    line.style.stroke = '#182838';
-    line.style.strokeWidth = '1.2';
-    line.style.strokeDasharray = '5 6';
-    line.style.fill = 'none';
-    line.style.opacity = '0.4';
-    line.style.transition = 'stroke 0.3s,opacity 0.3s';
+    const line = svgEl('line', {id:'edge-'+n.id, x1:SELF_X,y1:SELF_Y,x2:cp.x,y2:cp.y});
+    const edgeColor = n._type==='anon' ? '#0a1520' : n._type==='inbound' ? '#1a1008' : '#0e2030';
+    Object.assign(line.style,{stroke:edgeColor,strokeWidth:'1.2',strokeDasharray:'5 7',
+      fill:'none',opacity:'0.5',transition:'stroke .3s,opacity .3s'});
     document.getElementById('edges').appendChild(line);
 
-    // contact agent node
-    const el = makeAgentNode(c.id, (c.name||'?')[0].toUpperCase(),
-                              c.name, c.configured, true, c);
-    placeNode(el, cp.x, cp.y, 1000, 660);
+    placeEl(makeNodeEl(n), cp.x, cp.y);
 
-    // conversation node
-    const cv = makeConvNode(c.id, c.configured);
-    placeConvNode(cv, mp.x, mp.y, 1000, 660);
+    const cv = makeConvNode(n.id, n._type);
+    placeEl(cv, mp.x, mp.y);
   });
+
+  // reposition self-menu
+  const menu = document.getElementById('self-menu');
+  menu.style.left = pct(SELF_X, VBW);
+  menu.style.top  = pct(SELF_Y, VBH);
+
+  updateAnonBadge();
 }
 
-function makeAgentNode(id, letter, label, configured, isContact, contact) {
-  const wrap = div('node ' + (isContact ? 'node-contact' : 'node-self')
-                   + (configured ? ' configured' : ''));
-  wrap.id = 'node-' + id;
+function makeSelfNode() {
+  const wrap = div('node node-self'); wrap.id='node-self'; wrap.onclick=toggleSelfMenu;
+  const ring = div('agent-ring');
+  const av   = div('agent-avatar'); av.id='self-avatar';
+  av.textContent = (selfIdent.name||'Y')[0]?.toUpperCase()||'Y';
+  ring.appendChild(av);
+  const badge = div(''); badge.id='inbox-badge'; ring.appendChild(badge);
+  wrap.appendChild(ring);
+  const lbl = div('node-label'); lbl.id='self-label';
+  lbl.textContent = selfIdent.name ? selfIdent.name+' (you)' : '… (you)';
+  wrap.appendChild(lbl);
+  return wrap;
+}
 
+function makeNodeEl(n) {
+  let cls = 'node ';
+  if      (n._type==='anon')    cls += 'node-anon';
+  else if (n._type==='inbound') cls += 'node-inbound';
+  else                          cls += 'node-contact' + (n.configured?' configured':'');
+  const wrap = div(cls); wrap.id='node-'+n.id;
   const ring = div('agent-ring');
   const av   = div('agent-avatar');
-  av.textContent = letter;
+  av.textContent = n._type==='anon' ? '👤' : (n.name||'?')[0].toUpperCase();
   ring.appendChild(av);
-
-  if (isContact) {
-    const dot = div('status-dot ' + (configured ? 'ok' : 'off'));
-    ring.appendChild(dot);
-    wrap.onclick = () => selectContact(id);
-  } else {
-    // inbox badge on self
-    const badge = div('');
-    badge.id = 'inbox-badge';
-    badge.style.cssText = 'position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;background:#c83030;border-radius:9px;border:2px solid #07090f;font-size:0.6rem;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center';
-    ring.appendChild(badge);
+  if (n._type!=='anon') {
+    const dot = div('status-dot '+(n.configured?'ok':'off')); ring.appendChild(dot);
   }
-
   wrap.appendChild(ring);
-  const lbl = div('node-label');
-  lbl.textContent = label;
-  wrap.appendChild(lbl);
+  const lbl = div('node-label'); lbl.textContent = n.name; wrap.appendChild(lbl);
+  wrap.onclick = () => openChat(n.id);
   return wrap;
 }
 
-function makeConvNode(contactId, configured) {
-  const wrap = div('conv-node' + (configured ? ' configured' : ''));
-  wrap.id = 'conv-' + contactId;
+function makeConvNode(nodeId, nodeType) {
+  const isAnon = nodeType==='anon';
+  const wrap = div('conv-node'+(isAnon?' anon-conv configured':' configured'));
+  wrap.id = 'conv-'+nodeId;
   const ring = div('conv-ring');
-  const icon = div('conv-icon');
-  icon.textContent = '◈';
-  ring.appendChild(icon);
-  const cnt = div('conv-count');
-  cnt.id = 'conv-cnt-' + contactId;
-  ring.appendChild(cnt);
+  const icon = div('conv-icon'); icon.textContent='◈'; ring.appendChild(icon);
+  const badge = div('conv-badge'); badge.id='cbadge-'+nodeId; ring.appendChild(badge);
   wrap.appendChild(ring);
   const lbl = div('conv-label');
-  lbl.textContent = 'conversation';
+  lbl.textContent = isAnon ? 'anonymous' : 'conversation';
   wrap.appendChild(lbl);
-  wrap.onclick = () => selectContact(contactId);
+  wrap.onclick = () => openChat(nodeId);
   return wrap;
 }
 
-function placeNode(el, svgX, svgY, vbW, vbH) {
-  el.style.left = pct(svgX, vbW);
-  el.style.top  = pct(svgY, vbH);
+function placeEl(el, svgX, svgY) {
+  el.style.left = pct(svgX, VBW); el.style.top = pct(svgY, VBH);
   document.getElementById('nodes').appendChild(el);
 }
 
-function placeConvNode(el, svgX, svgY, vbW, vbH) {
-  el.style.left = pct(svgX, vbW);
-  el.style.top  = pct(svgY, vbH);
-  document.getElementById('nodes').appendChild(el);
-}
-
-// ── selection ─────────────────────────────────────────────────────────────
-async function selectContact(id) {
-  // clear previous
-  if (active) {
-    document.getElementById('node-' + active)?.classList.remove('active');
-    document.getElementById('conv-' + active)?.classList.remove('active');
-    const edge = document.getElementById('edge-' + active);
-    if (edge) { edge.style.stroke = '#182838'; edge.style.opacity = '0.4'; }
-  }
-  active = id;
-
-  // highlight
-  document.getElementById('node-' + id)?.classList.add('active');
-  document.getElementById('conv-' + id)?.classList.add('active');
-  const edge = document.getElementById('edge-' + id);
-  if (edge) { edge.style.stroke = '#8858e0'; edge.style.opacity = '0.7'; }
-
-  const c = contacts.find(x => x.id === id);
-  if (!c) return;
-
-  // panel header
-  document.getElementById('panel-av').textContent = (c.name||'?')[0].toUpperCase();
-  document.getElementById('panel-name').textContent = c.name || id;
-  document.getElementById('panel-agent').textContent = c.agent_id || '(agent_id not configured)';
-  document.getElementById('panel-onion').textContent = c.onion || '(onion not configured)';
-  document.getElementById('sb-onion').textContent =
-    c.onion ? c.onion.slice(0,44) + '…' : '';
-
-  document.getElementById('compose-ta').value = '';
-  document.getElementById('send-status').textContent = '';
-  onType();
-
-  const btn = document.getElementById('send-btn');
-  btn.disabled = !c.configured;
-  if (!c.configured) {
-    document.getElementById('send-status').style.color = '#806020';
-    document.getElementById('send-status').textContent = 'Contact not configured (placeholders)';
-  } else {
-    document.getElementById('send-status').style.color = '#28a060';
-    document.getElementById('send-status').textContent = '';
-  }
-
-  await loadSent(id);
-  document.getElementById('panel').classList.add('open');
-}
-
-function closePanel() {
-  document.getElementById('panel').classList.remove('open');
-  if (active) {
-    document.getElementById('node-' + active)?.classList.remove('active');
-    document.getElementById('conv-' + active)?.classList.remove('active');
-    const edge = document.getElementById('edge-' + active);
-    if (edge) { edge.style.stroke = '#182838'; edge.style.opacity = '0.4'; }
-  }
-  active = null;
-  document.getElementById('sb-onion').textContent = '';
-}
-
-// ── thread ────────────────────────────────────────────────────────────────
-async function loadSent(id) {
-  const r    = await fetch('/api/sent?id=' + encodeURIComponent(id));
-  const msgs = await r.json();
-  const th   = document.getElementById('thread');
-  // update conv count badge
-  const badge = document.getElementById('conv-cnt-' + id);
-  const node  = document.getElementById('conv-' + id);
+function updateAnonBadge() {
+  const n = inboxEnvelopes.length;
+  // inbox badge on self node ring
+  const badge = document.getElementById('inbox-badge');
   if (badge) {
-    badge.textContent = msgs.length || '';
-    node?.classList.toggle('has-msgs', msgs.length > 0);
+    badge.style.cssText = n
+      ? 'position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 4px;background:#c83030;border-radius:10px;border:2px solid #07090f;font-size:0.6rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;z-index:2'
+      : 'display:none';
+    badge.textContent = n;
   }
-  if (!msgs.length) {
-    th.innerHTML = '<div class="thread-empty">No messages sent yet<br>Type below and send →</div>';
+  // conv badge on anon node
+  const cb = document.getElementById('cbadge-'+ANON_ID);
+  if (cb) {
+    cb.textContent = n;
+    const convNode = document.getElementById('conv-'+ANON_ID);
+    convNode?.classList.toggle('has-badge', n>0);
+  }
+  // self-menu badge
+  const smb = document.getElementById('sm-inbox-badge');
+  if (smb) { smb.textContent = n; smb.className='sm-item-badge'+(n?'':' zero'); }
+}
+
+// ── self menu ─────────────────────────────────────────────────────────────
+function toggleSelfMenu(e) {
+  e?.stopPropagation();
+  selfMenuOpen = !selfMenuOpen;
+  document.getElementById('self-menu').classList.toggle('open', selfMenuOpen);
+  document.getElementById('node-self').classList.toggle('menu-open', selfMenuOpen);
+  if (selfMenuOpen) {
+    const name = selfIdent.name||selfIdent.id||'Unknown';
+    document.getElementById('sm-av').textContent   = name[0].toUpperCase();
+    document.getElementById('sm-name').textContent = name;
+    document.getElementById('sm-id').textContent   = selfIdent.agent_id
+      ? selfIdent.agent_id.slice(0,40)+'…' : '';
+    document.getElementById('sm-pubkey').textContent = selfIdent.pubkey
+      ? selfIdent.pubkey.slice(0,32)+'…' : '(pubkey)';
+  }
+}
+function closeSelfMenu() {
+  selfMenuOpen = false;
+  document.getElementById('self-menu').classList.remove('open');
+  document.getElementById('node-self').classList.remove('menu-open');
+}
+document.addEventListener('click', e => {
+  if (selfMenuOpen
+      && !document.getElementById('self-menu').contains(e.target)
+      && !document.getElementById('node-self').contains(e.target))
+    closeSelfMenu();
+});
+
+// ── chat view ─────────────────────────────────────────────────────────────
+function showChatView() {
+  document.getElementById('graph-view').classList.add('hidden');
+  document.getElementById('chat-view').classList.add('open');
+}
+function closeChat() {
+  document.getElementById('chat-view').classList.remove('open');
+  document.getElementById('graph-view').classList.remove('hidden');
+  activeId = null;
+  document.getElementById('compose-ta').value = '';
+  document.getElementById('byte-ctr').textContent = '';
+  document.getElementById('send-btn').disabled = true;
+  if (document.getElementById('reply-check'))
+    document.getElementById('reply-check').checked = false;
+}
+
+async function openChat(id) {
+  closeSelfMenu();
+  activeId = id;
+
+  const av   = document.getElementById('chat-av');
+  const name = document.getElementById('chat-name');
+  const sub  = document.getElementById('chat-sub');
+
+  if (id === ANON_ID) {
+    av.className = 'type-anon'; av.textContent = '👤';
+    name.textContent = 'Anonymous messages';
+    sub.textContent  = 'Sealed envelopes from unknown senders — tap to decrypt';
+    document.getElementById('chat-compose').style.display = 'none';
+  } else {
+    document.getElementById('chat-compose').style.display = '';
+    if (document.getElementById('reply-check'))
+      document.getElementById('reply-check').checked = false;
+
+    const inbound = inboundSenders[id];
+    if (inbound) {
+      av.className = 'type-inbound';
+      av.textContent = (inbound.replyTo.name||'?')[0].toUpperCase();
+      name.textContent = inbound.replyTo.name || id;
+      sub.textContent  = inbound.replyTo.endpoint || inbound.replyTo.agent_id || '(identified sender)';
+    } else {
+      const c = contacts.find(x => x.id===id) || {};
+      av.className = 'type-contact';
+      av.textContent = (c.name||'?')[0].toUpperCase();
+      name.textContent = c.name || id;
+      sub.textContent  = c.peer_endpoint || c.agent_id || '(not configured)';
+    }
+
+    document.getElementById('compose-ta').value = '';
+    onType();
+    const isConfigured = id in inboundSenders
+      ? !!(inboundSenders[id].replyTo.pubkey && inboundSenders[id].replyTo.endpoint)
+      : !!(contacts.find(x=>x.id===id)?.configured);
+    document.getElementById('send-btn').disabled = !isConfigured;
+    if (!isConfigured) {
+      // show send status explanation? just leave disabled for now
+    }
+  }
+
+  showChatView();
+  await renderThread(id);
+  if (id !== ANON_ID) document.getElementById('compose-ta').focus();
+}
+
+// ── thread rendering ──────────────────────────────────────────────────────
+async function renderThread(id) {
+  const th = document.getElementById('chat-thread');
+  th.innerHTML = '<div class="day-sep">loading…</div>';
+
+  if (id === ANON_ID) {
+    await refreshInbox();
+    renderAnonThread(th);
     return;
   }
-  th.innerHTML = msgs.map(m => {
-    const dt = new Date(m.ts * 1000).toLocaleString();
-    const body = m.plaintext_stored
-      ? esc(m.message || '')
-      : '<span style="color:#486070">Plaintext not retained locally; '
-        + esc(String(m.message_bytes || 0)) + ' bytes, sha256 '
-        + esc(String(m.message_sha256 || '').slice(0,16)) + '…</span>';
-    return `<div class="bubble">
-      <div class="bubble-text">${body}</div>
-      <div class="bubble-meta">${esc(dt)}</div>
-      <div class="bubble-receipt">${esc(m.receipt||'').slice(0,32)}…</div>
-    </div>`;
-  }).join('');
+
+  const inbound = inboundSenders[id];
+  if (inbound) {
+    renderInboundThread(th, id, inbound);
+    return;
+  }
+
+  // outbound contact: sent (right) + all inbox (left, since unattributed)
+  const [sentR] = await Promise.all([
+    fetch('/api/sent?id='+encodeURIComponent(id)),
+  ]);
+  const sent = await sentR.json();
+
+  const items = [
+    ...sent.map(m  => ({dir:'out', ts:m.ts,         data:m})),
+    ...inboxEnvelopes.map(e => ({dir:'in', ts:e.received, data:e})),
+  ].sort((a,b)=>a.ts-b.ts);
+
+  th.innerHTML = items.length ? renderItems(items) :
+    '<div class="day-sep" style="margin-top:40px">No messages yet</div>';
   th.scrollTop = th.scrollHeight;
+}
+
+function renderAnonThread(th) {
+  if (!inboxEnvelopes.length) {
+    th.innerHTML = '<div class="day-sep" style="margin-top:40px">No anonymous messages</div>';
+    return;
+  }
+  const items = inboxEnvelopes.map(e => ({dir:'in', ts:e.received, data:e}))
+    .sort((a,b)=>a.ts-b.ts);
+  th.innerHTML = renderItems(items);
+  th.scrollTop = th.scrollHeight;
+  // re-apply cached decrypts
+  for (const [rct, cached] of Object.entries(decryptCache)) {
+    applyDecrypt(rct, cached.plaintext, cached.replyTo, false);
+  }
+}
+
+function renderInboundThread(th, id, inbound) {
+  const items = [...inbound.receipts].map(rct => {
+    const e = inboxEnvelopes.find(x=>x.receipt===rct);
+    return { dir:'in', ts: e?.received || 0, data: e || {receipt:rct,size:4156,size_ok:true,received:0} };
+  }).sort((a,b)=>a.ts-b.ts);
+  th.innerHTML = items.length ? renderItems(items) :
+    '<div class="day-sep" style="margin-top:40px">No messages from this sender yet</div>';
+  th.scrollTop = th.scrollHeight;
+  for (const rct of inbound.receipts) {
+    const cached = decryptCache[rct];
+    if (cached) applyDecrypt(rct, cached.plaintext, cached.replyTo, false);
+  }
+}
+
+function renderItems(items) {
+  let lastDay = '';
+  return items.map(item => {
+    const dt  = new Date(item.ts*1000);
+    const day = dt.toLocaleDateString();
+    let sep = '';
+    if (day !== lastDay) { sep=`<div class="day-sep">${esc(day)}</div>`; lastDay=day; }
+    const time = dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    if (item.dir==='out') {
+      const m=item.data;
+      const body = m.plaintext_stored
+        ? esc(m.message||'')
+        : `<span style="color:#4a7090">sealed · ${esc(String(m.message_bytes||0))} B</span>`;
+      return sep+`<div class="bubble-sent">
+        <div class="btext">${body}</div>
+        <div class="bmeta">${esc(time)} · ${esc(m.transport||'?')}</div>
+      </div>`;
+    } else {
+      const e=item.data, rct=esc(e.receipt);
+      return sep+`<div class="bubble-recv" id="brecv-${rct}">
+        <div class="btext" id="btext-${rct}" style="color:#2a4060;font-style:italic">
+          sealed · ${e.size_ok?'✓':'⚠'} ${e.size} B
+        </div>
+        <div class="bmeta" id="bmeta-${rct}">
+          <span>${esc(time)}</span>
+          <button class="decrypt-btn" id="dbtn-${rct}" onclick="decryptBubble('${rct}')">Decrypt</button>
+        </div>
+      </div>`;
+    }
+  }).join('');
+}
+
+// ── decrypt ───────────────────────────────────────────────────────────────
+async function decryptBubble(receipt) {
+  const btn = document.getElementById('dbtn-'+receipt);
+  if (!btn) return;
+  btn.disabled=true; btn.textContent='…';
+  try {
+    const r    = await fetch('/api/read?receipt='+encodeURIComponent(receipt));
+    const data = await r.json();
+    if (data.ok) {
+      let plaintext=data.message, replyTo=null;
+      try {
+        const p=JSON.parse(data.message);
+        if (p&&p.v===1&&p.msg){ plaintext=p.msg; replyTo=p.reply_to||null; }
+      } catch(_) {}
+      const safe  = data.safe !== false;   // default true if field absent
+      const flags = Array.isArray(data.flags) ? data.flags : [];
+      decryptCache[receipt]={plaintext, replyTo, safe, flags};
+      applyDecrypt(receipt, plaintext, replyTo, true, safe, flags);
+    } else { btn.textContent='err'; btn.disabled=false; }
+  } catch(_) { btn.textContent='!'; btn.disabled=false; }
+}
+
+function applyDecrypt(receipt, plaintext, replyTo, updateGraph, safe=true, flags=[]) {
+  const text   = document.getElementById('btext-'+receipt);
+  const meta   = document.getElementById('bmeta-'+receipt);
+  const bubble = document.getElementById('brecv-'+receipt);
+  const btn    = document.getElementById('dbtn-'+receipt);
+  if (text) {
+    const color = replyTo ? '#c8a060' : '#a0c0d8';
+    text.innerHTML = `<span style="color:${color}">${esc(plaintext)}</span>`;
+    // Safety warning banner — shown when the content inspector flagged threats
+    const existingWarn = bubble?.querySelector('.safety-warn');
+    if (existingWarn) existingWarn.remove();
+    if (!safe && flags.length) {
+      const warn = document.createElement('div');
+      warn.className = 'safety-warn';
+      const flagTags = flags.map(f => `<code>${esc(f)}</code>`).join(' ');
+      warn.innerHTML = `⚠ Content flagged — review before acting: ${flagTags}`;
+      text.insertAdjacentElement('afterend', warn);
+    }
+    bubble?.classList.add('revealed');
+    if (replyTo) bubble?.classList.add('identified');
+  }
+  if (btn) { btn.textContent='✓'; btn.style.opacity='0.4'; btn.style.cursor='default'; btn.disabled=true; }
+
+  if (replyTo && replyTo.pubkey) {
+    // add reply button
+    if (meta && !meta.querySelector('.reply-btn')) {
+      const rb = document.createElement('button');
+      rb.className='reply-btn';
+      rb.textContent = '↩ ' + esc(replyTo.name || replyTo.pubkey.slice(0,10)+'…');
+      rb.onclick = () => promoteInboundSender(receipt, replyTo);
+      meta.appendChild(rb);
+    }
+    // register inbound sender and re-render graph
+    if (updateGraph) {
+      const sid = 'in-'+replyTo.pubkey.slice(0,12);
+      if (!inboundSenders[sid]) {
+        inboundSenders[sid] = { replyTo, receipts: new Set() };
+      }
+      inboundSenders[sid].receipts.add(receipt);
+      renderGraph();  // adds new node to orbit
+    }
+  }
+}
+
+function promoteInboundSender(receipt, replyTo) {
+  const sid = 'in-'+replyTo.pubkey.slice(0,12);
+  if (!inboundSenders[sid]) inboundSenders[sid]={replyTo,receipts:new Set()};
+  inboundSenders[sid].receipts.add(receipt);
+  renderGraph();
+  openChat(sid);
 }
 
 // ── compose ───────────────────────────────────────────────────────────────
@@ -860,112 +1147,95 @@ function onType() {
   const ta    = document.getElementById('compose-ta');
   const bytes = new TextEncoder().encode(ta.value).length;
   const ctr   = document.getElementById('byte-ctr');
-  ctr.textContent = bytes + ' / 2000';
-  ctr.className = bytes > 2000 ? 'over' : bytes > 1800 ? 'warn' : '';
-  const c = contacts.find(x => x.id === active);
-  document.getElementById('send-btn').disabled =
-    !ta.value.trim() || bytes > 2000 || !c?.configured;
+  ta.style.height='auto';
+  ta.style.height=Math.min(ta.scrollHeight,120)+'px';
+  ctr.textContent = bytes>1800 ? bytes+'/2000' : '';
+  ctr.className   = bytes>2000?'over':bytes>1800?'warn':'';
+  const configured =
+    activeId in inboundSenders
+      ? !!(inboundSenders[activeId].replyTo.pubkey && inboundSenders[activeId].replyTo.endpoint)
+      : !!(contacts.find(x=>x.id===activeId)?.configured);
+  document.getElementById('send-btn').disabled = !ta.value.trim()||bytes>2000||!configured;
 }
+function onKey(e) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend();} }
 
 async function doSend() {
-  const ta  = document.getElementById('compose-ta');
+  const ta          = document.getElementById('compose-ta');
+  const allowReply  = document.getElementById('reply-check')?.checked;
   const msg = ta.value.trim();
-  if (!msg || !active) return;
+  if (!msg || !activeId) return;
   const btn = document.getElementById('send-btn');
-  const st  = document.getElementById('send-status');
   btn.disabled = true;
-  st.style.color = '#4090b0';
-  st.textContent = 'Sealing envelope and routing via Tor…';
+
+  // build payload
+  let payload = msg;
+  if (allowReply && selfIdent.pubkey) {
+    const c = contacts.find(x=>x.id===activeId) || {};
+    payload = JSON.stringify({
+      v:1, msg,
+      reply_to:{
+        pubkey:   selfIdent.pubkey,
+        endpoint: c.peer_endpoint || '',
+        name:     selfIdent.name  || '',
+        agent_id: selfIdent.agent_id || '',
+      },
+    });
+  }
+
+  // optimistic bubble
+  const now=Date.now(), th=document.getElementById('chat-thread');
+  const tmp=div('bubble-sent'); tmp.id='tmp-'+now;
+  tmp.innerHTML=`<div class="btext">${esc(msg)}</div>
+    <div class="bmeta" style="color:#1a4a70">sending…${allowReply?' · reply allowed':''}</div>`;
+  th.appendChild(tmp); th.scrollTop=th.scrollHeight;
+  ta.value='';
+  if (document.getElementById('reply-check'))
+    document.getElementById('reply-check').checked=false;
+  onType();
 
   try {
-    const r    = await fetch('/api/send', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({contact_id: active, message: msg}),
+    const r    = await fetch('/api/send',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contact_id:activeId,message:payload}),
     });
     const data = await r.json();
+    const el   = document.getElementById('tmp-'+now);
     if (data.ok) {
-      st.style.color = '#28d87a';
-      st.textContent = '✓ Delivered — ' + (data.receipt||'').slice(0,18) + '…';
-      ta.value = '';
-      onType();
-      // flash edge green
-      const edge = document.getElementById('edge-' + active);
-      if (edge) {
-        const prev = edge.style.stroke;
-        edge.style.stroke = '#28d87a';
-        setTimeout(() => { edge.style.stroke = prev; }, 1400);
-      }
-      await loadSent(active);
+      if (el) el.querySelector('.bmeta').textContent =
+        new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+        + ' · '+(data.transport||'?')+(allowReply?' · reply allowed':'');
+      const edge=document.getElementById('edge-'+activeId);
+      if (edge){const p=edge.style.stroke;edge.style.stroke='#28d87a';setTimeout(()=>{edge.style.stroke=p;},1400);}
     } else {
-      st.style.color = '#c04030';
-      st.textContent = 'Error: ' + (data.error||'unknown');
-      btn.disabled = false;
+      if (el) el.querySelector('.bmeta').innerHTML=
+        `<span style="color:#c04030">failed: ${esc(data.error||'?')}</span>`;
+      btn.disabled=false;
     }
-  } catch (e) {
-    st.style.color = '#c04030';
-    st.textContent = 'Network: ' + e.message;
-    btn.disabled = false;
+  } catch(e) {
+    btn.disabled=false;
+    const el=document.getElementById('tmp-'+now);
+    if (el) el.querySelector('.bmeta').innerHTML=`<span style="color:#c04030">network error</span>`;
   }
-}
-
-// ── inbox ─────────────────────────────────────────────────────────────────
-function toggleInbox() {
-  inboxOpen = !inboxOpen;
-  document.getElementById('inbox-drawer').classList.toggle('open', inboxOpen);
-  if (inboxOpen) loadInbox();
-}
-
-async function loadInbox() {
-  const r    = await fetch('/api/inbox');
-  const envs = await r.json();
-  const list = document.getElementById('inbox-list');
-  if (!envs.length) {
-    list.innerHTML = '<div style="padding:10px 12px;font-size:0.6rem;color:#1e3050">No envelopes</div>';
-    return;
-  }
-  list.innerHTML = envs.map(e => {
-    const dt  = new Date(e.received * 1000).toLocaleString();
-    const col = e.size_ok ? '#1a6040' : '#806020';
-    const sz  = e.size_ok ? '✓ 4156 B' : '⚠ ' + e.size + ' B';
-    return `<div class="env-row">
-      <div class="env-rct">${esc(e.receipt)}</div>
-      <div class="env-sz" style="color:${col}">${sz} · ${esc(dt)}</div>
-    </div>`;
-  }).join('');
 }
 
 // ── status ────────────────────────────────────────────────────────────────
 async function pollStatus() {
   try {
-    const d = await (await fetch('/api/status')).json();
-    const dot = document.getElementById('sb-tor');
-    dot.className = 'sb-dot ' + (d.tor ? 'ok' : 'off');
-    document.getElementById('sb-tor-lbl').textContent =
-      d.tor ? 'Tor connected' : 'Tor offline';
-    const n = d.inbox_count || 0;
-    document.getElementById('sb-inbox-n').textContent = n;
-    const badge = document.getElementById('inbox-badge');
-    if (badge) { badge.style.display = n ? 'flex' : 'none'; badge.textContent = n; }
-  } catch (_) {}
+    const d=await (await fetch('/api/status')).json();
+    document.getElementById('sb-tor').className='sb-dot '+(d.tor?'ok':'off');
+    document.getElementById('sb-tor-lbl').textContent=d.tor?'Tor connected':'Tor offline';
+  } catch(_) {}
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────
-function div(cls) {
-  const el = document.createElement('div');
-  if (cls) el.className = cls;
-  return el;
+function div(cls){const el=document.createElement('div');if(cls)el.className=cls;return el;}
+function svgEl(tag,attrs){
+  const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);return el;
 }
-function svgEl(tag, attrs) {
-  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-  return el;
-}
-function pct(v, total) { return (v / total * 100).toFixed(3) + '%'; }
-function esc(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function pct(v,total){return (v/total*100).toFixed(3)+'%';}
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 boot();
