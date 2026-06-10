@@ -1,6 +1,6 @@
 # Phase 1448a — Pre-Publication Review Checklist
 
-**Status:** OPEN — public publication path paused 2026-05-29; FedEx physical delivery to USPTO recorded 2026-06-09; Phase 1545p-Fix5 human risk authorization resolves E1 for project-governance purposes while official filing receipts/application numbers remain pending
+**Status:** OPEN — public publication path paused 2026-05-29; FedEx physical delivery to USPTO recorded 2026-06-09; Phase 1545p-Fix5 human risk authorization resolves E1 for project-governance purposes; USPTO provisional application numbers received verbally 2026-06-10 (64/231,844–64/231,848); official written filing receipts still pending
 **Sensitivity:** NON-SENSITIVE (review only; no push occurs in this phase)
 **Feeds into:** Phase 1448b (actual public repository push)
 
@@ -253,6 +253,19 @@ delivery evidence pending formal USPTO filing receipts. This resolves E1 as a
 project-governance blocker. It does not publish the repo or assign official
 USPTO application numbers.
 
+**2026-06-10 application numbers addendum:** The human operator received the
+following US provisional patent application numbers from the USPTO via telephone
+on 2026-06-10: 64/231,844 (Filing 1 — Merkle-Laplacian dual commitment),
+64/231,845 (Filing 2 — Truth-primitive state machine), 64/231,846 (Filing 3 —
+ECU metering / verified epistemic work), 64/231,847 (Filing 4 — Anti-gaming
+reward invariants), 64/231,848 (Filing 5 — Agentic function endpoint layer).
+Official written filing receipts have not yet been received. Evidence recorded
+in `docs/specs/ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0.1.md`
+and `ilc_core/rc/patent_application_numbers_status.py`. The Fix4 delivery
+module (`ilc_core/rc/patent_delivery_status.py`) is not modified; it remains a
+point-in-time historical record. The patent gate is upgraded from
+delivery-only to application-number-confirmed. The public path remains blocked.
+
 ### E2 — Trademark
 
 - [ ] Decide whether to file trademark for "ILC", "Intelligent Labor Coin",
@@ -324,6 +337,7 @@ Required inputs for Phase 1448b.
 | E1 | Patent/publication disposition | RESOLVED FOR PROJECT-GOVERNANCE PURPOSES — Phase 1545p-Fix5 human risk authorization recorded after coverage audit; relies on FedEx delivery evidence pending formal USPTO filing receipts/application numbers | 2026-06-09 |
 | E1a | US provisional packet physical delivery evidence | RECORDED — FedEx delivery to USPTO Customer Service Window on 2026-06-08 at 13:18; tracking `872685541879`; application numbers/filing receipts pending | 2026-06-09 |
 | E1b | Repo disclosure versus five-provisional coverage audit and risk authorization | RECORDED — no unrouted material coverage gap found; human authorizes proceeding toward public RC pending formal USPTO receipts | 2026-06-09 |
+| E1c | USPTO provisional application numbers received | RECORDED VERBALLY 2026-06-10 — 64/231,844 (Filing 1), 64/231,845 (Filing 2), 64/231,846 (Filing 3), 64/231,847 (Filing 4), 64/231,848 (Filing 5); official written filing receipts still pending; gate upgraded from delivery-only to application-number-confirmed; public path remains blocked | 2026-06-10 |
 | F1 | CONTRIBUTING.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
 | F2 | SECURITY.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
 | G | publication_target + publication_tag | RESOLVED — `https://github.com/ILC-Foundation/ilc`, tag `v0.3-public-rc` | 2026-05-25 |
