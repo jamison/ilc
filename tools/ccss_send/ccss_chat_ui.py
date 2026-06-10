@@ -66,6 +66,60 @@ def _seal(message: str, pubkey_hex: str) -> bytes:
     return seal_message(message, pubkey_hex)
 
 
+def _live_contact_value(value: str) -> bool:
+    return bool(value) and "PLACEHOLDER" not in value.upper()
+
+
+def _contact_public_view(contact: dict[str, Any]) -> dict[str, Any]:
+    pubkey = contact.get("ccss_recipient_pubkey", "")
+    onion = contact.get("ccss_contact_onion", "")
+    peer_endpoint = contact.get("ccss_peer_endpoint", "")
+    agent_id = contact.get("agent_id", "")
+    transports: list[str] = []
+    if _live_contact_value(peer_endpoint):
+        transports.append("direct")
+    if _live_contact_value(onion):
+        transports.append("tor")
+    if _live_contact_value(agent_id):
+        transports.append("d2d(stub)")
+    return {
+        "id": contact.get("id", ""),
+        "name": contact.get("name", ""),
+        "description": contact.get("description", ""),
+        "agent_id": agent_id,
+        "onion": onion if _live_contact_value(onion) else "",
+        "peer_endpoint": (
+            peer_endpoint if _live_contact_value(peer_endpoint) else ""
+        ),
+        "transports": transports,
+        "configured": _live_contact_value(pubkey) and bool(transports),
+    }
+
+
+def _build_sent_record(
+    *,
+    ts: int,
+    contact_id: str,
+    message: str,
+    receipt: str,
+    transport: str,
+) -> dict[str, Any]:
+    message_bytes = message.encode("utf-8")
+    record: dict[str, Any] = {
+        "ts": ts,
+        "contact_id": contact_id,
+        "message_bytes": len(message_bytes),
+        "message_sha256": hashlib.sha256(message_bytes).hexdigest(),
+        "plaintext_stored": False,
+        "receipt": receipt,
+        "transport": transport,
+    }
+    if os.environ.get("CCSS_STORE_SENT_PLAINTEXT") == "1":
+        record["message"] = message
+        record["plaintext_stored"] = True
+    return record
+
+
 # ---------------------------------------------------------------------------
 # HTTP handler
 # ---------------------------------------------------------------------------
@@ -134,20 +188,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             raw = []
         safe = []
         for c in raw:
-            ph    = c.get("ccss_recipient_pubkey", "")
-            onion = c.get("ccss_contact_onion", "")
-            configured = (
-                ph and "PLACEHOLDER" not in ph.upper()
-                and onion and "PLACEHOLDER" not in onion.upper()
-            )
-            safe.append({
-                "id":          c.get("id", ""),
-                "name":        c.get("name", ""),
-                "description": c.get("description", ""),
-                "agent_id":    c.get("agent_id", ""),
-                "onion":       onion if configured else "",
-                "configured":  configured,
-            })
+            safe.append(_contact_public_view(c))
         self._json(safe)
 
     def _api_inbox(self) -> None:
@@ -183,11 +224,19 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         self._json(msgs[-50:])
 
     def _api_send(self) -> None:
-        length = int(self.headers.get("Content-Length", 0))
-        if length > 8192:
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            self._json({"ok": False, "error": "invalid content length"}, 400)
+            return
+        if length <= 0 or length > 8192:
             self.send_error(400, "payload too large")
             return
-        payload    = json.loads(self.rfile.read(length))
+        try:
+            payload = json.loads(self.rfile.read(length))
+        except json.JSONDecodeError as exc:
+            self._json({"ok": False, "error": f"invalid json: {exc}"}, 400)
+            return
         contact_id = payload.get("contact_id", "")
         message    = payload.get("message", "")
         if not contact_id or not message:
@@ -228,10 +277,13 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return
         receipt = result.get("receipt_token", hashlib.sha256(envelope).hexdigest())
         ts      = int(time.time())
-        record  = {
-            "ts": ts, "contact_id": contact_id, "message": message,
-            "receipt": receipt, "transport": transport.name,
-        }
+        record = _build_sent_record(
+            ts=ts,
+            contact_id=contact_id,
+            message=message,
+            receipt=receipt,
+            transport=transport.name,
+        )
         sent_d  = self.sent_dir / contact_id
         sent_d.mkdir(parents=True, exist_ok=True)
         out     = sent_d / f"{ts}_{receipt[:8]}.json"
@@ -239,7 +291,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         fd, tmp = tempfile.mkstemp(dir=sent_d)
         try:
             with os.fdopen(fd, "w") as fh:
-                json.dump(record, fh, sort_keys=True)
+                json.dump(record, fh, allow_nan=False, sort_keys=True)
             os.replace(tmp, out)
         except Exception:
             try:
@@ -789,8 +841,13 @@ async function loadSent(id) {
   }
   th.innerHTML = msgs.map(m => {
     const dt = new Date(m.ts * 1000).toLocaleString();
+    const body = m.plaintext_stored
+      ? esc(m.message || '')
+      : '<span style="color:#486070">Plaintext not retained locally; '
+        + esc(String(m.message_bytes || 0)) + ' bytes, sha256 '
+        + esc(String(m.message_sha256 || '').slice(0,16)) + '…</span>';
     return `<div class="bubble">
-      <div class="bubble-text">${esc(m.message)}</div>
+      <div class="bubble-text">${body}</div>
       <div class="bubble-meta">${esc(dt)}</div>
       <div class="bubble-receipt">${esc(m.receipt||'').slice(0,32)}…</div>
     </div>`;

@@ -82,13 +82,42 @@ def _write_sent(sent_dir: Path, contact_id: str, record: dict[str, Any]) -> None
     fd, tmp = tempfile.mkstemp(dir=d)
     try:
         with os.fdopen(fd, "w") as fh:
-            json.dump(record, fh, sort_keys=True)
+            json.dump(record, fh, allow_nan=False, sort_keys=True)
         os.replace(tmp, out)
     except Exception:
         try:
             os.unlink(tmp)
         except OSError:
             pass
+
+
+def _build_sent_record(
+    *,
+    ts: int,
+    contact_id: str,
+    message: str,
+    receipt: str,
+    transport: str,
+) -> dict[str, Any]:
+    """Build a privacy-preserving sent-log record.
+
+    Plaintext sent-message retention is disabled by default. Operators can opt in
+    for local debugging with CCSS_STORE_SENT_PLAINTEXT=1.
+    """
+    message_bytes = message.encode("utf-8")
+    record: dict[str, Any] = {
+        "ts": ts,
+        "contact_id": contact_id,
+        "message_bytes": len(message_bytes),
+        "message_sha256": hashlib.sha256(message_bytes).hexdigest(),
+        "plaintext_stored": False,
+        "receipt": receipt,
+        "transport": transport,
+    }
+    if os.environ.get("CCSS_STORE_SENT_PLAINTEXT") == "1":
+        record["message"] = message
+        record["plaintext_stored"] = True
+    return record
 
 
 # ---------------------------------------------------------------------------
@@ -231,13 +260,13 @@ class CCSSSender:
         receipt  = result.get("receipt_token", hashlib.sha256(envelope).hexdigest())
         ts       = int(time.time())
 
-        record = {
-            "ts":         ts,
-            "contact_id": contact_id,
-            "message":    message,
-            "receipt":    receipt,
-            "transport":  transport.name,
-        }
+        record = _build_sent_record(
+            ts=ts,
+            contact_id=contact_id,
+            message=message,
+            receipt=receipt,
+            transport=transport.name,
+        )
         _write_sent(self.sent_dir, contact_id, record)
 
         return {

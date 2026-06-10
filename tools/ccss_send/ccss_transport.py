@@ -32,6 +32,8 @@ from typing import Any
 _TOR_HOST = "127.0.0.1"
 _TOR_PORT = 9050
 _OUTER_ENVELOPE_BYTES = 4156
+_MAX_HTTP_RESPONSE_BYTES = 64 * 1024
+_MAX_DIRECT_RECEIPT_BYTES = 8192
 
 # ---------------------------------------------------------------------------
 # Base
@@ -85,13 +87,20 @@ class TorTransport(Transport):
 
 def _socks5_post(onion: str, path: str, body: bytes,
                  socks_host: str, socks_port: int, timeout: int) -> dict[str, Any]:
+    if not onion.endswith(".onion"):
+        raise ValueError(f"Tor endpoint must be a .onion host: {onion!r}")
     host_b = onion.encode()
+    if len(host_b) > 255:
+        raise ValueError("Tor endpoint host is too long for SOCKS5 domain form")
     with socket.create_connection((socks_host, socks_port), timeout=timeout) as s:
         s.sendall(b"\x05\x01\x00")
-        if s.recv(2) != b"\x05\x00":
+        auth_resp = s.recv(2)
+        if auth_resp != b"\x05\x00":
             raise RuntimeError("SOCKS5 auth negotiation failed")
         s.sendall(b"\x05\x01\x00\x03" + bytes([len(host_b)]) + host_b + b"\x00\x50")
         resp = s.recv(10)
+        if len(resp) < 2:
+            raise RuntimeError("SOCKS5 CONNECT returned truncated response")
         if resp[1] != 0x00:
             raise RuntimeError(f"SOCKS5 CONNECT failed: code {resp[1]}")
         req = (
@@ -105,12 +114,27 @@ def _socks5_post(onion: str, path: str, body: bytes,
             chunk = s.recv(4096)
             if not chunk:
                 break
+            if len(raw) + len(chunk) > _MAX_HTTP_RESPONSE_BYTES:
+                raise RuntimeError("relay HTTP response exceeded bounded read limit")
             raw += chunk
+
+    status_line, _, remainder = raw.partition(b"\r\n")
     _, _, resp_body = raw.partition(b"\r\n\r\n")
-    code = int(raw.split(b"\r\n")[0].split(b" ")[1])
+    if not remainder or not resp_body:
+        raise RuntimeError("relay returned malformed HTTP response")
+    status_parts = status_line.split(b" ")
+    if len(status_parts) < 2:
+        raise RuntimeError("relay returned malformed HTTP status line")
+    try:
+        code = int(status_parts[1])
+    except ValueError as exc:
+        raise RuntimeError("relay returned non-numeric HTTP status") from exc
     if code not in (200, 202):
         raise RuntimeError(f"relay returned HTTP {code}")
-    return json.loads(resp_body)
+    try:
+        return json.loads(resp_body)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("relay returned non-JSON receipt") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -148,6 +172,8 @@ class DirectTransport(Transport):
         if not host or not port_s:
             raise ValueError(f"invalid direct endpoint (expected host:port): {endpoint!r}")
         port = int(port_s)
+        if port < 1 or port > 65535:
+            raise ValueError(f"invalid direct endpoint port: {port}")
 
         with socket.create_connection((host, port), timeout=self._timeout) as s:
             # Wire format: 4156 raw bytes, then read JSON receipt line
@@ -158,11 +184,16 @@ class DirectTransport(Transport):
                 chunk = s.recv(512)
                 if not chunk:
                     break
+                if len(raw) + len(chunk) > _MAX_DIRECT_RECEIPT_BYTES:
+                    raise RuntimeError("peer receiver response exceeded bounded read limit")
                 raw += chunk
 
         if not raw:
             raise RuntimeError("peer receiver returned empty response")
-        return json.loads(raw.decode().strip())
+        try:
+            return json.loads(raw.decode().strip())
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("peer receiver returned non-JSON receipt") from exc
 
 
 # ---------------------------------------------------------------------------
