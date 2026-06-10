@@ -406,6 +406,50 @@ def build_allow_reply_message(message: str, *, home: str | Path | None = None) -
     return encoded
 
 
+def update_identity_reply_route(
+    *,
+    home: str | Path | None = None,
+    peer_endpoint: str = "",
+    onion: str = "",
+) -> dict[str, Any]:
+    """Update reply routing metadata for the existing local identity."""
+    if not _live(peer_endpoint) and not _live(onion):
+        return {"ok": True, "updated": False}
+
+    path = identity_path(home)
+    identity = _read_json(path, missing_default=None)
+    if not isinstance(identity, dict):
+        raise CCSSRuntimeError("identity_required_for_reply_route_update")
+
+    next_peer_endpoint = (
+        peer_endpoint
+        if _live(peer_endpoint)
+        else str(identity.get("ccss_peer_endpoint", ""))
+    )
+    next_onion = onion if _live(onion) else str(identity.get("ccss_contact_onion", ""))
+    updated = (
+        identity.get("ccss_peer_endpoint", "") != next_peer_endpoint
+        or identity.get("ccss_contact_onion", "") != next_onion
+    )
+    if not updated:
+        return {"ok": True, "updated": False}
+
+    identity["ccss_peer_endpoint"] = next_peer_endpoint
+    identity["ccss_contact_onion"] = next_onion
+    _atomic_write_json(path, identity, mode=_PRIVATE_FILE_MODE)
+    public_contact = build_public_contact(
+        contact_id=str(identity.get("id", "local-user")),
+        name=str(identity.get("name", "Local ILC User")),
+        description=str(identity.get("description", "Local CCSS identity")),
+        public_key_hex=str(identity.get("ccss_recipient_pubkey", "")),
+        peer_endpoint=next_peer_endpoint,
+        onion=next_onion,
+        agent_id=str(identity.get("agent_id", "")),
+    )
+    _atomic_write_json(_home(home) / "self.contact.json", public_contact, mode=0o644)
+    return {"ok": True, "updated": True}
+
+
 def _genesis_placeholder_contact() -> dict[str, Any]:
     return {
         "agent_id": "GENESIS_AGENT_ID_PLACEHOLDER",
@@ -1001,6 +1045,7 @@ def apply_confidential_contact_recipe(
     overwrite_identity: bool = False,
 ) -> dict[str, Any]:
     identity_created = False
+    reply_route_updated = False
     if overwrite_identity or not identity_path(home).exists():
         generate_identity(
             home=home,
@@ -1011,17 +1056,24 @@ def apply_confidential_contact_recipe(
             overwrite=overwrite_identity,
         )
         identity_created = True
+    else:
+        route_result = update_identity_reply_route(home=home, peer_endpoint=peer_endpoint)
+        reply_route_updated = bool(route_result.get("updated"))
     genesis = import_genesis_contact(home=home, overwrite=False)
+    steps = [
+        "local_ccss_identity_ready",
+        "genesis_contact_placeholder_imported",
+        "ccss_direct_or_tor_transport_available_when_contact_values_are_configured",
+    ]
+    if reply_route_updated:
+        steps.append("local_ccss_reply_route_updated")
     return {
         "home": str(_home(home)),
         "identity_created": identity_created,
+        "identity_reply_route_updated": reply_route_updated,
         "ok": True,
         "recipe_id": "confidential-contact",
-        "steps": [
-            "local_ccss_identity_ready",
-            "genesis_contact_placeholder_imported",
-            "ccss_direct_or_tor_transport_available_when_contact_values_are_configured",
-        ],
+        "steps": steps,
         "warnings": [genesis.get("warning")] if genesis.get("warning") else [],
         "version": CCSS_LOCAL_RUNTIME_VERSION,
     }

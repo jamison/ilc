@@ -111,6 +111,26 @@ def test_allow_reply_fails_without_local_reply_endpoint(tmp_path: Path) -> None:
         build_allow_reply_message("hello", home=tmp_path)
 
 
+def test_apply_recipe_updates_existing_identity_reply_endpoint(tmp_path: Path) -> None:
+    _payload(_run_cli("ccss", "apply-recipe", "--home", str(tmp_path)))
+
+    result = _run_cli(
+        "ccss",
+        "apply-recipe",
+        "--home",
+        str(tmp_path),
+        "--peer-endpoint",
+        "100.111.172.103:9001",
+    )
+    payload = _payload(result)
+    identity = json.loads((tmp_path / "identity.json").read_text(encoding="utf-8"))
+
+    assert payload["data"]["identity_created"] is False
+    assert payload["data"]["identity_reply_route_updated"] is True
+    assert "local_ccss_reply_route_updated" in payload["data"]["steps"]
+    assert identity["ccss_peer_endpoint"] == "100.111.172.103:9001"
+
+
 def test_main_py_registers_sidecar_and_ccss_operational_commands() -> None:
     from ilc_core.cli.main import OPERATIONAL_COMMANDS
 
