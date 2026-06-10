@@ -1,0 +1,71 @@
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def read(path: str) -> str:
+    return (ROOT / path).read_text(encoding="utf-8")
+
+
+def test_phase_1546p_sequence_lock_tokens_and_public_boundary() -> None:
+    text = read("docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md")
+
+    required = [
+        "window_1546p_1555p_opened",
+        "window_1538p_1545p_closed_pass_inherits_to_window_1546p",
+        "window_1546p_sequence_lock_committed_phase_1546p",
+        "gap_refresh_1546p_pre_block5_committed",
+        "mempalace_rebuild_complete_phase_1546p",
+        "cdl_096_scope_reconciliation_recorded_phase_1546p",
+        "obl_023_routed_to_window_1546p_phase_1546p",
+        "obl_024_routed_to_window_1546p_phase_1546p",
+        "obl_028_routed_to_window_1546p_phase_1546p",
+        "obl_029_routed_to_window_1546p_phase_1546p",
+        "block6_required_after_window_1546p_phase_1546p",
+        "public_rc_gate_not_reached_phase_1546p",
+    ]
+    for token in required:
+        assert token in text
+
+    assert "This window is not the public RC gate" in text
+    assert "Phase 1551p must not execute until the human reviewer selects" in text
+
+
+def test_phase_1546p_gap_refresh_records_cdl096_three_options() -> None:
+    text = read("docs/specs/ilc_gap_refresh_1546p_pre_block5_v0.1.md")
+
+    assert "| A | Combined Werner plus global-tier jury finality |" in text
+    assert "| B | Werner-only |" in text
+    assert "| C | Global-tier-only |" in text
+    assert "No option is selected in Phase 1546p" in text
+    assert "Guidance-only false positive" in text
+
+
+def test_obligation_register_routes_block5_rows_without_closure() -> None:
+    text = read("docs/specs/ilc_open_obligation_register_v0.1.md")
+
+    assert "**Status:** ACTIVE - WINDOW 1546P OPEN" in text
+    assert "docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md" in text
+
+    for obl, phase in {
+        "OBL-023": "Phase 1547p",
+        "OBL-024": "Phase 1548p",
+        "OBL-028": "Phase 1549p",
+        "OBL-029": "Phase 1550p",
+    }.items():
+        row = next(line for line in text.splitlines() if line.startswith(f"| {obl} |"))
+        assert "| open |" in row
+        assert f"Window 1546p-1555p {phase}" in row
+
+
+def test_frontier_docs_point_to_window_1546p() -> None:
+    planning = read("docs/PLANNING_INDEX.md")
+    status = read("docs/phases/STATUS.md")
+    agents = read("AGENTS.md")
+
+    assert "Phase 1546p Block 5 sequence lock and gap refresh" in planning
+    assert "Window 1546p-1555p is OPEN" in planning
+    assert "## Phase 1546p - Block 5 Sequence Lock and Gap Refresh" in status
+    assert "window: 1546p-1555p" in agents
+    assert "next_phase: phase_1547p_non_sensitive" in agents
