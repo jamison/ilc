@@ -42,7 +42,7 @@ def test_phase_1546p_gap_refresh_records_cdl096_three_options() -> None:
     assert "Guidance-only false positive" in text
 
 
-def test_obligation_register_routes_block5_rows_without_closure() -> None:
+def test_obligation_register_records_block5_routes_without_phase_1546p_closure() -> None:
     text = read("docs/specs/ilc_open_obligation_register_v0.1.md")
 
     assert "**Status:** ACTIVE - WINDOW 1546P OPEN" in text
@@ -55,8 +55,8 @@ def test_obligation_register_routes_block5_rows_without_closure() -> None:
         "OBL-029": "Phase 1550p",
     }.items():
         row = next(line for line in text.splitlines() if line.startswith(f"| {obl} |"))
-        assert "| open |" in row
         assert f"Window 1546p-1555p {phase}" in row
+        assert "closed_phase_1546p" not in row
 
 
 def test_frontier_docs_point_to_window_1546p() -> None:
@@ -65,7 +65,8 @@ def test_frontier_docs_point_to_window_1546p() -> None:
     agents = read("AGENTS.md")
 
     assert "Phase 1546p Block 5 sequence lock and gap refresh" in planning
+    assert "Phase 1550p OBL-029 peer-funded bounty spec" in planning
     assert "Window 1546p-1555p is OPEN" in planning
     assert "## Phase 1546p - Block 5 Sequence Lock and Gap Refresh" in status
     assert "window: 1546p-1555p" in agents
-    assert "next_phase: phase_1547p_non_sensitive" in agents
+    assert "next_phase: phase_1551p_sensitive_scope_selection_required" in agents
