@@ -4,7 +4,7 @@
 **Sensitivity:** NON-SENSITIVE (review only; no push occurs in this phase)
 **Feeds into:** Phase 1448b (actual public repository push)
 
-**Current routing addendum (2026-06-09):** FedEx physical delivery of the five reported US provisional packets to the USPTO Patent Customer Service Window is recorded in `docs/specs/ilc_us_provisional_patent_delivery_receipt_1545p_fix4_v0.1.md`. The disclosure-versus-provisional coverage audit and human risk authorization are recorded in `docs/specs/ilc_public_repo_disclosure_vs_provisional_coverage_audit_1545p_fix5_v0.1.md`. This resolves the E1 patent/publication blocker for project-governance purposes while relying on FedEx delivery evidence pending formal USPTO filing receipts. It does not itself execute Phase 1448b public publication, supply official USPTO application numbers, or supply official filing receipts.
+**Current routing addendum (2026-06-10):** FedEx physical delivery of the five reported US provisional packets to the USPTO Patent Customer Service Window is recorded in `docs/specs/ilc_us_provisional_patent_delivery_receipt_1545p_fix4_v0.1.md`. The disclosure-versus-provisional coverage audit and human risk authorization are recorded in `docs/specs/ilc_public_repo_disclosure_vs_provisional_coverage_audit_1545p_fix5_v0.1.md`. USPTO provisional application numbers were received verbally on 2026-06-10 and recorded in `docs/specs/ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0.1.md`. This resolves the E1 patent/publication blocker for project-governance purposes while formal written USPTO filing receipts remain pending. It does not itself execute Phase 1448b public publication, supply official written filing receipts, or authorize public RC.
 
 ---
 
@@ -217,7 +217,7 @@ Key candidate mechanisms worth discussing with counsel (not a legal opinion):
   query-response/co-attested inference artifacts, processing-capacity tier declarations,
   and invitation/provenance chains without executable payloads in core graph nodes.
 
-**Current decision before 1448b:** Phase 1545p-Fix5 records renewed human risk authorization to proceed toward public RC relying on FedEx physical-delivery evidence pending formal USPTO filing receipts/application numbers. Public publication still requires the final Phase 1448b publication gate, exact human GO, public export/materialization checks, and public-safe status wording updates.
+**Current decision before 1448b:** Phase 1545p-Fix5 records renewed human risk authorization to proceed toward public RC relying on FedEx physical-delivery evidence; USPTO application numbers were received verbally on 2026-06-10; formal written filing receipts remain pending. Public publication still requires the final Phase 1448b publication gate, exact human GO, public export/materialization checks, and public-safe status wording updates.
 
 **Historical 1448b decision paths (do not execute while the 2026-05-29 pause is active):**
 - [ ] **Path 1 — Obtained:** Record counsel disposition summary and any provisional application reference
@@ -334,8 +334,8 @@ Required inputs for Phase 1448b.
 | D1 | methodology.md ships? | RESOLVED — ships; force-included in DEFAULT_FORCE_INCLUDE_PATHS | 2026-05-25 |
 | D2 | metaphysics.md ships? | RESOLVED — ships; "Genesis Agent" pseudonym applied | 2026-05-25 |
 | D3 | FUNDING.md ships? | RESOLVED — ships; added to DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
-| E1 | Patent/publication disposition | RESOLVED FOR PROJECT-GOVERNANCE PURPOSES — Phase 1545p-Fix5 human risk authorization recorded after coverage audit; relies on FedEx delivery evidence pending formal USPTO filing receipts/application numbers | 2026-06-09 |
-| E1a | US provisional packet physical delivery evidence | RECORDED — FedEx delivery to USPTO Customer Service Window on 2026-06-08 at 13:18; tracking `872685541879`; application numbers/filing receipts pending | 2026-06-09 |
+| E1 | Patent/publication disposition | RESOLVED FOR PROJECT-GOVERNANCE PURPOSES — Phase 1545p-Fix5 human risk authorization recorded after coverage audit; FedEx delivery evidence recorded; USPTO application numbers received verbally 2026-06-10; formal written filing receipts still pending | 2026-06-09 |
+| E1a | US provisional packet physical delivery evidence | RECORDED — FedEx delivery to USPTO Customer Service Window on 2026-06-08 at 13:18; tracking `872685541879`; application numbers were later recorded verbally in E1c; formal written filing receipts still pending | 2026-06-09 |
 | E1b | Repo disclosure versus five-provisional coverage audit and risk authorization | RECORDED — no unrouted material coverage gap found; human authorizes proceeding toward public RC pending formal USPTO receipts | 2026-06-09 |
 | E1c | USPTO provisional application numbers received | RECORDED VERBALLY 2026-06-10 — 64/231,844 (Filing 1), 64/231,845 (Filing 2), 64/231,846 (Filing 3), 64/231,847 (Filing 4), 64/231,848 (Filing 5); official written filing receipts still pending; gate upgraded from delivery-only to application-number-confirmed; public path remains blocked | 2026-06-10 |
 | F1 | CONTRIBUTING.md | RESOLVED — ships; in DEFAULT_INCLUDE_ROOTS | 2026-05-25 |
@@ -346,7 +346,7 @@ Required inputs for Phase 1448b.
 - A1 — **RESOLVED 2026-05-25** — `tree_sha256: 925d6399399c7f82f52cf17318687a9d625d7e64ef2b0e2fc6586fd15c036361`
 - A4 — **RESOLVED 2026-05-28** — Option A (fresh mirror); `Genesis Agent <ilcops@proton.me>`; push instructions recorded above
 - CDL-095 — **RESOLVED 2026-05-25** — `cdl_095_ratified_phase_1448c` token emitted (Phase 1448c)
-- E1 — **RESOLVED 2026-06-09 FOR PROJECT-GOVERNANCE PURPOSES** — Phase 1545p-Fix5 records the coverage audit and explicit human risk authorization to proceed toward public RC relying on FedEx delivery evidence pending formal USPTO filing receipts/application numbers. Phase 1448b still requires its own exact GO and final publication/export checks.
+- E1 — **RESOLVED 2026-06-09 FOR PROJECT-GOVERNANCE PURPOSES** — Phase 1545p-Fix5 records the coverage audit and explicit human risk authorization to proceed toward public RC relying on FedEx delivery evidence; USPTO application numbers were received verbally on 2026-06-10; formal written filing receipts remain pending. Phase 1448b still requires its own exact GO and final publication/export checks.
 - G — **RESOLVED 2026-05-25** — `publication_target: https://github.com/ILC-Foundation/ilc`, `publication_tag: v0.3-public-rc`
 
-**Summary:** E1 is resolved for project-governance purposes by Phase 1545p-Fix5 human risk authorization. Formal USPTO filing receipts/application numbers remain pending as a residual risk, not as a project-governance blocker. Public publication still requires the final Phase 1448b gate and exact human GO.
+**Summary:** E1 is resolved for project-governance purposes by Phase 1545p-Fix5 human risk authorization. USPTO application numbers were received verbally on 2026-06-10. Formal written USPTO filing receipts remain pending as a residual risk, not as a project-governance blocker. Public publication still requires the final Phase 1448b gate and exact human GO.
