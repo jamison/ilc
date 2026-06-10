@@ -26,11 +26,18 @@ cd ilc_consensus && cargo build --release
 
 `python3 tools/genesis_boot.py` Reads `config/genesis.json` and prints the Genesis hash.
 
+## Sidecars
+
+ILC sidecars are optional local or network-adjacent components that use ILC as a
+trust substrate without becoming core protocol code. See [sidecars.md](sidecars.md)
+for the CLI namespace, recipe model, and CCSS private-contact bootstrap.
+
 ## Contact
 
-Genesis Agent is reachable via the CCSS sealed-sender relay (Tor v3 hidden service).
-See [docs/contact/genesis_agent_contact_protocol_v0.1.md](docs/contact/genesis_agent_contact_protocol_v0.1.md)
-for the endpoint address, envelope format, and submission instructions.
+Genesis Agent contact through the CCSS sealed-sender channel is prepared but not
+live until public-RC contact values are published. See
+[docs/contact/genesis_agent_contact_protocol_v0.1.md](docs/contact/genesis_agent_contact_protocol_v0.1.md)
+for the envelope format, status, and submission model.
 
 ## Security
 
