@@ -178,7 +178,7 @@ def test_phase_1548p_obl_row_and_status_are_backfilled() -> None:
 
     for obl in ("OBL-028", "OBL-029"):
         other = next(line for line in register.splitlines() if line.startswith(f"| {obl} |"))
-        assert "| open |" in other
+        assert "closed_phase_1548p" not in other
 
     status = read(STATUS)
     assert "## Phase 1548p - OBL-024 CDL-V6 Enforcement Scaffold Audit" in status

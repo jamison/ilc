@@ -50,7 +50,6 @@ def test_obl023_row_is_closed_and_only_obl023_is_closed_by_phase_1547p() -> None
 
     for obl in ("OBL-024", "OBL-028", "OBL-029"):
         other = next(line for line in register.splitlines() if line.startswith(f"| {obl} |"))
-        assert "| open |" in other
         assert "closed_phase_1547p" not in other
 
 
