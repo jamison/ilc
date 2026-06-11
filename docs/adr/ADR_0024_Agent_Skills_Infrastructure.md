@@ -3,8 +3,9 @@
 **Status:** Proposed
 **Date:** 2026-03-30
 **Authors:** Jamison (ILC), Claude Sonnet 4.6 (architectural review)
-**Classification:** Infrastructure / cross-agent coordination — requires no CDL for Tier 1/2;
-Tier 3 requires new CDL (skill versioning succession semantics in authored_envelope)
+**Classification:** Optional infrastructure / cross-agent coordination — requires no CDL for
+optional Tier 1/2 harness adapters; Tier 3 requires new CDL if skills become
+graph-native, credit-bearing, or authority-bearing ILC artifacts
 **Dependencies:** agentskills.io open standard (December 2025), CDL-034 (authored envelope
 schema), CDL-052 (epistemic runtime), CDL-V7 (Popperian gate for skill versioning claims)
 
@@ -34,6 +35,12 @@ skills would make them:
 4. Testable: per Nate Jones's testing mandate — each skill can have a benchmark and be
    quantified across versions
 
+For public RC, this ADR is not a protocol dependency and not a publication blocker.
+Agent Skills are procedural instructions for agent harnesses. They are not ILC runtime
+canon, not a public API, not a graph-native node type, and not required for a user or
+agent to install or operate ILC. The public-RC user surface remains CLI help, docs, and
+explicit operator guides unless a later phase intentionally ships shared skills.
+
 A separate, longer-horizon question emerges from this work: whether ILC knowledge nodes
 could serve as a native home for skill artifacts — making skills a first-class epistemic
 object in the ILC graph, with succession versioning, benchmark-gated advancement, and ECU
@@ -45,17 +52,24 @@ constitutional work and is explicitly deferred to Tier 3.
 
 ## Decision
 
-Adopt the Agent Skills standard for ILC in three tiers.
+Define an optional three-tier adoption path for Agent Skills in ILC. This ADR remains
+Proposed until a later phase decides whether to ship shared repository-owned skills at
+all. Absence of a root `skills/` directory is not a public-RC blocker.
 
-### Placement: root `skills/` directory (not `.claude/skills/`)
+### Placement If Implemented: root `skills/` directory (not `.claude/skills/`)
 
-Skills for this project live at `skills/` in the repository root, not `.claude/skills/`.
-Rationale: `.claude/skills/` is Claude Code-specific. A root-level `skills/` directory is:
+If ILC ships shared repository-owned skills, the preferred canonical source path is
+`skills/` in the repository root, not `.claude/skills/`. Rationale:
+`.claude/skills/` is Claude Code-specific. A root-level `skills/` directory is:
 
 - Visible to any agent tool (Codex, Cursor, local agents, future tools) without platform
   configuration
 - Obviously version-controlled and human-readable alongside other project directories
 - Consistent with agentskills.io's cross-platform portability intent
+
+The existing `.codex-plugin/skills/*` surface is a local Codex/plugin harness adapter.
+It is useful development infrastructure, but it is not the ADR-0024 canonical source path
+and does not, by itself, make Agent Skills an ILC protocol surface.
 
 For Claude Code to auto-discover skills at the root `skills/` path, either:
 (a) add `.claude/settings.json` with the additional-directories configuration, or
@@ -69,7 +83,7 @@ automatic.
 
 ---
 
-### Tier 1 — Immediate: Workflow Skills (Window 545+ candidate)
+### Tier 1 — Optional Harness Adapter: Workflow Skills
 
 Seven Group A workflow skills that formalize currently-prose patterns into invocable,
 version-controlled instruction sets. All are `disable-model-invocation: true` (user-invoked
@@ -90,7 +104,7 @@ may be added in Tier 2 if the workflow complexity warrants it.
 
 ---
 
-### Tier 2 — Near-Term: Scaffold Skills (Window 545-554 candidate)
+### Tier 2 — Optional Harness Scaffold: Scaffold Skills
 
 Five Group B scaffold skills that generate boilerplate for ILC's most repetitive artifact
 structures. These reduce error in routine phase construction and can be auto-invoked when
@@ -109,14 +123,17 @@ These must be authored against verified, passing phase examples — not from mem
 
 ---
 
-### Tier 3 — Long-Term Research: skill_node as ILC Knowledge Node Subtype (Window 555+)
+### Tier 3 — Long-Term Research: `skill_node` as ILC Knowledge Node Subtype
 
 A separately scoped research track, documented in
 `docs/research/ilc_skill_node_architecture_research_placeholder_v0.1.md`.
 
-The core claim: a skill.md version claim like "v0.2 achieves ≥85% on benchmark B" is a
-Popperian bounded-existential falsifiable statement — exactly the form CDL-V7 governs. If
-skills are treated as ILC knowledge nodes, then:
+The core boundary: a `SKILL.md` file is not homoiconic merely because it is Markdown. It
+becomes ILC-homoiconic only if a later protocol explicitly ingests it as a typed,
+versioned, validated graph artifact with provenance, benchmark evidence, and authority
+rules. A skill version claim like "v0.2 achieves >=85% on benchmark B" can be a
+Popperian bounded-existential falsifiable statement — exactly the form CDL-V7 governs.
+If skills are treated as ILC knowledge nodes, then:
 
 - Each skill version is a CID-addressed authored_envelope with `skill_version` and
   `supersedes_cid` fields (requires CDL-034 schema extension)
@@ -157,20 +174,28 @@ Revisit after the community ecosystem matures and a trusted skill audit process 
 This is the Tier 3 research question — keep them distinct until the succession semantics
 are constitutionally designed.
 
-**Do not use `.claude/skills/` as the canonical location.**
-Cross-platform portability requires the root `skills/` directory. Platform-specific
-configuration can point to it; the canonical source should not be platform-hidden.
+**Do not treat root `skills/` as a public-RC requirement.**
+The root `skills/` convention is the preferred location if shared ILC-owned skills are
+later shipped. Public RC does not require root `skills/`, `.claude/skills/`, or
+`.codex-plugin/skills/` to be present.
+
+**Do not treat `.codex-plugin/skills/` or `.claude/skills/` as protocol canon.**
+Those paths are harness-specific adapter surfaces. They can mirror or consume future
+root `skills/` content, but they do not create graph-native authority or close Tier 3.
 
 ---
 
 ## Consequences
 
-**Immediate:** ILC gains a shared, version-controlled instruction layer below CLAUDE.md
-that both Claude Code and Codex can discover. Recurring workflow patterns become invocable
-commands rather than prose to re-discover.
+**Immediate:** No public-RC runtime or publication dependency is created. ILC may proceed
+without root `skills/`; CLI help, docs, and operator guides remain the primary user-facing
+instruction surfaces.
 
-**Near-term:** Scaffold skills reduce error in phase construction and make the project's
-conventions more accessible to new agent instances without deep context loading.
+**If Tier 1/2 are implemented:** ILC gains a shared, version-controlled instruction layer
+below CLAUDE.md that agent harnesses can discover. Recurring workflow patterns become
+invocable commands rather than prose to re-discover. Scaffold skills can reduce error in
+phase construction and make the project's conventions more accessible to new agent
+instances without deep context loading.
 
 **Long-term:** If Tier 3 lands, ILC becomes the first protocol with constitutionally-
 governed, benchmark-gated, attribution-tracked skill versioning. Skills become a first-class
