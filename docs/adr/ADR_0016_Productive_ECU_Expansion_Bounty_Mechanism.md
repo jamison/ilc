@@ -1,7 +1,9 @@
 # ADR-0016: Productive ECU Expansion via Bounty and Funding Request Mechanisms
 
-**Status:** Proposed  
-**Date:** 2026-03-05  
+**Status:** Accepted
+**Acceptance token:** `adr_0016_accepted_phase_1545p_fix17`
+**Acceptance evidence:** `docs/phases/phase_1545p_fix17b_adr_acceptance_batch_walkthrough.md`
+**Date:** 2026-03-05
 **Author:** Opus (strategic architectural reviewer), in collaboration with Jamie (project lead)  
 **Source:** Economic architecture conversation 2026-03-05  
 **Dependencies:** CDL-025 (terminal issuance model), CDL-029 (allocation split), CDL-V3 (quorum diversity), CDL-V7 (Popperian gate), CDL-035 (validation lifecycle)

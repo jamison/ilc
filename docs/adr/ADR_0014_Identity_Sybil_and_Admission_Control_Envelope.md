@@ -1,7 +1,9 @@
 # ADR-0014: Identity, Sybil, and Admission Control Envelope
 
-**Status:** Proposed  
-**Date:** 2026-02-25  
+**Status:** Accepted
+**Acceptance token:** `adr_0014_accepted_phase_1545p_fix17`
+**Acceptance evidence:** `docs/phases/phase_1545p_fix17b_adr_acceptance_batch_walkthrough.md`
+**Date:** 2026-02-25
 **Context:** Preventing mesh abuse and preserving graph quality under open participation
 
 ## Context

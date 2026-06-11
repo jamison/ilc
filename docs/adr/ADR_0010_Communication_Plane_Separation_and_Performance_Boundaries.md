@@ -1,7 +1,9 @@
 # ADR-0010: Communication Plane Separation and Performance Boundaries
 
-**Status:** Proposed  
-**Date:** 2026-02-25  
+**Status:** Accepted
+**Acceptance token:** `adr_0010_accepted_phase_1545p_fix17`
+**Acceptance evidence:** `docs/phases/phase_1545p_fix17b_adr_acceptance_batch_walkthrough.md`
+**Date:** 2026-02-25
 **Context:** Post-Phase 299 architecture hardening for agent-native throughput
 
 ## Context
