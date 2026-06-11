@@ -16,7 +16,7 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def test_matrix_emits_required_part_a_tokens_and_no_part_b_acceptance_tokens() -> None:
+def test_matrix_emits_required_part_a_and_part_b_tokens() -> None:
     text = read(MATRIX)
     for token in (
         "phase_1545p_fix17_adr_cdl_coverage_matrix_refresh_committed",
@@ -27,17 +27,15 @@ def test_matrix_emits_required_part_a_tokens_and_no_part_b_acceptance_tokens() -
         "new_cdl_rows_091_097_covered_in_matrix_phase_1545p_fix17",
         "adr_0040_through_0044_covered_in_matrix_phase_1545p_fix17",
         "public_path_remains_blocked_phase_1545p_fix17",
-    ):
-        assert token in text
-
-    for token in (
         "adr_0010_accepted_phase_1545p_fix17",
         "adr_0013_accepted_phase_1545p_fix17",
         "adr_0014_accepted_phase_1545p_fix17",
         "adr_0016_accepted_phase_1545p_fix17",
-        "adr_0024_accepted_phase_1545p_fix17",
+        "adr_0024_acceptance_deferred_evidence_gap_phase_1545p_fix17",
     ):
-        assert token not in text
+        assert token in text
+
+    assert "adr_0024_accepted_phase_1545p_fix17" not in text
 
 
 def test_old_matrix_is_tombstoned_to_1555p_refresh() -> None:
@@ -63,11 +61,31 @@ def test_deferred_and_evidence_gap_adrs_are_explicitly_classified() -> None:
     assert "| ADR-0017 | Proposed | explicitly_deferred_outside_public_rc |" in text
     assert "| ADR-0018 | Proposed | explicitly_deferred_outside_public_rc |" in text
     assert "| ADR-0024 | Proposed | proposed_evidence_gap_pending_human_review |" in text
+    assert "| ADR-0010 | Accepted | implemented_or_verified_for_public_rc |" in text
+    assert "| ADR-0013 | Accepted | governance_or_documentation_only |" in text
+    assert "| ADR-0014 | Accepted | implemented_or_verified_for_public_rc |" in text
+    assert "| ADR-0016 | Accepted | explicitly_deferred_outside_public_rc |" in text
     assert "root `skills/` does not" in text
 
 
-def test_part_a_does_not_mutate_proposed_adr_status_lines() -> None:
+def test_part_b_accepts_only_verified_adr_status_lines() -> None:
+    for adr in ("0010", "0013", "0014", "0016"):
+        candidates = list((ROOT / "docs/adr").glob(f"ADR_{adr}_*.md"))
+        assert len(candidates) == 1
+        text = read(candidates[0])
+        assert "**Status:** Accepted" in text
+        assert f"adr_{adr}_accepted_phase_1545p_fix17" in text
+
+    candidates = list((ROOT / "docs/adr").glob("ADR_0024_*.md"))
+    assert len(candidates) == 1
+    assert "**Status:** Proposed" in read(candidates[0])
+
+
+def test_non_accepted_proposed_adr_status_lines_remain_proposed() -> None:
     for adr in ("0010", "0013", "0014", "0016", "0024"):
+        candidates = list((ROOT / "docs/adr").glob(f"ADR_{adr}_*.md"))
+        assert len(candidates) == 1
+    for adr in ("0015", "0017", "0018", "0024"):
         candidates = list((ROOT / "docs/adr").glob(f"ADR_{adr}_*.md"))
         assert len(candidates) == 1
         assert "**Status:** Proposed" in read(candidates[0])
@@ -78,7 +96,8 @@ def test_status_planning_prompt_and_walkthrough_record_part_a_boundary() -> None
         text = read(path)
         assert "phase_1545p_fix17_adr_cdl_coverage_matrix_refresh_committed" in text
         assert "public_path_remains_blocked_phase_1545p_fix17" in text
-        assert "GO Fix17-B" in text
+    assert "GO Fix17-B" in read(STATUS)
+    assert "adr_0016_accepted_phase_1545p_fix17" in read(STATUS)
 
     prompt = read(PROMPT)
     assert "PUBLIC_RC_EXCLUDE: phase_1545p_fix17_private_prompt" in prompt
