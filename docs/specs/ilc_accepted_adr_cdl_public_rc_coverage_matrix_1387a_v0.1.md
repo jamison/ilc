@@ -1,5 +1,12 @@
 # ILC Accepted ADR/CDL Public-RC Coverage Matrix 1387a v0.1
 
+> **Superseded:** This matrix is superseded for current planning by
+> `docs/specs/ilc_accepted_adr_cdl_public_rc_coverage_matrix_1555p_v0.1.md`.
+> The Phase 1387a row decisions remain historical evidence, but current
+> pre-public-RC planning must use the Phase 1555p refresh.
+>
+> `superseded_by_phase_1545p_fix17_matrix_1555p`
+
 **Phase:** 1387a
 **Date:** 2026-05-19
 **Status:** PASS — no unknown rows and no public-RC blocking rows
