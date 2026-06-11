@@ -1,7 +1,9 @@
 # ADR-0013: External Payment Boundary and Third-Party Independence
 
-**Status:** Proposed  
-**Date:** 2026-02-25  
+**Status:** Accepted
+**Acceptance token:** `adr_0013_accepted_phase_1545p_fix17`
+**Acceptance evidence:** `docs/phases/phase_1545p_fix17b_adr_acceptance_batch_walkthrough.md`
+**Date:** 2026-02-25
 **Context:** Clarifying optional perimeter payment integrations vs core protocol design
 
 ## Context
