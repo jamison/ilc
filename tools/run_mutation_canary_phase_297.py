@@ -259,6 +259,7 @@ def _run_probe(probe: Probe) -> bool:
         return False
 
     restored = False
+    _write_dirty_sentinel(probe)
     try:
         probe.path.write_text(mutated, encoding="utf-8")
         _invalidate_pyc(probe.path)
@@ -288,11 +289,15 @@ def _run_probe(probe: Probe) -> bool:
                     file=sys.stderr,
                 )
             _invalidate_pyc(probe.path)
+            # Keep build/lib in sync so it never serves a stale mutated copy.
+            _sync_build_lib(probe.path)
             os.utime(probe.path, ns=original_times_ns)
             restored = True
         finally:
             if not restored:
                 print(f"[{probe.name}] restore_error", file=sys.stderr)
+            else:
+                _clear_dirty_sentinel(probe)
 
 
 def _run_dry() -> int:
@@ -318,6 +323,7 @@ def _reset_all_probe_targets(original_times: dict[Path, tuple[int, int]]) -> Non
                 text=True,
             )
             _invalidate_pyc(probe.path)
+            _sync_build_lib(probe.path)
             if probe.path in original_times:
                 try:
                     os.utime(probe.path, ns=original_times[probe.path])
@@ -329,6 +335,47 @@ def _reset_all_probe_targets(original_times: dict[Path, tuple[int, int]]) -> Non
 
 
 _CANARY_LOCK_PATH = Path("/tmp/ilc_mutation_canary.lock")
+_CANARY_SENTINEL_DIR = Path("/tmp")
+
+
+def _sentinel_path(probe_name: str) -> Path:
+    return _CANARY_SENTINEL_DIR / f"ilc_mutation_canary_dirty_{probe_name}.lock"
+
+
+def _write_dirty_sentinel(probe: Probe) -> None:
+    """Write a sentinel file before mutating so conftest can detect un-reverted state."""
+    sentinel = _sentinel_path(probe.name)
+    sentinel.write_text(str(probe.path), encoding="utf-8")
+
+
+def _clear_dirty_sentinel(probe: Probe) -> None:
+    """Remove the sentinel after a successful revert."""
+    try:
+        _sentinel_path(probe.name).unlink()
+    except FileNotFoundError:
+        pass
+
+
+def probe_sentinel_paths() -> list[Path]:
+    """Return all currently-live dirty sentinel paths (for external consumers)."""
+    return [_sentinel_path(p.name) for p in PROBES if _sentinel_path(p.name).exists()]
+
+
+def _sync_build_lib(source_path: Path) -> None:
+    """Copy source_path into build/lib/ mirror if that copy exists.
+
+    build/lib/ is not on the import path for editable installs, but if it
+    exists and holds a stale mutated copy it can be picked up accidentally
+    after a non-editable rebuild.  Keeping it in sync with the canonical
+    source costs nothing and prevents hard-to-diagnose dirty-state leaks.
+    """
+    build_copy = Path("build/lib") / source_path
+    if build_copy.exists():
+        try:
+            import shutil as _shutil
+            _shutil.copy2(str(source_path), str(build_copy))
+        except OSError:
+            pass
 
 
 def _run_full() -> int:
