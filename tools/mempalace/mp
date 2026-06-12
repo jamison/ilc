@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# mp — MemPalace query wrapper
+#
+# Selects the correct Python (dedicated mempalace runtime venv if available,
+# then system python3) and forwards all arguments to query_tiered.py.
+#
+# Usage:
+#   tools/mempalace/mp --palace out/mempalace_active_palace "your query here"
+#   tools/mempalace/mp --palace out/mempalace_active_palace --json "your query"
+#
+# This wrapper exists so callers never need to specify --python manually.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Preferred: dedicated MemPalace runtime venv (has chromadb + rank_bm25)
+MEMPALACE_PYTHON="${REPO_ROOT}/out/mempalace_runtime/bin/python"
+
+# Default palace if not specified in args
+DEFAULT_PALACE="${REPO_ROOT}/out/mempalace_active_palace"
+
+# Check if --palace is already in args; if not, prepend the default
+has_palace=0
+for arg in "$@"; do
+  if [[ "$arg" == "--palace" ]]; then
+    has_palace=1
+    break
+  fi
+done
+
+if [[ ! -x "$MEMPALACE_PYTHON" ]]; then
+  # Fallback: system python3 (will still work via BM25 if chromadb missing)
+  MEMPALACE_PYTHON="python3"
+  echo "[mp] WARNING: dedicated mempalace runtime not found at out/mempalace_runtime/bin/python" >&2
+  echo "[mp] Run: bash tools/mempalace/install_local_mempalace_env.sh" >&2
+  echo "[mp] Falling back to system python3 (BM25 only; no semantic search)" >&2
+fi
+
+if [[ $has_palace -eq 0 ]]; then
+  exec python3 "${SCRIPT_DIR}/query_tiered.py" \
+    --python "$MEMPALACE_PYTHON" \
+    --palace "$DEFAULT_PALACE" \
+    "$@"
+else
+  exec python3 "${SCRIPT_DIR}/query_tiered.py" \
+    --python "$MEMPALACE_PYTHON" \
+    "$@"
+fi
