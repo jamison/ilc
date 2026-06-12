@@ -301,9 +301,10 @@ def _prototype_data_for_command(command: str) -> dict[str, Any]:
             "verification_type": "prototype",
         },
         "balance": {
-            "account_id": "acct-prototype",
-            "ecu_balance": 0.0,
-            "pending_balance": 0.0,
+            "account_id": "prototype_compat",
+            "balance_ilc": "0",
+            "pending_balance_ilc": "0",
+            "report_mode": "prototype_compat",
         },
         "identity": {
             "lineage_id": "lineage-local",
@@ -342,6 +343,10 @@ def _default_graph_state_path() -> Path:
 
 def _default_bundle_state_path() -> Path:
     return Path(os.environ.get("ILC_BUNDLE_STATE_PATH", ".ilc_d2e07_bundle_state.json"))
+
+
+def _default_balance_state_path() -> Path:
+    return Path(os.environ.get("ILC_BALANCE_STATE_PATH", "out/ecu_live_smoke_1561.json"))
 
 
 def _ensure_local_graph_state(path: Path, command: str) -> None:
@@ -446,6 +451,113 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
         }
 
     raise ValueError(f"unknown_identity_subcommand:{subcommand}")
+
+
+def _load_balance_state(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    raw = path.read_text(encoding="utf-8")
+    data = json.loads(raw)
+    if not isinstance(data, dict):
+        raise ValueError("balance_state_not_object")
+    return data
+
+
+def _require_balance_decimal_string(value: Any, *, field_name: str) -> str:
+    from decimal import Decimal, InvalidOperation
+
+    if isinstance(value, float) or isinstance(value, bool):
+        raise ValueError(f"{field_name}_must_be_exact_decimal_string")
+    if not isinstance(value, str):
+        raise ValueError(f"{field_name}_must_be_exact_decimal_string")
+    try:
+        amount = Decimal(value)
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(f"{field_name}_must_be_exact_decimal_string") from exc
+    if not amount.is_finite():
+        raise ValueError(f"{field_name}_must_be_finite")
+    if amount < Decimal("0"):
+        raise ValueError(f"{field_name}_must_be_non_negative")
+    return format(amount.normalize(), "f")
+
+
+def _phase_1561_smoke_balance_report(
+    agent_id: str,
+    state: dict[str, Any],
+    state_path: Path,
+) -> dict[str, Any]:
+    claiming_agent_id = state.get("claiming_agent_id")
+    verifying_agent_id = state.get("verifying_agent_id")
+    known_agent_ids = [
+        value for value in (claiming_agent_id, verifying_agent_id) if isinstance(value, str)
+    ]
+    if agent_id not in known_agent_ids:
+        raise ValueError("balance_agent_not_found")
+
+    amounts = state.get("amounts")
+    if not isinstance(amounts, dict):
+        raise ValueError("balance_state_amounts_missing")
+    scheduled_emission = _require_balance_decimal_string(
+        amounts.get("scheduled_emission_pool_ilc"),
+        field_name="scheduled_emission_pool_ilc",
+    )
+
+    role = "claiming_agent" if agent_id == claiming_agent_id else "verifying_agent"
+    return {
+        "agent_id": agent_id,
+        "balance_ilc": "0",
+        "balance_status": "not_settled_no_ledger_write",
+        "claim_id": state.get("claim_id"),
+        "pending_smoke_report": {
+            "amount_ilc": scheduled_emission if role == "claiming_agent" else "0",
+            "event_hash": state.get("ecu_credit_event_hash"),
+            "is_ledger_balance": False,
+            "role": role,
+            "settlement_root_hash": state.get("settlement_root_hash"),
+        },
+        "production_emission_activated": state.get("production_emission_activated"),
+        "report_mode": "phase_1561_smoke_evidence",
+        "state_path": str(state_path),
+    }
+
+
+def _run_balance_command(args: argparse.Namespace) -> dict[str, Any]:
+    agent_id = getattr(args, "agent_id", None)
+    state_path = Path(getattr(args, "balance_state_json", None) or _default_balance_state_path())
+    if not agent_id:
+        return {
+            "account_id": "prototype_compat",
+            "balance_ilc": "0",
+            "pending_balance_ilc": "0",
+            "report_mode": "prototype_compat",
+        }
+
+    state = _load_balance_state(state_path)
+    if state is None:
+        return {
+            "agent_id": agent_id,
+            "balance_ilc": "0",
+            "balance_status": "state_file_absent",
+            "pending_smoke_report": None,
+            "report_mode": "no_local_state",
+            "state_path": str(state_path),
+        }
+    if state.get("phase") == "1561":
+        return _phase_1561_smoke_balance_report(agent_id, state, state_path)
+
+    balances = state.get("balances")
+    if isinstance(balances, dict) and agent_id in balances:
+        return {
+            "agent_id": agent_id,
+            "balance_ilc": _require_balance_decimal_string(
+                balances[agent_id],
+                field_name="balance_ilc",
+            ),
+            "balance_status": "local_state_balance",
+            "report_mode": "local_balance_state",
+            "state_path": str(state_path),
+        }
+    raise ValueError("balance_agent_not_found")
 
 
 def _read_graph_state(path: Path) -> dict[str, Any]:
@@ -1171,6 +1283,24 @@ def _build_parser() -> JsonArgumentParser:
             p_ccss_serve.add_argument("--port", type=int, default=9001)
             continue
 
+        if command == "balance":
+            balance_parser = subparsers.add_parser(
+                "balance",
+                help="Report a local per-agent ILC balance or guarded smoke evidence",
+            )
+            balance_parser.add_argument(
+                "--agent-id",
+                default="",
+                help="Agent identifier to report. Omit for legacy prototype compatibility.",
+            )
+            balance_parser.add_argument(
+                "--state-json",
+                dest="balance_state_json",
+                default=str(_default_balance_state_path()),
+                help="Local balance/evidence JSON file. Defaults to Phase 1561 smoke evidence.",
+            )
+            continue
+
         if command == "submit":
             submit_parser = subparsers.add_parser(
                 "submit",
@@ -1286,6 +1416,9 @@ def _run_top_level_command(
         from ilc_core.cli.ccss_cli import run_ccss_command
 
         data = run_ccss_command(args)
+        return _success_payload(command, data)
+    if command == "balance":
+        data = _run_balance_command(args)
         return _success_payload(command, data)
     if command == "submit":
         from ilc_core.cli.d2e_submit_cli import handle_submit, SubmitCommandError
