@@ -13,10 +13,15 @@ import argparse
 import json
 import os
 import ssl
+import sys
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Mapping
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.private_json_guardrails import (
