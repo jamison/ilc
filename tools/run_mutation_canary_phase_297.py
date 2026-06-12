@@ -228,15 +228,21 @@ PROBES = (
 
 
 def _invalidate_pyc(path: Path) -> None:
-    """Remove the .pyc for path so Python recompiles from the current source."""
-    import importlib.util
-    # Resolve to absolute path so the pyc path is unambiguous regardless of CWD.
+    """Remove all .pyc variants for path so Python recompiles from the current source.
+
+    Globs the __pycache__ directory for all files matching the module stem so
+    that different interpreter version suffixes (cpython-311, pypy3, opt-1, etc.)
+    are all evicted — not just the one returned by importlib.util.cache_from_source
+    for the currently running interpreter.
+    """
     abs_path = path.resolve()
-    cache = importlib.util.cache_from_source(str(abs_path))
-    try:
-        Path(cache).unlink()
-    except FileNotFoundError:
-        pass
+    cache_dir = abs_path.parent / "__pycache__"
+    stem = abs_path.stem
+    for pyc in cache_dir.glob(f"{stem}.*.pyc"):
+        try:
+            pyc.unlink()
+        except OSError:
+            pass
 
 
 def _run_probe(probe: Probe) -> bool:
@@ -269,12 +275,18 @@ def _run_probe(probe: Probe) -> bool:
     finally:
         try:
             probe.path.write_text(original, encoding="utf-8")
-            subprocess.run(
+            gc_result = subprocess.run(
                 ["git", "checkout", "HEAD", "--", str(probe.path)],
                 check=False,
                 capture_output=True,
                 text=True,
             )
+            if gc_result.returncode != 0:
+                print(
+                    f"[{probe.name}] restore_warning: git_checkout_nonzero"
+                    f" rc={gc_result.returncode} stderr={gc_result.stderr.strip()!r}",
+                    file=sys.stderr,
+                )
             _invalidate_pyc(probe.path)
             os.utime(probe.path, ns=original_times_ns)
             restored = True

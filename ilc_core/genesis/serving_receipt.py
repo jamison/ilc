@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Mapping
 
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
-from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
+
 from ilc_core.private_json_guardrails import (
     canonical_json,
     freeze_json_value,
@@ -343,6 +343,10 @@ def _read_bounded_response(response: object) -> bytes:
 
 
 def _known_private_peer_endpoint(endpoint: str) -> str:
+    # Deferred import to break the circular dependency:
+    # gossip_transport → centrality_delta_gossip_runtime → epistemic → genesis
+    # → serving_receipt → gossip_peer_registry → gossip_transport
+    from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint  # noqa: PLC0415
     return validate_peer_endpoint(endpoint, allow_private_address_literals=True)
 
 
