@@ -1201,6 +1201,17 @@ def _build_parser() -> JsonArgumentParser:
             p_recipe_apply.add_argument("--name", default="Local ILC User")
             p_recipe_apply.add_argument("--peer-endpoint", default="")
             p_recipe_apply.add_argument("--overwrite-identity", action="store_true")
+
+            p_gv = sidecar_subparsers.add_parser(
+                "graph-viz",
+                help="ILC epistemic graph visualization (ilc-graphics-sidecar)",
+                add_help=False,
+            )
+            p_gv.add_argument(
+                "graph_viz_args",
+                nargs=argparse.REMAINDER,
+                help="Arguments forwarded to ilc-graph-viz (run with --help for options)",
+            )
             continue
 
         if command == "ccss":
@@ -1476,6 +1487,44 @@ def _value_error_result(command: str, exc: ValueError) -> tuple[int, dict[str, A
 
 
 def main() -> int:
+    # Short-circuit sidecar passthrough commands before argparse so that
+    # sidecar-specific flags (e.g. --open, --summary) are not consumed by
+    # the top-level parser.  Pattern: ilc sidecar <name> [args...]
+    #
+    # Convention: every external sidecar package exposes a Python module
+    # named ilc_sidecar_<snake_name> with a main(argv) entry point.
+    # The CLI name is <kebab-name>, e.g.:
+    #   ilc sidecar graph-viz --open   →  ilc_sidecar_graph_viz.main(["--open"])
+    #   ilc sidecar ccss-monitor ...   →  ilc_sidecar_ccss_monitor.main([...])
+    #
+    # Built-in sidecars (graph-viz) are registered here explicitly.
+    _SIDECAR_PASSTHROUGH: dict[str, str] = {
+        "graph-viz": "ilc_graph_viz.__main__",
+    }
+    argv = sys.argv[1:]
+    if len(argv) >= 2 and argv[0] == "sidecar" and argv[1] in _SIDECAR_PASSTHROUGH:
+        sidecar_name = argv[1]
+        module_path = _SIDECAR_PASSTHROUGH[sidecar_name]
+        sidecar_argv = argv[2:]
+        try:
+            import importlib
+            mod = importlib.import_module(module_path)
+            raise SystemExit(mod.main(sidecar_argv))
+        except ModuleNotFoundError:
+            _write_json_payload(
+                {
+                    "ok": False,
+                    "error": True,
+                    "code": "sidecar_not_installed",
+                    "message": (
+                        f"sidecar '{sidecar_name}' is not installed. "
+                        f"Run install.sh from the ilc-graphics-sidecar repo."
+                    ),
+                },
+                stderr=True,
+            )
+            return 1
+
     parser = _build_parser()
     args = parser.parse_args()
 
