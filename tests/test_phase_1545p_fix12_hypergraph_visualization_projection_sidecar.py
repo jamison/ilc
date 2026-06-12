@@ -102,4 +102,5 @@ def test_privacy_public_serving_and_canonical_mutation_non_claims() -> None:
     assert "phase_1545p_fix12_hypergraph_visualization_projection_sidecar_spec_committed" in walkthrough
     assert "Phase 1545p-Fix12" in status
     assert "Phase 1545p-Fix12" in planning
-    assert "⬅ CURRENT" in planning.split("Phase 1545p-Fix12", 1)[1].splitlines()[0]
+    fix12_line = planning.split("Phase 1545p-Fix12", 1)[1].splitlines()[0]
+    assert "⬅ CURRENT" in fix12_line or "Superseded as current frontier" in fix12_line
