@@ -89,4 +89,5 @@ def test_non_claims_and_frontier_docs_record_fix13() -> None:
     assert "phase_1545p_fix13_agentic_graph_grammar_axiom_inventory_committed" in walkthrough
     assert "Phase 1545p-Fix13" in status
     assert "Phase 1545p-Fix13" in planning
-    assert "⬅ CURRENT" in planning.split("Phase 1545p-Fix13", 1)[1].splitlines()[0]
+    fix13_line = planning.split("Phase 1545p-Fix13", 1)[1].splitlines()[0]
+    assert "⬅ CURRENT" in fix13_line or "Superseded as current frontier" in fix13_line
