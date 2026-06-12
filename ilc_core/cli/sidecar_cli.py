@@ -42,6 +42,27 @@ def _sidecar_by_id(sidecar_id: str) -> dict[str, Any]:
     raise ValueError(f"sidecar_not_found:{sidecar_id}")
 
 
+_EXTERNAL_SIDECARS: list[dict[str, Any]] = [
+    {
+        "sidecar_id": "graph-viz",
+        "kind": "external",
+        "description": "Epistemic graph visualization — interactive HTML, community detection, PageRank",
+        "invoke": "ilc sidecar graph-viz [OPTIONS]",
+        "install": "bash ilc-graphics-sidecar/install.sh",
+        "module": "ilc_graph_viz.__main__",
+    },
+]
+
+
+def _list_external_sidecars() -> list[dict[str, Any]]:
+    result = []
+    for entry in _EXTERNAL_SIDECARS:
+        import importlib.util
+        installed = importlib.util.find_spec(entry["module"].split(".")[0]) is not None
+        result.append({**entry, "installed": installed})
+    return result
+
+
 def _recipe_by_id(recipe_id: str) -> dict[str, Any]:
     try:
         return dict(_RECIPES[recipe_id])
@@ -57,15 +78,18 @@ def run_sidecar_command(args: argparse.Namespace) -> dict[str, Any]:
 
     if subcommand == "list":
         manifest = _manifest()
+        protocol_sidecars = [
+            {
+                "implementation_status": item["implementation_status"],
+                "public_serving_enabled": item["public_serving_enabled"],
+                "sidecar_id": item["sidecar_id"],
+                "kind": "protocol",
+            }
+            for item in manifest["sidecars"]
+        ]
+        external_sidecars = _list_external_sidecars()
         return {
-            "sidecars": [
-                {
-                    "implementation_status": item["implementation_status"],
-                    "public_serving_enabled": item["public_serving_enabled"],
-                    "sidecar_id": item["sidecar_id"],
-                }
-                for item in manifest["sidecars"]
-            ],
+            "sidecars": protocol_sidecars + external_sidecars,
             "subcommand": "list",
             "version": SIDECAR_CLI_VERSION,
         }
