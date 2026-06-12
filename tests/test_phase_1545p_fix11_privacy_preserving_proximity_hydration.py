@@ -97,4 +97,5 @@ def test_non_claims_and_frontier_docs_record_fix11() -> None:
     assert "phase_1545p_fix11_privacy_preserving_proximity_hydration_committed" in walkthrough
     assert "Phase 1545p-Fix11" in status
     assert "Phase 1545p-Fix11" in planning
-    assert "⬅ CURRENT" in planning.split("Phase 1545p-Fix11", 1)[1].splitlines()[0]
+    fix11_line = planning.split("Phase 1545p-Fix11", 1)[1].splitlines()[0]
+    assert "⬅ CURRENT" in fix11_line or "Superseded as current frontier" in fix11_line
