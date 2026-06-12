@@ -1494,6 +1494,7 @@ def main() -> int:
     # Built-in sidecars (graph-viz) are registered here explicitly.
     _SIDECAR_PASSTHROUGH: dict[str, str] = {
         "graph-viz": "ilc_graph_viz.__main__",
+        "genesis-atlas": "ilc_genesis_atlas.__main__",
     }
     argv = sys.argv[1:]
     if len(argv) >= 2 and argv[0] == "sidecar" and argv[1] in _SIDECAR_PASSTHROUGH:
