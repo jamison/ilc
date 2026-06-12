@@ -51,6 +51,14 @@ _EXTERNAL_SIDECARS: list[dict[str, Any]] = [
         "install": "bash ilc-graphics-sidecar/install.sh",
         "module": "ilc_graph_viz.__main__",
     },
+    {
+        "sidecar_id": "genesis-atlas",
+        "kind": "external",
+        "description": "Genesis Atlas — semantic hypergraph optimization via AutoResearch loop (Karpathy pattern)",
+        "invoke": "ilc sidecar genesis-atlas [OPTIONS]",
+        "install": "bash ilc-genesis-atlas-sidecar/install.sh",
+        "module": "ilc_genesis_atlas.__main__",
+    },
 ]
 
 
