@@ -1202,16 +1202,10 @@ def _build_parser() -> JsonArgumentParser:
             p_recipe_apply.add_argument("--peer-endpoint", default="")
             p_recipe_apply.add_argument("--overwrite-identity", action="store_true")
 
-            p_gv = sidecar_subparsers.add_parser(
-                "graph-viz",
-                help="ILC epistemic graph visualization (ilc-graphics-sidecar)",
-                add_help=False,
-            )
-            p_gv.add_argument(
-                "graph_viz_args",
-                nargs=argparse.REMAINDER,
-                help="Arguments forwarded to ilc-graph-viz (run with --help for options)",
-            )
+            # External sidecars are dispatched via the _SIDECAR_PASSTHROUGH
+            # short-circuit in main() before argparse runs — they do NOT
+            # appear here as subcommands so ilc sidecar --help stays clean.
+            # Use `ilc sidecar list` to discover available sidecars.
             continue
 
         if command == "ccss":
