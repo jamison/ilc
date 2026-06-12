@@ -6,8 +6,64 @@ Required because test files use subprocess.run(["python3", ...]) directly.
 """
 
 import os
+import subprocess
 import sys
 from pathlib import Path
+
+
+def _reset_canary_dirty_files() -> None:
+    """If the mutation canary left sentinel files, hard-reset affected probe targets.
+
+    The canary writes /tmp/ilc_mutation_canary_dirty_<probe>.lock before mutating a
+    file and removes it only after a successful revert.  If the process was killed
+    mid-mutation the sentinel survives and we must restore the file before tests run.
+    This prevents stale mutation tokens (e.g. v9.9, REMOVED_FOR_MUTATION) from
+    poisoning the test session.
+    """
+    sentinel_dir = Path("/tmp")
+    dirty_sentinels = list(sentinel_dir.glob("ilc_mutation_canary_dirty_*.lock"))
+    if not dirty_sentinels:
+        return
+
+    # Collect probe target paths from sentinel contents.
+    paths_to_reset: set[Path] = set()
+    for sentinel in dirty_sentinels:
+        try:
+            target = Path(sentinel.read_text(encoding="utf-8").strip())
+            if target.exists():
+                paths_to_reset.add(target)
+        except OSError:
+            pass
+
+    for target in paths_to_reset:
+        result = subprocess.run(
+            ["git", "checkout", "HEAD", "--", str(target)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        # Clear all pyc variants for this module.
+        cache_dir = target.parent / "__pycache__"
+        for pyc in cache_dir.glob(f"{target.stem}.*.pyc"):
+            try:
+                pyc.unlink()
+            except OSError:
+                pass
+        if result.returncode == 0:
+            # Remove the sentinel only after the file is confirmed clean.
+            for sentinel in dirty_sentinels:
+                try:
+                    recorded = Path(sentinel.read_text(encoding="utf-8").strip())
+                    if recorded == target:
+                        sentinel.unlink()
+                except OSError:
+                    pass
+        else:
+            print(
+                f"conftest: canary_recovery_warning: git checkout failed for {target}"
+                f" rc={result.returncode}",
+                file=sys.stderr,
+            )
 
 
 def pytest_configure(config):
@@ -36,6 +92,10 @@ def pytest_sessionstart(session):  # noqa: ARG001
     *before* centrality_delta_gossip_runtime so that gossip_transport is fully
     initialized in sys.modules when the circular path tries to re-import it.
     """
+    # Recover any probe files the mutation canary left dirty (e.g. after SIGKILL).
+    # Must run before module pre-warm so dirty source files are reverted first.
+    _reset_canary_dirty_files()
+
     try:
         # Warm up modules that appear in the circular import path first.
         # The chain gossip_transport → centrality_delta_gossip_runtime →
