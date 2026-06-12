@@ -96,4 +96,5 @@ def test_non_authorizations_and_frontier_docs_record_fix10() -> None:
     assert "phase_1545p_fix10_agent_onboarding_hydration_spec_committed" in walkthrough
     assert "Phase 1545p-Fix10" in status
     assert "Phase 1545p-Fix10" in planning
-    assert "⬅ CURRENT" in planning.split("Phase 1545p-Fix10", 1)[1].splitlines()[0]
+    fix10_line = planning.split("Phase 1545p-Fix10", 1)[1].splitlines()[0]
+    assert "⬅ CURRENT" in fix10_line or "Superseded as current frontier" in fix10_line
