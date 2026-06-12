@@ -54,6 +54,14 @@ class _FakeOpener:
         return _FakeResponse(self.body)
 
 
+class _RaisingOpener:
+    def __init__(self, error: BaseException) -> None:
+        self.error = error
+
+    def open(self, request: object, *, timeout: int):
+        raise self.error
+
+
 def _layer0_fixture():
     return generate_layer0_protocol_bundle(
         bundle_id="phase1559-layer0",
@@ -210,6 +218,30 @@ def test_serving_response_size_is_bounded(monkeypatch: pytest.MonkeyPatch) -> No
 
     with pytest.raises(ServingReceiptError, match="serving_receipt_response_too_large"):
         serve_genesis_bundle("https://100.64.0.13:8443", layer0)
+
+
+def test_serving_response_rejects_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    layer0 = _layer0_fixture()
+
+    def fake_build_opener(*_args: object) -> _FakeOpener:
+        return _FakeOpener(b"{not-json", {})
+
+    monkeypatch.setattr(serving_receipt.urllib.request, "build_opener", fake_build_opener)
+
+    with pytest.raises(ServingReceiptError, match="serving_receipt_response_invalid_json"):
+        serve_genesis_bundle("https://100.64.0.15:8443", layer0)
+
+
+def test_serving_transport_os_errors_are_stable(monkeypatch: pytest.MonkeyPatch) -> None:
+    layer0 = _layer0_fixture()
+
+    def fake_build_opener(*_args: object) -> _RaisingOpener:
+        return _RaisingOpener(TimeoutError("timed out"))
+
+    monkeypatch.setattr(serving_receipt.urllib.request, "build_opener", fake_build_opener)
+
+    with pytest.raises(ServingReceiptError, match="serving_receipt_transport_error"):
+        serve_genesis_bundle("https://100.64.0.16:8443", layer0)
 
 
 def test_known_peer_surface_rejects_non_https_endpoint() -> None:

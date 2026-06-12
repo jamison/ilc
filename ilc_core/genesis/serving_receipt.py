@@ -293,11 +293,14 @@ def _post_json(url: str, payload: Mapping[str, object]) -> dict[str, object]:
             raw = _read_bounded_response(response)
     except urllib.error.HTTPError as exc:
         raise ServingReceiptError("serving_receipt_http_error") from exc
-    except urllib.error.URLError as exc:
+    except (urllib.error.URLError, OSError, TimeoutError) as exc:
         raise ServingReceiptError("serving_receipt_transport_error") from exc
     if raw == b"":
         return {}
-    parsed = json.loads(raw.decode("utf-8"))
+    try:
+        parsed = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ServingReceiptError("serving_receipt_response_invalid_json") from exc
     if not isinstance(parsed, dict):
         raise ServingReceiptError("serving_receipt_response_not_object")
     try:
