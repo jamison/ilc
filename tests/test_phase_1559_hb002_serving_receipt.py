@@ -154,18 +154,32 @@ def test_write_serving_receipt_json_uses_canonical_atomic_output(tmp_path: Path)
 
 def test_serve_genesis_bundle_posts_to_known_peer_with_timeout(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     layer0 = _layer0_fixture()
     layer1 = _layer1_fixture(layer0)
     capture: dict[str, object] = {}
+    ca_file = tmp_path / "phase1560-private-ca.pem"
+    ca_file.write_text("not-a-real-ca-for-mocked-opener\n", encoding="utf-8")
 
     def fake_build_opener(*_args: object) -> _FakeOpener:
         return _FakeOpener(b'{"accepted":true}', capture)
 
     monkeypatch.setattr(serving_receipt.urllib.request, "build_opener", fake_build_opener)
+    monkeypatch.setattr(
+        serving_receipt.ssl,
+        "create_default_context",
+        lambda *, cafile=None: capture.setdefault("cafile", cafile),
+    )
 
-    receipt = serve_genesis_bundle("https://100.64.0.10:8443", layer0, layer1)
+    receipt = serve_genesis_bundle(
+        "https://100.64.0.10:8443",
+        layer0,
+        layer1,
+        ca_file=ca_file,
+    )
 
+    assert capture["cafile"] == str(ca_file)
     assert capture["timeout"] == SERVING_HTTP_TIMEOUT_SECONDS
     assert capture["url"] == "https://100.64.0.10:8443/ilc/genesis/serve"
     assert receipt.served_layer == "layer0+layer1"

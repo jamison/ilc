@@ -167,6 +167,8 @@ def serve_genesis_bundle(
     peer_tailscale_url: str,
     layer0: object,
     layer1: object | None = None,
+    *,
+    ca_file: str | Path | None = None,
 ) -> ServingReceipt:
     """Send Layer 0/1 bundle material to a known private peer.
 
@@ -193,13 +195,18 @@ def serve_genesis_bundle(
         "receipt": receipt.to_dict(),
         "schema_version": SERVING_RECEIPT_SCHEMA_VERSION,
     }
-    response = _post_json(endpoint + SERVING_REQUEST_PATH, request_payload)
+    response = _post_json(endpoint + SERVING_REQUEST_PATH, request_payload, ca_file=ca_file)
     if response and response.get("accepted") is False:
         raise ServingReceiptError("serving_receipt_peer_rejected_bundle")
     return receipt
 
 
-def verify_received_bundle(peer_tailscale_url: str, expected_layer0_cid: str) -> bool:
+def verify_received_bundle(
+    peer_tailscale_url: str,
+    expected_layer0_cid: str,
+    *,
+    ca_file: str | Path | None = None,
+) -> bool:
     endpoint = _known_private_peer_endpoint(peer_tailscale_url)
     _require_cidv1(expected_layer0_cid, "serving_receipt_invalid_expected_layer0_cid")
     response = _post_json(
@@ -208,6 +215,7 @@ def verify_received_bundle(peer_tailscale_url: str, expected_layer0_cid: str) ->
             "expected_layer0_cidv1": expected_layer0_cid,
             "schema_version": SERVING_RECEIPT_SCHEMA_VERSION,
         },
+        ca_file=ca_file,
     )
     if not isinstance(response, dict):
         return False
@@ -274,7 +282,12 @@ def _receipt_payload(
     return payload
 
 
-def _post_json(url: str, payload: Mapping[str, object]) -> dict[str, object]:
+def _post_json(
+    url: str,
+    payload: Mapping[str, object],
+    *,
+    ca_file: str | Path | None = None,
+) -> dict[str, object]:
     body = canonical_json(payload, float_token="serving_receipt_float_not_allowed").encode(
         "utf-8"
     )
@@ -286,7 +299,7 @@ def _post_json(url: str, payload: Mapping[str, object]) -> dict[str, object]:
     )
     opener = urllib.request.build_opener(
         _NoRedirectHandler,
-        urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+        urllib.request.HTTPSHandler(context=_client_ssl_context(ca_file=ca_file)),
     )
     try:
         with opener.open(request, timeout=SERVING_HTTP_TIMEOUT_SECONDS) as response:
@@ -309,6 +322,12 @@ def _post_json(url: str, payload: Mapping[str, object]) -> dict[str, object]:
         raise ServingReceiptError(str(exc)) from exc
     normalized = freeze_json_value(parsed)
     return thaw_json_value(normalized)  # type: ignore[return-value]
+
+
+def _client_ssl_context(*, ca_file: str | Path | None = None) -> ssl.SSLContext:
+    if ca_file is None:
+        return ssl.create_default_context()
+    return ssl.create_default_context(cafile=str(ca_file))
 
 
 def _read_bounded_response(response: object) -> bytes:
