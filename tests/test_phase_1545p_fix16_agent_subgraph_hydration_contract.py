@@ -125,5 +125,4 @@ def test_frontier_docs_record_fix16() -> None:
     assert "Phase 1545p-Fix16" in status
     assert "Phase 1545p-Fix16" in planning
     fix16_line = planning.split("Phase 1545p-Fix16", 1)[1].splitlines()[0]
-    assert "⬅ CURRENT" in fix16_line
-
+    assert "⬅ CURRENT" in fix16_line or "Superseded as current frontier by Fix18" in fix16_line
