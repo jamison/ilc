@@ -115,4 +115,20 @@ def run_sidecar_command(args: argparse.Namespace) -> dict[str, Any]:
         result["version"] = SIDECAR_CLI_VERSION
         return result
 
+    if subcommand == "graph-viz":
+        _run_graph_viz(getattr(args, "graph_viz_args", []))
+        return {"subcommand": "graph-viz", "version": SIDECAR_CLI_VERSION}
+
     raise ValueError(f"unknown_sidecar_subcommand:{subcommand}")
+
+
+def _run_graph_viz(argv: list[str]) -> None:
+    """Delegate to ilc_graph_viz.__main__.main(), raising if not installed."""
+    try:
+        from ilc_graph_viz.__main__ import main as _gv_main  # type: ignore[import]
+    except ModuleNotFoundError as exc:
+        raise ValueError(
+            "graph_viz_sidecar_not_installed: run install.sh from the "
+            "ilc-graphics-sidecar repo to install ilc_graph_viz"
+        ) from exc
+    raise SystemExit(_gv_main(argv))
