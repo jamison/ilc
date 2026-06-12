@@ -19,11 +19,6 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
-from ilc_core.genesis.serving_receipt import (
-    SERVING_RECEIPT_SCHEMA_VERSION,
-    SERVING_REQUEST_PATH,
-    VERIFY_REQUEST_PATH,
-)
 from ilc_core.private_json_guardrails import (
     canonical_json,
     reject_float,
@@ -34,6 +29,9 @@ from ilc_core.private_json_guardrails import (
 MAX_REQUEST_BYTES = 1_048_576
 GENESIS_RECEIVER_STATUS_PATH = "/ilc/genesis/status"
 GENESIS_RECEIVER_VERSION = "genesis_serving_receiver_1560_preflight.v0.1"
+SERVING_RECEIPT_SCHEMA_VERSION = "serving_receipt_1559.v0.1"
+SERVING_REQUEST_PATH = "/ilc/genesis/serve"
+VERIFY_REQUEST_PATH = "/ilc/genesis/verify"
 
 
 class GenesisReceiverError(ValueError):
