@@ -1,0 +1,3846 @@
+{
+  "classification_values": [
+    "closed_true",
+    "closed_false",
+    "still_blocking",
+    "default_off_guard",
+    "historical_superseded",
+    "code_style_noise",
+    "needs_direct_read",
+    "possible_orphan"
+  ],
+  "entries": [
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0640_g8_r3_numeric_companion_cleanup_walkthrough.md",
+      "line_number": 34,
+      "phase": "640",
+      "surrounding_text": "`allow_nan=False`",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0644_g8_canonical_json_and_signature_boundary_hardening_walkthrough.md",
+      "line_number": 6,
+      "phase": "644",
+      "surrounding_text": "The phase removed `sort_keys=False` from the touched machine-verifiable or",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0656_g8_canon_export_and_registry_signature_reproducibility_walkthrough.md",
+      "line_number": 36,
+      "phase": "656",
+      "surrounding_text": "sorted-key, compact-separator, `allow_nan=False` JSON.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0792_h010_embedding_pipeline.md",
+      "line_number": 55,
+      "phase": "792",
+      "surrounding_text": "- canonical JSON with `sort_keys=True` and `allow_nan=False`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0792_h010_embedding_pipeline.md",
+      "line_number": 55,
+      "phase": "792",
+      "surrounding_text": "- canonical JSON with `sort_keys=True` and `allow_nan=False`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_0813_checklist_v0_2.md",
+      "line_number": 25,
+      "phase": "813",
+      "surrounding_text": "`pre_public_rc_obligation: true`.",
+      "token": "pre_public_rc_obligation"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0946_h012_epoch_attribution_settle_runtime_walkthrough.md",
+      "line_number": 67,
+      "phase": "946",
+      "surrounding_text": "@dataclass(frozen=True)",
+      "token": "frozen"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0947_h012_ratification_evidence_walkthrough.md",
+      "line_number": 126,
+      "phase": "947",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0947_h012_ratification_evidence_walkthrough.md",
+      "line_number": 126,
+      "phase": "947",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0954_g8_constitution_cluster_a_edge_link_controlled_migration_phase2_walkthrough.md",
+      "line_number": 42,
+      "phase": "954",
+      "surrounding_text": "- Added `self._legacy_edge_mutation_warned: bool = False` in graph state.",
+      "token": "bool"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0960_g8_constitution_cluster_a_typed_return_contract_rollout_sim_harness_override_and_settlement_contracts_phase6_walkthrough.md",
+      "line_number": 43,
+      "phase": "960",
+      "surrounding_text": "- `SettlementMetrics` (`TypedDict`, `total=False`) with known settlement keys.",
+      "token": "total"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0966_g8_constitution_cluster_a_typed_return_contract_rollout_replay_proof_cli_boundary_contracts_phase12_walkthrough.md",
+      "line_number": 49,
+      "phase": "966",
+      "surrounding_text": "- `_emit_ops_contract(contract: OpsContract, pretty: bool, quiet: bool, force_stdout: bool = False) -> None`",
+      "token": "bool"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0966_g8_constitution_cluster_a_typed_return_contract_rollout_replay_proof_cli_boundary_contracts_phase12_walkthrough.md",
+      "line_number": 55,
+      "phase": "966",
+      "surrounding_text": "- unchanged deterministic serialization (`sort_keys=True`, stable compact vs pretty output)",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0969_g8_constitution_cluster_a_typed_return_contract_rollout_replay_proof_cli_error_emission_contracts_phase15_walkthrough.md",
+      "line_number": 41,
+      "phase": "969",
+      "surrounding_text": "- `CliErrorPayload` (`TypedDict`, `total=False`) with keys `error`, `file`, `detail`",
+      "token": "total"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0987_g8_constitution_cluster_a_silent_exception_diagnostic_logging_hardening_walkthrough.md",
+      "line_number": 12,
+      "phase": "987",
+      "surrounding_text": "This phase added diagnostic debug logging to silent broad exception handlers in targeted replay-proof protocol modules. Every touched handler now logs exception context with `exc_info=True` while preserving existing control flow and return behavior. This is diagnostic-only hardening; runtime semantics remain unchanged.",
+      "token": "exc_info"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0987_g8_constitution_cluster_a_silent_exception_diagnostic_logging_hardening_walkthrough.md",
+      "line_number": 18,
+      "phase": "987",
+      "surrounding_text": "1. Add `logger.debug(message, exc, exc_info=True)` to silent `except Exception` handlers in scoped protocol modules.",
+      "token": "exc_info"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0987_g8_constitution_cluster_a_silent_exception_diagnostic_logging_hardening_walkthrough.md",
+      "line_number": 53,
+      "phase": "987",
+      "surrounding_text": "- Converted each silent broad handler to `except Exception as exc:` and added a site-specific `logger.debug(message, exc, exc_info=True)` call.",
+      "token": "exc_info"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_0999_g8_constitution_cluster_a_cli_key_loader_dedupe_and_contract_narrowing_walkthrough.md",
+      "line_number": 51,
+      "phase": "999",
+      "surrounding_text": "- attempts strict base64 decode (`validate=True`),",
+      "token": "validate"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1011_g8_constitution_cluster_a_broad_exception_boundary_narrowing_and_policy_lock_walkthrough.md",
+      "line_number": 62,
+      "phase": "1011",
+      "surrounding_text": "- `base64.b64decode(sig_b64, validate=True)`",
+      "token": "validate"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 120,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 120,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 142,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 142,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 189,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 189,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 199,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1101_window_945_1101_closure_gate_walkthrough.md",
+      "line_number": 199,
+      "phase": "1101",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1160_claim_composition_projection_build_walkthrough.md",
+      "line_number": 63,
+      "phase": "1160",
+      "surrounding_text": "Implement with: `sort_keys=True`, `allow_nan=False`, stable separators.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1160_claim_composition_projection_build_walkthrough.md",
+      "line_number": 63,
+      "phase": "1160",
+      "surrounding_text": "Implement with: `sort_keys=True`, `allow_nan=False`, stable separators.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1170_sim_spectral_05_track_b_build_walkthrough.md",
+      "line_number": 137,
+      "phase": "1170",
+      "surrounding_text": "5. **Determinism:** Two runs must produce byte-identical output (`sort_keys=True` for",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1177_cdl_085_prelock_walkthrough.md",
+      "line_number": 154,
+      "phase": "1177",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1177_cdl_085_prelock_walkthrough.md",
+      "line_number": 154,
+      "phase": "1177",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1177_cdl_085_prelock_walkthrough.md",
+      "line_number": 163,
+      "phase": "1177",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1177_cdl_085_prelock_walkthrough.md",
+      "line_number": 163,
+      "phase": "1177",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1178_v0_2_signing_ceremony_walkthrough.md",
+      "line_number": 140,
+      "phase": "1178",
+      "surrounding_text": "content = json.dumps(data, sort_keys=True).encode()",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1182_window_1176_1182_closure_gate_walkthrough.md",
+      "line_number": 127,
+      "phase": "1182",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1182_window_1176_1182_closure_gate_walkthrough.md",
+      "line_number": 127,
+      "phase": "1182",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1184_cdl_085_prelock_hardening_walkthrough.md",
+      "line_number": 52,
+      "phase": "1184",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1184_cdl_085_prelock_hardening_walkthrough.md",
+      "line_number": 52,
+      "phase": "1184",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1184_cdl_085_prelock_hardening_walkthrough.md",
+      "line_number": 62,
+      "phase": "1184",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1184_cdl_085_prelock_hardening_walkthrough.md",
+      "line_number": 62,
+      "phase": "1184",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1185_cdl_085_ratification_walkthrough.md",
+      "line_number": 183,
+      "phase": "1185",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1185_cdl_085_ratification_walkthrough.md",
+      "line_number": 183,
+      "phase": "1185",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1190_window_1183_1190_closure_gate_walkthrough.md",
+      "line_number": 102,
+      "phase": "1190",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1190_window_1183_1190_closure_gate_walkthrough.md",
+      "line_number": 102,
+      "phase": "1190",
+      "surrounding_text": "capture_output=True, text=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1197_canon_bundle_signing_repair_walkthrough.md",
+      "line_number": 67,
+      "phase": "1197",
+      "surrounding_text": "`USE_TESTING_CANON_EXPORT_SNAPSHOT = True`, to build bundles from that valid snapshot.",
+      "token": "USE_TESTING_CANON_EXPORT_SNAPSHOT"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1201_tier3_runtime_linkage_walkthrough.md",
+      "line_number": 75,
+      "phase": "1201",
+      "surrounding_text": "return json.dumps(record, sort_keys=True, allow_nan=False, separators=(\",\", \":\"))",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1201_tier3_runtime_linkage_walkthrough.md",
+      "line_number": 75,
+      "phase": "1201",
+      "surrounding_text": "return json.dumps(record, sort_keys=True, allow_nan=False, separators=(\",\", \":\"))",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1201_tier3_runtime_linkage_walkthrough.md",
+      "line_number": 90,
+      "phase": "1201",
+      "surrounding_text": "- JSON serialization must use `sort_keys=True, allow_nan=False`",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1201_tier3_runtime_linkage_walkthrough.md",
+      "line_number": 90,
+      "phase": "1201",
+      "surrounding_text": "- JSON serialization must use `sort_keys=True, allow_nan=False`",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1202_persistent_rate_limiter_walkthrough.md",
+      "line_number": 58,
+      "phase": "1202",
+      "surrounding_text": "# canonical JSON: sort_keys=True, allow_nan=False, separators=(\",\",\":\")",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1202_persistent_rate_limiter_walkthrough.md",
+      "line_number": 58,
+      "phase": "1202",
+      "surrounding_text": "# canonical JSON: sort_keys=True, allow_nan=False, separators=(\",\",\":\")",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1202_persistent_rate_limiter_walkthrough.md",
+      "line_number": 96,
+      "phase": "1202",
+      "surrounding_text": "- Canonical JSON: `json.dumps(..., sort_keys=True, allow_nan=False, separators=(\",\", \":\"))`",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1202_persistent_rate_limiter_walkthrough.md",
+      "line_number": 96,
+      "phase": "1202",
+      "surrounding_text": "- Canonical JSON: `json.dumps(..., sort_keys=True, allow_nan=False, separators=(\",\", \":\"))`",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1222_reciprocal_fetch_admission_spec_walkthrough.md",
+      "line_number": 208,
+      "phase": "1222",
+      "surrounding_text": "- Safety constraints (read-only, max bounds, `sort_keys=True`, `allow_nan=False`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1222_reciprocal_fetch_admission_spec_walkthrough.md",
+      "line_number": 208,
+      "phase": "1222",
+      "surrounding_text": "- Safety constraints (read-only, max bounds, `sort_keys=True`, `allow_nan=False`,",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1226_commit_epoch_causal_frontier_mapping_spec_walkthrough.md",
+      "line_number": 85,
+      "phase": "1226",
+      "surrounding_text": "policy (JSON, `sort_keys=True`, no float values, no `null` for required fields).",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1228_cdl_087_prelock_walkthrough.md",
+      "line_number": 165,
+      "phase": "1228",
+      "surrounding_text": "Output format: JSON with `sort_keys=True`; epoch sequence number as the time axis; no",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1228_cdl_087_prelock_walkthrough.md",
+      "line_number": 361,
+      "phase": "1228",
+      "surrounding_text": "capture_output=True, text=True, check=True",
+      "token": "capture_output"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1228_cdl_087_prelock_walkthrough.md",
+      "line_number": 361,
+      "phase": "1228",
+      "surrounding_text": "capture_output=True, text=True, check=True",
+      "token": "text"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1228_cdl_087_prelock_walkthrough.md",
+      "line_number": 361,
+      "phase": "1228",
+      "surrounding_text": "capture_output=True, text=True, check=True",
+      "token": "check"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1229_agent_graph_projection_runtime_walkthrough.md",
+      "line_number": 46,
+      "phase": "1229",
+      "surrounding_text": "- deterministic JSON export with `sort_keys=True`, compact separators, and `allow_nan=False`",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1229_agent_graph_projection_runtime_walkthrough.md",
+      "line_number": 46,
+      "phase": "1229",
+      "surrounding_text": "- deterministic JSON export with `sort_keys=True`, compact separators, and `allow_nan=False`",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1235_g8_commit_epoch_canonical_runtime_mutation_walkthrough.md",
+      "line_number": 50,
+      "phase": "1235",
+      "surrounding_text": "`sort_keys=True` and `allow_nan=False`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1235_g8_commit_epoch_canonical_runtime_mutation_walkthrough.md",
+      "line_number": 50,
+      "phase": "1235",
+      "surrounding_text": "`sort_keys=True` and `allow_nan=False`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1236_fix2_commit_epoch_quorum_projection_walkthrough.md",
+      "line_number": 92,
+      "phase": "1236",
+      "surrounding_text": "sort_keys=True",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1236_fix2_commit_epoch_quorum_projection_walkthrough.md",
+      "line_number": 93,
+      "phase": "1236",
+      "surrounding_text": "allow_nan=False",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1236_fix3_commit_epoch_causal_frontier_projection_walkthrough.md",
+      "line_number": 102,
+      "phase": "1236",
+      "surrounding_text": "sort_keys=True",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1236_fix3_commit_epoch_causal_frontier_projection_walkthrough.md",
+      "line_number": 103,
+      "phase": "1236",
+      "surrounding_text": "allow_nan=False",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1237_fix6_canonical_export_bundle_walkthrough.md",
+      "line_number": 36,
+      "phase": "1237",
+      "surrounding_text": "- `sort_keys=True`",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1237_fix6_canonical_export_bundle_walkthrough.md",
+      "line_number": 37,
+      "phase": "1237",
+      "surrounding_text": "- `allow_nan=False`",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1238_g8_sim_fetch_01_harness_walkthrough.md",
+      "line_number": 149,
+      "phase": "1238",
+      "surrounding_text": "| CDL-087 ratification not authorized | `cdl_087_ratification_authorized: false` in all outputs |",
+      "token": "cdl_087_ratification_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1243_gap14_package_profile_contracts_walkthrough.md",
+      "line_number": 83,
+      "phase": "1243",
+      "surrounding_text": "- exports canonical JSON with `sort_keys=True`, `allow_nan=False`, and compact",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1243_gap14_package_profile_contracts_walkthrough.md",
+      "line_number": 83,
+      "phase": "1243",
+      "surrounding_text": "- exports canonical JSON with `sort_keys=True`, `allow_nan=False`, and compact",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_walkthrough.md",
+      "line_number": 49,
+      "phase": "1245",
+      "surrounding_text": "openclaw_dependency_required = false",
+      "token": "openclaw_dependency_required"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_walkthrough.md",
+      "line_number": 51,
+      "phase": "1245",
+      "surrounding_text": "public_p2p_enabled = false",
+      "token": "public_p2p_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_walkthrough.md",
+      "line_number": 52,
+      "phase": "1245",
+      "surrounding_text": "public_claimability_enabled = false",
+      "token": "public_claimability_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_walkthrough.md",
+      "line_number": 53,
+      "phase": "1245",
+      "surrounding_text": "final_public_rc_claim = false",
+      "token": "final_public_rc_claim"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_walkthrough.md",
+      "line_number": 55,
+      "phase": "1245",
+      "surrounding_text": "digitalocean_openclaw_droplet_private_target = true",
+      "token": "digitalocean_openclaw_droplet_private_target"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1250_fix1_rc_frontier_gap_audit_walkthrough.md",
+      "line_number": 50,
+      "phase": "1250",
+      "surrounding_text": "- canonicalizes JSON with `sort_keys=True` and `allow_nan=False`;",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1250_fix1_rc_frontier_gap_audit_walkthrough.md",
+      "line_number": 50,
+      "phase": "1250",
+      "surrounding_text": "- canonicalizes JSON with `sort_keys=True` and `allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1251_gap14_package_ci_profile_audit_walkthrough.md",
+      "line_number": 64,
+      "phase": "1251",
+      "surrounding_text": "separators, and `allow_nan=False`. File digests in the measurement artifact are",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1252_gap13_claimability_resolution_boundary_walkthrough.md",
+      "line_number": 109,
+      "phase": "1252",
+      "surrounding_text": "| `ilc_core/ledger/settlement_verification.py:56` | Security/audit-binding evidence hash | Hardened to full SHA-256 over canonical JSON with `sort_keys=True`, compact separators, and `allow_nan=False`. |",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1252_gap13_claimability_resolution_boundary_walkthrough.md",
+      "line_number": 109,
+      "phase": "1252",
+      "surrounding_text": "| `ilc_core/ledger/settlement_verification.py:56` | Security/audit-binding evidence hash | Hardened to full SHA-256 over canonical JSON with `sort_keys=True`, compact separators, and `allow_nan=False`. |",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1254_atlas_g_004_005_graph_bridge_walkthrough.md",
+      "line_number": 95,
+      "phase": "1254",
+      "surrounding_text": "emits canonical JSON with `sort_keys=True`, `allow_nan=False`, and compact",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1254_atlas_g_004_005_graph_bridge_walkthrough.md",
+      "line_number": 95,
+      "phase": "1254",
+      "surrounding_text": "emits canonical JSON with `sort_keys=True`, `allow_nan=False`, and compact",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "historical_superseded",
+      "file_path": "docs/phases/phase_1254_atlas_g_004_005_graph_bridge_walkthrough.md",
+      "line_number": 104,
+      "phase": "1254",
+      "surrounding_text": "- Bulk historical backfill authorized: false",
+      "token": "authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1259_cdl087_serving_peer_evidence_slice_walkthrough.md",
+      "line_number": 74,
+      "phase": "1259",
+      "surrounding_text": "- Canonical JSON export with `sort_keys=True`, compact separators, and",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1259_cdl087_serving_peer_evidence_slice_walkthrough.md",
+      "line_number": 75,
+      "phase": "1259",
+      "surrounding_text": "`allow_nan=False`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1260_cdl087_observability_and_limiter_regression_walkthrough.md",
+      "line_number": 67,
+      "phase": "1260",
+      "surrounding_text": "| Canonical JSON | Compact, sorted, `allow_nan=False`; float payload values rejected. |",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1267_transport_principal_runtime_identity_pre_public_path_walkthrough.md",
+      "line_number": 79,
+      "phase": "1267",
+      "surrounding_text": "- canonical JSON export with `sort_keys=True` and `allow_nan=False`;",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1267_transport_principal_runtime_identity_pre_public_path_walkthrough.md",
+      "line_number": 79,
+      "phase": "1267",
+      "surrounding_text": "- canonical JSON export with `sort_keys=True` and `allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1269_werner_default_topology_pressure_profile_walkthrough.md",
+      "line_number": 50,
+      "phase": "1269",
+      "surrounding_text": "The profile export uses canonical JSON with `sort_keys=True`, `allow_nan=False`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1269_werner_default_topology_pressure_profile_walkthrough.md",
+      "line_number": 50,
+      "phase": "1269",
+      "surrounding_text": "The profile export uses canonical JSON with `sort_keys=True`, `allow_nan=False`,",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1270_gap13_claimability_conversion_sweeper_preflight_walkthrough.md",
+      "line_number": 94,
+      "phase": "1270",
+      "surrounding_text": "- `local_skill_preview` records `public_claimability_enabled: False`.",
+      "token": "public_claimability_enabled"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 78,
+      "phase": "1274",
+      "surrounding_text": "json.dumps(payload, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 78,
+      "phase": "1274",
+      "surrounding_text": "json.dumps(payload, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 83,
+      "phase": "1274",
+      "surrounding_text": "`STRICT_MACHINE_JSON_FILES`, so missing sorted keys or `allow_nan=False` in its",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 109,
+      "phase": "1274",
+      "surrounding_text": "public_claimability_activated=false",
+      "token": "public_claimability_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 110,
+      "phase": "1274",
+      "surrounding_text": "wallet_withdrawal_enabled=false",
+      "token": "wallet_withdrawal_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 111,
+      "phase": "1274",
+      "surrounding_text": "wallet_transfer_enabled=false",
+      "token": "wallet_transfer_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 112,
+      "phase": "1274",
+      "surrounding_text": "wallet_spend_enabled=false",
+      "token": "wallet_spend_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 113,
+      "phase": "1274",
+      "surrounding_text": "ecu_mint_authorized=false",
+      "token": "ecu_mint_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1274_cdl048_conversion_sweeper_runtime_skeleton_walkthrough.md",
+      "line_number": 114,
+      "phase": "1274",
+      "surrounding_text": "ilc_settlement_authorized=false",
+      "token": "ilc_settlement_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1275_claimability_proof_binding_runtime_boundary_walkthrough.md",
+      "line_number": 52,
+      "phase": "1275",
+      "surrounding_text": "separators, and `allow_nan=False`. It rejects floats recursively in proof input",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1275_claimability_proof_binding_runtime_boundary_walkthrough.md",
+      "line_number": 81,
+      "phase": "1275",
+      "surrounding_text": "non_loopback_claimability_api_enabled=false",
+      "token": "non_loopback_claimability_api_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1275_claimability_proof_binding_runtime_boundary_walkthrough.md",
+      "line_number": 82,
+      "phase": "1275",
+      "surrounding_text": "public_claimability_activated=false",
+      "token": "public_claimability_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1294_claimability_package_allowlist_rehearsal_walkthrough.md",
+      "line_number": 31,
+      "phase": "1294",
+      "surrounding_text": "| Section 0d Source expansion | Confirmed `openclaw_skill_claimable` still passes package-profile CI with `public_claimability_declared=True` and `public_claimability_runtime_activated=False`. Also confirmed the measured `ilc_logic` surface includes `ilc_core/graph/sidecar_public_path_preflight.py`, which carries `PUBLIC_RC_EXCLUDE`, so the raw profile root is not a publishable allowlist root. |",
+      "token": "public_claimability_declared"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1294_claimability_package_allowlist_rehearsal_walkthrough.md",
+      "line_number": 31,
+      "phase": "1294",
+      "surrounding_text": "| Section 0d Source expansion | Confirmed `openclaw_skill_claimable` still passes package-profile CI with `public_claimability_declared=True` and `public_claimability_runtime_activated=False`. Also confirmed the measured `ilc_logic` surface includes `ilc_core/graph/sidecar_public_path_preflight.py`, which carries `PUBLIC_RC_EXCLUDE`, so the raw profile root is not a publishable allowlist root. |",
+      "token": "public_claimability_runtime_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1297_sidecar_public_safe_projection_schema_walkthrough.md",
+      "line_number": 100,
+      "phase": "1297",
+      "surrounding_text": "`allow_nan=False`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1298_sidecar_bind_listener_peer_discovery_authority_preflight_walkthrough.md",
+      "line_number": 72,
+      "phase": "1298",
+      "surrounding_text": "runtime with canonical JSON export, `sort_keys=True`, `allow_nan=False`, compact",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1298_sidecar_bind_listener_peer_discovery_authority_preflight_walkthrough.md",
+      "line_number": 72,
+      "phase": "1298",
+      "surrounding_text": "runtime with canonical JSON export, `sort_keys=True`, `allow_nan=False`, compact",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 63,
+      "phase": "1308",
+      "surrounding_text": "- canonical JSON export with `sort_keys=True`, `allow_nan=False`, and compact",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 63,
+      "phase": "1308",
+      "surrounding_text": "- canonical JSON export with `sort_keys=True`, `allow_nan=False`, and compact",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 127,
+      "phase": "1308",
+      "surrounding_text": "source_allowlist_export_executed=false",
+      "token": "source_allowlist_export_executed"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 128,
+      "phase": "1308",
+      "surrounding_text": "clean_public_tree_materialized=false",
+      "token": "clean_public_tree_materialized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 129,
+      "phase": "1308",
+      "surrounding_text": "helper_promotion_authorized=false",
+      "token": "helper_promotion_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 130,
+      "phase": "1308",
+      "surrounding_text": "marker_removal_authorized=false",
+      "token": "marker_removal_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 131,
+      "phase": "1308",
+      "surrounding_text": "helper_stripping_executed=false",
+      "token": "helper_stripping_executed"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1308_public_rc_exclude_helper_pruning_replacement_plan_walkthrough.md",
+      "line_number": 132,
+      "phase": "1308",
+      "surrounding_text": "public_rc_claimed=false",
+      "token": "public_rc_claimed"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1325_ccss_002_capability_membership_grant_revocation_boundary_walkthrough.md",
+      "line_number": 118,
+      "phase": "1325",
+      "surrounding_text": "- canonical JSON with `sort_keys=True`, compact separators, and `allow_nan=False`;",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1325_ccss_002_capability_membership_grant_revocation_boundary_walkthrough.md",
+      "line_number": 118,
+      "phase": "1325",
+      "surrounding_text": "- canonical JSON with `sort_keys=True`, compact separators, and `allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1327_ccss_004_gossip_jitter_cover_policy_tests_walkthrough.md",
+      "line_number": 52,
+      "phase": "1327",
+      "surrounding_text": "The implementation enforces canonical JSON, sorted keys, `allow_nan=False`, bounded payload depth, bounded node count, pre-serialization byte budget, positive epochs, positive sequences, fixed false authorization flags, hash-bound refs, no participant-identifying fields, no seed/mnemonic/private-key/secret/wallet fields, no public serving flags, and no predictable PRNG.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1336_public_claimability_api_activation_or_carry_forward_gate_walkthrough.md",
+      "line_number": 58,
+      "phase": "1336",
+      "surrounding_text": "explicit_public_claimability_activation_authority_present=false",
+      "token": "explicit_public_claimability_activation_authority_present"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1337_public_path_sidecar_activation_or_exclusion_gate_walkthrough.md",
+      "line_number": 57,
+      "phase": "1337",
+      "surrounding_text": "explicit_public_path_activation_authority_present=false",
+      "token": "explicit_public_path_activation_authority_present"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate_walkthrough.md",
+      "line_number": 58,
+      "phase": "1338",
+      "surrounding_text": "explicit_value_path_activation_authority_present=false",
+      "token": "explicit_value_path_activation_authority_present"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1340_v0_2_signing_ceremony_gate_walkthrough.md",
+      "line_number": 98,
+      "phase": "1340",
+      "surrounding_text": "public_rc_remains_blocked=true",
+      "token": "public_rc_remains_blocked"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1347_cdl_029_80_15_5_allocation_distributor_walkthrough.md",
+      "line_number": 64,
+      "phase": "1347",
+      "surrounding_text": "may pass `genesis_overhead_cap_blocked=True`. If that quote would route any",
+      "token": "genesis_overhead_cap_blocked"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1348_cdl_047_treasury_governance_runtime_walkthrough.md",
+      "line_number": 84,
+      "phase": "1348",
+      "surrounding_text": "- keeps `production_treasury_activated = False`.",
+      "token": "production_treasury_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1353_cdl_017_validator_admission_ejection_sec_004_wiring_walkthrough.md",
+      "line_number": 74,
+      "phase": "1353",
+      "surrounding_text": "- records `production_validator_admission_activated=False`.",
+      "token": "production_validator_admission_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1353_cdl_017_validator_admission_ejection_sec_004_wiring_walkthrough.md",
+      "line_number": 85,
+      "phase": "1353",
+      "surrounding_text": "- records `production_validator_admission_activated=False`.",
+      "token": "production_validator_admission_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1354_cdl_068_topology_shuffle_vrf_runtime_walkthrough.md",
+      "line_number": 92,
+      "phase": "1354",
+      "surrounding_text": "- `json.dumps(..., sort_keys=True, separators=(\",\", \":\"), allow_nan=False)`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1354_cdl_068_topology_shuffle_vrf_runtime_walkthrough.md",
+      "line_number": 92,
+      "phase": "1354",
+      "surrounding_text": "- `json.dumps(..., sort_keys=True, separators=(\",\", \":\"), allow_nan=False)`,",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1355_cdl_v6_genesis_intervention_enforcement_walkthrough.md",
+      "line_number": 159,
+      "phase": "1355",
+      "surrounding_text": "All canonical JSON produced by the runtime uses `sort_keys=True`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1355_cdl_v6_genesis_intervention_enforcement_walkthrough.md",
+      "line_number": 160,
+      "phase": "1355",
+      "surrounding_text": "`allow_nan=False`, and fixed separators.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1356_cdl_013_governance_weight_live_integration_walkthrough.md",
+      "line_number": 50,
+      "phase": "1356",
+      "surrounding_text": "The decision quote accepts a `proposal_id`, `decision_epoch`, governance-weight input rows, and explicit votes. It computes governance weights through the CDL-013 function, converts the legacy float outputs to `Decimal` using a finite-value guard, aggregates approve/reject/abstain weight totals, emits canonical JSON with `sort_keys=True` and `allow_nan=False`, and records `production_governance_decisions_activated = False`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1356_cdl_013_governance_weight_live_integration_walkthrough.md",
+      "line_number": 50,
+      "phase": "1356",
+      "surrounding_text": "The decision quote accepts a `proposal_id`, `decision_epoch`, governance-weight input rows, and explicit votes. It computes governance weights through the CDL-013 function, converts the legacy float outputs to `Decimal` using a finite-value guard, aggregates approve/reject/abstain weight totals, emits canonical JSON with `sort_keys=True` and `allow_nan=False`, and records `production_governance_decisions_activated = False`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1356_cdl_013_governance_weight_live_integration_walkthrough.md",
+      "line_number": 50,
+      "phase": "1356",
+      "surrounding_text": "The decision quote accepts a `proposal_id`, `decision_epoch`, governance-weight input rows, and explicit votes. It computes governance weights through the CDL-013 function, converts the legacy float outputs to `Decimal` using a finite-value guard, aggregates approve/reject/abstain weight totals, emits canonical JSON with `sort_keys=True` and `allow_nan=False`, and records `production_governance_decisions_activated = False`.",
+      "token": "production_governance_decisions_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1358_ilc_core_ilc_consensus_production_bridge_walkthrough.md",
+      "line_number": 49,
+      "phase": "1358",
+      "surrounding_text": "- `PRODUCTION_BRIDGE_ACTIVE = False`.",
+      "token": "PRODUCTION_BRIDGE_ACTIVE"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1358_ilc_core_ilc_consensus_production_bridge_walkthrough.md",
+      "line_number": 55,
+      "phase": "1358",
+      "surrounding_text": "- Canonical quote JSON via `json.dumps(sort_keys=True, separators=(\",\", \":\"), allow_nan=False)`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1358_ilc_core_ilc_consensus_production_bridge_walkthrough.md",
+      "line_number": 55,
+      "phase": "1358",
+      "surrounding_text": "- Canonical quote JSON via `json.dumps(sort_keys=True, separators=(\",\", \":\"), allow_nan=False)`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1359_high_001_two_layer_defense_walkthrough.md",
+      "line_number": 105,
+      "phase": "1359",
+      "surrounding_text": "ACTIVATION_GATE_REQUIRED = True",
+      "token": "ACTIVATION_GATE_REQUIRED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1361_cdl_043_044_adaptive_pruning_completion_walkthrough.md",
+      "line_number": 25,
+      "phase": "1361",
+      "surrounding_text": "| Production pruning activation | PASS | `PRODUCTION_PRUNING_ACTIVE = False`; production calls raise `production_pruning_not_activated_phase_1361` |",
+      "token": "PRODUCTION_PRUNING_ACTIVE"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1361_cdl_043_044_adaptive_pruning_completion_walkthrough.md",
+      "line_number": 75,
+      "phase": "1361",
+      "surrounding_text": "with env.begin(write=True, db=db) as txn:",
+      "token": "write"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1361_cdl_043_044_adaptive_pruning_completion_walkthrough.md",
+      "line_number": 89,
+      "phase": "1361",
+      "surrounding_text": "PRODUCTION_PRUNING_ACTIVE = False",
+      "token": "PRODUCTION_PRUNING_ACTIVE"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md",
+      "line_number": 5,
+      "phase": "1362",
+      "surrounding_text": "Phase 1362 opens CDL-089 as the Phase-1344-selected blocking-authority activation vehicle for the CDL-057 epoch-boundary witness lane. This resolves the CDL-053 collision by using a non-CDL-053 vehicle and keeps `BLOCKING_AUTHORITY_DEFERRED = True`.",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md",
+      "line_number": 34,
+      "phase": "1362",
+      "surrounding_text": "| Runtime unchanged | PASS | `ilc_core/epoch/epoch_boundary_witness_runtime.py` still has `BLOCKING_AUTHORITY_DEFERRED = True` |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md",
+      "line_number": 63,
+      "phase": "1362",
+      "surrounding_text": "| `BLOCKING_AUTHORITY_DEFERRED = True` is present | `ilc_core/epoch/epoch_boundary_witness_runtime.py` | confirmed |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md",
+      "line_number": 74,
+      "phase": "1362",
+      "surrounding_text": "BLOCKING_AUTHORITY_DEFERRED = True",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1362_blocking_authority_vehicle_opening_walkthrough.md",
+      "line_number": 101,
+      "phase": "1362",
+      "surrounding_text": "| `BLOCKING_AUTHORITY_DEFERRED = True` to `False` runtime flip | Phase 1364 only, after CDL-089 ratification authority |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1363_blocking_authority_deliberation_prelock_walkthrough.md",
+      "line_number": 5,
+      "phase": "1363",
+      "surrounding_text": "Phase 1363 prelocks CDL-089 as the Phase-1344-selected blocking-authority activation vehicle for CDL-057. It resolves the Phase 1362 carry-forward agenda, locks the future blocking-authority scope, locks CDL-055 and CDL-030 interaction clauses, and keeps `BLOCKING_AUTHORITY_DEFERRED = True`.",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1363_blocking_authority_deliberation_prelock_walkthrough.md",
+      "line_number": 58,
+      "phase": "1363",
+      "surrounding_text": "| Runtime unchanged | PASS | `ilc_core/epoch/epoch_boundary_witness_runtime.py` still has `BLOCKING_AUTHORITY_DEFERRED = True` |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1363_blocking_authority_deliberation_prelock_walkthrough.md",
+      "line_number": 81,
+      "phase": "1363",
+      "surrounding_text": "| `BLOCKING_AUTHORITY_DEFERRED = True` is still present | `ilc_core/epoch/epoch_boundary_witness_runtime.py` | confirmed |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1363_blocking_authority_deliberation_prelock_walkthrough.md",
+      "line_number": 112,
+      "phase": "1363",
+      "surrounding_text": "BLOCKING_AUTHORITY_DEFERRED = True",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1363_blocking_authority_deliberation_prelock_walkthrough.md",
+      "line_number": 122,
+      "phase": "1363",
+      "surrounding_text": "| `BLOCKING_AUTHORITY_DEFERRED = True` to `False` runtime flip | Phase 1364 only, after CDL-089 ratification authority |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1364_blocking_authority_ratification_cdl_057_activation_walkthrough.md",
+      "line_number": 38,
+      "phase": "1364",
+      "surrounding_text": "| Runtime flag flip | PASS | Commit `37440146` sets `BLOCKING_AUTHORITY_DEFERRED = False` |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1364_blocking_authority_ratification_cdl_057_activation_walkthrough.md",
+      "line_number": 55,
+      "phase": "1364",
+      "surrounding_text": "| Runtime flag | `BLOCKING_AUTHORITY_DEFERRED = False` |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1364_blocking_authority_ratification_cdl_057_activation_walkthrough.md",
+      "line_number": 64,
+      "phase": "1364",
+      "surrounding_text": "| `BLOCKING_AUTHORITY_DEFERRED = True` before Commit 2 | `ilc_core/epoch/epoch_boundary_witness_runtime.py` before runtime edit | confirmed |",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1364_blocking_authority_ratification_cdl_057_activation_walkthrough.md",
+      "line_number": 79,
+      "phase": "1364",
+      "surrounding_text": "BLOCKING_AUTHORITY_DEFERRED = False",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1364_blocking_authority_ratification_cdl_057_activation_walkthrough.md",
+      "line_number": 131,
+      "phase": "1364",
+      "surrounding_text": "from `BLOCKING_AUTHORITY_DEFERRED = True` to `False`. Phase 1364 requires a",
+      "token": "BLOCKING_AUTHORITY_DEFERRED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1368_window_1343_1368_closure_handoff_walkthrough.md",
+      "line_number": 64,
+      "phase": "1368",
+      "surrounding_text": "`production_minting_activated=False` and still raises",
+      "token": "production_minting_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1380_cdl_048_dry_run_wiring_walkthrough.md",
+      "line_number": 47,
+      "phase": "1380",
+      "surrounding_text": "| Gate-closed activation guard | COMPLETE | `activation_requested=True` fails closed with `cdl_048_not_activated_phase_1380`; quote payloads record gate closed and all write/activation flags false. |",
+      "token": "activation_requested"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1380_cdl_048_dry_run_wiring_walkthrough.md",
+      "line_number": 67,
+      "phase": "1380",
+      "surrounding_text": "- `conversion_activation_authorized=False`",
+      "token": "conversion_activation_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1380_cdl_048_dry_run_wiring_walkthrough.md",
+      "line_number": 68,
+      "phase": "1380",
+      "surrounding_text": "- `ledger_write_authorized=False`",
+      "token": "ledger_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1380_cdl_048_dry_run_wiring_walkthrough.md",
+      "line_number": 69,
+      "phase": "1380",
+      "surrounding_text": "- `wallet_write_authorized=False`",
+      "token": "wallet_write_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1382_cdl_006_challenge_node_runtime_walkthrough.md",
+      "line_number": 76,
+      "phase": "1382",
+      "surrounding_text": "json.dumps(payload, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1382_cdl_006_challenge_node_runtime_walkthrough.md",
+      "line_number": 76,
+      "phase": "1382",
+      "surrounding_text": "json.dumps(payload, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1382_cdl_006_challenge_node_runtime_walkthrough.md",
+      "line_number": 87,
+      "phase": "1382",
+      "surrounding_text": "- canonical JSON uses sorted keys and `allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1383_cdl_009_fork_legitimacy_ux_walkthrough.md",
+      "line_number": 97,
+      "phase": "1383",
+      "surrounding_text": "- canonical JSON uses sorted keys and `allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 64,
+      "phase": "1388",
+      "surrounding_text": "Before Phase 1388, `activation_requested=True` failed closed with",
+      "token": "activation_requested"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 67,
+      "phase": "1388",
+      "surrounding_text": "After Phase 1388, `activation_requested=True` returns an activation-authorized",
+      "token": "activation_requested"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 73,
+      "phase": "1388",
+      "surrounding_text": "conversion_activation_authorized=True",
+      "token": "conversion_activation_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 74,
+      "phase": "1388",
+      "surrounding_text": "ledger_write_authorized=True",
+      "token": "ledger_write_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 75,
+      "phase": "1388",
+      "surrounding_text": "wallet_write_authorized=True",
+      "token": "wallet_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 76,
+      "phase": "1388",
+      "surrounding_text": "public_claimability_activated=False",
+      "token": "public_claimability_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1388_cdl_048_activation_counsel_clearance_walkthrough.md",
+      "line_number": 79,
+      "phase": "1388",
+      "surrounding_text": "The default `activation_requested=False` path still returns the Phase 1380",
+      "token": "activation_requested"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1396_j006_jury_assignment_runtime_walkthrough.md",
+      "line_number": 42,
+      "phase": "1396",
+      "surrounding_text": "| `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = True` | PASS |",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1396_j006_jury_assignment_runtime_walkthrough.md",
+      "line_number": 43,
+      "phase": "1396",
+      "surrounding_text": "| `production_activated=False` in every quote | PASS |",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1396_j006_jury_assignment_runtime_walkthrough.md",
+      "line_number": 54,
+      "phase": "1396",
+      "surrounding_text": "| `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = True` | module constant |",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1396_j006_jury_assignment_runtime_walkthrough.md",
+      "line_number": 60,
+      "phase": "1396",
+      "surrounding_text": "- Per-agent score: `hashlib.sha256` over canonical `json.dumps(sort_keys=True)` of",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 48,
+      "phase": "1397",
+      "surrounding_text": "| `PRODUCTION_INGESTION_NOT_ACTIVATED = True` | PASS |",
+      "token": "PRODUCTION_INGESTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 49,
+      "phase": "1397",
+      "surrounding_text": "| `production_activated=False`, `live_ecu_distributed=False` in all reports | PASS |",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 49,
+      "phase": "1397",
+      "surrounding_text": "| `production_activated=False`, `live_ecu_distributed=False` in all reports | PASS |",
+      "token": "live_ecu_distributed"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 63,
+      "phase": "1397",
+      "surrounding_text": "| `PRODUCTION_INGESTION_NOT_ACTIVATED = True` | module constant |",
+      "token": "PRODUCTION_INGESTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 92,
+      "phase": "1397",
+      "surrounding_text": "All reports carry `production_activated=False`, `live_ecu_distributed=False`.",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 92,
+      "phase": "1397",
+      "surrounding_text": "All reports carry `production_activated=False`, `live_ecu_distributed=False`.",
+      "token": "live_ecu_distributed"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+      "line_number": 101,
+      "phase": "1397",
+      "surrounding_text": "`PRODUCTION_INGESTION_NOT_ACTIVATED = True` \u2014 must remain True until J-008 gate.",
+      "token": "PRODUCTION_INGESTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1398_j008_production_jury_activation_gate_walkthrough.md",
+      "line_number": 48,
+      "phase": "1398",
+      "surrounding_text": "| `production_activated=False` in all reports | PASS |",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1398_j008_production_jury_activation_gate_walkthrough.md",
+      "line_number": 49,
+      "phase": "1398",
+      "surrounding_text": "| `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=True` | PASS |",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1398_j008_production_jury_activation_gate_walkthrough.md",
+      "line_number": 64,
+      "phase": "1398",
+      "surrounding_text": "| `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED = True` | module constant |",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1401_cdl_091_jury_incentive_runtime_stub_walkthrough.md",
+      "line_number": 13,
+      "phase": "1401",
+      "surrounding_text": "REVIEWER_PAYMENT_NOT_ACTIVATED: bool = True",
+      "token": "bool"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1401_cdl_091_jury_incentive_runtime_stub_walkthrough.md",
+      "line_number": 46,
+      "phase": "1401",
+      "surrounding_text": "`payment_enqueued=False`, `ledger_write_authorized=False`,",
+      "token": "ledger_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1401_cdl_091_jury_incentive_runtime_stub_walkthrough.md",
+      "line_number": 47,
+      "phase": "1401",
+      "surrounding_text": "`treasury_write_authorized=False`, and `ecu_distribution_authorized=False`.",
+      "token": "treasury_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1401_cdl_091_jury_incentive_runtime_stub_walkthrough.md",
+      "line_number": 47,
+      "phase": "1401",
+      "surrounding_text": "`treasury_write_authorized=False`, and `ecu_distribution_authorized=False`.",
+      "token": "ecu_distribution_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1404_cdl_092_capproof_prelock_walkthrough.md",
+      "line_number": 50,
+      "phase": "1404",
+      "surrounding_text": "- deterministic JSON projection rule with `sort_keys=True` and",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1404_cdl_092_capproof_prelock_walkthrough.md",
+      "line_number": 51,
+      "phase": "1404",
+      "surrounding_text": "`allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1407_fix2_cdl_053_werner_local_productive_credit_ratification_walkthrough.md",
+      "line_number": 28,
+      "phase": "1407",
+      "surrounding_text": "| `WERNER_DIRECT_ECU_CREATION_AUTHORIZED = false` is in prelock | Fix1 prelock scope constants table | confirmed |",
+      "token": "WERNER_DIRECT_ECU_CREATION_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1407_fix3_cdl_093_prelock_amendment_q2_sim_walkthrough.md",
+      "line_number": 28,
+      "phase": "1407",
+      "surrounding_text": "| `MAINTENANCE_POOL_FUNDING_FRACTION_PENDING_SIM = true` was present in Phase 1407 prelock | `docs/specs/ilc_cdl_093_maintenance_lottery_pool_prelock_1407_v0.1.md` | confirmed |",
+      "token": "MAINTENANCE_POOL_FUNDING_FRACTION_PENDING_SIM"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1407_fix3_cdl_093_prelock_amendment_q2_sim_walkthrough.md",
+      "line_number": 67,
+      "phase": "1407",
+      "surrounding_text": "MAINTENANCE_POOL_FUNDING_FRACTION_PENDING_SIM = false",
+      "token": "MAINTENANCE_POOL_FUNDING_FRACTION_PENDING_SIM"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1409_cdl_093_maintenance_lottery_runtime_stub_walkthrough.md",
+      "line_number": 34,
+      "phase": "1409",
+      "surrounding_text": "MAINTENANCE_LOTTERY_NOT_ACTIVATED = True",
+      "token": "MAINTENANCE_LOTTERY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1409_cdl_093_maintenance_lottery_runtime_stub_walkthrough.md",
+      "line_number": 44,
+      "phase": "1409",
+      "surrounding_text": "MAINTENANCE_POOL_FUNDING_FRACTION_PENDING_SIM = False",
+      "token": "MAINTENANCE_POOL_FUNDING_FRACTION_PENDING_SIM"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1409_cdl_093_maintenance_lottery_runtime_stub_walkthrough.md",
+      "line_number": 56,
+      "phase": "1409",
+      "surrounding_text": "`lottery_entry_enqueued=False`, `draw_authorized=False`,",
+      "token": "draw_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1409_cdl_093_maintenance_lottery_runtime_stub_walkthrough.md",
+      "line_number": 57,
+      "phase": "1409",
+      "surrounding_text": "`ecu_distribution_authorized=False`, `ledger_write_authorized=False`, and",
+      "token": "ecu_distribution_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1409_cdl_093_maintenance_lottery_runtime_stub_walkthrough.md",
+      "line_number": 57,
+      "phase": "1409",
+      "surrounding_text": "`ecu_distribution_authorized=False`, `ledger_write_authorized=False`, and",
+      "token": "ledger_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1409_cdl_093_maintenance_lottery_runtime_stub_walkthrough.md",
+      "line_number": 58,
+      "phase": "1409",
+      "surrounding_text": "`treasury_write_authorized=False`.",
+      "token": "treasury_write_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1410_vrf_proof_verifier_adr_walkthrough.md",
+      "line_number": 52,
+      "phase": "1410",
+      "surrounding_text": "- canonical JSON requirements: `sort_keys=True`, `separators=(\",\", \":\")`, and",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1410_vrf_proof_verifier_adr_walkthrough.md",
+      "line_number": 53,
+      "phase": "1410",
+      "surrounding_text": "`allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1411_vrf_proof_verifier_implementation_walkthrough.md",
+      "line_number": 15,
+      "phase": "1411",
+      "surrounding_text": "| `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = True` remains in jury assignment | `ilc_core/epistemic/jury_assignment_runtime.py` | confirmed; file not modified |",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1412_vrf_jury_assignment_integration_walkthrough.md",
+      "line_number": 16,
+      "phase": "1412",
+      "surrounding_text": "| `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = True` in jury assignment runtime | `ilc_core/epistemic/jury_assignment_runtime.py` | confirmed and unchanged |",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1412_vrf_jury_assignment_integration_walkthrough.md",
+      "line_number": 33,
+      "phase": "1412",
+      "surrounding_text": "- Preserved `production_activated=False` in every returned quote.",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1419_anti_capture_diversity_verification_walkthrough.md",
+      "line_number": 55,
+      "phase": "1419",
+      "surrounding_text": "`PRODUCTION_ASSIGNMENT_NOT_ACTIVATED=True` remains unchanged.",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1422_launch_readiness_manifest_schema_walkthrough.md",
+      "line_number": 9,
+      "phase": "1422",
+      "surrounding_text": "| `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=True` in gate source | `ilc_core/epistemic/jury_activation_gate.py` | confirmed |",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1422_launch_readiness_manifest_schema_walkthrough.md",
+      "line_number": 38,
+      "phase": "1422",
+      "surrounding_text": "The unsigned template keeps `epoch_0_to_1_transition_authorized=false`,",
+      "token": "epoch_0_to_1_transition_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1424_public_rc_activation_certificate_design_walkthrough.md",
+      "line_number": 29,
+      "phase": "1424",
+      "surrounding_text": "| `epoch_0_to_1_transition_authorized=false` in Phase 1422 schema | `docs/specs/ilc_launch_readiness_manifest_schema_1422_v0.1.md` | confirmed: unsigned template has `\"epoch_0_to_1_transition_authorized\": false` |",
+      "token": "epoch_0_to_1_transition_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1424_public_rc_activation_certificate_design_walkthrough.md",
+      "line_number": 32,
+      "phase": "1424",
+      "surrounding_text": "| CDL-053 is ratified only for narrow local productive-credit eligibility, not direct Werner ECU creation | `docs/specs/ilc_cdl_053_werner_local_productive_credit_ratification_evidence_1407_fix2_v0.1.md` | confirmed: `WERNER_DIRECT_ECU_CREATION_AUTHORIZED = false`; `cdl_053_ratified_phase_1407_fix2` present; scope is review-lane-passed maintenance tasks only |",
+      "token": "WERNER_DIRECT_ECU_CREATION_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1424_public_rc_activation_certificate_design_walkthrough.md",
+      "line_number": 80,
+      "phase": "1424",
+      "surrounding_text": "`json.dumps(payload, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)`",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1424_public_rc_activation_certificate_design_walkthrough.md",
+      "line_number": 80,
+      "phase": "1424",
+      "surrounding_text": "`json.dumps(payload, sort_keys=True, separators=(\",\", \":\"), allow_nan=False)`",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1424_public_rc_activation_certificate_design_walkthrough.md",
+      "line_number": 96,
+      "phase": "1424",
+      "surrounding_text": "4. **Economic activation authorization** -> `epoch_0_to_1_transition_authorized=true`",
+      "token": "epoch_0_to_1_transition_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1425_pre_gate_verification_walkthrough.md",
+      "line_number": 37,
+      "phase": "1425",
+      "surrounding_text": "| `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED` is currently True | `ilc_core/epistemic/jury_activation_gate.py` | confirmed \u2014 `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED: bool = True` |",
+      "token": "bool"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1425_pre_gate_verification_walkthrough.md",
+      "line_number": 99,
+      "phase": "1425",
+      "surrounding_text": "- `production_activated = False`",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1425_pre_gate_verification_walkthrough.md",
+      "line_number": 100,
+      "phase": "1425",
+      "surrounding_text": "- `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED = True`",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1426_soft_rc_gate_rerun_walkthrough.md",
+      "line_number": 37,
+      "phase": "1426",
+      "surrounding_text": "| Phase 1425 gate preconditions return PASS | `evaluate_jury_activation_gate()` live import | confirmed: `verdict=PASS`, `blocking_not_met=[]`, `production_activated=False` |",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1427_j008_gate_rerun_walkthrough.md",
+      "line_number": 20,
+      "phase": "1427",
+      "surrounding_text": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1427_j008_gate_rerun_walkthrough.md",
+      "line_number": 21,
+      "phase": "1427",
+      "surrounding_text": "gate_authorized=True",
+      "token": "gate_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1427_j008_gate_rerun_walkthrough.md",
+      "line_number": 22,
+      "phase": "1427",
+      "surrounding_text": "production_activated=False",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1427_j008_gate_rerun_walkthrough.md",
+      "line_number": 79,
+      "phase": "1427",
+      "surrounding_text": "gate_authorized=True",
+      "token": "gate_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1427_j008_gate_rerun_walkthrough.md",
+      "line_number": 80,
+      "phase": "1427",
+      "surrounding_text": "production_activated=False",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1427_j008_gate_rerun_walkthrough.md",
+      "line_number": 81,
+      "phase": "1427",
+      "surrounding_text": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1428_window_closure_gate_walkthrough.md",
+      "line_number": 76,
+      "phase": "1428",
+      "surrounding_text": "gate_authorized=True",
+      "token": "gate_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1428_window_closure_gate_walkthrough.md",
+      "line_number": 77,
+      "phase": "1428",
+      "surrounding_text": "production_activated=False",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1428_window_closure_gate_walkthrough.md",
+      "line_number": 78,
+      "phase": "1428",
+      "surrounding_text": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED=False",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 28,
+      "phase": "1429",
+      "surrounding_text": "| `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = True` currently in jury assignment runtime before edit | `ilc_core/epistemic/jury_assignment_runtime.py` | confirmed before edit at line 75 |",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 29,
+      "phase": "1429",
+      "surrounding_text": "| `PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED = False` in activation gate | `ilc_core/epistemic/jury_activation_gate.py` | confirmed at line 88 |",
+      "token": "PRODUCTION_JURY_ACTIVATION_NOT_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 52,
+      "phase": "1429",
+      "surrounding_text": "`gate_authorized=True` and `production_activated=False`; the stale support text",
+      "token": "gate_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 52,
+      "phase": "1429",
+      "surrounding_text": "`gate_authorized=True` and `production_activated=False`; the stale support text",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 60,
+      "phase": "1429",
+      "surrounding_text": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False",
+      "token": "bool"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 74,
+      "phase": "1429",
+      "surrounding_text": "gate_authorized=True",
+      "token": "gate_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 75,
+      "phase": "1429",
+      "surrounding_text": "production_activated=False",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1429_production_assignment_activation_walkthrough.md",
+      "line_number": 79,
+      "phase": "1429",
+      "surrounding_text": "`production_activated=False` remains correct for",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 21,
+      "phase": "1430",
+      "surrounding_text": "| CDL-053 scope is maintenance-equivalent productive credit only, with no direct ECU creation | `docs/specs/ilc_cdl_053_werner_local_productive_credit_ratification_evidence_1407_fix2_v0.1.md` | confirmed: review-lane-passed maintenance-equivalent work only; local credit is not settlement-grade, wallet-visible, or transferable; `WERNER_DIRECT_ECU_CREATION_AUTHORIZED = false` |",
+      "token": "WERNER_DIRECT_ECU_CREATION_AUTHORIZED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 23,
+      "phase": "1430",
+      "surrounding_text": "| Maintenance lottery runtime has default-off stub | `ilc_core/epistemic/maintenance_lottery_runtime.py` | confirmed before edit: `MAINTENANCE_LOTTERY_NOT_ACTIVATED = True`; preserved after edit |",
+      "token": "MAINTENANCE_LOTTERY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 86,
+      "phase": "1430",
+      "surrounding_text": "draw_authorized=False",
+      "token": "draw_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 87,
+      "phase": "1430",
+      "surrounding_text": "ecu_distribution_authorized=False",
+      "token": "ecu_distribution_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 88,
+      "phase": "1430",
+      "surrounding_text": "wallet_write_authorized=False",
+      "token": "wallet_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 89,
+      "phase": "1430",
+      "surrounding_text": "ledger_write_authorized=False",
+      "token": "ledger_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1430_cdl053_local_credit_wire_walkthrough.md",
+      "line_number": 90,
+      "phase": "1430",
+      "surrounding_text": "treasury_write_authorized=False",
+      "token": "treasury_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md",
+      "line_number": 31,
+      "phase": "1432",
+      "surrounding_text": "| Production jury assignment gate is authorized after Phase 1429 | `ilc_core/epistemic/jury_assignment_runtime.py` | confirmed: `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED = False` |",
+      "token": "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md",
+      "line_number": 128,
+      "phase": "1432",
+      "surrounding_text": "production_activated=false",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md",
+      "line_number": 142,
+      "phase": "1432",
+      "surrounding_text": "graph_write_authorized=false",
+      "token": "graph_write_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md",
+      "line_number": 143,
+      "phase": "1432",
+      "surrounding_text": "public_economics_authorized=false",
+      "token": "public_economics_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md",
+      "line_number": 144,
+      "phase": "1432",
+      "surrounding_text": "reviewer_payment_authorized=false",
+      "token": "reviewer_payment_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1433_rehearsal_verdict_walkthrough.md",
+      "line_number": 139,
+      "phase": "1433",
+      "surrounding_text": "production_keypairs_preserved_off_machine_phase_1433=true",
+      "token": "production_keypairs_preserved_off_machine_phase_1433"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1434_transport_principal_cdl_opening_walkthrough.md",
+      "line_number": 89,
+      "phase": "1434",
+      "surrounding_text": "public_confidential_messaging_enabled=false",
+      "token": "public_confidential_messaging_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1434_transport_principal_cdl_opening_walkthrough.md",
+      "line_number": 90,
+      "phase": "1434",
+      "surrounding_text": "public_confidential_coordination_enabled=false",
+      "token": "public_confidential_coordination_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1435_transport_principal_cdl_ratification_walkthrough.md",
+      "line_number": 81,
+      "phase": "1435",
+      "surrounding_text": "public_confidential_messaging_enabled=false",
+      "token": "public_confidential_messaging_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1435_transport_principal_cdl_ratification_walkthrough.md",
+      "line_number": 82,
+      "phase": "1435",
+      "surrounding_text": "public_confidential_coordination_enabled=false",
+      "token": "public_confidential_coordination_enabled"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1436_public_fetch_serving_activation_walkthrough.md",
+      "line_number": 74,
+      "phase": "1436",
+      "surrounding_text": "- returns canonical hash-bound decisions with `sort_keys=True`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1436_public_fetch_serving_activation_walkthrough.md",
+      "line_number": 75,
+      "phase": "1436",
+      "surrounding_text": "`allow_nan=False`, compact separators, payload size bounds, and float",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1436_public_fetch_serving_activation_walkthrough.md",
+      "line_number": 81,
+      "phase": "1436",
+      "surrounding_text": "- non-loopback bind now requires `public_fetch_serving_enabled=True`;",
+      "token": "public_fetch_serving_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md",
+      "line_number": 29,
+      "phase": "1437",
+      "surrounding_text": "| Phase 1436 left `OPENCLAW_P2P_ACTIVATED = False` and `PUBLIC_P2P_ACTIVATED = False` | `ilc_core/sidecars/public_path_activation.py` | confirmed before edit |",
+      "token": "OPENCLAW_P2P_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md",
+      "line_number": 29,
+      "phase": "1437",
+      "surrounding_text": "| Phase 1436 left `OPENCLAW_P2P_ACTIVATED = False` and `PUBLIC_P2P_ACTIVATED = False` | `ilc_core/sidecars/public_path_activation.py` | confirmed before edit |",
+      "token": "PUBLIC_P2P_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md",
+      "line_number": 96,
+      "phase": "1437",
+      "surrounding_text": "OPENCLAW_P2P_ACTIVATED=True",
+      "token": "OPENCLAW_P2P_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md",
+      "line_number": 97,
+      "phase": "1437",
+      "surrounding_text": "PUBLIC_P2P_ACTIVATED=False",
+      "token": "PUBLIC_P2P_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md",
+      "line_number": 98,
+      "phase": "1437",
+      "surrounding_text": "NATIVE_RUST_P2P_NOT_ACTIVATED=True",
+      "token": "NATIVE_RUST_P2P_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1437_openclaw_p2p_activation_walkthrough.md",
+      "line_number": 99,
+      "phase": "1437",
+      "surrounding_text": "OPENCLAW_GATEWAY_NOT_PUBLICLY_ACTIVATED=True",
+      "token": "OPENCLAW_GATEWAY_NOT_PUBLICLY_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 22,
+      "phase": "1438",
+      "surrounding_text": "| Public fetch sidecar active | `ilc_core/sidecars/public_path_activation.py` has `PUBLIC_FETCH_SERVING_ACTIVATED=True` | confirmed |",
+      "token": "PUBLIC_FETCH_SERVING_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 23,
+      "phase": "1438",
+      "surrounding_text": "| Native Rust P2P remains inactive | `ilc_core/sidecars/public_path_activation.py` preserves `PUBLIC_P2P_ACTIVATED=False` | confirmed |",
+      "token": "PUBLIC_P2P_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 33,
+      "phase": "1438",
+      "surrounding_text": "CDL088_PUBLIC_CLAIMABILITY_ACTIVATED=True",
+      "token": "CDL088_PUBLIC_CLAIMABILITY_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 41,
+      "phase": "1438",
+      "surrounding_text": "non_loopback_claimability_api_enabled=False",
+      "token": "non_loopback_claimability_api_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 42,
+      "phase": "1438",
+      "surrounding_text": "public_api_enabled=False",
+      "token": "public_api_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 43,
+      "phase": "1438",
+      "surrounding_text": "receipt_verifier_public_serving_enabled=False",
+      "token": "receipt_verifier_public_serving_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 44,
+      "phase": "1438",
+      "surrounding_text": "ecu_mint_authorized=False",
+      "token": "ecu_mint_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 45,
+      "phase": "1438",
+      "surrounding_text": "ilc_settlement_authorized=False",
+      "token": "ilc_settlement_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 46,
+      "phase": "1438",
+      "surrounding_text": "wallet_ops_authorized=False",
+      "token": "wallet_ops_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 47,
+      "phase": "1438",
+      "surrounding_text": "public_rc_activated=False",
+      "token": "public_rc_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 48,
+      "phase": "1438",
+      "surrounding_text": "native_rust_p2p_activated=False",
+      "token": "native_rust_p2p_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1438_cdl088_public_claimability_activation_walkthrough.md",
+      "line_number": 49,
+      "phase": "1438",
+      "surrounding_text": "epoch_transition_triggered=False",
+      "token": "epoch_transition_triggered"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 16,
+      "phase": "1439",
+      "surrounding_text": "| Phase 1438 activated CDL-088 public claimability authority | `ilc_core/sidecars/cdl088_claimability_activation.py` has `CDL088_PUBLIC_CLAIMABILITY_ACTIVATED=True` and `public_claimability_activated_phase_1438` | confirmed |",
+      "token": "CDL088_PUBLIC_CLAIMABILITY_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 45,
+      "phase": "1439",
+      "surrounding_text": "non_loopback_claimability_api_enabled=true",
+      "token": "non_loopback_claimability_api_enabled"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 46,
+      "phase": "1439",
+      "surrounding_text": "public_api_enabled=true",
+      "token": "public_api_enabled"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 47,
+      "phase": "1439",
+      "surrounding_text": "public_claimability_activated=true",
+      "token": "public_claimability_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 48,
+      "phase": "1439",
+      "surrounding_text": "receipt_verifier_public_serving_enabled=true",
+      "token": "receipt_verifier_public_serving_enabled"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 49,
+      "phase": "1439",
+      "surrounding_text": "ecu_mint_authorized=false",
+      "token": "ecu_mint_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 50,
+      "phase": "1439",
+      "surrounding_text": "ilc_settlement_authorized=false",
+      "token": "ilc_settlement_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1439_public_verifier_api_activation_walkthrough.md",
+      "line_number": 51,
+      "phase": "1439",
+      "surrounding_text": "wallet_ops_authorized=false",
+      "token": "wallet_ops_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 38,
+      "phase": "1441",
+      "surrounding_text": "PUBLIC_CLAIMABILITY_ACTIVATED=True",
+      "token": "PUBLIC_CLAIMABILITY_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 39,
+      "phase": "1441",
+      "surrounding_text": "public_verifier_api_wired=true",
+      "token": "public_verifier_api_wired"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 40,
+      "phase": "1441",
+      "surrounding_text": "claimability_integration_tests_passed=true",
+      "token": "claimability_integration_tests_passed"
+    },
+    {
+      "boolean_value": true,
+      "classification": "closed_true",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 41,
+      "phase": "1441",
+      "surrounding_text": "security_review_gate_passed=true",
+      "token": "security_review_gate_passed"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 47,
+      "phase": "1441",
+      "surrounding_text": "ecu_mint_authorized=false",
+      "token": "ecu_mint_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 48,
+      "phase": "1441",
+      "surrounding_text": "ilc_settlement_authorized=false",
+      "token": "ilc_settlement_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 49,
+      "phase": "1441",
+      "surrounding_text": "wallet_ops_authorized=false",
+      "token": "wallet_ops_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 50,
+      "phase": "1441",
+      "surrounding_text": "public_rc_activated=false",
+      "token": "public_rc_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 51,
+      "phase": "1441",
+      "surrounding_text": "native_rust_p2p_activated=false",
+      "token": "native_rust_p2p_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 52,
+      "phase": "1441",
+      "surrounding_text": "epoch_transition_triggered=false",
+      "token": "epoch_transition_triggered"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1441_gap_13_closure_verdict_walkthrough.md",
+      "line_number": 55,
+      "phase": "1441",
+      "surrounding_text": "wallet_write=false",
+      "token": "wallet_write"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1442_werner_diagnostic_wiring_walkthrough.md",
+      "line_number": 11,
+      "phase": "1442",
+      "surrounding_text": "| Werner local credit remains non-settlement | `WERNER_LOCAL_CREDIT_IS_SETTLEMENT_GRADE=False` | confirmed |",
+      "token": "WERNER_LOCAL_CREDIT_IS_SETTLEMENT_GRADE"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1442_werner_diagnostic_wiring_walkthrough.md",
+      "line_number": 12,
+      "phase": "1442",
+      "surrounding_text": "| Werner local credit remains wallet-invisible | `WERNER_LOCAL_CREDIT_IS_WALLET_VISIBLE=False` | confirmed |",
+      "token": "WERNER_LOCAL_CREDIT_IS_WALLET_VISIBLE"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1442_werner_diagnostic_wiring_walkthrough.md",
+      "line_number": 13,
+      "phase": "1442",
+      "surrounding_text": "| Werner local credit remains non-transferable | `WERNER_LOCAL_CREDIT_IS_TRANSFERABLE=False` | confirmed |",
+      "token": "WERNER_LOCAL_CREDIT_IS_TRANSFERABLE"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1447_release_artifact_signing_manifest_walkthrough.md",
+      "line_number": 20,
+      "phase": "1447",
+      "surrounding_text": "| Launch-readiness manifest schema exists and requires `epoch_0_to_1_transition_authorized=false` before activation. | `docs/specs/ilc_launch_readiness_manifest_schema_1422_v0.1.md` | confirmed |",
+      "token": "epoch_0_to_1_transition_authorized"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1461p_local_node_capture_consent_gate_walkthrough.md",
+      "line_number": 18,
+      "phase": "1461",
+      "surrounding_text": "`LocalNodeCapture` builds deterministic canonical snapshots only after `ConsentGate` permits the subject/purpose pair. Captures explicitly record `production_graph_write=False` and `public_rc_exclude=True`.",
+      "token": "production_graph_write"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1461p_local_node_capture_consent_gate_walkthrough.md",
+      "line_number": 18,
+      "phase": "1461",
+      "surrounding_text": "`LocalNodeCapture` builds deterministic canonical snapshots only after `ConsentGate` permits the subject/purpose pair. Captures explicitly record `production_graph_write=False` and `public_rc_exclude=True`.",
+      "token": "public_rc_exclude"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1462p_idle_capacity_scheduler_walkthrough.md",
+      "line_number": 17,
+      "phase": "1462",
+      "surrounding_text": "The scheduler consumes local `ProviderBudgetSnapshot` values and schedules deterministic maintenance task candidates while enforcing anti-gaming filters: minimum complexity, bounded tasks per window, provider match, requester submission cap, and no self-referential tasks. It records `IDLE_CAPACITY_SCHEDULER_NOT_ACTIVATED=True`.",
+      "token": "IDLE_CAPACITY_SCHEDULER_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1463p_node_value_kernel_decimal_conversion_walkthrough.md",
+      "line_number": 14,
+      "phase": "1463",
+      "surrounding_text": "Updated `ilc_core/analysis/node_value_conformance.py` so score-row hashes serialize `Decimal` values canonically through `json.dumps(..., sort_keys=True, separators=(\",\", \":\"), allow_nan=False, default=...)`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1463p_node_value_kernel_decimal_conversion_walkthrough.md",
+      "line_number": 14,
+      "phase": "1463",
+      "surrounding_text": "Updated `ilc_core/analysis/node_value_conformance.py` so score-row hashes serialize `Decimal` values canonically through `json.dumps(..., sort_keys=True, separators=(\",\", \":\"), allow_nan=False, default=...)`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1464p_maintenance_task_executor_co_attestation_walkthrough.md",
+      "line_number": 19,
+      "phase": "1464",
+      "surrounding_text": "The executor produces private query-response artifacts from scheduled fixture tasks and records `MAINTENANCE_TASK_EXECUTOR_NOT_ACTIVATED=True`. Co-attestation receipts are local canonical JSON envelopes with deterministic SHA-256 verification.",
+      "token": "MAINTENANCE_TASK_EXECUTOR_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 21,
+      "phase": "1475",
+      "surrounding_text": "| Layer 0 canonical JSON uses `sort_keys=True` and `allow_nan=False` | `ilc_core/bundle/layer0_protocol_bundle.py` | confirmed |",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 21,
+      "phase": "1475",
+      "surrounding_text": "| Layer 0 canonical JSON uses `sort_keys=True` and `allow_nan=False` | `ilc_core/bundle/layer0_protocol_bundle.py` | confirmed |",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 39,
+      "phase": "1475",
+      "surrounding_text": "- `ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION = True` guard;",
+      "token": "ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 40,
+      "phase": "1475",
+      "surrounding_text": "- deterministic canonical JSON using `sort_keys=True`, `separators=(\",\", \":\")`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 41,
+      "phase": "1475",
+      "surrounding_text": "and `allow_nan=False`;",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 62,
+      "phase": "1475",
+      "surrounding_text": "rg -n \"sort_keys=True|allow_nan=False\" ilc_core/bundle/layer1_genesis_bundle.py",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1475p_adr0009_layer1_genesis_bundle_walkthrough.md",
+      "line_number": 62,
+      "phase": "1475",
+      "surrounding_text": "rg -n \"sort_keys=True|allow_nan=False\" ilc_core/bundle/layer1_genesis_bundle.py",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1476p_adr0009_layers23_runtime_walkthrough.md",
+      "line_number": 85,
+      "phase": "1476",
+      "surrounding_text": "rg -n \"sort_keys=True|allow_nan=False\" ilc_core/bundle/layer2_epoch_snapshot.py ilc_core/bundle/layer3_wire_binding.py",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1476p_adr0009_layers23_runtime_walkthrough.md",
+      "line_number": 85,
+      "phase": "1476",
+      "surrounding_text": "rg -n \"sort_keys=True|allow_nan=False\" ilc_core/bundle/layer2_epoch_snapshot.py ilc_core/bundle/layer3_wire_binding.py",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1477p_harness_kernel_decimal_integration_walkthrough.md",
+      "line_number": 23,
+      "phase": "1477",
+      "surrounding_text": "| Scheduler is private and not activated | `IDLE_CAPACITY_SCHEDULER_NOT_ACTIVATED = True` | confirmed |",
+      "token": "IDLE_CAPACITY_SCHEDULER_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1483p_rust_p2p_relay_routing_table_walkthrough.md",
+      "line_number": 31,
+      "phase": "1483",
+      "surrounding_text": "Phase 1483p also adds `ilc_core/network/rust_p2p_bridge.py`, a disabled subprocess bridge stub. The bridge exposes `RustP2PBridge.send_via_rust_p2p(endpoint_id, payload, timeout_s=5.0) -> bool`, enforces `MAX_PAYLOAD_BYTES`, uses `subprocess.run()` with `shell=False`, explicit `timeout=`, a repo-local relative binary path, and canonical JSON with `sort_keys=True` and `allow_nan=False`. `RUST_P2P_BRIDGE_NOT_ACTIVATED = True` makes the method return `False` before subprocess invocation.",
+      "token": "shell"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1483p_rust_p2p_relay_routing_table_walkthrough.md",
+      "line_number": 31,
+      "phase": "1483",
+      "surrounding_text": "Phase 1483p also adds `ilc_core/network/rust_p2p_bridge.py`, a disabled subprocess bridge stub. The bridge exposes `RustP2PBridge.send_via_rust_p2p(endpoint_id, payload, timeout_s=5.0) -> bool`, enforces `MAX_PAYLOAD_BYTES`, uses `subprocess.run()` with `shell=False`, explicit `timeout=`, a repo-local relative binary path, and canonical JSON with `sort_keys=True` and `allow_nan=False`. `RUST_P2P_BRIDGE_NOT_ACTIVATED = True` makes the method return `False` before subprocess invocation.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1483p_rust_p2p_relay_routing_table_walkthrough.md",
+      "line_number": 31,
+      "phase": "1483",
+      "surrounding_text": "Phase 1483p also adds `ilc_core/network/rust_p2p_bridge.py`, a disabled subprocess bridge stub. The bridge exposes `RustP2PBridge.send_via_rust_p2p(endpoint_id, payload, timeout_s=5.0) -> bool`, enforces `MAX_PAYLOAD_BYTES`, uses `subprocess.run()` with `shell=False`, explicit `timeout=`, a repo-local relative binary path, and canonical JSON with `sort_keys=True` and `allow_nan=False`. `RUST_P2P_BRIDGE_NOT_ACTIVATED = True` makes the method return `False` before subprocess invocation.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1483p_rust_p2p_relay_routing_table_walkthrough.md",
+      "line_number": 31,
+      "phase": "1483",
+      "surrounding_text": "Phase 1483p also adds `ilc_core/network/rust_p2p_bridge.py`, a disabled subprocess bridge stub. The bridge exposes `RustP2PBridge.send_via_rust_p2p(endpoint_id, payload, timeout_s=5.0) -> bool`, enforces `MAX_PAYLOAD_BYTES`, uses `subprocess.run()` with `shell=False`, explicit `timeout=`, a repo-local relative binary path, and canonical JSON with `sort_keys=True` and `allow_nan=False`. `RUST_P2P_BRIDGE_NOT_ACTIVATED = True` makes the method return `False` before subprocess invocation.",
+      "token": "RUST_P2P_BRIDGE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1488p_window_closure_gate_walkthrough.md",
+      "line_number": 34,
+      "phase": "1488",
+      "surrounding_text": "| Rust P2P bridge remains inactive | `ilc_core/network/rust_p2p_bridge.py` | confirmed: `RUST_P2P_BRIDGE_NOT_ACTIVATED = True` |",
+      "token": "RUST_P2P_BRIDGE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1488p_window_closure_gate_walkthrough.md",
+      "line_number": 35,
+      "phase": "1488",
+      "surrounding_text": "| Local immutable store remains private | `ilc_core/harness/local_immutable_store.py` | confirmed: `LOCAL_IMMUTABLE_STORE_NOT_PRODUCTION = True` |",
+      "token": "LOCAL_IMMUTABLE_STORE_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1488p_window_closure_gate_walkthrough.md",
+      "line_number": 99,
+      "phase": "1488",
+      "surrounding_text": "| OBL-005 | Investigate stale `PHASE_1436_NOT_ACTIVATED = True` package-profile flag |",
+      "token": "PHASE_1436_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1490p_cdl094_admission_wire_walkthrough.md",
+      "line_number": 36,
+      "phase": "1490",
+      "surrounding_text": "| `ilc_core/network/rust_p2p_bridge.py` | Added `CDL_094_ADMISSION_WIRE_NOT_ACTIVATED = True` and `RustP2PBridge.transport_principal_admission_check()` fail-closed hook |",
+      "token": "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1493p_invitation_provenance_chain_walkthrough.md",
+      "line_number": 54,
+      "phase": "1493",
+      "surrounding_text": "The prompt also used `PUBLIC_RC_NOT_ACTIVATED = True` as shorthand for public",
+      "token": "PUBLIC_RC_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1493p_invitation_provenance_chain_walkthrough.md",
+      "line_number": 57,
+      "phase": "1493",
+      "surrounding_text": "`ADR_0009_LAYER*_NOT_PUBLIC_DISTRIBUTION = True` constants. The spec records",
+      "token": "_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1494p_cdl095_runtime_completions_walkthrough.md",
+      "line_number": 48,
+      "phase": "1494",
+      "surrounding_text": "`JURY_FINALITY_EVALUATOR_NOT_PRODUCTION = True` is present in",
+      "token": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1494p_cdl095_runtime_completions_walkthrough.md",
+      "line_number": 62,
+      "phase": "1494",
+      "surrounding_text": "`json.dumps(..., sort_keys=True, separators=(\",\", \":\"), allow_nan=False)` in",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1494p_cdl095_runtime_completions_walkthrough.md",
+      "line_number": 62,
+      "phase": "1494",
+      "surrounding_text": "`json.dumps(..., sort_keys=True, separators=(\",\", \":\"), allow_nan=False)` in",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1502p_cdl031_dynamic_ranking_multiplier_runtime_walkthrough.md",
+      "line_number": 55,
+      "phase": "1502",
+      "surrounding_text": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED = True",
+      "token": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 33,
+      "phase": "1503",
+      "surrounding_text": "| `DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED = True` | `ilc_core/economics/dynamic_ranking_multiplier_runtime.py` | confirmed |",
+      "token": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 61,
+      "phase": "1503",
+      "surrounding_text": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED = True",
+      "token": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 83,
+      "phase": "1503",
+      "surrounding_text": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED = True",
+      "token": "DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 84,
+      "phase": "1503",
+      "surrounding_text": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION = True",
+      "token": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 85,
+      "phase": "1503",
+      "surrounding_text": "RUST_P2P_BRIDGE_NOT_ACTIVATED = True",
+      "token": "RUST_P2P_BRIDGE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 86,
+      "phase": "1503",
+      "surrounding_text": "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED = True",
+      "token": "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1503p_window_coherence_capsule_walkthrough.md",
+      "line_number": 87,
+      "phase": "1503",
+      "surrounding_text": "LOCAL_IMMUTABLE_STORE_NOT_PRODUCTION = True",
+      "token": "LOCAL_IMMUTABLE_STORE_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1504p_window_1498p_closure_gate_walkthrough.md",
+      "line_number": 40,
+      "phase": "1504",
+      "surrounding_text": "| Dynamic-ranking guard remains set | `DYNAMIC_RANKING_MULTIPLIER_NOT_ACTIVATED: bool = True` | confirmed |",
+      "token": "bool"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1504p_window_1498p_closure_gate_walkthrough.md",
+      "line_number": 51,
+      "phase": "1504",
+      "surrounding_text": "ilc_core/epistemic/jury_assignment_runtime.py:80:PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False",
+      "token": "bool"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1510p_spec_only_obl_batch_walkthrough.md",
+      "line_number": 31,
+      "phase": "1510",
+      "surrounding_text": "| Phase 1494p runtime is local-tier only and guarded | `ilc_core/epistemic/jury_finality_evaluator.py`; `ilc_core/schema/verdict_record_schema.py` | Confirmed. `JURY_FINALITY_EVALUATOR_NOT_PRODUCTION = True` remains set and shard/global escalation is not executed. |",
+      "token": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1514p_window_1505p_1514p_closure_gate_walkthrough.md",
+      "line_number": 56,
+      "phase": "1514",
+      "surrounding_text": "ilc_core/epistemic/jury_assignment_runtime.py:80:PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False",
+      "token": "bool"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1515p_window_1515p_1522p_sequence_lock_walkthrough.md",
+      "line_number": 45,
+      "phase": "1515",
+      "surrounding_text": "| Layer 0 guard retained | `ilc_core/bundle/layer0_protocol_bundle.py` | `ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION = True` confirmed |",
+      "token": "ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1515p_window_1515p_1522p_sequence_lock_walkthrough.md",
+      "line_number": 46,
+      "phase": "1515",
+      "surrounding_text": "| Layer 1 guard retained | `ilc_core/bundle/layer1_genesis_bundle.py` | `ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION = True` confirmed |",
+      "token": "ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1515p_window_1515p_1522p_sequence_lock_walkthrough.md",
+      "line_number": 47,
+      "phase": "1515",
+      "surrounding_text": "| Layer 2 guard retained | `ilc_core/bundle/layer2_epoch_snapshot.py` | `ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION = True` confirmed |",
+      "token": "ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1515p_window_1515p_1522p_sequence_lock_walkthrough.md",
+      "line_number": 48,
+      "phase": "1515",
+      "surrounding_text": "| Layer 3 guard retained | `ilc_core/bundle/layer3_wire_binding.py` | `ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION = True` confirmed |",
+      "token": "ADR_0009_LAYER3_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1516p_adr_0009_layer0_layer1_encoding_integration_walkthrough.md",
+      "line_number": 54,
+      "phase": "1516",
+      "surrounding_text": "| Guard | `ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION = True` | retained `True` |",
+      "token": "ADR_0009_LAYER0_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1516p_adr_0009_layer0_layer1_encoding_integration_walkthrough.md",
+      "line_number": 64,
+      "phase": "1516",
+      "surrounding_text": "| Guard | `ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION = True` | retained `True` |",
+      "token": "ADR_0009_LAYER1_NOT_PUBLIC_DISTRIBUTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1518p_adr_0009_bundle_verifier_test_vectors_walkthrough.md",
+      "line_number": 74,
+      "phase": "1518",
+      "surrounding_text": "`sort_keys=True` and committed under `tests/fixtures/adr_0009/`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1527p_adr0035_cdl_deliberation_prelock_walkthrough.md",
+      "line_number": 59,
+      "phase": "1527",
+      "surrounding_text": "| S7 | The `NodeType` extension to `\"type_definition\"` is deferred to Phase 1529p after ratification and remains default-off under `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`. |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1529p_adr0035_type_registry_runtime_scaffold_walkthrough.md",
+      "line_number": 44,
+      "phase": "1529",
+      "surrounding_text": "- `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1529p_adr0035_type_registry_runtime_scaffold_walkthrough.md",
+      "line_number": 62,
+      "phase": "1529",
+      "surrounding_text": "`Node(type=\"type_definition\")` is now parseable, but it is not authority-bearing while `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`.",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1530p_window_1523p_1530p_closure_gate_walkthrough.md",
+      "line_number": 81,
+      "phase": "1530",
+      "surrounding_text": "`ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True` remains set.",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1530p_window_1523p_1530p_closure_gate_walkthrough.md",
+      "line_number": 92,
+      "phase": "1530",
+      "surrounding_text": "`ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`. The type registry cache remains",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1531p_block4_gap_refresh_walkthrough.md",
+      "line_number": 16,
+      "phase": "1531",
+      "surrounding_text": "default-off under `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`.",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1531p_block4_gap_refresh_walkthrough.md",
+      "line_number": 62,
+      "phase": "1531",
+      "surrounding_text": "`PRODUCTION_EMISSION_NOT_ACTIVATED = False` setting exists in `ilc_core/`. No",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1531p_block4_gap_refresh_walkthrough.md",
+      "line_number": 81,
+      "phase": "1531",
+      "surrounding_text": "`PRODUCTION_EMISSION_NOT_ACTIVATED = True`.",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1532p_obl020_emission_production_path_walkthrough.md",
+      "line_number": 31,
+      "phase": "1532",
+      "surrounding_text": "genesis_overhead_cap_blocked=False, upheld_refutation_recipients=None)` returns",
+      "token": "genesis_overhead_cap_blocked"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1532p_obl020_emission_production_path_walkthrough.md",
+      "line_number": 43,
+      "phase": "1532",
+      "surrounding_text": "`PRODUCTION_EMISSION_NOT_ACTIVATED = True` as the first module-level constant",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1532p_obl020_emission_production_path_walkthrough.md",
+      "line_number": 73,
+      "phase": "1532",
+      "surrounding_text": "PRODUCTION_EMISSION_NOT_ACTIVATED = True",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1533p_obl020_settlement_roots_walkthrough.md",
+      "line_number": 16,
+      "phase": "1533",
+      "surrounding_text": "`PRODUCTION_EMISSION_NOT_ACTIVATED = True`. The result carries",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1533p_obl020_settlement_roots_walkthrough.md",
+      "line_number": 25,
+      "phase": "1533",
+      "surrounding_text": "over UTF-8 encoded compact canonical JSON rendered with `sort_keys=True`,",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1533p_obl020_settlement_roots_walkthrough.md",
+      "line_number": 26,
+      "phase": "1533",
+      "surrounding_text": "`separators=(\",\", \":\")`, `allow_nan=False`, and `ensure_ascii=True`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1533p_obl020_settlement_roots_walkthrough.md",
+      "line_number": 26,
+      "phase": "1533",
+      "surrounding_text": "`separators=(\",\", \":\")`, `allow_nan=False`, and `ensure_ascii=True`.",
+      "token": "ensure_ascii"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1534p_obl020_canonical_economic_events_walkthrough.md",
+      "line_number": 47,
+      "phase": "1534",
+      "surrounding_text": "`sort_keys=True`, compact separators, `allow_nan=False`, and `ensure_ascii=True`.",
+      "token": "sort_keys"
+    },
+    {
+      "boolean_value": false,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1534p_obl020_canonical_economic_events_walkthrough.md",
+      "line_number": 47,
+      "phase": "1534",
+      "surrounding_text": "`sort_keys=True`, compact separators, `allow_nan=False`, and `ensure_ascii=True`.",
+      "token": "allow_nan"
+    },
+    {
+      "boolean_value": true,
+      "classification": "code_style_noise",
+      "file_path": "docs/phases/phase_1534p_obl020_canonical_economic_events_walkthrough.md",
+      "line_number": 47,
+      "phase": "1534",
+      "surrounding_text": "`sort_keys=True`, compact separators, `allow_nan=False`, and `ensure_ascii=True`.",
+      "token": "ensure_ascii"
+    },
+    {
+      "boolean_value": true,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1535p_obl020_round_trip_walkthrough.md",
+      "line_number": 87,
+      "phase": "1535",
+      "surrounding_text": "`True`. No event has `production_emission_activated = True`.",
+      "token": "production_emission_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1536p_block4a_coherence_walkthrough.md",
+      "line_number": 17,
+      "phase": "1536",
+      "surrounding_text": "| `PRODUCTION_EMISSION_NOT_ACTIVATED = True` | pass; direct-read line 39 |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1536p_block4a_coherence_walkthrough.md",
+      "line_number": 26,
+      "phase": "1536",
+      "surrounding_text": "| `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True` | pass; direct-read line 17 of `ilc_core/bundle/type_registry.py` |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1536p_block4a_coherence_walkthrough.md",
+      "line_number": 51,
+      "phase": "1536",
+      "surrounding_text": "PRODUCTION_EMISSION_NOT_ACTIVATED = True",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1536p_block4a_coherence_walkthrough.md",
+      "line_number": 52,
+      "phase": "1536",
+      "surrounding_text": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1536p_block4a_coherence_walkthrough.md",
+      "line_number": 55,
+      "phase": "1536",
+      "surrounding_text": "No `PRODUCTION_EMISSION_NOT_ACTIVATED = False` or",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1536p_block4a_coherence_walkthrough.md",
+      "line_number": 56,
+      "phase": "1536",
+      "surrounding_text": "`ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = False` setting exists in `ilc_core/`.",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_fix1_window_1531p_hardening_walkthrough.md",
+      "line_number": 90,
+      "phase": "1537",
+      "surrounding_text": "`PRODUCTION_EMISSION_NOT_ACTIVATED = True` remains in force.",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_fix1_window_1531p_hardening_walkthrough.md",
+      "line_number": 91,
+      "phase": "1537",
+      "surrounding_text": "`ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True` remains in force. Public source",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_window_1531p_1537p_closure_gate_walkthrough.md",
+      "line_number": 26,
+      "phase": "1537",
+      "surrounding_text": "| Phase 1532p production emission path committed | pass | `obl_020_emission_production_path_committed_phase_1532p` is present; `PRODUCTION_EMISSION_NOT_ACTIVATED = True` is present in `ilc_core/epoch/epoch_emission_production_path.py`. |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_window_1531p_1537p_closure_gate_walkthrough.md",
+      "line_number": 31,
+      "phase": "1537",
+      "surrounding_text": "| `PRODUCTION_EMISSION_NOT_ACTIVATED = True` | pass | Direct-read confirmed the constant in `ilc_core/epoch/epoch_emission_production_path.py`. |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_window_1531p_1537p_closure_gate_walkthrough.md",
+      "line_number": 32,
+      "phase": "1537",
+      "surrounding_text": "| `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True` | pass | Direct-read confirmed the constant in `ilc_core/bundle/type_registry.py`. |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_window_1531p_1537p_closure_gate_walkthrough.md",
+      "line_number": 36,
+      "phase": "1537",
+      "surrounding_text": "| No production emission activation | pass | No `PRODUCTION_EMISSION_NOT_ACTIVATED = False` setting exists in `ilc_core/`; the closure records `production_emission_not_activated_guard_set_phase_1537p`. |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_window_1531p_1537p_closure_gate_walkthrough.md",
+      "line_number": 46,
+      "phase": "1537",
+      "surrounding_text": "PRODUCTION_EMISSION_NOT_ACTIVATED = True",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1537p_window_1531p_1537p_closure_gate_walkthrough.md",
+      "line_number": 47,
+      "phase": "1537",
+      "surrounding_text": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1538p_block4b_gap_refresh_walkthrough.md",
+      "line_number": 16,
+      "phase": "1538",
+      "surrounding_text": "`PRODUCTION_EMISSION_NOT_ACTIVATED = True` retained. Phase 1537p-Fix1 hardened",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1539p_obl021_validator_admission_ejection_walkthrough.md",
+      "line_number": 29,
+      "phase": "1539",
+      "surrounding_text": "VALIDATOR_ADMISSION_NOT_ACTIVATED = True",
+      "token": "VALIDATOR_ADMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1539p_obl021_validator_admission_ejection_walkthrough.md",
+      "line_number": 90,
+      "phase": "1539",
+      "surrounding_text": "VALIDATOR_ADMISSION_NOT_ACTIVATED=True",
+      "token": "VALIDATOR_ADMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1540p_obl022_treasury_validator_reward_walkthrough.md",
+      "line_number": 29,
+      "phase": "1540",
+      "surrounding_text": "TREASURY_DISTRIBUTION_NOT_ACTIVATED = True",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1540p_obl022_treasury_validator_reward_walkthrough.md",
+      "line_number": 120,
+      "phase": "1540",
+      "surrounding_text": "TREASURY_DISTRIBUTION_NOT_ACTIVATED=True",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1541p_obl022_ejected_stake_walkthrough.md",
+      "line_number": 29,
+      "phase": "1541",
+      "surrounding_text": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED = True",
+      "token": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1541p_obl022_ejected_stake_walkthrough.md",
+      "line_number": 106,
+      "phase": "1541",
+      "surrounding_text": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED=True",
+      "token": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1542p_obl027_expansion_bounty_walkthrough.md",
+      "line_number": 29,
+      "phase": "1542",
+      "surrounding_text": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED = True",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1542p_obl027_expansion_bounty_walkthrough.md",
+      "line_number": 112,
+      "phase": "1542",
+      "surrounding_text": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED=True",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1543p_block4b_round_trip_walkthrough.md",
+      "line_number": 54,
+      "phase": "1543",
+      "surrounding_text": "VALIDATOR_ADMISSION_NOT_ACTIVATED=True",
+      "token": "VALIDATOR_ADMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1543p_block4b_round_trip_walkthrough.md",
+      "line_number": 55,
+      "phase": "1543",
+      "surrounding_text": "TREASURY_DISTRIBUTION_NOT_ACTIVATED=True",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1543p_block4b_round_trip_walkthrough.md",
+      "line_number": 56,
+      "phase": "1543",
+      "surrounding_text": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED=True",
+      "token": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1543p_block4b_round_trip_walkthrough.md",
+      "line_number": 57,
+      "phase": "1543",
+      "surrounding_text": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED=True",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "closed_false",
+      "file_path": "docs/phases/phase_1543p_block4b_round_trip_walkthrough.md",
+      "line_number": 60,
+      "phase": "1543",
+      "surrounding_text": "Emitted events preserve `production_*_activated=False` or",
+      "token": "_activated"
+    },
+    {
+      "boolean_value": false,
+      "classification": "still_blocking",
+      "file_path": "docs/phases/phase_1543p_block4b_round_trip_walkthrough.md",
+      "line_number": 61,
+      "phase": "1543",
+      "surrounding_text": "`production_activated=False`.",
+      "token": "production_activated"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1544p_block4b_coherence_walkthrough.md",
+      "line_number": 16,
+      "phase": "1544",
+      "surrounding_text": "| OBL-021 | 1539p | `VALIDATOR_ADMISSION_NOT_ACTIVATED=True` | Phase 1543p PASS | Yes |",
+      "token": "VALIDATOR_ADMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1544p_block4b_coherence_walkthrough.md",
+      "line_number": 17,
+      "phase": "1544",
+      "surrounding_text": "| OBL-022 treasury + reward | 1540p | `TREASURY_DISTRIBUTION_NOT_ACTIVATED=True` | Phase 1543p PASS | Yes |",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1544p_block4b_coherence_walkthrough.md",
+      "line_number": 18,
+      "phase": "1544",
+      "surrounding_text": "| OBL-022 ejected-stake | 1541p | `EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED=True` | Phase 1543p PASS | Yes |",
+      "token": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1544p_block4b_coherence_walkthrough.md",
+      "line_number": 19,
+      "phase": "1544",
+      "surrounding_text": "| OBL-027 | 1542p | `PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED=True` | Phase 1543p PASS | Yes |",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix13_agentic_graph_grammar_axiom_inventory_walkthrough.md",
+      "line_number": 91,
+      "phase": "1545",
+      "surrounding_text": "| `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True` | retained |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix14_transitivity_preserving_agent_projection_walkthrough.md",
+      "line_number": 24,
+      "phase": "1545",
+      "surrounding_text": "| Type registry remains inactive. | `ilc_core/bundle/type_registry.py` and ADR-0035 context | Confirmed: `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`. |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix15_graph_optimization_maintenance_reward_walkthrough.md",
+      "line_number": 18,
+      "phase": "1545",
+      "surrounding_text": "| Productive ECU expansion scaffold exists and is default-off. | `ilc_core/economics/productive_ecu_expansion_bounty_runtime.py` | Confirmed: `PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED = True`. |",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix15_graph_optimization_maintenance_reward_walkthrough.md",
+      "line_number": 23,
+      "phase": "1545",
+      "surrounding_text": "| Production emission remains default-off. | `ilc_core/epoch/epoch_emission_production_path.py` | Confirmed: `PRODUCTION_EMISSION_NOT_ACTIVATED = True`. |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix15_graph_optimization_maintenance_reward_walkthrough.md",
+      "line_number": 24,
+      "phase": "1545",
+      "surrounding_text": "| Treasury distribution remains default-off. | `ilc_core/epoch/treasury_validator_reward_production_path.py` | Confirmed: `TREASURY_DISTRIBUTION_NOT_ACTIVATED = True`. |",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix15_graph_optimization_maintenance_reward_walkthrough.md",
+      "line_number": 117,
+      "phase": "1545",
+      "surrounding_text": "| `PRODUCTION_EMISSION_NOT_ACTIVATED=True` | Preserved. |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix15_graph_optimization_maintenance_reward_walkthrough.md",
+      "line_number": 118,
+      "phase": "1545",
+      "surrounding_text": "| `TREASURY_DISTRIBUTION_NOT_ACTIVATED=True` | Preserved. |",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix17b_adr_acceptance_batch_walkthrough.md",
+      "line_number": 40,
+      "phase": "1545",
+      "surrounding_text": "| ADR-0016 | OBL-027 default-off productive ECU expansion bounty scaffold exists at `ilc_core/economics/productive_ecu_expansion_bounty_runtime.py`; the module retains `PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED = True`, records `ADR_0016_STATUS_PROPOSED` as an activation-gating token, and keeps production bounty activation false. CDL-V3/7 panel/diversity semantics remain governance dependencies, not live activation. | Accepted with runtime activation still deferred |",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1545p_fix6_genesis_v03_methodology_preservation_walkthrough.md",
+      "line_number": 30,
+      "phase": "1545",
+      "surrounding_text": "| Public repository publication did not occur in Phase 1447. | `PUBLIC_REPOSITORY_NOT_PUBLISHED_PHASE_1447_TOKEN`; `PHASE_1447_PUBLIC_REPOSITORY_PUBLISHED = False` | confirmed |",
+      "token": "PHASE_1447_PUBLIC_REPOSITORY_PUBLISHED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1545p_fix7_genesis_common_registry_node_candidate_audit_walkthrough.md",
+      "line_number": 41,
+      "phase": "1545",
+      "surrounding_text": "| `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True`. | `ilc_core/bundle/type_registry.py`; imported in focused test | confirmed |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": false,
+      "classification": "possible_orphan",
+      "file_path": "docs/phases/phase_1548p_obl024_cdl_v6_enforcement_scaffold_walkthrough.md",
+      "line_number": 38,
+      "phase": "1548",
+      "surrounding_text": "| Non-execution guard | Audit records set `execution_authorized=False` and `brake_fired=False`; explicit execution authorization function always raises | satisfied |",
+      "token": "execution_authorized"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1552p_cdl096_prelock_walkthrough.md",
+      "line_number": 64,
+      "phase": "1552",
+      "surrounding_text": "| Activation guards | `RUST_P2P_BRIDGE_NOT_ACTIVATED = True`; `JURY_FINALITY_EVALUATOR_NOT_PRODUCTION = True`; future global-tier runtime requires successor guard. |",
+      "token": "RUST_P2P_BRIDGE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1552p_cdl096_prelock_walkthrough.md",
+      "line_number": 64,
+      "phase": "1552",
+      "surrounding_text": "| Activation guards | `RUST_P2P_BRIDGE_NOT_ACTIVATED = True`; `JURY_FINALITY_EVALUATOR_NOT_PRODUCTION = True`; future global-tier runtime requires successor guard. |",
+      "token": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1553p_cdl096_ratification_walkthrough.md",
+      "line_number": 73,
+      "phase": "1553",
+      "surrounding_text": "RUST_P2P_BRIDGE_NOT_ACTIVATED = True",
+      "token": "RUST_P2P_BRIDGE_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1553p_cdl096_ratification_walkthrough.md",
+      "line_number": 74,
+      "phase": "1553",
+      "surrounding_text": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION = True",
+      "token": "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1553p_cdl096_ratification_walkthrough.md",
+      "line_number": 75,
+      "phase": "1553",
+      "surrounding_text": "GLOBAL_TIER_JURY_NOT_ACTIVATED = True, if runtime code is added later",
+      "token": "GLOBAL_TIER_JURY_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1555p_window_1546p_1555p_closure_gate_walkthrough.md",
+      "line_number": 90,
+      "phase": "1555",
+      "surrounding_text": "| `PRODUCTION_EMISSION_NOT_ACTIVATED = True` | `ilc_core/epoch/epoch_emission_production_path.py` |",
+      "token": "PRODUCTION_EMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1555p_window_1546p_1555p_closure_gate_walkthrough.md",
+      "line_number": 91,
+      "phase": "1555",
+      "surrounding_text": "| `VALIDATOR_ADMISSION_NOT_ACTIVATED = True` | `ilc_core/validator/validator_admission_ejection_production_path.py` |",
+      "token": "VALIDATOR_ADMISSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1555p_window_1546p_1555p_closure_gate_walkthrough.md",
+      "line_number": 92,
+      "phase": "1555",
+      "surrounding_text": "| `TREASURY_DISTRIBUTION_NOT_ACTIVATED = True` | `ilc_core/epoch/treasury_validator_reward_production_path.py` |",
+      "token": "TREASURY_DISTRIBUTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1555p_window_1546p_1555p_closure_gate_walkthrough.md",
+      "line_number": 93,
+      "phase": "1555",
+      "surrounding_text": "| `EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED = True` | `ilc_core/epoch/ejected_stake_distribution_production_path.py` |",
+      "token": "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1555p_window_1546p_1555p_closure_gate_walkthrough.md",
+      "line_number": 94,
+      "phase": "1555",
+      "surrounding_text": "| `PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED = True` | `ilc_core/economics/productive_ecu_expansion_bounty_runtime.py` |",
+      "token": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"
+    },
+    {
+      "boolean_value": true,
+      "classification": "default_off_guard",
+      "file_path": "docs/phases/phase_1555p_window_1546p_1555p_closure_gate_walkthrough.md",
+      "line_number": 95,
+      "phase": "1555",
+      "surrounding_text": "| `ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED = True` | `ilc_core/bundle/type_registry.py` |",
+      "token": "ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED"
+    }
+  ],
+  "generated_phase": "1556",
+  "scan_target": "docs/phases/phase_* with numeric phase >= 600",
+  "schema_version": "phase_boolean_token_census_600_plus_1556.v0.1",
+  "summary": {
+    "classification_counts": {
+      "closed_false": 27,
+      "closed_true": 18,
+      "code_style_noise": 149,
+      "default_off_guard": 102,
+      "historical_superseded": 1,
+      "possible_orphan": 75,
+      "still_blocking": 50
+    },
+    "files_scanned": 154,
+    "high_risk_term_counts_in_possible_or_blocking": {
+      "activation": 16,
+      "claimability": 14,
+      "ecu": 17,
+      "ilc": 22,
+      "mint": 5,
+      "minting": 1,
+      "openclaw": 7,
+      "p2p": 8,
+      "production": 29,
+      "public": 48,
+      "publication": 1,
+      "repo": 6,
+      "settlement": 6,
+      "sidecar": 6,
+      "wallet": 12
+    },
+    "possible_orphan_or_still_blocking_count": 125,
+    "total_entries": 422
+  }
+}
