@@ -51,6 +51,17 @@ from .genesis_intervention_runtime import (
     require_genesis_intervention_execution_authorization,
     write_genesis_intervention_counter_atomic,
 )
+from .serving_receipt import (
+    SERVING_HTTP_TIMEOUT_SECONDS,
+    SERVING_RECEIPT_SCHEMA_VERSION,
+    SERVING_RULE_VERSION,
+    ServingReceipt,
+    ServingReceiptError,
+    build_serving_receipt,
+    serve_genesis_bundle,
+    verify_received_bundle,
+    write_serving_receipt_json,
+)
 
 __all__ = [
     "CDL_040_DEPENDENCY",
@@ -72,9 +83,14 @@ __all__ = [
     "SIGNED_AUDIT_RECORD_REQUIRED_TOKEN",
     "GenesisBootstrapError",
     "SCHEMA_BASELINE_DEPENDENCY",
+    "SERVING_HTTP_TIMEOUT_SECONDS",
+    "SERVING_RECEIPT_SCHEMA_VERSION",
+    "SERVING_RULE_VERSION",
     "GenesisBundleValidationError",
     "GenesisInterventionCounterState",
     "GenesisInterventionRequest",
+    "ServingReceipt",
+    "ServingReceiptError",
     "APPEND_ONLY_INVOCATION_LOG_TOKEN",
     "CDL_V6_EXTRAORDINARY_PATH_NOT_ORDINARY_GOVERNANCE_TOKEN",
     "CDL_V6_GENESIS_INTERVENTION_RUNTIME_TOKEN",
@@ -83,6 +99,7 @@ __all__ = [
     "EPOCH_CEILING_ENFORCER_TOKEN",
     "canonical_genesis_vectors",
     "build_genesis_intervention_audit_record",
+    "build_serving_receipt",
     "build_genesis_admission_control_bundle",
     "enforce_genesis_admission",
     "generate_validator_enrollment_record",
@@ -92,9 +109,12 @@ __all__ = [
     "record_genesis_intervention_guardrail_invocation",
     "require_genesis_intervention_execution_authorization",
     "verify_genesis_bundle",
+    "serve_genesis_bundle",
     "verify_admission_control_bundle",
     "verify_epoch_zero_state",
     "verify_genesis_enrollment",
     "write_genesis_intervention_counter_atomic",
+    "verify_received_bundle",
+    "write_serving_receipt_json",
     "EpistemicWorkTask",
 ]
