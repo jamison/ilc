@@ -198,7 +198,7 @@ def _build_terminal_maps(nodes: list[dict[str, Any]]) -> dict[str, str]:
 
         if node_id.startswith("policy:"):
             mapping.setdefault(f"POLICY:{_slug(label or node_id)}", node_id)
-        if node_id in {NODE0, PUBLIC_ROOT, PRIVATE_ROOT, GENERATED_ROOT}:
+        if node_id == NODE0:
             mapping[node_id] = node_id
     return mapping
 
@@ -299,8 +299,6 @@ def _evidence_hint(recipe_id: str, text: str) -> tuple[str, str]:
 def _trace_role(node: dict[str, Any], recipe_id: str, terminal: str | None) -> str:
     if terminal is None:
         return "undeclared"
-    if terminal in {PRIVATE_ROOT, GENERATED_ROOT, PUBLIC_ROOT}:
-        return "CLASSIFIED_BY"
     kind = str(node.get("node_kind", ""))
     path = str(node.get("source_path", ""))
     if kind == "runtime_source_file_node" or path.startswith("ilc_core/"):
@@ -333,11 +331,15 @@ def _privacy_class(node: dict[str, Any]) -> str:
 
 
 def _classification_terminal(node: dict[str, Any], node_ids: set[str]) -> str | None:
-    privacy = _privacy_class(node)
-    if privacy == "genesis_private_or_local" and PRIVATE_ROOT in node_ids:
-        return PRIVATE_ROOT
-    if privacy == "generated_evidence" and GENERATED_ROOT in node_ids:
-        return GENERATED_ROOT
+    """Return a Genesis-rooted classification rule terminal if one is known.
+
+    Fix22 material roots are containment buckets, not classification rules. A
+    private/generated/public bucket alone is therefore not a valid CLASSIFIED_BY
+    terminal under the Fix24/Fix25 typed-trace standard. Until a policy/rule
+    terminal exists for these classifications, these candidates must stay
+    deferred.
+    """
+    _ = (node, node_ids)
     return None
 
 

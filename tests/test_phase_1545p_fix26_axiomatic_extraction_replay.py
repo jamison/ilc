@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SIM_JSON = ROOT / "out/sim_atlas_axiomatic_extraction_replay_1545p_fix26.json"
 ATOM_QUEUE = ROOT / "out/atlas_research/genesis_atlas_atom_candidates_1545p_fix26.jsonl"
+GRAPH = ROOT / "out/genesis_atlas_full_repo_candidate_1545p_fix22.json"
 REPORT = ROOT / "docs/sims/sim_atlas_axiomatic_extraction_replay_1545p_fix26_v0.1.md"
 REVIEW = ROOT / "docs/specs/ilc_atlas_axiomatic_extraction_replay_review_1545p_fix26_v0.1.md"
 WALKTHROUGH = ROOT / "docs/phases/phase_1545p_fix26_axiomatic_extraction_replay_walkthrough.md"
@@ -55,6 +56,24 @@ def _queue_rows() -> list[dict]:
     return [json.loads(line) for line in _read(ATOM_QUEUE).splitlines() if line.strip()]
 
 
+def _authority_forward_terminals() -> set[str]:
+    graph = json.loads(_read(GRAPH))
+    adjacency: dict[str, set[str]] = {}
+    node0 = "artifact:genesis_intent_attestation_init_authority_map"
+    for edge in graph["edges"]:
+        if edge["edge_type"] in {"GOVERNS", "ATTESTATION"}:
+            adjacency.setdefault(edge["source"], set()).add(edge["target"])
+    seen = {node0}
+    queue = [node0]
+    while queue:
+        current = queue.pop(0)
+        for target in sorted(adjacency.get(current, set())):
+            if target not in seen:
+                seen.add(target)
+                queue.append(target)
+    return seen
+
+
 def test_fix26_outputs_and_tokens_present():
     payload = _payload()
     surfaces = [_read(REPORT), _read(REVIEW), _read(WALKTHROUGH), _read(STATUS), _read(PLANNING)]
@@ -70,9 +89,10 @@ def test_atom_candidate_queue_has_required_schema_and_non_promotional_classes():
     rows = _queue_rows()
 
     assert len(rows) == payload["atom_candidate_record_count"] == 20440
-    assert payload["queue_counts"]["accepted_atom_candidates_for_review"] == 7873
-    assert payload["queue_counts"]["deferred_low_confidence"] == 12555
-    assert payload["queue_counts"]["rejected_overclaim_or_noisy"] == 12
+    assert payload["queue_counts"]["accepted_atom_candidates_for_review"] == 5482
+    assert payload["queue_counts"]["deferred_low_confidence"] == 14958
+    assert payload["queue_counts"]["rejected_overclaim_or_noisy"] == 0
+    assert "CLASSIFIED_BY" not in payload["trace_role_counts"]
 
     for row in rows[:250]:
         assert set(row) == REQUIRED_RECORD_KEYS
@@ -104,6 +124,24 @@ def test_calibration_gates_and_confusion_matrix_remain_clean():
     assert gates["fix20_negative_controls"]["failed_count"] == 0
     assert gates["fix20_manual_spot_checks"]["failed_count"] == 0
     assert "held-out validation" in gates["held_out_validation_non_claim"]
+
+
+def test_accepted_candidates_target_authority_forward_terminals_only():
+    rows = _queue_rows()
+    authority_terminals = _authority_forward_terminals()
+    material_roots = {
+        "artifact:full_repo_genesis_atlas_candidate_root_1545p_fix22",
+        "artifact:generated_evidence_material_root_1545p_fix22",
+        "artifact:genesis_private_local_material_root_1545p_fix22",
+        "artifact:public_release_candidate_material_root_1545p_fix22",
+    }
+
+    accepted = [row for row in rows if row["queue_class"] == "accepted_atom_candidates_for_review"]
+    assert accepted
+    for row in accepted:
+        terminal = row["typed_trace_terminal_node_id"]
+        assert terminal in authority_terminals
+        assert terminal not in material_roots
 
 
 def test_denominator_lock_trace_orientation_and_python_ast_are_recorded():
