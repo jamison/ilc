@@ -76,6 +76,7 @@ def test_every_objective_has_required_fields_and_hard_invariants_are_separate():
     assert len(data["objective_vector"]) >= 10
     assert "endpoint_validity" in data["tier1_hard_invariants"]
     assert "privacy_tier_preservation" in data["tier1_hard_invariants"]
+    assert "anti_gaming_penalty" not in data["tier1_hard_invariants"]
     assert "spectral_laplacian_health" in data["tier2_objective_vector"]
     assert "no_activation_preservation" not in data["tier2_objective_vector"]
 
