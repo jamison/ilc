@@ -53,6 +53,28 @@ def test_guidance_defines_concrete_phase_route():
         assert f'"node_kind": "{node_kind}"' in text
 
 
+def test_sonnet_checker_feedback_is_recorded_with_correct_boundaries():
+    combined = "\n".join([_read(GUIDANCE), _read(FORWARD_PLAN), _read(WINDOW)])
+
+    for required in [
+        "tools/check_test_graph_coverage.py",
+        "out/test_graph_coverage_phase_1577.json",
+        "docs/specs/ilc_test_graph_coverage_report_1577_v0.1.md",
+        "missing_candidate_node",
+        "missing_tests_edge",
+        "dangling_tests_target",
+        "ready_for_function_collection",
+        "--enforce-threshold",
+        "report-first",
+        "sort_keys=True",
+        "allow_nan=False",
+    ]:
+        assert required in combined
+
+    assert "REFERENCES_AUTHORITY` is not mandatory for every test" in _read(GUIDANCE)
+    assert "role-specific authority traces are checked only where expected" in _read(FORWARD_PLAN)
+
+
 def test_fix32_prompt_is_valid_and_non_authorizing():
     result = subprocess.run(
         [sys.executable, "tools/validate_phase_prompt.py", str(PROMPT)],
@@ -100,6 +122,7 @@ def test_window_1576_1584_has_scopes_tokens_and_non_claims():
         assert f"Phase {phase}" in text
 
     for token in [
+        "test_graph_coverage_checker_committed_phase_1577",
         "pytest_sidecar_registry_mode_scaffold_committed_phase_1579",
         "canonical_test_evidence_envelope_rehearsed_phase_1580",
         "pytest_sidecar_graph_hydrated_workspace_committed_phase_1581",
