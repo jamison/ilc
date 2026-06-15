@@ -162,7 +162,29 @@ Produce a planning/spec phase that defines:
 
 Output should be a spec and schema only. No runtime activation.
 
-### Fix33 candidate: pytest-to-graph collector
+### Fix33 candidate: test graph coverage checker
+
+Build `tools/check_test_graph_coverage.py` as a read-only diagnostic that
+compares the local `tests/**/*.py` corpus against current Atlas/Fix queue
+artifacts:
+
+- every test file has a candidate node or documented exclusion;
+- every mapped test node has either an outgoing `TESTS` edge or a classified
+  gap such as `missing_tests_edge`;
+- every `TESTS` target resolves to an existing graph node or is reported as
+  `dangling_tests_target`;
+- role-specific authority traces are checked only where expected, not required
+  universally;
+- private, historical, expensive, live-network, and sensitive test files are
+  classified by executor gate;
+- deterministic JSON output is written with sorted keys, compact separators, and
+  `allow_nan=False`.
+
+The initial checker run should be report-first. A future `--enforce-threshold`
+mode is appropriate after the baseline is accepted, but it should not fail CI
+before the graph gaps are measured and routed.
+
+### Fix34 candidate: pytest-to-graph collector
 
 Build a research-only collector that reads local `pytest --collect-only` output
 and Python AST metadata, then emits candidate nodes:
@@ -175,7 +197,7 @@ and Python AST metadata, then emits candidate nodes:
 The collector must not promote edges to canonical Atlas authority. It emits a
 candidate queue for review.
 
-### Fix34 candidate: canonical test evidence envelope
+### Fix35 candidate: canonical test evidence envelope
 
 Build a local runner wrapper that executes selected test nodes and emits
 canonical JSON evidence records:
@@ -188,7 +210,7 @@ canonical JSON evidence records:
 - no public serving;
 - no graph mutation.
 
-### Fix35 candidate: graph-derived test frontier report
+### Fix36 candidate: graph-derived test frontier report
 
 Query the Atlas/LMDB projection for:
 
