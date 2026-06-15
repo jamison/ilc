@@ -1,0 +1,9 @@
+{
+  "artifact": "genesis_atlas_enriched_candidate_1545p_fix27_prepass.json",
+  "artifact_path": "out/atlas_research/genesis_atlas_enriched_candidate_1545p_fix27_prepass.json",
+  "edges": 53825,
+  "nodes": 10035,
+  "note": "Not committed (35MB, gitignored). Pre-pass is script-reproducible; manual B1-B12 requires replayable annotation data or force-added artifact.",
+  "phase": "1545p-Fix27",
+  "sha256": "e97b9c17f7ffa702d2879c5b7ed6ccf645a7071009c8b2ca109617d05fb2fa88"
+}
