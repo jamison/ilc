@@ -158,3 +158,26 @@ If a test is always skipped on purpose, keep it only when all three are true:
 
 Remove or rewrite tests that are dead, permanently unrunnable, or asserting
 superseded state without archival value.
+
+## Future Homoiconic Test Registry
+
+Forward plan:
+`docs/specs/ilc_homoiconic_test_registry_forward_plan_v0.1.md`
+
+The current test suite is still organized around local `pytest` execution.
+The planned homoiconic model keeps `pytest` as an executor, but moves test
+discovery and evidence semantics into graph nodes and typed edges.
+
+The intended transition is:
+
+- test files become graph nodes with `TESTS` edges;
+- test functions become graph nodes with `pytest_nodeid`, marks, executor
+  profile, fixture dependencies, expected invariants, and target coverage;
+- test runs emit canonical evidence nodes;
+- graph queries answer which tests validate a runtime, spec, ADR, CDL, or Atlas
+  node;
+- `pytest <path>::<test_name>` remains one concrete executor command resolved
+  from the graph.
+
+This future registry is planning-only until a later phase implements a
+collector, evidence envelope, and graph-derived test frontier report.
