@@ -1,0 +1,9 @@
+{
+  "artifact": "genesis_atlas_rewrite_candidates_1545p_fix27.jsonl",
+  "artifact_path": "out/atlas_research/genesis_atlas_rewrite_candidates_1545p_fix27.jsonl",
+  "bytes": 125101530,
+  "candidate_record_count": 31741,
+  "note": "Not committed because it is 119 MiB and gitignored. Regenerate with .venv/bin/python tools/evaluators/sim_atlas_rewrite_candidate_generation_1545p_fix27.py.",
+  "phase": "1545p-Fix27",
+  "sha256": "ae4c11cb105f70d6c496506f33acd3d8c6338047f465d374efe30aacdc5808c0"
+}
