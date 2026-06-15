@@ -201,6 +201,26 @@ Query the Atlas/LMDB projection for:
 Compare this graph-derived frontier against `docs/testing/test_inventory.md`,
 `docs/phases/STATUS.md`, and `docs/PLANNING_INDEX.md`.
 
+### Candidate Window 1576-1584: pytest sidecar implementation
+
+After the Fix32-Fix36 support lane or equivalent preparation, the proposed
+implementation window is:
+
+`docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md`
+
+This window separates the sidecar into registry mode and graph-hydrated
+workspace mode:
+
+- registry mode: graph query resolves existing local pytest node IDs and runs
+  local pytest under explicit executor gates;
+- graph-hydrated mode: graph/source-tree nodes hydrate a temporary verified
+  workspace, then pytest executes inside that workspace;
+- native pytest plugin mode is deferred until both modes are stable.
+
+The window is a candidate proposal only. It does not supersede Block 6 and does
+not authorize public RC, signing, graph upload, runtime activation, or
+governance mutation.
+
 ## 7. Governance Boundary
 
 ADR is needed if the homoiconic test registry becomes the canonical protocol
@@ -253,3 +273,6 @@ Implementation guidance:
 
 Draft executable prompt:
 `docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix32_g10_homoiconic_test_registry_contract.md`
+
+Candidate phase window:
+`docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md`
