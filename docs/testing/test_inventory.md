@@ -167,6 +167,12 @@ Forward plan:
 Implementation guidance:
 `docs/specs/ilc_homoiconic_test_registry_implementation_guidance_v0.1.md`
 
+Phase 1545p-Fix32 contract:
+`docs/specs/ilc_homoiconic_test_registry_contract_1545p_fix32_v0.1.md`
+
+Phase 1545p-Fix32 implementation route:
+`docs/specs/ilc_homoiconic_test_registry_implementation_route_1545p_fix32_v0.1.md`
+
 The current test suite is still organized around local `pytest` execution.
 The planned homoiconic model keeps `pytest` as an executor, but moves test
 discovery and evidence semantics into graph nodes and typed edges.
