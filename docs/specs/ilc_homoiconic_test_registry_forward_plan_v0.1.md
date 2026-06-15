@@ -168,6 +168,11 @@ Build `tools/check_test_graph_coverage.py` as a read-only diagnostic that
 compares the local `tests/**/*.py` corpus against current Atlas/Fix queue
 artifacts:
 
+- prefer `out/atlas_research/genesis_atlas_enriched_candidate_1545p_fix27_prepass.json`
+  because it contains the Fix27 annotation-pass edges;
+- load Fix26/Fix27 JSONL queue artifacts as supplementary edge context;
+- record `coverage_input_scope: lower_information_fallback` if it must run
+  against Fix22 or another lower-information graph;
 - every test file has a candidate node or documented exclusion;
 - every mapped test node has either an outgoing `TESTS` edge or a classified
   gap such as `missing_tests_edge`;
