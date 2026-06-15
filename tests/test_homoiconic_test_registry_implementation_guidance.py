@@ -58,6 +58,10 @@ def test_sonnet_checker_feedback_is_recorded_with_correct_boundaries():
 
     for required in [
         "tools/check_test_graph_coverage.py",
+        "genesis_atlas_enriched_candidate_1545p_fix27_prepass.json",
+        "genesis_atlas_atom_candidates_1545p_fix26.jsonl",
+        "genesis_atlas_semantic_prepass_fix27.jsonl",
+        "coverage_input_scope: lower_information_fallback",
         "out/test_graph_coverage_phase_1577.json",
         "docs/specs/ilc_test_graph_coverage_report_1577_v0.1.md",
         "missing_candidate_node",
@@ -73,6 +77,7 @@ def test_sonnet_checker_feedback_is_recorded_with_correct_boundaries():
 
     assert "REFERENCES_AUTHORITY` is not mandatory for every test" in _read(GUIDANCE)
     assert "role-specific authority traces are checked only where expected" in _read(FORWARD_PLAN)
+    assert "test_graph_coverage_enriched_input_preferred_phase_1577" in _read(WINDOW)
 
 
 def test_fix32_prompt_is_valid_and_non_authorizing():

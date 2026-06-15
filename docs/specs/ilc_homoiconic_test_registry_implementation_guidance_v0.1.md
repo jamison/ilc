@@ -195,6 +195,10 @@ or signing.
 Build `tools/check_test_graph_coverage.py` as a research-only audit runner that:
 
 - enumerates all local `tests/**/*.py` files;
+- uses `out/atlas_research/genesis_atlas_enriched_candidate_1545p_fix27_prepass.json`
+  as the preferred graph input when present, because it includes the Fix27
+  annotation-pass edges that the lower-information Fix22 graph does not carry;
+- accepts Fix26/Fix27 queue inputs as supplementary candidate-edge context;
 - resolves each file to its Fix22/Fix26/Fix27 candidate node;
 - checks whether each test file has test semantics in the graph;
 - checks whether outgoing `TESTS` edges exist and target valid nodes;
@@ -210,11 +214,17 @@ Recommended command shape:
 
 ```bash
 python tools/check_test_graph_coverage.py \
-  --graph out/atlas_research/<candidate>.json \
-  --queue out/atlas_research/<candidate_edges>.jsonl \
+  --graph out/atlas_research/genesis_atlas_enriched_candidate_1545p_fix27_prepass.json \
+  --queue out/atlas_research/genesis_atlas_atom_candidates_1545p_fix26.jsonl \
+  --queue out/atlas_research/genesis_atlas_semantic_prepass_fix27.jsonl \
   --json-out out/test_graph_coverage_phase_1577.json \
   --report docs/specs/ilc_test_graph_coverage_report_1577_v0.1.md
 ```
+
+If the enriched Fix27 graph is unavailable, the checker may fall back to a
+lower-information candidate graph only if the JSON and human report explicitly
+record `coverage_input_scope: lower_information_fallback`. A fallback run must
+not be compared directly against an enriched-graph baseline.
 
 The initial Phase 1577 run should be report-first. It may support
 `--enforce-threshold`, but that flag should be opt-in until a baseline is
