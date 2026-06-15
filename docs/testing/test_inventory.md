@@ -182,5 +182,12 @@ The intended transition is:
 - `pytest <path>::<test_name>` remains one concrete executor command resolved
   from the graph.
 
+The planned pytest sidecar has two implementation modes before any native pytest
+plugin work:
+
+- registry mode resolves graph-selected test nodes to local pytest commands;
+- graph-hydrated workspace mode verifies graph/source-tree digests before
+  executing pytest in a temporary workspace.
+
 This future registry is planning-only until a later phase implements a
 collector, evidence envelope, and graph-derived test frontier report.

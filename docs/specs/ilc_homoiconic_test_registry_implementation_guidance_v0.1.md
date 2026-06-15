@@ -29,7 +29,44 @@ The practical inversion is:
 - target model: graph query -> selected test nodes -> executor invocation ->
   canonical evidence envelope -> graph evidence node.
 
-## 2. Required Pushback
+## 2. Pytest Sidecar Architecture
+
+The sidecar should be introduced in three modes, in this order.
+
+### Mode 1: registry-mode executor
+
+The sidecar queries the graph or local Atlas projection for `test_file` and
+`test_function` nodes, resolves them to existing local pytest node IDs, enforces
+executor profile gates, and invokes local `pytest`.
+
+This is the first implementation target because it preserves the current repo
+checkout and pytest behavior while moving discovery and evidence semantics into
+the graph.
+
+Minimum command shape:
+
+```bash
+ilc-test run --graph out/atlas_research/<candidate>.json --selector <node-id> --profile pytest_default_local
+```
+
+### Mode 2: graph-hydrated workspace executor
+
+The sidecar hydrates a bounded graph slice into a temporary workspace, verifies
+every file against the graph/source-tree digests, runs pytest inside that
+workspace, and emits the same evidence envelope.
+
+This is the first genuinely distributed/homoiconic execution mode: the graph is
+the source of execution material and the local directory is only a verified
+cache.
+
+### Mode 3: native pytest collector/plugin
+
+A custom pytest collector reads graph nodes directly and creates pytest items.
+This is feasible but should be deferred. Pytest collection is sensitive to
+imports, `conftest.py`, fixtures, parametrization, and package layout. Implement
+Modes 1 and 2 before attempting a graph-native pytest plugin.
+
+## 3. Required Pushback
 
 The following constraints are mandatory for future prompts and implementations.
 
@@ -56,7 +93,11 @@ The following constraints are mandatory for future prompts and implementations.
    Future docs must not describe them as Genesis-signed until a signing phase
    actually signs them.
 
-## 3. Node Model
+7. Registry-mode sidecar output is not enough for distributed execution. It is
+   the right bootstrap, but the graph-hydrated workspace mode is needed before
+   the central repo can fade without losing reproducible test execution.
+
+## 4. Node Model
 
 Minimum `test_file` node:
 
@@ -116,7 +157,7 @@ Minimum `test_evidence_run` node:
 }
 ```
 
-## 4. Edge Model
+## 5. Edge Model
 
 Use role-specific edges. Do not overload `TESTS`.
 
@@ -135,7 +176,7 @@ Use role-specific edges. Do not overload `TESTS`.
 - `REGRESSES`: evidence reopens or blocks a claim.
 - `SUPERSEDES`: newer test/evidence replaces a stale node.
 
-## 5. Implementation Route
+## 6. Implementation Route
 
 ### Phase 1545p-Fix32: contract
 
@@ -193,13 +234,28 @@ Query the graph and evidence records for:
 This report becomes the bridge from local pytest coverage to homoiconic
 maintenance and gap discovery.
 
+### Window 1576-1584: pytest sidecar implementation window
+
+After Fix32-Fix36 or equivalent preparation, execute the candidate window in
+`docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md`.
+That window implements:
+
+- file-level Atlas smoke audit;
+- function-node collection;
+- registry-mode pytest sidecar;
+- canonical evidence-envelope rehearsal;
+- graph-hydrated workspace mode;
+- graph-derived test frontier reporting;
+- multi-agent evidence profile planning;
+- coherence and governance handoff.
+
 ### Later ADR/CDL route
 
 An ADR is required before the homoiconic test registry becomes protocol
 architecture. A CDL is required only if test evidence grants governance effect,
 public economic weight, eligibility, claimability, or constitutional authority.
 
-## 6. Acceptance Standard
+## 7. Acceptance Standard
 
 The registry lane is ready for public-RC support only when all of the following
 are true:
@@ -209,11 +265,14 @@ are true:
 - every default-regression test file has at least one valid outgoing `TESTS` or
   deferred-gap classification;
 - function-level node IDs are derived from actual pytest collection output;
+- registry-mode sidecar can resolve graph-selected tests to safe local pytest
+  commands;
+- graph-hydrated sidecar can run a bounded verified workspace rehearsal;
 - opt-in/private tests have explicit graph gates;
 - evidence envelopes are deterministic and replayable;
 - no test result is overclaimed as authority or activation.
 
-## 7. Non-Claims
+## 8. Non-Claims
 
 This guidance does not claim:
 
