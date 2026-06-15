@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import json
 import os
-import subprocess
 import tempfile
 from collections import Counter, defaultdict, deque
 from pathlib import Path
@@ -178,15 +177,6 @@ def repo_file_counts(graph: dict[str, Any]) -> dict[str, int]:
         else:
             counts["public_support"] += 1
     return dict(counts)
-
-
-def git_head() -> str:
-    try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip()
-    except subprocess.CalledProcessError:
-        return "git_head_unavailable"
 
 
 def fix30_added_edges(graph: dict[str, Any]) -> list[dict[str, Any]]:
@@ -378,6 +368,15 @@ def main() -> None:
     spectral = load_json(FIX29_SPECTRAL)
     optimized = load_json(FIX30_OPTIMIZED)
     fix30_summary = load_json(FIX30_SUMMARY)
+    stable_source_context = {
+        "fix22_source_git_commit": full.get("source_git_commit", "unknown"),
+        "fix30_input_digests": fix30_summary.get("input_digests", {}),
+        "source_context_note": (
+            "Stable input context only. This intentionally does not record the "
+            "ambient HEAD, so rerunning the committed Fix31 reducer does not "
+            "dirty outputs after the Fix31 commit."
+        ),
+    }
 
     authority_traceable = set(
         diagnostic["authority_traceability"]["authority_traceable_node_ids"]
@@ -575,7 +574,7 @@ def main() -> None:
     batch_plan = {
         "schema_version": "ilc.genesis_atlas.public_private_batch_plan.fix31.v1",
         "phase": "1545p-Fix31",
-        "source_git_commit": git_head(),
+        "source_context": stable_source_context,
         "signing_batches": {
             "genesis_core_fix18": {
                 "candidate_variant": "v04_core_only_fix18_preserved",
@@ -618,7 +617,7 @@ def main() -> None:
     variants_payload = {
         "schema_version": "ilc.genesis_atlas.v04_v05.candidate_variants.fix31.v1",
         "phase": "1545p-Fix31",
-        "source_git_commit": git_head(),
+        "source_context": stable_source_context,
         "variants": variants,
         "pareto_frontier": pareto_rows,
         "why_not_selected": why_not_selected,

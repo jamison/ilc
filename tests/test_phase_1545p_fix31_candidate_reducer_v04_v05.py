@@ -84,6 +84,20 @@ def test_fix31_proof_classes_and_batch_records():
     ] > 0
 
 
+def test_fix31_source_context_is_stable_not_ambient_head():
+    variants = _json(VARIANTS)
+    batch = _json(BATCH_PLAN)
+
+    for payload in (variants, batch):
+        assert "source_git_commit" not in payload
+        source_context = payload["source_context"]
+        assert source_context["fix22_source_git_commit"] == (
+            "394a0db7d1d9eff8012ac1f6d87374fb290cf328"
+        )
+        assert "fix30_input_digests" in source_context
+        assert "ambient HEAD" in source_context["source_context_note"]
+
+
 def test_fix31_decision_packet_non_claims_and_human_gate():
     payload = _json(VARIANTS)
     decision = payload["signing_scope_decision"]
