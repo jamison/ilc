@@ -79,6 +79,11 @@ Sensitivity: NON-SENSITIVE.
 Scope:
 
 - implement `tools/check_test_graph_coverage.py` as a read-only diagnostic;
+- use `out/atlas_research/genesis_atlas_enriched_candidate_1545p_fix27_prepass.json`
+  as the preferred graph input when present;
+- load Fix26/Fix27 queue artifacts as supplementary candidate-edge context;
+- record `coverage_input_scope: lower_information_fallback` if the checker must
+  fall back to a lower-information graph such as Fix22 alone;
 - enumerate all `tests/**/*.py` files;
 - map every test file to its Fix22/Fix26/Fix27 candidate node where possible;
 - verify each test file node has test semantics or a classified gap;
@@ -100,6 +105,7 @@ Completion tokens:
 
 - `test_graph_coverage_checker_committed_phase_1577`
 - `homoiconic_test_file_atlas_smoke_audit_committed_phase_1577`
+- `test_graph_coverage_enriched_input_preferred_phase_1577`
 - `test_file_candidate_node_mapping_recorded_phase_1577`
 - `test_graph_gap_classes_recorded_phase_1577`
 - `test_graph_coverage_threshold_report_only_phase_1577`
