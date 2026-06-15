@@ -10,6 +10,12 @@ PROMPT = (
     / "docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix32_g10_homoiconic_test_registry_contract.md"
 )
 FORWARD_PLAN = ROOT / "docs/specs/ilc_homoiconic_test_registry_forward_plan_v0.1.md"
+WINDOW = (
+    ROOT
+    / "docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md"
+)
+INVENTORY = ROOT / "docs/testing/test_inventory.md"
+PLANNING_INDEX = ROOT / "docs/PLANNING_INDEX.md"
 
 
 def _read(path: Path) -> str:
@@ -39,6 +45,7 @@ def test_guidance_defines_concrete_phase_route():
         "Phase 1545p-Fix34: pytest collection to function-node candidates",
         "Phase 1545p-Fix35: canonical evidence envelope rehearsal",
         "Phase 1545p-Fix36: graph-derived test frontier report",
+        "Window 1576-1584: pytest sidecar implementation window",
     ]:
         assert phase in text
 
@@ -68,4 +75,49 @@ def test_forward_plan_points_to_fix32_and_prompt_exists():
     text = _read(FORWARD_PLAN)
 
     assert "Phase 1545p-Fix32: Homoiconic Test Registry Contract" in text
+    assert "Candidate Window 1576-1584: pytest sidecar implementation" in text
     assert PROMPT.exists()
+    assert WINDOW.exists()
+
+
+def test_sidecar_architecture_records_registry_then_hydration_then_plugin_deferral():
+    combined = "\n".join([_read(GUIDANCE), _read(FORWARD_PLAN), _read(INVENTORY), _read(WINDOW)])
+
+    for required in [
+        "registry-mode executor",
+        "graph-hydrated workspace",
+        "native pytest collector/plugin",
+        "native pytest plugin mode is deferred",
+        "pytest <path>::<test_name>",
+    ]:
+        assert required in combined
+
+
+def test_window_1576_1584_has_scopes_tokens_and_non_claims():
+    text = _read(WINDOW)
+
+    for phase in [str(number) for number in range(1576, 1585)]:
+        assert f"Phase {phase}" in text
+
+    for token in [
+        "pytest_sidecar_registry_mode_scaffold_committed_phase_1579",
+        "canonical_test_evidence_envelope_rehearsed_phase_1580",
+        "pytest_sidecar_graph_hydrated_workspace_committed_phase_1581",
+        "graph_derived_test_frontier_report_committed_phase_1582",
+        "window_1576_1584_homoiconic_test_registry_closed_phase_1584",
+    ]:
+        assert token in text
+
+    for non_claim in [
+        "does not open Window 1576-1584",
+        "public RC activation",
+        "Genesis signing",
+        "canonical Atlas mutation",
+        "replacement of `pytest`",
+        "ADR/CDL mutation",
+    ]:
+        assert non_claim in text
+
+    assert "docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md" in _read(
+        PLANNING_INDEX
+    )
