@@ -164,6 +164,9 @@ superseded state without archival value.
 Forward plan:
 `docs/specs/ilc_homoiconic_test_registry_forward_plan_v0.1.md`
 
+Implementation guidance:
+`docs/specs/ilc_homoiconic_test_registry_implementation_guidance_v0.1.md`
+
 The current test suite is still organized around local `pytest` execution.
 The planned homoiconic model keeps `pytest` as an executor, but moves test
 discovery and evidence semantics into graph nodes and typed edges.

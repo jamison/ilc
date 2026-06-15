@@ -247,3 +247,9 @@ The next concrete prompt should be:
 
 It should be NON-SENSITIVE, planning/spec-only, and should not mutate runtime,
 Atlas canon, public path, signing state, or governance logs.
+
+Implementation guidance:
+`docs/specs/ilc_homoiconic_test_registry_implementation_guidance_v0.1.md`
+
+Draft executable prompt:
+`docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix32_g10_homoiconic_test_registry_contract.md`
