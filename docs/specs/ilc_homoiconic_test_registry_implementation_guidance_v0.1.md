@@ -96,6 +96,12 @@ The following constraints are mandatory for future prompts and implementations.
 7. Registry-mode sidecar output is not enough for distributed execution. It is
    the right bootstrap, but the graph-hydrated workspace mode is needed before
    the central repo can fade without losing reproducible test execution.
+8. `REFERENCES_AUTHORITY` is not mandatory for every test. Governance, window,
+   ADR, CDL, and release-gate tests may require an authority trace, but ordinary
+   runtime unit tests can be valid with `TESTS`, `COVERS_SYMBOL`,
+   `DERIVED_FROM`, and executor-profile edges only. A checker must classify
+   missing authority edges by test role rather than treating them as a universal
+   failure.
 
 ## 4. Node Model
 
@@ -186,16 +192,34 @@ or signing.
 
 ### Phase 1545p-Fix33: test-node Atlas smoke audit
 
-Build a research-only audit runner that:
+Build `tools/check_test_graph_coverage.py` as a research-only audit runner that:
 
 - enumerates all local `tests/**/*.py` files;
 - resolves each file to its Fix22/Fix26/Fix27 candidate node;
 - checks whether each test file has test semantics in the graph;
 - checks whether outgoing `TESTS` edges exist and target valid nodes;
+- checks whether role-specific authority edges are present only where expected,
+  not as a universal condition for all test files;
 - classifies gaps as `missing_candidate_node`, `missing_tests_edge`,
   `dangling_tests_target`, `missing_executor_profile`, `private_or_opt_in_gate`,
-  or `ready_for_function_collection`;
-- emits deterministic JSON and a human report.
+  `missing_expected_authority_trace`, or `ready_for_function_collection`;
+- emits deterministic JSON with `sort_keys=True`, `separators=(",", ":")`, and
+  `allow_nan=False`, plus a human report.
+
+Recommended command shape:
+
+```bash
+python tools/check_test_graph_coverage.py \
+  --graph out/atlas_research/<candidate>.json \
+  --queue out/atlas_research/<candidate_edges>.jsonl \
+  --json-out out/test_graph_coverage_phase_1577.json \
+  --report docs/specs/ilc_test_graph_coverage_report_1577_v0.1.md
+```
+
+The initial Phase 1577 run should be report-first. It may support
+`--enforce-threshold`, but that flag should be opt-in until a baseline is
+recorded. Do not make CI fail on known graph gaps before the threshold is
+accepted in a later phase.
 
 This phase measures file-level readiness. It does not create canonical graph
 nodes or execute test functions.
@@ -264,6 +288,8 @@ are true:
   exclusion;
 - every default-regression test file has at least one valid outgoing `TESTS` or
   deferred-gap classification;
+- test graph coverage is measured by `tools/check_test_graph_coverage.py` and
+  recorded as both deterministic JSON and human-readable report;
 - function-level node IDs are derived from actual pytest collection output;
 - registry-mode sidecar can resolve graph-selected tests to safe local pytest
   commands;

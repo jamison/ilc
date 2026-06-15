@@ -78,21 +78,31 @@ Sensitivity: NON-SENSITIVE.
 
 Scope:
 
+- implement `tools/check_test_graph_coverage.py` as a read-only diagnostic;
 - enumerate all `tests/**/*.py` files;
 - map every test file to its Fix22/Fix26/Fix27 candidate node where possible;
 - verify each test file node has test semantics or a classified gap;
 - verify outgoing `TESTS` edges target existing nodes;
+- verify expected authority traces only for test roles that require them
+  instead of requiring `REFERENCES_AUTHORITY` for every test file;
 - classify private, historical, expensive, live-network, and sensitive tests by
   executor gate;
-- emit deterministic JSON plus a human report.
+- emit `out/test_graph_coverage_phase_1577.json` plus
+  `docs/specs/ilc_test_graph_coverage_report_1577_v0.1.md`;
+- add focused tests for deterministic output, gap classes, and report-first
+  threshold behavior.
 
 This phase does not execute tests and does not create canonical graph nodes.
+The checker may expose `--enforce-threshold`, but the first Phase 1577 baseline
+must be report-first unless a later prompt explicitly authorizes enforcement.
 
 Completion tokens:
 
+- `test_graph_coverage_checker_committed_phase_1577`
 - `homoiconic_test_file_atlas_smoke_audit_committed_phase_1577`
 - `test_file_candidate_node_mapping_recorded_phase_1577`
 - `test_graph_gap_classes_recorded_phase_1577`
+- `test_graph_coverage_threshold_report_only_phase_1577`
 - `public_path_remains_blocked_phase_1577`
 
 ### Phase 1578: Pytest collection to function-node candidates
@@ -254,7 +264,8 @@ Completion tokens:
 Waypoint A: file-level graph readiness.
 
 - Done when every test file is mapped to a graph candidate node or documented
-  exclusion.
+  exclusion, and `tools/check_test_graph_coverage.py` records a deterministic
+  report-first baseline with gap classes.
 
 Waypoint B: function-level graph readiness.
 
