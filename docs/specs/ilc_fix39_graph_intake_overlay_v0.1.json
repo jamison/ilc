@@ -1,0 +1,71 @@
+{
+  "artifact": "ilc_fix39_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for Fix38/Fix39 files without modifying the deterministic Fix38 manual annotation ledger."
+  },
+  "records": [
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix38_g10_graph_derived_test_frontier_report.md",
+      "target": "phase:1545p_fix38_graph_derived_test_frontier_report"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix39_g10_fix38_commit_cleanup_lint_tool.md",
+      "target": "phase:1545p_fix39_fix38_commit_cleanup_lint_tool"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "SUPPORTS_FRONTIER_REPORT",
+      "repo_path": "docs/specs/ilc_fix38_all_frontier_gap_files_1545p_v0.1.md",
+      "target": "testing:homoiconic_test_registry_frontier"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "REVIEW_QUEUE_LEDGER",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json",
+      "target": "phase:1545p_fix38_graph_derived_test_frontier_report"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "SUPPORTS_FRONTIER_REPORT",
+      "repo_path": "docs/specs/ilc_test_registry_frontier_report_1545p_fix38_v0.1.md",
+      "target": "testing:homoiconic_test_registry_frontier"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix39_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_phase_1545p_fix38_graph_derived_frontier_report.py",
+      "target": "tools/build_test_registry_frontier_report.py"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_phase_1545p_fix39_graph_intake_lint_tool.py",
+      "target": "tools/check_new_file_graph_coverage.py"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "tools/build_test_registry_frontier_report.py",
+      "target": "testing:homoiconic_test_registry_frontier"
+    },
+    {
+      "annotation_method": "fix39_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "tools/check_new_file_graph_coverage.py",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "status": "review_queue_support_only"
+}
