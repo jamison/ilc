@@ -43,8 +43,10 @@ def test_guidance_defines_concrete_phase_route():
         "Phase 1545p-Fix32: contract",
         "Phase 1545p-Fix33: test-node Atlas smoke audit",
         "Phase 1545p-Fix34: pytest collection to function-node candidates",
-        "Phase 1545p-Fix35: canonical evidence envelope rehearsal",
-        "Phase 1545p-Fix36: graph-derived test frontier report",
+        "Phase 1545p-Fix35: registry-mode pytest sidecar scaffold",
+        "Phase 1545p-Fix36: canonical evidence envelope rehearsal",
+        "Phase 1545p-Fix37: graph-hydrated workspace mode",
+        "Phase 1545p-Fix38: graph-derived test frontier report",
         "Window 1576-1584: pytest sidecar implementation window",
     ]:
         assert phase in text
