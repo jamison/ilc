@@ -27,6 +27,7 @@ COVERED_PREFIXES = (
 )
 DEFAULT_LEDGER = Path("docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json")
 DEFAULT_OVERLAY_LEDGER = Path("docs/specs/ilc_fix39_graph_intake_overlay_v0.1.json")
+DEFAULT_OVERLAY_GLOB = "ilc_fix*_graph_intake_overlay_v0.1.json"
 
 
 def _candidate_stub(path: str) -> str:
@@ -76,9 +77,10 @@ def _ledger_paths(path: Path) -> set[str]:
 
 def _default_ledgers(repo_root: Path) -> list[Path]:
     ledgers = [repo_root / DEFAULT_LEDGER]
-    overlay = repo_root / DEFAULT_OVERLAY_LEDGER
-    if overlay.exists():
-        ledgers.append(overlay)
+    overlay_dir = repo_root / DEFAULT_OVERLAY_LEDGER.parent
+    for overlay in sorted(overlay_dir.glob(DEFAULT_OVERLAY_GLOB)):
+        if overlay != repo_root / DEFAULT_LEDGER:
+            ledgers.append(overlay)
     return ledgers
 
 
