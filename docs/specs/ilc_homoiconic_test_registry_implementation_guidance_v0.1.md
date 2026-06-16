@@ -248,14 +248,33 @@ It emits candidate `test_function` nodes and candidate edges only. It must
 record uncertain coverage as deferred, not invent `TESTS` or `COVERS_SYMBOL`
 claims.
 
-### Phase 1545p-Fix35: canonical evidence envelope rehearsal
+### Phase 1545p-Fix35: registry-mode pytest sidecar scaffold
+
+Build a local-only sidecar that reads graph/test-function candidate records and
+resolves selected test nodes into deterministic local pytest command arrays.
+This phase must default to dry-run, preserve executor profile gates, and fail
+closed for private, live-network, sensitive, historical, or expensive profiles
+unless a positive opt-in is supplied.
+
+Fix35 produces command plans only. A dry-run command plan is not test evidence
+and does not promote graph edges or mutate Atlas canon.
+
+### Phase 1545p-Fix36: canonical evidence envelope rehearsal
 
 Build a local-only wrapper that executes a bounded selected set of graph-resolved
 test nodes and emits canonical result envelopes. This phase must preserve
 deterministic serialization and must not run private, live-network, sensitive, or
 expensive tests unless the executor profile explicitly allows them.
 
-### Phase 1545p-Fix36: graph-derived test frontier report
+### Phase 1545p-Fix37: graph-hydrated workspace mode
+
+Hydrate a bounded source/test dependency slice from graph/source-tree digests
+into a temporary verified workspace, then run pytest inside that workspace and
+emit the same canonical evidence-envelope format as Fix36. This is the first
+rehearsal where the graph can supply execution material while pytest remains the
+executor.
+
+### Phase 1545p-Fix38: graph-derived test frontier report
 
 Query the graph and evidence records for:
 
@@ -270,7 +289,7 @@ maintenance and gap discovery.
 
 ### Window 1576-1584: pytest sidecar implementation window
 
-After Fix32-Fix36 or equivalent preparation, execute the candidate window in
+After Fix32-Fix38 or equivalent preparation, execute the candidate window in
 `docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md`.
 That window implements:
 
