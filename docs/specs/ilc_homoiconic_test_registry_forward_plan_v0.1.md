@@ -202,7 +202,19 @@ and Python AST metadata, then emits candidate nodes:
 The collector must not promote edges to canonical Atlas authority. It emits a
 candidate queue for review.
 
-### Fix35 candidate: canonical test evidence envelope
+### Fix35 candidate: registry-mode pytest sidecar scaffold
+
+Build a local-only sidecar that reads graph/test-function candidate records and
+resolves selected test nodes into deterministic local pytest command arrays:
+
+- defaults to dry-run;
+- preserves executor profile and environment-gate policy;
+- rejects private, live-network, sensitive, historical, or expensive profiles
+  unless the matching positive opt-in is supplied;
+- treats command plans as non-evidence;
+- performs no graph mutation.
+
+### Fix36 candidate: canonical test evidence envelope
 
 Build a local runner wrapper that executes selected test nodes and emits
 canonical JSON evidence records:
@@ -215,7 +227,13 @@ canonical JSON evidence records:
 - no public serving;
 - no graph mutation.
 
-### Fix36 candidate: graph-derived test frontier report
+### Fix37 candidate: graph-hydrated workspace mode
+
+Hydrate a bounded graph/source-tree slice into a temporary verified workspace,
+verify source digests, run pytest inside that workspace, and emit the same
+canonical evidence envelope format as Fix36.
+
+### Fix38 candidate: graph-derived test frontier report
 
 Query the Atlas/LMDB projection for:
 
@@ -230,7 +248,7 @@ Compare this graph-derived frontier against `docs/testing/test_inventory.md`,
 
 ### Candidate Window 1576-1584: pytest sidecar implementation
 
-After the Fix32-Fix36 support lane or equivalent preparation, the proposed
+After the Fix32-Fix38 support lane or equivalent preparation, the proposed
 implementation window is:
 
 `docs/specs/ilc_window_1576_1584_homoiconic_test_registry_candidate_phase_grouping_v0.1.md`
