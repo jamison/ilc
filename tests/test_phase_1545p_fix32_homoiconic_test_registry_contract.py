@@ -108,6 +108,15 @@ def test_fix32_successor_route_names_fix33_through_fix38():
     assert "enriched_candidate_1545p_fix27_prepass.json" in text
 
 
+def test_fix32_contract_section_numbers_are_sequential_after_fix37_audit():
+    text = _read(CONTRACT)
+
+    assert "## 12. Fix38 Frontier Report Contract" in text
+    assert "## 13. Acceptance Criteria For Later Implementation" in text
+    assert "## 14. Non-Claims" in text
+    assert "## 12. Non-Claims" not in text
+
+
 def test_fix32_planning_surfaces_reference_contract_and_route():
     contract = "docs/specs/ilc_homoiconic_test_registry_contract_1545p_fix32_v0.1.md"
     route = "docs/specs/ilc_homoiconic_test_registry_implementation_route_1545p_fix32_v0.1.md"
