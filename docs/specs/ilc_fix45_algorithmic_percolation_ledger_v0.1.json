@@ -1,0 +1,4833 @@
+{
+  "decision_counts": {
+    "added_edge": 99,
+    "deferred_existing_semantic_edge_present": 19,
+    "deferred_low_value_fixture": 9,
+    "deferred_manual_semantic_review": 359,
+    "unresolved_no_unique_target": 14
+  },
+  "edge_type_counts_added": {
+    "REFERENCES_AUTHORITY": 34,
+    "SOURCE_TREE_MEMBER": 69
+  },
+  "graph_intake_nodes": [
+    {
+      "candidate_id": "repo:file:ec089233c31c7b90:docs_specs_ilc_fix45_target_queue_analysis_v0_1_md",
+      "candidate_status": "fix45_support_only",
+      "category": "fix45_support_document",
+      "confidence": 0.8,
+      "inclusion_status": "support_only",
+      "label": "docs/specs/ilc_fix45_target_queue_analysis_v0.1.md",
+      "node_kind": "repo_support_doc_node",
+      "phase": "1545p-Fix45",
+      "public_path": "blocked",
+      "rationale": "Fix45 graph intake record for a newly produced support artifact.",
+      "sensitivity": "NON-SENSITIVE",
+      "signature_status": "unsigned_candidate",
+      "source_path": "docs/specs/ilc_fix45_target_queue_analysis_v0.1.md",
+      "source_phase": "1545p-Fix45",
+      "tier": "public_release_candidate_material"
+    },
+    {
+      "candidate_id": "repo:file:d56ecf7c02d5f0c1:docs_specs_ilc_fix45_algorithmic_percolation_ledger_v0_1_json",
+      "candidate_status": "fix45_support_only",
+      "category": "fix45_support_document",
+      "confidence": 0.8,
+      "inclusion_status": "support_only",
+      "label": "docs/specs/ilc_fix45_algorithmic_percolation_ledger_v0.1.json",
+      "node_kind": "repo_support_doc_node",
+      "phase": "1545p-Fix45",
+      "public_path": "blocked",
+      "rationale": "Fix45 graph intake record for a newly produced support artifact.",
+      "sensitivity": "NON-SENSITIVE",
+      "signature_status": "unsigned_candidate",
+      "source_path": "docs/specs/ilc_fix45_algorithmic_percolation_ledger_v0.1.json",
+      "source_phase": "1545p-Fix45",
+      "tier": "public_release_candidate_material"
+    },
+    {
+      "candidate_id": "repo:file:7db37ca0931c6e2f:docs_specs_ilc_fix45_algorithmic_percolation_report_v0_1_md",
+      "candidate_status": "fix45_support_only",
+      "category": "fix45_support_document",
+      "confidence": 0.8,
+      "inclusion_status": "support_only",
+      "label": "docs/specs/ilc_fix45_algorithmic_percolation_report_v0.1.md",
+      "node_kind": "repo_support_doc_node",
+      "phase": "1545p-Fix45",
+      "public_path": "blocked",
+      "rationale": "Fix45 graph intake record for a newly produced support artifact.",
+      "sensitivity": "NON-SENSITIVE",
+      "signature_status": "unsigned_candidate",
+      "source_path": "docs/specs/ilc_fix45_algorithmic_percolation_report_v0.1.md",
+      "source_phase": "1545p-Fix45",
+      "tier": "public_release_candidate_material"
+    },
+    {
+      "candidate_id": "repo:file:31feb4b37e9772a7:docs_specs_ilc_fix46_manual_semantic_annotation_queue_v0_1_json",
+      "candidate_status": "fix45_support_only",
+      "category": "fix45_support_document",
+      "confidence": 0.8,
+      "inclusion_status": "support_only",
+      "label": "docs/specs/ilc_fix46_manual_semantic_annotation_queue_v0.1.json",
+      "node_kind": "repo_support_doc_node",
+      "phase": "1545p-Fix45",
+      "public_path": "blocked",
+      "rationale": "Fix45 graph intake record for a newly produced support artifact.",
+      "sensitivity": "NON-SENSITIVE",
+      "signature_status": "unsigned_candidate",
+      "source_path": "docs/specs/ilc_fix46_manual_semantic_annotation_queue_v0.1.json",
+      "source_phase": "1545p-Fix45",
+      "tier": "public_release_candidate_material"
+    }
+  ],
+  "non_claims": [
+    "No Genesis signing occurred.",
+    "No signed genesis_base_graph_v0.4.json artifact was produced.",
+    "No canonical Atlas mutation occurred.",
+    "No public graph publication occurred.",
+    "No public repository push occurred.",
+    "No public RC activation occurred.",
+    "No runtime, economic, sidecar, network, ADR, or CDL activation occurred.",
+    "No Fix45 edge is authority-bearing or promoted to canonical state."
+  ],
+  "phase": "1545p-Fix45",
+  "queue_entry_count": 500,
+  "rows": [
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file:7d427265062269b1:docs_specs_ilc_llm_repo_workflow_policy_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_llm_repo_workflow_policy_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file:e40d2e1d1b735718:docs_specs_sponsor_clustering_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/sponsor_clustering.md"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:c3e72dd272db752ff2dca76fecf855da",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:3b94ed5758e20b54:ilc_core_distribution_init_py",
+      "repo_path": "ilc_core/distribution/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f99d7b9509ad9daec5ae4cdfa43770ad",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:cd72646b6e9b1438:ilc_core_eve_init_py",
+      "repo_path": "ilc_core/eve/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:3c72dd7b47ac2d4094c0dc72378b07d7",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:fe9dbbb6011b2e72:ilc_core_network_star_map_init_py",
+      "repo_path": "ilc_core/network/star_map/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_treasury_objective_function_and_observables_contract_451_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_treasury_objective_function_and_observables_contract_451_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:d62f6691829c318b9e805af50de41b26",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_050_constitutional_treasury_ecu_governor_opening_stub_457_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_050_constitutional_treasury_ecu_governor_opening_stub_457_v0.1.md",
+      "target": "cdl:050_treasury_ecu_governor_lane"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_epistemic_node_submission_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/epistemic/node_submission_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:ilc_core_epistemic",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/epistemic/"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file:7f776ac53614e4fc:tests_fixtures_cluster_a_replay_proof_batch_ops_v0_1_manifest_txt",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file:109e5841f3c287c4:tests_fixtures_cluster_a_replay_proof_batch_ops_v0_1_report_schema_invalid_json",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/report_schema_invalid.json"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file:f1d8b5eb1aa63046:tests_fixtures_cluster_a_replay_proof_batch_v0_1_contract_valid_json",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1/contract_valid.json"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file:d405f7b0955d32b3:tests_fixtures_cluster_a_replay_proof_batch_v0_1_manifest_valid_then_tampered_txt",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1/manifest_valid_then_tampered.txt"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file:298af6efe05306e7:tests_test_phase_m019_adversarial_hardening_results_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_M019_adversarial_hardening_results.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_04_identity_subsystem_contract_293_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_04_identity_subsystem_contract_293_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0023_cdl_scoping_analysis_522_v0_1_md",
+      "pattern": "adr:0023",
+      "reason": "multiple_existing_adr_targets",
+      "repo_path": "docs/specs/ilc_adr_0023_cdl_scoping_analysis_522_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_schemas_ilc_cluster_a_replay_proof_batch_report_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_report_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:tests_fixtures_cluster_a_replay_proof_batch_v0_1",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_economic_risk_monitoring_baseline_305_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_economic_risk_monitoring_baseline_305_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_accrual_governor_contract_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_accumulation_dynamics_analysis_298_v0_3_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.3.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_593_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_593_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_d2_schema_baseline_runtime_handoff_310_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2_schema_baseline_runtime_handoff_310_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_epoch_snapshot_runtime_handoff_314_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_epoch_snapshot_runtime_handoff_314_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_890_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_890_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli_d2e_query_truth_cli_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/d2e_query_truth_cli.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_485_494_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_485_494_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_485_494_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_485_494_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_485_494_handoff_494_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_485_494_handoff_494_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0023_simulation_synthesis_528_v0_1_md",
+      "pattern": "adr:0023",
+      "reason": "multiple_existing_adr_targets",
+      "repo_path": "docs/specs/ilc_adr_0023_simulation_synthesis_528_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:56c523e0d8d4a9e07c3ac8583c0c89c0",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:tests_test_cdl_v1_ratification_330_py",
+      "repo_path": "tests/test_cdl_v1_ratification_330.py",
+      "target": "cdl:v1_temporal_decay"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f58b46b1d1b5990bad9a192daf9dad1f",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:tests_test_cdl_v2_ratification_331_py",
+      "repo_path": "tests/test_cdl_v2_ratification_331.py",
+      "target": "cdl:v2_sybil_resistance"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_clause_binding_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/ilc_cluster_a_clause_binding.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v2_6_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v2.6.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_533_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_533_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_agent_sdk_boundary_contract_draft_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v0_5_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v0.5.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_claude_extraction_brief_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_claude_extraction_brief_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_economic_architecture_comprehensive_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_economic_architecture_comprehensive_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v0_8_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v0.8.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cil_window_336_node_schema_session_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cil_window_336_node_schema_session_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr0035_dependency_reconciliation_1524p_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_adr0035_dependency_reconciliation_1524p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_code_health_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_code_health.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_58_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.58.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_compare_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:4ea880c857fcff4b5b121b2e7caea49e",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_050_lane_identity_freeze_450_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_050_lane_identity_freeze_450_v0.1.md",
+      "target": "cdl:050_treasury_ecu_governor_lane"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_epoch_boundary_witness_opening_stub_509_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_epoch_boundary_witness_opening_stub_509_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_replay_verify_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_replay_verify.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_export_bundle_report_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_report.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_475_484_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_475_484_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_475_484_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_475_484_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_475_484_handoff_484_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_475_484_handoff_484_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl096_eligibility_checkpoint_1509p_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cdl096_eligibility_checkpoint_1509p_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_runtime_integration_over_receipt_boundary_591_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_runtime_integration_over_receipt_boundary_591_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_483_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_483_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_068_topology_shuffle_authorization_opening_v0_1_md",
+      "pattern": "cdl:068",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_068_topology_shuffle_authorization_opening_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_sync_state_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_sync_state.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_epoch_epoch_boundary_witness_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/epoch/epoch_boundary_witness_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_55_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.55.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_transport_operationalization_boundary_lock_566_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transport_operationalization_boundary_lock_566_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:516df23c62a4c44939927af3590bf1c4",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_035_validation_lifecycle_and_gate_verdict_attachment_ratification_evidence_350_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_035_validation_lifecycle_and_gate_verdict_attachment_ratification_evidence_350_v0.1.md",
+      "target": "cdl:035_validation_lifecycle"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:653ff7dea9d436a6e0b9b09ae31567a2",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_038_private_to_public_promotion_and_promotion_receipt_ratification_evidence_353_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_038_private_to_public_promotion_and_promotion_receipt_ratification_evidence_353_v0.1.md",
+      "target": "cdl:038_private_to_public_promotion"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_receipt_envelope_and_payout_trace_contract_candidate_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_receipt_envelope_and_payout_trace_contract_candidate_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_6_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.6.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v1_8_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v1.8.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_439_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_439_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_identity_epoch_endorsement_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/epoch_endorsement_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_identity_genesis_record_schema_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/genesis_record_schema.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_security_runtime_window_closure_240_248_phase_249_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_security_runtime_window_closure_240_248_phase_249.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_node_value_policy_migration_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/node_value_policy_migration.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_0_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.0.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_631_window_631_636_sequence_lock_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_631_window_631_636_sequence_lock.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_post_genesis_readiness_package_238_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_post_genesis_readiness_package_238_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_graph_edges_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_graph_edges.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:08989cd17cfe5d74e2cccbbe67f047d5",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:tests_test_phase_865_872_cdl_074_truth_primitive_runtime_py",
+      "repo_path": "tests/test_phase_865_872_cdl_074_truth_primitive_runtime.py",
+      "target": "cdl:074_truth_primitive_runtime"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_056_validator_trust_tier_elevation_opening_stub_499_v0_1_md",
+      "pattern": "cdl:056",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_056_validator_trust_tier_elevation_opening_stub_499_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_refutation_criterion_schema_specification_462_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_refutation_criterion_schema_specification_462_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_distribution_package_profiles_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/distribution/package_profiles.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_1440_claimability_integration_tests_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_1440_claimability_integration_tests.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:ilc_core_genesis_py",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/genesis.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:8c973b0c9f2d1ca5c0af5ae205ecdfe9",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file_ref:ilc_core_genesis___init___py",
+      "repo_path": "ilc_core/genesis/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:c0d2adb0f6287af04970a7570a0e6bcc",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0019_graph_native_governance_boundary_disposition_note_v0_1_md",
+      "repo_path": "docs/specs/ilc_adr_0019_graph_native_governance_boundary_disposition_note_v0.1.md",
+      "target": "adr:0019_graph_native_governance_compilation_boundary"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_226_decision_log_backlog_queue_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_226_decision_log_backlog_queue_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_226_open_cdl_security_triage_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_phase_226_open_cdl_security_triage_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_5_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.5.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_706_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_706_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_766_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_766_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_055_validator_staking_and_liveness_enforcement_prelock_hardening_493_v0_1_md",
+      "pattern": "cdl:055",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_055_validator_staking_and_liveness_enforcement_prelock_hardening_493_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_invitation_provenance_chain_spec_1493p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_invitation_provenance_chain_spec_1493p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_issuance_evidence_closure_a_266_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_issuance_evidence_closure_a_266_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:3d977f526a67018b3c4efd75e7f9e63d",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0021_epistemic_finality_claims_461_v0_1_md",
+      "repo_path": "docs/specs/ilc_adr_0021_epistemic_finality_claims_461_v0.1.md",
+      "target": "adr:0021_epistemic_finality_claims"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v1_9_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v1.9.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_genesis_agent1_keygen_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/genesis_agent1_keygen.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b23105dd3e9be9b37cdd5fa97822929f",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file_ref:ilc_core_crypto___init___py",
+      "repo_path": "ilc_core/crypto/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_rc_source_allowlist_export_rehearsal_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/source_allowlist_export_rehearsal.py"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_node_schema_implementation_readiness_356_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_node_schema_implementation_readiness_356_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_wire_transport_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/wire_transport_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_schema_d2_schema_baseline_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/schema/d2_schema_baseline_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:4dc87f3da27788d6a3027f7f8858431b",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_040_admission_control_and_identity_envelope_ratification_evidence_393_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_040_admission_control_and_identity_envelope_ratification_evidence_393_v0.1.md",
+      "target": "cdl:040_admission_control_identity_envelope"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:ed7e86f513ecf3a013c6e7bcb87a1077",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_042_agent_identity_namespace_prelock_hardening_403_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_042_agent_identity_namespace_prelock_hardening_403_v0.1.md",
+      "target": "cdl:042_agent_id_flat_namespace"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:65a1c91f6a96f979c22e5448f8da007f",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_042_agent_identity_namespace_ratification_evidence_407_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_042_agent_identity_namespace_ratification_evidence_407_v0.1.md",
+      "target": "cdl:042_agent_id_flat_namespace"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_economics_reward_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/economics/reward.py"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_ip_dispute_resolution_governance_framework_1512p_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_ip_dispute_resolution_governance_framework_1512p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_goods_dedication_governance_framework_1512p_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_public_goods_dedication_governance_framework_1512p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v2_3_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v2.3.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_503_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_503_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_identity_endorsement_packet_schema_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/endorsement_packet_schema.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_boolean_token_census_600_plus_1556_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_boolean_token_census_600_plus_1556_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file_ref:tests_fixtures_cluster_a_replay_proof_ci_gate_v0_1_release_v0_1_baseline_json",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_ci_gate_v0_1/release_v0_1_baseline.json"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_bootstrap_operations_runbook_235_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_bootstrap_operations_runbook_235_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_05_query_subsystem_handoff_300_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_05_query_subsystem_handoff_300_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_cluster_a_replay_proof_ci_gate_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_cluster_a_replay_proof_ci_gate.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_cluster_a_replay_proof_release_gate_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_cluster_a_replay_proof_release_gate.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_domain_exception_migration_guardrails_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_domain_exception_migration_guardrails.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_non_replay_domain_exception_migration_guardrails_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_non_replay_domain_exception_migration_guardrails.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_replay_proof_schema_parity_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_replay_proof_schema_parity.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_track1_closure_guardrails_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_track1_closure_guardrails.sh"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:5057a3e502455416dbd91d679237d6d1",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:45dcf660a3762e3b:tools_agent_loop_v0_sh",
+      "repo_path": "tools/agent_loop_v0.sh",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:4519aa72c3cb5a4d5a01c8b3bcdd5998",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:ed3c0f371e7a4ca5:tools_ccss_relay_init_py",
+      "repo_path": "tools/ccss_relay/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:7fc8d88e23ae0104679629e36b882607",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:99fe6064f0e93c35:tools_ccss_relay_ccss_admin_ui_py",
+      "repo_path": "tools/ccss_relay/ccss_admin_ui.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f74431e0d5c78583f221110839b3926c",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:83c6f565d861bf75:tools_ccss_relay_ccss_inbox_reader_py",
+      "repo_path": "tools/ccss_relay/ccss_inbox_reader.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:58eb7adb89ba282b00c51492ea5a0f7f",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:111ad8dd57668103:tools_ccss_send_init_py",
+      "repo_path": "tools/ccss_send/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:2384468e4081c2526eea28d1bdc75498",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:27f2a1e70f2f2d54:tools_check_rc0_1_release_gate_py",
+      "repo_path": "tools/check_rc0_1_release_gate.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f846f1bace967019ea8f6ba449b0b8cf",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:c52e7871cee84d04:tools_codex_chat_recovery_py",
+      "repo_path": "tools/codex_chat_recovery.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:c8c4eb43eb82e4a30893e28f736d89b4",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:e3b0c44298fc1c14:tools_evaluators_init_py",
+      "repo_path": "tools/evaluators/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:29c5af997bfab6951b774d84d8807c97",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:16c5c76b8b430772:tools_extract_glossary_terms_py",
+      "repo_path": "tools/extract_glossary_terms.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b2fa290ce9d311059ea0da2700bdf28f",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:d81e04ad2f10a3b8:tools_ilc_dredge_extension_py",
+      "repo_path": "tools/ilc_dredge_extension.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:816bf02bf6ab915689cdcac5151a6dca",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:4c0b6f04a01b3171:tools_ilc_rc_gap_dredge_py",
+      "repo_path": "tools/ilc_rc_gap_dredge.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:d6d1cc3c3859c58abbd13e3722afb6c0",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:8ea5ad9242c44be9:tools_mempalace_build_full_corpus_palace_sh",
+      "repo_path": "tools/mempalace/build_full_corpus_palace.sh",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:779bf46880e8dd3c98f267aed40eceac",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:352f3b15a706a8d3:tools_mempalace_mp",
+      "repo_path": "tools/mempalace/mp",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:0150c2558897fb8cd7a4d07f45212680",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:300e017a77be1d04:tools_patch_codex_resume_override_js",
+      "repo_path": "tools/patch_codex_resume_override.js",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:cb231fb173b8e38a62d5db9e66380c01",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:5e5831af006ff75b:tools_phase_queue_sync_sh",
+      "repo_path": "tools/phase_queue_sync.sh",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:2dceba64bb2a006ba88f01ea68abf528",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:39d465a38295ebac:tools_prove_rc0_1_bundle_install_py",
+      "repo_path": "tools/prove_rc0_1_bundle_install.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:4643d1ae7ac96fa78b82bdb4ae56d159",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:e998b8745522e321:tools_rc_install_bundle_node_py",
+      "repo_path": "tools/rc_install_bundle_node.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:50ba36d46ee7a0f5c70211443e6dc027",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:2bff07197c6879c5:tools_rc_update_bundle_node_py",
+      "repo_path": "tools/rc_update_bundle_node.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:2738401c981dd7d6cc089bf4a656128b",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:00f8be415e51155f:tools_reset_antigravity_codex_ui_state_sh",
+      "repo_path": "tools/reset_antigravity_codex_ui_state.sh",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:35e3f2feeff90783adf56f973f8721d8",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:1115aa32ed0f9196:tools_run_rc0_1_release_gate_py",
+      "repo_path": "tools/run_rc0_1_release_gate.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:db99a5aee132c48d543fa9eb5eb5b570",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:4403fd308a597e6c:tools_run_with_operator_lock_py",
+      "repo_path": "tools/run_with_operator_lock.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:79bfa0fa894acceaa1d4e169e4a4851f",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:0e5107d842ffe63e:tools_sim_spectral_05_track_a_calibration_py",
+      "repo_path": "tools/sim_spectral_05_track_a_calibration.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:e0fed465eed05e47a1ba00720b06ae8d",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:abf6ae10b8544efd:tools_sim_spectral_05_track_b_run_py",
+      "repo_path": "tools/sim_spectral_05_track_b_run.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f6c8a5300ff090388e9fb38719acf149",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:32a6d5dc0b42b867:tools_strike_path_nonlinear_backburn_search_py",
+      "repo_path": "tools/strike_path_nonlinear_backburn_search.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:9ed99b48f2e72d52658756d4d92a923d",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:acd3544323469fca:tools_testbed_harness_sl01_log",
+      "repo_path": "tools/testbed/harness_sl01.log",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:66618e1977141977ffd13905828d65b9",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:b2a61d7429481084:tools_testbed_ilc_exitability_m022_runner_sh",
+      "repo_path": "tools/testbed/ilc_exitability_m022_runner.sh",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:004e36c198f81aa57236c111afbe6c68",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:cefeb25fb1aeb718:tools_testbed_ilc_m018_grpc_audit_client_py",
+      "repo_path": "tools/testbed/ilc_m018_grpc_audit_client.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:4f6e55155b7e9c66a2660aa509256c80",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:0ad91b2ca98200a8:tools_testbed_ilc_m022_grpc_probe_py",
+      "repo_path": "tools/testbed/ilc_m022_grpc_probe.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f69651d244cbd5ef0a9cdcaaea804438",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:45517b7b8d8fd32b:tools_testbed_ilc_m022_verify_py",
+      "repo_path": "tools/testbed/ilc_m022_verify.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:3026fc6b6444662bcf9d567dcab42245",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:fcc6bf1f35bb552e:tools_testbed_phase779_assets_readme_md",
+      "repo_path": "tools/testbed/phase779_assets/README.md",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:9c6932c0fce92adf73e3a30d64471183",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:4db90898ae2f513d:tools_testbed_phase779_assets_certs_client_cert_der",
+      "repo_path": "tools/testbed/phase779_assets/certs/client_cert.der",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:edd0f83cf99260a0674ac9863482846e",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:e24b040e841dd339:tools_testbed_phase779_assets_certs_client_cert_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/client_cert.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:a9e49458f9306aaacfbf6addcd655484",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:e97d58c5198a52cb:tools_testbed_phase779_assets_certs_client_key_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/client_key.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:701eb06b6c785977d830342a39341e30",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:1c15917d90a04057:tools_testbed_phase779_assets_certs_validator_1_cert_der",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_1_cert.der",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:1bcfd90592bb1838678a0e04135a9a75",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:21d7389e01ab431e:tools_testbed_phase779_assets_certs_validator_1_cert_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_1_cert.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b80d4244819ade2189bfb2697f164e9a",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:f6f69213161f50af:tools_testbed_phase779_assets_certs_validator_1_consensus_key_hex",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_1_consensus_key.hex",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:135e3d4f9bfab90f1a4b125a64ba17dd",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:b383b6528b58d18e:tools_testbed_phase779_assets_certs_validator_1_key_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_1_key.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f366dddd3a343bce912e56400b345ee3",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:1d639b05126939f6:tools_testbed_phase779_assets_certs_validator_2_cert_der",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_2_cert.der",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:8aa62fe7672749f3ce8332a5c4770b00",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:68332835e6ec1c8d:tools_testbed_phase779_assets_certs_validator_2_cert_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_2_cert.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:3906e43f9af7fd549b6bf89d2ff5117b",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:10f0c45818e60216:tools_testbed_phase779_assets_certs_validator_2_consensus_key_hex",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_2_consensus_key.hex",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:4a3be391134b0ce3c4e6a35d849f616d",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:ffd3e8efd849c193:tools_testbed_phase779_assets_certs_validator_2_key_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_2_key.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:9ce5817ed67e2152860a0b101b0e235a",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:4c55178cd6d034a2:tools_testbed_phase779_assets_certs_validator_3_cert_der",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_3_cert.der",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:37597045c34da0418e042cf066eddf29",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:36609d4903f8f5e1:tools_testbed_phase779_assets_certs_validator_3_cert_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_3_cert.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:319a25fd035e2766662d12a918ad7c1c",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:dd1e7d7fd2b63ebf:tools_testbed_phase779_assets_certs_validator_3_consensus_key_hex",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_3_consensus_key.hex",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:e156b4ff36fe3442931a8d628b3adf4f",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:c073414f4d7a10de:tools_testbed_phase779_assets_certs_validator_3_key_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_3_key.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:c36374a5ffe4249aeff693ea74477340",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:4f1049eab9346b1a:tools_testbed_phase779_assets_certs_validator_4_cert_der",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_4_cert.der",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:492f274b04ce292266489bf41154cc0e",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:831d0e6077576935:tools_testbed_phase779_assets_certs_validator_4_cert_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_4_cert.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b024c59792e77cb09d3a94edcbabc870",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:26848cbd2961f861:tools_testbed_phase779_assets_certs_validator_4_consensus_key_hex",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_4_consensus_key.hex",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:612193d06fbd062cd071a0cfe48e98c2",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:259338027c5b68b2:tools_testbed_phase779_assets_certs_validator_4_key_pem",
+      "repo_path": "tools/testbed/phase779_assets/certs/validator_4_key.pem",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:e56fc0ec6179f2a00db8873f28bdfacc",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:6670cbdd8d9b92a5:tools_testbed_phase779_assets_validator_1_config_json",
+      "repo_path": "tools/testbed/phase779_assets/validator_1_config.json",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f55eb2496bef0ae05c7ec98794551b69",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:4358f71caaccaeff:tools_testbed_phase779_assets_validator_2_config_json",
+      "repo_path": "tools/testbed/phase779_assets/validator_2_config.json",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:e62423e5696c2daabe50d98550cc4703",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:6c75537e40243001:tools_testbed_phase779_assets_validator_3_config_json",
+      "repo_path": "tools/testbed/phase779_assets/validator_3_config.json",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:53c4215c0709480cea57e69220e7cc05",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:53262d2e1c17a5a1:tools_testbed_phase779_assets_validator_4_config_json",
+      "repo_path": "tools/testbed/phase779_assets/validator_4_config.json",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:f5fc10c5ea956741522ca6002ce9f257",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:befc1df0fe24dc8e:tools_testbed_render_diagnostics_manifest_py",
+      "repo_path": "tools/testbed/render_diagnostics_manifest.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:869825ed4d2a3decdf9711811bd4762c",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:42837ce6d19e6f66:tools_testbed_run_rc0_1_substrate_closure_sh",
+      "repo_path": "tools/testbed/run_rc0_1_substrate_closure.sh",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:cf4eca701ae24dea13602ee9c40bbb4c",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:5b5f69464503e5e6:tools_testbed_v1_m022_log",
+      "repo_path": "tools/testbed/v1_m022.log",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b1c455e76da64f2bf6c50ec628f4a07a",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file:a3fc74370993034d:tools_transcript_dredge_py",
+      "repo_path": "tools/transcript_dredge.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:a2f77d2ce67be7190d31dcdfa6fd08b5",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file_ref:ilc_core_sidecars___init___py",
+      "repo_path": "ilc_core/sidecars/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v2_9_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v2.9.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:76f614b8b7670d5e8773830b2006b2f5",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_061_gossip_http_envelope_ratification_evidence_561_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_061_gossip_http_envelope_ratification_evidence_561_v0.1.md",
+      "target": "cdl:061"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_563_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_563_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_ops_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_ops.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_star_map_route_index_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/star_map/route_index.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_ecu_ilc_lifecycle_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_rc_frontier_gap_audit_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/rc_frontier_gap_audit.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_1411_vrf_proof_verifier_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_1411_vrf_proof_verifier.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_1412_vrf_integration_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_1412_vrf_integration.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_06_verify_subsystem_handoff_302_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_06_verify_subsystem_handoff_302_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_63p_private_1489p_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.63p_private_1489p.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:11a5d7d11d4a4f1e99af90c1c24c2237",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_054_validator_economic_incentive_framework_opening_stub_489_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_054_validator_economic_incentive_framework_opening_stub_489_v0.1.md",
+      "target": "cdl:054_validator_reward_pool_routing"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_consolidated_obligation_and_window_plan_1489p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consolidated_obligation_and_window_plan_1489p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_1489p_coherence_1496p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_1489p_coherence_1496p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_4_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.4.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_460_468_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_460_468_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_460_468_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_460_468_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_460_468_handoff_468_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_460_468_handoff_468_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_460_plus_consensus_follow_on_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_460_plus_consensus_follow_on_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_tier0_exact_numeric_runtime_migration_635_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_tier0_exact_numeric_runtime_migration_635_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_exact_numeric_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/exact_numeric.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_schemas_commit_epoch_event_schema_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/schemas/commit_epoch_event_schema_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:0547355638682cbaa736c5f343ef4de3",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_071_temporal_tier_reconciliation_opening_850_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_071_temporal_tier_reconciliation_opening_850_v0.1.md",
+      "target": "cdl:071_temporal_tier_reconciliation"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:904517dd1e0a3d97e88cf48d72cdf99c",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_071_temporal_tier_reconciliation_ratification_evidence_851_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_071_temporal_tier_reconciliation_ratification_evidence_851_v0.1.md",
+      "target": "cdl:071_temporal_tier_reconciliation"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_580_panel_live_submission_integration_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_580_panel_live_submission_integration.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_testbed_check_phase_581_settlement_wallet_query_integration_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/check_phase_581_settlement_wallet_query_integration.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_testbed_run_phase_581_settlement_wallet_query_integration_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/run_phase_581_settlement_wallet_query_integration.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_515_524_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_515_524_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_515_524_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_515_524_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_515_524_handoff_524_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_515_524_handoff_524_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_sim_harness_closed_loop_controllers_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sim/harness_closed_loop_controllers.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_cw6_convergence_window_closure_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_cw6_convergence_window_closure_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_763_window_763_766_sequence_lock_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_763_window_763_766_sequence_lock.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_0_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.0.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_4_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.4.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_700_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_700_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_694_700_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_694_700_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_693_700_closure_gate_700_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_693_700_closure_gate_700_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_694_700_track_a_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_694_700_track_a_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1198_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1198_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_495_504_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_495_504_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_495_504_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_495_504_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_495_504_handoff_504_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_495_504_handoff_504_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_consensus_circuit_breaker_interface_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/consensus/circuit_breaker_interface.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_rc_package_profile_ci_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/package_profile_ci_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_sidecars_local_graph_memory_projection_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sidecars/local_graph_memory_projection.py"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:1d725c2415ad811f:docs_specs_ilc_source_allowlist_export_execution_gate_1333_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_source_allowlist_export_execution_gate_1333_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_canon_bundle_key_registry_signing_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_signing.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_canon_export_bundle_sign_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_export_bundle_sign.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b57ba4a027b11c330632f656131c022f",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0035_design_validation_1470p_v0_1_md",
+      "repo_path": "docs/specs/ilc_adr_0035_design_validation_1470p_v0.1.md",
+      "target": "adr:0035_homoiconic_type_definition_system"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_consensus_diversity_floor_finality_runtime_handoff_470_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consensus_diversity_floor_finality_runtime_handoff_470_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_447_consensus_adversarial_regression_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_447_consensus_adversarial_regression.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:fc35e245d680643310013e9ea83dd1db",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0015_family_inventory_and_scope_718_v0_1_md",
+      "repo_path": "docs/specs/ilc_adr_0015_family_inventory_and_scope_718_v0.1.md",
+      "target": "adr:0015_node_transfer_economics"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_commit_epoch_audit_1234_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_commit_epoch_audit_1234_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_testbed_phase1360_multiop_control_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/phase1360_multiop_control.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_49_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.49.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_227_blocker_remediation_package_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_227_blocker_remediation_package_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_5_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.5.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_tier0_numeric_hardening_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_tier0_numeric_hardening.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_window_631_636_numeric_determinism_gate_phase_636_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_window_631_636_numeric_determinism_gate_phase_636.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v5_schema_epoch_translation_ratification_evidence_333_v0_1_md",
+      "pattern": "cdl:v5",
+      "reason": "no_existing_cdl_target",
+      "repo_path": "docs/specs/ilc_cdl_v5_schema_epoch_translation_ratification_evidence_333_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_328_337_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_328_337_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_328_337_handoff_337_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_328_337_handoff_337_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:tests_test_cdl_v4_v6_dual_ratification_334_py",
+      "pattern": "cdl:v4",
+      "reason": "no_existing_cdl_target",
+      "repo_path": "tests/test_cdl_v4_v6_dual_ratification_334.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:tests_test_cdl_v5_ratification_333_py",
+      "pattern": "cdl:v5",
+      "reason": "no_existing_cdl_target",
+      "repo_path": "tests/test_cdl_v5_ratification_333.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_cdl_v_batch_b_open_and_evidence_prelock_325_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_cdl_v_batch_b_open_and_evidence_prelock_325.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_38_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.38.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1137_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1137_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:05a2c7ff6972d916b62cef4a94fdf8f3",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_083_h_con_02_ratification_evidence_1104_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_083_h_con_02_ratification_evidence_1104_v0.1.md",
+      "target": "cdl:083_panel_quorum_refutation"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_mcp_node_service_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/mcp/node_service.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:3e8428b6e32c9b80f744de56b6fa0e5e",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_090_ratification_evidence_1373_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_090_ratification_evidence_1373_v0.1.md",
+      "target": "cdl:090_identity_bootstrap"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:dfd85fb91c507c66a4b936f690b342ec",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_062_opening_admissibility_matrix_662_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_062_opening_admissibility_matrix_662_v0.1.md",
+      "target": "cdl:062_sovereign_substrate_research_lane"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:6c4b4abb1336d37d77f37a8d3c29ae38",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_065_coupling_invariants_governance_lock_opening_662_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_065_coupling_invariants_governance_lock_opening_662_v0.1.md",
+      "target": "cdl:065_coupling_invariants_governance_lock"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_d2d_gossip_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/gossip.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_d2d_interface_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/interface.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:dd0c6aedbad94c30216cd97760f0ecc7",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v2_sybil_resistance_runtime_handoff_389_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_v2_sybil_resistance_runtime_handoff_389_v0.1.md",
+      "target": "cdl:v2_sybil_resistance"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:54d81f4188226288bef5786ef23c03b3",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file_ref:ilc_core_identity___init___py",
+      "repo_path": "ilc_core/identity/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_identity_sybil_resistance_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/sybil_resistance_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1207_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1207_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_d2d_openclaw_p2p_relay_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/openclaw_p2p_relay.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_sidecars_public_path_activation_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sidecars/public_path_activation.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_rc0_1_readiness_checklist_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_rc0_1_release_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_rc0_1_release_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_rc0_1_release_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_rc0_1_release_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_testbed_check_phase_595_rc0_1_strike_force_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/check_phase_595_rc0_1_strike_force.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_testbed_run_phase_595_rc0_1_strike_force_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/run_phase_595_rc0_1_strike_force.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_096_prelock_1552p_v0_1_md",
+      "pattern": "cdl:096",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_096_prelock_1552p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_096_ratification_evidence_1553p_v0_1_md",
+      "pattern": "cdl:096",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_096_ratification_evidence_1553p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_03_prototype_handoff_265_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_03_prototype_handoff_265_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_3_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.3.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_option_b_graduation_checklist_state_682_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_option_b_graduation_checklist_state_682_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_privacy_public_legitimacy_threat_model_678_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_privacy_public_legitimacy_threat_model_678_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_legitimacy_observability_budget_679_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_legitimacy_observability_budget_679_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_620_622_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_620_622_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_620_622_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_620_622_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_565_574_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_565_574_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_565_574_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_565_574_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_565_574_handoff_574_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_565_574_handoff_574_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_light_cone_kpis_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/light_cone_kpis.py"
+    },
+    {
+      "current_edge_types": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_047_treasury_governance_ratification_evidence_418_v0_1_md",
+      "pattern": "cdl:047",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_047_treasury_governance_ratification_evidence_418_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_15_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.15.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_834_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_834_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:f9bc645a534ed3f9:docs_specs_ilc_idea_descent_phase_prompt_objective_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_idea_descent_phase_prompt_objective_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_6_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.6.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_residual_numeric_hardening_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_residual_numeric_hardening.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_window_637_641_residual_numeric_gate_phase_641_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_window_637_641_residual_numeric_gate_phase_641.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_adaptive_fee_burn_ratio_spec_1549p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_adaptive_fee_burn_ratio_spec_1549p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:eb6b1ec9f99d968cb550bdba8495244e",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_001_genesis_blocker_scoping_1188_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_001_genesis_blocker_scoping_1188_v0.1.md",
+      "target": "cdl:001"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v0_9_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.9.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_434_440_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_434_440_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_434_440_handoff_440_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_434_440_handoff_440_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_434_plus_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_434_plus_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_434_runtime_tranche_intake_434_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_434_runtime_tranche_intake_434_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_node_node_dissemination_runtime_362_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/node/node_dissemination_runtime_362.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0_1_md",
+      "pattern": "cdl:v3",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v1_temporal_decay_runtime_handoff_388_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_cdl_v1_temporal_decay_runtime_handoff_388_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:b1a57e53a84fbed4ee7af78cba33b89e",
+      "edge_type": "SOURCE_TREE_MEMBER",
+      "node_id": "repo:file_ref:ilc_core_reputation___init___py",
+      "repo_path": "ilc_core/reputation/__init__.py",
+      "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_ecu_active_layer_runtime_hardening_gate_629_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_ecu_active_layer_runtime_hardening_gate_629_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_commons_dedication_and_treasury_routing_note_720_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_commons_dedication_and_treasury_routing_note_720_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_leasehold_duration_and_reversion_calibration_note_720_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_leasehold_duration_and_reversion_calibration_note_720_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_739_744_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_739_744_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_739_744_closure_gate_744_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_739_744_closure_gate_744_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_739_744_guidance_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_739_744_guidance_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_freshness_gate_invariants_phase_217_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_freshness_gate_invariants_phase_217.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_767_774_closure_gate_774_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_767_774_closure_gate_774_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_window_767_774_integration_gate_772_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_window_767_774_integration_gate_772.py"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:6bc325917bcc57b8:docs_specs_ilc_antigravity_context_capsule_v5_12_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.12.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_745_748_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_745_748_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_745_748_closure_gate_748_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_745_748_closure_gate_748_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_745_748_guidance_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_745_748_guidance_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_star_map_star_map_route_index_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/star_map/star_map_route_index_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_21_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.21.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_852_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_852_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_stress_and_cohesion_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/stress_and_cohesion.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_phase_606_mempalace_adoption_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_phase_606_mempalace_adoption.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_rc_release_keys_envelopes_generation_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/release_keys_envelopes_generation_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli_ep_task_cli_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/ep_task_cli.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_epistemic_aesthetic_panel_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/epistemic/aesthetic_panel_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_084_q2_amendment_prelock_1125_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_cdl_084_q2_amendment_prelock_1125_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_security_cdl_ratification_251_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_security_cdl_ratification_251.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_security_runtime_cross_cdl_interactions_244_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_security_runtime_cross_cdl_interactions_244.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_phase_252_security_ratification_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_phase_252_security_ratification_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:manually_added:tools_tla_tla2tools_jar",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "tools/tla/tla2tools.jar"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_9_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.9.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_726_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_726_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_phase_236_preflight_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_phase_236_preflight.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_crypto_surface_inventory_lock_280_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_crypto_surface_inventory_lock_280_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_utils_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_utils.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_genesis_accrual_governor_phase_218_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_genesis_accrual_governor_phase_218.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_sphincs_shamir_split_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/sphincs_shamir_split.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:tests_fixtures_cluster_a_replay_proof_ci_gate_v0_1",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_ci_gate_v0_1"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_659_664_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_659_664_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_659_664_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_659_664_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_659_664_handoff_664_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_659_664_handoff_664_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_sequestered_financial_shard_eligibility_prefilter_724_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_sequestered_financial_shard_eligibility_prefilter_724_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_devnet_multi_epoch_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_devnet_multi_epoch.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli_canon_bundle_pipeline_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_bundle_pipeline.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli_canon_bundle_replay_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_bundle_replay.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli_canon_bundle_validate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_bundle_validate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_compare_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_compare_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_ops_contract_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_report_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_ci_gate_report_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:ilc_core_protocol_schemas",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/protocol/schemas"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_32_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.32.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_33_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.33.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_082_h013_emission_threshold_amendment_opening_948_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_cdl_082_h013_emission_threshold_amendment_opening_948_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1100_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1100_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_945_952_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_945_952_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_945_952_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_945_952_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0_1_md",
+      "pattern": "cdl:081",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_gap14_package_profile_audit_1251_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_network_transport_identity_and_value_path_forward_planning_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_path_lift_counterfactual_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/path_lift_counterfactual.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_7_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.7.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_716_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_716_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_validator_bootstrap_specification_479_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_validator_bootstrap_specification_479_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_validator_enhancement_roadmap_479_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_validator_enhancement_roadmap_479_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_censorship_resistance_threat_model_672_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_censorship_resistance_threat_model_672_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_671_676_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_671_676_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_rows_7_8_ratification_or_threshold_decision_675_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_rows_7_8_ratification_or_threshold_decision_675_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_rows_7_8_selection_criteria_lock_675_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_rows_7_8_selection_criteria_lock_675_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_671_676_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_671_676_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_671_676_handoff_676_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_671_676_handoff_676_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_closure_handoff_doc_schema_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_guidance_doc_schema_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_guidance_doc_schema_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_mempalace_render_retrieval_brief_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/mempalace/render_retrieval_brief.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:206d721c813de11d6358121df79a7fa9",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_061_gossip_http_envelope_prelock_557_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_061_gossip_http_envelope_prelock_557_v0.1.md",
+      "target": "cdl:061"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:81263d631c68f3818b84e2400b495da1",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v6_enforcement_scaffold_audit_1548p_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_v6_enforcement_scaffold_audit_1548p_v0.1.md",
+      "target": "cdl:v6_genesis_intervention"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_authority_sunset_spec_1547p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_authority_sunset_spec_1547p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_555_564_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_555_564_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_signal_floor_policy_consistency_scoping_547_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_signal_floor_policy_consistency_scoping_547_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_555_564_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_555_564_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_555_564_handoff_564_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_555_564_handoff_564_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_559_gossip_transport_hardening_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_559_gossip_transport_hardening.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_genesis_serving_receiver_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/genesis_serving_receiver.py"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:9c6e4848b155a5ca:docs_specs_ilc_h013_closure_gate_938_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_h013_closure_gate_938_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_harness_interfaces_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/harness_interfaces.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_crypto_bundle_registry_completion_handoff_284_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_crypto_bundle_registry_completion_handoff_284_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_claimability_verifier_api_boundary_preflight_1284_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_claimability_verifier_api_boundary_preflight_1284_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:6ee28ac8eea4b1938aeb598ed144f2b3",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0009_bundle_layer_schemas_1467p_v0_1_md",
+      "repo_path": "docs/specs/ilc_adr_0009_bundle_layer_schemas_1467p_v0.1.md",
+      "target": "adr:0009_bundle_distribution"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:bb9ab468a5fcd79762103062d53ee7e8",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_tla_plus_cdl_051_shell_specification_467_v0_1_md",
+      "repo_path": "docs/specs/ilc_tla_plus_cdl_051_shell_specification_467_v0.1.md",
+      "target": "cdl:051_epoch_state_quorum"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_server_instance_isolation_phase_199_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_server_instance_isolation_phase_199.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_main_track_return_preflight_193_199_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_main_track_return_preflight_193_199.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "unresolved_no_unique_target",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v7_popperian_gate_runtime_handoff_398_v0_1_md",
+      "pattern": "cdl:v7",
+      "reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_v7_popperian_gate_runtime_handoff_398_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_adm_003_reference_agent_architecture_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_adm_003_reference_agent_architecture_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v0_9_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v0.9.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_open_requirements_and_unknown_unknowns_analysis_354_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_open_requirements_and_unknown_unknowns_analysis_354_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_reputation_and_agent_profile_adjoint_contract_345_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_reputation_and_agent_profile_adjoint_contract_345_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_adm_003_role_resolution_339_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_adm_003_role_resolution_339.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_genesis_genesis_authority_assertion_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/genesis/genesis_authority_assertion.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_consensus_reputation_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/consensus/reputation.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_d2d_routing_reputation_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/routing_reputation_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_governance_weighted_decision_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/governance_weighted_decision.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_atlas_g_1241_plus_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_atlas_g_1241_plus_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_packaging_distribution_sequence_222_229_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_packaging_distribution_sequence_222_229_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_row_5_mechanism_proof_mysticeti_697_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_row_5_mechanism_proof_mysticeti_697_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_schema_petition_node_type_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/schema/petition_node_type.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_schema_verdict_record_schema_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/schema/verdict_record_schema.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli__cli_error_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/_cli_error.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file_ref:tests_fixtures_antigravity_prompt__phase_1546p_g10_block5_init_descent_v1_md",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file_ref:tests_fixtures_antigravity_prompt__phase_1546p_g10_block5_init_descent_v2_md",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v2.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_evaluators_phase_prompt_evaluator_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/evaluators/phase_prompt_evaluator.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_near_prep_non_governance_term_contracts_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_near_prep_non_governance_term_contracts_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:b630db57b3f05bbb:docs_specs_ilc_cdl_084_provenance_chain_attribution_ratification_evidence_1112_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_cdl_084_provenance_chain_attribution_ratification_evidence_1112_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_bundle_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_bundle.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_channel_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_channel.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_promotion_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_promotion.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_canon_bundle_key_registry_bundle_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_bundle.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_canon_bundle_key_registry_channel_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_channel.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_canon_bundle_key_registry_promotion_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_promotion.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_intent_attestation_and_init_authority_map_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_intent_attestation_and_init_authority_map_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_crawl_genesis_node_candidates_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/crawl_genesis_node_candidates.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_reuse_diversity_invariants_phase_216_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_reuse_diversity_invariants_phase_216.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_reuse_diversity_invariants_phase_216_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_reuse_diversity_invariants_phase_216.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_row_5_layer2_mechanism_implementation_778_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_row_5_layer2_mechanism_implementation_778_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_775_782_closure_gate_782_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_775_782_closure_gate_782_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_rc_publication_claim_gate_1341_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_rc_publication_claim_gate_1341_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_rc_public_rc_publication_claim_gate_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/public_rc_publication_claim_gate.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_stale_reconciliation_strike_force_1156_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_adr_stale_reconciliation_strike_force_1156_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_1156_1165_candidate_phase_grouping_v0_1_md",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "docs/specs/ilc_window_1156_1165_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_7_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.7.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_build_genesis_branchial_claim_projection_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/build_genesis_branchial_claim_projection.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_transport_hardening_and_maturity_decision_669_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transport_hardening_and_maturity_decision_669_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "CONTAINS_FILE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "decision": "deferred_existing_semantic_edge_present",
+      "node_id": "repo:file:ba0454e4699b9a30:ilc_core_bundle_init_py",
+      "reason": "entry_already_has_semantic_or_classification_edge",
+      "repo_path": "ilc_core/bundle/__init__.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_protocol_known_records_migration_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/known_records_migration.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_migrate_known_records_hash_mode_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/migrate_known_records_hash_mode.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_ledger_substrate_options_and_rejection_matrix_610_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_ledger_substrate_options_and_rejection_matrix_610_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:docs_specs_ilc_window_665_670_historical_recovery_v0_1_md",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "docs/specs/ilc_window_665_670_historical_recovery_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_sim_sim_fetch_01_werner_capture_sim_fetch_rerun_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_sim_sim_fetch_01_werner_topology_capture_schema_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_task_routing_suggestions_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/task_routing_suggestions.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_option_b_graduation_checklist_state_670_v0_1_json",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_option_b_graduation_checklist_state_670_v0.1.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_window_665_670_transport_maturity_closure_gate_phase_670_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_window_665_670_transport_maturity_closure_gate_phase_670.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_row_8_mysticeti_sovereign_config_699_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_row_8_mysticeti_sovereign_config_699_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:963f37692ff0d530fa0809c15fbf8b0b",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_adr_0015_node_transfer_economics_disposition_721_v0_1_md",
+      "repo_path": "docs/specs/ilc_adr_0015_node_transfer_economics_disposition_721_v0.1.md",
+      "target": "adr:0015_node_transfer_economics"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_8_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.8.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_722_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_722_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_transfer_economics_cdl_opening_recommendation_or_deferment_721_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transfer_economics_cdl_opening_recommendation_or_deferment_721_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_transfer_tax_cooling_and_leasehold_simulation_replay_contract_721_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transfer_tax_cooling_and_leasehold_simulation_replay_contract_721_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_ledger_signature_migration_contract_282_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_ledger_signature_migration_contract_282_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_migrate_node_ids_to_canonical_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/migrate_node_ids_to_canonical.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_hash_id_compatibility_contract_281_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_hash_id_compatibility_contract_281_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "target:ilc_core_economics",
+      "reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/economics/"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_550_passive_ecu_attribution_runtime_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_550_passive_ecu_attribution_runtime.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_20_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.20.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_844_row5_rust_routing_instrumentation_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_844_row5_rust_routing_instrumentation.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_39_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.39.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v0_8_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.8.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_node_value_input_canon_phase_203_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_node_value_input_canon_phase_203.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_node_value_policy_migration_phase_209_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_node_value_policy_migration_phase_209.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_main_track_return_preflight_203_209_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_main_track_return_preflight_203_209.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_sim_010_validator_incentive_economics_evidence_package_487_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_sim_010_validator_incentive_economics_evidence_package_487_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_1481p_coherence_1487p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_1481p_coherence_1487p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_run_sim_010_validator_incentive_economics_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_sim_010_validator_incentive_economics.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_private_query_response_artifact_schema_1465p_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_private_query_response_artifact_schema_1465p_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_network_d2d_spectral_beacon_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/spectral_beacon.py"
+    },
+    {
+      "current_edge_types": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_tla_ilc_ecu_fast_path_bcast_tlc_out",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/tla/ilc_ecu_fast_path_bcast.tlc.out"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_logging_config_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/logging_config.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_sidecars_confidential_coordination_sealed_sender_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sidecars/confidential_coordination_sealed_sender.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_bundle_bundle_verifier_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/bundle/bundle_verifier.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file_ref:tests_fixtures_adr_0009_bundle_four_layer_chain_valid_json",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/adr_0009/bundle_four_layer_chain_valid.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_low_value_fixture",
+      "node_id": "repo:file_ref:tests_fixtures_adr_0009_bundle_layer0_valid_json",
+      "reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/adr_0009/bundle_layer0_valid.json"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:0dff4cf2a99c3b59b0a3b6ecdea15726",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_051_constitutional_consensus_and_epoch_finality_opening_stub_441_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_051_constitutional_consensus_and_epoch_finality_opening_stub_441_v0.1.md",
+      "target": "cdl:051_epoch_state_quorum"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:2d97d10e32083bc0879de20b47688149",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_051_constitutional_consensus_and_epoch_finality_prelock_hardening_442_v0_1_md",
+      "repo_path": "docs/specs/ilc_cdl_051_constitutional_consensus_and_epoch_finality_prelock_hardening_442_v0.1.md",
+      "target": "cdl:051_epoch_state_quorum"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_consensus_runtime_finality_evaluator_handoff_445_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consensus_runtime_finality_evaluator_handoff_445_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_441_449_sequence_lock_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_441_449_sequence_lock_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_441_449_handoff_449_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_441_449_handoff_449_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_window_441_plus_candidate_phase_grouping_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_441_plus_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:a6dce1a987121d66dda9a643fdb910dd",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:tests_test_phase_441_cdl_051_opening_py",
+      "repo_path": "tests/test_phase_441_cdl_051_opening.py",
+      "target": "cdl:051_epoch_state_quorum"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:3e3996e6bd57033844844726b3bcb247",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:tests_test_phase_442_cdl_051_constitutional_consensus_and_epoch_finality_prelock_hardening_py",
+      "repo_path": "tests/test_phase_442_cdl_051_constitutional_consensus_and_epoch_finality_prelock_hardening.py",
+      "target": "cdl:051_epoch_state_quorum"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "added_edge",
+      "edge_id": "edge:fix45:998f701b73cabb1c7b467f2a7c8e51f6",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "node_id": "repo:file_ref:tests_test_phase_443_cdl_051_ratification_py",
+      "repo_path": "tests/test_phase_443_cdl_051_ratification.py",
+      "target": "cdl:051_epoch_state_quorum"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tests_test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_adm_002_cli_first_agent_sdk_v0_2_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.2.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_lineage_lifecycle_event_schema_v0_2_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_sdk_boundary_contract_234_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_sdk_boundary_contract_234_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_signing_provider_interface_262_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_signing_provider_interface_262_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_release_artifact_manifest_instance_rehearsal_1320_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_release_artifact_manifest_instance_rehearsal_1320_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_check_event_log_retention_rotation_sh",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_event_log_retention_rotation.sh"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_cli_canon_export_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_export.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_public_rc_drift_reconciliation_and_successor_manifest_plan_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_rc_drift_reconciliation_and_successor_manifest_plan_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_6_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.6.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_coherence_report_773_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_773_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_competency_kpis_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/competency_kpis.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:tools_sim_sim_merkle_laplacian_v02_followon_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/sim/sim_merkle_laplacian_v02_followon.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:ilc_core_analysis_stress_response_kpis_py",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/stress_response_kpis.py"
+    },
+    {
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "decision": "deferred_manual_semantic_review",
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_ratification_window_270_279_handoff_v0_1_md",
+      "reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cdl_ratification_window_270_279_handoff_v0.1.md"
+    }
+  ],
+  "schema_version": "genesis_base_graph_fix45_targeted_percolation.v0.1",
+  "status": "PASS"
+}
