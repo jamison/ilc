@@ -7,6 +7,7 @@ PUBLIC_RC_EXCLUDE_REASON: Local research/materialization adapter for unsigned At
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -40,16 +41,20 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
         self,
         root: Path | str,
         *,
+        allow_synthetic_edge_keys: bool = False,
         map_size: int = DEFAULT_MAP_SIZE_BYTES * 4,
     ) -> None:
+        self._allow_synthetic_edge_keys = allow_synthetic_edge_keys
         super().__init__(
             root,
             db_names=(
                 b"nodes",
                 b"edges",
+                b"graph_payload",
                 b"preimages",
                 b"meta",
                 b"nodes_by_tier",
+                b"nodes_by_tier_group",
                 b"nodes_by_source_path",
             ),
             map_size=map_size,
@@ -62,9 +67,17 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
         payload = self._get_json(b"meta", key)
         return payload if isinstance(payload, dict) else None
 
+    def put_graph_payload(self, graph: dict[str, Any]) -> None:
+        self._put_json(b"graph_payload", "candidate", graph)
+
+    def get_graph_payload(self) -> dict[str, Any] | None:
+        payload = self._get_json(b"graph_payload", "candidate")
+        return payload if isinstance(payload, dict) else None
+
     def put_nodes(self, nodes: list[dict[str, Any]]) -> None:
         """Bulk-write candidate nodes and deterministic indexes."""
         tier_index: dict[str, list[str]] = {}
+        tier_group_index: dict[str, list[str]] = {}
         path_index: dict[str, list[str]] = {}
         with self.env.begin(write=True) as txn:
             nodes_db = self._dbs[b"nodes"]
@@ -73,17 +86,23 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
                 txn.put(_encode_key(node_id), _encode_json(node), db=nodes_db)
                 tier = str(node.get("tier", "unknown"))
                 tier_index.setdefault(tier, []).append(node_id)
+                tier_group_index.setdefault(_tier_group(node), []).append(node_id)
                 source_path = node.get("source_path")
                 if isinstance(source_path, str) and source_path:
                     path_index.setdefault(source_path, []).append(node_id)
         self._write_string_list_index(b"nodes_by_tier", tier_index)
+        self._write_string_list_index(b"nodes_by_tier_group", tier_group_index)
         self._write_string_list_index(b"nodes_by_source_path", path_index)
 
     def put_edges(self, edges: list[dict[str, Any]]) -> None:
         """Bulk-write candidate edges."""
         with self.env.begin(write=True, db=self._dbs[b"edges"]) as txn:
-            for edge in edges:
-                edge_id = _edge_id(edge)
+            for index, edge in enumerate(edges):
+                edge_id = _edge_lmdb_key(
+                    edge,
+                    index=index,
+                    allow_synthetic_edge_keys=self._allow_synthetic_edge_keys,
+                )
                 txn.put(_encode_key(edge_id), _encode_json(edge))
 
     def put_preimages(self, preimages: list[dict[str, Any]]) -> None:
@@ -111,7 +130,14 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
 
     def iter_edges(self) -> list[dict[str, Any]]:
         rows = [row for row in self._iter_json(b"edges") if isinstance(row, dict)]
-        return sorted(rows, key=lambda row: str(row.get("edge_id", "")))
+        return sorted(
+            rows,
+            key=lambda row: (
+                str(row.get("edge_id", "")),
+                str(row.get("source_candidate_id", row.get("source", row.get("from", "")))),
+                str(row.get("target_candidate_id", row.get("target", row.get("to", "")))),
+            ),
+        )
 
     def iter_preimages(self) -> list[dict[str, Any]]:
         rows = [row for row in self._iter_json(b"preimages") if isinstance(row, dict)]
@@ -119,6 +145,10 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
 
     def node_ids_by_tier(self, tier: str) -> list[str]:
         payload = self._get_json(b"nodes_by_tier", tier)
+        return sorted(item for item in payload if isinstance(item, str)) if isinstance(payload, list) else []
+
+    def node_ids_by_tier_group(self, tier_group: str) -> list[str]:
+        payload = self._get_json(b"nodes_by_tier_group", tier_group)
         return sorted(item for item in payload if isinstance(item, str)) if isinstance(payload, list) else []
 
     def node_ids_by_source_path(self, source_path: str) -> list[str]:
@@ -145,11 +175,42 @@ def _edge_id(edge: dict[str, Any]) -> str:
     return value
 
 
+def _edge_lmdb_key(edge: dict[str, Any], *, index: int, allow_synthetic_edge_keys: bool) -> str:
+    if not allow_synthetic_edge_keys:
+        return _edge_id(edge)
+    explicit = edge.get("edge_id")
+    digest = hashlib.sha256(_encode_json(edge)).hexdigest()[:32]
+    if isinstance(explicit, str) and explicit:
+        return f"{index:012d}:edge_id:{explicit}:{digest}"
+    return f"{index:012d}:synthetic:{digest}"
+
+
 def _preimage_node_id(preimage: dict[str, Any]) -> str:
     value = preimage.get("node_id")
     if not isinstance(value, str) or not value:
         raise ValueError("genesis_atlas_candidate_preimage_missing_node_id")
     return value
+
+
+def _tier_group(node: dict[str, Any]) -> str:
+    tier = str(node.get("tier", "unknown")).lower()
+    canonicality_tier = str(node.get("canonicality_tier", "")).lower()
+    node_kind = str(node.get("node_kind", "")).lower()
+    sensitivity = str(node.get("sensitivity", "")).lower()
+    inclusion_status = str(node.get("inclusion_status", "")).lower()
+    if tier == "genesis_core" or "genesis_core" in canonicality_tier:
+        return "canonical"
+    if (
+        "private" in tier
+        or "excluded" in tier
+        or "private" in sensitivity
+        or "public_rc_exclude" in sensitivity
+        or "excluded" in inclusion_status
+    ):
+        return "private"
+    if "test" in node_kind:
+        return "support"
+    return "support"
 
 
 __all__ = [
