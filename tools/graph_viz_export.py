@@ -1,0 +1,420 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
+"""Export deterministic browser view-model JSON from the Genesis Atlas LMDB.
+
+PUBLIC_RC_EXCLUDE: graph_viz_export_research_tool
+PUBLIC_RC_EXCLUDE_REASON: Local visualization adapter for unsigned Atlas
+candidate projections; no signing, publication, upload, or canonical graph
+mutation.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import tempfile
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCandidateStore
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_LMDB_ROOT = REPO_ROOT / "out/genesis_base_graph_v0.4.lmdb"
+DEFAULT_DIGEST_MANIFEST = REPO_ROOT / "out/genesis_base_graph_v0.4_lmdb_digest.json"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "out/viz_exports"
+DEFAULT_SOURCE_CANDIDATE = "out/atlas_research/genesis_atlas_enriched_candidate_fix41a.json"
+FIX41A_SHA256 = "3bcf8cdf248ea44248e72dce0c8209c92302826399b42524235cf8ee59936e52"
+NODE0 = "artifact:genesis_intent_attestation_init_authority_map"
+
+VIZ_METADATA_PURPOSE = "diagnostic_input_identity_only_not_signing_proof"
+
+VIEWS = ("all-local", "public-material", "private-local", "governance", "authority-core", "test-registry")
+
+PRIVATE_GENERATED_TIERS = frozenset(
+    {
+        "genesis_private_or_public_rc_excluded",
+        "genesis_private_historical_material",
+        "agent_harness_private_material",
+        "generated_evidence_material",
+        "generated_evidence_root",
+    }
+)
+
+AUTHORITY_PREFIXES = frozenset(
+    {"truth_primitive", "policy", "artifact", "genesis_agent", "adr", "cdl", "ceremony"}
+)
+GOVERNANCE_EDGE_TYPES = frozenset(
+    {"GOVERNS", "ATTESTATION", "REFERENCES_AUTHORITY", "IMPLEMENTS", "EVIDENCES"}
+)
+TEST_EDGE_TYPES = frozenset({"TESTS", "COVERS_SYMBOL", "IMPLEMENTS", "IMPORTS_MODULE"})
+
+PREFIX_COLORS: dict[str, str] = {
+    "truth_primitive": "#ff4444",
+    "policy": "#ff9900",
+    "artifact": "#ffcc00",
+    "genesis_agent": "#ff66ff",
+    "adr": "#4499ff",
+    "cdl": "#44aaff",
+    "ceremony": "#ff88ff",
+    "source": "#44cc88",
+    "repo": "#888888",
+    "atlas": "#aaaaaa",
+    "other": "#cccccc",
+}
+
+EDGE_COLORS: dict[str, str] = {
+    "GOVERNS": "#ff4444",
+    "ATTESTATION": "#ff9900",
+    "IMPLEMENTS": "#88aaff",
+    "TESTS": "#44cccc",
+    "COVERS_SYMBOL": "#33bbbb",
+    "EVIDENCES": "#ffaa44",
+    "REFERENCES_AUTHORITY": "#00cccc",
+    "DERIVED_FROM": "#cc88ff",
+    "CLASSIFIED_BY": "#cc44ff",
+    "SOURCE_TREE_MEMBER": "#448844",
+    "CONTAINS_FILE": "#444444",
+    "CONTAINS_GROUP": "#444444",
+    "CONTAINS_PARTITION": "#444444",
+    "IMPORTS_MODULE": "#555555",
+    "PROVENANCE": "#888844",
+    "PRIMITIVE_INVOCATION": "#ff6644",
+    "CONSTRAINS": "#886644",
+}
+
+
+def _canonical_json_bytes(payload: Any) -> bytes:
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode(
+        "utf-8"
+    )
+
+
+def _atomic_write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(_canonical_json_bytes(payload))
+            handle.write(b"\n")
+        os.replace(tmp, path)
+    except Exception:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
+def _load_digest_manifest(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("source_candidate") != "fix41a":
+        raise ValueError("fix42_digest_manifest_not_fix41a")
+    source_digest = payload.get("digests", {}).get("source_file_sha256")
+    if source_digest != FIX41A_SHA256:
+        raise ValueError("fix42_digest_manifest_unexpected_source_sha256")
+    return payload
+
+
+def _prefix(node_id: str) -> str:
+    return node_id.split(":", 1)[0]
+
+
+def _node_id(node: dict[str, Any]) -> str:
+    value = node.get("candidate_id") or node.get("id") or node.get("node_id")
+    if not isinstance(value, str) or not value:
+        raise ValueError("fix42_node_missing_id")
+    return value
+
+
+def _source(edge: dict[str, Any]) -> str:
+    value = edge.get("source_candidate_id") or edge.get("source") or edge.get("from")
+    return value if isinstance(value, str) else ""
+
+
+def _target(edge: dict[str, Any]) -> str:
+    value = edge.get("target_candidate_id") or edge.get("target") or edge.get("to")
+    return value if isinstance(value, str) else ""
+
+
+def _edge_type(edge: dict[str, Any]) -> str:
+    value = edge.get("edge_type") or edge.get("type")
+    return value if isinstance(value, str) else ""
+
+
+def _tier(node: dict[str, Any]) -> str:
+    value = node.get("tier")
+    return value if isinstance(value, str) else ""
+
+
+def _kind(node: dict[str, Any]) -> str:
+    value = node.get("node_kind") or node.get("kind")
+    return value if isinstance(value, str) else ""
+
+
+def _label(node_id: str, node: dict[str, Any]) -> str:
+    value = node.get("label") or node.get("source_path") or node_id
+    label = value if isinstance(value, str) else node_id
+    return label[-60:] if len(label) > 60 else label
+
+
+def _node_size(node_id: str) -> int:
+    prefix = _prefix(node_id)
+    if node_id == NODE0:
+        return 20
+    if prefix == "truth_primitive":
+        return 12
+    if prefix in {"policy", "artifact", "genesis_agent"}:
+        return 10
+    if prefix in {"adr", "cdl", "ceremony"}:
+        return 8
+    return 4
+
+
+def _node_color(node_id: str) -> str:
+    if node_id == NODE0:
+        return "#ffffff"
+    return PREFIX_COLORS.get(_prefix(node_id), PREFIX_COLORS["other"])
+
+
+def _is_private_or_generated(node: dict[str, Any]) -> bool:
+    return _tier(node) in PRIVATE_GENERATED_TIERS
+
+
+def _is_core_authority(node_id: str, node: dict[str, Any]) -> bool:
+    return _prefix(node_id) in AUTHORITY_PREFIXES and (_tier(node) == "genesis_core" or node_id == NODE0)
+
+
+def _is_test_node(node_id: str, node: dict[str, Any]) -> bool:
+    lowered_id = node_id.lower()
+    kind = _kind(node).lower()
+    label = str(node.get("label", "")).lower()
+    source_path = str(node.get("source_path", "")).lower()
+    return (
+        ("test" in kind)
+        or (node_id.startswith("repo:file:") and "test" in lowered_id)
+        or "/tests/" in source_path
+        or source_path.startswith("tests/")
+        or "/tests/" in label
+        or label.startswith("tests/")
+    )
+
+
+def _select_node_ids(view: str, nodes_by_id: dict[str, dict[str, Any]], edges: list[dict[str, Any]]) -> set[str]:
+    if view == "all-local":
+        return set(nodes_by_id)
+    if view == "public-material":
+        return {node_id for node_id, node in nodes_by_id.items() if not _is_private_or_generated(node)}
+    if view == "private-local":
+        return {node_id for node_id, node in nodes_by_id.items() if _is_private_or_generated(node)}
+    if view == "authority-core":
+        return {node_id for node_id, node in nodes_by_id.items() if _is_core_authority(node_id, node)}
+    if view == "governance":
+        selected = {node_id for node_id in nodes_by_id if _prefix(node_id) in AUTHORITY_PREFIXES}
+        for edge in edges:
+            if _edge_type(edge) not in GOVERNANCE_EDGE_TYPES:
+                continue
+            source = _source(edge)
+            target = _target(edge)
+            if source in selected or target in selected:
+                if source in nodes_by_id:
+                    selected.add(source)
+                if target in nodes_by_id:
+                    selected.add(target)
+        return selected
+    if view == "test-registry":
+        selected = {
+            node_id for node_id, node in nodes_by_id.items() if _is_test_node(node_id=node_id, node=node)
+        }
+        for edge in edges:
+            if _edge_type(edge) not in TEST_EDGE_TYPES:
+                continue
+            source = _source(edge)
+            target = _target(edge)
+            if source in selected or target in selected:
+                if source in nodes_by_id:
+                    selected.add(source)
+                if target in nodes_by_id:
+                    selected.add(target)
+        return selected
+    raise ValueError(f"fix42_unknown_view:{view}")
+
+
+def _edge_type_allowed(view: str, edge_type: str) -> bool:
+    if view == "governance":
+        return edge_type in GOVERNANCE_EDGE_TYPES
+    if view == "test-registry":
+        return edge_type in TEST_EDGE_TYPES
+    return True
+
+
+def build_view(
+    *,
+    view: str,
+    nodes: list[dict[str, Any]],
+    edges: list[dict[str, Any]],
+    digest_manifest: dict[str, Any],
+    lmdb_root: Path,
+    omit_export_time: bool,
+) -> dict[str, Any]:
+    nodes_by_id = {_node_id(node): node for node in nodes}
+    selected_ids = _select_node_ids(view=view, nodes_by_id=nodes_by_id, edges=edges)
+
+    view_nodes = [
+        {
+            "color": _node_color(node_id),
+            "group": _prefix(node_id),
+            "id": node_id,
+            "kind": _kind(node),
+            "label": _label(node_id, node),
+            "size": _node_size(node_id),
+            "tier": _tier(node),
+        }
+        for node_id, node in sorted(nodes_by_id.items())
+        if node_id in selected_ids
+    ]
+
+    view_edges = []
+    for edge in edges:
+        source = _source(edge)
+        target = _target(edge)
+        edge_type = _edge_type(edge)
+        if source not in selected_ids or target not in selected_ids:
+            continue
+        if not _edge_type_allowed(view, edge_type):
+            continue
+        view_edges.append(
+            {
+                "color": EDGE_COLORS.get(edge_type, "#666666"),
+                "source": source,
+                "target": target,
+                "type": edge_type,
+            }
+        )
+    view_edges.sort(key=lambda item: (item["source"], item["target"], item["type"]))
+
+    metadata: dict[str, Any] = {
+        "edge_count": len(view_edges),
+        "filters_applied": _filters_for_view(view),
+        "lmdb_digest_sha256": digest_manifest["digests"]["reexport_canonical_sha256"],
+        "lmdb_root": str(lmdb_root.relative_to(REPO_ROOT) if lmdb_root.is_absolute() else lmdb_root),
+        "node_count": len(view_nodes),
+        "source_candidate_path": digest_manifest.get("source_candidate_path", DEFAULT_SOURCE_CANDIDATE),
+        "source_candidate_sha256": digest_manifest["digests"]["source_file_sha256"],
+        "view": view,
+        "viz_metadata_purpose": VIZ_METADATA_PURPOSE,
+    }
+    if not omit_export_time:
+        metadata["export_time_utc"] = datetime.now(UTC).isoformat(timespec="seconds")
+
+    return {"edges": view_edges, "metadata": metadata, "nodes": view_nodes}
+
+
+def _filters_for_view(view: str) -> list[str]:
+    if view == "all-local":
+        return ["all_nodes_including_private_and_generated", "all_edge_types"]
+    if view == "public-material":
+        return ["exclude_private_and_generated_tiers", "all_edge_types"]
+    if view == "private-local":
+        return ["only_private_and_generated_tiers", "all_edge_types"]
+    if view == "governance":
+        return ["authority_prefixes_plus_direct_governance_neighbors", "governance_edge_types"]
+    if view == "authority-core":
+        return ["authority_prefixes_only", "edges_between_authority_nodes"]
+    if view == "test-registry":
+        return ["test_nodes_plus_direct_test_edge_targets", "test_edge_types"]
+    raise ValueError(f"fix42_unknown_view:{view}")
+
+
+def _write_report(
+    *,
+    output_dir: Path,
+    exported: dict[str, Path],
+    digest_manifest: dict[str, Any],
+) -> dict[str, Any]:
+    view_digests = {}
+    for view, path in sorted(exported.items()):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        view_digests[view] = {
+            "edge_count": payload["metadata"]["edge_count"],
+            "node_count": payload["metadata"]["node_count"],
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        }
+
+    report = {
+        "lmdb_digest_sha256": digest_manifest["digests"]["reexport_canonical_sha256"],
+        "non_claims": [
+            "View metadata proves input identity only; it is not a signing proof, authority trace, or Genesis-rootedness proof.",
+            "View JSON files are local derived artifacts; only this digest report is committed.",
+            "No graph mutation, signing, or public activation occurred.",
+        ],
+        "phase": "1545p-Fix42",
+        "source_candidate_sha256": digest_manifest["digests"]["source_file_sha256"],
+        "view_digests": view_digests,
+        "views_exported": list(VIEWS),
+    }
+    _atomic_write_json(output_dir / "fix42_export_report.json", report)
+    return report
+
+
+def export_views(
+    *,
+    lmdb_root: Path,
+    digest_manifest_path: Path,
+    output_dir: Path,
+    view: str,
+    omit_export_time: bool,
+) -> dict[str, Path]:
+    digest_manifest = _load_digest_manifest(digest_manifest_path)
+    views = VIEWS if view == "all" else (view,)
+
+    store = GenesisAtlasCandidateStore(lmdb_root)
+    try:
+        nodes = store.iter_nodes()
+        edges = store.iter_edges()
+    finally:
+        store.close()
+
+    exported = {}
+    for view_name in views:
+        payload = build_view(
+            view=view_name,
+            nodes=nodes,
+            edges=edges,
+            digest_manifest=digest_manifest,
+            lmdb_root=lmdb_root,
+            omit_export_time=omit_export_time,
+        )
+        output_path = output_dir / f"graph_view_{view_name}.json"
+        _atomic_write_json(output_path, payload)
+        exported[view_name] = output_path
+
+    if view == "all":
+        _write_report(output_dir=output_dir, exported=exported, digest_manifest=digest_manifest)
+
+    return exported
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Export Genesis Atlas LMDB view-model JSON for graph visualization.")
+    parser.add_argument("--view", choices=("all", *VIEWS), default="all")
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--lmdb-root", type=Path, default=DEFAULT_LMDB_ROOT)
+    parser.add_argument("--digest-manifest", type=Path, default=DEFAULT_DIGEST_MANIFEST)
+    parser.add_argument("--omit-export-time", action="store_true")
+    args = parser.parse_args()
+
+    exported = export_views(
+        lmdb_root=args.lmdb_root,
+        digest_manifest_path=args.digest_manifest,
+        output_dir=args.output_dir,
+        view=args.view,
+        omit_export_time=args.omit_export_time,
+    )
+    for view_name, path in sorted(exported.items()):
+        print(f"{view_name}: {path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
