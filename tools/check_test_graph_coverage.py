@@ -54,6 +54,26 @@ AUTHORITY_EXPECTATION_TERMS = (
     "patent",
 )
 
+AUTHORITY_TRACE_EDGE_TYPES = frozenset(
+    {
+        "CLASSIFIED_BY",
+        "DERIVED_FROM",
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "REGRESSES",
+        "TESTS",
+    }
+)
+
+AUTHORITY_TRACE_TARGET_PREFIXES = (
+    "adr:",
+    "cdl:",
+    "phase:",
+    "phase_window:",
+    "policy:",
+)
+
 PRIVATE_LIVE_TERMS = (
     "tailscale",
     "vps",
@@ -76,6 +96,7 @@ class GraphIndex:
     node_ids: frozenset[str]
     path_to_node_ids: dict[str, list[str]]
     outgoing_tests: dict[str, list[dict[str, Any]]]
+    outgoing_role_traces: dict[str, list[dict[str, Any]]]
     edge_type_counts: Counter[str]
 
 
@@ -165,27 +186,28 @@ def load_graph_index(graph_path: Path, coverage_input_scope: str) -> GraphIndex:
             path_to_node_ids[graph_path_value].append(nid)
 
     outgoing_tests: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    outgoing_role_traces: dict[str, list[dict[str, Any]]] = defaultdict(list)
     edge_type_counts: Counter[str] = Counter()
     for e in edges:
         if not isinstance(e, dict):
             continue
         etype = edge_type(e)
         edge_type_counts[etype] += 1
-        if etype != "TESTS":
-            continue
         src = edge_source(e)
         tgt = edge_target(e)
         if not src or not tgt:
             continue
-        outgoing_tests[src].append(
-            {
-                "source": src,
-                "target": tgt,
-                "edge_type": etype,
-                "provenance": e.get("provenance", "graph"),
-                "target_resolves": tgt in node_ids,
-            }
-        )
+        edge_record = {
+            "source": src,
+            "target": tgt,
+            "edge_type": etype,
+            "provenance": e.get("provenance", "graph"),
+            "target_resolves": tgt in node_ids,
+        }
+        if etype == "TESTS":
+            outgoing_tests[src].append(edge_record)
+        if etype in AUTHORITY_TRACE_EDGE_TYPES:
+            outgoing_role_traces[src].append(edge_record)
 
     return GraphIndex(
         path=graph_path,
@@ -195,6 +217,10 @@ def load_graph_index(graph_path: Path, coverage_input_scope: str) -> GraphIndex:
         node_ids=frozenset(node_ids),
         path_to_node_ids={k: sorted(set(v)) for k, v in path_to_node_ids.items()},
         outgoing_tests={k: sorted(v, key=lambda item: item["target"]) for k, v in outgoing_tests.items()},
+        outgoing_role_traces={
+            k: sorted(v, key=lambda item: (item["edge_type"], item["target"]))
+            for k, v in outgoing_role_traces.items()
+        },
         edge_type_counts=edge_type_counts,
     )
 
@@ -336,13 +362,16 @@ def load_supplemental_test_edges(
     return edges, queue_stats
 
 
-def authority_trace_satisfied(tests_edges: list[dict[str, Any]]) -> bool:
-    for edge in tests_edges:
+def authority_trace_satisfied(
+    tests_edges: list[dict[str, Any]],
+    role_trace_edges: list[dict[str, Any]],
+) -> bool:
+    for edge in [*tests_edges, *role_trace_edges]:
+        if not edge.get("target_resolves", False):
+            continue
         target = edge["target"].lower()
         if (
-            target.startswith("adr:")
-            or target.startswith("cdl:")
-            or target.startswith("policy:")
+            target.startswith(AUTHORITY_TRACE_TARGET_PREFIXES)
             or "docs_adr_" in target
             or "docs_specs_" in target
             or "docs_phases_" in target
@@ -384,13 +413,27 @@ def build_coverage(
             mapped_files += 1
 
         file_tests_edges: list[dict[str, Any]] = []
+        file_role_trace_edges: list[dict[str, Any]] = []
         for nid in node_ids:
             file_tests_edges.extend(outgoing_tests.get(nid, []))
+            file_role_trace_edges.extend(graph.outgoing_role_traces.get(nid, []))
         file_tests_edges = sorted(
             file_tests_edges,
             key=lambda item: (item["source"], item["target"], item["provenance"]),
         )
+        file_role_trace_edges = sorted(
+            file_role_trace_edges,
+            key=lambda item: (
+                item["source"],
+                item["edge_type"],
+                item["target"],
+                item["provenance"],
+            ),
+        )
         valid_edges = [edge for edge in file_tests_edges if edge["target_resolves"]]
+        valid_role_trace_edges = [
+            edge for edge in file_role_trace_edges if edge["target_resolves"]
+        ]
         if valid_edges:
             tests_with_edges += 1
         for edge in file_tests_edges:
@@ -410,7 +453,7 @@ def build_coverage(
             gap_classes.append("dangling_tests_target")
         if classification["requires_role_specific_authority_trace"]:
             authority_expected += 1
-            if authority_trace_satisfied(valid_edges):
+            if authority_trace_satisfied(valid_edges, valid_role_trace_edges):
                 authority_satisfied += 1
             elif node_ids:
                 gap_classes.append("missing_expected_authority_trace")
@@ -434,6 +477,13 @@ def build_coverage(
                 ],
                 "tests_edge_count": len(valid_edges),
                 "tests_targets": sorted({edge["target"] for edge in valid_edges})[:25],
+                "role_trace_edge_count": len(valid_role_trace_edges),
+                "role_trace_targets": sorted(
+                    {
+                        f"{edge['edge_type']}:{edge['target']}"
+                        for edge in valid_role_trace_edges
+                    }
+                )[:25],
                 "gap_classes": sorted(set(gap_classes)),
             }
         )
@@ -462,6 +512,7 @@ def build_coverage(
         "authority_trace_policy": {
             "ordinary_runtime_tests_do_not_require_references_authority": True,
             "role_specific_authority_trace_checked_only_when_expected": True,
+            "role_specific_trace_edges_are_evaluated_directly": True,
         },
         "report_first_mode": True,
         "enforce_threshold_default": False,
