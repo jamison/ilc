@@ -1,0 +1,2058 @@
+{
+  "entries": [
+    {
+      "batch_id": "fix46_batch_001",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "node_id": "repo:file:7d427265062269b1:docs_specs_ilc_llm_repo_workflow_policy_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_llm_repo_workflow_policy_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_001",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "node_id": "repo:file:e40d2e1d1b735718:docs_specs_sponsor_clustering_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/sponsor_clustering.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_001",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "CONTAINS_FILE"
+      ],
+      "node_id": "repo:file:298af6efe05306e7:tests_test_phase_m019_adversarial_hardening_results_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tests/test_phase_M019_adversarial_hardening_results.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_002",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_04_identity_subsystem_contract_293_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_d2e_04_identity_subsystem_contract_293_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_002",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_protocol_schemas_ilc_cluster_a_replay_proof_batch_report_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_report_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_002",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_economic_risk_monitoring_baseline_305_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_d2e_economic_risk_monitoring_baseline_305_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_002",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_genesis_accrual_governor_contract_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_002",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_593_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_593_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_002",
+      "batch_index": 10,
+      "candidate_authority_refs": [
+        {
+          "candidates": [],
+          "key": "020",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "021",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "024",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_d2_schema_baseline_runtime_handoff_310_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_d2_schema_baseline_runtime_handoff_310_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_004",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_claude_extraction_brief_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_claude_extraction_brief_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_004",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tests_test_code_health_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tests/test_code_health.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_005",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_export_bundle_report_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_report.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_005",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl096_eligibility_checkpoint_1509p_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cdl096_eligibility_checkpoint_1509p_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_005",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_public_runtime_integration_over_receipt_boundary_591_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_public_runtime_integration_over_receipt_boundary_591_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_005",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_sync_state_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_sync_state.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_006",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_receipt_envelope_and_payout_trace_contract_candidate_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_receipt_envelope_and_payout_trace_contract_candidate_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_006",
+      "batch_index": 9,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_security_runtime_window_closure_240_248_phase_249_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_security_runtime_window_closure_240_248_phase_249.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_007",
+      "batch_index": 5,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:053_werner_local_productive_credit",
+            "cdl:053_werner_local_productive_credit_future_vehicle"
+          ],
+          "key": "053",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:053_werner_local_productive_credit",
+            "cdl:053_werner_local_productive_credit_future_vehicle"
+          ],
+          "key": "053",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v3_diversity_floor",
+            "cdl:v3_quorum_diversity"
+          ],
+          "key": "v3",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_056_validator_trust_tier_elevation_opening_stub_499_v0_1_md",
+      "prior_decision": "unresolved_no_unique_target",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cdl_056_validator_trust_tier_elevation_opening_stub_499_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_007",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_226_decision_log_backlog_queue_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_phase_226_decision_log_backlog_queue_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_008",
+      "batch_index": 4,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_055_validator_staking_and_liveness_enforcement_prelock_hardening_493_v0_1_md",
+      "prior_decision": "unresolved_no_unique_target",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cdl_055_validator_staking_and_liveness_enforcement_prelock_hardening_493_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_008",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_network_wire_transport_runtime_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/network/wire_transport_runtime.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_009",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_schema_d2_schema_baseline_runtime_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/schema/d2_schema_baseline_runtime.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_009",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_economics_reward_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/economics/reward.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_009",
+      "batch_index": 4,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:053_werner_local_productive_credit",
+            "cdl:053_werner_local_productive_credit_future_vehicle"
+          ],
+          "key": "053",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:053_werner_local_productive_credit",
+            "cdl:053_werner_local_productive_credit_future_vehicle"
+          ],
+          "key": "053",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "adr:0022_local_first_private_publication_bound_economics",
+            "adr:0022_local_first_private_use_and_publication_bound_economics",
+            "adr:0022_local_first_private_use_publication_bound_economics"
+          ],
+          "key": "0022",
+          "kind": "adr",
+          "resolution": "multiple_existing_adr_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_503_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_503_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_009",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_d2e_05_query_subsystem_handoff_300_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_d2e_05_query_subsystem_handoff_300_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_009",
+      "batch_index": 9,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_cluster_a_replay_proof_ci_gate_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_cluster_a_replay_proof_ci_gate.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_009",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_cluster_a_replay_proof_release_gate_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_cluster_a_replay_proof_release_gate.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_010",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_domain_exception_migration_guardrails_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_domain_exception_migration_guardrails.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_010",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_non_replay_domain_exception_migration_guardrails_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_non_replay_domain_exception_migration_guardrails.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_010",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_replay_proof_schema_parity_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_replay_proof_schema_parity.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_010",
+      "batch_index": 4,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_track1_closure_guardrails_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_track1_closure_guardrails.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_010",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_star_map_route_index_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/star_map/route_index.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_012",
+      "batch_index": 4,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_ledger_exact_numeric_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/ledger/exact_numeric.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_014",
+      "batch_index": 4,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:053_werner_local_productive_credit",
+            "cdl:053_werner_local_productive_credit_future_vehicle"
+          ],
+          "key": "053",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:055_validator_staking_liveness",
+            "cdl:055_validator_staking_liveness_runtime"
+          ],
+          "key": "055",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:056_trust_tier_boundary",
+            "cdl:056_validator_trust_tier_elevation"
+          ],
+          "key": "056",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:053_werner_local_productive_credit",
+            "cdl:053_werner_local_productive_credit_future_vehicle"
+          ],
+          "key": "053",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_window_495_504_handoff_504_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_window_495_504_handoff_504_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_015",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_commit_epoch_audit_1234_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_commit_epoch_audit_1234_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_015",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_testbed_phase1360_multiop_control_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/testbed/phase1360_multiop_control.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_015",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_window_631_636_numeric_determinism_gate_phase_636_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_window_631_636_numeric_determinism_gate_phase_636.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_016",
+      "batch_index": 8,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:039_open_and_promotion_continuity",
+            "cdl:039_topology_shuffling_authorization"
+          ],
+          "key": "039",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:039_open_and_promotion_continuity",
+            "cdl:039_topology_shuffling_authorization"
+          ],
+          "key": "039",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_network_d2d_gossip_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/network/d2d/gossip.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_016",
+      "batch_index": 9,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_network_d2d_interface_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/network/d2d/interface.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_017",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_rc0_1_release_gate_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_rc0_1_release_gate.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_017",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_rc0_1_release_gate_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_rc0_1_release_gate.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_017",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_testbed_check_phase_595_rc0_1_strike_force_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/testbed/check_phase_595_rc0_1_strike_force.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_018",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_privacy_public_legitimacy_threat_model_678_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_privacy_public_legitimacy_threat_model_678_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_018",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_public_legitimacy_observability_budget_679_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_public_legitimacy_observability_budget_679_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_019",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_834_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_834_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_019",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_window_637_641_residual_numeric_gate_phase_641_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_window_637_641_residual_numeric_gate_phase_641.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_020",
+      "batch_index": 6,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:v3_diversity_floor",
+            "cdl:v3_quorum_diversity"
+          ],
+          "key": "v3",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v3_diversity_floor",
+            "cdl:v3_quorum_diversity"
+          ],
+          "key": "v3",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v3_diversity_floor",
+            "cdl:v3_quorum_diversity"
+          ],
+          "key": "v3",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v3_diversity_floor",
+            "cdl:v3_quorum_diversity"
+          ],
+          "key": "v3",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v7_agent_decomposition",
+            "cdl:v7_popperian_gate"
+          ],
+          "key": "v7",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v3_diversity_floor",
+            "cdl:v3_quorum_diversity"
+          ],
+          "key": "v3",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v7_agent_decomposition",
+            "cdl:v7_popperian_gate"
+          ],
+          "key": "v7",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0_1_md",
+      "prior_decision": "unresolved_no_unique_target",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_021",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_freshness_gate_invariants_phase_217_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_freshness_gate_invariants_phase_217.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_021",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tests_test_window_767_774_integration_gate_772_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tests/test_window_767_774_integration_gate_772.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_022",
+      "batch_index": 4,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_022",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_phase_606_mempalace_adoption_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_phase_606_mempalace_adoption.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_022",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_epistemic_aesthetic_panel_runtime_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/epistemic/aesthetic_panel_runtime.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_023",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_phase_252_security_ratification_gate_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_phase_252_security_ratification_gate.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_023",
+      "batch_index": 4,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_phase_236_preflight_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_phase_236_preflight.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_023",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_crypto_surface_inventory_lock_280_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_crypto_surface_inventory_lock_280_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_023",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_utils_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/ledger/canon_bundle_utils.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_023",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_sphincs_shamir_split_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/sphincs_shamir_split.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_024",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_compare_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_compare_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_024",
+      "batch_index": 9,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_ops_contract_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_024",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_report_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_025",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_ci_gate_report_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_025",
+      "batch_index": 6,
+      "candidate_authority_refs": [
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [],
+          "key": "082",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_945_952_sequence_lock_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_phase_945_952_sequence_lock_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_025",
+      "batch_index": 9,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:v7_agent_decomposition",
+            "cdl:v7_popperian_gate"
+          ],
+          "key": "v7",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        },
+        {
+          "candidates": [
+            "cdl:081_hyperedge_attribution",
+            "cdl:081_hyperedge_ecu_attribution"
+          ],
+          "key": "081",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_025",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_026",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_gap14_package_profile_audit_1251_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_026",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0_1_json",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.json",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_027",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_window_closure_handoff_doc_schema_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_027",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_mempalace_render_retrieval_brief_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/mempalace/render_retrieval_brief.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_028",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_crypto_bundle_registry_completion_handoff_284_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_crypto_bundle_registry_completion_handoff_284_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_028",
+      "batch_index": 9,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_main_track_return_preflight_193_199_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_main_track_return_preflight_193_199.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_029",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_029",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tests_test_adm_003_role_resolution_339_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tests/test_adm_003_role_resolution_339.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_029",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_consensus_reputation_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/consensus/reputation.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_029",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_atlas_g_1241_plus_candidate_phase_grouping_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_atlas_g_1241_plus_candidate_phase_grouping_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_030",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_cli__cli_error_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/cli/_cli_error.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_031",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_near_prep_non_governance_term_contracts_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_near_prep_non_governance_term_contracts_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_031",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_channel_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_channel.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_032",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_reuse_diversity_invariants_phase_216_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_reuse_diversity_invariants_phase_216.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_032",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_row_5_layer2_mechanism_implementation_778_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_row_5_layer2_mechanism_implementation_778_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_032",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_window_775_782_closure_gate_782_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_window_775_782_closure_gate_782_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_032",
+      "batch_index": 9,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_transport_hardening_and_maturity_decision_669_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_transport_hardening_and_maturity_decision_669_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_033",
+      "batch_index": 3,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "adr:0026_protocol_vs_harness_boundary",
+            "adr:0026_protocol_vs_harness_product_boundary"
+          ],
+          "key": "0026",
+          "kind": "adr",
+          "resolution": "multiple_existing_adr_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_public_ledger_substrate_options_and_rejection_matrix_610_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_public_ledger_substrate_options_and_rejection_matrix_610_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_033",
+      "batch_index": 6,
+      "candidate_authority_refs": [
+        {
+          "candidates": [
+            "cdl:096_werner_flow_governor_lane",
+            "cdl:096_werner_global_tier_authority"
+          ],
+          "key": "096",
+          "kind": "cdl",
+          "resolution": "multiple_existing_cdl_targets"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_sim_sim_fetch_01_werner_topology_capture_schema_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_033",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_window_665_670_transport_maturity_closure_gate_phase_670_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_window_665_670_transport_maturity_closure_gate_phase_670.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_034",
+      "batch_index": 6,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_ledger_signature_migration_contract_282_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_ledger_signature_migration_contract_282_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_034",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_hash_id_compatibility_contract_281_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_hash_id_compatibility_contract_281_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_035",
+      "batch_index": 2,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tests_test_phase_844_row5_rust_routing_instrumentation_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tests/test_phase_844_row5_rust_routing_instrumentation.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_035",
+      "batch_index": 7,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_main_track_return_preflight_203_209_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_main_track_return_preflight_203_209.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_035",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_sim_010_validator_incentive_economics_evidence_package_487_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_sim_010_validator_incentive_economics_evidence_package_487_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_035",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_run_sim_010_validator_incentive_economics_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/run_sim_010_validator_incentive_economics.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_036",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_private_query_response_artifact_schema_1465p_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_private_query_response_artifact_schema_1465p_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_036",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_tla_ilc_ecu_fast_path_bcast_tlc_out",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/tla/ilc_ecu_fast_path_bcast.tlc.out",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_036",
+      "batch_index": 4,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_logging_config_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/logging_config.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_036",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:ilc_core_sidecars_confidential_coordination_sealed_sender_py",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "ilc_core/sidecars/confidential_coordination_sealed_sender.py",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_037",
+      "batch_index": 7,
+      "candidate_authority_refs": [
+        {
+          "candidates": [],
+          "key": "032",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "032",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_adm_002_cli_first_agent_sdk_v0_2_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_adm_002_cli_first_agent_sdk_v0.2.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_037",
+      "batch_index": 8,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_lineage_lifecycle_event_schema_v0_2_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_037",
+      "batch_index": 9,
+      "candidate_authority_refs": [
+        {
+          "candidates": [],
+          "key": "032",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "032",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        },
+        {
+          "candidates": [],
+          "key": "033",
+          "kind": "cdl",
+          "resolution": "no_existing_cdl_target"
+        }
+      ],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_sdk_boundary_contract_234_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_sdk_boundary_contract_234_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_037",
+      "batch_index": 10,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_signing_provider_interface_262_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_signing_provider_interface_262_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_038",
+      "batch_index": 1,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_release_artifact_manifest_instance_rehearsal_1320_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_release_artifact_manifest_instance_rehearsal_1320_v0.1.md",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_038",
+      "batch_index": 3,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:tools_check_event_log_retention_rotation_sh",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "tools/check_event_log_retention_rotation.sh",
+      "source_read_disposition": "read_text"
+    },
+    {
+      "batch_id": "fix46_batch_038",
+      "batch_index": 5,
+      "candidate_authority_refs": [],
+      "current_edge_types": [
+        "TESTS"
+      ],
+      "node_id": "repo:file_ref:docs_specs_ilc_public_rc_drift_reconciliation_and_successor_manifest_plan_v0_1_md",
+      "prior_decision": "deferred_manual_semantic_review",
+      "reason": "no_unique_evidence_backed_edge_added",
+      "repo_path": "docs/specs/ilc_public_rc_drift_reconciliation_and_successor_manifest_plan_v0.1.md",
+      "source_read_disposition": "read_text"
+    }
+  ],
+  "entry_count": 101,
+  "non_claims": [
+    "No Genesis signing occurred.",
+    "No signed genesis_base_graph_v0.4.json artifact was produced.",
+    "No canonical Atlas mutation occurred.",
+    "No public graph publication occurred.",
+    "No public repository push occurred.",
+    "No public RC activation occurred.",
+    "No runtime, economic, sidecar, network, ADR, or CDL activation occurred.",
+    "No Fix46 edge is authority-bearing or promoted to canonical state."
+  ],
+  "phase": "1545p-Fix46",
+  "schema_version": "genesis_base_graph_fix46_manual_semantic_annotation.v0.1",
+  "status": "PASS"
+}
