@@ -1,0 +1,192 @@
+{
+  "$id": "https://ilc.local/schemas/ilc_epistemic_gap_node_schema_v0.1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "Schema for unsigned candidate-only epistemic_gap nodes in the ILC Genesis Atlas research/frontier projection.",
+  "properties": {
+    "annotation_method": {
+      "const": "fix51_epistemic_gap_schema"
+    },
+    "authority_boundary": {
+      "const": "not_authority_promotion"
+    },
+    "authority_effect": {
+      "const": "none_until_resolved"
+    },
+    "candidate_id": {
+      "pattern": "^gap:",
+      "type": "string"
+    },
+    "candidate_status": {
+      "const": "fix51_support_only_not_canonical"
+    },
+    "candidate_targets": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "type": "string"
+          },
+          "kgc_method": {
+            "enum": [
+              "TransE",
+              "RotatE",
+              "manual"
+            ],
+            "type": "string"
+          },
+          "kgc_phase": {
+            "type": "string"
+          },
+          "kgc_score": {
+            "pattern": "^(0|1)(\\.\\d+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "kgc_score",
+          "kgc_method",
+          "kgc_phase"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "created_by_phase": {
+      "const": "phase_1545p_fix51"
+    },
+    "expected_edge_type": {
+      "type": "string"
+    },
+    "expiry_epochs": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "gap_id": {
+      "pattern": "^gap:[0-9a-f]{24}$",
+      "type": "string"
+    },
+    "gossip_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "gossip_publishable": {
+      "type": "boolean"
+    },
+    "node_kind": {
+      "const": "epistemic_gap"
+    },
+    "projection_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_projection": {
+          "const": "excluded"
+        },
+        "frontier_projection": {
+          "const": "included"
+        },
+        "research_projection": {
+          "const": "included"
+        }
+      },
+      "required": [
+        "authority_projection",
+        "frontier_projection",
+        "research_projection"
+      ],
+      "type": "object"
+    },
+    "resolved_by_edge_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resolution_phase": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "signature_status": {
+      "const": "unsigned_candidate_preimage"
+    },
+    "signing_posture": {
+      "const": "not_atlas_signing_ready"
+    },
+    "source_node_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "resolved",
+        "expired_unresolved",
+        "deferred"
+      ],
+      "type": "string"
+    },
+    "target_prefix_hint": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "target_schema_hint": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "node_kind",
+    "gap_id",
+    "status",
+    "source_node_id",
+    "expected_edge_type",
+    "target_schema_hint",
+    "target_prefix_hint",
+    "candidate_targets",
+    "authority_effect",
+    "signing_posture",
+    "projection_policy",
+    "created_by_phase",
+    "annotation_method",
+    "candidate_status",
+    "signature_status",
+    "authority_boundary",
+    "resolved_by_edge_id",
+    "resolution_phase",
+    "expiry_epochs",
+    "gossip_publishable",
+    "gossip_hash"
+  ],
+  "title": "ILC Epistemic Gap Node Schema v0.1",
+  "type": "object"
+}
