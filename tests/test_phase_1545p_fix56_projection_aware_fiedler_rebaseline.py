@@ -77,5 +77,21 @@ def test_fix56_fiedler_caveat_in_walkthrough() -> None:
 def test_fix56_evaluator_does_not_call_lmdb_put_methods() -> None:
     text = EVALUATOR.read_text(encoding="utf-8")
 
-    forbidden = ("put_nodes(", "put_edges(", "put_graph_payload(", "put_meta(")
+    forbidden = (
+        "GenesisAtlasCandidateStore",
+        "put_nodes(",
+        "put_edges(",
+        "put_graph_payload(",
+        "put_meta(",
+        "_put_json(",
+        "write=True",
+    )
     assert all(token not in text for token in forbidden)
+
+
+def test_fix56_evaluator_opens_lmdb_readonly() -> None:
+    text = EVALUATOR.read_text(encoding="utf-8")
+
+    assert "readonly=True" in text
+    assert "create=False" in text
+    assert "lock=False" in text

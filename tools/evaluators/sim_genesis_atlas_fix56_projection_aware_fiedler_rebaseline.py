@@ -11,12 +11,12 @@ import hashlib
 import json
 import math
 import os
-import sys
 import tempfile
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
+import lmdb
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse.csgraph import connected_components
@@ -24,13 +24,6 @@ from scipy.sparse.linalg import eigsh
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import (  # noqa: E402
-    GenesisAtlasCandidateStore,
-)
-
 
 PHASE = "1545p-Fix56"
 NODE0 = "artifact:genesis_intent_attestation_init_authority_map"
@@ -50,7 +43,7 @@ PUBLIC_ELIGIBLE_PROJECTIONS = frozenset(
 )
 SPECTRAL_CAVEAT = (
     "Fiedler vector gives spectral relaxation of the minimum sparse-cut problem "
-    "— not a proof of the exact minimum cut."
+    "-- not a proof of the exact minimum cut."
 )
 
 
@@ -105,6 +98,45 @@ def _candidate_id(node: dict[str, Any]) -> str:
     if not isinstance(value, str) or not value:
         raise ValueError("fix56_node_missing_candidate_id")
     return value
+
+
+def _decode_lmdb_json(raw: bytes) -> dict[str, Any]:
+    payload = json.loads(raw.decode("utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("fix56_lmdb_row_not_object")
+    return payload
+
+
+def _read_lmdb_rows(lmdb_root: Path, db_name: bytes) -> list[dict[str, Any]]:
+    env = lmdb.open(
+        str(lmdb_root.resolve()),
+        subdir=True,
+        readonly=True,
+        lock=False,
+        create=False,
+        max_dbs=8,
+    )
+    try:
+        db = env.open_db(db_name, create=False)
+        with env.begin(db=db, write=False) as txn:
+            rows = [_decode_lmdb_json(bytes(value)) for _, value in txn.cursor()]
+    finally:
+        env.close()
+    return rows
+
+
+def _load_lmdb_graph(lmdb_root: Path = LMDB_ROOT) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    nodes = sorted(_read_lmdb_rows(lmdb_root, b"nodes"), key=_candidate_id)
+    edges = sorted(
+        _read_lmdb_rows(lmdb_root, b"edges"),
+        key=lambda edge: (
+            str(edge.get("edge_id", "")),
+            _edge_source(edge),
+            _edge_type(edge),
+            _edge_target(edge),
+        ),
+    )
+    return nodes, edges
 
 
 def _edge_source(edge: dict[str, Any]) -> str:
@@ -238,7 +270,14 @@ def _minority_records(
     outbound: Counter[str],
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
-    for node_id, coordinate in sorted(minority, key=lambda row: (row[1], row[0])):
+    def sort_key(row: tuple[str, float]) -> tuple[float, int, str]:
+        node_id, coordinate = row
+        # ARPACK may assign tiny coordinate differences inside a nearly flat
+        # boundary cluster. Bucket those differences so the audit queue is
+        # stable and prioritizes structurally higher-degree boundary nodes.
+        return (round(coordinate, 12), -int(inbound[node_id] + outbound[node_id]), node_id)
+
+    for node_id, coordinate in sorted(minority, key=sort_key):
         node = node_by_id[node_id]
         records.append(
             {
@@ -320,7 +359,16 @@ def _fiedler_projection(
         return base_result, _cluster_payload(projection, base_result, records)
 
     k = min(3, len(node_ids) - 1)
-    values, vectors = eigsh(laplacian, k=k, which="SM", return_eigenvectors=True, tol=1e-6, maxiter=10000)
+    deterministic_start = np.linspace(1.0, 2.0, len(node_ids), dtype=float)
+    values, vectors = eigsh(
+        laplacian,
+        k=k,
+        which="SM",
+        return_eigenvectors=True,
+        tol=1e-6,
+        maxiter=10000,
+        v0=deterministic_start,
+    )
     order = np.argsort(values)
     sorted_values = [float(values[index]) for index in order]
     base_result["smallest_eigenvalues"] = sorted_values
@@ -425,12 +473,7 @@ def _run() -> dict[str, Any]:
     if not (LMDB_ROOT / "data.mdb").exists():
         raise ValueError("fix56_lmdb_missing")
     fix55_baseline = _load_fix55_baseline()
-    store = GenesisAtlasCandidateStore(LMDB_ROOT, allow_synthetic_edge_keys=True)
-    try:
-        nodes = store.iter_nodes()
-        edges = store.iter_edges()
-    finally:
-        store.close()
+    nodes, edges = _load_lmdb_graph()
 
     if len(nodes) != EXPECTED_NODE_COUNT:
         raise ValueError(f"fix56_unexpected_node_count:{len(nodes)}")
@@ -474,6 +517,7 @@ def _run() -> dict[str, Any]:
         "fix57_input_ledger": str(FIX57_LEDGER_PATH.relative_to(REPO_ROOT)),
         "input_digest": _input_digest(nodes=nodes, edges=edges),
         "lmdb_path": str(LMDB_ROOT.relative_to(REPO_ROOT)),
+        "lmdb_read_mode": "readonly_true_create_false_lock_false",
         "phase": PHASE,
         "projections": projections,
         "spectral_caveat": SPECTRAL_CAVEAT,
