@@ -21,9 +21,9 @@ def test_fix57_non_out_ledger_counts_and_deferred_raw_out_boundary() -> None:
     assert data["source_cluster"] == "out/genesis_atlas_fix56_fiedler_public_eligible_minority_cluster_v0.1.json"
     assert data["raw_out_full_pass_deferred"] is True
     assert data["total_non_out_entries"] == 432
-    assert data["manual_reviewed_entries"] == 159
-    assert data["assisted_triage_entries"] == 273
-    assert data["pending_deep_manual_confirmation_entries"] == 273
+    assert data["manual_reviewed_entries"] == 169
+    assert data["assisted_triage_entries"] == 263
+    assert data["pending_deep_manual_confirmation_entries"] == 263
     assert data["pending_entries"] == 0
     assert data["full_non_out_pass_status"] == "assisted_triage_complete_deep_manual_confirmation_pending"
     assert len(data["entries"]) == 432
@@ -42,10 +42,10 @@ def test_fix57_non_out_edges_are_support_only_and_marked_by_confidence_boundary(
     }
     confirmed = [row for row in data["entries"] if row.get("deep_manual_confirmation_status") == "confirmed"]
     assisted = [row for row in data["entries"] if row.get("deep_manual_confirmation_status") == "pending"]
-    assert len(confirmed) == 159
-    assert len(assisted) == 273
+    assert len(confirmed) == 169
+    assert len(assisted) == 263
     recommended_edges = [edge for row in data["entries"] for edge in row["recommended_edges"]]
-    assert len(recommended_edges) == 725
+    assert len(recommended_edges) == 764
     for edge in recommended_edges:
         assert edge["edge_type"] in allowed_edge_types
         assert edge["edge_type"] != "GOVERNS"
@@ -70,17 +70,17 @@ def test_fix57_non_out_all_assisted_rows_wait_for_deep_manual_confirmation() -> 
     data = _ledger()
     pending = [row for row in data["entries"] if row["manual_status"] == "pending"]
     assert pending == []
-    assert data["full_pass_summary"]["file_direct_reads"] == 216
+    assert data["full_pass_summary"]["file_direct_reads"] == 309
     assert data["full_pass_summary"]["semantic_node_classifications"] == 123
-    assert data["full_pass_summary"]["reviewed_with_no_new_safe_edge"] == 95
+    assert data["full_pass_summary"]["reviewed_with_no_new_safe_edge"] == 89
     assert data["full_pass_summary"]["governs_recommendations"] == 0
     pending_assisted = [row for row in data["entries"] if row.get("deep_manual_confirmation_status") == "pending"]
-    assert len(pending_assisted) == 273
+    assert len(pending_assisted) == 263
     for row in pending_assisted:
         assert row["manual_status"] == "assisted_triage_pending_deep_manual_confirmation"
         assert row["deep_manual_confirmation_status"] == "pending"
-    assert len(data["deep_manual_confirmation_batches"]) == 15
-    assert data["deep_manual_confirmation_batches"][-1]["batch_id"] == "batch_016_docs_phases_other"
+    assert len(data["deep_manual_confirmation_batches"]) == 16
+    assert data["deep_manual_confirmation_batches"][-1]["batch_id"] == "batch_017_tests_other"
 
 
 def test_fix57_non_out_prompt_registers_lmdb_nodes_and_no_completion_token() -> None:
@@ -96,12 +96,12 @@ def test_fix57_non_out_report_and_walkthrough_record_full_pass() -> None:
     report = REPORT_PATH.read_text(encoding="utf-8")
     walkthrough = WALKTHROUGH_PATH.read_text(encoding="utf-8")
     assert "Total non-out entries: `432`" in report
-    assert "Deep-manual confirmed entries: `159`" in report
-    assert "Assisted-triage entries pending deep confirmation: `273`" in report
-    assert "Total support-only edge recommendations currently recorded: `725`" in report
+    assert "Deep-manual confirmed entries: `169`" in report
+    assert "Assisted-triage entries pending deep confirmation: `263`" in report
+    assert "Total support-only edge recommendations currently recorded: `764`" in report
     assert "Honesty Correction" in report
-    assert "Deep-manual confirmed rows | `159`" in walkthrough
-    assert "Assisted-triage rows pending deep confirmation | `273`" in walkthrough
+    assert "Deep-manual confirmed rows | `169`" in walkthrough
+    assert "Assisted-triage rows pending deep confirmation | `263`" in walkthrough
     assert "fix57_complete is not emitted" in walkthrough
     assert "No LMDB mutation occurred" in walkthrough
 
