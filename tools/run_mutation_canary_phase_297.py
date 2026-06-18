@@ -263,11 +263,14 @@ def _run_probe(probe: Probe) -> bool:
     try:
         probe.path.write_text(mutated, encoding="utf-8")
         _invalidate_pyc(probe.path)
+        env = os.environ.copy()
+        env["ILC_MUTATION_CANARY_ACTIVE"] = "1"
         result = subprocess.run(
             list(probe.command),
             check=False,
             capture_output=True,
             text=True,
+            env=env,
         )
         killed = result.returncode != 0
         status = "MUTATION_KILLED" if killed else "MUTATION_SURVIVED"
