@@ -2053,6 +2053,8 @@
     "No Fix46 edge is authority-bearing or promoted to canonical state."
   ],
   "phase": "1545p-Fix46",
-  "schema_version": "genesis_base_graph_fix46_manual_semantic_annotation.v0.1",
+  "renamed_for_phase": "1545p-Fix48",
+  "schema_version": "ilc_fix48_residual_semantic_annotation_queue.v0.1",
+  "source_phase": "1545p-Fix46",
   "status": "PASS"
 }
