@@ -89,19 +89,19 @@
       "tier": "public_release_candidate_material"
     },
     {
-      "candidate_id": "repo:file:86a4a8794229c4a5:docs_specs_ilc_fix47_residual_semantic_annotation_queue_v0_1_json",
+      "candidate_id": "repo:file:403fb2a1c4f7dfb5:docs_specs_ilc_fix48_residual_semantic_annotation_queue_v0_1_json",
       "candidate_status": "fix46_support_only",
       "category": "fix46_support_document",
       "confidence": 0.8,
       "inclusion_status": "support_only",
-      "label": "docs/specs/ilc_fix47_residual_semantic_annotation_queue_v0.1.json",
+      "label": "docs/specs/ilc_fix48_residual_semantic_annotation_queue_v0.1.json",
       "node_kind": "repo_support_doc_node",
       "phase": "1545p-Fix46",
       "public_path": "blocked",
       "rationale": "Fix46 graph intake record for a newly produced support artifact.",
       "sensitivity": "NON-SENSITIVE",
       "signature_status": "unsigned_candidate",
-      "source_path": "docs/specs/ilc_fix47_residual_semantic_annotation_queue_v0.1.json",
+      "source_path": "docs/specs/ilc_fix48_residual_semantic_annotation_queue_v0.1.json",
       "source_phase": "1545p-Fix46",
       "tier": "public_release_candidate_material"
     }
