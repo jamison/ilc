@@ -46,7 +46,7 @@ _EXTERNAL_SIDECARS: list[dict[str, Any]] = [
     {
         "sidecar_id": "graph-viz",
         "kind": "external",
-        "description": "Epistemic graph visualization — interactive HTML, community detection, PageRank",
+        "description": "Epistemic graph visualization — interactive HTML, community detection, StarRank",
         "invoke": "ilc sidecar graph-viz [OPTIONS]",
         "install": "bash ilc-graphics-sidecar/install.sh",
         "module": "ilc_graph_viz.__main__",

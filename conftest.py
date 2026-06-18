@@ -20,6 +20,9 @@ def _reset_canary_dirty_files() -> None:
     This prevents stale mutation tokens (e.g. v9.9, REMOVED_FOR_MUTATION) from
     poisoning the test session.
     """
+    if os.environ.get("ILC_MUTATION_CANARY_ACTIVE") == "1":
+        return
+
     sentinel_dir = Path("/tmp")
     dirty_sentinels = list(sentinel_dir.glob("ilc_mutation_canary_dirty_*.lock"))
     if not dirty_sentinels:

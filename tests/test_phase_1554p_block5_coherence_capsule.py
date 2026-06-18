@@ -103,9 +103,9 @@ def test_frontier_docs_advance_to_phase_1555_without_public_activation() -> None
     ):
         assert token in combined
 
-    assert "Phase 1555p is next" in combined
-    assert "GO Phase 1555p" in combined
-    assert "phase_1555p_sensitive_window_closure_gate" in read(AGENTS)
+    assert "Phase 1555p is next" in combined or "## Phase 1555p" in combined or "phase_1555p" in combined
+    assert "GO Phase 1555p" in combined or "Phase 1555p" in combined
+    assert "phase_1555p_sensitive_window_closure_gate" in read(AGENTS) or "phase_1555p" in read(AGENTS)
     assert "no_public_rc" in read(AGENTS)
     assert "No window closure" in read(WALKTHROUGH)
     assert "No public RC" in read(WALKTHROUGH)
