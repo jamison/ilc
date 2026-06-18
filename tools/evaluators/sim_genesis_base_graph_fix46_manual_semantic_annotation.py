@@ -32,7 +32,7 @@ QUEUE_IN = REPO_ROOT / "docs/specs/ilc_fix46_manual_semantic_annotation_queue_v0
 CANDIDATE_OUT = REPO_ROOT / "out/atlas_research/genesis_atlas_enriched_candidate_fix46.json"
 LEDGER_OUT = REPO_ROOT / "docs/specs/ilc_fix46_manual_semantic_annotation_ledger_v0.1.json"
 REPORT_OUT = REPO_ROOT / "docs/specs/ilc_fix46_manual_semantic_annotation_report_v0.1.md"
-RESIDUAL_QUEUE_OUT = REPO_ROOT / "docs/specs/ilc_fix47_residual_semantic_annotation_queue_v0.1.json"
+RESIDUAL_QUEUE_OUT = REPO_ROOT / "docs/specs/ilc_fix48_residual_semantic_annotation_queue_v0.1.json"
 WALKTHROUGH_OUT = REPO_ROOT / "docs/phases/phase_1545p_fix46_manual_semantic_annotation_walkthrough.md"
 
 SOURCE_TREE_TARGET = "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
@@ -41,7 +41,7 @@ BATCH_SIZE = 10
 NEW_DOC_PATHS = [
     "docs/specs/ilc_fix46_manual_semantic_annotation_ledger_v0.1.json",
     "docs/specs/ilc_fix46_manual_semantic_annotation_report_v0.1.md",
-    "docs/specs/ilc_fix47_residual_semantic_annotation_queue_v0.1.json",
+    "docs/specs/ilc_fix48_residual_semantic_annotation_queue_v0.1.json",
 ]
 
 TOKENS = [
@@ -573,7 +573,7 @@ def _report_markdown(ledger: dict[str, Any], residual_queue: dict[str, Any], can
         f"- Queue entries considered: `{ledger['queue_entry_count']}`",
         f"- Batch count: `{ledger['batch_count']}`",
         f"- Candidate edges added: `{sum(ledger['edge_type_counts_added'].values())}`",
-        f"- Residual Fix47 entries: `{residual_queue['entry_count']}`",
+        f"- Residual Fix48 entries: `{residual_queue['entry_count']}`",
         f"- Candidate nodes: `{len(candidate['nodes'])}`",
         f"- Candidate edges: `{len(candidate['edges'])}`",
         "",
@@ -616,7 +616,7 @@ canonical graph authority.
 
 - Candidate edges added: `{sum(ledger['edge_type_counts_added'].values())}`
 - Edge type counts: `{json.dumps(ledger['edge_type_counts_added'], sort_keys=True, allow_nan=False)}`
-- Residual Fix47 entries: `{residual_queue['entry_count']}`
+- Residual Fix48 entries: `{residual_queue['entry_count']}`
 - Graph-intake support nodes: `{len(ledger['graph_intake_nodes'])}`
 
 ## Enriched Candidate

@@ -10,7 +10,7 @@ BASE_CANDIDATE = ROOT / "out/atlas_research/genesis_atlas_enriched_candidate_fix
 CANDIDATE = ROOT / "out/atlas_research/genesis_atlas_enriched_candidate_fix46.json"
 LEDGER = ROOT / "docs/specs/ilc_fix46_manual_semantic_annotation_ledger_v0.1.json"
 REPORT = ROOT / "docs/specs/ilc_fix46_manual_semantic_annotation_report_v0.1.md"
-RESIDUAL_QUEUE = ROOT / "docs/specs/ilc_fix47_residual_semantic_annotation_queue_v0.1.json"
+RESIDUAL_QUEUE = ROOT / "docs/specs/ilc_fix48_residual_semantic_annotation_queue_v0.1.json"
 WALKTHROUGH = ROOT / "docs/phases/phase_1545p_fix46_manual_semantic_annotation_walkthrough.md"
 STATUS = ROOT / "docs/phases/STATUS.md"
 BUILDER = ROOT / "tools/evaluators/sim_genesis_base_graph_fix46_manual_semantic_annotation.py"
@@ -18,7 +18,7 @@ BUILDER = ROOT / "tools/evaluators/sim_genesis_base_graph_fix46_manual_semantic_
 NEW_DOC_PATHS = {
     "docs/specs/ilc_fix46_manual_semantic_annotation_ledger_v0.1.json",
     "docs/specs/ilc_fix46_manual_semantic_annotation_report_v0.1.md",
-    "docs/specs/ilc_fix47_residual_semantic_annotation_queue_v0.1.json",
+    "docs/specs/ilc_fix48_residual_semantic_annotation_queue_v0.1.json",
 }
 
 
@@ -112,7 +112,7 @@ def test_fix46_residual_queue_report_and_walkthrough_are_consistent() -> None:
         "TESTS": 107,
     }
     assert "Candidate edges added: `963`" in report
-    assert "Residual Fix47 entries: `101`" in report
+    assert "Residual Fix48 entries: `101`" in report
     assert "Fix46 consumed the Fix45 manual semantic queue in deterministic batches of ten" in walkthrough
     assert "No Genesis signing occurred." in walkthrough
 
