@@ -47,6 +47,7 @@ class AtlasPhaseFileRegistration:
     graph_projection: str
     graph_delta: str = "support_only"
     required_edges: tuple[tuple[str, str], ...] = ()
+    skip_carries_forward: bool = False
 
 
 class AtlasLmdbSafeWriter:
@@ -236,7 +237,7 @@ class AtlasLmdbSafeWriter:
                     candidate_status="fix59b_phase_file_registration_edge",
                 )
             )
-            if registration.path != "docs/phases/phase_1545p_fix59b_atlas_lmdb_safe_writer_walkthrough.md":
+            if not registration.skip_carries_forward:
                 edges_to_add.append(
                     _edge(
                         source=file_id,
@@ -629,6 +630,7 @@ def _coerce_phase_file_registration(
         graph_projection=item["graph_projection"],
         graph_delta=item.get("graph_delta", "support_only"),
         required_edges=tuple(tuple(edge) for edge in edges),
+        skip_carries_forward=bool(item.get("skip_carries_forward", False)),
     )
 
 
