@@ -45,6 +45,7 @@ OPERATIONAL_COMMANDS = (
     "node",
     "sidecar",
     "ccss",
+    "atlas",
     "submit",
     "version",
 )
@@ -1288,6 +1289,43 @@ def _build_parser() -> JsonArgumentParser:
             p_ccss_serve.add_argument("--port", type=int, default=9001)
             continue
 
+        if command == "atlas":
+            atlas_parser = subparsers.add_parser(
+                "atlas",
+                help="Read-only Genesis Atlas LMDB inspection commands",
+            )
+            atlas_subparsers = atlas_parser.add_subparsers(
+                dest="atlas_subcommand",
+                required=True,
+            )
+
+            p_atlas_status = atlas_subparsers.add_parser(
+                "status",
+                help="Report local Genesis Atlas LMDB counts and metadata",
+            )
+            p_atlas_status.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+
+            p_atlas_validate = atlas_subparsers.add_parser(
+                "validate",
+                help="Validate local Genesis Atlas LMDB row and payload consistency",
+            )
+            p_atlas_validate.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+
+            p_atlas_node = atlas_subparsers.add_parser(
+                "node",
+                help="Return one Atlas node by candidate ID",
+            )
+            p_atlas_node.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+            p_atlas_node.add_argument("--node-id", required=True, help="Atlas candidate ID")
+
+            p_atlas_edges = atlas_subparsers.add_parser(
+                "edges",
+                help="Return Atlas edges connected to a candidate ID",
+            )
+            p_atlas_edges.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+            p_atlas_edges.add_argument("--node-id", required=True, help="Atlas candidate ID")
+            continue
+
         if command == "balance":
             balance_parser = subparsers.add_parser(
                 "balance",
@@ -1385,7 +1423,7 @@ def _run_top_level_command(
     args: argparse.Namespace,
     graph_state_path: Path,
 ) -> dict[str, Any]:
-    if command not in {"query", "verify", "bundle", "agent", "node", "sidecar", "ccss"}:
+    if command not in {"query", "verify", "bundle", "agent", "node", "sidecar", "ccss", "atlas"}:
         _ensure_local_graph_state(graph_state_path, command)
 
     if command == "version":
@@ -1421,6 +1459,14 @@ def _run_top_level_command(
         from ilc_core.cli.ccss_cli import run_ccss_command
 
         data = run_ccss_command(args)
+        return _success_payload(command, data)
+    if command == "atlas":
+        from ilc_core.cli.atlas_lmdb_cli import AtlasLmdbCliError, run_atlas_command
+
+        try:
+            data = run_atlas_command(args)
+        except AtlasLmdbCliError as exc:
+            raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "balance":
         data = _run_balance_command(args)
