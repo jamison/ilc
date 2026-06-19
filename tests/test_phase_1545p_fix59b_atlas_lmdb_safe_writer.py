@@ -207,3 +207,34 @@ def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path
         assert (file_id, "EVIDENCES", "phase:1545p_fix59b") in edges
     finally:
         writer.close()
+
+
+def test_phase_file_registration_can_skip_generic_carries_forward_edge(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.register_phase_files(
+            "1545p-Fix59b",
+            [
+                AtlasPhaseFileRegistration(
+                    path="docs/phases/no_generic_carry_forward.md",
+                    node_kind="phase_walkthrough",
+                    graph_projection="support_candidate_graph",
+                    required_edges=(("EVIDENCES", "phase:1545p_fix59b"),),
+                    skip_carries_forward=True,
+                )
+            ],
+            dry_run=False,
+        )
+        file_id = repo_file_ref_id("docs/phases/no_generic_carry_forward.md")
+        assert receipt["rejected_edge_count"] == 0
+        store = GenesisAtlasCandidateStore(root, allow_synthetic_edge_keys=True)
+        try:
+            edges = {(edge["source"], edge["edge_type"], edge["target"]) for edge in store.iter_edges()}
+        finally:
+            store.close()
+        assert (file_id, "EVIDENCES", "phase:1545p_fix59b") in edges
+        assert (file_id, "CARRIES_FORWARD", "phase:1545p_fix59b") not in edges
+    finally:
+        writer.close()
