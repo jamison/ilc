@@ -19,6 +19,9 @@ PUBLIC_MATERIAL = ROOT / "out/viz_exports/graph_view_public-material.json"
 GOVERNANCE = ROOT / "out/viz_exports/graph_view_governance.json"
 AUTHORITY_CORE = ROOT / "out/viz_exports/graph_view_authority-core.json"
 TEST_REGISTRY = ROOT / "out/viz_exports/graph_view_test-registry.json"
+LEGACY_LMDB = ROOT / "out/genesis_base_graph_v0.4.lmdb"
+LEGACY_DIGEST = ROOT / "out/genesis_base_graph_v0.4_lmdb_digest.json"
+UNIFIED_DIGEST = ROOT / "out/genesis_base_graph_v0.4_unified_lmdb_digest_fix61.json"
 
 FIX41A_SHA256 = "3bcf8cdf248ea44248e72dce0c8209c92302826399b42524235cf8ee59936e52"
 NODE0 = "artifact:genesis_intent_attestation_init_authority_map"
@@ -83,6 +86,63 @@ def test_fix42_export_report_records_all_view_digests() -> None:
 
 
 def test_fix42_public_material_view_is_deterministic_and_public_scoped(tmp_path: Path) -> None:
+    output_a = tmp_path / "a"
+    output_b = tmp_path / "b"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(EXPORT_TOOL),
+            "--view",
+            "public-material",
+            "--output-dir",
+            str(output_a),
+            "--lmdb-root",
+            str(LEGACY_LMDB),
+            "--digest-manifest",
+            str(LEGACY_DIGEST),
+            "--omit-export-time",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    second = subprocess.run(
+        [
+            sys.executable,
+            str(EXPORT_TOOL),
+            "--view",
+            "public-material",
+            "--output-dir",
+            str(output_b),
+            "--lmdb-root",
+            str(LEGACY_LMDB),
+            "--digest-manifest",
+            str(LEGACY_DIGEST),
+            "--omit-export-time",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert second.returncode == 0, second.stdout + second.stderr
+
+    regenerated = output_a / "graph_view_public-material.json"
+    assert _sha256(regenerated) == _sha256(output_b / "graph_view_public-material.json")
+
+    payload = _load(regenerated)
+    metadata = payload["metadata"]
+    assert metadata["source_candidate_sha256"] == FIX41A_SHA256
+    assert metadata["viz_metadata_purpose"] == "diagnostic_input_identity_only_not_signing_proof"
+    assert "export_time_utc" not in metadata
+    assert metadata["node_count"] > 10_000
+    assert metadata["edge_count"] > 20_000
+    assert all(node.get("tier") not in PRIVATE_GENERATED_TIERS for node in payload["nodes"])
+
+
+def test_fix42_exporter_defaults_to_unified_lmdb_and_fix61_digest(tmp_path: Path) -> None:
     result = subprocess.run(
         [
             sys.executable,
@@ -100,18 +160,13 @@ def test_fix42_public_material_view_is_deterministic_and_public_scoped(tmp_path:
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
-    regenerated = tmp_path / "graph_view_public-material.json"
-    report = _load(REPORT)
-    assert _sha256(regenerated) == report["view_digests"]["public-material"]["sha256"]
-
-    payload = _load(regenerated)
+    digest = _load(UNIFIED_DIGEST)
+    payload = _load(tmp_path / "graph_view_public-material.json")
     metadata = payload["metadata"]
-    assert metadata["source_candidate_sha256"] == FIX41A_SHA256
-    assert metadata["viz_metadata_purpose"] == "diagnostic_input_identity_only_not_signing_proof"
-    assert "export_time_utc" not in metadata
-    assert metadata["node_count"] > 10_000
-    assert metadata["edge_count"] > 20_000
-    assert all(node.get("tier") not in PRIVATE_GENERATED_TIERS for node in payload["nodes"])
+    assert metadata["lmdb_root"] == "out/genesis_base_graph_v0.4_unified.lmdb"
+    assert metadata["source_candidate_path"] == "out/genesis_base_graph_v0.4_unified.lmdb"
+    assert metadata["source_candidate_sha256"] == digest["node_digest"]
+    assert metadata["node_count"] > 12_000
 
 
 def test_fix42_governance_and_authority_views_are_shaped() -> None:
@@ -152,6 +207,8 @@ def test_fix42_exporter_uses_atomic_writes_and_public_rc_exclude_marker() -> Non
     assert "PUBLIC_RC_EXCLUDE" in source
     assert "tempfile.mkstemp" in source
     assert "os.replace" in source
+    assert '"CARRIES_FORWARD"' in source
+    assert '"phase"' in source
 
 
 def test_fix42_committed_public_view_matches_report() -> None:
