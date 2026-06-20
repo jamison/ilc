@@ -238,3 +238,9 @@ def test_phase_file_registration_can_skip_generic_carries_forward_edge(tmp_path:
         assert (file_id, "CARRIES_FORWARD", "phase:1545p_fix59b") not in edges
     finally:
         writer.close()
+
+
+def test_repo_file_ref_id_fully_collapses_repeated_underscores() -> None:
+    assert repo_file_ref_id("docs//phases/weird--name..md") == (
+        "repo:file_ref:docs_phases_weird_name_md"
+    )
