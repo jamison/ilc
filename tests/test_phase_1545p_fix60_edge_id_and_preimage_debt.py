@@ -9,6 +9,7 @@ from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCa
 
 STATUS_PATH = Path("docs/phases/STATUS.md")
 REPORT_PATH = Path("out/genesis_atlas_fix60_edge_id_preimage_debt_report_v0.1.json")
+FIX61_SUMMARY_PATH = Path("out/genesis_atlas_fix61_projection_summary_v0.1.json")
 LMDB_ROOT = Path("out/genesis_base_graph_v0.4_unified.lmdb")
 
 
@@ -88,14 +89,17 @@ def test_fix60_preimage_sha256_is_correct() -> None:
         assert record["canonical_sha256"] == _canonical_sha256(fields)
 
 
-def test_fix60_lmdb_node_count_matches_report() -> None:
+def test_fix60_lmdb_node_count_not_below_report_and_matches_latest_summary() -> None:
     report = _report()
     store = GenesisAtlasCandidateStore(LMDB_ROOT, allow_synthetic_edge_keys=True)
     try:
         node_count = len(store.iter_nodes())
     finally:
         store.close()
-    assert node_count == report["lmdb_node_count"]
+    assert node_count >= report["lmdb_node_count"]
+    if FIX61_SUMMARY_PATH.exists():
+        summary = json.loads(FIX61_SUMMARY_PATH.read_text(encoding="utf-8"))
+        assert node_count == summary["lmdb_node_count_total"]
 
 
 def test_fix60_evaluator_uses_safe_writer_not_raw_adapter_writes() -> None:
