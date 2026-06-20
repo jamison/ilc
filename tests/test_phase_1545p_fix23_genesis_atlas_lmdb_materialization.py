@@ -74,11 +74,21 @@ def test_genesis_atlas_candidate_store_indexes_nodes(tmp_path: Path) -> None:
             ]
         )
         store.put_edges([{"edge_id": "edge-a", "source": "node-a", "target": "node-b"}])
-        store.put_preimages([{"node_id": "node-a", "source_path": "a.md"}])
+        store.put_preimages(
+            [
+                {"node_id": "node-a", "source_path": "a.md"},
+                {"edge_id": "edge-a", "source": "node-a", "target": "node-b"},
+            ]
+        )
 
         assert store.get_node("node-a")["source_path"] == "a.md"
         assert store.get_edge("edge-a")["target"] == "node-b"
         assert store.get_preimage("node-a")["source_path"] == "a.md"
+        assert store.get_preimage("edge-a")["target"] == "node-b"
+        assert [row.get("node_id", row.get("edge_id")) for row in store.iter_preimages()] == [
+            "node-a",
+            "edge-a",
+        ]
         assert store.node_ids_by_tier("public_release_candidate_material") == ["node-a"]
         assert store.node_ids_by_source_path("b.md") == ["node-b"]
     finally:
@@ -92,7 +102,7 @@ def test_genesis_atlas_candidate_store_fails_closed_on_missing_ids(tmp_path: Pat
             store.put_nodes([{"tier": "public_release_candidate_material"}])
         with pytest.raises(ValueError, match="genesis_atlas_candidate_edge_missing_edge_id"):
             store.put_edges([{"source": "a", "target": "b"}])
-        with pytest.raises(ValueError, match="genesis_atlas_candidate_preimage_missing_node_id"):
+        with pytest.raises(ValueError, match="genesis_atlas_candidate_preimage_missing_node_or_edge_id"):
             store.put_preimages([{"source_path": "a.md"}])
     finally:
         store.close()
