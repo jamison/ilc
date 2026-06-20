@@ -222,6 +222,44 @@ def test_safe_writer_rejects_missing_node_field_update(tmp_path: Path) -> None:
         writer.close()
 
 
+def test_safe_writer_removes_edges_by_exact_semantic(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.remove_edges_by_semantic(
+            {("node:a", "REFERENCES_AUTHORITY", "node:b")},
+            phase="1545p-Fix62e-test",
+            dry_run=False,
+        )
+        assert receipt["mutated"] is True
+        assert receipt["removed_edge_count"] == 1
+        assert receipt["missing_semantic_count"] == 0
+        assert receipt["post_counts"] == {"edges": 0, "nodes": 2}
+        assert receipt["post_invariants"]["payload_edge_count_matches_rows"] is True
+        assert writer.inspect()["edge_count"] == 0
+    finally:
+        writer.close()
+
+
+def test_safe_writer_reports_missing_edge_semantic_without_mutation(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.remove_edges_by_semantic(
+            {("node:a", "TESTS", "node:b")},
+            phase="1545p-Fix62e-test",
+            dry_run=False,
+        )
+        assert receipt["mutated"] is False
+        assert receipt["removed_edge_count"] == 0
+        assert receipt["missing_semantic_count"] == 1
+        assert writer.inspect()["edge_count"] == 1
+    finally:
+        writer.close()
+
+
 def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path: Path) -> None:
     root = tmp_path / "atlas"
     _seed_lmdb(root)

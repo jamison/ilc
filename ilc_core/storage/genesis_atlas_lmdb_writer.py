@@ -518,6 +518,85 @@ class AtlasLmdbSafeWriter:
             self.store.put_meta("last_safe_writer_receipt", receipt)
         return receipt
 
+    def remove_edges_by_semantic(
+        self,
+        edge_semantics: Iterable[tuple[str, str, str]],
+        *,
+        phase: str,
+        dry_run: bool = True,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Remove exact edge semantics through a validation-first rewrite."""
+
+        semantics = {
+            (str(source), str(edge_type), str(target))
+            for source, edge_type, target in edge_semantics
+        }
+        current_nodes = self.store.iter_nodes()
+        current_edges = self.store.iter_edges()
+        current_payload = self.store.get_graph_payload() or {}
+        retained_edges: list[dict[str, Any]] = []
+        removed_edges: list[dict[str, Any]] = []
+        for edge in current_edges:
+            semantic = (_edge_source(edge), _edge_type(edge), _edge_target(edge))
+            if semantic in semantics:
+                removed_edges.append(dict(edge))
+            else:
+                retained_edges.append(edge)
+        removed_semantics = {
+            (_edge_source(edge), _edge_type(edge), _edge_target(edge))
+            for edge in removed_edges
+        }
+        missing_semantics = sorted(semantics - removed_semantics)
+        payload = dict(current_payload)
+        payload["nodes"] = current_nodes
+        payload["edges"] = retained_edges
+        payload["safe_writer"] = {
+            "last_phase": phase,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        receipt: dict[str, Any] = {
+            "dry_run": dry_run,
+            "metadata": dict(metadata or {}),
+            "missing_semantic_count": len(missing_semantics),
+            "missing_semantics": [
+                {"source": source, "edge_type": edge_type, "target": target}
+                for source, edge_type, target in missing_semantics
+            ],
+            "mutated": False,
+            "phase": phase,
+            "pre_counts": {"edges": len(current_edges), "nodes": len(current_nodes)},
+            "removed_edge_count": len(removed_edges),
+            "removed_edges": removed_edges[:50],
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            receipt["projected_counts"] = {
+                "edges": len(retained_edges),
+                "nodes": len(current_nodes),
+            }
+            return receipt
+        if removed_edges:
+            self.store.replace_edges(retained_edges)
+            self.store.put_graph_payload(payload)
+        post_nodes = self.store.iter_nodes()
+        post_edges = self.store.iter_edges()
+        post_payload = self.store.get_graph_payload() or {}
+        post_invariants = _inspect_invariants(
+            nodes=post_nodes,
+            edges=post_edges,
+            payload=post_payload,
+            store=self.store,
+        )
+        receipt["mutated"] = bool(removed_edges)
+        receipt["post_counts"] = {"edges": len(post_edges), "nodes": len(post_nodes)}
+        receipt["post_invariants"] = post_invariants
+        receipt["status"] = "PASS" if all(post_invariants.values()) else "FAIL"
+        if phase:
+            self.store.put_meta(f"safe_writer_edge_removals:{phase}", receipt)
+            self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
 
 def deterministic_edge_id(source: str, edge_type: str, target: str) -> str:
     digest = hashlib.sha256(f"{source}|{edge_type}|{target}".encode("utf-8")).hexdigest()[:16]
