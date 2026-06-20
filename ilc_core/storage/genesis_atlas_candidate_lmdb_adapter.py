@@ -28,7 +28,7 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
     Named databases:
         b"nodes" - key=candidate_id, value=candidate node JSON
         b"edges" - key=edge_id, value=candidate edge JSON
-        b"preimages" - key=node_id, value=unsigned candidate preimage JSON
+        b"preimages" - key=node_id or edge_id, value=unsigned candidate preimage JSON
         b"meta" - key=metadata token, value=JSON metadata
         b"nodes_by_tier" - key=tier, value=sorted candidate_id list
         b"nodes_by_source_path" - key=source path, value=sorted candidate_id list
@@ -125,11 +125,11 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
                 txn.put(_encode_key(edge_id), _encode_json(edge), db=edges_db)
 
     def put_preimages(self, preimages: list[dict[str, Any]]) -> None:
-        """Bulk-write deterministic unsigned node preimages."""
+        """Bulk-write deterministic unsigned node or edge preimages."""
         with self.env.begin(write=True, db=self._dbs[b"preimages"]) as txn:
             for preimage in preimages:
-                node_id = _preimage_node_id(preimage)
-                txn.put(_encode_key(node_id), _encode_json(preimage))
+                preimage_id = _preimage_id(preimage)
+                txn.put(_encode_key(preimage_id), _encode_json(preimage))
 
     def get_node(self, candidate_id: str) -> dict[str, Any] | None:
         payload = self._get_json(b"nodes", candidate_id)
@@ -139,8 +139,8 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
         payload = self._get_json(b"edges", edge_id)
         return payload if isinstance(payload, dict) else None
 
-    def get_preimage(self, node_id: str) -> dict[str, Any] | None:
-        payload = self._get_json(b"preimages", node_id)
+    def get_preimage(self, preimage_id: str) -> dict[str, Any] | None:
+        payload = self._get_json(b"preimages", preimage_id)
         return payload if isinstance(payload, dict) else None
 
     def iter_nodes(self) -> list[dict[str, Any]]:
@@ -160,7 +160,13 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
 
     def iter_preimages(self) -> list[dict[str, Any]]:
         rows = [row for row in self._iter_json(b"preimages") if isinstance(row, dict)]
-        return sorted(rows, key=lambda row: str(row.get("node_id", "")))
+        return sorted(
+            rows,
+            key=lambda row: (
+                0 if isinstance(row.get("node_id"), str) and row.get("node_id") else 1,
+                str(row.get("node_id", row.get("edge_id", ""))),
+            ),
+        )
 
     def node_ids_by_tier(self, tier: str) -> list[str]:
         payload = self._get_json(b"nodes_by_tier", tier)
@@ -204,12 +210,12 @@ def _edge_lmdb_key(edge: dict[str, Any], *, index: int, allow_synthetic_edge_key
     return f"{index:012d}:synthetic:{digest}"
 
 
-def _preimage_node_id(preimage: dict[str, Any]) -> str:
+def _preimage_id(preimage: dict[str, Any]) -> str:
     value = preimage.get("node_id")
     if not isinstance(value, str) or not value:
         value = preimage.get("edge_id")
     if not isinstance(value, str) or not value:
-        raise ValueError("genesis_atlas_candidate_preimage_missing_node_id")
+        raise ValueError("genesis_atlas_candidate_preimage_missing_node_or_edge_id")
     return value
 
 
