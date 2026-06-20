@@ -606,7 +606,7 @@ def _edge_source(edge: dict[str, Any]) -> str:
         value = edge.get(key)
         if isinstance(value, str) and value:
             return value
-    return ""
+    raise AtlasLmdbCliError("atlas_edge_source_missing", "edge record missing source")
 
 
 def _edge_target(edge: dict[str, Any]) -> str:
@@ -614,12 +614,14 @@ def _edge_target(edge: dict[str, Any]) -> str:
         value = edge.get(key)
         if isinstance(value, str) and value:
             return value
-    return ""
+    raise AtlasLmdbCliError("atlas_edge_target_missing", "edge record missing target")
 
 
 def _edge_type(edge: dict[str, Any]) -> str:
     value = edge.get("edge_type")
-    return value if isinstance(value, str) else ""
+    if isinstance(value, str) and value:
+        return value
+    raise AtlasLmdbCliError("atlas_edge_type_missing", "edge record missing edge_type")
 
 
 def _node_summary(nodes: list[dict[str, Any]]) -> list[dict[str, str]]:

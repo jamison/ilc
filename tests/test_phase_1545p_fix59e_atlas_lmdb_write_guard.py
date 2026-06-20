@@ -167,6 +167,9 @@ def test_safe_writer_preimages_and_metadata_are_wrapped(tmp_path: Path) -> None:
         assert receipt["post_preimage_count"] == 2
         assert writer.store.get_preimage("node:a") == node_preimage
         assert writer.store.get_preimage("edge:test") == edge_preimage
+        assert writer.store.get_meta("safe_writer_preimages:1545p-Fix59e-test:test")[
+            "preimage_count"
+        ] == 2
 
         meta_receipt = writer.write_metadata(
             "fix59e_test_metadata",
@@ -176,6 +179,31 @@ def test_safe_writer_preimages_and_metadata_are_wrapped(tmp_path: Path) -> None:
         )
         assert meta_receipt["status"] == "PASS"
         assert writer.store.get_meta("fix59e_test_metadata") == {"ok": True}
+    finally:
+        writer.close()
+
+
+def test_safe_writer_rejects_preimage_without_canonical_sha(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_missing_edge_id_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        invalid_preimage = {
+            "fields": {"candidate_id": "node:a"},
+            "node_id": "node:a",
+            "preimage_version": "v0.4",
+        }
+        try:
+            writer.write_preimages(
+                [invalid_preimage],
+                phase="1545p-Fix59e-test",
+                dry_run=False,
+                metadata={"scope": "invalid"},
+            )
+        except ValueError as exc:
+            assert str(exc) == "atlas_lmdb_preimage_canonical_sha256_invalid"
+        else:
+            raise AssertionError("invalid preimage was accepted")
     finally:
         writer.close()
 

@@ -184,6 +184,30 @@ def test_atlas_edges_returns_source_or_target_matches(tmp_path: Path) -> None:
     assert edge_types == {"TESTS", "REFERENCES_AUTHORITY"}
 
 
+def test_atlas_edges_fails_closed_on_malformed_edge(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_atlas_lmdb(root)
+    malformed_edge = {
+        "edge_id": "edge:malformed",
+        "edge_type": "TESTS",
+        "target": "repo:file:ilc_core_example_py",
+        "tgt": "repo:file:ilc_core_example_py",
+    }
+    store = GenesisAtlasCandidateStore(root, allow_synthetic_edge_keys=True)
+    try:
+        edges = store.iter_edges()
+        payload = store.get_graph_payload() or {}
+        store.put_edges([malformed_edge])
+        payload["edges"] = [*edges, malformed_edge]
+        store.put_graph_payload(payload)
+    finally:
+        store.close()
+
+    with pytest.raises(AtlasLmdbCliError) as exc_info:
+        handle_atlas_edges(str(root), "repo:file:ilc_core_example_py")
+    assert exc_info.value.token == "atlas_edge_source_missing"
+
+
 def test_atlas_missing_lmdb_path_fails_closed(tmp_path: Path) -> None:
     with pytest.raises(AtlasLmdbCliError) as exc_info:
         handle_atlas_status(str(tmp_path / "missing"))

@@ -352,6 +352,13 @@ class AtlasLmdbSafeWriter:
         for row in rows:
             if not isinstance(row.get("node_id"), str) and not isinstance(row.get("edge_id"), str):
                 raise ValueError("atlas_lmdb_preimage_key_missing")
+            canonical_sha256 = row.get("canonical_sha256")
+            if (
+                not isinstance(canonical_sha256, str)
+                or len(canonical_sha256) != 64
+                or any(character not in "0123456789abcdef" for character in canonical_sha256)
+            ):
+                raise ValueError("atlas_lmdb_preimage_canonical_sha256_invalid")
         receipt = {
             "dry_run": dry_run,
             "metadata": dict(metadata or {}),
@@ -368,7 +375,9 @@ class AtlasLmdbSafeWriter:
         receipt["post_preimage_count"] = len(self.store.iter_preimages())
         receipt["status"] = "PASS"
         if phase:
-            self.store.put_meta(f"safe_writer_preimages:{phase}", receipt)
+            scope = str(receipt["metadata"].get("preimage_scope") or receipt["metadata"].get("scope") or "")
+            suffix = f":{scope}" if scope else ""
+            self.store.put_meta(f"safe_writer_preimages:{phase}{suffix}", receipt)
             self.store.put_meta("last_safe_writer_receipt", receipt)
         return receipt
 
@@ -412,8 +421,9 @@ def repo_file_ref_id(path: str | Path) -> str:
         .replace("/", "_")
         .replace(".", "_")
         .replace("-", "_")
-        .replace("__", "_")
     )
+    while "__" in sanitized:
+        sanitized = sanitized.replace("__", "_")
     return f"repo:file_ref:{sanitized}"
 
 
@@ -788,8 +798,6 @@ def _tier_group(node: dict[str, Any]) -> str:
         or "excluded" in inclusion_status
     ):
         return "private"
-    if "test" in node_kind:
-        return "support"
     return "support"
 
 
