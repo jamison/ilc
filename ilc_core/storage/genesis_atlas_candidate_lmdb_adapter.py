@@ -105,6 +105,25 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
                 )
                 txn.put(_encode_key(edge_id), _encode_json(edge))
 
+    def replace_edges(self, edges: list[dict[str, Any]]) -> None:
+        """Replace the full candidate edge database.
+
+        This is required for maintenance operations that change an existing
+        edge's explicit ``edge_id`` field. With synthetic LMDB keys enabled,
+        appending the repaired record would leave the old synthetic-key row in
+        place. Full replacement keeps row stores and graph payloads aligned.
+        """
+        with self.env.begin(write=True) as txn:
+            edges_db = self._dbs[b"edges"]
+            txn.drop(edges_db, delete=False)
+            for index, edge in enumerate(edges):
+                edge_id = _edge_lmdb_key(
+                    edge,
+                    index=index,
+                    allow_synthetic_edge_keys=self._allow_synthetic_edge_keys,
+                )
+                txn.put(_encode_key(edge_id), _encode_json(edge), db=edges_db)
+
     def put_preimages(self, preimages: list[dict[str, Any]]) -> None:
         """Bulk-write deterministic unsigned node preimages."""
         with self.env.begin(write=True, db=self._dbs[b"preimages"]) as txn:
@@ -187,6 +206,8 @@ def _edge_lmdb_key(edge: dict[str, Any], *, index: int, allow_synthetic_edge_key
 
 def _preimage_node_id(preimage: dict[str, Any]) -> str:
     value = preimage.get("node_id")
+    if not isinstance(value, str) or not value:
+        value = preimage.get("edge_id")
     if not isinstance(value, str) or not value:
         raise ValueError("genesis_atlas_candidate_preimage_missing_node_id")
     return value

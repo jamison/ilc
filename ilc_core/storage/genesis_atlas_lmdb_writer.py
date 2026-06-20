@@ -267,6 +267,138 @@ class AtlasLmdbSafeWriter:
             dry_run=dry_run,
         )
 
+    def repair_missing_edge_ids(
+        self,
+        *,
+        phase: str,
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        """Repair missing edge IDs with a full edge-store rewrite if needed."""
+        current_nodes = self.store.iter_nodes()
+        current_edges = self.store.iter_edges()
+        current_payload = self.store.get_graph_payload() or {}
+        updated_edges: list[dict[str, Any]] = []
+        repaired_edges: list[dict[str, str]] = []
+        for edge in current_edges:
+            normalized = dict(edge)
+            if not isinstance(normalized.get("edge_id"), str) or not normalized.get("edge_id"):
+                source = _edge_source(normalized)
+                edge_type = _edge_type(normalized)
+                target = _edge_target(normalized)
+                normalized["source"] = source
+                normalized["src"] = source
+                normalized["target"] = target
+                normalized["tgt"] = target
+                normalized["edge_type"] = edge_type
+                normalized["edge_id"] = deterministic_edge_id(source, edge_type, target)
+                repaired_edges.append(
+                    {
+                        "edge_id": normalized["edge_id"],
+                        "edge_type": edge_type,
+                        "source": source,
+                        "target": target,
+                    }
+                )
+            updated_edges.append(normalized)
+
+        payload = dict(current_payload)
+        payload["nodes"] = current_nodes
+        payload["edges"] = updated_edges
+        payload["safe_writer"] = {
+            "last_phase": phase,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        receipt: dict[str, Any] = {
+            "dry_run": dry_run,
+            "edge_count": len(current_edges),
+            "mutated": False,
+            "phase": phase,
+            "repaired_edge_count": len(repaired_edges),
+            "repaired_edges": repaired_edges[:50],
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            return receipt
+        if repaired_edges:
+            self.store.replace_edges(updated_edges)
+            self.store.put_graph_payload(payload)
+        post_nodes = self.store.iter_nodes()
+        post_edges = self.store.iter_edges()
+        post_payload = self.store.get_graph_payload() or {}
+        post_invariants = _inspect_invariants(
+            nodes=post_nodes,
+            edges=post_edges,
+            payload=post_payload,
+            store=self.store,
+        )
+        receipt["mutated"] = bool(repaired_edges)
+        receipt["post_invariants"] = post_invariants
+        receipt["status"] = "PASS" if all(post_invariants.values()) else "FAIL"
+        if phase:
+            self.store.put_meta(f"safe_writer_edge_id_repair:{phase}", receipt)
+            self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
+    def write_preimages(
+        self,
+        preimages: Sequence[dict[str, Any]],
+        *,
+        phase: str,
+        dry_run: bool = True,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Write node or edge preimage records through the safe writer."""
+        rows = [dict(row) for row in preimages]
+        for row in rows:
+            if not isinstance(row.get("node_id"), str) and not isinstance(row.get("edge_id"), str):
+                raise ValueError("atlas_lmdb_preimage_key_missing")
+        receipt = {
+            "dry_run": dry_run,
+            "metadata": dict(metadata or {}),
+            "mutated": False,
+            "phase": phase,
+            "preimage_count": len(rows),
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            return receipt
+        if rows:
+            self.store.put_preimages(rows)
+        receipt["mutated"] = bool(rows)
+        receipt["post_preimage_count"] = len(self.store.iter_preimages())
+        receipt["status"] = "PASS"
+        if phase:
+            self.store.put_meta(f"safe_writer_preimages:{phase}", receipt)
+            self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
+    def write_metadata(
+        self,
+        key: str,
+        payload: dict[str, Any],
+        *,
+        phase: str,
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        """Write a metadata receipt through the safe writer boundary."""
+        if not isinstance(key, str) or not key:
+            raise ValueError("atlas_lmdb_metadata_key_missing")
+        receipt = {
+            "dry_run": dry_run,
+            "key": key,
+            "mutated": False,
+            "phase": phase,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            return receipt
+        self.store.put_meta(key, dict(payload))
+        receipt["mutated"] = True
+        receipt["status"] = "PASS"
+        self.store.put_meta(f"safe_writer_metadata:{phase}:{key}", receipt)
+        self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
 
 def deterministic_edge_id(source: str, edge_type: str, target: str) -> str:
     digest = hashlib.sha256(f"{source}|{edge_type}|{target}".encode("utf-8")).hexdigest()[:16]
