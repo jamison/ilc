@@ -23,11 +23,14 @@ from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCa
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_LMDB_ROOT = REPO_ROOT / "out/genesis_base_graph_v0.4.lmdb"
-DEFAULT_DIGEST_MANIFEST = REPO_ROOT / "out/genesis_base_graph_v0.4_lmdb_digest.json"
+DEFAULT_LMDB_ROOT = REPO_ROOT / "out/genesis_base_graph_v0.4_unified.lmdb"
+DEFAULT_DIGEST_MANIFEST = REPO_ROOT / "out/genesis_base_graph_v0.4_unified_lmdb_digest_fix61.json"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "out/viz_exports"
-DEFAULT_SOURCE_CANDIDATE = "out/atlas_research/genesis_atlas_enriched_candidate_fix41a.json"
-FIX41A_SHA256 = "3bcf8cdf248ea44248e72dce0c8209c92302826399b42524235cf8ee59936e52"
+DEFAULT_SOURCE_CANDIDATE = "out/genesis_base_graph_v0.4_unified.lmdb"
+KNOWN_SOURCE_SHA256S = {
+    "fix41a": "3bcf8cdf248ea44248e72dce0c8209c92302826399b42524235cf8ee59936e52",
+    "fix53": "5a8c6fb0787596e1b67976b66a395cead90a16cb42c432a1510c864ed56977f9",
+}
 NODE0 = "artifact:genesis_intent_attestation_init_authority_map"
 
 VIZ_METADATA_PURPOSE = "diagnostic_input_identity_only_not_signing_proof"
@@ -55,11 +58,14 @@ TEST_EDGE_TYPES = frozenset({"TESTS", "COVERS_SYMBOL", "IMPLEMENTS", "IMPORTS_MO
 PREFIX_COLORS: dict[str, str] = {
     "truth_primitive": "#ff4444",
     "policy": "#ff9900",
+    "phase": "#ccaa44",
     "artifact": "#ffcc00",
     "genesis_agent": "#ff66ff",
     "adr": "#4499ff",
     "cdl": "#44aaff",
     "ceremony": "#ff88ff",
+    "invariant": "#ff7744",
+    "target": "#66aa66",
     "source": "#44cc88",
     "repo": "#888888",
     "atlas": "#aaaaaa",
@@ -76,11 +82,13 @@ EDGE_COLORS: dict[str, str] = {
     "REFERENCES_AUTHORITY": "#00cccc",
     "DERIVED_FROM": "#cc88ff",
     "CLASSIFIED_BY": "#cc44ff",
+    "CARRIES_FORWARD": "#aa66cc",
     "SOURCE_TREE_MEMBER": "#448844",
     "CONTAINS_FILE": "#444444",
     "CONTAINS_GROUP": "#444444",
     "CONTAINS_PARTITION": "#444444",
     "IMPORTS_MODULE": "#555555",
+    "USES": "#7777aa",
     "PROVENANCE": "#888844",
     "PRIMITIVE_INVOCATION": "#ff6644",
     "CONSTRAINS": "#886644",
@@ -108,12 +116,57 @@ def _atomic_write_json(path: Path, payload: Any) -> None:
 
 def _load_digest_manifest(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    if payload.get("source_candidate") != "fix41a":
-        raise ValueError("fix42_digest_manifest_not_fix41a")
-    source_digest = payload.get("digests", {}).get("source_file_sha256")
-    if source_digest != FIX41A_SHA256:
-        raise ValueError("fix42_digest_manifest_unexpected_source_sha256")
-    return payload
+    if not isinstance(payload, dict):
+        raise ValueError("fix42_digest_manifest_not_object")
+    digests = payload.get("digests")
+    if isinstance(digests, dict):
+        source_digest = digests.get("source_file_sha256")
+        lmdb_digest = digests.get("reexport_canonical_sha256")
+        if not _is_sha256(source_digest) or not _is_sha256(lmdb_digest):
+            raise ValueError("fix42_digest_manifest_missing_legacy_digests")
+        source_candidate = str(payload.get("source_candidate", ""))
+        expected_digest = KNOWN_SOURCE_SHA256S.get(source_candidate)
+        if expected_digest is not None and source_digest != expected_digest:
+            raise ValueError("fix42_digest_manifest_unexpected_source_sha256")
+        return payload
+    if payload.get("phase") == "1545p-Fix61":
+        for key in ("node_digest", "edge_digest", "preimage_digest"):
+            if not _is_sha256(payload.get(key)):
+                raise ValueError(f"fix42_digest_manifest_missing_{key}")
+        if payload.get("lmdb_path") != "out/genesis_base_graph_v0.4_unified.lmdb":
+            raise ValueError("fix42_digest_manifest_unexpected_lmdb_path")
+        return payload
+    raise ValueError("fix42_digest_manifest_unsupported_schema")
+
+
+def _is_sha256(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _manifest_digest_sha256(digest_manifest: dict[str, Any]) -> str:
+    digests = digest_manifest.get("digests")
+    if isinstance(digests, dict) and _is_sha256(digests.get("reexport_canonical_sha256")):
+        return str(digests["reexport_canonical_sha256"])
+    return hashlib.sha256(_canonical_json_bytes(digest_manifest)).hexdigest()
+
+
+def _manifest_source_sha256(digest_manifest: dict[str, Any]) -> str:
+    digests = digest_manifest.get("digests")
+    if isinstance(digests, dict) and _is_sha256(digests.get("source_file_sha256")):
+        return str(digests["source_file_sha256"])
+    node_digest = digest_manifest.get("node_digest")
+    if _is_sha256(node_digest):
+        return str(node_digest)
+    return _manifest_digest_sha256(digest_manifest)
+
+
+def _manifest_source_path(digest_manifest: dict[str, Any]) -> str:
+    value = digest_manifest.get("source_candidate_path") or digest_manifest.get("lmdb_path")
+    return value if isinstance(value, str) and value else DEFAULT_SOURCE_CANDIDATE
 
 
 def _prefix(node_id: str) -> str:
@@ -296,11 +349,11 @@ def build_view(
     metadata: dict[str, Any] = {
         "edge_count": len(view_edges),
         "filters_applied": _filters_for_view(view),
-        "lmdb_digest_sha256": digest_manifest["digests"]["reexport_canonical_sha256"],
+        "lmdb_digest_sha256": _manifest_digest_sha256(digest_manifest),
         "lmdb_root": str(lmdb_root.relative_to(REPO_ROOT) if lmdb_root.is_absolute() else lmdb_root),
         "node_count": len(view_nodes),
-        "source_candidate_path": digest_manifest.get("source_candidate_path", DEFAULT_SOURCE_CANDIDATE),
-        "source_candidate_sha256": digest_manifest["digests"]["source_file_sha256"],
+        "source_candidate_path": _manifest_source_path(digest_manifest),
+        "source_candidate_sha256": _manifest_source_sha256(digest_manifest),
         "view": view,
         "viz_metadata_purpose": VIZ_METADATA_PURPOSE,
     }
@@ -342,14 +395,14 @@ def _write_report(
         }
 
     report = {
-        "lmdb_digest_sha256": digest_manifest["digests"]["reexport_canonical_sha256"],
+        "lmdb_digest_sha256": _manifest_digest_sha256(digest_manifest),
         "non_claims": [
             "View metadata proves input identity only; it is not a signing proof, authority trace, or Genesis-rootedness proof.",
             "View JSON files are local derived artifacts; only this digest report is committed.",
             "No graph mutation, signing, or public activation occurred.",
         ],
         "phase": "1545p-Fix42",
-        "source_candidate_sha256": digest_manifest["digests"]["source_file_sha256"],
+        "source_candidate_sha256": _manifest_source_sha256(digest_manifest),
         "view_digests": view_digests,
         "views_exported": list(VIEWS),
     }
