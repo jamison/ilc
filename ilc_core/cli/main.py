@@ -1292,7 +1292,7 @@ def _build_parser() -> JsonArgumentParser:
         if command == "atlas":
             atlas_parser = subparsers.add_parser(
                 "atlas",
-                help="Read-only Genesis Atlas LMDB inspection commands",
+                help="Local Genesis Atlas LMDB inspection and guarded maintenance commands",
             )
             atlas_subparsers = atlas_parser.add_subparsers(
                 dest="atlas_subcommand",
@@ -1324,6 +1324,89 @@ def _build_parser() -> JsonArgumentParser:
             )
             p_atlas_edges.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
             p_atlas_edges.add_argument("--node-id", required=True, help="Atlas candidate ID")
+
+            p_atlas_register = atlas_subparsers.add_parser(
+                "register-phase-files",
+                help="Dry-run or write support-only phase-file registrations",
+            )
+            p_atlas_register.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+            p_atlas_register.add_argument("--phase", required=True, help="Phase identifier")
+            p_atlas_register.add_argument(
+                "--file",
+                dest="files",
+                action="append",
+                required=True,
+                help="Repo-relative file to register. May be repeated.",
+            )
+            p_atlas_register.add_argument(
+                "--node-kind",
+                default="phase_artifact",
+                help="Node kind for all registered files",
+            )
+            p_atlas_register.add_argument(
+                "--graph-projection",
+                default="support_candidate_graph",
+                help="Graph projection for all registered files",
+            )
+            p_atlas_register.add_argument(
+                "--graph-delta",
+                default="support_only",
+                help="Graph delta for all registered files",
+            )
+            p_atlas_register.add_argument(
+                "--edge",
+                dest="required_edges",
+                action="append",
+                default=[],
+                help="Required edge in EDGE_TYPE:target_id form. May be repeated.",
+            )
+            p_atlas_register.add_argument(
+                "--write",
+                action="store_true",
+                help="Mutate the local unsigned Atlas LMDB. Default is dry-run.",
+            )
+            p_atlas_register.add_argument(
+                "--dry-run",
+                action="store_true",
+                help="Validate only; accepted for explicitness and remains the default.",
+            )
+            p_atlas_register.add_argument("--receipt", default="", help="Optional receipt path")
+
+            p_atlas_edge_batch = atlas_subparsers.add_parser(
+                "apply-edge-batch",
+                help="Dry-run or write an edge batch through the safe writer",
+            )
+            p_atlas_edge_batch.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+            p_atlas_edge_batch.add_argument("--input", required=True, help="JSON edge batch path")
+            p_atlas_edge_batch.add_argument(
+                "--write",
+                action="store_true",
+                help="Mutate the local unsigned Atlas LMDB. Default is dry-run.",
+            )
+            p_atlas_edge_batch.add_argument(
+                "--dry-run",
+                action="store_true",
+                help="Validate only; accepted for explicitness and remains the default.",
+            )
+            p_atlas_edge_batch.add_argument("--receipt", default="", help="Optional receipt path")
+
+            p_atlas_plan = atlas_subparsers.add_parser(
+                "apply-node-edge-plan",
+                help="Dry-run or write a node+edge plan through the safe writer",
+            )
+            p_atlas_plan.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+            p_atlas_plan.add_argument("--input", required=True, help="JSON node-edge plan path")
+            p_atlas_plan.add_argument(
+                "--write",
+                action="store_true",
+                help="Mutate the local unsigned Atlas LMDB. Default is dry-run.",
+            )
+            p_atlas_plan.add_argument(
+                "--dry-run",
+                action="store_true",
+                help="Validate only; accepted for explicitness and remains the default.",
+            )
+            p_atlas_plan.add_argument("--receipt", default="", help="Optional receipt path")
             continue
 
         if command == "balance":

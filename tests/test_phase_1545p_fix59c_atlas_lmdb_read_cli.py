@@ -241,7 +241,7 @@ def test_atlas_help_lists_read_subcommands() -> None:
     assert "edges" in result.stdout
 
 
-def test_atlas_cli_helper_has_no_mutating_store_calls() -> None:
+def test_atlas_cli_helper_has_no_raw_adapter_mutating_store_calls() -> None:
     text = CLI_HELPER_PATH.read_text(encoding="utf-8")
     forbidden = (
         ".put_meta(",
@@ -249,8 +249,6 @@ def test_atlas_cli_helper_has_no_mutating_store_calls() -> None:
         ".put_nodes(",
         ".put_edges(",
         ".put_preimages(",
-        "apply_plan(",
-        "register_phase_files(",
     )
     for token in forbidden:
         assert token not in text

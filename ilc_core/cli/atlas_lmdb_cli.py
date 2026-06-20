@@ -12,14 +12,22 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 from ilc_core.ledger.exact_numeric import normalize_json_scalars
-from ilc_core.storage.genesis_atlas_lmdb_writer import AtlasLmdbSafeWriter
+from ilc_core.storage.genesis_atlas_lmdb_writer import (
+    AtlasLmdbSafeWriter,
+    AtlasLmdbWritePlan,
+    AtlasPhaseFileRegistration,
+    write_json_atomic,
+)
 
 
-ATLAS_LMDB_CLI_VERSION = "atlas_lmdb_cli_1545p_fix59c.v0.1"
+ATLAS_LMDB_CLI_VERSION = "atlas_lmdb_cli_1545p_fix59d.v0.1"
+AUTHORITY_EDGE_TYPES = frozenset({"GOVERNS", "ATTESTATION"})
+AUTHORITY_EDGE_ENV = "ILC_ATLAS_AUTHORITY_EDGE_AUTHORIZED"
 
 
 class AtlasLmdbCliError(ValueError):
@@ -43,6 +51,34 @@ def run_atlas_command(args: argparse.Namespace) -> dict[str, Any]:
         return handle_atlas_node(lmdb_path, str(getattr(args, "node_id", "") or ""))
     if subcommand == "edges":
         return handle_atlas_edges(lmdb_path, str(getattr(args, "node_id", "") or ""))
+    if subcommand == "register-phase-files":
+        return handle_atlas_register_phase_files(
+            lmdb_path=lmdb_path,
+            phase=str(getattr(args, "phase", "") or ""),
+            files=tuple(getattr(args, "files", ()) or ()),
+            node_kind=str(getattr(args, "node_kind", "") or "phase_artifact"),
+            graph_projection=str(
+                getattr(args, "graph_projection", "") or "support_candidate_graph"
+            ),
+            graph_delta=str(getattr(args, "graph_delta", "") or "support_only"),
+            required_edges=tuple(getattr(args, "required_edges", ()) or ()),
+            write=bool(getattr(args, "write", False)),
+            receipt_path=str(getattr(args, "receipt", "") or ""),
+        )
+    if subcommand == "apply-edge-batch":
+        return handle_atlas_apply_edge_batch(
+            lmdb_path=lmdb_path,
+            input_path=str(getattr(args, "input", "") or ""),
+            write=bool(getattr(args, "write", False)),
+            receipt_path=str(getattr(args, "receipt", "") or ""),
+        )
+    if subcommand == "apply-node-edge-plan":
+        return handle_atlas_apply_node_edge_plan(
+            lmdb_path=lmdb_path,
+            input_path=str(getattr(args, "input", "") or ""),
+            write=bool(getattr(args, "write", False)),
+            receipt_path=str(getattr(args, "receipt", "") or ""),
+        )
     raise AtlasLmdbCliError("atlas_subcommand_missing", "atlas subcommand is required")
 
 
@@ -172,6 +208,133 @@ def handle_atlas_edges(lmdb_path: str, node_id: str) -> dict[str, Any]:
         writer.close()
 
 
+def handle_atlas_register_phase_files(
+    *,
+    lmdb_path: str,
+    phase: str,
+    files: tuple[str, ...],
+    node_kind: str,
+    graph_projection: str,
+    graph_delta: str,
+    required_edges: tuple[str, ...],
+    write: bool,
+    receipt_path: str = "",
+) -> dict[str, Any]:
+    """Register phase artifacts in the local unsigned Atlas LMDB."""
+    if not phase.strip():
+        raise AtlasLmdbCliError("atlas_phase_missing", "--phase must be non-empty")
+    if not files:
+        raise AtlasLmdbCliError("atlas_files_missing", "--file must be provided at least once")
+    parsed_required_edges = tuple(_parse_required_edge(item) for item in required_edges)
+    registrations = [
+        AtlasPhaseFileRegistration(
+            path=file_path,
+            node_kind=node_kind,
+            graph_projection=graph_projection,
+            graph_delta=graph_delta,
+            required_edges=parsed_required_edges,
+        )
+        for file_path in files
+    ]
+    writer = _open_writer(lmdb_path)
+    try:
+        plan = writer.build_phase_file_registration_plan(
+            phase=phase,
+            files=registrations,
+            dry_run=not write,
+        )
+        return _guarded_apply_plan(
+            writer=writer,
+            plan=plan,
+            write=write,
+            receipt_path=receipt_path,
+            operation="register_phase_files",
+        )
+    finally:
+        writer.close()
+
+
+def handle_atlas_apply_edge_batch(
+    *,
+    lmdb_path: str,
+    input_path: str,
+    write: bool,
+    receipt_path: str = "",
+) -> dict[str, Any]:
+    """Apply or dry-run a local edge batch through the safe writer."""
+    payload = _load_json_file(input_path)
+    if isinstance(payload, list):
+        edges = payload
+        metadata: dict[str, Any] = {"operation": "edge_batch", "input_shape": "list"}
+        phase = "1545p-Fix59d-edge-batch"
+    elif isinstance(payload, dict):
+        edges = payload.get("edges", payload.get("edges_to_add", ()))
+        metadata = _metadata_from_payload(payload, operation="edge_batch")
+        phase = str(payload.get("phase", "") or "1545p-Fix59d-edge-batch")
+    else:
+        raise AtlasLmdbCliError("atlas_input_invalid", "edge batch must be an object or list")
+    if not isinstance(edges, list):
+        raise AtlasLmdbCliError("atlas_edges_invalid", "edge batch requires a list of edges")
+    _assert_json_safe_plan_value({"edges": edges, "metadata": metadata})
+    writer = _open_writer(lmdb_path)
+    try:
+        plan = AtlasLmdbWritePlan(
+            edges_to_add=[_require_object(edge, "edge") for edge in edges],
+            metadata=metadata,
+            phase=phase,
+            dry_run=not write,
+        )
+        return _guarded_apply_plan(
+            writer=writer,
+            plan=plan,
+            write=write,
+            receipt_path=receipt_path,
+            operation="apply_edge_batch",
+        )
+    finally:
+        writer.close()
+
+
+def handle_atlas_apply_node_edge_plan(
+    *,
+    lmdb_path: str,
+    input_path: str,
+    write: bool,
+    receipt_path: str = "",
+) -> dict[str, Any]:
+    """Apply or dry-run a node+edge materialization plan through the safe writer."""
+    payload = _load_json_file(input_path)
+    if not isinstance(payload, dict):
+        raise AtlasLmdbCliError("atlas_input_invalid", "node-edge plan must be an object")
+    nodes = payload.get("nodes", payload.get("nodes_to_add", ()))
+    edges = payload.get("edges", payload.get("edges_to_add", ()))
+    if not isinstance(nodes, list):
+        raise AtlasLmdbCliError("atlas_nodes_invalid", "node-edge plan requires nodes list")
+    if not isinstance(edges, list):
+        raise AtlasLmdbCliError("atlas_edges_invalid", "node-edge plan requires edges list")
+    metadata = _metadata_from_payload(payload, operation="node_edge_plan")
+    phase = str(payload.get("phase", "") or "1545p-Fix59d-node-edge-plan")
+    _assert_json_safe_plan_value({"nodes": nodes, "edges": edges, "metadata": metadata})
+    writer = _open_writer(lmdb_path)
+    try:
+        plan = AtlasLmdbWritePlan(
+            nodes_to_add=[_require_object(node, "node") for node in nodes],
+            edges_to_add=[_require_object(edge, "edge") for edge in edges],
+            metadata=metadata,
+            phase=phase,
+            dry_run=not write,
+        )
+        return _guarded_apply_plan(
+            writer=writer,
+            plan=plan,
+            write=write,
+            receipt_path=receipt_path,
+            operation="apply_node_edge_plan",
+        )
+    finally:
+        writer.close()
+
+
 def _open_writer(lmdb_path: str) -> AtlasLmdbSafeWriter:
     if not isinstance(lmdb_path, str) or not lmdb_path.strip():
         raise AtlasLmdbCliError("atlas_lmdb_path_missing", "--lmdb must be provided")
@@ -194,6 +357,206 @@ def _metadata_snapshot(writer: AtlasLmdbSafeWriter) -> dict[str, Any]:
         key: value
         for key in keys
         if (value := writer.store.get_meta(key)) is not None
+    }
+
+
+def _guarded_apply_plan(
+    *,
+    writer: AtlasLmdbSafeWriter,
+    plan: AtlasLmdbWritePlan,
+    write: bool,
+    receipt_path: str,
+    operation: str,
+) -> dict[str, Any]:
+    _assert_authority_gate(plan=plan, write=write)
+    validation = writer.validate_plan(plan)
+    if validation["rejected_edges"]:
+        receipt = _cli_receipt_from_validation(
+            validation,
+            mutated=False,
+            operation=operation,
+            reason="rejected_edges_present",
+        )
+        _write_receipt_if_requested(receipt_path, receipt)
+        return receipt
+    if not write:
+        receipt = _cli_receipt_from_validation(
+            validation,
+            mutated=False,
+            operation=operation,
+            reason="dry_run_default",
+        )
+        _write_receipt_if_requested(receipt_path, receipt)
+        return receipt
+    receipt = writer.apply_plan(
+        AtlasLmdbWritePlan(
+            nodes_to_add=plan.nodes_to_add,
+            edges_to_add=plan.edges_to_add,
+            metadata=plan.metadata,
+            phase=plan.phase,
+            dry_run=False,
+        )
+    )
+    receipt = _stable_object(
+        {
+            **receipt,
+            "cli_operation": operation,
+            "non_claims": _non_claims(),
+            "write_requested": True,
+        }
+    )
+    _write_receipt_if_requested(receipt_path, receipt)
+    return receipt
+
+
+def _cli_receipt_from_validation(
+    validation: dict[str, Any],
+    *,
+    mutated: bool,
+    operation: str,
+    reason: str,
+) -> dict[str, Any]:
+    return _stable_object(
+        {
+            "accepted_edge_count": len(validation["accepted_edges"]),
+            "accepted_edges": _edge_summary(validation["accepted_edges"]),
+            "accepted_node_count": len(validation["accepted_nodes"]),
+            "accepted_nodes": _node_summary(validation["accepted_nodes"]),
+            "cli_operation": operation,
+            "dry_run": bool(validation["dry_run"]),
+            "metadata": validation["metadata"],
+            "mutated": mutated,
+            "non_claims": _non_claims(),
+            "phase": validation["phase"],
+            "pre_counts": validation["pre_counts"],
+            "projected_counts": validation["projected_counts"],
+            "projected_dangling_edge_count": len(validation["projected_dangling_edges"]),
+            "projected_dangling_edges": validation["projected_dangling_edges"][:50],
+            "reason": reason,
+            "rejected_edge_count": len(validation["rejected_edges"]),
+            "rejected_edges": validation["rejected_edges"],
+            "skipped_edge_count": len(validation["skipped_edges"]),
+            "skipped_edges": validation["skipped_edges"][:50],
+            "skipped_node_count": len(validation["skipped_nodes"]),
+            "skipped_nodes": validation["skipped_nodes"],
+            "status": "PASS" if not validation["rejected_edges"] else "FAIL",
+            "version": ATLAS_LMDB_CLI_VERSION,
+            "write_requested": False,
+        }
+    )
+
+
+def _assert_authority_gate(*, plan: AtlasLmdbWritePlan, write: bool) -> None:
+    authority_edges = [
+        edge
+        for edge in plan.edges_to_add
+        if isinstance(edge, dict) and _edge_type(edge) in AUTHORITY_EDGE_TYPES
+    ]
+    if not authority_edges:
+        return
+    if not write:
+        raise AtlasLmdbCliError(
+            "atlas_authority_edge_write_blocked",
+            "authority edge writes require --write and environment authorization",
+        )
+    if os.environ.get(AUTHORITY_EDGE_ENV) != "1":
+        raise AtlasLmdbCliError(
+            "atlas_authority_edge_env_missing",
+            f"authority edge writes require {AUTHORITY_EDGE_ENV}=1",
+        )
+
+
+def _parse_required_edge(value: str) -> tuple[str, str]:
+    if ":" not in value:
+        raise AtlasLmdbCliError(
+            "atlas_required_edge_invalid",
+            "--edge must use EDGE_TYPE:target_id",
+        )
+    edge_type, target = value.split(":", 1)
+    if not edge_type or not target:
+        raise AtlasLmdbCliError(
+            "atlas_required_edge_invalid",
+            "--edge must use EDGE_TYPE:target_id",
+        )
+    return edge_type, target
+
+
+def _load_json_file(input_path: str) -> Any:
+    if not input_path:
+        raise AtlasLmdbCliError("atlas_input_missing", "--input must be provided")
+    path = Path(input_path)
+    if not path.exists():
+        raise AtlasLmdbCliError("atlas_input_not_found", f"input not found: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise AtlasLmdbCliError("atlas_input_invalid_json", str(exc)) from exc
+    _assert_json_safe_plan_value(payload)
+    return payload
+
+
+def _metadata_from_payload(payload: dict[str, Any], *, operation: str) -> dict[str, Any]:
+    metadata = payload.get("metadata", {})
+    if metadata is None:
+        metadata = {}
+    if not isinstance(metadata, dict):
+        raise AtlasLmdbCliError("atlas_metadata_invalid", "metadata must be an object")
+    return {**metadata, "operation": operation}
+
+
+def _assert_json_safe_plan_value(value: Any, *, path: str = "plan") -> None:
+    if isinstance(value, bool) or value is None:
+        return
+    if isinstance(value, float):
+        raise AtlasLmdbCliError("atlas_float_forbidden", f"float forbidden at {path}")
+    if isinstance(value, str):
+        lowered_path = path.lower()
+        if "commit" in lowered_path or "content_digest" in lowered_path:
+            raise AtlasLmdbCliError(
+                "atlas_self_referential_field_forbidden",
+                f"self-referential field forbidden at {path}",
+            )
+        return
+    if isinstance(value, int):
+        return
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            _assert_json_safe_plan_value(item, path=f"{path}[{index}]")
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise AtlasLmdbCliError("atlas_key_invalid", f"non-string key at {path}")
+            lowered_key = key.lower()
+            if "commit" in lowered_key or "content_digest" in lowered_key:
+                raise AtlasLmdbCliError(
+                    "atlas_self_referential_field_forbidden",
+                    f"self-referential field forbidden at {path}.{key}",
+                )
+            _assert_json_safe_plan_value(item, path=f"{path}.{key}")
+        return
+    raise AtlasLmdbCliError("atlas_value_invalid", f"unsupported value at {path}")
+
+
+def _require_object(value: Any, label: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise AtlasLmdbCliError("atlas_record_invalid", f"{label} must be an object")
+    return value
+
+
+def _write_receipt_if_requested(receipt_path: str, receipt: dict[str, Any]) -> None:
+    if receipt_path:
+        write_json_atomic(Path(receipt_path), receipt)
+
+
+def _non_claims() -> dict[str, bool]:
+    return {
+        "canonical_graph_mutation": False,
+        "economic_settlement": False,
+        "genesis_signing": False,
+        "public_graph_publication": False,
+        "public_rc_activation": False,
+        "runtime_activation": False,
     }
 
 
@@ -259,6 +622,30 @@ def _edge_type(edge: dict[str, Any]) -> str:
     return value if isinstance(value, str) else ""
 
 
+def _node_summary(nodes: list[dict[str, Any]]) -> list[dict[str, str]]:
+    return [
+        {
+            "candidate_id": str(node.get("candidate_id", "")),
+            "graph_projection": str(node.get("graph_projection", "")),
+            "node_kind": str(node.get("node_kind", "")),
+            "source_path": str(node.get("source_path", "")),
+        }
+        for node in nodes
+    ]
+
+
+def _edge_summary(edges: list[dict[str, Any]]) -> list[dict[str, str]]:
+    return [
+        {
+            "edge_id": str(edge.get("edge_id", "")),
+            "edge_type": _edge_type(edge),
+            "source": _edge_source(edge),
+            "target": _edge_target(edge),
+        }
+        for edge in edges
+    ]
+
+
 __all__ = [
     "ATLAS_LMDB_CLI_VERSION",
     "AtlasLmdbCliError",
@@ -266,5 +653,8 @@ __all__ = [
     "handle_atlas_node",
     "handle_atlas_status",
     "handle_atlas_validate",
+    "handle_atlas_register_phase_files",
+    "handle_atlas_apply_edge_batch",
+    "handle_atlas_apply_node_edge_plan",
     "run_atlas_command",
 ]

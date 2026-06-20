@@ -122,8 +122,6 @@ class AtlasLmdbSafeWriter:
         validation = self.validate_plan(plan)
         if plan.dry_run:
             receipt = _receipt_from_validation(validation, mutated=False)
-            if plan.phase:
-                self.store.put_meta(f"safe_writer_dry_run:{plan.phase}", receipt)
             return receipt
 
         merged_nodes = validation["merged_nodes"]
