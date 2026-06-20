@@ -15,7 +15,7 @@ import os
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
 from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import (
     GenesisAtlasCandidateStore,
@@ -406,6 +406,116 @@ class AtlasLmdbSafeWriter:
         receipt["status"] = "PASS"
         self.store.put_meta(f"safe_writer_metadata:{phase}:{key}", receipt)
         self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
+    def update_node_fields(
+        self,
+        updates: Mapping[str, Mapping[str, Any]],
+        *,
+        phase: str,
+        dry_run: bool = True,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Apply bounded field updates to existing Atlas nodes.
+
+        This is intentionally narrower than arbitrary node replacement. It
+        forbids candidate_id changes, rejects missing nodes, rewrites the full
+        node store plus graph payload through the adapter, and leaves edge rows
+        untouched. Routine attribution/projection maintenance should use this
+        instead of raw LMDB mutation.
+        """
+
+        current_nodes = self.store.iter_nodes()
+        current_edges = self.store.iter_edges()
+        current_payload = self.store.get_graph_payload() or {}
+        node_by_id = {_candidate_id(node): dict(node) for node in current_nodes}
+        accepted_updates: list[dict[str, Any]] = []
+        rejected_updates: list[dict[str, str]] = []
+        changed_node_ids: set[str] = set()
+
+        for node_id, patch in sorted(updates.items()):
+            if node_id not in node_by_id:
+                rejected_updates.append(
+                    {"candidate_id": node_id, "reason": "node_missing"}
+                )
+                continue
+            if "candidate_id" in patch and patch["candidate_id"] != node_id:
+                rejected_updates.append(
+                    {"candidate_id": node_id, "reason": "candidate_id_update_forbidden"}
+                )
+                continue
+            try:
+                json.dumps(patch, sort_keys=True, separators=(",", ":"), allow_nan=False)
+            except (TypeError, ValueError) as exc:
+                raise ValueError("atlas_lmdb_node_update_non_canonical_json") from exc
+
+            before = node_by_id[node_id]
+            after = dict(before)
+            changed_fields: list[str] = []
+            for key, value in sorted(patch.items()):
+                if after.get(key) != value:
+                    after[key] = value
+                    changed_fields.append(key)
+            if not changed_fields:
+                continue
+            node_by_id[node_id] = after
+            changed_node_ids.add(node_id)
+            accepted_updates.append(
+                {
+                    "candidate_id": node_id,
+                    "changed_fields": changed_fields,
+                }
+            )
+
+        updated_nodes = sorted(node_by_id.values(), key=_candidate_id)
+        payload = dict(current_payload)
+        payload["nodes"] = updated_nodes
+        payload["edges"] = current_edges
+        payload["safe_writer"] = {
+            "last_phase": phase,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        receipt: dict[str, Any] = {
+            "accepted_update_count": len(accepted_updates),
+            "accepted_updates": accepted_updates[:50],
+            "dry_run": dry_run,
+            "metadata": dict(metadata or {}),
+            "mutated": False,
+            "phase": phase,
+            "pre_counts": {"edges": len(current_edges), "nodes": len(current_nodes)},
+            "rejected_update_count": len(rejected_updates),
+            "rejected_updates": rejected_updates,
+            "updated_field_count": sum(
+                len(item["changed_fields"]) for item in accepted_updates
+            ),
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            receipt["projected_counts"] = {
+                "edges": len(current_edges),
+                "nodes": len(updated_nodes),
+            }
+            return receipt
+
+        if changed_node_ids:
+            self.store.put_nodes(updated_nodes)
+            self.store.put_graph_payload(payload)
+        post_nodes = self.store.iter_nodes()
+        post_edges = self.store.iter_edges()
+        post_payload = self.store.get_graph_payload() or {}
+        post_invariants = _inspect_invariants(
+            nodes=post_nodes,
+            edges=post_edges,
+            payload=post_payload,
+            store=self.store,
+        )
+        receipt["mutated"] = bool(changed_node_ids)
+        receipt["post_counts"] = {"edges": len(post_edges), "nodes": len(post_nodes)}
+        receipt["post_invariants"] = post_invariants
+        receipt["status"] = "PASS" if all(post_invariants.values()) else "FAIL"
+        if phase:
+            self.store.put_meta(f"safe_writer_node_updates:{phase}", receipt)
+            self.store.put_meta("last_safe_writer_receipt", receipt)
         return receipt
 
 

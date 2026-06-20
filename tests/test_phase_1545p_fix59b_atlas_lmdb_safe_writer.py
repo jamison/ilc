@@ -174,6 +174,54 @@ def test_safe_writer_applies_edge_ids_and_rebuilds_payload_and_indexes(tmp_path:
         writer.close()
 
 
+def test_safe_writer_updates_node_fields_without_edge_mutation(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.update_node_fields(
+            {
+                "node:a": {
+                    "creator_agent_id": "genesis_agent:01",
+                    "creator_attribution_basis": "test_basis",
+                }
+            },
+            phase="1545p-Fix62a-test",
+            dry_run=False,
+        )
+        assert receipt["mutated"] is True
+        assert receipt["accepted_update_count"] == 1
+        assert receipt["post_counts"] == {"edges": 1, "nodes": 2}
+        assert receipt["post_invariants"]["payload_node_count_matches_rows"] is True
+        assert receipt["post_invariants"]["payload_edge_count_matches_rows"] is True
+        node = writer.store.get_node("node:a")
+        assert node is not None
+        assert node["creator_agent_id"] == "genesis_agent:01"
+        assert node["creator_attribution_basis"] == "test_basis"
+        assert writer.inspect()["edge_count"] == 1
+    finally:
+        writer.close()
+
+
+def test_safe_writer_rejects_missing_node_field_update(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.update_node_fields(
+            {"node:missing": {"creator_agent_id": "genesis_agent:01"}},
+            phase="1545p-Fix62a-test",
+            dry_run=False,
+        )
+        assert receipt["mutated"] is False
+        assert receipt["accepted_update_count"] == 0
+        assert receipt["rejected_update_count"] == 1
+        assert receipt["rejected_updates"][0]["reason"] == "node_missing"
+        assert writer.inspect()["node_count"] == 2
+    finally:
+        writer.close()
+
+
 def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path: Path) -> None:
     root = tmp_path / "atlas"
     _seed_lmdb(root)
