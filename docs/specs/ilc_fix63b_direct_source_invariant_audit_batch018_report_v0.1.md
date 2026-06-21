@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 018
+
+- Phase: `1545p-Fix63b-batches014-018`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `171-180`
+- Direct read status: `complete`
+- Recommended edges: `26`
+- Accepted semantic edges written: `22`
+- Duplicate semantic edges skipped: `4`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `171` `invariant:phase1533p_settlement_root_payload_excludes_settlement_root_hex_production_emission_not_activated`
+  - Source: `tests/test_phase_1533p_obl020_settlement_roots.py`
+  - Evidence: `['76-90', '93-110']`
+  - Summary: Settlement-root payload excludes its own root hex, production emission remains not activated, and root commits canonical event payloads.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `172` `invariant:phase1533p_settlement_root_replay_sha256_canonical_json_float_nonfinite_rejection_anti_circularity`
+  - Source: `tests/test_phase_1533p_obl020_settlement_roots.py`
+  - Evidence: `['28-55', '58-73', '85-90']`
+  - Summary: Settlement root replay is deterministic over canonical JSON/SHA-256, rejects non-finite Decimal/float inputs, and enforces anti-circularity.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `173` `invariant:phase1534p_canonical_economic_events_default_off_float_nonfinite_rejected`
+  - Source: `tests/test_phase_1534p_obl020_canonical_economic_events.py`
+  - Evidence: `['51-55', '89-119']`
+  - Summary: Canonical economic events remain default-off and reject float/non-finite pool amounts.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `174` `invariant:phase1534p_canonical_economic_events_roles_decimal_conservation_root_commitment_stale_root_rejection`
+  - Source: `tests/test_phase_1534p_obl020_canonical_economic_events.py`
+  - Evidence: `['39-69', '72-86', '122-160', '175-186']`
+  - Summary: Canonical economic events enforce standard roles, Decimal conservation, settlement-root event-batch commitment, stale-root rejection, and CDL authority token binding.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `175` `invariant:phase1539p_validator_admission_not_activated_float_rejected_before_root`
+  - Source: `tests/test_phase_1539p_obl021_validator_admission_ejection.py`
+  - Evidence: `['59-81', '84-99', '168-174']`
+  - Summary: Validator admission/ejection path is default-off, binds CDL-017 dependency, computes deterministic transition roots, and rejects float stake before root.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `176` `invariant:phase1542p_productive_ecu_expansion_bounty_default_off_cap_no_debt_proposed_status_event_batch_stale_root_rejection`
+  - Source: `tests/test_phase_1542p_obl027_expansion_bounty.py`
+  - Evidence: `['42-68', '94-104', '132-180']`
+  - Summary: Productive ECU expansion bounty is default-off, applies CDL-047 cap without debt, records ADR-0016 proposed status, emits event batches, and rejects stale roots.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `177` `invariant:phase1542p_productive_ecu_expansion_not_activated_adr0016_proposed_peer_funded_bounty_excluded`
+  - Source: `tests/test_phase_1542p_obl027_expansion_bounty.py`
+  - Evidence: `['42-55', '94-104', '132-149']`
+  - Summary: Productive ECU expansion remains not activated; ADR-0016 is proposed and peer-funded bounty remains excluded.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `178` `invariant:phase1543p_block4b_round_trip_replay_roots_events_default_off_guards_stale_root_rejection`
+  - Source: `tests/test_phase_1543p_block4b_round_trip.py`
+  - Evidence: `['128-169', '172-260']`
+  - Summary: Block 4B round-trip verifies replay roots, canonical events, default-off guards, and stale-root rejection for validator, treasury, ejected stake, and bounty paths.
+  - Edges: `3` recommended, `2` written, `1` duplicate skipped
+- `179` `invariant:phase1545p_fix13_graph_research_governance_routing_no_activation_no_ecu_minting_no_manifest_mutation`
+  - Source: `tests/test_phase_1545p_fix13_agentic_graph_grammar_axiom_inventory.py`
+  - Evidence: `['15-33', '70-77', '79-92']`
+  - Summary: Graph research axiom inventory records governance routing and explicitly blocks graph optimization from direct ECU minting, runtime activation, or manifest mutation.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `180` `invariant:phase1545p_fix19_axiomatic_calibration_64_of_64_recall_7_of_7_recipe_coverage_research_only`
+  - Source: `tests/test_phase_1545p_fix19_atlas_axiomatic_calibration.py`
+  - Evidence: `['14-20', '23-35', '37-47', '80-100']`
+  - Summary: Axiomatic calibration SIM passes with 64/64 atom recall and 7/7 truth-primitive recipe coverage while remaining research-only and non-canonical.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped

@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 017
+
+- Phase: `1545p-Fix63b-batches014-018`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `161-170`
+- Direct read status: `complete`
+- Recommended edges: `25`
+- Accepted semantic edges written: `20`
+- Duplicate semantic edges skipped: `5`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `161` `invariant:phase1475p_layer1_deterministic_canonical_private_public_rc_exclude_layer0_hash_bound_no_float`
+  - Source: `tests/test_phase_1475p_layer1_genesis_bundle.py`
+  - Evidence: `['34-42', '79-127']`
+  - Summary: Layer1 genesis bundle is deterministic/canonical, private/public-RC-excluded, layer0 hash-bound, immutable, and rejects float inputs under ADR-0009 layer1 boundaries.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `162` `invariant:phase1476p_adr0009_cross_layer_digest_and_schema_reference_chain_integrity`
+  - Source: `tests/test_phase_1476p_adr0009_cross_layer.py`
+  - Evidence: `['19-30', '33-44', '47-58', '61-94']`
+  - Summary: ADR-0009 cross-layer tests confirm layer1/layer2 digest references, layer3 schema reference, and full layer0-to-layer3 chain integrity.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `163` `invariant:phase1512p_governance_frameworks_no_cdl_opening_no_live_adjudication_no_runtime_or_graph_write_no_ecu_mutation`
+  - Source: `tests/test_phase_1512p_genesis_governance_node_frameworks.py`
+  - Evidence: `['55-74', '76-94', '124-145']`
+  - Summary: Genesis governance-node frameworks cover IP/public-goods governance surfaces while preserving no CDL opening, no adjudication, no attribution/runtime/graph write, and no ECU mutation boundaries.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `164` `invariant:phase1514p_window_closure_no_publication_no_public_rc_no_epoch_transition_no_economic_or_governance_mutation_no_guard_clearance`
+  - Source: `tests/test_phase_1514p_window_1505p_closure_gate.py`
+  - Evidence: `['30-53', '143-173']`
+  - Summary: Window 1505p-1514p closure gate records no publication, public RC, epoch transition, wallet/treasury/ECU, CDL/ADR mutation, or guard clearance.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `165` `invariant:phase1516p_adr0009_layer0_layer1_dag_cbor_cidv1_cose_sign1_chain_integrity`
+  - Source: `tests/test_phase_1516p_adr_0009_layer0_layer1_integration.py`
+  - Evidence: `['32-60', '62-97', '99-143']`
+  - Summary: ADR-0009 layer0/layer1 integration validates DAG-CBOR/CIDv1 determinism and COSE_Sign1 payload CID verification.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `166` `invariant:phase1517p_adr0009_four_layer_cid_chain_tamper_detection_cose_sign1_verification`
+  - Source: `tests/test_phase_1517p_adr_0009_layer2_layer3_integration.py`
+  - Evidence: `['95-127', '130-159', '162-198']`
+  - Summary: ADR-0009 layer2/layer3 integration validates four-layer CID chain consistency, tamper detection, and COSE_Sign1 verification.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `167` `invariant:phase1518p_independent_bundle_verifier_catches_cid_signature_linkage_and_size_hex_errors`
+  - Source: `tests/test_phase_1518p_adr_0009_bundle_verifier.py`
+  - Evidence: `['42-47', '49-68', '70-111']`
+  - Summary: Independent ADR-0009 bundle verifier avoids builder imports and rejects CID, signature, linkage, oversized, and invalid-hex failures.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `168` `invariant:phase1525p_definition_node_schema_fields_error_tokens_non_attributable_authority_ref_no_adr_cdl_mutation`
+  - Source: `tests/test_phase_1525p_adr0035_definition_node_schema.py`
+  - Evidence: `['19-38', '40-55', '71-80']`
+  - Summary: ADR-0035 definition-node schema records required fields/error tokens/non-attributable requirement/authority_ref while preserving no ADR/CDL mutation.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `169` `invariant:phase1529p_parse_support_not_authority_bearing_under_guard_public_rc_exclude_no_activation`
+  - Source: `tests/test_phase_1529p_adr0035_type_registry_scaffold.py`
+  - Evidence: `['73-88', '188-205', '208-236']`
+  - Summary: ADR-0035 type-registry scaffold remains guarded/not activated, accepts only CDL-097 authority refs, and parse support is not authority-bearing under the guard.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `170` `invariant:phase1532p_no_wallet_ledger_treasury_write_production_emission_not_activated`
+  - Source: `tests/test_phase_1532p_obl020_emission_production_path.py`
+  - Evidence: `['35-44', '46-59', '98-105']`
+  - Summary: Emission production path is default-off, binds emission authority tokens, returns deterministic quotes, and contains no wallet/ledger/treasury write in canonical record.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped

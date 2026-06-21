@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 014
+
+- Phase: `1545p-Fix63b-batches014-018`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `131-140`
+- Direct read status: `complete`
+- Recommended edges: `23`
+- Accepted semantic edges written: `22`
+- Duplicate semantic edges skipped: `1`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `131` `invariant:phase1401_reviewer_payment_not_activated_no_ledger_treasury_or_ecu_distribution_write`
+  - Source: `tests/test_phase_1401_cdl_091_runtime_stub.py`
+  - Evidence: `['33-40', '53-66']`
+  - Summary: CDL-091 jury incentive runtime stub retains reviewer-payment default-off guard and blocks ledger, treasury, and ECU distribution writes.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `132` `invariant:phase1409_maintenance_lottery_not_activated_no_draw_no_ecu_distribution_no_ledger_or_treasury_write`
+  - Source: `tests/test_phase_1409_cdl_093_maintenance_lottery_stub.py`
+  - Evidence: `['33-40', '43-56', '59-73']`
+  - Summary: CDL-093 maintenance lottery runtime stub records ratified token, Werner-local-credit scope constants, and blocks draw, ECU distribution, ledger, and treasury writes.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `133` `invariant:phase1410_adr0042_no_vrf_runtime_no_production_assignment_no_j008_implemented_claim`
+  - Source: `tests/test_phase_1410_vrf_adr.py`
+  - Evidence: `['16-29', '56-75']`
+  - Summary: ADR-0042 records VRF proof-verifier algorithm/library/proof contract while explicitly not creating runtime implementation or production assignment.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `134` `invariant:phase1410_fix1_no_test_vector_skip_no_duplicate_agent_ids_no_epoch_zero_rejection`
+  - Source: `tests/test_phase_1410_fix1_pre_vrf_hardening.py`
+  - Evidence: `['87-99', '109-127', '199-206']`
+  - Summary: Pre-VRF hardening accepts epoch zero, rejects duplicate jury agent IDs, and records the ADR-0042 PyNaCl validation/test-vector gate.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `135` `invariant:phase1413_vrf_integration_security_no_random_no_assert_no_private_key_paths`
+  - Source: `tests/test_phase_1413_vrf_integration.py`
+  - Evidence: `['1-8', '127-143', '276-311']`
+  - Summary: VRF integration uses fixed RFC vectors, forbids random/assert/private-key proof generation paths, and verifies the J-008 condition without activating production.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `136` `invariant:phase1415_review_lane_quote_only_no_graph_write_no_public_economics_no_payment_authorization`
+  - Source: `tests/test_phase_1415_review_lane_admission_runtime.py`
+  - Evidence: `['56-63', '66-78', '172-184']`
+  - Summary: Review-lane admission runtime is quote-only: no graph write, no public economics, and no reviewer payment authorization under the default-off guard.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `137` `invariant:phase1423_no_live_llm_no_external_model_no_settlement_no_production_ecu_no_vps_provisioning_no_gate_patch`
+  - Source: `tests/test_phase_1423_rehearsal_criteria.py`
+  - Evidence: `['60-67', '79-87']`
+  - Summary: Private soft-RC rehearsal criteria cite ADR-0038/ADR-0041/CDL-042 identity boundaries and prohibit live LLM calls, settlement, production ECU distribution, VPS provisioning, and gate patching.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `138` `invariant:phase1425_no_production_jury_execution_surface_activation`
+  - Source: `tests/test_phase_1425_pre_gate_verification.py`
+  - Evidence: `['1-12', '117-120', '203-240']`
+  - Summary: Pre-gate verification marks jury gate conditions met while keeping production execution surfaces inactive; evidence refs include VRF, CDL-092, CDL-093, CDL-091, review lane, anti-capture, and counsel tokens.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `139` `invariant:phase1428_window_closure_no_window_1429_open_no_public_rc_no_public_serving`
+  - Source: `tests/test_phase_1428_window_closure_gate.py`
+  - Evidence: `['18-24', '117-127', '137-147']`
+  - Summary: Window 1399-1428 closure records closure tokens, requires a later GO for Window 1429, and preserves no public RC/public serving/epoch transition boundaries.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `140` `invariant:phase1433_no_live_llm_no_public_serving_no_public_rc_no_epoch_transition_no_cdl_mutation_no_wallet_or_treasury_write`
+  - Source: `tests/test_phase_1433_rehearsal_verdict.py`
+  - Evidence: `['104-119']`
+  - Summary: Rehearsal verdict records no live LLM API, no public serving/RC, no epoch transition, no CDL mutation, no production graph write, and no wallet/treasury write.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
