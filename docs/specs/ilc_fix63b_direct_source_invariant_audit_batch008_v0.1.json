@@ -1,0 +1,507 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch008",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:idea_descent_genesis_rework_local_rehearsal_no_graph_write_no_signing",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-180",
+            "330-510"
+          ],
+          "path": "ilc_core/sidecars/idea_descent_rehearsal.py",
+          "summary": "The rehearsal sidecar explicitly declares local-only scope, no graph writes, no ECU allocation, and no CDL/ADR mutation."
+        },
+        {
+          "line_refs": [
+            "1-130",
+            "200-320"
+          ],
+          "path": "tests/test_phase_1546p_idea_descent_rehearsal_sidecar.py",
+          "summary": "The tests assert local-only manifest flags, deterministic hashes, and no graph writes, ECU allocation, or CDL mutation."
+        },
+        {
+          "line_refs": [
+            "1-120"
+          ],
+          "path": "docs/specs/ilc_idea_descent_phase_prompt_objective_v0.1.md",
+          "summary": "The objective spec defines prompt-descent acceptance as structural validation only and explicitly forbids production activation and CDL mutation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Local rehearsal/no-signing invariant; policy trace is support-only and not a GOVERNS claim.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_rework_local_rehearsal_no_graph_write_no_signing",
+          "target": "repo:file:17a8b9e97aff730f:ilc_core_sidecars_idea_descent_rehearsal_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_rework_local_rehearsal_no_graph_write_no_signing",
+          "target": "repo:file:81e876db040fc265:tests_test_phase_1546p_idea_descent_rehearsal_sidecar_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_rework_local_rehearsal_no_graph_write_no_signing",
+          "target": "repo:file:f9bc645a534ed3f9:docs_specs_ilc_idea_descent_phase_prompt_objective_v0_1_md"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "source": "invariant:idea_descent_genesis_rework_local_rehearsal_no_graph_write_no_signing",
+          "target": "policy:idea_descent_sidecar_local_only_no_graph_writes_no_ecu_no_cdl_adr_mutation"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:idea_descent_rehearsal_sidecar_local_only_canonical_hash_determinism_no_activation_no_writes",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-180",
+            "330-510"
+          ],
+          "path": "ilc_core/sidecars/idea_descent_rehearsal.py",
+          "summary": "The sidecar builds replayable descent steps/traces with canonical JSON hashing and explicit local-only, no-activation flags."
+        },
+        {
+          "line_refs": [
+            "1-130",
+            "200-320"
+          ],
+          "path": "tests/test_phase_1546p_idea_descent_rehearsal_sidecar.py",
+          "summary": "The focused tests verify deterministic step and trace hashes, local-only tokens, and no graph/economic/CDL mutation behavior."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Support invariant for deterministic local rehearsal traces; direct evidence supports EVIDENCES and policy classification only.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_rehearsal_sidecar_local_only_canonical_hash_determinism_no_activation_no_writes",
+          "target": "repo:file:17a8b9e97aff730f:ilc_core_sidecars_idea_descent_rehearsal_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_rehearsal_sidecar_local_only_canonical_hash_determinism_no_activation_no_writes",
+          "target": "repo:file:81e876db040fc265:tests_test_phase_1546p_idea_descent_rehearsal_sidecar_py"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "source": "invariant:idea_descent_rehearsal_sidecar_local_only_canonical_hash_determinism_no_activation_no_writes",
+          "target": "policy:idea_descent_sidecar_local_only_no_graph_writes_no_ecu_no_cdl_adr_mutation"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:ilc_core_code_health_thresholds_not_regressed",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "tests/test_code_health.py",
+          "summary": "The code-health guard defines file/function/class/argument/nesting thresholds, excludes legacy hotspots, and reports deterministic top offenders."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Repository health invariant; direct evidence is the focused test file.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ilc_core_code_health_thresholds_not_regressed",
+          "target": "repo:file:661c40ac0ad8a892:tests_test_code_health_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:ilc_node_v0_ndjson_roundtrip_and_csv_export",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-140"
+          ],
+          "path": "ilc_core/node/node_v0.py",
+          "summary": "The node runtime records protocol events to a persistent NDJSON log and exposes CSV export through event_export."
+        },
+        {
+          "line_refs": [
+            "1-130"
+          ],
+          "path": "tests/test_ilc_node_v0.py",
+          "summary": "The tests verify NDJSON append, iter_events roundtrip, CSV export files, headers, and counts."
+        },
+        {
+          "line_refs": [
+            "1-110"
+          ],
+          "path": "docs/phases/phase_0066f_g1_ilc_node_v0_walkthrough.md",
+          "summary": "The walkthrough records the minimal node runtime, persistent event log, and CSV export objective and test result."
+        },
+        {
+          "line_refs": [
+            "130-250"
+          ],
+          "path": "ilc_core/protocol/event_export.py",
+          "summary": "The CSV exporter reads NDJSON events, splits task/epoch/claim rows, writes headers, and returns deterministic event counts."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Runtime smoke invariant for legacy node v0 support.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ilc_node_v0_ndjson_roundtrip_and_csv_export",
+          "target": "repo:file:9418844fe29be73c:ilc_core_node_node_v0_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ilc_node_v0_ndjson_roundtrip_and_csv_export",
+          "target": "repo:file:9d1b96130363dc69:tests_test_ilc_node_v0_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ilc_node_v0_ndjson_roundtrip_and_csv_export",
+          "target": "repo:file:fce7125832b562f4:docs_phases_phase_0066f_g1_ilc_node_v0_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ilc_node_v0_ndjson_roundtrip_and_csv_export",
+          "target": "repo:file:9310e2ab13814d63:ilc_core_protocol_event_export_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:j006_shadow_only_no_public_activation_no_random_no_float",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-170"
+          ],
+          "path": "ilc_core/epistemic/jury_assignment_runtime.py",
+          "summary": "The J006 runtime is a quote-only jury-assignment surface with ADR-0040 dependency, epoch-hash shadow mode, no graph writes, no reward activation, and no random import."
+        },
+        {
+          "line_refs": [
+            "1-130",
+            "340-400"
+          ],
+          "path": "tests/test_phase_1396_j006_jury_assignment_runtime.py",
+          "summary": "The tests assert ADR-0040 dependency, no public activation tokens, shadow assignment mode, production_activated=False, no random import, and no float score field."
+        },
+        {
+          "line_refs": [
+            "1-110"
+          ],
+          "path": "docs/phases/phase_1396_j006_jury_assignment_runtime_walkthrough.md",
+          "summary": "The walkthrough records J006 as default-off, quote-only, ADR-0040 shaped, with no production assignment or graph/economic effect."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "ADR-0040-bound shadow runtime invariant; not a production assignment claim.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:j006_shadow_only_no_public_activation_no_random_no_float",
+          "target": "repo:file:fe316b7887db475c:ilc_core_epistemic_jury_assignment_runtime_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:j006_shadow_only_no_public_activation_no_random_no_float",
+          "target": "repo:file:591ca1a1e336d42c:tests_test_phase_1396_j006_jury_assignment_runtime_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:j006_shadow_only_no_public_activation_no_random_no_float",
+          "target": "repo:file:ad64132ae6c38ffc:docs_phases_phase_1396_j006_jury_assignment_runtime_walkthrough_md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "source": "invariant:j006_shadow_only_no_public_activation_no_random_no_float",
+          "target": "adr:0040_jury_eligibility_assignment"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:j007_shadow_ingestion_no_production_ingestion_no_live_ecu_distribution_no_random_no_float",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-170"
+          ],
+          "path": "ilc_core/epistemic/ingestion_shadow_harness.py",
+          "summary": "The J007 harness exercises T0.5 quarantine, deduplication, taxonomy classification, and task lifecycle without production ingestion or live ECU distribution."
+        },
+        {
+          "line_refs": [
+            "1-150",
+            "470-525"
+          ],
+          "path": "tests/test_phase_1397_j007_shadow_public_ingestion_harness.py",
+          "summary": "The tests assert ADR-0041 and J003/J006 dependencies, no production ingestion, no live ECU distribution, no random import, and int byte-count handling."
+        },
+        {
+          "line_refs": [
+            "1-125"
+          ],
+          "path": "docs/phases/phase_1397_j007_shadow_public_ingestion_harness_walkthrough.md",
+          "summary": "The walkthrough records J007 as a shadow harness with no public canonical admission, graph writes, live ECU distribution, or production activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "ADR-0041-bound shadow ingestion invariant; evidence remains support-only because production ingestion is explicitly not activated.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:j007_shadow_ingestion_no_production_ingestion_no_live_ecu_distribution_no_random_no_float",
+          "target": "repo:file:c9a4c6cacb11e9d7:ilc_core_epistemic_ingestion_shadow_harness_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:j007_shadow_ingestion_no_production_ingestion_no_live_ecu_distribution_no_random_no_float",
+          "target": "repo:file:823cf0d768351a20:tests_test_phase_1397_j007_shadow_public_ingestion_harness_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:j007_shadow_ingestion_no_production_ingestion_no_live_ecu_distribution_no_random_no_float",
+          "target": "repo:file:495d270f48149477:docs_phases_phase_1397_j007_shadow_public_ingestion_harness_walkthrough_md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "source": "invariant:j007_shadow_ingestion_no_production_ingestion_no_live_ecu_distribution_no_random_no_float",
+          "target": "adr:0041_agent_init_and_ingestion_protocol"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:ledger_phase3_no_loose_any_and_has_bundle_replay_audit_typed_markers",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-130"
+          ],
+          "path": "tests/test_ledger_typed_contract_guardrails_phase3.py",
+          "summary": "The phase-3 guardrail test blocks loose Any contracts and requires typed markers across canon export, bundle validation, replay, report, and audit modules."
+        },
+        {
+          "line_refs": [
+            "1-130"
+          ],
+          "path": "docs/phases/phase_0985_g8_constitution_cluster_a_typed_return_contract_rollout_ledger_canon_export_and_bundle_helper_report_surfaces_phase3_walkthrough.md",
+          "summary": "The Phase 985 walkthrough records typed return-contract rollout across ledger canon export and bundle helper/report surfaces, preserving behavior while removing loose Any boundaries."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Typed-contract guardrail invariant; no authority promotion inferred.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ledger_phase3_no_loose_any_and_has_bundle_replay_audit_typed_markers",
+          "target": "repo:file:81175ee51e9ce2df:tests_test_ledger_typed_contract_guardrails_phase3_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ledger_phase3_no_loose_any_and_has_bundle_replay_audit_typed_markers",
+          "target": "repo:file:5c38ea7439b137f6:docs_phases_phase_0985_g8_constitution_cluster_a_typed_return_contract_rollout_ledger_canon_export_and_bundle_helper_report_surfaces_phase3_"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:ledger_signature_migration_dual_verify_cutoff_and_security_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-130"
+          ],
+          "path": "tests/test_ledger_signature_migration_contract_282.py",
+          "summary": "The tests verify required sections, migration-map entries, dual-verify/cutoff invariants, and no-runtime/no-CDL-mutation non-goals."
+        },
+        {
+          "line_refs": [
+            "1-120"
+          ],
+          "path": "docs/specs/ilc_ledger_signature_migration_contract_282_v0.1.md",
+          "summary": "The contract locks dual-verify window behavior, cutoff criteria, compatibility bounds, rollback boundary, and canonical fingerprint security invariants."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "docs/phases/phase_0282_g8_constitution_cluster_a_ledger_signature_migration_contract_lock_walkthrough.md",
+          "summary": "The walkthrough records Phase 282 as contract-only, without runtime implementation or decision-log mutation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Contract-lock invariant; evidence is docs/test support, not current runtime enforcement.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ledger_signature_migration_dual_verify_cutoff_and_security_contract",
+          "target": "repo:file:27dd03d641a0b258:tests_test_ledger_signature_migration_contract_282_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ledger_signature_migration_dual_verify_cutoff_and_security_contract",
+          "target": "repo:file:ec3330624635d85b:docs_specs_ilc_ledger_signature_migration_contract_282_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ledger_signature_migration_dual_verify_cutoff_and_security_contract",
+          "target": "repo:file:6576c245c9fcb0aa:docs_phases_phase_0282_g8_constitution_cluster_a_ledger_signature_migration_contract_lock_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:legacy_kernel_genesis_graph_boot_and_derivative_link",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-150"
+          ],
+          "path": "tests/test_kernel.py",
+          "summary": "The legacy kernel test loads genesis axioms, creates a derivative claim, and links it to the Genesis math axiom using derives_from."
+        },
+        {
+          "line_refs": [
+            "1-130"
+          ],
+          "path": "ilc_core/graph/__init__.py",
+          "summary": "The graph compatibility layer loads genesis axioms and supports derives_from through the add_edge_by_ids compatibility path."
+        },
+        {
+          "line_refs": [
+            "1-120"
+          ],
+          "path": "docs/phases/phase_0974_g8_constitution_cluster_a_track1_full_edge_removal_production_edge_constructor_eviction_slice1_walkthrough.md",
+          "summary": "The Phase 974 walkthrough records migration from direct Edge construction to add_edge_by_ids while preserving compatibility behavior."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Legacy compatibility invariant for the in-process EpistemicGraph path; this is not an Atlas authority edge.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:legacy_kernel_genesis_graph_boot_and_derivative_link",
+          "target": "repo:file:0d504fc5ed48e3f0:tests_test_kernel_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:legacy_kernel_genesis_graph_boot_and_derivative_link",
+          "target": "repo:file:1c6ee490c58e543e:ilc_core_graph_init_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:legacy_kernel_genesis_graph_boot_and_derivative_link",
+          "target": "repo:file:f7a9cd5fdd2e12ea:docs_phases_phase_0974_g8_constitution_cluster_a_track1_full_edge_removal_production_edge_constructor_eviction_slice1_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-130"
+          ],
+          "path": "tests/test_lineage_event_schema_phase_240.py",
+          "summary": "The Phase 240 tests verify schema existence, lifecycle events/states, allowed/disallowed sections, full 12-pair transition coverage, and no ratification language."
+        },
+        {
+          "line_refs": [
+            "1-120",
+            "120-220"
+          ],
+          "path": "docs/specs/ilc_lineage_lifecycle_event_schema_v0.1.md",
+          "summary": "The locked schema defines register/rotate/revoke/recover events, active/rotated/revoked/recovered states, and complete allowed/disallowed transition coverage."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "docs/phases/phase_0240_g8_constitution_cluster_a_security_runtime_sequence_lock_and_lineage_event_schema_walkthrough.md",
+          "summary": "The walkthrough records the Phase 240 schema lock, transition coverage, Phase 232 dependency, and no runtime or CDL-status mutation."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md",
+          "summary": "The v0.2 successor preserves v0.1 transitions and adds external signing-provider lifecycle coordination guidance."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_signing_provider_interface_262.py",
+          "summary": "The Phase 262 tests verify the v0.2 lifecycle coordination section and that v0.1 remains present."
+        },
+        {
+          "line_refs": [
+            "1-80"
+          ],
+          "path": "docs/phases/phase_0262_g8_constitution_cluster_a_signing_provider_interface_and_wallet_agnostic_doc_amendments_walkthrough.md",
+          "summary": "The Phase 262 walkthrough records v0.2 as a successor schema and confirms no runtime behavior change."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Signer-lineage schema invariant; direct reads support evidence edges plus a CDL-001 authority reference.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "repo:file:e3cf0c2142376c4a:tests_test_lineage_event_schema_phase_240_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "repo:file:cd48e5e701627521:docs_specs_ilc_lineage_lifecycle_event_schema_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "repo:file:3b1e47a422924ecb:docs_phases_phase_0240_g8_constitution_cluster_a_security_runtime_sequence_lock_and_lineage_event_schema_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "repo:file:dcaae03e1122d59e:docs_specs_ilc_lineage_lifecycle_event_schema_v0_2_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "repo:file:3c71c862fc147454:tests_test_signing_provider_interface_262_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "repo:file:599157af4e8be2c1:docs_phases_phase_0262_g8_constitution_cluster_a_signing_provider_interface_and_wallet_agnostic_doc_amendments_walkthrough_md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "source": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+          "target": "cdl:001_signer_lineage_trust_root"
+        }
+      ]
+    }
+  ],
+  "non_claims": [
+    "no_governs_edges_added",
+    "no_genesis_signing",
+    "no_public_rc_activation",
+    "no_production_economics_activation",
+    "support_trace_only"
+  ],
+  "phase": "1545p-Fix63b-batch008",
+  "schema_version": "fix63b_direct_source_invariant_audit_batch.v0.1",
+  "summary": {
+    "entries_reviewed": 10,
+    "recommended_edge_count": 35,
+    "recommended_edge_type_counts": {
+      "CLASSIFIED_BY": 2,
+      "EVIDENCES": 30,
+      "REFERENCES_AUTHORITY": 3
+    }
+  }
+}

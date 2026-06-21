@@ -1,0 +1,583 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch006",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-45"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_coverage_diagnostic_v0.1.md",
+          "summary": "The diagnostic report records PARTIAL_WITH_STRUCTURAL_GAPS, 31/32 authority traceability, partial source coverage, and zero missing decomposition recipes."
+        },
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "tools/genesis_compile_coverage_diagnostic.py",
+          "summary": "The diagnostic tool computes authority traceability, basis reachability, source coverage, recipe coverage, and verdict fields."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_genesis_compile_coverage_diagnostic.py",
+          "summary": "The test asserts partial-result reporting, authority traceability, edge recipe counts, and report tokens."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:bb938c349fcc63a0:tests_test_genesis_compile_coverage_diagnostic_py CLASSIFIED_BY invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete"
+      ],
+      "notes": "This is a diagnostic coverage invariant. Existing authority references are present; direct evidence should point to the diagnostic report, tool, and tests.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete",
+          "target": "repo:file:394e986540094dfd:docs_sims_sim_spectral_02_genesis_compile_coverage_diagnostic_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete",
+          "target": "repo:file:96719e6bccf20605:tools_genesis_compile_coverage_diagnostic_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete",
+          "target": "repo:file:bb938c349fcc63a0:tests_test_genesis_compile_coverage_diagnostic_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-88"
+          ],
+          "path": "tests/test_genesis_work_task_model.py",
+          "summary": "The test verifies `ecu.estimate` alias construction, JSON round-trip, TaskDescriptor bridge helper, and agent-id override behavior."
+        },
+        {
+          "line_refs": [
+            "1-73"
+          ],
+          "path": "ilc_core/genesis/work_task.py",
+          "summary": "The runtime defines EpistemicWorkTask, Decimal ECU estimate validation/serialization, JSON helpers, and alias handling."
+        },
+        {
+          "line_refs": [
+            "1-107"
+          ],
+          "path": "ilc_core/work/task_queue.py",
+          "summary": "The queue runtime defines TaskDescriptor.from_epistemic_work_task and an in-memory sandbox TaskQueue."
+        },
+        {
+          "line_refs": [
+            "1-61"
+          ],
+          "path": "epistemic_work_task_schema_v1.json",
+          "summary": "The JSON schema defines the epistemic work-task payload including `ecu.estimate`, task state, task class, and verification method fields."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file:4c6cb321689a59bc:tests_test_genesis_work_task_model_py REGRESSES invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge"
+      ],
+      "notes": "This is a schema/runtime bridge invariant and remains support trace.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge",
+          "target": "repo:file:4c6cb321689a59bc:tests_test_genesis_work_task_model_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge",
+          "target": "repo:file:abe6d255d94f3ebd:ilc_core_genesis_work_task_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge",
+          "target": "repo:file:3556d6d11e15901f:ilc_core_work_task_queue_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge",
+          "target": "repo:file:e6858b932c99a19b:epistemic_work_task_schema_v1_json"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-88"
+          ],
+          "path": "tests/test_phase_1387g_epistemic_leverage.py",
+          "summary": "The test verifies the epistemic leverage analysis section, zero keystone nodes, baseline reachable count, and leverage=1 for all non-root nodes."
+        },
+        {
+          "line_refs": [
+            "1-108"
+          ],
+          "path": "docs/phases/phase_1387i_graphopt_synthesis_walkthrough.md",
+          "summary": "The walkthrough records 0 keystones, hub-and-spoke resilience, and the synthesis report as load-bearing SIM output."
+        },
+        {
+          "line_refs": [
+            "1-90"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_graphopt_01_synthesis_report_v0.1.md",
+          "summary": "The synthesis report explains the zero-keystone result and its governance-star-map scope."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:d4248799c02ad99b:docs_phases_phase_1387g_epistemic_leverage_walkthrough_md CLASSIFIED_BY invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience"
+      ],
+      "notes": "This is a SIM graph-analysis invariant. It should evidence the test, synthesis walkthrough, and synthesis report.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience",
+          "target": "repo:file:e062f83b9fcc58d8:tests_test_phase_1387g_epistemic_leverage_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience",
+          "target": "repo:file:2a82a3b103c53be3:docs_phases_phase_1387i_graphopt_synthesis_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience",
+          "target": "repo:file:9e15395987e7fe53:docs_sims_sim_spectral_02_genesis_graphopt_01_synthesis_report_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1300-1380",
+            "1900-2188"
+          ],
+          "path": "tools/crawl_genesis_node_candidates.py",
+          "summary": "The crawler builds raw match, review, rejected-source, and promotion-trace ledgers, writes deterministic JSON/NDJSON, and renders inventory/decision-log outputs."
+        },
+        {
+          "line_refs": [
+            "1-260"
+          ],
+          "path": "tests/test_genesis_node_candidate_crawl.py",
+          "summary": "The tests validate crawl outputs, review/rejected ledgers, promotion trace, star-map projection, and index consistency."
+        },
+        {
+          "line_refs": [
+            "1-170"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md",
+          "summary": "The inventory records candidate nodes, review-required sources, and rejected-source ledger counts/reasons."
+        },
+        {
+          "line_refs": [
+            "1-48"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md",
+          "summary": "The decision log records non-binding GND decisions, including retaining raw-match, rejected-candidate, and promotion-trace ledgers."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract REFERENCES_AUTHORITY cdl:017_validator_admission_ejection",
+        "repo:file:89742d590b749d1a:tests_test_genesis_node_candidate_crawl_py CLASSIFIED_BY invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract"
+      ],
+      "notes": "This invariant governs auditability of the crawler support artifacts, not a canonical authority promotion.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract",
+          "target": "repo:file:4617f23ca60f3ac6:tools_crawl_genesis_node_candidates_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract",
+          "target": "repo:file:89742d590b749d1a:tests_test_genesis_node_candidate_crawl_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract",
+          "target": "repo:file:0b7a99d8e0f99bc1:docs_sims_sim_spectral_02_genesis_node_candidate_inventory_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract",
+          "target": "repo:file:9dfb478af42c3571:docs_sims_sim_spectral_02_genesis_node_candidate_decision_log_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_node_candidate_crawl_star_map_and_review_ledger_consistency",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-260"
+          ],
+          "path": "tests/test_genesis_node_candidate_crawl.py",
+          "summary": "The tests validate star-map projection/index consistency, review ledgers, raw-match ledgers, and rejected-source ledgers."
+        },
+        {
+          "line_refs": [
+            "1300-1380",
+            "1900-2188"
+          ],
+          "path": "tools/crawl_genesis_node_candidates.py",
+          "summary": "The crawler derives inventory, raw/rejected ledgers, core-star-map payload, and star-map index payload deterministically."
+        },
+        {
+          "line_refs": [
+            "1-170"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_node_candidate_inventory_v0.1.md",
+          "summary": "The inventory reports candidate-node counts, ledger paths, rejection reasons, and review queue contents."
+        },
+        {
+          "line_refs": [
+            "1-48"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md",
+          "summary": "The decision log records projection and audit-ledger policy decisions."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_node_candidate_crawl_star_map_and_review_ledger_consistency EVIDENCES repo:file:0b7a99d8e0f99bc1:docs_sims_sim_spectral_02_genesis_node_candidate_inventory_v0_1_md",
+        "invariant:genesis_node_candidate_crawl_star_map_and_review_ledger_consistency EVIDENCES repo:file:89742d590b749d1a:tests_test_genesis_node_candidate_crawl_py",
+        "invariant:genesis_node_candidate_crawl_star_map_and_review_ledger_consistency EVIDENCES repo:file:9dfb478af42c3571:docs_sims_sim_spectral_02_genesis_node_candidate_decision_log_v0_1_md"
+      ],
+      "notes": "Most evidence already exists; the missing useful direct edge is to the crawler implementation itself.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_node_candidate_crawl_star_map_and_review_ledger_consistency",
+          "target": "repo:file:4617f23ca60f3ac6:tools_crawl_genesis_node_candidates_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-126"
+          ],
+          "path": "tests/test_phase_1545p_fix9_genesis_optimization_harness.py",
+          "summary": "The tests assert support-only status, canonical output, string objective scores, and rejection of missing basis/authority nodes, invalid endpoints, missing recipes, and activation claims."
+        },
+        {
+          "line_refs": [
+            "1-230"
+          ],
+          "path": "tools/evaluators/genesis_optimization_harness.py",
+          "summary": "The evaluator loads JSON deterministically, rejects nonstandard numbers, checks required nodes, edge endpoints, decomposition recipes, and activation/economic claims."
+        },
+        {
+          "line_refs": [
+            "1-88"
+          ],
+          "path": "docs/specs/ilc_genesis_optimization_autoresearch_harness_1545p_fix9_v0.1.md",
+          "summary": "The spec records the support-only boundary, human objective-selection boundary, rejection rules, determinism evidence, and non-authorizations."
+        },
+        {
+          "line_refs": [
+            "1-110"
+          ],
+          "path": "docs/phases/phase_1545p_fix9_genesis_optimization_autoresearch_harness_walkthrough.md",
+          "summary": "The walkthrough records test results, rejection rules, graph delta, and no authority/publishing/economic activation claims."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:977fb7b255d98d1d:tests_test_phase_1545p_fix9_genesis_optimization_harness_py CLASSIFIED_BY invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes"
+      ],
+      "notes": "The invariant is a support-only evaluator safety contract.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes",
+          "target": "repo:file:977fb7b255d98d1d:tests_test_phase_1545p_fix9_genesis_optimization_harness_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes",
+          "target": "repo:file:05bf987c6053cd6d:tools_evaluators_genesis_optimization_harness_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes",
+          "target": "repo:file:12f3b515c64293f6:docs_specs_ilc_genesis_optimization_autoresearch_harness_1545p_fix9_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes",
+          "target": "repo:file:a0a88bfa0a179c5a:docs_phases_phase_1545p_fix9_genesis_optimization_autoresearch_harness_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_readiness_audit_reverification_gate_cli_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-44"
+          ],
+          "path": "tests/test_genesis_readiness_audit_reverification_gate_phase_1012.py",
+          "summary": "The tests verify dry-run, unknown-argument, help, and successful execution contract for the reverification gate script."
+        },
+        {
+          "line_refs": [
+            "1-74"
+          ],
+          "path": "tools/check_genesis_readiness_audit_reverification_1012.sh",
+          "summary": "The script implements the deterministic post-1011 audit reverification gate and consolidated pytest command list."
+        },
+        {
+          "line_refs": [
+            "1-59"
+          ],
+          "path": "docs/specs/ilc_genesis_readiness_audit_reverification_post_1011_v0.1.md",
+          "summary": "The report maps post-1011 audit claims to closure status, evidence anchors, and residual policy notes."
+        },
+        {
+          "line_refs": [
+            "1-98"
+          ],
+          "path": "docs/phases/phase_1012_g8_constitution_cluster_a_genesis_readiness_audit_reverification_gate_and_closure_report_walkthrough.md",
+          "summary": "The walkthrough records the reverification gate deliverables, verification commands, and residual policy notes."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_readiness_audit_reverification_gate_cli_contract REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:9ed7f5bbbab22ff6:tests_test_genesis_readiness_audit_reverification_gate_phase_1012_py REGRESSES invariant:genesis_readiness_audit_reverification_gate_cli_contract"
+      ],
+      "notes": "This is a CLI gate contract invariant for audit evidence, not authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_audit_reverification_gate_cli_contract",
+          "target": "repo:file:9ed7f5bbbab22ff6:tests_test_genesis_readiness_audit_reverification_gate_phase_1012_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_audit_reverification_gate_cli_contract",
+          "target": "repo:file:52002d4e3b680f55:tools_check_genesis_readiness_audit_reverification_1012_sh"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_audit_reverification_gate_cli_contract",
+          "target": "repo:file:ab4c848049bbd096:docs_specs_ilc_genesis_readiness_audit_reverification_post_1011_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_audit_reverification_gate_cli_contract",
+          "target": "repo:file:5e333aee9e5bdd26:docs_phases_phase_1012_g8_constitution_cluster_a_genesis_readiness_audit_reverification_gate_and_closure_report_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_readiness_remediation_closure_gate_cli_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-42"
+          ],
+          "path": "tests/test_genesis_readiness_remediation_closure_gate_phase_1009.py",
+          "summary": "The tests verify dry-run, unknown-argument, help, and successful execution contract for the remediation closure gate."
+        },
+        {
+          "line_refs": [
+            "1-71"
+          ],
+          "path": "tools/check_genesis_readiness_remediation_closure_996_1008.sh",
+          "summary": "The script implements the deterministic remediation closure gate for phases 996-1008."
+        },
+        {
+          "line_refs": [
+            "1-42"
+          ],
+          "path": "docs/specs/ilc_genesis_readiness_remediation_996_1008_handoff_v0.1.md",
+          "summary": "The handoff records covered remediation phases, audit-claim closure map, and closure-gate purpose."
+        },
+        {
+          "line_refs": [
+            "1-49"
+          ],
+          "path": "docs/specs/ilc_genesis_readiness_audit_reconciliation_v0.1.md",
+          "summary": "The reconciliation spec locks the remediation sequence and initial claim statuses."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_readiness_remediation_closure_gate_cli_contract REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:4df86e50a3688294:tests_test_genesis_readiness_remediation_closure_gate_phase_1009_py REGRESSES invariant:genesis_readiness_remediation_closure_gate_cli_contract"
+      ],
+      "notes": "This is a remediation closure-gate support invariant.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_remediation_closure_gate_cli_contract",
+          "target": "repo:file:4df86e50a3688294:tests_test_genesis_readiness_remediation_closure_gate_phase_1009_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_remediation_closure_gate_cli_contract",
+          "target": "repo:file:8d6bc4663cd96a03:tools_check_genesis_readiness_remediation_closure_996_1008_sh"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_remediation_closure_gate_cli_contract",
+          "target": "repo:file:43b92a875770c025:docs_specs_ilc_genesis_readiness_remediation_996_1008_handoff_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_readiness_remediation_closure_gate_cli_contract",
+          "target": "repo:file:da7836e9f044b326:docs_specs_ilc_genesis_readiness_audit_reconciliation_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-70"
+          ],
+          "path": "tools/build_genesis_signing_root_envelope.py",
+          "summary": "The builder loads M1/M2/M3 manifests, checks manifest_type, embeds each manifest hash/path/type, and hashes the canonical root envelope."
+        },
+        {
+          "line_refs": [
+            "1-122"
+          ],
+          "path": "tests/test_phase_1142s_genesis_signing_ceremony.py",
+          "summary": "The tests verify root envelope identity/hash, backlinks to all manifest hashes, signed nodes, and public-key signature verification."
+        },
+        {
+          "line_refs": [
+            "1-86"
+          ],
+          "path": "docs/phases/phase_1142s_genesis_node_attestation_signing_ceremony_walkthrough.md",
+          "summary": "The walkthrough records M1/M2/M3, the root envelope, signature, corrected root hash, and signature verification."
+        },
+        {
+          "line_refs": [
+            "1-100"
+          ],
+          "path": "ilc_core/rc/signing_ceremony_status.py",
+          "summary": "The status module records signing-ceremony tokens, root envelope hash, signed artifact hashes, and non-activation booleans."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "target:artifact_genesis_signing_root_envelope_v0_1 CLASSIFIED_BY invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+        "repo:file:a139958cd020a975:tools_build_genesis_signing_root_envelope_py CLASSIFIED_BY invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+        "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract"
+      ],
+      "notes": "This invariant is a signing-envelope integrity support trace.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+          "target": "repo:file:a139958cd020a975:tools_build_genesis_signing_root_envelope_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+          "target": "repo:file:5d0abcb601c20f51:tests_test_phase_1142s_genesis_signing_ceremony_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+          "target": "repo:file:3bba963cf67b13ad:docs_phases_phase_1142s_genesis_node_attestation_signing_ceremony_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+          "target": "repo:file:1f17256d7a102de4:ilc_core_rc_signing_ceremony_status_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_signing_private_key_never_committed_or_agent_handled",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-105"
+          ],
+          "path": "docs/phases/phase_1142s_genesis_node_attestation_signing_ceremony_walkthrough.md",
+          "summary": "The walkthrough's security notes state private key material was never committed, never passed to an agent, and only a public ML-DSA-65 signature was committed."
+        },
+        {
+          "line_refs": [
+            "1-122"
+          ],
+          "path": "tests/test_phase_1142s_genesis_signing_ceremony.py",
+          "summary": "The tests verify signature shape and public-key verification without exposing or recording private key material."
+        },
+        {
+          "line_refs": [
+            "1-100"
+          ],
+          "path": "ilc_core/rc/signing_ceremony_status.py",
+          "summary": "The status module records public signing tokens and hashes while retaining non-public-RC and no-release-artifact-signing flags."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "repo:file:3bba963cf67b13ad:docs_phases_phase_1142s_genesis_node_attestation_signing_ceremony_walkthrough_md CLASSIFIED_BY invariant:genesis_signing_private_key_never_committed_or_agent_handled",
+        "invariant:genesis_signing_private_key_never_committed_or_agent_handled REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_signing_private_key_never_committed_or_agent_handled REFERENCES_AUTHORITY policy:genesis_authority_sunset"
+      ],
+      "notes": "This is a security-boundary support invariant. The correct edge type is source evidence, not authority promotion.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_signing_private_key_never_committed_or_agent_handled",
+          "target": "repo:file:3bba963cf67b13ad:docs_phases_phase_1142s_genesis_node_attestation_signing_ceremony_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_signing_private_key_never_committed_or_agent_handled",
+          "target": "repo:file:5d0abcb601c20f51:tests_test_phase_1142s_genesis_signing_ceremony_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_signing_private_key_never_committed_or_agent_handled",
+          "target": "repo:file:1f17256d7a102de4:ilc_core_rc_signing_ceremony_status_py"
+        }
+      ]
+    }
+  ],
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "notes": "Batch006 replaces weak STATUS.md-style evidence for Genesis compile coverage, work-task, graphopt, crawler, optimization harness, readiness, and signing-boundary invariants with direct source/test/spec evidence. No new GOVERNS edges are recommended.",
+  "recommended_edge_count": 34,
+  "recommended_edge_types": {
+    "EVIDENCES": 34
+  },
+  "row_range": "51-60",
+  "source_ledger": "docs/specs/ilc_fix63_manual_governs_audit_ledger_v0.1.json"
+}

@@ -1,0 +1,540 @@
+{
+  "batch_id": "fix63b_batch002",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:bridge_realism_exercise_no_native_p2p_implementation",
+      "direct_reads": [
+        {
+          "path": "docs/specs/ilc_consensus_bridge_realism_exercise_472_v0.1.md",
+          "line_refs": [
+            "1-33"
+          ],
+          "summary": "Phase 472 bridge-realism exercise scope, report contract, and explicit non-goals; lines 31-33 state no native P2P implementation or decision-log mutation occurred."
+        },
+        {
+          "path": "tests/test_phase_472_bridge_realism_and_adversarial_transport.py",
+          "line_refs": [
+            "8-28",
+            "59-74",
+            "92-118",
+            "121-135"
+          ],
+          "summary": "Regression tests bind the exercise artifact, cases, deterministic verdict fields, and non-mutation boundary."
+        },
+        {
+          "path": "tools/consensus_bridge_realism_exercise_472.py",
+          "line_refs": [
+            "19-90",
+            "93-108"
+          ],
+          "summary": "Exercise builder evaluates deterministic forwarding/adversarial cases and writes canonical report/summary outputs."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "repo:file:109798c44aed12c6:docs_phases_phase_0472_bridge_realism_and_adversarial_transport_exercise_walkthrough_md CLASSIFIED_BY invariant:bridge_realism_exercise_no_native_p2p_implementation",
+        "invariant:bridge_realism_exercise_no_native_p2p_implementation CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "invariant:bridge_realism_exercise_no_native_p2p_implementation REFERENCES_AUTHORITY policy:formal_publication_gate_required"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bridge_realism_exercise_no_native_p2p_implementation",
+          "target": "repo:file:77d4afa3ce9593be:docs_specs_ilc_consensus_bridge_realism_exercise_472_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bridge_realism_exercise_no_native_p2p_implementation",
+          "target": "repo:file:68793262dce6eb5f:tests_test_phase_472_bridge_realism_and_adversarial_transport_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bridge_realism_exercise_no_native_p2p_implementation",
+          "target": "repo:file:6058a70b24eb01d8:tools_consensus_bridge_realism_exercise_472_py"
+        }
+      ],
+      "notes": "This is a bridge exercise/non-goal boundary, not a protocol authority node. No GOVERNS edge is warranted."
+    },
+    {
+      "candidate_id": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+      "direct_reads": [
+        {
+          "path": "docs/specs/ilc_crypto_bundle_registry_completion_handoff_284_v0.1.md",
+          "line_refs": [
+            "7-26",
+            "28-33",
+            "35-44"
+          ],
+          "summary": "Phase 284 handoff records bundle and registry key_fingerprint emission/enforcement and fail-closed mismatch behavior."
+        },
+        {
+          "path": "tests/test_crypto_migration_bundle_registry_completion_284.py",
+          "line_refs": [
+            "28-50",
+            "71-118"
+          ],
+          "summary": "Tests cover bundle and registry fingerprint emission plus fail-closed mismatch verification."
+        },
+        {
+          "path": "ilc_core/ledger/canon_export_bundle_sign.py",
+          "line_refs": [
+            "100-124"
+          ],
+          "summary": "Bundle signing writes key_id, key_fingerprint, sig_alg, signed_at, canonical manifest bytes, and detached signature."
+        },
+        {
+          "path": "ilc_core/ledger/canon_export_bundle_verify_sig.py",
+          "line_refs": [
+            "65-93",
+            "95-107"
+          ],
+          "summary": "Signature verification fails on key_id mismatch, missing fingerprint in asymmetric-required mode, fingerprint mismatch, deprecated/unknown registry status, or invalid signature bytes."
+        },
+        {
+          "path": "ilc_core/ledger/canon_bundle_key_registry.py",
+          "line_refs": [
+            "20-44",
+            "242-273"
+          ],
+          "summary": "Registry status and canonical signing helpers define key lifecycle and full SHA-256 fingerprint derivation."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:6fbc624b17d8f0e7:tests_test_crypto_migration_bundle_registry_completion_284_py REGRESSES invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+          "target": "repo:file:213db58727bd4069:docs_specs_ilc_crypto_bundle_registry_completion_handoff_284_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+          "target": "repo:file:6fbc624b17d8f0e7:tests_test_crypto_migration_bundle_registry_completion_284_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+          "target": "repo:file:85eada3098f88830:ilc_core_ledger_canon_export_bundle_sign_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+          "target": "repo:file:474f7ed953c72fa8:ilc_core_ledger_canon_export_bundle_verify_sig_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+          "target": "repo:file:b4f35344de564bee:ilc_core_ledger_canon_bundle_key_registry_py"
+        }
+      ],
+      "notes": "ADR-0009 is the governing distribution architecture. The invariant is support evidence for fail-closed key fingerprint behavior."
+    },
+    {
+      "candidate_id": "invariant:candidate_scoring_not_authority_human_objective_selection_boundary",
+      "direct_reads": [
+        {
+          "path": "docs/specs/ilc_genesis_optimization_autoresearch_harness_1545p_fix9_v0.1.md",
+          "line_refs": [
+            "20-31",
+            "42-60",
+            "62-75",
+            "87-99"
+          ],
+          "summary": "Fix9 spec states candidate scoring is not authority, humans select objectives, scores are deterministic strings, and public/economic activation claims are rejected."
+        },
+        {
+          "path": "tests/test_phase_1545p_fix9_genesis_optimization_harness.py",
+          "line_refs": [
+            "31-43",
+            "46-62",
+            "64-81",
+            "84-125"
+          ],
+          "summary": "Tests assert support-only authority status, string scores, human objective selection, and rejection of activation claims."
+        },
+        {
+          "path": "tools/evaluators/genesis_optimization_harness.py",
+          "line_refs": [
+            "19-34",
+            "46-52",
+            "140-158",
+            "207-311"
+          ],
+          "summary": "Harness implementation encodes support-only authority status, required authority-preservation checks, activation-claim detection, and deterministic string objective vectors."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:candidate_scoring_not_authority_human_objective_selection_boundary REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file:977fb7b255d98d1d:tests_test_phase_1545p_fix9_genesis_optimization_harness_py CLASSIFIED_BY invariant:candidate_scoring_not_authority_human_objective_selection_boundary"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:candidate_scoring_not_authority_human_objective_selection_boundary",
+          "target": "repo:file:12f3b515c64293f6:docs_specs_ilc_genesis_optimization_autoresearch_harness_1545p_fix9_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:candidate_scoring_not_authority_human_objective_selection_boundary",
+          "target": "repo:file:977fb7b255d98d1d:tests_test_phase_1545p_fix9_genesis_optimization_harness_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:candidate_scoring_not_authority_human_objective_selection_boundary",
+          "target": "repo:file:05bf987c6053cd6d:tools_evaluators_genesis_optimization_harness_py"
+        }
+      ],
+      "notes": "This boundary prevents optimization scores from becoming authority. It remains support trace, not a GOVERNS target."
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_key_registry_empty_default_unknown",
+      "direct_reads": [
+        {
+          "path": "tests/test_canon_bundle_key_registry.py",
+          "line_refs": [
+            "12-43"
+          ],
+          "summary": "Tests assert empty registry returns unknown by default unless explicitly allowed by ILC_ALLOW_EMPTY_KEY_REGISTRY."
+        },
+        {
+          "path": "ilc_core/ledger/canon_bundle_key_registry.py",
+          "line_refs": [
+            "20-44",
+            "48-87"
+          ],
+          "summary": "KeyRegistry.status returns unknown for empty registries unless the explicit environment override is set; load_registry falls back to DEFAULT_REGISTRY."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_bundle_key_registry_empty_default_unknown REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:b25aae83c3a770ed:tests_test_canon_bundle_key_registry_py REGRESSES invariant:canon_bundle_key_registry_empty_default_unknown"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_key_registry_empty_default_unknown",
+          "target": "repo:file:b25aae83c3a770ed:tests_test_canon_bundle_key_registry_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_key_registry_empty_default_unknown",
+          "target": "repo:file:b4f35344de564bee:ilc_core_ledger_canon_bundle_key_registry_py"
+        }
+      ],
+      "notes": "Support invariant under ADR-0009 bundle/key-registry behavior."
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key",
+      "direct_reads": [
+        {
+          "path": "tests/test_canon_bundle_sign_cli.py",
+          "line_refs": [
+            "39-51",
+            "69-88"
+          ],
+          "summary": "Tests assert missing manifest, invalid key file, missing key flag, and missing key path fail with stable JSON errors."
+        },
+        {
+          "path": "ilc_core/cli/canon_bundle_sign.py",
+          "line_refs": [
+            "19-55"
+          ],
+          "summary": "CLI checks bundle/manifest/key presence, catches invalid key and existing signature failures, and emits deterministic JSON reports."
+        },
+        {
+          "path": "ilc_core/ledger/canon_export_bundle_sign.py",
+          "line_refs": [
+            "58-67",
+            "69-99"
+          ],
+          "summary": "Key loader rejects empty/invalid base64 keys and sign_manifest fails when manifest is missing or signature exists without overwrite."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py REGRESSES invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key",
+          "target": "repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key",
+          "target": "repo:file:ea9f3330e30a94b6:ilc_core_cli_canon_bundle_sign_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key",
+          "target": "repo:file:85eada3098f88830:ilc_core_ledger_canon_export_bundle_sign_py"
+        }
+      ],
+      "notes": "Fail-closed CLI behavior supports ADR-0009 bundle verification but is not independent authority."
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_sign_no_overwrite_without_flag",
+      "direct_reads": [
+        {
+          "path": "tests/test_canon_bundle_sign_cli.py",
+          "line_refs": [
+            "53-67"
+          ],
+          "summary": "Tests assert existing manifest.sig is preserved and signing fails unless --overwrite is passed."
+        },
+        {
+          "path": "ilc_core/cli/canon_bundle_sign.py",
+          "line_refs": [
+            "19-24",
+            "42-49"
+          ],
+          "summary": "CLI exposes --overwrite and maps FileExistsError to signature_exists."
+        },
+        {
+          "path": "ilc_core/ledger/canon_export_bundle_sign.py",
+          "line_refs": [
+            "69-99"
+          ],
+          "summary": "sign_manifest raises FileExistsError when manifest.sig exists and overwrite is false."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_bundle_sign_no_overwrite_without_flag REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py REGRESSES invariant:canon_bundle_sign_no_overwrite_without_flag"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_sign_no_overwrite_without_flag",
+          "target": "repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_sign_no_overwrite_without_flag",
+          "target": "repo:file:ea9f3330e30a94b6:ilc_core_cli_canon_bundle_sign_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_sign_no_overwrite_without_flag",
+          "target": "repo:file:85eada3098f88830:ilc_core_ledger_canon_export_bundle_sign_py"
+        }
+      ],
+      "notes": "Support invariant around safe signing file behavior."
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_signing_repair_testing_snapshot_explicit_toggle_and_guardrails",
+      "direct_reads": [
+        {
+          "path": "docs/specs/ilc_canon_bundle_signing_repair_1197_v0.1.md",
+          "line_refs": [
+            "11-21",
+            "41-61",
+            "87-96"
+          ],
+          "summary": "Phase 1197 records test-fixture repair scope, deterministic testing snapshot toggle, and guardrails against production validation weakening."
+        },
+        {
+          "path": "tests/test_phase_1197_canon_bundle_signing_repair.py",
+          "line_refs": [
+            "11-18",
+            "20-43",
+            "46-57"
+          ],
+          "summary": "Tests require the repair token, production guardrails, valid v0.1 snapshot shape, and explicit snapshot toggle in affected tests."
+        },
+        {
+          "path": "tests/test_canon_bundle_audit_artifact.py",
+          "line_refs": [
+            "10-22",
+            "30-39"
+          ],
+          "summary": "Audit artifact tests use the explicit testing snapshot toggle and build valid bundles from the deterministic snapshot."
+        },
+        {
+          "path": "tests/test_canon_bundle_pipeline_report.py",
+          "line_refs": [
+            "10-22",
+            "31-38"
+          ],
+          "summary": "Pipeline report tests use the same explicit testing snapshot toggle and valid bundle fixture."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_bundle_signing_repair_testing_snapshot_explicit_toggle_and_guardrails REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:3977f34913ada5da:tests_test_phase_1197_canon_bundle_signing_repair_py REGRESSES invariant:canon_bundle_signing_repair_testing_snapshot_explicit_toggle_and_guardrails"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_signing_repair_testing_snapshot_explicit_toggle_and_guardrails",
+          "target": "repo:file:1c85bf1e3fddef08:docs_specs_ilc_canon_bundle_signing_repair_1197_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_bundle_signing_repair_testing_snapshot_explicit_toggle_and_guardrails",
+          "target": "repo:file:3977f34913ada5da:tests_test_phase_1197_canon_bundle_signing_repair_py"
+        }
+      ],
+      "notes": "The invariant is a test-fixture repair guardrail. It should remain support trace."
+    },
+    {
+      "candidate_id": "invariant:canon_cli_output_deterministic",
+      "direct_reads": [
+        {
+          "path": "tests/test_canon_cli.py",
+          "line_refs": [
+            "81-90"
+          ],
+          "summary": "Test runs canon CLI twice with --print-hash and asserts identical stdout."
+        },
+        {
+          "path": "ilc_core/cli/canon_cli.py",
+          "line_refs": [
+            "16-29"
+          ],
+          "summary": "CLI verifies canon state, optionally removes hash fields, emits sorted-key JSON, and returns deterministic exit code."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_cli_output_deterministic REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:2c7f776c23231b53:tests_test_canon_cli_py REGRESSES invariant:canon_cli_output_deterministic"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cli_output_deterministic",
+          "target": "repo:file:2c7f776c23231b53:tests_test_canon_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cli_output_deterministic",
+          "target": "repo:file:6f4c03b053013bea:ilc_core_cli_canon_cli_py"
+        }
+      ],
+      "notes": "Support invariant for deterministic canon verification CLI output."
+    },
+    {
+      "candidate_id": "invariant:canon_cli_rejects_tampered_hash",
+      "direct_reads": [
+        {
+          "path": "tests/test_canon_cli.py",
+          "line_refs": [
+            "60-79"
+          ],
+          "summary": "Test mutates a canon fixture and asserts CLI exits nonzero with Hash mismatch."
+        },
+        {
+          "path": "ilc_core/cli/canon_cli.py",
+          "line_refs": [
+            "16-29"
+          ],
+          "summary": "CLI delegates to verify_canon_state and returns failure exit code when report ok is false."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_cli_rejects_tampered_hash REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:2c7f776c23231b53:tests_test_canon_cli_py REGRESSES invariant:canon_cli_rejects_tampered_hash"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cli_rejects_tampered_hash",
+          "target": "repo:file:2c7f776c23231b53:tests_test_canon_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cli_rejects_tampered_hash",
+          "target": "repo:file:6f4c03b053013bea:ilc_core_cli_canon_cli_py"
+        }
+      ],
+      "notes": "Support invariant for tamper rejection in canon verification."
+    },
+    {
+      "candidate_id": "invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module",
+      "direct_reads": [
+        {
+          "path": "tests/test_cli_error_output_standardization_guardrail.py",
+          "line_refs": [
+            "9-18",
+            "21-36"
+          ],
+          "summary": "Tests require shared _cli_error exports and verify canon_cluster_a_replay_proof imports emit_cli_error instead of defining a local function."
+        },
+        {
+          "path": "ilc_core/cli/_cli_error.py",
+          "line_refs": [
+            "1-39"
+          ],
+          "summary": "Shared helper builds structured CLI error payloads and emits deterministic JSON before exiting."
+        },
+        {
+          "path": "ilc_core/cli/canon_cluster_a_replay_proof.py",
+          "line_refs": [
+            "20-25",
+            "55-73",
+            "169-200"
+          ],
+          "summary": "Replay proof CLI imports shared error helpers and uses them for file/schema/input-source errors."
+        }
+      ],
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:f99726ef223dd7bd:tests_test_cli_error_output_standardization_guardrail_py REGRESSES invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module"
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module",
+          "target": "repo:file:f99726ef223dd7bd:tests_test_cli_error_output_standardization_guardrail_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module",
+          "target": "repo:file:b998f5f0d56d609c:ilc_core_cli_cli_error_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module",
+          "target": "repo:file:9aae5d044ff900d9:ilc_core_cli_canon_cluster_a_replay_proof_py"
+        }
+      ],
+      "notes": "Support invariant for standardized CLI error behavior in the canon replay proof CLI."
+    }
+  ],
+  "entry_count": 10,
+  "lmdb_application": {
+    "accepted_edge_count": 28,
+    "accepted_node_count": 3,
+    "dangling_edge_count_after": 0,
+    "edge_count_after": 86224,
+    "edge_count_before_batch": 86190,
+    "edge_rejection_count": 0,
+    "file_registration_edge_count": 6,
+    "file_registration_node_count": 3,
+    "lmdb_path": "out/genesis_base_graph_v0.4_unified.lmdb",
+    "metadata_key": "fix63b_batch002_direct_source_audit",
+    "node_count_after": 16352,
+    "node_count_before_batch": 16349,
+    "safe_writer_phase": "1545p-Fix63b-batch002",
+    "status": "PASS"
+  },
+  "lmdb_mutation_recommendation": "applied_via_atlas_lmdb_safe_writer",
+  "phase": "1545p-Fix63b",
+  "source_problem": "Fix63 and Fix63a left many invariant support classifications backed by STATUS.md evidence. Batch 002 replaces proxy evidence with direct source/test/spec reads for the next ten confirmed_support_stub invariants.",
+  "status": "applied_to_unified_lmdb"
+}
