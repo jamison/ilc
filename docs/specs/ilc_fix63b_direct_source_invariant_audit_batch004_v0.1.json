@@ -1,0 +1,604 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch004",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-102"
+          ],
+          "path": "tests/test_phase_1136a_genesis_morphogenic_hypergraph_atlas.py",
+          "summary": "The test validates the curated seed path, generated crawl/star-map metadata, and generated artifact reproducibility checks."
+        },
+        {
+          "line_refs": [
+            "1-62"
+          ],
+          "path": "docs/phases/phase_1136a_genesis_morphogenic_hypergraph_atlas_walkthrough.md",
+          "summary": "The walkthrough records the curated seed as hand-edited authority source and generated out files as reproducible products."
+        },
+        {
+          "line_refs": [
+            "1-81"
+          ],
+          "path": "tests/test_phase_1149_atlas_tier2_patch.py",
+          "summary": "The test validates v0.2 curated seed handling, accepted ADR presence, pending signing posture, and immutability of signed v0.1."
+        },
+        {
+          "line_refs": [
+            "1-61"
+          ],
+          "path": "docs/phases/phase_1149_atlas_tier2_curated_seed_patch_walkthrough.md",
+          "summary": "The walkthrough records v0.2 candidate generation and preserves signed v0.1 immutability."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible REFERENCES_AUTHORITY policy:formal_publication_gate_required",
+        "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22"
+      ],
+      "notes": "This invariant records atlas candidate-generation reproducibility and authority-source separation. It is support trace, not independent Genesis authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible",
+          "target": "repo:file:434aa6338cd814f1:tests_test_phase_1136a_genesis_morphogenic_hypergraph_atlas_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible",
+          "target": "repo:file:7ff9d3e3b3281379:docs_phases_phase_1136a_genesis_morphogenic_hypergraph_atlas_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible",
+          "target": "repo:file:9af804c63ff80d40:tests_test_phase_1149_atlas_tier2_patch_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible",
+          "target": "repo:file:c1470642206f0e56:docs_phases_phase_1149_atlas_tier2_curated_seed_patch_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-13"
+          ],
+          "path": "tests/test_data_center_ballast.py",
+          "summary": "The test asserts the ballast simulation improves or preserves ILC utilization relative to baseline."
+        },
+        {
+          "line_refs": [
+            "1-48"
+          ],
+          "path": "tests/test_data_center_controller.py",
+          "summary": "The controller test checks subprocess output and non-degradation of reported utilization."
+        },
+        {
+          "line_refs": [
+            "1-240"
+          ],
+          "path": "simulations/data_center_ballast.py",
+          "summary": "The simulation models CPU utilization, target utilization, Decimal ECU budget, ballast wallet behavior, and summary metrics without protocol activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline REFERENCES_AUTHORITY adr:0012_ecu_ilc_graph_coupling_anti_reflexivity",
+        "repo:file:d79647f520d5316b:tests_test_data_center_ballast_py REGRESSES invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline"
+      ],
+      "notes": "This is simulation evidence for an ILC utilization hypothesis. It is not production economics or settlement authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline",
+          "target": "repo:file:d79647f520d5316b:tests_test_data_center_ballast_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline",
+          "target": "repo:file:e8dfe23e6a03ffe3:tests_test_data_center_controller_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline",
+          "target": "repo:file:c9c8b7375e1848ae:simulations_data_center_ballast_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-187"
+          ],
+          "path": "ilc_core/exceptions.py",
+          "summary": "The runtime file defines the centralized ILC domain exception hierarchy, including GenesisAccrualGovernorError and backward-compatible base classes."
+        },
+        {
+          "line_refs": [
+            "1-57"
+          ],
+          "path": "tests/test_domain_exception_hierarchy_guardrail.py",
+          "summary": "The tests assert hierarchy shape and backward-compatible imports from legacy modules."
+        },
+        {
+          "line_refs": [
+            "1-123"
+          ],
+          "path": "docs/phases/phase_0989_g8_constitution_cluster_a_domain_exception_hierarchy_foundation_walkthrough.md",
+          "summary": "The walkthrough records the Phase 989 migration, compatibility objective, changed files, and verification results."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable REFERENCES_AUTHORITY policy:formal_publication_gate_required",
+        "repo:file:6308c2f36ec74d70:tests_test_domain_exception_hierarchy_guardrail_py REGRESSES invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable"
+      ],
+      "notes": "This is a code-contract invariant for exception semantics and compatibility. It should evidence the runtime, test, and phase record.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable",
+          "target": "repo:file:233a7c074d23e42a:ilc_core_exceptions_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable",
+          "target": "repo:file:6308c2f36ec74d70:tests_test_domain_exception_hierarchy_guardrail_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable",
+          "target": "repo:file:f690092e443add8c:docs_phases_phase_0989_g8_constitution_cluster_a_domain_exception_hierarchy_foundation_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:ecu_aware_decimal_staking_strategy",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-50"
+          ],
+          "path": "tests/test_agent_strategy.py",
+          "summary": "The tests assert stake selection respects the ECU fee, wallet cap, and stake deduction on successful claim mining."
+        },
+        {
+          "line_refs": [
+            "1-60"
+          ],
+          "path": "tests/test_agent_auto_strategy.py",
+          "summary": "The tests assert auto-mining spends Decimal wallet stake and high-potential agents stake at least as much as low-potential agents."
+        },
+        {
+          "line_refs": [
+            "38-90",
+            "111-218"
+          ],
+          "path": "ilc_core/agent.py",
+          "summary": "The agent runtime normalizes Decimal balances, queries ECU task fees, caps stake by wallet, deducts chosen stake, and delegates auto-mining through mine_thought."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:ecu_aware_decimal_staking_strategy REFERENCES_AUTHORITY adr:0012_ecu_ilc_graph_coupling_anti_reflexivity",
+        "repo:file:1d21a34429486b39:tests_test_agent_strategy_py REGRESSES invariant:ecu_aware_decimal_staking_strategy"
+      ],
+      "notes": "This is runtime/test support for ECU-aware stake accounting. ADR-0012 authority is already present; no GOVERNS edge is added.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ecu_aware_decimal_staking_strategy",
+          "target": "repo:file:1d21a34429486b39:tests_test_agent_strategy_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ecu_aware_decimal_staking_strategy",
+          "target": "repo:file:74bd5f36af57ceaf:tests_test_agent_auto_strategy_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ecu_aware_decimal_staking_strategy",
+          "target": "repo:file:3e127f532920d852:ilc_core_agent_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:edge_path_lineage_only_link_path_semantic_relations",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-28"
+          ],
+          "path": "tests/test_edge_link_boundary_phase_1007.py",
+          "summary": "The test asserts graph edge paths accept lineage types only while link paths retain semantic relation types such as supports."
+        },
+        {
+          "line_refs": [
+            "1-85"
+          ],
+          "path": "docs/phases/phase_0065f_walkthrough.md",
+          "summary": "The walkthrough records doc-link path repair and MCP naming consistency, giving historical context for path-vs-semantic relation separation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:edge_path_lineage_only_link_path_semantic_relations REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:0eb679facd6ba25d:tests_test_edge_link_boundary_phase_1007_py REGRESSES invariant:edge_path_lineage_only_link_path_semantic_relations"
+      ],
+      "notes": "This is a graph/link API boundary invariant. It supports lineage semantics under ADR-0037 rather than creating independent authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:edge_path_lineage_only_link_path_semantic_relations",
+          "target": "repo:file:0eb679facd6ba25d:tests_test_edge_link_boundary_phase_1007_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:edge_path_lineage_only_link_path_semantic_relations",
+          "target": "repo:file:d44d9b1a051d763c:docs_phases_phase_0065f_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:edge_recipe_canonicalization_scope_distinguishes_attestation_provenance",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-122"
+          ],
+          "path": "tests/test_phase_1387h_edge_recipe_canonicalization.py",
+          "summary": "The tests assert complete decomposition recipes, ATTESTATION/PROVENANCE primitive sharing, distinct scopes, and GOVERNS/CONSTRAINS merge-candidate preservation."
+        },
+        {
+          "line_refs": [
+            "1-139"
+          ],
+          "path": "docs/phases/phase_1387h_edge_recipe_canonicalization_walkthrough.md",
+          "summary": "The walkthrough records canonical recipes for ATTESTATION and PROVENANCE, scope distinction, and recipe-gap closure without runtime or CDL mutation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:edge_recipe_canonicalization_scope_distinguishes_attestation_provenance REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:edge_recipe_canonicalization_scope_distinguishes_attestation_provenance REFERENCES_AUTHORITY cdl:084_provenance_chain_attribution"
+      ],
+      "notes": "This invariant supports edge-recipe auditability and scope distinction. It evidences graph-optimization artifacts, not a standalone authority node.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:edge_recipe_canonicalization_scope_distinguishes_attestation_provenance",
+          "target": "repo:file:6f4d655426d76e60:tests_test_phase_1387h_edge_recipe_canonicalization_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:edge_recipe_canonicalization_scope_distinguishes_attestation_provenance",
+          "target": "repo:file:2d6be613cc5b9638:docs_phases_phase_1387h_edge_recipe_canonicalization_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-176"
+          ],
+          "path": "tests/test_freshness_gate_phase_217.py",
+          "summary": "The tests assert Genesis exemption at 1.0, monotonic bounded decay, fail-closed invalid input handling, deterministic governance override, and diversity interaction."
+        },
+        {
+          "line_refs": [
+            "1-88"
+          ],
+          "path": "ilc_core/analysis/freshness_gate.py",
+          "summary": "The implementation validates the policy/input contract, preserves Genesis exemption, enforces safety floor, and computes bounded exponential freshness decay."
+        },
+        {
+          "line_refs": [
+            "1-158"
+          ],
+          "path": "tests/test_phase_598_freshness_gate_provenance_and_genesis_exemption_closure.py",
+          "summary": "The Phase 598 tests assert the closure document, inherited dependencies, forbidden interpretations, and no unauthorized ADR/CDL/ilc_core mutation."
+        },
+        {
+          "line_refs": [
+            "1-142"
+          ],
+          "path": "docs/specs/ilc_freshness_gate_provenance_and_genesis_exemption_closure_598_v0.1.md",
+          "summary": "The closure ratifies the current freshness posture, Genesis exemption, decay-vs-reuse boundary, and explicit non-governance/non-tokenomics interpretations."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:e675474018aed46b:tests_test_freshness_gate_phase_217_py REGRESSES invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction"
+      ],
+      "notes": "This invariant is stronger than a pure test stub because Phase 598 canonically dispositions the Genesis freshness exemption, but it remains a support trace under existing authority references.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction",
+          "target": "repo:file:e675474018aed46b:tests_test_freshness_gate_phase_217_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction",
+          "target": "repo:file:6092fd5117bb6903:ilc_core_analysis_freshness_gate_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction",
+          "target": "repo:file:a693031e693c6d14:tests_test_phase_598_freshness_gate_provenance_and_genesis_exemption_closure_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction",
+          "target": "repo:file:8bc926bc36103a85:docs_specs_ilc_freshness_gate_provenance_and_genesis_exemption_closure_598_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-89"
+          ],
+          "path": "tests/test_phase_1250_gap14_adapter_extraction.py",
+          "summary": "The tests assert exported tokens, pure logic import boundary, structural store interfaces, primitive registry preservation, and LMDB adapter behavior."
+        },
+        {
+          "line_refs": [
+            "1-128"
+          ],
+          "path": "docs/phases/phase_1250_gap14_adapter_extraction_walkthrough.md",
+          "summary": "The walkthrough records extraction of storage/node-runtime dependencies behind protocol interfaces and concrete storage adapters."
+        },
+        {
+          "line_refs": [
+            "1-78"
+          ],
+          "path": "ilc_core/storage/truth_primitive_graph_lmdb_adapter.py",
+          "summary": "The concrete CDL-075 LMDB adapter provides node/edge persistence and deterministic iteration for truth primitive graph storage."
+        },
+        {
+          "line_refs": [
+            "1-240"
+          ],
+          "path": "ilc_core/epistemic/truth_primitive_graph_store.py",
+          "summary": "The pure graph write path defines CDL-075 node records, CID derivation, edge resolution, and store-contract write behavior."
+        },
+        {
+          "line_refs": [
+            "1-20"
+          ],
+          "path": "ilc_core/protocol/primitive_type_registry.py",
+          "summary": "The primitive registry keeps primitive-type constants in pure protocol space rather than importing node runtime."
+        },
+        {
+          "line_refs": [
+            "1-107"
+          ],
+          "path": "ilc_core/protocol/harness_interfaces.py",
+          "summary": "The protocol harness interfaces define structural persistence contracts for admission, receipt, wallet, and truth primitive graph stores."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter REFERENCES_AUTHORITY cdl:074_truth_primitive_runtime",
+        "repo:file:a9c1adea05f89248:tests_test_phase_1250_gap14_adapter_extraction_py REGRESSES invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter"
+      ],
+      "notes": "This is a package-boundary and storage-adapter invariant for CDL-074/CDL-075 truth primitive graph persistence. It evidences concrete files and remains support trace.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+          "target": "repo:file:a9c1adea05f89248:tests_test_phase_1250_gap14_adapter_extraction_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+          "target": "repo:file:b018e4e73ac8d1b0:docs_phases_phase_1250_gap14_adapter_extraction_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+          "target": "repo:file:bc248107c047f750:ilc_core_storage_truth_primitive_graph_lmdb_adapter_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+          "target": "repo:file:c4519d2c49233ae4:ilc_core_epistemic_truth_primitive_graph_store_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+          "target": "repo:file:9ce953447831924e:ilc_core_protocol_primitive_type_registry_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+          "target": "repo:file:92fc53a47a8f2b54:ilc_core_protocol_harness_interfaces_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-51"
+          ],
+          "path": "tests/test_phase_1151_composability_audit.py",
+          "summary": "The tests assert the audit artifact parses, covers all 32 signed Genesis nodes, uses allowed projection classes, and carries authority_source_ref for every entry."
+        },
+        {
+          "line_refs": [
+            "1-37"
+          ],
+          "path": "tests/test_phase_1160_claim_composition_projection_build.py",
+          "summary": "The tests assert projection shape, authority-source coverage, and allowed edge reasons for the generated claim-composition projection."
+        },
+        {
+          "line_refs": [
+            "1-247"
+          ],
+          "path": "tools/build_genesis_claim_composition_projection.py",
+          "summary": "The tool derives deterministic projection vertices and edges from the signed star map, audit, and plan while enforcing authority_source_ref and allowed reasons."
+        },
+        {
+          "line_refs": [
+            "1-223"
+          ],
+          "path": "docs/specs/ilc_genesis_claim_composition_projection_plan_1146_v0.1.md",
+          "summary": "The plan separates raw authority graph from claim-composition graph and requires deterministic projection classes, authority-source references, and typed edge reasons."
+        },
+        {
+          "line_refs": [
+            "1-111"
+          ],
+          "path": "docs/phases/phase_1160_claim_composition_projection_build_walkthrough.md",
+          "summary": "The walkthrough records tool build, projection artifact shape, authority-source coverage, and signed v0.1 immutability."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file:60f18fd5256cbe7f:tests_test_phase_1151_composability_audit_py CLASSIFIED_BY invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract"
+      ],
+      "notes": "This is a Genesis projection/composability support invariant. It is authority-rooted by existing ADR/policy references and now gains source-level evidence.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+          "target": "repo:file:60f18fd5256cbe7f:tests_test_phase_1151_composability_audit_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+          "target": "repo:file:314ce4ff10206655:tests_test_phase_1160_claim_composition_projection_build_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+          "target": "repo:file:4e5adc9f49f27aa2:tools_build_genesis_claim_composition_projection_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+          "target": "repo:file:701923ba3102825f:docs_specs_ilc_genesis_claim_composition_projection_plan_1146_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+          "target": "repo:file:5a523fd96e544f20:docs_phases_phase_1160_claim_composition_projection_build_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-89"
+          ],
+          "path": "tests/test_genesis_accrual_governor_phase_218.py",
+          "summary": "The tests assert locked constants, hard-cap zero behavior, bounded monotonic taper, fail-closed validation, and deterministic trajectory simulation."
+        },
+        {
+          "line_refs": [
+            "1-41"
+          ],
+          "path": "tests/test_genesis_accrual_governor_gate_phase_218.py",
+          "summary": "The gate tests assert dry-run contract, help/unknown-argument behavior, and successful execution of the Genesis accrual governor gate."
+        },
+        {
+          "line_refs": [
+            "1-211"
+          ],
+          "path": "ilc_core/analysis/genesis_accrual_governor.py",
+          "summary": "The implementation locks theta_hard and theta_soft, validates policies/signals, computes taper, and simulates deterministic cumulative trajectories."
+        },
+        {
+          "line_refs": [
+            "1-75"
+          ],
+          "path": "docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md",
+          "summary": "The contract defines locked constants, policy/signal validation, taper function, trajectory simulation, and non-goals."
+        },
+        {
+          "line_refs": [
+            "1-112"
+          ],
+          "path": "docs/phases/phase_0218_g8_constitution_cluster_a_ra12_genesis_accrual_governor_simulation_and_cap_trajectory_checks_walkthrough.md",
+          "summary": "The walkthrough records Phase 218 scope, locked constants, hard-cap evidence, fail-closed tests, and runtime non-mutation boundary."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_accrual_governor_phase_218_gate_cli_contract REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:genesis_accrual_governor_phase_218_gate_cli_contract REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_accrual_governor_phase_218_gate_cli_contract DERIVED_FROM phase:218",
+        "repo:file:3433616435caad1b:tests_test_genesis_accrual_governor_gate_phase_218_py REGRESSES invariant:genesis_accrual_governor_phase_218_gate_cli_contract"
+      ],
+      "notes": "This is a gate/runtime-contract invariant for the Phase 218 Genesis accrual governor simulation surface. It remains support trace and does not activate payout integration.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+          "target": "repo:file:6893b150e59d4bd2:tests_test_genesis_accrual_governor_phase_218_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+          "target": "repo:file:3433616435caad1b:tests_test_genesis_accrual_governor_gate_phase_218_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+          "target": "repo:file:98c8070def431d14:ilc_core_analysis_genesis_accrual_governor_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+          "target": "repo:file:fa7cb00f5f3a79d1:docs_specs_ilc_genesis_accrual_governor_contract_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+          "target": "repo:file:3a1e2ba028824062:docs_phases_phase_0218_g8_constitution_cluster_a_ra12_genesis_accrual_governor_simulation_and_cap_trajectory_checks_walkthrough_md"
+        }
+      ]
+    }
+  ],
+  "phase": "1545p-Fix63b-batch004",
+  "recommended_edge_count": 37,
+  "source_queue": "docs/specs/ilc_fix63_manual_governs_audit_ledger_v0.1.json",
+  "lmdb_application": {
+    "accepted_edge_count": 37,
+    "dangling_edges_after": 0,
+    "edge_id_debt_after": 0,
+    "final_lmdb_edge_count": 86303,
+    "final_lmdb_node_count": 16358,
+    "registered_phase_files": [
+      "docs/specs/ilc_fix63b_direct_source_invariant_audit_batch004_v0.1.json",
+      "docs/specs/ilc_fix63b_direct_source_invariant_audit_batch004_report_v0.1.md"
+    ],
+    "rejected_edge_count": 0,
+    "skipped_edge_count": 0
+  },
+  "status": "applied_to_unified_lmdb"
+}

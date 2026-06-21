@@ -1,0 +1,324 @@
+{
+  "batch_id": "fix63b_batch_001",
+  "batch_size": 10,
+  "direct_read_status": "complete_for_batch",
+  "entries": [
+    {
+      "candidate_id": "invariant:adr0020_acceptance_scope_boundary_and_unsigned_v02_candidate_presence",
+      "direct_read_files": [
+        "docs/adr/ADR_0020_Knowledge_Node_First_Design_Principle.md:3",
+        "docs/adr/ADR_0020_Knowledge_Node_First_Design_Principle.md:8",
+        "docs/adr/ADR_0020_Knowledge_Node_First_Design_Principle.md:11",
+        "docs/adr/ADR_0020_Knowledge_Node_First_Design_Principle.md:48",
+        "docs/adr/ADR_0020_Knowledge_Node_First_Design_Principle.md:99",
+        "tests/test_phase_1157_adr_0020_acceptance.py:11",
+        "tests/test_phase_1157_adr_0020_acceptance.py:17",
+        "tests/test_phase_1157_adr_0020_acceptance.py:25"
+      ],
+      "disposition": "authority_trace_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "adr:0020_knowledge_node_first_design_principle GOVERNS invariant:adr0020_acceptance_scope_boundary_and_unsigned_v02_candidate_presence",
+        "invariant:adr0020_acceptance_scope_boundary_and_unsigned_v02_candidate_presence REFERENCES_AUTHORITY adr:0020_knowledge_node_first_design_principle",
+        "repo:file:3efdb94a85003baa:tests_test_phase_1157_adr_0020_acceptance_py REGRESSES invariant:adr0020_acceptance_scope_boundary_and_unsigned_v02_candidate_presence"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1 despite direct ADR and test sources existing.",
+      "notes": "ADR-0020 is Accepted and the Phase 1157 test directly checks the accepted status, scoped boundary, and unsigned v0.2 candidate presence.",
+      "recommended_new_edges": []
+    },
+    {
+      "candidate_id": "invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary",
+      "direct_read_files": [
+        "docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md:28",
+        "docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md:44",
+        "docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md:184",
+        "docs/phases/phase_1173_adr_0036_0037_acceptance_walkthrough.md:138",
+        "docs/phases/phase_1173_adr_0036_0037_acceptance_walkthrough.md:147",
+        "tests/test_phase_1173_adr_0036_0037_acceptance.py:88",
+        "tests/test_phase_1173_adr_0036_0037_acceptance.py:100",
+        "tests/test_phase_1173_adr_0036_0037_acceptance.py:118"
+      ],
+      "disposition": "dual_adr_authority_trace_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "adr:0036_operational_release_key_genesis_binding GOVERNS invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary",
+        "invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary REFERENCES_AUTHORITY adr:0036_operational_release_key_genesis_binding",
+        "invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:03a777ad0ec5391a:tests_test_phase_1173_adr_0036_0037_acceptance_py REGRESSES invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1 and attached only ADR-0036 as GOVERNS, even though ADR-0037 supplies the lineage and PEC authority.",
+      "notes": "Phase 1173 accepted both ADRs. ADR-0037 is the governing source for lineage, PEC, and equivalence domains; ADR-0036 remains the release-key scope authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "source": "adr:0037_genesis_canonical_lineage_contract",
+          "target": "invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:adr0036_release_key_draft_status_lineage_separation_and_release_key_chain",
+      "direct_read_files": [
+        "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md:32",
+        "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md:51",
+        "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md:77",
+        "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md:94",
+        "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md:111",
+        "docs/phases/phase_1173_adr_0036_0037_acceptance_walkthrough.md:147",
+        "tests/test_phase_1173_adr_0036_0037_acceptance.py:58",
+        "tests/test_phase_1173_adr_0036_0037_acceptance.py:118"
+      ],
+      "disposition": "authority_trace_confirmed_with_stale_body_note",
+      "existing_lmdb_edges_confirmed": [
+        "adr:0036_operational_release_key_genesis_binding GOVERNS invariant:adr0036_release_key_draft_status_lineage_separation_and_release_key_chain",
+        "invariant:adr0036_release_key_draft_status_lineage_separation_and_release_key_chain REFERENCES_AUTHORITY adr:0036_operational_release_key_genesis_binding",
+        "repo:file:2b8ad5a61d46c853:tests_test_phase_1159_adr_0036_release_key_draft_py REGRESSES invariant:adr0036_release_key_draft_status_lineage_separation_and_release_key_chain"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct read found stale Proposed prose in ADR-0036, but Phase 1173 later accepted ADR-0036 and governs the current status.",
+      "notes": "Current status should follow Phase 1173 and the ADR header/test, not older body text. ADR-0036 governs operational release-key binding while ADR-0037 governs lineage semantics.",
+      "recommended_new_edges": []
+    },
+    {
+      "candidate_id": "invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice",
+      "direct_read_files": [
+        "ilc_core/graph/agent_graph_projection_runtime.py:20",
+        "ilc_core/graph/agent_graph_projection_runtime.py:72",
+        "ilc_core/graph/agent_graph_projection_runtime.py:121",
+        "ilc_core/graph/agent_graph_projection_runtime.py:192",
+        "ilc_core/graph/agent_graph_projection_runtime.py:229",
+        "tests/test_phase_1229_agent_graph_projection_runtime.py:47",
+        "tests/test_phase_1229_agent_graph_projection_runtime.py:56",
+        "tests/test_phase_1229_agent_graph_projection_runtime.py:90",
+        "tests/test_phase_1229_agent_graph_projection_runtime.py:151"
+      ],
+      "disposition": "runtime_support_invariant_with_authority_trace",
+      "existing_lmdb_edges_confirmed": [
+        "invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:f354f4728b2fda50:tests_test_phase_1229_agent_graph_projection_runtime_py REGRESSES invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct runtime and test files exist.",
+      "notes": "This is a runtime support invariant, not an independent constitutional authority node. Existing references to ADR-0009, ADR-0037, and genesis-authority sunset are sufficient.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice",
+          "target": "repo:file:6656b42f7d36eeba:ilc_core_graph_agent_graph_projection_runtime_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes",
+      "direct_read_files": [
+        "ilc_core/agent.py:238",
+        "ilc_core/consensus/engine.py:361",
+        "ilc_core/epistemic/refutation_runtime.py:41",
+        "ilc_core/epistemic/refutation_runtime.py:70",
+        "docs/specs/ilc_cdl_052_epistemic_runtime_part_2_handoff_478_v0.1.md:9",
+        "tests/test_phase_478_cdl_052_epistemic_runtime_part_2.py:92",
+        "tests/test_contradiction_war.py:29",
+        "docs/specs/ilc_cdl_083_h_con_02_panel_quorum_ejected_stake_opening_1103_v0.1.md:95",
+        "docs/specs/ilc_constitutional_decision_log_v0.1.md:85",
+        "docs/specs/ilc_constitutional_decision_log_v0.1.md:114"
+      ],
+      "disposition": "runtime_refutation_invariant_needs_authority_references_not_full_governs",
+      "existing_lmdb_edges_confirmed": [
+        "invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "repo:file:5650d7e64297791c:tests_test_contradiction_war_py REGRESSES invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct source evidence shows a legacy contradiction test and later bounded CDL-052/CDL-083 governance surfaces.",
+      "notes": "The exact legacy wording is broader than current ratified scope. CDL-052 governs epistemic refutation handling; CDL-083 governs upheld REFUTATION ECU flow. Do not claim a single current rule that both zeroes stake and decanonicalizes unless later direct source confirms it.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "source": "invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes",
+          "target": "cdl:052_epistemic_evaluation_contract"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "source": "invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes",
+          "target": "cdl:083_panel_quorum_refutation"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes",
+          "target": "repo:file:28af1a1450558c1d:ilc_core_epistemic_refutation_runtime_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:application_numbers_addendum_does_not_clear_public_path_or_authorize_public_rc",
+      "direct_read_files": [
+        "docs/specs/ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0.1.md:1",
+        "docs/specs/ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0.1.md:11",
+        "docs/specs/ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0.1.md:37",
+        "docs/specs/ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0.1.md:56",
+        "ilc_core/rc/patent_application_numbers_status.py:67",
+        "ilc_core/rc/patent_application_numbers_status.py:91",
+        "ilc_core/rc/patent_application_numbers_status.py:140",
+        "tests/test_patent_application_numbers_status.py:58",
+        "tests/test_patent_application_numbers_status.py:73",
+        "tests/test_patent_application_numbers_status.py:115"
+      ],
+      "disposition": "negative_public_path_invariant_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "invariant:application_numbers_addendum_does_not_clear_public_path_or_authorize_public_rc REFERENCES_AUTHORITY policy:formal_publication_gate_required",
+        "repo:file:7af0e332ac24729c:tests_test_patent_application_numbers_status_py NEGATIVE_ASSERTS invariant:application_numbers_addendum_does_not_clear_public_path_or_authorize_public_rc"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct addendum, runtime, and test evidence exists.",
+      "notes": "This remains a non-claim/public-path-blocked invariant. No GOVERNS edge is needed beyond the existing publication-gate authority trace.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:application_numbers_addendum_does_not_clear_public_path_or_authorize_public_rc",
+          "target": "repo:file:74bd5a7460609a5c:docs_specs_ilc_us_provisional_patent_application_numbers_received_2026_06_10_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:application_numbers_addendum_does_not_clear_public_path_or_authorize_public_rc",
+          "target": "repo:file:44004b97af9d3ad6:ilc_core_rc_patent_application_numbers_status_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:atlas_g_004_005_high_authority_classification_dependency_bridge_and_package_profile_edges",
+      "direct_read_files": [
+        "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.md:3",
+        "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.md:14",
+        "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.md:29",
+        "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.md:39",
+        "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.md:48",
+        "tests/test_phase_1254_atlas_g_004_005_graph_bridge.py:46",
+        "tests/test_phase_1254_atlas_g_004_005_graph_bridge.py:95",
+        "tests/test_phase_1254_atlas_g_004_005_graph_bridge.py:131",
+        "docs/phases/phase_1254_atlas_g_004_005_graph_bridge_walkthrough.md:8",
+        "docs/phases/phase_1254_atlas_g_004_005_graph_bridge_walkthrough.md:98"
+      ],
+      "disposition": "unsigned_support_invariant_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "invariant:atlas_g_004_005_high_authority_classification_dependency_bridge_and_package_profile_edges REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file:f8a9cd7f7be10017:tests_test_phase_1254_atlas_g_004_005_graph_bridge_py REGRESSES invariant:atlas_g_004_005_high_authority_classification_dependency_bridge_and_package_profile_edges"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct Phase 1254 artifact, test, and walkthrough evidence exists.",
+      "notes": "The source explicitly says unsigned planning/validation artifact and non-authorization boundary. Keep support-only; do not add authority-bearing GOVERNS.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:atlas_g_004_005_high_authority_classification_dependency_bridge_and_package_profile_edges",
+          "target": "repo:file:442d6b62bb4e3854:docs_specs_ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:atlas_g_004_005_high_authority_classification_dependency_bridge_and_package_profile_edges",
+          "target": "repo:file:68eb9a7f3f3c1ee8:docs_phases_phase_1254_atlas_g_004_005_graph_bridge_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished",
+      "direct_read_files": [
+        "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md:28",
+        "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md:30",
+        "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md:31",
+        "docs/sims/sim_spectral_02/genesis_node_candidate_decision_log_v0.1.md:34",
+        "tools/crawl_genesis_node_candidates.py:53",
+        "tools/crawl_genesis_node_candidates.py:71",
+        "tools/crawl_genesis_node_candidates.py:400",
+        "tools/crawl_genesis_node_candidates.py:1926",
+        "tests/test_genesis_node_candidate_crawl.py:114",
+        "tests/test_genesis_node_candidate_crawl.py:141"
+      ],
+      "disposition": "semantic_edge_role_invariant_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished REFERENCES_AUTHORITY cdl:084_provenance_chain_attribution",
+        "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished REFERENCES_AUTHORITY cdl:074_truth_primitive_runtime"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct decision-log, crawler, and test evidence exists.",
+      "notes": "This is a real typed-edge semantics invariant. It should remain tied to CDL-074 truth primitive runtime and CDL-084 provenance semantics.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished",
+          "target": "repo:file:9dfb478af42c3571:docs_sims_sim_spectral_02_genesis_node_candidate_decision_log_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished",
+          "target": "repo:file:89742d590b749d1a:tests_test_genesis_node_candidate_crawl_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished",
+          "target": "repo:file:4617f23ca60f3ac6:tools_crawl_genesis_node_candidates_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:auto_mine_uses_decimal_wallet_stake_accounting",
+      "direct_read_files": [
+        "ilc_core/agent.py:166",
+        "ilc_core/agent.py:203",
+        "ilc_core/agent.py:206",
+        "ilc_core/agent.py:238",
+        "tests/test_agent_auto_strategy.py:19",
+        "tests/test_agent_auto_strategy.py:36"
+      ],
+      "disposition": "runtime_economic_safety_invariant_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "invariant:auto_mine_uses_decimal_wallet_stake_accounting REFERENCES_AUTHORITY adr:0012_ecu_ilc_graph_coupling_anti_reflexivity",
+        "repo:file:74bd5f36af57ceaf:tests_test_agent_auto_strategy_py REGRESSES invariant:auto_mine_uses_decimal_wallet_stake_accounting"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1. Direct runtime and test evidence exists.",
+      "notes": "The runtime uses Decimal wallet/stake accounting for auto-mine decisions. Existing ADR-0012 authority trace is sufficient.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:auto_mine_uses_decimal_wallet_stake_accounting",
+          "target": "repo:file:3e127f532920d852:ilc_core_agent_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion",
+      "direct_read_files": [
+        "docs/sims/sim_spectral_05/branchial_projection_design_1170_v0.1.md:47",
+        "docs/sims/sim_spectral_05/branchial_projection_design_1170_v0.1.md:87",
+        "docs/sims/sim_spectral_05/branchial_projection_design_1170_v0.1.md:99",
+        "tests/test_phase_1170_branchial_projection_build.py:26",
+        "tests/test_phase_1170_branchial_projection_build.py:57",
+        "tests/test_phase_1170_branchial_projection_build.py:78",
+        "tools/build_genesis_branchial_claim_projection.py:1",
+        "tools/build_genesis_branchial_claim_projection.py:76",
+        "tools/build_genesis_branchial_claim_projection.py:96"
+      ],
+      "disposition": "authority_and_evidence_trace_confirmed",
+      "existing_lmdb_edges_confirmed": [
+        "adr:0037_genesis_canonical_lineage_contract GOVERNS invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion",
+        "invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion EVIDENCES repo:file:0791489a98e5d2bf:docs_sims_sim_spectral_05_branchial_projection_design_1170_v0_1_md",
+        "invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion EVIDENCES repo:file:fda74a63bb02249a:tests_test_phase_1170_branchial_projection_build_py",
+        "invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion EVIDENCES repo:file:06d04af8f00c0c7d:tools_build_genesis_branchial_claim_projection_py"
+      ],
+      "fix63a_evidence_problem": "Fix63a ledger used docs/phases/STATUS.md:1, but LMDB already contains the correct ADR-0037 and evidence edges.",
+      "notes": "No graph mutation needed; the ledger evidence should be corrected to cite the direct design/test/tool sources.",
+      "recommended_new_edges": []
+    }
+  ],
+  "entry_count": 10,
+  "lmdb_application": {
+    "accepted_edge_count": 13,
+    "accepted_file_registration_edge_count": 6,
+    "accepted_file_registration_node_count": 3,
+    "lmdb_path": "out/genesis_base_graph_v0.4_unified.lmdb",
+    "post_counts": {
+      "edges": 86190,
+      "nodes": 16349
+    },
+    "rejected_edge_count": 0,
+    "status": "PASS",
+    "writer": "AtlasLmdbSafeWriter"
+  },
+  "lmdb_mutation_recommendation": "applied_recommended_new_edges_only",
+  "phase": "1545p-Fix63b",
+  "source_problem": "Fix63/Fix63a classified these support-stub invariant rows with weak STATUS.md evidence. Batch 001 direct-read replaces that weak evidence with source-file citations and identifies only incremental edges not already present in LMDB.",
+  "status": "batch001_direct_read_complete"
+}

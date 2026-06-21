@@ -1,0 +1,617 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch005",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-96"
+          ],
+          "path": "tests/test_genesis_accrual_governor_phase_218.py",
+          "summary": "The test verifies the hard theta cap, soft theta taper, alpha decay, monotonic cap behavior, and fail-closed handling for invalid inputs."
+        },
+        {
+          "line_refs": [
+            "1-103"
+          ],
+          "path": "tests/test_genesis_accrual_governor_gate_phase_218.py",
+          "summary": "The gate test verifies CLI contract behavior, canonical JSON output, and default non-activation posture."
+        },
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "ilc_core/analysis/genesis_accrual_governor.py",
+          "summary": "The runtime implements Decimal-only theta constants, hard cap enforcement, soft taper, provenance decay, input validation, and non-runtime simulation output."
+        },
+        {
+          "line_refs": [
+            "1-177"
+          ],
+          "path": "docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md",
+          "summary": "The contract records the governor constants, purpose, non-activation boundary, fail-closed behavior, and authority posture."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:6893b150e59d4bd2:tests_test_genesis_accrual_governor_phase_218_py REGRESSES invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs"
+      ],
+      "notes": "This is a governed simulation/control invariant. Existing authority references are already present; direct evidence should point to the test, runtime, and contract files.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs",
+          "target": "repo:file:6893b150e59d4bd2:tests_test_genesis_accrual_governor_phase_218_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs",
+          "target": "repo:file:3433616435caad1b:tests_test_genesis_accrual_governor_gate_phase_218_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs",
+          "target": "repo:file:98c8070def431d14:ilc_core_analysis_genesis_accrual_governor_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs",
+          "target": "repo:file:fa7cb00f5f3a79d1:docs_specs_ilc_genesis_accrual_governor_contract_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-94"
+          ],
+          "path": "docs/specs/ilc_genesis_intent_attestation_and_init_authority_map_v0.1.md",
+          "summary": "The attestation spec explicitly records retrospective Genesis intent, pending signature posture, no history rewrite, and no settlement/validator/economic runtime effect."
+        },
+        {
+          "line_refs": [
+            "1-105"
+          ],
+          "path": "docs/antigravity_tasks/antigravity_prompt__phase_1142_atlas_tier1_curated_seed_patch.md",
+          "summary": "The prompt requires ex-post-facto attestation, forbids timestamp/history rewriting, and separates authority edges from provenance."
+        },
+        {
+          "line_refs": [
+            "1-92"
+          ],
+          "path": "tests/test_phase_1142_atlas_tier1_genesis_attestation.py",
+          "summary": "The test checks attestation metadata, pending signature posture, curated seed edges, authority traceability, and stale-reference fail-closed behavior."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1142_atlas_tier1_genesis_attestation_walkthrough.md",
+          "summary": "The walkthrough records the retrospective attestation, non-signing boundary, and authority traceability result."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:53cadb59adacc590:docs_specs_ilc_genesis_intent_attestation_and_init_authority_map_v0_1_md CLASSIFIED_BY invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+        "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect REFERENCES_AUTHORITY policy:genesis_authority_sunset"
+      ],
+      "notes": "The invariant is a non-claim boundary around a Genesis attestation artifact. It should remain support trace with source evidence, not become independent authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+          "target": "repo:file:53cadb59adacc590:docs_specs_ilc_genesis_intent_attestation_and_init_authority_map_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+          "target": "repo:file:c91fd4a52b806e2b:docs_antigravity_tasks_antigravity_prompt_phase_1142_atlas_tier1_curated_seed_patch_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+          "target": "repo:file:8849036cc395f2ba:tests_test_phase_1142_atlas_tier1_genesis_attestation_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+          "target": "repo:file:bfa26be6a7cfc067:docs_phases_phase_1142_atlas_tier1_genesis_attestation_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-260"
+          ],
+          "path": "tests/test_genesis_node_candidate_crawl.py",
+          "summary": "The crawl tests cover top-level sections, genesis-attested star-map metadata, operator/provenance edge semantics, review ledgers, and star-map projection/index outputs."
+        },
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "tools/crawl_genesis_node_candidates.py",
+          "summary": "The crawler defines genesis-attested candidate metadata, core star-map projection logic, truth primitive nodes, proposed edge types, and deterministic crawl outputs."
+        },
+        {
+          "line_refs": [
+            "1-105"
+          ],
+          "path": "docs/antigravity_tasks/antigravity_prompt__phase_1142_atlas_tier1_curated_seed_patch.md",
+          "summary": "The prompt requires attestation-node authority edges and stale-reference safeguards for the curated seed."
+        },
+        {
+          "line_refs": [
+            "1-92"
+          ],
+          "path": "tests/test_phase_1142_atlas_tier1_genesis_attestation.py",
+          "summary": "The test validates the attestation node, star-map overrides, authority traceability gate, and crawler stale-reference behavior."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1142_atlas_tier1_genesis_attestation_walkthrough.md",
+          "summary": "The walkthrough records the 32-node star-map regeneration and attestation-root authority model."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards EVIDENCES artifact:genesis_intent_attestation_init_authority_map",
+        "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards DERIVED_FROM repo:file_ref:docs_antigravity_tasks_antigravity_prompt__phase_1142_atlas_tier1_curated_seed_patch_md",
+        "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards EVIDENCES sim:GENESIS-COMPILE-01",
+        "repo:file:8849036cc395f2ba:tests_test_phase_1142_atlas_tier1_genesis_attestation_py REGRESSES invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards"
+      ],
+      "notes": "This invariant supports the attestation/crawler implementation contract. It is source-evidenced support trace; no new authority edge is needed.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+          "target": "repo:file:89742d590b749d1a:tests_test_genesis_node_candidate_crawl_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+          "target": "repo:file:4617f23ca60f3ac6:tools_crawl_genesis_node_candidates_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+          "target": "repo:file:c91fd4a52b806e2b:docs_antigravity_tasks_antigravity_prompt_phase_1142_atlas_tier1_curated_seed_patch_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+          "target": "repo:file:8849036cc395f2ba:tests_test_phase_1142_atlas_tier1_genesis_attestation_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+          "target": "repo:file:bfa26be6a7cfc067:docs_phases_phase_1142_atlas_tier1_genesis_attestation_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-105"
+          ],
+          "path": "docs/antigravity_tasks/antigravity_prompt__phase_1142_atlas_tier1_curated_seed_patch.md",
+          "summary": "The prompt explicitly separates actual authority structure from traversal metrics and forbids PROVENANCE as an authority substitute."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1142_atlas_tier1_genesis_attestation_walkthrough.md",
+          "summary": "The walkthrough reports authority-traceable core nodes separately from basis-reachable core nodes."
+        },
+        {
+          "line_refs": [
+            "1-180"
+          ],
+          "path": "docs/antigravity_tasks/antigravity_prompt__phase_1143_genesis_compile_checkpoint_1.md",
+          "summary": "The checkpoint prompt requires separate reporting of authority_traceability and derivation_reachability."
+        },
+        {
+          "line_refs": [
+            "1-70"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_checkpoint_1_1143_v0.1.md",
+          "summary": "The checkpoint report records 31/32 authority traceability against 17/32 basis reachability and treats that distinction as the gate basis."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_authority_traceability_separate_from_derivation_reachability REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:8849036cc395f2ba:tests_test_phase_1142_atlas_tier1_genesis_attestation_py CLASSIFIED_BY invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+        "repo:file:bfa26be6a7cfc067:docs_phases_phase_1142_atlas_tier1_genesis_attestation_walkthrough_md CLASSIFIED_BY invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+        "invariant:genesis_authority_traceability_separate_from_derivation_reachability REFERENCES_AUTHORITY policy:genesis_authority_sunset"
+      ],
+      "notes": "This is a methodological boundary invariant. It is already authority-referenced and should be strengthened with direct source evidence.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+          "target": "repo:file:c91fd4a52b806e2b:docs_antigravity_tasks_antigravity_prompt_phase_1142_atlas_tier1_curated_seed_patch_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+          "target": "repo:file:bfa26be6a7cfc067:docs_phases_phase_1142_atlas_tier1_genesis_attestation_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+          "target": "repo:file:6f9cd23cb1d6bff5:docs_antigravity_tasks_antigravity_prompt_phase_1143_genesis_compile_checkpoint_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+          "target": "repo:file:d3c108112ec297f9:docs_sims_sim_spectral_02_genesis_compile_checkpoint_1_1143_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-180"
+          ],
+          "path": "docs/antigravity_tasks/antigravity_prompt__phase_1143_genesis_compile_checkpoint_1.md",
+          "summary": "The prompt defines checkpoint scope, signed star-map inputs, authority-traceability gates, and reachability-boundary reporting."
+        },
+        {
+          "line_refs": [
+            "1-102"
+          ],
+          "path": "tests/test_phase_1143_genesis_compile_checkpoint_1.py",
+          "summary": "The test asserts report token/pass, diagnostic authority traceability, 32-node signed star-map scope, and documented legacy basis-reachability gap."
+        },
+        {
+          "line_refs": [
+            "1-70"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_checkpoint_1_1143_v0.1.md",
+          "summary": "The report records Checkpoint #1 PASS with 31/32 authority traceability and 17/32 derivation reachability."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1143_genesis_compile_checkpoint_1_walkthrough.md",
+          "summary": "The walkthrough records the pass decision, no fake edges, and S1 topology baseline approval."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary EVIDENCES repo:file:e643d0ee9a5e3083:tests_test_phase_1143_genesis_compile_checkpoint_1_py",
+        "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary EVIDENCES repo:file:d3c108112ec297f9:docs_sims_sim_spectral_02_genesis_compile_checkpoint_1_1143_v0_1_md",
+        "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary CLASSIFIED_BY sim:GENESIS-COMPILE-01",
+        "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22"
+      ],
+      "notes": "The invariant is a checkpoint evidence boundary, not a new governing node. Direct prompt and walkthrough evidence fills the weak-support gap.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary",
+          "target": "repo:file:6f9cd23cb1d6bff5:docs_antigravity_tasks_antigravity_prompt_phase_1143_genesis_compile_checkpoint_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary",
+          "target": "repo:file:f832e4b4d3908f65:docs_phases_phase_1143_genesis_compile_checkpoint_1_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-102"
+          ],
+          "path": "tests/test_phase_1143_genesis_compile_checkpoint_1.py",
+          "summary": "The test requires authority traceability pass, 31 traceable core nodes, and explicit preservation of the basis-reachability gap."
+        },
+        {
+          "line_refs": [
+            "1-70"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_checkpoint_1_1143_v0.1.md",
+          "summary": "The checkpoint report records the authority-vs-basis split and interprets the basis gap as diagnostic rather than failure."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1143_genesis_compile_checkpoint_1_walkthrough.md",
+          "summary": "The walkthrough records the explicit gate pass while documenting the old basis reachability shortfall."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file:e643d0ee9a5e3083:tests_test_phase_1143_genesis_compile_checkpoint_1_py CLASSIFIED_BY invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented"
+      ],
+      "notes": "This invariant is already rooted by authority references. The corrective action is direct source evidence for the checkpoint pass and documented gap.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented",
+          "target": "repo:file:e643d0ee9a5e3083:tests_test_phase_1143_genesis_compile_checkpoint_1_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented",
+          "target": "repo:file:d3c108112ec297f9:docs_sims_sim_spectral_02_genesis_compile_checkpoint_1_1143_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented",
+          "target": "repo:file:f832e4b4d3908f65:docs_phases_phase_1143_genesis_compile_checkpoint_1_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-70"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_checkpoint_1_1143_v0.1.md",
+          "summary": "The report records partial source coverage alongside the authority traceability pass."
+        },
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "tools/genesis_compile_coverage_diagnostic.py",
+          "summary": "The diagnostic computes source coverage, basis reachability, authority traceability, edge recipes, and verdict fields separately."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_genesis_compile_coverage_diagnostic.py",
+          "summary": "The test verifies partial result reporting, authority-trace metrics, edge recipe counts, and human-readable report tokens."
+        },
+        {
+          "line_refs": [
+            "1-45"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_coverage_diagnostic_v0.1.md",
+          "summary": "The diagnostic report records PARTIAL_WITH_STRUCTURAL_GAPS, 31/32 authority traceability, and partial source-file coverage."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass REFERENCES_AUTHORITY policy:formal_publication_gate_required",
+        "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "repo:file:d3c108112ec297f9:docs_sims_sim_spectral_02_genesis_compile_checkpoint_1_1143_v0_1_md CLASSIFIED_BY invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+        "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass REFERENCES_AUTHORITY policy:genesis_authority_sunset"
+      ],
+      "notes": "This is a diagnostic-coverage invariant. It does not need GOVERNS; it needs direct evidence links to the diagnostic tool, tests, and reports.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+          "target": "repo:file:d3c108112ec297f9:docs_sims_sim_spectral_02_genesis_compile_checkpoint_1_1143_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+          "target": "repo:file:96719e6bccf20605:tools_genesis_compile_coverage_diagnostic_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+          "target": "repo:file:bb938c349fcc63a0:tests_test_genesis_compile_coverage_diagnostic_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+          "target": "repo:file:394e986540094dfd:docs_sims_sim_spectral_02_genesis_compile_coverage_diagnostic_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-90"
+          ],
+          "path": "tests/test_phase_1150_genesis_compile_checkpoint_2.py",
+          "summary": "The test asserts v0.2 authority traceability 36/36, signed v0.1 immutability, and legacy failure preservation."
+        },
+        {
+          "line_refs": [
+            "1-45"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_checkpoint_2_1150_v0.1.md",
+          "summary": "The report records Checkpoint #2 PASS while preserving the old legacy basis failure as expected diagnostic output."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1150_genesis_compile_checkpoint_2_walkthrough.md",
+          "summary": "The walkthrough records the candidate v0.2 pass, 36/36 authority traceability, and signed v0.1 preservation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file:fa211d0054e2514e:tests_test_phase_1150_genesis_compile_checkpoint_2_py CLASSIFIED_BY invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary"
+      ],
+      "notes": "This is a candidate-checkpoint boundary invariant. It should remain support trace with direct checkpoint evidence.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary",
+          "target": "repo:file:fa211d0054e2514e:tests_test_phase_1150_genesis_compile_checkpoint_2_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary",
+          "target": "repo:file:d9d97ef63a143571:docs_sims_sim_spectral_02_genesis_compile_checkpoint_2_1150_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary",
+          "target": "repo:file:3da1e6459e305da3:docs_phases_phase_1150_genesis_compile_checkpoint_2_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-90"
+          ],
+          "path": "tests/test_phase_1150_genesis_compile_checkpoint_2.py",
+          "summary": "The test explicitly checks the expected legacy FAIL_CORE_INADEQUATE result while accepting the authority-traceability pass."
+        },
+        {
+          "line_refs": [
+            "1-45"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_checkpoint_2_1150_v0.1.md",
+          "summary": "The report states the legacy tool verdict remains fail because basis/source explainability is incomplete."
+        },
+        {
+          "line_refs": [
+            "1-65"
+          ],
+          "path": "docs/phases/phase_1150_genesis_compile_checkpoint_2_walkthrough.md",
+          "summary": "The walkthrough treats the legacy basis failure as expected and not the gate used for the candidate authority-trace pass."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "repo:file_ref:docs_phases_phase_1150_genesis_compile_checkpoint_2_walkthrough_md CLASSIFIED_BY invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected"
+      ],
+      "notes": "This invariant documents an expected diagnostic limitation. It is support evidence, not an authority claim.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected",
+          "target": "repo:file:fa211d0054e2514e:tests_test_phase_1150_genesis_compile_checkpoint_2_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected",
+          "target": "repo:file:d9d97ef63a143571:docs_sims_sim_spectral_02_genesis_compile_checkpoint_2_1150_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected",
+          "target": "repo:file:3da1e6459e305da3:docs_phases_phase_1150_genesis_compile_checkpoint_2_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "tools/genesis_compile_coverage_diagnostic.py",
+          "summary": "The tool computes coverage metrics, basis reachability, authority traceability, edge recipe counts, and writes the diagnostic report."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_genesis_compile_coverage_diagnostic.py",
+          "summary": "The test verifies partial result reporting, edge recipe counts, missing recipe zero count, and human-readable report tokens."
+        },
+        {
+          "line_refs": [
+            "1-45"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_coverage_diagnostic_v0.1.md",
+          "summary": "The report records PARTIAL_WITH_STRUCTURAL_GAPS and 25 proposed edge instances with zero missing decomposition recipes."
+        },
+        {
+          "line_refs": [
+            "1-45"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_compile_coverage_diagnostic_v0.2_candidate.md",
+          "summary": "The candidate report records full authority traceability for 49 core nodes and 47 proposed edge dependencies with zero missing decomposition recipes."
+        },
+        {
+          "line_refs": [
+            "1-100"
+          ],
+          "path": "tests/test_phase_1387f_graph_structure_analysis.py",
+          "summary": "The graph-structure test validates authority trace depth, expected recipe groups, missing recipe closure, and orphan handling."
+        },
+        {
+          "line_refs": [
+            "1-80"
+          ],
+          "path": "docs/phases/phase_1387f_graph_structure_analysis_walkthrough.md",
+          "summary": "The walkthrough records the structural analysis, duplicate recipe group, missing recipe queue, and no runtime/CDL mutation boundary."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts EVIDENCES repo:file:96719e6bccf20605:tools_genesis_compile_coverage_diagnostic_py",
+        "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts EVIDENCES repo:file:bb938c349fcc63a0:tests_test_genesis_compile_coverage_diagnostic_py",
+        "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts EVIDENCES repo:file:394e986540094dfd:docs_sims_sim_spectral_02_genesis_compile_coverage_diagnostic_v0_1_md",
+        "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts CLASSIFIED_BY sim:GENESIS-COMPILE-01"
+      ],
+      "notes": "This invariant is a diagnostic-result and edge-recipe-count record. It should retain support scope and gain direct evidence for the candidate report and later graph-structure analysis.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts",
+          "target": "repo:file:6e2e8bb12810c04a:docs_sims_sim_spectral_02_genesis_compile_coverage_diagnostic_v0_2_candidate_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts",
+          "target": "repo:file:0c9918d289e0c14a:tests_test_phase_1387f_graph_structure_analysis_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts",
+          "target": "repo:file:8849a07824ef503e:docs_phases_phase_1387f_graph_structure_analysis_walkthrough_md"
+        }
+      ]
+    }
+  ],
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "notes": "Batch005 replaces weak STATUS.md-style evidence for Genesis attestation and compile-checkpoint invariants with direct source/test/spec/report evidence. No new GOVERNS edges are recommended.",
+  "recommended_edge_count": 35,
+  "recommended_edge_types": {
+    "EVIDENCES": 35
+  },
+  "row_range": "41-50",
+  "source_ledger": "docs/specs/ilc_fix63_manual_governs_audit_ledger_v0.1.json"
+}
