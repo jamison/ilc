@@ -384,6 +384,7 @@ Graph.d3Force("charge").strength(-25);"""
     position: fixed; top: 10px; right: 10px; z-index: 10;
     background: rgba(10,10,30,0.85); border: 1px solid #333;
     border-radius: 6px; padding: 10px; font-size: 11px;
+    width: 260px; box-sizing: border-box;
   }}
   #controls label {{ color: #aaa; display: block; margin: 4px 0; cursor: pointer; }}
   button {{
@@ -421,7 +422,7 @@ Graph.d3Force("charge").strength(-25);"""
   <label><input type="checkbox" id="chk-contains" checked> CONTAINS_* edges</label>
   <label><input type="checkbox" id="chk-imports" checked> IMPORTS_MODULE edges</label>
   <div id="node-count-display" style="font-size:11px;color:#aaa;margin-top:6px"></div>
-  <div id="debug-log" style="font-size:9px;color:#666;margin-top:3px;word-break:break-all"></div>
+  <div id="debug-log" style="font-size:9px;color:#666;margin-top:3px;word-break:break-all;overflow-wrap:break-word;white-space:normal"></div>
   <div style="margin-top:6px">
     <button id="btn-reset">Reset camera</button>
     <button id="btn-center">Centre on Node 0</button>
@@ -433,6 +434,14 @@ Graph.d3Force("charge").strength(-25);"""
     <button id="btn-trace">Trace mode: OFF</button>
     <button id="btn-clear-trace">Clear trace</button>
     <div id="trace-info" style="font-size:10px;color:#ff6644;margin-top:4px"></div>
+  </div>
+  <div style="margin-top:8px;border-top:1px solid #333;padding-top:8px">
+    <div style="font-size:11px;color:#888;margin-bottom:4px">Hops from Genesis</div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <input type="range" id="hop-slider" min="0" max="30" value="0" style="flex:1;accent-color:#ff6644;">
+      <span id="hop-label" style="font-size:11px;color:#ff9944;min-width:28px">All</span>
+    </div>
+    <div id="hop-stats" style="font-size:10px;color:#666;margin-top:3px"></div>
   </div>
 </div>
 
@@ -457,6 +466,43 @@ const SPRITE_BY_GROUP = {sprite_by_group_json};
 // ── build lookup ──────────────────────────────────────────────────────────
 const nodeMap = {{}};
 RAW_NODES.forEach(n => {{ nodeMap[n.id] = n; }});
+
+// ── BFS hop depth from NODE0 (full graph, all links) ──────────────────────
+// NODE_HOP[id] = distance in hops from NODE0.
+// Nodes unreachable from NODE0 get Infinity.
+const NODE_HOP = {{}};
+(function computeHops() {{
+  const adj = {{}};
+  RAW_LINKS.forEach(l => {{
+    const s = l.source, t = l.target;
+    if (!adj[s]) adj[s] = [];
+    if (!adj[t]) adj[t] = [];
+    adj[s].push(t);
+    adj[t].push(s);
+  }});
+  const queue = [NODE0_ID];
+  NODE_HOP[NODE0_ID] = 0;
+  while (queue.length) {{
+    const curr = queue.shift();
+    (adj[curr] || []).forEach(nb => {{
+      if (NODE_HOP[nb] === undefined) {{
+        NODE_HOP[nb] = NODE_HOP[curr] + 1;
+        queue.push(nb);
+      }}
+    }});
+  }}
+  RAW_NODES.forEach(n => {{
+    if (NODE_HOP[n.id] === undefined) NODE_HOP[n.id] = Infinity;
+  }});
+  const maxHop = Math.max(...Object.values(NODE_HOP).filter(v => isFinite(v)));
+  document.getElementById("hop-slider").max = maxHop;
+}})();
+
+// ── BFS_ORDER: nodes sorted by hop depth, used by install-demo mode ───────
+const BFS_ORDER = RAW_NODES
+  .slice()
+  .sort((a, b) => (NODE_HOP[a.id] ?? Infinity) - (NODE_HOP[b.id] ?? Infinity))
+  .map(n => n.id);
 
 // ── Genesis trace (BFS) ───────────────────────────────────────────────────
 // Adjacency is rebuilt from the CURRENTLY VISIBLE links on every refresh so
@@ -605,6 +651,7 @@ let showClassified      = true;
 let showSourceTree      = true;
 let showContains        = true;
 let showImports         = true;
+let hopDepth            = 0;  // 0 = all; N = show only nodes ≤ N hops from NODE0
 
 // hiddenGroups: per-group toggle; nodes in this set are fully invisible.
 const hiddenGroups = new Set();
@@ -623,6 +670,8 @@ function _isAuthority(n) {{
 function nodeVisible(n) {{
   // Per-group checkbox: fully hidden
   if (hiddenGroups.has(n.group)) return false;
+  // Hop-depth filter: show only nodes within N hops of NODE0
+  if (hopDepth > 0 && (NODE_HOP[n.id] ?? Infinity) > hopDepth) return false;
   // Tier-based hide filters
   if (hideGenerated && n.tier === "generated_evidence_material") return false;
   if (hidePrivateHistory && n.tier === "genesis_private_historical_material") return false;
@@ -854,6 +903,23 @@ document.getElementById("chk-imports").addEventListener("change", e => {{
   showImports = e.target.checked; refresh();
 }});
 
+document.getElementById("hop-slider").addEventListener("input", e => {{
+  hopDepth = parseInt(e.target.value, 10);
+  const lbl = document.getElementById("hop-label");
+  const stats = document.getElementById("hop-stats");
+  if (hopDepth === 0) {{
+    lbl.textContent = "All";
+    stats.textContent = "";
+  }} else {{
+    lbl.textContent = hopDepth;
+    // Count nodes at exactly this hop and cumulatively
+    const atThisHop  = RAW_NODES.filter(n => NODE_HOP[n.id] === hopDepth).length;
+    const cumulative = RAW_NODES.filter(n => (NODE_HOP[n.id] ?? Infinity) <= hopDepth).length;
+    stats.textContent = `Layer ${{hopDepth}}: ${{atThisHop}} new · ${{cumulative}} total`;
+  }}
+  refresh();
+}});
+
 let paused = false;
 document.getElementById("btn-pause").addEventListener("click", () => {{
   paused = !paused;
@@ -944,6 +1010,794 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
 """
 
 
+def _install_html(nodes: list, links: list) -> str:
+    """Homoiconic install demo — phased bootstrap with terminal + 3D graph + info panel."""
+    nodes_json = json.dumps(nodes, separators=(",", ":"))
+    links_json = json.dumps(links, separators=(",", ":"))
+    prefix_colors_js = _prefix_colors_js()
+    edge_colors_js = "const EDGE_COLORS = " + json.dumps(EDGE_COLORS, separators=(",", ":")) + ";"
+    total_nodes = len(nodes)
+    total_links = len(links)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ILC — Homoiconic Install</title>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    background: #000; color: #eee; font-family: monospace;
+    overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+  }}
+
+  /* ── header ────────────────────────────────────────────────────────────── */
+  #header {{
+    display: flex; align-items: center; gap: 14px;
+    padding: 7px 14px; background: #060608;
+    border-bottom: 1px solid #181828; flex-shrink: 0;
+  }}
+  #header h1 {{ font-size: 12px; color: #ff9944; letter-spacing: 2px;
+                text-transform: uppercase; white-space: nowrap; }}
+  #progress-wrap {{ flex: 1; }}
+  #progress-bar-bg {{
+    background: #0d0d18; border: 1px solid #222; border-radius: 3px;
+    height: 7px; overflow: hidden;
+  }}
+  #progress-bar-fill {{
+    background: linear-gradient(90deg, #ff2244, #ff9944);
+    height: 100%; width: 0%; transition: width 0.1s linear;
+  }}
+  #progress-label {{ font-size: 10px; color: #666; margin-top: 3px; }}
+  #header-stats {{ font-size: 10px; color: #444; white-space: nowrap; }}
+
+  /* ── main row ───────────────────────────────────────────────────────────── */
+  #main {{ display: flex; flex: 1; overflow: hidden; }}
+
+  /* ── left column ────────────────────────────────────────────────────────── */
+  #left-col {{
+    width: 290px; flex-shrink: 0; display: flex; flex-direction: column;
+    border-right: 1px solid #111;
+  }}
+
+  /* invite row */
+  #invite-row {{
+    padding: 8px; gap: 5px; display: flex; flex-shrink: 0;
+    border-bottom: 1px solid #111; background: #030306;
+  }}
+  #invite-input {{
+    flex: 1; background: #0a0a14; border: 1px solid #222;
+    color: #00ff41; font-family: monospace; font-size: 11px;
+    padding: 5px 7px; border-radius: 3px; outline: none;
+  }}
+  #invite-input::placeholder {{ color: #1a2a1a; }}
+  #invite-input:focus {{ border-color: #ff6644; box-shadow: 0 0 0 1px #ff664433; }}
+  #invite-btn {{
+    background: #cc3333; border: none; color: #fff;
+    font-family: monospace; font-size: 11px;
+    padding: 5px 10px; border-radius: 3px; cursor: pointer;
+  }}
+  #invite-btn:hover {{ background: #ff4444; }}
+  #invite-btn:disabled {{ background: #331111; color: #555; cursor: default; }}
+
+  /* terminal — compact height */
+  #terminal-log {{
+    height: 200px; flex-shrink: 0; overflow-y: auto;
+    padding: 6px 9px; font-size: 10px; line-height: 1.6;
+    background: #010104; border-bottom: 1px solid #111;
+  }}
+  .tl-sys  {{ color: #3a3a4a; font-style: italic; }}
+  .tl-h0   {{ color: #ffffff; font-weight: bold; }}
+  .tl-h1   {{ color: #ff4444; }}
+  .tl-h2   {{ color: #ff9900; }}
+  .tl-h3   {{ color: #ffcc00; }}
+  .tl-h4   {{ color: #44ff88; }}
+  .tl-h5   {{ color: #44ccff; }}
+  .tl-deep {{ color: #00aa55; }}
+  .tl-done {{ color: #ff9944; font-weight: bold; }}
+  .tl-bridge {{ color: #888866; }}
+
+  /* speed / controls */
+  #left-controls {{
+    padding: 7px 10px; border-bottom: 1px solid #111;
+    flex-shrink: 0; background: #020208;
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  }}
+  .ctrl-btn {{
+    background: #0d0d1a; border: 1px solid #222; color: #999;
+    font-size: 10px; font-family: monospace; padding: 3px 8px;
+    border-radius: 3px; cursor: pointer;
+  }}
+  .ctrl-btn:hover {{ background: #1a1a33; color: #fff; }}
+  #speed-row {{ display: flex; align-items: center; gap: 5px;
+                font-size: 10px; color: #555; }}
+  #speed-slider {{ width: 72px; accent-color: #ff6644; }}
+
+  /* phase-2 choice panel */
+  #phase2-panel {{
+    display: none; padding: 10px; flex-shrink: 0;
+    background: #05050e; border-bottom: 1px solid #1a1a2a;
+    animation: fadein 0.5s ease;
+  }}
+  @keyframes fadein {{ from {{ opacity:0 }} to {{ opacity:1 }} }}
+  #phase2-panel h3 {{ font-size: 11px; color: #ff9944; margin-bottom: 6px; }}
+  #phase2-panel p  {{ font-size: 10px; color: #555; margin-bottom: 8px; line-height: 1.5; }}
+  .choice-btn {{
+    display: block; width: 100%; background: #0a0a1e; border: 1px solid #2a2a3a;
+    color: #bbb; font-family: monospace; font-size: 11px;
+    padding: 7px 10px; border-radius: 4px; cursor: pointer;
+    text-align: left; margin-bottom: 5px; transition: background 0.15s;
+  }}
+  .choice-btn:hover {{ background: #1a1a44; border-color: #ff6644; color: #fff; }}
+  .choice-btn .sub {{ font-size: 9px; color: #444; display: block; margin-top: 2px; }}
+
+  /* hop slider */
+  #hop-section {{
+    padding: 7px 10px; flex-shrink: 0;
+    border-bottom: 1px solid #111; background: #020208;
+  }}
+  #hop-section label {{ font-size: 10px; color: #444; display: block; margin-bottom: 3px; }}
+  #hop-row {{ display: flex; align-items: center; gap: 6px; }}
+  #hop-slider {{ flex: 1; accent-color: #ff6644; }}
+  #hop-label {{ font-size: 11px; color: #ff9944; min-width: 26px; }}
+  #hop-stats {{ font-size: 9px; color: #333; margin-top: 2px; }}
+
+  /* edge + view filters */
+  #edge-filters {{
+    flex: 1; overflow-y: auto; padding: 8px 10px;
+    background: #010104; font-size: 10px;
+  }}
+  #edge-filters .section-hd {{ color: #333; margin: 6px 0 3px; letter-spacing: 1px; }}
+  #edge-filters label {{
+    display: flex; align-items: center; gap: 5px;
+    color: #666; margin: 2px 0; cursor: pointer;
+  }}
+  #edge-filters label:hover {{ color: #aaa; }}
+
+  /* ── graph ──────────────────────────────────────────────────────────────── */
+  #graph-pane {{ flex: 1; position: relative; overflow: hidden; }}
+  #graph {{ position: absolute; inset: 0; }}
+  #vis-overlay {{
+    position: absolute; bottom: 8px; right: 8px; z-index: 5;
+    background: rgba(0,0,0,0.55); border: 1px solid #1a1a2a;
+    border-radius: 3px; padding: 4px 8px; font-size: 10px; color: #444;
+  }}
+
+  /* ── right column ────────────────────────────────────────────────────────── */
+  #right-col {{
+    width: 240px; flex-shrink: 0; display: flex; flex-direction: column;
+    border-left: 1px solid #111; background: #020208; overflow-y: auto;
+  }}
+  /* legend first */
+  #legend-section {{ padding: 10px; border-bottom: 1px solid #111; flex-shrink: 0; }}
+  #legend-section h3 {{ font-size: 10px; color: #444; margin-bottom: 6px;
+                        letter-spacing: 1px; text-transform: uppercase; }}
+  .leg-row {{
+    display: flex; align-items: center; gap: 5px;
+    margin: 2px 0; cursor: pointer; user-select: none;
+  }}
+  .leg-dot {{ width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }}
+  .leg-label {{ font-size: 10px; color: #666; flex: 1; }}
+  .leg-count {{ font-size: 10px; color: #333; }}
+  /* node info below legend */
+  #node-info {{ padding: 10px; flex-shrink: 0; }}
+  #node-info h3 {{ font-size: 10px; color: #444; margin-bottom: 6px;
+                   letter-spacing: 1px; text-transform: uppercase; }}
+  .nf {{ font-size: 10px; color: #444; margin: 3px 0; word-break: break-all; line-height: 1.4; }}
+  .nf b {{ color: #666; }}
+  .nf-id {{ color: #888; }}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>ILC — Homoiconic Install</h1>
+  <div id="progress-wrap">
+    <div id="progress-bar-bg"><div id="progress-bar-fill"></div></div>
+    <div id="progress-label">Paste your invite command and press ENTER</div>
+  </div>
+  <div id="header-stats">{total_nodes:,} nodes · {total_links:,} edges</div>
+</div>
+
+<div id="main">
+
+  <!-- ── LEFT COLUMN ─────────────────────────────────────────────────────── -->
+  <div id="left-col">
+
+    <div id="invite-row">
+      <input id="invite-input" type="text"
+             placeholder="Paste your invite command and press ENTER">
+      <button id="invite-btn">ENTER</button>
+    </div>
+
+    <div id="terminal-log">
+      <div class="tl-sys">$ _ Waiting for invite command…</div>
+    </div>
+
+    <div id="left-controls">
+      <button class="ctrl-btn" id="btn-pause">Pause</button>
+      <button class="ctrl-btn" id="btn-restart">Restart</button>
+      <div id="speed-row">
+        Speed:
+        <input type="range" id="speed-slider" min="1" max="300" value="50">
+        <span id="speed-label">50/s</span>
+      </div>
+    </div>
+
+    <div id="phase2-panel">
+      <h3>Genesis core installed.</h3>
+      <p>Choose how to expand your local graph:</p>
+      <button class="choice-btn" id="btn-full-genesis">
+        Load full Genesis graph
+        <span class="sub">All {total_nodes:,} nodes — specs, runtime, evidence, tools.
+For contributors, auditors, and developers.</span>
+      </button>
+      <button class="choice-btn" id="btn-invite-chain">
+        Invite chain only
+        <span class="sub">Genesis core + attestation path from your inviting agent.
+Minimal footprint for participation.</span>
+      </button>
+    </div>
+
+    <div id="hop-section">
+      <label>Hops from Genesis (filter view)</label>
+      <div id="hop-row">
+        <input type="range" id="hop-slider" min="0" max="30" value="0">
+        <span id="hop-label">All</span>
+      </div>
+      <div id="hop-stats"></div>
+    </div>
+
+    <div id="edge-filters">
+      <div class="section-hd">Edge types</div>
+      <label><input type="checkbox" id="chk-governs" checked> GOVERNS</label>
+      <label><input type="checkbox" id="chk-attestation" checked> ATTESTATION</label>
+      <label><input type="checkbox" id="chk-refs" checked> REFERENCES_AUTHORITY</label>
+      <label><input type="checkbox" id="chk-implements" checked> IMPLEMENTS / TESTS</label>
+      <label><input type="checkbox" id="chk-derived" checked> DERIVED_FROM / EVIDENCES</label>
+      <label><input type="checkbox" id="chk-source-tree" checked> SOURCE_TREE_MEMBER</label>
+      <label><input type="checkbox" id="chk-contains" checked> CONTAINS_*</label>
+      <label><input type="checkbox" id="chk-imports" checked> IMPORTS_MODULE</label>
+      <div class="section-hd" style="margin-top:8px">View</div>
+      <label><input type="checkbox" id="chk-hide-private" checked> Hide private history</label>
+      <label><input type="checkbox" id="chk-spotlight"> Spotlight authority</label>
+    </div>
+
+  </div>
+
+  <!-- ── GRAPH ───────────────────────────────────────────────────────────── -->
+  <div id="graph-pane">
+    <div id="graph"></div>
+    <div id="vis-overlay">
+      <span id="vis-count">0</span>n / <span id="vis-edge-count">0</span>e visible
+    </div>
+  </div>
+
+  <!-- ── RIGHT COLUMN ────────────────────────────────────────────────────── -->
+  <div id="right-col">
+
+    <!-- legend first -->
+    <div id="legend-section">
+      <h3>Node Types</h3>
+      <div id="legend"></div>
+    </div>
+
+    <!-- node info below -->
+    <div id="node-info">
+      <h3>Node Info</h3>
+      <div id="nf-body">
+        <div class="nf" style="color:#222">Click any node to inspect it.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/3d-force-graph@1.73.0/dist/3d-force-graph.min.js"></script>
+<script>
+const ALL_NODES = {nodes_json};
+const ALL_LINKS = {links_json};
+const NODE0_ID  = "{NODE0}";
+
+{prefix_colors_js}
+{edge_colors_js}
+
+// ── index ──────────────────────────────────────────────────────────────────
+const nodeMap = {{}};
+ALL_NODES.forEach(n => {{ nodeMap[n.id] = n; }});
+
+// ── BFS hop depth + order (undirected, full graph) ─────────────────────────
+const NODE_HOP = {{}};
+const BFS_ORDER = [];
+
+(function computeBFS() {{
+  const adj = {{}};
+  ALL_LINKS.forEach(l => {{
+    if (!adj[l.source]) adj[l.source] = [];
+    if (!adj[l.target]) adj[l.target] = [];
+    adj[l.source].push(l.target);
+    adj[l.target].push(l.source);
+  }});
+  const queue = [NODE0_ID];
+  NODE_HOP[NODE0_ID] = 0;
+  while (queue.length) {{
+    const curr = queue.shift();
+    BFS_ORDER.push(curr);
+    (adj[curr] || []).forEach(nb => {{
+      if (NODE_HOP[nb] === undefined) {{
+        NODE_HOP[nb] = NODE_HOP[curr] + 1;
+        queue.push(nb);
+      }}
+    }});
+  }}
+  ALL_NODES.forEach(n => {{
+    if (NODE_HOP[n.id] === undefined) {{
+      NODE_HOP[n.id] = Infinity;
+      BFS_ORDER.push(n.id);
+    }}
+  }});
+  const maxHop = Math.max(...Object.values(NODE_HOP).filter(v => isFinite(v)));
+  document.getElementById("hop-slider").max = maxHop;
+}})();
+
+// ── Phase sets ─────────────────────────────────────────────────────────────
+// Phase 1 = authority nodes + bridge nodes (connect ≥2 authority nodes).
+// Adding bridges gives 6,500+ edges instead of 81 — visually rich from the start.
+// Phase 2a = full graph. Phase 2b = invite chain only.
+
+const AUTHORITY_GROUPS = new Set([
+  "truth_primitive","axiom","policy","artifact","genesis_agent",
+  "adr","cdl","ceremony","invariant"
+]);
+
+const AUTH_IDS = new Set(ALL_NODES.filter(n => AUTHORITY_GROUPS.has(n.group)).map(n => n.id));
+
+// Count how many authority neighbors each non-authority node has
+const authNeighborCount = {{}};
+ALL_LINKS.forEach(l => {{
+  const s = l.source, t = l.target;
+  if (AUTH_IDS.has(s) && !AUTH_IDS.has(t)) {{
+    authNeighborCount[t] = (authNeighborCount[t]||0) + 1;
+  }}
+  if (AUTH_IDS.has(t) && !AUTH_IDS.has(s)) {{
+    authNeighborCount[s] = (authNeighborCount[s]||0) + 1;
+  }}
+}});
+const BRIDGE_IDS = new Set(
+  Object.entries(authNeighborCount)
+    .filter(([,cnt]) => cnt >= 2)
+    .map(([id]) => id)
+);
+const PHASE1_IDS = new Set([...AUTH_IDS, ...BRIDGE_IDS]);
+
+const CORE_BFS  = BFS_ORDER.filter(id => PHASE1_IDS.has(id));
+const REST_BFS  = BFS_ORDER.filter(id => !PHASE1_IDS.has(id));
+
+// Invite chain: authority nodes + BFS path to furthest genesis_agent
+function buildInviteChain() {{
+  const agentNodes = ALL_NODES.filter(n => n.group === "genesis_agent")
+    .sort((a,b) => (NODE_HOP[b.id]||0) - (NODE_HOP[a.id]||0));
+  if (!agentNodes.length) return CORE_BFS.slice();
+  const target = agentNodes[0].id;
+  const adj = {{}};
+  ALL_LINKS.forEach(l => {{
+    if (!adj[l.source]) adj[l.source] = [];
+    if (!adj[l.target]) adj[l.target] = [];
+    adj[l.source].push(l.target);
+    adj[l.target].push(l.source);
+  }});
+  const parent = {{ [NODE0_ID]: null }};
+  const queue = [NODE0_ID];
+  let found = false;
+  while (queue.length && !found) {{
+    const curr = queue.shift();
+    for (const nb of (adj[curr]||[])) {{
+      if (nb in parent) continue;
+      parent[nb] = curr;
+      if (nb === target) {{ found = true; break; }}
+      queue.push(nb);
+    }}
+  }}
+  if (!found) return CORE_BFS.slice();
+  const path = [];
+  let node = target;
+  while (node !== null) {{ path.push(node); node = parent[node]; }}
+  path.reverse();
+  const chain = new Set([...PHASE1_IDS, ...path]);
+  return BFS_ORDER.filter(id => chain.has(id));
+}}
+
+// ── filter state ───────────────────────────────────────────────────────────
+let installedIds  = new Set();
+let hopDepth      = 0;
+let spotlightAuth = false;
+let hidePrivate   = true;
+let showGoverns   = true;
+let showAttest    = true;
+let showRefs      = true;
+let showImpl      = true;
+let showDerived   = true;
+let showSrcTree   = true;
+let showContains  = true;
+let showImports   = true;
+const hiddenGroups = new Set(["repo"]);  // repo hidden by default
+
+const CONTAINS_TYPES = new Set(["CONTAINS_FILE","CONTAINS_GROUP","CONTAINS_PARTITION"]);
+
+function nodeVisible(n) {{
+  if (!installedIds.has(n.id)) return false;
+  if (hiddenGroups.has(n.group)) return false;
+  if (hopDepth > 0 && (NODE_HOP[n.id]??Infinity) > hopDepth) return false;
+  if (hidePrivate && n.tier === "genesis_private_historical_material") return false;
+  return true;
+}}
+function linkVisible(l) {{
+  const s = l.source?.id||l.source, t = l.target?.id||l.target;
+  if (!installedIds.has(s)||!installedIds.has(t)) return false;
+  const sm = nodeMap[s], tm = nodeMap[t];
+  if (!sm||!nodeVisible(sm)||!tm||!nodeVisible(tm)) return false;
+  if (spotlightAuth && !AUTHORITY_GROUPS.has(sm.group) && !AUTHORITY_GROUPS.has(tm.group)) return false;
+  if (!showGoverns && l.type==="GOVERNS") return false;
+  if (!showAttest  && l.type==="ATTESTATION") return false;
+  if (!showRefs    && l.type==="REFERENCES_AUTHORITY") return false;
+  if (!showImpl    && (l.type==="IMPLEMENTS"||l.type==="TESTS")) return false;
+  if (!showDerived && (l.type==="DERIVED_FROM"||l.type==="EVIDENCES")) return false;
+  if (!showSrcTree && l.type==="SOURCE_TREE_MEMBER") return false;
+  if (!showContains && CONTAINS_TYPES.has(l.type)) return false;
+  if (!showImports && l.type==="IMPORTS_MODULE") return false;
+  return true;
+}}
+
+// ── NODE0 "OG" canvas sprite ───────────────────────────────────────────────
+// THREE is loaded explicitly above, so it is a guaranteed global here.
+let _ogSprite = null;
+function _makeOGSprite() {{
+  if (_ogSprite) return _ogSprite.clone();
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  // soft glow ring
+  const grad = ctx.createRadialGradient(size/2,size/2,10, size/2,size/2,size/2-2);
+  grad.addColorStop(0, "rgba(255,255,255,0.22)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(size/2,size/2,size/2-2,0,Math.PI*2); ctx.fill();
+  // "OG" text — 30% larger than default NODE0 size
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 44px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("OG", size/2, size/2);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({{ map: tex, depthWrite: false }});
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(38, 38, 1);
+  _ogSprite = sprite;
+  return sprite;
+}}
+
+// ── graph ──────────────────────────────────────────────────────────────────
+const Graph = ForceGraph3D()(document.getElementById("graph"))
+  .backgroundColor("#000000")
+  .nodeId("id")
+  .nodeLabel(n => n.id)
+  .nodeColor(n => {{
+    if (n.id === NODE0_ID) return "#ffffff";
+    if (spotlightAuth && !AUTHORITY_GROUPS.has(n.group)) return "#0a0a18";
+    return n.color;
+  }})
+  .nodeVal(n => n.id === NODE0_ID ? 28 : n.size)
+  .nodeOpacity(0.92)
+  .nodeVisibility(nodeVisible)
+  // Return undefined (not null) for non-NODE0 nodes — undefined = use default sphere.
+  // null would suppress rendering entirely for that node.
+  .nodeThreeObject(n => n.id === NODE0_ID ? _makeOGSprite() : undefined)
+  .nodeThreeObjectExtend(false)
+  .linkColor(l => EDGE_COLORS[l.type]||"#2a2a2a")
+  .linkOpacity(0.65)
+  .linkWidth(l => (l.type==="GOVERNS"||l.type==="ATTESTATION") ? 1.5 : 0.5)
+  .linkVisibility(linkVisible)
+  .linkDirectionalArrowLength(l => (l.type==="GOVERNS"||l.type==="ATTESTATION") ? 4 : 0)
+  .linkDirectionalArrowRelPos(1)
+  .onNodeClick(showNodeInfo)
+  .graphData({{ nodes: ALL_NODES, links: ALL_LINKS }});
+
+Graph.d3Force("charge").strength(-40);
+Graph.d3Force("radial", function(alpha) {{
+  const radial = {{
+    "truth_primitive":0,"genesis_agent":5,"axiom":20,"artifact":60,
+    "policy":80,"cdl":120,"adr":120,"ceremony":120,
+    "invariant":180,"claim":220,"repo":320,"other":260
+  }};
+  const str = 0.025 * alpha;
+  Graph.graphData().nodes.forEach(function(n) {{
+    if (!installedIds.has(n.id)) return;
+    const r = radial[n.group] ?? 220;
+    const cx=n.x||0,cy=n.y||0,cz=n.z||0;
+    const dist=Math.sqrt(cx*cx+cy*cy+cz*cz)||1;
+    const delta=(r-dist)*str;
+    n.vx=(n.vx||0)+(cx/dist)*delta;
+    n.vy=(n.vy||0)+(cy/dist)*delta;
+    n.vz=(n.vz||0)+(cz/dist)*delta;
+  }});
+}});
+
+function refresh() {{
+  Graph.nodeColor(n => {{
+    if (n.id===NODE0_ID) return "#ffffff";
+    if (spotlightAuth&&!AUTHORITY_GROUPS.has(n.group)) return "#0a0a18";
+    return n.color;
+  }})
+  .nodeVal(n => n.id===NODE0_ID ? 0 : n.size)
+  .nodeVisibility(nodeVisible)
+  .linkVisibility(linkVisible)
+  .linkColor(l=>EDGE_COLORS[l.type]||"#2a2a2a")
+  .linkWidth(l=>(l.type==="GOVERNS"||l.type==="ATTESTATION")?1.5:0.5);
+  const vn = ALL_NODES.filter(nodeVisible).length;
+  const ve = ALL_LINKS.filter(linkVisible).length;
+  document.getElementById("vis-count").textContent = vn.toLocaleString();
+  document.getElementById("vis-edge-count").textContent = ve.toLocaleString();
+}}
+
+// ── node info panel ─────────────────────────────────────────────────────────
+function showNodeInfo(n) {{
+  const hop = NODE_HOP[n.id];
+  const isAuth = AUTHORITY_GROUPS.has(n.group);
+  const fields = [
+    ["id",    n.id],
+    ["group", n.group + (isAuth ? " ★" : "")],
+    ["kind",  n.kind||"—"],
+    ["tier",  n.tier||"—"],
+    ["hops",  isFinite(hop) ? hop : "unreachable"],
+    ["label", n.label && n.label !== n.id ? n.label : "—"],
+  ];
+  document.getElementById("nf-body").innerHTML =
+    fields.map(([k,v]) =>
+      `<div class="nf ${{k==="id"?"nf-id":""}}"><b>${{k}}:</b> ${{v}}</div>`
+    ).join("");
+}}
+
+// ── install engine ──────────────────────────────────────────────────────────
+const log          = document.getElementById("terminal-log");
+const progressFill = document.getElementById("progress-bar-fill");
+const progressLabel= document.getElementById("progress-label");
+
+let installQueue = [];
+let installTotal = 0;
+let installDone  = 0;
+let installTimer = null;
+let paused       = false;
+let speedNPS     = 50;
+let started      = false;
+let phase        = 0;
+
+function hopCls(h) {{
+  if (!isFinite(h)) return "tl-deep";
+  if (h===0) return "tl-h0";
+  if (h<=5) return `tl-h${{h}}`;
+  return "tl-deep";
+}}
+function appendLog(text, cls) {{
+  const d = document.createElement("div");
+  d.className = cls||"tl-deep";
+  d.textContent = text;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}}
+function updateProgress(n, total, label) {{
+  const pct = total > 0 ? (n/total*100).toFixed(1) : "0.0";
+  progressFill.style.width = pct + "%";
+  progressLabel.textContent = label || `${{n.toLocaleString()}} / ${{total.toLocaleString()}} nodes (${{pct}}%)`;
+}}
+
+function revealNext() {{
+  if (!installQueue.length) {{
+    clearInterval(installTimer); installTimer = null;
+    if (phase === 1) {{
+      const authCount = [...installedIds].filter(id => AUTH_IDS.has(id)).length;
+      const bridgeCount = [...installedIds].filter(id => BRIDGE_IDS.has(id)).length;
+      appendLog("", "tl-sys");
+      appendLog(`✓ Genesis core installed.`, "tl-h0");
+      appendLog(`  ${{authCount.toLocaleString()}} authority nodes · ${{bridgeCount.toLocaleString()}} connector nodes`, "tl-sys");
+      updateProgress(CORE_BFS.length, CORE_BFS.length,
+        "Genesis core complete — choose how to expand ↓");
+      document.getElementById("phase2-panel").style.display = "block";
+    }} else {{
+      // Final completion message
+      const n = installedIds.size;
+      appendLog("", "tl-sys");
+      appendLog("✓ Bootstrap complete.", "tl-done");
+      appendLog(`  ${{n.toLocaleString()}} nodes now in your local graph.`, "tl-sys");
+      appendLog("", "tl-sys");
+      appendLog("  Welcome to ILC.", "tl-h0");
+      appendLog("  We are building the future together.", "tl-h3");
+      updateProgress(n, n, `Bootstrap complete — ${{n.toLocaleString()}} nodes installed.`);
+    }}
+    refresh();
+    return;
+  }}
+  const nodeId = installQueue.shift();
+  installedIds.add(nodeId);
+  installDone++;
+  const hop = NODE_HOP[nodeId]??Infinity;
+  const isBridge = BRIDGE_IDS.has(nodeId) && !AUTH_IDS.has(nodeId);
+  const cls = isBridge ? "tl-bridge" : hopCls(hop);
+  const hopStr = isFinite(hop) ? `hop ${{hop}}` : "orphan";
+  const tag = isBridge ? "[bridge]" : `[${{hopStr.padStart(6)}}]`;
+  appendLog(`[${{String(installDone).padStart(6)}}] ${{tag.padStart(9)}} ${{nodeId}}`, cls);
+  updateProgress(installDone, installTotal,
+    `Phase ${{phase}} — ${{installDone.toLocaleString()}} / ${{installTotal.toLocaleString()}}`);
+  // Batch refresh every 5 nodes for performance
+  if (installDone % 5 === 0 || installQueue.length === 0) refresh();
+}}
+
+function scheduleInstall() {{
+  if (installTimer) clearInterval(installTimer);
+  installTimer = setInterval(revealNext, Math.max(3, Math.round(1000/speedNPS)));
+}}
+
+function startPhase1(inviteCmd) {{
+  if (started) return;
+  started = true; phase = 1;
+  appendLog("", "tl-sys");
+  appendLog("$ " + (inviteCmd||"ilc agent install"), "tl-sys");
+  appendLog("Verifying invite token…", "tl-sys");
+  appendLog("Resolving genesis anchors…", "tl-sys");
+  appendLog(`Preparing ${{CORE_BFS.length.toLocaleString()}} nodes (${{AUTH_IDS.size.toLocaleString()}} authority + ${{BRIDGE_IDS.size.toLocaleString()}} connectors)…`, "tl-sys");
+  appendLog("", "tl-sys");
+  appendLog("Phase 1 — Genesis authority graph:", "tl-h0");
+  appendLog("", "tl-sys");
+  installQueue = CORE_BFS.slice();
+  installTotal = CORE_BFS.length;
+  installDone  = 0;
+  scheduleInstall();
+}}
+
+function startPhase2Full() {{
+  document.getElementById("phase2-panel").style.display = "none";
+  phase = 2;
+  appendLog("", "tl-sys");
+  appendLog("Phase 2 — Full Genesis graph:", "tl-sys");
+  appendLog(`  Loading ${{REST_BFS.length.toLocaleString()}} additional nodes…`, "tl-sys");
+  installQueue = REST_BFS.slice();
+  installTotal = CORE_BFS.length + REST_BFS.length;
+  installDone  = CORE_BFS.length;
+  scheduleInstall();
+}}
+
+function startPhase2InviteChain() {{
+  document.getElementById("phase2-panel").style.display = "none";
+  phase = 2;
+  appendLog("", "tl-sys");
+  appendLog("Phase 2 — Invite attestation chain:", "tl-sys");
+  appendLog("  Tracing provenance from your inviting agent…", "tl-sys");
+  const chain = buildInviteChain();
+  const newNodes = chain.filter(id => !installedIds.has(id));
+  installQueue = newNodes;
+  installTotal = installedIds.size + newNodes.length;
+  installDone  = installedIds.size;
+  scheduleInstall();
+}}
+
+// ── invite handler ──────────────────────────────────────────────────────────
+function handleInvite() {{
+  const val = document.getElementById("invite-input").value.trim();
+  if (!val) return;
+  document.getElementById("invite-input").disabled = true;
+  document.getElementById("invite-btn").disabled = true;
+  startPhase1(val);
+}}
+document.getElementById("invite-btn").addEventListener("click", handleInvite);
+document.getElementById("invite-input").addEventListener("keydown", e => {{
+  if (e.key === "Enter") handleInvite();
+}});
+
+document.getElementById("btn-full-genesis").addEventListener("click", startPhase2Full);
+document.getElementById("btn-invite-chain").addEventListener("click", startPhase2InviteChain);
+
+// ── controls ────────────────────────────────────────────────────────────────
+document.getElementById("btn-pause").addEventListener("click", () => {{
+  if (!started) return;
+  paused = !paused;
+  if (paused) {{ clearInterval(installTimer); installTimer=null; }}
+  else scheduleInstall();
+  document.getElementById("btn-pause").textContent = paused ? "Resume" : "Pause";
+}});
+document.getElementById("btn-restart").addEventListener("click", () => {{
+  clearInterval(installTimer); installTimer=null;
+  installedIds.clear(); installQueue=[]; installDone=0; installTotal=0;
+  started=false; paused=false; phase=0;
+  refresh();
+  document.getElementById("phase2-panel").style.display = "none";
+  document.getElementById("invite-input").disabled = false;
+  document.getElementById("invite-btn").disabled = false;
+  document.getElementById("invite-input").value = "";
+  document.getElementById("btn-pause").textContent = "Pause";
+  log.innerHTML = '<div class="tl-sys">$ _ Restarted. Paste your invite command above.</div>';
+  progressFill.style.width="0%";
+  progressLabel.textContent="Paste your invite command and press ENTER";
+}});
+
+document.getElementById("speed-slider").addEventListener("input", e => {{
+  speedNPS = parseInt(e.target.value,10);
+  document.getElementById("speed-label").textContent = speedNPS+"/s";
+  if (installTimer) scheduleInstall();
+}});
+
+// ── hop slider ──────────────────────────────────────────────────────────────
+document.getElementById("hop-slider").addEventListener("input", e => {{
+  hopDepth = parseInt(e.target.value,10);
+  const lbl = document.getElementById("hop-label");
+  const stats = document.getElementById("hop-stats");
+  if (hopDepth===0) {{ lbl.textContent="All"; stats.textContent=""; }}
+  else {{
+    lbl.textContent = hopDepth;
+    const atHop = ALL_NODES.filter(n=>installedIds.has(n.id)&&NODE_HOP[n.id]===hopDepth).length;
+    const cum   = ALL_NODES.filter(n=>installedIds.has(n.id)&&(NODE_HOP[n.id]??Infinity)<=hopDepth).length;
+    stats.textContent = `Layer ${{hopDepth}}: ${{atHop}} new · ${{cum}} total`;
+  }}
+  refresh();
+}});
+
+// ── edge / view filters ─────────────────────────────────────────────────────
+document.getElementById("chk-governs").addEventListener("change",   e=>{{showGoverns=e.target.checked;refresh();}});
+document.getElementById("chk-attestation").addEventListener("change",e=>{{showAttest=e.target.checked;refresh();}});
+document.getElementById("chk-refs").addEventListener("change",       e=>{{showRefs=e.target.checked;refresh();}});
+document.getElementById("chk-implements").addEventListener("change", e=>{{showImpl=e.target.checked;refresh();}});
+document.getElementById("chk-derived").addEventListener("change",    e=>{{showDerived=e.target.checked;refresh();}});
+document.getElementById("chk-source-tree").addEventListener("change",e=>{{showSrcTree=e.target.checked;refresh();}});
+document.getElementById("chk-contains").addEventListener("change",   e=>{{showContains=e.target.checked;refresh();}});
+document.getElementById("chk-imports").addEventListener("change",    e=>{{showImports=e.target.checked;refresh();}});
+document.getElementById("chk-hide-private").addEventListener("change",e=>{{hidePrivate=e.target.checked;refresh();}});
+document.getElementById("chk-spotlight").addEventListener("change",  e=>{{spotlightAuth=e.target.checked;refresh();}});
+
+// ── legend with repo crossed out by default ─────────────────────────────────
+(function buildLegend() {{
+  const counts = {{}};
+  ALL_NODES.forEach(n => {{ counts[n.group]=(counts[n.group]||0)+1; }});
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const legend = document.getElementById("legend");
+  sorted.forEach(([g, cnt]) => {{
+    const color = NODE_COLORS[g]||"#ccc";
+    const isHiddenByDefault = g === "repo";
+    if (isHiddenByDefault) hiddenGroups.add(g);  // already in set but explicit
+    const row = document.createElement("div");
+    row.className = "leg-row";
+    const dot = document.createElement("div");
+    dot.className = "leg-dot";
+    dot.style.background = color;
+    const lbl = document.createElement("span");
+    lbl.className = "leg-label";
+    lbl.textContent = g;
+    const cnt_el = document.createElement("span");
+    cnt_el.className = "leg-count";
+    cnt_el.textContent = cnt.toLocaleString();
+    row.appendChild(dot); row.appendChild(lbl); row.appendChild(cnt_el);
+
+    let hidden = isHiddenByDefault;
+    // Apply initial crossed-out state
+    if (hidden) {{
+      lbl.style.textDecoration = "line-through";
+      dot.style.opacity = "0.2";
+    }}
+    row.addEventListener("click", () => {{
+      hidden = !hidden;
+      if (hidden) hiddenGroups.add(g); else hiddenGroups.delete(g);
+      lbl.style.textDecoration = hidden ? "line-through" : "";
+      dot.style.opacity = hidden ? "0.2" : "1";
+      refresh();
+    }});
+    legend.appendChild(row);
+  }});
+}})();
+</script>
+</body>
+</html>
+"""
+
 def _export_lmdb_view(view: str) -> Path:
     output_path = DEFAULT_VIZ_EXPORT_DIR / f"graph_view_{view}.json"
     cmd = [
@@ -976,7 +1830,16 @@ def main() -> None:
     )
     parser.add_argument("--core-only",  action="store_true",         help="Pre-filter to authority nodes only")
     parser.add_argument("--max-nodes",  type=int, default=None,      help="Hard cap on node count")
-    parser.add_argument("--sprites",    default=None,                help="JSON sprite manifest path")
+    parser.add_argument("--sprites",      default=None,                help="JSON sprite manifest path")
+    parser.add_argument(
+        "--install-demo",
+        action="store_true",
+        help=(
+            "Generate the homoiconic install demo: split terminal + live 3D graph "
+            "that grows from NODE0 outward in BFS order. "
+            "Output to graphify-out/graph_install_demo.html by default."
+        ),
+    )
     args = parser.parse_args()
 
     inp = _export_lmdb_view(args.view) if args.lmdb else Path(args.input)
@@ -1002,8 +1865,12 @@ def main() -> None:
     nodes, links = _build_graph_data(graph, max_nodes=args.max_nodes)
     print(f"  {len(nodes):,} nodes, {len(links):,} links", file=sys.stderr)
 
-    title = f"ILC Genesis Atlas ({len(nodes):,}n / {len(links):,}e)"
-    html  = _html(nodes, links, title, sprite_manifest=sprite_manifest, core_only=args.core_only)
+    if args.install_demo:
+        html = _install_html(nodes, links)
+        out = out.parent / "graph_install_demo.html" if args.output == str(DEFAULT_OUTPUT) else out
+    else:
+        title = f"ILC Genesis Atlas ({len(nodes):,}n / {len(links):,}e)"
+        html  = _html(nodes, links, title, sprite_manifest=sprite_manifest, core_only=args.core_only)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=str(out.parent), prefix=".graph_3d.", suffix=".tmp")
