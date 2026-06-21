@@ -1,0 +1,340 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch009",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:lmdb_public_runtime_persistence_restart_decimal_normalization_and_rollback",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-152"
+          ],
+          "path": "tests/test_lmdb_public_runtime_store.py",
+          "summary": "Direct read confirms LMDB graph/wallet stores persist nodes, links, quorum rows, Decimal payloads, ledger restart state, and rollback after settlement failure."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_lmdb_public_runtime_store.py:1-152",
+          "source": "invariant:lmdb_public_runtime_persistence_restart_decimal_normalization_and_rollback",
+          "target": "repo:file:ff3e80f5bede262b:tests_test_lmdb_public_runtime_store_py"
+        },
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "high",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "tests/test_lmdb_public_runtime_store.py:1-152",
+          "source": "invariant:lmdb_public_runtime_persistence_restart_decimal_normalization_and_rollback",
+          "target": "cdl:075_truth_primitive_graph_persistence"
+        }
+      ],
+      "row_index": 81,
+      "source_file": "tests/test_lmdb_public_runtime_store.py",
+      "source_node": "repo:file:ff3e80f5bede262b:tests_test_lmdb_public_runtime_store_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:mcp_cli_invocation_json_payload_sources_and_audit_logging",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-158"
+          ],
+          "path": "tests/test_mcp_cli_adapter.py",
+          "summary": "Direct read confirms MCP CLI tool invocation accepts JSON/file/stdin payloads, rejects invalid JSON, and writes audit provenance with node_id."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_mcp_cli_adapter.py:1-158",
+          "source": "invariant:mcp_cli_invocation_json_payload_sources_and_audit_logging",
+          "target": "repo:file:2a2b94857a3621b3:tests_test_mcp_cli_adapter_py"
+        }
+      ],
+      "row_index": 82,
+      "source_file": "tests/test_mcp_cli_adapter.py",
+      "source_node": "repo:file:2a2b94857a3621b3:tests_test_mcp_cli_adapter_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:merkle_laplacian_followon_does_not_authorize_publication_or_epoch_commitment_activation",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-145"
+          ],
+          "path": "tests/test_merkle_laplacian_v02_followon_sims.py",
+          "summary": "Direct read confirms follow-on Merkle/Laplacian simulations are internal-only and explicitly do not authorize external publication or epoch-commitment activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_merkle_laplacian_v02_followon_sims.py:1-145",
+          "source": "invariant:merkle_laplacian_followon_does_not_authorize_publication_or_epoch_commitment_activation",
+          "target": "repo:file:91cc76e223440cce:tests_test_merkle_laplacian_v02_followon_sims_py"
+        }
+      ],
+      "row_index": 83,
+      "source_file": "tests/test_merkle_laplacian_v02_followon_sims.py",
+      "source_node": "repo:file:91cc76e223440cce:tests_test_merkle_laplacian_v02_followon_sims_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:merkle_laplacian_strike_force_is_research_positive_with_publication_gates_remaining",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-89"
+          ],
+          "path": "tests/test_merkle_laplacian_v02_strike_force_sim.py",
+          "summary": "Direct read confirms strike-force simulation findings are positive research inputs while publication and activation gates remain unsatisfied."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_merkle_laplacian_v02_strike_force_sim.py:1-89",
+          "source": "invariant:merkle_laplacian_strike_force_is_research_positive_with_publication_gates_remaining",
+          "target": "repo:file:1f4d1c5210a822e2:tests_test_merkle_laplacian_v02_strike_force_sim_py"
+        }
+      ],
+      "row_index": 84,
+      "source_file": "tests/test_merkle_laplacian_v02_strike_force_sim.py",
+      "source_node": "repo:file:1f4d1c5210a822e2:tests_test_merkle_laplacian_v02_strike_force_sim_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:no_default_v1_public_fastapi_routes_and_protocol_routes_preserved",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-132"
+          ],
+          "path": "tests/test_fastapi_route_cleanup_1378.py",
+          "summary": "Direct read confirms default v1 public FastAPI routes are absent while protocol route behavior is preserved."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_fastapi_route_cleanup_1378.py:1-132",
+          "source": "invariant:no_default_v1_public_fastapi_routes_and_protocol_routes_preserved",
+          "target": "repo:file:51dab9749a0d4b74:tests_test_fastapi_route_cleanup_1378_py"
+        }
+      ],
+      "row_index": 85,
+      "source_file": "tests/test_fastapi_route_cleanup_1378.py",
+      "source_node": "repo:file:51dab9749a0d4b74:tests_test_fastapi_route_cleanup_1378_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:no_duplicate_imports_or_consecutive_duplicate_lines_outside_explicit_legacy_allowlist",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-148"
+          ],
+          "path": "tests/test_duplicate_definitions.py",
+          "summary": "Direct read confirms repository duplicate-definition/import/line hygiene is enforced outside the explicit legacy allowlist."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_duplicate_definitions.py:1-148",
+          "source": "invariant:no_duplicate_imports_or_consecutive_duplicate_lines_outside_explicit_legacy_allowlist",
+          "target": "repo:file:b1d5de40b7d788fc:tests_test_duplicate_definitions_py"
+        }
+      ],
+      "row_index": 86,
+      "source_file": "tests/test_duplicate_definitions.py",
+      "source_node": "repo:file:b1d5de40b7d788fc:tests_test_duplicate_definitions_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:no_ilc_core_runtime_mutation_phase_354",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-135"
+          ],
+          "path": "tests/test_adm_003_7_plus_1_panel_role_354.py",
+          "summary": "Direct read confirms Phase 354 ADM-003 role resolution did not mutate ilc_core runtime paths or the CDL register."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_adm_003_7_plus_1_panel_role_354.py:1-135",
+          "source": "invariant:no_ilc_core_runtime_mutation_phase_354",
+          "target": "repo:file:18c0a59bf218f003:tests_test_adm_003_7_plus_1_panel_role_354_py"
+        }
+      ],
+      "row_index": 87,
+      "source_file": "tests/test_adm_003_7_plus_1_panel_role_354.py",
+      "source_node": "repo:file:18c0a59bf218f003:tests_test_adm_003_7_plus_1_panel_role_354_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:no_public_edges_attribute_usage_outside_explicit_allowlist",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-127"
+          ],
+          "path": "tests/test_edge_removal_phase1_guardrails.py",
+          "summary": "Direct read confirms direct Edge symbol and public .edges attribute usage are blocked outside the post-sunset allowlists."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_edge_removal_phase1_guardrails.py:1-127",
+          "source": "invariant:no_public_edges_attribute_usage_outside_explicit_allowlist",
+          "target": "repo:file:0833033cd3e41d19:tests_test_edge_removal_phase1_guardrails_py"
+        }
+      ],
+      "row_index": 88,
+      "source_file": "tests/test_edge_removal_phase1_guardrails.py",
+      "source_node": "repo:file:0833033cd3e41d19:tests_test_edge_removal_phase1_guardrails_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:node_id_canonical_default_determinism_and_float_payload_rejection",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-56"
+          ],
+          "path": "tests/test_node_id_dual_contract_phase_1002.py",
+          "summary": "Direct read confirms Node.compute_id defaults to canonical CIDv1 determinism and rejects non-DAG-CBOR float payloads."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_node_id_dual_contract_phase_1002.py:1-56",
+          "source": "invariant:node_id_canonical_default_determinism_and_float_payload_rejection",
+          "target": "repo:file:9244a122bc690cc9:tests_test_node_id_dual_contract_phase_1002_py"
+        }
+      ],
+      "row_index": 89,
+      "source_file": "tests/test_node_id_dual_contract_phase_1002.py",
+      "source_node": "repo:file:9244a122bc690cc9:tests_test_node_id_dual_contract_phase_1002_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:node_id_migration_rewrites_legacy_preserves_canonical_and_reports_stats",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-91"
+          ],
+          "path": "tests/test_node_id_migration_utility_phase_1004.py",
+          "summary": "Direct read confirms legacy node IDs migrate to canonical IDs, canonical IDs are preserved, and migration CLI reports deterministic stats."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_node_id_migration_utility_phase_1004.py:1-91",
+          "source": "invariant:node_id_migration_rewrites_legacy_preserves_canonical_and_reports_stats",
+          "target": "repo:file:6c4196289e8f9f64:tests_test_node_id_migration_utility_phase_1004_py"
+        }
+      ],
+      "row_index": 90,
+      "source_file": "tests/test_node_id_migration_utility_phase_1004.py",
+      "source_node": "repo:file:6c4196289e8f9f64:tests_test_node_id_migration_utility_phase_1004_py",
+      "source_node_materialized_in_this_batch": false
+    }
+  ],
+  "lmdb_application": {
+    "edges_written": 11,
+    "note": "Artifact file-node registration executed separately in same tranche.",
+    "safe_writer_phase": "1545p-Fix63b-batches009-013",
+    "status": "PASS"
+  },
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "non_claims": [
+    "No GOVERNS edge added unless a direct authority gap is confirmed.",
+    "No STATUS.md proxy evidence used for dispositions.",
+    "No public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized."
+  ],
+  "phase": "1545p-Fix63b-batches009-013",
+  "recommended_edge_count": 11,
+  "recommended_edge_types": [
+    "EVIDENCES",
+    "REFERENCES_AUTHORITY"
+  ],
+  "row_range": [
+    81,
+    90
+  ],
+  "schema_version": "fix63b_direct_source_invariant_audit_batch.v0.2",
+  "source_ledger": "docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json"
+}

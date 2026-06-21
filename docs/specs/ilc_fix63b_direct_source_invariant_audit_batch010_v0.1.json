@@ -1,0 +1,342 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch010",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:node_value_input_canon_required_fields_optional_freshness_and_telemetry",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-134"
+          ],
+          "path": "tests/test_node_value_input_canon_phase_203.py",
+          "summary": "Direct read confirms node-value input canonicalization validates task/claim fields, optional freshness fields, and rejection telemetry."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_node_value_input_canon_phase_203.py:1-134",
+          "source": "invariant:node_value_input_canon_required_fields_optional_freshness_and_telemetry",
+          "target": "repo:file:a59c485fec96bcb5:tests_test_node_value_input_canon_phase_203_py"
+        }
+      ],
+      "row_index": 91,
+      "source_file": "tests/test_node_value_input_canon_phase_203.py",
+      "source_node": "repo:file:a59c485fec96bcb5:tests_test_node_value_input_canon_phase_203_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:node_value_policy_migration_strict_mode_legacy_bridge_and_version_rejection",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-90"
+          ],
+          "path": "tests/test_node_value_policy_migration_phase_209.py",
+          "summary": "Direct read confirms node-value policy migration accepts strict canonical bundles, bridges legacy aliases only when allowed, and rejects unsupported versions."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_node_value_policy_migration_phase_209.py:1-90",
+          "source": "invariant:node_value_policy_migration_strict_mode_legacy_bridge_and_version_rejection",
+          "target": "repo:file:244832ace69f4a3b:tests_test_node_value_policy_migration_phase_209_py"
+        }
+      ],
+      "row_index": 92,
+      "source_file": "tests/test_node_value_policy_migration_phase_209.py",
+      "source_node": "repo:file:244832ace69f4a3b:tests_test_node_value_policy_migration_phase_209_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:non_replay_domain_exception_hierarchy_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-35"
+          ],
+          "path": "tests/test_non_replay_domain_exception_foundation.py",
+          "summary": "Direct read confirms protocol, ledger, and CLI non-replay exceptions inherit from the intended domain base exceptions and ValueError."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_non_replay_domain_exception_foundation.py:1-35",
+          "source": "invariant:non_replay_domain_exception_hierarchy_contract",
+          "target": "repo:file:1d4dd4cc48c59694:tests_test_non_replay_domain_exception_foundation_py"
+        }
+      ],
+      "row_index": 93,
+      "source_file": "tests/test_non_replay_domain_exception_foundation.py",
+      "source_node": "repo:file:1d4dd4cc48c59694:tests_test_non_replay_domain_exception_foundation_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:observed_repo_hypergraph_shape_and_star_map_gap_categories",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-97"
+          ],
+          "path": "tests/test_genesis_star_map_gap_analysis.py",
+          "summary": "Direct read confirms observed repo hypergraph shape, star-map vertices, gap categories, and human-readable gap report outputs."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [
+        "invariant:observed_repo_hypergraph_shape_and_star_map_gap_categories EVIDENCES repo:file:70c337c7e2b70707:tests_test_genesis_star_map_gap_analysis_py"
+      ],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "high",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "tests/test_genesis_star_map_gap_analysis.py:1-97",
+          "source": "invariant:observed_repo_hypergraph_shape_and_star_map_gap_categories",
+          "target": "adr:0037_genesis_canonical_lineage_contract"
+        }
+      ],
+      "row_index": 94,
+      "source_file": "tests/test_genesis_star_map_gap_analysis.py",
+      "source_node": "repo:file:70c337c7e2b70707:tests_test_genesis_star_map_gap_analysis_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:package_hygiene_root_archive_manifest_and_chat_corpus_policy",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-30"
+          ],
+          "path": "tests/test_package_hygiene_phase_1005.py",
+          "summary": "Direct read confirms legacy root artifacts are archived, fixture wrapper moved, MANIFEST excludes archive/chat corpus, and .gitignore records chat-corpus policy."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_package_hygiene_phase_1005.py:1-30",
+          "source": "invariant:package_hygiene_root_archive_manifest_and_chat_corpus_policy",
+          "target": "repo:file:57a8fa8b1692b635:tests_test_package_hygiene_phase_1005_py"
+        }
+      ],
+      "row_index": 95,
+      "source_file": "tests/test_package_hygiene_phase_1005.py",
+      "source_node": "repo:file:57a8fa8b1692b635:tests_test_package_hygiene_phase_1005_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:package_profiles_nonexcisable_components_import_inventory_and_canonical_export",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-124"
+          ],
+          "path": "tests/test_phase_1243_package_boundary_inventory.py",
+          "summary": "Direct read confirms package profiles preserve non-excisable components, profile/public-claimability boundaries, import inventory rules, and canonical export JSON."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1243_package_boundary_inventory.py:1-124",
+          "source": "invariant:package_profiles_nonexcisable_components_import_inventory_and_canonical_export",
+          "target": "repo:file:187dc11785b84d6c:tests_test_phase_1243_package_boundary_inventory_py"
+        }
+      ],
+      "row_index": 96,
+      "source_file": "tests/test_phase_1243_package_boundary_inventory.py",
+      "source_node": "repo:file:187dc11785b84d6c:tests_test_phase_1243_package_boundary_inventory_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:path_lift_counterfactual_determinism_ranking_validation_and_provenance",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-108"
+          ],
+          "path": "tests/test_path_lift_counterfactual_phase_214.py",
+          "summary": "Direct read confirms path-lift counterfactual deterministic ranking, validation, and provenance reporting behavior."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_path_lift_counterfactual_phase_214.py:1-108",
+          "source": "invariant:path_lift_counterfactual_determinism_ranking_validation_and_provenance",
+          "target": "repo:file:e4ae15841a88ea85:tests_test_path_lift_counterfactual_phase_214_py"
+        }
+      ],
+      "row_index": 97,
+      "source_file": "tests/test_path_lift_counterfactual_phase_214.py",
+      "source_node": "repo:file:e4ae15841a88ea85:tests_test_path_lift_counterfactual_phase_214_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1143_authority_traceability_gate_not_basis_reachability",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-3016"
+          ],
+          "path": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md",
+          "summary": "Direct read confirms the Fix57 walkthrough distinguishes authority-traceability gates from basis reachability and records rejected/missing-target cases."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md:1-3016",
+          "source": "invariant:phase1143_authority_traceability_gate_not_basis_reachability",
+          "target": "repo:file_ref:docs_phases_phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough_md"
+        },
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "high",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md:1-3016",
+          "source": "invariant:phase1143_authority_traceability_gate_not_basis_reachability",
+          "target": "adr:0037_genesis_canonical_lineage_contract"
+        }
+      ],
+      "row_index": 98,
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md",
+      "source_node": "repo:file_ref:docs_phases_phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough_md",
+      "source_node_materialized_in_this_batch": true
+    },
+    {
+      "candidate_id": "invariant:phase1218b_transport_ledger_security_hardening_oom_ssrf_tmp_race_prune_spoofing_deadline_tokens",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-313"
+          ],
+          "path": "tests/test_phase_1218b_security_hardening.py",
+          "summary": "Direct read confirms transport and ledger security hardening around OOM, SSRF/private endpoints, temp race, pruning, spoofing, and deadline tokens."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1218b_security_hardening.py:1-313",
+          "source": "invariant:phase1218b_transport_ledger_security_hardening_oom_ssrf_tmp_race_prune_spoofing_deadline_tokens",
+          "target": "repo:file:06b01ae9f1ef2b44:tests_test_phase_1218b_security_hardening_py"
+        }
+      ],
+      "row_index": 99,
+      "source_file": "tests/test_phase_1218b_security_hardening.py",
+      "source_node": "repo:file:06b01ae9f1ef2b44:tests_test_phase_1218b_security_hardening_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1224_fix1_security_hardening_tls_bounds_archive_canonical_json_and_sensitive_guardrail",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-132"
+          ],
+          "path": "tests/test_phase_1224_fix1_post_closure_audit_hardening.py",
+          "summary": "Direct read confirms TLS/private endpoint, bounded archive/download, canonical JSON, wall-clock removal, and sensitive-runtime guardrail hardening."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1224_fix1_post_closure_audit_hardening.py:1-132",
+          "source": "invariant:phase1224_fix1_security_hardening_tls_bounds_archive_canonical_json_and_sensitive_guardrail",
+          "target": "repo:file:8387f60982a13438:tests_test_phase_1224_fix1_post_closure_audit_hardening_py"
+        }
+      ],
+      "row_index": 100,
+      "source_file": "tests/test_phase_1224_fix1_post_closure_audit_hardening.py",
+      "source_node": "repo:file:8387f60982a13438:tests_test_phase_1224_fix1_post_closure_audit_hardening_py",
+      "source_node_materialized_in_this_batch": false
+    }
+  ],
+  "lmdb_application": {
+    "edges_written": 11,
+    "note": "Artifact file-node registration executed separately in same tranche.",
+    "safe_writer_phase": "1545p-Fix63b-batches009-013",
+    "status": "PASS"
+  },
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "non_claims": [
+    "No GOVERNS edge added unless a direct authority gap is confirmed.",
+    "No STATUS.md proxy evidence used for dispositions.",
+    "No public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized."
+  ],
+  "phase": "1545p-Fix63b-batches009-013",
+  "recommended_edge_count": 11,
+  "recommended_edge_types": [
+    "EVIDENCES",
+    "REFERENCES_AUTHORITY"
+  ],
+  "row_range": [
+    91,
+    100
+  ],
+  "schema_version": "fix63b_direct_source_invariant_audit_batch.v0.2",
+  "source_ledger": "docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json"
+}
