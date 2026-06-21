@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 033
+
+- Phase: `1545p-Fix63b-batches029-034`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `321-330`
+- Direct read status: `complete`
+- Recommended edges: `30`
+- Accepted semantic edges written: `30`
+- Duplicate semantic edges skipped: `5`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `321` `invariant:sim_spectral_05_track_a_discriminants_lambda2_sweep_and_signed_v01_preservation`
+  - Source: `tests/test_phase_1169_sim_spectral_05_track_a.py`
+  - Evidence: `['1-70']`
+  - Summary: SIM-SPECTRAL-05 Track A tests discriminants, lambda2 sweep outputs, and signed v0.1 preservation.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `322` `invariant:sim_spectral_05_track_b_gate_pass_adr0037_criterion_sensitive_boundary_and_deferred_slices`
+  - Source: `tests/test_phase_1171_sim_spectral_05_disposition.py`
+  - Evidence: `['1-78']`
+  - Summary: SIM-SPECTRAL-05 Track B gate tests ADR-0037 criterion boundaries, sensitive gating, and deferred slice handling.
+  - Edges: `2` recommended, `2` written, `2` duplicate skipped
+- `323` `invariant:source_export_public_rc_blocked_fail_closed_privacy_generated_cache_stripped_helper_guards`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records source-export/public-RC blocked posture, privacy/generated/cache stripping, and helper guardrails.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `324` `invariant:task_primitive_node_payload_and_claim_derives_from_task_lineage_shape`
+  - Source: `tests/test_task_primitive.py`
+  - Evidence: `['1-52']`
+  - Summary: Task primitive tests preserve task-node payload shape and claim derives-from task lineage.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `325` `invariant:tier3_runtime_linkage_scope_adr0020_node_families_and_no_mutation_boundary`
+  - Source: `tests/test_phase_1195_tier3_runtime_linkage.py`
+  - Evidence: `['1-49']`
+  - Summary: Phase 1195 Tier-3 runtime linkage tests ADR-0020 node-family boundaries and no-mutation behavior for runtime linkage.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `326` `invariant:transport_principal_identity_spec_http_downgrade_rust_m5_and_sidecar_public_gate`
+  - Source: `tests/test_phase_1253_transport_principal_identity_spec.py`
+  - Evidence: `['1-148']`
+  - Summary: Phase 1253 transport principal identity spec tests HTTP downgrade, Rust M5 alignment, sidecar public gate, and principal identity boundaries.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `327` `invariant:window1273_1280_prompt_package_go_nonclaim_human_escalation_no_register_mutation_and_no_authority_expansion`
+  - Source: `tests/test_window_1273_1280_prompt_drafts.py`
+  - Evidence: `['1-203']`
+  - Summary: Window 1273-1280 prompt drafts preserve GO, non-claim, human-escalation, no-register-mutation, and no-authority-expansion controls.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `328` `invariant:window1289_1302_prompt_package_superseded_sequence_lock_go_nonclaim_public_claimability_and_release_allowlist_contract`
+  - Source: `tests/test_window_1289_1302_prompt_drafts.py`
+  - Evidence: `['1-224']`
+  - Summary: Window 1289-1302 prompt drafts preserve superseded sequence-lock handling, GO/non-claim controls, public claimability boundaries, and release allowlist contract.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `329` `invariant:window1330_1342_atlas_g_tail_high_authority_go_gate_public_rc_publication_and_activation_ordering_contract`
+  - Source: `tests/test_window_1330_1342_prompt_drafts.py`
+  - Evidence: `['1-231']`
+  - Summary: Window 1330-1342 prompt-draft tests lock Atlas-G tail routing, public activation order, high-authority GO phrases, and publication/signing boundaries.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `330` `invariant:window1330_sequence_lock_final_rc_gate_atlas_g_tail_routing_and_identity_bootstrap_guard`
+  - Source: `tests/test_phase_1330_window_1330_1342_sequence_lock.py`
+  - Evidence: `['1-205']`
+  - Summary: Phase 1330 sequence-lock tests record public-RC non-authorization, Atlas-G tail routing, identity-bootstrap guard, and CDL-088 not-open boundary.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped

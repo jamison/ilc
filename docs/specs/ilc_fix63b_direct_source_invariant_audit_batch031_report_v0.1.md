@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 031
+
+- Phase: `1545p-Fix63b-batches029-034`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `301-310`
+- Direct read status: `complete`
+- Recommended edges: `19`
+- Accepted semantic edges written: `19`
+- Duplicate semantic edges skipped: `7`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `301` `invariant:sim_fetch_fix10_robustness_suite_positive_negative_controls_caps_and_canonical_export`
+  - Source: `tests/test_phase_1238j_sim_fetch_01_fix10_robustness_suite.py`
+  - Evidence: `['1-213']`
+  - Summary: SIM-FETCH-01 Fix10 robustness suite tests CDL-087 positive/negative controls, caps, canonical export, and non-authorizing deterministic behavior.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `302` `invariant:sim_genesis_compile_02_baseline_candidate_gap_closure_bootstrap_axioms`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-GENESIS-COMPILE-02 baseline candidate gap-closure and bootstrap axiom support for the Genesis seed graph.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `303` `invariant:sim_provenance_01_alpha_0_45_recommended_not_runtime_mutated_phase1121`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-PROVENANCE-01 alpha 0.45 recommendation as advisory provenance support with no runtime mutation.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `304` `invariant:sim_provenance_01_alpha_recommendation_not_runtime_lock`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-PROVENANCE-01 alpha recommendation boundaries and keeps runtime alpha locking outside this support edge.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `305` `invariant:sim_provenance_01_decimal_alpha_045_and_runtime_guardrail_boundary`
+  - Source: `tests/test_phase_1120_sim_provenance_01_commissioning.py`
+  - Evidence: `['1-256']`
+  - Summary: Phase 1120 SIM-PROVENANCE-01 commissioning tests Decimal alpha 0.45, q2/q8 tokens, and runtime guardrail boundaries.
+  - Edges: `2` recommended, `2` written, `2` duplicate skipped
+- `306` `invariant:sim_provenance_01_run02_alpha_045_disposition_and_no_mutation_boundary`
+  - Source: `tests/test_phase_1121_sim_provenance_01_run02_disposition.py`
+  - Evidence: `['1-95']`
+  - Summary: Phase 1121 SIM-PROVENANCE-01 run02 disposition records alpha 0.45 recommendation and no-mutation runtime boundary.
+  - Edges: `1` recommended, `1` written, `2` duplicate skipped
+- `307` `invariant:sim_spectral_02_fix3_homoiconic_seed_diagnostic_shape`
+  - Source: `tests/test_phase_1133_sim_spectral_02_fix3.py`
+  - Evidence: `['1-98']`
+  - Summary: SIM-SPECTRAL-02 Fix3 tests the homoiconic Genesis seed diagnostic shape and its matrix/report outputs.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `308` `invariant:sim_spectral_02_harness_normalization_and_provenance_topology_patch`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-SPECTRAL-02 harness normalization and provenance/topology patch support.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `309` `invariant:sim_spectral_02_research_only_no_cdl_adr_settlement_qatps_or_runtime_authority`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-SPECTRAL-02 as research-only with no CDL, ADR, settlement, QATP, or runtime authority.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `310` `invariant:sim_spectral_02_run02_disposition_genesis_seed_bootstrap_adr_and_beta_probe`
+  - Source: `tests/test_phase_1136_sim_spectral_02_run02_disposition.py`
+  - Evidence: `['1-52']`
+  - Summary: Phase 1136 SIM-SPECTRAL-02 run02 disposition carries Genesis seed support forward, proposes bootstrap ADR work, and records beta probe boundaries.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped

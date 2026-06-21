@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 029
+
+- Phase: `1545p-Fix63b-batches029-034`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `281-290`
+- Direct read status: `complete`
+- Recommended edges: `34`
+- Accepted semantic edges written: `34`
+- Duplicate semantic edges skipped: `4`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `281` `invariant:phase_297_mutation_canary_kills_all_required_mutants_and_restores_security_files`
+  - Source: `tests/test_mutation_canary_phase_297.py`
+  - Evidence: `['1-108']`
+  - Summary: Phase 297 mutation canary validates kill probes for signer-lineage, key-compromise, rollback/gossip-adjacent security files and restores the mutated security files after the run.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `282` `invariant:phase_m009_testnet_n4_f1_no_real_ecu_config_and_tls_paths`
+  - Source: `tests/test_phase_M009_mysticeti_testnet_setup.py`
+  - Evidence: `['1-213']`
+  - Summary: Phase M009 provisions a Mysticeti N=4/f=1 testnet setup while preserving no-real-ECU, devnet-only, config-path, TLS, and safety-boundary posture.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `283` `invariant:phase_m013_workload_a_epoch_commits_and_validator1_silence_verified`
+  - Source: `tests/test_phase_M013_workload_a_results.py`
+  - Evidence: `['1-36']`
+  - Summary: Phase M013 workload A records epoch commits and a silent-validator observation without converting the testnet workload into production settlement authority.
+  - Edges: `3` recommended, `3` written, `1` duplicate skipped
+- `284` `invariant:phase_m017_validator_operability_commodity_bounds_storage_sync_chain_sanity_pass`
+  - Source: `tests/test_phase_M017_workload_e_results.py`
+  - Evidence: `['1-100']`
+  - Summary: Phase M017 workload E validates validator operability bounds, commodity hardware posture, storage sync, and chain sanity for the testnet lane.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `285` `invariant:pre_public_rc_obligations_synthesis_phase1146_adr_tier2_counsel_canon_bundle_and_nonclaim_scope`
+  - Source: `tests/test_phase_1154_pre_public_rc_obligations_synthesis.py`
+  - Evidence: `['1-55']`
+  - Summary: Phase 1154 synthesizes pre-public-RC obligations around ADR-tier counsel, Tier-2 signing/canon-bundle constraints, and non-claim boundaries.
+  - Edges: `4` recommended, `4` written, `1` duplicate skipped
+- `286` `invariant:protocol_and_replay_proof_exception_hierarchy_and_messages_stable`
+  - Source: `tests/test_domain_exception_rollout_foundation.py`
+  - Evidence: `['1-35']`
+  - Summary: Domain exception rollout tests preserve protocol/replay exception hierarchy, stable messages, and explicit migration away from broad exception swallowing.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `287` `invariant:provenance_chain_input_shape_type_length_and_depth_hardening`
+  - Source: `tests/test_phase_1129_fix1_provenance_input_hardening.py`
+  - Evidence: `['1-91']`
+  - Summary: Phase 1129 Fix1 hardens provenance-chain input shape, edge type, length, and depth constraints for epoch attribution settlement replay.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `288` `invariant:public_economics_gap_planning_phase1387a_firewall_and_1388_1389_fail_closed_contract`
+  - Source: `tests/test_window_1369_1390_public_economics_gap_planning.py`
+  - Evidence: `['1-98']`
+  - Summary: Window 1369-1390 public-economics planning records the public-economics admission firewall and fail-closed contracts for public ECU/reputation/settlement/claimability work.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `289` `invariant:public_rc_go_live_plan_separates_default_off_rehearsal_public_live_and_keeps_gate_blocked`
+  - Source: `tests/test_public_rc_general_go_live_forward_plan.py`
+  - Evidence: `['1-72']`
+  - Summary: The public RC go-live plan separates default-off rehearsal, public-live gates, and still-blocked publication/runtime activation boundaries.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `290` `invariant:public_rc_package_profiles_non_excisable_components_canonical_manifest_and_no_heavy_imports`
+  - Source: `tests/test_public_rc_package_profiles.py`
+  - Evidence: `['1-241']`
+  - Summary: Public RC package profile tests enforce non-excisable component lists, canonical profile manifests, and no-heavy-import package boundaries.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
