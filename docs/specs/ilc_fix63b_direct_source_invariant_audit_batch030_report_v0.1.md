@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 030
+
+- Phase: `1545p-Fix63b-batches029-034`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `291-300`
+- Direct read status: `complete`
+- Recommended edges: `27`
+- Accepted semantic edges written: `27`
+- Duplicate semantic edges skipped: `2`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `291` `invariant:rc0_1_benchmark_runner_aggregates_latency_transport_and_graph_growth_metrics`
+  - Source: `tests/test_rc0_1_benchmark_runner.py`
+  - Evidence: `['1-70']`
+  - Summary: RC0.1 benchmark runner tests aggregate latency, transport, and graph-growth metrics from the testbed benchmark lane.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `292` `invariant:rc_dredge_stack_preserves_source_paths_dedups_exact_text_and_marks_review_placeholders`
+  - Source: `tests/test_rc_dredge_stack_tools.py`
+  - Evidence: `['1-143']`
+  - Summary: RC dredge stack tools preserve source paths, deduplicate exact text, and emit review placeholders rather than silently claiming complete classification.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `293` `invariant:reciprocal_fetch_admission_design_and_agent_graph_projection_interface_bounds`
+  - Source: `tests/test_phase_1222_reciprocal_fetch_admission_spec.py`
+  - Evidence: `['1-69']`
+  - Summary: Phase 1222 reciprocal-fetch admission design bounds reciprocal serving, local graph projection, and admission interfaces without mutating canonical graph state.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `294` `invariant:refutation_stake_can_prune_false_canonical_claim`
+  - Source: `tests/test_contradiction.py`
+  - Evidence: `['1-66']`
+  - Summary: Legacy contradiction tests demonstrate refutation stake can prune a false canonical claim while remaining a support evidence path, not an activation claim.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `295` `invariant:rust_fixture_mapping_cidv1root_validatorid_storedcheckpoint_to_python_projection`
+  - Source: `tests/test_phase_1236_fix5_rust_fixture_mapping.py`
+  - Evidence: `['1-233']`
+  - Summary: Phase 1236 Fix5 maps Rust fixture IDs and checkpoint records into the Python projection for epoch emission, quorum proof, and causal-frontier interop.
+  - Edges: `3` recommended, `3` written, `1` duplicate skipped
+- `296` `invariant:settlement_metrics_count_distributed_stubbed_rolled_back_pending_and_snapshots_correctly`
+  - Source: `tests/test_settlement_metrics.py`
+  - Evidence: `['1-70']`
+  - Summary: Settlement metrics tests count distributed, stubbed, rolled-back, and pending settlement states and preserve stake-snapshot reporting.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `297` `invariant:settlement_stability_distributed_stub_supersession_and_idempotency`
+  - Source: `tests/test_settlement_stability.py`
+  - Evidence: `['1-111']`
+  - Summary: Settlement stability tests preserve distributed, stub, supersession, and idempotency behavior in the settlement-support lane.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `298` `invariant:sidecar_export_canonical_json_ndjson_decimal_strings_and_bounded_bundle`
+  - Source: `tests/test_phase_1237_fix6_canonical_export_bundle.py`
+  - Evidence: `['1-235']`
+  - Summary: Phase 1237 Fix6 canonical export bundle tests enforce canonical JSON/NDJSON output, Decimal string serialization, and bounded sidecar bundles.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `299` `invariant:sim_010_validator_incentive_reward_fraction_stake_liveness_recommendations`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-010 validator incentive recommendations as public-eligible Fiedler-minority support evidence, not runtime activation.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `300` `invariant:sim_embed_01_records_recommendations_staleness_thresholds_and_unexecuted_openai_candidate`
+  - Source: `tests/test_sim_embed_01_results.py`
+  - Evidence: `['1-61']`
+  - Summary: SIM-EMBED-01 result tests record embedding-model recommendations, staleness thresholds, and the unexecuted OpenAI candidate boundary.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
