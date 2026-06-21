@@ -1,0 +1,348 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch013",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:phase1387b_genesis_compile_candidate_reachability_authority_traceability_and_bootstrap_axioms",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-163"
+          ],
+          "path": "tests/test_phase_1387b_sim_genesis_compile_02.py",
+          "summary": "Direct read confirms genesis compile candidate reachability, authority traceability, candidate manifest, and bootstrap axiom basis handling."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [
+        "invariant:phase1387b_genesis_compile_candidate_reachability_authority_traceability_and_bootstrap_axioms EVIDENCES repo:file:2ceb979e603bb653:tests_test_phase_1387b_sim_genesis_compile_02_py"
+      ],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "high",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "tests/test_phase_1387b_sim_genesis_compile_02.py:1-163",
+          "source": "invariant:phase1387b_genesis_compile_candidate_reachability_authority_traceability_and_bootstrap_axioms",
+          "target": "adr:0037_genesis_canonical_lineage_contract"
+        }
+      ],
+      "row_index": 121,
+      "source_file": "tests/test_phase_1387b_sim_genesis_compile_02.py",
+      "source_node": "repo:file:2ceb979e603bb653:tests_test_phase_1387b_sim_genesis_compile_02_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1387c_compiler_basis_expansion_empty_unreachable_gap_and_two_tier_verdict",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-83"
+          ],
+          "path": "tests/test_phase_1387c_compiler_basis_expansion.py",
+          "summary": "Direct read confirms compiler basis expansion closes the unreachable gap and records a two-tier partial-source-coverage verdict."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [
+        "invariant:phase1387c_compiler_basis_expansion_empty_unreachable_gap_and_two_tier_verdict EVIDENCES repo:file:3f290e8f4b8a795a:tests_test_phase_1387c_compiler_basis_expansion_py"
+      ],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [],
+      "row_index": 122,
+      "source_file": "tests/test_phase_1387c_compiler_basis_expansion.py",
+      "source_node": "repo:file:3f290e8f4b8a795a:tests_test_phase_1387c_compiler_basis_expansion_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1387d_adr0035_type_definition_compositional_recipe_snapshot_and_non_attributable_definition_nodes",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-106"
+          ],
+          "path": "tests/test_phase_1387d_adr_0035_spec.py",
+          "summary": "Direct read confirms ADR-0035 type definition system, compositional recipe constraints, snapshot/retroactivity handling, and non-attributable definition nodes."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [
+        "invariant:phase1387d_adr0035_type_definition_compositional_recipe_snapshot_and_non_attributable_definition_nodes REFERENCES_AUTHORITY adr:0035_homoiconic_type_definition_system"
+      ],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1387d_adr_0035_spec.py:1-106",
+          "source": "invariant:phase1387d_adr0035_type_definition_compositional_recipe_snapshot_and_non_attributable_definition_nodes",
+          "target": "repo:file:263e06f3ebb2cb68:tests_test_phase_1387d_adr_0035_spec_py"
+        }
+      ],
+      "row_index": 123,
+      "source_file": "tests/test_phase_1387d_adr_0035_spec.py",
+      "source_node": "repo:file:263e06f3ebb2cb68:tests_test_phase_1387d_adr_0035_spec_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1387e_star_map_expansion_54_nodes_basis_reachable_partial_source_coverage",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-3016"
+          ],
+          "path": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md",
+          "summary": "Direct read confirms Fix57 recorded Phase 1387e star-map expansion evidence and accepted DERIVED_FROM relation to the Genesis attestation root."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md:1-3016",
+          "source": "invariant:phase1387e_star_map_expansion_54_nodes_basis_reachable_partial_source_coverage",
+          "target": "repo:file_ref:docs_phases_phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough_md"
+        },
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "high",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md:1-3016",
+          "source": "invariant:phase1387e_star_map_expansion_54_nodes_basis_reachable_partial_source_coverage",
+          "target": "adr:0037_genesis_canonical_lineage_contract"
+        }
+      ],
+      "row_index": 124,
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md",
+      "source_node": "repo:file_ref:docs_phases_phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough_md",
+      "source_node_materialized_in_this_batch": true
+    },
+    {
+      "candidate_id": "invariant:phase1387f_authority_trace_depth_duplicate_recipes_and_orphan_node_analysis",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-124"
+          ],
+          "path": "tests/test_phase_1387f_graph_structure_analysis.py",
+          "summary": "Direct read confirms authority-trace depth analysis, duplicate recipe detection, decomposition recipe gaps, and orphan-node analysis."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [
+        "invariant:phase1387f_authority_trace_depth_duplicate_recipes_and_orphan_node_analysis EVIDENCES repo:file:0c9918d289e0c14a:tests_test_phase_1387f_graph_structure_analysis_py"
+      ],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "high",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "tests/test_phase_1387f_graph_structure_analysis.py:1-124",
+          "source": "invariant:phase1387f_authority_trace_depth_duplicate_recipes_and_orphan_node_analysis",
+          "target": "adr:0037_genesis_canonical_lineage_contract"
+        }
+      ],
+      "row_index": 125,
+      "source_file": "tests/test_phase_1387f_graph_structure_analysis.py",
+      "source_node": "repo:file:0c9918d289e0c14a:tests_test_phase_1387f_graph_structure_analysis_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1387g_epistemic_leverage_zero_keystones_and_hub_spoke_resilience",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-94"
+          ],
+          "path": "tests/test_phase_1387g_epistemic_leverage.py",
+          "summary": "Direct read confirms epistemic leverage analysis, zero keystone findings, and hub-spoke resilience properties."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [
+        "invariant:phase1387g_epistemic_leverage_zero_keystones_and_hub_spoke_resilience EVIDENCES repo:file:e062f83b9fcc58d8:tests_test_phase_1387g_epistemic_leverage_py"
+      ],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [],
+      "row_index": 126,
+      "source_file": "tests/test_phase_1387g_epistemic_leverage.py",
+      "source_node": "repo:file:e062f83b9fcc58d8:tests_test_phase_1387g_epistemic_leverage_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1387i_graphopt_synthesis_max_depth_zero_keystones_recipe_canonicalization_and_orphan_leaf_findings",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-55"
+          ],
+          "path": "tests/test_phase_1387i_synthesis_report.py",
+          "summary": "Direct read confirms graph optimization synthesis records max depth, zero keystones, recipe canonicalization, and orphan leaf findings."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1387i_synthesis_report.py:1-55",
+          "source": "invariant:phase1387i_graphopt_synthesis_max_depth_zero_keystones_recipe_canonicalization_and_orphan_leaf_findings",
+          "target": "repo:file:ddb2876261f60e6e:tests_test_phase_1387i_synthesis_report_py"
+        }
+      ],
+      "row_index": 127,
+      "source_file": "tests/test_phase_1387i_synthesis_report.py",
+      "source_node": "repo:file:ddb2876261f60e6e:tests_test_phase_1387i_synthesis_report_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1388a_no_external_legal_opinion_no_runtime_activation_no_public_claimability_activation",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-143"
+          ],
+          "path": "tests/test_phase_1388a_cdl_048_self_counsel_clearance.py",
+          "summary": "Direct read confirms CDL-048 self-counsel clearance records no external legal opinion, no runtime activation, and no public claimability activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1388a_cdl_048_self_counsel_clearance.py:1-143",
+          "source": "invariant:phase1388a_no_external_legal_opinion_no_runtime_activation_no_public_claimability_activation",
+          "target": "repo:file:3dadbdedc7168109:tests_test_phase_1388a_cdl_048_self_counsel_clearance_py"
+        },
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "medium",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "tests/test_phase_1388a_cdl_048_self_counsel_clearance.py:1-143",
+          "source": "invariant:phase1388a_no_external_legal_opinion_no_runtime_activation_no_public_claimability_activation",
+          "target": "cdl:048_activation_counsel_clearance"
+        }
+      ],
+      "row_index": 128,
+      "source_file": "tests/test_phase_1388a_cdl_048_self_counsel_clearance.py",
+      "source_node": "repo:file:3dadbdedc7168109:tests_test_phase_1388a_cdl_048_self_counsel_clearance_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1389b_docs_no_rerun_activation_no_wallet_no_ecu_mint_no_ilc_settlement_no_cdl_mutation",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-68"
+          ],
+          "path": "tests/test_phase_1389b_claimability_public_mode_runtime_docs.py",
+          "summary": "Direct read confirms Phase 1389b docs correction performed no rerun, no wallet/ECU mint/ILC settlement, and no CDL mutation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1389b_claimability_public_mode_runtime_docs.py:1-68",
+          "source": "invariant:phase1389b_docs_no_rerun_activation_no_wallet_no_ecu_mint_no_ilc_settlement_no_cdl_mutation",
+          "target": "repo:file:16ed5729b0be93fc:tests_test_phase_1389b_claimability_public_mode_runtime_docs_py"
+        }
+      ],
+      "row_index": 129,
+      "source_file": "tests/test_phase_1389b_claimability_public_mode_runtime_docs.py",
+      "source_node": "repo:file:16ed5729b0be93fc:tests_test_phase_1389b_claimability_public_mode_runtime_docs_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1389b_public_api_and_public_claimability_not_activated_duplicate_replay_claim_window_rejected",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-240"
+          ],
+          "path": "tests/test_phase_1389b_claimability_public_mode_runtime.py",
+          "summary": "Direct read confirms public-mode claimability verifier remains local-only, rejects duplicate/replay/closed-window claims, and does not activate public API."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1389b_claimability_public_mode_runtime.py:1-240",
+          "source": "invariant:phase1389b_public_api_and_public_claimability_not_activated_duplicate_replay_claim_window_rejected",
+          "target": "repo:file:f0243ee7158dd460:tests_test_phase_1389b_claimability_public_mode_runtime_py"
+        },
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_authority_reference",
+          "confidence": "medium",
+          "edge_type": "REFERENCES_AUTHORITY",
+          "evidence": "tests/test_phase_1389b_claimability_public_mode_runtime.py:1-240",
+          "source": "invariant:phase1389b_public_api_and_public_claimability_not_activated_duplicate_replay_claim_window_rejected",
+          "target": "cdl:048_mandatory_conversion"
+        }
+      ],
+      "row_index": 130,
+      "source_file": "tests/test_phase_1389b_claimability_public_mode_runtime.py",
+      "source_node": "repo:file:f0243ee7158dd460:tests_test_phase_1389b_claimability_public_mode_runtime_py",
+      "source_node_materialized_in_this_batch": false
+    }
+  ],
+  "lmdb_application": {
+    "edges_written": 11,
+    "note": "Artifact file-node registration executed separately in same tranche.",
+    "safe_writer_phase": "1545p-Fix63b-batches009-013",
+    "status": "PASS"
+  },
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "non_claims": [
+    "No GOVERNS edge added unless a direct authority gap is confirmed.",
+    "No STATUS.md proxy evidence used for dispositions.",
+    "No public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized."
+  ],
+  "phase": "1545p-Fix63b-batches009-013",
+  "recommended_edge_count": 11,
+  "recommended_edge_types": [
+    "EVIDENCES",
+    "REFERENCES_AUTHORITY"
+  ],
+  "row_range": [
+    121,
+    130
+  ],
+  "schema_version": "fix63b_direct_source_invariant_audit_batch.v0.2",
+  "source_ledger": "docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json"
+}
