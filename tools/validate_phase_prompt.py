@@ -27,6 +27,12 @@ UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
     "### §0d — Source expansion and newly discovered tokens",
 )
 
+# Every phase at or above this number must include an explicit LMDB node
+# registration section declaring graph node records for all new files
+# created in docs/specs/, docs/antigravity_tasks/, ilc_core/, tools/, tests/.
+# Enforces the Graph Intake Protocol (CLAUDE.md) — prevents coverage deficit.
+LMDB_NODE_REGISTRATION_PHASE_FLOOR = 1545
+
 
 def _norm_heading(s: str) -> str:
     s = s.strip().lower().rstrip(":")
@@ -135,6 +141,14 @@ def validate(path: Path) -> list[str]:
         for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
             if section not in text:
                 errors.append(f"missing_unknown_unknown_discovery_section:{section}")
+
+    if expected_phase_number >= LMDB_NODE_REGISTRATION_PHASE_FLOOR:
+        # Require a dedicated LMDB node registration section.
+        # This enforces the Graph Intake Protocol: every new file in
+        # docs/specs/, docs/antigravity_tasks/, ilc_core/, tools/, tests/
+        # must be declared as a candidate LMDB node in the same commit.
+        if "lmdb node registration" not in headings:
+            errors.append("missing_section:lmdb_node_registration")
 
     return errors
 
