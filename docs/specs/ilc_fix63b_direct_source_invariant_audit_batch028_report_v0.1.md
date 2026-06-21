@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 028
+
+- Phase: `1545p-Fix63b-batches024-028`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `271-280`
+- Direct read status: `complete`
+- Recommended edges: `47`
+- Accepted semantic edges written: `47`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `271` `invariant:phase834_row5_b_impl_complete_but_runtime_pending_no_cdl_mutation_no_live_settlement`
+  - Source: `tests/test_phase_834_row5_b_impl_strike_force_closure_gate.py`
+  - Evidence: `['1-42', '48-118', '123-190']`
+  - Summary: Phase 834 closes the row-5 B-implementation strike force while preserving runtime-pending, no-CDL-mutation, and no-live-settlement boundaries.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `272` `invariant:phase835_settlement_gate_preflight_validates_none_and_mysticeti_guards_before_live_routing`
+  - Source: `tests/test_phase_835_settlement_gate_preflight.py`
+  - Evidence: `['1-40', '44-123', '127-205']`
+  - Summary: Phase 835 tests the settlement-gate preflight tool for none posture, Mysticeti guards, config-dir handling, and smoke harness integration.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `273` `invariant:phase837_track1_predeployment_no_human_gate_no_live_settlement_no_cdl_mutation`
+  - Source: `tests/test_phase_837_track1_coherence_and_capsule.py`
+  - Evidence: `['1-41', '44-76']`
+  - Summary: Phase 837 records Track-1 predeployment coherence with prerequisites satisfied but human gate, live settlement, CDL mutation, and row-5 runtime closure not performed.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `274` `invariant:phase838e_genesis_record_recovery_commitments_canonical_and_domain_separated`
+  - Source: `tests/test_phase_838e_genesis_record_schema.py`
+  - Evidence: `['1-35', '39-112', '240-384']`
+  - Summary: Phase 838e tests CDL-069 genesis record schema, recovery commitments, canonical bytes, domain separation, and validation failure modes.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `275` `invariant:phase838f_endorsement_packet_canonical_payload_window_and_cose_tbs_semantics`
+  - Source: `tests/test_phase_838f_endorsement_packet_schema.py`
+  - Evidence: `['1-35', '39-128', '260-470']`
+  - Summary: Phase 838f tests CDL-069 endorsement packet schema, liveness assertions, endorsement windows, canonical signing payloads, and COSE TBS bytes.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `276` `invariant:phase844_privacy_lane_routing_tokens_after_signature_before_inflight_and_no_cdl_mutation`
+  - Source: `tests/test_phase_844_row5_rust_routing_instrumentation.py`
+  - Evidence: `['1-24', '30-84', '86-151']`
+  - Summary: Phase 844 tests Rust privacy-lane routing instrumentation after signature verification and before in-flight insertion, with no CDL mutation.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `277` `invariant:phase858_hb001_genesis_assertion_schema_canonical_json_and_validator_constraints`
+  - Source: `tests/test_phase_858_hb_001_genesis_assertion_schema.py`
+  - Evidence: `['1-35', '39-114', '118-214', '216-333']`
+  - Summary: Phase 858 tests HB-001 genesis assertion schema runtime, CDL-073 dependency, canonical JSON encoding, primitive-type extension, and validator constraints.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `278` `invariant:phase888_891_truth_query_cli_read_only_lmdb_query_path_no_mutation`
+  - Source: `tests/test_phase_888_891_query_truth_cli.py`
+  - Evidence: `['1-44', '78-156', '240-352']`
+  - Summary: Phase 888-891 tests CDL-075 truth primitive read-path query CLI, typed miss/error behavior, subprocess integration, and no LMDB mutation on query.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `279` `invariant:phase998_readme_quickstart_matches_genesis_boot_behavior`
+  - Source: `tests/test_quickstart_parity_phase_998.py`
+  - Evidence: `['1-21']`
+  - Summary: Phase 998 tests README quickstart parity with genesis_boot behavior and Genesis hash output.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `280` `invariant:phase_1156_preserves_signed_genesis_v0_1_artifacts`
+  - Source: `tests/test_adr_stale_reconciliation_strike_force_1156.py`
+  - Evidence: `['1-49']`
+  - Summary: Phase 1156 ADR stale reconciliation preserves signed Genesis v0.1 artifacts, routes near-term ADR candidates, and carries stale ADR families forward without accepting ADRs.
+  - Edges: `10` recommended, `10` written, `0` duplicate skipped

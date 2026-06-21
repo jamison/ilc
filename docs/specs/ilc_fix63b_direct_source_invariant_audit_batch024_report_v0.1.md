@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 024
+
+- Phase: `1545p-Fix63b-batches024-028`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `231-240`
+- Direct read status: `complete`
+- Recommended edges: `70`
+- Accepted semantic edges written: `70`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `231` `invariant:phase585_public_release_requires_receipt_boundary_genesis_rooted_lineage_no_quota_miner_onboarding_lane`
+  - Source: `tests/test_phase_585_window_585_594_sequence_lock.py`
+  - Evidence: `['20-58', '59-86', '185-204']`
+  - Summary: Phase 585 locks the public-release receipt boundary, Genesis-rooted lineage, and no quota-miner onboarding posture for the 585-594 window.
+  - Edges: `12` recommended, `12` written, `0` duplicate skipped
+- `232` `invariant:phase587_public_identity_activation_namespace_key_derived_admission_bound_no_alias_authority`
+  - Source: `tests/test_phase_587_public_identity_activation_and_namespace_boundary_lock.py`
+  - Evidence: `['20-52', '53-66', '151-177']`
+  - Summary: Phase 587 locks public identity activation, key-derived namespace admission, and no alias authority for public identity records.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `233` `invariant:phase588_public_quorum_eligibility_activation_snapshot_diversity_quorum_chain_no_panel_shortcut`
+  - Source: `tests/test_phase_588_public_quorum_eligibility_and_genesis_lineage_authority_boundary_lock.py`
+  - Evidence: `['20-52', '53-66', '166-203']`
+  - Summary: Phase 588 locks public quorum eligibility, activation snapshots, diversity/quorum chain posture, and no panel shortcut.
+  - Edges: `8` recommended, `8` written, `0` duplicate skipped
+- `234` `invariant:phase589_settlement_linked_public_legitimacy_receipt_chain_payout_trace_no_wallet_claimability_shortcut`
+  - Source: `tests/test_phase_589_settlement_linked_public_legitimacy_and_payout_traceability_lock.py`
+  - Evidence: `['20-52', '53-64', '137-175']`
+  - Summary: Phase 589 locks settlement-linked public legitimacy, receipt-chain payout traceability, and no wallet-claimability shortcut.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `235` `invariant:phase590_genesis_authority_bounded_sunset_lineage_fork_consequence_no_supporting_context_as_canon`
+  - Source: `tests/test_phase_590_genesis_authority_sunset_and_fork_legitimacy_coherence_lock.py`
+  - Evidence: `['20-54', '55-65', '149-195']`
+  - Summary: Phase 590 records bounded Genesis authority sunset and fork-legitimacy coherence without treating supporting context as canon.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `236` `invariant:phase591_public_runtime_bridge_maps_to_frozen_receipt_boundary_no_runtime_legitimacy_shortcut`
+  - Source: `tests/test_phase_591_public_runtime_integration_over_receipt_boundary.py`
+  - Evidence: `['20-52', '53-68', '149-190']`
+  - Summary: Phase 591 maps public runtime integration to frozen receipt boundaries and rejects runtime-legitimacy shortcuts.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `237` `invariant:phase595_rc0_1_consolidation_runtime_hardening_preserves_576_581_boundaries_no_public_upgrade`
+  - Source: `tests/test_phase_595_rc0_1_strike_force_consolidation_and_runtime_hardening.py`
+  - Evidence: `['42-83', '123-180']`
+  - Summary: Phase 595 consolidates RC0.1 runtime hardening while preserving Phase 576/581 public-runtime and payout boundaries without a public upgrade claim.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `238` `invariant:phase596_genesis_carry_forward_sequence_closes_support_canon_preserves_585_595_boundaries`
+  - Source: `tests/test_phase_596_window_596_605_sequence_lock.py`
+  - Evidence: `['20-58', '59-91', '185-204']`
+  - Summary: Phase 596 closes Genesis carry-forward sequencing and preserves the Phase 585-595 support/canon boundaries.
+  - Edges: `16` recommended, `16` written, `0` duplicate skipped
+- `239` `invariant:phase597_no_permanent_genesis_governance_floor_bootstrap_only_suspensive_guardrail`
+  - Source: `tests/test_phase_597_genesis_governance_dilution_and_brake_semantics_closure.py`
+  - Evidence: `['20-55', '56-64', '111-170']`
+  - Summary: Phase 597 closes no-permanent-Genesis-governance-floor and bootstrap-only suspensive guardrail semantics.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `240` `invariant:phase601_capability_proof_future_lane_no_current_mint_no_permanent_genesis_reference`
+  - Source: `tests/test_phase_601_post_genesis_capability_proof_disposition_and_bootstrap_transition_boundary.py`
+  - Evidence: `['18-43', '44-51', '94-139']`
+  - Summary: Phase 601 records post-Genesis capability proof disposition and bootstrap-transition boundaries without current minting or permanent Genesis-reference claims.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped

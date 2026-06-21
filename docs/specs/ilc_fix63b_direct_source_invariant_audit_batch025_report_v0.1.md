@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 025
+
+- Phase: `1545p-Fix63b-batches024-028`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `241-250`
+- Direct read status: `complete`
+- Recommended edges: `39`
+- Accepted semantic edges written: `39`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `241` `invariant:phase602_public_tokenomics_5pct_cap_no_8pct_no_self_executing_topological_exemption`
+  - Source: `tests/test_phase_602_topological_exemption_boundary_and_public_tokenomics_statement.py`
+  - Evidence: `['18-52', '53-62', '100-156']`
+  - Summary: Phase 602 states public tokenomics boundaries: 5 percent Genesis cap, no 8 percent, and no self-executing topological exemption.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `242` `invariant:phase603_synthesis_does_not_reopen_597_602_or_overclaim_mainnet_public_authority`
+  - Source: `tests/test_phase_603_genesis_carry_forward_synthesis_and_readiness_delta_addendum.py`
+  - Evidence: `['18-38', '39-47', '68-100']`
+  - Summary: Phase 603 synthesizes Genesis carry-forward readiness deltas without reopening Phases 597-602 or overclaiming mainnet/public authority.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `243` `invariant:phase606_mempalace_retrieval_only_no_canon_override_no_wallet_or_public_scope_widening`
+  - Source: `tests/test_phase_606_mempalace_internal_retrieval_adoption.py`
+  - Evidence: `['15-37', '40-73', '76-91']`
+  - Summary: Phase 606 adopts MemPalace as internal retrieval only, with no canon override, wallet widening, or public-scope widening.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `244` `invariant:phase607_settlement_substrate_reconciliation_before_expansion_no_wallet_or_payment_widening`
+  - Source: `tests/test_phase_607_window_607_612_sequence_lock.py`
+  - Evidence: `['20-59', '60-91', '188-211']`
+  - Summary: Phase 607 sequence-locks settlement-substrate reconciliation before expansion while preserving no-wallet and no-payment widening boundaries.
+  - Edges: `12` recommended, `12` written, `0` duplicate skipped
+- `245` `invariant:phase609_ecu_local_credit_ilc_hard_settlement_current_runtime_not_final_substrate`
+  - Source: `tests/test_phase_609_ecu_ilc_runtime_boundary_reconciliation.py`
+  - Evidence: `['21-48', '49-78', '112-153']`
+  - Summary: Phase 609 reconciles ECU local credit versus ILC hard-settlement runtime boundaries and does not finalize the settlement substrate.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `246` `invariant:phase612_mvp_gate_precedes_sovereign_substrate_execution_no_option_b_selection`
+  - Source: `tests/test_phase_612_settlement_substrate_closure_and_mvp_gated_replan.py`
+  - Evidence: `['16-34', '51-134']`
+  - Summary: Phase 612 gates settlement-substrate closure behind MVP evidence and records no Option-B selection.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `247` `invariant:phase613_mvp_spec_form_not_sufficient_without_runtime_no_wallet_payment_chain_widening`
+  - Source: `tests/test_phase_613_window_613_619_sequence_lock.py`
+  - Evidence: `['19-48', '49-61', '102-160']`
+  - Summary: Phase 613 locks MVP form as insufficient without runtime evidence and prevents wallet/payment-chain widening.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `248` `invariant:phase631_tier0_float_retention_unacceptable_no_option_b_no_wallet_widening`
+  - Source: `tests/test_phase_631_window_631_636_sequence_lock.py`
+  - Evidence: `['20-52', '53-82', '111-150']`
+  - Summary: Phase 631 sequence-locks Tier-0 exact numeric migration and rejects float retention, Option-B selection, and wallet widening.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `249` `invariant:phase635_tier0_exact_numeric_runtime_no_float_accounting_no_tolerance_equality_canonical_decimal_strings`
+  - Source: `tests/test_phase_635_tier0_exact_numeric_runtime_migration.py`
+  - Evidence: `['20-57', '87-135', '147-163']`
+  - Summary: Phase 635 migrates Tier-0 exact numeric runtime with no float accounting, no tolerance equality, and canonical decimal-string behavior.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `250` `invariant:phase642_security_strike_force_canonical_json_nonfinite_prng_assert_stream_guardrails`
+  - Source: `tests/test_phase_642_window_642_648_sequence_lock.py`
+  - Evidence: `['20-58', '59-72', '129-170']`
+  - Summary: Phase 642 sequence-locks the security strike force around canonical JSON, non-finite numeric rejection, PRNG isolation, and assert-stream guardrails.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped

@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 026
+
+- Phase: `1545p-Fix63b-batches024-028`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `251-260`
+- Direct read status: `complete`
+- Recommended edges: `27`
+- Accepted semantic edges written: `27`
+- Duplicate semantic edges skipped: `3`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `251` `invariant:phase644_canonical_json_sort_keys_compact_separators_allow_nan_false_manifest_signing_bytes`
+  - Source: `tests/test_phase_644_canonical_json_and_signature_boundary_hardening.py`
+  - Evidence: `['14-39', '70-103']`
+  - Summary: Phase 644 hardens canonical JSON and signature boundaries with sorted keys, compact separators, allow_nan=false, and manifest signing-byte discipline.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `252` `invariant:phase647_security_gate_passes_and_checks_fix_induced_regressions`
+  - Source: `tests/test_phase_647_security_hardening_gate_and_fix_induced_regression_audit.py`
+  - Evidence: `['15-34', '48-84']`
+  - Summary: Phase 647 records security hardening gate passage and checks fix-induced regression risks.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `253` `invariant:phase648_security_window_closed_no_constitutional_vehicle_remaining_float_carry_forward_explicit`
+  - Source: `tests/test_phase_648_window_642_648_closure_and_handoff.py`
+  - Evidence: `['10-32', '58-91']`
+  - Summary: Phase 648 closes the security window and carries remaining float/constitutional-vehicle work forward explicitly.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `254` `invariant:phase649_public_runtime_rows1_4_target_no_wallet_widening_no_cdl062_no_option_b`
+  - Source: `tests/test_phase_649_window_649_654_sequence_lock.py`
+  - Evidence: `['20-45', '46-67', '115-150']`
+  - Summary: Phase 649 sequence-locks public runtime rows 1-4 while preserving no wallet widening, no CDL-062, and no Option-B selection boundaries.
+  - Edges: `5` recommended, `5` written, `0` duplicate skipped
+- `255` `invariant:phase651_public_receipt_runtime_four_classes_read_only_fail_closed_no_wallet_widening`
+  - Source: `tests/test_phase_651_public_receipt_runtime.py`
+  - Evidence: `['21-47', '66-146', '149-188']`
+  - Summary: Phase 651 tests public receipt runtime classes, read-only/fail-closed behavior, and no wallet widening.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `256` `invariant:phase653_public_wallet_runtime_read_only_accounting_only_claimability_deferred_no_http_routes`
+  - Source: `tests/test_phase_653_public_wallet_runtime_integration.py`
+  - Evidence: `['1-27', '84-127', '130-191']`
+  - Summary: Phase 653 tests public wallet runtime read-only accounting, settled-root linkage, deferred claimability, and no HTTP route exposure.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `257` `invariant:phase677_row5_privacy_prework_partial_only_cdl062_deferred_observability_floor_locked`
+  - Source: `tests/test_phase_677_window_677_682_sequence_lock.py`
+  - Evidence: `['20-52', '53-72', '100-170']`
+  - Summary: Phase 677 locks row-5 privacy prework as partial only, keeps CDL-062 deferred, and sets the observability floor.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `258` `invariant:phase723_financial_shard_eligibility_not_activation_cdl062_adr0022_separate`
+  - Source: `tests/test_phase_723_window_723_726_sequence_lock.py`
+  - Evidence: `['20-52', '53-77', '93-135']`
+  - Summary: Phase 723 sequence-locks financial-shard eligibility as non-activation, with CDL-062 and ADR-0022 kept separate.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `259` `invariant:phase724_financial_shard_activation_not_eligible_bhft_separate_cdl062_adr0022_separate`
+  - Source: `tests/test_phase_724_financial_shard_eligibility_prefilter_and_lane_separation.py`
+  - Evidence: `['20-47', '73-118']`
+  - Summary: Phase 724 confirms financial-shard activation is not eligible, separates B_hft, CDL-062, and private gated-access lanes.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `260` `invariant:phase726_financial_shard_no_activation_no_ratification_later_candidate_separate_from_cdl062_adr0022`
+  - Source: `tests/test_phase_726_coherence_report_capsule_v4_9_and_window_723_726_closure_gate.py`
+  - Evidence: `['20-54', '81-129']`
+  - Summary: Phase 726 closes the financial-shard window with no activation, no ratification, and explicit separation from CDL-062 and ADR-0022.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
