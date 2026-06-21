@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 021
+
+- Phase: `1545p-Fix63b-batches019-023`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `201-210`
+- Direct read status: `complete`
+- Recommended edges: `33`
+- Accepted semantic edges written: `32`
+- Duplicate semantic edges skipped: `1`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `201` `invariant:phase1560_preflight_blocker_no_live_execution_until_receiver_and_key_custody_remediation`
+  - Source: `tests/test_phase_1560_preflight_blocker.py`
+  - Evidence: `['11-32', '34-57']`
+  - Summary: Phase 1560 preflight blocker prevents live execution until receiver and key-custody remediation; completion is not recorded by this blocker.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `202` `invariant:phase1561_ecu_live_smoke_claim_root_round_trip_guard_true_no_float_balance_report_not_ledger`
+  - Source: `tests/test_phase_1561_ecu_live_smoke.py`
+  - Evidence: `['43-80', '83-116', '119-150']`
+  - Summary: Phase 1561 ECU live smoke verifies claim-root round-trip, independent verification, guard retention, no float balance handling, and balance report not ledger write.
+  - Edges: `3` recommended, `2` written, `1` duplicate skipped
+- `203` `invariant:phase1562_invitation_provenance_depth_one_hash_cycle_detection_node6_boundary_no_economics`
+  - Source: `tests/test_phase_1562_invitation_provenance_chain.py`
+  - Evidence: `['43-72', '93-119', '122-150']`
+  - Summary: Phase 1562 invitation provenance records enforce depth-one Genesis invitation records, detect cycles, keep Node6 receiver-only, and exclude invitation economics.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `204` `invariant:phase226_security_triage_backlog_counts_two_pass_quality_must_rows_row_specific_rationale`
+  - Source: `tests/test_phase_226_security_triage_artifacts.py`
+  - Evidence: `['23-36', '39-50', '53-83', '86-95']`
+  - Summary: Phase 226 security triage records CDL-001/002/007 verdict sections, explicit risk rubric criteria, backlog counts, two-pass quality, and row-specific rationale for must rows.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `205` `invariant:phase232_security_plan_names_cdls_dependencies_entry_criteria_risk_rollback_and_non_goals`
+  - Source: `tests/test_security_runtime_implementation_plan_232.py`
+  - Evidence: `['23-31', '34-40', '43-60']`
+  - Summary: Phase 232 security runtime plan names CDL-001/002/007, records dependency ordering, negative paths, entry criteria, risk/rollback, and non-goals.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `206` `invariant:phase240_security_sequence_covers_240_249_sensitive_set_carry_forward_and_anchor_paths`
+  - Source: `tests/test_security_runtime_sequence_240.py`
+  - Evidence: `['25-33', '36-48']`
+  - Summary: Phase 240 security implementation sequence covers phases 240-249, sensitivity classification, carry-forward debt including CDL-025/D2e, and anchor path existence.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `207` `invariant:phase244_key_compromise_revocation_recovery_and_rollback_authority_interactions`
+  - Source: `tests/test_security_runtime_cross_cdl_interactions_244.py`
+  - Evidence: `['43-64', '67-81', '84-106', '109-125']`
+  - Summary: Phase 244 security cross-CDL interactions verify compromise revocation, rollback rejection, recovery, and future supersession through signer lineage, key compromise, and rollback runtimes.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `208` `invariant:phase249_security_runtime_closure_records_security_cdls_forward_cdls_and_d2e_paths`
+  - Source: `tests/test_security_runtime_closure_gate_phase_249.py`
+  - Evidence: `['23-39', '42-58', '61-70']`
+  - Summary: Phase 249 closure gate verifies dry-run/help behavior and handoff references for CDL-001/002/007, CDL-025/CDL-032, and D2 evidence paths.
+  - Edges: `6` recommended, `6` written, `0` duplicate skipped
+- `209` `invariant:phase252_security_ratification_gate_composes_required_targets_and_cli_contract`
+  - Source: `tests/test_security_ratification_gate_252.py`
+  - Evidence: `['1-23', '27-48', '51-72']`
+  - Summary: Phase 252 security ratification gate composes four required command targets and CLI behavior for security CDL ratification readiness.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `210` `invariant:phase262_signing_provider_kid_privacy_and_external_provider_lifecycle_coordination`
+  - Source: `tests/test_signing_provider_interface_262.py`
+  - Evidence: `['21-44', '47-64']`
+  - Summary: Phase 262 signing-provider interface locks provider sections, kid privacy invariants, SDK boundary wording, and external provider lifecycle coordination.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
