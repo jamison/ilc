@@ -1,8 +1,8 @@
-# Window 1576-1584 Candidate Phase Grouping: Homoiconic Test Registry And Pytest Sidecar
+# Window 1576-1584 Candidate Phase Grouping: Homoiconic Test Registry, Pytest Sidecar, and Graph Percolation Pass
 
 Status: candidate window proposal.
 
-Date: 2026-06-15
+Date: 2026-06-15 (updated 2026-06-16 — added Fix44 percolation pass and graph intake lint tool to window scope)
 
 This window proposal defines when and how the homoiconic test registry and
 pytest executor sidecar should be implemented after the current Block 6 route,
@@ -37,6 +37,60 @@ The initial implementation must support two practical modes:
 The native pytest collector/plugin mode is deferred until after these two modes
 are stable.
 
+## 1a. Additional Window Scope (added 2026-06-16)
+
+This window now also covers two items that were identified in Q1-Q5 analysis
+(2026-06-16 session) as having no concrete assigned Fix or phase:
+
+### Fix44 — Targeted Percolation Pass on Bottom-500 Protocol Files
+
+**Input:** Fix42 (`out/genesis_base_graph_v0.4_spectral_analysis.json`) — filtered
+target queue of the bottom 500 protocol-relevant files by PageRank and betweenness
+centrality. `out/` generated artifacts and simulation-output leaves excluded from
+the queue before selection.
+
+**Scope:** Codex manual annotation pass on the Fix42-generated target queue. Same
+ledger format as Fix38: `proposed_authority_trace_edges`, `proposed_semantic_edges`,
+`recommended_graph_action` per file. Primary edge types: REFERENCES_AUTHORITY,
+IMPLEMENTS, USED_BY. Goal: connect low-connectivity files to protocol-spine nodes
+to push λ₂ (Fiedler value) above the percolation threshold.
+
+**Output:**
+- `docs/specs/ilc_fix44_percolation_pass_annotation_ledger_v0.1.json`
+- Post-Fix44 spectral re-run (new output path: `out/genesis_base_graph_spectral_post_fix44.json`)
+- λ₂ before/after comparison committed as a report doc
+
+**Sequencing:** Fix44 runs in this window after Block 6 closes. NOT a Block 6
+blocker. Fix44 output is the primary input to the first Genesis graph update
+cycle (`genesis_base_graph_v0.4.1.json`) under CDL-098 authority.
+
+**Percolation threshold criteria:** If λ₂ after Fix44 is large enough that the
+giant connected component contains ≥ 95% of protocol-relevant nodes (ilc_core/,
+docs/specs/, tests/, tools/ — excluding out/), record
+`percolation_threshold_crossed_phase_fix44`. If not yet crossed, Fix44 output
+informs Fix45+ targeting.
+
+### Graph Intake Lint Tool — `tools/check_new_file_graph_coverage.py`
+
+**Scope:** Confirm this tool exists and is functional before this window opens.
+It should have been implemented in Fix39 (pre-Block 6). If Fix39 did not
+implement it, the first phase of this window (Phase 1576 sequence lock) must
+add it as a prerequisite.
+
+**What the tool checks:** For staged files in `docs/specs/`,
+`docs/antigravity_tasks/`, `ilc_core/`, `tools/`, `tests/` — confirm a
+corresponding candidate node record exists in the active intake ledger (Fix38
+successor or overlay). Emits warnings for missing entries with suggested
+`candidate_id` stubs. Used as pre-commit hook and CI check.
+
+**Relationship to homoiconic test registry:** Once the test registry is live,
+this tool's output can be validated graph-natively — new test files will have
+TESTS edges pointing to their source modules, and the registry sidecar can
+verify coverage automatically. The lint tool is a stopgap until that
+graph-native validation is possible.
+
+---
+
 ## 2. Preconditions
 
 Before this window opens, the project should have:
@@ -45,6 +99,9 @@ Before this window opens, the project should have:
 - Phase 1545p-Fix32 contract complete;
 - no unresolved contradiction between `docs/testing/test_inventory.md` and
   `tests/conftest.py` gating policy;
+- Fix39–Fix43 complete (graph baseline, LMDB, star-map, signing packet);
+- Fix42 spectral/PageRank output available with filtered 500-file target queue;
+- `tools/check_new_file_graph_coverage.py` implemented (Fix39 or Phase 1576);
 - current Atlas candidate artifacts available locally;
 - explicit human authorization for this window if it is scheduled before the
   public-RC gate.
