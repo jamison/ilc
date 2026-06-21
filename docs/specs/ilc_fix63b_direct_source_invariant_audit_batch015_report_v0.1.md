@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 015
+
+- Phase: `1545p-Fix63b-batches014-018`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `141-150`
+- Direct read status: `complete`
+- Recommended edges: `17`
+- Accepted semantic edges written: `17`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `141` `invariant:phase1433_private_rehearsal_pass_rights_safe_dataset_wipe_right_and_no_public_activation`
+  - Source: `tests/test_phase_1433_rehearsal_verdict.py`
+  - Evidence: `['14-20', '38-48', '89-101', '104-119']`
+  - Summary: Private rehearsal pass uses rights-safe bounded dataset evidence, exercises wipe rights without touching key material, and preserves public non-activation boundaries.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `142` `invariant:phase1436_public_fetch_sidecar_projection_without_public_rc_ecu_distribution_or_epoch_transition`
+  - Source: `tests/test_phase_1436_public_fetch_serving_activation.py`
+  - Evidence: `['52-72', '74-91', '207-241']`
+  - Summary: Public fetch and sidecar projection activation require authenticated transport-principal context while public RC, ECU distribution, and epoch transition remain false.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `143` `invariant:phase1438_public_claimability_sidecar_without_ecu_mint_ilc_settlement_wallet_public_rc_native_rust_p2p_or_epoch_transition`
+  - Source: `tests/test_phase_1438_cdl088_public_claimability_activation.py`
+  - Evidence: `['11-21', '24-38', '59-67']`
+  - Summary: CDL-088 public claimability sidecar is activated while ECU mint, ILC settlement, wallet ops, public RC, native Rust P2P, and epoch transition remain unauthorized.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `144` `invariant:phase1439_public_claimability_verify_route_accepts_canonical_rejects_duplicate_malformed_and_oversized_payloads`
+  - Source: `tests/test_phase_1439_public_verifier_api_activation.py`
+  - Evidence: `['110-134', '136-188']`
+  - Summary: Public claimability verify route accepts canonical presentation and rejects duplicate, malformed, and oversized payloads through the verifier API.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `145` `invariant:phase1439_public_verifier_api_without_ecu_mint_ilc_settlement_or_wallet_authority`
+  - Source: `tests/test_phase_1439_public_verifier_api_activation.py`
+  - Evidence: `['88-108', '120-133']`
+  - Summary: Public verifier API is enabled for claimability presentation while ECU mint, ILC settlement, and wallet authority remain false.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `146` `invariant:phase1440_security_findings_1_3_11_13_14_resolved_and_claimability_integration_hardened`
+  - Source: `tests/test_phase_1440_claimability_integration_tests.py`
+  - Evidence: `['113-124', '127-136', '177-218', '221-227']`
+  - Summary: Claimability integration hardens duplicate, stale, malformed, residual-routing, price-clamp, and event-log retention findings while keeping value authority disabled.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `147` `invariant:phase1441_gap13_closed_public_claimability_api_enabled_without_ecu_mint_ilc_settlement_or_wallet_ops`
+  - Source: `tests/test_phase_1441_gap_13_closure_verdict.py`
+  - Evidence: `['35-46', '65-78', '80-95']`
+  - Summary: Gap 13 closure records public claimability/API blockers cleared while ECU mint, ILC settlement, wallet ops, public RC, and epoch transition remain false.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `148` `invariant:phase1442_werner_diagnostic_review_lane_only_no_ecu_distribution_no_flow_governor_cdl_not_settlement_grade_not_wallet_visible_not_transferable`
+  - Source: `tests/test_phase_1442_werner_diagnostic_wiring.py`
+  - Evidence: `['41-59', '91-108']`
+  - Summary: Werner diagnostic quote remains review-lane-only, not settlement-grade, not wallet-visible, not transferable, and records no ECU distribution/no flow-governor CDL tokens.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `149` `invariant:phase1443_allowlisted_python_files_have_agpl_spdx_no_unresolved_include_requires_public_rc_not_published`
+  - Source: `tests/test_phase_1443_agpl_license_header_audit_allowlist.py`
+  - Evidence: `['31-41', '44-51', '54-75']`
+  - Summary: AGPL license audit confirms allowlisted Python files have SPDX headers, no unresolved include requirements, and source-publication remains unauthorized.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `150` `invariant:phase1446_no_public_rc_no_epoch_transition_no_runtime_flag_activation_no_secret_material`
+  - Source: `tests/test_phase_1446_v03_genesis_root_signing_ceremony.py`
+  - Evidence: `['36-50', '53-72', '75-82']`
+  - Summary: v0.3 root signing ceremony records root-envelope signing status while public RC, epoch transition, runtime flag activation, release artifact signing, and secret material remain absent.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped

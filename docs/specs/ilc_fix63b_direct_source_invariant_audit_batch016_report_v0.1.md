@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 016
+
+- Phase: `1545p-Fix63b-batches014-018`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `151-160`
+- Direct read status: `complete`
+- Recommended edges: `12`
+- Accepted semantic edges written: `12`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `151` `invariant:phase1447_complete_not_pending_and_public_rc_gate_remains_blocked_pending_block6`
+  - Source: `tests/test_public_rc_drift_reconciliation_successor_manifest_plan.py`
+  - Evidence: `['11-23', '26-39', '41-52']`
+  - Summary: Public-RC drift reconciliation marks Phase 1447 historical complete, routes successor manifest work, and keeps the public gate blocked pending Block 6.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `152` `invariant:phase1447_public_repository_not_published_epoch_transition_unauthorized_manifest_signature_null_no_secret_material`
+  - Source: `tests/test_phase_1447_release_artifact_signing_manifest.py`
+  - Evidence: `['64-77', '79-92']`
+  - Summary: Release-artifact manifest sidecar records public repository not published, epoch transition unauthorized, manifest signature null, deterministic timestamp, and no secret material.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `153` `invariant:phase1447_release_manifest_canonical_hash_recomputes_artifact_set_matches_phase1446`
+  - Source: `tests/test_phase_1447_release_artifact_signing_manifest.py`
+  - Evidence: `['95-116']`
+  - Summary: Release manifest canonical content hash recomputes, and Phase 1446 root hash plus artifact set match the signing sidecar constants.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `154` `invariant:phase1460p_provider_usage_operational_only_not_protocol_truth_decimal_nonfinite_rejected_record_cap_enforced`
+  - Source: `tests/test_phase_1460p_provider_usage_adapter.py`
+  - Evidence: `['12-35', '38-70']`
+  - Summary: Provider usage adapter tracks local operational budget only, uses Decimal costs, rejects non-finite inputs, and enforces record caps.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `155` `invariant:phase1461p_local_capture_requires_consent_no_production_graph_write_public_rc_exclude_no_float_payloads`
+  - Source: `tests/test_phase_1461p_local_node_capture_consent_gate.py`
+  - Evidence: `['9-42', '44-68', '121-144']`
+  - Summary: Local node capture requires consent, emits deterministic local artifact, prevents production graph write, marks public-RC exclusion, and rejects float payloads.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `156` `invariant:phase1462p_idle_capacity_scheduler_private_fixture_only_filters_gaming_not_activated_candidate_cap_enforced`
+  - Source: `tests/test_phase_1462p_idle_capacity_scheduler.py`
+  - Evidence: `['13-58', '60-80', '83-108']`
+  - Summary: Idle-capacity scheduler is private-fixture-only, filters gaming/self-target candidates, stays not activated, and enforces candidate caps.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `157` `invariant:phase1464p_co_attestation_receipt_deterministic_sorted_verifiable_immutable_public_rc_exclude`
+  - Source: `tests/test_phase_1464p_co_attestation_receipt.py`
+  - Evidence: `['9-32']`
+  - Summary: Co-attestation receipt is deterministic, sorted by agent ID, verifiable, immutable, and public-RC excluded.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `158` `invariant:phase1464p_maintenance_task_executor_private_fixture_not_activated_public_rc_exclude_no_float_payloads`
+  - Source: `tests/test_phase_1464p_maintenance_task_executor.py`
+  - Evidence: `['13-37', '40-57']`
+  - Summary: Maintenance task executor builds private fixture artifacts, remains not activated, public-RC excluded, uses truth primitive query/response nodes, and rejects float payloads.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `159` `invariant:phase1465p_private_harness_full_stack_provider_scheduler_executor_co_attestation_public_rc_exclude`
+  - Source: `tests/test_phase_1465p_harness_integration.py`
+  - Evidence: `['13-57']`
+  - Summary: Private harness integration wires provider usage, scheduler, executor, and co-attestation into a public-RC-excluded full-stack fixture.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `160` `invariant:phase1466p_layer0_deterministic_private_public_rc_exclude_no_float_frozen_nested_containers`
+  - Source: `tests/test_phase_1466p_layer0_protocol_bundle.py`
+  - Evidence: `['10-34', '36-57']`
+  - Summary: Layer0 protocol bundle is deterministic, private/public-RC-excluded, rejects float inputs, and freezes nested containers under ADR-0009 layer0 boundaries.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
