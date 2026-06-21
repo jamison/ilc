@@ -1,0 +1,330 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch011",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:phase1244_harness_interfaces_import_prefix_lint_dynamic_import_detection_and_canonical_inventory",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-263"
+          ],
+          "path": "tests/test_phase_1244_import_boundary_lint_and_protocol_stubs.py",
+          "summary": "Direct read confirms harness interface protocols, no runtime IO imports, dynamic forbidden import detection, and canonical inventory export."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1244_import_boundary_lint_and_protocol_stubs.py:1-263",
+          "source": "invariant:phase1244_harness_interfaces_import_prefix_lint_dynamic_import_detection_and_canonical_inventory",
+          "target": "repo:file:893d61d0cf7e489c:tests_test_phase_1244_import_boundary_lint_and_protocol_stubs_py"
+        }
+      ],
+      "row_index": 101,
+      "source_file": "tests/test_phase_1244_import_boundary_lint_and_protocol_stubs.py",
+      "source_node": "repo:file:893d61d0cf7e489c:tests_test_phase_1244_import_boundary_lint_and_protocol_stubs_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1245_local_skill_preview_manifest_actions_harness_transport_storage_and_canonical_export",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-209"
+          ],
+          "path": "tests/test_phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation.py",
+          "summary": "Direct read confirms local skill preview is local-only, uses harness-owned transport/storage, rejects invalid requests, avoids public dependencies, and exports canonical JSON."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation.py:1-209",
+          "source": "invariant:phase1245_local_skill_preview_manifest_actions_harness_transport_storage_and_canonical_export",
+          "target": "repo:file:8fc2ad6e28910e7a:tests_test_phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_py"
+        }
+      ],
+      "row_index": 102,
+      "source_file": "tests/test_phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation.py",
+      "source_node": "repo:file:8fc2ad6e28910e7a:tests_test_phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1268_loopback_sidecar_endpoint_boundary_canonical_exports_and_nonclaims",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-185"
+          ],
+          "path": "tests/test_phase_1268_sidecar_loopback_projection_endpoint_boundary.py",
+          "summary": "Direct read confirms sidecar loopback projection endpoint boundaries, canonical exports, non-claims, and no public/non-loopback activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1268_sidecar_loopback_projection_endpoint_boundary.py:1-185",
+          "source": "invariant:phase1268_loopback_sidecar_endpoint_boundary_canonical_exports_and_nonclaims",
+          "target": "repo:file:69be03aac086167a:tests_test_phase_1268_sidecar_loopback_projection_endpoint_boundary_py"
+        }
+      ],
+      "row_index": 103,
+      "source_file": "tests/test_phase_1268_sidecar_loopback_projection_endpoint_boundary.py",
+      "source_node": "repo:file:69be03aac086167a:tests_test_phase_1268_sidecar_loopback_projection_endpoint_boundary_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1287_release_publication_signing_preflight_gate_inventory_and_nonclaims",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-145"
+          ],
+          "path": "tests/test_phase_1287_release_publication_signing_authorization_preflight.py",
+          "summary": "Direct read confirms release/publication/signing preflight records inventory and non-claims without authorizing public release or signing."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1287_release_publication_signing_authorization_preflight.py:1-145",
+          "source": "invariant:phase1287_release_publication_signing_preflight_gate_inventory_and_nonclaims",
+          "target": "repo:file:2e7812d0f1d067db:tests_test_phase_1287_release_publication_signing_authorization_preflight_py"
+        }
+      ],
+      "row_index": 104,
+      "source_file": "tests/test_phase_1287_release_publication_signing_authorization_preflight.py",
+      "source_node": "repo:file:2e7812d0f1d067db:tests_test_phase_1287_release_publication_signing_authorization_preflight_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1299_release_allowlist_artifact_genesis_readiness_preflight_and_nonclaims",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-176"
+          ],
+          "path": "tests/test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight.py",
+          "summary": "Direct read confirms release allowlist and Genesis readiness preflight artifacts plus non-claims remain blocked until explicit gates."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight.py:1-176",
+          "source": "invariant:phase1299_release_allowlist_artifact_genesis_readiness_preflight_and_nonclaims",
+          "target": "repo:file:4c878109112111c0:tests_test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight_py"
+        }
+      ],
+      "row_index": 105,
+      "source_file": "tests/test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight.py",
+      "source_node": "repo:file:4c878109112111c0:tests_test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1300_counsel_ip_publication_inventory_sources_nonclaims_and_frontier_routing",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-175"
+          ],
+          "path": "tests/test_phase_1300_counsel_ip_publication_clearance_inventory.py",
+          "summary": "Direct read confirms counsel/IP publication inventory sources, non-claims, and frontier routing are recorded without publication authority."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1300_counsel_ip_publication_clearance_inventory.py:1-175",
+          "source": "invariant:phase1300_counsel_ip_publication_inventory_sources_nonclaims_and_frontier_routing",
+          "target": "repo:file:e3f85b547221a127:tests_test_phase_1300_counsel_ip_publication_clearance_inventory_py"
+        }
+      ],
+      "row_index": 106,
+      "source_file": "tests/test_phase_1300_counsel_ip_publication_clearance_inventory.py",
+      "source_node": "repo:file:e3f85b547221a127:tests_test_phase_1300_counsel_ip_publication_clearance_inventory_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1316_closure_phase_ledger_blocker_classification_and_public_rc_nonclaims",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-168"
+          ],
+          "path": "tests/test_phase_1316_window_1303_1316_closure_implementation_audit.py",
+          "summary": "Direct read confirms closure ledger, blocker classification, and public-RC non-claims for the 1303-1316 window."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1316_window_1303_1316_closure_implementation_audit.py:1-168",
+          "source": "invariant:phase1316_closure_phase_ledger_blocker_classification_and_public_rc_nonclaims",
+          "target": "repo:file:8740c3c83545e4d7:tests_test_phase_1316_window_1303_1316_closure_implementation_audit_py"
+        }
+      ],
+      "row_index": 107,
+      "source_file": "tests/test_phase_1316_window_1303_1316_closure_implementation_audit.py",
+      "source_node": "repo:file:8740c3c83545e4d7:tests_test_phase_1316_window_1303_1316_closure_implementation_audit_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1331_capsule_v555_final_rc_blocker_map_and_identity_bootstrap_guard",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-165"
+          ],
+          "path": "tests/test_phase_1331_context_capsule_v5_55_release_candidate_freeze.py",
+          "summary": "Direct read confirms context capsule v5.55 records final RC blocker map, identity bootstrap guard, graph deltas, and non-authorization boundaries."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1331_context_capsule_v5_55_release_candidate_freeze.py:1-165",
+          "source": "invariant:phase1331_capsule_v555_final_rc_blocker_map_and_identity_bootstrap_guard",
+          "target": "repo:file:7f8b3a54917e8dc5:tests_test_phase_1331_context_capsule_v5_55_release_candidate_freeze_py"
+        }
+      ],
+      "row_index": 108,
+      "source_file": "tests/test_phase_1331_context_capsule_v5_55_release_candidate_freeze.py",
+      "source_node": "repo:file:7f8b3a54917e8dc5:tests_test_phase_1331_context_capsule_v5_55_release_candidate_freeze_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1332_fix4_private_endpoint_cbor_params_registry_atlas_source_export_hardening",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-204"
+          ],
+          "path": "tests/test_phase_1332_fix4_pre_1333_hardening.py",
+          "summary": "Direct read confirms private endpoint rejection, CBOR size bounds, transport principal params, registry integrity, atlas/source export gates, and function-size hardening."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1332_fix4_pre_1333_hardening.py:1-204",
+          "source": "invariant:phase1332_fix4_private_endpoint_cbor_params_registry_atlas_source_export_hardening",
+          "target": "repo:file:dcc1b3fa211b4a26:tests_test_phase_1332_fix4_pre_1333_hardening_py"
+        }
+      ],
+      "row_index": 109,
+      "source_file": "tests/test_phase_1332_fix4_pre_1333_hardening.py",
+      "source_node": "repo:file:dcc1b3fa211b4a26:tests_test_phase_1332_fix4_pre_1333_hardening_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1333_clean_source_export_materialization_marker_scan_dependency_scan_and_canonical_manifest",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-156"
+          ],
+          "path": "tests/test_phase_1333_source_allowlist_export_execution_gate.py",
+          "summary": "Direct read confirms source allowlist export execution gate materializes clean export only when marker/dependency scans pass and records canonical manifest/non-publication."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1333_source_allowlist_export_execution_gate.py:1-156",
+          "source": "invariant:phase1333_clean_source_export_materialization_marker_scan_dependency_scan_and_canonical_manifest",
+          "target": "repo:file:de5a75edd36a4e68:tests_test_phase_1333_source_allowlist_export_execution_gate_py"
+        }
+      ],
+      "row_index": 110,
+      "source_file": "tests/test_phase_1333_source_allowlist_export_execution_gate.py",
+      "source_node": "repo:file:de5a75edd36a4e68:tests_test_phase_1333_source_allowlist_export_execution_gate_py",
+      "source_node_materialized_in_this_batch": false
+    }
+  ],
+  "lmdb_application": {
+    "edges_written": 10,
+    "note": "Artifact file-node registration executed separately in same tranche.",
+    "safe_writer_phase": "1545p-Fix63b-batches009-013",
+    "status": "PASS"
+  },
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "non_claims": [
+    "No GOVERNS edge added unless a direct authority gap is confirmed.",
+    "No STATUS.md proxy evidence used for dispositions.",
+    "No public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized."
+  ],
+  "phase": "1545p-Fix63b-batches009-013",
+  "recommended_edge_count": 10,
+  "recommended_edge_types": [
+    "EVIDENCES"
+  ],
+  "row_range": [
+    101,
+    110
+  ],
+  "schema_version": "fix63b_direct_source_invariant_audit_batch.v0.2",
+  "source_ledger": "docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json"
+}

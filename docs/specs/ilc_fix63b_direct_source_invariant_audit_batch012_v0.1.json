@@ -1,0 +1,330 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch012",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:phase1337_public_path_sidecar_exclusion_blockers_and_public_serving_disabled",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-139"
+          ],
+          "path": "tests/test_phase_1337_public_path_sidecar_activation_or_exclusion_gate.py",
+          "summary": "Direct read confirms public path sidecar surfaces are excluded from first RC, blockers are open, and public serving remains disabled."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1337_public_path_sidecar_activation_or_exclusion_gate.py:1-139",
+          "source": "invariant:phase1337_public_path_sidecar_exclusion_blockers_and_public_serving_disabled",
+          "target": "repo:file:91c877df369cacec:tests_test_phase_1337_public_path_sidecar_activation_or_exclusion_gate_py"
+        }
+      ],
+      "row_index": 111,
+      "source_file": "tests/test_phase_1337_public_path_sidecar_activation_or_exclusion_gate.py",
+      "source_node": "repo:file:91c877df369cacec:tests_test_phase_1337_public_path_sidecar_activation_or_exclusion_gate_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1338_wallet_ecu_ilc_carry_forward_exact_numeric_safety_and_value_path_blockers",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-155"
+          ],
+          "path": "tests/test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate.py",
+          "summary": "Direct read confirms wallet/ECU/ILC value path is carried forward, exact numeric safety is preserved, and activation blockers remain open."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate.py:1-155",
+          "source": "invariant:phase1338_wallet_ecu_ilc_carry_forward_exact_numeric_safety_and_value_path_blockers",
+          "target": "repo:file:6128058fce2644e1:tests_test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate_py"
+        }
+      ],
+      "row_index": 112,
+      "source_file": "tests/test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate.py",
+      "source_node": "repo:file:6128058fce2644e1:tests_test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1341_blocked_publication_claim_gate_positive_evidence_scoped_not_published",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-87"
+          ],
+          "path": "tests/test_phase_1341_public_rc_publication_claim_gate.py",
+          "summary": "Direct read confirms public-RC publication claim gate has positive scoped evidence but remains blocked and performs no publication/signing/wallet activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1341_public_rc_publication_claim_gate.py:1-87",
+          "source": "invariant:phase1341_blocked_publication_claim_gate_positive_evidence_scoped_not_published",
+          "target": "repo:file:4c8c8aa7c35f3403:tests_test_phase_1341_public_rc_publication_claim_gate_py"
+        }
+      ],
+      "row_index": 113,
+      "source_file": "tests/test_phase_1341_public_rc_publication_claim_gate.py",
+      "source_node": "repo:file:4c8c8aa7c35f3403:tests_test_phase_1341_public_rc_publication_claim_gate_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1342_window_closure_final_public_rc_blockers_and_sequence_lock_requirement",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-142"
+          ],
+          "path": "tests/test_phase_1342_window_1330_1342_closure_handoff.py",
+          "summary": "Direct read confirms window closure/handoff records final public-RC blockers and requires next sequence lock."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1342_window_1330_1342_closure_handoff.py:1-142",
+          "source": "invariant:phase1342_window_closure_final_public_rc_blockers_and_sequence_lock_requirement",
+          "target": "repo:file:d76370d6a84e4360:tests_test_phase_1342_window_1330_1342_closure_handoff_py"
+        }
+      ],
+      "row_index": 114,
+      "source_file": "tests/test_phase_1342_window_1330_1342_closure_handoff.py",
+      "source_node": "repo:file:d76370d6a84e4360:tests_test_phase_1342_window_1330_1342_closure_handoff_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1358_secure_grpc_read_adapter_quic_submission_path_default_off_and_bounded_io",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-249"
+          ],
+          "path": "tests/test_phase_1358_production_bridge.py",
+          "summary": "Direct read confirms secure gRPC read adapter and QUIC submission path remain default-off with bounded IO controls."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1358_production_bridge.py:1-249",
+          "source": "invariant:phase1358_secure_grpc_read_adapter_quic_submission_path_default_off_and_bounded_io",
+          "target": "repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py"
+        }
+      ],
+      "row_index": 115,
+      "source_file": "tests/test_phase_1358_production_bridge.py",
+      "source_node": "repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1359_high001_agent_id_log_redaction_sender_privacy_and_default_off_transfer_mixing",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-184"
+          ],
+          "path": "tests/test_phase_1359_high_001_defense.py",
+          "summary": "Direct read confirms HIGH-001 hardening around agent-id log redaction, sender privacy, and default-off transfer mixing."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1359_high_001_defense.py:1-184",
+          "source": "invariant:phase1359_high001_agent_id_log_redaction_sender_privacy_and_default_off_transfer_mixing",
+          "target": "repo:file:52c17273d099b77c:tests_test_phase_1359_high_001_defense_py"
+        }
+      ],
+      "row_index": 116,
+      "source_file": "tests/test_phase_1359_high_001_defense.py",
+      "source_node": "repo:file:52c17273d099b77c:tests_test_phase_1359_high_001_defense_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1367_validator_reward_budget_binding_and_pre_gate_fix_nonclaim",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-64"
+          ],
+          "path": "tests/test_phase_1367_pre_gate_fix_pass.py",
+          "summary": "Direct read confirms validator reward budget binding and pre-gate fix pass are recorded as non-claims without new scope."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1367_pre_gate_fix_pass.py:1-64",
+          "source": "invariant:phase1367_validator_reward_budget_binding_and_pre_gate_fix_nonclaim",
+          "target": "repo:file:95bff81ed6d87d32:tests_test_phase_1367_pre_gate_fix_pass_py"
+        }
+      ],
+      "row_index": 117,
+      "source_file": "tests/test_phase_1367_pre_gate_fix_pass.py",
+      "source_node": "repo:file:95bff81ed6d87d32:tests_test_phase_1367_pre_gate_fix_pass_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1369_fix1_numeric_magnitude_governance_quality_genesis_counter_and_lmdb_batch_hardening",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-229"
+          ],
+          "path": "tests/test_phase_1369_fix1_numeric_hardening.py",
+          "summary": "Direct read confirms numeric magnitude guards, governance quality bounds, serialized Genesis guardrail counter, and LMDB pruning batch hardening."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1369_fix1_numeric_hardening.py:1-229",
+          "source": "invariant:phase1369_fix1_numeric_magnitude_governance_quality_genesis_counter_and_lmdb_batch_hardening",
+          "target": "repo:file:82203e7adfe94179:tests_test_phase_1369_fix1_numeric_hardening_py"
+        }
+      ],
+      "row_index": 118,
+      "source_file": "tests/test_phase_1369_fix1_numeric_hardening.py",
+      "source_node": "repo:file:82203e7adfe94179:tests_test_phase_1369_fix1_numeric_hardening_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1385_tla_safetynodualcert_defer_with_authority_and_scope_distinction",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-82"
+          ],
+          "path": "tests/test_phase_1385_tla_safetynodualcert_disposition.py",
+          "summary": "Direct read confirms TLA SafetyNoDualCert is deferred with authority while distinguishing owned-object from epoch-checkpoint/shared-object scope."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1385_tla_safetynodualcert_disposition.py:1-82",
+          "source": "invariant:phase1385_tla_safetynodualcert_defer_with_authority_and_scope_distinction",
+          "target": "repo:file:916e55840875464c:tests_test_phase_1385_tla_safetynodualcert_disposition_py"
+        }
+      ],
+      "row_index": 119,
+      "source_file": "tests/test_phase_1385_tla_safetynodualcert_disposition.py",
+      "source_node": "repo:file:916e55840875464c:tests_test_phase_1385_tla_safetynodualcert_disposition_py",
+      "source_node_materialized_in_this_batch": false
+    },
+    {
+      "candidate_id": "invariant:phase1386_genesis_validator_bootstrap_single_custodian_exception_and_mainnet_routing_scope",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-117"
+          ],
+          "path": "tests/test_phase_1386_genesis_validator_bootstrap_record.py",
+          "summary": "Direct read confirms Genesis validator bootstrap is a single-custodian pre-RC exception, not multi-operator completion, and routes split custody to mainnet prerequisites."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "duplicate_edges_observed": [],
+      "notes": "Direct source read used; STATUS.md proxy evidence not used.",
+      "recommended_new_edges": [
+        {
+          "annotation_method": "direct_source_manual_read_fix63b",
+          "candidate_status": "fix63b_direct_source_read_evidence_edge",
+          "confidence": "high",
+          "edge_type": "EVIDENCES",
+          "evidence": "tests/test_phase_1386_genesis_validator_bootstrap_record.py:1-117",
+          "source": "invariant:phase1386_genesis_validator_bootstrap_single_custodian_exception_and_mainnet_routing_scope",
+          "target": "repo:file:ec5c46e61b85cadb:tests_test_phase_1386_genesis_validator_bootstrap_record_py"
+        }
+      ],
+      "row_index": 120,
+      "source_file": "tests/test_phase_1386_genesis_validator_bootstrap_record.py",
+      "source_node": "repo:file:ec5c46e61b85cadb:tests_test_phase_1386_genesis_validator_bootstrap_record_py",
+      "source_node_materialized_in_this_batch": false
+    }
+  ],
+  "lmdb_application": {
+    "edges_written": 10,
+    "note": "Artifact file-node registration executed separately in same tranche.",
+    "safe_writer_phase": "1545p-Fix63b-batches009-013",
+    "status": "PASS"
+  },
+  "lmdb_target": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "non_claims": [
+    "No GOVERNS edge added unless a direct authority gap is confirmed.",
+    "No STATUS.md proxy evidence used for dispositions.",
+    "No public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized."
+  ],
+  "phase": "1545p-Fix63b-batches009-013",
+  "recommended_edge_count": 10,
+  "recommended_edge_types": [
+    "EVIDENCES"
+  ],
+  "row_range": [
+    111,
+    120
+  ],
+  "schema_version": "fix63b_direct_source_invariant_audit_batch.v0.2",
+  "source_ledger": "docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json"
+}
