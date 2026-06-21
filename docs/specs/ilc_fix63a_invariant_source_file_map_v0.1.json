@@ -1,0 +1,1351 @@
+{
+  "description": "Source file map for Fix63a manual read pass \u2014 336 confirmed_support_stub invariant nodes",
+  "source": "Cross-referenced from docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json (293) and phase_1545p_fix57 walkthrough (43)",
+  "count": 336,
+  "entries": [
+    {
+      "candidate_id": "invariant:adr0020_acceptance_scope_boundary_and_unsigned_v02_candidate_presence",
+      "source_file": "tests/test_phase_1157_adr_0020_acceptance.py"
+    },
+    {
+      "candidate_id": "invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary",
+      "source_file": "tests/test_phase_1173_adr_0036_0037_acceptance.py"
+    },
+    {
+      "candidate_id": "invariant:adr0036_release_key_draft_status_lineage_separation_and_release_key_chain",
+      "source_file": "tests/test_phase_1159_adr_0036_release_key_draft.py"
+    },
+    {
+      "candidate_id": "invariant:agent_graph_projection_runtime_canonical_bounded_exports_filters_path_to_genesis_and_fetch_incentive_slice",
+      "source_file": "tests/test_phase_1229_agent_graph_projection_runtime.py"
+    },
+    {
+      "candidate_id": "invariant:agent_refutation_zeroes_false_claim_stake_and_decanonicalizes",
+      "source_file": "tests/test_contradiction_war.py"
+    },
+    {
+      "candidate_id": "invariant:application_numbers_addendum_does_not_clear_public_path_or_authorize_public_rc",
+      "source_file": "tests/test_patent_application_numbers_status.py"
+    },
+    {
+      "candidate_id": "invariant:atlas_g_004_005_high_authority_classification_dependency_bridge_and_package_profile_edges",
+      "source_file": "tests/test_phase_1254_atlas_g_004_005_graph_bridge.py"
+    },
+    {
+      "candidate_id": "invariant:attestation_provenance_primitive_invocation_recipe_scope_distinguished",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:auto_mine_uses_decimal_wallet_stake_accounting",
+      "source_file": "tests/test_agent_auto_strategy.py"
+    },
+    {
+      "candidate_id": "invariant:branchial_claim_projection_schema_operations_determinism_and_adr0037_criterion",
+      "source_file": "tests/test_phase_1170_branchial_projection_build.py"
+    },
+    {
+      "candidate_id": "invariant:bridge_realism_exercise_no_native_p2p_implementation",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:bundle_and_registry_signature_fingerprint_mismatch_fails_closed",
+      "source_file": "tests/test_crypto_migration_bundle_registry_completion_284.py"
+    },
+    {
+      "candidate_id": "invariant:candidate_scoring_not_authority_human_objective_selection_boundary",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_key_registry_empty_default_unknown",
+      "source_file": "tests/test_canon_bundle_key_registry.py"
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_sign_fails_closed_on_missing_or_invalid_key",
+      "source_file": "tests/test_canon_bundle_sign_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_sign_no_overwrite_without_flag",
+      "source_file": "tests/test_canon_bundle_sign_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_bundle_signing_repair_testing_snapshot_explicit_toggle_and_guardrails",
+      "source_file": "tests/test_phase_1197_canon_bundle_signing_repair.py"
+    },
+    {
+      "candidate_id": "invariant:canon_cli_output_deterministic",
+      "source_file": "tests/test_canon_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_cli_rejects_tampered_hash",
+      "source_file": "tests/test_canon_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_cluster_a_replay_proof_uses_shared_cli_error_module",
+      "source_file": "tests/test_cli_error_output_standardization_guardrail.py"
+    },
+    {
+      "candidate_id": "invariant:canon_export_exported_at_utc",
+      "source_file": "tests/test_canon_export_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_export_preserves_overwrite_protection",
+      "source_file": "tests/test_canon_export_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_export_rejects_invalid_exact_numeric_balance",
+      "source_file": "tests/test_canon_export_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_key_registry_cli_outputs_json_error_contract",
+      "source_file": "tests/test_canon_bundle_key_registry_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature",
+      "source_file": "tests/test_canon_bundle_key_registry_cli.py"
+    },
+    {
+      "candidate_id": "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection",
+      "source_file": "tests/test_phase_1235_commit_epoch_canonical_mutation.py"
+    },
+    {
+      "candidate_id": "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs",
+      "source_file": "tests/test_phase_1236_fix3_commit_epoch_causal_frontier_projection.py"
+    },
+    {
+      "candidate_id": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+      "source_file": "tests/test_sidecar_ccss_cli_public_ux.py"
+    },
+    {
+      "candidate_id": "invariant:claim_composition_projection_schema_authority_source_allowed_reasons",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:cluster_a_policy_hash_canonical_json_replay_determinism",
+      "source_file": "tests/test_ilc_cluster_a_replay_determinism.py"
+    },
+    {
+      "candidate_id": "invariant:curated_seed_authority_source_generated_out_artifacts_reproducible",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:data_center_ballast_ilc_utilization_not_worse_than_baseline",
+      "source_file": "tests/test_data_center_ballast.py"
+    },
+    {
+      "candidate_id": "invariant:domain_exception_hierarchy_and_backward_compatible_imports_stable",
+      "source_file": "tests/test_domain_exception_hierarchy_guardrail.py"
+    },
+    {
+      "candidate_id": "invariant:ecu_aware_decimal_staking_strategy",
+      "source_file": "tests/test_agent_strategy.py"
+    },
+    {
+      "candidate_id": "invariant:edge_path_lineage_only_link_path_semantic_relations",
+      "source_file": "tests/test_edge_link_boundary_phase_1007.py"
+    },
+    {
+      "candidate_id": "invariant:edge_recipe_canonicalization_scope_distinguishes_attestation_provenance",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:freshness_gate_genesis_exemption_monotonic_floor_fail_closed_and_diversity_interaction",
+      "source_file": "tests/test_freshness_gate_phase_217.py"
+    },
+    {
+      "candidate_id": "invariant:gap14_adapter_extraction_structural_store_interfaces_primitive_registry_and_lmdb_adapter",
+      "source_file": "tests/test_phase_1250_gap14_adapter_extraction.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_32_node_composability_audit_projection_class_and_authority_source_contract",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_accrual_governor_phase_218_gate_cli_contract",
+      "source_file": "tests/test_genesis_accrual_governor_gate_phase_218.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_accrual_theta_constants_hard_cap_taper_and_fail_closed_inputs",
+      "source_file": "tests/test_genesis_accrual_governor_phase_218.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_attestation_ex_post_facto_no_history_rewrite_no_runtime_effect",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_attestation_node_star_map_overrides_authority_traceability_and_crawler_safeguards",
+      "source_file": "tests/test_phase_1142_atlas_tier1_genesis_attestation.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_authority_traceability_separate_from_derivation_reachability",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint1_signed_star_map_authority_traceability_and_reachability_boundary",
+      "source_file": "tests/test_phase_1143_genesis_compile_checkpoint_1.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_1_authority_traceability_pass_basis_reachability_gap_documented",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_1_source_coverage_partial_authority_trace_pass",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_basis_boundary",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_checkpoint_2_authority_traceability_pass_legacy_fail_expected",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_coverage_partial_result_and_edge_recipe_counts",
+      "source_file": "tests/test_genesis_compile_coverage_diagnostic.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_compile_coverage_partial_with_structural_gaps_authority_traceability_31_32_recipes_complete",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_epistemic_work_task_json_alias_and_task_queue_bridge",
+      "source_file": "tests/test_genesis_work_task_model.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_graph_zero_keystone_nodes_hub_spoke_resilience",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_node_candidate_crawl_review_queue_rejection_and_promotion_trace_contract",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_node_candidate_crawl_star_map_and_review_ledger_consistency",
+      "source_file": "tests/test_genesis_node_candidate_crawl.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_optimization_harness_rejects_activation_claims_invalid_edges_missing_recipes",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_readiness_audit_reverification_gate_cli_contract",
+      "source_file": "tests/test_genesis_readiness_audit_reverification_gate_phase_1012.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_readiness_remediation_closure_gate_cli_contract",
+      "source_file": "tests/test_genesis_readiness_remediation_closure_gate_phase_1009.py"
+    },
+    {
+      "candidate_id": "invariant:genesis_root_envelope_binds_m1_m2_m3_manifest_hashes",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_signing_private_key_never_committed_or_agent_handled",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_star_map_authority_trace_depth_max_2_hub_spoke",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_star_map_edge_recipe_completeness_77_of_77",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:genesis_star_map_gap_analysis_review_categories_and_hypergraph_shape",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:gossip_receive_accepts_canonical_node_ids_and_rejects_legacy_or_mismatched_ids",
+      "source_file": "tests/test_node_id_runtime_bridge_phase_1003.py"
+    },
+    {
+      "candidate_id": "invariant:governance_weight_decay_genesis_baseline_vote_share_precision_and_input_guards",
+      "source_file": "tests/test_governance_weight_phase_207.py"
+    },
+    {
+      "candidate_id": "invariant:graph_edge_iterators_and_public_edges_surface_removed",
+      "source_file": "tests/test_graph_edges.py"
+    },
+    {
+      "candidate_id": "invariant:hardware_archetype_strategy_applies_to_agent_mining",
+      "source_file": "tests/test_hardware_archetypes.py"
+    },
+    {
+      "candidate_id": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+      "source_file": "tests/test_hash_id_compatibility_contract_281.py"
+    },
+    {
+      "candidate_id": "invariant:idea_descent_genesis_candidate_refutation_and_trace_integrity",
+      "source_file": "tests/test_idea_descent_genesis_star_map_loop.py"
+    },
+    {
+      "candidate_id": "invariant:idea_descent_genesis_candidate_refutation_trace_contract",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:idea_descent_genesis_rework_local_rehearsal_no_graph_write_no_signing",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:idea_descent_rehearsal_sidecar_local_only_canonical_hash_determinism_no_activation_no_writes",
+      "source_file": "tests/test_phase_1546p_idea_descent_rehearsal_sidecar.py"
+    },
+    {
+      "candidate_id": "invariant:ilc_core_code_health_thresholds_not_regressed",
+      "source_file": "tests/test_code_health.py"
+    },
+    {
+      "candidate_id": "invariant:ilc_node_v0_ndjson_roundtrip_and_csv_export",
+      "source_file": "tests/test_ilc_node_v0.py"
+    },
+    {
+      "candidate_id": "invariant:j006_shadow_only_no_public_activation_no_random_no_float",
+      "source_file": "tests/test_phase_1396_j006_jury_assignment_runtime.py"
+    },
+    {
+      "candidate_id": "invariant:j007_shadow_ingestion_no_production_ingestion_no_live_ecu_distribution_no_random_no_float",
+      "source_file": "tests/test_phase_1397_j007_shadow_public_ingestion_harness.py"
+    },
+    {
+      "candidate_id": "invariant:ledger_phase3_no_loose_any_and_has_bundle_replay_audit_typed_markers",
+      "source_file": "tests/test_ledger_typed_contract_guardrails_phase3.py"
+    },
+    {
+      "candidate_id": "invariant:ledger_signature_migration_dual_verify_cutoff_and_security_contract",
+      "source_file": "tests/test_ledger_signature_migration_contract_282.py"
+    },
+    {
+      "candidate_id": "invariant:legacy_kernel_genesis_graph_boot_and_derivative_link",
+      "source_file": "tests/test_kernel.py"
+    },
+    {
+      "candidate_id": "invariant:lineage_lifecycle_event_schema_transition_pair_coverage",
+      "source_file": "tests/test_lineage_event_schema_phase_240.py"
+    },
+    {
+      "candidate_id": "invariant:lmdb_public_runtime_persistence_restart_decimal_normalization_and_rollback",
+      "source_file": "tests/test_lmdb_public_runtime_store.py"
+    },
+    {
+      "candidate_id": "invariant:mcp_cli_invocation_json_payload_sources_and_audit_logging",
+      "source_file": "tests/test_mcp_cli_adapter.py"
+    },
+    {
+      "candidate_id": "invariant:merkle_laplacian_followon_does_not_authorize_publication_or_epoch_commitment_activation",
+      "source_file": "tests/test_merkle_laplacian_v02_followon_sims.py"
+    },
+    {
+      "candidate_id": "invariant:merkle_laplacian_strike_force_is_research_positive_with_publication_gates_remaining",
+      "source_file": "tests/test_merkle_laplacian_v02_strike_force_sim.py"
+    },
+    {
+      "candidate_id": "invariant:no_default_v1_public_fastapi_routes_and_protocol_routes_preserved",
+      "source_file": "tests/test_fastapi_route_cleanup_1378.py"
+    },
+    {
+      "candidate_id": "invariant:no_duplicate_imports_or_consecutive_duplicate_lines_outside_explicit_legacy_allowlist",
+      "source_file": "tests/test_duplicate_definitions.py"
+    },
+    {
+      "candidate_id": "invariant:no_ilc_core_runtime_mutation_phase_354",
+      "source_file": "tests/test_adm_003_7_plus_1_panel_role_354.py"
+    },
+    {
+      "candidate_id": "invariant:no_public_edges_attribute_usage_outside_explicit_allowlist",
+      "source_file": "tests/test_edge_removal_phase1_guardrails.py"
+    },
+    {
+      "candidate_id": "invariant:node_id_canonical_default_determinism_and_float_payload_rejection",
+      "source_file": "tests/test_node_id_dual_contract_phase_1002.py"
+    },
+    {
+      "candidate_id": "invariant:node_id_migration_rewrites_legacy_preserves_canonical_and_reports_stats",
+      "source_file": "tests/test_node_id_migration_utility_phase_1004.py"
+    },
+    {
+      "candidate_id": "invariant:node_value_input_canon_required_fields_optional_freshness_and_telemetry",
+      "source_file": "tests/test_node_value_input_canon_phase_203.py"
+    },
+    {
+      "candidate_id": "invariant:node_value_policy_migration_strict_mode_legacy_bridge_and_version_rejection",
+      "source_file": "tests/test_node_value_policy_migration_phase_209.py"
+    },
+    {
+      "candidate_id": "invariant:non_replay_domain_exception_hierarchy_contract",
+      "source_file": "tests/test_non_replay_domain_exception_foundation.py"
+    },
+    {
+      "candidate_id": "invariant:observed_repo_hypergraph_shape_and_star_map_gap_categories",
+      "source_file": "tests/test_genesis_star_map_gap_analysis.py"
+    },
+    {
+      "candidate_id": "invariant:package_hygiene_root_archive_manifest_and_chat_corpus_policy",
+      "source_file": "tests/test_package_hygiene_phase_1005.py"
+    },
+    {
+      "candidate_id": "invariant:package_profiles_nonexcisable_components_import_inventory_and_canonical_export",
+      "source_file": "tests/test_phase_1243_package_boundary_inventory.py"
+    },
+    {
+      "candidate_id": "invariant:path_lift_counterfactual_determinism_ranking_validation_and_provenance",
+      "source_file": "tests/test_path_lift_counterfactual_phase_214.py"
+    },
+    {
+      "candidate_id": "invariant:phase1143_authority_traceability_gate_not_basis_reachability",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase1218b_transport_ledger_security_hardening_oom_ssrf_tmp_race_prune_spoofing_deadline_tokens",
+      "source_file": "tests/test_phase_1218b_security_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase1224_fix1_security_hardening_tls_bounds_archive_canonical_json_and_sensitive_guardrail",
+      "source_file": "tests/test_phase_1224_fix1_post_closure_audit_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase1244_harness_interfaces_import_prefix_lint_dynamic_import_detection_and_canonical_inventory",
+      "source_file": "tests/test_phase_1244_import_boundary_lint_and_protocol_stubs.py"
+    },
+    {
+      "candidate_id": "invariant:phase1245_local_skill_preview_manifest_actions_harness_transport_storage_and_canonical_export",
+      "source_file": "tests/test_phase_1245_openclaw_nemoclaw_skill_preview_dependency_isolation.py"
+    },
+    {
+      "candidate_id": "invariant:phase1268_loopback_sidecar_endpoint_boundary_canonical_exports_and_nonclaims",
+      "source_file": "tests/test_phase_1268_sidecar_loopback_projection_endpoint_boundary.py"
+    },
+    {
+      "candidate_id": "invariant:phase1287_release_publication_signing_preflight_gate_inventory_and_nonclaims",
+      "source_file": "tests/test_phase_1287_release_publication_signing_authorization_preflight.py"
+    },
+    {
+      "candidate_id": "invariant:phase1299_release_allowlist_artifact_genesis_readiness_preflight_and_nonclaims",
+      "source_file": "tests/test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight.py"
+    },
+    {
+      "candidate_id": "invariant:phase1300_counsel_ip_publication_inventory_sources_nonclaims_and_frontier_routing",
+      "source_file": "tests/test_phase_1300_counsel_ip_publication_clearance_inventory.py"
+    },
+    {
+      "candidate_id": "invariant:phase1316_closure_phase_ledger_blocker_classification_and_public_rc_nonclaims",
+      "source_file": "tests/test_phase_1316_window_1303_1316_closure_implementation_audit.py"
+    },
+    {
+      "candidate_id": "invariant:phase1331_capsule_v555_final_rc_blocker_map_and_identity_bootstrap_guard",
+      "source_file": "tests/test_phase_1331_context_capsule_v5_55_release_candidate_freeze.py"
+    },
+    {
+      "candidate_id": "invariant:phase1332_fix4_private_endpoint_cbor_params_registry_atlas_source_export_hardening",
+      "source_file": "tests/test_phase_1332_fix4_pre_1333_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase1333_clean_source_export_materialization_marker_scan_dependency_scan_and_canonical_manifest",
+      "source_file": "tests/test_phase_1333_source_allowlist_export_execution_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1337_public_path_sidecar_exclusion_blockers_and_public_serving_disabled",
+      "source_file": "tests/test_phase_1337_public_path_sidecar_activation_or_exclusion_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1338_wallet_ecu_ilc_carry_forward_exact_numeric_safety_and_value_path_blockers",
+      "source_file": "tests/test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1341_blocked_publication_claim_gate_positive_evidence_scoped_not_published",
+      "source_file": "tests/test_phase_1341_public_rc_publication_claim_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1342_window_closure_final_public_rc_blockers_and_sequence_lock_requirement",
+      "source_file": "tests/test_phase_1342_window_1330_1342_closure_handoff.py"
+    },
+    {
+      "candidate_id": "invariant:phase1358_secure_grpc_read_adapter_quic_submission_path_default_off_and_bounded_io",
+      "source_file": "tests/test_phase_1358_production_bridge.py"
+    },
+    {
+      "candidate_id": "invariant:phase1359_high001_agent_id_log_redaction_sender_privacy_and_default_off_transfer_mixing",
+      "source_file": "tests/test_phase_1359_high_001_defense.py"
+    },
+    {
+      "candidate_id": "invariant:phase1367_validator_reward_budget_binding_and_pre_gate_fix_nonclaim",
+      "source_file": "tests/test_phase_1367_pre_gate_fix_pass.py"
+    },
+    {
+      "candidate_id": "invariant:phase1369_fix1_numeric_magnitude_governance_quality_genesis_counter_and_lmdb_batch_hardening",
+      "source_file": "tests/test_phase_1369_fix1_numeric_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase1385_tla_safetynodualcert_defer_with_authority_and_scope_distinction",
+      "source_file": "tests/test_phase_1385_tla_safetynodualcert_disposition.py"
+    },
+    {
+      "candidate_id": "invariant:phase1386_genesis_validator_bootstrap_single_custodian_exception_and_mainnet_routing_scope",
+      "source_file": "tests/test_phase_1386_genesis_validator_bootstrap_record.py"
+    },
+    {
+      "candidate_id": "invariant:phase1387b_genesis_compile_candidate_reachability_authority_traceability_and_bootstrap_axioms",
+      "source_file": "tests/test_phase_1387b_sim_genesis_compile_02.py"
+    },
+    {
+      "candidate_id": "invariant:phase1387c_compiler_basis_expansion_empty_unreachable_gap_and_two_tier_verdict",
+      "source_file": "tests/test_phase_1387c_compiler_basis_expansion.py"
+    },
+    {
+      "candidate_id": "invariant:phase1387d_adr0035_type_definition_compositional_recipe_snapshot_and_non_attributable_definition_nodes",
+      "source_file": "tests/test_phase_1387d_adr_0035_spec.py"
+    },
+    {
+      "candidate_id": "invariant:phase1387e_star_map_expansion_54_nodes_basis_reachable_partial_source_coverage",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase1387f_authority_trace_depth_duplicate_recipes_and_orphan_node_analysis",
+      "source_file": "tests/test_phase_1387f_graph_structure_analysis.py"
+    },
+    {
+      "candidate_id": "invariant:phase1387g_epistemic_leverage_zero_keystones_and_hub_spoke_resilience",
+      "source_file": "tests/test_phase_1387g_epistemic_leverage.py"
+    },
+    {
+      "candidate_id": "invariant:phase1387i_graphopt_synthesis_max_depth_zero_keystones_recipe_canonicalization_and_orphan_leaf_findings",
+      "source_file": "tests/test_phase_1387i_synthesis_report.py"
+    },
+    {
+      "candidate_id": "invariant:phase1388a_no_external_legal_opinion_no_runtime_activation_no_public_claimability_activation",
+      "source_file": "tests/test_phase_1388a_cdl_048_self_counsel_clearance.py"
+    },
+    {
+      "candidate_id": "invariant:phase1389b_docs_no_rerun_activation_no_wallet_no_ecu_mint_no_ilc_settlement_no_cdl_mutation",
+      "source_file": "tests/test_phase_1389b_claimability_public_mode_runtime_docs.py"
+    },
+    {
+      "candidate_id": "invariant:phase1389b_public_api_and_public_claimability_not_activated_duplicate_replay_claim_window_rejected",
+      "source_file": "tests/test_phase_1389b_claimability_public_mode_runtime.py"
+    },
+    {
+      "candidate_id": "invariant:phase1401_reviewer_payment_not_activated_no_ledger_treasury_or_ecu_distribution_write",
+      "source_file": "tests/test_phase_1401_cdl_091_runtime_stub.py"
+    },
+    {
+      "candidate_id": "invariant:phase1409_maintenance_lottery_not_activated_no_draw_no_ecu_distribution_no_ledger_or_treasury_write",
+      "source_file": "tests/test_phase_1409_cdl_093_maintenance_lottery_stub.py"
+    },
+    {
+      "candidate_id": "invariant:phase1410_adr0042_no_vrf_runtime_no_production_assignment_no_j008_implemented_claim",
+      "source_file": "tests/test_phase_1410_vrf_adr.py"
+    },
+    {
+      "candidate_id": "invariant:phase1410_fix1_no_test_vector_skip_no_duplicate_agent_ids_no_epoch_zero_rejection",
+      "source_file": "tests/test_phase_1410_fix1_pre_vrf_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase1413_vrf_integration_security_no_random_no_assert_no_private_key_paths",
+      "source_file": "tests/test_phase_1413_vrf_integration.py"
+    },
+    {
+      "candidate_id": "invariant:phase1415_review_lane_quote_only_no_graph_write_no_public_economics_no_payment_authorization",
+      "source_file": "tests/test_phase_1415_review_lane_admission_runtime.py"
+    },
+    {
+      "candidate_id": "invariant:phase1423_no_live_llm_no_external_model_no_settlement_no_production_ecu_no_vps_provisioning_no_gate_patch",
+      "source_file": "tests/test_phase_1423_rehearsal_criteria.py"
+    },
+    {
+      "candidate_id": "invariant:phase1425_no_production_jury_execution_surface_activation",
+      "source_file": "tests/test_phase_1425_pre_gate_verification.py"
+    },
+    {
+      "candidate_id": "invariant:phase1428_window_closure_no_window_1429_open_no_public_rc_no_public_serving",
+      "source_file": "tests/test_phase_1428_window_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1433_no_live_llm_no_public_serving_no_public_rc_no_epoch_transition_no_cdl_mutation_no_wallet_or_treasury_write",
+      "source_file": "tests/test_phase_1433_rehearsal_verdict.py"
+    },
+    {
+      "candidate_id": "invariant:phase1433_private_rehearsal_pass_rights_safe_dataset_wipe_right_and_no_public_activation",
+      "source_file": "tests/test_phase_1433_rehearsal_verdict.py"
+    },
+    {
+      "candidate_id": "invariant:phase1436_public_fetch_sidecar_projection_without_public_rc_ecu_distribution_or_epoch_transition",
+      "source_file": "tests/test_phase_1436_public_fetch_serving_activation.py"
+    },
+    {
+      "candidate_id": "invariant:phase1438_public_claimability_sidecar_without_ecu_mint_ilc_settlement_wallet_public_rc_native_rust_p2p_or_epoch_transition",
+      "source_file": "tests/test_phase_1438_cdl088_public_claimability_activation.py"
+    },
+    {
+      "candidate_id": "invariant:phase1439_public_claimability_verify_route_accepts_canonical_rejects_duplicate_malformed_and_oversized_payloads",
+      "source_file": "tests/test_phase_1439_public_verifier_api_activation.py"
+    },
+    {
+      "candidate_id": "invariant:phase1439_public_verifier_api_without_ecu_mint_ilc_settlement_or_wallet_authority",
+      "source_file": "tests/test_phase_1439_public_verifier_api_activation.py"
+    },
+    {
+      "candidate_id": "invariant:phase1440_security_findings_1_3_11_13_14_resolved_and_claimability_integration_hardened",
+      "source_file": "tests/test_phase_1440_claimability_integration_tests.py"
+    },
+    {
+      "candidate_id": "invariant:phase1441_gap13_closed_public_claimability_api_enabled_without_ecu_mint_ilc_settlement_or_wallet_ops",
+      "source_file": "tests/test_phase_1441_gap_13_closure_verdict.py"
+    },
+    {
+      "candidate_id": "invariant:phase1442_werner_diagnostic_review_lane_only_no_ecu_distribution_no_flow_governor_cdl_not_settlement_grade_not_wallet_visible_not_transferable",
+      "source_file": "tests/test_phase_1442_werner_diagnostic_wiring.py"
+    },
+    {
+      "candidate_id": "invariant:phase1443_allowlisted_python_files_have_agpl_spdx_no_unresolved_include_requires_public_rc_not_published",
+      "source_file": "tests/test_phase_1443_agpl_license_header_audit_allowlist.py"
+    },
+    {
+      "candidate_id": "invariant:phase1446_no_public_rc_no_epoch_transition_no_runtime_flag_activation_no_secret_material",
+      "source_file": "tests/test_phase_1446_v03_genesis_root_signing_ceremony.py"
+    },
+    {
+      "candidate_id": "invariant:phase1447_complete_not_pending_and_public_rc_gate_remains_blocked_pending_block6",
+      "source_file": "tests/test_public_rc_drift_reconciliation_successor_manifest_plan.py"
+    },
+    {
+      "candidate_id": "invariant:phase1447_public_repository_not_published_epoch_transition_unauthorized_manifest_signature_null_no_secret_material",
+      "source_file": "tests/test_phase_1447_release_artifact_signing_manifest.py"
+    },
+    {
+      "candidate_id": "invariant:phase1447_release_manifest_canonical_hash_recomputes_artifact_set_matches_phase1446",
+      "source_file": "tests/test_phase_1447_release_artifact_signing_manifest.py"
+    },
+    {
+      "candidate_id": "invariant:phase1460p_provider_usage_operational_only_not_protocol_truth_decimal_nonfinite_rejected_record_cap_enforced",
+      "source_file": "tests/test_phase_1460p_provider_usage_adapter.py"
+    },
+    {
+      "candidate_id": "invariant:phase1461p_local_capture_requires_consent_no_production_graph_write_public_rc_exclude_no_float_payloads",
+      "source_file": "tests/test_phase_1461p_local_node_capture_consent_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1462p_idle_capacity_scheduler_private_fixture_only_filters_gaming_not_activated_candidate_cap_enforced",
+      "source_file": "tests/test_phase_1462p_idle_capacity_scheduler.py"
+    },
+    {
+      "candidate_id": "invariant:phase1464p_co_attestation_receipt_deterministic_sorted_verifiable_immutable_public_rc_exclude",
+      "source_file": "tests/test_phase_1464p_co_attestation_receipt.py"
+    },
+    {
+      "candidate_id": "invariant:phase1464p_maintenance_task_executor_private_fixture_not_activated_public_rc_exclude_no_float_payloads",
+      "source_file": "tests/test_phase_1464p_maintenance_task_executor.py"
+    },
+    {
+      "candidate_id": "invariant:phase1465p_private_harness_full_stack_provider_scheduler_executor_co_attestation_public_rc_exclude",
+      "source_file": "tests/test_phase_1465p_harness_integration.py"
+    },
+    {
+      "candidate_id": "invariant:phase1466p_layer0_deterministic_private_public_rc_exclude_no_float_frozen_nested_containers",
+      "source_file": "tests/test_phase_1466p_layer0_protocol_bundle.py"
+    },
+    {
+      "candidate_id": "invariant:phase1475p_layer1_deterministic_canonical_private_public_rc_exclude_layer0_hash_bound_no_float",
+      "source_file": "tests/test_phase_1475p_layer1_genesis_bundle.py"
+    },
+    {
+      "candidate_id": "invariant:phase1476p_adr0009_cross_layer_digest_and_schema_reference_chain_integrity",
+      "source_file": "tests/test_phase_1476p_adr0009_cross_layer.py"
+    },
+    {
+      "candidate_id": "invariant:phase1512p_governance_frameworks_no_cdl_opening_no_live_adjudication_no_runtime_or_graph_write_no_ecu_mutation",
+      "source_file": "tests/test_phase_1512p_genesis_governance_node_frameworks.py"
+    },
+    {
+      "candidate_id": "invariant:phase1514p_window_closure_no_publication_no_public_rc_no_epoch_transition_no_economic_or_governance_mutation_no_guard_clearance",
+      "source_file": "tests/test_phase_1514p_window_1505p_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase1516p_adr0009_layer0_layer1_dag_cbor_cidv1_cose_sign1_chain_integrity",
+      "source_file": "tests/test_phase_1516p_adr_0009_layer0_layer1_integration.py"
+    },
+    {
+      "candidate_id": "invariant:phase1517p_adr0009_four_layer_cid_chain_tamper_detection_cose_sign1_verification",
+      "source_file": "tests/test_phase_1517p_adr_0009_layer2_layer3_integration.py"
+    },
+    {
+      "candidate_id": "invariant:phase1518p_independent_bundle_verifier_catches_cid_signature_linkage_and_size_hex_errors",
+      "source_file": "tests/test_phase_1518p_adr_0009_bundle_verifier.py"
+    },
+    {
+      "candidate_id": "invariant:phase1525p_definition_node_schema_fields_error_tokens_non_attributable_authority_ref_no_adr_cdl_mutation",
+      "source_file": "tests/test_phase_1525p_adr0035_definition_node_schema.py"
+    },
+    {
+      "candidate_id": "invariant:phase1529p_parse_support_not_authority_bearing_under_guard_public_rc_exclude_no_activation",
+      "source_file": "tests/test_phase_1529p_adr0035_type_registry_scaffold.py"
+    },
+    {
+      "candidate_id": "invariant:phase1532p_no_wallet_ledger_treasury_write_production_emission_not_activated",
+      "source_file": "tests/test_phase_1532p_obl020_emission_production_path.py"
+    },
+    {
+      "candidate_id": "invariant:phase1533p_settlement_root_payload_excludes_settlement_root_hex_production_emission_not_activated",
+      "source_file": "tests/test_phase_1533p_obl020_settlement_roots.py"
+    },
+    {
+      "candidate_id": "invariant:phase1533p_settlement_root_replay_sha256_canonical_json_float_nonfinite_rejection_anti_circularity",
+      "source_file": "tests/test_phase_1533p_obl020_settlement_roots.py"
+    },
+    {
+      "candidate_id": "invariant:phase1534p_canonical_economic_events_default_off_float_nonfinite_rejected",
+      "source_file": "tests/test_phase_1534p_obl020_canonical_economic_events.py"
+    },
+    {
+      "candidate_id": "invariant:phase1534p_canonical_economic_events_roles_decimal_conservation_root_commitment_stale_root_rejection",
+      "source_file": "tests/test_phase_1534p_obl020_canonical_economic_events.py"
+    },
+    {
+      "candidate_id": "invariant:phase1539p_validator_admission_not_activated_float_rejected_before_root",
+      "source_file": "tests/test_phase_1539p_obl021_validator_admission_ejection.py"
+    },
+    {
+      "candidate_id": "invariant:phase1542p_productive_ecu_expansion_bounty_default_off_cap_no_debt_proposed_status_event_batch_stale_root_rejection",
+      "source_file": "tests/test_phase_1542p_obl027_expansion_bounty.py"
+    },
+    {
+      "candidate_id": "invariant:phase1542p_productive_ecu_expansion_not_activated_adr0016_proposed_peer_funded_bounty_excluded",
+      "source_file": "tests/test_phase_1542p_obl027_expansion_bounty.py"
+    },
+    {
+      "candidate_id": "invariant:phase1543p_block4b_round_trip_replay_roots_events_default_off_guards_stale_root_rejection",
+      "source_file": "tests/test_phase_1543p_block4b_round_trip.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix13_graph_research_governance_routing_no_activation_no_ecu_minting_no_manifest_mutation",
+      "source_file": "tests/test_phase_1545p_fix13_agentic_graph_grammar_axiom_inventory.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix19_axiomatic_calibration_64_of_64_recall_7_of_7_recipe_coverage_research_only",
+      "source_file": "tests/test_phase_1545p_fix19_atlas_axiomatic_calibration.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix20_precision_replay_preserves_golden_recall_negative_controls_pass_rejected_candidates_not_promoted",
+      "source_file": "tests/test_phase_1545p_fix20_atlas_precision_replay.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix22_full_repo_candidate_covers_tracked_snapshot_unsigned_noncanonical_no_public_rc",
+      "source_file": "tests/test_phase_1545p_fix22_full_repo_genesis_atlas.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix23_lmdb_counts_digest_identity_indexes_fail_closed_missing_ids_noncanonical",
+      "source_file": "tests/test_phase_1545p_fix23_genesis_atlas_lmdb_materialization.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix25_baseline_diagnostic_keeps_merkle_laplacian_authority_backtrace_classification_metrics_separate",
+      "source_file": "tests/test_phase_1545p_fix25_whole_graph_baseline_diagnostic.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix29_laplacian_fiedler_firewall_non_excisability_negative_controls_no_authority_overclaim",
+      "source_file": "tests/test_phase_1545p_fix29_spectral_non_excisability_sim.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix30_200_iteration_autoresearch_keep_revert_no_spectral_only_keep_no_authority_padding",
+      "source_file": "tests/test_phase_1545p_fix30_long_autoresearch_optimization.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix32_pytest_nodeid_contract_executor_profiles_authority_nonclaims_successor_route",
+      "source_file": "tests/test_phase_1545p_fix32_homoiconic_test_registry_contract.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix33_enriched_graph_coverage_report_first_no_execution_no_canonical_mutation",
+      "source_file": "tests/test_phase_1545p_fix33_test_graph_coverage.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix4_delivery_record_must_not_authorize_public_rc_or_clear_public_path",
+      "source_file": "tests/test_phase_1545p_fix4_patent_delivery_status.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix4_patent_delivery_recorded_receipts_pending_public_path_not_cleared_canonical_json",
+      "source_file": "tests/test_phase_1545p_fix4_patent_delivery_status.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix5_no_public_repo_publication_no_uspto_receipts_no_application_numbers",
+      "source_file": "tests/test_phase_1545p_fix5_public_disclosure_patent_coverage.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix5_public_disclosure_coverage_five_filings_e1_resolved_publication_gate_separate",
+      "source_file": "tests/test_phase_1545p_fix5_public_disclosure_patent_coverage.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix6_v03_methodology_reachability_authority_source_coverage_distinguished_successor_deferred_to_fix7",
+      "source_file": "tests/test_phase_1545p_fix6_genesis_v03_methodology_preservation.py"
+    },
+    {
+      "candidate_id": "invariant:phase1545p_fix7_common_registry_support_queue_v04_target_no_authority_no_activation",
+      "source_file": "tests/test_phase_1545p_fix7_genesis_common_registry_node_candidates.py"
+    },
+    {
+      "candidate_id": "invariant:phase1556_pre_rc_sequence_lock_gap_refresh_boolean_token_census_no_public_activation",
+      "source_file": "tests/test_phase_1556_pre_rc_completion_gap_refresh.py"
+    },
+    {
+      "candidate_id": "invariant:phase1557_hb001_genesis_authority_assertion_schema_import_float_rejection_canonical_json_stability",
+      "source_file": "tests/test_phase_1557_hb001_genesis_authority_assertion.py"
+    },
+    {
+      "candidate_id": "invariant:phase1559_hb002_serving_receipt_canonical_atomic_https_timeout_bounded_response_no_live_calls",
+      "source_file": "tests/test_phase_1559_hb002_serving_receipt.py"
+    },
+    {
+      "candidate_id": "invariant:phase1560_agent_init_live_evidence_hosts_agents_receipts_node6_receiver_only_no_private_material_public_path_blocked",
+      "source_file": "tests/test_phase_1560_agent_init_live.py"
+    },
+    {
+      "candidate_id": "invariant:phase1560_genesis_operator_held_public_p2p_economics_blocked_no_private_material",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase1560_genesis_serving_receiver_validates_payload_float_rejection_atomic_state_no_public_activation",
+      "source_file": "tests/test_phase_1560_genesis_serving_receiver.py"
+    },
+    {
+      "candidate_id": "invariant:phase1560_preflight_blocker_no_live_execution_until_receiver_and_key_custody_remediation",
+      "source_file": "tests/test_phase_1560_preflight_blocker.py"
+    },
+    {
+      "candidate_id": "invariant:phase1561_ecu_live_smoke_claim_root_round_trip_guard_true_no_float_balance_report_not_ledger",
+      "source_file": "tests/test_phase_1561_ecu_live_smoke.py"
+    },
+    {
+      "candidate_id": "invariant:phase1562_invitation_provenance_depth_one_hash_cycle_detection_node6_boundary_no_economics",
+      "source_file": "tests/test_phase_1562_invitation_provenance_chain.py"
+    },
+    {
+      "candidate_id": "invariant:phase226_security_triage_backlog_counts_two_pass_quality_must_rows_row_specific_rationale",
+      "source_file": "tests/test_phase_226_security_triage_artifacts.py"
+    },
+    {
+      "candidate_id": "invariant:phase232_security_plan_names_cdls_dependencies_entry_criteria_risk_rollback_and_non_goals",
+      "source_file": "tests/test_security_runtime_implementation_plan_232.py"
+    },
+    {
+      "candidate_id": "invariant:phase240_security_sequence_covers_240_249_sensitive_set_carry_forward_and_anchor_paths",
+      "source_file": "tests/test_security_runtime_sequence_240.py"
+    },
+    {
+      "candidate_id": "invariant:phase244_key_compromise_revocation_recovery_and_rollback_authority_interactions",
+      "source_file": "tests/test_security_runtime_cross_cdl_interactions_244.py"
+    },
+    {
+      "candidate_id": "invariant:phase249_security_runtime_closure_records_security_cdls_forward_cdls_and_d2e_paths",
+      "source_file": "tests/test_security_runtime_closure_gate_phase_249.py"
+    },
+    {
+      "candidate_id": "invariant:phase252_security_ratification_gate_composes_required_targets_and_cli_contract",
+      "source_file": "tests/test_security_ratification_gate_252.py"
+    },
+    {
+      "candidate_id": "invariant:phase262_signing_provider_kid_privacy_and_external_provider_lifecycle_coordination",
+      "source_file": "tests/test_signing_provider_interface_262.py"
+    },
+    {
+      "candidate_id": "invariant:phase266_issuance_evidence_and_genesis_accrual_reconciliation_nonratifying",
+      "source_file": "tests/test_issuance_evidence_closure_266.py"
+    },
+    {
+      "candidate_id": "invariant:phase365_sim_commissioning_deterministic_no_decision_log_no_ilc_core_mutation",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase386_sim006_sim007_deterministic_no_decision_log_no_ilc_core_mutation",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase429_sim009_deterministic_grid_manifest_recommendation_no_decision_log_no_ilc_core_mutation",
+      "source_file": "tests/test_phase_429_sim_009_pe_stabilization_commissioning.py"
+    },
+    {
+      "candidate_id": "invariant:phase436_runtime_baseline_frozen_source_cli_budget_contract_exact_scope",
+      "source_file": "tests/test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion.py"
+    },
+    {
+      "candidate_id": "invariant:phase456_fix10_nonlinear_control_candidate_registry_exact_overrides_no_execution_no_opening",
+      "source_file": "tests/test_phase_456_fix_10_nonlinear_control_mechanism_implementation.py"
+    },
+    {
+      "candidate_id": "invariant:phase456_fix3_recovery_rule_candidate_registry_oscillator_stub_no_execution_no_opening",
+      "source_file": "tests/test_phase_456_fix_3_recovery_rule_mechanism_implementation.py"
+    },
+    {
+      "candidate_id": "invariant:phase456_fix6_oscillator_candidate_registry_exact_overrides_no_execution_no_opening",
+      "source_file": "tests/test_phase_456_fix_6_oscillator_mechanism_implementation.py"
+    },
+    {
+      "candidate_id": "invariant:phase459_post1_hybrid_intake_no_execution_no_window_reopen_no_new_authority",
+      "source_file": "tests/test_phase_459_post1_waggle_oscillator_hybrid_intake_and_admissibility_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase459_post2_hybrid_contrast_exact_values_no_execution_no_reopen_no_new_authority",
+      "source_file": "tests/test_phase_459_post2_waggle_oscillator_hybrid_contrast_field_attestation_and_brief_freeze.py"
+    },
+    {
+      "candidate_id": "invariant:phase472_no_native_p2p_no_decision_log_no_ilc_core_mutation",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase479_validator_bootstrap_key_enrollment_epoch0_spec_no_ilc_core_no_decision_log",
+      "source_file": "tests/test_phase_479_genesis_validator_bootstrap_specification.py"
+    },
+    {
+      "candidate_id": "invariant:phase487_sim010_pass_no_decision_log_no_ilc_core_mutation",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase487_sim010_pass_recommendations_four_scenarios_no_runtime_or_decision_log_mutation",
+      "source_file": "tests/test_phase_487_sim_010_validator_incentive_economics_execution_and_evidence.py"
+    },
+    {
+      "candidate_id": "invariant:phase498_epoch_boundary_provenance_vs_constitutional_gating_carry_forward_no_cdl_open",
+      "source_file": "tests/test_phase_498_epoch_boundary_enforcement_architectural_scoping.py"
+    },
+    {
+      "candidate_id": "invariant:phase575_sequence_lock_rc0_1_wallet_graph_lineage_reproducibility_no_public_release",
+      "source_file": "tests/test_phase_575_window_575_584_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase576_settlement_wallet_visibility_no_claimability_read_only_replay_idempotency",
+      "source_file": "tests/test_phase_576_rc0_1_settlement_wallet_boundary_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase578_bootstrap_inventory_not_admission_authority_explicit_promotion_compromise_rollback_identity_gap",
+      "source_file": "tests/test_phase_578_rc0_1_curated_genesis_bootstrap_lineage_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase579_transport_wallet_semantics_unchanged",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:phase581_settlement_wallet_query_replay_idempotency_lmdb_state_identity_alignment_claimability_boundary",
+      "source_file": "tests/test_phase_581_settlement_wallet_query_integration.py"
+    },
+    {
+      "candidate_id": "invariant:phase585_public_release_requires_receipt_boundary_genesis_rooted_lineage_no_quota_miner_onboarding_lane",
+      "source_file": "tests/test_phase_585_window_585_594_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase587_public_identity_activation_namespace_key_derived_admission_bound_no_alias_authority",
+      "source_file": "tests/test_phase_587_public_identity_activation_and_namespace_boundary_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase588_public_quorum_eligibility_activation_snapshot_diversity_quorum_chain_no_panel_shortcut",
+      "source_file": "tests/test_phase_588_public_quorum_eligibility_and_genesis_lineage_authority_boundary_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase589_settlement_linked_public_legitimacy_receipt_chain_payout_trace_no_wallet_claimability_shortcut",
+      "source_file": "tests/test_phase_589_settlement_linked_public_legitimacy_and_payout_traceability_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase590_genesis_authority_bounded_sunset_lineage_fork_consequence_no_supporting_context_as_canon",
+      "source_file": "tests/test_phase_590_genesis_authority_sunset_and_fork_legitimacy_coherence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase591_public_runtime_bridge_maps_to_frozen_receipt_boundary_no_runtime_legitimacy_shortcut",
+      "source_file": "tests/test_phase_591_public_runtime_integration_over_receipt_boundary.py"
+    },
+    {
+      "candidate_id": "invariant:phase595_rc0_1_consolidation_runtime_hardening_preserves_576_581_boundaries_no_public_upgrade",
+      "source_file": "tests/test_phase_595_rc0_1_strike_force_consolidation_and_runtime_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase596_genesis_carry_forward_sequence_closes_support_canon_preserves_585_595_boundaries",
+      "source_file": "tests/test_phase_596_window_596_605_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase597_no_permanent_genesis_governance_floor_bootstrap_only_suspensive_guardrail",
+      "source_file": "tests/test_phase_597_genesis_governance_dilution_and_brake_semantics_closure.py"
+    },
+    {
+      "candidate_id": "invariant:phase601_capability_proof_future_lane_no_current_mint_no_permanent_genesis_reference",
+      "source_file": "tests/test_phase_601_post_genesis_capability_proof_disposition_and_bootstrap_transition_boundary.py"
+    },
+    {
+      "candidate_id": "invariant:phase602_public_tokenomics_5pct_cap_no_8pct_no_self_executing_topological_exemption",
+      "source_file": "tests/test_phase_602_topological_exemption_boundary_and_public_tokenomics_statement.py"
+    },
+    {
+      "candidate_id": "invariant:phase603_synthesis_does_not_reopen_597_602_or_overclaim_mainnet_public_authority",
+      "source_file": "tests/test_phase_603_genesis_carry_forward_synthesis_and_readiness_delta_addendum.py"
+    },
+    {
+      "candidate_id": "invariant:phase606_mempalace_retrieval_only_no_canon_override_no_wallet_or_public_scope_widening",
+      "source_file": "tests/test_phase_606_mempalace_internal_retrieval_adoption.py"
+    },
+    {
+      "candidate_id": "invariant:phase607_settlement_substrate_reconciliation_before_expansion_no_wallet_or_payment_widening",
+      "source_file": "tests/test_phase_607_window_607_612_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase609_ecu_local_credit_ilc_hard_settlement_current_runtime_not_final_substrate",
+      "source_file": "tests/test_phase_609_ecu_ilc_runtime_boundary_reconciliation.py"
+    },
+    {
+      "candidate_id": "invariant:phase612_mvp_gate_precedes_sovereign_substrate_execution_no_option_b_selection",
+      "source_file": "tests/test_phase_612_settlement_substrate_closure_and_mvp_gated_replan.py"
+    },
+    {
+      "candidate_id": "invariant:phase613_mvp_spec_form_not_sufficient_without_runtime_no_wallet_payment_chain_widening",
+      "source_file": "tests/test_phase_613_window_613_619_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase631_tier0_float_retention_unacceptable_no_option_b_no_wallet_widening",
+      "source_file": "tests/test_phase_631_window_631_636_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase635_tier0_exact_numeric_runtime_no_float_accounting_no_tolerance_equality_canonical_decimal_strings",
+      "source_file": "tests/test_phase_635_tier0_exact_numeric_runtime_migration.py"
+    },
+    {
+      "candidate_id": "invariant:phase642_security_strike_force_canonical_json_nonfinite_prng_assert_stream_guardrails",
+      "source_file": "tests/test_phase_642_window_642_648_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase644_canonical_json_sort_keys_compact_separators_allow_nan_false_manifest_signing_bytes",
+      "source_file": "tests/test_phase_644_canonical_json_and_signature_boundary_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:phase647_security_gate_passes_and_checks_fix_induced_regressions",
+      "source_file": "tests/test_phase_647_security_hardening_gate_and_fix_induced_regression_audit.py"
+    },
+    {
+      "candidate_id": "invariant:phase648_security_window_closed_no_constitutional_vehicle_remaining_float_carry_forward_explicit",
+      "source_file": "tests/test_phase_648_window_642_648_closure_and_handoff.py"
+    },
+    {
+      "candidate_id": "invariant:phase649_public_runtime_rows1_4_target_no_wallet_widening_no_cdl062_no_option_b",
+      "source_file": "tests/test_phase_649_window_649_654_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase651_public_receipt_runtime_four_classes_read_only_fail_closed_no_wallet_widening",
+      "source_file": "tests/test_phase_651_public_receipt_runtime.py"
+    },
+    {
+      "candidate_id": "invariant:phase653_public_wallet_runtime_read_only_accounting_only_claimability_deferred_no_http_routes",
+      "source_file": "tests/test_phase_653_public_wallet_runtime_integration.py"
+    },
+    {
+      "candidate_id": "invariant:phase677_row5_privacy_prework_partial_only_cdl062_deferred_observability_floor_locked",
+      "source_file": "tests/test_phase_677_window_677_682_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase723_financial_shard_eligibility_not_activation_cdl062_adr0022_separate",
+      "source_file": "tests/test_phase_723_window_723_726_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase724_financial_shard_activation_not_eligible_bhft_separate_cdl062_adr0022_separate",
+      "source_file": "tests/test_phase_724_financial_shard_eligibility_prefilter_and_lane_separation.py"
+    },
+    {
+      "candidate_id": "invariant:phase726_financial_shard_no_activation_no_ratification_later_candidate_separate_from_cdl062_adr0022",
+      "source_file": "tests/test_phase_726_coherence_report_capsule_v4_9_and_window_723_726_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase727_adjacent_gated_hardening_no_activation_no_ratification_cdl062_adr0022_separate",
+      "source_file": "tests/test_phase_727_window_727_732_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:phase734_sim_validator_results_numeric_stake_floor_vrf_threshold_no_import_side_effects",
+      "source_file": "tests/test_phase_734_sim_validator_01_results.py"
+    },
+    {
+      "candidate_id": "invariant:phase751_archived_planning_docs_removed_from_startup_canon_successor_master_roadmap",
+      "source_file": "tests/test_phase_751_stale_planning_doc_archival_and_planning_index_advance.py"
+    },
+    {
+      "candidate_id": "invariant:phase768_sec004_historical_validator_epoch_boundary_and_no_hardcoded_cert_epoch",
+      "source_file": "tests/test_phase_768_sec_004_acceptance.py"
+    },
+    {
+      "candidate_id": "invariant:phase770_audit_clear_live_settlement_deferred_first_validator_gate_preserved",
+      "source_file": "tests/test_phase_770_codex_audit.py"
+    },
+    {
+      "candidate_id": "invariant:phase771_lane_doc_updated_sec004_m007_activated_first_validator_gate_not_crossed",
+      "source_file": "tests/test_phase_771_lane_doc_update.py"
+    },
+    {
+      "candidate_id": "invariant:phase773_sec004_m007_closed_but_live_settlement_delivery_and_first_validator_gate_deferred",
+      "source_file": "tests/test_phase_773_coherence_and_capsule.py"
+    },
+    {
+      "candidate_id": "invariant:phase813_option_b_selected_false_row5_pre_public_rc_obligation_acknowledged",
+      "source_file": "tests/test_phase_813_checklist_v0_2.py"
+    },
+    {
+      "candidate_id": "invariant:phase830_settlement_gate_predeployment_no_live_routing_no_validator_deployment_no_cdl_mutation",
+      "source_file": "tests/test_phase_830_settlement_path_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase831_privacy_lane_k30_k20_jitter3_bounded_hold_and_express_bypass_semantics",
+      "source_file": "tests/test_phase_831_row5_b_impl_obligations_1_3.py"
+    },
+    {
+      "candidate_id": "invariant:phase834_row5_b_impl_complete_but_runtime_pending_no_cdl_mutation_no_live_settlement",
+      "source_file": "tests/test_phase_834_row5_b_impl_strike_force_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:phase835_settlement_gate_preflight_validates_none_and_mysticeti_guards_before_live_routing",
+      "source_file": "tests/test_phase_835_settlement_gate_preflight.py"
+    },
+    {
+      "candidate_id": "invariant:phase837_track1_predeployment_no_human_gate_no_live_settlement_no_cdl_mutation",
+      "source_file": "tests/test_phase_837_track1_coherence_and_capsule.py"
+    },
+    {
+      "candidate_id": "invariant:phase838e_genesis_record_recovery_commitments_canonical_and_domain_separated",
+      "source_file": "tests/test_phase_838e_genesis_record_schema.py"
+    },
+    {
+      "candidate_id": "invariant:phase838f_endorsement_packet_canonical_payload_window_and_cose_tbs_semantics",
+      "source_file": "tests/test_phase_838f_endorsement_packet_schema.py"
+    },
+    {
+      "candidate_id": "invariant:phase844_privacy_lane_routing_tokens_after_signature_before_inflight_and_no_cdl_mutation",
+      "source_file": "tests/test_phase_844_row5_rust_routing_instrumentation.py"
+    },
+    {
+      "candidate_id": "invariant:phase858_hb001_genesis_assertion_schema_canonical_json_and_validator_constraints",
+      "source_file": "tests/test_phase_858_hb_001_genesis_assertion_schema.py"
+    },
+    {
+      "candidate_id": "invariant:phase888_891_truth_query_cli_read_only_lmdb_query_path_no_mutation",
+      "source_file": "tests/test_phase_888_891_query_truth_cli.py"
+    },
+    {
+      "candidate_id": "invariant:phase998_readme_quickstart_matches_genesis_boot_behavior",
+      "source_file": "tests/test_quickstart_parity_phase_998.py"
+    },
+    {
+      "candidate_id": "invariant:phase_1156_preserves_signed_genesis_v0_1_artifacts",
+      "source_file": "tests/test_adr_stale_reconciliation_strike_force_1156.py"
+    },
+    {
+      "candidate_id": "invariant:phase_297_mutation_canary_kills_all_required_mutants_and_restores_security_files",
+      "source_file": "tests/test_mutation_canary_phase_297.py"
+    },
+    {
+      "candidate_id": "invariant:phase_m009_testnet_n4_f1_no_real_ecu_config_and_tls_paths",
+      "source_file": "tests/test_phase_M009_mysticeti_testnet_setup.py"
+    },
+    {
+      "candidate_id": "invariant:phase_m013_workload_a_epoch_commits_and_validator1_silence_verified",
+      "source_file": "tests/test_phase_M013_workload_a_results.py"
+    },
+    {
+      "candidate_id": "invariant:phase_m017_validator_operability_commodity_bounds_storage_sync_chain_sanity_pass",
+      "source_file": "tests/test_phase_M017_workload_e_results.py"
+    },
+    {
+      "candidate_id": "invariant:pre_public_rc_obligations_synthesis_phase1146_adr_tier2_counsel_canon_bundle_and_nonclaim_scope",
+      "source_file": "tests/test_phase_1154_pre_public_rc_obligations_synthesis.py"
+    },
+    {
+      "candidate_id": "invariant:protocol_and_replay_proof_exception_hierarchy_and_messages_stable",
+      "source_file": "tests/test_domain_exception_rollout_foundation.py"
+    },
+    {
+      "candidate_id": "invariant:provenance_chain_input_shape_type_length_and_depth_hardening",
+      "source_file": "tests/test_phase_1129_fix1_provenance_input_hardening.py"
+    },
+    {
+      "candidate_id": "invariant:public_economics_gap_planning_phase1387a_firewall_and_1388_1389_fail_closed_contract",
+      "source_file": "tests/test_window_1369_1390_public_economics_gap_planning.py"
+    },
+    {
+      "candidate_id": "invariant:public_rc_go_live_plan_separates_default_off_rehearsal_public_live_and_keeps_gate_blocked",
+      "source_file": "tests/test_public_rc_general_go_live_forward_plan.py"
+    },
+    {
+      "candidate_id": "invariant:public_rc_package_profiles_non_excisable_components_canonical_manifest_and_no_heavy_imports",
+      "source_file": "tests/test_public_rc_package_profiles.py"
+    },
+    {
+      "candidate_id": "invariant:rc0_1_benchmark_runner_aggregates_latency_transport_and_graph_growth_metrics",
+      "source_file": "tests/test_rc0_1_benchmark_runner.py"
+    },
+    {
+      "candidate_id": "invariant:rc_dredge_stack_preserves_source_paths_dedups_exact_text_and_marks_review_placeholders",
+      "source_file": "tests/test_rc_dredge_stack_tools.py"
+    },
+    {
+      "candidate_id": "invariant:reciprocal_fetch_admission_design_and_agent_graph_projection_interface_bounds",
+      "source_file": "tests/test_phase_1222_reciprocal_fetch_admission_spec.py"
+    },
+    {
+      "candidate_id": "invariant:refutation_stake_can_prune_false_canonical_claim",
+      "source_file": "tests/test_contradiction.py"
+    },
+    {
+      "candidate_id": "invariant:rust_fixture_mapping_cidv1root_validatorid_storedcheckpoint_to_python_projection",
+      "source_file": "tests/test_phase_1236_fix5_rust_fixture_mapping.py"
+    },
+    {
+      "candidate_id": "invariant:settlement_metrics_count_distributed_stubbed_rolled_back_pending_and_snapshots_correctly",
+      "source_file": "tests/test_settlement_metrics.py"
+    },
+    {
+      "candidate_id": "invariant:settlement_stability_distributed_stub_supersession_and_idempotency",
+      "source_file": "tests/test_settlement_stability.py"
+    },
+    {
+      "candidate_id": "invariant:sidecar_export_canonical_json_ndjson_decimal_strings_and_bounded_bundle",
+      "source_file": "tests/test_phase_1237_fix6_canonical_export_bundle.py"
+    },
+    {
+      "candidate_id": "invariant:sim_010_validator_incentive_reward_fraction_stake_liveness_recommendations",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_embed_01_records_recommendations_staleness_thresholds_and_unexecuted_openai_candidate",
+      "source_file": "tests/test_sim_embed_01_results.py"
+    },
+    {
+      "candidate_id": "invariant:sim_fetch_fix10_robustness_suite_positive_negative_controls_caps_and_canonical_export",
+      "source_file": "tests/test_phase_1238j_sim_fetch_01_fix10_robustness_suite.py"
+    },
+    {
+      "candidate_id": "invariant:sim_genesis_compile_02_baseline_candidate_gap_closure_bootstrap_axioms",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_provenance_01_alpha_0_45_recommended_not_runtime_mutated_phase1121",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_provenance_01_alpha_recommendation_not_runtime_lock",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_provenance_01_decimal_alpha_045_and_runtime_guardrail_boundary",
+      "source_file": "tests/test_phase_1120_sim_provenance_01_commissioning.py"
+    },
+    {
+      "candidate_id": "invariant:sim_provenance_01_run02_alpha_045_disposition_and_no_mutation_boundary",
+      "source_file": "tests/test_phase_1121_sim_provenance_01_run02_disposition.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_02_fix3_homoiconic_seed_diagnostic_shape",
+      "source_file": "tests/test_phase_1133_sim_spectral_02_fix3.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_02_harness_normalization_and_provenance_topology_patch",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_02_research_only_no_cdl_adr_settlement_qatps_or_runtime_authority",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_02_run02_disposition_genesis_seed_bootstrap_adr_and_beta_probe",
+      "source_file": "tests/test_phase_1136_sim_spectral_02_run02_disposition.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_02_scenario_b_advisory_remains_in_force_after_fix2",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_02_signal_definition_theta_floor_k_candidates_and_data_inventory",
+      "source_file": "tests/test_phase_1131_sim_spectral_02_signal_definition.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_03_harness_signed_star_map_s1_only_fail_closed_boundary",
+      "source_file": "tests/test_phase_1144_sim_spectral_03_harness.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_03_run01_matrix_signed_star_map_s1_and_corrected_run02_scope",
+      "source_file": "tests/test_phase_1145_sim_spectral_03_run01.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_03_topology_search_no_variant_passed",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_03_topology_search_no_variant_passed_signed_star_map_unchanged",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_03_topology_search_variants_controls_and_defer_guidance",
+      "source_file": "tests/test_phase_1145a_topology_search.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_05_economic_flow_slice_pass_prerequisite_suppression_preservation_and_current_phi_bound",
+      "source_file": "tests/test_phase_1180_sim_spectral_05_economic_flow_slice.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_05_gossip_slice_pass_three_slice_framework_and_phi_bound_decisions",
+      "source_file": "tests/test_phase_1187_sim_spectral_05_gossip_slice.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_05_runtime_binding_slice_pass_prelock_prerequisite_and_current_phi_bound",
+      "source_file": "tests/test_phase_1179_sim_spectral_05_runtime_binding_slice.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_05_track_a_discriminants_lambda2_sweep_and_signed_v01_preservation",
+      "source_file": "tests/test_phase_1169_sim_spectral_05_track_a.py"
+    },
+    {
+      "candidate_id": "invariant:sim_spectral_05_track_b_gate_pass_adr0037_criterion_sensitive_boundary_and_deferred_slices",
+      "source_file": "tests/test_phase_1171_sim_spectral_05_disposition.py"
+    },
+    {
+      "candidate_id": "invariant:source_export_public_rc_blocked_fail_closed_privacy_generated_cache_stripped_helper_guards",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    },
+    {
+      "candidate_id": "invariant:task_primitive_node_payload_and_claim_derives_from_task_lineage_shape",
+      "source_file": "tests/test_task_primitive.py"
+    },
+    {
+      "candidate_id": "invariant:tier3_runtime_linkage_scope_adr0020_node_families_and_no_mutation_boundary",
+      "source_file": "tests/test_phase_1195_tier3_runtime_linkage.py"
+    },
+    {
+      "candidate_id": "invariant:transport_principal_identity_spec_http_downgrade_rust_m5_and_sidecar_public_gate",
+      "source_file": "tests/test_phase_1253_transport_principal_identity_spec.py"
+    },
+    {
+      "candidate_id": "invariant:window1273_1280_prompt_package_go_nonclaim_human_escalation_no_register_mutation_and_no_authority_expansion",
+      "source_file": "tests/test_window_1273_1280_prompt_drafts.py"
+    },
+    {
+      "candidate_id": "invariant:window1289_1302_prompt_package_superseded_sequence_lock_go_nonclaim_public_claimability_and_release_allowlist_contract",
+      "source_file": "tests/test_window_1289_1302_prompt_drafts.py"
+    },
+    {
+      "candidate_id": "invariant:window1330_1342_atlas_g_tail_high_authority_go_gate_public_rc_publication_and_activation_ordering_contract",
+      "source_file": "tests/test_window_1330_1342_prompt_drafts.py"
+    },
+    {
+      "candidate_id": "invariant:window1330_sequence_lock_final_rc_gate_atlas_g_tail_routing_and_identity_bootstrap_guard",
+      "source_file": "tests/test_phase_1330_window_1330_1342_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:window1369_sequence_lock_hardening_routes_public_economics_firewall_and_sensitive_go_requirements",
+      "source_file": "tests/test_phase_1369_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:window775_782_row5_privacy_nonclosure_layer1_layer2_sim_artifacts_zk_note_and_no_cdl_mutation",
+      "source_file": "tests/test_window_775_782_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:window823_829_mysticeti_activation_sequence_lock_high002_rotation_first_validator_gate_and_no_cdl_mutation",
+      "source_file": "tests/test_window_823_829_sequence_lock.py"
+    },
+    {
+      "candidate_id": "invariant:window_1118_1123_sequence_lock_provenance_sim_coherence_and_q2_q8_boundary",
+      "source_file": "tests/test_phase_1123_window_1118_1123_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:window_1139_1147_closure_signed_genesis_sim_spectral03_obligations_and_no_scope_creep",
+      "source_file": "tests/test_phase_1147_window_1139_1147_closure_gate.py"
+    },
+    {
+      "candidate_id": "invariant:window_1139_1147_three_lane_complete_and_public_rc_blocked",
+      "source_file": "docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md"
+    }
+  ]
+}

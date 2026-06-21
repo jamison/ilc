@@ -1,0 +1,554 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch007",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:genesis_star_map_authority_trace_depth_max_2_hub_spoke",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_phase_1387f_graph_structure_analysis.py",
+          "summary": "The test verifies authority-trace depth analysis and asserts the shallow hub-and-spoke bound."
+        },
+        {
+          "line_refs": [
+            "1-115"
+          ],
+          "path": "tests/test_phase_1387g_epistemic_leverage.py",
+          "summary": "The leverage tests confirm hub-and-spoke resilience and zero keystone nodes for the Genesis star-map diagnostic."
+        },
+        {
+          "line_refs": [
+            "1-108"
+          ],
+          "path": "docs/phases/phase_1387i_graphopt_synthesis_walkthrough.md",
+          "summary": "The synthesis walkthrough records max authority-trace depth of 2 and the hub-and-spoke result as SIM graph-optimization evidence."
+        },
+        {
+          "line_refs": [
+            "1-90"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_graphopt_01_synthesis_report_v0.1.md",
+          "summary": "The synthesis report records authority-trace max depth 2 and interprets the star map as a shallow hub-and-spoke structure."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "SIM/atlas-support invariant; direct evidence supports EVIDENCES edges, not GOVERNS promotion.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_authority_trace_depth_max_2_hub_spoke",
+          "target": "repo:file:0c9918d289e0c14a:tests_test_phase_1387f_graph_structure_analysis_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_authority_trace_depth_max_2_hub_spoke",
+          "target": "repo:file:e062f83b9fcc58d8:tests_test_phase_1387g_epistemic_leverage_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_authority_trace_depth_max_2_hub_spoke",
+          "target": "repo:file:2a82a3b103c53be3:docs_phases_phase_1387i_graphopt_synthesis_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_authority_trace_depth_max_2_hub_spoke",
+          "target": "repo:file:9e15395987e7fe53:docs_sims_sim_spectral_02_genesis_graphopt_01_synthesis_report_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_star_map_edge_recipe_completeness_77_of_77",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-150"
+          ],
+          "path": "tests/test_phase_1387h_edge_recipe_canonicalization.py",
+          "summary": "The test asserts all star-map edges have decomposition recipes and validates ATTESTATION/PROVENANCE scope distinctions."
+        },
+        {
+          "line_refs": [
+            "1-145"
+          ],
+          "path": "docs/phases/phase_1387h_edge_recipe_canonicalization_walkthrough.md",
+          "summary": "The walkthrough records closure of the recipe gap from 47/77 to 77/77 and no Genesis artifact mutation."
+        },
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_graphopt_01_synthesis_report_v0.1.md",
+          "summary": "The graph-optimization synthesis report carries forward the 0 missing-recipe result."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Recipe-completeness diagnostic invariant with direct test and walkthrough support.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_edge_recipe_completeness_77_of_77",
+          "target": "repo:file:6f4d655426d76e60:tests_test_phase_1387h_edge_recipe_canonicalization_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_edge_recipe_completeness_77_of_77",
+          "target": "repo:file:2d6be613cc5b9638:docs_phases_phase_1387h_edge_recipe_canonicalization_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_edge_recipe_completeness_77_of_77",
+          "target": "repo:file:9e15395987e7fe53:docs_sims_sim_spectral_02_genesis_graphopt_01_synthesis_report_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:genesis_star_map_gap_analysis_review_categories_and_hypergraph_shape",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-120"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_core_star_map_gap_analysis_v0.1.md",
+          "summary": "The gap analysis records observed source files, core nodes, proposed edge review queues, governance-reference gaps, and review-category interpretation."
+        },
+        {
+          "line_refs": [
+            "1-108"
+          ],
+          "path": "docs/phases/phase_1387i_graphopt_synthesis_walkthrough.md",
+          "summary": "The synthesis walkthrough routes orphan leaf review and graph-shape follow-up work as support analysis."
+        },
+        {
+          "line_refs": [
+            "1-220"
+          ],
+          "path": "docs/sims/sim_spectral_02/genesis_graphopt_01_synthesis_report_v0.1.md",
+          "summary": "The synthesis report explains the hypergraph shape and review categories for graph optimization."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Gap-analysis review invariant; evidence is support/diagnostic, not independent authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_gap_analysis_review_categories_and_hypergraph_shape",
+          "target": "repo:file:c8a65effabab52d7:docs_sims_sim_spectral_02_genesis_core_star_map_gap_analysis_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_gap_analysis_review_categories_and_hypergraph_shape",
+          "target": "repo:file:2a82a3b103c53be3:docs_phases_phase_1387i_graphopt_synthesis_walkthrough_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:genesis_star_map_gap_analysis_review_categories_and_hypergraph_shape",
+          "target": "repo:file:9e15395987e7fe53:docs_sims_sim_spectral_02_genesis_graphopt_01_synthesis_report_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:gossip_receive_accepts_canonical_node_ids_and_rejects_legacy_or_mismatched_ids",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "240-292"
+          ],
+          "path": "ilc_core/server.py",
+          "summary": "The gossip receive endpoint computes the canonical node ID and rejects mismatched payload IDs."
+        },
+        {
+          "line_refs": [
+            "1-70"
+          ],
+          "path": "tests/test_node_id_runtime_bridge_phase_1003.py",
+          "summary": "The focused runtime tests reject legacy and mismatched node IDs and accept canonical IDs."
+        },
+        {
+          "line_refs": [
+            "1-125"
+          ],
+          "path": "docs/phases/phase_1013_g8_constitution_cluster_a_nodeid_strict_canonical_cutover_runtime_and_contracts_walkthrough.md",
+          "summary": "The Phase 1013 walkthrough records strict canonical NodeID cutover and removal of legacy gossip acceptance."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Runtime boundary invariant with direct implementation and regression-test evidence.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gossip_receive_accepts_canonical_node_ids_and_rejects_legacy_or_mismatched_ids",
+          "target": "repo:file:31e3d5988c063cd2:ilc_core_server_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gossip_receive_accepts_canonical_node_ids_and_rejects_legacy_or_mismatched_ids",
+          "target": "repo:file:ce4c642f4993b8db:tests_test_node_id_runtime_bridge_phase_1003_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:gossip_receive_accepts_canonical_node_ids_and_rejects_legacy_or_mismatched_ids",
+          "target": "repo:file:166c9879c7cc841d:docs_phases_phase_1013_g8_constitution_cluster_a_nodeid_strict_canonical_cutover_runtime_and_contracts_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:governance_weight_decay_genesis_baseline_vote_share_precision_and_input_guards",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-240"
+          ],
+          "path": "ilc_core/analysis/governance_weight.py",
+          "summary": "The runtime validates Decimal-only governance weight inputs, applies non-genesis decay, Genesis baseline/bonus policy, and deterministic vote-share quantization."
+        },
+        {
+          "line_refs": [
+            "1-180"
+          ],
+          "path": "tests/test_governance_weight_phase_207.py",
+          "summary": "The tests cover non-Genesis decay, Genesis baseline policy, vote-share normalization, precision closure, float rejection, and duplicate-agent rejection."
+        },
+        {
+          "line_refs": [
+            "1-225"
+          ],
+          "path": "ilc_core/protocol/governance_weighted_decision.py",
+          "summary": "The decision quote adapter preserves Decimal governance-weight outputs, canonical JSON, default-off decision status, and legacy float rejection tokens."
+        },
+        {
+          "line_refs": [
+            "1-140"
+          ],
+          "path": "docs/phases/phase_1357_reputation_py_h11_float_kill_walkthrough.md",
+          "summary": "The Phase 1357 walkthrough records the Decimal rewrite, CDL-013 dependency, vote-share precision closure, and no production-governance activation."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Protocol-runtime invariant with direct implementation and test evidence; no new GOVERNS edge was inferred.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:governance_weight_decay_genesis_baseline_vote_share_precision_and_input_guards",
+          "target": "repo:file:c4db6527114d1bb9:ilc_core_analysis_governance_weight_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:governance_weight_decay_genesis_baseline_vote_share_precision_and_input_guards",
+          "target": "repo:file:bd0105a9eeb167ba:tests_test_governance_weight_phase_207_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:governance_weight_decay_genesis_baseline_vote_share_precision_and_input_guards",
+          "target": "repo:file:be7a54e22faa3ca9:ilc_core_protocol_governance_weighted_decision_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:governance_weight_decay_genesis_baseline_vote_share_precision_and_input_guards",
+          "target": "repo:file:39c36cc31427595e:docs_phases_phase_1357_reputation_py_h11_float_kill_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:graph_edge_iterators_and_public_edges_surface_removed",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-170"
+          ],
+          "path": "ilc_core/graph/__init__.py",
+          "summary": "The graph runtime exposes explicit edge insertion and iterator APIs while omitting a public `graph.edges` list surface."
+        },
+        {
+          "line_refs": [
+            "1-150"
+          ],
+          "path": "tests/test_graph_edges.py",
+          "summary": "The tests verify edge APIs and assert that public `graph.edges` access raises AttributeError."
+        },
+        {
+          "line_refs": [
+            "1-135"
+          ],
+          "path": "docs/phases/phase_0977_g8_constitution_cluster_a_track1_full_edge_removal_direct_append_compatibility_sunset_and_public_edge_list_surface_removal_slice4_walkthrough.md",
+          "summary": "The walkthrough records direct append compatibility sunset and public edge-list surface removal."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Runtime API contract invariant; direct evidence supports EVIDENCES edges.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:graph_edge_iterators_and_public_edges_surface_removed",
+          "target": "repo:file:1c6ee490c58e543e:ilc_core_graph_init_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:graph_edge_iterators_and_public_edges_surface_removed",
+          "target": "repo:file:038456bcb7afa0a3:tests_test_graph_edges_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:graph_edge_iterators_and_public_edges_surface_removed",
+          "target": "repo:file:d20528a7c12f81bb:docs_phases_phase_0977_g8_constitution_cluster_a_track1_full_edge_removal_direct_append_compatibility_sunset_and_public_edge_list_surface_re"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:hardware_archetype_strategy_applies_to_agent_mining",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-135"
+          ],
+          "path": "ilc_core/hardware.py",
+          "summary": "The hardware helper loads archetypes and applies potential/stake strategy knobs to EveAgent instances as simulation/helper behavior."
+        },
+        {
+          "line_refs": [
+            "160-225"
+          ],
+          "path": "ilc_core/agent.py",
+          "summary": "The agent auto-mining helper uses potential-derived stake fractions and routes through ECU-aware stake selection."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_hardware_archetypes.py",
+          "summary": "The tests verify archetype loading, applying strategy fields, and auto-mining behavior under an archetype."
+        },
+        {
+          "line_refs": [
+            "1-95"
+          ],
+          "path": "tests/test_agent_auto_strategy.py",
+          "summary": "The tests verify high-potential agents stake more aggressively and auto-mining spends stake through the agent path."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Simulation/helper invariant; not a protocol-level hardware reward rule.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hardware_archetype_strategy_applies_to_agent_mining",
+          "target": "repo:file:708d3a8ae4a1567b:ilc_core_hardware_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hardware_archetype_strategy_applies_to_agent_mining",
+          "target": "repo:file:3e127f532920d852:ilc_core_agent_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hardware_archetype_strategy_applies_to_agent_mining",
+          "target": "repo:file:0500f93915e2ef9d:tests_test_hardware_archetypes_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hardware_archetype_strategy_applies_to_agent_mining",
+          "target": "repo:file:74bd5f36af57ceaf:tests_test_agent_auto_strategy_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "230-285"
+          ],
+          "path": "ilc_core/types.py",
+          "summary": "The Node runtime keeps legacy hash computation migration-only while default `compute_id()` delegates to canonical CIDv1 computation."
+        },
+        {
+          "line_refs": [
+            "200-245"
+          ],
+          "path": "ilc_core/encoding/cidv1.py",
+          "summary": "The CIDv1 runtime derives node IDs from deterministic DAG-CBOR encoding and strict NodeID parsing/validation."
+        },
+        {
+          "line_refs": [
+            "1-110"
+          ],
+          "path": "tests/test_node_id_dual_contract_phase_1002.py",
+          "summary": "The tests verify canonical default IDs, CIDv1 parsing, deterministic dual IDs, and strict rejection of non-DAG-CBOR payloads."
+        },
+        {
+          "line_refs": [
+            "1-125"
+          ],
+          "path": "tests/test_node_id_migration_utility_phase_1004.py",
+          "summary": "The tests verify legacy-to-canonical migration records preserve legacy aliases and leave canonical records unchanged."
+        },
+        {
+          "line_refs": [
+            "1-125"
+          ],
+          "path": "docs/phases/phase_1013_g8_constitution_cluster_a_nodeid_strict_canonical_cutover_runtime_and_contracts_walkthrough.md",
+          "summary": "The walkthrough records strict canonical NodeID cutover and legacy fallback removal."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Canonical ID and migration contract invariant with runtime and focused test evidence.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+          "target": "repo:file:8363bf4570f883e2:ilc_core_types_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+          "target": "repo:file:fe63b08cec751ed8:ilc_core_encoding_cidv1_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+          "target": "repo:file:9244a122bc690cc9:tests_test_node_id_dual_contract_phase_1002_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+          "target": "repo:file:6c4196289e8f9f64:tests_test_node_id_migration_utility_phase_1004_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:hash_id_canonical_fingerprint_alias_migration_contract",
+          "target": "repo:file:166c9879c7cc841d:docs_phases_phase_1013_g8_constitution_cluster_a_nodeid_strict_canonical_cutover_runtime_and_contracts_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:idea_descent_genesis_candidate_refutation_and_trace_integrity",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-235"
+          ],
+          "path": "tests/test_idea_descent_genesis_star_map_loop.py",
+          "summary": "The tests verify damaged Genesis candidates produce actionable refutations, accepted candidates pass, and two-step traces record improvement."
+        },
+        {
+          "line_refs": [
+            "1-390"
+          ],
+          "path": "tools/evaluators/genesis_star_map_evaluator.py",
+          "summary": "The evaluator checks required Genesis/truth nodes, metadata, endpoint integrity, decomposition recipes, and non-finite numeric values."
+        },
+        {
+          "line_refs": [
+            "1-170"
+          ],
+          "path": "docs/specs/ilc_idea_descent_genesis_star_map_objective_v0.1.md",
+          "summary": "The objective defines required candidate invariants and explicitly states non-goals including no signing, graph mutation, ECU allocation, or public RC activation."
+        },
+        {
+          "line_refs": [
+            "1-150"
+          ],
+          "path": "docs/phases/phase_1545p_fix3_idea_descent_genesis_rework_walkthrough.md",
+          "summary": "The walkthrough records the local evaluator, runner hardening, and non-claims for idea-descent Genesis rework."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Local candidate-refutation/evaluator support invariant; not signing authority.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_and_trace_integrity",
+          "target": "repo:file:d12f97b8d0175918:tests_test_idea_descent_genesis_star_map_loop_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_and_trace_integrity",
+          "target": "repo:file:cd609b1815b30817:tools_evaluators_genesis_star_map_evaluator_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_and_trace_integrity",
+          "target": "repo:file:e37d746e9473baa3:docs_specs_ilc_idea_descent_genesis_star_map_objective_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_and_trace_integrity",
+          "target": "repo:file:15fe01da1794e456:docs_phases_phase_1545p_fix3_idea_descent_genesis_rework_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:idea_descent_genesis_candidate_refutation_trace_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "1-210"
+          ],
+          "path": "tools/idea_descent_runner.py",
+          "summary": "The runner loads objective/evaluator/candidate inputs, validates existing traces, builds descent steps, and writes traces via same-directory atomic replace."
+        },
+        {
+          "line_refs": [
+            "1-235"
+          ],
+          "path": "tests/test_idea_descent_genesis_star_map_loop.py",
+          "summary": "The tests verify rejected-to-accepted two-step trace behavior and runner trace append behavior."
+        },
+        {
+          "line_refs": [
+            "1-120"
+          ],
+          "path": "docs/specs/ilc_genesis_star_map_candidate_methodology_preservation_1545p_fix6_v0.1.md",
+          "summary": "The methodology preservation spec records idea descent as a later support overlay, not the original star-map generator or signing authority."
+        },
+        {
+          "line_refs": [
+            "1-145"
+          ],
+          "path": "tests/test_phase_1545p_fix6_genesis_v03_methodology_preservation.py",
+          "summary": "The tests lock the methodology distinction and no-mutation/no-public-path boundaries around the idea-descent overlay."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "notes": "Trace-contract support invariant; evidence confirms local support overlay status.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_trace_contract",
+          "target": "repo:file:6f48ec8169a6462e:tools_idea_descent_runner_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_trace_contract",
+          "target": "repo:file:d12f97b8d0175918:tests_test_idea_descent_genesis_star_map_loop_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_trace_contract",
+          "target": "repo:file:97f5e85d567a69a4:docs_specs_ilc_genesis_star_map_candidate_methodology_preservation_1545p_fix6_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:idea_descent_genesis_candidate_refutation_trace_contract",
+          "target": "repo:file:65c564cb346ffe81:tests_test_phase_1545p_fix6_genesis_v03_methodology_preservation_py"
+        }
+      ]
+    }
+  ],
+  "phase": "1545p-Fix63b-batch007",
+  "recommended_edge_count": 37,
+  "safe_writer_application_summary": {
+    "accepted_evidence_edges": 36,
+    "dangling_edges_after_apply": 0,
+    "edge_id_debt_after_apply": 0,
+    "final_lmdb_edges": 86427,
+    "final_lmdb_nodes": 16368,
+    "phase_file_registration_accepted_edges": 6,
+    "phase_file_registration_accepted_nodes": 3,
+    "rejected_evidence_edges": 0,
+    "skipped_duplicate_evidence_edges": 1
+  }
+}

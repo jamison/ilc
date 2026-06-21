@@ -1,0 +1,615 @@
+{
+  "batch_id": "fix63b_direct_source_invariant_audit_batch003",
+  "batch_size": 10,
+  "direct_read_status": "complete",
+  "entries": [
+    {
+      "candidate_id": "invariant:canon_export_exported_at_utc",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "183-201"
+          ],
+          "path": "tests/test_canon_export_cli.py",
+          "summary": "The test asserts that canon export emits an exported_at UTC timestamp with a trailing Z and accepted parse semantics."
+        },
+        {
+          "line_refs": [
+            "1-77"
+          ],
+          "path": "ilc_core/cli/canon_export.py",
+          "summary": "The CLI builds canon export output through export_canon_format_v0_1, validates it, and writes JSON deterministically."
+        },
+        {
+          "line_refs": [
+            "72-83",
+            "117-135"
+          ],
+          "path": "ilc_core/ledger/canon_export_format.py",
+          "summary": "The export-format builder normalizes exact values and creates exported_at from timezone-aware UTC if not supplied."
+        },
+        {
+          "line_refs": [
+            "25-38",
+            "106-123"
+          ],
+          "path": "ilc_core/ledger/canon_export.py",
+          "summary": "Canon export hashing and atomic JSON write use deterministic serialization and safe filesystem replacement."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_export_exported_at_utc REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:canon_export_exported_at_utc CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py REGRESSES invariant:canon_export_exported_at_utc"
+      ],
+      "notes": "This is a canon-export runtime/test invariant under ADR-0009. It is not an independent authority node.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_exported_at_utc",
+          "target": "repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_exported_at_utc",
+          "target": "repo:file:b364050e203f61ac:ilc_core_cli_canon_export_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_exported_at_utc",
+          "target": "repo:file:4238f280d5e056e2:ilc_core_ledger_canon_export_format_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_exported_at_utc",
+          "target": "repo:file:2abd96e9573b1675:ilc_core_ledger_canon_export_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:canon_export_preserves_overwrite_protection",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "118-149"
+          ],
+          "path": "tests/test_canon_export_cli.py",
+          "summary": "The test asserts canon export refuses to overwrite an existing output path unless the caller passes --overwrite."
+        },
+        {
+          "line_refs": [
+            "47-50",
+            "64-72"
+          ],
+          "path": "ilc_core/cli/canon_export.py",
+          "summary": "The CLI performs the overwrite guard before writing and validates canon export output before atomic persistence."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_export_preserves_overwrite_protection REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:canon_export_preserves_overwrite_protection CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py REGRESSES invariant:canon_export_preserves_overwrite_protection"
+      ],
+      "notes": "This is a CLI safety invariant for canon export. ADR-0009 authority is already present; no GOVERNS edge is warranted.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_preserves_overwrite_protection",
+          "target": "repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_preserves_overwrite_protection",
+          "target": "repo:file:b364050e203f61ac:ilc_core_cli_canon_export_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:canon_export_rejects_invalid_exact_numeric_balance",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "89-116"
+          ],
+          "path": "tests/test_canon_export_cli.py",
+          "summary": "The test asserts invalid exact numeric balances are rejected and reported as canon_export_validation_failed."
+        },
+        {
+          "line_refs": [
+            "41-60",
+            "72-75"
+          ],
+          "path": "ilc_core/ledger/canon_export_format.py",
+          "summary": "The export format normalizes exact numeric string balances and rejects invalid, non-finite, or malformed values."
+        },
+        {
+          "line_refs": [
+            "25-38",
+            "72-75"
+          ],
+          "path": "ilc_core/ledger/canon_export.py",
+          "summary": "Canon export depends on canonical JSON and exact balance normalization before export persistence."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_export_rejects_invalid_exact_numeric_balance REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:canon_export_rejects_invalid_exact_numeric_balance CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py REGRESSES invariant:canon_export_rejects_invalid_exact_numeric_balance"
+      ],
+      "notes": "This is a canon-export exact-numeric validation invariant, not a standalone governance primitive.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_rejects_invalid_exact_numeric_balance",
+          "target": "repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_rejects_invalid_exact_numeric_balance",
+          "target": "repo:file:4238f280d5e056e2:ilc_core_ledger_canon_export_format_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_export_rejects_invalid_exact_numeric_balance",
+          "target": "repo:file:2abd96e9573b1675:ilc_core_ledger_canon_export_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:canon_key_registry_cli_outputs_json_error_contract",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "42-76"
+          ],
+          "path": "tests/test_canon_bundle_key_registry_cli.py",
+          "summary": "The tests assert missing and unreadable registry inputs return structured JSON error payloads."
+        },
+        {
+          "line_refs": [
+            "272-345"
+          ],
+          "path": "ilc_core/cli/canon_bundle_key_registry.py",
+          "summary": "The CLI emits JSON error envelopes for registry loading, validation, and output failures."
+        },
+        {
+          "line_refs": [
+            "33-43",
+            "65-72"
+          ],
+          "path": "docs/specs/canon_bundle_key_registry_v0.1.md",
+          "summary": "The registry spec defines production requirements and security considerations for bundle key registry handling."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_key_registry_cli_outputs_json_error_contract REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:canon_key_registry_cli_outputs_json_error_contract CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:020febfb26e35776:tests_test_canon_bundle_key_registry_cli_py REGRESSES invariant:canon_key_registry_cli_outputs_json_error_contract"
+      ],
+      "notes": "This is a CLI contract invariant for key-registry error output under the canon-bundle path.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_key_registry_cli_outputs_json_error_contract",
+          "target": "repo:file:020febfb26e35776:tests_test_canon_bundle_key_registry_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_key_registry_cli_outputs_json_error_contract",
+          "target": "repo:file:a3c8145e9e6a54f9:ilc_core_cli_canon_bundle_key_registry_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_key_registry_cli_outputs_json_error_contract",
+          "target": "repo:file:77e68360ba164c6c:docs_specs_canon_bundle_key_registry_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "78-107",
+            "219-327"
+          ],
+          "path": "tests/test_canon_bundle_key_registry_cli.py",
+          "summary": "The tests assert production mode rejects empty current keys or missing signatures and accepts valid signed production registries."
+        },
+        {
+          "line_refs": [
+            "260-267",
+            "272-345"
+          ],
+          "path": "ilc_core/cli/canon_bundle_key_registry.py",
+          "summary": "The CLI enforces production registry signature and key availability requirements before successful output."
+        },
+        {
+          "line_refs": [
+            "33-43",
+            "65-72"
+          ],
+          "path": "docs/specs/canon_bundle_key_registry_v0.1.md",
+          "summary": "The spec records production key-registry requirements and security constraints."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:020febfb26e35776:tests_test_canon_bundle_key_registry_cli_py REGRESSES invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature"
+      ],
+      "notes": "This is a production-mode key-registry guard under the bundle distribution authority chain.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature",
+          "target": "repo:file:020febfb26e35776:tests_test_canon_bundle_key_registry_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature",
+          "target": "repo:file:a3c8145e9e6a54f9:ilc_core_cli_canon_bundle_key_registry_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canon_key_registry_prod_requires_nonempty_current_keys_and_signature",
+          "target": "repo:file:77e68360ba164c6c:docs_specs_canon_bundle_key_registry_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "67-129",
+            "168-182",
+            "212-257"
+          ],
+          "path": "tests/test_phase_1235_commit_epoch_canonical_mutation.py",
+          "summary": "The tests assert canonical constructor shape, decimal normalization, float rejection, deterministic payloads, and consensus/finality validation."
+        },
+        {
+          "line_refs": [
+            "50-85",
+            "339-446",
+            "457-502"
+          ],
+          "path": "ilc_core/protocol/event_log.py",
+          "summary": "The event-log runtime rejects floats, validates canonical commit epoch event fields, and exposes the canonical constructor."
+        },
+        {
+          "line_refs": [
+            "415-480"
+          ],
+          "path": "ilc_core/protocol/commit_epoch_emission_runtime.py",
+          "summary": "Commit epoch emission builds canonical commit-epoch events over finalized consensus metadata and causal frontier inputs."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection REFERENCES_AUTHORITY cdl:017_validator_admission_ejection",
+        "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:b494905cfccadca2:tests_test_phase_1235_commit_epoch_canonical_mutation_py REGRESSES invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection"
+      ],
+      "notes": "This is a runtime validation invariant already tied to ADR-0009 and CDL-017; direct source reads support retaining it as support trace.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection",
+          "target": "repo:file:b494905cfccadca2:tests_test_phase_1235_commit_epoch_canonical_mutation_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection",
+          "target": "repo:file:8a8f7597328a83e8:ilc_core_protocol_event_log_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:canonical_commit_epoch_constructor_validator_decimal_finality_and_consensus_float_rejection",
+          "target": "repo:file:6d5f05debad7e44c:ilc_core_protocol_commit_epoch_emission_runtime_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "51-112",
+            "134-144",
+            "179-189"
+          ],
+          "path": "tests/test_phase_1236_fix3_commit_epoch_causal_frontier_projection.py",
+          "summary": "The tests assert genesis frontier anchor rules, post-genesis predecessor quorum refs, deterministic references, and no wall-clock/random/file IO in projection code."
+        },
+        {
+          "line_refs": [
+            "164-276",
+            "309-388",
+            "415-480"
+          ],
+          "path": "ilc_core/protocol/commit_epoch_emission_runtime.py",
+          "summary": "The runtime builds quorum and causal-frontier projections and emits canonical commit epoch events over those projections."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:6b776b1ede5581fd:tests_test_phase_1236_fix3_commit_epoch_causal_frontier_projection_py REGRESSES invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs"
+      ],
+      "notes": "This is a deterministic runtime projection invariant already authority-referenced to Genesis lineage/sunset surfaces.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs",
+          "target": "repo:file:6b776b1ede5581fd:tests_test_phase_1236_fix3_commit_epoch_causal_frontier_projection_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:causal_frontier_genesis_anchor_and_post_genesis_predecessor_quorum_refs",
+          "target": "repo:file:6d5f05debad7e44c:ilc_core_protocol_commit_epoch_emission_runtime_py"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "33-80",
+            "91-131",
+            "134-138"
+          ],
+          "path": "tests/test_sidecar_ccss_cli_public_ux.py",
+          "summary": "The tests assert recipe listing, placeholder Genesis contact import, fail-closed send to placeholder Genesis, allow-reply endpoint behavior, and CLI command registration."
+        },
+        {
+          "line_refs": [
+            "49-79",
+            "125-135"
+          ],
+          "path": "ilc_core/cli/ccss_cli.py",
+          "summary": "The CLI routes import-genesis, send --allow-reply, and apply-recipe to the CCSS runtime."
+        },
+        {
+          "line_refs": [
+            "364-406",
+            "453-504",
+            "1040-1079"
+          ],
+          "path": "ilc_core/ccss/runtime.py",
+          "summary": "The runtime fails closed without reply endpoints, imports a placeholder Genesis contact with warning, and applies the confidential-contact recipe."
+        },
+        {
+          "line_refs": [
+            "26-30",
+            "47-57",
+            "82-91"
+          ],
+          "path": "docs/specs/ilc_ccss_001_private_gated_shard_sidecar_contract_1324_v0.1.md",
+          "summary": "CCSS-001 records a deterministic local-only substrate and explicit public-serving non-claims."
+        },
+        {
+          "line_refs": [
+            "18-32",
+            "109-139"
+          ],
+          "path": "docs/specs/ilc_ccss_002_capability_membership_grant_revocation_boundary_1325_v0.1.md",
+          "summary": "CCSS-002 defines local/private membership and capability boundaries and rejects public membership or credential claims."
+        },
+        {
+          "line_refs": [
+            "19-33",
+            "57-83"
+          ],
+          "path": "docs/specs/ilc_ccss_003_sealed_sender_local_delivery_boundary_1326_v0.1.md",
+          "summary": "CCSS-003 records local/private sealed-sender delivery boundaries and public P2P/non-claim constraints."
+        },
+        {
+          "line_refs": [
+            "7-12",
+            "27-45",
+            "92-94"
+          ],
+          "path": "docs/specs/ilc_ccss_004_gossip_jitter_cover_policy_tests_1327_v0.1.md",
+          "summary": "CCSS-004 records private/local gossip and cover-policy boundaries and explicit non-authorization for public serving."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint REFERENCES_AUTHORITY adr:0037_genesis_canonical_lineage_contract",
+        "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:715c23c71fc5a220:tests_test_sidecar_ccss_cli_public_ux_py REGRESSES invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint"
+      ],
+      "notes": "This is a private/local CCSS bootstrap and fail-closed UX invariant. Existing Genesis lineage/policy authority references are appropriate; no independent GOVERNS edge should be added.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:715c23c71fc5a220:tests_test_sidecar_ccss_cli_public_ux_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:e811b4dbcd2bc5c7:ilc_core_cli_ccss_cli_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:435008b5cec7ff3b:ilc_core_ccss_runtime_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:ff4b1ed83cf45908:docs_specs_ilc_ccss_001_private_gated_shard_sidecar_contract_1324_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:d09a759897325a5b:docs_specs_ilc_ccss_002_capability_membership_grant_revocation_boundary_1325_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:d7bd791e245de3fb:docs_specs_ilc_ccss_003_sealed_sender_local_delivery_boundary_1326_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:ccss_cli_recipe_identity_placeholder_genesis_fail_closed_and_allow_reply_endpoint",
+          "target": "repo:file:63d76b58aa076ae3:docs_specs_ilc_ccss_004_gossip_jitter_cover_policy_tests_1327_v0_1_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:claim_composition_projection_schema_authority_source_allowed_reasons",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "10-37"
+          ],
+          "path": "tests/test_phase_1160_claim_composition_projection_build.py",
+          "summary": "The tests assert projection tool determinism, artifact counts, authority_source_ref coverage, and allowed edge reasons."
+        },
+        {
+          "line_refs": [
+            "13-25",
+            "85-118",
+            "119-218",
+            "238-247"
+          ],
+          "path": "tools/build_genesis_claim_composition_projection.py",
+          "summary": "The projection builder derives claim vertices from the signed star map, requires authority_source_ref coverage, validates allowed reasons, and writes deterministic JSON."
+        },
+        {
+          "line_refs": [
+            "11-20",
+            "69-83",
+            "127-152"
+          ],
+          "path": "docs/specs/ilc_genesis_claim_composition_projection_plan_1146_v0.1.md",
+          "summary": "The plan separates signed authority graph from claim-composition projection and requires authority_source_ref and typed edge reasons."
+        },
+        {
+          "line_refs": [
+            "11-20",
+            "121-143"
+          ],
+          "path": "docs/phases/phase_1160_claim_composition_projection_build_walkthrough.md",
+          "summary": "The walkthrough records Phase 1160 output, counts, projection hash, and token for claim-composition projection build."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:claim_composition_projection_schema_authority_source_allowed_reasons REFERENCES_AUTHORITY policy:genesis_authority_sunset",
+        "invariant:claim_composition_projection_schema_authority_source_allowed_reasons REFERENCES_AUTHORITY policy:formal_publication_gate_required",
+        "invariant:claim_composition_projection_schema_authority_source_allowed_reasons CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:314ce4ff10206655:tests_test_phase_1160_claim_composition_projection_build_py CLASSIFIED_BY invariant:claim_composition_projection_schema_authority_source_allowed_reasons"
+      ],
+      "notes": "This is a projection schema/support invariant for SIM-SPECTRAL, not a governance authority node.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:claim_composition_projection_schema_authority_source_allowed_reasons",
+          "target": "repo:file:314ce4ff10206655:tests_test_phase_1160_claim_composition_projection_build_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:claim_composition_projection_schema_authority_source_allowed_reasons",
+          "target": "repo:file:4e5adc9f49f27aa2:tools_build_genesis_claim_composition_projection_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:claim_composition_projection_schema_authority_source_allowed_reasons",
+          "target": "repo:file:701923ba3102825f:docs_specs_ilc_genesis_claim_composition_projection_plan_1146_v0_1_md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:claim_composition_projection_schema_authority_source_allowed_reasons",
+          "target": "repo:file:5a523fd96e544f20:docs_phases_phase_1160_claim_composition_projection_build_walkthrough_md"
+        }
+      ]
+    },
+    {
+      "candidate_id": "invariant:cluster_a_policy_hash_canonical_json_replay_determinism",
+      "direct_reads": [
+        {
+          "line_refs": [
+            "27-65",
+            "67-115"
+          ],
+          "path": "tests/test_ilc_cluster_a_replay_determinism.py",
+          "summary": "The tests assert stable canonical policy hashes across repeated application and hash changes when payload content changes."
+        },
+        {
+          "line_refs": [
+            "134-145",
+            "523-564"
+          ],
+          "path": "ilc_core/protocol/ilc_cluster_a_ingest.py",
+          "summary": "Cluster A ingest computes policy snapshots from sorted compact JSON and returns policy_hash in deterministic policy state delta."
+        },
+        {
+          "line_refs": [
+            "74-91",
+            "146-168",
+            "226-290"
+          ],
+          "path": "ilc_core/protocol/ilc_cluster_a_conformance.py",
+          "summary": "Cluster A conformance extracts and validates policy binding fields, compares expected policy hashes, and evaluates context mismatches."
+        }
+      ],
+      "disposition": "confirmed_support_trace_with_direct_evidence",
+      "existing_lmdb_edges_observed": [
+        "invariant:cluster_a_policy_hash_canonical_json_replay_determinism REFERENCES_AUTHORITY adr:0009_bundle_distribution",
+        "invariant:cluster_a_policy_hash_canonical_json_replay_determinism CLASSIFIED_BY policy:full_repo_genesis_atlas_candidate_unsigned_support_only_phase_1545p_fix22",
+        "repo:file:6c8fd0ffff2626d7:tests_test_ilc_cluster_a_replay_determinism_py REGRESSES invariant:cluster_a_policy_hash_canonical_json_replay_determinism"
+      ],
+      "notes": "This is a replay-determinism invariant under Cluster A/ADR-0009 runtime handling. It remains support-trace with direct source evidence.",
+      "recommended_new_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:cluster_a_policy_hash_canonical_json_replay_determinism",
+          "target": "repo:file:6c8fd0ffff2626d7:tests_test_ilc_cluster_a_replay_determinism_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:cluster_a_policy_hash_canonical_json_replay_determinism",
+          "target": "repo:file:1002e8ff25012a59:ilc_core_protocol_ilc_cluster_a_ingest_py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "source": "invariant:cluster_a_policy_hash_canonical_json_replay_determinism",
+          "target": "repo:file:ff7b6cffb8552047:ilc_core_protocol_ilc_cluster_a_conformance_py"
+        }
+      ]
+    }
+  ],
+  "entry_count": 10,
+  "lmdb_application": {
+    "accepted_edge_count": 34,
+    "accepted_node_count": 3,
+    "applied": true,
+    "artifact_registration_edge_count": 4,
+    "edge_rejected_count": 0,
+    "edge_skipped_count": 0,
+    "lmdb_path": "out/genesis_base_graph_v0.4_unified.lmdb",
+    "phase": "1545p-Fix63b-batch003",
+    "post_lmdb_edge_count": 86262,
+    "post_lmdb_node_count": 16355,
+    "status": "applied_to_unified_lmdb"
+  },
+  "lmdb_mutation_recommendation": "apply_recommended_evidences_edges_via_atlas_lmdb_safe_writer",
+  "phase": "1545p-Fix63b",
+  "source_problem": "Fix63 confirmed_support_stub invariants had weak STATUS.md evidence; batch003 replaces proxy evidence with direct source reads.",
+  "status": "applied"
+}
