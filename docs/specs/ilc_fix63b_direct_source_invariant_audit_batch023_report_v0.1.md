@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 023
+
+- Phase: `1545p-Fix63b-batches019-023`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `221-230`
+- Direct read status: `complete`
+- Recommended edges: `19`
+- Accepted semantic edges written: `17`
+- Duplicate semantic edges skipped: `2`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `221` `invariant:phase472_no_native_p2p_no_decision_log_no_ilc_core_mutation`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['888-893', '1905-1909', '2594-2599']`
+  - Summary: Fix57 walkthrough records Phase 472 consensus-bridge realism tool/prompt/test/evidence edges and no native P2P/runtime mutation support boundary.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `222` `invariant:phase479_validator_bootstrap_key_enrollment_epoch0_spec_no_ilc_core_no_decision_log`
+  - Source: `tests/test_phase_479_genesis_validator_bootstrap_specification.py`
+  - Evidence: `['18-35', '38-48', '51-66']`
+  - Summary: Phase 479 Genesis validator bootstrap specification locks Ed25519 signing, CDL-042 validator ID derivation, ceremony tooling placement, checklist, and no ilc_core or decision-log mutation.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `223` `invariant:phase487_sim010_pass_no_decision_log_no_ilc_core_mutation`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1155-1159', '1667-1671']`
+  - Summary: Fix57 walkthrough records SIM-010 pass/no-decision-log support evidence and missing-target rejections for validator incentive economics follow-on edges.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `224` `invariant:phase487_sim010_pass_recommendations_four_scenarios_no_runtime_or_decision_log_mutation`
+  - Source: `tests/test_phase_487_sim_010_validator_incentive_economics_execution_and_evidence.py`
+  - Evidence: `['30-54', '57-77', '80-83']`
+  - Summary: Phase 487 SIM-010 validator incentive economics produces pass evidence, recommendations, four scenarios, and follow-on authorization without ilc_core or decision-log mutation.
+  - Edges: `3` recommended, `1` written, `2` duplicate skipped
+- `225` `invariant:phase498_epoch_boundary_provenance_vs_constitutional_gating_carry_forward_no_cdl_open`
+  - Source: `tests/test_phase_498_epoch_boundary_enforcement_architectural_scoping.py`
+  - Evidence: `['31-48', '51-70', '73-84']`
+  - Summary: Phase 498 scopes epoch-boundary enforcement into implementable provenance tags versus future constitutional gating, with no CDL opening or decision-log mutation.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `226` `invariant:phase575_sequence_lock_rc0_1_wallet_graph_lineage_reproducibility_no_public_release`
+  - Source: `tests/test_phase_575_window_575_584_sequence_lock.py`
+  - Evidence: `['107-143', '146-184']`
+  - Summary: Phase 575 sequence lock defines RC0.1 phase ordering, hard pass condition, reproducibility carry-forward, runtime baseline, and no public release claim before 585-594.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `227` `invariant:phase576_settlement_wallet_visibility_no_claimability_read_only_replay_idempotency`
+  - Source: `tests/test_phase_576_rc0_1_settlement_wallet_boundary_lock.py`
+  - Evidence: `['71-97', '100-117', '120-151']`
+  - Summary: Phase 576 locks settlement/wallet boundaries: balance visibility is not claimability, wallet queries are read-only, replay must be idempotent, and founder/genesis split is deferred.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `228` `invariant:phase578_bootstrap_inventory_not_admission_authority_explicit_promotion_compromise_rollback_identity_gap`
+  - Source: `tests/test_phase_578_rc0_1_curated_genesis_bootstrap_lineage_lock.py`
+  - Evidence: `['79-116', '119-139', '142-176']`
+  - Summary: Phase 578 locks curated genesis/bootstrap lineage: bootstrap inventory is not admission authority, compromise/rollback posture is explicit, and CDL-052 identity-binding gap remains open.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `229` `invariant:phase579_transport_wallet_semantics_unchanged`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['643-643']`
+  - Summary: Fix57 walkthrough records Phase 579 testbed scenario linkage for agent behavioral loop runtime cutover while preserving transport/wallet semantic boundaries.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `230` `invariant:phase581_settlement_wallet_query_replay_idempotency_lmdb_state_identity_alignment_claimability_boundary`
+  - Source: `tests/test_phase_581_settlement_wallet_query_integration.py`
+  - Evidence: `['43-58', '86-151', '153-257', '287-307']`
+  - Summary: Phase 581 settlement and wallet query integration verifies live settlement path authority, replay idempotency, LMDB state reads, identity alignment, and no public claimability/spend semantics.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped

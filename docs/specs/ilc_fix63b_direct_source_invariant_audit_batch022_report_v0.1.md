@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 022
+
+- Phase: `1545p-Fix63b-batches019-023`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `211-220`
+- Direct read status: `complete`
+- Recommended edges: `25`
+- Accepted semantic edges written: `25`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `211` `invariant:phase266_issuance_evidence_and_genesis_accrual_reconciliation_nonratifying`
+  - Source: `tests/test_issuance_evidence_closure_266.py`
+  - Evidence: `['13-39', '42-63']`
+  - Summary: Phase 266 issuance evidence closure and Genesis accrual reconciliation reference CDL-025/CDL-029, constants, non-ratification language, and no CDL status mutation.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `212` `invariant:phase365_sim_commissioning_deterministic_no_decision_log_no_ilc_core_mutation`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['628-633', '715-780']`
+  - Summary: Fix57 walkthrough records deep-manual Phase 365 SIM utility/script/test/evidence edges for deterministic simulation commissioning without runtime or decision-log mutation.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `213` `invariant:phase386_sim006_sim007_deterministic_no_decision_log_no_ilc_core_mutation`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['860-866', '2566-2572']`
+  - Summary: Fix57 walkthrough records Phase 386 SIM-006/SIM-007 commissioning edges, including agent-decomposition and validation-lifecycle authority references.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `214` `invariant:phase429_sim009_deterministic_grid_manifest_recommendation_no_decision_log_no_ilc_core_mutation`
+  - Source: `tests/test_phase_429_sim_009_pe_stabilization_commissioning.py`
+  - Evidence: `['42-73', '160-185', '188-205', '208-219']`
+  - Summary: Phase 429 SIM-009 locks deterministic PE stabilization simulation, non-ratifying recommendations, CDL-030 clamp context, and no decision-log/ilc_core mutation.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `215` `invariant:phase436_runtime_baseline_frozen_source_cli_budget_contract_exact_scope`
+  - Source: `tests/test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion.py`
+  - Evidence: `['109-139', '185-217', '220-236']`
+  - Summary: Phase 436 benchmark harness locks source scope, CLI budget contract, frozen release-track hashes, and no decision-log or runtime-scope drift.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `216` `invariant:phase456_fix10_nonlinear_control_candidate_registry_exact_overrides_no_execution_no_opening`
+  - Source: `tests/test_phase_456_fix_10_nonlinear_control_mechanism_implementation.py`
+  - Evidence: `['58-78', '93-135', '139-162', '165-177']`
+  - Summary: Phase 456 Fix10 nonlinear-control candidate registry exposes exact overrides and non-execution/non-authorization while preserving CDL-050 unopened and CDL-051 status.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `217` `invariant:phase456_fix3_recovery_rule_candidate_registry_oscillator_stub_no_execution_no_opening`
+  - Source: `tests/test_phase_456_fix_3_recovery_rule_mechanism_implementation.py`
+  - Evidence: `['94-127', '130-147', '151-177', '181-197']`
+  - Summary: Phase 456 Fix3 recovery-rule surface exposes runnable candidates and oscillator stub boundary while preserving no Scenario-5 execution, no CDL-050 opening, and CDL-051 status.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `218` `invariant:phase456_fix6_oscillator_candidate_registry_exact_overrides_no_execution_no_opening`
+  - Source: `tests/test_phase_456_fix_6_oscillator_mechanism_implementation.py`
+  - Evidence: `['59-78', '92-127', '131-153', '156-169']`
+  - Summary: Phase 456 Fix6 oscillator candidate registry implements exact overrides and non-execution/non-authorization while preserving CDL-050 unopened and CDL-051 status.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `219` `invariant:phase459_post1_hybrid_intake_no_execution_no_window_reopen_no_new_authority`
+  - Source: `tests/test_phase_459_post1_waggle_oscillator_hybrid_intake_and_admissibility_lock.py`
+  - Evidence: `['46-71', '84-99', '102-119', '122-134']`
+  - Summary: Phase 459 Post1 admits a frozen Waggle-Oscillator hybrid neighborhood as future scheduling support only, with CDL-050/CDL-051 ratified and no window reopening or new authority.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `220` `invariant:phase459_post2_hybrid_contrast_exact_values_no_execution_no_reopen_no_new_authority`
+  - Source: `tests/test_phase_459_post2_waggle_oscillator_hybrid_contrast_field_attestation_and_brief_freeze.py`
+  - Evidence: `['44-73', '76-105', '108-118', '121-127']`
+  - Summary: Phase 459 Post2 freezes the hybrid contrast field with implemented status, preserves post-window boundaries, and keeps CDL-050/CDL-051 unchanged.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped

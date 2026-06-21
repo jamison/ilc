@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 020
+
+- Phase: `1545p-Fix63b-batches019-023`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `191-200`
+- Direct read status: `complete`
+- Recommended edges: `22`
+- Accepted semantic edges written: `19`
+- Duplicate semantic edges skipped: `3`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `191` `invariant:phase1545p_fix5_no_public_repo_publication_no_uspto_receipts_no_application_numbers`
+  - Source: `tests/test_phase_1545p_fix5_public_disclosure_patent_coverage.py`
+  - Evidence: `['20-32', '35-49', '52-68']`
+  - Summary: Fix5 confirms public disclosure/patent coverage boundaries: no publication, no application-number receipts, E1 resolved, and publication gate remains separate.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `192` `invariant:phase1545p_fix5_public_disclosure_coverage_five_filings_e1_resolved_publication_gate_separate`
+  - Source: `tests/test_phase_1545p_fix5_public_disclosure_patent_coverage.py`
+  - Evidence: `['20-32', '35-49', '52-68']`
+  - Summary: Fix5 records five-filing coverage and E1 disposition while separating publication authorization from patent-delivery evidence.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `193` `invariant:phase1545p_fix6_v03_methodology_reachability_authority_source_coverage_distinguished_successor_deferred_to_fix7`
+  - Source: `tests/test_phase_1545p_fix6_genesis_v03_methodology_preservation.py`
+  - Evidence: `['22-59', '76-83']`
+  - Summary: Fix6 preserves Genesis v0.3 methodology with reachability/authority/source coverage distinguished and audits ADR-0009, ADR-0035, and CDL-096 relevance.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `194` `invariant:phase1545p_fix7_common_registry_support_queue_v04_target_no_authority_no_activation`
+  - Source: `tests/test_phase_1545p_fix7_genesis_common_registry_node_candidates.py`
+  - Evidence: `['37-67', '69-99', '102-130']`
+  - Summary: Fix7 builds the common-registry support queue and v0.4 target while preserving no-authority, no-activation, and type-registry default-off boundaries.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `195` `invariant:phase1556_pre_rc_sequence_lock_gap_refresh_boolean_token_census_no_public_activation`
+  - Source: `tests/test_phase_1556_pre_rc_completion_gap_refresh.py`
+  - Evidence: `['21-49', '52-67', '69-115']`
+  - Summary: Phase 1556 sequence lock, gap refresh, Boolean-token census, and MemPalace rebuild preserve pre-RC ordering and no public activation.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `196` `invariant:phase1557_hb001_genesis_authority_assertion_schema_import_float_rejection_canonical_json_stability`
+  - Source: `tests/test_phase_1557_hb001_genesis_authority_assertion.py`
+  - Evidence: `['53-85', '94-112']`
+  - Summary: Phase 1557 Genesis authority assertion imports the Phase 858 schema, verifies authority assertions, rejects float amounts, and preserves canonical JSON stability.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `197` `invariant:phase1559_hb002_serving_receipt_canonical_atomic_https_timeout_bounded_response_no_live_calls`
+  - Source: `tests/test_phase_1559_hb002_serving_receipt.py`
+  - Evidence: `['87-153', '155-190', '193-264']`
+  - Summary: Phase 1559 serving receipts are canonical, atomic, HTTPS/known-peer bounded, reject floats, and avoid live network calls during tests.
+  - Edges: `2` recommended, `1` written, `1` duplicate skipped
+- `198` `invariant:phase1560_agent_init_live_evidence_hosts_agents_receipts_node6_receiver_only_no_private_material_public_path_blocked`
+  - Source: `tests/test_phase_1560_agent_init_live.py`
+  - Evidence: `['48-85', '87-106']`
+  - Summary: Phase 1560 live agent-init ceremony evidence records hosts, assignments, custody boundaries, Node6 receiver-only status, serving receipts, and no private material.
+  - Edges: `3` recommended, `1` written, `2` duplicate skipped
+- `199` `invariant:phase1560_genesis_operator_held_public_p2p_economics_blocked_no_private_material`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['5-31', '33-42']`
+  - Summary: Fix57 walkthrough records structural bridge-edge repair for the public-eligible Fiedler minority cluster and explicitly states the work is non-authority.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `200` `invariant:phase1560_genesis_serving_receiver_validates_payload_float_rejection_atomic_state_no_public_activation`
+  - Source: `tests/test_phase_1560_genesis_serving_receiver.py`
+  - Evidence: `['78-95', '98-127']`
+  - Summary: Phase 1560 serving receiver persists expected state, rejects receipt mismatch and floats, verifies atomic state, and does not activate public serving.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped

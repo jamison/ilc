@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 019
+
+- Phase: `1545p-Fix63b-batches019-023`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `181-190`
+- Direct read status: `complete`
+- Recommended edges: `14`
+- Accepted semantic edges written: `14`
+- Duplicate semantic edges skipped: `0`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, or CDL mutation authorized.
+
+## Entries
+
+- `181` `invariant:phase1545p_fix20_precision_replay_preserves_golden_recall_negative_controls_pass_rejected_candidates_not_promoted`
+  - Source: `tests/test_phase_1545p_fix20_atlas_precision_replay.py`
+  - Evidence: `['14-20', '23-39', '42-57', '71-83', '86-92']`
+  - Summary: Fix20 precision replay preserves golden recall, verifies negative controls, and keeps rejected candidates as review-only support artifacts.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `182` `invariant:phase1545p_fix22_full_repo_candidate_covers_tracked_snapshot_unsigned_noncanonical_no_public_rc`
+  - Source: `tests/test_phase_1545p_fix22_full_repo_genesis_atlas.py`
+  - Evidence: `['21-29', '31-41', '55-75']`
+  - Summary: Fix22 full-repo candidate covers the tracked snapshot and root reachability while retaining unsigned, noncanonical, no-public-RC boundaries.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `183` `invariant:phase1545p_fix23_lmdb_counts_digest_identity_indexes_fail_closed_missing_ids_noncanonical`
+  - Source: `tests/test_phase_1545p_fix23_genesis_atlas_lmdb_materialization.py`
+  - Evidence: `['26-47', '49-56', '98-117']`
+  - Summary: Fix23 materializes the Atlas LMDB with digest identity, indexes, fail-closed missing-ID behavior, and noncanonical support-only boundaries.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `184` `invariant:phase1545p_fix25_baseline_diagnostic_keeps_merkle_laplacian_authority_backtrace_classification_metrics_separate`
+  - Source: `tests/test_phase_1545p_fix25_whole_graph_baseline_diagnostic.py`
+  - Evidence: `['41-67', '70-88', '99-108']`
+  - Summary: Fix25 keeps Merkle, Laplacian connectedness, authority-forward trace, backtrace, and classification-rule trace metrics separate and non-authorizing.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `185` `invariant:phase1545p_fix29_laplacian_fiedler_firewall_non_excisability_negative_controls_no_authority_overclaim`
+  - Source: `tests/test_phase_1545p_fix29_spectral_non_excisability_sim.py`
+  - Evidence: `['53-80', '83-117']`
+  - Summary: Fix29 computes Laplacian/Fiedler diagnostics and enforces the authority-semantics firewall, negative controls, and non-excisability boundaries.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `186` `invariant:phase1545p_fix30_200_iteration_autoresearch_keep_revert_no_spectral_only_keep_no_authority_padding`
+  - Source: `tests/test_phase_1545p_fix30_long_autoresearch_optimization.py`
+  - Evidence: `['45-79', '81-113']`
+  - Summary: Fix30 long autoresearch optimization preserves KEEP/REVERT discipline, no spectral-only KEEP, and no authority-padding behavior.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `187` `invariant:phase1545p_fix32_pytest_nodeid_contract_executor_profiles_authority_nonclaims_successor_route`
+  - Source: `tests/test_phase_1545p_fix32_homoiconic_test_registry_contract.py`
+  - Evidence: `['34-78', '80-109', '120-128']`
+  - Summary: Fix32 defines pytest node-id contracts, executor profiles, homoiconic test registry boundaries, and successor routing without execution or authority claims.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `188` `invariant:phase1545p_fix33_enriched_graph_coverage_report_first_no_execution_no_canonical_mutation`
+  - Source: `tests/test_phase_1545p_fix33_test_graph_coverage.py`
+  - Evidence: `['33-66', '68-98', '100-108']`
+  - Summary: Fix33 is report-first graph coverage: enriched graph input, test mapping/gap classes, executor profiles, fallback scope, and no canonical mutation.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `189` `invariant:phase1545p_fix4_delivery_record_must_not_authorize_public_rc_or_clear_public_path`
+  - Source: `tests/test_phase_1545p_fix4_patent_delivery_status.py`
+  - Evidence: `['28-52', '54-67', '69-88']`
+  - Summary: Fix4 records patent delivery status but explicitly does not authorize public RC, counsel clearance, or public-path clearing.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
+- `190` `invariant:phase1545p_fix4_patent_delivery_recorded_receipts_pending_public_path_not_cleared_canonical_json`
+  - Source: `tests/test_phase_1545p_fix4_patent_delivery_status.py`
+  - Evidence: `['28-52', '69-100']`
+  - Summary: Fix4 records patent delivery facts with pending receipts and canonical JSON validation while keeping public-path clearing out of scope.
+  - Edges: `2` recommended, `2` written, `0` duplicate skipped
