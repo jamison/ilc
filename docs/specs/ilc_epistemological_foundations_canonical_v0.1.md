@@ -68,7 +68,7 @@ Three classes of epistemological claim carry progressively less exposure to Göd
 
 **Praxic epistemology** (claims about what works in practice):
 - Asks: what do participants actually do, and does it reliably track what is valuable?
-- ILC operates here. "Valuable" in ILC means: gets reused by participants who are themselves frequently reused, weighted by the reuser's own centrality (a PageRank-style eigenvalue measurement over the reuse graph).
+- ILC operates here. "Valuable" in ILC means: gets reused by participants who are themselves frequently reused, weighted by the reuser's own centrality (a StarRank eigenvalue measurement over the reuse graph).
 - Praxic epistemology makes no formal provability claims. It measures behavioral patterns.
 - Gödel's theorems do not apply: there is no formal proof system, no axiom set, no provability relation. There is only measurement of what participants do.
 

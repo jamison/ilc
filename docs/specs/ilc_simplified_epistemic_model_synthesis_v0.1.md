@@ -46,7 +46,7 @@ design for a future ratification lane.
 ### Mode 1: Default reuse-valuation (all nodes)
 
 Every node on the graph receives reuse-weighted centrality valuation by default. "Valuable"
-means "gets reused by agents who are themselves frequently reused" — a PageRank-style
+means "gets reused by agents who are themselves frequently reused" — a StarRank
 eigenvalue measurement over the reuse graph. This is ILC's praxic epistemological core.
 
 No explicit epistemic classification is required. Subjective content, creative work, cultural
