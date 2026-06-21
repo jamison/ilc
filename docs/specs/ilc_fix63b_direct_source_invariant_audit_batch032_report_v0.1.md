@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 032
+
+- Phase: `1545p-Fix63b-batches029-034`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `311-320`
+- Direct read status: `complete`
+- Recommended edges: `21`
+- Accepted semantic edges written: `21`
+- Duplicate semantic edges skipped: `6`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `311` `invariant:sim_spectral_02_scenario_b_advisory_remains_in_force_after_fix2`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-SPECTRAL-02 scenario-B advisory guidance as still in force after Fix2.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `312` `invariant:sim_spectral_02_signal_definition_theta_floor_k_candidates_and_data_inventory`
+  - Source: `tests/test_phase_1131_sim_spectral_02_signal_definition.py`
+  - Evidence: `['1-49']`
+  - Summary: Phase 1131 SIM-SPECTRAL-02 signal-definition tests record theta floors, k-candidates, and data inventory for the spectral diagnostic lane.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `313` `invariant:sim_spectral_03_harness_signed_star_map_s1_only_fail_closed_boundary`
+  - Source: `tests/test_phase_1144_sim_spectral_03_harness.py`
+  - Evidence: `['1-99']`
+  - Summary: Phase 1144 SIM-SPECTRAL-03 harness tests signed star-map S1-only loading and fail-closed behavior.
+  - Edges: `3` recommended, `3` written, `1` duplicate skipped
+- `314` `invariant:sim_spectral_03_run01_matrix_signed_star_map_s1_and_corrected_run02_scope`
+  - Source: `tests/test_phase_1145_sim_spectral_03_run01.py`
+  - Evidence: `['1-77']`
+  - Summary: Phase 1145 SIM-SPECTRAL-03 run01 tests the run matrix, signed star-map S1 handling, and corrected run02 scope.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `315` `invariant:sim_spectral_03_topology_search_no_variant_passed`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-SPECTRAL-03 topology search with no passing variant and no signed star-map mutation.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `316` `invariant:sim_spectral_03_topology_search_no_variant_passed_signed_star_map_unchanged`
+  - Source: `docs/phases/phase_1545p_fix57_public_eligible_fiedler_minority_manual_pass_walkthrough.md`
+  - Evidence: `['1-260']`
+  - Summary: Fix57 walkthrough evidence records SIM-SPECTRAL-03 topology-search no-pass disposition and signed star-map unchanged boundary.
+  - Edges: `3` recommended, `3` written, `0` duplicate skipped
+- `317` `invariant:sim_spectral_03_topology_search_variants_controls_and_defer_guidance`
+  - Source: `tests/test_phase_1145a_topology_search.py`
+  - Evidence: `['1-83']`
+  - Summary: Phase 1145a topology-search tests variants, controls, no-pass disposition, signed star-map preservation, and defer guidance.
+  - Edges: `3` recommended, `3` written, `1` duplicate skipped
+- `318` `invariant:sim_spectral_05_economic_flow_slice_pass_prerequisite_suppression_preservation_and_current_phi_bound`
+  - Source: `tests/test_phase_1180_sim_spectral_05_economic_flow_slice.py`
+  - Evidence: `['1-43']`
+  - Summary: SIM-SPECTRAL-05 economic-flow slice tests slice-pass prerequisites, suppression/preservation checks, and current phi-bound decisions.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `319` `invariant:sim_spectral_05_gossip_slice_pass_three_slice_framework_and_phi_bound_decisions`
+  - Source: `tests/test_phase_1187_sim_spectral_05_gossip_slice.py`
+  - Evidence: `['1-46']`
+  - Summary: SIM-SPECTRAL-05 gossip slice tests the three-slice framework, slice-pass status, and phi-bound decision record.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `320` `invariant:sim_spectral_05_runtime_binding_slice_pass_prelock_prerequisite_and_current_phi_bound`
+  - Source: `tests/test_phase_1179_sim_spectral_05_runtime_binding_slice.py`
+  - Evidence: `['1-43']`
+  - Summary: SIM-SPECTRAL-05 runtime-binding slice tests the prelock prerequisite and current phi-bound boundary.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
