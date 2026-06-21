@@ -1,0 +1,63 @@
+# Fix63b Direct Source Invariant Audit Batch 027
+
+- Phase: `1545p-Fix63b-batches024-028`
+- Source map: `docs/specs/ilc_fix63a_invariant_source_file_map_v0.1.json`
+- Row range: `261-270`
+- Direct read status: `complete`
+- Recommended edges: `26`
+- Accepted semantic edges written: `26`
+- Duplicate semantic edges skipped: `7`
+- Non-claim: no public RC, publication, runtime activation, ECU minting, ILC settlement, CDL mutation, or Genesis signing authorized.
+
+## Entries
+
+- `261` `invariant:phase727_adjacent_gated_hardening_no_activation_no_ratification_cdl062_adr0022_separate`
+  - Source: `tests/test_phase_727_window_727_732_sequence_lock.py`
+  - Evidence: `['20-52', '53-77', '93-135']`
+  - Summary: Phase 727 sequence-locks adjacent gated hardening with no activation, no ratification, CDL-017 text review only, and CDL-062/ADR-0022 separation.
+  - Edges: `3` recommended, `3` written, `1` duplicate skipped
+- `262` `invariant:phase734_sim_validator_results_numeric_stake_floor_vrf_threshold_no_import_side_effects`
+  - Source: `tests/test_phase_734_sim_validator_01_results.py`
+  - Evidence: `['1-23', '31-55']`
+  - Summary: Phase 734 validates SIM-VALIDATOR-01 results, numeric stake-floor interval, VRF threshold, and import side-effect isolation.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `263` `invariant:phase751_archived_planning_docs_removed_from_startup_canon_successor_master_roadmap`
+  - Source: `tests/test_phase_751_stale_planning_doc_archival_and_planning_index_advance.py`
+  - Evidence: `['20-68', '70-118']`
+  - Summary: Phase 751 archives stale planning docs, advances the planning index, and points archived docs to the master-roadmap successor.
+  - Edges: `1` recommended, `1` written, `0` duplicate skipped
+- `264` `invariant:phase768_sec004_historical_validator_epoch_boundary_and_no_hardcoded_cert_epoch`
+  - Source: `tests/test_phase_768_sec_004_acceptance.py`
+  - Evidence: `['1-31', '34-47']`
+  - Summary: Phase 768 tests SEC-004 historical validator epoch boundary behavior and removal of hardcoded certificate epoch in the testnet client.
+  - Edges: `3` recommended, `3` written, `1` duplicate skipped
+- `265` `invariant:phase770_audit_clear_live_settlement_deferred_first_validator_gate_preserved`
+  - Source: `tests/test_phase_770_codex_audit.py`
+  - Evidence: `['1-31']`
+  - Summary: Phase 770 audit confirms CDL-017 compliance, SEC-004 acceptance, M-007 hooks, deferred live settlement wiring, and first-validator gate preservation.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `266` `invariant:phase771_lane_doc_updated_sec004_m007_activated_first_validator_gate_not_crossed`
+  - Source: `tests/test_phase_771_lane_doc_update.py`
+  - Evidence: `['1-31']`
+  - Summary: Phase 771 updates the M-series lane doc to record SEC-004 closure, M-007 hook activation, ratified CDL-017, and the unpulled human gate.
+  - Edges: `1` recommended, `1` written, `1` duplicate skipped
+- `267` `invariant:phase773_sec004_m007_closed_but_live_settlement_delivery_and_first_validator_gate_deferred`
+  - Source: `tests/test_phase_773_coherence_and_capsule.py`
+  - Evidence: `['1-54']`
+  - Summary: Phase 773 coherence/capsule records SEC-004 and M-007 closure while deferring live settlement delivery and first-validator gate crossing.
+  - Edges: `2` recommended, `2` written, `1` duplicate skipped
+- `268` `invariant:phase813_option_b_selected_false_row5_pre_public_rc_obligation_acknowledged`
+  - Source: `tests/test_phase_813_checklist_v0_2.py`
+  - Evidence: `['1-25']`
+  - Summary: Phase 813 checklist keeps Option B unselected and marks row 5 as a pre-public-RC parallel obligation.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
+- `269` `invariant:phase830_settlement_gate_predeployment_no_live_routing_no_validator_deployment_no_cdl_mutation`
+  - Source: `tests/test_phase_830_settlement_path_gate.py`
+  - Evidence: `['1-27', '34-94', '117-150']`
+  - Summary: Phase 830 gates settlement-path predeployment without live routing, first-validator deployment, or CDL mutation.
+  - Edges: `4` recommended, `4` written, `1` duplicate skipped
+- `270` `invariant:phase831_privacy_lane_k30_k20_jitter3_bounded_hold_and_express_bypass_semantics`
+  - Source: `tests/test_phase_831_row5_b_impl_obligations_1_3.py`
+  - Evidence: `['1-49', '76-145', '220-405']`
+  - Summary: Phase 831 tests row-5 privacy-lane rolling groups, K=30/K=20, jitter=3, bounded hold, force release, and express-bypass semantics.
+  - Edges: `4` recommended, `4` written, `0` duplicate skipped
