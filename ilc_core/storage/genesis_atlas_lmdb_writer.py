@@ -919,7 +919,7 @@ def _support_node(
 
 def _file_node_from_registration(registration: AtlasPhaseFileRegistration, *, phase: str) -> dict[str, Any]:
     repo_path = Path(registration.path).as_posix()
-    return {
+    node = {
         "annotation_method": "phase_file_lmdb_registration",
         "annotation_phase": _phase_token(phase),
         "candidate_id": repo_file_ref_id(repo_path),
@@ -931,6 +931,25 @@ def _file_node_from_registration(registration: AtlasPhaseFileRegistration, *, ph
         "source_path": repo_path,
         "tier": "support_candidate",
     }
+    path = Path(repo_path)
+    if path.is_file():
+        node["source_sha256"] = _file_sha256(path)
+        node["size_bytes"] = path.stat().st_size
+        node["source_identity_status"] = "content_addressed_at_registration"
+    else:
+        node["source_identity_status"] = "source_path_not_found_at_registration"
+    return node
+
+
+def _file_sha256(path: Path, chunk_size: int = 65536) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        while True:
+            chunk = handle.read(chunk_size)
+            if not chunk:
+                break
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _append_if_missing(
