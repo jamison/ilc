@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCandidateStore
@@ -291,6 +292,37 @@ def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path
         assert DEFAULT_PUBLIC_PATH_POLICY in nodes
         assert (file_id, "CLASSIFIED_BY", DEFAULT_PUBLIC_PATH_POLICY) in edges
         assert (file_id, "EVIDENCES", "phase:1545p_fix59b") in edges
+    finally:
+        writer.close()
+
+
+def test_phase_file_registration_content_addresses_existing_files(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    source = tmp_path / "phase_artifact.md"
+    payload = b"phase evidence\n"
+    source.write_bytes(payload)
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.register_phase_files(
+            "1545p-Fix59b",
+            [
+                AtlasPhaseFileRegistration(
+                    path=source,
+                    node_kind="phase_walkthrough",
+                    graph_projection="support_candidate_graph",
+                    skip_carries_forward=True,
+                )
+            ],
+            dry_run=False,
+        )
+        file_id = repo_file_ref_id(source.as_posix())
+        assert receipt["rejected_edge_count"] == 0
+        node = writer.store.get_node(file_id)
+        assert node is not None
+        assert node["source_sha256"] == hashlib.sha256(payload).hexdigest()
+        assert node["size_bytes"] == len(payload)
+        assert node["source_identity_status"] == "content_addressed_at_registration"
     finally:
         writer.close()
 
