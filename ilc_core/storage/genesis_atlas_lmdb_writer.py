@@ -182,7 +182,21 @@ class AtlasLmdbSafeWriter:
             dry_run=dry_run,
             extra_nodes=extra_nodes,
         )
-        return self.apply_plan(plan)
+        receipt = self.apply_plan(plan)
+        identity_updates = {
+            repo_file_ref_id(Path(registration.path).as_posix()): _file_identity_fields(
+                Path(registration.path).as_posix()
+            )
+            for registration in registrations
+        }
+        receipt["file_identity_update_count"] = len(identity_updates)
+        if not dry_run and identity_updates:
+            receipt["file_identity_update_receipt"] = self.update_node_fields(
+                identity_updates,
+                phase=f"{phase}:phase_file_identity",
+                dry_run=False,
+            )
+        return receipt
 
     def build_phase_file_registration_plan(
         self,
@@ -931,14 +945,23 @@ def _file_node_from_registration(registration: AtlasPhaseFileRegistration, *, ph
         "source_path": repo_path,
         "tier": "support_candidate",
     }
+    node.update(_file_identity_fields(repo_path))
+    return node
+
+
+def _file_identity_fields(repo_path: str) -> dict[str, Any]:
     path = Path(repo_path)
     if path.is_file():
-        node["source_sha256"] = _file_sha256(path)
-        node["size_bytes"] = path.stat().st_size
-        node["source_identity_status"] = "content_addressed_at_registration"
-    else:
-        node["source_identity_status"] = "source_path_not_found_at_registration"
-    return node
+        return {
+            "source_path": repo_path,
+            "source_sha256": _file_sha256(path),
+            "size_bytes": path.stat().st_size,
+            "source_identity_status": "content_addressed_at_registration",
+        }
+    return {
+        "source_path": repo_path,
+        "source_identity_status": "source_path_not_found_at_registration",
+    }
 
 
 def _file_sha256(path: Path, chunk_size: int = 65536) -> str:

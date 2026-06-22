@@ -327,6 +327,55 @@ def test_phase_file_registration_content_addresses_existing_files(tmp_path: Path
         writer.close()
 
 
+def test_phase_file_registration_refreshes_existing_file_identity(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    source = tmp_path / "existing_phase_artifact.md"
+    payload = b"updated phase evidence\n"
+    source.write_bytes(payload)
+    _seed_lmdb(root)
+    file_id = repo_file_ref_id(source.as_posix())
+    store = GenesisAtlasCandidateStore(root, allow_synthetic_edge_keys=True)
+    try:
+        existing_nodes = store.iter_nodes()
+        existing_nodes.append(
+            {
+                "candidate_id": file_id,
+                "graph_projection": "support_candidate_graph",
+                "node_kind": "phase_walkthrough",
+                "source_path": source.as_posix(),
+                "source_identity_status": "stale_before_registration",
+                "tier": "support_candidate",
+            }
+        )
+        store.put_nodes(existing_nodes)
+        store.put_graph_payload({"nodes": existing_nodes, "edges": store.iter_edges()})
+    finally:
+        store.close()
+
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.register_phase_files(
+            "1545p-Fix59b",
+            [
+                AtlasPhaseFileRegistration(
+                    path=source,
+                    node_kind="phase_walkthrough",
+                    graph_projection="support_candidate_graph",
+                    skip_carries_forward=True,
+                )
+            ],
+            dry_run=False,
+        )
+        assert receipt["file_identity_update_count"] == 1
+        node = writer.store.get_node(file_id)
+        assert node is not None
+        assert node["source_sha256"] == hashlib.sha256(payload).hexdigest()
+        assert node["size_bytes"] == len(payload)
+        assert node["source_identity_status"] == "content_addressed_at_registration"
+    finally:
+        writer.close()
+
+
 def test_phase_file_registration_can_skip_generic_carries_forward_edge(tmp_path: Path) -> None:
     root = tmp_path / "atlas"
     _seed_lmdb(root)

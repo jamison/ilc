@@ -101,6 +101,14 @@ EDGE_COLORS: dict[str, str] = {
     "REFERENCES_AUTHORITY": "#00cccc",
     "DERIVED_FROM":         "#cc88ff",
     "CLASSIFIED_BY":        "#ff88aa",
+    "SAME_AUTHORITY":       "#ee88ff",
+    "SAME_SOURCE":          "#44ff88",
+    "OPENED_FOR":           "#88ddff",
+    "PRELOCK_FOR":          "#88bbff",
+    "RATIFICATION_EVIDENCE_FOR": "#88ffaa",
+    "PROPOSES_CHANGE_TO":   "#ffaa88",
+    "RESOLVED_BY":          "#aaff88",
+    "CARRIES_FORWARD":      "#aa66cc",
     "SOURCE_TREE_MEMBER":   "#448844",
     "CONTAINS_FILE":        "#444444",
     "CONTAINS_GROUP":       "#444444",
@@ -217,10 +225,14 @@ def _build_graph_data(
             "id":    nid,
             "label": _short_label(nid, n),
             "color": _node_color(nid, n),
+            "degree_lmdb_total": n.get("degree_lmdb_total"),
+            "directed_hop_from_root": n.get("directed_hop_from_root"),
             "size":  _node_size(nid, n),
             "group": _prefix(nid),
             "tier":  str(n.get("tier", "")),
-            "kind":  str(n.get("node_kind", "")),
+            "kind":  str(n.get("node_kind") or n.get("kind") or ""),
+            "projection": str(n.get("graph_projection") or n.get("projection") or ""),
+            "status": str(n.get("candidate_status") or n.get("status") or ""),
         })
 
     # --max-nodes: trim by group priority, always keep NODE0
@@ -266,12 +278,18 @@ def _html(
     title: str,
     sprite_manifest: dict | None = None,
     core_only: bool = False,
+    metadata: dict | None = None,
 ) -> str:
     nodes_json = json.dumps(nodes, separators=(",", ":"))
     links_json = json.dumps(links, separators=(",", ":"))
     prefix_colors_js = _prefix_colors_js()
     node_count = len(nodes)
     link_count = len(links)
+    metadata = metadata or {}
+    lmdb_root_display = str(metadata.get("lmdb_root") or "unknown")
+    lmdb_digest = str(metadata.get("lmdb_digest_sha256") or "")
+    digest_short = lmdb_digest[:12] if lmdb_digest else "—"
+    export_time = str(metadata.get("export_time_utc") or "—")
 
     # Sprite manifest injected as JS — empty dicts if none provided
     sm = sprite_manifest or {}
@@ -358,8 +376,13 @@ Graph.d3Force("charge").strength(-25);"""
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{ background: #0d0d1a; color: #eee; font-family: monospace; overflow: hidden; }}
   #graph {{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; }}
+  #lmdb-source-bar {{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    background: #111; color: #777; font-size: 10px; padding: 2px 8px;
+    border-bottom: 1px solid #333; font-family: monospace;
+  }}
   #panel {{
-    position: fixed; top: 10px; left: 10px; z-index: 10;
+    position: fixed; top: 26px; left: 10px; z-index: 10;
     background: rgba(10,10,30,0.85); border: 1px solid #333;
     border-radius: 6px; padding: 12px; width: 220px;
     max-height: calc(100vh - 20px); overflow-y: auto;
@@ -381,7 +404,7 @@ Graph.d3Force("charge").strength(-25);"""
   #info h3 {{ color: #fff; margin-bottom: 6px; font-size: 12px; }}
   #info .field {{ color: #aaa; margin: 2px 0; word-break: break-all; }}
   #controls {{
-    position: fixed; top: 10px; right: 10px; z-index: 10;
+    position: fixed; top: 26px; right: 10px; z-index: 10;
     background: rgba(10,10,30,0.85); border: 1px solid #333;
     border-radius: 6px; padding: 10px; font-size: 11px;
     width: 260px; box-sizing: border-box;
@@ -397,6 +420,7 @@ Graph.d3Force("charge").strength(-25);"""
 </head>
 <body>
 <div id="graph"></div>
+<div id="lmdb-source-bar">Source: {lmdb_root_display} | digest: {digest_short}… | exported: {export_time} | nodes: {node_count:,} | edges: {link_count:,}</div>
 
 <div id="panel">
   <h2>ILC Genesis Atlas</h2>
@@ -773,6 +797,28 @@ function visibleNodeCount() {{
 function visibleLinkCount() {{
   return RAW_LINKS.filter(linkVisible).length;
 }}
+function _edgeEndpointId(value) {{
+  return value && value.id ? value.id : value;
+}}
+function exportDegree(nodeId) {{
+  return RAW_LINKS.filter(l =>
+    _edgeEndpointId(l.source) === nodeId || _edgeEndpointId(l.target) === nodeId
+  ).length;
+}}
+function visibleDegree(nodeId) {{
+  return RAW_LINKS.filter(l => linkVisible(l) && (
+    _edgeEndpointId(l.source) === nodeId || _edgeEndpointId(l.target) === nodeId
+  )).length;
+}}
+function hiddenEdges(nodeId) {{
+  const exp = exportDegree(nodeId);
+  const vis = visibleDegree(nodeId);
+  const hidden = exp - vis;
+  const node = RAW_NODES.find(n => n.id === nodeId);
+  const lmdb = node && node.degree_lmdb_total !== undefined && node.degree_lmdb_total !== null
+    ? node.degree_lmdb_total : "—";
+  return `${{hidden}} hidden / ${{lmdb}} total LMDB`;
+}}
 
 // ── graph — load full graph once, never replace graphData ────────────────
 let traceOnClick = false;
@@ -838,11 +884,20 @@ function showInfo(n) {{
   const traceLen = tracePathOrdered.length > 1
     ? `${{tracePathOrdered.length - 1}} hop(s) to Genesis` : "";
   const fields = [
-    ["group",  n.group],
-    ["kind",   n.kind],
-    ["tier",   n.tier],
-    ["label",  n.label],
-    ["sprite", customUrl || "(default circle)"],
+    ["id",            n.id],
+    ["kind",          n.kind],
+    ["tier",          n.tier],
+    ["group",         n.group],
+    ["projection",    n.projection],
+    ["status",        n.status],
+    ["lmdb_degree",   n.degree_lmdb_total !== undefined && n.degree_lmdb_total !== null ? n.degree_lmdb_total : "—"],
+    ["export_degree", exportDegree(n.id)],
+    ["visible_degree", visibleDegree(n.id)],
+    ["hidden_edges",  hiddenEdges(n.id)],
+    ["directed_hop",  n.directed_hop_from_root !== null && n.directed_hop_from_root !== undefined
+                        ? n.directed_hop_from_root : "unreachable"],
+    ["label",         n.label],
+    ["sprite",        customUrl || "(default circle)"],
     ...(traceLen ? [["trace", traceLen]] : []),
   ];
   document.getElementById("info-body").innerHTML =
@@ -1870,7 +1925,14 @@ def main() -> None:
         out = out.parent / "graph_install_demo.html" if args.output == str(DEFAULT_OUTPUT) else out
     else:
         title = f"ILC Genesis Atlas ({len(nodes):,}n / {len(links):,}e)"
-        html  = _html(nodes, links, title, sprite_manifest=sprite_manifest, core_only=args.core_only)
+        html  = _html(
+            nodes,
+            links,
+            title,
+            sprite_manifest=sprite_manifest,
+            core_only=args.core_only,
+            metadata=graph.get("metadata") if isinstance(graph.get("metadata"), dict) else {},
+        )
 
     out.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=str(out.parent), prefix=".graph_3d.", suffix=".tmp")

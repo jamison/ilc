@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 import tempfile
+from collections import deque
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -51,7 +52,21 @@ AUTHORITY_PREFIXES = frozenset(
     {"truth_primitive", "policy", "artifact", "genesis_agent", "adr", "cdl", "ceremony"}
 )
 GOVERNANCE_EDGE_TYPES = frozenset(
-    {"GOVERNS", "ATTESTATION", "REFERENCES_AUTHORITY", "IMPLEMENTS", "EVIDENCES"}
+    {
+        "GOVERNS",
+        "ATTESTATION",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "CLASSIFIED_BY",
+        "SAME_AUTHORITY",
+        "OPENED_FOR",
+        "PRELOCK_FOR",
+        "RATIFICATION_EVIDENCE_FOR",
+        "PROPOSES_CHANGE_TO",
+        "RESOLVED_BY",
+        "DERIVED_FROM",
+    }
 )
 TEST_EDGE_TYPES = frozenset({"TESTS", "COVERS_SYMBOL", "IMPLEMENTS", "IMPORTS_MODULE"})
 
@@ -82,6 +97,13 @@ EDGE_COLORS: dict[str, str] = {
     "REFERENCES_AUTHORITY": "#00cccc",
     "DERIVED_FROM": "#cc88ff",
     "CLASSIFIED_BY": "#cc44ff",
+    "SAME_AUTHORITY": "#ee88ff",
+    "SAME_SOURCE": "#44ff88",
+    "OPENED_FOR": "#88ddff",
+    "PRELOCK_FOR": "#88bbff",
+    "RATIFICATION_EVIDENCE_FOR": "#88ffaa",
+    "PROPOSES_CHANGE_TO": "#ffaa88",
+    "RESOLVED_BY": "#aaff88",
     "CARRIES_FORWARD": "#aa66cc",
     "SOURCE_TREE_MEMBER": "#448844",
     "CONTAINS_FILE": "#444444",
@@ -205,6 +227,16 @@ def _kind(node: dict[str, Any]) -> str:
     return value if isinstance(value, str) else ""
 
 
+def _projection(node: dict[str, Any]) -> str:
+    value = node.get("graph_projection")
+    return value if isinstance(value, str) else ""
+
+
+def _status(node: dict[str, Any]) -> str:
+    value = node.get("candidate_status") or node.get("status")
+    return value if isinstance(value, str) else ""
+
+
 def _label(node_id: str, node: dict[str, Any]) -> str:
     value = node.get("label") or node.get("source_path") or node_id
     label = value if isinstance(value, str) else node_id
@@ -312,15 +344,43 @@ def build_view(
 ) -> dict[str, Any]:
     nodes_by_id = {_node_id(node): node for node in nodes}
     selected_ids = _select_node_ids(view=view, nodes_by_id=nodes_by_id, edges=edges)
+    lmdb_out_degree: dict[str, int] = {}
+    lmdb_in_degree: dict[str, int] = {}
+    directed_adj: dict[str, list[str]] = {node_id: [] for node_id in nodes_by_id}
+    for edge in edges:
+        source = _source(edge)
+        target = _target(edge)
+        if source in nodes_by_id:
+            lmdb_out_degree[source] = lmdb_out_degree.get(source, 0) + 1
+            directed_adj.setdefault(source, []).append(target)
+        if target in nodes_by_id:
+            lmdb_in_degree[target] = lmdb_in_degree.get(target, 0) + 1
+
+    directed_hop: dict[str, int] = {}
+    if NODE0 in nodes_by_id:
+        directed_hop[NODE0] = 0
+        queue: deque[str] = deque([NODE0])
+        while queue:
+            current = queue.popleft()
+            for neighbor in directed_adj.get(current, []):
+                if neighbor in nodes_by_id and neighbor not in directed_hop:
+                    directed_hop[neighbor] = directed_hop[current] + 1
+                    queue.append(neighbor)
 
     view_nodes = [
         {
             "color": _node_color(node_id),
+            "degree_lmdb_in": lmdb_in_degree.get(node_id, 0),
+            "degree_lmdb_out": lmdb_out_degree.get(node_id, 0),
+            "degree_lmdb_total": lmdb_in_degree.get(node_id, 0) + lmdb_out_degree.get(node_id, 0),
+            "directed_hop_from_root": directed_hop.get(node_id),
             "group": _prefix(node_id),
             "id": node_id,
             "kind": _kind(node),
             "label": _label(node_id, node),
+            "projection": _projection(node),
             "size": _node_size(node_id),
+            "status": _status(node),
             "tier": _tier(node),
         }
         for node_id, node in sorted(nodes_by_id.items())
