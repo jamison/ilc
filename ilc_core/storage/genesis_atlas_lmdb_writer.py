@@ -240,15 +240,9 @@ class AtlasLmdbSafeWriter:
             file_node = _file_node_from_registration(registration, phase=phase)
             _append_if_missing(nodes_to_add, current_node_ids, file_node)
             file_id = _candidate_id(file_node)
-            edges_to_add.append(
-                _edge(
-                    source=file_id,
-                    edge_type="CLASSIFIED_BY",
-                    target=DEFAULT_PUBLIC_PATH_POLICY,
-                    phase=phase,
-                    candidate_status="fix59b_phase_file_registration_edge",
-                )
-            )
+            # Routine phase-file registration must not create a high-fan-in
+            # public-path classification hub. Public-path tagging history is
+            # tracked by Fix67's sidecar receipt instead of canonical topology.
             if not registration.skip_carries_forward:
                 edges_to_add.append(
                     _edge(
