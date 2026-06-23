@@ -1,0 +1,1868 @@
+{
+  "dry_run_receipt": {
+    "missing_semantic_count": 0,
+    "projected_counts": {
+      "edges": 89437,
+      "nodes": 16816
+    },
+    "removed_edge_count": 199
+  },
+  "edge_count": 199,
+  "entries": [
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ccb5d3cebee392e6",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix59_g10_atlas_lmdb_phase_tool_migration_fix59e_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a95048b72eb2b6a8",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix59_g10_atlas_lmdb_read_cli_fix59c_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:9bf46c546b4cc30f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix59_g10_atlas_lmdb_safe_writer_contract_fix59b_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e707de90af64b5fa",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix59_g10_atlas_lmdb_write_cli_fix59d_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:eb224544a22002eb",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix60_g10_edge_id_and_preimage_debt_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_fix63d_prompt_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f1293db135a1cefd",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix63_g10_cdl_adr_lifecycle_governance_cleanup_fix63d_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_fix63d_prompt_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:984e3259ed7154ca",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix63_g10_floating_invariant_direct_read_fix63c_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1b00ecc513677152",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix63_g10_graph_viz_hardening_fix63e_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:98ebe77758a04838",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix63_g10_manual_governs_audit_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:9bb9c5d4b032989b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix63_g10_procedural_support_edge_manual_audit_fix63a_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:263d12fa4728e9b9",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix64_g10_file_ref_content_hash_resolution_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:be7d6f882bc1ffc0",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix65_g10_package_membership_manifest_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix66",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1dc1b058b2e9702f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix66_g10_hub_artifact_removal_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:702d1f2b4eb9bdfd",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix59b_atlas_lmdb_safe_writer_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1c10d4adaa7ff464",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix59c_atlas_lmdb_read_cli_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:6acfb5884dd6dac9",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix59d_atlas_lmdb_write_cli_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ffbb82213488f4d3",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix59e_atlas_lmdb_phase_tool_migration_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix60",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:af193e1fb4d1291b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix60_edge_id_and_preimage_debt_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix61",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:459e87269d7b20a2",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix61_projection_export_package_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:bdf980124a57f108",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62a_attribution_substrate_closure_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1a9ad87072ef99e2",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62b_priority0_authority_trace_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:3b7aaf15cf576de1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62c_priority0_disposition_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e324d849feab1e19",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62d_authority_normalization_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:baeed0f2a576bec7",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62e_false_authority_cleanup_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62f",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f29b985cbca3d9dc",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62f_runtime_source_trace_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62g",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f4a1163eff626bfc",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62g_governance_spine_closure_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62h",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ad041f5ca853406c",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62h_priority1_overlay_classification_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62i",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:073a30c23070b75c",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix62i_support_queue_closure_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a16334946a7a5302",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix63_manual_governs_audit_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b4baaf0344d0e359",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix63a_procedural_support_edge_manual_audit_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:766466b5606bb0c7",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix63c_floating_invariant_direct_read_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0ff4df533bde4d5c",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix63d_cdl_adr_lifecycle_governance_cleanup_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:9f7e323495070a93",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix63e_graph_viz_hardening_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix64",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:387d80a5193ff6be",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix64_file_ref_content_hash_resolution_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:734ab7bfb8d8f6b7",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix65_package_membership_manifest_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix66",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:88ca9ce39a385aa1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_phase_1545p_fix66_hub_artifact_removal_walkthrough_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:2c689559315b7ccd",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_phases_status_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:08342db690d116ac",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_planning_index_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ff9a90f74bd0049b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62a_attribution_substrate_closure_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:fcc241d11541057f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62a_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a50b1befa5d8e353",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62b_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:971912f09de06607",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62b_priority0_authority_trace_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:64f886dfff5917f1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62b_priority0_authority_trace_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7ae69e05ff0c45c4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62c_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:412bda38ff9bb4c1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62c_priority0_disposition_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e74c4cdf9efbd735",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62c_priority0_disposition_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:df5b079dcc79a0f1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62d_authority_normalization_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d7d96b5f04ebe2ab",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62d_authority_normalization_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:83bacf0a14425d12",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62d_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:3a1803954cfc9916",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62e_false_authority_cleanup_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:8558ea0cc4884914",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62e_false_authority_cleanup_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f8a0c63a83a9880c",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62e_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62f",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0683a821421a7bc4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62f_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62f",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:607c0ed315eb1af4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62f_runtime_source_trace_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62f",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:613c27b2ff2fdff1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62f_runtime_source_trace_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62g",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b2fe9a139ea19f3f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62g_governance_spine_closure_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62g",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:676157c164758e33",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62g_governance_spine_closure_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62g",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:fa63bec1caf128a2",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62g_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62h",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b0e4bbd7509ad0c2",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62h_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62h",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:2c88ab479996728c",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62h_priority1_overlay_classification_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62h",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:17f4f125ab45f753",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62h_priority1_overlay_classification_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62i",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:78e199e27bc5a12a",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62i_manual_graph_finish_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62i",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:53c35d01f899c6cb",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62i_support_queue_closure_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62i",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:599e64df3dc78f5a",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix62i_support_queue_closure_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:bf9b48491ae79d65",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63_manual_governs_audit_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:c16659189c73305d",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63_manual_governs_audit_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_source_map_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:79ff2408007c1b2e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63a_invariant_source_file_map_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:119a3c728e8f66af",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63a_procedural_support_edge_manual_audit_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:78093e9656d13009",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63a_procedural_support_edge_manual_audit_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch001",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:139bf5a371dba85e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch001_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch001",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:464a2640f00ef9e8",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch001_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch002",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:af46c017803bfc10",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch002_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch002",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a6820171e76a3202",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch002_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch003",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a6bb952bc7bab326",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch003_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch003",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:21a190051d410f25",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch003_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch004",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:61743243e260f5da",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch004_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch004",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:adb0378a87be9810",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch004_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch005",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d4001470fd6c170e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch005_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch005",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:cbaf2cba335f8fc6",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch005_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch006",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:87893c454f98809d",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch006_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch006",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0736dcfc53d5fa8b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch006_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch007",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:96899ba8ba8c9d3a",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch007_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch007",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a5e3275037973b04",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch007_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch008",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b446f21a41be5a64",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch008_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batch008",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:8898f9e1a15b4402",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch008_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:9d5cb5775c62b015",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch009_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d8f9d1f8a758a640",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch009_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:187426acc6b2eaaf",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch010_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:19dc8f6ea2a2c4f5",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch010_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:69139d5263bd6177",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch011_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:cf006f3b78340d73",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch011_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7909bea6c4f08f1e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch012_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:2d2ada00818e4a3c",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch012_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1a239e381211f272",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch013_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches009_013",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:8a8945f62bad85b9",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch013_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:63c4df561cc5803d",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch014_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d0d5b98109985dc4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch014_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:87307123bbe96326",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch015_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e6639825a423134f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch015_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0656bae3f142af56",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch016_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:434d1378a9007f2b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch016_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:fe199298b935469d",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch017_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0521e1e0ff9d9492",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch017_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:fee09cac705234d0",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch018_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches014_018",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:747bbe2a0aa0ee39",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch018_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d80d27f84f3dac0f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch019_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7342a7d551a326f2",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch019_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:bbf7879642814de1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch020_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:4b247cc0620894ad",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch020_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0141db3d8384c3f8",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch021_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ffa44c90dcff7d32",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch021_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1d0e8e5e31bb481f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch022_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:83d982d46ca60af1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch022_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7a53bb5cd53f30b0",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch023_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches019_023",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:597af1b02358a746",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch023_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:42a17b981c9ab7e1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch024_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:daf4ecae09e107a6",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch024_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a11a22211c439259",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch025_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:346df14e9cb416ba",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch025_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b343d5c88606c50a",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch026_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1482c02ee4ade92b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch026_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:6af19e261b5ad71e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch027_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d964b9a3aa66fb39",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch027_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:9c658e8bbdf21b1e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch028_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches024_028_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:4696d8b6d617288f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch028_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0bbe2b3583c65c6a",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch029_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:fdd94e5dd1d57371",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch029_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:dab8fe69eae7e8c6",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch030_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:8754de5e6ebf20a0",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch030_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e3f6e47c2ac48e3b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch031_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:688b104f03e3f0ff",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch031_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:eceffc3bfd2bfb64",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch032_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:9c0a6b46adfb1676",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch032_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:8b54feb5579b8492",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch033_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:3c11d04b468f708b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch033_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:86aff3157b6555e9",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch034_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63b_batches029_034_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:113eff935b9e8240",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63b_direct_source_invariant_audit_batch034_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:dea52036843d524d",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63c_floating_invariant_direct_read_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b7f1ad76ba6c7877",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63c_floating_invariant_direct_read_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0325a656af6ea6f5",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63c_floating_invariant_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a5d556e4fb392113",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63d_cdl_adr_lifecycle_governance_cleanup_ledger_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:780f286fd4e1e87e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63d_cdl_adr_lifecycle_governance_cleanup_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:434e2193f2fbf34f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix63d_cdl_adr_no_outbound_governs_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix64",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:a13b9b3af2d4fe2f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix64_file_ref_resolution_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix64",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1beea2314140998d",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix64_file_ref_resolution_report_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:68080ca20833715a",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix65_package_membership_manifest_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:0ee073a7ce001334",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix65_package_membership_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix66",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:91633edf814d129f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix66_hub_artifact_removal_report_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix66",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:79c2e409ec5d8c59",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_fix66_residual_audit_queue_v0_1_json",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65_pre_spec_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:36c4cfda638ad740",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_genesis_distribution_rings_spec_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65_pre_spec_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7038ca111c0e3099",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:docs_specs_ilc_time_capsule_sidecar_pre_cdl_spec_v0_1_md",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:1b31385e5752dca1",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:ilc_core_cli_atlas_lmdb_cli_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:778ef10e4aa06bbf",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:ilc_core_cli_main_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:73ac35f9e2ee09ca",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:ilc_core_distribution_genesis_package_manifest_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e6cb880e673b1f90",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:ilc_core_storage_genesis_atlas_candidate_lmdb_adapter_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f58a31abf63440ea",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:ilc_core_storage_genesis_atlas_lmdb_writer_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:95b6bb794529335b",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix59b_atlas_lmdb_safe_writer_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:aa746258909525c7",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix59c_atlas_lmdb_read_cli_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:69a4956f9e8f628f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix59d_atlas_lmdb_write_cli_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix59e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:06c41d2beccab42e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix59e_atlas_lmdb_write_guard_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix60",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7af4a70f5974bf8e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix60_edge_id_and_preimage_debt_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix61",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f52d92afe24bd7c8",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix61_projection_export_package_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:c24ce5dfd66c5537",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62a_attribution_substrate_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ede84bed0784b3cb",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62b_priority0_authority_trace_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:6b2c9c7caca5e596",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62c_priority0_disposition_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b187cc33f25ccbf2",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62d_authority_normalization_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:466c520d666c59b9",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62e_false_authority_cleanup_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62f",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:241daf4204516d8f",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62f_runtime_source_trace_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62g",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:02edd335feccd6e4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62g_governance_spine_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62h",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ccbff2ce64f08437",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62h_priority1_overlay_classification_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62i",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:541c38df8b633291",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix62i_support_queue_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:2785ad5c19b7cabb",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix63_manual_governs_audit_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f9dc2fc32a6467b3",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix63a_procedural_support_edge_manual_audit_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e97c39660c116bbb",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix63c_floating_invariant_direct_read_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:2da79e9946b5c296",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix63d_cdl_adr_lifecycle_governance_cleanup_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:23731f904ec86044",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix63e_graph_viz_hardening_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix64",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ac038f7f06c4ab15",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix64_file_ref_content_hash_resolution_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:ef02521848a9a1a8",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix65_package_membership_manifest_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix66",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e8dbac2ae72380cf",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tests_test_phase_1545p_fix66_hub_artifact_removal_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix60",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d554db22057426e5",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix60_edge_id_and_preimage_debt_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix61",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:723179af81af2897",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix61_projection_export_package_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:acf13ef54ec38557",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62a_attribution_substrate_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62b",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:c3275539c9dc1a51",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62b_priority0_authority_trace_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62c",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:7bde2186b2a97055",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62c_priority0_disposition_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:644b4d7c46984eea",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62d_authority_normalization_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:06d9c1380fe880ce",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62e_false_authority_cleanup_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62f",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:049a13b4657f2020",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62f_runtime_source_trace_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62g",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:d383a7a82fd233be",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62g_governance_spine_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62h",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:c5f573e45d58ff03",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62h_priority1_overlay_classification_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix62i",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:5d9a28d7a3f896bf",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix62i_support_queue_closure_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e40d61a699d04ce4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix63_manual_governs_audit_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63a",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:f7f976d8e0181ebc",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix63a_procedural_support_edge_manual_audit_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63c_file_registration",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:eb79441e5de53b73",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix63c_floating_invariant_direct_read_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63d",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:e86a9226a24081e4",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix63d_cdl_adr_lifecycle_governance_cleanup_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix64",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:33ace1c84ef2b2bb",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix64_file_ref_content_hash_resolution_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix65",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:b61afbb87956469e",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix65_package_membership_manifest_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix66",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:8a37734bae494e01",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_evaluators_sim_genesis_atlas_fix66_hub_artifact_removal_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:558e5e3a6d8a7094",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_graph_viz_3d_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    },
+    {
+      "annotation_method": "phase_file_lmdb_registration",
+      "annotation_phase": "phase_1545p_fix63e",
+      "candidate_status": "fix59b_phase_file_registration_edge",
+      "edge_id": "edge:26cca707d3ee12d5",
+      "edge_type": "CLASSIFIED_BY",
+      "source": "repo:file_ref:tools_graph_viz_export_py",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    }
+  ],
+  "live_receipt_summary": {
+    "missing_semantic_count": 0,
+    "post_counts": {
+      "edges": 89437,
+      "nodes": 16816
+    },
+    "post_public_path_classified_by_edge_count": 1,
+    "post_top_classified_by_targets": [
+      {
+        "fan_in": 24,
+        "target": "policy:formal_publication_gate_required"
+      },
+      {
+        "fan_in": 18,
+        "target": "policy:fix63c_direct_source_reviewed_support_trace"
+      },
+      {
+        "fan_in": 10,
+        "target": "policy:idea_descent_sidecar_local_only_no_graph_writes_no_ecu_no_cdl_adr_mutation"
+      },
+      {
+        "fan_in": 7,
+        "target": "sim:GENESIS-COMPILE-01"
+      },
+      {
+        "fan_in": 7,
+        "target": "invariant:genesis_authority_traceability_separate_from_derivation_reachability"
+      }
+    ],
+    "pre_counts": {
+      "edges": 89636,
+      "nodes": 16816
+    },
+    "removed_edge_count": 199,
+    "status": "PASS"
+  },
+  "migrated_phase": "1545p-fix67",
+  "non_repo_source_edge_count": 1,
+  "pre_public_path_classified_by_edge_count": 200,
+  "preserved_edges": [
+    {
+      "adjudication": "preserved",
+      "edge_id": "edge:3fcc446232fb4ae7",
+      "edge_type": "CLASSIFIED_BY",
+      "node_record_excerpt": {
+        "candidate_id": "artifact:genesis_package_merkle_root_v0.4",
+        "candidate_status": "fix65_unsigned_pre_rc_package_membership_manifest",
+        "graph_delta": "support_only_until_signing",
+        "graph_projection": "public_protocol_graph",
+        "node_kind": "package_membership_manifest_artifact",
+        "package_member_count": 465,
+        "public_rc_exclude_marker_count": 49,
+        "tier": "public_protocol_candidate"
+      },
+      "reason": "Direct-read LMDB node record: artifact is the Genesis package membership Merkle root v0.4, graph_projection=public_protocol_graph, candidate_status=fix65_unsigned_pre_rc_package_membership_manifest, graph_delta=support_only_until_signing, public_rc_exclude_marker_count=49. Its public-path classification is semantically meaningful and is not a routine phase-file registration spoke.",
+      "source": "artifact:genesis_package_merkle_root_v0.4",
+      "target": "policy:public_path_still_blocked_phase_1545p"
+    }
+  ],
+  "purpose": "Receipt of per-file CLASSIFIED_BY edges migrated out of canonical LMDB by Fix67. Not a graph topology source. Public-path blocking status remains represented by policy:public_path_still_blocked_phase_1545p; these entries record routine file/ref-level public-path tags removed from active topology.",
+  "repo_source_edge_count": 199,
+  "schema_version": "ilc_fix67_public_path_classified_by_receipt.v0.1",
+  "source_lmdb": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "target_policy": "policy:public_path_still_blocked_phase_1545p"
+}

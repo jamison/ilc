@@ -273,7 +273,7 @@ def test_register_phase_files_cli_write_adds_support_nodes_and_edges(tmp_path: P
     assert receipt["mutated"] is True
     assert receipt["rejected_edge_count"] == 0
     assert receipt["accepted_node_count"] == 3
-    assert receipt["accepted_edge_count"] == 3
+    assert receipt["accepted_edge_count"] == 2
 
 
 def test_float_and_self_referential_digest_fields_fail_closed(tmp_path: Path) -> None:
