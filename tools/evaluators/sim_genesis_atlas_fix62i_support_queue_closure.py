@@ -260,6 +260,9 @@ def _validate(report: dict[str, Any]) -> None:
 
 
 def run() -> dict[str, Any]:
+    raise RuntimeError(
+        "fix62i_historical_evaluator_superseded_by_fix66_do_not_recreate_support_hub"
+    )
     _verify_tokens()
     input_queue = _read_json(INPUT_QUEUE_PATH)
     entries = [dict(entry) for entry in input_queue["entries"]]

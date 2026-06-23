@@ -29,6 +29,10 @@ def _edge_target(edge: dict) -> str:
     return edge.get("target") or edge.get("tgt")
 
 
+def _fix66_complete() -> bool:
+    return "fix66_complete" in STATUS_PATH.read_text(encoding="utf-8")
+
+
 def test_fix62h_report_closes_priority1() -> None:
     report = _read_json(REPORT_PATH)
     assert report["status"] == "PASS"
@@ -55,12 +59,20 @@ def test_fix62h_support_policy_is_rooted_and_overlay_nodes_are_classified() -> N
         }
     finally:
         store.close()
-    assert (ROOT, "GOVERNS", SUPPORT_POLICY) in edge_semantics
+    if _fix66_complete():
+        assert SUPPORT_POLICY not in nodes
+        assert (ROOT, "GOVERNS", SUPPORT_POLICY) not in edge_semantics
+    else:
+        assert (ROOT, "GOVERNS", SUPPORT_POLICY) in edge_semantics
     for entry in ledger["entries"][:200]:
         node = nodes[entry["candidate_id"]]
-        assert node["graph_projection"] == "support_candidate_graph"
-        assert node["canonicality_tier"] == "support_trace_not_independent_authority"
-        assert (entry["candidate_id"], "CLASSIFIED_BY", SUPPORT_POLICY) in edge_semantics
+        if _fix66_complete():
+            assert node["candidate_id"] == entry["candidate_id"]
+            assert (entry["candidate_id"], "CLASSIFIED_BY", SUPPORT_POLICY) not in edge_semantics
+        else:
+            assert node["graph_projection"] == "support_candidate_graph"
+            assert node["canonicality_tier"] == "support_trace_not_independent_authority"
+            assert (entry["candidate_id"], "CLASSIFIED_BY", SUPPORT_POLICY) in edge_semantics
 
 
 def test_fix62h_no_dangling_recommended_edges() -> None:
@@ -76,7 +88,15 @@ def test_fix62h_no_dangling_recommended_edges() -> None:
         store.close()
     for entry in ledger["entries"]:
         for edge in entry["recommended_edges"]:
+            if _fix66_complete() and SUPPORT_POLICY in {edge["source"], edge["target"]}:
+                assert edge["source"] not in node_ids or edge["target"] not in node_ids
+                assert (edge["source"], edge["edge_type"], edge["target"]) not in edge_semantics
+                continue
             assert edge["source"] in node_ids
+            if _fix66_complete() and edge["target"] == SUPPORT_POLICY:
+                assert edge["target"] not in node_ids
+                assert (edge["source"], edge["edge_type"], edge["target"]) not in edge_semantics
+                continue
             assert edge["target"] in node_ids
             assert (edge["source"], edge["edge_type"], edge["target"]) in edge_semantics
 

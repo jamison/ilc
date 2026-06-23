@@ -441,7 +441,7 @@ Graph.d3Force("charge").strength(-25);"""
   <label><input type="checkbox" id="chk-governs" checked> GOVERNS edges</label>
   <label><input type="checkbox" id="chk-attestation" checked> ATTESTATION edges</label>
   <label><input type="checkbox" id="chk-refs" checked> REFERENCES_AUTHORITY</label>
-  <label><input type="checkbox" id="chk-classified" checked> CLASSIFIED_BY</label>
+  <label><input type="checkbox" id="chk-classified"> CLASSIFIED_BY</label>
   <label><input type="checkbox" id="chk-source-tree" checked> SOURCE_TREE_MEMBER</label>
   <label><input type="checkbox" id="chk-contains" checked> CONTAINS_* edges</label>
   <label><input type="checkbox" id="chk-imports" checked> IMPORTS_MODULE edges</label>
@@ -671,7 +671,7 @@ let hidePrivateHistory  = true;
 let showGoverns         = true;
 let showAttest          = true;
 let showRefs            = true;
-let showClassified      = true;
+let showClassified      = false;
 let showSourceTree      = true;
 let showContains        = true;
 let showImports         = true;

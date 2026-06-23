@@ -94,6 +94,27 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
         self._write_string_list_index(b"nodes_by_tier_group", tier_group_index)
         self._write_string_list_index(b"nodes_by_source_path", path_index)
 
+    def replace_nodes(self, nodes: list[dict[str, Any]]) -> None:
+        """Replace the full candidate node database and deterministic indexes."""
+        tier_index: dict[str, list[str]] = {}
+        tier_group_index: dict[str, list[str]] = {}
+        path_index: dict[str, list[str]] = {}
+        with self.env.begin(write=True) as txn:
+            nodes_db = self._dbs[b"nodes"]
+            txn.drop(nodes_db, delete=False)
+            for node in nodes:
+                node_id = _candidate_id(node)
+                txn.put(_encode_key(node_id), _encode_json(node), db=nodes_db)
+                tier = str(node.get("tier", "unknown"))
+                tier_index.setdefault(tier, []).append(node_id)
+                tier_group_index.setdefault(_tier_group(node), []).append(node_id)
+                source_path = node.get("source_path")
+                if isinstance(source_path, str) and source_path:
+                    path_index.setdefault(source_path, []).append(node_id)
+        self._replace_string_list_index(b"nodes_by_tier", tier_index)
+        self._replace_string_list_index(b"nodes_by_tier_group", tier_group_index)
+        self._replace_string_list_index(b"nodes_by_source_path", path_index)
+
     def put_edges(self, edges: list[dict[str, Any]]) -> None:
         """Bulk-write candidate edges."""
         with self.env.begin(write=True, db=self._dbs[b"edges"]) as txn:
@@ -184,6 +205,13 @@ class GenesisAtlasCandidateStore(_LmdbRuntimeBase):
         with self.env.begin(write=True, db=self._dbs[db_name]) as txn:
             for key, values in sorted(index.items()):
                 txn.put(_encode_key(key), _encode_json(sorted(set(values))))
+
+    def _replace_string_list_index(self, db_name: bytes, index: dict[str, list[str]]) -> None:
+        with self.env.begin(write=True) as txn:
+            db = self._dbs[db_name]
+            txn.drop(db, delete=False)
+            for key, values in sorted(index.items()):
+                txn.put(_encode_key(key), _encode_json(sorted(set(values))), db=db)
 
 
 def _candidate_id(node: dict[str, Any]) -> str:

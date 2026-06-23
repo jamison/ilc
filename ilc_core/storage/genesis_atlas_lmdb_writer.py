@@ -611,6 +611,104 @@ class AtlasLmdbSafeWriter:
             self.store.put_meta("last_safe_writer_receipt", receipt)
         return receipt
 
+    def remove_nodes_by_id(
+        self,
+        node_ids: Iterable[str],
+        *,
+        phase: str,
+        dry_run: bool = True,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Remove exact nodes through a validation-first full node-store rewrite.
+
+        Node removal is intentionally stricter than field updates. Any requested
+        node with incident edges is rejected, because deleting it would create
+        dangling graph topology. Callers must remove or rewrite edges first.
+        """
+
+        requested = {str(node_id) for node_id in node_ids if str(node_id)}
+        current_nodes = self.store.iter_nodes()
+        current_edges = self.store.iter_edges()
+        current_payload = self.store.get_graph_payload() or {}
+        node_by_id = {_candidate_id(node): dict(node) for node in current_nodes}
+        incident_counts: dict[str, int] = {node_id: 0 for node_id in requested}
+        for edge in current_edges:
+            source = _edge_source(edge)
+            target = _edge_target(edge)
+            if source in incident_counts:
+                incident_counts[source] += 1
+            if target in incident_counts:
+                incident_counts[target] += 1
+
+        missing_node_ids = sorted(requested - set(node_by_id))
+        rejected_nodes = [
+            {
+                "candidate_id": node_id,
+                "incident_edge_count": incident_counts[node_id],
+                "reason": "incident_edges_remain",
+            }
+            for node_id in sorted(requested & set(node_by_id))
+            if incident_counts[node_id] > 0
+        ]
+        removable_ids = sorted(
+            node_id
+            for node_id in requested & set(node_by_id)
+            if incident_counts[node_id] == 0
+        )
+        retained_nodes = [
+            node
+            for node in current_nodes
+            if _candidate_id(node) not in set(removable_ids)
+        ]
+        payload = dict(current_payload)
+        payload["nodes"] = retained_nodes
+        payload["edges"] = current_edges
+        payload["safe_writer"] = {
+            "last_phase": phase,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        receipt: dict[str, Any] = {
+            "dry_run": dry_run,
+            "metadata": dict(metadata or {}),
+            "missing_node_count": len(missing_node_ids),
+            "missing_node_ids": missing_node_ids,
+            "mutated": False,
+            "phase": phase,
+            "pre_counts": {"edges": len(current_edges), "nodes": len(current_nodes)},
+            "rejected_node_count": len(rejected_nodes),
+            "rejected_nodes": rejected_nodes,
+            "removed_node_count": len(removable_ids),
+            "removed_node_ids": removable_ids,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            receipt["projected_counts"] = {
+                "edges": len(current_edges),
+                "nodes": len(retained_nodes),
+            }
+            return receipt
+
+        if removable_ids:
+            self.store.replace_nodes(retained_nodes)
+            self.store.put_graph_payload(payload)
+        post_nodes = self.store.iter_nodes()
+        post_edges = self.store.iter_edges()
+        post_payload = self.store.get_graph_payload() or {}
+        post_invariants = _inspect_invariants(
+            nodes=post_nodes,
+            edges=post_edges,
+            payload=post_payload,
+            store=self.store,
+        )
+        receipt["mutated"] = bool(removable_ids)
+        receipt["post_counts"] = {"edges": len(post_edges), "nodes": len(post_nodes)}
+        receipt["post_invariants"] = post_invariants
+        receipt["status"] = "PASS" if all(post_invariants.values()) else "FAIL"
+        if phase:
+            self.store.put_meta(f"safe_writer_node_removals:{phase}", receipt)
+            self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
 
 def deterministic_edge_id(source: str, edge_type: str, target: str) -> str:
     digest = hashlib.sha256(f"{source}|{edge_type}|{target}".encode("utf-8")).hexdigest()[:16]
