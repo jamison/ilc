@@ -30,6 +30,10 @@ def _edge_target(edge: dict) -> str:
     return edge.get("target") or edge.get("tgt")
 
 
+def _fix66_complete() -> bool:
+    return "fix66_complete" in STATUS_PATH.read_text(encoding="utf-8")
+
+
 def test_fix62i_report_closes_support_queue() -> None:
     report = _read_json(REPORT_PATH)
     assert report["status"] == "PASS"
@@ -77,7 +81,11 @@ def test_fix62i_lmdb_contains_support_edges_and_node_classification() -> None:
         node_id = entry["candidate_id"]
         assert nodes[node_id]["graph_projection"] == "support_candidate_graph"
         assert nodes[node_id]["canonicality_tier"] == "support_trace_not_independent_authority"
-        assert (node_id, "CLASSIFIED_BY", SUPPORT_POLICY) in edge_semantics
+        if _fix66_complete():
+            assert SUPPORT_POLICY not in nodes
+            assert (node_id, "CLASSIFIED_BY", SUPPORT_POLICY) not in edge_semantics
+        else:
+            assert (node_id, "CLASSIFIED_BY", SUPPORT_POLICY) in edge_semantics
 
     for entry in repo_sample:
         node_id = entry["candidate_id"]
