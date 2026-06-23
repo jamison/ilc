@@ -320,7 +320,9 @@ def test_safe_writer_removes_isolated_node_and_rebuilds_indexes(tmp_path: Path) 
         writer.close()
 
 
-def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path: Path) -> None:
+def test_phase_file_registration_helper_materializes_required_endpoints_without_public_path_hub(
+    tmp_path: Path,
+) -> None:
     root = tmp_path / "atlas"
     _seed_lmdb(root)
     writer = AtlasLmdbSafeWriter(root)
@@ -349,7 +351,7 @@ def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path
         assert file_id in nodes
         assert "phase:1545p_fix59b" in nodes
         assert DEFAULT_PUBLIC_PATH_POLICY in nodes
-        assert (file_id, "CLASSIFIED_BY", DEFAULT_PUBLIC_PATH_POLICY) in edges
+        assert (file_id, "CLASSIFIED_BY", DEFAULT_PUBLIC_PATH_POLICY) not in edges
         assert (file_id, "EVIDENCES", "phase:1545p_fix59b") in edges
     finally:
         writer.close()
