@@ -242,7 +242,7 @@ class AtlasLmdbSafeWriter:
             file_id = _candidate_id(file_node)
             # Routine phase-file registration must not create a high-fan-in
             # public-path classification hub. Public-path tagging history is
-            # tracked by Fix67's sidecar receipt instead of canonical topology.
+            # tracked by Fix67's migration receipt instead of canonical topology.
             if not registration.skip_carries_forward:
                 edges_to_add.append(
                     _edge(
