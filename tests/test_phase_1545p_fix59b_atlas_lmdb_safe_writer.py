@@ -261,6 +261,65 @@ def test_safe_writer_reports_missing_edge_semantic_without_mutation(tmp_path: Pa
         writer.close()
 
 
+def test_safe_writer_rejects_node_removal_with_incident_edges(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        receipt = writer.remove_nodes_by_id(
+            {"node:a"},
+            phase="1545p-Fix66-test",
+            dry_run=False,
+        )
+        assert receipt["mutated"] is False
+        assert receipt["removed_node_count"] == 0
+        assert receipt["rejected_node_count"] == 1
+        assert receipt["rejected_nodes"][0]["reason"] == "incident_edges_remain"
+        assert writer.inspect()["node_count"] == 2
+        assert writer.inspect()["edge_count"] == 1
+    finally:
+        writer.close()
+
+
+def test_safe_writer_removes_isolated_node_and_rebuilds_indexes(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        writer.apply_plan(
+            AtlasLmdbWritePlan(
+                nodes_to_add=[
+                    {
+                        "candidate_id": "node:c",
+                        "graph_projection": "support_candidate_graph",
+                        "node_kind": "support_node",
+                        "source_path": "c.md",
+                        "tier": "support_candidate",
+                    }
+                ],
+                phase="1545p-Fix66-test",
+                dry_run=False,
+            )
+        )
+        assert writer.inspect()["node_count"] == 3
+        receipt = writer.remove_nodes_by_id(
+            {"node:c"},
+            phase="1545p-Fix66-test",
+            dry_run=False,
+        )
+        assert receipt["mutated"] is True
+        assert receipt["removed_node_count"] == 1
+        assert receipt["rejected_node_count"] == 0
+        inspection = writer.inspect()
+        assert inspection["node_count"] == 2
+        assert inspection["edge_count"] == 1
+        assert inspection["invariants"]["payload_node_count_matches_rows"] is True
+        assert inspection["invariants"]["source_path_index_matches_rows"] is True
+        assert writer.store.get_node("node:c") is None
+    finally:
+        writer.close()
+
+
 def test_phase_file_registration_helper_materializes_required_endpoints(tmp_path: Path) -> None:
     root = tmp_path / "atlas"
     _seed_lmdb(root)
