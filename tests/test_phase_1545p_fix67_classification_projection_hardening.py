@@ -19,7 +19,7 @@ PROMPT_PATH = (
     REPO_ROOT
     / "docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix67_g10_classified_by_sidecar_migration.md"
 )
-SIDECAR_PATH = REPO_ROOT / "docs/specs/ilc_fix67_public_path_classified_by_receipt_v0.1.json"
+RECEIPT_PATH = REPO_ROOT / "docs/specs/ilc_fix67_public_path_classified_by_receipt_v0.1.json"
 STATUS_PATH = REPO_ROOT / "docs/phases/STATUS.md"
 ARTIFACT_EDGE_SOURCE = "artifact:genesis_package_merkle_root_v0.4"
 
@@ -51,8 +51,8 @@ def test_fix67_status_tokens_present() -> None:
         assert token in text
 
 
-def test_public_path_classified_by_spokes_migrated_to_sidecar() -> None:
-    payload = json.loads(SIDECAR_PATH.read_text(encoding="utf-8"))
+def test_public_path_classified_by_spokes_migrated_to_receipt() -> None:
+    payload = json.loads(RECEIPT_PATH.read_text(encoding="utf-8"))
     assert payload["schema_version"] == "ilc_fix67_public_path_classified_by_receipt.v0.1"
     assert payload["target_policy"] == DEFAULT_PUBLIC_PATH_POLICY
     assert payload["pre_public_path_classified_by_edge_count"] == 200
