@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Read-only CLI helpers for the unsigned Genesis Atlas LMDB projection.
+"""Read-first CLI helpers for the unsigned Genesis Atlas LMDB projection.
 
-PUBLIC_RC_EXCLUDE: genesis_atlas_lmdb_read_cli_research_only
+PUBLIC_RC_EXCLUDE: genesis_atlas_lmdb_local_maintenance_cli_research_only
 PUBLIC_RC_EXCLUDE_REASON: Local unsigned Atlas LMDB inspection helper; not
 public graph activation, Genesis signing, canonical graph mutation, runtime
 activation, public serving, or economic settlement.
+
+The default surface is read-only. Mutating subcommands are local maintenance
+helpers that require explicit write flags and route through AtlasLmdbSafeWriter.
 """
 
 from __future__ import annotations

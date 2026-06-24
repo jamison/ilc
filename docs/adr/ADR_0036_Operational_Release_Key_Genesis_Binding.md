@@ -21,7 +21,7 @@ Later public RC and post-RC releases need an operational signing path for:
 - versioned star-map candidates;
 - release metadata and receipts.
 
-This ADR drafts the narrow mechanism for registering an operational release key
+This ADR defines the narrow mechanism for registering an operational release key
 as Genesis-bound delegated authority. It does not create the key and does not
 authorize any signing ceremony.
 
@@ -139,6 +139,6 @@ authorized.
 
 ## 8. Status
 
-This ADR is a Phase 1159 draft. It remains Proposed. Acceptance review is
-deferred to a later window after the full Genesis Canonical Lineage Contract
-routing is resolved.
+This ADR was accepted by the Phase 1173 acceptance review after ADR-0037
+resolved the Genesis Canonical Lineage Contract dependency. Acceptance does not
+create an operational release key and does not authorize any signing ceremony.

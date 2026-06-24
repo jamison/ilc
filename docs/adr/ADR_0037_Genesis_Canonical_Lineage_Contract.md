@@ -19,7 +19,7 @@ The contract is separate from ADR-0036. ADR-0036 covers a delegated operational 
 key. This ADR covers the canonical lineage, equivalence, and merge-policy semantics
 that determine what the release key may bind to.
 
-This ADR is Proposed only. Acceptance review is Phase 1173.
+This ADR was accepted by the Phase 1173 acceptance review.
 
 ---
 
@@ -274,7 +274,7 @@ fork-equivalent under this contract.
 
 ## 9. Consequences
 
-If accepted, this ADR provides:
+This accepted ADR provides:
 
 - the formal lineage/equivalence/merge-policy basis for public RC artifacts;
 - the provenance equivalence criterion consumed by SIM-SPECTRAL-05;
@@ -282,9 +282,9 @@ If accepted, this ADR provides:
 - the fork-boundary policy needed before public release-key acceptance; and
 - the Genesis encrustation model that makes Genesis non-removable across observer slices.
 
-Open risks before acceptance:
+Acceptance review disposition:
 
-- Phase 1168 must confirm that §3.2 is operational enough for SIM-SPECTRAL-05.
-- Phase 1173 must confirm consistency with ADR-0036.
+- Phase 1168 confirmed that §3.2 is operational enough for SIM-SPECTRAL-05.
+- Phase 1173 confirmed consistency with ADR-0036.
 - Later windows must implement deferred observer-slice tests for runtime-binding,
   economic-flow, and gossip.

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Materialize the current Genesis Atlas candidate into local LMDB.
+"""Materialize the historical Fix41 Genesis Atlas candidate into local LMDB.
 
 PUBLIC_RC_EXCLUDE: genesis_base_graph_lmdb_rematerialization_research_only
 PUBLIC_RC_EXCLUDE_REASON: Local deterministic projection of an unsigned Atlas candidate; not Genesis signing, public graph upload, public RC activation, or canonical graph mutation.
+
+Historical note: this evaluator preserves the pre-unified Fix41 materialization
+path for audit/replay only. Current Atlas LMDB maintenance must use the unified
+LMDB plus AtlasLmdbSafeWriter instead of this historical rematerializer.
 """
 
 from __future__ import annotations
