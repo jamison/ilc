@@ -87,6 +87,8 @@ class AtlasLmdbSafeWriter:
             store=self.store,
         )
         return {
+            "duplicate_semantic_edge_extra_row_count": _duplicate_semantic_edge_extra_row_count(edges),
+            "duplicate_semantic_edge_group_count": _duplicate_semantic_edge_group_count(edges),
             "edge_count": len(edges),
             "edge_id_debt_count": sum(1 for edge in edges if not edge.get("edge_id")),
             "graph_payload_edge_count": len(payload.get("edges", []))
@@ -344,6 +346,108 @@ class AtlasLmdbSafeWriter:
         receipt["status"] = "PASS" if all(post_invariants.values()) else "FAIL"
         if phase:
             self.store.put_meta(f"safe_writer_edge_id_repair:{phase}", receipt)
+            self.store.put_meta("last_safe_writer_receipt", receipt)
+        return receipt
+
+    def dedupe_semantic_edges(
+        self,
+        *,
+        phase: str,
+        dry_run: bool = True,
+        metadata: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Remove duplicate edge rows that assert the same semantic triple.
+
+        The dedupe key is ``(source, edge_type, target)``. The retained row is
+        selected deterministically by metadata richness, confidence, authority
+        status hints, and finally edge_id. Removed rows are preserved in the
+        receipt so provenance loss remains auditable.
+        """
+
+        current_nodes = self.store.iter_nodes()
+        current_edges = self.store.iter_edges()
+        current_payload = self.store.get_graph_payload() or {}
+        edge_groups: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+        for edge in current_edges:
+            semantic = (_edge_source(edge), _edge_type(edge), _edge_target(edge))
+            edge_groups.setdefault(semantic, []).append(dict(edge))
+
+        retained_edges: list[dict[str, Any]] = []
+        entries: list[dict[str, Any]] = []
+        duplicate_groups = {
+            semantic: edges
+            for semantic, edges in edge_groups.items()
+            if len(edges) > 1
+        }
+        for semantic, edges in sorted(edge_groups.items()):
+            if len(edges) == 1:
+                retained_edges.append(edges[0])
+                continue
+            ordered = sorted(edges, key=_semantic_dedupe_sort_key)
+            canonical = ordered[0]
+            removed = ordered[1:]
+            retained_edges.append(canonical)
+            source, edge_type, target = semantic
+            entries.append(
+                {
+                    "canonical_edge": canonical,
+                    "canonical_edge_id": str(canonical.get("edge_id", "")),
+                    "edge_type": edge_type,
+                    "removed_edge_ids": [str(edge.get("edge_id", "")) for edge in removed],
+                    "removed_edges": removed,
+                    "source": source,
+                    "target": target,
+                }
+            )
+
+        retained_edges = sorted(
+            retained_edges,
+            key=lambda edge: (
+                str(edge.get("edge_id", "")),
+                _edge_source(edge),
+                _edge_type(edge),
+                _edge_target(edge),
+            ),
+        )
+        payload = dict(current_payload)
+        payload["nodes"] = current_nodes
+        payload["edges"] = retained_edges
+        payload["safe_writer"] = {
+            "last_phase": phase,
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        receipt: dict[str, Any] = {
+            "dry_run": dry_run,
+            "duplicate_groups": len(duplicate_groups),
+            "entries": entries,
+            "metadata": dict(metadata or {}),
+            "mutated": False,
+            "phase": phase,
+            "post_edge_rows": len(retained_edges),
+            "pre_edge_rows": len(current_edges),
+            "removed_duplicate_rows": len(current_edges) - len(retained_edges),
+            "semantic_triples": len(edge_groups),
+            "version": GENESIS_ATLAS_LMDB_WRITER_VERSION,
+        }
+        if dry_run:
+            return receipt
+        if entries:
+            self.store.replace_edges(retained_edges)
+            self.store.put_graph_payload(payload)
+        post_nodes = self.store.iter_nodes()
+        post_edges = self.store.iter_edges()
+        post_payload = self.store.get_graph_payload() or {}
+        post_invariants = _inspect_invariants(
+            nodes=post_nodes,
+            edges=post_edges,
+            payload=post_payload,
+            store=self.store,
+        )
+        receipt["mutated"] = bool(entries)
+        receipt["post_invariants"] = post_invariants
+        receipt["status"] = "PASS" if all(post_invariants.values()) else "FAIL"
+        if phase:
+            self.store.put_meta(f"safe_writer_semantic_edge_dedupe:{phase}", receipt)
             self.store.put_meta("last_safe_writer_receipt", receipt)
         return receipt
 
@@ -707,6 +811,71 @@ class AtlasLmdbSafeWriter:
 def deterministic_edge_id(source: str, edge_type: str, target: str) -> str:
     digest = hashlib.sha256(f"{source}|{edge_type}|{target}".encode("utf-8")).hexdigest()[:16]
     return f"edge:{digest}"
+
+
+def _duplicate_semantic_edge_group_count(edges: Sequence[dict[str, Any]]) -> int:
+    counts: dict[tuple[str, str, str], int] = {}
+    for edge in edges:
+        semantic = (_edge_source(edge), _edge_type(edge), _edge_target(edge))
+        counts[semantic] = counts.get(semantic, 0) + 1
+    return sum(1 for count in counts.values() if count > 1)
+
+
+def _duplicate_semantic_edge_extra_row_count(edges: Sequence[dict[str, Any]]) -> int:
+    counts: dict[tuple[str, str, str], int] = {}
+    for edge in edges:
+        semantic = (_edge_source(edge), _edge_type(edge), _edge_target(edge))
+        counts[semantic] = counts.get(semantic, 0) + 1
+    return sum(count - 1 for count in counts.values() if count > 1)
+
+
+def _semantic_dedupe_sort_key(edge: dict[str, Any]) -> tuple[int, float, int, str]:
+    confidence = _numeric_confidence(edge)
+    confidence_key = -confidence if confidence is not None else float("inf")
+    return (
+        -_metadata_richness(edge),
+        confidence_key,
+        -_authority_status_score(edge),
+        str(edge.get("edge_id", "")),
+    )
+
+
+def _metadata_richness(edge: dict[str, Any]) -> int:
+    return sum(1 for value in edge.values() if not _empty_metadata_value(value))
+
+
+def _empty_metadata_value(value: Any) -> bool:
+    return value is None or value == "" or value == [] or value == {} or value == ()
+
+
+def _numeric_confidence(edge: dict[str, Any]) -> float | None:
+    value = edge.get("confidence")
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int | float):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
+def _authority_status_score(edge: dict[str, Any]) -> int:
+    status_text = " ".join(
+        str(edge.get(key, ""))
+        for key in (
+            "authority_status",
+            "candidate_status",
+            "canonicality_tier",
+            "promotion_status",
+            "signature_status",
+            "status",
+            "tier",
+        )
+    ).lower()
+    return int(any(token in status_text for token in ("signed", "canonical", "ratified")))
 
 
 def repo_file_ref_id(path: str | Path) -> str:
